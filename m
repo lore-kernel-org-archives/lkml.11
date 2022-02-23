@@ -2,239 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99379C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 16:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242749AbiBWQVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 11:21:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57718 "EHLO
+        id S242764AbiBWQVw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 11:21:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242728AbiBWQVj (ORCPT
+        with ESMTP id S242762AbiBWQVs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 11:21:39 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2BA9C5DA5
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 08:21:10 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nMuNV-00087t-O4; Wed, 23 Feb 2022 17:20:33 +0100
-Message-ID: <a8cb99e0-fe01-2234-9839-fea28ca09f6d@pengutronix.de>
-Date:   Wed, 23 Feb 2022 17:20:27 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v5 4/5] crypto: caam - add in-kernel interface for blob
- generator
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     =?UTF-8?Q?Horia_Geant=c4=83?= <horia.geanta@nxp.com>,
-        Aymen Sghaier <aymen.sghaier@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>, kernel@pengutronix.de,
-        David Gstir <david@sigma-star.at>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Tim Harvey <tharvey@gateworks.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Jan Luebbe <j.luebbe@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Franck LENORMAND <franck.lenormand@nxp.com>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        linux-integrity@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-References: <20220222195819.2313913-1-a.fatoum@pengutronix.de>
- <20220222195819.2313913-5-a.fatoum@pengutronix.de> <YhZVmBy3/nWbqf+/@iki.fi>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <YhZVmBy3/nWbqf+/@iki.fi>
-Content-Type: text/plain; charset=UTF-8
+        Wed, 23 Feb 2022 11:21:48 -0500
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60069.outbound.protection.outlook.com [40.107.6.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EF9C6206;
+        Wed, 23 Feb 2022 08:21:16 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YYlcIGaeCuUDXQYnKeKccTMHSdAevX89tHtvwdSNFVgU/rgz7Yq7pEABifhurv8dNUWsfPXJyIAo30ErfByzOdZfHHp6+fx+yGW/O5rQ6mzBZfIXx+Z7YjjicSoJCZyWbK9iL8U9HtMwBYevv4JRBnqJAqlnXnfuybfr4sAfWJbhCu53How8M/yw+Yq8LhnvxubgXniw3bV5xkUpRr9QEgMvNj7RlQYxV8YD+kmFT+m5B6tkpUQh3W6ThhYJa6HVBL8XAWer9EBWuOnHb8zar5H5zj466E8V/WVVf7aIcY7t6XdGH9Q/8Fuwz8UXYAF8alsmTNaqmyoPlE+FNQe10g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lmylffdE7ICLsXYq7mnD3JZBs6zEm80G7C1Ek+QXQ+4=;
+ b=DuOjxv4zr58M2hZBaFHB/xaO33AmLwqdNNbIUizGTGw1G7ldhQHtpHVE7tk2pmysD+z/I4kq2nVT0UdtKZGwvtjIaHEG9asMd+NCR2+GsRBc2zBwWdclCeKRhWQrT7TqnBAudXdrnMtf8yn3FX3ohiV0v4Nabl0kKwuC8otd15KzphTHO4y40dRCCwhRR+SIBhxtGOJfBMeGGDOJ0g/H6wv8i+by0emGkAl+gRV+NWwYBTJDyMnlE/io3N8SYxR3iZK9uNZFYGmj2ZeXUkPCmLJlJZsCR2NVIRQThGOGnquxw8CVkiE8aQJfM8WXDGawf9lhawCRZyi5fOWRKjZDkw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wolfvision.net; dmarc=pass action=none
+ header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lmylffdE7ICLsXYq7mnD3JZBs6zEm80G7C1Ek+QXQ+4=;
+ b=FJAbuawVhIbsh5X+r58yyaBO12d8VqkWULGgsDQMbuO9Xl9yC0bZYUe4/WQkWxjT3mmeZVq+hev9FpIgjIMP8r37qwnXMYEcnS6o9jrFgjQf4Ma306ycDKLcZWfZiW8GMwDF8CjMDTOBswKWYfw+bU11NEJU2Gda6DJdMWCIkz0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=wolfvision.net;
+Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com (2603:10a6:3:e1::23)
+ by PAXPR08MB7264.eurprd08.prod.outlook.com (2603:10a6:102:213::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Wed, 23 Feb
+ 2022 16:21:07 +0000
+Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com
+ ([fe80::f9ee:a333:b115:5049]) by HE1PR0802MB2426.eurprd08.prod.outlook.com
+ ([fe80::f9ee:a333:b115:5049%4]) with mapi id 15.20.4995.027; Wed, 23 Feb 2022
+ 16:21:07 +0000
+From:   Michael Riesch <michael.riesch@wolfvision.net>
+To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Liang Chen <cl@rock-chips.com>
+Subject: [PATCH] arm64: dts: rockchip: add the vdd_cpu regulator to rk3568-evb1-v10
+Date:   Wed, 23 Feb 2022 17:20:54 +0100
+Message-Id: <20220223162054.1626257-1-michael.riesch@wolfvision.net>
+X-Mailer: git-send-email 2.30.2
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain
+X-ClientProxiedBy: ZR0P278CA0175.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:45::17) To HE1PR0802MB2426.eurprd08.prod.outlook.com
+ (2603:10a6:3:e1::23)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6b0f871a-73ed-4d96-ddec-08d9f6e87ed2
+X-MS-TrafficTypeDiagnostic: PAXPR08MB7264:EE_
+X-Microsoft-Antispam-PRVS: <PAXPR08MB72645C6CEE2081C2ACF025D5F23C9@PAXPR08MB7264.eurprd08.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WmU1zMw2mhLgk1L3xUADttidESynGoIjDUJIyGEQEoGUDUt7/SSpeID4EgAVVWPsig1cfMT2tEb6PdP+MjA7x1JObET/RcHCODowF2mXY17JZj2fIPWbqf1RKt7yMeo6YfVfhRjWAUyCBJ+3imOeE0IowmVsc/4T/CTPTY/gPJ6g/8AXLs42xpAJaZ4nY67hwIAPktoAfsjeV21gYvShAY+tdpIA/22gHZ1rY1HbMMoWk/0LjduZLzpR4MEWRNMMRSH+C8QlQ3tZbZhMIq1EIFoIfiPkefyUQ0xKrwXyzdrdRznOJdzA3gvPouNnkcDlcBWSDDgHqu8kiwgr/h7peTEnYSNPDk9311q4UudVvKgImmlr/iD96B4Uk/CUjTUFIG3n8JS3Ddn/QJkRvrHnce6FsBxCPA/MKG+VWclIqVciiSh4Hzp8wDnlaCendrQutUw0EAvh78B5VKZIa2J+INiBVpogfhrtx3iGK6pQYHu0b4en5O7ahK6xIxRhPY8UUjUQmPA1Xsin3x9FFSk+CY7Yy+tMrEF7/RjAOPcOGv/CFn3SGB5GRFWVncQ6/P/kIsL6vfEvATHA0oRJN1UhqZIkxHSdmh8m4VkCYNt3OTRERcJ0Bq/H+pVdhSCaX3aXjTE/ouSL2Jr2/xehxfHVwA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2426.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(136003)(376002)(39850400004)(366004)(396003)(346002)(66476007)(66556008)(66946007)(4326008)(83380400001)(86362001)(44832011)(8936002)(316002)(36756003)(2906002)(5660300002)(8676002)(186003)(6486002)(508600001)(6506007)(2616005)(54906003)(1076003)(38100700002)(52116002)(6512007)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tc5tfbHgnR3N+COHHwAMUrT3kRT5OgZveMkvc1gNkhfY9XUTJAr3cgOSo8uo?=
+ =?us-ascii?Q?MkshpzQQI+v5ckaIDU49T0/kzs3iUjtcWgGFsRtAbCbR89epYW13jsxiD/li?=
+ =?us-ascii?Q?V/Hfcl1vZqWivadF/YmANUGptTbgQynFOzfkzt9LHUsKYcknIzBnqxUV1qY2?=
+ =?us-ascii?Q?8ZT5BhMfsMZ84WBvX2PygagN6cV0Mu1KIyYJGazlzGwRgUiiK7PDuMOzAcjJ?=
+ =?us-ascii?Q?qq4VPYVPeHEsLhEAGZ7ESi3rCxpCx/S2ORIascCMoNMQhMpBb+Qpooc+o+8b?=
+ =?us-ascii?Q?PhJDRBWKrsld56I3WbsxpUjcWo5qi9zbPEVLal8rT0jDa5RQoKIuJvfEzsZ7?=
+ =?us-ascii?Q?NMs7c4pN0HFzgeqIsPc0M7qOC5rs9lUHHefcL1FWRZOQW7AnpbRaylc/+bxy?=
+ =?us-ascii?Q?Ad8dQAX4gHZq+We7KDISlFQk+YT49LeYPcGHVb42ak4xwP6LiuG768YXw3F3?=
+ =?us-ascii?Q?Vi/1mWeaXFWEU4EXfCNd24WginR1rxfbEr2gLwYe3V08L2df9QTAd9p6mvVb?=
+ =?us-ascii?Q?ZyeMeracoULtYe7st70YCQ1Ai0J9ZHF7TXrL79xgHCFCgjORE0HOZXldC74E?=
+ =?us-ascii?Q?acIofzyCpDD9T09mIX9MBS3NQ1DRIPlllAhySkGDYUJl4AIIDslBJXOmScdU?=
+ =?us-ascii?Q?i2IDFWk/qbHIfdYViZE0LWMXaAsaE3Uku0XPCsGKjjuvaAVxBIZcae507yKh?=
+ =?us-ascii?Q?fAX4I81kKuVE41j0A2HFhzLn8cLOhfNHqbMd2PHxCishJBUI729xJxxUe1hv?=
+ =?us-ascii?Q?pU5eJIiQJnogwsSaYABewdSmUv947iFRrovl2IeE6/fdOgCwTVG6SuuFlnoz?=
+ =?us-ascii?Q?L3oyFPZ+gNeYZNnRweFR+hyvUBi313acgI0EnMwvlbyTQXdOncK9KGj0ac71?=
+ =?us-ascii?Q?1zhxAVsv7You43UGFRrvwAqrxzxU9XNv9p21HcblPWkf8bB60ymMf03p4E9Z?=
+ =?us-ascii?Q?O//7X6FHgbXRBoPSwZgs6BtiywPyDbzLNMSBva6InqK/Pjv+MH+P8gj64bni?=
+ =?us-ascii?Q?tnOcM1oc6B7bF1Z2khY1PxE+h8w5nZSMh8dKNFASF38mrJwDSFaafQfAbPTE?=
+ =?us-ascii?Q?wdnfeJ7e8NxExPsGeRDAK1ZVmW8mxr+xgL1p5mRC6Ra2uHIAvuZq+H1cB+Ml?=
+ =?us-ascii?Q?RBigr7+zHdt6zCjcHwZgiaVdx69MhlqxXvaBwKpsxIxn2jN72uskljBqzX1d?=
+ =?us-ascii?Q?qzUO3xLvNVNOuvskrxhONtWCthBUuF7QIOibg2pQKamZjjg7UNe5M0aQbWHk?=
+ =?us-ascii?Q?1kazoRzRqdAn3Yv7Xu1QBfzGa6Mok3mnMVKM5GCofnv0wsJapZvHt7eX6U6e?=
+ =?us-ascii?Q?Ab7TYX03rD7wRlXiIp0HQNkngEmto/7DhOBgzy+uPrxNrFz6OgWhkS1y5ouQ?=
+ =?us-ascii?Q?dy3DAjHyCDIbQwRqJgCS0GiYhUoT8wQM4eGzeEi2twz6Ov9Sx6c4O+yNdTSn?=
+ =?us-ascii?Q?H7/bO+7InxzULmZbGfmwYvuujfTJ4mKfEIhTEAZBBGe8JlnUjo2jIg9OFXX2?=
+ =?us-ascii?Q?EbwXn3WGYgkRkCmRnwwp7zs/2EOa4KWcQA37FmoRiV0u97V7qWSHM3vNMzxD?=
+ =?us-ascii?Q?Io7AtcFQCywp2bCaU3x4IEkIKuf9U7ILCBrcg9OBXJMHQ11VaCBuL6omeT79?=
+ =?us-ascii?Q?9jE54VNVMko0co42qhXHrlWIXRnKV8hj9haq3lbsiwwEIlWpiiUgfWGAmb3K?=
+ =?us-ascii?Q?z5L580lCmYGAct1640clD0/cUAZnhvrpRoyKBVnXkMiMMwUSMFawvvK5/jiV?=
+ =?us-ascii?Q?sff2vLv8NFGnRRiJ6Isgb6hXcaxoi2o=3D?=
+X-OriginatorOrg: wolfvision.net
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b0f871a-73ed-4d96-ddec-08d9f6e87ed2
+X-MS-Exchange-CrossTenant-AuthSource: HE1PR0802MB2426.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2022 16:21:07.2104
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uEL7Jw100moVQgQwfYo0HhTanza1mGxoBcbwXVyfqoYgR72pooc70AC3tJ8o+OKotxbRXfDSIAzLtDplax/OaDLr0q4eHMikTRz8k08/RQc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR08MB7264
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23.02.22 16:41, Jarkko Sakkinen wrote:
-> On Tue, Feb 22, 2022 at 08:58:18PM +0100, Ahmad Fatoum wrote:
->> The NXP Cryptographic Acceleration and Assurance Module (CAAM)
->> can be used to protect user-defined data across system reboot:
->>
->>   - When the system is fused and boots into secure state, the master
->>     key is a unique never-disclosed device-specific key
->>   - random key is encrypted by key derived from master key
->>   - data is encrypted using the random key
->>   - encrypted data and its encrypted random key are stored alongside
->>   - This blob can now be safely stored in non-volatile memory
->>
->> On next power-on:
->>   - blob is loaded into CAAM
->>   - CAAM writes decrypted data either into memory or key register
->>
->> Add functions to realize encrypting and decrypting into memory alongside
->> the CAAM driver.
->>
->> They will be used in a later commit as a source for the trusted key
->> seal/unseal mechanism.
->>
->> Reviewed-by: David Gstir <david@sigma-star.at>
->> Reviewed-by: Pankaj Gupta <pankaj.gupta@nxp.com>
->> Tested-By: Tim Harvey <tharvey@gateworks.com>
->> Tested-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
->> Signed-off-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
->> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
->> ---
->> To: "Horia Geantă" <horia.geanta@nxp.com>
->> To: Aymen Sghaier <aymen.sghaier@nxp.com>
->> To: Herbert Xu <herbert@gondor.apana.org.au>
->> To: "David S. Miller" <davem@davemloft.net>
->> Cc: James Bottomley <jejb@linux.ibm.com>
->> Cc: Jarkko Sakkinen <jarkko@kernel.org>
->> Cc: Mimi Zohar <zohar@linux.ibm.com>
->> Cc: David Howells <dhowells@redhat.com>
->> Cc: James Morris <jmorris@namei.org>
->> Cc: Eric Biggers <ebiggers@kernel.org>
->> Cc: "Serge E. Hallyn" <serge@hallyn.com>
->> Cc: Jan Luebbe <j.luebbe@pengutronix.de>
->> Cc: David Gstir <david@sigma-star.at>
->> Cc: Richard Weinberger <richard@nod.at>
->> Cc: Franck LENORMAND <franck.lenormand@nxp.com>
->> Cc: Sumit Garg <sumit.garg@linaro.org>
->> Cc: Tim Harvey <tharvey@gateworks.com>
->> Cc: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
->> Cc: Pankaj Gupta <pankaj.gupta@nxp.com>
->> Cc: linux-integrity@vger.kernel.org
->> Cc: keyrings@vger.kernel.org
->> Cc: linux-crypto@vger.kernel.org
->> Cc: linux-kernel@vger.kernel.org
->> Cc: linux-security-module@vger.kernel.org
->> ---
->>  drivers/crypto/caam/Kconfig    |   3 +
->>  drivers/crypto/caam/Makefile   |   1 +
->>  drivers/crypto/caam/blob_gen.c | 230 +++++++++++++++++++++++++++++++++
->>  include/soc/fsl/caam-blob.h    |  56 ++++++++
->>  4 files changed, 290 insertions(+)
->>  create mode 100644 drivers/crypto/caam/blob_gen.c
->>  create mode 100644 include/soc/fsl/caam-blob.h
->>
->> diff --git a/drivers/crypto/caam/Kconfig b/drivers/crypto/caam/Kconfig
->> index 84ea7cba5ee5..ea9f8b1ae981 100644
->> --- a/drivers/crypto/caam/Kconfig
->> +++ b/drivers/crypto/caam/Kconfig
->> @@ -151,6 +151,9 @@ config CRYPTO_DEV_FSL_CAAM_RNG_API
->>  	  Selecting this will register the SEC4 hardware rng to
->>  	  the hw_random API for supplying the kernel entropy pool.
->>  
->> +config CRYPTO_DEV_FSL_CAAM_BLOB_GEN
->> +	bool
->> +
->>  endif # CRYPTO_DEV_FSL_CAAM_JR
->>  
->>  endif # CRYPTO_DEV_FSL_CAAM
->> diff --git a/drivers/crypto/caam/Makefile b/drivers/crypto/caam/Makefile
->> index 3570286eb9ce..25f7ae5a4642 100644
->> --- a/drivers/crypto/caam/Makefile
->> +++ b/drivers/crypto/caam/Makefile
->> @@ -21,6 +21,7 @@ caam_jr-$(CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI) += caamalg_qi.o
->>  caam_jr-$(CONFIG_CRYPTO_DEV_FSL_CAAM_AHASH_API) += caamhash.o
->>  caam_jr-$(CONFIG_CRYPTO_DEV_FSL_CAAM_RNG_API) += caamrng.o
->>  caam_jr-$(CONFIG_CRYPTO_DEV_FSL_CAAM_PKC_API) += caampkc.o pkc_desc.o
->> +caam_jr-$(CONFIG_CRYPTO_DEV_FSL_CAAM_BLOB_GEN) += blob_gen.o
->>  
->>  caam-$(CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI) += qi.o
->>  ifneq ($(CONFIG_CRYPTO_DEV_FSL_CAAM_CRYPTO_API_QI),)
->> diff --git a/drivers/crypto/caam/blob_gen.c b/drivers/crypto/caam/blob_gen.c
->> new file mode 100644
->> index 000000000000..513d3f90e438
->> --- /dev/null
->> +++ b/drivers/crypto/caam/blob_gen.c
->> @@ -0,0 +1,230 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Copyright (C) 2015 Pengutronix, Steffen Trumtrar <kernel@pengutronix.de>
->> + * Copyright (C) 2021 Pengutronix, Ahmad Fatoum <kernel@pengutronix.de>
->> + */
->> +
->> +#include <linux/device.h>
->> +#include <soc/fsl/caam-blob.h>
->> +
->> +#include "compat.h"
->> +#include "desc_constr.h"
->> +#include "desc.h"
->> +#include "error.h"
->> +#include "intern.h"
->> +#include "jr.h"
->> +#include "regs.h"
->> +
->> +struct caam_blob_priv {
->> +	struct device jrdev;
->> +};
->> +
->> +struct caam_blob_job_result {
->> +	int err;
->> +	struct completion completion;
->> +};
->> +
->> +static void caam_blob_job_done(struct device *dev, u32 *desc, u32 err, void *context)
->> +{
->> +	struct caam_blob_job_result *res = context;
->> +	int ecode = 0;
->> +
->> +	dev_dbg(dev, "%s %d: err 0x%x\n", __func__, __LINE__, err);
->> +
->> +	if (err)
->> +		ecode = caam_jr_strstatus(dev, err);
->> +
->> +	res->err = ecode;
->> +
->> +	/*
->> +	 * Upon completion, desc points to a buffer containing a CAAM job
->> +	 * descriptor which encapsulates data into an externally-storable
->> +	 * blob.
->> +	 */
->> +	complete(&res->completion);
->> +}
->> +
->> +static u32 *caam_blob_alloc_desc(size_t keymod_len)
->> +{
->> +	size_t len;
->> +
->> +	/* header + (key mod immediate) + 2x pointers + op */
->> +	len = 4 + (4 + ALIGN(keymod_len, 4)) + 2*(4 + 4 + CAAM_PTR_SZ_MAX) + 4;
-> 
-> Nit: the amount of magic numbers is overwhelming here. I neither understand
-> the statement nor how that comment should help me to understand it.
+The TCS4525 voltage regulator provides the vdd_cpu on the Rockchip
+RK3568 EVB1. Add the device tree node and connect it to the CPU
+nodes.
 
-header              =  4
-(key mod immediate) = (4 + ALIGN(keymod_len, 4))
-2x pointer          =  2 * (4 + 4 + CAAM_PTR_SZ_MAX)
-op                  =  4
+Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
+---
+ .../boot/dts/rockchip/rk3568-evb1-v10.dts     | 33 +++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-I haven't heard back from the CAAM maintainers yet since v1. Perhaps now
-is a good occasion to chime in? :-)
-
-@Jarkko, could you take a look at patch 5? That's the gist of the series
-and I have yet to get maintainer feedback on that one.
-
-Cheers,
-Ahmad
-
-
-> 
-> BR, Jarkko
-> 
-
-
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+index bb7177ff92ac..a794a0ea5c70 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+@@ -136,6 +136,22 @@ regulator-state-mem {
+ 	};
+ };
+ 
++&cpu0 {
++	cpu-supply = <&vdd_cpu>;
++};
++
++&cpu1 {
++	cpu-supply = <&vdd_cpu>;
++};
++
++&cpu2 {
++	cpu-supply = <&vdd_cpu>;
++};
++
++&cpu3 {
++	cpu-supply = <&vdd_cpu>;
++};
++
+ &gmac0 {
+ 	assigned-clocks = <&cru SCLK_GMAC0_RX_TX>, <&cru SCLK_GMAC0>;
+ 	assigned-clock-parents = <&cru SCLK_GMAC0_RGMII_SPEED>;
+@@ -176,6 +192,23 @@ &gpu {
+ &i2c0 {
+ 	status = "okay";
+ 
++	vdd_cpu: regulator@1c {
++		compatible = "tcs,tcs4525";
++		reg = <0x1c>;
++		fcs,suspend-voltage-selector = <1>;
++		regulator-name = "vdd_cpu";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <800000>;
++		regulator-max-microvolt = <1150000>;
++		regulator-ramp-delay = <2300>;
++		vin-supply = <&vcc5v0_sys>;
++
++		regulator-state-mem {
++			regulator-off-in-suspend;
++		};
++	};
++
+ 	rk809: pmic@20 {
+ 		compatible = "rockchip,rk809";
+ 		reg = <0x20>;
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.30.2
+
