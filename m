@@ -2,229 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E9BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242075AbiBWPoW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:44:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55984 "EHLO
+        id S242313AbiBWPon (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:44:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242108AbiBWPoO (ORCPT
+        with ESMTP id S242342AbiBWPoe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:44:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2F0B1A85;
-        Wed, 23 Feb 2022 07:43:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 687B1618B9;
-        Wed, 23 Feb 2022 15:43:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 882EAC340EB;
-        Wed, 23 Feb 2022 15:43:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645631025;
-        bh=GlQlJ7gTsSs+29mQwM51uU8EyiUWcBAHlmovzgZMq5A=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=ZO1F7n8icLu0SS8LTbbOz3ZX6I0UObRkMZp430mjGi8LrVJUfF2OldgHMoIAzghD1
-         At9AE3VGPsI1ocidqHDOgU8k0/e6MLECtGV+lC7G/btQp4HrkDP1F9XVJc9Yse7aUL
-         mf0cqqw5PbI7fNrGwG0UzZkZyYXVB+Ml/GZggGje4XPizTwSQvNDVGk/tnmWbsfw2l
-         lEnLltwKC4sGbZcxl2yUy66AgXuv+/maAOaFl30j3WzRX1NMcz+bNn6oSbA9LnFLzL
-         wFifgLSN3AYjBd/Ue6eziysvQHRY1lFlZ1BnUJkJQNvSyDlpcBXxF1ZkxyYDbu3pSD
-         T2gR1yrBxcBIQ==
-Message-ID: <ccc81eb5c23f933137c5da8d5050540cc54e58f0.camel@kernel.org>
-Subject: Re: [PATCH 06/11] ceph: remove reliance on bdi congestion
-From:   Jeff Layton <jlayton@kernel.org>
-To:     NeilBrown <neilb@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jan Kara <jack@suse.cz>, Wu Fengguang <fengguang.wu@intel.com>,
-        Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Philipp Reisner <philipp.reisner@linbit.com>,
-        Lars Ellenberg <lars.ellenberg@linbit.com>,
-        Paolo Valente <paolo.valente@linaro.org>,
-        Jens Axboe <axboe@kernel.dk>
-Cc:     linux-doc@vger.kernel.org, linux-mm@kvack.org,
-        linux-nilfs@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, linux-ext4@vger.kernel.org,
-        ceph-devel@vger.kernel.org, drbd-dev@lists.linbit.com,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 23 Feb 2022 10:43:42 -0500
-In-Reply-To: <164549983739.9187.14895675781408171186.stgit@noble.brown>
-References: <164549971112.9187.16871723439770288255.stgit@noble.brown>
-         <164549983739.9187.14895675781408171186.stgit@noble.brown>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Wed, 23 Feb 2022 10:44:34 -0500
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F0CEC1148;
+        Wed, 23 Feb 2022 07:44:06 -0800 (PST)
+Received: by mail-ej1-f53.google.com with SMTP id bg10so53324117ejb.4;
+        Wed, 23 Feb 2022 07:44:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=D9YoXmL0fH0aKcdRK7BK9p6bYV4a8ZT32GFRySXCBdU=;
+        b=RIV+5pwRmII3crrgV/JucWi0BPJWGTQ+CRLXqi5IRsjf4U7TcYZDgjd3mX9V14Bx4s
+         OqBGQHnyQx7FiEkzh+o6CK9OPWccSXqgl99gTpR/Kp0n51Ov600SSirjnK+0JXcuvyCl
+         WS72KrwxZHHzKCMRI1i3/Bq7AbveLGC12hvota+S5WdY0jXENgdpG1IaGLfOhzlXLElQ
+         xAAdxSfA5IRafzyUIjC4nkt9bYwJViKQupZNON+i2EXcxN4xqHKt3013YpnESRKyCBVz
+         ISyJQK/R+JQ4VCaJEikyuKvep+Kn+JkiEnnCJ4eE9s96bymcmZg4M40hgwGWDPSJC8O3
+         fcIQ==
+X-Gm-Message-State: AOAM532OjLIwv1+F9PA9yqSyKuXE+5uuC/nchMMbPW31mH+mm7JBVvW4
+        9ymjsAHQKq9Yott0yZtyDQM=
+X-Google-Smtp-Source: ABdhPJxXI094jfo93LhxnFNB5bGS9gHU1H1rFlcOLOWlSh9AKcr6Cm2g1nUnSRsQyalvpUvbbLbSDA==
+X-Received: by 2002:a17:906:35d5:b0:6b7:faf7:9611 with SMTP id p21-20020a17090635d500b006b7faf79611mr238158ejb.537.1645631044590;
+        Wed, 23 Feb 2022 07:44:04 -0800 (PST)
+Received: from [192.168.0.125] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.googlemail.com with ESMTPSA id f3sm8446edy.72.2022.02.23.07.44.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 07:44:03 -0800 (PST)
+Message-ID: <2929cc96-b272-7144-f4a4-71d60852c5cd@kernel.org>
+Date:   Wed, 23 Feb 2022 16:44:02 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v10 2/4] Documentation/dt: Add descriptions for loongson
+ display controller
+Content-Language: en-US
+To:     Sui Jingfeng <15330273260@189.cn>, Rob Herring <robh@kernel.org>
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Roland Scheidegger <sroland@vmware.com>,
+        Zack Rusin <zackr@vmware.com>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andrey Zhizhikin <andrey.zhizhikin@leica-geosystems.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Qing Zhang <zhangqing@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+References: <20220220145554.117854-1-15330273260@189.cn>
+ <20220220145554.117854-3-15330273260@189.cn>
+ <YhVrigEnXTiNgk67@robh.at.kernel.org>
+ <720f940e.5ac.17f26de3a5b.Coremail.suijingfeng@loongson.cn>
+ <72e3790f-088d-1a70-a5f7-3a18c14a6eae@189.cn>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <72e3790f-088d-1a70-a5f7-3a18c14a6eae@189.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-22 at 14:17 +1100, NeilBrown wrote:
-> The bdi congestion tracking in not widely used and will be removed.
+On 23/02/2022 16:35, Sui Jingfeng wrote:
 > 
-> CEPHfs is one of a small number of filesystems that uses it, setting
-> just the async (write) congestion flags at what it determines are
-> appropriate times.
+> On 2022/2/23 21:56, 隋景峰 wrote:
+>> Something like this:
+>>   
+>> dt-bindings: display: Add Loongson display controller
 > 
-> The only remaining effect of the async flag is to cause (some)
-> WB_SYNC_NONE writes to be skipped.
+> Hi,
+
+Thanks for resending in a proper format. I already replied to your
+original post, so let me paste it here as well.
+
 > 
-> So instead of setting the flag, set an internal flag and change:
->  - .writepages to do nothing if WB_SYNC_NONE and the flag is set
->  - .writepage to return AOP_WRITEPAGE_ACTIVATE if WB_SYNC_NONE
->     and the flag is set.
+> We are not a platform device driver, there is no
+> of_device_id defined in my driver. In other word,
+> my driver will not bind against devices whose compatible
+> is "loongson,ls7a1000-dc". We just parse the device tree
+> actively, find necessary information of interest.
 > 
-> The writepages change causes a behavioural change in that pageout() can
-> now return PAGE_ACTIVATE instead of PAGE_KEEP, so SetPageActive() will
-> be called on the page which (I think) wil further delay the next attempt
-> at writeout.  This might be a good thing.
+> What's the meaning of dt-bindings by definition ?
+> In this case, can I use the word "dt-bindings" in the commit title?
+
+This is a patch for specific subsystem, so as Rob said, it should follow
+subsystem conventions.
+
+The patch itself is a dt-bindings patch, so there is nothing here
+special which would encourage for any exception.
+
 > 
-> Signed-off-by: NeilBrown <neilb@suse.de>
+> I want to follow the conventions, but get some push back,
+> Krzysztof say that he can not see any bindings, these are not bindings.
 
-Maybe. I have to wonder whether all of this is really useful.
+I said in comment to your patch with DTS, which you called bindings,
+that there are no bindings at all in it. Because in your patch with DTS
+you did not include bindings, but you called it bindings.
 
-When things are congested we'll avoid trying to issue new writeback
-requests. Note that we don't prevent new pages from being dirtied here -
-- only their being written back.
+Here, this is a patch with bindings, so your comment "these are not
+bindings" is not true.
 
-This also doesn't do anything in the DIO or sync_write cases, so if we
-lose caps or are doing DIO, we'll just keep churning out "unlimited"
-writes in those cases anyway.
-
-With ceph too, we're not likely to be dealing with a single server as
-well. One OSD could be struggling to keep up but others are OK. Do we
-really want to throttle writeback to the ones that are fine?
-
-FWIW, the original patch that added this stuff was this:
-
-commit 2baba25019ec564cd247af74013873d69a0b8190
-Author: Yehuda Sadeh <yehuda@hq.newdream.net>
-Date:   Fri Dec 18 13:51:57 2009 -0800
-
-    ceph: writeback congestion control
-    
-    Set bdi congestion bit when amount of write data in flight exceeds adjustable
-    threshold.
-    
-    Signed-off-by: Yehuda Sadeh <yehuda@hq.newdream.net>
-    Signed-off-by: Sage Weil <sage@newdream.net>
-
-...but it's pretty scant on details.
-
-The only reason I can see to throttle writeback like this is to prevent
-you from having too much memory tied up in writeback requests, but we
-aren't limiting other requests in the same way.
-
-Maybe we would do better to just rip this stuff out?
-
-> ---
->  fs/ceph/addr.c  |   22 +++++++++++++---------
->  fs/ceph/super.c |    1 +
->  fs/ceph/super.h |    1 +
->  3 files changed, 15 insertions(+), 9 deletions(-)
-> 
-> diff --git a/fs/ceph/addr.c b/fs/ceph/addr.c
-> index c98e5238a1b6..dc7af34640dd 100644
-> --- a/fs/ceph/addr.c
-> +++ b/fs/ceph/addr.c
-> @@ -563,7 +563,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
->  
->  	if (atomic_long_inc_return(&fsc->writeback_count) >
->  	    CONGESTION_ON_THRESH(fsc->mount_options->congestion_kb))
-> -		set_bdi_congested(inode_to_bdi(inode), BLK_RW_ASYNC);
-> +		fsc->write_congested = true;
->  
->  	req = ceph_osdc_new_request(osdc, &ci->i_layout, ceph_vino(inode), page_off, &len, 0, 1,
->  				    CEPH_OSD_OP_WRITE, CEPH_OSD_FLAG_WRITE, snapc,
-> @@ -623,7 +623,7 @@ static int writepage_nounlock(struct page *page, struct writeback_control *wbc)
->  
->  	if (atomic_long_dec_return(&fsc->writeback_count) <
->  	    CONGESTION_OFF_THRESH(fsc->mount_options->congestion_kb))
-> -		clear_bdi_congested(inode_to_bdi(inode), BLK_RW_ASYNC);
-> +		fsc->write_congested = false;
->  
->  	return err;
->  }
-> @@ -635,6 +635,10 @@ static int ceph_writepage(struct page *page, struct writeback_control *wbc)
->  	BUG_ON(!inode);
->  	ihold(inode);
->  
-> +	if (wbc->sync_mode == WB_SYNC_NONE &&
-> +	    ceph_inode_to_client(inode)->write_congested)
-> +		return AOP_WRITEPAGE_ACTIVATE;
-> +
->  	wait_on_page_fscache(page);
->  
->  	err = writepage_nounlock(page, wbc);
-> @@ -707,8 +711,7 @@ static void writepages_finish(struct ceph_osd_request *req)
->  			if (atomic_long_dec_return(&fsc->writeback_count) <
->  			     CONGESTION_OFF_THRESH(
->  					fsc->mount_options->congestion_kb))
-> -				clear_bdi_congested(inode_to_bdi(inode),
-> -						    BLK_RW_ASYNC);
-> +				fsc->write_congested = false;
->  
->  			ceph_put_snap_context(detach_page_private(page));
->  			end_page_writeback(page);
-> @@ -760,6 +763,10 @@ static int ceph_writepages_start(struct address_space *mapping,
->  	bool done = false;
->  	bool caching = ceph_is_cache_enabled(inode);
->  
-> +	if (wbc->sync_mode == WB_SYNC_NONE &&
-> +	    fsc->write_congested)
-> +		return 0;
-> +
->  	dout("writepages_start %p (mode=%s)\n", inode,
->  	     wbc->sync_mode == WB_SYNC_NONE ? "NONE" :
->  	     (wbc->sync_mode == WB_SYNC_ALL ? "ALL" : "HOLD"));
-> @@ -954,11 +961,8 @@ static int ceph_writepages_start(struct address_space *mapping,
->  
->  			if (atomic_long_inc_return(&fsc->writeback_count) >
->  			    CONGESTION_ON_THRESH(
-> -				    fsc->mount_options->congestion_kb)) {
-> -				set_bdi_congested(inode_to_bdi(inode),
-> -						  BLK_RW_ASYNC);
-> -			}
-> -
-> +				    fsc->mount_options->congestion_kb))
-> +				fsc->write_congested = true;
->  
->  			pages[locked_pages++] = page;
->  			pvec.pages[i] = NULL;
-> diff --git a/fs/ceph/super.c b/fs/ceph/super.c
-> index bf79f369aec6..4a3b77d049c7 100644
-> --- a/fs/ceph/super.c
-> +++ b/fs/ceph/super.c
-> @@ -802,6 +802,7 @@ static struct ceph_fs_client *create_fs_client(struct ceph_mount_options *fsopt,
->  	fsc->have_copy_from2 = true;
->  
->  	atomic_long_set(&fsc->writeback_count, 0);
-> +	fsc->write_congested = false;
->  
->  	err = -ENOMEM;
->  	/*
-> diff --git a/fs/ceph/super.h b/fs/ceph/super.h
-> index 67f145e1ae7a..0bd97aea2319 100644
-> --- a/fs/ceph/super.h
-> +++ b/fs/ceph/super.h
-> @@ -121,6 +121,7 @@ struct ceph_fs_client {
->  	struct ceph_mds_client *mdsc;
->  
->  	atomic_long_t writeback_count;
-> +	bool write_congested;
->  
->  	struct workqueue_struct *inode_wq;
->  	struct workqueue_struct *cap_wq;
-> 
-> 
-
--- 
-Jeff Layton <jlayton@kernel.org>
+Best regards,
+Krzysztof
