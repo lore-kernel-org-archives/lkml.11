@@ -2,161 +2,277 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EECF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D60EC4321E
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:14:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244179AbiBWTOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 14:14:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55444 "EHLO
+        id S244194AbiBWTOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 14:14:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233231AbiBWTOA (ORCPT
+        with ESMTP id S244183AbiBWTO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 14:14:00 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44A1931213
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:13:31 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id hw13so54227491ejc.9
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:13:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KvNxmsK7om4nL0g4ISMz7hk28jUTX9RGKaudCuq0JlY=;
-        b=qvK/o2neNOE9fwRjjEgYLKlvcTiSSxUZMrznc5hxZwocp9ffqx2apCHysxGbeqGDi7
-         mH+RG4Wjj0AtY3gnZi2ySafbFWXK1qtl3uDAYuuaI3zMn7bzqLJptTrtySFiPKJr90Md
-         MmsNZNYMcgiWrabAktg9+MJENZ0B/SVsoZGG9GPaYZVoFsmG8DoLqgcb2LU1yWjIOwZI
-         iw1j6PSOpeWkcOhC7wFGKT7V1f3yDEw42P14B7kB549S5la2deEY19Op8vpkieCxXUj+
-         bJ6vl7EjMpwiogGguNzTckZRVTyDZspXb6NNEnAVuhl/6QYfj70OJ48w0GvhGigu2UiE
-         da8A==
+        Wed, 23 Feb 2022 14:14:28 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C4E73FBCC
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:13:59 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C0F2940806
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 19:13:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645643630;
+        bh=jDkZtIbGu7Rx+CZZvT8FrNfVIDpOYhUi3Zl4KFBr3UY=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=d02hkyOzDd3V7Gj3Z39UKJHB1r3gfRc8xCxuG2WTfQxI+0KldKt/O/FqZ+fonZuD2
+         YIwK386NeFRhheJlEbRBAnjBwwfYB7ngI/dkMMrwGq3ERUVb7/thLM7fFf0Dg0J4U7
+         Bb0jn2hcf8//00rtdpLQ5OWVpDWdlhbAEyhUHI5Kjp2ceYQW/KfjE+wcahtYSeUS3h
+         JreKSx5iLttGX1ZCXj9Z34leWXDgkUGNIuh4Ct3g82k3KFWQA0+Ro3eQnLCZpigCM/
+         OKiKL1FpNFoYnpY6mdHoNt7aJfpI81P01mrJULCO0ymRFhZMiqVIWqJXJjKTn6QTHn
+         48iA1Ckel+N1A==
+Received: by mail-ed1-f72.google.com with SMTP id y10-20020a056402358a00b00410deddea4cso14027635edc.16
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:13:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=KvNxmsK7om4nL0g4ISMz7hk28jUTX9RGKaudCuq0JlY=;
-        b=a6RTmUhm2KbMIwmWHDKdrbQg993MyHp9euCLqajKVe5DwoFjTZJZ7hHh55F6UU0hYV
-         XGJEOGPjb3IQFLQYDU3ylmnjKa2epRCbNyKrCE0TuUg77vdHK5ft7AwFit288rolm3TO
-         ivhirUf9lha+t2VxMbO7x3tE40XnhgTzQmX7ZyHULkBEBaV8/lsNQubUUA7C/7+3FhCK
-         EgP0bMkjNSZuL24pqYFxsddGOiL+7Sbzx34GvxA4NsxJfb0C2u69DQc9+F/RPVyCw4Hd
-         lhMSqcQeuH/lBCz5OHK3P7MGeCm3dtW7ZmDuw/HrB088tUwmunaaj5nG/7YvjHEitvGx
-         kMCw==
-X-Gm-Message-State: AOAM530MuSPyX7J37lDtPlURgIPTnBIo2eWEa6e5ZXz0b8kAk+iNPZWK
-        6QB5cEFq99UeXuIiFCvf8jw=
-X-Google-Smtp-Source: ABdhPJyjtTfEFnQp3At+KO8m88JiOl5OJKsTdy/54iBndqcYTE66kpgLLNFrjFkUjL5zNNBDKQ4+ZA==
-X-Received: by 2002:a17:906:8a5b:b0:6ce:2a05:813b with SMTP id gx27-20020a1709068a5b00b006ce2a05813bmr864005ejc.589.1645643609692;
-        Wed, 23 Feb 2022 11:13:29 -0800 (PST)
-Received: from stitch.. ([2a01:4262:1ab:c:6aa:aa1e:3637:3a48])
-        by smtp.gmail.com with ESMTPSA id z22sm304172edd.45.2022.02.23.11.13.28
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jDkZtIbGu7Rx+CZZvT8FrNfVIDpOYhUi3Zl4KFBr3UY=;
+        b=LpElMCRRxY9vdVWANOv4+VMg2Snv4qMCkfg1P+Uh+xyfoMAF7aCuz9HBmSps1hcgLG
+         7JlJcnhwgEKkeaOYPAwl9P0bzA/4K2adzaGJa2V6nugJ9WpEOEeKfS7iaVtYO7c2+rYl
+         VKl6g8HagBvTP9YuK1hq1PoGHnnFP1JMdegZ8SdJLzKqHxeABZ89r8ReGb4dIPX3gUD3
+         JpSlRyrf3MFD9V304PVE5F1nxtpno5m+WE+BorCVuEtLL30arSjRvKFlOPoTxHJwzoGu
+         ytOFo57pjkX2IBcPTstIiltdSiWpt09D9fAIY9exAZ83b6uzhhLUKWUawVvIICqI3Hs+
+         gV6g==
+X-Gm-Message-State: AOAM532oY62IcLjxVC2REmdxFtd9IpdX6LkO5Ra+dkLLGLGk3sGsiXyD
+        DtGyfV3d8EjzhzJKxdw6Royo7ra+bW9PW5MsRC2NEi2lkiq8qkbS6b3fyBNU1cmYJiz7l7uheD1
+        8J/H0MnQwXse89pWdMPSbRjBycU45DQQxK0TcNKAcmg==
+X-Received: by 2002:a17:906:16cc:b0:6ce:e607:ff02 with SMTP id t12-20020a17090616cc00b006cee607ff02mr872196ejd.418.1645643630079;
+        Wed, 23 Feb 2022 11:13:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwxRdig8NaceeNOO2F1vxV5JTwYIw54VeRpY5+G4e03MaYaAg/BDtvoqP0gdGTwXBo6IyszVA==
+X-Received: by 2002:a17:906:16cc:b0:6ce:e607:ff02 with SMTP id t12-20020a17090616cc00b006cee607ff02mr872176ejd.418.1645643629849;
+        Wed, 23 Feb 2022 11:13:49 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id q5sm212611ejc.115.2022.02.23.11.13.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 11:13:29 -0800 (PST)
-Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
-From:   Emil Renner Berthing <kernel@esmil.dk>
-To:     linux-riscv@lists.infradead.org
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexandre Ghiti <alex@ghiti.fr>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] riscv: Fix auipc+jalr relocation range checks
-Date:   Wed, 23 Feb 2022 20:12:57 +0100
-Message-Id: <20220223191257.143694-1-kernel@esmil.dk>
-X-Mailer: git-send-email 2.35.1
+        Wed, 23 Feb 2022 11:13:48 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v2 01/11] driver: platform: add and use helper for safer setting of driver_override
+Date:   Wed, 23 Feb 2022 20:13:00 +0100
+Message-Id: <20220223191310.347669-2-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220223191310.347669-1-krzysztof.kozlowski@canonical.com>
+References: <20220223191310.347669-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RISC-V can do PC-relative jumps with a 32bit range using the following
-two instructions:
+Several core drivers and buses expect that driver_override is a
+dynamically allocated memory thus later they can kfree() it.
 
-	auipc	t0, imm20	; t0 = PC + imm20 * 2^12
-	jalr	ra, t0, imm12	; ra = PC + 4, PC = t0 + imm12
+However such assumption is not documented, there were in the past and
+there are already users setting it to a string literal. This leads to
+kfree() of static memory during device release (e.g. in error paths or
+during unbind):
 
-Crucially both the 20bit immediate imm20 and the 12bit immediate imm12
-are treated as two's-complement signed values. For this reason the
-immediates are usually calculated like this:
+    kernel BUG at ../mm/slub.c:3960!
+    Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
+    ...
+    (kfree) from [<c058da50>] (platform_device_release+0x88/0xb4)
+    (platform_device_release) from [<c0585be0>] (device_release+0x2c/0x90)
+    (device_release) from [<c0a69050>] (kobject_put+0xec/0x20c)
+    (kobject_put) from [<c0f2f120>] (exynos5_clk_probe+0x154/0x18c)
+    (exynos5_clk_probe) from [<c058de70>] (platform_drv_probe+0x6c/0xa4)
+    (platform_drv_probe) from [<c058b7ac>] (really_probe+0x280/0x414)
+    (really_probe) from [<c058baf4>] (driver_probe_device+0x78/0x1c4)
+    (driver_probe_device) from [<c0589854>] (bus_for_each_drv+0x74/0xb8)
+    (bus_for_each_drv) from [<c058b48c>] (__device_attach+0xd4/0x16c)
+    (__device_attach) from [<c058a638>] (bus_probe_device+0x88/0x90)
+    (bus_probe_device) from [<c05871fc>] (device_add+0x3dc/0x62c)
+    (device_add) from [<c075ff10>] (of_platform_device_create_pdata+0x94/0xbc)
+    (of_platform_device_create_pdata) from [<c07600ec>] (of_platform_bus_create+0x1a8/0x4fc)
+    (of_platform_bus_create) from [<c0760150>] (of_platform_bus_create+0x20c/0x4fc)
+    (of_platform_bus_create) from [<c07605f0>] (of_platform_populate+0x84/0x118)
+    (of_platform_populate) from [<c0f3c964>] (of_platform_default_populate_init+0xa0/0xb8)
+    (of_platform_default_populate_init) from [<c01031f8>] (do_one_initcall+0x8c/0x404)
+    (do_one_initcall) from [<c0f012c0>] (kernel_init_freeable+0x3d0/0x4d8)
+    (kernel_init_freeable) from [<c0a7def0>] (kernel_init+0x8/0x114)
+    (kernel_init) from [<c01010b4>] (ret_from_fork+0x14/0x20)
 
-	imm20 = (offset + 0x800) >> 12
-	imm12 = offset & 0xfff
+Provide a helper which clearly documents the usage of driver_override.
+This will allow later to reuse the helper and reduce amount of
+duplicated code.
 
-..where offset is the signed offset from the auipc instruction. When
-the 11th bit of offset is 0 the addition of 0x800 doesn't change the top
-20 bits and imm12 considered positive. When the 11th bit is 1 the carry
-of the addition by 0x800 means imm20 is one higher, but since imm12 is
-then considered negative the two's complement representation means it
-all cancels out nicely.
-
-However, this addition by 0x800 (2^11) means an offset greater than or
-equal to 2^31 - 2^11 would overflow so imm20 is considered negative and
-result in a backwards jump. Similarly the lower range of offset is also
-moved down by 2^11 and hence the true 32bit range is
-
-	[-2^31 - 2^11, 2^31 - 2^11)
-
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- arch/riscv/kernel/module.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ drivers/base/driver.c           | 44 +++++++++++++++++++++++++++++++++
+ drivers/base/platform.c         | 24 +++---------------
+ include/linux/device/driver.h   |  1 +
+ include/linux/platform_device.h |  6 ++++-
+ 4 files changed, 54 insertions(+), 21 deletions(-)
 
-diff --git a/arch/riscv/kernel/module.c b/arch/riscv/kernel/module.c
-index 68a9e3d1fe16..4a48287513c3 100644
---- a/arch/riscv/kernel/module.c
-+++ b/arch/riscv/kernel/module.c
-@@ -13,6 +13,19 @@
- #include <linux/pgtable.h>
- #include <asm/sections.h>
+diff --git a/drivers/base/driver.c b/drivers/base/driver.c
+index 8c0d33e182fd..79efe51bb4c0 100644
+--- a/drivers/base/driver.c
++++ b/drivers/base/driver.c
+@@ -30,6 +30,50 @@ static struct device *next_device(struct klist_iter *i)
+ 	return dev;
+ }
  
 +/*
-+ * The auipc+jalr instruction pair can reach any PC-relative offset
-+ * in the range [-2^31 - 2^11, 2^31 - 2^11)
++ * set_driver_override() - Helper to set or clear driver override.
++ * @dev: Device to change
++ * @override: Address of string to change (e.g. &device->driver_override);
++ *            The contents will be freed and hold newly allocated override.
++ * @s: NULL terminated string, new driver name to force a match, pass empty
++ *     string to clear it
++ *
++ * Helper to setr or clear driver override in a device, intended for the cases
++ * when the driver_override field is allocated by driver/bus code.
++ *
++ * Returns: 0 on success or a negative error code on failure.
 + */
-+static bool riscv_insn_valid_32bit_offset(ptrdiff_t val)
++int driver_set_override(struct device *dev, char **override, const char *s)
 +{
-+#ifdef CONFIG_32BIT
-+	return true;
-+#else
-+	return (-(1L << 31) - (1L << 11)) <= val && val < ((1L << 31) - (1L << 11));
-+#endif
-+}
++	char *new, *old, *cp;
 +
- static int apply_r_riscv_32_rela(struct module *me, u32 *location, Elf_Addr v)
++	if (!dev || !override || !s)
++		return -EINVAL;
++
++	new = kstrndup(s, strlen(s), GFP_KERNEL);
++	if (!new)
++		return -ENOMEM;
++
++	cp = strchr(new, '\n');
++	if (cp)
++		*cp = '\0';
++
++	device_lock(dev);
++	old = *override;
++	if (strlen(new)) {
++		*override = new;
++	} else {
++		kfree(new);
++		*override = NULL;
++	}
++	device_unlock(dev);
++
++	kfree(old);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(driver_set_override);
++
+ /**
+  * driver_for_each_device - Iterator for devices bound to a driver.
+  * @drv: Driver we're iterating.
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 6cb04ac48bf0..d8853b32ea10 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1275,31 +1275,15 @@ static ssize_t driver_override_store(struct device *dev,
+ 				     const char *buf, size_t count)
  {
- 	if (v != (u32)v) {
-@@ -95,7 +108,7 @@ static int apply_r_riscv_pcrel_hi20_rela(struct module *me, u32 *location,
- 	ptrdiff_t offset = (void *)v - (void *)location;
- 	s32 hi20;
+ 	struct platform_device *pdev = to_platform_device(dev);
+-	char *driver_override, *old, *cp;
++	int ret;
  
--	if (offset != (s32)offset) {
-+	if (!riscv_insn_valid_32bit_offset(offset)) {
- 		pr_err(
- 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
- 		  me->name, (long long)v, location);
-@@ -197,10 +210,9 @@ static int apply_r_riscv_call_plt_rela(struct module *me, u32 *location,
- 				       Elf_Addr v)
- {
- 	ptrdiff_t offset = (void *)v - (void *)location;
--	s32 fill_v = offset;
- 	u32 hi20, lo12;
+ 	/* We need to keep extra room for a newline */
+ 	if (count >= (PAGE_SIZE - 1))
+ 		return -EINVAL;
  
--	if (offset != fill_v) {
-+	if (!riscv_insn_valid_32bit_offset(offset)) {
- 		/* Only emit the plt entry if offset over 32-bit range */
- 		if (IS_ENABLED(CONFIG_MODULE_SECTIONS)) {
- 			offset = module_emit_plt_entry(me, v);
-@@ -224,10 +236,9 @@ static int apply_r_riscv_call_rela(struct module *me, u32 *location,
- 				   Elf_Addr v)
- {
- 	ptrdiff_t offset = (void *)v - (void *)location;
--	s32 fill_v = offset;
- 	u32 hi20, lo12;
+-	driver_override = kstrndup(buf, count, GFP_KERNEL);
+-	if (!driver_override)
+-		return -ENOMEM;
+-
+-	cp = strchr(driver_override, '\n');
+-	if (cp)
+-		*cp = '\0';
+-
+-	device_lock(dev);
+-	old = pdev->driver_override;
+-	if (strlen(driver_override)) {
+-		pdev->driver_override = driver_override;
+-	} else {
+-		kfree(driver_override);
+-		pdev->driver_override = NULL;
+-	}
+-	device_unlock(dev);
+-
+-	kfree(old);
++	ret = driver_set_override(dev, &pdev->driver_override, buf);
++	if (ret)
++		return ret;
  
--	if (offset != fill_v) {
-+	if (!riscv_insn_valid_32bit_offset(offset)) {
- 		pr_err(
- 		  "%s: target %016llx can not be addressed by the 32-bit offset from PC = %p\n",
- 		  me->name, (long long)v, location);
+ 	return count;
+ }
+diff --git a/include/linux/device/driver.h b/include/linux/device/driver.h
+index 15e7c5e15d62..81c0d9f65a40 100644
+--- a/include/linux/device/driver.h
++++ b/include/linux/device/driver.h
+@@ -151,6 +151,7 @@ extern int __must_check driver_create_file(struct device_driver *driver,
+ extern void driver_remove_file(struct device_driver *driver,
+ 			       const struct driver_attribute *attr);
+ 
++int driver_set_override(struct device *dev, char **override, const char *s);
+ extern int __must_check driver_for_each_device(struct device_driver *drv,
+ 					       struct device *start,
+ 					       void *data,
+diff --git a/include/linux/platform_device.h b/include/linux/platform_device.h
+index 7c96f169d274..37ac14459499 100644
+--- a/include/linux/platform_device.h
++++ b/include/linux/platform_device.h
+@@ -31,7 +31,11 @@ struct platform_device {
+ 	struct resource	*resource;
+ 
+ 	const struct platform_device_id	*id_entry;
+-	char *driver_override; /* Driver name to force a match */
++	/*
++	 * Driver name to force a match, use
++	 * driver_set_override() to set or clear it.
++	 */
++	char *driver_override;
+ 
+ 	/* MFD cell pointer */
+ 	struct mfd_cell *mfd_cell;
 -- 
-2.35.1
+2.32.0
 
