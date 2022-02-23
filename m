@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABEDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A87EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238242AbiBWFY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:24:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57634 "EHLO
+        id S235836AbiBWFZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:25:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237992AbiBWFYx (ORCPT
+        with ESMTP id S236018AbiBWFYz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:24:53 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4212F6A036
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:04 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d5258e8a4bso162217137b3.22
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:04 -0800 (PST)
+        Wed, 23 Feb 2022 00:24:55 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8A46C1F3
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:08 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id l3-20020a25ad43000000b0062462e2af34so11456599ybe.17
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:24:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=rf+PEwSCAjx96OEampym4lZ49QLmyoHK2vvPo63tKDU=;
-        b=ClDNkRcR05xwUIt+/3suGkjgzNs7jx8crmYYSBy7YIfyMwXpzxpsuO7L5+YX8vxRfh
-         1E4PSbB3uEBG+XkPHeMZghVckls3s0XgENlVkTaPWZjkwqbjhFcBMXRc0pNft0u4lgb5
-         OHkuB86fnETxs+Q/fn9lSwDJhVOhXOzfA1+wbVB6gzJyDg9tXEAFaT4CQ0u+HBjQvZbK
-         xaLThn55HGR54AO8ID3Zi3c8s3jxcmEzd75ic5aZDYq6ErsSaIKBY/8EVr+KDDNXwZv5
-         bVHGd/T3R6cR1QrhXBnqEawoY6M01XywGeiIoQ1z1l9A03h+cXgMumLSGriK6mCj3H15
-         pxlQ==
+        bh=gMgbv5PxdERvilfG13W1/59w3Y4MPufgzH9ipT5mZcE=;
+        b=b6urhxkWGfnvarQIxVi9atsKIrKLwBXqKa9HpQGtESTNRqGIm9vkGf3iqdrTrF3WZR
+         5m1o2lHCH4V6NfBZsxlk8GhGN3fJPzlR3rYLD19suBuPDuixp1NPgPg6U6hpUzZvTY5L
+         IgBE58eLo2ZZzbqp5xEwBHiVFVtDJ87nrKLza6quhghsvVIu54Q0IHEcJ3cNhC/sxTwh
+         jZftmgJSZ3zhdFt219bc3VfY34rKbPUl3RGNBdUPaeK8YOXIcRYVBQ85kA7yXhGQqR5+
+         DMF/TwW/QA+HqXhMMcxPWsADaTGbuLYcULrIcRh5s/jS84XHXJ0eFx/xBfm7XL6hFrwa
+         +MKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=rf+PEwSCAjx96OEampym4lZ49QLmyoHK2vvPo63tKDU=;
-        b=Vcy8E+DX60rioAhbKpo0rPMrSLcD6X2gk0iSSLFdhJmju8ELl5qPX9szm/eA7XmcvK
-         NhsqcIoeTEWdm7oQWWPRvGaiI8zV/JGjnUJqcPGhck01sw/wqIwhLlPLnBhxD83rL0oq
-         ANXxh2reQfs9yL9dpghDH6v00D5gIiDOoKy1tdN8yxZySUBJ8AtMHEDBSATZs3WuKyzA
-         7AISDPejaJh9mbA7rcMo/6OWPazpAt3l9i9szRWnuUzwhGnb+EnXKiW4Sj/nRNs6KAB2
-         sACjRT/uFl5JdFapXHy8mN2D4CE5fC/+2KR0r/YFWk5gGE5siDrvPPdWIQ55/v2eXCaP
-         4eDQ==
-X-Gm-Message-State: AOAM533n5xDdpOsTiBF6ylqMI/en7DP/nx5W/4lDoNyrXoG3G+03tKAR
-        uKcEPVqHRMpNLLO6b3o7kTt5vDdcIAF84jjCdiPUBk4qILivQd/NaJ7zzGj6KoszMPyfKPnI/Mc
-        O+AnCFnmbjS+uqaHuDi0ml9VaGJOyBN7SpBQ8WrJwvGNGs+/NUPv/GqO+n/b3I+k6G821l4D0
-X-Google-Smtp-Source: ABdhPJxAE8giXqGIDJh7Mviar4JsaaTJZtQQuDBTZF65UTbW8rTNqxt0+PJdM/jBytNMKHkW6V66FJSXIQ6n
+        bh=gMgbv5PxdERvilfG13W1/59w3Y4MPufgzH9ipT5mZcE=;
+        b=q17eb0ZHA3+ghCF1kyzSt2krPVdFPyEijngIgeUGezGR33OPCU1lGM8xMjSiSGGQrL
+         6h3vtdFx1IGa5oguZnzp7LubH9zTsNdM4p/ottPetnM8EpHsDeTXvpJaA7WjWCuWP7FP
+         J62mqiG3E5yCO4/1f0+dF+BHHFbtJjJtOcKAKZegqTEN6fL062ruCu4Vbw7lP6SDfN8Y
+         5iMHxmQqttx1WqFjvNl46yV8b4KV44eme1OvLdqNGkR49GUuNHZzKTgJCECk+DI7ppsI
+         Vh1Gyd1lNn62dkGLmhrs0FOCSlPTTODafZMQeDawtddi1Fm2IB50+xscelH1pJWWGpDw
+         kaRg==
+X-Gm-Message-State: AOAM5323M4X00rMS81u1oqUeoYPhJv3NqBkb9hGZKQVtaM33Br0ICOuP
+        fXZzerD9qnZkUzwl7qbpvoPjfpaf9OlR+zZS47E0f4Ad9kkkkOKskzX3FbMc6lXuRSKOBWnD0t6
+        lMtEdsaIsz0V31KO3B5+P/JlO/HMZCFo85CKqI9GVEZ0ijCxYj4lk/NXnQZA0GxZHsWtJOlvq
+X-Google-Smtp-Source: ABdhPJxT/vWX0OjiErFxevki8JUky5j473dKCodPTix92VCbsXfh3r9zdc2C7QnCBcd9ntaYhKL50joC8J3g
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a05:6902:108:b0:621:165e:5c1e with SMTP id
- o8-20020a056902010800b00621165e5c1emr25436069ybh.204.1645593843385; Tue, 22
- Feb 2022 21:24:03 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:21:44 -0800
+ (user=junaids job=sendgmr) by 2002:a81:5d0:0:b0:2d0:d056:c703 with SMTP id
+ 199-20020a8105d0000000b002d0d056c703mr28080196ywf.288.1645593847896; Tue, 22
+ Feb 2022 21:24:07 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:21:46 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-9-junaids@google.com>
+Message-Id: <20220223052223.1202152-11-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 08/47] mm: asi: Add basic infrastructure for global
- non-sensitive mappings
+Subject: [RFC PATCH 10/47] mm: asi: Support for global non-sensitive direct
+ map allocations
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, jmattson@google.com,
@@ -67,256 +67,330 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A pseudo-PGD is added to store global non-sensitive ASI mappings.
-Actual ASI PGDs copy entries from this pseudo-PGD during asi_init().
-
-Memory can be mapped as globally non-sensitive by calling asi_map()
-with ASI_GLOBAL_NONSENSITIVE.
-
-Page tables allocated for global non-sensitive mappings are never
-freed.
+A new GFP flag is added to specify that an allocation should be
+considered globally non-sensitive. The pages will be mapped into the
+ASI global non-sensitive pseudo-PGD, which is shared between all
+standard ASI instances. A new page flag is also added so that when
+these pages are freed, they can also be unmapped from the ASI page
+tables.
 
 Signed-off-by: Junaid Shahid <junaids@google.com>
 
 
 ---
- arch/x86/include/asm/asi.h | 12 ++++++++++++
- arch/x86/mm/asi.c          | 36 +++++++++++++++++++++++++++++++++++-
- arch/x86/mm/init_64.c      | 26 +++++++++++++++++---------
- arch/x86/mm/mm_internal.h  |  3 +++
- include/asm-generic/asi.h  |  5 +++++
- mm/init-mm.c               |  2 ++
- 6 files changed, 74 insertions(+), 10 deletions(-)
+ include/linux/gfp.h            |  10 ++-
+ include/linux/mm_types.h       |   5 ++
+ include/linux/page-flags.h     |   9 ++
+ include/trace/events/mmflags.h |  12 ++-
+ mm/page_alloc.c                | 145 ++++++++++++++++++++++++++++++++-
+ tools/perf/builtin-kmem.c      |   1 +
+ 6 files changed, 178 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/asi.h b/arch/x86/include/asm/asi.h
-index 521b40d1864b..64c2b4d1dba2 100644
---- a/arch/x86/include/asm/asi.h
-+++ b/arch/x86/include/asm/asi.h
-@@ -15,6 +15,8 @@
- #define ASI_MAX_NUM_ORDER	2
- #define ASI_MAX_NUM		(1 << ASI_MAX_NUM_ORDER)
+diff --git a/include/linux/gfp.h b/include/linux/gfp.h
+index 8fcc38467af6..07a99a463a34 100644
+--- a/include/linux/gfp.h
++++ b/include/linux/gfp.h
+@@ -60,6 +60,11 @@ struct vm_area_struct;
+ #else
+ #define ___GFP_NOLOCKDEP	0
+ #endif
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++#define ___GFP_GLOBAL_NONSENSITIVE 0x4000000u
++#else
++#define ___GFP_GLOBAL_NONSENSITIVE 0
++#endif
+ /* If the above are modified, __GFP_BITS_SHIFT may need updating */
  
-+#define ASI_GLOBAL_NONSENSITIVE	(&init_mm.asi[0])
+ /*
+@@ -248,8 +253,11 @@ struct vm_area_struct;
+ /* Disable lockdep for GFP context tracking */
+ #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
+ 
++/* Allocate non-sensitive memory */
++#define __GFP_GLOBAL_NONSENSITIVE ((__force gfp_t)___GFP_GLOBAL_NONSENSITIVE)
 +
- struct asi_state {
- 	struct asi *curr_asi;
- 	struct asi *target_asi;
-@@ -41,6 +43,8 @@ struct asi {
+ /* Room for N __GFP_FOO bits */
+-#define __GFP_BITS_SHIFT (25 + IS_ENABLED(CONFIG_LOCKDEP))
++#define __GFP_BITS_SHIFT 27
+ #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
  
- DECLARE_PER_CPU_ALIGNED(struct asi_state, asi_cpu_state);
+ /**
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 3de1afa57289..5b8028fcfe67 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -191,6 +191,11 @@ struct page {
  
-+extern pgd_t asi_global_nonsensitive_pgd[];
+ 		/** @rcu_head: You can use this to free a page by RCU. */
+ 		struct rcu_head rcu_head;
 +
- void asi_init_mm_state(struct mm_struct *mm);
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++		/* Links the pages_to_free_async list */
++		struct llist_node async_free_node;
++#endif
+ 	};
  
- int  asi_register_class(const char *name, uint flags,
-@@ -117,6 +121,14 @@ static inline void asi_intr_exit(void)
- 	}
+ 	union {		/* This union is 4 bytes in size. */
+diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
+index b90a17e9796d..a07434cc679c 100644
+--- a/include/linux/page-flags.h
++++ b/include/linux/page-flags.h
+@@ -140,6 +140,9 @@ enum pageflags {
+ #endif
+ #ifdef CONFIG_KASAN_HW_TAGS
+ 	PG_skip_kasan_poison,
++#endif
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	PG_global_nonsensitive,
+ #endif
+ 	__NR_PAGEFLAGS,
+ 
+@@ -542,6 +545,12 @@ TESTCLEARFLAG(Young, young, PF_ANY)
+ PAGEFLAG(Idle, idle, PF_ANY)
+ #endif
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++__PAGEFLAG(GlobalNonSensitive, global_nonsensitive, PF_ANY);
++#else
++__PAGEFLAG_FALSE(GlobalNonSensitive, global_nonsensitive);
++#endif
++
+ #ifdef CONFIG_KASAN_HW_TAGS
+ PAGEFLAG(SkipKASanPoison, skip_kasan_poison, PF_HEAD)
+ #else
+diff --git a/include/trace/events/mmflags.h b/include/trace/events/mmflags.h
+index 116ed4d5d0f8..73a49197ef54 100644
+--- a/include/trace/events/mmflags.h
++++ b/include/trace/events/mmflags.h
+@@ -50,7 +50,8 @@
+ 	{(unsigned long)__GFP_DIRECT_RECLAIM,	"__GFP_DIRECT_RECLAIM"},\
+ 	{(unsigned long)__GFP_KSWAPD_RECLAIM,	"__GFP_KSWAPD_RECLAIM"},\
+ 	{(unsigned long)__GFP_ZEROTAGS,		"__GFP_ZEROTAGS"},	\
+-	{(unsigned long)__GFP_SKIP_KASAN_POISON,"__GFP_SKIP_KASAN_POISON"}\
++	{(unsigned long)__GFP_SKIP_KASAN_POISON,"__GFP_SKIP_KASAN_POISON"},\
++	{(unsigned long)__GFP_GLOBAL_NONSENSITIVE, "__GFP_GLOBAL_NONSENSITIVE"}\
+ 
+ #define show_gfp_flags(flags)						\
+ 	(flags) ? __print_flags(flags, "|",				\
+@@ -93,6 +94,12 @@
+ #define IF_HAVE_PG_SKIP_KASAN_POISON(flag,string)
+ #endif
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++#define IF_HAVE_ASI(flag, string) ,{1UL << flag, string}
++#else
++#define IF_HAVE_ASI(flag, string)
++#endif
++
+ #define __def_pageflag_names						\
+ 	{1UL << PG_locked,		"locked"	},		\
+ 	{1UL << PG_waiters,		"waiters"	},		\
+@@ -121,7 +128,8 @@ IF_HAVE_PG_HWPOISON(PG_hwpoison,	"hwpoison"	)		\
+ IF_HAVE_PG_IDLE(PG_young,		"young"		)		\
+ IF_HAVE_PG_IDLE(PG_idle,		"idle"		)		\
+ IF_HAVE_PG_ARCH_2(PG_arch_2,		"arch_2"	)		\
+-IF_HAVE_PG_SKIP_KASAN_POISON(PG_skip_kasan_poison, "skip_kasan_poison")
++IF_HAVE_PG_SKIP_KASAN_POISON(PG_skip_kasan_poison, "skip_kasan_poison")	\
++IF_HAVE_ASI(PG_global_nonsensitive,	"global_nonsensitive")
+ 
+ #define show_page_flags(flags)						\
+ 	(flags) ? __print_flags(flags, "|",				\
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index c5952749ad40..a4048fa1868a 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -697,7 +697,7 @@ static inline bool pcp_allowed_order(unsigned int order)
+ 	return false;
  }
  
-+#define INIT_MM_ASI(init_mm)						\
-+	.asi = {							\
-+		[0] = {							\
-+			.pgd = asi_global_nonsensitive_pgd,		\
-+			.mm = &init_mm					\
-+		}							\
-+	},
-+
- static inline pgd_t *asi_pgd(struct asi *asi)
+-static inline void free_the_page(struct page *page, unsigned int order)
++static inline void __free_the_page(struct page *page, unsigned int order)
  {
- 	return asi->pgd;
-diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
-index 84d220cbdcfc..d381ae573af9 100644
---- a/arch/x86/mm/asi.c
-+++ b/arch/x86/mm/asi.c
-@@ -1,11 +1,13 @@
- // SPDX-License-Identifier: GPL-2.0
- 
- #include <linux/init.h>
-+#include <linux/memblock.h>
- 
- #include <asm/asi.h>
- #include <asm/pgalloc.h>
- #include <asm/mmu_context.h>
- 
-+#include "mm_internal.h"
- #include "../../../mm/internal.h"
- 
- #undef pr_fmt
-@@ -17,6 +19,8 @@ static DEFINE_SPINLOCK(asi_class_lock);
- DEFINE_PER_CPU_ALIGNED(struct asi_state, asi_cpu_state);
- EXPORT_PER_CPU_SYMBOL_GPL(asi_cpu_state);
- 
-+__aligned(PAGE_SIZE) pgd_t asi_global_nonsensitive_pgd[PTRS_PER_PGD];
-+
- int asi_register_class(const char *name, uint flags,
- 		       const struct asi_hooks *ops)
- {
-@@ -160,12 +164,17 @@ static void asi_free_pgd_range(struct asi *asi, uint start, uint end)
-  * Free the page tables allocated for the given ASI instance.
-  * The caller must ensure that all the mappings have already been cleared
-  * and appropriate TLB flushes have been issued before calling this function.
-+ *
-+ * For standard non-sensitive ASI classes, the page tables shared with the
-+ * master pseudo-PGD are not freed.
-  */
- static void asi_free_pgd(struct asi *asi)
- {
- 	VM_BUG_ON(asi->mm == &init_mm);
- 
--	asi_free_pgd_range(asi, KERNEL_PGD_BOUNDARY, PTRS_PER_PGD);
-+	if (!(asi->class->flags & ASI_MAP_STANDARD_NONSENSITIVE))
-+		asi_free_pgd_range(asi, KERNEL_PGD_BOUNDARY, PTRS_PER_PGD);
-+
- 	free_pages((ulong)asi->pgd, PGD_ALLOCATION_ORDER);
+ 	if (pcp_allowed_order(order))		/* Via pcp? */
+ 		free_unref_page(page, order);
+@@ -705,6 +705,14 @@ static inline void free_the_page(struct page *page, unsigned int order)
+ 		__free_pages_ok(page, order, FPI_NONE);
  }
  
-@@ -178,6 +187,24 @@ static int __init set_asi_param(char *str)
- }
- early_param("asi", set_asi_param);
- 
-+static int __init asi_global_init(void)
++static bool asi_unmap_freed_pages(struct page *page, unsigned int order);
++
++static inline void free_the_page(struct page *page, unsigned int order)
 +{
-+	if (!boot_cpu_has(X86_FEATURE_ASI))
++	if (asi_unmap_freed_pages(page, order))
++		__free_the_page(page, order);
++}
++
+ /*
+  * Higher-order pages are called "compound pages".  They are structured thusly:
+  *
+@@ -5162,6 +5170,129 @@ static inline bool prepare_alloc_pages(gfp_t gfp_mask, unsigned int order,
+ 	return true;
+ }
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++
++static DEFINE_PER_CPU(struct work_struct, async_free_work);
++static DEFINE_PER_CPU(struct llist_head, pages_to_free_async);
++static bool async_free_work_initialized;
++
++static void __free_the_page(struct page *page, unsigned int order);
++
++static void async_free_work_fn(struct work_struct *work)
++{
++	struct page *page, *tmp;
++	struct llist_node *pages_to_free;
++	void *va;
++	size_t len;
++	uint order;
++
++	pages_to_free = llist_del_all(this_cpu_ptr(&pages_to_free_async));
++
++	/* A later patch will do a more optimized TLB flush. */
++
++	llist_for_each_entry_safe(page, tmp, pages_to_free, async_free_node) {
++		va = page_to_virt(page);
++		order = page->private;
++		len = PAGE_SIZE * (1 << order);
++
++		asi_flush_tlb_range(ASI_GLOBAL_NONSENSITIVE, va, len);
++		__free_the_page(page, order);
++	}
++}
++
++static int __init asi_page_alloc_init(void)
++{
++	int cpu;
++
++	if (!static_asi_enabled())
 +		return 0;
 +
-+	preallocate_toplevel_pgtbls(asi_global_nonsensitive_pgd,
-+				    PAGE_OFFSET,
-+				    PAGE_OFFSET + PFN_PHYS(max_possible_pfn) - 1,
-+				    "ASI Global Non-sensitive direct map");
++	for_each_possible_cpu(cpu)
++		INIT_WORK(per_cpu_ptr(&async_free_work, cpu),
++			  async_free_work_fn);
 +
-+	preallocate_toplevel_pgtbls(asi_global_nonsensitive_pgd,
-+				    VMALLOC_START, VMALLOC_END,
-+				    "ASI Global Non-sensitive vmalloc");
++	/*
++	 * This function is called before SMP is initialized, so we can assume
++	 * that this is the only running CPU at this point.
++	 */
++
++	barrier();
++	async_free_work_initialized = true;
++	barrier();
++
++	if (!llist_empty(this_cpu_ptr(&pages_to_free_async)))
++		queue_work_on(smp_processor_id(), mm_percpu_wq,
++			      this_cpu_ptr(&async_free_work));
 +
 +	return 0;
 +}
-+subsys_initcall(asi_global_init)
++early_initcall(asi_page_alloc_init);
 +
- int asi_init(struct mm_struct *mm, int asi_index)
- {
- 	struct asi *asi = &mm->asi[asi_index];
-@@ -202,6 +229,13 @@ int asi_init(struct mm_struct *mm, int asi_index)
- 	asi->class = &asi_class[asi_index];
- 	asi->mm = mm;
- 
-+	if (asi->class->flags & ASI_MAP_STANDARD_NONSENSITIVE) {
-+		uint i;
++static int asi_map_alloced_pages(struct page *page, uint order, gfp_t gfp_mask)
++{
++	uint i;
 +
-+		for (i = KERNEL_PGD_BOUNDARY; i < PTRS_PER_PGD; i++)
-+			set_pgd(asi->pgd + i, asi_global_nonsensitive_pgd[i]);
++	if (!static_asi_enabled())
++		return 0;
++
++	if (gfp_mask & __GFP_GLOBAL_NONSENSITIVE) {
++		for (i = 0; i < (1 << order); i++)
++			__SetPageGlobalNonSensitive(page + i);
++
++		return asi_map_gfp(ASI_GLOBAL_NONSENSITIVE, page_to_virt(page),
++				   PAGE_SIZE * (1 << order), gfp_mask);
 +	}
 +
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(asi_init);
-diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
-index 36098226a957..ebd512c64ed0 100644
---- a/arch/x86/mm/init_64.c
-+++ b/arch/x86/mm/init_64.c
-@@ -1277,18 +1277,15 @@ static void __init register_page_bootmem_info(void)
- #endif
- }
- 
--/*
-- * Pre-allocates page-table pages for the vmalloc area in the kernel page-table.
-- * Only the level which needs to be synchronized between all page-tables is
-- * allocated because the synchronization can be expensive.
-- */
--static void __init preallocate_vmalloc_pages(void)
-+void __init preallocate_toplevel_pgtbls(pgd_t *pgd_table,
-+					ulong start, ulong end,
-+					const char *name)
- {
- 	unsigned long addr;
- 	const char *lvl;
- 
--	for (addr = VMALLOC_START; addr <= VMALLOC_END; addr = ALIGN(addr + 1, PGDIR_SIZE)) {
--		pgd_t *pgd = pgd_offset_k(addr);
-+	for (addr = start; addr <= end; addr = ALIGN(addr + 1, PGDIR_SIZE)) {
-+		pgd_t *pgd = pgd_offset_pgd(pgd_table, addr);
- 		p4d_t *p4d;
- 		pud_t *pud;
- 
-@@ -1324,7 +1321,18 @@ static void __init preallocate_vmalloc_pages(void)
- 	 * The pages have to be there now or they will be missing in
- 	 * process page-tables later.
- 	 */
--	panic("Failed to pre-allocate %s pages for vmalloc area\n", lvl);
-+	panic("Failed to pre-allocate %s pages for %s area\n", lvl, name);
++	return 0;
 +}
 +
-+/*
-+ * Pre-allocates page-table pages for the vmalloc area in the kernel page-table.
-+ * Only the level which needs to be synchronized between all page-tables is
-+ * allocated because the synchronization can be expensive.
-+ */
-+static void __init preallocate_vmalloc_pages(void)
++static bool asi_unmap_freed_pages(struct page *page, unsigned int order)
 +{
-+	preallocate_toplevel_pgtbls(init_mm.pgd, VMALLOC_START, VMALLOC_END,
-+				    "vmalloc");
- }
- 
- void __init mem_init(void)
-diff --git a/arch/x86/mm/mm_internal.h b/arch/x86/mm/mm_internal.h
-index 3f37b5c80bb3..a1e8c523ab08 100644
---- a/arch/x86/mm/mm_internal.h
-+++ b/arch/x86/mm/mm_internal.h
-@@ -19,6 +19,9 @@ unsigned long kernel_physical_mapping_change(unsigned long start,
- 					     unsigned long page_size_mask);
- void zone_sizes_init(void);
- 
-+void preallocate_toplevel_pgtbls(pgd_t *pgd_table, ulong start, ulong end,
-+				 const char *name);
++	void *va;
++	size_t len;
++	bool async_flush_needed;
 +
- extern int after_bootmem;
- 
- void update_cache_mode_entry(unsigned entry, enum page_cache_mode cache);
-diff --git a/include/asm-generic/asi.h b/include/asm-generic/asi.h
-index 7da91cbe075d..012691e29895 100644
---- a/include/asm-generic/asi.h
-+++ b/include/asm-generic/asi.h
-@@ -12,6 +12,8 @@
- #define ASI_MAX_NUM_ORDER		0
- #define ASI_MAX_NUM			0
- 
-+#define ASI_GLOBAL_NONSENSITIVE		NULL
++	if (!static_asi_enabled())
++		return true;
 +
- #ifndef _ASSEMBLY_
- 
- struct asi_hooks {};
-@@ -63,8 +65,11 @@ void asi_unmap(struct asi *asi, void *addr, size_t len, bool flush_tlb) { }
- static inline
- void asi_flush_tlb_range(struct asi *asi, void *addr, size_t len) { }
- 
-+#define INIT_MM_ASI(init_mm)
++	if (!PageGlobalNonSensitive(page))
++		return true;
 +
- #define static_asi_enabled() false
- 
++	va = page_to_virt(page);
++	len = PAGE_SIZE * (1 << order);
++	async_flush_needed = irqs_disabled() || in_interrupt();
 +
- #endif  /* !_ASSEMBLY_ */
++	asi_unmap(ASI_GLOBAL_NONSENSITIVE, va, len, !async_flush_needed);
++
++	if (!async_flush_needed)
++		return true;
++
++	page->private = order;
++	llist_add(&page->async_free_node, this_cpu_ptr(&pages_to_free_async));
++
++	if (async_free_work_initialized)
++		queue_work_on(smp_processor_id(), mm_percpu_wq,
++			      this_cpu_ptr(&async_free_work));
++
++	return false;
++}
++
++#else /* CONFIG_ADDRESS_SPACE_ISOLATION */
++
++static inline
++int asi_map_alloced_pages(struct page *pages, uint order, gfp_t gfp_mask)
++{
++	return 0;
++}
++
++static inline
++bool asi_unmap_freed_pages(struct page *page, unsigned int order)
++{
++	return true;
++}
++
++#endif
++
+ /*
+  * __alloc_pages_bulk - Allocate a number of order-0 pages to a list or array
+  * @gfp: GFP flags for the allocation
+@@ -5345,6 +5476,9 @@ struct page *__alloc_pages(gfp_t gfp, unsigned int order, int preferred_nid,
+ 		return NULL;
+ 	}
  
- #endif /* !CONFIG_ADDRESS_SPACE_ISOLATION */
-diff --git a/mm/init-mm.c b/mm/init-mm.c
-index b4a6f38fb51d..47a6a66610fb 100644
---- a/mm/init-mm.c
-+++ b/mm/init-mm.c
-@@ -11,6 +11,7 @@
- #include <linux/atomic.h>
- #include <linux/user_namespace.h>
- #include <asm/mmu.h>
-+#include <asm/asi.h>
++	if (static_asi_enabled() && (gfp & __GFP_GLOBAL_NONSENSITIVE))
++		gfp |= __GFP_ZERO;
++
+ 	gfp &= gfp_allowed_mask;
+ 	/*
+ 	 * Apply scoped allocation constraints. This is mainly about GFP_NOFS
+@@ -5388,6 +5522,15 @@ struct page *__alloc_pages(gfp_t gfp, unsigned int order, int preferred_nid,
+ 		page = NULL;
+ 	}
  
- #ifndef INIT_MM_CONTEXT
- #define INIT_MM_CONTEXT(name)
-@@ -38,6 +39,7 @@ struct mm_struct init_mm = {
- 	.mmlist		= LIST_HEAD_INIT(init_mm.mmlist),
- 	.user_ns	= &init_user_ns,
- 	.cpu_bitmap	= CPU_BITS_NONE,
-+	INIT_MM_ASI(init_mm)
- 	INIT_MM_CONTEXT(init_mm)
++	if (page) {
++		int err = asi_map_alloced_pages(page, order, gfp);
++
++		if (unlikely(err)) {
++			__free_pages(page, order);
++			page = NULL;
++		}
++	}
++
+ 	trace_mm_page_alloc(page, order, alloc_gfp, ac.migratetype);
+ 
+ 	return page;
+diff --git a/tools/perf/builtin-kmem.c b/tools/perf/builtin-kmem.c
+index da03a341c63c..5857953cd5c1 100644
+--- a/tools/perf/builtin-kmem.c
++++ b/tools/perf/builtin-kmem.c
+@@ -660,6 +660,7 @@ static const struct {
+ 	{ "__GFP_RECLAIM",		"R" },
+ 	{ "__GFP_DIRECT_RECLAIM",	"DR" },
+ 	{ "__GFP_KSWAPD_RECLAIM",	"KR" },
++	{ "__GFP_GLOBAL_NONSENSITIVE",	"GNS" },
  };
  
+ static size_t max_gfp_len;
 -- 
 2.35.1.473.g83b2b277ed-goog
 
