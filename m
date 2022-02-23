@@ -2,84 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BECC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 846A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:44:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237231AbiBWFhC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:37:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
+        id S237289AbiBWFo3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:44:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235021AbiBWFg4 (ORCPT
+        with ESMTP id S233645AbiBWFo0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:36:56 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E02C3AA4A;
-        Tue, 22 Feb 2022 21:27:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2EDA9CE13B5;
-        Wed, 23 Feb 2022 05:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC17C340F8;
-        Wed, 23 Feb 2022 05:26:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645594011;
-        bh=RpQ+yXG3WFaffUN6V0S3i2gI2RX67GakuK4ftCRhl4U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Fpa7IScXDsqk4ECKhcoTOYPxb0jIoj+13R+KevQRg78oaEY9jTJGymNzCAv2JRrSa
-         +7FWqta9tHZ5T7PmpBlQcbu/c1JZFx4LbwsYA/5ZM6fbyUyeZh3EdWg1M6yZ/fyozF
-         G/aBkk2/QuLR6aeVxxBKrwx0OmYuUSeCXV2i1vjEOxatqRcWNqyv0y0i4kDSDfydKP
-         PFrCbq1B2NzdboETdiCwYYTlwrfYsaX0J62cUmo5yCdnU4oi6L8rDifiW+G1jyMdQL
-         bz1f0DIJaD7N3ODopsDhucvNFAr97h+0ZcjBsa2ggKEfE+cPLcuwAvxmL45KZD1ojh
-         qpIdpilxoOtrw==
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-2d625082ae2so198333347b3.1;
-        Tue, 22 Feb 2022 21:26:51 -0800 (PST)
-X-Gm-Message-State: AOAM533tQIaIoJii/On3HMzc3/e/zg9hQSIsQxv/i9ukljZqkEHrldKr
-        2vaKLX8owWWZOnevzw869iyIIkXcp8m45jdaC5U=
-X-Google-Smtp-Source: ABdhPJyfshd1gVhgC3vT8dx9/92eRD19V4ZvzuTAr6QYZ+Zc+JlY31XDj0BqcEtQhmq8ohDT+WD5JxLT1FNuWFWTGFk=
-X-Received: by 2002:a81:c47:0:b0:2d6:beec:b381 with SMTP id
- 68-20020a810c47000000b002d6beecb381mr22698552ywm.148.1645594010676; Tue, 22
- Feb 2022 21:26:50 -0800 (PST)
+        Wed, 23 Feb 2022 00:44:26 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549143EABC
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:43:59 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2d6d0cb5da4so143674157b3.10
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:43:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eodUpTPWhYKf4AxltKUgxmHbO5CaYYvg7LhtDPIsTcM=;
+        b=cAX+Ddp7L2gX4YZhVvsBdwNsjk4mRAEW+Ul3CnDPoWjqFYDSD0jpmzh/BfNxLg1nsQ
+         3CSJQucaZiq63aNGjh2MQRKIFe31NNIdOehrK67t+suwDsL1gh+zwIkXl+87vRM3f9ou
+         jVUHjXZZjmOwuGbAvagKZqt1ghx2+y3dR9WtIQSxKVOmFsgzpWryzQQc3vbk8XIYoCuV
+         LQ1VTWrV8Wb+q/ou5zKqm/UoEMlDyLbzEjOq/xQjYu8x3rrTdzDcuUBa0I6h9+O1Ulj2
+         cAHMcYua7+LUVIsUPUX4XIWAwqm29Kah5DEQC+BJ+Hmb0dVi0IBzZEfW8aHux+f9kw6N
+         UOXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eodUpTPWhYKf4AxltKUgxmHbO5CaYYvg7LhtDPIsTcM=;
+        b=p3j4aVrIL0HKUOVDouDuUe2rq9aV7Hw9Zy5EKwiaQRIBqzRkL79YXj8MoTfmKzV26I
+         dlnmnukBPkuW864M3Am6S+VwOZ0Pq4D/Pd9LamZUVgm1vS343MaldbcI5s9nrVhXS1ok
+         79o87fXY+6yuXAy7GrCKydu4FKCLxu15D0tR++/jUZ+Ur05+pIVVWNophb5DsVfhER/f
+         9FqBjXokaTi7niVq0GJRULEgn6OdAxr9QyZHrk57R4gFOJAm0KsxGjg3gsL0RnIfRV3D
+         J6ipAzAOAO2ESsNdF6S50X8tcNVgGdIAnQZAnGYqbNUvBgP5/0dQkUk4TffUyA5Q4Ztl
+         NIWg==
+X-Gm-Message-State: AOAM530cWl6rU9WFKA4du8LE44EHpFOrIHfKwFL06K29Y+0pEL9C17CH
+        9G4kmuIoLBkPmd46A5skF7k/FQYFUP4nVcedIIo=
+X-Google-Smtp-Source: ABdhPJxxOtgK+SZTJRU6dGf+rHY9WUQ3DO3u300cyAZRwwurIdJg6iBLfNhGBEVYEEtiqtZhaAqOpDgdAxzV2JBbK6w=
+X-Received: by 2002:a0d:fcc5:0:b0:2d6:8eec:b2f7 with SMTP id
+ m188-20020a0dfcc5000000b002d68eecb2f7mr27223356ywf.439.1645595038400; Tue, 22
+ Feb 2022 21:43:58 -0800 (PST)
 MIME-Version: 1.0
-References: <1645523826-18149-1-git-send-email-yangtiezhu@loongson.cn> <1645523826-18149-3-git-send-email-yangtiezhu@loongson.cn>
-In-Reply-To: <1645523826-18149-3-git-send-email-yangtiezhu@loongson.cn>
-From:   Song Liu <song@kernel.org>
-Date:   Tue, 22 Feb 2022 21:26:39 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW6UHZYr49gSMo6bo_F9dd14SBDN=GGM4PeTTxJQPUCEPw@mail.gmail.com>
-Message-ID: <CAPhsuW6UHZYr49gSMo6bo_F9dd14SBDN=GGM4PeTTxJQPUCEPw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/2] bpf: Make BPF_JIT_DEFAULT_ON selectable
- in Kconfig
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+References: <20220220231554.2510567-1-ztong0001@gmail.com> <YhPI5iDRUpzYWDyY@kroah.com>
+In-Reply-To: <YhPI5iDRUpzYWDyY@kroah.com>
+From:   Tong Zhang <ztong0001@gmail.com>
+Date:   Tue, 22 Feb 2022 21:43:47 -0800
+Message-ID: <CAA5qM4B40s7qPY2kipffK+zCZrovA9Z3k0Cvq6EUYGABcdq91Q@mail.gmail.com>
+Subject: Re: [PATCH] staging: rtl8192u: cleanup proc fs entries upon exit
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Lee Jones <lee.jones@linaro.org>,
+        Colin Ian King <colin.i.king@googlemail.com>,
+        Saurav Girepunje <saurav.girepunje@gmail.com>,
+        Johan Hovold <johan@kernel.org>,
+        =?UTF-8?Q?Cl=C3=A1udio_Maia?= <clrrm@isep.ipp.pt>,
+        linux-staging@lists.linux.dev,
         open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 1:57 AM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
->
-> Currently, only x86, arm64 and s390 select ARCH_WANT_DEFAULT_BPF_JIT,
-> the other archs do not select ARCH_WANT_DEFAULT_BPF_JIT. On the archs
-> without ARCH_WANT_DEFAULT_BPF_JIT, if we want to set bpf_jit_enable to
-> 1 by default, the only way is to enable CONFIG_BPF_JIT_ALWAYS_ON, then
-> the users can not change it to 0 or 2, it seems bad for some users. We
-> can select ARCH_WANT_DEFAULT_BPF_JIT for those archs if it is proper,
-> but at least for now, make BPF_JIT_DEFAULT_ON selectable can give them
-> a chance.
->
-> Additionally, with this patch, under !BPF_JIT_ALWAYS_ON, we can disable
-> BPF_JIT_DEFAULT_ON on the archs with ARCH_WANT_DEFAULT_BPF_JIT when make
-> menuconfig, it seems flexible for some developers.
->
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-
-Acked-by: Song Liu <songliubraving@fb.com>
+Thank you, Dan and Greg!
+I will revise as suggested and send v2.
+- Tong
