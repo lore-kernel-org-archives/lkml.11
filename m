@@ -2,95 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C43C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A522BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 15:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242265AbiBWPnI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 10:43:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55020 "EHLO
+        id S242297AbiBWPnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 10:43:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242341AbiBWPnA (ORCPT
+        with ESMTP id S242262AbiBWPnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 10:43:00 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF93927CC4
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:42:32 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id o8so1510607pgf.9
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 07:42:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5eKMkbn3vkPpm7UY1+T/n4u23dYrThYK2hTdMcTSqbk=;
-        b=iQzHOuBdRTgUUwt6x2XL6c8dfG05Yq2gL7QStu4+rU71gTwZCdVG62tkmnrcJ/f8dH
-         zQcDF4w85f82eNBReN8+eMUSdqm5waegLQY0IJNLiNjN36p+1FuyVSmEaSe7kUixtrVV
-         VB1yF9AAN0VGCT3TMx+zfqBN2hQ1DdRRM7EcMByLGE+QkDfDbbN2X8+o+i4np2ejbMbL
-         Znzp7xrygfK0NJmiU89eEIQGozNaVvTJUs6eEHx/+tBNY7jg4mQrXTTQU4EmoCMkCRYP
-         htRsgSUx6DkOhgpD32eQl1emvmhW19tNmjDmqL+Js+IARGf+990k4VCkK+vyZfmRlbTy
-         k5mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5eKMkbn3vkPpm7UY1+T/n4u23dYrThYK2hTdMcTSqbk=;
-        b=adLhJwe6SPh6fhHLxuuL6ieN/V8qT/nF31ekp0W1yKl5cbgb7q5SXC8I5aaih1JQQl
-         mUdLy/k6w0ZHDVOR3RkGH2LAH8GAK/D8nZECCCPn8rvoUt4S0WzPib5Z8p6+6wbMy1dx
-         PLVvP4VbxOICCbOj/7luG2inZspAUVA25TF1/xKnHlCQDLvMoagmPfrtcjIDj7AbxHWq
-         A2BPOvXTC4Riqm1VATe5q9+2TQCwXI5JNIJwfy/LEyYEfdOKrUNK5S83JHWPZrjZyO3l
-         PzDCmmL/ebmUslshrz3uHjAT0ZxiGFh8zEOfbVAe+49yIhd8lD9NHzoCZXwwXdsRFZof
-         IzCA==
-X-Gm-Message-State: AOAM533lLUXEzy80igqD1r+x5v6cubulvYv2DVoa7dXdWF7T27vH/qm1
-        FzX/o6ZQoDNqGtPg62z9lyIMNFP27wktmQ==
-X-Google-Smtp-Source: ABdhPJwC6BFJXKTBBXCtBd1U+4hyOlzH0X/agA3nwjmP1Umj4h9d1LMS/fMMYwwkm2ORUHx4O6X1YA==
-X-Received: by 2002:a62:fb0d:0:b0:4f1:a584:71f with SMTP id x13-20020a62fb0d000000b004f1a584071fmr10767700pfm.2.1645630951771;
-        Wed, 23 Feb 2022 07:42:31 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id s24sm24789695pgq.51.2022.02.23.07.42.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 07:42:31 -0800 (PST)
-Date:   Wed, 23 Feb 2022 15:42:27 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Subject: Re: [PATCH v2 05/18] KVM: x86/mmu: use struct kvm_mmu_root_info for
- mmu->root
-Message-ID: <YhZV4yFw5dk3N5o7@google.com>
-References: <20220217210340.312449-1-pbonzini@redhat.com>
- <20220217210340.312449-6-pbonzini@redhat.com>
- <cb338203d9abf040fc1b68763ce60369cc8342a6.camel@redhat.com>
+        Wed, 23 Feb 2022 10:43:08 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210D42D1E5;
+        Wed, 23 Feb 2022 07:42:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645630960; x=1677166960;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=e4iUHA2a+l+KhADALNLZscJEFxyySLAdMRx9NxqUlUY=;
+  b=GNHIh5uRR7RcnJ11FeOqgVCXkLbsF+4dd992sq4ECeK+3VqBWb3PS83T
+   eSuZ5Is/xdBVdm/JNA1Cc5AiCPurRdkWlIy9SREcP78D6FHSa/J/hPsbx
+   Gmz0XvvgEy1Wig14Ei9c/nPNDEzdGbjS9B+XYm01GxUmAzKb+o+YdQwxV
+   ZxlgiVMW9JJJKGW5uvtKbeM/g09SZ05sUpNBHCSSSD/XpL6UzuFJLyTBY
+   bbHZL/OCuqPjNt1p7fENqaNCagBGFPfmLP0BtK6mnBNzSB56Z8+idasSS
+   jBPY+8O9ceNE9zpOSDukQGCHvOsxflf2sugfaDHaB1EcWY26Fff38tAvp
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10266"; a="235500200"
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="235500200"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 07:42:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,391,1635231600"; 
+   d="scan'208";a="591739627"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 23 Feb 2022 07:42:36 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nMtml-0001ZQ-W6; Wed, 23 Feb 2022 15:42:35 +0000
+Date:   Wed, 23 Feb 2022 23:41:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Markuss Broks <markuss.broks@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, phone-devel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Henrik Rydberg <rydberg@bitmath.org>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 2/2] Input: add Imagis touchscreen driver
+Message-ID: <202202232342.Ew209GPR-lkp@intel.com>
+References: <20220222203414.8656-3-markuss.broks@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cb338203d9abf040fc1b68763ce60369cc8342a6.camel@redhat.com>
+In-Reply-To: <20220222203414.8656-3-markuss.broks@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022, Maxim Levitsky wrote:
-> On Thu, 2022-02-17 at 16:03 -0500, Paolo Bonzini wrote:
-> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > index b912eef5dc1a..c0d7256e3a78 100644
-> > --- a/arch/x86/kvm/x86.c
-> > +++ b/arch/x86/kvm/x86.c
-> > @@ -762,7 +762,7 @@ bool kvm_inject_emulated_page_fault(struct kvm_vcpu *vcpu,
-> >  	if ((fault->error_code & PFERR_PRESENT_MASK) &&
-> >  	    !(fault->error_code & PFERR_RSVD_MASK))
-> >  		kvm_mmu_invalidate_gva(vcpu, fault_mmu, fault->address,
-> > -				       fault_mmu->root_hpa);
-> > +				       fault_mmu->root.hpa);
-> >  
-> >  	fault_mmu->inject_page_fault(vcpu, fault);
-> >  	return fault->nested_page_fault;
-> 
-> 
-> As a follow up to this patch I suggest that we should also rename pgd to just 'gpa'.
+Hi Markuss,
 
-Hmm, I prefer 'pgd' over 'gpa' because it provides a hint/reminder that the field
-is unused for TDP.  It also pairs with e.g. kvm_mmu_new_pgd(), though I suppose we
-could rename those to something else too.
+I love your patch! Perhaps something to improve:
 
-> This also brings a question, what pgd acronym actually means? 
-> I guess paging guest directory?
+[auto build test WARNING on dtor-input/next]
+[also build test WARNING on linux/master robh/for-next linus/master v5.17-rc5 next-20220222]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Page Global Directory, borrowed from the kernel's arch-agnostic paging terminology.
+url:    https://github.com/0day-ci/linux/commits/Markuss-Broks/Add-support-for-Imagis-touchscreens/20220223-043645
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git next
+config: arm-randconfig-s031-20220223 (https://download.01.org/0day-ci/archive/20220223/202202232342.Ew209GPR-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/bc77ee5e0d7309edca7d65925c6afa05334b0b01
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Markuss-Broks/Add-support-for-Imagis-touchscreens/20220223-043645
+        git checkout bc77ee5e0d7309edca7d65925c6afa05334b0b01
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash drivers/input/touchscreen/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/input/touchscreen/imagis.c:65:35: sparse: sparse: cast to restricted __be32
+
+vim +65 drivers/input/touchscreen/imagis.c
+
+    40	
+    41	static int imagis_i2c_read_reg(struct imagis_ts *ts,
+    42				       unsigned int reg, unsigned int *buffer)
+    43	{
+    44		__be32 reg_be = cpu_to_be32(reg);
+    45		struct i2c_msg msg[] = {
+    46			{
+    47				.addr = ts->client->addr,
+    48				.flags = 0,
+    49				.buf = (unsigned char *)&reg_be,
+    50				.len = sizeof(reg_be),
+    51			}, {
+    52				.addr = ts->client->addr,
+    53				.flags = I2C_M_RD,
+    54				.buf = (unsigned char *)buffer,
+    55				.len = sizeof(reg_be),
+    56			},
+    57		};
+    58		int ret, error;
+    59		int retry = IST3038C_I2C_RETRY_COUNT;
+    60	
+    61		/* Retry in case the controller fails to respond */
+    62		do {
+    63			ret = i2c_transfer(ts->client->adapter, msg, ARRAY_SIZE(msg));
+    64			if (ret == ARRAY_SIZE(msg)) {
+  > 65				*buffer = be32_to_cpu(*buffer);
+    66				return 0;
+    67			}
+    68	
+    69			error = ret < 0 ? ret : -EIO;
+    70			dev_err(&ts->client->dev,
+    71				"%s - i2c_transfer failed: %d (%d)\n",
+    72				__func__, error, ret);
+    73		} while (--retry);
+    74	
+    75		return error;
+    76	}
+    77	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
