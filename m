@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A10F3C4321E
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9951C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 05:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238652AbiBWF2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 00:28:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57700 "EHLO
+        id S238379AbiBWF2j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 00:28:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238400AbiBWF0w (ORCPT
+        with ESMTP id S238422AbiBWF1R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 00:26:52 -0500
+        Wed, 23 Feb 2022 00:27:17 -0500
 Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C26386A033
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:16 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d6180e0ab4so162345607b3.2
-        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A51E6C1FE
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:24 -0800 (PST)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d61f6c1877so163279377b3.15
+        for <linux-kernel@vger.kernel.org>; Tue, 22 Feb 2022 21:25:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Bg8ARgAvpxqrVZujUdMBpF3O5GREYgeeic1zpLXlEAs=;
-        b=ZkYcibzizevz7miAILMO787yJLGRxl/cgzlUmAaY/wAepMJq6EHrvI2zYY3SBnMhsX
-         y7RWUVRNbxiaiAE1t5uCyYG9PImJ+/9dR0KGIg93jTvqY0XFQDy403oNMPINt668O0wX
-         lN1x9DKfkMN5phGLIKP2guH1oM8X+oF56FSnIjn/s1bc0sFaDAvUiQYbfWLnDYkAyeoI
-         kOK471SB7zkEDfAJTXNkMVhdXnFBGV5vBVLgIoK40R3LZcAduulDDg2qjj+85oLE8w4w
-         JUmk2whW1jd4H91VlFkZkcbARwnTRCiIuS1DGvK4lzbHyv57ehOmB1Yejn5DI2lnROWR
-         Cvjg==
+        bh=AJ9oF4MxpZqgNWeQmqV576xo41knbB79umnOaNmXddY=;
+        b=gDjBd/x5dYNgFpVj+6AXYinaFyQ0y0nY9xCgZVbh0gj9MDv8hxw/demmgSf5+q0lIl
+         f5u9TMyC094RJt+uGxErIIL6jEyzHxyof4Xb7WeyC6uYfiR8WIq5qp+TlkXog/JDvZk7
+         2mtgyW1bRYWB4o+N58ElEO1CyDNRbfSatixMLbQR1FnYuk0Gfj5u+Ct8tTOprcSTTI3D
+         O9Kk/stLoRds2nPZbzZ/5aJHis4MCrOVxHj7FYqsiO1KWp6tTJxhsj5RQHjcB5DUXElF
+         yIJbJ9KqvnvVAuRlFRGpGXt2ubrzQb0wSafap3WMiTiEiFUzbC7xRedGoDqwKzVo3u9S
+         eXvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Bg8ARgAvpxqrVZujUdMBpF3O5GREYgeeic1zpLXlEAs=;
-        b=1G3V8GcSB7fbm1HyYfpMaPWtoSOT7PlcZ11tElWZr6Yj/76HSDTG3z3vDx56RzIvtX
-         YBBLhJmbOBnwcCEoNWHyaVsrddY+Jm3XaFIP2tZMnaaJ7SL4SoyhE0wG8ViQI1SbSDMu
-         E5YZa4EIjNXPunSVhUY4t2ty3xq0MrzmBJWHUKNt+4rGlU7imGJN5Msv6cqXdD7yMW8E
-         HhdB1+Tt0/9A7GC2Ar4GnrxJi9knbihcA+404RgxNJw7aFL730xjgAtSxghQNjZIo09n
-         mZLKFOa3RYWpqzjpVuYCtOeiu8rv/Ji40fvkoaEfMp0E2eJ790Wr5ycpaOWc3y6HCv7D
-         gSYA==
-X-Gm-Message-State: AOAM532dTxc4xXBh4VhviMKltgYT2/YW+H9qOpa9qSUY6ZbwCgsSj6Sj
-        cIqeLEgLiCJrMGP4j3/0Fdy2JJ1i+Yqu6vU05qFjzpRmjTe1uyuBCal+LAgGb2kwcfyP2ogqR2I
-        5t5pTkcGX4Fl4+H0vb5NGTQyVV0tD3Is6vrSBCwnHrGcu1mDiKgI42x1ZK2Xy6B4j6T3xJhIS
-X-Google-Smtp-Source: ABdhPJxyXiC19n49tKMSkgiaHfTQpZqUfpkjxmpDblETVmyKjxfScd3DY0k63b7nH5huwuEYpTcB2HPTnvtH
+        bh=AJ9oF4MxpZqgNWeQmqV576xo41knbB79umnOaNmXddY=;
+        b=wEycSYj/+hEkEsWchfbGj8KUYz2PwEG+dBVcAYVu6e5s3ylw3gcd0y464WXM9zxSWj
+         LSE6cqS4z0qp4vtnXpyNQietCZA+WfJQkmZ69QhwrET/AAXkJ0kYBqys5b/o1W1WGzih
+         1Sir90ITJYzKJ0CtfRfF7j0nbYks1Z1CZdI5Qyla8v1xBwI0lxgXMlO/pj/eh5JEM2u+
+         sr6Cthq4KD6CI5LGohtCmHwdTSTwpDt9cTH4LzRJR27WE8Rxi/+Y3AWcugNZdbt8Zu6Y
+         dyrxAnSJu6FlUGjC7V/qtfK7srYPKa429N6ducb3TYI8SvqlAQgWh40eg0waYSVXUAsj
+         /wCQ==
+X-Gm-Message-State: AOAM531glZ7htlFRAKSNcwMtWGzjwQrvVOX0W3bU9CAmPjM02d0B5xf+
+        4YFC13fuifi16VkuA8mGK7FNakdrvOSc92zmPr3LMpQikAU/BnBoGXZvgXfO+u0c08UAA3+J4Zj
+        KC2KDVhmrynpicWM7ODEjySKvs872LHcbqyPL/uMPFduPzcCLycCdeUBEP171dK+PU41rRSU+
+X-Google-Smtp-Source: ABdhPJxXcU94ggDYk55LTym0qr5/ST37jyZ7dcNnih2o73ZZ8KtzSOHKd++I3ohJEg/v0wMLNTTLtdFeGJBD
 X-Received: from js-desktop.svl.corp.google.com ([2620:15c:2cd:202:ccbe:5d15:e2e6:322])
- (user=junaids job=sendgmr) by 2002:a25:6993:0:b0:624:55af:336c with SMTP id
- e141-20020a256993000000b0062455af336cmr19351739ybc.412.1645593905875; Tue, 22
- Feb 2022 21:25:05 -0800 (PST)
-Date:   Tue, 22 Feb 2022 21:22:12 -0800
+ (user=junaids job=sendgmr) by 2002:a81:3dcb:0:b0:2ca:72dd:904c with SMTP id
+ k194-20020a813dcb000000b002ca72dd904cmr28454275ywa.290.1645593914646; Tue, 22
+ Feb 2022 21:25:14 -0800 (PST)
+Date:   Tue, 22 Feb 2022 21:22:16 -0800
 In-Reply-To: <20220223052223.1202152-1-junaids@google.com>
-Message-Id: <20220223052223.1202152-37-junaids@google.com>
+Message-Id: <20220223052223.1202152-41-junaids@google.com>
 Mime-Version: 1.0
 References: <20220223052223.1202152-1-junaids@google.com>
 X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [RFC PATCH 36/47] mm: asi: Adding support for dynamic percpu ASI allocations
+Subject: [RFC PATCH 40/47] mm: asi: support for static percpu DEFINE_PER_CPU*_ASI
 From:   Junaid Shahid <junaids@google.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ofir Weisse <oweisse@google.com>, kvm@vger.kernel.org,
@@ -68,463 +68,713 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ofir Weisse <oweisse@google.com>
 
-Adding infrastructure to support pcpu_alloc with gfp flag of
-__GFP_GLOBAL_NONSENSITIVE. We use a similar mechanism as the earlier
-infrastructure for memcg percpu allocations and add pcpu type
-PCPU_CHUNK_ASI_NONSENSITIVE.
-pcpu_chunk_list(PCPU_CHUNK_ASI_NONSENSITIVE) will return a list of ASI
-nonsensitive percpu chunks, allowing most of the code to be unchanged.
+Implemented the following PERCPU static declarations:
+
+- DECLARE/DEFINE_PER_CPU_ASI_NOT_SENSITIVE
+- DECLARE/DEFINE_PER_CPU_SHARED_ALIGNED_ASI_NOT_SENSITIVE
+- DECLARE/DEFINE_PER_CPU_ALIGNED_ASI_NOT_SENSITIVE
+- DECLARE/DEFINE_PER_CPU_PAGE_ALIGNED_ASI_NOT_SENSITIVE
+
+These definitions are also supported in dynamic modules.
+To support percpu variables in dynamic modules, we're creating an ASI
+pcpu reserved chunk. The reserved size PERCPU_MODULE_RESERVE is now
+split between the normal reserved chunk and the ASI one.
 
 Signed-off-by: Ofir Weisse <oweisse@google.com>
 
 
 ---
- mm/percpu-internal.h |  23 ++++++-
- mm/percpu-km.c       |   5 +-
- mm/percpu-vm.c       |   6 +-
- mm/percpu.c          | 139 ++++++++++++++++++++++++++++++++++---------
- 4 files changed, 141 insertions(+), 32 deletions(-)
+ arch/x86/mm/asi.c                 |  39 +++++++-
+ include/asm-generic/percpu.h      |   6 ++
+ include/asm-generic/vmlinux.lds.h |   5 +
+ include/linux/module.h            |   6 ++
+ include/linux/percpu-defs.h       |  39 ++++++++
+ include/linux/percpu.h            |   8 +-
+ kernel/module-internal.h          |   1 +
+ kernel/module.c                   | 154 ++++++++++++++++++++++++++----
+ mm/percpu.c                       | 134 ++++++++++++++++++++++----
+ 9 files changed, 356 insertions(+), 36 deletions(-)
 
-diff --git a/mm/percpu-internal.h b/mm/percpu-internal.h
-index 639662c20c82..2fac01114edc 100644
---- a/mm/percpu-internal.h
-+++ b/mm/percpu-internal.h
-@@ -5,6 +5,15 @@
- #include <linux/types.h>
- #include <linux/percpu.h>
- 
-+enum pcpu_chunk_type {
-+        PCPU_CHUNK_ROOT,
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+        PCPU_CHUNK_ASI_NONSENSITIVE,
-+#endif
-+        PCPU_NR_CHUNK_TYPES,
-+        PCPU_FAIL_ALLOC = PCPU_NR_CHUNK_TYPES
-+};
-+
- /*
-  * pcpu_block_md is the metadata block struct.
-  * Each chunk's bitmap is split into a number of full blocks.
-@@ -59,6 +68,9 @@ struct pcpu_chunk {
- #ifdef CONFIG_MEMCG_KMEM
- 	struct obj_cgroup	**obj_cgroups;	/* vector of object cgroups */
- #endif
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+        bool                    is_asi_nonsensitive; /* ASI nonsensitive chunk */
-+#endif
- 
- 	int			nr_pages;	/* # of pages served by this chunk */
- 	int			nr_populated;	/* # of populated pages */
-@@ -68,7 +80,7 @@ struct pcpu_chunk {
- 
- extern spinlock_t pcpu_lock;
- 
--extern struct list_head *pcpu_chunk_lists;
-+extern struct list_head *pcpu_chunk_lists[PCPU_NR_CHUNK_TYPES];
- extern int pcpu_nr_slots;
- extern int pcpu_sidelined_slot;
- extern int pcpu_to_depopulate_slot;
-@@ -113,6 +125,15 @@ static inline int pcpu_chunk_map_bits(struct pcpu_chunk *chunk)
- 	return pcpu_nr_pages_to_map_bits(chunk->nr_pages);
+diff --git a/arch/x86/mm/asi.c b/arch/x86/mm/asi.c
+index 6c14aa1fc4aa..ba373b461855 100644
+--- a/arch/x86/mm/asi.c
++++ b/arch/x86/mm/asi.c
+@@ -309,6 +309,32 @@ static int __init set_asi_param(char *str)
  }
+ early_param("asi", set_asi_param);
  
-+static inline enum pcpu_chunk_type pcpu_chunk_type(struct pcpu_chunk *chunk)
++static int asi_map_percpu(struct asi *asi, void *percpu_addr, size_t len)
 +{
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+        if (chunk->is_asi_nonsensitive)
-+                return PCPU_CHUNK_ASI_NONSENSITIVE;
-+#endif
-+        return PCPU_CHUNK_ROOT;
++       int cpu, err;
++       void *ptr;
++
++       for_each_possible_cpu(cpu) {
++               ptr = per_cpu_ptr(percpu_addr, cpu);
++               err = asi_map(asi, ptr, len);
++               if (err)
++                       return err;
++       }
++
++       return 0;
 +}
 +
- #ifdef CONFIG_PERCPU_STATS
- 
- #include <linux/spinlock.h>
-diff --git a/mm/percpu-km.c b/mm/percpu-km.c
-index fe31aa19db81..01e31bd55860 100644
---- a/mm/percpu-km.c
-+++ b/mm/percpu-km.c
-@@ -50,7 +50,8 @@ static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
- 	/* nada */
- }
- 
--static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp)
-+static struct pcpu_chunk *pcpu_create_chunk(enum pcpu_chunk_type type,
-+					    gfp_t gfp)
- {
- 	const int nr_pages = pcpu_group_sizes[0] >> PAGE_SHIFT;
- 	struct pcpu_chunk *chunk;
-@@ -58,7 +59,7 @@ static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp)
- 	unsigned long flags;
- 	int i;
- 
--	chunk = pcpu_alloc_chunk(gfp);
-+	chunk = pcpu_alloc_chunk(type, gfp);
- 	if (!chunk)
- 		return NULL;
- 
-diff --git a/mm/percpu-vm.c b/mm/percpu-vm.c
-index 5579a96ad782..59f3b55abdd1 100644
---- a/mm/percpu-vm.c
-+++ b/mm/percpu-vm.c
-@@ -357,7 +357,8 @@ static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
- 	pcpu_free_pages(chunk, pages, page_start, page_end);
- }
- 
--static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp)
-+static struct pcpu_chunk *pcpu_create_chunk(enum pcpu_chunk_type type,
-+                                            gfp_t gfp)
- {
- 	struct pcpu_chunk *chunk;
- 	struct vm_struct **vms;
-@@ -368,7 +369,8 @@ static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp)
- 
- 	gfp &= ~__GFP_GLOBAL_NONSENSITIVE;
- 
--	chunk = pcpu_alloc_chunk(gfp);
-+	chunk = pcpu_alloc_chunk(type, gfp);
++static void asi_unmap_percpu(struct asi *asi, void *percpu_addr, size_t len)
++{
++       int cpu;
++       void *ptr;
 +
- 	if (!chunk)
- 		return NULL;
++       for_each_possible_cpu(cpu) {
++               ptr = per_cpu_ptr(percpu_addr, cpu);
++               asi_unmap(asi, ptr, len, true);
++       }
++}
++
+ /* asi_load_module() is called from layout_and_allocate() in kernel/module.c
+  * We map the module and its data in init_mm.asi_pgd[0].
+ */
+@@ -347,7 +373,13 @@ int asi_load_module(struct module* module)
+         if (err)
+                 return err;
  
+-        return 0;
++	err = asi_map_percpu(ASI_GLOBAL_NONSENSITIVE,
++			     module->percpu_asi,
++			     module->percpu_asi_size );
++        if (err)
++                return err;
++
++       return 0;
+ }
+ EXPORT_SYMBOL_GPL(asi_load_module);
+ 
+@@ -372,6 +404,9 @@ void asi_unload_module(struct module* module)
+                       module->core_layout.once_section_offset,
+                       module->core_layout.once_section_size, true);
+ 
++	asi_unmap_percpu(ASI_GLOBAL_NONSENSITIVE, module->percpu_asi,
++			 module->percpu_asi_size);
++
+ }
+ 
+ static int __init asi_global_init(void)
+@@ -399,6 +434,8 @@ static int __init asi_global_init(void)
+ 
+ 	static_branch_enable(&asi_local_map_initialized);
+ 
++        pcpu_map_asi_reserved_chunk();
++
+ 	return 0;
+ }
+ subsys_initcall(asi_global_init)
+diff --git a/include/asm-generic/percpu.h b/include/asm-generic/percpu.h
+index 6432a7fade91..40001b74114f 100644
+--- a/include/asm-generic/percpu.h
++++ b/include/asm-generic/percpu.h
+@@ -50,6 +50,12 @@ extern void setup_per_cpu_areas(void);
+ 
+ #endif	/* SMP */
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++void __init pcpu_map_asi_reserved_chunk(void);
++#else
++static inline void pcpu_map_asi_reserved_chunk(void) {}
++#endif
++
+ #ifndef PER_CPU_BASE_SECTION
+ #ifdef CONFIG_SMP
+ #define PER_CPU_BASE_SECTION ".data..percpu"
+diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
+index c769d939c15f..0a931aedc285 100644
+--- a/include/asm-generic/vmlinux.lds.h
++++ b/include/asm-generic/vmlinux.lds.h
+@@ -1080,6 +1080,11 @@
+ 	. = ALIGN(cacheline);						\
+ 	*(.data..percpu)						\
+ 	*(.data..percpu..shared_aligned)				\
++        . = ALIGN(PAGE_SIZE);                                           \
++        __per_cpu_asi_start = .;                                        \
++        *(.data..percpu..asi_non_sensitive)                             \
++        . = ALIGN(PAGE_SIZE);                                           \
++        __per_cpu_asi_end = .;                                          \
+ 	PERCPU_DECRYPTED_SECTION					\
+ 	__per_cpu_end = .;
+ 
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 82267a95f936..d4d020bae171 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -463,6 +463,12 @@ struct module {
+ 	/* Per-cpu data. */
+ 	void __percpu *percpu;
+ 	unsigned int percpu_size;
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	/* Per-cpu data for ASI */
++	void __percpu *percpu_asi;
++	unsigned int percpu_asi_size;
++#endif /* CONFIG_ADDRESS_SPACE_ISOLATION */
++
+ #endif
+ 	void *noinstr_text_start;
+ 	unsigned int noinstr_text_size;
+diff --git a/include/linux/percpu-defs.h b/include/linux/percpu-defs.h
+index af1071535de8..5d9fdc93e0fa 100644
+--- a/include/linux/percpu-defs.h
++++ b/include/linux/percpu-defs.h
+@@ -170,6 +170,45 @@
+ 
+ #define DEFINE_PER_CPU_READ_MOSTLY(type, name)				\
+ 	DEFINE_PER_CPU_SECTION(type, name, "..read_mostly")
++/*
++ * Declaration/definition used for per-CPU variables which for the sake for
++ * address space isolation (ASI) are deemed not sensitive
++ */
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++#define ASI_PERCPU_SECTION "..asi_non_sensitive"
++#else
++#define ASI_PERCPU_SECTION ""
++#endif
++
++#define DECLARE_PER_CPU_ASI_NOT_SENSITIVE(type, name)					\
++	DECLARE_PER_CPU_SECTION(type, name, ASI_PERCPU_SECTION)
++
++#define DECLARE_PER_CPU_SHARED_ALIGNED_ASI_NOT_SENSITIVE(type, name)	\
++	DECLARE_PER_CPU_SECTION(type, name, ASI_PERCPU_SECTION)         \
++	____cacheline_aligned_in_smp
++
++#define DECLARE_PER_CPU_ALIGNED_ASI_NOT_SENSITIVE(type, name)	        \
++	DECLARE_PER_CPU_SECTION(type, name, ASI_PERCPU_SECTION)         \
++	____cacheline_aligned
++
++#define DECLARE_PER_CPU_PAGE_ALIGNED_ASI_NOT_SENSITIVE(type, name)	\
++	DECLARE_PER_CPU_SECTION(type, name, ASI_PERCPU_SECTION)         \
++	__aligned(PAGE_SIZE)
++
++#define DEFINE_PER_CPU_ASI_NOT_SENSITIVE(type, name)		      	\
++	DEFINE_PER_CPU_SECTION(type, name, ASI_PERCPU_SECTION)
++
++#define DEFINE_PER_CPU_SHARED_ALIGNED_ASI_NOT_SENSITIVE(type, name)	\
++	DEFINE_PER_CPU_SECTION(type, name, ASI_PERCPU_SECTION)          \
++	____cacheline_aligned_in_smp
++
++#define DEFINE_PER_CPU_ALIGNED_ASI_NOT_SENSITIVE(type, name)	        \
++	DEFINE_PER_CPU_SECTION(type, name, ASI_PERCPU_SECTION)          \
++	____cacheline_aligned
++
++#define DEFINE_PER_CPU_PAGE_ALIGNED_ASI_NOT_SENSITIVE(type, name)	\
++	DEFINE_PER_CPU_SECTION(type, name, ASI_PERCPU_SECTION)          \
++	__aligned(PAGE_SIZE)
+ 
+ /*
+  * Declaration/definition used for per-CPU variables that should be accessed
+diff --git a/include/linux/percpu.h b/include/linux/percpu.h
+index ae4004e7957e..a2cc4c32cabd 100644
+--- a/include/linux/percpu.h
++++ b/include/linux/percpu.h
+@@ -13,7 +13,8 @@
+ 
+ /* enough to cover all DEFINE_PER_CPUs in modules */
+ #ifdef CONFIG_MODULES
+-#define PERCPU_MODULE_RESERVE		(8 << 10)
++/* #define PERCPU_MODULE_RESERVE		(8 << 10) */
++#define PERCPU_MODULE_RESERVE		(16 << 10)
+ #else
+ #define PERCPU_MODULE_RESERVE		0
+ #endif
+@@ -123,6 +124,11 @@ extern int __init pcpu_page_first_chunk(size_t reserved_size,
+ #endif
+ 
+ extern void __percpu *__alloc_reserved_percpu(size_t size, size_t align) __alloc_size(1);
++
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++extern void __percpu *__alloc_reserved_percpu_asi(size_t size, size_t align);
++#endif
++
+ extern bool __is_kernel_percpu_address(unsigned long addr, unsigned long *can_addr);
+ extern bool is_kernel_percpu_address(unsigned long addr);
+ 
+diff --git a/kernel/module-internal.h b/kernel/module-internal.h
+index 33783abc377b..44c05ae06b2c 100644
+--- a/kernel/module-internal.h
++++ b/kernel/module-internal.h
+@@ -25,6 +25,7 @@ struct load_info {
+ #endif
+ 	struct {
+ 		unsigned int sym, str, mod, vers, info, pcpu;
++                unsigned int pcpu_asi;
+ 	} index;
+ };
+ 
+diff --git a/kernel/module.c b/kernel/module.c
+index d363b8a0ee24..0048b7843903 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -587,6 +587,13 @@ static inline void __percpu *mod_percpu(struct module *mod)
+ 	return mod->percpu;
+ }
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++static inline void __percpu *mod_percpu_asi(struct module *mod)
++{
++	return mod->percpu_asi;
++}
++#endif
++
+ static int percpu_modalloc(struct module *mod, struct load_info *info)
+ {
+ 	Elf_Shdr *pcpusec = &info->sechdrs[info->index.pcpu];
+@@ -611,9 +618,34 @@ static int percpu_modalloc(struct module *mod, struct load_info *info)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++static int percpu_asi_modalloc(struct module *mod, struct load_info *info)
++{
++	Elf_Shdr *pcpusec = &info->sechdrs[info->index.pcpu_asi];
++	unsigned long align = pcpusec->sh_addralign;
++
++	if ( !pcpusec->sh_size)
++		return 0;
++
++	mod->percpu_asi = __alloc_reserved_percpu_asi(pcpusec->sh_size, align);
++	if (!mod->percpu_asi) {
++		pr_warn("%s: Could not allocate %lu bytes percpu data\n",
++			mod->name, (unsigned long)pcpusec->sh_size);
++		return -ENOMEM;
++	}
++	mod->percpu_asi_size = pcpusec->sh_size;
++
++	return 0;
++}
++#endif
++
+ static void percpu_modfree(struct module *mod)
+ {
+ 	free_percpu(mod->percpu);
++
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	free_percpu(mod->percpu_asi);
++#endif
+ }
+ 
+ static unsigned int find_pcpusec(struct load_info *info)
+@@ -621,6 +653,13 @@ static unsigned int find_pcpusec(struct load_info *info)
+ 	return find_sec(info, ".data..percpu");
+ }
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++static unsigned int find_pcpusec_asi(struct load_info *info)
++{
++	return find_sec(info, ".data..percpu" ASI_PERCPU_SECTION );
++}
++#endif
++
+ static void percpu_modcopy(struct module *mod,
+ 			   const void *from, unsigned long size)
+ {
+@@ -630,6 +669,39 @@ static void percpu_modcopy(struct module *mod,
+ 		memcpy(per_cpu_ptr(mod->percpu, cpu), from, size);
+ }
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++static void percpu_asi_modcopy(struct module *mod,
++			   const void *from, unsigned long size)
++{
++	int cpu;
++
++	for_each_possible_cpu(cpu)
++		memcpy(per_cpu_ptr(mod->percpu_asi, cpu), from, size);
++}
++#endif
++
++bool __is_module_percpu_address_helper(unsigned long addr,
++                                       unsigned long *can_addr,
++                                       unsigned int cpu,
++                                       void* percpu_start,
++                                       unsigned int percpu_size)
++{
++        void *start = per_cpu_ptr(percpu_start, cpu);
++        void *va = (void *)addr;
++
++        if (va >= start && va < start + percpu_size) {
++                if (can_addr) {
++                        *can_addr = (unsigned long) (va - start);
++                        *can_addr += (unsigned long)
++                                per_cpu_ptr(percpu_start,
++                                            get_boot_cpu_id());
++                }
++                return true;
++        }
++
++        return false;
++}
++
+ bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr)
+ {
+ 	struct module *mod;
+@@ -640,22 +712,34 @@ bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr)
+ 	list_for_each_entry_rcu(mod, &modules, list) {
+ 		if (mod->state == MODULE_STATE_UNFORMED)
+ 			continue;
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++		if (!mod->percpu_size && !mod->percpu_asi_size)
++			continue;
++#else
+ 		if (!mod->percpu_size)
+ 			continue;
++#endif
+ 		for_each_possible_cpu(cpu) {
+-			void *start = per_cpu_ptr(mod->percpu, cpu);
+-			void *va = (void *)addr;
+-
+-			if (va >= start && va < start + mod->percpu_size) {
+-				if (can_addr) {
+-					*can_addr = (unsigned long) (va - start);
+-					*can_addr += (unsigned long)
+-						per_cpu_ptr(mod->percpu,
+-							    get_boot_cpu_id());
+-				}
++                        if (__is_module_percpu_address_helper(addr,
++                                                              can_addr,
++                                                              cpu,
++                                                              mod->percpu,
++                                                              mod->percpu_size)) {
+ 				preempt_enable();
+ 				return true;
+-			}
++                        }
++
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++                        if (__is_module_percpu_address_helper(
++                                                        addr,
++                                                        can_addr,
++                                                        cpu,
++                                                        mod->percpu_asi,
++                                                        mod->percpu_asi_size)) {
++				preempt_enable();
++				return true;
++                        }
++#endif
+ 		}
+ 	}
+ 
+@@ -2344,6 +2428,10 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
+ 			/* Divert to percpu allocation if a percpu var. */
+ 			if (sym[i].st_shndx == info->index.pcpu)
+ 				secbase = (unsigned long)mod_percpu(mod);
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++                        else if (sym[i].st_shndx == info->index.pcpu_asi)
++				secbase = (unsigned long)mod_percpu_asi(mod);
++#endif
+ 			else
+ 				secbase = info->sechdrs[sym[i].st_shndx].sh_addr;
+ 			sym[i].st_value += secbase;
+@@ -2664,6 +2752,10 @@ static char elf_type(const Elf_Sym *sym, const struct load_info *info)
+ 		return 'U';
+ 	if (sym->st_shndx == SHN_ABS || sym->st_shndx == info->index.pcpu)
+ 		return 'a';
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++        if (sym->st_shndx == info->index.pcpu_asi)
++		return 'a';
++#endif
+ 	if (sym->st_shndx >= SHN_LORESERVE)
+ 		return '?';
+ 	if (sechdrs[sym->st_shndx].sh_flags & SHF_EXECINSTR)
+@@ -2691,7 +2783,8 @@ static char elf_type(const Elf_Sym *sym, const struct load_info *info)
+ }
+ 
+ static bool is_core_symbol(const Elf_Sym *src, const Elf_Shdr *sechdrs,
+-			unsigned int shnum, unsigned int pcpundx)
++			unsigned int shnum, unsigned int pcpundx,
++                        unsigned pcpu_asi_ndx)
+ {
+ 	const Elf_Shdr *sec;
+ 
+@@ -2701,7 +2794,7 @@ static bool is_core_symbol(const Elf_Sym *src, const Elf_Shdr *sechdrs,
+ 		return false;
+ 
+ #ifdef CONFIG_KALLSYMS_ALL
+-	if (src->st_shndx == pcpundx)
++	if (src->st_shndx == pcpundx || src->st_shndx == pcpu_asi_ndx )
+ 		return true;
+ #endif
+ 
+@@ -2743,7 +2836,7 @@ static void layout_symtab(struct module *mod, struct load_info *info)
+ 	for (ndst = i = 0; i < nsrc; i++) {
+ 		if (i == 0 || is_livepatch_module(mod) ||
+ 		    is_core_symbol(src+i, info->sechdrs, info->hdr->e_shnum,
+-				   info->index.pcpu)) {
++				   info->index.pcpu, info->index.pcpu_asi)) {
+ 			strtab_size += strlen(&info->strtab[src[i].st_name])+1;
+ 			ndst++;
+ 		}
+@@ -2807,7 +2900,7 @@ static void add_kallsyms(struct module *mod, const struct load_info *info)
+ 		mod->kallsyms->typetab[i] = elf_type(src + i, info);
+ 		if (i == 0 || is_livepatch_module(mod) ||
+ 		    is_core_symbol(src+i, info->sechdrs, info->hdr->e_shnum,
+-				   info->index.pcpu)) {
++				   info->index.pcpu, info->index.pcpu_asi)) {
+ 			mod->core_kallsyms.typetab[ndst] =
+ 			    mod->kallsyms->typetab[i];
+ 			dst[ndst] = src[i];
+@@ -3289,6 +3382,12 @@ static int setup_load_info(struct load_info *info, int flags)
+ 
+ 	info->index.pcpu = find_pcpusec(info);
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	info->index.pcpu_asi = find_pcpusec_asi(info);
++#else
++        info->index.pcpu_asi = 0;
++#endif
++
+ 	return 0;
+ }
+ 
+@@ -3629,6 +3728,12 @@ static struct module *layout_and_allocate(struct load_info *info, int flags)
+ 	/* We will do a special allocation for per-cpu sections later. */
+ 	info->sechdrs[info->index.pcpu].sh_flags &= ~(unsigned long)SHF_ALLOC;
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++        if (info->index.pcpu_asi)
++               info->sechdrs[info->index.pcpu_asi].sh_flags &=
++                                                    ~(unsigned long)SHF_ALLOC;
++#endif
++
+ 	/*
+ 	 * Mark ro_after_init section with SHF_RO_AFTER_INIT so that
+ 	 * layout_sections() can put it in the right place.
+@@ -3700,6 +3805,14 @@ static int post_relocation(struct module *mod, const struct load_info *info)
+ 	percpu_modcopy(mod, (void *)info->sechdrs[info->index.pcpu].sh_addr,
+ 		       info->sechdrs[info->index.pcpu].sh_size);
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	/* Copy relocated percpu ASI area over. */
++	percpu_asi_modcopy(
++                      mod,
++                      (void *)info->sechdrs[info->index.pcpu_asi].sh_addr,
++		      info->sechdrs[info->index.pcpu_asi].sh_size);
++#endif
++
+ 	/* Setup kallsyms-specific fields. */
+ 	add_kallsyms(mod, info);
+ 
+@@ -4094,6 +4207,11 @@ static int load_module(struct load_info *info, const char __user *uargs,
+ 	err = percpu_modalloc(mod, info);
+ 	if (err)
+ 		goto unlink_mod;
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++	err = percpu_asi_modalloc(mod, info);
++	if (err)
++		goto unlink_mod;
++#endif
+ 
+ 	/* Now module is in final location, initialize linked lists, etc. */
+ 	err = module_unload_init(mod);
+@@ -4183,7 +4301,11 @@ static int load_module(struct load_info *info, const char __user *uargs,
+ 	/* Get rid of temporary copy. */
+ 	free_copy(info);
+ 
+-        asi_load_module(mod);
++        err = asi_load_module(mod);
++	/* If the ASI loading failed, it doesn't necessarily mean that the
++	 * module loading failed. We print an error and move on. */
++        if (err)
++                pr_err("ASI: failed loading module %s", mod->name);
+ 
+ 	/* Done! */
+ 	trace_module_load(mod);
 diff --git a/mm/percpu.c b/mm/percpu.c
-index f5b2c2ea5a54..beaca5adf9d4 100644
+index beaca5adf9d4..3665a5ea71ec 100644
 --- a/mm/percpu.c
 +++ b/mm/percpu.c
-@@ -172,7 +172,7 @@ struct pcpu_chunk *pcpu_reserved_chunk __ro_after_init;
+@@ -169,6 +169,10 @@ struct pcpu_chunk *pcpu_first_chunk __ro_after_init;
+  */
+ struct pcpu_chunk *pcpu_reserved_chunk __ro_after_init;
+ 
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++struct pcpu_chunk *pcpu_reserved_nonsensitive_chunk __ro_after_init;
++#endif
++
  DEFINE_SPINLOCK(pcpu_lock);	/* all internal data structures */
  static DEFINE_MUTEX(pcpu_alloc_mutex);	/* chunk create/destroy, [de]pop, map ext */
  
--struct list_head *pcpu_chunk_lists __ro_after_init; /* chunk list slots */
-+struct list_head *pcpu_chunk_lists[PCPU_NR_CHUNK_TYPES] __ro_after_init; /* chunk list slots */
+@@ -1621,6 +1625,11 @@ static struct pcpu_chunk *pcpu_chunk_addr_search(void *addr)
+ 	if (pcpu_addr_in_chunk(pcpu_first_chunk, addr))
+ 		return pcpu_first_chunk;
  
- /* chunks which need their map areas extended, protected by pcpu_lock */
- static LIST_HEAD(pcpu_map_extend_chunks);
-@@ -531,10 +531,12 @@ static void __pcpu_chunk_move(struct pcpu_chunk *chunk, int slot,
- 			      bool move_front)
- {
- 	if (chunk != pcpu_reserved_chunk) {
-+                struct list_head *pcpu_type_lists =
-+                          pcpu_chunk_lists[pcpu_chunk_type(chunk)];
- 		if (move_front)
--			list_move(&chunk->list, &pcpu_chunk_lists[slot]);
-+			list_move(&chunk->list, &pcpu_type_lists[slot]);
- 		else
--			list_move_tail(&chunk->list, &pcpu_chunk_lists[slot]);
-+			list_move_tail(&chunk->list, &pcpu_type_lists[slot]);
- 	}
- }
- 
-@@ -570,13 +572,16 @@ static void pcpu_chunk_relocate(struct pcpu_chunk *chunk, int oslot)
- 
- static void pcpu_isolate_chunk(struct pcpu_chunk *chunk)
- {
-+	struct list_head *pcpu_type_lists =
-+		  pcpu_chunk_lists[pcpu_chunk_type(chunk)];
-+
- 	lockdep_assert_held(&pcpu_lock);
- 
- 	if (!chunk->isolated) {
- 		chunk->isolated = true;
- 		pcpu_nr_empty_pop_pages -= chunk->nr_empty_pop_pages;
- 	}
--	list_move(&chunk->list, &pcpu_chunk_lists[pcpu_to_depopulate_slot]);
-+	list_move(&chunk->list, &pcpu_type_lists[pcpu_to_depopulate_slot]);
- }
- 
- static void pcpu_reintegrate_chunk(struct pcpu_chunk *chunk)
-@@ -1438,7 +1443,8 @@ static struct pcpu_chunk * __init pcpu_alloc_first_chunk(unsigned long tmp_addr,
- 	return chunk;
- }
- 
--static struct pcpu_chunk *pcpu_alloc_chunk(gfp_t gfp)
-+static struct pcpu_chunk *pcpu_alloc_chunk(enum pcpu_chunk_type type,
-+                                           gfp_t gfp)
- {
- 	struct pcpu_chunk *chunk;
- 	int region_bits;
-@@ -1475,6 +1481,13 @@ static struct pcpu_chunk *pcpu_alloc_chunk(gfp_t gfp)
- 			goto objcg_fail;
- 	}
- #endif
 +#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+        /* TODO: (oweisse) do asi_map for nonsensitive chunks */
-+        if (type == PCPU_CHUNK_ASI_NONSENSITIVE)
-+                chunk->is_asi_nonsensitive = true;
-+        else
-+                chunk->is_asi_nonsensitive = false;
++	/* is it in the reserved ASI region? */
++	if (pcpu_addr_in_chunk(pcpu_reserved_nonsensitive_chunk, addr))
++		return pcpu_reserved_nonsensitive_chunk;
 +#endif
+ 	/* is it in the reserved region? */
+ 	if (pcpu_addr_in_chunk(pcpu_reserved_chunk, addr))
+ 		return pcpu_reserved_chunk;
+@@ -1805,23 +1814,37 @@ static void __percpu *pcpu_alloc(size_t size, size_t align, bool reserved,
  
- 	pcpu_init_md_blocks(chunk);
+ 	spin_lock_irqsave(&pcpu_lock, flags);
  
-@@ -1580,7 +1593,8 @@ static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
- 				  int page_start, int page_end);
- static void pcpu_post_unmap_tlb_flush(struct pcpu_chunk *chunk,
- 				      int page_start, int page_end);
--static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp);
-+static struct pcpu_chunk *pcpu_create_chunk(enum pcpu_chunk_type type,
-+					    gfp_t gfp);
- static void pcpu_destroy_chunk(struct pcpu_chunk *chunk);
- static struct page *pcpu_addr_to_page(void *addr);
- static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai);
-@@ -1733,6 +1747,8 @@ static void __percpu *pcpu_alloc(size_t size, size_t align, bool reserved,
- 	unsigned long flags;
- 	void __percpu *ptr;
- 	size_t bits, bit_align;
-+        enum pcpu_chunk_type type;
-+        struct list_head *pcpu_type_lists;
- 
- 	gfp = current_gfp_context(gfp);
- 	/* whitelisted flags that can be passed to the backing allocators */
-@@ -1763,6 +1779,16 @@ static void __percpu *pcpu_alloc(size_t size, size_t align, bool reserved,
- 	if (unlikely(!pcpu_memcg_pre_alloc_hook(size, gfp, &objcg)))
- 		return NULL;
- 
-+        type = PCPU_CHUNK_ROOT;
-+#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+        if (static_asi_enabled() && (gfp & __GFP_GLOBAL_NONSENSITIVE)) {
-+                 type = PCPU_CHUNK_ASI_NONSENSITIVE;
-+                 pcpu_gfp |= __GFP_GLOBAL_NONSENSITIVE;
-+        }
-+#endif
-+	pcpu_type_lists = pcpu_chunk_lists[type];
-+        BUG_ON(!pcpu_type_lists);
++#define TRY_ALLOC_FROM_CHUNK(source_chunk, chunk_name)                  \
++do {                                                                    \
++        if (!source_chunk) {                                            \
++                err = chunk_name " chunk not allocated";                \
++                goto fail_unlock;                                       \
++        }                                                               \
++        chunk = source_chunk;                                           \
++                                                                        \
++        off = pcpu_find_block_fit(chunk, bits, bit_align, is_atomic);   \
++        if (off < 0) {                                                  \
++                err = "alloc from " chunk_name " chunk failed";         \
++                goto fail_unlock;                                       \
++        }                                                               \
++                                                                        \
++        off = pcpu_alloc_area(chunk, bits, bit_align, off);             \
++        if (off >= 0)                                                   \
++                goto area_found;                                        \
++                                                                        \
++        err = "alloc from " chunk_name " chunk failed";                 \
++        goto fail_unlock;                                               \
++} while(0)
 +
- 	if (!is_atomic) {
- 		/*
- 		 * pcpu_balance_workfn() allocates memory under this mutex,
-@@ -1800,7 +1826,7 @@ static void __percpu *pcpu_alloc(size_t size, size_t align, bool reserved,
+ 	/* serve reserved allocations from the reserved chunk if available */
+-	if (reserved && pcpu_reserved_chunk) {
+-		chunk = pcpu_reserved_chunk;
+-
+-		off = pcpu_find_block_fit(chunk, bits, bit_align, is_atomic);
+-		if (off < 0) {
+-			err = "alloc from reserved chunk failed";
+-			goto fail_unlock;
+-		}
+-
+-		off = pcpu_alloc_area(chunk, bits, bit_align, off);
+-		if (off >= 0)
+-			goto area_found;
+-
+-		err = "alloc from reserved chunk failed";
+-		goto fail_unlock;
+-	}
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++        if (reserved && (gfp & __GFP_GLOBAL_NONSENSITIVE))
++                TRY_ALLOC_FROM_CHUNK(pcpu_reserved_nonsensitive_chunk,
++                                     "reserverved ASI");
++	else
++#endif
++        if (reserved && pcpu_reserved_chunk)
++                TRY_ALLOC_FROM_CHUNK(pcpu_reserved_chunk, "reserved");
+ 
  restart:
  	/* search through normal chunks */
- 	for (slot = pcpu_size_to_slot(size); slot <= pcpu_free_slot; slot++) {
--		list_for_each_entry_safe(chunk, next, &pcpu_chunk_lists[slot],
-+		list_for_each_entry_safe(chunk, next, &pcpu_type_lists[slot],
- 					 list) {
- 			off = pcpu_find_block_fit(chunk, bits, bit_align,
- 						  is_atomic);
-@@ -1830,8 +1856,8 @@ static void __percpu *pcpu_alloc(size_t size, size_t align, bool reserved,
- 		goto fail;
- 	}
- 
--	if (list_empty(&pcpu_chunk_lists[pcpu_free_slot])) {
--		chunk = pcpu_create_chunk(pcpu_gfp);
-+	if (list_empty(&pcpu_type_lists[pcpu_free_slot])) {
-+		chunk = pcpu_create_chunk(type, pcpu_gfp);
- 		if (!chunk) {
- 			err = "failed to allocate new chunk";
- 			goto fail;
-@@ -1983,12 +2009,19 @@ void __percpu *__alloc_reserved_percpu(size_t size, size_t align)
-  * CONTEXT:
-  * pcpu_lock (can be dropped temporarily)
-  */
--static void pcpu_balance_free(bool empty_only)
-+
-+static void __pcpu_balance_free(bool empty_only,
-+                                enum pcpu_chunk_type type)
- {
- 	LIST_HEAD(to_free);
--	struct list_head *free_head = &pcpu_chunk_lists[pcpu_free_slot];
-+        struct list_head *pcpu_type_lists = pcpu_chunk_lists[type];
-+	struct list_head *free_head;
- 	struct pcpu_chunk *chunk, *next;
- 
-+        if (!pcpu_type_lists)
-+                  return;
-+	free_head = &pcpu_type_lists[pcpu_free_slot];
-+
- 	lockdep_assert_held(&pcpu_lock);
- 
- 	/*
-@@ -2026,6 +2059,14 @@ static void pcpu_balance_free(bool empty_only)
- 	spin_lock_irq(&pcpu_lock);
+@@ -1998,6 +2021,14 @@ void __percpu *__alloc_reserved_percpu(size_t size, size_t align)
+ 	return pcpu_alloc(size, align, true, GFP_KERNEL);
  }
  
-+static void pcpu_balance_free(bool empty_only)
-+{
-+        enum pcpu_chunk_type type;
-+        for (type = 0; type < PCPU_NR_CHUNK_TYPES; type++) {
-+                __pcpu_balance_free(empty_only, type);
-+        }
-+}
-+
- /**
-  * pcpu_balance_populated - manage the amount of populated pages
-  *
-@@ -2038,12 +2079,21 @@ static void pcpu_balance_free(bool empty_only)
-  * CONTEXT:
-  * pcpu_lock (can be dropped temporarily)
-  */
--static void pcpu_balance_populated(void)
-+static void __pcpu_balance_populated(enum pcpu_chunk_type type)
- {
- 	/* gfp flags passed to underlying allocators */
--	const gfp_t gfp = GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN;
-+        const gfp_t gfp = GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN
 +#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+              | (type == PCPU_CHUNK_ASI_NONSENSITIVE ?
-+                    __GFP_GLOBAL_NONSENSITIVE : 0)
-+#endif
-+        ;
- 	struct pcpu_chunk *chunk;
- 	int slot, nr_to_pop, ret;
-+	struct list_head *pcpu_type_lists = pcpu_chunk_lists[type];
-+
-+	if (!pcpu_type_lists)
-+		return;
- 
- 	lockdep_assert_held(&pcpu_lock);
- 
-@@ -2074,7 +2124,7 @@ static void pcpu_balance_populated(void)
- 		if (!nr_to_pop)
- 			break;
- 
--		list_for_each_entry(chunk, &pcpu_chunk_lists[slot], list) {
-+		list_for_each_entry(chunk, &pcpu_type_lists[slot], list) {
- 			nr_unpop = chunk->nr_pages - chunk->nr_populated;
- 			if (nr_unpop)
- 				break;
-@@ -2107,7 +2157,7 @@ static void pcpu_balance_populated(void)
- 	if (nr_to_pop) {
- 		/* ran out of chunks to populate, create a new one and retry */
- 		spin_unlock_irq(&pcpu_lock);
--		chunk = pcpu_create_chunk(gfp);
-+		chunk = pcpu_create_chunk(type, gfp);
- 		cond_resched();
- 		spin_lock_irq(&pcpu_lock);
- 		if (chunk) {
-@@ -2117,6 +2167,14 @@ static void pcpu_balance_populated(void)
- 	}
- }
- 
-+static void pcpu_balance_populated()
++void __percpu *__alloc_reserved_percpu_asi(size_t size, size_t align)
 +{
-+        enum pcpu_chunk_type type;
-+
-+        for (type = 0; type < PCPU_NR_CHUNK_TYPES; type++)
-+                __pcpu_balance_populated(type);
++       return pcpu_alloc(size, align, true,
++                          GFP_KERNEL | __GFP_GLOBAL_NONSENSITIVE);
 +}
++#endif
 +
  /**
-  * pcpu_reclaim_populated - scan over to_depopulate chunks and free empty pages
-  *
-@@ -2132,13 +2190,19 @@ static void pcpu_balance_populated(void)
-  * pcpu_lock (can be dropped temporarily)
-  *
-  */
--static void pcpu_reclaim_populated(void)
-+
-+
-+static void __pcpu_reclaim_populated(enum pcpu_chunk_type type)
- {
- 	struct pcpu_chunk *chunk;
- 	struct pcpu_block_md *block;
- 	int freed_page_start, freed_page_end;
- 	int i, end;
- 	bool reintegrate;
-+        struct list_head *pcpu_type_lists = pcpu_chunk_lists[type];
-+
-+        if (!pcpu_type_lists)
-+                  return;
- 
- 	lockdep_assert_held(&pcpu_lock);
- 
-@@ -2148,8 +2212,8 @@ static void pcpu_reclaim_populated(void)
- 	 * other accessor is the free path which only returns area back to the
- 	 * allocator not touching the populated bitmap.
+  * pcpu_balance_free - manage the amount of free chunks
+  * @empty_only: free chunks only if there are no populated pages
+@@ -2838,15 +2869,46 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
+ 	 * the dynamic region.
  	 */
--	while (!list_empty(&pcpu_chunk_lists[pcpu_to_depopulate_slot])) {
--		chunk = list_first_entry(&pcpu_chunk_lists[pcpu_to_depopulate_slot],
-+	while (!list_empty(&pcpu_type_lists[pcpu_to_depopulate_slot])) {
-+		chunk = list_first_entry(&pcpu_type_lists[pcpu_to_depopulate_slot],
- 					 struct pcpu_chunk, list);
- 		WARN_ON(chunk->immutable);
- 
-@@ -2219,10 +2283,18 @@ static void pcpu_reclaim_populated(void)
- 			pcpu_reintegrate_chunk(chunk);
- 		else
- 			list_move_tail(&chunk->list,
--				       &pcpu_chunk_lists[pcpu_sidelined_slot]);
-+				       &pcpu_type_lists[pcpu_sidelined_slot]);
- 	}
- }
- 
-+static void pcpu_reclaim_populated(void)
-+{
-+        enum pcpu_chunk_type type;
-+        for (type = 0; type < PCPU_NR_CHUNK_TYPES; type++) {
-+                __pcpu_reclaim_populated(type);
-+        }
-+}
-+
- /**
-  * pcpu_balance_workfn - manage the amount of free chunks and populated pages
-  * @work: unused
-@@ -2268,6 +2340,7 @@ void free_percpu(void __percpu *ptr)
- 	unsigned long flags;
- 	int size, off;
- 	bool need_balance = false;
-+        struct list_head *pcpu_type_lists = NULL;
- 
- 	if (!ptr)
- 		return;
-@@ -2280,6 +2353,8 @@ void free_percpu(void __percpu *ptr)
- 
- 	chunk = pcpu_chunk_addr_search(addr);
- 	off = addr - chunk->base_addr;
-+        pcpu_type_lists = pcpu_chunk_lists[pcpu_chunk_type(chunk)];
-+        BUG_ON(!pcpu_type_lists);
- 
- 	size = pcpu_free_area(chunk, off);
- 
-@@ -2293,7 +2368,7 @@ void free_percpu(void __percpu *ptr)
- 	if (!chunk->isolated && chunk->free_bytes == pcpu_unit_size) {
- 		struct pcpu_chunk *pos;
- 
--		list_for_each_entry(pos, &pcpu_chunk_lists[pcpu_free_slot], list)
-+		list_for_each_entry(pos, &pcpu_type_lists[pcpu_free_slot], list)
- 			if (pos != chunk) {
- 				need_balance = true;
- 				break;
-@@ -2601,6 +2676,7 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
- 	int map_size;
- 	unsigned long tmp_addr;
- 	size_t alloc_size;
-+        enum pcpu_chunk_type type;
- 
- #define PCPU_SETUP_BUG_ON(cond)	do {					\
- 	if (unlikely(cond)) {						\
-@@ -2723,15 +2799,24 @@ void __init pcpu_setup_first_chunk(const struct pcpu_alloc_info *ai,
- 	pcpu_free_slot = pcpu_sidelined_slot + 1;
- 	pcpu_to_depopulate_slot = pcpu_free_slot + 1;
- 	pcpu_nr_slots = pcpu_to_depopulate_slot + 1;
--	pcpu_chunk_lists = memblock_alloc(pcpu_nr_slots *
--					  sizeof(pcpu_chunk_lists[0]),
-+	for (type = 0; type < PCPU_NR_CHUNK_TYPES; type++) {
+ 	tmp_addr = (unsigned long)base_addr + static_size;
 +#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
-+                if (type == PCPU_CHUNK_ASI_NONSENSITIVE &&
-+                    !static_asi_enabled()) {
-+                        pcpu_chunk_lists[type] = NULL;
-+                        continue;
-+                }
++        /* If ASI is used, split the reserved size between the nonsensitive
++         * chunk and the normal chunk evenly. */
++	map_size = (ai->reserved_size / 2) ?: dyn_size;
++#else
+ 	map_size = ai->reserved_size ?: dyn_size;
 +#endif
-+	        pcpu_chunk_lists[type] = memblock_alloc(pcpu_nr_slots *
-+					  sizeof(pcpu_chunk_lists[0][0]),
- 					  SMP_CACHE_BYTES);
--	if (!pcpu_chunk_lists)
--		panic("%s: Failed to allocate %zu bytes\n", __func__,
--		      pcpu_nr_slots * sizeof(pcpu_chunk_lists[0]));
-+                if (!pcpu_chunk_lists[type])
-+                        panic("%s: Failed to allocate %zu bytes\n", __func__,
-+                              pcpu_nr_slots * sizeof(pcpu_chunk_lists[0][0]));
+ 	chunk = pcpu_alloc_first_chunk(tmp_addr, map_size);
  
--	for (i = 0; i < pcpu_nr_slots; i++)
--		INIT_LIST_HEAD(&pcpu_chunk_lists[i]);
-+                for (i = 0; i < pcpu_nr_slots; i++)
-+                        INIT_LIST_HEAD(&pcpu_chunk_lists[type][i]);
-+        }
+ 	/* init dynamic chunk if necessary */
+ 	if (ai->reserved_size) {
+-		pcpu_reserved_chunk = chunk;
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++          /* TODO: check if ASI was enabled via boot param or static branch */
++          /* We allocated pcpu_reserved_nonsensitive_chunk only if
++           * pcpu_reserved_chunk is used as well. */
++		pcpu_reserved_nonsensitive_chunk = chunk;
++                pcpu_reserved_nonsensitive_chunk->is_asi_nonsensitive = true;
  
- 	/*
- 	 * The end of the static region needs to be aligned with the
++                /* We used the previous chunk as pcpu_reserved_nonsensitive_chunk. Now
++                 * allocate pcpu_reserved_chunk */
++		tmp_addr = (unsigned long)base_addr + static_size +
++			   (ai->reserved_size / 2);
++		map_size = ai->reserved_size / 2;
++                chunk = pcpu_alloc_first_chunk(tmp_addr, map_size);
++#endif
++                /* Whether ASI is enabled or disabled, the end result is the
++                 * same:
++                 * If ASI is enabled, tmp_addr, used for pcpu_first_chunk should
++                 * be after
++                 * 1. pcpu_reserved_nonsensitive_chunk AND
++                 * 2. pcpu_reserved_chunk
++                 * Since we split the reserve size in half, we skip in total the
++                 * whole ai->reserved_size.
++                 * If ASI is disabled, tmp_addr, used for pcpu_first_chunk is
++                 * just after pcpu_reserved_chunk */
+ 		tmp_addr = (unsigned long)base_addr + static_size +
+ 			   ai->reserved_size;
++
++                pcpu_reserved_chunk = chunk;
++
+ 		map_size = dyn_size;
+ 		chunk = pcpu_alloc_first_chunk(tmp_addr, map_size);
+ 	}
+@@ -3129,7 +3191,6 @@ int __init pcpu_embed_first_chunk(size_t reserved_size, size_t dyn_size,
+ 				   cpu_distance_fn);
+ 	if (IS_ERR(ai))
+ 		return PTR_ERR(ai);
+-
+ 	size_sum = ai->static_size + ai->reserved_size + ai->dyn_size;
+ 	areas_size = PFN_ALIGN(ai->nr_groups * sizeof(void *));
+ 
+@@ -3460,3 +3521,40 @@ static int __init percpu_enable_async(void)
+ 	return 0;
+ }
+ subsys_initcall(percpu_enable_async);
++
++#ifdef CONFIG_ADDRESS_SPACE_ISOLATION
++void __init pcpu_map_asi_reserved_chunk(void)
++{
++        void *start_addr, *end_addr;
++        unsigned long map_start_addr, map_end_addr;
++        struct pcpu_chunk *chunk = pcpu_reserved_nonsensitive_chunk;
++        int err = 0;
++
++        if (!chunk)
++		return;
++
++	start_addr = chunk->base_addr + chunk->start_offset;
++	end_addr = chunk->base_addr + chunk->nr_pages * PAGE_SIZE -
++		   chunk->end_offset;
++
++
++        /* No need in asi_map_percpu, since these addresses are "real". The
++         * chunk has full pages allocated, so we're not worried about leakage of
++         * data caused by start_addr-->end_addr not being page aligned. asi_map,
++         * however, will fail/crash if the addresses are not aligned. */
++        map_start_addr = (unsigned long)start_addr & PAGE_MASK;
++        map_end_addr = PAGE_ALIGN((unsigned long)end_addr);
++
++        pr_err("%s:%d mapping 0x%lx --> 0x%lx",
++               __FUNCTION__, __LINE__, map_start_addr, map_end_addr);
++        err = asi_map(ASI_GLOBAL_NONSENSITIVE,
++                      (void*)map_start_addr, map_end_addr - map_start_addr);
++
++        WARN(err, "Failed mapping percpu reserved chunk into ASI");
++
++        /* If we couldn't map the chuknk into ASI, it is useless. Set the chunk
++         * to NULL, so allocations from it will fail. */
++        if (err)
++              pcpu_reserved_nonsensitive_chunk = NULL;
++}
++#endif
 -- 
 2.35.1.473.g83b2b277ed-goog
 
