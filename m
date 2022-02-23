@@ -2,122 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 550E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:39:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B949C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 17:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239633AbiBWRkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 12:40:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58144 "EHLO
+        id S243425AbiBWRkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 12:40:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232607AbiBWRkL (ORCPT
+        with ESMTP id S240809AbiBWRkq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 12:40:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5236B48;
-        Wed, 23 Feb 2022 09:39:43 -0800 (PST)
+        Wed, 23 Feb 2022 12:40:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9298FA19B;
+        Wed, 23 Feb 2022 09:40:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26A4C61484;
-        Wed, 23 Feb 2022 17:39:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F2DC340E7;
-        Wed, 23 Feb 2022 17:39:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2965961483;
+        Wed, 23 Feb 2022 17:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B72DC340E7;
+        Wed, 23 Feb 2022 17:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645637982;
-        bh=UB/fdzNnOIHMXBBBmk61V4+OoYvesbVZ2l0elnEufzg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Kf3D2LPejolRCxzzwXBAjLaXRzKYJp3PVnWiPo6fUoWNajRrzf0DJpnrbGS310o+b
-         d5Wp8WWyMsyHMqh1H4aXG7CkNqkqxv4nhSAXKmxgG0Wi4NmyoI0VJTpvgAse7fDhqh
-         IEWoXVixG3N+TSSAF24zW1hB0F9jxPdSQghzIwFhmQqihwyNKVgQvCn5z5dfmBNCs9
-         ynAGTrmCV1hFtBbw+754CjyRqQN4nDhp5+vTuDH098HsUtx/ZeikW8QnO3DspbBz89
-         7KSa29WNpvX4IFs+d+kut4AytrYJVsnDTmBX/9nQDNosRbphm1Fr657UDS/CNoBrXU
-         yp1WsX2CJWy7Q==
-Date:   Wed, 23 Feb 2022 10:39:35 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Dan Li <ashimida@linux.alibaba.com>
-Cc:     catalin.marinas@arm.com, will@kernel.org, ndesaulniers@google.com,
-        keescook@chromium.org, masahiroy@kernel.org, tglx@linutronix.de,
-        akpm@linux-foundation.org, mark.rutland@arm.com,
-        samitolvanen@google.com, npiggin@gmail.com, linux@roeck-us.net,
-        mhiramat@kernel.org, ojeda@kernel.org, luc.vanoostenryck@gmail.com,
-        elver@google.com, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] [PATCH] AARCH64: Add gcc Shadow Call Stack support
-Message-ID: <YhZxVwoshSwwJkJO@dev-arch.archlinux-ax161>
-References: <20220222095736.24898-1-ashimida@linux.alibaba.com>
- <YhUMRoLDan7tJRiL@dev-arch.archlinux-ax161>
- <69d351c6-a69d-6ebb-53bc-b46dfe4da08a@linux.alibaba.com>
+        s=k20201202; t=1645638016;
+        bh=vdNxr48kXvnOvyGZXeXUt9F8EvQ0/KBfD8xz+E+eWzQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Sygr+3AqUbbfFMiGflScjFAz1W52Di4MmF0D0l2kQMvn2JhrwmdY9yJkV79q9+VWp
+         j17Sirc+t3iRW5seOsuj15K0pgP5Yl8omqqV+cdwH2WeztviMmdR5tMFuHQTpyVap1
+         Z4t+jPZwWmb7AnIHcH1D0dKZBj4hFvKHr3Nz7q/OSSK6/D1mc+lyphro88kPSchX8h
+         LdDASysYmj4PV5kn1SjzzI9fJQAdKaEf0jUaM6N4JWzkNeVX+8CFHTGhW3HcL6BO41
+         LMsD2e0HFXYmKWDXtc/pWIDzRNSajCA2yOqLtDZnbG/oz2y03r01+F1JMxHH24ARaY
+         2/XCNahlftZgw==
+Date:   Wed, 23 Feb 2022 11:40:14 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Richard Zhu <hongxing.zhu@nxp.com>
+Cc:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
+        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
+        festevam@gmail.com, francesco.dolcini@toradex.com,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Subject: Re: [PATCH v7 8/8] PCI: imx6: Add the compliance tests mode support
+Message-ID: <20220223174014.GA139367@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <69d351c6-a69d-6ebb-53bc-b46dfe4da08a@linux.alibaba.com>
+In-Reply-To: <1644992463-14467-9-git-send-email-hongxing.zhu@nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 12:50:21AM -0800, Dan Li wrote:
-> 
-> 
-> On 2/22/22 08:16, Nathan Chancellor wrote:
-> > On Tue, Feb 22, 2022 at 01:57:36AM -0800, Dan Li wrote:
-> > > Shadow call stack is available in GCC > 11.2.0, this patch makes
-> > > the corresponding kernel configuration available when compiling
-> > > the kernel with gcc.
-> > >   config SHADOW_CALL_STACK
-> > > -	bool "Clang Shadow Call Stack"
-> > > -	depends on CC_IS_CLANG && ARCH_SUPPORTS_SHADOW_CALL_STACK
-> > > +	bool "Shadow Call Stack"
-> > > +	depends on ARCH_SUPPORTS_SHADOW_CALL_STACK
-> > >   	depends on DYNAMIC_FTRACE_WITH_REGS || !FUNCTION_GRAPH_TRACER
-> > >   	help
-> > > -	  This option enables Clang's Shadow Call Stack, which uses a
-> > > +	  This option enables Clang/GCC's Shadow Call Stack, which uses a
-> > 
-> > I wonder if we want to just ditch the mention of the compiler if both
-> > support it?
-> > 
-> 
-> My intention is to remind users that this is a compiler feature.
-> But since there is also a hint in CC_HAVE_SHADOW_CALL_STACK:
-> +# Supported by clang >= 7.0 or GCC ...
-> 
-> Removing the specific compiler here also looks fine to me.
-> Would this look better?
-> 
-> "This option enables Shadow Call Stack, which uses a ..."
-> 
-> or maybe:
-> 
-> "This option enables compiler's Shadow Call Stack, which uses a ..."
+In subject:
 
-I do not honestly have a strong opinion around removing mention of the
-compiler so either looks fine to me (might be better to say "the
-compiler's Shadow ..." in the second one).
+s/Add the/Add/
 
-> > >   	  shadow stack to protect function return addresses from being
-> > >   	  overwritten by an attacker. More information can be found in
-> > >   	  Clang's documentation:
-> > > diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> > > index 09b885cc4db5..a48a604301aa 100644
-> > > --- a/arch/arm64/Kconfig
-> > > +++ b/arch/arm64/Kconfig
-> > > @@ -1255,7 +1255,7 @@ config HW_PERF_EVENTS
-> > >   config ARCH_HAS_FILTER_PGPROT
-> > >   	def_bool y
-> > > -# Supported by clang >= 7.0
-> > > +# Supported by clang >= 7.0 or GCC > 11.2.0
-> > 
-> > Same thing here, although eventually there may be a minimum GCC version
-> > bump to something newer than 11.2.0, which would allow us to just drop
-> > CONFIG_CC_HAVE_SHADOW_CALL_STACK altogether. No strong opinion.
-> > 
+On Wed, Feb 16, 2022 at 02:21:03PM +0800, Richard Zhu wrote:
+> Refer to the system board signal Quality of PCIe archiecture PHY test
+> specification. Signal quality tests(for example: jitters,  differential
+> eye opening and so on ) can be executed with devices in the
+> polling.compliance state.
+
+s/archiecture/architecture/
+s/tests(for/tests (for/
+s/jitters,  /jitter, /              (remove double space)
+s/so on )/so on)/
+
+Is this a reference to a spec?  If so, I can't tell the name of the
+spec, the revision, or the section number.
+
+> To let the device support polling.compliance stat, the clocks and powers
+> shouldn't be turned off when the probe of device driver is failed.
+
+s/stat/state/
+s/powers/power/
+s/driver is failed/driver fails/
+
+> Based on CLB(Compliance Load Board) Test Fixture and so on test
+> equipments, the PHY link would be down during the compliance tests.
+> Refer to this scenario, add the i.MX PCIe compliance tests mode enable
+> support, and keep the clocks and powers on, and finish the driver probe
+> without error return.
+
+s/CLB(Compliance/CLB (Compliance/
+
+> Use the "pci_imx6.compliance=1" in kernel command line to enable the
+> compliance tests mode.
+
+Thanks for including this in the commit log!
+
+>  	ret = dw_pcie_host_init(&pci->pp);
+> -	if (ret < 0)
+> +	if (ret < 0) {
+> +		if (imx6_pcie_cmp_mode) {
+> +			dev_info(dev, "Driver loaded with compliance test mode enabled.\n");
+
+To match other messages:
+
+s/Driver loaded/driver loaded/
+s/enabled./enabled/
+
+> +			ret = 0;
+> +		} else {
+> +			dev_err(dev, "Unable to add pcie port.\n");
+
+s/Unable/unable/
+s/pcie/PCIe/
+s/port./port/
+
+> +		}
+>  		return ret;
+> +	}
+>  
+>  	if (pci_msi_enabled()) {
+>  		u8 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
+> -- 
+> 2.25.1
 > 
-> As Guenter said, I thought maybe we could mark the minimum available
-> version for users :)
-
-Yes, that is what I was getting at with the "minimum version" comment.
-It should remain around.
-
-Cheers,
-Nathan
