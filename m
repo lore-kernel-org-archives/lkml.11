@@ -2,119 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 476FEC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 23 Feb 2022 19:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244368AbiBWTYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 14:24:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41796 "EHLO
+        id S244376AbiBWTaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 14:30:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233668AbiBWTYa (ORCPT
+        with ESMTP id S238408AbiBWTaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 14:24:30 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 091564615A
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:24:02 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id i11so40386lfu.3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:24:01 -0800 (PST)
+        Wed, 23 Feb 2022 14:30:13 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14BF147AE4
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:29:45 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id q8-20020a17090a178800b001bc299b8de1so3958859pja.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:29:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HjArSS8ANU0AmF9VRiQ+JwaB1JolSh6jU4/KfBIWJSg=;
-        b=SxgxuRG0OkfsBfuvCa7RY3/WZgvDzK2U9zqimJb2S8qNwZdf5H//RLR918xc8lgJj+
-         M68mG5a/yJboRqjg/HEaGiIjdE+20eno7KhkjxVE6tVzmRLvywdJPoHydDzgl6AIzIaI
-         ZKh+7HuT69NwKddIUvjRtBnkS0FxhwvyckzOs=
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rcZtDDDiBwFJfxUmlCOz3RDMEXHNKOOpzN1iEr3gL5U=;
+        b=QWBzyrjZbDyYSLOvasncoWEYru0Moni/yVGRO01JjZbgsx9D2Olu/maNAtD0effRNG
+         wNYTVyenRE2iN8/gxF8zvDFIp1czImRucV3q+rH/Db4mDxfkNsMa5DdPNA12q8f3hQw0
+         CGhSrzqNOX9eTGM8sUUHgDxFqNl+jJQdeU/Ko=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HjArSS8ANU0AmF9VRiQ+JwaB1JolSh6jU4/KfBIWJSg=;
-        b=tFpEuyLCxdVdASi5U32Kl9uKRRIHkBfLE3DrF/3IfcjMjh6ftevLXJlS0SOBrqCmKp
-         u6dMtbXMuH8hmr1TgPyFIH7haDf4i9tBnW/ddW+nkSqLFB9/omUV4Wl/a4cEIno9DX0h
-         AfBNDZZuyUNDYjrnG51P79YsJojMQLn0Sb4PN8nWHSfERjVPZlaNfR+vAy0Jzeli/rfS
-         hK2S4mZSuumttOhmwU3NYMNE8u1MiZGMoIEtevO5v/i3a4Z4NyVpdZr6OCAkaT7WAzAE
-         cXx/6SMVEyuDzKvU3+JOkwqbFQIcDv2CMm+sb4g3fPjm5o6aAgpnPSyiUmPFg1n8GZRc
-         fn/w==
-X-Gm-Message-State: AOAM533Ou/Ec5KYvIeqeSfEkenq63ykbsn7UrURkSZ+cv6zlrq2i+JXw
-        02ZeeI05cfY76sioWP6lqGyZKnhjcjvUoVgxdr4=
-X-Google-Smtp-Source: ABdhPJzHJ3H82H/IwXBCwtSkJz8uQrs8eEFseQkc0+q9Q0UolFricfzKJl8jD9SdiHi4xK7cHyu+1A==
-X-Received: by 2002:ac2:4e52:0:b0:443:b1a0:1c2 with SMTP id f18-20020ac24e52000000b00443b1a001c2mr744939lfr.444.1645644240099;
-        Wed, 23 Feb 2022 11:24:00 -0800 (PST)
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
-        by smtp.gmail.com with ESMTPSA id z14sm32616lfu.232.2022.02.23.11.23.55
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 11:23:56 -0800 (PST)
-Received: by mail-lf1-f53.google.com with SMTP id e5so32919850lfr.9
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 11:23:55 -0800 (PST)
-X-Received: by 2002:a05:6512:130b:b0:443:c2eb:399d with SMTP id
- x11-20020a056512130b00b00443c2eb399dmr728782lfu.27.1645644235739; Wed, 23 Feb
- 2022 11:23:55 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rcZtDDDiBwFJfxUmlCOz3RDMEXHNKOOpzN1iEr3gL5U=;
+        b=BIc/egrS7GoaMYUXhvfghSZ7EX4sjwFPwZpXEhVqipTeDFHKI2Dmh1NsUYenLQnwzE
+         qMJk7i7FJLHxq1ei66+zGmBZfBu0y44wDplEARJRkHd36pJsaf0nj3HKHPEYSh5Njh27
+         QP80dvafqo+6/5HdCdmeZBglLGjDyEPbe3FprKlmcFSuyFUfeeh8wADCi955wAoxVVK7
+         enlVS6d9avjP52iTnksHmR+16FEugMkqv8Tk8tUx3DPBui2j7LjwvPIisnfje91Y5vRo
+         PlkDDq9S/0hpI0b+5bbJkRBxoNNPGao/9AU5Wr9xa5DolIimQiSFL5IqKMNa3NcxCHON
+         J8Pg==
+X-Gm-Message-State: AOAM5300+Us7kwjqsFTKaGoUJTG+4zPX6KMpt5DGoFRyaXxVBXGXopnK
+        fc8VKe1lzxZvlOOUcrdGs87k05xwa6FkVQ==
+X-Google-Smtp-Source: ABdhPJxlXjAtTppGbdCoaBZt4izIbAhB7dGQ5TNK+YADNjZYa3D+4W9K2F3X6jY0EE0TLHnQMMfldA==
+X-Received: by 2002:a17:902:ab12:b0:14f:ce60:2ae4 with SMTP id ik18-20020a170902ab1200b0014fce602ae4mr1048141plb.87.1645644584562;
+        Wed, 23 Feb 2022 11:29:44 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id on17sm246496pjb.40.2022.02.23.11.29.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 11:29:44 -0800 (PST)
+Date:   Wed, 23 Feb 2022 11:29:43 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Jann Horn <jannh@google.com>
+Cc:     Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] pstore: Don't use semaphores in always-atomic-context
+ code
+Message-ID: <202202231128.E7445769AD@keescook>
+References: <20220218181950.1438236-1-jannh@google.com>
+ <8D85619E-99BD-4DB5-BDDB-A205B057C910@chromium.org>
+ <CAG48ez0UJDBzoaB4=c0Uju6L-eZvhWMdnzAp8N3QfeERbzYv2w@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
- <20220217184829.1991035-4-jakobkoschel@gmail.com> <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
- <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
-In-Reply-To: <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 23 Feb 2022 11:23:39 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
-Message-ID: <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-To:     Jakob <jakobkoschel@gmail.com>, Arnd Bergmann <arnd@arndb.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAG48ez0UJDBzoaB4=c0Uju6L-eZvhWMdnzAp8N3QfeERbzYv2w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 10:47 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Arnd - remind me, please.. Was there some other problem than just gcc-4.9?
+On Wed, Feb 23, 2022 at 06:50:52PM +0100, Jann Horn wrote:
+> On Wed, Feb 23, 2022 at 8:50 AM Kees Cook <keescook@chromium.org> wrote:
+> > On February 18, 2022 10:19:50 AM PST, Jann Horn <jannh@google.com> wrote:
+> > >pstore_dump() is *always* invoked in atomic context (nowadays in an RCU
+> > >read-side critical section, before that under a spinlock).
+> > >It doesn't make sense to try to use semaphores here.
+> >
+> > Ah, very nice. Thanks for the analysis!
+> >
+> > >[...]
+> > >-static bool pstore_cannot_wait(enum kmsg_dump_reason reason)
+> > >+bool pstore_cannot_block_path(enum kmsg_dump_reason reason)
+> >
+> > Why the rename,
+> 
+> That's one of the parts of commit ea84b580b955 that I included in the
+> revert. "wait" in the name is not accurate, since "wait" in the kernel
+> normally refers to scheduling away until some condition is fulfilled.
+> (Though I guess "block" also isn't the best name either... idk.) The
+> place where we might want to have different behavior depending on
+> whether we're handling a kernel crash are spinlocks; during a kernel
+> crash, we shouldn't deadlock on them, but otherwise, AFAIK it's fine
+> to block on them.
 
-Hmm. Interesting. I decided to just try it and see for the compiler I
-have, and changing the gnu89 to gnu99 I get new warnings
-(-Werror=shift-negative-value).
+Gotcha. I'm find to avoid "wait"; I was just curious why it was
+changing, but I see now.
 
-Very annoying.  Especially since negative values are in many contexts
-actually *safer* than positive ones when used as a mask, because as
-long as the top bit is set in 'int', if the end result is then
-expanded to some wider type, the top bit stays set.
+> 
+> > extern, and EXPORT? This appears to still only have the same single caller?
+> 
+> Also part of the revert. I figured it might make sense to also revert
+> that part because:
+> 
+> With this commit applied, the EFI code will always take the "nonblock"
+> path for now, but that's kinda suboptimal; on some platforms the
+> "blocking" path uses a semaphore, so we really can't take that, but on
+> x86 it uses a spinlock, which we could block on if we're not oopsing.
+> We could avoid needlessly losing non-crash dmesg dumps there; I don't
+> know whether we care about that though.
+> 
+> So I figured that we might want to start adding new callers to this
+> later on. But if you want, I'll remove that part of the revert and
+> resend?
 
-Example:
+Yeah, let's just keep this static -- there's no reason to export it.
 
-  unsigned long mask(unsigned long x)
-  { return x & (~0 << 5); }
+> 
+> > > [...]
+> > >-                      pr_err("dump skipped in %s path: may corrupt error record\n",
+> > >-                              in_nmi() ? "NMI" : why);
+> > >-                      return;
+> > >-              }
+> > >-              if (down_interruptible(&psinfo->buf_lock)) {
+> > >-                      pr_err("could not grab semaphore?!\n");
+> > >+      if (pstore_cannot_block_path(reason)) {
+> > >+              if (!spin_trylock_irqsave(&psinfo->buf_lock, flags)) {
+> > >+                      pr_err("dump skipped in %s path because of concurrent dump\n"
+> > >+                                     , in_nmi() ? "NMI" : why);
+> >
+> > The pr_err had the comma following the format string moved,
+> 
+> Ah, whoops, that was also part of the revert, but I guess I should
+> have left that part out...
+> 
+> > and the note about corruption removed. Is that no longer accurate?
+> 
+> There should be no more corruption since commit 959217c84c27 ("pstore:
+> Actually give up during locking failure") - if we're bailing out, we
+> can't be causing corruption, I believe?
 
-  unsigned long badmask(unsigned long x)
-  { return x & (~0u << 5); }
+Yeah, agreed. String content change is fine, the weird leading comma I'd
+like to do without. :)
 
-One does it properly, the other is buggy.
+Thanks!
 
-Now, with an explicit "unsigned long" like this, some clueless
-compiler person  might say "just use "~0ul", but that's completely
-wrong - because quite often the type is *not* this visible, and the
-signed version works *regardless* of type.
-
-So this Werror=shift-negative-value warning seems to be actively
-detrimental, and I'm not seeing the reason for it. Can somebody
-explain the thinking for that stupid warning?
-
-That said, we seem to only have two cases of it in the kernel, at
-least by a x86-64 allmodconfig build. So we could examine the types
-there, or we could just add '-Wno-shift-negative-value".
-
-               Linus
+-- 
+Kees Cook
