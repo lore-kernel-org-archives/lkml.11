@@ -2,82 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:36:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE62C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbiBXBhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:37:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
+        id S229632AbiBXBhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:37:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229575AbiBXBhE (ORCPT
+        with ESMTP id S229563AbiBXBhE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 23 Feb 2022 20:37:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4FCB1D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 998B51D3;
         Wed, 23 Feb 2022 17:36:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F28B560FBE;
-        Thu, 24 Feb 2022 01:27:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E42EFC340E7;
-        Thu, 24 Feb 2022 01:27:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 139AB60ED2;
+        Thu, 24 Feb 2022 01:26:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 458E4C340E7;
+        Thu, 24 Feb 2022 01:26:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645666063;
-        bh=GaCSlaHuoL4PTPpbJsCAbmTac306bb0289J4Jyt/cCk=;
+        s=k20201202; t=1645665979;
+        bh=8LDaM4Jy5ejD/wY59B/RpUu2ht19fRLgDsVinlKVkz8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uTcgqSuvreJcrt+GI6FBVbHvqWaCYHfJMDVKh298DN/yG74ijBRZPbgCEPe1SSnv/
-         OWNZlqtpLMmtebO+jSPT2tI79bq0YuNY7TCpcI7JVvUMWiHVkyw4QJyvs554PKS8Y9
-         yeoFqkpu8MIeywz1nC153jIcoBKg6MXsMzAJ7xfWz40z9BIrTiWEfyXzLNkkTmH71d
-         VxV/se8WZF+3WlgLYOMUMoHBb8hqKl+jGYfrM0Apzfdb6Xs36lYJNKbnGn2Y0EWJ5g
-         SkQ2b3jZVI8c5Be1KZMj0x+5uwbjyWJc1KApfl5lz867/+dPA75kgtSOxLR7uH/Cu6
-         b7PtrA5RYslfw==
-Date:   Wed, 23 Feb 2022 17:27:41 -0800
+        b=eoAVUn1fHYOdBWEUVuQXREhDK/0DHFrXmXjXifC8G4q8K8O7UC0WBstBt+H2QGX25
+         H8n77lvmTP/SCtZrse9ESioB7fzeJtocPDcnqcNTKYPhAiB6fBajXw37PHELsQeS6Z
+         1npEVBrlVVdePpm+5zXRAT/U8GLW9Q1nw1uw5QQTyndn7xFGfxf9Tf96k6nn4viJBe
+         5m3LCrlEHkAmmEjc2u+GrZc5SgveF6GFxdzE8baaa0Af9L3PhnLO1y7a4XzJGAWOEz
+         uJmclobZFzbazQEm4SluQosfJu7Cv+7HNoOrUQ73XcfhZDFBNOlTP1uF8p0EcF0FiO
+         a2nPv3A4zJr7g==
+Date:   Wed, 23 Feb 2022 17:26:17 -0800
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        qemu-devel@nongnu.org, kvm@vger.kernel.org,
-        linux-s390@vger.kernel.org, adrian@parity.io, dwmw@amazon.co.uk,
-        acatan@amazon.com, graf@amazon.com, colmmacc@amazon.com,
-        sblbir@amazon.com, raduweis@amazon.com, jannh@google.com,
-        gregkh@linuxfoundation.org, tytso@mit.edu
-Subject: Re: [PATCH RFC v1 1/2] random: add mechanism for VM forks to
- reinitialize crng
-Message-ID: <YhbfDQ2ernjrRNRX@sol.localdomain>
-References: <20220223131231.403386-1-Jason@zx2c4.com>
- <20220223131231.403386-2-Jason@zx2c4.com>
- <YhbAOW/KbFW1CFkQ@sol.localdomain>
- <CAHmME9oa_wE8_n8e5b=iM5v-s5dgyibm4vXMhwzc8zGd6VWZMQ@mail.gmail.com>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 3/8] fs-verity: define a function to return the
+ integrity protected file digest
+Message-ID: <YhbeuQpGuDxEmi9o@sol.localdomain>
+References: <20220211214310.119257-1-zohar@linux.ibm.com>
+ <20220211214310.119257-4-zohar@linux.ibm.com>
+ <YhbKYZcWxmi4auJU@sol.localdomain>
+ <f322ae351dde71b92d7d4037d78190c7338ca710.camel@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHmME9oa_wE8_n8e5b=iM5v-s5dgyibm4vXMhwzc8zGd6VWZMQ@mail.gmail.com>
+In-Reply-To: <f322ae351dde71b92d7d4037d78190c7338ca710.camel@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 01:54:54AM +0100, Jason A. Donenfeld wrote:
-> On 2/24/22, Eric Biggers <ebiggers@kernel.org> wrote:
-> > I think we should be removing cases where the base_crng key is changed
-> > directly
-> > besides extraction from the input_pool, not adding new ones.  Why not
-> > implement
-> > this as add_device_randomness() followed by crng_reseed(force=true), where
-> > the
-> > 'force' argument forces a reseed to occur even if the entropy_count is too
-> > low?
+On Wed, Feb 23, 2022 at 08:21:01PM -0500, Mimi Zohar wrote:
+> On Wed, 2022-02-23 at 15:59 -0800, Eric Biggers wrote:
+> > On Fri, Feb 11, 2022 at 04:43:05PM -0500, Mimi Zohar wrote:
+> > > +/**
+> > > + * fsverity_get_digest() - get a verity file's digest
+> > > + * @inode: inode to get digest of
+> > > + * @digest: (out) pointer to the digest
+> > > + * @alg: (out) pointer to the hash algorithm enumeration
+> > > + *
+> > > + * Return the file hash algorithm and digest of an fsverity protected file.
+> > > + *
+> > > + * Return: 0 on success, -errno on failure
+> > > + */
+> > > +int fsverity_get_digest(struct inode *inode,
+> > > +			u8 digest[FS_VERITY_MAX_DIGEST_SIZE],
+> > > +			enum hash_algo *alg)
+> > > +{
+> > > +	const struct fsverity_info *vi;
+> > > +	const struct fsverity_hash_alg *hash_alg;
+> > > +	int i;
+> > > +
+> > > +	vi = fsverity_get_info(inode);
+> > > +	if (!vi)
+> > > +		return -ENODATA; /* not a verity file */
+> > 
+> > Sorry for the slow reviews; I'm taking a look again now.  One question about
+> > something I missed earlier: is the file guaranteed to have been opened before
+> > this is called?  fsverity_get_info() only returns a non-NULL value if the file
+> > has been opened at least once since the inode has been loaded into memory.  If
+> > the inode has just been loaded into memory without being opened, for example due
+> > to a call to stat(), then fsverity_get_info() will return NULL.
+> > 
+> > If the file is guaranteed to have been opened, then the code is fine, but the
+> > comment for fsverity_get_digest() perhaps should be updated to mention this
+> > assumption, given that it takes a struct inode rather than a struct file.
+> > 
+> > If the file is *not* guaranteed to have been opened, then it would be necessary
+> > to make fsverity_get_digest() call ensure_verity_info() to set up the
+> > fsverity_info.
 > 
-> Because that induces a "premature next" condition which can let that
-> entropy, potentially newly acquired by a storm of IRQs at power-on, be
-> bruteforced by unprivileged userspace. I actually had it exactly the
-> way you describe at first, but decided that this here is the lesser of
-> evils and doesn't really complicate things the way an intentional
-> premature next would. The only thing we care about here is branching
-> the crng stream, and so this does explicitly that, without having to
-> interfere with how we collect entropy. Of course we *also* add it as
-> non-credited "device randomness" so that it's part of the next
-> reseeding, whenever that might occur.
+> Yes, fsverity_get_digest() is called as a result of a syscall - open,
+> execve, mmap, etc.   
+> Refer to the LSM hooks security_bprm_check() and security_mmap_file().
+> ima_file_check() is called directly in do_open().
 
-Can you make sure to properly explain this in the code?
+stat() is a syscall too, so the question is not whether this is being called as
+a result of a syscall, but rather whether it's only being called while the file
+is open (or at least previously opened).  Is the answer to that "yes"?
 
 - Eric
