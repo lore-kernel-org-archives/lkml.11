@@ -2,227 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E7EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1498CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbiBXQdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:33:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
+        id S229836AbiBXQeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:34:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiBXQdk (ORCPT
+        with ESMTP id S229770AbiBXQeQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:33:40 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C0C17BC70
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:32:56 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id p14so5510339ejf.11
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:32:56 -0800 (PST)
+        Thu, 24 Feb 2022 11:34:16 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465E81B6E34
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:33:45 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id e13so2204062plh.3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:33:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8iFz8OejFA6DX9qXi4bQtBNaigBN1GDlBFEToUXGY3Q=;
-        b=m/r5a9WyEVahimcDrZ+I4kJ+LN5cBWUrcwkSOYJNGjLFuEihkwHAmdn4TmcJQatFmI
-         iJxxXr3qTsESDM74BAln0qM6OAD6wcNOTgIt+Pi5Uf46pLxlbvkff+J5tfM09G7NRc/K
-         pMyLOVPaPukn9OTEQrvxsNvp+jhK1d4R2CKv0MZCys2z0XWqYOZYUI1vJ3DGr8sN4a/w
-         TzxvadnG+pes4kBwh0Slizq3PEfC1CBU4zNlGoNDM4DDrDfjbAnyUwLV9ZqgJrHtOkTw
-         7sPw6x6j+46l2j40lcmS6ciEvtj1buqo5Vh66VgSW53OOnYIpDMhP3ZG7bhuWj2OWnQT
-         XRkA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hicd0tEo/b5LFaXhDInEJPUGfqEVOu+qbFlSudecvJ0=;
+        b=fS9MOKL7PnyGYGUrEHm1W+CpwJy2baJ8/5LJyKMcAWjsJZogmHWVaUfDGQuZCkd8vP
+         VK4ExEycU276xQ5S+kmUK8IVGZL9LtAPjVeyyI9yS6uqvs2uoRZiC/eOJqe8Vq9b+uvP
+         xc4ZlO8+so2JceflzyF2iPU8/gIQZX3lFz5Ts=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8iFz8OejFA6DX9qXi4bQtBNaigBN1GDlBFEToUXGY3Q=;
-        b=h2l0XUFFO/AKfFWrtdRZcTPEttA4CiuLIvLuegq2lEYAT5RSTFsc7Q0rCV4e0slcTR
-         yO0H9px/ufLbog7rQGImNasPhR46leYJ8da6yj4twkKWduIXTvRzTOb+uqC1voBtPrOx
-         pD+hXuXic3iLb21YcD3VVTz4ab4DoCToDPXm162JpsXxOTR8mEsKLOb4NGLGfOjMP5wT
-         kE1pN8cFvj39q2k0sGUftQ1lWz/y2hU1YLDwkItDy3RbL9ived+WQ+bgohUts35ugM2D
-         bNfeah1vDDxfwo6J7OupTCS0bn9Ixb/PfyQg38Hl0Qyf6JD2T8nuWZecGm5t9Pcw8jIe
-         Mqrw==
-X-Gm-Message-State: AOAM530vvXaplAatYmuaSzd+0t522APm+SNI+lgD3/7w2Bp7TK/7ewLC
-        eYnTd7953BNuyJOuDwMfV7Xkb7nl/1QDNA==
-X-Google-Smtp-Source: ABdhPJxM9Mr69FsUxMrjzwl+vN04ZCx0HQBkHsmr2jnNDhpL/c69hBp6L0yBwPwPAABLQy5SGzYEoA==
-X-Received: by 2002:a05:6512:2306:b0:443:3db8:d6c8 with SMTP id o6-20020a056512230600b004433db8d6c8mr2302641lfu.161.1645719757815;
-        Thu, 24 Feb 2022 08:22:37 -0800 (PST)
-Received: from localhost (c-9b28e555.07-21-73746f28.bbcust.telenor.se. [85.229.40.155])
-        by smtp.gmail.com with ESMTPSA id i17sm241327lfu.207.2022.02.24.08.22.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hicd0tEo/b5LFaXhDInEJPUGfqEVOu+qbFlSudecvJ0=;
+        b=eijxj0gTFDWiq8SBIYyNa4sSMD3BnnyhJ1KSvKVA/tRjZg1ZAwyJm+9692JHQfJZBa
+         CD/ZyzkB5K6poQPENrWB9Vn7GrQz2YIevdIDrBmADm3mcJZxkIB4LvFkBsGyFJ/WWXf4
+         MRHnDSXz63PFIhEiBTmMPQ85p3TCwcjbmrAE9KhouWTaBFZ5rvTZxeLFDwFw+AKT7lMs
+         3s8A/PF+m4ECCtxDSSv/DRJE2iZyUngpODfeTekyFlFzjSRj74SNXGbH5j2EWTLb5HHb
+         8ExaOZHU+a7cgOT21HqazcU7J4Pgghtl9B6jF5vfB40+CgA+v6GO5/zgos1j+Uvu3/br
+         uK+g==
+X-Gm-Message-State: AOAM532XJBlBA0e5pHlU0atcFFq3ESuih3XNmfG+SBfrYASmY1PavxW6
+        MTC/vD6DAmox/neZhhWMJSUYcw==
+X-Google-Smtp-Source: ABdhPJyWX2X03NpVP7OG9tb3/bOJYzu9SCAwlXij7cTFtfwKtKMcQhac3eTOvjUxx32AVPETPTB7Vw==
+X-Received: by 2002:a17:902:e80c:b0:14f:f95c:41ee with SMTP id u12-20020a170902e80c00b0014ff95c41eemr3140315plg.31.1645720424809;
+        Thu, 24 Feb 2022 08:33:44 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 19sm3998951pfz.153.2022.02.24.08.33.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 08:22:37 -0800 (PST)
-From:   Anders Roxell <anders.roxell@linaro.org>
-To:     mpe@ellerman.id.au
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Anders Roxell <anders.roxell@linaro.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Segher Boessenkool <segher@kernel.crashing.org>
-Subject: [PATCHv2 2/3] powerpc: fix build errors
-Date:   Thu, 24 Feb 2022 17:22:14 +0100
-Message-Id: <20220224162215.3406642-2-anders.roxell@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220224162215.3406642-1-anders.roxell@linaro.org>
-References: <20220224162215.3406642-1-anders.roxell@linaro.org>
+        Thu, 24 Feb 2022 08:33:44 -0800 (PST)
+Date:   Thu, 24 Feb 2022 08:33:43 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     matoro <matoro_mailinglist_kernel@matoro.tk>
+Cc:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        Anthony Yznaga <anthony.yznaga@oracle.com>,
+        matoro_bugzilla_kernel@matoro.tk,
+        Andrew Morton <akpm@linux-foundation.org>,
+        regressions@lists.linux.dev, linux-ia64@vger.kernel.org,
+        Linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: regression: Bug 215601 - gcc segv at startup on ia64
+Message-ID: <202202240832.F40AEB20@keescook>
+References: <a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info>
+ <823f70be-7661-0195-7c97-65673dc7c12a@leemhuis.info>
+ <03497313-A472-4152-BD28-41C35E4E824E@chromium.org>
+ <94c3be49-0262-c613-e5f5-49b536985dde@physik.fu-berlin.de>
+ <9A1F30F8-3DE2-4075-B103-81D891773246@chromium.org>
+ <4e42e754-d87e-5f6b-90db-39b4700ee0f1@physik.fu-berlin.de>
+ <202202232030.B408F0E895@keescook>
+ <7e3a93e7-1300-8460-30fb-789180a745eb@physik.fu-berlin.de>
+ <65ed8ab4fad779fadf572fb737dfb789@matoro.tk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <65ed8ab4fad779fadf572fb737dfb789@matoro.tk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
-2.37.90.20220207) the following build error shows up:
+On Thu, Feb 24, 2022 at 09:22:04AM -0500, matoro wrote:
+> Hi Kees, I can provide live ssh access to my system exhibiting the issue.
+> My system is a lot more stable due to using openrc rather than systemd, for
+> me GCC seems to be the only binary affected.  Would that be helpful?
 
- {standard input}: Assembler messages:
- {standard input}:1190: Error: unrecognized opcode: `stbcix'
- {standard input}:1433: Error: unrecognized opcode: `lwzcix'
- {standard input}:1453: Error: unrecognized opcode: `stbcix'
- {standard input}:1460: Error: unrecognized opcode: `stwcix'
- {standard input}:1596: Error: unrecognized opcode: `stbcix'
- ...
+Yeah, that might be helpful. I have access to a Debian ia64 porter box,
+but it's not running the broken kernel, so I can only examine "normal"
+behavior.
 
-Rework to add assembler directives [1] around the instruction. Going
-through the them one by one shows that the changes should be safe.  Like
-__get_user_atomic_128_aligned() is only called in p9_hmi_special_emu(),
-which according to the name is specific to power9.  And __raw_rm_read*()
-are only called in things that are powernv or book3s_hv specific.
+I'll switch to off-list email...
 
-[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
+-Kees
 
-Cc: <stable@vger.kernel.org>
-Co-developed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
----
- arch/powerpc/include/asm/io.h        | 40 ++++++++++++++++++++++------
- arch/powerpc/include/asm/uaccess.h   |  3 +++
- arch/powerpc/platforms/powernv/rng.c |  6 ++++-
- 3 files changed, 40 insertions(+), 9 deletions(-)
-
-diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
-index beba4979bff9..fee979d3a1aa 100644
---- a/arch/powerpc/include/asm/io.h
-+++ b/arch/powerpc/include/asm/io.h
-@@ -359,25 +359,37 @@ static inline void __raw_writeq_be(unsigned long v, volatile void __iomem *addr)
-  */
- static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stbcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stbcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
- static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("sthcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      sthcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
- static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stwcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stwcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
- static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
- {
--	__asm__ __volatile__("stdcix %0,0,%1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      stdcix %0,0,%1;  \
-+			      .machine pop;"
- 		: : "r" (val), "r" (paddr) : "memory");
- }
- 
-@@ -389,7 +401,10 @@ static inline void __raw_rm_writeq_be(u64 val, volatile void __iomem *paddr)
- static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
- {
- 	u8 ret;
--	__asm__ __volatile__("lbzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lbzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -397,7 +412,10 @@ static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
- static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
- {
- 	u16 ret;
--	__asm__ __volatile__("lhzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lhzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -405,7 +423,10 @@ static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
- static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
- {
- 	u32 ret;
--	__asm__ __volatile__("lwzcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      lwzcix %0,0, %1; \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-@@ -413,7 +434,10 @@ static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
- static inline u64 __raw_rm_readq(volatile void __iomem *paddr)
- {
- 	u64 ret;
--	__asm__ __volatile__("ldcix %0,0, %1"
-+	__asm__ __volatile__(".machine push;   \
-+			      .machine power6; \
-+			      ldcix %0,0, %1;  \
-+			      .machine pop;"
- 			     : "=r" (ret) : "r" (paddr) : "memory");
- 	return ret;
- }
-diff --git a/arch/powerpc/include/asm/uaccess.h b/arch/powerpc/include/asm/uaccess.h
-index 63316100080c..4a35423f766d 100644
---- a/arch/powerpc/include/asm/uaccess.h
-+++ b/arch/powerpc/include/asm/uaccess.h
-@@ -125,8 +125,11 @@ do {								\
-  */
- #define __get_user_atomic_128_aligned(kaddr, uaddr, err)		\
- 	__asm__ __volatile__(				\
-+		".machine push\n"			\
-+		".machine altivec\n"			\
- 		"1:	lvx  0,0,%1	# get user\n"	\
- 		" 	stvx 0,0,%2	# put kernel\n"	\
-+		".machine pop\n"			\
- 		"2:\n"					\
- 		".section .fixup,\"ax\"\n"		\
- 		"3:	li %0,%3\n"			\
-diff --git a/arch/powerpc/platforms/powernv/rng.c b/arch/powerpc/platforms/powernv/rng.c
-index b4386714494a..e3d44b36ae98 100644
---- a/arch/powerpc/platforms/powernv/rng.c
-+++ b/arch/powerpc/platforms/powernv/rng.c
-@@ -43,7 +43,11 @@ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
- 	unsigned long parity;
- 
- 	/* Calculate the parity of the value */
--	asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
-+	asm (".machine push;   \
-+	      .machine power7; \
-+	      popcntd %0,%1;   \
-+	      .machine pop;"
-+	     : "=r" (parity) : "r" (val));
- 
- 	/* xor our value with the previous mask */
- 	val ^= rng->mask;
 -- 
-2.34.1
-
+Kees Cook
