@@ -2,169 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D87EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiBXFPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 00:15:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
+        id S230105AbiBXFQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 00:16:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiBXFPf (ORCPT
+        with ESMTP id S229515AbiBXFQh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 00:15:35 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A72FB1662EE
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:15:06 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d07ae11464so11372067b3.14
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:15:06 -0800 (PST)
+        Thu, 24 Feb 2022 00:16:37 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825891662EE
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:16:07 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id o23so796191pgk.13
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:16:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:cc;
-        bh=VRP10WDdbxuQYIT1IOcNI0rSS6aawIOMCBB1XLSQkxI=;
-        b=GYT8cVdbYGZDyroDPEZvq6vJikNTwDBW1778+5mVN+VE1nqSYZIh3zBtI83Ini4jgj
-         756Ky/3UCYmLes/d/U5KVFihtRdDfmjziMCEDEW2f0ku69+YeHsb2HHkDW+Ub28RVl+b
-         LPICnhLLfMZ+IE/PRhN971A35YNNuZveHt7YymqK2bKa2yQFiE+nz3uvxOU2r7dNnEs7
-         4rCXezH2cYkWAseacLrlJvEyKcScR3ulZ9xGrp23Tjpl1P879Fp2acRPbsobDt33gqrw
-         B2bwgZpivDYzkoqwZlhFKWDNZse6ucvzS5pVORIELgIbiIZHbMosGBhcb8hRxmuNaRVE
-         y+lg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=srYPL04OWay1dcY8e70dNGhHS9ZwVWkaxq0mw17kle0=;
+        b=E+AaIZP0v7bVUhbtnlfQdm0GewhlDSLyFsa4Gc9ttCYc4Wugq3ehabUEmagg6S/HG5
+         ZIBO/6RSxYufDXorILKqvIXx/WRBvOtOllmU7CIO+HDmGlm+E2pJTWQQR9ntIuP4IqTi
+         SE2nH8yGt6EOujARktNsaPIbSukKsuSizLpvc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:cc;
-        bh=VRP10WDdbxuQYIT1IOcNI0rSS6aawIOMCBB1XLSQkxI=;
-        b=Hyit/n4+3Fmoc0KnaDhsjQmIvQLmsBQvr423vCKwv8/SOOUi7d9wlK3w9wHeoxR782
-         k+2aYxxBs/16Lt6yzsHWcLBQjRzEpIMIcxYu0pEPTuoKoEKPgBHzIlPHmGDC8es+cS9H
-         aa1GHV4E5n15aSbBnGszwu9li8nRtl7KmQoH8wXE87JTlr7jsBbduZvGrvbxvZAnEtrp
-         98e8eRvsrySt07FdFAsyLXeDaqQx23xqMdlW78qR3+19Yu0hs3EAdlFc7S/bcKypfK04
-         +OJz5y01nIaTzAwrbipZRRHGO8row0CQkgjgFzBD58+AtBWubvO0j15dwC7TdWsVSL8G
-         MrMA==
-X-Gm-Message-State: AOAM533/jfJKP8TA8n2bHCz4qAW7glcAXNBcuJToRaF2igP2tvnYjmfw
-        +dEH7lesFX1mH0oGzGW40+anPTuBk1aL2/vciw==
-X-Google-Smtp-Source: ABdhPJzUArkTDX/M4vDb37UTwphM2NOQLwma1KWAfIVP/V2aK4dx/IvxUZwMhGnxk0KxU4+1OmIAS8k+ilwciBnuXw==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:415c:9be0:c461:440a])
- (user=kaleshsingh job=sendgmr) by 2002:a25:ab74:0:b0:624:41d4:c4f0 with SMTP
- id u107-20020a25ab74000000b0062441d4c4f0mr1008577ybi.277.1645679705804; Wed,
- 23 Feb 2022 21:15:05 -0800 (PST)
-Date:   Wed, 23 Feb 2022 21:13:35 -0800
-Message-Id: <20220224051439.640768-1-kaleshsingh@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [PATCH v3 0/8] KVM: arm64: Hypervisor stack enhancements
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=srYPL04OWay1dcY8e70dNGhHS9ZwVWkaxq0mw17kle0=;
+        b=gyqmBS+LxVLEm1U+ZIG6nDUAhX/8sip1hvzHO5rIwYxB3MFZDxKxEqWPAq2vujjqr+
+         eOViXl5n7ZmPX1fs74vktyXPcjRx0k2C1Jk4O3gY5P3jkybl0KarkW9Ne0YAg5D+VQO2
+         ukI7OjqY6ZDAWJiaTD7nEdflHlk5glPiCLRAHyM3wgHx8ygGLysHR/Z6KNs9yjulu3Q7
+         xn8UvHM4ndGa+5dl0S59/AmphMk478nrIDbE8l7MjWUwksrk6dC61WwJnUOCHzIRH9zp
+         tzSBZ1jTxfLEhR6QmxhlFlpG/0Op/BrQVgcHzf5+9swLQZvxSiAGzErHyLIpYmGpkd0h
+         E7qA==
+X-Gm-Message-State: AOAM533YpOOU/Qe7B2oWN+6QxJRKlNOm+vaWDgFx4U/EQOR+ggN50u92
+        //42RdNOuwWy80BoxoL/xkEK8w==
+X-Google-Smtp-Source: ABdhPJyY08KTJaKQ5zKGQ1yFLiRI1Pv8/UxZIiAHPJqb0gnMTYA9nhd/ZhDBm4UZolLnsVTN1dDpkA==
+X-Received: by 2002:a05:6a00:23c6:b0:4cf:1e1e:ff4f with SMTP id g6-20020a056a0023c600b004cf1e1eff4fmr1200901pfc.80.1645679767050;
+        Wed, 23 Feb 2022 21:16:07 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id m11-20020a17090a3f8b00b001bc299e0aefsm4595800pjc.56.2022.02.23.21.16.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 21:16:06 -0800 (PST)
+Date:   Wed, 23 Feb 2022 21:16:05 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Anthony Yznaga <anthony.yznaga@oracle.com>,
+        matoro_bugzilla_kernel@matoro.tk,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        linux-ia64@vger.kernel.org,
+        Linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: regression: Bug 215601 - gcc segv at startup on ia64
+Message-ID: <202202232030.B408F0E895@keescook>
+References: <a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info>
+ <823f70be-7661-0195-7c97-65673dc7c12a@leemhuis.info>
+ <03497313-A472-4152-BD28-41C35E4E824E@chromium.org>
+ <94c3be49-0262-c613-e5f5-49b536985dde@physik.fu-berlin.de>
+ <9A1F30F8-3DE2-4075-B103-81D891773246@chromium.org>
+ <4e42e754-d87e-5f6b-90db-39b4700ee0f1@physik.fu-berlin.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4e42e754-d87e-5f6b-90db-39b4700ee0f1@physik.fu-berlin.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On Mon, Feb 21, 2022 at 10:57:01PM +0100, John Paul Adrian Glaubitz wrote:
+> Hi Kees!
+> 
+> On 2/21/22 21:58, Kees Cook wrote:
+> >> I have applied this patch on top of 038101e6b2cd5c55f888f85db42ea2ad3aecb4b6 and it doesn't
+> >> fix the problem for me. Reverting 5f501d555653f8968011a1e65ebb121c8b43c144, however, fixes
+> >> the problem.
+> >>
+> >> FWIW, this problem doesn't just affect GCC but systemd keeps segfaulting with this change as well.
+> > 
+> > Very weird! Can you attached either of those binaries to bugzilla (or a URL I can fetch it from)? I can try to figure out where it is going weird...
+> 
+> Here's the initrd of that particular machine:
+> 
+> > https://people.debian.org/~glaubitz/initrd.img-5.17.0-rc5+
+> 
+> You should be able to extract the binaries from this initrd image and the "mount" command,
+> for example, should be one of the affected binaries.
 
-This is v3 of the nVHE hypervisor stack enhancements.
+In dmesg, do you see any of these reports?
 
-Previous versions can be found at:
-v2: https://lore.kernel.org/r/20220222165212.2005066-1-kaleshsingh@google.com/
-v1: https://lore.kernel.org/r/20220210224220.4076151-1-kaleshsingh@google.com/
+                pr_info("%d (%s): Uhuuh, elf segment at %px requested but the memory is mapped already\n",
+                        task_pid_nr(current), current->comm, (void *)addr);
 
-The main update in this version is that the unwinder now uses the core logic
-from the regular kernel stack unwinder to avoid duplicate code, per Mark; along
-with fixes for the other issues identified in v2.
+I don't see anything out of order in the "mount" binary from the above
+initrd. What does "readelf -lW" show for the GCC you're seeing failures
+on?
 
-The previous cover letter (with updated call trace) has been copied below.
-
-Thanks,
-Kalesh
-
------
-
-This series is based on 5.17-rc5 and adds the following stack features to
-the KVM nVHE hypervisor:
-
-== Hyp Stack Guard Pages ==
-
-Based on the technique used by arm64 VMAP_STACK to detect overflow.
-i.e. the stack is aligned to twice its size which ensure that the 
-'stack shift' bit of any valid SP is 0. The 'stack shift' bit can be
-tested in the exception entry to detect overflow without corrupting GPRs.
-
-== Hyp Stack Unwinder ==
-
-Based on the arm64 kernel stack unwinder
-(See: arch/arm64/kernel/stacktrace.c)
-
-The unwinding and dumping of the hyp stack is not enabled by default and
-depends on CONFIG_NVHE_EL2_DEBUG to avoid potential information leaks.
-
-When CONFIG_NVHE_EL2_DEBUG is enabled the host stage 2 protection is
-disabled, allowing the host to read the hypervisor stack pages and unwind
-the stack from EL1. This allows us to print the hypervisor stacktrace
-before panicking the host; as shown below.
-
-Example call trace:
-
-[   98.916444][  T426] kvm [426]: nVHE hyp panic at: [<ffffffc0096156fc>] __kvm_nvhe_overflow_stack+0x8/0x34!
-[   98.918360][  T426] nVHE HYP call trace:
-[   98.918692][  T426] kvm [426]: [<ffffffc009615aac>] __kvm_nvhe_cpu_prepare_nvhe_panic_info+0x4c/0x68
-[   98.919545][  T426] kvm [426]: [<ffffffc0096159a4>] __kvm_nvhe_hyp_panic+0x2c/0xe8
-[   98.920107][  T426] kvm [426]: [<ffffffc009615ad8>] __kvm_nvhe_hyp_panic_bad_stack+0x10/0x10
-[   98.920665][  T426] kvm [426]: [<ffffffc009610a4c>] __kvm_nvhe___kvm_hyp_host_vector+0x24c/0x794
-[   98.921292][  T426] kvm [426]: [<ffffffc009615718>] __kvm_nvhe_overflow_stack+0x24/0x34
-. . .
-
-[   98.973382][  T426] kvm [426]: [<ffffffc009615718>] __kvm_nvhe_overflow_stack+0x24/0x34
-[   98.973816][  T426] kvm [426]: [<ffffffc0096152f4>] __kvm_nvhe___kvm_vcpu_run+0x38/0x438
-[   98.974255][  T426] kvm [426]: [<ffffffc009616f80>] __kvm_nvhe_handle___kvm_vcpu_run+0x1c4/0x364
-[   98.974719][  T426] kvm [426]: [<ffffffc009616928>] __kvm_nvhe_handle_trap+0xa8/0x130
-[   98.975152][  T426] kvm [426]: [<ffffffc009610064>] __kvm_nvhe___host_exit+0x64/0x64
-[   98.975588][  T426] ---- end of nVHE HYP call trace ----
-
-
-Kalesh Singh (8):
-  KVM: arm64: Introduce hyp_alloc_private_va_range()
-  KVM: arm64: Introduce pkvm_alloc_private_va_range()
-  KVM: arm64: Add guard pages for KVM nVHE hypervisor stack
-  KVM: arm64: Add guard pages for pKVM (protected nVHE) hypervisor stack
-  KVM: arm64: Detect and handle hypervisor stack overflows
-  KVM: arm64: Add hypervisor overflow stack
-  KVM: arm64: Unwind and dump nVHE HYP stacktrace
-  KVM: arm64: Symbolize the nVHE HYP backtrace
-
- arch/arm64/include/asm/kvm_asm.h     |  20 +++
- arch/arm64/include/asm/kvm_mmu.h     |   4 +
- arch/arm64/include/asm/stacktrace.h  |  12 ++
- arch/arm64/kernel/stacktrace.c       | 210 ++++++++++++++++++++++++---
- arch/arm64/kvm/Kconfig               |   5 +-
- arch/arm64/kvm/arm.c                 |  34 ++++-
- arch/arm64/kvm/handle_exit.c         |  16 +-
- arch/arm64/kvm/hyp/include/nvhe/mm.h |   3 +-
- arch/arm64/kvm/hyp/nvhe/host.S       |  29 ++++
- arch/arm64/kvm/hyp/nvhe/hyp-main.c   |   5 +-
- arch/arm64/kvm/hyp/nvhe/mm.c         |  51 ++++---
- arch/arm64/kvm/hyp/nvhe/setup.c      |  25 +++-
- arch/arm64/kvm/hyp/nvhe/switch.c     |  30 +++-
- arch/arm64/kvm/mmu.c                 |  62 +++++---
- scripts/kallsyms.c                   |   2 +-
- 15 files changed, 422 insertions(+), 86 deletions(-)
-
-
-base-commit: cfb92440ee71adcc2105b0890bb01ac3cddb8507
 -- 
-2.35.1.473.g83b2b277ed-goog
-
+Kees Cook
