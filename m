@@ -2,125 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C61C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:54:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232153AbiBXIyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 03:54:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40802 "EHLO
+        id S232173AbiBXIyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 03:54:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiBXIyM (ORCPT
+        with ESMTP id S232062AbiBXIyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 03:54:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 61EDE162020
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 00:53:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645692822;
+        Thu, 24 Feb 2022 03:54:47 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497E4163062;
+        Thu, 24 Feb 2022 00:54:18 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id C1FB122239;
+        Thu, 24 Feb 2022 09:54:15 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645692856;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=thrYYz9q4DcC0rOHSVDRqBTRDM3HEZ49oAwiCU0vtIA=;
-        b=gpGlAeeeED/JQh+YrP5CiO8JU9JdrmOEaLc6q1G+gFEV/410TgSWvmc4o8LEw539BNgx9+
-        VQL9wKuIJGNG6zfSM1kB3IfO7W3MOYsejOpmEO479VPaQ+FBGY9HSxiqa3AEG4C2JGS5x7
-        zDuvoeRroslj52c5NxR1qqbUtP6FB5I=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-503-2e81YYi9MyyiXnp89lNAuQ-1; Thu, 24 Feb 2022 03:53:41 -0500
-X-MC-Unique: 2e81YYi9MyyiXnp89lNAuQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 41803800496;
-        Thu, 24 Feb 2022 08:53:39 +0000 (UTC)
-Received: from localhost (unknown [10.39.194.148])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CA567607CB;
-        Thu, 24 Feb 2022 08:53:32 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 08:53:31 +0000
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com,
-        kvm@vger.kernel.org, Anirudh Rayabharam <mail@anirudhrb.com>,
-        syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com,
-        linux-kernel@vger.kernel.org,
-        Mike Christie <michael.christie@oracle.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH v2] vhost/vsock: don't check owner in vhost_vsock_stop()
- while releasing
-Message-ID: <YhdHi4wHLjUfD3WN@stefanha-x1.localdomain>
-References: <20220222094742.16359-1-sgarzare@redhat.com>
+        bh=ZvkcoUKllQj2T4+MNV6kXQ3nLOUi8Q7r2MLGcdGUqmY=;
+        b=RBInsJPHuWavYhtDil26uHxuu1hhkXEIy8BK9iZ7Gqbb0NEctvhoVGEPGErHLnVGbznh6m
+        CCB2eo37CSiFwVfhtG/l4bHYj8aczvSJLIAgxX1PlM+kXD4C/xywD/5II4iBMgUbotl7Sq
+        eKne8tpz6DqzFLwtJ43OtBoLdquy9E4=
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="eMHA10fN330j9lI9"
-Content-Disposition: inline
-In-Reply-To: <20220222094742.16359-1-sgarzare@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 24 Feb 2022 09:54:15 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Heiko Thiery <heiko.thiery@gmail.com>
+Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Shawn Guo <shawnguo@kernel.org>
+Subject: Re: [PATCH v1 1/2] arm64: dts: imx8mn-evk: use proper names for PMIC
+ outputs
+In-Reply-To: <CAEyMn7aVWK7NBH5+FpcK-gr9LPqb8MwsiOOTVJqo+PZJ+_naSw@mail.gmail.com>
+References: <20220223210559.1999209-1-michael@walle.cc>
+ <CAEyMn7aVWK7NBH5+FpcK-gr9LPqb8MwsiOOTVJqo+PZJ+_naSw@mail.gmail.com>
+User-Agent: Roundcube Webmail/1.4.12
+Message-ID: <b3f0b5ee57b144c2e0487fb104ae92da@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Am 2022-02-24 08:29, schrieb Heiko Thiery:
+> Hi,
+> 
+> Am Mi., 23. Feb. 2022 um 22:06 Uhr schrieb Michael Walle 
+> <michael@walle.cc>:
+>> 
+>> Use the power signal names as given in the schematics of the reference
+>> board.
+>> 
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>  arch/arm64/boot/dts/freescale/imx8mn-evk.dts | 20 
+>> ++++++++++----------
+>>  1 file changed, 10 insertions(+), 10 deletions(-)
+>> 
+>> diff --git a/arch/arm64/boot/dts/freescale/imx8mn-evk.dts 
+>> b/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
+>> index b4225cfcb6d9..eaa06f49aef5 100644
+>> --- a/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
+>> +++ b/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
+>> @@ -41,7 +41,7 @@ pmic: pmic@25 {
+>> 
+>>                 regulators {
+>>                         buck1: BUCK1{
+>> -                               regulator-name = "BUCK1";
+>> +                               regulator-name = "VDD_ARM_0V9";
+> 
+> I think BUCK1 and BUCK2 are twisted here. This should be "VDD_SOC".
+> 
+>>                                 regulator-min-microvolt = <600000>;
+>>                                 regulator-max-microvolt = <2187500>;
+>>                                 regulator-boot-on;
+>> @@ -50,7 +50,7 @@ buck1: BUCK1{
+>>                         };
+>> 
+>>                         buck2: BUCK2 {
+>> -                               regulator-name = "BUCK2";
+>> +                               regulator-name = "VDD_SOC";
+> 
+> And this should be "VDD_ARM_0V9".
 
---eMHA10fN330j9lI9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+You are absolutely right. I noticed it on the 8MNANOD3L-EVK but
+forgot to update these.
 
-On Tue, Feb 22, 2022 at 10:47:42AM +0100, Stefano Garzarella wrote:
-> vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
-> ownership. It expects current->mm to be valid.
->=20
-> vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
-> the user has not done close(), so when we are in do_exit(). In this
-> case current->mm is invalid and we're releasing the device, so we
-> should clean it anyway.
->=20
-> Let's check the owner only when vhost_vsock_stop() is called
-> by an ioctl.
->=20
-> When invoked from release we can not fail so we don't check return
-> code of vhost_vsock_stop(). We need to stop vsock even if it's not
-> the owner.
->=20
-> Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
-> Cc: stable@vger.kernel.org
-> Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
-> Reported-and-tested-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail=
-=2Ecom
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-> ---
-> v2:
-> - initialized `ret` in vhost_vsock_stop [Dan]
-> - added comment about vhost_vsock_stop() calling in the code and an expla=
-nation
->   in the commit message [MST]
->=20
-> v1: https://lore.kernel.org/virtualization/20220221114916.107045-1-sgarza=
-re@redhat.com
-> ---
->  drivers/vhost/vsock.c | 21 ++++++++++++++-------
->  1 file changed, 14 insertions(+), 7 deletions(-)
-
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
-
---eMHA10fN330j9lI9
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmIXR4oACgkQnKSrs4Gr
-c8i0LQf/bGGbSYckr30SGrkHytT/rZHQYzSD8L7Mcj6YDjh7rV/lE31ATrVY9JY4
-qZ/hJTMlfAx8gqVYEmZrUh9xM09BjRAdSjGy92sdpbVYhWbr1D0HmDS+hQvFQjXs
-HHpjWQeHtKjAfw8nz6HfgcH3329t+oVH5V4RQ5pOeLNq0Tm58uYdhmf7IqIrb9TI
-LySJlzqTqsRzI8URPo6u9i+PqNhTnbjYTSBP2/WnAZeSrHUDXlOmeJ5cXGweinGe
-CiH+66Eay0ga1M/Xym1xsota2L8lfQlO9HF1XkTJiYEeQDYthIJUc7wuZvnftCgh
-ZND4ieEesa+iV+Lyaxno7s+gT0fLHw==
-=f2iv
------END PGP SIGNATURE-----
-
---eMHA10fN330j9lI9--
-
+-michael
