@@ -2,177 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D1BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B08D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234866AbiBXN0e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:26:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34192 "EHLO
+        id S234886AbiBXN25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:28:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231328AbiBXN0c (ORCPT
+        with ESMTP id S234869AbiBXN2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:26:32 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF1215B3FE;
-        Thu, 24 Feb 2022 05:26:01 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 625F8212BE;
-        Thu, 24 Feb 2022 13:26:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645709160;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 24 Feb 2022 08:28:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7CC3FB0E86
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:28:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645709301;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=yJlK5ujeFz45Ymry2OtkURFYaywUnISwHUMuFfLs3y8=;
-        b=QyAZC3JZssy+GcwXULtKx6hz5dLZM10ezQnTF+x+DC8+apBie8ahtihAxQet8p+lEnaukk
-        EoA5FCCHfJ0iO1RKMfNYLBi3MoNzTHA/V4zv4pY80FbqSZLuL2i4WWskP1p3iF5Cyqik53
-        p726ubiwxzU6vwG+vLinM48iBELE9L0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645709160;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yJlK5ujeFz45Ymry2OtkURFYaywUnISwHUMuFfLs3y8=;
-        b=8mdsY++ZKa7KimYyKQukP0IAyc40vPsn/dmMFUd/0Soc0EPJxzh5pdO60s62QHpDY1L7zI
-        eWpjHRipLAkYzBCw==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 58174A3B89;
-        Thu, 24 Feb 2022 13:25:59 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id BE31CDA818; Thu, 24 Feb 2022 14:22:10 +0100 (CET)
-Date:   Thu, 24 Feb 2022 14:22:10 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v4] btrfs: add fs state details to error messages.
-Message-ID: <20220224132210.GS12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <a059920460fe13f773fd9a2e870ceb9a8e3a105a.1645644489.git.sweettea-kernel@dorminy.me>
+        bh=psZr4jDZFA2vXRGitiJpCpve4DYNl/gB1HAhwDvFOEM=;
+        b=jFx8yeM/Gs5BifaIN1+LO7TZMpWhX18uQqDj3U8xR2dVpGGP1yWTWYBjRr+SJeiLW629wu
+        UVOuHLIq9WwLsiLYR+Rq/YBU7zSCQ0VpPErYyG6kkHmw7UHgQtR31Lp8gDp1S//Ni7VCYg
+        47HP5XA0fZNuJA59X/DsoTlQMhf21zQ=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-637-DbZy4lSIPF-Z0GrVSVZMXA-1; Thu, 24 Feb 2022 08:28:20 -0500
+X-MC-Unique: DbZy4lSIPF-Z0GrVSVZMXA-1
+Received: by mail-wr1-f71.google.com with SMTP id c16-20020adfa310000000b001ed9cd8f4c7so766792wrb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:28:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=psZr4jDZFA2vXRGitiJpCpve4DYNl/gB1HAhwDvFOEM=;
+        b=DpJIOtPUdQ/Vk2pIAZZU2ZNvH1ae10e8oYX5O7B2GWSInFWBy2ekjyu1PbNN6s/e5n
+         vmz7zHTAdGgFIt7s7KlpXOHZD7+tkLvmgkYnGpL5KULArXXz5Atux6lvjTon2RgqvRGZ
+         cP2D15d/UyNjnLCN583p6J/CiKXDJ5kmhcmbR3dC9m0LRzzr9KbkYReNisvTZjPqYNTL
+         3jsCxxju9dLAOsw4XGFGQl/yItzvR3GRVYVHG/sasGnP7NTdwF5oQDqY8pCQBBna93Gr
+         J6e17hilk5NH8vXf2TtwE24NXtBcXws7Tlrja6ekwJcj9CwRnWhrB6I4nU8PJW1sK6ko
+         eexQ==
+X-Gm-Message-State: AOAM533uPyYnNb3zXTLlETkIQoCO9gZ6rkdt3h4ApBHjTyyeilUWjekb
+        +voRSt9nr/w674ZqR+7k+tCjwoPGGEAy1gyD3tYqogJ1KKDPMFwQEv3/1ihIa8UVl6KQ4ubwddw
+        l4dq7M9GLQFcO5VGYm9WPgGw=
+X-Received: by 2002:a5d:6a4e:0:b0:1e4:b619:52b0 with SMTP id t14-20020a5d6a4e000000b001e4b61952b0mr2158393wrw.504.1645709299420;
+        Thu, 24 Feb 2022 05:28:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw5cFa1a1boJUcrdDPIdjZCohUc+uHn6SwTHV0xA9uehxBSNdr0AG9/cLNR0CXvMFzZI+bhEA==
+X-Received: by 2002:a5d:6a4e:0:b0:1e4:b619:52b0 with SMTP id t14-20020a5d6a4e000000b001e4b61952b0mr2158377wrw.504.1645709299163;
+        Thu, 24 Feb 2022 05:28:19 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id ba27sm2815015wrb.61.2022.02.24.05.28.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 05:28:18 -0800 (PST)
+Date:   Thu, 24 Feb 2022 13:28:16 +0000
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     Aaron Tomlin <atomlin@atomlin.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Christoph Lameter <cl@linux.com>, tglx@linutronix.de,
+        mingo@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Phil Auld <pauld@redhat.com>
+Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
+ idle tick was stopped too
+Message-ID: <20220224132816.qsfa66ao3xdjdxxx@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220203214339.1889971-1-atomlin@redhat.com>
+ <20220217124729.GA743618@lothringen>
+ <20220217142615.xqtiydixvnumyvei@ava.usersys.com>
+ <20220217163205.GA748087@lothringen>
+ <20220218125454.utlgmuhijklzr3if@ava.usersys.com>
+ <20220219154616.pwsvh445x3vn7ltf@ava.usersys.com>
+ <Yhd5olg9CjXSAf2s@fuller.cnet>
+ <20220224130014.rmhtx3xlepybuxn2@ava.usersys.com>
+ <YheE0joXm53Hxn4J@fuller.cnet>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <a059920460fe13f773fd9a2e870ceb9a8e3a105a.1645644489.git.sweettea-kernel@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <YheE0joXm53Hxn4J@fuller.cnet>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 02:38:06PM -0500, Sweet Tea Dorminy wrote:
-> When a filesystem goes read-only due to an error, multiple errors tend
-> to be reported, some of which are knock-on failures. Logging fs_states,
-> in btrfs_handle_fs_error() and btrfs_printk() helps distinguish the
-> first error from subsequent messages which may only exist due to an
-> error state.
-> 
-> Under the new format, most initial errors will look like:
-> `BTRFS: error (device loop0) in ...`
-> while subsequent errors will begin with:
-> `error (device loop0: state E) in ...`
-> 
-> An initial transaction abort error will look like
-> `error (device loop0: state A) in ...`
-> and subsequent messages will contain
-> `(device loop0: state EA) in ...`
-> 
-> Signed-off-by: Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+On Thu 2022-02-24 10:14 -0300, Marcelo Tosatti wrote:
+> If the per-CPU vmstat_update is limited to happen once per second, that
+> shouldnt be a significant performance impact?
 
-Added to misc-next with some minor updates, thanks.
+Perhaps not. Albeit, is the interrupt worth it? Then again it could indeed
+be a long time before the idle task is selected and a return to idle code
+were we'd check for any remaining differentials with the aforementioned
+patch.
 
-> ---
-> v4:
->   - Adjusted state translation table to contain chars instead of
->     strings.
-> 
-> v3:
->   - Reworked btrfs_state_to_string to use an array mapping all states
->     to various error chars, or nothing, explicitly. Added error logging
->     for more states, as requested.
->   - Consolidated buffer length definition
->   - ttps://lore.kernel.org/linux-btrfs/8a2a73ab4b48a4e73d24cf7f10cc0fe245d50a84.1645562216.git.sweettea-kernel@dorminy.me/
-> 
-> v2: 
->   - Changed btrfs_state_to_string() for clarity
->   - Removed superfluous whitespace change
->   - https://lore.kernel.org/linux-btrfs/084c136c6bb2d20ca0e91af7ded48306d52bb910.1645210326.git.sweettea-kernel@dorminy.me/
-> 
-> v1:
->   - https://lore.kernel.org/linux-btrfs/20220212191042.94954-1-sweettea-kernel@dorminy.me/
-> 
->  fs/btrfs/ctree.h |  2 ++
->  fs/btrfs/super.c | 62 +++++++++++++++++++++++++++++++++++++++++-------
->  2 files changed, 56 insertions(+), 8 deletions(-)
-> 
-> diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
-> index 8992e0096163..3db337cd015a 100644
-> --- a/fs/btrfs/ctree.h
-> +++ b/fs/btrfs/ctree.h
-> @@ -148,6 +148,8 @@ enum {
->  
->  	/* Indicates there was an error cleaning up a log tree. */
->  	BTRFS_FS_STATE_LOG_CLEANUP_ERROR,
-> +
-> +	BTRFS_FS_STATE_COUNT,
->  };
->  
->  #define BTRFS_BACKREF_REV_MAX		256
-> diff --git a/fs/btrfs/super.c b/fs/btrfs/super.c
-> index 4d947ba32da9..7ef6a3e494d0 100644
-> --- a/fs/btrfs/super.c
-> +++ b/fs/btrfs/super.c
-> @@ -66,6 +66,46 @@ static struct file_system_type btrfs_root_fs_type;
->  
->  static int btrfs_remount(struct super_block *sb, int *flags, char *data);
->  
-> +#define STATE_STRING_PREFACE ": state "
-> +#define STATE_STRING_BUF_LEN \
-> +	(sizeof(STATE_STRING_PREFACE) + BTRFS_FS_STATE_COUNT)
-> +
-> +/* Characters to print to indicate error conditions. RO is not an error. */
-> +static const char fs_state_chars[] = {
-> +	[BTRFS_FS_STATE_ERROR]			= 'E',
-> +	[BTRFS_FS_STATE_REMOUNTING]		= 'M',
-> +	[BTRFS_FS_STATE_RO]			= 0,
-> +	[BTRFS_FS_STATE_TRANS_ABORTED]		= 'A',
-> +	[BTRFS_FS_STATE_DEV_REPLACING]		= 'P',
-> +	[BTRFS_FS_STATE_DUMMY_FS_INFO]		= 0,
-> +	[BTRFS_FS_STATE_NO_CSUMS]		= 0,
+Kind regards,
 
-I've added 'C' for this, as it's an interesting state (data checksums
-not verified) and renamed the device replace to 'R'.
+-- 
+Aaron Tomlin
 
-> +	[BTRFS_FS_STATE_LOG_CLEANUP_ERROR]	= 'L',
-> +};
-> +
-> +static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
-> +{
-> +	unsigned int bit;
-> +	unsigned int states_printed = 0;
-
-This could be a simple bool indicator.
-
-> +	char *curr = buf;
-> +
-> +	memcpy(curr, STATE_STRING_PREFACE, sizeof(STATE_STRING_PREFACE));
-> +	curr += sizeof(STATE_STRING_PREFACE) - 1;
-> +
-> +	for_each_set_bit(bit, &info->fs_state, sizeof(info->fs_state)) {
-> +		WARN_ON_ONCE(bit >= BTRFS_FS_STATE_COUNT);
-> +		if ((bit < BTRFS_FS_STATE_COUNT) && fs_state_chars[bit]) {
-> +			*curr++ = fs_state_chars[bit];
-> +			states_printed++;
-> +		}
-> +	}
-> +
-> +	/* If no states were printed, reset the buffer */
-> +	if (!states_printed)
-> +		curr = buf;
-> +
-> +	*curr++ = '\0';
-> +}
