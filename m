@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D37C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:19:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD45C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236038AbiBXPUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:20:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
+        id S236049AbiBXPUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:20:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235983AbiBXPSb (ORCPT
+        with ESMTP id S235986AbiBXPSc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:18:31 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06CB14EF72
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:17:58 -0800 (PST)
+        Thu, 24 Feb 2022 10:18:32 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C54914A222
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:17:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=FPcqJTz/Xocj6COZ9oQu9lrBcpY/42nLHlfeH+QkjWM=; b=eTS8AeRWcAVEvFxwijWn7VqyVN
-        0yIifCblczY/dKOa3zTrtMNWcZuO+n3C3cFzISK8qOHjyE5UD33G2J4pKlecjD+awb/uPx5+SBo7r
-        F48Zg7qgLXB82/F6U8Bsofo5lxygzoZXU1fVgjgN7bDF9SIQGms8RHddCXZ2cHt/4qroUBnhaB5ri
-        cI17g875tvBuVeKJBQvPLBPz6w47VE69kHCrKpU+oot+t2Wj/akMQZ4TapUbMF++OpYsxTIyLzEiR
-        BscN3WUixqqtVBE5FE0ilzVx0UpULwgpYmDSpNCneDBGWMieauPtBaIMZQTvIp/0j5vcGDth/n7CF
-        xiJN4BTw==;
+        bh=wPLl25fpeIQLW8L8xKToiko4ArI0LSp6NU8/QNuYuJ0=; b=ENbQjLoLz+m7A1scSH3yNztEZL
+        z675SOv02DHkEGshocpql8uExc13E+6TihVJFhXy7yCkR1EXHjdSnTujsp0oPxGwM98wESovuy2Yh
+        tcT8NFyUWM1E973Fbcyf0a6liKxpKcEcBukIno2jUpcfhiLmO7dk0i2MHnF80mZBflmo3dOgaZCGs
+        /C+p7e6GFD9zVqwwLk3/dWDIVmY36cpxs81hM9LT5fpDJNebE5UV1VTJ5yOCzqUWf20xdhV6wmF/9
+        xfioMEef9KToCbf989addXIZr1nIilbebKXcqAZlrE4egh4SVxzIPqwuB+rWutgW0zzcnQM4Pwxqo
+        OQxE+8HQ==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNFs3-004s1y-7Q; Thu, 24 Feb 2022 15:17:31 +0000
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNFs3-00CeM3-Ve; Thu, 24 Feb 2022 15:17:32 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2634830076D;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 48455302A1E;
         Thu, 24 Feb 2022 16:17:29 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 3CDAE29E75E57; Thu, 24 Feb 2022 16:17:28 +0100 (CET)
-Message-ID: <20220224151322.481071290@infradead.org>
+        id 8D1842B35479F; Thu, 24 Feb 2022 16:17:28 +0100 (CET)
+Message-ID: <20220224151323.661210297@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 24 Feb 2022 15:51:46 +0100
+Date:   Thu, 24 Feb 2022 15:52:06 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v2 08/39] x86/linkage: Add ENDBR to SYM_FUNC_START*()
+Subject: [PATCH v2 28/39] x86/ibt,xen: Sprinkle the ENDBR
 References: <20220224145138.952963315@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,69 +55,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ensure the ASM functions have ENDBR on for IBT builds, this follows
-the ARM64 example. Unlike ARM64, we'll likely end up overwriting them
-with poison.
+Even though Xen currently doesn't advertise IBT, prepare for when it
+will eventually do so and sprinkle the ENDBR dust accordingly.
 
-Suggested-by: Mark Rutland <mark.rutland@arm.com>
+Even though most of the entry points are IRET like, the CPL0
+Hypervisor can set WAIT-FOR-ENDBR and demand ENDBR at these sites.
+
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/include/asm/linkage.h |   39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ arch/x86/entry/entry_64.S      |    1 +
+ arch/x86/include/asm/segment.h |    2 +-
+ arch/x86/kernel/head_64.S      |    1 +
+ arch/x86/xen/enlighten_pv.c    |    3 +++
+ arch/x86/xen/xen-asm.S         |   10 ++++++++++
+ arch/x86/xen/xen-head.S        |    8 ++++++--
+ 6 files changed, 22 insertions(+), 3 deletions(-)
 
---- a/arch/x86/include/asm/linkage.h
-+++ b/arch/x86/include/asm/linkage.h
-@@ -3,6 +3,7 @@
- #define _ASM_X86_LINKAGE_H
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -822,6 +822,7 @@ SYM_CODE_END(exc_xen_hypervisor_callback
+  */
+ SYM_CODE_START(xen_failsafe_callback)
+ 	UNWIND_HINT_EMPTY
++	ENDBR
+ 	movl	%ds, %ecx
+ 	cmpw	%cx, 0x10(%rsp)
+ 	jne	1f
+--- a/arch/x86/include/asm/segment.h
++++ b/arch/x86/include/asm/segment.h
+@@ -283,7 +283,7 @@ static inline void vdso_read_cpunode(uns
+  * pop %rcx; pop %r11; jmp early_idt_handler_array[i]; summing up to
+  * max 8 bytes.
+  */
+-#define XEN_EARLY_IDT_HANDLER_SIZE 8
++#define XEN_EARLY_IDT_HANDLER_SIZE (8 + 4*HAS_KERNEL_IBT)
  
- #include <linux/stringify.h>
-+#include <asm/ibt.h>
+ #ifndef __ASSEMBLY__
  
- #undef notrace
- #define notrace __attribute__((no_instrument_function))
-@@ -34,5 +35,43 @@
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -389,6 +389,7 @@ SYM_CODE_START(early_idt_handler_array)
+ 	.fill early_idt_handler_array + i*EARLY_IDT_HANDLER_SIZE - ., 1, 0xcc
+ 	.endr
+ SYM_CODE_END(early_idt_handler_array)
++	ANNOTATE_NOENDBR // early_idt_handler_array[NUM_EXCEPTION_VECTORS]
  
- #endif /* __ASSEMBLY__ */
+ SYM_CODE_START_LOCAL(early_idt_handler_common)
+ 	UNWIND_HINT_IRET_REGS offset=16
+--- a/arch/x86/xen/enlighten_pv.c
++++ b/arch/x86/xen/enlighten_pv.c
+@@ -624,6 +624,9 @@ static struct trap_array_entry trap_arra
+ 	TRAP_ENTRY(exc_coprocessor_error,		false ),
+ 	TRAP_ENTRY(exc_alignment_check,			false ),
+ 	TRAP_ENTRY(exc_simd_coprocessor_error,		false ),
++#ifdef CONFIG_X86_KERNEL_IBT
++	TRAP_ENTRY(exc_control_protection,		false ),
++#endif
+ };
  
-+/*
-+ * compressed and purgatory define this to disable EXPORT,
-+ * hijack this same to also not emit ENDBR.
-+ */
-+#ifndef __DISABLE_EXPORTS
-+
-+/* SYM_FUNC_START -- use for global functions */
-+#define SYM_FUNC_START(name)				\
-+	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)	\
+ static bool __ref get_trap_addr(void **addr, unsigned int ist)
+--- a/arch/x86/xen/xen-asm.S
++++ b/arch/x86/xen/xen-asm.S
+@@ -122,6 +122,7 @@ SYM_FUNC_END(xen_read_cr2_direct);
+ .macro xen_pv_trap name
+ SYM_CODE_START(xen_\name)
+ 	UNWIND_HINT_EMPTY
 +	ENDBR
-+
-+/* SYM_FUNC_START_NOALIGN -- use for global functions, w/o alignment */
-+#define SYM_FUNC_START_NOALIGN(name)			\
-+	SYM_START(name, SYM_L_GLOBAL, SYM_A_NONE)	\
+ 	pop %rcx
+ 	pop %r11
+ 	jmp  \name
+@@ -147,6 +148,9 @@ xen_pv_trap asm_exc_page_fault
+ xen_pv_trap asm_exc_spurious_interrupt_bug
+ xen_pv_trap asm_exc_coprocessor_error
+ xen_pv_trap asm_exc_alignment_check
++#ifdef CONFIG_X86_KERNEL_IBT
++xen_pv_trap asm_exc_control_protection
++#endif
+ #ifdef CONFIG_X86_MCE
+ xen_pv_trap asm_xenpv_exc_machine_check
+ #endif /* CONFIG_X86_MCE */
+@@ -162,6 +166,7 @@ SYM_CODE_START(xen_early_idt_handler_arr
+ 	i = 0
+ 	.rept NUM_EXCEPTION_VECTORS
+ 	UNWIND_HINT_EMPTY
 +	ENDBR
-+
-+/* SYM_FUNC_START_LOCAL -- use for local functions */
-+#define SYM_FUNC_START_LOCAL(name)			\
-+	SYM_START(name, SYM_L_LOCAL, SYM_A_ALIGN)	\
-+	ENDBR
-+
-+/* SYM_FUNC_START_LOCAL_NOALIGN -- use for local functions, w/o alignment */
-+#define SYM_FUNC_START_LOCAL_NOALIGN(name)		\
-+	SYM_START(name, SYM_L_LOCAL, SYM_A_NONE)	\
-+	ENDBR
-+
-+/* SYM_FUNC_START_WEAK -- use for weak functions */
-+#define SYM_FUNC_START_WEAK(name)			\
-+	SYM_START(name, SYM_L_WEAK, SYM_A_ALIGN)	\
-+	ENDBR
-+
-+/* SYM_FUNC_START_WEAK_NOALIGN -- use for weak functions, w/o alignment */
-+#define SYM_FUNC_START_WEAK_NOALIGN(name)		\
-+	SYM_START(name, SYM_L_WEAK, SYM_A_NONE)		\
-+	ENDBR
-+
-+#endif /* __DISABLE_EXPORTS */
-+
- #endif /* _ASM_X86_LINKAGE_H */
+ 	pop %rcx
+ 	pop %r11
+ 	jmp early_idt_handler_array + i*EARLY_IDT_HANDLER_SIZE
+@@ -169,6 +174,7 @@ SYM_CODE_START(xen_early_idt_handler_arr
+ 	.fill xen_early_idt_handler_array + i*XEN_EARLY_IDT_HANDLER_SIZE - ., 1, 0xcc
+ 	.endr
+ SYM_CODE_END(xen_early_idt_handler_array)
++	ANNOTATE_NOENDBR
+ 	__FINIT
  
+ hypercall_iret = hypercall_page + __HYPERVISOR_iret * 32
+@@ -231,6 +237,7 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
+ /* Normal 64-bit system call target */
+ SYM_CODE_START(xen_syscall_target)
+ 	UNWIND_HINT_EMPTY
++	ENDBR
+ 	popq %rcx
+ 	popq %r11
+ 
+@@ -250,6 +257,7 @@ SYM_CODE_END(xen_syscall_target)
+ /* 32-bit compat syscall target */
+ SYM_CODE_START(xen_syscall32_target)
+ 	UNWIND_HINT_EMPTY
++	ENDBR
+ 	popq %rcx
+ 	popq %r11
+ 
+@@ -267,6 +275,7 @@ SYM_CODE_END(xen_syscall32_target)
+ /* 32-bit compat sysenter target */
+ SYM_CODE_START(xen_sysenter_target)
+ 	UNWIND_HINT_EMPTY
++	ENDBR
+ 	/*
+ 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
+ 	 * that we don't need to guard against single step exceptions here.
+@@ -290,6 +299,7 @@ SYM_CODE_END(xen_sysenter_target)
+ SYM_CODE_START(xen_syscall32_target)
+ SYM_CODE_START(xen_sysenter_target)
+ 	UNWIND_HINT_EMPTY
++	ENDBR
+ 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
+ 	mov $-ENOSYS, %rax
+ 	pushq $0
+--- a/arch/x86/xen/xen-head.S
++++ b/arch/x86/xen/xen-head.S
+@@ -25,8 +25,11 @@
+ SYM_CODE_START(hypercall_page)
+ 	.rept (PAGE_SIZE / 32)
+ 		UNWIND_HINT_FUNC
+-		.skip 31, 0x90
+-		RET
++		ANNOTATE_NOENDBR
++		/*
++		 * Xen will write the hypercall page, and sort out ENDBR.
++		 */
++		.skip 32, 0xcc
+ 	.endr
+ 
+ #define HYPERCALL(n) \
+@@ -74,6 +77,7 @@ SYM_CODE_END(startup_xen)
+ .pushsection .text
+ SYM_CODE_START(asm_cpu_bringup_and_idle)
+ 	UNWIND_HINT_EMPTY
++	ENDBR
+ 
+ 	call cpu_bringup_and_idle
+ SYM_CODE_END(asm_cpu_bringup_and_idle)
 
 
