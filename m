@@ -2,258 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39108C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF32C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbiBXCDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:03:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37926 "EHLO
+        id S229956AbiBXCDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:03:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229901AbiBXCDd (ORCPT
+        with ESMTP id S229901AbiBXCDt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:03:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D926D3AF1;
-        Wed, 23 Feb 2022 18:03:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96521B82353;
-        Thu, 24 Feb 2022 02:03:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0E3C340EF;
-        Thu, 24 Feb 2022 02:02:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645668181;
-        bh=EXpllbxcrzgy7E+Zt2uuVgOjp9g+9BSyx9ZaGI0tTVo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=faeUHNWaYLfZSiJ4uIY+ASRZvlhyg/uXc127ROH28PiChoKZIJSn+3GRjGVPF59sG
-         Kzyfec5SbDcoKwZW+lnIIPn11eGoJ35Z7YOidN8l2wQDO8XJ619Cm2vut4cfZEMgHv
-         HSKzSQEgLUuAQsGr+Sasn0Yie0k91zocR6xFEs8qdnd2zBUY2BalFU4W+E5z/HUPnL
-         UqYadScjgWRJjqD+xGtsMPjqRIUUK7IBzTI6buZsrmyCNxbYrb5czNtyeTAvs9VL4F
-         4jnBrMMf2tVDLlinx6h+VKthmJOa+969A+czt1Q+Ho0PS/+ABGfSYOQritsgS5z79t
-         Jz6hOAnaACxtA==
-Date:   Thu, 24 Feb 2022 02:02:56 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Hugh Dickins <hughd@google.com>,
-        "Liam R . Howlett" <Liam.Howlett@oracle.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the folio tree with the maple tree
-Message-ID: <YhbnUNKjN5SBWKwD@sirena.org.uk>
-References: <20220224011653.1380557-1-broonie@kernel.org>
+        Wed, 23 Feb 2022 21:03:49 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA3B18DA89
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:03:20 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id h17-20020a17090acf1100b001bc68ecce4aso4384697pju.4
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:03:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=znMwX4FScuV+4uHAf4bq87b0ptOrxpv09XpqfPjpHM4=;
+        b=RIflPf3zIbeQxP71RJlTLXSqWgApaCmYWXWPjK0Z+lJpVKUXry9dWT6M+mBQYlXHbi
+         L0eK3kpX2D90GBGgWV2zir6z2I5Rd2Yl4QSlWuC39DFldjfyUqZNhuGty9zP47jj6hty
+         Y0HUBy6uDQ8+OX7JoWM7sZSKGNUthgATbl6tLFf/hzuP5BGkYwGVDWEX1dlknxYi8fFL
+         3GFqH37Tu0xBDuayw5/AlF6w4BU/94wzYGZGyZvc652IrbqzUQC5LSN2c6vkSVW5dnA7
+         ytDtF8c7XNYYLRqkLZ1exnGgZlv0IWvOZ27rnjCRbtzgp4LVpVoEb3cAIMlgoVCLdWW2
+         ijaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=znMwX4FScuV+4uHAf4bq87b0ptOrxpv09XpqfPjpHM4=;
+        b=fgVRYVj3Vjiq3KPUp/fIQOMp/j4NKNt9QwJci/9uFi313a5le5//50NBihSsJaYJ1s
+         4lL+ebeUUNNZHKS+5uThQ0ugYW2voEyuKEehs0LD/K8zEx5rD2ekhbvXsojdfwf6jSn2
+         jSlgaC0v4g/iz11sCjTZLUX1sCAWXjspGbkltJ62+zJad7POuvMwxh3qLqTknvQOQT2o
+         4yggXik8LH/e5sAKF3rEn5JVubN5btXzZXiSunu5pTSI4vQuToRWDjyFBB7mM4aTifD1
+         eWhzMVzLLOx2WYxcYFN55JZvlKxMoinptgdtvgKaZV77pxRgCKcC2OnNKE8+px/cabsG
+         ipAA==
+X-Gm-Message-State: AOAM533xSFmOGtwMWnCZQ0l/QkZ1CP1T/YfVAJNWrX80WD36fmvOrPO6
+        XknTBIWIM1DRgN5ZWN93XmtZHg==
+X-Google-Smtp-Source: ABdhPJxBK76e2gZc4yflwe2Y79j/oOrDnEdfK8zQN2xb8IkCIH0K59TSCXfiHV3Vyr1AE0t+ZO7GSA==
+X-Received: by 2002:a17:90a:a382:b0:1bc:202a:28e8 with SMTP id x2-20020a17090aa38200b001bc202a28e8mr12204134pjp.131.1645668199753;
+        Wed, 23 Feb 2022 18:03:19 -0800 (PST)
+Received: from [10.70.253.117] ([139.177.225.250])
+        by smtp.gmail.com with ESMTPSA id q91sm739890pjq.36.2022.02.23.18.03.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 18:03:19 -0800 (PST)
+Message-ID: <843a1a8e-51a6-3e96-b380-9f3fc28a2321@bytedance.com>
+Date:   Thu, 24 Feb 2022 10:03:13 +0800
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="uiHEU8A1LLzcf4og"
-Content-Disposition: inline
-In-Reply-To: <20220224011653.1380557-1-broonie@kernel.org>
-X-Cookie: I smell a wumpus.
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [External] Re: [PATCH] arm64/ftrace: Make function graph use
+ ftrace directly
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     mingo@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+        mark.rutland@arm.com, broonie@kernel.org, songmuchun@bytedance.com,
+        qirui.001@bytedance.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220222130049.81284-1-zhouchengming@bytedance.com>
+ <20220222105218.28e3d5aa@gandalf.local.home>
+ <5d64733b-8d2a-4928-c4dc-ce4f3b5fc561@bytedance.com>
+ <20220223203001.1158d9d4@rorschach.local.home>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <20220223203001.1158d9d4@rorschach.local.home>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 2022/2/24 9:30 上午, Steven Rostedt wrote:
+> On Wed, 23 Feb 2022 16:00:27 +0800
+> Chengming Zhou <zhouchengming@bytedance.com> wrote:
+> 
+>> Yes, it would be better to implement DYNAMIC_FTRACE_WITH_ARGS on arm64 too,
+>> and this patch just use DYNAMIC_FTRACE_WITH_REGS to install return_hooker
+>> for graph tracer, so it's a code cleanup, no performance optimization.
+> 
+> I'm worried that a clean up is either breaking the design or hurting
+> performance.
+> 
+> You have:
+> 
+>> +void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
+>> +		       struct ftrace_ops *op, struct ftrace_regs *fregs)
+>> +{
+>> +	struct pt_regs *regs = arch_ftrace_get_regs(fregs);
+> 
+> Now, technically, arch_ftrace_get_regs() is to return NULL if the
+> ftrace_ops was not registered with ops->flags |= FTRACE_OPS_FL_SAVE_REGS.
+> 
+> Which function graph does not do.
+> 
+> But this is in arch specific code so you have more control of this
+> "undefined behavior". But you really should have a comment saying that
+> this needs to be fixed when DYNAMIC_FTRACE_WITH_ARGS is implemented.
+> 
 
---uiHEU8A1LLzcf4og
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ok, I will add a comment noting that.
 
-On Thu, Feb 24, 2022 at 01:16:53AM +0000, broonie@kernel.org wrote:
+Thanks.
 
-> I have absolutely no confindence in this resolution.
-
-Pretty sure that the resolution is bogus and I've broken boot (at least
-=66rom some quick testing).  Not confirmed that this merge is the cause
-though, I'll take a closer look tomorrow.  Any help from someone who's
-looked at this code before would be much appreciated.
-
-> diff --cc mm/mmap.c
-> index 1b3600152f6f5,64b5985b5295c..0000000000000
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@@ -2286,32 -2780,38 +2286,37 @@@ int split_vma(struct mm_struct *mm, str
->   	return __split_vma(mm, vma, addr, new_below);
->   }
->  =20
->  -/* Munmap is split into 2 main parts -- this part which finds
->  +/*
->  + * do_mas_align_munmap() - munmap the aligned region from @start to @en=
-d.
->  + * @mas: The maple_state, ideally set up to alter the correct tree loca=
-tion.
->  + * @vma: The starting vm_area_struct
->  + * @mm: The mm_struct
->  + * @start: The aligned start address to munmap.
->  + * @end: The aligned end address to munmap.
->  + * @uf: The userfaultfd list_head
->  + * @downgrade: Set to true to attempt a write downgrade of the mmap_sem
->  + *
->  + * If @downgrade is true, check return code for potential release of th=
-e lock.
-> ++ *
-> ++ * Munmap is split into 2 main parts -- this part which finds
-> +  * what needs doing, and the areas themselves, which do the
-> +  * work.  This now handles partial unmappings.
-> +  * Jeremy Fitzhardinge <jeremy@goop.org>
->    */
->  -int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
->  -		struct list_head *uf, bool downgrade)
->  -{
->  -	unsigned long end;
->  -	struct vm_area_struct *vma, *prev, *last;
->  -
->  -	if ((offset_in_page(start)) || start > TASK_SIZE || len > TASK_SIZE-st=
-art)
->  -		return -EINVAL;
->  -
->  -	len =3D PAGE_ALIGN(len);
->  -	end =3D start + len;
->  -	if (len =3D=3D 0)
->  -		return -EINVAL;
->  -
->  -	/*
->  -	 * arch_unmap() might do unmaps itself.  It must be called
->  -	 * and finish any rbtree manipulation before this code
->  -	 * runs and also starts to manipulate the rbtree.
->  -	 */
->  -	arch_unmap(mm, start, end);
->  -
->  -	/* Find the first overlapping VMA where start < vma->vm_end */
->  -	vma =3D find_vma_intersection(mm, start, end);
->  -	if (!vma)
->  -		return 0;
->  -	prev =3D vma->vm_prev;
->  -
->  +static int
->  +do_mas_align_munmap(struct ma_state *mas, struct vm_area_struct *vma,
->  +		    struct mm_struct *mm, unsigned long start,
->  +		    unsigned long end, struct list_head *uf, bool downgrade)
->  +{
->  +	struct vm_area_struct *prev, *next;
->  +	struct maple_tree mt_detach;
->  +	int count =3D 0;
->  +	MA_STATE(mas_detach, &mt_detach, start, end - 1);
->  +	mt_init_flags(&mt_detach, MM_MT_FLAGS);
->  +	mt_set_external_lock(&mt_detach, &mm->mmap_lock);
->  +
->  +	mas->last =3D end - 1;
->  +	prev =3D next =3D NULL;
->   	/*
->   	 * If we need to split any vma, do it now to save pain later.
->   	 *
-> @@@ -3107,13 -3127,8 +3112,12 @@@ void exit_mmap(struct mm_struct *mm
->   		 * Nothing can be holding mm->mmap_lock here and the above call
->   		 * to mmu_notifier_release(mm) ensures mmu notifier callbacks in
->   		 * __oom_reap_task_mm() will not block.
->  +		 *
->  +		 * This needs to be done before unlocking the VMAs in the loop
->  +		 * below which clears VM_LOCKED, otherwise the oom reaper cannot
->  +		 * reliably test it.
->   		 */
->   		(void)__oom_reap_task_mm(mm);
-> -=20
->   		set_bit(MMF_OOM_SKIP, &mm->flags);
->   	}
->=20
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index 2ddf1caf90488..d469555df0a21 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -2373,10 +2373,8 @@ do_mas_align_munmap(struct ma_state *mas, struct v=
-m_area_struct *vma,
->  		BUG_ON(next->vm_start > end);
->  #endif
->  		vma_mas_store(next, &mas_detach);
-> -		if (next->vm_flags & VM_LOCKED) {
-> +		if (next->vm_flags & VM_LOCKED)
->  			mm->locked_vm -=3D vma_pages(next);
-> -			munlock_vma_pages_all(next);
-> -		}
->  	}
-> =20
->  	next =3D mas_find(mas, ULONG_MAX);
-> @@ -2906,10 +2904,8 @@ static int do_brk_munmap(struct ma_state *mas, str=
-uct vm_area_struct *vma,
->  	}
-> =20
->  	unmap_pages =3D vma_pages(&unmap);
-> -	if (vma->vm_flags & VM_LOCKED) {
-> +	if (vma->vm_flags & VM_LOCKED)
->  		mm->locked_vm -=3D unmap_pages;
-> -		munlock_vma_pages_range(&unmap, newbrk, oldbrk);
-> -	}
-> =20
->  	next =3D mas_next(mas, ULONG_MAX);
->  	mmap_write_downgrade(mm);
-> @@ -3130,10 +3126,8 @@ void exit_mmap(struct mm_struct *mm)
->  	rwsem_acquire(&mm->mmap_lock.dep_map, 0, 0, _THIS_IP_);
->  	if (mm->locked_vm) {
->  		mas_for_each(&mas, vma, ULONG_MAX) {
-> -			if (vma->vm_flags & VM_LOCKED) {
-> +			if (vma->vm_flags & VM_LOCKED)
->  				mm->locked_vm -=3D vma_pages(vma);
-> -				munlock_vma_pages_all(vma);
-> -			}
->  		}
->  		mas_set(&mas, 0);
->  	}
->=20
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index 2ddf1caf90488..d469555df0a21 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -2373,10 +2373,8 @@ do_mas_align_munmap(struct ma_state *mas, struct v=
-m_area_struct *vma,
->  		BUG_ON(next->vm_start > end);
->  #endif
->  		vma_mas_store(next, &mas_detach);
-> -		if (next->vm_flags & VM_LOCKED) {
-> +		if (next->vm_flags & VM_LOCKED)
->  			mm->locked_vm -=3D vma_pages(next);
-> -			munlock_vma_pages_all(next);
-> -		}
->  	}
-> =20
->  	next =3D mas_find(mas, ULONG_MAX);
-> @@ -2906,10 +2904,8 @@ static int do_brk_munmap(struct ma_state *mas, str=
-uct vm_area_struct *vma,
->  	}
-> =20
->  	unmap_pages =3D vma_pages(&unmap);
-> -	if (vma->vm_flags & VM_LOCKED) {
-> +	if (vma->vm_flags & VM_LOCKED)
->  		mm->locked_vm -=3D unmap_pages;
-> -		munlock_vma_pages_range(&unmap, newbrk, oldbrk);
-> -	}
-> =20
->  	next =3D mas_next(mas, ULONG_MAX);
->  	mmap_write_downgrade(mm);
-> @@ -3130,10 +3126,8 @@ void exit_mmap(struct mm_struct *mm)
->  	rwsem_acquire(&mm->mmap_lock.dep_map, 0, 0, _THIS_IP_);
->  	if (mm->locked_vm) {
->  		mas_for_each(&mas, vma, ULONG_MAX) {
-> -			if (vma->vm_flags & VM_LOCKED) {
-> +			if (vma->vm_flags & VM_LOCKED)
->  				mm->locked_vm -=3D vma_pages(vma);
-> -				munlock_vma_pages_all(vma);
-> -			}
->  		}
->  		mas_set(&mas, 0);
->  	}
-
---uiHEU8A1LLzcf4og
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIW51AACgkQJNaLcl1U
-h9CDIgf+PNAZqmioo7XTL+teW4wUw6cpBd6At28RWKb62OZTTlD49gaUNvx/Dc2H
-gW/dwGYy8FHZ5WskOJskcZvjDnY7sGrwcDbcxnSBqKyNyHEf6a5excVzF96dRSTM
-vUDf2hcf3rM8ULNU0CyGzHuSFavMpTroQqnG3QoPl7lpHLnS1/WZ/D8Zk4y4FNPm
-+pLrSsdWusWXoKjVgHcZdNs5o6orDSrZpLBG7Hnd09rm30RNdPg2JFShihfmxkga
-qrC4KcpqgQ/6fI89qe4qYTfwUOZCIe/g9+NiN7sG0wOoz9oHNlZDY0MdANXOOkE1
-GIAM2lVyeSgjw/MDRfd813P2sj93JA==
-=olE7
------END PGP SIGNATURE-----
-
---uiHEU8A1LLzcf4og--
+> -- Steve
+> 
+> 
+>> +	unsigned long *parent = (unsigned long *)&procedure_link_pointer(regs);
+>> +
+>> +	prepare_ftrace_return(ip, parent, frame_pointer(regs));
+>> +}
+> 
+> -- Steve
