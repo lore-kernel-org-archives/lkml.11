@@ -2,113 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2157FC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25690C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbiBXQc7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:32:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59260 "EHLO
+        id S229812AbiBXQdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:33:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230016AbiBXQcv (ORCPT
+        with ESMTP id S230074AbiBXQdL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:32:51 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211761E6974;
-        Thu, 24 Feb 2022 08:32:11 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id r20so3715145ljj.1;
-        Thu, 24 Feb 2022 08:32:11 -0800 (PST)
+        Thu, 24 Feb 2022 11:33:11 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F14011B5E5
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:32:33 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id d28so526883wra.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:32:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=QxdeQ03DOR4RUC1RUGZAh5JLbtSCzS9nhA1X4N35/bw=;
-        b=KmC0LCs2Vxk9FBRyReMaUV3AKq9Rlbiqsam70nDmlZsqjW1y7j6LXnK9gFFcTDJlFa
-         Ks+Sr2Qffjmvoj18qUVEiFXgRAUE3kcgo1wFqtq4+HHKHzRDwrnm680F3AwJ7gV3JLDq
-         DN+3exlceOtVKKWiOj8ZZ0Vq7EuMw9+xyHqEXtfc/DKOJfn7/EAgqUCgNJLpMwV0IdlE
-         ApRg6eggZSPjPreGaEWY+U0axCKkz54UeUK7/+pTM+D28ifoAmrMau29U+NEy6EunAGy
-         9An76HikDYT9bTtymPfBDV8uQbGmVZ9LSkTqDhjZVMb7j6zia2jUv96pNZEgW+QG5gf5
-         X+og==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TtmeV9bgxOIabhJpHOR897CD9xgb87UemODU6yGgV2U=;
+        b=kuPalLo0ngHOxMvZ6qIgbB+moVrh17o+Lv9Ez7Ucqyo8MJkTddP+53mAdrQrjT/iIS
+         NBbuQpY9+EyL7o0cF9EUX6BiaG/emCBJwgZ7/O8LOzPt3zwXXcdR7BdF3oPNbstEtaWI
+         IEpIbLKdf7RuUHHHH74BbrDqcA7itr0BCaBeyWEfVAkr1eXo6yITFooJcpQfXjpLSX/N
+         Q00TNT7VNos313AB95PZ1Ztfl68NEuVi3Ghw1As1wnhd+/t9fByKElDKdjKiVesNlmeG
+         vgsJyynXcSf5AHf2vzLpP1zEFsoWFYmp1lebeWmVkb4/Y4nnwgoLUfDxWnIwz1JXLLGa
+         7GGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=QxdeQ03DOR4RUC1RUGZAh5JLbtSCzS9nhA1X4N35/bw=;
-        b=jCnGIMl9lVn1iTPVuwuuodwlT2nOM5OKAtni4bvEW6m553GeHCgVx1IL3+cF0IO75X
-         4duF0xibGDyBMuYzy04M9LL12V98xiXk07AgA6Zfg8EnmJwYkhHyk6+MFx65tYbn6eQX
-         HnfGdk5uw+KnPwyoErYLJEvX2G3X24t63llQnfbXP8w+/li6Tj1dCGxRtd92BNID/ctC
-         13kD5V0E6u/VbU0atntPXqpa0ee8VmoJru7ZcQ7+niqf7mjQ/x0Uo99soYIszXXbLwEx
-         ALZioYoJvFyNVMSoS/PYmRUdgADyAw3hITGRfjVqXGviKT2bUrimIMep/9KO8gtNExli
-         vv1Q==
-X-Gm-Message-State: AOAM532nLZkvnhn5v9Thsbf7lk7oxpHmxDwjkgeYEXJSDbI8YcCMVDV0
-        0C24QRcVB+RktFjCBNIvbn7swNXT8IY=
-X-Google-Smtp-Source: ABdhPJzGSFV9ICsyeh1MhD6IF+T1wQ5Hlmu7RGqgBZ+IBS0v6RBOWl4mje++5heJI0kcnHQt6WaXng==
-X-Received: by 2002:a2e:b014:0:b0:23c:9593:f7 with SMTP id y20-20020a2eb014000000b0023c959300f7mr2397143ljk.209.1645720328197;
-        Thu, 24 Feb 2022 08:32:08 -0800 (PST)
-Received: from orome ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id 7sm243339lft.194.2022.02.24.08.32.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TtmeV9bgxOIabhJpHOR897CD9xgb87UemODU6yGgV2U=;
+        b=3UVzJWQwhHuuOKsTEhkKg+5F7Lsf5cAY4cJDiI3QPuz9E2CoovAh7K7MtOodzG6BRW
+         o6KCc5ZuuEPR/gL+5yrTACrJyDxfbcGoYD8gh7ebs9GFeRcebUojYaEP4VzOCN4ZinCn
+         3IB7BLjkQIzBlTcEcXOUArC1juJPSMRJ56a+mohcVDo+Cus+nJM2V8HaaORgco+2ajaY
+         VWjaebh1cR541pw3lBWbZQfUKFLQTmsJEvj5fA7DlAyG54RTJmfAG04Bn8bDGfA8mfQ3
+         uItxEqUc31QsjaKi+3QkHDAn9W7/X6AOSMTkjuvaxamLdiSoO7j1wv687DWYav+SMSoi
+         bc0g==
+X-Gm-Message-State: AOAM532m6eN7ECJjl3pNLXD68spLVjwePGTlMIQ1AEULuNeC73Zh+hX6
+        a19NFGwp82hFNsBpeMOmaeq5w+Qr6w745w==
+X-Google-Smtp-Source: ABdhPJwiKP+dfsndf3VPpMglOVWrIIfHrXym6SEpHnxWV0ApQvGlhQKCMMsZmT1onUav3oJu2Z4OkQ==
+X-Received: by 2002:ac2:5d67:0:b0:442:f135:3bcc with SMTP id h7-20020ac25d67000000b00442f1353bccmr2267428lft.452.1645719756809;
+        Thu, 24 Feb 2022 08:22:36 -0800 (PST)
+Received: from localhost (c-9b28e555.07-21-73746f28.bbcust.telenor.se. [85.229.40.155])
+        by smtp.gmail.com with ESMTPSA id v9sm242600lfr.130.2022.02.24.08.22.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 08:32:06 -0800 (PST)
-Date:   Thu, 24 Feb 2022 17:32:04 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
-        jonathanh@nvidia.com, kyarlagadda@nvidia.com, ldewangan@nvidia.com,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        p.zabel@pengutronix.de, rgumasta@nvidia.com, robh+dt@kernel.org,
-        nathan@kernel.org, vkoul@kernel.org
-Subject: Re: [PATCH v21 1/2] dt-bindings: dmaengine: Add doc for tegra gpcdma
-Message-ID: <YhezBG9tpNDG24R6@orome>
-References: <20220224123903.5020-1-akhilrajeev@nvidia.com>
- <20220224123903.5020-2-akhilrajeev@nvidia.com>
+        Thu, 24 Feb 2022 08:22:36 -0800 (PST)
+From:   Anders Roxell <anders.roxell@linaro.org>
+To:     mpe@ellerman.id.au
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCHv2 1/3] powerpc: lib: sstep: fix 'sthcx' instruction
+Date:   Thu, 24 Feb 2022 17:22:13 +0100
+Message-Id: <20220224162215.3406642-1-anders.roxell@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="r/ttdRDeDVZvVJVR"
-Content-Disposition: inline
-In-Reply-To: <20220224123903.5020-2-akhilrajeev@nvidia.com>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Looks like there been a copy paste mistake when added the instruction
+'stbcx' twice and one was probably meant to be 'sthcx'.
+Changing to 'sthcx' from 'stbcx'.
 
---r/ttdRDeDVZvVJVR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cc: <stable@vger.kernel.org> # v4.13+
+Fixes: 350779a29f11 ("powerpc: Handle most loads and stores in instruction emulation code")
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+---
+ arch/powerpc/lib/sstep.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On Thu, Feb 24, 2022 at 06:09:02PM +0530, Akhil R wrote:
-> Add DT binding document for Nvidia Tegra GPCDMA controller.
->=20
-> Signed-off-by: Rajesh Gumasta <rgumasta@nvidia.com>
-> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-> Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../bindings/dma/nvidia,tegra186-gpc-dma.yaml | 110 ++++++++++++++++++
->  1 file changed, 110 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/dma/nvidia,tegra186=
--gpc-dma.yaml
+diff --git a/arch/powerpc/lib/sstep.c b/arch/powerpc/lib/sstep.c
+index bd3734d5be89..d2d29243fa6d 100644
+--- a/arch/powerpc/lib/sstep.c
++++ b/arch/powerpc/lib/sstep.c
+@@ -3389,7 +3389,7 @@ int emulate_loadstore(struct pt_regs *regs, struct instruction_op *op)
+ 			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
+ 			break;
+ 		case 2:
+-			__put_user_asmx(op->val, ea, err, "stbcx.", cr);
++			__put_user_asmx(op->val, ea, err, "sthcx.", cr);
+ 			break;
+ #endif
+ 		case 4:
+-- 
+2.34.1
 
-Acked-by: Thierry Reding <treding@nvidia.com>
-
---r/ttdRDeDVZvVJVR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIXswQACgkQ3SOs138+
-s6FH/w//X7V7oWBuRIHPW4LFa+M3TSBMgEuz3noJYqm1is6ABFrLv4sdprTm/ykI
-3dmEvSS5y0CoyW7VgnUDnmQ+UYwXzAGisFo/fIR7VjKdIkgIjQrejEF/hWNj4RY4
-Os1OejpnpNQJXq/4LRxqO7DVe7iFPMGhzO8jrHkpMuDACDHUnz5fF95FqLLwrMBo
-aJ0c0kzuCj1j3op+yfQuc900AbX07bPpYYMk2kicD5/2NhoYQUVSCo6Q7KvI6lyj
-p55v0eqtqe14gNeO4QG3lE2jtGmA2KEMs/+Yn+CQ3mnkQiC5RJR+A5IS+GdCINR7
-1wavUab7pQUGCVie80j1AcdOP616q8q7AmO23F+O2lahT80QLzPj1Rdl5rQOQS5z
-uksopvbpGNO4ACxsL8UoUZ9IGb+9NV/kEp1iDIHuLUslURtrAQJvz2cp6vWpM+Tx
-EeuO1Y0JEXdW4N1pBf73FjUut5f4lp9d2s20w9ByfMRnHfaeKyU6kPPWEWup2z9X
-IQNkCtFEKwdsBbFm8w6Ftq4dSTmcA/+hmr/vl7Q5vMuYQUAYiiIpD2uyeuquNiQy
-0nYX8VYWDQy9t53GzB5cj5gSgKqnaqdVEvSCcJ+/mg1tmw8tU+vxRbg8qQTy4xuy
-LpMxvFWSh9Fb4hG+oQ6TL13O9tigX1vIs8pFbNHs7AlLbMxCXdg=
-=7ran
------END PGP SIGNATURE-----
-
---r/ttdRDeDVZvVJVR--
