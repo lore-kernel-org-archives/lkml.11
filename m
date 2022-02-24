@@ -2,268 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D0EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60215C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230267AbiBXQgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:36:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
+        id S229777AbiBXQiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:38:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbiBXQg1 (ORCPT
+        with ESMTP id S230202AbiBXQis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:36:27 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21641D6826
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:35:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645720544; x=1677256544;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=tf65skpb16JOfeIGRXlVvnRE9pqOJ3Gp6hwOwMP4/wo=;
-  b=LJSI4JU6By/YCEWpKZLtfCuDE1VE1tOW1lx5meq9UrmQliu7yiiZMEEm
-   ZitbNltGgvcm3ZR4fhbPGAOmwhLNCliB/zGarPQHOsxQMlA6/rRQs5lv8
-   wOGEOeGU1AIK5A+K2qefaV2iLQW0rGc/lENg193YsPuU5uwyeatR8GfA1
-   /+DKyDMLz376Yp+f+mv0JALD+5VjUFTEQWfBHUCXafpZ2TQooMmd5YDHr
-   ZinJVbh9VQLYN31PkoltYAqdQf+EWpigr2TdFTPXNDRynOx97xI7+KaHL
-   SXDwgIlcoT1t5jpy9mGqgEYN6yWVtGpeJV4ZNa3UvSjCSondcjqc/5nNT
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="235785003"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="235785003"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 08:35:42 -0800
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="548820495"
-Received: from vpirogov-mobl.amr.corp.intel.com (HELO [10.252.137.68]) ([10.252.137.68])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 08:35:39 -0800
-Message-ID: <faeb3c16-55a9-912d-1222-9dab364f56c7@intel.com>
-Date:   Thu, 24 Feb 2022 08:35:32 -0800
+        Thu, 24 Feb 2022 11:38:48 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4F61342E4;
+        Thu, 24 Feb 2022 08:38:08 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id f11so3675650ljq.11;
+        Thu, 24 Feb 2022 08:38:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=HKzxqhI5E0hInxN0B+6sR1bWJjqg6HiuWwnAoTz4dj4=;
+        b=DJuDDee+DDCURX0UIukj5cQPc9oTEG0zT+tpAYxK9ESNxmlrUYLCP4f3NKkP5cMl5D
+         Fo+SnrpogamdLZTbsL9jR7/9/kvKh05PNsAZH/gScGru1RhZEsErUm8syZZHQE5Jr0/D
+         nlj6IbxXpoDgrsbXsGPW5LQBYmGjWdym8/uSdecx34EZTfDzgVeI8qorvDqMYmt5miy0
+         11EVy8ALh20uMAxGIn2spoie8Hqze5Uoq42AsL7tUOulFAIrGVO6Adnatt0kUIS3gwuU
+         rTi3xeg4GxZ2AMFAK6IjmduZ6vbk4kqLlVawakv93NQqTsSGJyuO3b0wYU5Y2Nrfci/D
+         tQUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=HKzxqhI5E0hInxN0B+6sR1bWJjqg6HiuWwnAoTz4dj4=;
+        b=xBFjj2ds2/nqZKNdv4B0RG20nLh0FGmADtGnLti4OODdxZDh2uJoEaf3om/i7hyKOb
+         8YneEeBsdhTxy0liLz0mzn+IyvtgHgnHybeUM8hXDW+fSZinfXJLkYblzTn3fWnA14rt
+         exDSpR/3MUrkJDx9/3o7HzlO9DduukpEX8o98SYj+h1U/tShMJdRA4rj41VUI7CFa7qb
+         fXOgZcUJe6XAQnT2aspatWS/rd6qHoGJonupet4z1WiwPykRpwn4gsl3hwdNqK17rl/L
+         fQP9/IhErMEMVN7OOf9Q/lUrMtv6DnvIS6Tl9RQHfXx9Yvi9fDxe5XION5hsbew2tptF
+         sFSQ==
+X-Gm-Message-State: AOAM533n0dnF/WqwHxjA4Z/OE1HDUHt1xqN8Ij2MG89SLUpAgA738xru
+        sXF0rBjtXMYiVVrXM+7vrxM=
+X-Google-Smtp-Source: ABdhPJw9JaJ1kjvCUb4y4AB0oU89kshZAxRNFwS/j2Jfr3k5bqBT/d5vxMxfL/zEMZJOyzM9iJed+w==
+X-Received: by 2002:a2e:a171:0:b0:244:c2fc:d1d with SMTP id u17-20020a2ea171000000b00244c2fc0d1dmr2369703ljl.159.1645720686690;
+        Thu, 24 Feb 2022 08:38:06 -0800 (PST)
+Received: from orome ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id t20sm245402lfk.159.2022.02.24.08.38.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 08:38:05 -0800 (PST)
+Date:   Thu, 24 Feb 2022 17:38:03 +0100
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        linux-tegra@vger.kernel.org
+Subject: Re: [PATCH 2/5] tty: serial: make use of UART_LCR_WLEN() +
+ tty_get_char_size()
+Message-ID: <Yhe0a0RX8XTBF8BL@orome>
+References: <20220224095517.30872-1-jslaby@suse.cz>
+ <20220224095558.30929-1-jslaby@suse.cz>
+ <20220224095558.30929-2-jslaby@suse.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
- <20220224155630.52734-4-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv4 03/30] x86/tdx: Provide common base for SEAMCALL and
- TDCALL C wrappers
-In-Reply-To: <20220224155630.52734-4-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="bGyWIReJ9zdg8psW"
+Content-Disposition: inline
+In-Reply-To: <20220224095558.30929-2-jslaby@suse.cz>
+User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-...
->  arch/x86/include/asm/tdx.h    | 20 ++++++++
->  arch/x86/kernel/asm-offsets.c |  9 ++++
->  arch/x86/virt/tdxcall.S       | 91 +++++++++++++++++++++++++++++++++++
->  3 files changed, 120 insertions(+)
->  create mode 100644 arch/x86/virt/tdxcall.S
-> 
-> diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-> index ba8042ce61c2..2f8cb1e53e77 100644
-> --- a/arch/x86/include/asm/tdx.h
-> +++ b/arch/x86/include/asm/tdx.h
-> @@ -8,6 +8,25 @@
->  #define TDX_CPUID_LEAF_ID	0x21
->  #define TDX_IDENT		"IntelTDX    "
->  
-> +#define TDX_SEAMCALL_VMFAILINVALID     0x8000FF00FFFF0000ULL
 
-This needs a comment.  It's a completely software-defined value, right?
+--bGyWIReJ9zdg8psW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> +#ifndef __ASSEMBLY__
-> +
-> +/*
-> + * Used to gather the output registers values of the TDCALL and SEAMCALL
-> + * instructions when requesting services from the TDX module.
-> + *
-> + * This is a software only structure and not part of the TDX module/VMM ABI.
-> + */
-> +struct tdx_module_output {
-> +	u64 rcx;
-> +	u64 rdx;
-> +	u64 r8;
-> +	u64 r9;
-> +	u64 r10;
-> +	u64 r11;
-> +};
-> +
->  #ifdef CONFIG_INTEL_TDX_GUEST
->  
->  void __init tdx_early_init(void);
-> @@ -18,4 +37,5 @@ static inline void tdx_early_init(void) { };
->  
->  #endif /* CONFIG_INTEL_TDX_GUEST */
->  
-> +#endif /* !__ASSEMBLY__ */
->  #endif /* _ASM_X86_TDX_H */
-> diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
-> index 9fb0a2f8b62a..7dca52f5cfc6 100644
-> --- a/arch/x86/kernel/asm-offsets.c
-> +++ b/arch/x86/kernel/asm-offsets.c
-> @@ -18,6 +18,7 @@
->  #include <asm/bootparam.h>
->  #include <asm/suspend.h>
->  #include <asm/tlbflush.h>
-> +#include <asm/tdx.h>
->  
->  #ifdef CONFIG_XEN
->  #include <xen/interface/xen.h>
-> @@ -65,6 +66,14 @@ static void __used common(void)
->  	OFFSET(XEN_vcpu_info_arch_cr2, vcpu_info, arch.cr2);
->  #endif
->  
-> +	BLANK();
-> +	OFFSET(TDX_MODULE_rcx, tdx_module_output, rcx);
-> +	OFFSET(TDX_MODULE_rdx, tdx_module_output, rdx);
-> +	OFFSET(TDX_MODULE_r8,  tdx_module_output, r8);
-> +	OFFSET(TDX_MODULE_r9,  tdx_module_output, r9);
-> +	OFFSET(TDX_MODULE_r10, tdx_module_output, r10);
-> +	OFFSET(TDX_MODULE_r11, tdx_module_output, r11);
-> +
->  	BLANK();
->  	OFFSET(BP_scratch, boot_params, scratch);
->  	OFFSET(BP_secure_boot, boot_params, secure_boot);
-> diff --git a/arch/x86/virt/tdxcall.S b/arch/x86/virt/tdxcall.S
-> new file mode 100644
-> index 000000000000..90569faedacc
-> --- /dev/null
-> +++ b/arch/x86/virt/tdxcall.S
-> @@ -0,0 +1,91 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#include <asm/asm-offsets.h>
-> +#include <asm/tdx.h>
-> +
-> +/*
-> + * TDX guests use the TDCALL instruction to make requests to the
-> + * TDX module and hypercalls to the VMM.
-> + *
-> + * TDX host user SEAMCALL instruction to make requests to TDX module.
+On Thu, Feb 24, 2022 at 10:55:55AM +0100, Jiri Slaby wrote:
+> Having a generic UART_LCR_WLEN() macro and the tty_get_char_size()
+> helper, we can remove all those repeated switch-cases in drivers.
+>=20
+> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+> Cc: Laxman Dewangan <ldewangan@nvidia.com>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Jonathan Hunter <jonathanh@nvidia.com>
+> Cc: linux-tegra@vger.kernel.org
+> ---
+>  drivers/tty/serial/8250/8250_omap.c | 16 +---------------
+>  drivers/tty/serial/8250/8250_port.c | 16 +---------------
+>  drivers/tty/serial/jsm/jsm_cls.c    | 16 +---------------
+>  drivers/tty/serial/jsm/jsm_neo.c    | 16 +---------------
+>  drivers/tty/serial/omap-serial.c    | 16 +---------------
+>  drivers/tty/serial/pxa.c            | 16 +---------------
+>  drivers/tty/serial/serial-tegra.c   | 22 ++++------------------
+>  drivers/tty/serial/vr41xx_siu.c     | 15 +--------------
+>  8 files changed, 11 insertions(+), 122 deletions(-)
 
-		^ uses??
+This would've been easier to review if I had this in my inbox, but I did
+find it on lkml.org and this does look correct, so:
 
+Reviewed-by: Thierry Reding <treding@nvidia.com>
 
-> + * They are supported in Binutils >= 2.36.
-> + */
+--bGyWIReJ9zdg8psW
+Content-Type: application/pgp-signature; name="signature.asc"
 
-While you're in there, could we make this a little more structured, please?
+-----BEGIN PGP SIGNATURE-----
 
-/*
- * TDX_MODULE_CALL - common helper macro for both
- *		     TDCALL and SEAMCALL instructions.
- * 		
- * TDCALL   - used by TDX guests to make requests to the
- * 	      TDX module and hypercalls to the VMM.
- * SEAMCALL - used by TDX hosts to make requests to the
- *	      TDX module.
- *
- * Both instruction are supported in Binutils >= 2.36.
- */
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIXtGsACgkQ3SOs138+
+s6G8LA//a6T2l7OdGOi6gS4JTGpVy3oswh/dgzFUZyXLfgc/hZ4+XfafpeRT0tHj
+F3NYARAAYfXtWh0WXj7scRQd1Kcax8wBO8ltzhUU+Qv/QWzmt3tDhrzD3LqxHoN1
+qmI+AEBkfr81HRR/NWnbn1h11SwtEUzPrPaOhSkaGkTZqD2gk8D093cC7YVqB+er
+5TvEM9BP9/BGtcLoA+1p/Ir+TIbxUd1fFdGVYsJ32rYBssAtBvn3wiC08oByrOrL
+Qx0im6NLDjxffI7Ijxw4257lQy9wSGq7S8HxmPb+gTSn9IYwllo4zhC9A6ZzT643
+CheDmqm++kfg5Ijrg8PQmuXzQ2m89Z0b0n3rQA6P/N59hqWg0obU8M8+wTbQfiXw
+GPeWHW9iwe+yrcU0B+CjP8uVFCq/6m/JzalevUvP1G2tnIG3At7xL45YpU+YI07h
+cdEYQuG5Yom0RCwSX8f4W7UB8KRL6UJclqUbAfUc2h6MReYMkhguxTi7O/Qc7Lkv
+SuUJ6765xPhSmqouxo+b4Id0gvCg9AHElyD/q6K4sgEFdFy4NqonAJZJj00YsGVf
+BoLZ834npx8Vd9DUgPrGzRzTSOBvPzUAIOli8pk5e2DyvO2fNgg6RJrWESn1U+Ly
+vTaLIAsh31wu9T9/E67OBAaohALhLETkgjh5Wed9uBOAwpxFbhw=
+=5bfD
+-----END PGP SIGNATURE-----
 
-> +#define tdcall		.byte 0x66,0x0f,0x01,0xcc
-> +#define seamcall	.byte 0x66,0x0f,0x01,0xcf
-> +
-> +.macro TDX_MODULE_CALL host:req
-> +	/*
-> +	 * R12 will be used as temporary storage for struct tdx_module_output
-> +	 * pointer. Since R12-R15 registers are not used by TDCALL/SEAMCALL
-> +	 * services supported by this function, it can be reused.
-> +	 */
-> +
-> +	/* Callee saved, so preserve it */
-> +	push %r12
-> +
-> +	/*
-> +	 * Push output pointer to stack.
-> +	 * After the operation, it will be fetched into R12 register.
-> +	 */
-> +	push %r9
-> +
-> +	/* Mangle function call ABI into TDCALL/SEAMCALL ABI: */
-> +	/* Move Leaf ID to RAX */
-> +	mov %rdi, %rax
-> +	/* Move input 4 to R9 */
-> +	mov %r8,  %r9
-> +	/* Move input 3 to R8 */
-> +	mov %rcx, %r8
-> +	/* Move input 1 to RCX */
-> +	mov %rsi, %rcx
-> +	/* Leave input param 2 in RDX */
-> +
-> +	.if \host
-> +	seamcall
-> +	/*
-> +	 * SEAMCALL instruction is essentially a VMExit from VMX root
-> +	 * mode to SEAM VMX root mode.  VMfailInvalid (CF=1) indicates
-> +	 * that the targeted SEAM firmware is not loaded or disabled,
-> +	 * or P-SEAMLDR is busy with another SEAMCALL.  %rax is not
-> +	 * changed in this case.
-> +	 *
-> +	 * Set %rax to TDX_SEAMCALL_VMFAILINVALID for VMfailInvalid.
-> +	 * This value will never be used as actual SEAMCALL error code.
-> +	 */
-
-Why can TDX_SEAMCALL_VMFAILINVALID never be used as an actual SEAMCALL
-error code?  Would it be more accurate to say that today's P-SEAMLDR and
-TDX module never use TDX_SEAMCALL_VMFAILINVALID as an actual SEAMCALL
-error code?
-
-There's an important distinction there.  It's possible that the SEAMCALL
-instruction architecture says or implies that it can never have
-TDX_SEAMCALL_VMFAILINVALID as a return value.  It's also possible that
-this "never" comes from a guess about what P-SEAMLDRs or TDX modules can do.
-
-> +	jnc .Lno_vmfailinvalid
-> +	mov $TDX_SEAMCALL_VMFAILINVALID, %rax
-> +.Lno_vmfailinvalid:
-> +	.else
-> +	tdcall
-> +	.endif
-> +
-> +	/*
-> +	 * Fetch output pointer from stack to R12 (It is used
-> +	 * as temporary storage)
-> +	 */
-> +	pop %r12
-> +
-> +	/* Check for success: 0 - Successful, otherwise failed */
-> +	test %rax, %rax
-> +	jnz .Lno_output_struct
-> +
-> +	/*
-> +	 * Since this function can be initiated without an output pointer,
-> +	 * check if caller provided an output struct before storing
-> +	 * output registers.
-> +	 */
-> +	test %r12, %r12
-> +	jz .Lno_output_struct
-> +
-> +	/* Copy result registers to output struct: */
-> +	movq %rcx, TDX_MODULE_rcx(%r12)
-> +	movq %rdx, TDX_MODULE_rdx(%r12)
-> +	movq %r8,  TDX_MODULE_r8(%r12)
-> +	movq %r9,  TDX_MODULE_r9(%r12)
-> +	movq %r10, TDX_MODULE_r10(%r12)
-> +	movq %r11, TDX_MODULE_r11(%r12)
-> +
-> +.Lno_output_struct:
-> +	/* Restore the state of R12 register */
-> +	pop %r12
-> +.endm
-
-That doesn't look too bad.  Please just send an updated version with the
-revised comments.
+--bGyWIReJ9zdg8psW--
