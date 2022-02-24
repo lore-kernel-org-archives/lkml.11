@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4859CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C275CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236217AbiBXP0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:26:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
+        id S236237AbiBXP0K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:26:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236056AbiBXPZt (ORCPT
+        with ESMTP id S236178AbiBXPZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:25:49 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1118A22A2B4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:25:18 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id hw13so5087278ejc.9
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:25:17 -0800 (PST)
+        Thu, 24 Feb 2022 10:25:50 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E134A22A292
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:25:19 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id qk11so5167102ejb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:25:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8bKHwHd9wrNVqM17Oa3exsITsVuSL3cS/OZaCl9ltdU=;
-        b=Xu14nMrdL/kEer+3zNMAoJu75pcDa/4wbBn87Aq91UuLQXEwfPwsOfgSRU4uufnmA7
-         +qKlGVqeIjGlUAbmRb1cf4snlXfZmBEg1wyREArT+I18vzgOlZgPrIyiejvoLrPPlhga
-         1+poolq+DiL1yPIQ34m7Uy7poHA9pT6p2wDh9pgdWpMFaB2J9t83hJGna8kyGbkVaI1B
-         3wPn7yE/bueB0kzwy2+wEtLQn/oeP2TyHvvkhgUd+VRs6UZOyWU4Ts/dvlI4YxWJuouX
-         oxVktOY0T9gO2sahD52w/uNdkwU1tF2bA0zbho4nXrRHuku14R3Z2xVKoXKasOjsU2jG
-         gv6A==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YCCLljOzkZTWVhp4UcnxVmYpwCgumhAeXuk5FTxJkB0=;
+        b=TiFvJ0dV8oZgGXJzw3d5vMthSlHC7N/ou80D7XIhS6zXizdQQ9fT7xARchhB1K989M
+         sqvbYGdOf26hgiJpp0Mmshu/fPhlntJU1t+XNdqJUGxprWcV6ZKCGfykIl0Scgm3fYXC
+         rP3b4kAIMhOhIQzbVGd3StT+r0HPCyyI7zELHOkPvFUCOmwX6prXOPCKYWYotiq18VMZ
+         MN6C9H9BZaTU1RgKK+J/E4wxu7dvxDDkxc8NO25dyYzV4j6OjvCTgA5/L4Xdr9QnaOng
+         pODMwpsmRd5PV+pl4hChgJNgqe8M8Gseg7MFHnKpScIo1ppmyp9OCME/fwKniob97ArX
+         18Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=8bKHwHd9wrNVqM17Oa3exsITsVuSL3cS/OZaCl9ltdU=;
-        b=ELfE5+B4slrS86V+lpQtgRAvYCGpsUAWRMLl+lWcCp7EIKNKBEDWl3uu3NL3ZC1LAh
-         UNN7bsf4XqCH9TZDWvwOQY8+XbZXQmB6Moa1ZUCRzJ/Ds07q8k2TXClRBr5+rD35vywA
-         3bkkg6W6FjvTjhY//RrZg9l5GKAVxfgXwyjk3hwsBcIZjs9ZCl1d7qlPcV0t6+bTOutK
-         wDXv70jmIErlgDIK1eXkPKgPHTWQFQbD04w2BeMRva7cPCC1gD1F0AHP10ccLoyqgf1y
-         4SjgmkBkdkqJTIcjD+6YtHiVC30G5GIR98a3fC+0oDsY7YRSvCLiS88D0UWl2vWUEPWt
-         Uj/g==
-X-Gm-Message-State: AOAM533jZVF/rpsxauVZLeSl6iHFp0nnut5kRh+jT+2jD9zl7f/5p2kY
-        LJsLOoPGeJP6hva/JbUYp6c=
-X-Google-Smtp-Source: ABdhPJzdcnTid5+1b8gpHvm6zGYUVRj5BmDXAL6rYfBuRhTnrWv3XXZCJSqhWEaGX1ZLmRLi86sJFA==
-X-Received: by 2002:a17:906:8d8:b0:6d2:131d:be51 with SMTP id o24-20020a17090608d800b006d2131dbe51mr2612370eje.564.1645716316455;
-        Thu, 24 Feb 2022 07:25:16 -0800 (PST)
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=YCCLljOzkZTWVhp4UcnxVmYpwCgumhAeXuk5FTxJkB0=;
+        b=HTKjslbTRbYnQ9ckCC1XdjQBDJYOmN9dldb0huVg1YH6yxbLSMBNsiYbALcBd98/V1
+         GIQjDk6BKv7Hx0IvzMJaxgL8WbwPw4DDOiqcDEVrOQpRb8QkgwbDlvnjwO/IsyKOWmrV
+         J7UbFj+NHLsWq8MvrkQs60i7/sMhnn9yAFHYAN/rX6EmHH2TrYj082IK837DFY6CUD1r
+         soHguWJATZ07hfrrfbtmt831yOw5/cWZlsbrRqLMnxGCkwN/D55NDuUMCZZEhpB3aQVy
+         uu0XPvtdhOV59p/lyWkRHikhM8cjothxPXHVQbHyU0pB8mHqGZ1F2Kfe8IVWI1LtyrlX
+         lgpw==
+X-Gm-Message-State: AOAM532/HBINn7qYN0K6i27fe76diWnKEDLVZIYHK6E78DIl7ZEPWrML
+        v25usJhykqFh+NbBKvDdHpPdzWOr9ULtNl0R
+X-Google-Smtp-Source: ABdhPJzbc4J9AQJ7JJ5b/LrjFjbCOzAT+PXAgLjfQPliRCa02sLFO4rQw8CytIS537W0EB6TGsW2Hg==
+X-Received: by 2002:a17:906:aad7:b0:6cc:c9aa:d9ad with SMTP id kt23-20020a170906aad700b006ccc9aad9admr2708800ejb.726.1645716318467;
+        Thu, 24 Feb 2022 07:25:18 -0800 (PST)
 Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
-        by smtp.gmail.com with ESMTPSA id s11sm1509693edt.10.2022.02.24.07.25.15
+        by smtp.gmail.com with ESMTPSA id s11sm1509693edt.10.2022.02.24.07.25.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 07:25:16 -0800 (PST)
+        Thu, 24 Feb 2022 07:25:18 -0800 (PST)
 Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
 From:   Emil Renner Berthing <kernel@esmil.dk>
 To:     linux-riscv@lists.infradead.org
@@ -63,63 +63,239 @@ Cc:     Emil Renner Berthing <kernel@esmil.dk>,
         Ard Biesheuvel <ardb@kernel.org>,
         Jisheng Zhang <jszhang@kernel.org>,
         Alexandre Ghiti <alex@ghiti.fr>, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/8] Add RISC-V asm/insn.h header
-Date:   Thu, 24 Feb 2022 16:24:48 +0100
-Message-Id: <20220224152456.493365-1-kernel@esmil.dk>
+Subject: [PATCH v3 2/8] riscv: Remove unneeded definitions from asm/module.h
+Date:   Thu, 24 Feb 2022 16:24:50 +0100
+Message-Id: <20220224152456.493365-3-kernel@esmil.dk>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220224152456.493365-1-kernel@esmil.dk>
+References: <20220224152456.493365-1-kernel@esmil.dk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds a RISC-V asm/insn.h header to consolidate instruction
-generation and manipulation similar to arm64's asm/insn.h.
+The inline functions previously defined here are only ever
+used in kernel/module-sections.c, so there is no need to
+include them in every user of asm/module.h. Through
+linux/module.h this is just about every driver.
 
-The first three patches are preparatory patches fixing unaligned access
-in module relocations and moving unneded definitions out of asm/module.h
-and asm/ftrace.h.
-Patch 4 adds the header and the remaining patches converts module
-relocation, plt entry, jump label and dynamic ftrace code to use it.
+Now that these functions are static in a single file
+remove the inline marker to allow the compiler to make
+its own decisions.
 
-The only obvious code left to convert is the BPF JIT(s).
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+---
+ arch/riscv/include/asm/module.h     | 87 ----------------------------
+ arch/riscv/kernel/module-sections.c | 90 +++++++++++++++++++++++++++++
+ 2 files changed, 90 insertions(+), 87 deletions(-)
 
-This series depends on the module relocation range check fix here:
-https://lore.kernel.org/linux-riscv/20220223191257.143694-1-kernel@esmil.dk/
-
-Changes since v2:
-- Split the range check fix out and send it separately.
-- Convert "if (IS_DEFINED(CONFIG_32BIT))" to #ifdef to avoid compiler
-  warning on rv32. Thanks kernel test robot!
-- Add sp register, load/store instructions and RISCV_INSN_REG_L,
-  RISCV_INSN_REG_S and RISC_INSN_SZREG macros to work on both rv32 and
-  rv64 to the asm/insn.h header.
-- Add patch moving unneded definitions out of out asm/ftrace.h and a
-  patch converting kernel/ftrace.c to use the header.
-
-Changes since v1:
-- Send the right patches.
-
-Emil Renner Berthing (8):
-  riscv: Avoid unaligned access when relocating modules
-  riscv: Remove unneeded definitions from asm/module.h
-  riscv: Remove unneeded definitions from asm/ftrace.h
-  riscv: Add asm/insn.h header
-  riscv: Use asm/insn.h for module relocations
-  riscv: Use asm/insn.h to generate plt entries
-  riscv: Use asm/insn.h for jump labels
-  riscv: Use asm/insn.h for dynamic ftrace
-
- arch/riscv/include/asm/ftrace.h     |  35 +----
- arch/riscv/include/asm/insn.h       | 151 ++++++++++++++++++
- arch/riscv/include/asm/module.h     |  87 ----------
- arch/riscv/kernel/ftrace.c          |  56 ++++---
- arch/riscv/kernel/jump_label.c      |  12 +-
- arch/riscv/kernel/module-sections.c |  71 +++++++++
- arch/riscv/kernel/module.c          | 236 +++++++++++++---------------
- 7 files changed, 364 insertions(+), 284 deletions(-)
- create mode 100644 arch/riscv/include/asm/insn.h
-
+diff --git a/arch/riscv/include/asm/module.h b/arch/riscv/include/asm/module.h
+index 76aa96a9fc08..570cd025f220 100644
+--- a/arch/riscv/include/asm/module.h
++++ b/arch/riscv/include/asm/module.h
+@@ -22,93 +22,6 @@ struct mod_arch_specific {
+ 	struct mod_section plt;
+ 	struct mod_section got_plt;
+ };
+-
+-struct got_entry {
+-	unsigned long symbol_addr;	/* the real variable address */
+-};
+-
+-static inline struct got_entry emit_got_entry(unsigned long val)
+-{
+-	return (struct got_entry) {val};
+-}
+-
+-static inline struct got_entry *get_got_entry(unsigned long val,
+-					      const struct mod_section *sec)
+-{
+-	struct got_entry *got = (struct got_entry *)(sec->shdr->sh_addr);
+-	int i;
+-	for (i = 0; i < sec->num_entries; i++) {
+-		if (got[i].symbol_addr == val)
+-			return &got[i];
+-	}
+-	return NULL;
+-}
+-
+-struct plt_entry {
+-	/*
+-	 * Trampoline code to real target address. The return address
+-	 * should be the original (pc+4) before entring plt entry.
+-	 */
+-	u32 insn_auipc;		/* auipc t0, 0x0                       */
+-	u32 insn_ld;		/* ld    t1, 0x10(t0)                  */
+-	u32 insn_jr;		/* jr    t1                            */
+-};
+-
+-#define OPC_AUIPC  0x0017
+-#define OPC_LD     0x3003
+-#define OPC_JALR   0x0067
+-#define REG_T0     0x5
+-#define REG_T1     0x6
+-
+-static inline struct plt_entry emit_plt_entry(unsigned long val,
+-					      unsigned long plt,
+-					      unsigned long got_plt)
+-{
+-	/*
+-	 * U-Type encoding:
+-	 * +------------+----------+----------+
+-	 * | imm[31:12] | rd[11:7] | opc[6:0] |
+-	 * +------------+----------+----------+
+-	 *
+-	 * I-Type encoding:
+-	 * +------------+------------+--------+----------+----------+
+-	 * | imm[31:20] | rs1[19:15] | funct3 | rd[11:7] | opc[6:0] |
+-	 * +------------+------------+--------+----------+----------+
+-	 *
+-	 */
+-	unsigned long offset = got_plt - plt;
+-	u32 hi20 = (offset + 0x800) & 0xfffff000;
+-	u32 lo12 = (offset - hi20);
+-	return (struct plt_entry) {
+-		OPC_AUIPC | (REG_T0 << 7) | hi20,
+-		OPC_LD | (lo12 << 20) | (REG_T0 << 15) | (REG_T1 << 7),
+-		OPC_JALR | (REG_T1 << 15)
+-	};
+-}
+-
+-static inline int get_got_plt_idx(unsigned long val, const struct mod_section *sec)
+-{
+-	struct got_entry *got_plt = (struct got_entry *)sec->shdr->sh_addr;
+-	int i;
+-	for (i = 0; i < sec->num_entries; i++) {
+-		if (got_plt[i].symbol_addr == val)
+-			return i;
+-	}
+-	return -1;
+-}
+-
+-static inline struct plt_entry *get_plt_entry(unsigned long val,
+-					      const struct mod_section *sec_plt,
+-					      const struct mod_section *sec_got_plt)
+-{
+-	struct plt_entry *plt = (struct plt_entry *)sec_plt->shdr->sh_addr;
+-	int got_plt_idx = get_got_plt_idx(val, sec_got_plt);
+-	if (got_plt_idx >= 0)
+-		return plt + got_plt_idx;
+-	else
+-		return NULL;
+-}
+-
+ #endif /* CONFIG_MODULE_SECTIONS */
+ 
+ #endif /* _ASM_RISCV_MODULE_H */
+diff --git a/arch/riscv/kernel/module-sections.c b/arch/riscv/kernel/module-sections.c
+index e264e59e596e..39d4ac681c2a 100644
+--- a/arch/riscv/kernel/module-sections.c
++++ b/arch/riscv/kernel/module-sections.c
+@@ -10,6 +10,28 @@
+ #include <linux/module.h>
+ #include <linux/moduleloader.h>
+ 
++struct got_entry {
++	unsigned long symbol_addr;	/* the real variable address */
++};
++
++static struct got_entry emit_got_entry(unsigned long val)
++{
++	return (struct got_entry) {val};
++}
++
++static struct got_entry *get_got_entry(unsigned long val,
++				       const struct mod_section *sec)
++{
++	struct got_entry *got = (struct got_entry *)(sec->shdr->sh_addr);
++	int i;
++
++	for (i = 0; i < sec->num_entries; i++) {
++		if (got[i].symbol_addr == val)
++			return &got[i];
++	}
++	return NULL;
++}
++
+ unsigned long module_emit_got_entry(struct module *mod, unsigned long val)
+ {
+ 	struct mod_section *got_sec = &mod->arch.got;
+@@ -29,6 +51,74 @@ unsigned long module_emit_got_entry(struct module *mod, unsigned long val)
+ 	return (unsigned long)&got[i];
+ }
+ 
++struct plt_entry {
++	/*
++	 * Trampoline code to real target address. The return address
++	 * should be the original (pc+4) before entring plt entry.
++	 */
++	u32 insn_auipc;		/* auipc t0, 0x0                       */
++	u32 insn_ld;		/* ld    t1, 0x10(t0)                  */
++	u32 insn_jr;		/* jr    t1                            */
++};
++
++#define OPC_AUIPC  0x0017
++#define OPC_LD     0x3003
++#define OPC_JALR   0x0067
++#define REG_T0     0x5
++#define REG_T1     0x6
++
++static struct plt_entry emit_plt_entry(unsigned long val,
++				       unsigned long plt,
++				       unsigned long got_plt)
++{
++	/*
++	 * U-Type encoding:
++	 * +------------+----------+----------+
++	 * | imm[31:12] | rd[11:7] | opc[6:0] |
++	 * +------------+----------+----------+
++	 *
++	 * I-Type encoding:
++	 * +------------+------------+--------+----------+----------+
++	 * | imm[31:20] | rs1[19:15] | funct3 | rd[11:7] | opc[6:0] |
++	 * +------------+------------+--------+----------+----------+
++	 *
++	 */
++	unsigned long offset = got_plt - plt;
++	u32 hi20 = (offset + 0x800) & 0xfffff000;
++	u32 lo12 = (offset - hi20);
++
++	return (struct plt_entry) {
++		OPC_AUIPC | (REG_T0 << 7) | hi20,
++		OPC_LD | (lo12 << 20) | (REG_T0 << 15) | (REG_T1 << 7),
++		OPC_JALR | (REG_T1 << 15)
++	};
++}
++
++static int get_got_plt_idx(unsigned long val, const struct mod_section *sec)
++{
++	struct got_entry *got_plt = (struct got_entry *)sec->shdr->sh_addr;
++	int i;
++
++	for (i = 0; i < sec->num_entries; i++) {
++		if (got_plt[i].symbol_addr == val)
++			return i;
++	}
++	return -1;
++}
++
++static struct plt_entry *get_plt_entry(unsigned long val,
++				       const struct mod_section *sec_plt,
++				       const struct mod_section *sec_got_plt)
++{
++	struct plt_entry *plt = (struct plt_entry *)sec_plt->shdr->sh_addr;
++	int got_plt_idx = get_got_plt_idx(val, sec_got_plt);
++
++	if (got_plt_idx >= 0)
++		return plt + got_plt_idx;
++	else
++		return NULL;
++}
++
+ unsigned long module_emit_plt_entry(struct module *mod, unsigned long val)
+ {
+ 	struct mod_section *got_plt_sec = &mod->arch.got_plt;
 -- 
 2.35.1
 
