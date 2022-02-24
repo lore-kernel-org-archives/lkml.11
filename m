@@ -2,58 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B261BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232133AbiBXRlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:41:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
+        id S232155AbiBXRl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:41:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiBXRlv (ORCPT
+        with ESMTP id S229914AbiBXRlv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 12:41:51 -0500
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 464B61C2DAA;
-        Thu, 24 Feb 2022 09:41:21 -0800 (PST)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21OHbDJC020019;
-        Thu, 24 Feb 2022 11:37:13 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21OHbDNV020018;
-        Thu, 24 Feb 2022 11:37:13 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 24 Feb 2022 11:37:13 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Anders Roxell <anders.roxell@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 2/3] powerpc: fix build errors
-Message-ID: <20220224173713.GO614@gate.crashing.org>
-References: <20220223135820.2252470-1-anders.roxell@linaro.org> <20220223135820.2252470-2-anders.roxell@linaro.org> <871qzsphfv.fsf@mpe.ellerman.id.au>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <871qzsphfv.fsf@mpe.ellerman.id.au>
-User-Agent: Mutt/1.4.2.3i
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F61F1C2F60
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:41:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645724480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=70SduNrAiaotDuCIZO647ys8w2/fadsYzkVqmSb6sHw=;
+        b=d8JLEX6cekXhQyxAoq/xEFYiIBvrdgF/V8DgqaNyQqLt99tMcRlpkq0qIOHnNqLEmLIoH4
+        XjxF/f29tw32RkTZ96pZwfaW88OSG17VOSeaylxo9CtKun1MuAbbiLkr0SWF3yHGsIXkgt
+        7fjuOOL/g+IRo2Nm/7p8j9OKEU9dfII=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-126-Wg3qdFI8OLuymlgHy0vicQ-1; Thu, 24 Feb 2022 12:41:17 -0500
+X-MC-Unique: Wg3qdFI8OLuymlgHy0vicQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 70B5E80573C;
+        Thu, 24 Feb 2022 17:41:14 +0000 (UTC)
+Received: from starship (unknown [10.40.195.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E50D51077CBF;
+        Thu, 24 Feb 2022 17:41:11 +0000 (UTC)
+Message-ID: <55c391a51bf6b7d3927493ff56333e9846e04a4a.camel@redhat.com>
+Subject: Re: [RFC PATCH 08/13] KVM: SVM: Do not update logical APIC ID table
+ when in x2APIC mode
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
+        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
+Date:   Thu, 24 Feb 2022 19:41:10 +0200
+In-Reply-To: <20220221021922.733373-9-suravee.suthikulpanit@amd.com>
+References: <20220221021922.733373-1-suravee.suthikulpanit@amd.com>
+         <20220221021922.733373-9-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 11:39:16PM +1100, Michael Ellerman wrote:
-> >  	/* Calculate the parity of the value */
-> > -	asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
-> > +	asm (".machine \"push\"\n"
-> > +	     ".machine \"power7\"\n"
-> > +	     "popcntd %0,%1\n"
-> > +	     ".machine \"pop\"\n"
-> > +	     : "=r" (parity) : "r" (val));
+On Sun, 2022-02-20 at 20:19 -0600, Suravee Suthikulpanit wrote:
+> In X2APIC mode the Logical Destination Register is read-only,
+> which provides a fixed mapping between the logical and physical
+> APIC IDs. Therefore, there is no Logical APIC ID table in X2AVIC
+> and the processor uses the X2APIC ID in the backing page to create
+> a vCPU’s logical ID.
 > 
-> This was actually present in an older CPU, but it doesn't really matter,
-> this is fine.
+> Therefore, add logic to check x2APIC mode before updating logical
+> APIC ID table.
+> 
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  arch/x86/kvm/svm/avic.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index 215d8a7dbc1d..55b3b703b93b 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -417,6 +417,10 @@ static int avic_ldr_write(struct kvm_vcpu *vcpu, u8 g_physical_id, u32 ldr)
+>  	bool flat;
+>  	u32 *entry, new_entry;
+>  
+> +	/* Note: x2AVIC does not use logical APIC ID table */
+> +	if (apic_x2apic_mode(vcpu->arch.apic))
+> +		return 0;
+> +
+>  	flat = kvm_lapic_get_reg(vcpu->arch.apic, APIC_DFR) == APIC_DFR_FLAT;
+>  	entry = avic_get_logical_id_entry(vcpu, ldr, flat);
+>  	if (!entry)
+> @@ -435,8 +439,13 @@ static void avic_invalidate_logical_id_entry(struct kvm_vcpu *vcpu)
+>  {
+>  	struct vcpu_svm *svm = to_svm(vcpu);
+>  	bool flat = svm->dfr_reg == APIC_DFR_FLAT;
+> -	u32 *entry = avic_get_logical_id_entry(vcpu, svm->ldr_reg, flat);
+> +	u32 *entry;
+> +
+> +	/* Note: x2AVIC does not use logical APIC ID table */
+> +	if (apic_x2apic_mode(vcpu->arch.apic))
+> +		return;
+>  
+> +	entry = avic_get_logical_id_entry(vcpu, svm->ldr_reg, flat);
+>  	if (entry)
+>  		clear_bit(AVIC_LOGICAL_ID_ENTRY_VALID_BIT, (unsigned long *)entry);
+>  }
 
-popcntd was new on p7 (popcntb is the older one :-) )  And it does not
-matter indeed.
 
+Here actually the good apic_x2apic_mode was used.
 
-Segher
+However, shouldn't we inject #GP in avic_ldr_write to make this read realy read-only?
+It might be too late to do so here, since most AVIC writes are trap like.
+
+Thus we need to make the msr that corresponds to LDR to be write protected in the msr bitmap,
+and inject #GP when write it attempted.
+
+Then we can add WARN_ON in this function for this case instead.
+
+Best regards,
+	Maxim Levitsky
+
