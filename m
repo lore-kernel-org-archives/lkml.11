@@ -2,140 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:44:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7190FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234108AbiBXLpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 06:45:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50522 "EHLO
+        id S234118AbiBXLyI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 06:54:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231176AbiBXLpC (ORCPT
+        with ESMTP id S231176AbiBXLyG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 06:45:02 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D027C3EB82
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:44:32 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id d28so2573789wra.4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:44:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=By0koPKvfxcMR4uami4q6nEo7H/plZ6B7hXdRpr9zos=;
-        b=i8qMcPf1Q3mE5GCDoGg5rN2z7KNR4v1QkWzdeaMyW3k3kXIOY/PIZZoO6jIzrS9GXf
-         N9J6MgxVHAl8cKqQeyfCQQDG4qPlkD5aYJCyfFSPkTwQNcaQ9gYSWj1kbxmzh8jUh+4o
-         WC4u08jO9c1zBuBLLsiQa8Spwvz7ssr2B3BAWulYxl4FnxeAYyvP13FtiYVEawCyqc0q
-         +yzoQlx6Y4aTL5/fh1nHkgZbx5plCCjmpVTf1t+MWsHwZBuivtQnySk8fM3G6A5NiXCZ
-         sXHHBvZ4aTdUjMWeM2AYEuCPcWqA5p7ojUQdIZHcKCaRG/P808wP/zP8G+Ji2NOxc4zc
-         g81g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=By0koPKvfxcMR4uami4q6nEo7H/plZ6B7hXdRpr9zos=;
-        b=5ZHR9MNo33O5QkZHdMZSeou6YQQxCnVtWLzh7AySDeucMQ3ICDDM/ugSWUpINCISD1
-         hijXPmdlIBlzEAHMd7OyQk/xQrNGTLbmPvctGbk3Ns/xvqCVoPa7bPZTjhECMus4atzz
-         oEUEcD+0wL0UvgjcyqSxYCmIncaSfq8hsCvthyrCOmfXQJnDDqwtFC3DSlB3o4K52Lup
-         lIyuZVK9voPd1dQzp4nU82qDYE7IZw+uErO/AFdk3gkwQpieS4O32YF6cndvebVYt/EL
-         /oBtBbms35Sm1z+COV0A6W/8ZBTmm9M4+XMKHWJZT9yLZW6pVxnlYR4QakYc2UUGpcdV
-         Z52w==
-X-Gm-Message-State: AOAM532YNk3I6haVcBlMnOpv8GymWIdK7af62JIPLZVUJwdkeMYgOw/P
-        jndSzVbotKYuYdzmsS+6n+1ltA==
-X-Google-Smtp-Source: ABdhPJxFyXliu42yySrAeEXNzyWqVzug0J0Iti33/VcWEhV2LbIEmmE4MOW6ths5lINZk21h7SfROw==
-X-Received: by 2002:a05:6000:186d:b0:1ea:8e14:21c5 with SMTP id d13-20020a056000186d00b001ea8e1421c5mr1880571wri.635.1645703071405;
-        Thu, 24 Feb 2022 03:44:31 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id u14sm3164913wmq.41.2022.02.24.03.44.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 03:44:31 -0800 (PST)
-Date:   Thu, 24 Feb 2022 11:44:28 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH 1/4] dt-bindings: pwm: google,cros-ec: include generic
- pwm schema
-Message-ID: <YhdvnCnXbzFz63ys@google.com>
-References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
- <3248917.W5uN0jUHDo@phil>
- <YhdXyBvAbdHzc4gH@google.com>
- <1817486.VeUe9BSz9F@phil>
- <ad6e347b-a25b-5309-2a6a-8fd3faba256c@canonical.com>
+        Thu, 24 Feb 2022 06:54:06 -0500
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 03:51:53 PST
+Received: from wnew1-smtp.messagingengine.com (unknown [64.147.123.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F48F457A4;
+        Thu, 24 Feb 2022 03:51:51 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.west.internal (Postfix) with ESMTP id EF73B2B01789;
+        Thu, 24 Feb 2022 06:34:03 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Thu, 24 Feb 2022 06:34:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; bh=IW6ZF7jJlvH0wnSPVJN305buP+XUnsj/j2eLpQ
+        e9IRA=; b=fyq4KR64kAUkX1w4kjHgqt6y2G5Yzr0CK9WMz/ZLHTc2XDCLOGpHGG
+        bC2UBwU3mPf8mTvq6doDnGaQBIxAGFXbzWMwIwSdQE3mVSM/mhbvTWr/bF4wZ5Tm
+        kC9N+IRGUfD2nhlhwdC2qv7D+/GFkhOQP7c4jD4IWinW0ysmz+DgqxumbaEjJKPI
+        xwMzuTv8RbvhbY9j3lxNQxkaaZFBaKjVLSGvVaf9VD2yvk/Ijz2bzLk4uuvo6ep1
+        D+L3pLBmH550om7F02JMG7kv3dGGiOzoJOTk9uqgQciy+CLQXnWFeZRJ4xFZVFv0
+        od3BunfUoRISe23G5RGFDSd57grE4zyQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=IW6ZF7jJlvH0wnSPV
+        JN305buP+XUnsj/j2eLpQe9IRA=; b=W1yQ8dqf5MusPM/VuBD1og+qv0ByHaoeN
+        SypZYFaPyLr1cZgMdQqp6I52mwFaTbB42C2UlBsrYJgvb0eXU156XRQ5YqfnBNHo
+        Q8gZN0/y5igYQRLWFrINYDE63ACCnv4AbzGFRmZSFFJ4nyZVHXEVDJ5gM8A/Jdx8
+        vNJHvI5SM1dPlYSXuZvrKbQBFCDXcZ9w8KTTU3tX+mxzMomQT1l9yHuEOsyWQWNw
+        Jaq//zQsRX2b+Rs3/g6S8RbPh5ym8ZJCfU53Foezq5q8PZHUj+aKD53uh5EvOBLB
+        hUFtuOhvYJtWq7tZACmOhCCikB50N/Wv9WDNRgMyzBNfnFqEM34NQ==
+X-ME-Sender: <xms:Km0XYqG1JGN9f31kSGe0b--yiWe9O6_4wdTlN3M_VfDMNLmhswHi_Q>
+    <xme:Km0XYrUXMoiGArpDio6JDH_ZKbSjNadUq3IzKrZRL0Ay0IUwAma0Edku9o3rRe_Zg
+    bgeTFYfxK058w>
+X-ME-Received: <xmr:Km0XYkIO3caPr1J9Rr7GbF6YDZUJ95eriB1w-NcxWNwij8Uspue3CitaLVySdZBvrjYCe1Ps83Kzd0MzBkN0c_j7_Q8cCX4k>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrledvgddvlecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghgucfm
+    jfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepveeuheejgf
+    ffgfeivddukedvkedtleelleeghfeljeeiueeggeevueduudekvdetnecuvehluhhsthgv
+    rhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepghhrvghgsehkrhhorghhrd
+    gtohhm
+X-ME-Proxy: <xmx:K20XYkHKqezn-B2fQnhQRNFYvP3gjBIRR024DSiXURnn5ANMMU-80Q>
+    <xmx:K20XYgVIMV41dw6TkHECwcAcrrMCMLvPXoXBhc142qQ4MR56GIucjQ>
+    <xmx:K20XYnPEMp2ylJleWvT5dAruf1uSCPRoGmpItBiOjSjkrf_Bsd47sw>
+    <xmx:K20XYpUrME8rdFLEUSvF3kucOFhBvJ1kHdkCJtbG7BYAQy2qc7b2aHuDGJY>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 24 Feb 2022 06:34:02 -0500 (EST)
+Date:   Thu, 24 Feb 2022 12:34:00 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH bpf-next v1 1/6] HID: initial BPF implementation
+Message-ID: <YhdtKN7qodX7VDPV@kroah.com>
+References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
+ <20220224110828.2168231-2-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ad6e347b-a25b-5309-2a6a-8fd3faba256c@canonical.com>
+In-Reply-To: <20220224110828.2168231-2-benjamin.tissoires@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Feb 2022, Krzysztof Kozlowski wrote:
+On Thu, Feb 24, 2022 at 12:08:23PM +0100, Benjamin Tissoires wrote:
+> index 000000000000..243ac45a253f
+> --- /dev/null
+> +++ b/include/uapi/linux/bpf_hid.h
+> @@ -0,0 +1,39 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later WITH Linux-syscall-note */
+> +
+> +/*
+> + *  HID BPF public headers
+> + *
+> + *  Copyright (c) 2021 Benjamin Tissoires
+> + */
+> +
+> +#ifndef _UAPI__LINUX_BPF_HID_H__
+> +#define _UAPI__LINUX_BPF_HID_H__
+> +
+> +#include <linux/types.h>
+> +
+> +#define HID_BPF_MAX_BUFFER_SIZE		16384		/* 16kb */
+> +
+> +struct hid_device;
+> +
+> +enum hid_bpf_event {
+> +	HID_BPF_UNDEF = 0,
+> +	HID_BPF_DEVICE_EVENT,
+> +};
+> +
+> +/* type is HID_BPF_DEVICE_EVENT */
+> +struct hid_bpf_ctx_device_event {
+> +	__u8 data[HID_BPF_MAX_BUFFER_SIZE];
+> +	unsigned long size;
 
-> On 24/02/2022 11:06, Heiko Stuebner wrote:
-> > Am Donnerstag, 24. Februar 2022, 11:02:48 CET schrieb Lee Jones:
-> >> On Wed, 23 Feb 2022, Heiko Stuebner wrote:
-> >>
-> >>> Hi Lee,
-> >>>
-> >>> Am Mittwoch, 23. Februar 2022, 10:16:01 CET schrieb Lee Jones:
-> >>>> On Mon, 14 Feb 2022, Krzysztof Kozlowski wrote:
-> >>>>
-> >>>>> Include generic pwm.yaml schema, which enforces PWM node naming.  Keep
-> >>>>> the old name in bindings as deprecated.
-> >>>>>
-> >>>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> >>>>> ---
-> >>>>>  Documentation/devicetree/bindings/mfd/google,cros-ec.yaml    | 4 ++++
-> >>>>
-> >>>> Acked-by: Lee Jones <lee.jones@linaro.org>
-> >>>
-> >>> what is your expectation regarding this patch?
-> >>>
-> >>> Are you planning to merge it or are you expecting this to go through
-> >>> some other tree?
-> >>>
-> >>> The binding-change here is backward-comaptible in that the old
-> >>> node-name is still in it, only marked as deprecated, so in theory
-> >>> this patch should be able to be applied on its own without
-> >>> causing defects.
-> >>
-> >> In an ideal world, it would be broken up and I would take the MFD
-> >> part.   Is that possible or are there dependencies?
-> > 
-> > That is also what Krzysztof had in mind - see his reply to patch4.
-> > Binding going through the MFD tree and soc maintainers applying
-> > the individual dts patches.
-> > 
-> > As written the binding change is backward compatible, so no harm.
-> > 
-> > I was just confused by the "Acked-by" and wanted to clarify how you
-> > see it ;-)
-> >
-> 
-> The bindings patch should not be split more, but itself can be taken
-> alone. DTS patches can go via SoC maintainer trees.
+That's not a valid type to cross the user/kernel boundry, shouldn't it
+be "__u64"?  But really, isn't __u32 enough here?
 
-So in answer to Heiko's question, either Thierry, Rob or I can take
-the patch.  I'm not overly fussed which.  If I am to take it, I need
-Thierry's go-ahead and info on whether he requires a PR or not.
+thanks,
 
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+greg k-h
