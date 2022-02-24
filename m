@@ -2,75 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D135C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C87C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232850AbiBXJnf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:43:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35774 "EHLO
+        id S232892AbiBXJo1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:44:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232846AbiBXJnc (ORCPT
+        with ESMTP id S232878AbiBXJoZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:43:32 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1DFE27DF19;
-        Thu, 24 Feb 2022 01:43:02 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 58504212B6;
-        Thu, 24 Feb 2022 09:43:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645695781; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VhYBAe1gSGopgSRSOGMTGOmOvlVoIMiOWHRCXiap7/Q=;
-        b=P1OoCH8Hysjd2HFJr+09bFIvyRIBq+BM0fJ3CCR0CtN2K6H83HzE2Px/uJJs+A7wa3CuRY
-        +QJ3u5s/4vjmLZRyQytgjCjDBZc2CbBbNEJJnejBXcGyH6Lkpn+VjoyLhqVcwe18Rkbx2k
-        f3LLmhPlGtAZPvxlMix5S8oq0NCJNm0=
-Received: from suse.cz (unknown [10.100.216.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id F21E2A3B87;
-        Thu, 24 Feb 2022 09:43:00 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 10:43:00 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v2] vsprintf: Fix %pK with kptr_restrict == 0
-Message-ID: <YhdTJLHsSVPrta2R@alley>
-References: <107476128e59bff11a309b5bf7579a1753a41aca.1645087605.git.christophe.leroy@csgroup.eu>
+        Thu, 24 Feb 2022 04:44:25 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA0A627DF19;
+        Thu, 24 Feb 2022 01:43:55 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9574AED1;
+        Thu, 24 Feb 2022 01:43:55 -0800 (PST)
+Received: from [10.57.8.211] (unknown [10.57.8.211])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A57C23F70D;
+        Thu, 24 Feb 2022 01:43:53 -0800 (PST)
+Message-ID: <eb49beb7-584d-152d-0c61-bad66056505c@arm.com>
+Date:   Thu, 24 Feb 2022 09:43:52 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <107476128e59bff11a309b5bf7579a1753a41aca.1645087605.git.christophe.leroy@csgroup.eu>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 3/4] OPP: Add support of "opp-microwatt" for advanced
+ EM registration
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        rafael@kernel.org, daniel.lezcano@linaro.org, nm@ti.com,
+        sboyd@kernel.org, mka@chromium.org, dianders@chromium.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org
+References: <20220224081131.27282-1-lukasz.luba@arm.com>
+ <20220224081131.27282-4-lukasz.luba@arm.com>
+ <20220224091346.xmnpj27vllpa4cuy@vireshk-i7>
+ <9c8f15a3-563f-3bed-61a4-2f72b0c20e89@arm.com>
+ <20220224094216.mtxjjx65bbjzalqx@vireshk-i7>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220224094216.mtxjjx65bbjzalqx@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-02-17 09:49:59, Christophe Leroy wrote:
-> Although kptr_restrict is set to 0 and the kernel is booted with
-> no_hash_pointers parameter, the content of /proc/vmallocinfo is
-> lacking the real addresses.
-> 
->   / # cat /proc/vmallocinfo
->   0x(ptrval)-0x(ptrval)    8192 load_module+0xc0c/0x2c0c pages=1 vmalloc
->   0x(ptrval)-0x(ptrval)   12288 start_kernel+0x4e0/0x690 pages=2 vmalloc
->   0x(ptrval)-0x(ptrval)   12288 start_kernel+0x4e0/0x690 pages=2 vmalloc
->   0x(ptrval)-0x(ptrval)    8192 _mpic_map_mmio.constprop.0+0x20/0x44 phys=0x80041000 ioremap
->   0x(ptrval)-0x(ptrval)   12288 _mpic_map_mmio.constprop.0+0x20/0x44 phys=0x80041000 ioremap
->     ...
-> 
-> According to the documentation for /proc/sys/kernel/, %pK is
-> equivalent to %p when kptr_restrict is set to 0.
-> 
-> Fixes: 5ead723a20e0 ("lib/vsprintf: no_hash_pointers prints all addresses as unhashed")
-> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-The patch has been committed into printk/linux.git, branch for-5.18.
 
-Best Regards,
-Petr
+On 2/24/22 09:42, Viresh Kumar wrote:
+> On 24-02-22, 09:33, Lukasz Luba wrote:
+>> On 2/24/22 09:13, Viresh Kumar wrote:
+>>> On 24-02-22, 08:11, Lukasz Luba wrote:
+>>>> diff --git a/drivers/opp/of.c b/drivers/opp/of.c
+> 
+>>>> +static bool _of_has_opp_microwatt_property(struct device *dev)
+>>>> +{
+>>>> +	unsigned long power, freq = 0;
+>>>> +	struct dev_pm_opp *opp;
+>>>> +
+>>>> +	/* Check if at least one OPP has needed property */
+>>>> +	opp = dev_pm_opp_find_freq_ceil(dev, &freq);
+>>>> +	if (IS_ERR(opp))
+>>>> +		return false;
+>>>> +
+>>>> +	power = dev_pm_opp_get_power(opp);
+>>>> +	dev_pm_opp_put(opp);
+>>>> +	if (!power)
+>>>
+>>> Instead of this heavy stuff, just pick the first OPP from the opp
+>>> table and see its power-value.
+>>
+>> It is the first opp: freq=0.
+>> You mean by parsing the the DT node instead, like I had in v2 version?
+> 
+> No, I was thinking if you can simply do:
+> 
+> opp = list_first_entry(&opp_table->opp_list, struct dev_pm_opp, node);
+> 
+> But that requires locking, etc as well. So maybe this is fine.
+>   
+
+OK, so I'll leave it as is now.
+
+Thank you for the comments. I'll work on v4
