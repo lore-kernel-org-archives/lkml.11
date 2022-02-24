@@ -2,111 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1E0C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0533BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbiBXSz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 13:55:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35576 "EHLO
+        id S233106AbiBXSz1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 13:55:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231218AbiBXSzZ (ORCPT
+        with ESMTP id S233083AbiBXSz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 13:55:25 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1790924FB98;
-        Thu, 24 Feb 2022 10:54:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+        Thu, 24 Feb 2022 13:55:26 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EFE24CCE3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:54:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1645728895; x=1677264895;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yz3VSeeqS/d8vtsV1wM/LL37fEG9kXMUFrMpOBnMrT0=;
-  b=Wr8dVCEqZiVfStV94KZJME9KB8cd8DcXJqqz8xINpM+HUqxYYmhasQ2F
-   /tC/QnPEnavn20jC26Bij2geh9JcZPfAFBD9FAD5OIYYa6ceF0fOTeg7R
-   DyRmkycdpxKByFGe3a1vftUhF/R3CnOCDaCqnHUrZ390fUXd2Sy1VSY5B
-   C6x6f8cpTSgi40qEsJCXzQ1HUSc4dnNn/MunkOoLCP8V38fdMuk6bSnd8
-   dTlbC07hSGNxxYvJ5Zf2uCqSFwxEWZ9hZkW8a+/ltK1FkwXaVvfZiKjbf
-   1J00DgVihPs+3LxItK3U/QIEUHENyiZVuT/8fGkISo/dm4zlILVI5zSeU
-   g==;
-X-IronPort-AV: E=Sophos;i="5.90,134,1643698800"; 
-   d="scan'208";a="154308419"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Feb 2022 11:54:55 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 24 Feb 2022 11:54:54 -0700
-Received: from [10.12.73.51] (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 24 Feb 2022 11:54:52 -0700
-Message-ID: <c8eafea6-f530-1e17-7557-d4fa4224ee2a@microchip.com>
-Date:   Thu, 24 Feb 2022 19:54:52 +0100
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=maTwcdC87fX3lmLSsjgS76Kko/CC89cO+10/za1K53s=;
+  b=fGN0wx8cWz+iIJq0NnQkFoDI22gxAgBtbNO9z8I1G+0to4vHsymcsv6N
+   8lFvdCIuxBPk2qmSKhPCm01sFW3fsl+ErB39SUMAmlcfXLFFFyQxzHSa3
+   eYN9pJuLp2xBCGBOmQf372NHKNFlDTAII5GY7q2Zp9pIuLSxMkas1jXvg
+   vyq8VFRvd6gBWjmmTsM44KpDJbVUwjnYOaq9IxiBJQvKmsl6SfizF3o63
+   aSucOae8CYSawx7rL9xUz7a1votHO9zDQppba2Jm17gODq7208rD41lPp
+   MQdOhJaHVLU12rM7qx7YodebJOHKNuFKJu6S3Jo9bBUssjh5elQMS1702
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="251150246"
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="251150246"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 10:52:29 -0800
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="548888374"
+Received: from vpirogov-mobl.amr.corp.intel.com (HELO [10.252.137.68]) ([10.252.137.68])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 10:52:28 -0800
+Message-ID: <67dfdb0c-c483-ec3c-4fb8-57086ffde9bf@intel.com>
+Date:   Thu, 24 Feb 2022 10:52:23 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] ARM: configs: at91: sama7: Enable crypto IPs and software
- algs
 Content-Language: en-US
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        <claudiu.beznea@microchip.com>, <alexandre.belloni@bootlin.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>
-References: <20220204135905.512013-1-tudor.ambarus@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20220204135905.512013-1-tudor.ambarus@microchip.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
+ <20220224155630.52734-10-kirill.shutemov@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCHv4 09/30] x86/tdx: Add MSR support for TDX guests
+In-Reply-To: <20220224155630.52734-10-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 04/02/2022 at 14:59, Tudor Ambarus wrote:
-> Similar to sama5_defconfig, enable hardware acceleration for the
-> sama7 crypto IPs, enable crypto software implementations in case
-> the crypto IPs need a fallback to them, and enable the hash and
-> skcipher user interfaces in case one wants to offload the crypto
-> algs to the sama7 crypto IPs.
+On 2/24/22 07:56, Kirill A. Shutemov wrote:
+> Use hypercall to emulate MSR read/write for the TDX platform.
 > 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> There are two viable approaches for doing MSRs in a TD guest:
+> 
+> 1. Execute the RDMSR/WRMSR instructions like most VMs and bare metal
+>    do. Some will succeed, others will cause a #VE. All of those that
+>    cause a #VE will be handled with a TDCALL.
+> 2. Use paravirt infrastructure.  The paravirt hook has to keep a list
+>    of which MSRs would cause a #VE and use a TDCALL.  All other MSRs
+>    execute RDMSR/WRMSR instructions directly.
+> 
+> The second option can be ruled out because the list of MSRs was
+> challenging to maintain. That leaves option #1 as the only viable
+> solution for the minimal TDX support.
+> 
+> For performance-critical MSR writes (like TSC_DEADLINE), future patches
+> will replace the WRMSR/#VE sequence with the direct TDCALL.
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Queued for 5.18 in at91-defconfig
+This will still leave us with a list of non-#VE-inducing MSRs.  That's
+not great.  But, if we miss an MSR in the performance-critical list, the
+result is a slow WRMSR->#VE.  If we miss an MSR in the paravirt
+approach, we induce a fatal #VE.
 
-Regards,
-   Nicolas
+Please add something to that effect if you revise this patch.
 
+> RDMSR and WRMSR specification details can be found in
+> Guest-Host-Communication Interface (GHCI) for Intel Trust Domain
+> Extensions (Intel TDX) specification, sec titled "TDG.VP.
+> VMCALL<Instruction.RDMSR>" and "TDG.VP.VMCALL<Instruction.WRMSR>".
+> 
+> Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+> Reviewed-by: Andi Kleen <ak@linux.intel.com>
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 > ---
->   arch/arm/configs/sama7_defconfig | 14 +++++++++++++-
->   1 file changed, 13 insertions(+), 1 deletion(-)
+>  arch/x86/coco/tdx.c | 42 ++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 42 insertions(+)
 > 
-> diff --git a/arch/arm/configs/sama7_defconfig b/arch/arm/configs/sama7_defconfig
-> index c12278174579..d6e27b837f88 100644
-> --- a/arch/arm/configs/sama7_defconfig
-> +++ b/arch/arm/configs/sama7_defconfig
-> @@ -196,7 +196,19 @@ CONFIG_NLS_CODEPAGE_850=y
->   CONFIG_NLS_ISO8859_1=y
->   CONFIG_NLS_UTF8=y
->   CONFIG_LSM="N"
-> -# CONFIG_CRYPTO_HW is not set
-> +CONFIG_CRYPTO_AUTHENC=y
-> +CONFIG_CRYPTO_GCM=y
-> +CONFIG_CRYPTO_CBC=y
-> +CONFIG_CRYPTO_CFB=y
-> +CONFIG_CRYPTO_OFB=y
-> +CONFIG_CRYPTO_XTS=y
-> +CONFIG_CRYPTO_SHA1=y
-> +CONFIG_CRYPTO_DES=y
-> +CONFIG_CRYPTO_USER_API_HASH=m
-> +CONFIG_CRYPTO_USER_API_SKCIPHER=m
-> +CONFIG_CRYPTO_DEV_ATMEL_AES=y
-> +CONFIG_CRYPTO_DEV_ATMEL_TDES=y
-> +CONFIG_CRYPTO_DEV_ATMEL_SHA=y
->   CONFIG_CRC_CCITT=y
->   CONFIG_CRC_ITU_T=y
->   CONFIG_DMA_CMA=y
+> diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
+> index 0a2e6be0cdae..89992593a209 100644
+> --- a/arch/x86/coco/tdx.c
+> +++ b/arch/x86/coco/tdx.c
+> @@ -116,6 +116,44 @@ void __cpuidle tdx_safe_halt(void)
+>  		WARN_ONCE(1, "HLT instruction emulation failed\n");
+>  }
+>  
+> +static bool read_msr(struct pt_regs *regs)
+> +{
+> +	struct tdx_hypercall_args args = {
+> +		.r10 = TDX_HYPERCALL_STANDARD,
+> +		.r11 = EXIT_REASON_MSR_READ,
 
+Just a minor note: these "EXIT_REASON_FOO"'s in r11 are effectively
+*the* hypercall being made, right?
 
--- 
-Nicolas Ferre
+The hypercall is being made in response to what would have otherwise
+been a MSR read VMEXIT.  But, it's a *bit* goofy to see them here when
+the TDX guest isn't doing any kind of VMEXIT.
+
+I wish there were some clarity around it, but it's not a deal breaker.
+
+> +		.r12 = regs->cx,
+> +	};
+> +
+> +	/*
+> +	 * Emulate the MSR read via hypercall. More info about ABI
+> +	 * can be found in TDX Guest-Host-Communication Interface
+> +	 * (GHCI), section titled "TDG.VP.VMCALL<Instruction.RDMSR>".
+> +	 */
+> +	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
+> +		return false;
+> +
+> +	regs->ax = lower_32_bits(args.r11);
+> +	regs->dx = upper_32_bits(args.r11);
+> +	return true;
+> +}
+> +
+> +static bool write_msr(struct pt_regs *regs)
+> +{
+> +	struct tdx_hypercall_args args = {
+> +		.r10 = TDX_HYPERCALL_STANDARD,
+> +		.r11 = EXIT_REASON_MSR_WRITE,
+> +		.r12 = regs->cx,
+> +		.r13 = (u64)regs->dx << 32 | regs->ax,
+> +	};
+> +
+> +	/*
+> +	 * Emulate the MSR write via hypercall. More info about ABI
+> +	 * can be found in TDX Guest-Host-Communication Interface
+> +	 * (GHCI) section titled "TDG.VP.VMCALL<Instruction.WRMSR>".
+> +	 */
+> +	return !__tdx_hypercall(&args, 0);
+> +}
+> +
+>  void tdx_get_ve_info(struct ve_info *ve)
+>  {
+>  	struct tdx_module_output out;
+> @@ -158,6 +196,10 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
+>  	switch (ve->exit_reason) {
+>  	case EXIT_REASON_HLT:
+>  		return handle_halt();
+> +	case EXIT_REASON_MSR_READ:
+> +		return read_msr(regs);
+> +	case EXIT_REASON_MSR_WRITE:
+> +		return write_msr(regs);
+>  	default:
+>  		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
+>  		return false;
+
+I still think it's annoying that all these WRMSR's are turned into #VE,
+but this does seem like the best approach given the architecture that we
+have.  Having the optimized ones seems like a good compromise.
+
+Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
