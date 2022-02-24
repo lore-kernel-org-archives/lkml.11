@@ -2,92 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7ADEC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2CDDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:53:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233006AbiBXJuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:50:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43640 "EHLO
+        id S232956AbiBXJyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:54:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233003AbiBXJuK (ORCPT
+        with ESMTP id S229746AbiBXJyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:50:10 -0500
-Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com [209.85.222.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 228012819B2;
-        Thu, 24 Feb 2022 01:49:40 -0800 (PST)
-Received: by mail-ua1-f42.google.com with SMTP id p33so609901uap.8;
-        Thu, 24 Feb 2022 01:49:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9IkiN0VIfOnYW5l2ddoLdbKXjFAORIEW7LEcXcst+cU=;
-        b=W7Jc42pt22ZkEpdnueYEPN7U/0bcpQgFvPDq0tNlhrn6ZmfeDp8ieB0YLCYZUyookc
-         H2+H+FHS/7yFiiZ1Y48nj9namidksaxQHyp/6msHeDIxPXaEO9BGvM5IZfSEiIOERTeA
-         CB1QDfZgTOUnweMnG0TuNDJSHF6HEJP9xAg5RvzllKYCojK/34cuJz+oR0pqOnoCKtDU
-         H7zIsWVcApnxhI1WF3Z917xDTtzhAiAiGoAXxw88XQaBPSf2A+ktpUmIEGqZPxeR9Sx8
-         A3/9T06T4SeQYtSBfwx4qxyKbGBoS+PwiSrjFjgeUmzGl14iKJxEvBXnHpwNC2gJfOdS
-         iniw==
-X-Gm-Message-State: AOAM53149u0ntyYC1qqBiJO9bRlmUcCd1D7mJPJhjUpzeS/sA8XGvdWW
-        qdcxIsMbxbY9kUWPCGC2EUbyApUg/rPruA==
-X-Google-Smtp-Source: ABdhPJxWI0W/CyVSr5GWmiGwIMIRNdaGuMDum0EpH4QRfsA9DlmWB46r/KgbqAXgfSahbTiyIZ9YnA==
-X-Received: by 2002:ab0:b05:0:b0:342:2961:37ee with SMTP id b5-20020ab00b05000000b00342296137eemr735920uak.29.1645696179094;
-        Thu, 24 Feb 2022 01:49:39 -0800 (PST)
-Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com. [209.85.217.44])
-        by smtp.gmail.com with ESMTPSA id l187sm322879vke.6.2022.02.24.01.49.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 01:49:38 -0800 (PST)
-Received: by mail-vs1-f44.google.com with SMTP id t22so1513805vsa.4;
-        Thu, 24 Feb 2022 01:49:38 -0800 (PST)
-X-Received: by 2002:a05:6102:4411:b0:31b:6df1:3b80 with SMTP id
- df17-20020a056102441100b0031b6df13b80mr761507vsb.5.1645696178512; Thu, 24 Feb
- 2022 01:49:38 -0800 (PST)
+        Thu, 24 Feb 2022 04:54:07 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9A72819B6
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:53:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645696418; x=1677232418;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=CYRIDdp9DfLLgliDckqKxr1/trJ76a0IiZvbqZYWbu0=;
+  b=R7xoD7U5Am5Ptv8RNWYKKjxdUkIBG33x20mDrFEJFmtlePs+UrzZRFPZ
+   Sph/N4Sh8HUBZDn5K9Yjh4HFS3Oenu2fMjOyd14jGdG4RlBlTuHwRJHUg
+   jmIPztQr9DBVQ/6+3ruUlHIpIcMtuZtq8t2J6ONaNs+/TMk9y702vq/jX
+   xf92ns4yNlmzMrhpVqY6+3Fse78ToEooUxByicrAD38kRK10/M6wF2pxy
+   HBLDQfPBytnkWgCuMwiTIRdk+JYsZGR6OUCq4VAPDebuO7bplcfhGl1WS
+   z3gdunSDjpi9eSK9J5Z6PNOHNYkB4Ik5ZQShYLr0Qj4RgewRNilQTGv4d
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232815979"
+X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
+   d="scan'208";a="232815979"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 01:53:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
+   d="scan'208";a="684223536"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 01:53:19 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nNAoI-0002yZ-I9; Thu, 24 Feb 2022 09:53:18 +0000
+Date:   Thu, 24 Feb 2022 17:52:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [peterz-queue:x86/wip.ibt 27/42] arch/x86/lib/error-inject.c:15:3:
+ error: expected ')'
+Message-ID: <202202241727.G6Jrx2wZ-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220224092114.25737-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220224092114.25737-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 24 Feb 2022 10:49:27 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWebGqoLeDcTYM9vKkdVpC0wCfcUSpV6gr+4wphzkacCg@mail.gmail.com>
-Message-ID: <CAMuHMdWebGqoLeDcTYM9vKkdVpC0wCfcUSpV6gr+4wphzkacCg@mail.gmail.com>
-Subject: Re: [PATCH] soc: renesas: Kconfig: Introduce ARCH_RZG2L config option
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Magnus Damm <magnus.damm@gmail.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prabhakar,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
+head:   27b6438f414b6a37b60dcd90c8980397586d49db
+commit: 894eca106331b66d8f1c261d40386c043da75ee2 [27/42] x86/ibt: Annotate text references
+config: i386-randconfig-a011 (https://download.01.org/0day-ci/archive/20220224/202202241727.G6Jrx2wZ-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=894eca106331b66d8f1c261d40386c043da75ee2
+        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
+        git fetch --no-tags peterz-queue x86/wip.ibt
+        git checkout 894eca106331b66d8f1c261d40386c043da75ee2
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-On Thu, Feb 24, 2022 at 10:21 AM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Renesas RZ/G2L, RZ/G2LC, RZ/G2UL and RZ/V2L SoC's have identical IP blocks
-> for which drivers are common. To avoid updating the Kconfig files for
-> drivers in common to each SoC, introduce the ARCH_RZG2L config option.
-> ARCH_RZG2L config option will be selected by the above mentioned SoC's and
-> ARCH_RZG2L config option will be used as a dependency for the drivers in
-> common.
->
-> While at it, move PM and PM_GENERIC_DOMAINS under the ARCH_RZG2L
-> config option instead of adding it to individual SoC.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.18, so you can start updating
-dependencies after v5.18-rc1.
+All errors (new ones prefixed by >>):
 
-Gr{oetje,eeting}s,
+>> arch/x86/lib/error-inject.c:15:3: error: expected ')'
+                   ANNOTATE_NOENDBR
+                   ^
+   arch/x86/lib/error-inject.c:10:4: note: to match this '('
+   asm(
+      ^
+   1 error generated.
 
-                        Geert
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+vim +15 arch/x86/lib/error-inject.c
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+     9	
+    10	asm(
+    11		".text\n"
+    12		".type just_return_func, @function\n"
+    13		".globl just_return_func\n"
+    14		"just_return_func:\n"
+  > 15			ANNOTATE_NOENDBR
+    16			ASM_RET
+    17		".size just_return_func, .-just_return_func\n"
+    18	);
+    19	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
