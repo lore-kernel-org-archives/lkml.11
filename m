@@ -2,179 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA306C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:55:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236579AbiBXPze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:55:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39950 "EHLO
+        id S236567AbiBXP4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:56:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236434AbiBXPz1 (ORCPT
+        with ESMTP id S236618AbiBXPz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:55:27 -0500
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FE517C426;
-        Thu, 24 Feb 2022 07:54:56 -0800 (PST)
-Received: from localhost.localdomain (unknown [80.240.223.29])
-        by mail.ispras.ru (Postfix) with ESMTPSA id DC8BF40755DB;
-        Thu, 24 Feb 2022 15:44:53 +0000 (UTC)
-From:   Baskov Evgeniy <baskov@ispras.ru>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Baskov Evgeniy <baskov@ispras.ru>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH RFC v2 2/2] libstub: ensure allocated memory to be executable
-Date:   Thu, 24 Feb 2022 18:43:30 +0300
-Message-Id: <20220224154330.26564-3-baskov@ispras.ru>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220224154330.26564-1-baskov@ispras.ru>
-References: <20220224154330.26564-1-baskov@ispras.ru>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 24 Feb 2022 10:55:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3778217C438
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:55:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5A2E61764
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 15:55:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA1E0C340EC;
+        Thu, 24 Feb 2022 15:55:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645718126;
+        bh=QqinqAC468TSKHfPVewQtZrGPuE4gy2uDC9DJz44xt4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N40eyeImIMne6IsvOpWskvHDWp/1aSFrqsLQecfhnOdC/G5/IU/UeavX9JBh9mau5
+         U49HHzDmkCsiSX1yA4/Tjm1CPaV8Q0DDjnnvV2LUUIM5ssEQhlbEcpFAC2nQU1/yM1
+         PQ9plYsKFK7LOPPheOG+RcWz7jFNZPWxUPHp2j60rkRs6OlzQCw6OtjlW0SWOw5oUd
+         SIgY1raFUrHwTlokFJ3PSpBxWbkW1T/TYq5eiFtkR8w9trxvNydX//RWr/ghkaqC1T
+         hn01CWJh8yu0Qym3jeCul7R1ESY6Vm6u2TaMZST6ZvQnYi//ILROLDYtLAqoLSrl5I
+         Z14BSX/QFF6xQ==
+Date:   Fri, 25 Feb 2022 00:55:20 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
+        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
+        keescook@chromium.org, samitolvanen@google.com,
+        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
+        rostedt@goodmis.org, mhiramat@kernel.org,
+        alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
+Message-Id: <20220225005520.c69be2fbdbd28028361792d9@kernel.org>
+In-Reply-To: <20220224151322.714815604@infradead.org>
+References: <20220224145138.952963315@infradead.org>
+        <20220224151322.714815604@infradead.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are UEFI versions that restrict execution of memory regions,
-preventing the kernel from booting. Parts that needs to be executable
-are:
+Hi Peter,
 
-* Area used for trampoline placement.
-* All memory regions that the kernel may be relocated before
-  and during extraction.
+On Thu, 24 Feb 2022 15:51:50 +0100
+Peter Zijlstra <peterz@infradead.org> wrote:
 
-Use DXE services to ensure aforementioned address ranges
-to be executable.
+> Have ftrace_location() search the symbol for the __fentry__ location
+> when it isn't at func+0 and use this for {,un}register_ftrace_direct().
+> 
+> This avoids a whole bunch of assumptions about __fentry__ being at
+> func+0.
+> 
+> Suggested-by: Steven Rostedt <rostedt@goodmis.org>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> ---
+>  kernel/trace/ftrace.c |   30 ++++++++++++++++++++++++++++--
+>  1 file changed, 28 insertions(+), 2 deletions(-)
+> 
+> --- a/kernel/trace/ftrace.c
+> +++ b/kernel/trace/ftrace.c
+> @@ -1578,7 +1578,24 @@ unsigned long ftrace_location_range(unsi
+>   */
+>  unsigned long ftrace_location(unsigned long ip)
+>  {
+> -	return ftrace_location_range(ip, ip);
+> +	struct dyn_ftrace *rec;
+> +	unsigned long offset;
+> +	unsigned long size;
+> +
+> +	rec = lookup_rec(ip, ip);
+> +	if (!rec) {
+> +		if (!kallsyms_lookup_size_offset(ip, &size, &offset))
+> +			goto out;
+> +
+> +		if (!offset)
 
-Signed-off-by: Baskov Evgeniy <baskov@ispras.ru>
+Isn't this 'if (offset)' ?
 
-diff --git a/drivers/firmware/efi/libstub/x86-stub.c b/drivers/firmware/efi/libstub/x86-stub.c
-index 01ddd4502e28..ca7d5379b480 100644
---- a/drivers/firmware/efi/libstub/x86-stub.c
-+++ b/drivers/firmware/efi/libstub/x86-stub.c
-@@ -22,6 +22,7 @@
- #define MAXMEM_X86_64_4LEVEL (1ull << 46)
- 
- const efi_system_table_t *efi_system_table;
-+const efi_dxe_services_table_t *efi_dxe_table;
- extern u32 image_offset;
- static efi_loaded_image_t *image = NULL;
- 
-@@ -211,9 +212,41 @@ static void retrieve_apple_device_properties(struct boot_params *boot_params)
- 	}
- }
- 
-+
-+static void unprotect_memory_range(unsigned long base, unsigned long size)
-+{
-+	unsigned long rounded_base, rounded_size;
-+	efi_status_t res;
-+
-+	if (efi_dxe_table == NULL)
-+		return;
-+
-+	rounded_base = rounddown(base, EFI_PAGE_SIZE);
-+	rounded_size = roundup(base + size, EFI_PAGE_SIZE) - rounded_base;
-+
-+	res = efi_dxe_call(set_memory_space_attributes,
-+			   rounded_base, rounded_size, EFI_MEMORY_WB);
-+	if (res != EFI_SUCCESS) {
-+		efi_warn("Unable to unprotect memory range [%08lx,%08lx]: %d\n",
-+			 base, size + base, (int)res);
-+	}
-+}
-+
-+/*
-+ * Trampoline takes 2 pages and can be loaded in first megabyte of memory
-+ * with its end placed between 128k and 640k where BIOS might start
-+ */
-+
-+#define TRAMPOLINE_PLACEMENT_BASE ((128 - 8)*1024)
-+#define TRAMPOLINE_PLACEMENT_SIZE (640*1024 - (128 - 8)*1024)
-+
-+void startup_32(struct boot_params *boot_params);
-+
- static const efi_char16_t apple[] = L"Apple";
- 
--static void setup_quirks(struct boot_params *boot_params)
-+static void setup_quirks(struct boot_params *boot_params,
-+			 unsigned long image_base,
-+			 unsigned long image_size)
- {
- 	efi_char16_t *fw_vendor = (efi_char16_t *)(unsigned long)
- 		efi_table_attr(efi_system_table, fw_vendor);
-@@ -222,6 +255,31 @@ static void setup_quirks(struct boot_params *boot_params)
- 		if (IS_ENABLED(CONFIG_APPLE_PROPERTIES))
- 			retrieve_apple_device_properties(boot_params);
- 	}
-+
-+	/*
-+	 * Allow execution of possible trampoline used
-+	 * for switching between 4- and 5-level page tables
-+	 * and relocated kernel image.
-+	 */
-+
-+	unprotect_memory_range(TRAMPOLINE_PLACEMENT_BASE,
-+	                       TRAMPOLINE_PLACEMENT_SIZE);
-+
-+#ifdef CONFIG_64BIT
-+	if (image_base != (unsigned long)startup_32)
-+		unprotect_memory_range(image_base, image_size);
-+#else
-+	/*
-+	 * Clear protection flags on a whole range of possible
-+	 * addresses used for KASLR. We don't need to do that
-+	 * on x86_64, since KASLR/extraction is performed after
-+	 * dedicated identity page tables are built and we only
-+	 * need to remove possible protection on relocated image
-+	 * itself disregarding further relocations.
-+	 */
-+	unprotect_memory_range(LOAD_PHYSICAL_ADDR,
-+			       KERNEL_IMAGE_SIZE - LOAD_PHYSICAL_ADDR);
-+#endif
- }
- 
- /*
-@@ -341,8 +399,6 @@ static void __noreturn efi_exit(efi_handle_t handle, efi_status_t status)
- 		asm("hlt");
- }
- 
--void startup_32(struct boot_params *boot_params);
--
- void __noreturn efi_stub_entry(efi_handle_t handle,
- 			       efi_system_table_t *sys_table_arg,
- 			       struct boot_params *boot_params);
-@@ -677,11 +733,18 @@ unsigned long efi_main(efi_handle_t handle,
- 	efi_status_t status;
- 
- 	efi_system_table = sys_table_arg;
--
- 	/* Check if we were booted by the EFI firmware */
- 	if (efi_system_table->hdr.signature != EFI_SYSTEM_TABLE_SIGNATURE)
- 		efi_exit(handle, EFI_INVALID_PARAMETER);
- 
-+	efi_dxe_table = get_efi_config_table(EFI_DXE_SERVICES_TABLE_GUID);
-+
-+	if (efi_dxe_table == NULL ||
-+	    efi_dxe_table->hdr.signature != EFI_DXE_SERVICES_TABLE_SIGNATURE) {
-+		efi_warn("Unable to locate EFI DXE services table\n");
-+		efi_dxe_table = NULL;
-+	}
-+
- 	/*
- 	 * If the kernel isn't already loaded at a suitable address,
- 	 * relocate it.
-@@ -791,7 +854,7 @@ unsigned long efi_main(efi_handle_t handle,
- 
- 	setup_efi_pci(boot_params);
- 
--	setup_quirks(boot_params);
-+	setup_quirks(boot_params, bzimage_addr, buffer_end - buffer_start);
- 
- 	status = exit_boot(boot_params, handle);
- 	if (status != EFI_SUCCESS) {
+> +			rec = lookup_rec(ip - offset, (ip - offset) + size);
+> +	}
+> +
+> +	if (rec)
+> +		return rec->ip;
+> +
+> +out:
+> +	return 0;
+>  }
+
+Thank you,
+
+>  
+>  /**
+> @@ -5110,11 +5127,16 @@ int register_ftrace_direct(unsigned long
+>  	struct ftrace_func_entry *entry;
+>  	struct ftrace_hash *free_hash = NULL;
+>  	struct dyn_ftrace *rec;
+> -	int ret = -EBUSY;
+> +	int ret = -ENODEV;
+>  
+>  	mutex_lock(&direct_mutex);
+>  
+> +	ip = ftrace_location(ip);
+> +	if (!ip)
+> +		goto out_unlock;
+> +
+>  	/* See if there's a direct function at @ip already */
+> +	ret = -EBUSY;
+>  	if (ftrace_find_rec_direct(ip))
+>  		goto out_unlock;
+>  
+> @@ -5222,6 +5244,10 @@ int unregister_ftrace_direct(unsigned lo
+>  
+>  	mutex_lock(&direct_mutex);
+>  
+> +	ip = ftrace_location(ip);
+> +	if (!ip)
+> +		goto out_unlock;
+> +
+>  	entry = find_direct_entry(&ip, NULL);
+>  	if (!entry)
+>  		goto out_unlock;
+> 
+> 
+
+
 -- 
-2.35.1
-
+Masami Hiramatsu <mhiramat@kernel.org>
