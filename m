@@ -2,568 +2,358 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E5ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:28:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52E00C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:29:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234361AbiBXM3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:29:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
+        id S234375AbiBXM33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:29:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231365AbiBXM3M (ORCPT
+        with ESMTP id S234389AbiBXM31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:29:12 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2202D25A323
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:28:42 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id x193so2334741oix.0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:28:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yqnZYNW9ADSY/YfVSxsO+0vIDcEZwOdxGA0neyWGAlw=;
-        b=tGWtxjXJBuzYw/z72un4l6o/AlYVmzvPYKOkfbS5QFLUcoBhFOoNgglT8gMom/pVBI
-         rteKw2r9PdWr2md0TcnS/C/ID7SGMB/ftC1Zc7tdFXqeQwZErsxlrz3f4XcTNOZYhESh
-         9YjJbrmjL4RJRwmqYZU0ttidZrQeifzPueJwnSM5HqxJ3QJehX3idjQE6rFlTwejNzj9
-         Kr9m56ISvtk7+6gguRwOqz7oCKwC/jDqvff8Yva2rqiWX75k+XndP9A80LpNofk0CTvE
-         zcXFjuR13d74iJ9odAZhdxpWVZiAQwTBEqowxYUnEHTeDrd2xv0iwjEXTnOvSeBYssxp
-         Qchw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yqnZYNW9ADSY/YfVSxsO+0vIDcEZwOdxGA0neyWGAlw=;
-        b=EsSViGH4v6TPQav2Ze7WXkijQpU3bUgZFLoaL/qhVtrElPKXCzgnFciHv5CiKg0GA/
-         QVUDant3o4sGan+0sciv0o60lyOc686yq/Ged0BhYaFvOgBUajCoz1d94HfNjmQrdmpQ
-         4H+Fl0ur3exqayr1lprOZKFN1MX+BBHh7zX4NCSjPuj7ZJZdmh8Vo6XB6kz812bsMGe6
-         BnkDZJ6jNMAMjRtPZpiGA55GX4Z9XiFLEF5rGIknY5U/rO64sGMrmRfbJdZRBrz9TxyA
-         kRGODZW0yub7iE9N8BHJzF3tx1XePjh8AtgiMRgmF4hCD795SL0Y68BhFizS9IJtA/ms
-         mFsQ==
-X-Gm-Message-State: AOAM532WyNZ7IwEiUMNc4DSFooMRoo3TKTy4UlYbz87yMSdT4iMOL39Y
-        erJe9YrugS9gtP2Kmsedg4Z0/6hPJW5sJaudKiJV5w==
-X-Google-Smtp-Source: ABdhPJxvGFZpfwlvVvE0Naq2MWTGmpe6OduOJ6e6hBM9s5o9yN/8vaC1lg8BXNudAfPTB3+P3GGN4Dwv78IuCRoZ3UY=
-X-Received: by 2002:a05:6808:ec1:b0:2d6:52f:6405 with SMTP id
- q1-20020a0568080ec100b002d6052f6405mr5744782oiv.124.1645705721184; Thu, 24
- Feb 2022 04:28:41 -0800 (PST)
+        Thu, 24 Feb 2022 07:29:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D183A264983
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:28:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645705736;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=e7ZQKYDQncYbDG1B2fFk8VM+4OlBI5GOY3f+j/Ennbk=;
+        b=fdyMrrYONR87zx385Irc6VA2R8PByftxZwXkgbJskGh2D3Pi1LXubSJMxgIIhl6QLnEJ8g
+        5d6WoT2WsmWRpuCTICYfIcHI345Nc7qX5OEBb5deMMQL1fiIem+Dx1/3EMqCF82gYBdB6h
+        ERVTTBWm2g5wsIITWp77pmMROSadEgg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-137-l-dPh7FOOXqyuZa2skQfaQ-1; Thu, 24 Feb 2022 07:28:52 -0500
+X-MC-Unique: l-dPh7FOOXqyuZa2skQfaQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 77EB851DF;
+        Thu, 24 Feb 2022 12:28:49 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.160])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 49E442634C;
+        Thu, 24 Feb 2022 12:28:22 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH RFC 04/13] mm/rmap: split page_dup_rmap() into page_dup_file_rmap() and page_try_dup_anon_rmap()
+Date:   Thu, 24 Feb 2022 13:26:05 +0100
+Message-Id: <20220224122614.94921-5-david@redhat.com>
+In-Reply-To: <20220224122614.94921-1-david@redhat.com>
+References: <20220224122614.94921-1-david@redhat.com>
 MIME-Version: 1.0
-References: <20220224051439.640768-1-kaleshsingh@google.com> <20220224051439.640768-8-kaleshsingh@google.com>
-In-Reply-To: <20220224051439.640768-8-kaleshsingh@google.com>
-From:   Fuad Tabba <tabba@google.com>
-Date:   Thu, 24 Feb 2022 12:28:03 +0000
-Message-ID: <CA+EHjTwMvQzvyA2Nxq_TKNjM-0_XvTtoKPtBPVPjSn7cboBNUA@mail.gmail.com>
-Subject: Re: [PATCH v3 7/8] KVM: arm64: Unwind and dump nVHE HYP stacktrace
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        surenb@google.com, kernel-team@android.com,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Scull <ascull@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kalesh,
+... and move the special check for pinned pages into
+page_try_dup_anon_rmap() to prepare for tracking exclusive anonymous
+pages via a new pageflag, clearing it only after making sure that there
+are no GUP pins on the anonymous page.
 
-On Thu, Feb 24, 2022 at 5:22 AM Kalesh Singh <kaleshsingh@google.com> wrote:
->
-> Unwind the stack in EL1, when CONFIG_NVHE_EL2_DEBUG is enabled. This is
-> possible because CONFIG_NVHE_EL2_DEBUG disables the host stage 2 protection
-> which allows host to access the hypervisor stack pages in EL1.
+We really only care about pins on anonymous pages, because they are
+prone to getting replaced in the COW handler once mapped R/O. For !anon
+pages in cow-mappings (!VM_SHARED && VM_MAYWRITE) we shouldn't really
+care about that, at least not that I could come up with an example.
 
-For this comment to be clearer, and if my understanding is correct, I
-think that it should say that CONFIG_NVHE_EL2_DEBUG allows host stage
-2 protection to be disabled on a hyp_panic. Otherwise, on reading the
-comment one might think that CONFIG_NVHE_EL2_DEBUG runs without host
-stage 2 protection at all.
+Let's drop the is_cow_mapping() check from page_needs_cow_for_dma(), as we
+know we're dealing with anonymous pages. Also, drop the handling of
+pinned pages from copy_huge_pud() and add a comment if ever supporting
+anonymous pages on the PUD level.
 
->
-> Unwinding and dumping hyp call traces is gated on CONFIG_NVHE_EL2_DEBUG
-> to avoid the potential leaking of information to the host.
->
-> A simple stack overflow test produces the following output:
->
-> [  580.376051][  T412] kvm: nVHE hyp panic at: ffffffc0116145c4!
-> [  580.378034][  T412] kvm [412]: nVHE HYP call trace:
-> [  580.378591][  T412] kvm [412]:  [<ffffffc011614934>]
-> [  580.378993][  T412] kvm [412]:  [<ffffffc01160fa48>]
-> [  580.379386][  T412] kvm [412]:  [<ffffffc0116145dc>]  // Non-terminating recursive call
-> [  580.379772][  T412] kvm [412]:  [<ffffffc0116145dc>]
-> [  580.380158][  T412] kvm [412]:  [<ffffffc0116145dc>]
-> [  580.380544][  T412] kvm [412]:  [<ffffffc0116145dc>]
-> [  580.380928][  T412] kvm [412]:  [<ffffffc0116145dc>]
-> . . .
->
-> Since nVHE hyp symbols are not included by kallsyms to avoid issues
-> with aliasing, we fallback to the vmlinux addresses. Symbolizing the
-> addresses is handled in the next patch in this series.
->
-> Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> ---
->
-> Changes in v3:
->   - The nvhe hyp stack unwinder now makes use of the core logic from the
->     regular kernel unwinder to avoid duplication, per Mark
->
-> Changes in v2:
->   - Add cpu_prepare_nvhe_panic_info()
->   - Move updating the panic info to hyp_panic(), so that unwinding also
->     works for conventional nVHE Hyp-mode.
->
->  arch/arm64/include/asm/kvm_asm.h    |  19 +++
->  arch/arm64/include/asm/stacktrace.h |  12 ++
->  arch/arm64/kernel/stacktrace.c      | 210 +++++++++++++++++++++++++---
->  arch/arm64/kvm/Kconfig              |   5 +-
->  arch/arm64/kvm/arm.c                |   2 +-
->  arch/arm64/kvm/handle_exit.c        |   3 +
->  arch/arm64/kvm/hyp/nvhe/switch.c    |  18 +++
->  7 files changed, 243 insertions(+), 26 deletions(-)
->
-> diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
-> index 2e277f2ed671..16efdf150a37 100644
-> --- a/arch/arm64/include/asm/kvm_asm.h
-> +++ b/arch/arm64/include/asm/kvm_asm.h
-> @@ -176,6 +176,25 @@ struct kvm_nvhe_init_params {
->         unsigned long vtcr;
->  };
->
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +/*
-> + * Used by the host in EL1 to dump the nVHE hypervisor backtrace on
-> + * hyp_panic. This is possible because CONFIG_NVHE_EL2_DEBUG disables
-> + * the host stage 2 protection. See: __hyp_do_panic()
+This is a preparation for tracking exclusivity of anonymous pages in
+the rmap code, and disallowing marking a page shared (-> failing to
+duplicate) if there are GUP pins on a page.
 
-Same as my comment above.
+RFC notes: if I'm missing something important for !anon pages, we could
+           similarly handle it via page_try_dup_file_rmap().
 
-> + *
-> + * @hyp_stack_base:             hyp VA of the hyp_stack base.
-> + * @hyp_overflow_stack_base:    hyp VA of the hyp_overflow_stack base.
-> + * @fp:                         hyp FP where the backtrace begins.
-> + * @pc:                         hyp PC where the backtrace begins.
-> + */
-> +struct kvm_nvhe_panic_info {
-> +       unsigned long hyp_stack_base;
-> +       unsigned long hyp_overflow_stack_base;
-> +       unsigned long fp;
-> +       unsigned long pc;
-> +};
-> +#endif /* CONFIG_NVHE_EL2_DEBUG */
-> +
->  /* Translate a kernel address @ptr into its equivalent linear mapping */
->  #define kvm_ksym_ref(ptr)                                              \
->         ({                                                              \
-> diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
-> index e77cdef9ca29..18611a51cf14 100644
-> --- a/arch/arm64/include/asm/stacktrace.h
-> +++ b/arch/arm64/include/asm/stacktrace.h
-> @@ -22,6 +22,10 @@ enum stack_type {
->         STACK_TYPE_OVERFLOW,
->         STACK_TYPE_SDEI_NORMAL,
->         STACK_TYPE_SDEI_CRITICAL,
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +       STACK_TYPE_KVM_NVHE_HYP,
-> +       STACK_TYPE_KVM_NVHE_OVERFLOW,
-> +#endif /* CONFIG_NVHE_EL2_DEBUG */
->         __NR_STACK_TYPES
->  };
->
-> @@ -147,4 +151,12 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
->         return false;
->  }
->
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +void kvm_nvhe_dump_backtrace(unsigned long hyp_offset);
-> +#else
-> +static inline void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
-> +{
-> +}
-> +#endif /* CONFIG_NVHE_EL2_DEBUG */
-> +
->  #endif /* __ASM_STACKTRACE_H */
-> diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-> index e4103e085681..6ec85cb69b1f 100644
-> --- a/arch/arm64/kernel/stacktrace.c
-> +++ b/arch/arm64/kernel/stacktrace.c
-> @@ -15,6 +15,8 @@
->
->  #include <asm/irq.h>
->  #include <asm/pointer_auth.h>
-> +#include <asm/kvm_asm.h>
-> +#include <asm/kvm_hyp.h>
->  #include <asm/stack_pointer.h>
->  #include <asm/stacktrace.h>
->
-> @@ -64,26 +66,15 @@ NOKPROBE_SYMBOL(start_backtrace);
->   * records (e.g. a cycle), determined based on the location and fp value of A
->   * and the location (but not the fp value) of B.
->   */
-> -static int notrace unwind_frame(struct task_struct *tsk,
-> -                               struct stackframe *frame)
-> +static int notrace __unwind_frame(struct stackframe *frame, struct stack_info *info,
-> +               unsigned long (*translate_fp)(unsigned long, enum stack_type))
->  {
->         unsigned long fp = frame->fp;
-> -       struct stack_info info;
-> -
-> -       if (!tsk)
-> -               tsk = current;
-> -
-> -       /* Final frame; nothing to unwind */
-> -       if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
-> -               return -ENOENT;
->
->         if (fp & 0x7)
->                 return -EINVAL;
->
-> -       if (!on_accessible_stack(tsk, fp, 16, &info))
-> -               return -EINVAL;
-> -
-> -       if (test_bit(info.type, frame->stacks_done))
-> +       if (test_bit(info->type, frame->stacks_done))
->                 return -EINVAL;
->
->         /*
-> @@ -94,28 +85,62 @@ static int notrace unwind_frame(struct task_struct *tsk,
->          *
->          * TASK -> IRQ -> OVERFLOW -> SDEI_NORMAL
->          * TASK -> SDEI_NORMAL -> SDEI_CRITICAL -> OVERFLOW
-> +        * KVM_NVHE_HYP -> KVM_NVHE_OVERFLOW
->          *
->          * ... but the nesting itself is strict. Once we transition from one
->          * stack to another, it's never valid to unwind back to that first
->          * stack.
->          */
-> -       if (info.type == frame->prev_type) {
-> +       if (info->type == frame->prev_type) {
->                 if (fp <= frame->prev_fp)
->                         return -EINVAL;
->         } else {
->                 set_bit(frame->prev_type, frame->stacks_done);
->         }
->
-> +       /* Record fp as prev_fp before attempting to get the next fp */
-> +       frame->prev_fp = fp;
-> +
-> +       /*
-> +        * If fp is not from the current address space perform the
-> +        * necessary translation before dereferencing it to get next fp.
-> +        */
-> +       if (translate_fp)
-> +               fp = translate_fp(fp, info->type);
-> +       if (!fp)
-> +               return -EINVAL;
-> +
->         /*
->          * Record this frame record's values and location. The prev_fp and
-> -        * prev_type are only meaningful to the next unwind_frame() invocation.
-> +        * prev_type are only meaningful to the next __unwind_frame() invocation.
->          */
->         frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
->         frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
-> -       frame->prev_fp = fp;
-> -       frame->prev_type = info.type;
-> -
->         frame->pc = ptrauth_strip_insn_pac(frame->pc);
-> +       frame->prev_type = info->type;
-> +
-> +       return 0;
-> +}
-> +
-> +static int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
-> +{
-> +       unsigned long fp = frame->fp;
-> +       struct stack_info info;
-> +       int err;
-> +
-> +       if (!tsk)
-> +               tsk = current;
-> +
-> +       /* Final frame; nothing to unwind */
-> +       if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
-> +               return -ENOENT;
-> +
-> +       if (!on_accessible_stack(tsk, fp, 16, &info))
-> +               return -EINVAL;
-> +
-> +       err = __unwind_frame(frame, &info, NULL);
-> +       if (err)
-> +               return err;
->
->  #ifdef CONFIG_FUNCTION_GRAPH_TRACER
->         if (tsk->ret_stack &&
-> @@ -143,20 +168,27 @@ static int notrace unwind_frame(struct task_struct *tsk,
->  }
->  NOKPROBE_SYMBOL(unwind_frame);
->
-> -static void notrace walk_stackframe(struct task_struct *tsk,
-> -                                   struct stackframe *frame,
-> -                                   bool (*fn)(void *, unsigned long), void *data)
-> +static void notrace __walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
-> +               bool (*fn)(void *, unsigned long), void *data,
-> +               int (*unwind_frame_fn)(struct task_struct *tsk, struct stackframe *frame))
->  {
->         while (1) {
->                 int ret;
->
->                 if (!fn(data, frame->pc))
->                         break;
-> -               ret = unwind_frame(tsk, frame);
-> +               ret = unwind_frame_fn(tsk, frame);
->                 if (ret < 0)
->                         break;
->         }
->  }
-> +
-> +static void notrace walk_stackframe(struct task_struct *tsk,
-> +                                   struct stackframe *frame,
-> +                                   bool (*fn)(void *, unsigned long), void *data)
-> +{
-> +       __walk_stackframe(tsk, frame, fn, data, unwind_frame);
-> +}
->  NOKPROBE_SYMBOL(walk_stackframe);
->
->  static bool dump_backtrace_entry(void *arg, unsigned long where)
-> @@ -210,3 +242,135 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
->
->         walk_stackframe(task, &frame, consume_entry, cookie);
->  }
-> +
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +DECLARE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
-> +DECLARE_KVM_NVHE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack);
-> +DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
-> +
-> +static inline bool kvm_nvhe_on_overflow_stack(unsigned long sp, unsigned long size,
-> +                                struct stack_info *info)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       unsigned long low = (unsigned long)panic_info->hyp_overflow_stack_base;
-> +       unsigned long high = low + PAGE_SIZE;
-> +
-> +       return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_OVERFLOW, info);
-> +}
-> +
-> +static inline bool kvm_nvhe_on_hyp_stack(unsigned long sp, unsigned long size,
-> +                                struct stack_info *info)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       unsigned long low = (unsigned long)panic_info->hyp_stack_base;
-> +       unsigned long high = low + PAGE_SIZE;
-> +
-> +       return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_HYP, info);
-> +}
-> +
-> +static inline bool kvm_nvhe_on_accessible_stack(unsigned long sp, unsigned long size,
-> +                                      struct stack_info *info)
-> +{
-> +       if (info)
-> +               info->type = STACK_TYPE_UNKNOWN;
-> +
-> +       if (kvm_nvhe_on_hyp_stack(sp, size, info))
-> +               return true;
-> +       if (kvm_nvhe_on_overflow_stack(sp, size, info))
-> +               return true;
-> +
-> +       return false;
-> +}
-> +
-> +static unsigned long kvm_nvhe_hyp_stack_kern_va(unsigned long addr)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       unsigned long hyp_base, kern_base, hyp_offset;
-> +
-> +       hyp_base = (unsigned long)panic_info->hyp_stack_base;
-> +       hyp_offset = addr - hyp_base;
-> +
-> +       kern_base = (unsigned long)*this_cpu_ptr(&kvm_arm_hyp_stack_page);
-> +
-> +       return kern_base + hyp_offset;
-> +}
-> +
-> +static unsigned long kvm_nvhe_overflow_stack_kern_va(unsigned long addr)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       unsigned long hyp_base, kern_base, hyp_offset;
-> +
-> +       hyp_base = (unsigned long)panic_info->hyp_overflow_stack_base;
-> +       hyp_offset = addr - hyp_base;
-> +
-> +       kern_base = (unsigned long)this_cpu_ptr_nvhe_sym(hyp_overflow_stack);
-> +
-> +       return kern_base + hyp_offset;
-> +}
-> +
-> +/*
-> + * Convert KVM nVHE hypervisor stack VA to a kernel VA.
-> + *
-> + * The nVHE hypervisor stack is mapped in the flexible 'private' VA range, to allow
-> + * for guard pages below the stack. Consequently, the fixed offset address
-> + * translation macros won't work here.
-> + *
-> + * The kernel VA is calculated as an offset from the kernel VA of the hypervisor
-> + * stack base. See: kvm_nvhe_hyp_stack_kern_va(),  kvm_nvhe_overflow_stack_kern_va()
-> + */
-> +static unsigned long kvm_nvhe_stack_kern_va(unsigned long addr,
-> +                                       enum stack_type type)
-> +{
-> +       switch (type) {
-> +       case STACK_TYPE_KVM_NVHE_HYP:
-> +               return kvm_nvhe_hyp_stack_kern_va(addr);
-> +       case STACK_TYPE_KVM_NVHE_OVERFLOW:
-> +               return kvm_nvhe_overflow_stack_kern_va(addr);
-> +       default:
-> +               return 0UL;
-> +       }
-> +}
-> +
-> +static int notrace kvm_nvhe_unwind_frame(struct task_struct *tsk,
-> +                                       struct stackframe *frame)
-> +{
-> +       struct stack_info info;
-> +
-> +       if (!kvm_nvhe_on_accessible_stack(frame->fp, 16, &info))
-> +               return -EINVAL;
-> +
-> +       return  __unwind_frame(frame, &info, kvm_nvhe_stack_kern_va);
-> +}
-> +
-> +static bool kvm_nvhe_dump_backtrace_entry(void *arg, unsigned long where)
-> +{
-> +       unsigned long va_mask = GENMASK_ULL(vabits_actual - 1, 0);
-> +       unsigned long hyp_offset = (unsigned long)arg;
-> +
-> +       where &= va_mask;       /* Mask tags */
-> +       where += hyp_offset;    /* Convert to kern addr */
-> +
-> +       kvm_err("[<%016lx>] %pB\n", where, (void *)where);
-> +
-> +       return true;
-> +}
-> +
-> +static void notrace kvm_nvhe_walk_stackframe(struct task_struct *tsk,
-> +                                   struct stackframe *frame,
-> +                                   bool (*fn)(void *, unsigned long), void *data)
-> +{
-> +       __walk_stackframe(tsk, frame, fn, data, kvm_nvhe_unwind_frame);
-> +}
-> +
-> +void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-> +       struct stackframe frame;
-> +
-> +       start_backtrace(&frame, panic_info->fp, panic_info->pc);
-> +       pr_err("nVHE HYP call trace:\n");
-> +       kvm_nvhe_walk_stackframe(NULL, &frame, kvm_nvhe_dump_backtrace_entry,
-> +                                       (void *)hyp_offset);
-> +       pr_err("---- end of nVHE HYP call trace ----\n");
-> +}
-> +#endif /* CONFIG_NVHE_EL2_DEBUG */
-> diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
-> index 8a5fbbf084df..75f2c8255ff0 100644
-> --- a/arch/arm64/kvm/Kconfig
-> +++ b/arch/arm64/kvm/Kconfig
-> @@ -51,8 +51,9 @@ config NVHE_EL2_DEBUG
->         depends on KVM
->         help
->           Say Y here to enable the debug mode for the non-VHE KVM EL2 object.
-> -         Failure reports will BUG() in the hypervisor. This is intended for
-> -         local EL2 hypervisor development.
-> +         Failure reports will BUG() in the hypervisor; and panics will print
-> +         the hypervisor call stack. This is intended for local EL2 hypervisor
-> +         development.
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ include/linux/mm.h   |  5 +----
+ include/linux/rmap.h | 48 +++++++++++++++++++++++++++++++++++++++++++-
+ mm/huge_memory.c     | 27 ++++++++-----------------
+ mm/hugetlb.c         | 16 ++++++++-------
+ mm/memory.c          | 17 +++++++++++-----
+ mm/migrate.c         |  2 +-
+ 6 files changed, 78 insertions(+), 37 deletions(-)
 
-Nit: maybe for clarity you could rephrase as "calls to hyp_panic()
-will result in printing the hypervisor call stack".
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index b29cb8bacd59..ffeb7f5fa32b 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1322,16 +1322,13 @@ static inline bool is_cow_mapping(vm_flags_t flags)
+ 
+ /*
+  * This should most likely only be called during fork() to see whether we
+- * should break the cow immediately for a page on the src mm.
++ * should break the cow immediately for an anon page on the src mm.
+  *
+  * The caller has to hold the PT lock and the vma->vm_mm->->write_protect_seq.
+  */
+ static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
+ 					  struct page *page)
+ {
+-	if (!is_cow_mapping(vma->vm_flags))
+-		return false;
+-
+ 	VM_BUG_ON(!(raw_read_seqcount(&vma->vm_mm->write_protect_seq) & 1));
+ 
+ 	if (!test_bit(MMF_HAS_PINNED, &vma->vm_mm->flags))
+diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+index e704b1a4c06c..92c3585b8c6a 100644
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -180,11 +180,57 @@ void hugepage_add_anon_rmap(struct page *, struct vm_area_struct *,
+ void hugepage_add_new_anon_rmap(struct page *, struct vm_area_struct *,
+ 				unsigned long);
+ 
+-static inline void page_dup_rmap(struct page *page, bool compound)
++static inline void __page_dup_rmap(struct page *page, bool compound)
+ {
+ 	atomic_inc(compound ? compound_mapcount_ptr(page) : &page->_mapcount);
+ }
+ 
++static inline void page_dup_file_rmap(struct page *page, bool compound)
++{
++	__page_dup_rmap(page, compound);
++}
++
++/**
++ * page_try_dup_anon_rmap - try duplicating a mapping of an already mapped
++ *			    anonymous page
++ * @page: the page to duplicate the mapping for
++ * @compound: the page is mapped as compound or as a small page
++ * @vma: the source vma
++ *
++ * The caller needs to hold the PT lock and the vma->vma_mm->write_protect_seq.
++ *
++ * Duplicating the mapping can only fail if the page may be pinned; device
++ * private pages cannot get pinned and consequently this function cannot fail.
++ *
++ * If duplicating the mapping succeeds, the page has to be mapped R/O into
++ * the parent and the child. It must *not* get mapped writable after this call.
++ *
++ * Returns 0 if duplicating the mapping succeeded. Returns -EBUSY otherwise.
++ */
++static inline int page_try_dup_anon_rmap(struct page *page, bool compound,
++					 struct vm_area_struct *vma)
++{
++	VM_BUG_ON_PAGE(!PageAnon(page), page);
++
++	/*
++	 * If this page may have been pinned by the parent process,
++	 * don't allow to duplicate the mapping but instead require to e.g.,
++	 * copy the page immediately for the child so that we'll always
++	 * guarantee the pinned page won't be randomly replaced in the
++	 * future on write faults.
++	 */
++	if (likely(!is_device_private_page(page) &&
++	    unlikely(page_needs_cow_for_dma(vma, page))))
++		return -EBUSY;
++
++	/*
++	 * It's okay to share the anon page between both processes, mapping
++	 * the page R/O into both processes.
++	 */
++	__page_dup_rmap(page, compound);
++	return 0;
++}
++
+ /*
+  * Called from mm/vmscan.c to handle paging out
+  */
+diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+index cda88d8ac1bd..c126d728b8de 100644
+--- a/mm/huge_memory.c
++++ b/mm/huge_memory.c
+@@ -1097,23 +1097,16 @@ int copy_huge_pmd(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ 	src_page = pmd_page(pmd);
+ 	VM_BUG_ON_PAGE(!PageHead(src_page), src_page);
+ 
+-	/*
+-	 * If this page is a potentially pinned page, split and retry the fault
+-	 * with smaller page size.  Normally this should not happen because the
+-	 * userspace should use MADV_DONTFORK upon pinned regions.  This is a
+-	 * best effort that the pinned pages won't be replaced by another
+-	 * random page during the coming copy-on-write.
+-	 */
+-	if (unlikely(page_needs_cow_for_dma(src_vma, src_page))) {
++	get_page(src_page);
++	if (unlikely(page_try_dup_anon_rmap(src_page, true, src_vma))) {
++		/* Page maybe pinned: split and retry the fault on PTEs. */
++		put_page(src_page);
+ 		pte_free(dst_mm, pgtable);
+ 		spin_unlock(src_ptl);
+ 		spin_unlock(dst_ptl);
+ 		__split_huge_pmd(src_vma, src_pmd, addr, false, NULL);
+ 		return -EAGAIN;
+ 	}
+-
+-	get_page(src_page);
+-	page_dup_rmap(src_page, true);
+ 	add_mm_counter(dst_mm, MM_ANONPAGES, HPAGE_PMD_NR);
+ out_zero_page:
+ 	mm_inc_nr_ptes(dst_mm);
+@@ -1217,14 +1210,10 @@ int copy_huge_pud(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ 		/* No huge zero pud yet */
+ 	}
+ 
+-	/* Please refer to comments in copy_huge_pmd() */
+-	if (unlikely(page_needs_cow_for_dma(vma, pud_page(pud)))) {
+-		spin_unlock(src_ptl);
+-		spin_unlock(dst_ptl);
+-		__split_huge_pud(vma, src_pud, addr);
+-		return -EAGAIN;
+-	}
+-
++	/*
++	 * TODO: once we support anonymous pages, use page_try_dup_anon_rmap()
++	 * and split if duplicating fails.
++	 */
+ 	pudp_set_wrprotect(src_mm, addr, src_pud);
+ 	pud = pud_mkold(pud_wrprotect(pud));
+ 	set_pud_at(dst_mm, addr, dst_pud, pud);
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index e2e2d0f3f259..6b928e720e83 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -4781,15 +4781,18 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+ 			get_page(ptepage);
+ 
+ 			/*
+-			 * This is a rare case where we see pinned hugetlb
+-			 * pages while they're prone to COW.  We need to do the
+-			 * COW earlier during fork.
++			 * Failing to duplicate the anon rmap is a rare case
++			 * where we see pinned hugetlb pages while they're
++			 * prone to COW. We need to do the COW earlier during
++			 * fork.
+ 			 *
+ 			 * When pre-allocating the page or copying data, we
+ 			 * need to be without the pgtable locks since we could
+ 			 * sleep during the process.
+ 			 */
+-			if (unlikely(page_needs_cow_for_dma(vma, ptepage))) {
++			if (!PageAnon(ptepage)) {
++				page_dup_file_rmap(ptepage, true);
++			} else if (page_try_dup_anon_rmap(ptepage, true, vma)) {
+ 				pte_t src_pte_old = entry;
+ 				struct page *new;
+ 
+@@ -4836,7 +4839,6 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+ 				entry = huge_pte_wrprotect(entry);
+ 			}
+ 
+-			page_dup_rmap(ptepage, true);
+ 			set_huge_pte_at(dst, addr, dst_pte, entry);
+ 			hugetlb_count_add(npages, dst);
+ 		}
+@@ -5515,7 +5517,7 @@ static vm_fault_t hugetlb_no_page(struct mm_struct *mm,
+ 		ClearHPageRestoreReserve(page);
+ 		hugepage_add_new_anon_rmap(page, vma, haddr);
+ 	} else
+-		page_dup_rmap(page, true);
++		page_dup_file_rmap(page, true);
+ 	new_pte = make_huge_pte(vma, page, ((vma->vm_flags & VM_WRITE)
+ 				&& (vma->vm_flags & VM_SHARED)));
+ 	set_huge_pte_at(mm, haddr, ptep, new_pte);
+@@ -5875,7 +5877,7 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
+ 		goto out_release_unlock;
+ 
+ 	if (vm_shared) {
+-		page_dup_rmap(page, true);
++		page_dup_file_rmap(page, true);
+ 	} else {
+ 		ClearHPageRestoreReserve(page);
+ 		hugepage_add_new_anon_rmap(page, dst_vma, dst_addr);
+diff --git a/mm/memory.c b/mm/memory.c
+index accb72a3343d..b9602d41d907 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -828,7 +828,8 @@ copy_nonpresent_pte(struct mm_struct *dst_mm, struct mm_struct *src_mm,
+ 		 */
+ 		get_page(page);
+ 		rss[mm_counter(page)]++;
+-		page_dup_rmap(page, false);
++		/* Cannot fail as these pages cannot get pinned. */
++		BUG_ON(page_try_dup_anon_rmap(page, false, src_vma));
+ 
+ 		/*
+ 		 * We do not preserve soft-dirty information, because so
+@@ -924,18 +925,24 @@ copy_present_pte(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
+ 	struct page *page;
+ 
+ 	page = vm_normal_page(src_vma, addr, pte);
+-	if (page && unlikely(page_needs_cow_for_dma(src_vma, page))) {
++	if (page && PageAnon(page)) {
+ 		/*
+ 		 * If this page may have been pinned by the parent process,
+ 		 * copy the page immediately for the child so that we'll always
+ 		 * guarantee the pinned page won't be randomly replaced in the
+ 		 * future.
+ 		 */
+-		return copy_present_page(dst_vma, src_vma, dst_pte, src_pte,
+-					 addr, rss, prealloc, page);
++		get_page(page);
++		if (unlikely(page_try_dup_anon_rmap(page, false, src_vma))) {
++			/* Page maybe pinned, we have to copy. */
++			put_page(page);
++			return copy_present_page(dst_vma, src_vma, dst_pte, src_pte,
++						 addr, rss, prealloc, page);
++		}
++		rss[mm_counter(page)]++;
+ 	} else if (page) {
+ 		get_page(page);
+-		page_dup_rmap(page, false);
++		page_dup_file_rmap(page, false);
+ 		rss[mm_counter(page)]++;
+ 	}
+ 
+diff --git a/mm/migrate.c b/mm/migrate.c
+index c7da064b4781..524c2648ab36 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -240,7 +240,7 @@ static bool remove_migration_pte(struct page *page, struct vm_area_struct *vma,
+ 			if (PageAnon(new))
+ 				hugepage_add_anon_rmap(new, vma, pvmw.address);
+ 			else
+-				page_dup_rmap(new, true);
++				page_dup_file_rmap(new, true);
+ 			set_huge_pte_at(vma->vm_mm, pvmw.address, pvmw.pte, pte);
+ 		} else
+ #endif
+-- 
+2.35.1
 
-Thanks,
-/fuad
-
-
->
->           If unsure, say N.
->
-> diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-> index 7a23630c4a7f..66c07c04eb52 100644
-> --- a/arch/arm64/kvm/arm.c
-> +++ b/arch/arm64/kvm/arm.c
-> @@ -49,7 +49,7 @@ DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
->
->  DECLARE_KVM_HYP_PER_CPU(unsigned long, kvm_hyp_vector);
->
-> -static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
-> +DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
->  unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
->  DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
->
-> diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
-> index e3140abd2e2e..ff69dff33700 100644
-> --- a/arch/arm64/kvm/handle_exit.c
-> +++ b/arch/arm64/kvm/handle_exit.c
-> @@ -17,6 +17,7 @@
->  #include <asm/kvm_emulate.h>
->  #include <asm/kvm_mmu.h>
->  #include <asm/debug-monitors.h>
-> +#include <asm/stacktrace.h>
->  #include <asm/traps.h>
->
->  #include <kvm/arm_hypercalls.h>
-> @@ -326,6 +327,8 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
->                 kvm_err("nVHE hyp panic at: %016llx!\n", elr_virt + hyp_offset);
->         }
->
-> +       kvm_nvhe_dump_backtrace(hyp_offset);
-> +
->         /*
->          * Hyp has panicked and we're going to handle that by panicking the
->          * kernel. The kernel offset will be revealed in the panic so we're
-> diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
-> index efc20273a352..b8ecffc47424 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/switch.c
-> +++ b/arch/arm64/kvm/hyp/nvhe/switch.c
-> @@ -37,6 +37,22 @@ DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
->  #ifdef CONFIG_NVHE_EL2_DEBUG
->  DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack)
->         __aligned(16);
-> +DEFINE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
-> +
-> +static inline void cpu_prepare_nvhe_panic_info(void)
-> +{
-> +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr(&kvm_panic_info);
-> +       struct kvm_nvhe_init_params *params = this_cpu_ptr(&kvm_init_params);
-> +
-> +       panic_info->hyp_stack_base = (unsigned long)(params->stack_hyp_va - PAGE_SIZE);
-> +       panic_info->hyp_overflow_stack_base = (unsigned long)this_cpu_ptr(hyp_overflow_stack);
-> +       panic_info->fp = (unsigned long)__builtin_frame_address(0);
-> +       panic_info->pc = _THIS_IP_;
-> +}
-> + #else
-> +static inline void cpu_prepare_nvhe_panic_info(void)
-> +{
-> +}
->  #endif
->
->  static void __activate_traps(struct kvm_vcpu *vcpu)
-> @@ -360,6 +376,8 @@ asmlinkage void __noreturn hyp_panic(void)
->         struct kvm_cpu_context *host_ctxt;
->         struct kvm_vcpu *vcpu;
->
-> +       cpu_prepare_nvhe_panic_info();
-> +
->         host_ctxt = &this_cpu_ptr(&kvm_host_data)->host_ctxt;
->         vcpu = host_ctxt->__hyp_running_vcpu;
->
-> --
-> 2.35.1.473.g83b2b277ed-goog
->
