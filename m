@@ -2,172 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A6E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA959C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:27:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229681AbiBXQ2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:28:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60452 "EHLO
+        id S229764AbiBXQ2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:28:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229589AbiBXQ2C (ORCPT
+        with ESMTP id S229661AbiBXQ2M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:28:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6DF29F6C6
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:27:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645720051;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HnqUOzHPW8Dkvm4wNNfAluTLjyE7u1lt3OFqRCOZI9M=;
-        b=baIzjeneG2SIDXgzdATgQN2Nyc1tqeOvcb6KwUsppuV9FX6sDNknokQOuT//uJBOcEai+4
-        3LCADUCIVhA2vZr9Qzs+oh8OCF5Xsp2FS31ef437BbhQAMub+LCbSo9VNvsIrQvo0fFVfP
-        5U++FiISYLVdNmTY9ur/pE/RtjI5ePY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-474-066Bo6ZvOnOsOkVHTtdzCA-1; Thu, 24 Feb 2022 11:11:19 -0500
-X-MC-Unique: 066Bo6ZvOnOsOkVHTtdzCA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 11A46180FD73;
-        Thu, 24 Feb 2022 16:11:18 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A3475804D4;
-        Thu, 24 Feb 2022 16:11:16 +0000 (UTC)
-Message-ID: <065dff8b1c54e456c9f0d7d5d4d806aadf80eb16.camel@redhat.com>
-Subject: Re: [PATCH v2 17/18] KVM: x86: flush TLB separately from MMU reset
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Cc:     seanjc@google.com
-Date:   Thu, 24 Feb 2022 18:11:15 +0200
-In-Reply-To: <20220217210340.312449-18-pbonzini@redhat.com>
-References: <20220217210340.312449-1-pbonzini@redhat.com>
-         <20220217210340.312449-18-pbonzini@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
+        Thu, 24 Feb 2022 11:28:12 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E44EB4588
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:27:40 -0800 (PST)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21OFWRka007294;
+        Thu, 24 Feb 2022 16:26:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=200kOCfXtYF/tAr9UfR5CF5vsCqg1VPUr0/EKP19veM=;
+ b=xf32NczT6zzwTEZjbwlYZNa+rnT4KZl2IqUWLkY2NzzqVlKrRyWNoL3i1CAaibrnk4Ua
+ r7bbfqcVa5MzbnS2FZiFxMrvVNiF0vUlTDf3M/1WH3hTzCnLpag+jEcyIEPvG17Y2dDO
+ QiqskH/Qb0cKMlzv9RGEKbXug0LvyxC4cN6DpXpL97S+Sf9aImcn+3NSPXnDPnJPXJAs
+ L0LvYi6HXqOYTADLwWzA7B5eELGReGMVdiiY07JlTnK3Slxuqo46n5kBkwn7TXl3gk2z
+ /POq8ZCWc4uxmPT6hviVvXKp75Ki5VAfcoMHq6XDrKwOFtO8UfOSKTD8SF1s77mbXw0Q yQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ectsx7wm6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Feb 2022 16:26:54 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21OG729V160817;
+        Thu, 24 Feb 2022 16:26:53 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2171.outbound.protection.outlook.com [104.47.59.171])
+        by aserp3030.oracle.com with ESMTP id 3eapkke0ak-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Feb 2022 16:26:53 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I2+kYs0GBXgh9l/eTkxQi6sTq9vY3GjpQNKeUFdbfJAlcE5TVDPRObvsy3akWX0b1brvyJ/Rp1zluHkZvDXdOF49b8N6rjqldRhzzLj8PoOmMno8JbjXux51q01UZUQ0txs57jXIYXAfuavc7L3v7Z2B5A6nU2SR5nmOuOCIETi3X1ndg8A4PvIIDMe0q04S11dw1wa9G/pAc3Z0eB3WU8/iLCLRaZPNWmkUsl3c6smRQ/LltFuA/+wbw55/otRzqXf+CWpxWnbJRnICaVFSsIEO+JAePRk3L57BdVZnmNAj3KMaLHzRqI1Xu9rWD7UTdLB3VbqykjwAFTKzn2SPag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=200kOCfXtYF/tAr9UfR5CF5vsCqg1VPUr0/EKP19veM=;
+ b=ZmfdelQ5YfwOf7NXDETkTBriOjY+8NnZAX3y61feQ4untZWFgWFUMv2TX6z1OLhUOCty+GP54h/xd0gjj/4Is1RvvbmMy6FaLROep5HrP/UWcjxhLl11EK9L0Nzv8UNpBYb2FsRtTsCz5YpLJn5FZPpCmaoevkQyY6doaW5GkV15NoAn7A/YNuymOQXCOCbVgip24My5E0habFTjoOFBHf+A4nxWu4gRNOUC88u/CVYiKJ0jqQ9RHxK1SJSZK2ErN2+VzvlDIDu6suJ0DJDuhmJCLNreFImntfAjXLuIB8u9fL2UH3qzOmSnNZ45LGwouCO/5EctsPz823UrLgubTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=200kOCfXtYF/tAr9UfR5CF5vsCqg1VPUr0/EKP19veM=;
+ b=waawE2gRK7RnLnKngVqJAH1pXhPLV433AD911zyaX/aXtl9QYf8tSfjpW0LLDyJrjZv/WJxlNvfQwm3yMha1mI3DtWyv2lJH9ruJLk/oNS+KajiMAFwG5pgqR8NECPJwtoyFRVLDbFddv45tuSsYI3/rc1ycIo8+fI4s2xgBT9c=
+Received: from BN8PR10MB3220.namprd10.prod.outlook.com (2603:10b6:408:c8::18)
+ by CH0PR10MB5050.namprd10.prod.outlook.com (2603:10b6:610:c3::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Thu, 24 Feb
+ 2022 16:26:51 +0000
+Received: from BN8PR10MB3220.namprd10.prod.outlook.com
+ ([fe80::5552:4944:d684:1bfd]) by BN8PR10MB3220.namprd10.prod.outlook.com
+ ([fe80::5552:4944:d684:1bfd%5]) with mapi id 15.20.5017.024; Thu, 24 Feb 2022
+ 16:26:51 +0000
+Message-ID: <e1c1a037-9782-dead-fcfe-e6be318069fa@oracle.com>
+Date:   Thu, 24 Feb 2022 09:26:44 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH RFC 01/13] mm/rmap: fix missing swap_free() in
+ try_to_unmap() after arch_unmap_one() failed
+Content-Language: en-US
+To:     David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org
+References: <20220224122614.94921-1-david@redhat.com>
+ <20220224122614.94921-2-david@redhat.com>
+From:   Khalid Aziz <khalid.aziz@oracle.com>
+In-Reply-To: <20220224122614.94921-2-david@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-ClientProxiedBy: SN4PR0501CA0010.namprd05.prod.outlook.com
+ (2603:10b6:803:40::23) To BN8PR10MB3220.namprd10.prod.outlook.com
+ (2603:10b6:408:c8::18)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7855cf4a-08fd-4b3c-8d40-08d9f7b27666
+X-MS-TrafficTypeDiagnostic: CH0PR10MB5050:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR10MB5050E1942755F878D2020229863D9@CH0PR10MB5050.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8NOaDxHoQ2Cj3JU+DYXj0t3f0NMe5VlPU4lQq4b6z4vFbldKqACLsSGcQs19qy+D1PzzSmvCyaNfXDNm5sOug13HSBc/Azekq0o0RXtVpGJlYsVCmolY6eh0+1hw3h0fEtZGL9z8YgdzN6xrBJ+BiOIFmja6EbgCD6fTV8VoQ9T9CeJo6VF2ZLXoZyEu5hi+ae8AWZn5EP/BDGBe58F7W2gRRsvFa7aceg0qWbhakKXeh5jdHm6/Oi4xOooQXE7NFA1VjGM+d9PrnSR1ncVz+nTqKd8R2IxCbmULWurArT+9RA2Oy21rSjWfYEngb5rOMXCQbTVJoSCN9Zvf/Tc0M4BVZh9UYjgLDH7O4ScosQYUd3Yo7MwXpZRHvwQ60ZLNw9vEmEjWsr7HdjTOuKxMAMqwEkLy4LRtl/lGrrbHPbTCwJZAhwGfNxChfvN/f/u3r+qI9ikgOiASsHpyXYjI9E1sLp4L+guNeJGy3qB1yhrIdmhcJIlIYwiY9Y8uVF7OyLcPBLPHyQ2rsLgNHEutNk75hHj1vqhMSxK9m900g/03BF2ch0ruAWCgw6Hr8YM9cfOcaHZC7yZS0rHMY0gxYWID1ht7rVpa4bjI0UrRwheLEfT1wkpMm+YeVToD/hcO2t3m5MEe8aKGPvXpkFU1Etmo8VmbFTwUZZn4XJL/+HkChUwYY7Vc117v79+PLgISRE1Zj4F53xqg1+Hp46quX7NeG31I/JICCUOcmWiQhd0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR10MB3220.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(31686004)(8936002)(6486002)(26005)(2616005)(5660300002)(86362001)(38100700002)(2906002)(6512007)(31696002)(54906003)(7416002)(4744005)(44832011)(36756003)(508600001)(6666004)(316002)(53546011)(4326008)(186003)(66946007)(66476007)(66556008)(6506007)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T2tOVURzZFJkL3I3OVpCQU1IWm9kL2hlMzNjc1NQekV6R0lGOWR0RS8weDdh?=
+ =?utf-8?B?ODdRZDBieStvQ2RBbWkvbVc0QWRMd0kvbElkcmJIdEp4em1lT2ZyYzdpMkV1?=
+ =?utf-8?B?ZlhmOU9nTU9EMm4xUG1MY2RaVmlMRFExOUs1V0ovajdLMlR2YkZxdlVtZHlw?=
+ =?utf-8?B?d1l6R203MHFSRjJCc3ZFWUNsQkFtOG9xR0pvdnkycGZvVkFyVXN6b2R5KzBP?=
+ =?utf-8?B?UDdOYmRjenNBZmt4VTRZODdHajN6dnhDZUNKdGMzaFhWb0k0WHkzckdGczdK?=
+ =?utf-8?B?OGZCZ3o4RVE0Sm8vaFd0UEg2TEZvRWNJU0JHMjdQdkV1bHp2WWd4TzRFOGZi?=
+ =?utf-8?B?RFpFRG9yOEdYQVpKT2VOb3VmZE5Db0hpaVpqZXNTSFBxR1EzZ1pvYnpuQlI2?=
+ =?utf-8?B?RFQ2SHg3SGFydDdFNDFjRDk1bFNub2Y3R3U3SWlROXFsUHNvditGRU9rMjkr?=
+ =?utf-8?B?OGk1TUt5cWZ3SDE5NzBaRURBSEhlb0s5T2d0KzExMUFmZFFsaXNDNWduMnc2?=
+ =?utf-8?B?eXczbEE4aE5BV0VBT2RwN3VCWVppeVhqc29HOTJtN1EzR3hwYVZndmt2Y3Vs?=
+ =?utf-8?B?RC9aaHd1bXRSY3dQMnpmTXA4NVlKUlJxY3VtYVRBL0NwRkROYWMxUFRvYTY0?=
+ =?utf-8?B?WnU3ek9GZzJ5K1o0c2dmKzVFOXk5clJkaVdLWWpOSWc5UWk4UmtyaitVMHE0?=
+ =?utf-8?B?OTMzcWUrYldDbGRoVFVWTytFM1dwTkcraUo1eUViTEtRbTZvWFI5RVpVUjJz?=
+ =?utf-8?B?bzA2Rjl1eFkxc2RoclZlMkphUFlTNDAvYy8rUTJJaUdDNEZJS1lWNVV0TUJN?=
+ =?utf-8?B?WmJLY2J1Q3dOTU1LN3BYdTg0V0NnY3FtN3Y1blp5Z2E3UVdMS1JKSlVEczd6?=
+ =?utf-8?B?WUduRDhOMFduUnZLSjhTc0ZPdVpjeVFZMERWWG5HOTJaa21qUDRZcHU3RWpq?=
+ =?utf-8?B?R0ZlU293UW9WTVJlcnBVMGlTWDFXdGFqUnNRUUJpNWExM1hRVXExVlR4UzNO?=
+ =?utf-8?B?TzJaRTkwOWpvV0h0ZnlGYmJUYW1lMWZHK2VZWHNUcHBsZ00xai9kRzVva3lC?=
+ =?utf-8?B?SkpXKzhnL2xLbHhZdXphNHUyYXJZUzF1SWQvUGQ1WDB4RExsdXZpMVVobVVk?=
+ =?utf-8?B?K2dFSHVrcjRXd2RLU3hudXJHMDVpdGNVL1dUVmRTK2JQMmY0OTBMTWs2OFpj?=
+ =?utf-8?B?SDNabzI5eWJsRjd0Ym5xV2w4MmhJbFhJS2xtRkxsNWlwb2VhaHl3QWU1Q0Y3?=
+ =?utf-8?B?YVllZ1FnN0NKSGw1aVE1SWNWYzZmR0x6WEdxRnllTUd1OFBlV3d1ekdiNXYv?=
+ =?utf-8?B?WU1ackQxWDN5T0ZtMllBWi9FV2FCSWNxMjhzUnorV1RDdHZ5bHZ0c3MySVIw?=
+ =?utf-8?B?aUl4N3l1SmZBWmVjVGV5QzB0VWVOeTkyY2VWalpzbGk0V1JIMVJDQ3JmcEtI?=
+ =?utf-8?B?RWk2elVMZEtRTTdueGtkUjU1RnlIdU0rSHVOdFRWSERXQUtLb1FGQjBrcWpL?=
+ =?utf-8?B?MW9veWNjbUg0U0JTTjBScHVLZTJNbWwrRDRwNURzQkxDWmxhVDJIZUJnOVVv?=
+ =?utf-8?B?cVFHM0k4QW1sSVF1bXVJSmdvSFFleE5zN2ZKb1pEVFk5NlJqM1VZMkpINjZ0?=
+ =?utf-8?B?VVNqbDZXeCtQTDJydzk5N0NwM0hXNzFFdDFaNGthL0NwbHZZYTRXdkVNbER5?=
+ =?utf-8?B?QmxDWjNxNVdJWlFhanl5dU5FdlM2WUpaMlNoN1JFSzhyaFF1VW9WNkRNdzJo?=
+ =?utf-8?B?eDVtYUNnZ0hBWXA3c21GVEIreDBjQy9KL2VYRk9iQ1MrcWVGUFd0NUVGbGJX?=
+ =?utf-8?B?RGNuc3dabVMwSERQdDBWelcyMTJWTGxscmgrSGpJVGxLWWEzQnNGR3hEWDNO?=
+ =?utf-8?B?K3NpRDF0bFM3eFcyK0M3UzJBTzMwYmkvQURKM3VmdjZ0S05MSzhIVUxOZSto?=
+ =?utf-8?B?dHZQcjNrckJuclVWTGFMMmMxOG5IUnBwclpzeGtHODFKeFRHRVhQOWhiWVJV?=
+ =?utf-8?B?MTVTNXNlbmFwbDlMKy9IdHlJajFqeEhub01vRHRIdFVDUEcrNnY5bjZTL240?=
+ =?utf-8?B?MTRDT0h5NkFJT3pqSjJ6L0kzcjhUNUZXR01HK29BRUIyRXlUQnZhNmkrWnRh?=
+ =?utf-8?B?M0l5SFptK1ZlMVlpVGl4N09tSk9RRU1LZTJQVm5KOE8rdnhhNUYveE92dmtE?=
+ =?utf-8?Q?Hb1geG7iyQz948rw9bvknuU=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7855cf4a-08fd-4b3c-8d40-08d9f7b27666
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR10MB3220.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 16:26:51.4807
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PImcNyw8YkJW3kOwwjk39t7PpmORMROp141IcGlMoqcSfsKy+PnTNLrqm5hw80kXZupFwZ3DkRPglRULh9yZ0w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5050
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10268 signatures=684655
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 mlxscore=0
+ spamscore=0 mlxlogscore=999 adultscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202240095
+X-Proofpoint-ORIG-GUID: Ttp9MZKlv1NKZG1texLjA6y7mUsOIoW0
+X-Proofpoint-GUID: Ttp9MZKlv1NKZG1texLjA6y7mUsOIoW0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-02-17 at 16:03 -0500, Paolo Bonzini wrote:
-> For both CR0 and CR4, disassociate the TLB flush logic from the
-> MMU role logic.  Instead  of relying on kvm_mmu_reset_context() being
-> a superset of various TLB flushes (which is not necessarily going to
-> be the case in the future), always call it if the role changes
-> but also set the various TLB flush requests according to what is
-> in the manual.
+On 2/24/22 05:26, David Hildenbrand wrote:
+> In case arch_unmap_one() fails, we already did a swap_duplicate(). let's
+> undo that properly via swap_free().
 > 
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> Fixes: ca827d55ebaa ("mm, swap: Add infrastructure for saving page metadata on swap")
+> Cc: Khalid Aziz <khalid.aziz@oracle.com>
+> Signed-off-by: David Hildenbrand <david@redhat.com>
 > ---
->  arch/x86/kvm/x86.c | 58 ++++++++++++++++++++++++++++++++--------------
->  1 file changed, 40 insertions(+), 18 deletions(-)
+>   mm/rmap.c | 1 +
+>   1 file changed, 1 insertion(+)
 > 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 9043548e6baf..2b4663dfcd8d 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -871,6 +871,13 @@ void kvm_post_set_cr0(struct kvm_vcpu *vcpu, unsigned long old_cr0, unsigned lon
->  	if ((cr0 ^ old_cr0) & X86_CR0_PG) {
->  		kvm_clear_async_pf_completion_queue(vcpu);
->  		kvm_async_pf_hash_reset(vcpu);
-> +
-> +		/*
-> +		 * Clearing CR0.PG is defined to flush the TLB from the guest's
-> +		 * perspective.
-> +		 */
-> +		if (!(cr0 & X86_CR0_PG))
-> +			kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
->  	}
->  
->  	if ((cr0 ^ old_cr0) & KVM_MMU_CR0_ROLE_BITS)
-> @@ -1057,28 +1064,41 @@ EXPORT_SYMBOL_GPL(kvm_is_valid_cr4);
->  
->  void kvm_post_set_cr4(struct kvm_vcpu *vcpu, unsigned long old_cr4, unsigned long cr4)
->  {
-> +	if ((cr4 ^ old_cr4) & KVM_MMU_CR4_ROLE_BITS)
-> +		kvm_mmu_reset_context(vcpu);
-> +
->  	/*
-> -	 * If any role bit is changed, the MMU needs to be reset.
-> -	 *
-> -	 * If CR4.PCIDE is changed 1 -> 0, the guest TLB must be flushed.
->  	 * If CR4.PCIDE is changed 0 -> 1, there is no need to flush the TLB
->  	 * according to the SDM; however, stale prev_roots could be reused
->  	 * incorrectly in the future after a MOV to CR3 with NOFLUSH=1, so we
-> -	 * free them all.  KVM_REQ_MMU_RELOAD is fit for the both cases; it
-> -	 * is slow, but changing CR4.PCIDE is a rare case.
-> -	 *
-> -	 * If CR4.PGE is changed, the guest TLB must be flushed.
-> -	 *
-> -	 * Note: resetting MMU is a superset of KVM_REQ_MMU_RELOAD and
-> -	 * KVM_REQ_MMU_RELOAD is a superset of KVM_REQ_TLB_FLUSH_GUEST, hence
-> -	 * the usage of "else if".
-> +	 * free them all.  This is *not* a superset of KVM_REQ_TLB_FLUSH_GUEST
-> +	 * or KVM_REQ_TLB_FLUSH_CURRENT, because the hardware TLB is not flushed,
-> +	 * so fall through.
->  	 */
-> -	if ((cr4 ^ old_cr4) & KVM_MMU_CR4_ROLE_BITS)
-> -		kvm_mmu_reset_context(vcpu);
-> -	else if ((cr4 ^ old_cr4) & X86_CR4_PCIDE)
-> +	if (!tdp_enabled &&
-> +	    (cr4 & X86_CR4_PCIDE) && !(old_cr4 & X86_CR4_PCIDE))
->  		kvm_make_request(KVM_REQ_MMU_RELOAD, vcpu);
-> -	else if ((cr4 ^ old_cr4) & X86_CR4_PGE)
-> -		kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
-> +
-> +	/*
-> +	 * The TLB has to be flushed for all PCIDs on:
-> +	 * - CR4.PCIDE changed from 1 to 0
-> +	 * - any change to CR4.PGE
-> +	 *
-> +	 * This is a superset of KVM_REQ_TLB_FLUSH_CURRENT.
-> +	 */
-> +	if (((cr4 ^ old_cr4) & X86_CR4_PGE) ||
-> +	    (!(cr4 & X86_CR4_PCIDE) && (old_cr4 & X86_CR4_PCIDE)))
-> +		 kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
-> +
-> +	/*
-> +	 * The TLB has to be flushed for the current PCID on:
-> +	 * - CR4.SMEP changed from 0 to 1
-> +	 * - any change to CR4.PAE
-> +	 */
-> +	else if (((cr4 ^ old_cr4) & X86_CR4_PAE) ||
-> +		 ((cr4 & X86_CR4_SMEP) && !(old_cr4 & X86_CR4_SMEP)))
-> +		 kvm_make_request(KVM_REQ_TLB_FLUSH_CURRENT, vcpu);
-> +
->  }
->  EXPORT_SYMBOL_GPL(kvm_post_set_cr4);
->  
-> @@ -11323,15 +11343,17 @@ void kvm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event)
->  	static_call(kvm_x86_update_exception_bitmap)(vcpu);
->  
->  	/*
-> -	 * Reset the MMU context if paging was enabled prior to INIT (which is
-> +	 * A TLB flush is needed if paging was enabled prior to INIT (which is
->  	 * implied if CR0.PG=1 as CR0 will be '0' prior to RESET).  Unlike the
->  	 * standard CR0/CR4/EFER modification paths, only CR0.PG needs to be
->  	 * checked because it is unconditionally cleared on INIT and all other
->  	 * paging related bits are ignored if paging is disabled, i.e. CR0.WP,
->  	 * CR4, and EFER changes are all irrelevant if CR0.PG was '0'.
->  	 */
-> -	if (old_cr0 & X86_CR0_PG)
-> +	if (old_cr0 & X86_CR0_PG) {
-> +		kvm_make_request(KVM_REQ_TLB_FLUSH_GUEST, vcpu);
->  		kvm_mmu_reset_context(vcpu);
-> +	}
->  
->  	/*
->  	 * Intel's SDM states that all TLB entries are flushed on INIT.  AMD's
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+> diff --git a/mm/rmap.c b/mm/rmap.c
+> index 6a1e8c7f6213..f825aeef61ca 100644
+> --- a/mm/rmap.c
+> +++ b/mm/rmap.c
+> @@ -1625,6 +1625,7 @@ static bool try_to_unmap_one(struct page *page, struct vm_area_struct *vma,
+>   				break;
+>   			}
+>   			if (arch_unmap_one(mm, vma, address, pteval) < 0) {
+> +				swap_free(entry);
+>   				set_pte_at(mm, address, pvmw.pte, pteval);
+>   				ret = false;
+>   				page_vma_mapped_walk_done(&pvmw);
 
-Best regards,
-	Maxim Levitsky
+That looks reasonable.
 
+Reviewed-by: Khalid Aziz <khalid.aziz@oracle.com>
+
+--
+Khalid
