@@ -2,94 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD951C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:11:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231641AbiBXILx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 03:11:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37530 "EHLO
+        id S231967AbiBXINF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 03:13:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231604AbiBXILt (ORCPT
+        with ESMTP id S231652AbiBXIM0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 03:11:49 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F6120BCE1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 00:11:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645690279; x=1677226279;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GFwgXOGJpALs3zlAijjfYNw0pudkBtjVqmWxF3fSdRg=;
-  b=ZMiZ7lAqm/VElOQ6aXFa7XO1P5WRtK6xccvOFSeW6teJZ0pCgFFHpd+B
-   Dr/yaQRgE5Fhfdvegy8ngnYHREttWH6usRKcx263C49TdF3R/WnD/toWw
-   YJG/Kge4sg7et5WPsgGyNUdx+8Ggudc5fiiMxUEXAS07sMLdddLACXVMv
-   Qj8X97DnUTpjAT1bm7hSHrgV0/M8oP64aS9nSSqpDw/Sn4S5THoskWm1l
-   +3jvN5s2Y8NRSEpEoyyd+mwcwUk15dLMTOnjOWsZ/g8SeGj+AUlvJ4EQh
-   fip/RBBkp/zDmrsoi623hCVxp+qYybUMDeJGXwNdvh69yuDtsLcmJGQ6r
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="251911588"
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="251911588"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 00:11:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="707367251"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 24 Feb 2022 00:11:16 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nN9DX-0002tf-Gj; Thu, 24 Feb 2022 08:11:15 +0000
-Date:   Thu, 24 Feb 2022 16:10:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [peterz-queue:x86/wip.ibt 27/42] arch/x86/lib/retpoline.S:15:2:
- error: invalid instruction mnemonic 'annotate_noendbr'
-Message-ID: <202202241631.ROFL064p-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Thu, 24 Feb 2022 03:12:26 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5EFA22018F;
+        Thu, 24 Feb 2022 00:11:43 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C736F1509;
+        Thu, 24 Feb 2022 00:11:42 -0800 (PST)
+Received: from e123648.arm.com (unknown [10.57.8.211])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 916623F70D;
+        Thu, 24 Feb 2022 00:11:40 -0800 (PST)
+From:   Lukasz Luba <lukasz.luba@arm.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     lukasz.luba@arm.com, dietmar.eggemann@arm.com,
+        viresh.kumar@linaro.org, rafael@kernel.org,
+        daniel.lezcano@linaro.org, nm@ti.com, sboyd@kernel.org,
+        mka@chromium.org, dianders@chromium.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: [PATCH v3 1/4] dt-bindings: opp: Add "opp-microwatt" entry in the OPP
+Date:   Thu, 24 Feb 2022 08:11:28 +0000
+Message-Id: <20220224081131.27282-2-lukasz.luba@arm.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220224081131.27282-1-lukasz.luba@arm.com>
+References: <20220224081131.27282-1-lukasz.luba@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
-head:   27b6438f414b6a37b60dcd90c8980397586d49db
-commit: 894eca106331b66d8f1c261d40386c043da75ee2 [27/42] x86/ibt: Annotate text references
-config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220224/202202241631.ROFL064p-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=894eca106331b66d8f1c261d40386c043da75ee2
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue x86/wip.ibt
-        git checkout 894eca106331b66d8f1c261d40386c043da75ee2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+Add new entry for the OPP which provides information about power
+expressed in micro-Watts. It is useful for the Energy Model framework.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> arch/x86/lib/retpoline.S:15:2: error: invalid instruction mnemonic 'annotate_noendbr'
-    ANNOTATE_NOENDBR
-    ^~~~~~~~~~~~~~~~
-
-
-vim +/annotate_noendbr +15 arch/x86/lib/retpoline.S
-
-    12	
-    13		.section .text.__x86.indirect_thunk
-    14	
-  > 15		ANNOTATE_NOENDBR // apply_retpolines
-    16	
-
+Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ .../devicetree/bindings/opp/opp-v2-base.yaml      | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+index 15a76bcd6d42..433164186a98 100644
+--- a/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
++++ b/Documentation/devicetree/bindings/opp/opp-v2-base.yaml
+@@ -93,6 +93,21 @@ patternProperties:
+         minItems: 1
+         maxItems: 8   # Should be enough regulators
+ 
++      opp-microwatt:
++        description: |
++          The power for the OPP in micro-Watts.
++
++          Entries for multiple regulators shall be provided in the same field
++          separated by angular brackets <>. If current values aren't required
++          for a regulator, then it shall be filled with 0. If power values
++          aren't required for any of the regulators, then this field is not
++          required. The OPP binding doesn't provide any provisions to relate the
++          values to their power supplies or the order in which the supplies need
++          to be configured and that is left for the implementation specific
++          binding.
++        minItems: 1
++        maxItems: 8   # Should be enough regulators
++
+       opp-level:
+         description:
+           A value representing the performance level of the device.
+-- 
+2.17.1
+
