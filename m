@@ -2,77 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AF7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:12:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8095C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbiBXQNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:13:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38504 "EHLO
+        id S230235AbiBXQNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:13:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiBXQNN (ORCPT
+        with ESMTP id S229521AbiBXQNr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:13:13 -0500
-Received: from box.fidei.email (box.fidei.email [IPv6:2605:2700:0:2:a800:ff:feba:dc44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EA41B0BF3;
-        Thu, 24 Feb 2022 08:12:35 -0800 (PST)
-Received: from authenticated-user (box.fidei.email [71.19.144.250])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        Thu, 24 Feb 2022 11:13:47 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421C01B2AF4;
+        Thu, 24 Feb 2022 08:13:10 -0800 (PST)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by box.fidei.email (Postfix) with ESMTPSA id 010FA803AB;
-        Thu, 24 Feb 2022 11:10:59 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dorminy.me; s=mail;
-        t=1645719060; bh=LBptnaz84kXUF48osWhg+vMhXBOFqAysTHDgWQz+/5M=;
-        h=Date:Subject:To:References:From:In-Reply-To:From;
-        b=KD0LqR8xTO6qwqQOxUaq8jxBCou8o56pHwuGsTPfCf1PMeqVJdJrfuw6dK+hbob6V
-         krVa0xHr3PjYe8BslgHJPkXRhpbHuX+5/hStPhPZAieU9oORQYEoBQ1OcxqRjZvwJm
-         UZ5xGi4Jp3DGoORsCAEh68xbEga1mHIsFqyHWSPwizZkvhe3dYQQXN62NQaLDAprWC
-         ZmM3/XMKTqvlbyMAj1i9feTnZn6lV4zn7lBYRIiWM2VpapR0SSFVooHJZN4tXb+l0S
-         YnxmD6QSbNIvYkqO0zyBeMtURlRYKF9C9zpxsjm29HMklOJNbC4aLIX3Goj9oFTBXL
-         7geTeoejQh9rg==
-Message-ID: <284ccc08-8de7-9188-19d8-20f4eda56cb4@dorminy.me>
-Date:   Thu, 24 Feb 2022 11:10:59 -0500
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 4DA5022236;
+        Thu, 24 Feb 2022 17:10:37 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645719037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=3AVbMEK1Kj2Wq9B+4ntgjAAH5iOrMVQj74iBl24oPtw=;
+        b=ITei4q9+8nn/DYKLqakBypCqB2YpmgMFhVkxmsND14t8x2SN3jXGfW0/oVaGBvbnwN+dX3
+        vwOanXjcD2um8NA8npBeore3XYI+pRrYa/vfRZ1hqYI/NKnX18vbOoWJOP/xTsCQF+Rdf7
+        ZsNKPmPLk2WuLgaho/Vlt601Xapzg8k=
+From:   Michael Walle <michael@walle.cc>
+To:     Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc:     UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v1 0/5] pinctrl: microchip-sgpio: locking and synchronous output
+Date:   Thu, 24 Feb 2022 17:10:16 +0100
+Message-Id: <20220224161021.2197263-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Subject: Re: [PATCH v4] btrfs: add fs state details to error messages.
-Content-Language: en-US
-To:     dsterba@suse.cz, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <a059920460fe13f773fd9a2e870ceb9a8e3a105a.1645644489.git.sweettea-kernel@dorminy.me>
- <20220224132210.GS12643@twin.jikos.cz>
-From:   Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-In-Reply-To: <20220224132210.GS12643@twin.jikos.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+There are boards which use the output of the SGPIO to drive I2C muxers.
+SGPIO right now is broken in a way that when the software sets this bit
+there is a rather large delay until that value ends up on the hardware
+pin.
 
-> Added to misc-next with some minor updates, thanks.
->
-Awesome, thank you. I realized this morning that it might be technically 
-slightly racy actually and would propose something like the following
+While digging into this, I've noticed that there is no locking at all
+in this driver. Add locking for all RWM accesses.
 
-static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
-{
-	unsigned int bit;
-+	unsigned long fs_state = READ_ONCE(info->fs_state);
-	unsigned int states_printed = 0;
-	char *curr = buf;
+Please note, that parts of the modification of the first patch are
+removed again in a later patch. This is because the first patch is
+intended to be backported to the stable trees.
 
-	memcpy(curr, STATE_STRING_PREFACE, sizeof(STATE_STRING_PREFACE));
-	curr += sizeof(STATE_STRING_PREFACE) - 1;
+Michael Walle (5):
+  pinctrl: microchip-sgpio: lock RMW access
+  pinctrl: microchip-sgpio: don't do RMW for interrupt ack register
+  pinctrl: microchip-sgpio: use regmap_update_bits()
+  pinctrl: microchip-sgpio: return error in spgio_output_set()
+  pinctrl: microchip-sgpio: wait until output is actually set
 
--	for_each_set_bit(bit, &info->fs_state, sizeof(info->fs_state)) {
-+	for_each_set_bit(bit, fs_state, sizeof(fs_state)) {
+ drivers/pinctrl/pinctrl-microchip-sgpio.c | 101 ++++++++++++++++++----
+ 1 file changed, 86 insertions(+), 15 deletions(-)
 
-
-All the other interactions with info->fs_state are test/set/clear_bit, which treat the argument as volatile and are therefore safe to do from multiple threads. Without the READ_ONCE (reading it as a volatile), the compiler or cpu could turn the reads of info->fs_state in for_each_set_bit() into writes of random stuff into info->fs_state, potentially clearing the state bits or filling them with garbage.
-
-Even if this is right, it'd be rare, but it would be exceeding weird for a message to be logged listing an error and then future messages be logged without any such state, or with a random collection of garbage states.
-
-I can send another patch if this explanation seems reasonable and you'd like it separate; or maybe this is too unlikely to worry about. Thanks again for the review!
-
-Sweet Tea
+-- 
+2.30.2
 
