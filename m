@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F817C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22617C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233356AbiBXKNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:13:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52400 "EHLO
+        id S233364AbiBXKNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:13:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233310AbiBXKNE (ORCPT
+        with ESMTP id S233324AbiBXKNF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:13:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A760AC992F;
-        Thu, 24 Feb 2022 02:12:34 -0800 (PST)
+        Thu, 24 Feb 2022 05:13:05 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C80013AA30;
+        Thu, 24 Feb 2022 02:12:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5EABDB82354;
+        by sin.source.kernel.org (Postfix) with ESMTPS id C8A5ECE1E46;
         Thu, 24 Feb 2022 10:12:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E76A9C340F4;
-        Thu, 24 Feb 2022 10:12:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3234CC340F8;
+        Thu, 24 Feb 2022 10:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645697551;
-        bh=1P5kYNK0inw6c83XhTJAHu36iAxTv1EUCPZswN00cPA=;
+        s=k20201202; t=1645697552;
+        bh=ZtLfo26jT/bIFMFsWcHW86soigSIb26d5K3SfwTXhkQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=chV/K20lZ6/kqvnMaAEE2pmx3jHbqACH6fdoyNLDqPWPjXvFR+d4qHslnQpKgL0gI
-         /7bPzNwlDYksaayGjwUbnRaVQwrFzF0fmCcnDRN3Qua0C6VUd7teGYZ0qXy+YgW2EQ
-         NcZglRuJ9v3SXya/P1C6g65E1GKu2xzAfyG+qqcn+i8W0hrXiBPS1WbWfCaF0u+6L3
-         kHcc3M+SSlh9FoWXg++sLN/XtGtPEdG4qQoQTMQ29da+iau4g+SMDXbAY6RumfGbd/
-         GzN5ZUU3VRIT137CqxpiMG8MplvwPLaf8IkZ6dt0iwVYjY+XvDqe8ylOuKliYiU1qx
-         1PkpnkS+2xIYw==
+        b=H+QWNOF+ofgTmOKYgx/thfjFiUUhd+MNt0sEeC7SaxpfKeBoVvOpySlw6nCNSZjNQ
+         EDCMNHq9OuOwSh6Tgw9Kruc+StHKYHYvP2K1SmOtTTsoIBsKq1RvEZYyQhJkyYv3rs
+         NxjTE3OjVLqI1cwNz6TGREht16z17Q8O9NE9vXESs4da4a/UFwpSyJcr6olB2GEZGS
+         g97gxHiKRLbpwy8aZPjHPJBImTzix9eVi/w9DH+sblbmFNxJbCvN+X7MzXoGMc3xrC
+         odFkzlqyROXLA7g6926LeSCgRVE1ddYrqjf2MWpdiMh9bS9wGWHIp92mXQFqQbYxNl
+         /P2p+tYx7HQsw==
 Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
         by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <maz@kernel.org>)
-        id 1nNB6r-00A979-N6; Thu, 24 Feb 2022 10:12:29 +0000
+        id 1nNB6s-00A979-2T; Thu, 24 Feb 2022 10:12:30 +0000
 From:   Marc Zyngier <maz@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-arm-msm@vger.kernel.org
-Subject: [PATCH 3/5] irqchip/qcom-pdc: Kill qcom_pdc_translate helper
-Date:   Thu, 24 Feb 2022 10:12:24 +0000
-Message-Id: <20220224101226.88373-4-maz@kernel.org>
+Subject: [PATCH 5/5] irqchip/qcom-pdc: Drop open coded version of __assign_bit()
+Date:   Thu, 24 Feb 2022 10:12:26 +0000
+Message-Id: <20220224101226.88373-6-maz@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220224101226.88373-1-maz@kernel.org>
 References: <20220224101226.88373-1-maz@kernel.org>
@@ -59,59 +59,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-qcom_pdc_translate() really is nothing but an open coded version
-of irq_domain_translate_twocell(). Get rid of it and use the common
-version instead.
+The driver uses what looks like an open-coded version of __assign_bit().
+Replace it with the real thing.
 
 Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- drivers/irqchip/qcom-pdc.c | 19 ++-----------------
- 1 file changed, 2 insertions(+), 17 deletions(-)
+ drivers/irqchip/qcom-pdc.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 5be531403f50..837ca6998f6a 100644
+index 0cd20ddfae2a..d96916cf6a41 100644
 --- a/drivers/irqchip/qcom-pdc.c
 +++ b/drivers/irqchip/qcom-pdc.c
-@@ -198,21 +198,6 @@ static struct pdc_pin_region *get_pin_region(int pin)
- 	return NULL;
- }
+@@ -23,9 +23,6 @@
  
--static int qcom_pdc_translate(struct irq_domain *d, struct irq_fwspec *fwspec,
--			      unsigned long *hwirq, unsigned int *type)
--{
--	if (is_of_node(fwspec->fwnode)) {
--		if (fwspec->param_count != 2)
--			return -EINVAL;
+ #define PDC_MAX_GPIO_IRQS	256
+ 
+-#define CLEAR_INTR(reg, intr)	(reg & ~(1 << intr))
+-#define ENABLE_INTR(reg, intr)	(reg | (1 << intr))
 -
--		*hwirq = fwspec->param[0];
--		*type = fwspec->param[1] & IRQ_TYPE_SENSE_MASK;
--		return 0;
--	}
--
--	return -EINVAL;
--}
--
- static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
- 			  unsigned int nr_irqs, void *data)
+ #define IRQ_ENABLE_BANK		0x10
+ #define IRQ_i_CFG		0x110
+ 
+@@ -55,16 +52,16 @@ static u32 pdc_reg_read(int reg, u32 i)
+ static void pdc_enable_intr(struct irq_data *d, bool on)
  {
-@@ -223,7 +208,7 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
- 	unsigned int type;
- 	int ret;
+ 	int pin_out = d->hwirq;
++	unsigned long enable;
+ 	unsigned long flags;
+ 	u32 index, mask;
+-	u32 enable;
  
--	ret = qcom_pdc_translate(domain, fwspec, &hwirq, &type);
-+	ret = irq_domain_translate_twocell(domain, fwspec, &hwirq, &type);
- 	if (ret)
- 		return ret;
+ 	index = pin_out / 32;
+ 	mask = pin_out % 32;
  
-@@ -256,7 +241,7 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
+ 	raw_spin_lock_irqsave(&pdc_lock, flags);
+ 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
+-	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
++	__assign_bit(mask, &enable, on);
+ 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
+ 	raw_spin_unlock_irqrestore(&pdc_lock, flags);
  }
- 
- static const struct irq_domain_ops qcom_pdc_ops = {
--	.translate	= qcom_pdc_translate,
-+	.translate	= irq_domain_translate_twocell,
- 	.alloc		= qcom_pdc_alloc,
- 	.free		= irq_domain_free_irqs_common,
- };
 -- 
 2.30.2
 
