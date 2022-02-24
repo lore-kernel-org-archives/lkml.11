@@ -2,159 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17CC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:33:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39422C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:33:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232499AbiBXJdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:33:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49114 "EHLO
+        id S229746AbiBXJeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:34:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232769AbiBXJdv (ORCPT
+        with ESMTP id S232798AbiBXJdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:33:51 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8633C26A3AC;
-        Thu, 24 Feb 2022 01:33:21 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52667ED1;
-        Thu, 24 Feb 2022 01:33:21 -0800 (PST)
-Received: from [10.57.8.211] (unknown [10.57.8.211])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5F7F13F70D;
-        Thu, 24 Feb 2022 01:33:19 -0800 (PST)
-Message-ID: <9c8f15a3-563f-3bed-61a4-2f72b0c20e89@arm.com>
-Date:   Thu, 24 Feb 2022 09:33:18 +0000
+        Thu, 24 Feb 2022 04:33:53 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C04726A39E
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:33:23 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id iq13-20020a17090afb4d00b001bc4437df2cso1546076pjb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:33:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Um2hOoO992A8z0y3YtWZVlugWm1fUhrmcXQ/7RYGwh8=;
+        b=dmY9TiLAQ/Sks9iO7V4G62Iq0F4qlBMW21+hDyL33W+fC59uEKCeH1kQPz7H/qXr4X
+         SvVBePgkVfp2+ZdtGoFrz4RZA/MnbhKe1Y+gZUU8kHjNRYAdc+x2DtDHGt3jwK9Cb00C
+         TkG5V3K39mgV+oebLPqYz8Hv/fUqlOzTKV7wyjPfam74HRRaVwDI7B29oSg2sxF4/xTS
+         np6kqdrSTbTA3AohcQZa4LYTE0N5FePEQb0d0FnaZdZkN0Kn0Sn2o1Ce6tFhYruXHP2Q
+         8nmbW3JYmXV0GJJDCQj3unSGk3/Cwdu+a9DjeDZp2/Fy96EP0/UCgyNTa256oPuvM3oB
+         Vgkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Um2hOoO992A8z0y3YtWZVlugWm1fUhrmcXQ/7RYGwh8=;
+        b=h1lUJsGUAHfF28f63cqi4NXMb5056811/rHYkhfe331SZnyatMIF2JBZR2/hapxS7a
+         M3BiWterxHcCBbysHHEB89sWOHeIEUllfaKM/akGm/9GUs6YU4GeNQeaWXG2Dslq0ewa
+         fogfn3hdSWUagB35k219fahxSlxJMtfHnXxEHt45weO5UWvtni1tChxxC4ww3KtBiAaE
+         yAk+0XAcru8YsXwHDsWtH9qney1MGGh9leO2GAHSebPpzctNUTRpHT3zeofhG1Ql/MBX
+         JoOnBr2J1pWAfhpbP62DepTp+vG3E7gnM5HCvv62IWjqzIvTJ3JPAxY5lqdiKn2R5gYE
+         9n9A==
+X-Gm-Message-State: AOAM53176vKfcjPKADi9auTmiNenDc52nyDbIJEWGPm/jukOlfxxIMIH
+        wbVOYtz8duLVPYzj/gTCIwc9zQ==
+X-Google-Smtp-Source: ABdhPJxLfTLxRibEEIi3LQRH2mR/4H/gW2oqwevUc7iY2J2LFlnQXH9WaCZ0SWn98k92VCGYf8fjjQ==
+X-Received: by 2002:a17:90a:4891:b0:1b9:81c:8774 with SMTP id b17-20020a17090a489100b001b9081c8774mr1930738pjh.8.1645695202689;
+        Thu, 24 Feb 2022 01:33:22 -0800 (PST)
+Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.251])
+        by smtp.gmail.com with ESMTPSA id 13sm2530988pfx.122.2022.02.24.01.33.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 01:33:22 -0800 (PST)
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+To:     rostedt@goodmis.org, mark.rutland@arm.com, mingo@redhat.com,
+        tglx@linutronix.de, catalin.marinas@arm.com, will@kernel.org,
+        dave.hansen@linux.intel.com, broonie@kernel.org
+Cc:     x86@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        qirui.001@bytedance.com,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Subject: [PATCH v3 2/3] x86/ftrace: cleanup graph tracer
+Date:   Thu, 24 Feb 2022 17:32:50 +0800
+Message-Id: <20220224093251.49971-2-zhouchengming@bytedance.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220224093251.49971-1-zhouchengming@bytedance.com>
+References: <20220224093251.49971-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 3/4] OPP: Add support of "opp-microwatt" for advanced
- EM registration
-Content-Language: en-US
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        rafael@kernel.org, daniel.lezcano@linaro.org, nm@ti.com,
-        sboyd@kernel.org, mka@chromium.org, dianders@chromium.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org
-References: <20220224081131.27282-1-lukasz.luba@arm.com>
- <20220224081131.27282-4-lukasz.luba@arm.com>
- <20220224091346.xmnpj27vllpa4cuy@vireshk-i7>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220224091346.xmnpj27vllpa4cuy@vireshk-i7>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Put CONFIG_DYNAMIC_FTRACE related code after prepare_ftrace_return(),
+in which we define ftrace_graph_func() for graph_ops in
+DYNAMIC_FTRACE_WITH_ARGS case, then define ftrace_graph_caller
+enable and disable functions in the #else case to override.
 
+Since ftrace_graph_caller enable and disable functions have weak
+versions in Ftrace core code, we don't need to override them in the
+DYNAMIC_FTRACE_WITH_ARGS case. This patch is just a cleanup,
+doesn't have functional changes actually.
 
-On 2/24/22 09:13, Viresh Kumar wrote:
-> On 24-02-22, 08:11, Lukasz Luba wrote:
->> diff --git a/drivers/opp/of.c b/drivers/opp/of.c
->>   
->> +/*
->> + * Callback function provided to the Energy Model framework upon registration.
->> + * It provides the power used by @dev at @kHz if it is the frequency of an
->> + * existing OPP, or at the frequency of the first OPP above @kHz otherwise
->> + * (see dev_pm_opp_find_freq_ceil()). This function updates @kHz to the ceiled
->> + * frequency and @mW to the associated power.
->> + *
->> + * Returns 0 on success or a proper -EINVAL value in case of error.
->> + */
->> +static int __maybe_unused
->> +_get_opp_power(unsigned long *mW, unsigned long *kHz, struct device *dev)
-> 
-> Lets call it _get_dt_opp_power() or _get_dt_power() ?
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+---
+ arch/x86/kernel/ftrace.c | 78 +++++++++++++++++-----------------------
+ 1 file changed, 32 insertions(+), 46 deletions(-)
 
-OK, I'll return to _get_dt_power()
+diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
+index 7cc540e6de0c..e49c9d3e986b 100644
+--- a/arch/x86/kernel/ftrace.c
++++ b/arch/x86/kernel/ftrace.c
+@@ -583,51 +583,6 @@ void arch_ftrace_trampoline_free(struct ftrace_ops *ops)
+ #endif /* CONFIG_DYNAMIC_FTRACE */
+ 
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+-
+-#ifdef CONFIG_DYNAMIC_FTRACE
+-
+-#ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
+-extern void ftrace_graph_call(void);
+-static const char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
+-{
+-	return text_gen_insn(JMP32_INSN_OPCODE, (void *)ip, (void *)addr);
+-}
+-
+-static int ftrace_mod_jmp(unsigned long ip, void *func)
+-{
+-	const char *new;
+-
+-	new = ftrace_jmp_replace(ip, (unsigned long)func);
+-	text_poke_bp((void *)ip, new, MCOUNT_INSN_SIZE, NULL);
+-	return 0;
+-}
+-
+-int ftrace_enable_ftrace_graph_caller(void)
+-{
+-	unsigned long ip = (unsigned long)(&ftrace_graph_call);
+-
+-	return ftrace_mod_jmp(ip, &ftrace_graph_caller);
+-}
+-
+-int ftrace_disable_ftrace_graph_caller(void)
+-{
+-	unsigned long ip = (unsigned long)(&ftrace_graph_call);
+-
+-	return ftrace_mod_jmp(ip, &ftrace_stub);
+-}
+-#else /* !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+-int ftrace_enable_ftrace_graph_caller(void)
+-{
+-	return 0;
+-}
+-
+-int ftrace_disable_ftrace_graph_caller(void)
+-{
+-	return 0;
+-}
+-#endif /* CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+-#endif /* !CONFIG_DYNAMIC_FTRACE */
+-
+ /*
+  * Hook the return address and push it in the stack of return addrs
+  * in current thread info.
+@@ -666,6 +621,8 @@ void prepare_ftrace_return(unsigned long ip, unsigned long *parent,
+ 	ftrace_test_recursion_unlock(bit);
+ }
+ 
++#ifdef CONFIG_DYNAMIC_FTRACE
++
+ #ifdef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
+ void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
+ 		       struct ftrace_ops *op, struct ftrace_regs *fregs)
+@@ -675,6 +632,35 @@ void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
+ 
+ 	prepare_ftrace_return(ip, (unsigned long *)stack, 0);
+ }
+-#endif
++#else
++extern void ftrace_graph_call(void);
++static const char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
++{
++	return text_gen_insn(JMP32_INSN_OPCODE, (void *)ip, (void *)addr);
++}
+ 
++static int ftrace_mod_jmp(unsigned long ip, void *func)
++{
++	const char *new;
++
++	new = ftrace_jmp_replace(ip, (unsigned long)func);
++	text_poke_bp((void *)ip, new, MCOUNT_INSN_SIZE, NULL);
++	return 0;
++}
++
++int ftrace_enable_ftrace_graph_caller(void)
++{
++	unsigned long ip = (unsigned long)(&ftrace_graph_call);
++
++	return ftrace_mod_jmp(ip, &ftrace_graph_caller);
++}
++
++int ftrace_disable_ftrace_graph_caller(void)
++{
++	unsigned long ip = (unsigned long)(&ftrace_graph_call);
++
++	return ftrace_mod_jmp(ip, &ftrace_stub);
++}
++#endif /* CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
++#endif /* CONFIG_DYNAMIC_FTRACE */
+ #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
+-- 
+2.20.1
 
-> 
->> +{
->> +	struct dev_pm_opp *opp;
->> +	unsigned long opp_freq, opp_power;
->> +
->> +	/* Find the right frequency and related OPP */
->> +	opp_freq = *kHz * 1000;
->> +	opp = dev_pm_opp_find_freq_ceil(dev, &opp_freq);
->> +	if (IS_ERR(opp))
->> +		return -EINVAL;
->> +
->> +	opp_power = dev_pm_opp_get_power(opp);
-> 
-> As I said in 2/4, this should really give the total instead.
-
-make sense
-
-> 
->> +	dev_pm_opp_put(opp);
->> +	if (!opp_power)
->> +		return -EINVAL;
->> +
->> +	*kHz = opp_freq / 1000;
->> +	*mW = opp_power / 1000;
->> +
->> +	return 0;
->> +}
->> +
->>   /*
->>    * Callback function provided to the Energy Model framework upon registration.
->>    * This computes the power estimated by @dev at @kHz if it is the frequency
->> @@ -1488,6 +1520,24 @@ static int __maybe_unused _get_power(unsigned long *mW, unsigned long *kHz,
->>   	return 0;
->>   }
->>   
->> +static bool _of_has_opp_microwatt_property(struct device *dev)
->> +{
->> +	unsigned long power, freq = 0;
->> +	struct dev_pm_opp *opp;
->> +
->> +	/* Check if at least one OPP has needed property */
->> +	opp = dev_pm_opp_find_freq_ceil(dev, &freq);
->> +	if (IS_ERR(opp))
->> +		return false;
->> +
->> +	power = dev_pm_opp_get_power(opp);
->> +	dev_pm_opp_put(opp);
->> +	if (!power)
-> 
-> What if this particular frequency has 0 power mentioned for some
-> reason :)
-
-If that power 0 would be allowed here, then in next step when EM
-calls active_power() we check !power and report dev_err().
-IPA design would also not accept the power=0
-
-> 
-> Instead of this heavy stuff, just pick the first OPP from the opp
-> table and see its power-value.
-
-It is the first opp: freq=0.
-You mean by parsing the the DT node instead, like I had in v2 version?
-
-> 
->> +		return false;
->> +
->> +	return true;
->> +}
->> +
->>   /**
->>    * dev_pm_opp_of_register_em() - Attempt to register an Energy Model
->>    * @dev		: Device for which an Energy Model has to be registered
->> @@ -1517,6 +1567,14 @@ int dev_pm_opp_of_register_em(struct device *dev, struct cpumask *cpus)
->>   		goto failed;
->>   	}
->>   
->> +	/* First, try to find more precised Energy Model in DT */
->> +	if (_of_has_opp_microwatt_property(dev)) {
->> +		struct em_data_callback em_dt_cb = EM_DATA_CB(_get_opp_power);
->> +
->> +		return em_dev_register_perf_domain(dev, nr_opp, &em_dt_cb,
->> +						   cpus, true);
->> +	}
->> +
-> 
-> We have another em_dev_register_perf_domain() down the line, lets keep
-> only one such call and get it a callback that should be set in an
-> if/else loop.
-
-OK
