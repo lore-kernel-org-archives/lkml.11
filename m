@@ -2,67 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:00:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233418AbiBXMAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:00:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60526 "EHLO
+        id S234315AbiBXMDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:03:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbiBXMAs (ORCPT
+        with ESMTP id S234267AbiBXMDb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:00:48 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B1234BB8A
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:00:19 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K4BDx34Ltzbbpy;
-        Thu, 24 Feb 2022 19:55:45 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 24 Feb
- 2022 20:00:17 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] mm/oom_kill: remove unneeded is_memcg_oom check
-Date:   Thu, 24 Feb 2022 19:59:33 +0800
-Message-ID: <20220224115933.20154-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Thu, 24 Feb 2022 07:03:31 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB4B820D82C
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:02:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=RcyygvmcLReoBtZ0CkCckdYWq6gYr8Kblc5/vEzgApQ=; b=NvwVIqSR7fbffKXE0p5j5bXrIY
+        220Rmqe1SXE4/53c0iqbuyM42OpHIHqGRID3i4u71JO0IsHga7Ppx76xMuJ8ITMNUk5VdwQdX3LGX
+        ELrObJqdG826VDVrdup6XM+VftCps1oLv5KArMLo6N3dklm0+nDtTDlXe4Zi4kmpIJ29vWt4S2gc7
+        qnj4utnMlqz5dw73lsxYkQKnrksluCO2kKeVQD3vm7nbg3PR6nzPcF9RWmBwk//UOnxO7iBmQHCqZ
+        wQNIpJAWjcrVZGXSnZBHbFRULmXhfhMtAk1xQYR12wxkO6pKAeSDeVOhhFYK3k/3gKaqvh5uFcZt2
+        NZ1jpj+g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNCpU-00Cbrl-0j; Thu, 24 Feb 2022 12:02:40 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A6124300230;
+        Thu, 24 Feb 2022 13:02:37 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 8CBDB201C20B8; Thu, 24 Feb 2022 13:02:37 +0100 (CET)
+Date:   Thu, 24 Feb 2022 13:02:37 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Junru Shen <hhusjrsjr@gmail.com>
+Cc:     Will Deacon <will@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] atomic: Put the fetching of the old value into the loop
+ when doing atomic CAS
+Message-ID: <Yhdz3W3cnKtVmBYc@hirez.programming.kicks-ass.net>
+References: <20220224082438.580191-1-hhusjrsjr@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220224082438.580191-1-hhusjrsjr@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-oom_cpuset_eligible is always called when !is_memcg_oom. Remove this
-unnecessary check.
+On Thu, Feb 24, 2022 at 04:24:38PM +0800, Junru Shen wrote:
+> Put the acquisition of the expected value inside the loop to prevent an infinite loop when it does not match.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/oom_kill.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-index 9fea6d3c1ec7..c70a4330e548 100644
---- a/mm/oom_kill.c
-+++ b/mm/oom_kill.c
-@@ -122,9 +122,6 @@ static bool oom_cpuset_eligible(struct task_struct *start,
- 	bool ret = false;
- 	const nodemask_t *mask = oc->nodemask;
- 
--	if (is_memcg_oom(oc))
--		return true;
--
- 	rcu_read_lock();
- 	for_each_thread(start, tsk) {
- 		if (mask) {
--- 
-2.23.0
-
+NAK, this is broken.
