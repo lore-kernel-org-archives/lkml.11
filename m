@@ -2,226 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91240C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 06:13:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD53C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 06:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231135AbiBXGN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 01:13:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35848 "EHLO
+        id S231218AbiBXGQU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 01:16:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230509AbiBXGN4 (ORCPT
+        with ESMTP id S230303AbiBXGQS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 01:13:56 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1EC234020
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 22:13:27 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id x11so823916pll.10
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 22:13:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Asma8WNQQUT3FBNGCvGXdievYO+L9dWKrHZUkqpLwYo=;
-        b=YP0hTw4BhQTutsHE3lgb2hwfeMrAAi2vjHqX4ZmQJDQvgozj5g8q/QqqcI09WdFnPd
-         sD3El4ySr3YOjFuLIb49Bd1UUSdf60EoRhU0SNdE7vvX3rGUTe17TFup32D3dKf11GqR
-         BCjntqEmhiz32jfO4BE5StMUcD6q3Zr8fLQE0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Asma8WNQQUT3FBNGCvGXdievYO+L9dWKrHZUkqpLwYo=;
-        b=IXYufA12ulfARurhx4eeTQ18L08igJddb4At0yX6LYMp9ay2RuNSC4R/u79iSbtUta
-         tzL4RQ/7PZJGCQKQ4Mz7Tr8AKt1Nl6nsNXT1URgXcmRG5pD1fEfheSNF11DNQii2I8j5
-         kQJHwUvVTHgG8oHULX5WJjGwAHV6VyxKln8B1M1Kxff1Bz3LmKFbIwj/DH8fTtkvs6SY
-         ixnc6FQ6dp50zy4W7YenYjT6z0Vn9O6wn8qiWpGTEplCPKIgnaaR88Z4+gRvkD/z8O71
-         UwvWCgFWDEehtvjrWhoSN4u0BjctRxbvTtQD2JLF3Ibq6AmhYAs7H+EW7a9UFKiQfT1V
-         h4zA==
-X-Gm-Message-State: AOAM530VtEWonR9aEZ6NMiLgAF4goKc8mM0jfN77oB+dlr57JA7cmLV7
-        wiRiqAyWGrKP4mTaEIijaFPahg==
-X-Google-Smtp-Source: ABdhPJyRPCtuqkCcj9377exCaz5pyA9MMqZh33gOYt1MVstAjPz3jqClc+zk9NooYp5PwP7tqlaPNA==
-X-Received: by 2002:a17:90a:a78d:b0:1bc:d11c:ad40 with SMTP id f13-20020a17090aa78d00b001bcd11cad40mr24287pjq.246.1645683206850;
-        Wed, 23 Feb 2022 22:13:26 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 142sm1830697pfy.11.2022.02.23.22.13.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 22:13:26 -0800 (PST)
-Date:   Wed, 23 Feb 2022 22:13:25 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Daniel Latypov <dlatypov@google.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     Eric Biederman <ebiederm@xmission.com>,
-        David Gow <davidgow@google.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Magnus =?iso-8859-1?Q?Gro=DF?= <magnus.gross@rwth-aachen.de>,
-        kunit-dev@googlegroups.com, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] binfmt_elf: Introduce KUnit test
-Message-ID: <202202232208.B416701@keescook>
-References: <20220224054332.1852813-1-keescook@chromium.org>
- <CAGS_qxp8cjG5jCX-7ziqHcy2gq_MqL8kU01-joFD_W9iPG08EA@mail.gmail.com>
+        Thu, 24 Feb 2022 01:16:18 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D79269A8B;
+        Wed, 23 Feb 2022 22:15:44 -0800 (PST)
+X-UUID: 2dcc8b82a94045cb9bd75b628a1be054-20220224
+X-UUID: 2dcc8b82a94045cb9bd75b628a1be054-20220224
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2042828854; Thu, 24 Feb 2022 14:15:40 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 24 Feb 2022 14:15:38 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 24 Feb 2022 14:15:36 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Lina Wang <lina.wang@mediatek.com>
+Subject: [PATCH v2] xfrm: fix tunnel model fragmentation behavior
+Date:   Thu, 24 Feb 2022 14:09:31 +0800
+Message-ID: <20220224060931.30404-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAGS_qxp8cjG5jCX-7ziqHcy2gq_MqL8kU01-joFD_W9iPG08EA@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 10:07:04PM -0800, Daniel Latypov wrote:
-> On Wed, Feb 23, 2022 at 9:43 PM Kees Cook <keescook@chromium.org> wrote:
-> >
-> > Adds simple KUnit test for some binfmt_elf internals: specifically a
-> > regression test for the problem fixed by commit 8904d9cd90ee ("ELF:
-> > fix overflow in total mapping size calculation").
-> >
-> > Cc: Eric Biederman <ebiederm@xmission.com>
-> > Cc: David Gow <davidgow@google.com>
-> > Cc: Alexey Dobriyan <adobriyan@gmail.com>
-> > Cc: "Magnus Groﬂ" <magnus.gross@rwth-aachen.de>
-> > Cc: kunit-dev@googlegroups.com
-> > Cc: linux-fsdevel@vger.kernel.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > ---
-> > I'm exploring ways to mock copy_to_user() for more tests in here.
-> > kprobes doesn't seem to let me easily hijack a function...
-> 
-> Yeah, there doesn't seem to be a good way to do so. It seems more
-> feasible if one is willing to write arch-specific code, but I'm not
-> quite sure if that works either.
+In tunnel mode, if outer interface(ipv4) is less, it is easily to let 
+inner IPV6 mtu be less than 1280. If so, a Packet Too Big ICMPV6 message 
+is received. When send again, packets are fragmentized with 1280, they
+are still rejected with ICMPV6(Packet Too Big) by xfrmi_xmit2().
 
-Yeah, I'm hoping maybe Steven has some ideas.
+According to RFC4213 Section3.2.2:
+         if (IPv4 path MTU - 20) is less than 1280
+                 if packet is larger than 1280 bytes
+                         Send ICMPv6 "packet too big" with MTU = 1280.
+                         Drop packet.
+                 else
+                         Encapsulate but do not set the Don't Fragment
+                         flag in the IPv4 header.  The resulting IPv4
+                         packet might be fragmented by the IPv4 layer
+                         on the encapsulator or by some router along
+                         the IPv4 path.
+                 endif
+         else
+                 if packet is larger than (IPv4 path MTU - 20)
+                         Send ICMPv6 "packet too big" with
+                         MTU = (IPv4 path MTU - 20).
+                         Drop packet.
+                 else
+                         Encapsulate and set the Don't Fragment flag
+                         in the IPv4 header.
+                 endif
+         endif
+Packets should be fragmentized with ipv4 outer interface, so change it.
 
-Steven, I want to do fancy live-patch kind or things to replace functions,
-but it doesn't need to be particularly fancy because KUnit tests (usually)
-run single-threaded, etc. It looks like kprobes could almost do it, but
-I don't see a way to have it _avoid_ making a function call.
+After it is fragemtized with ipv4, there will be double fragmenation.
+No.48 & No.51 are ipv6 fragment packets, No.48 is double fragmentized, 
+then tunneled with IPv4(No.49& No.50), which obey spec. And received peer
+cannot decrypt it rightly.
 
-> https://kunit.dev/mocking.html has some thoughts on this.
-> Not sure if there's anything there that would be useful to you, but
-> perhaps it can give you some ideas.
+48              2002::10	2002::11 1296(length) IPv6 fragment (off=0 more=y ident=0xa20da5bc nxt=50) 
+49   0x0000 (0) 2002::10	2002::11 1304	      IPv6 fragment (off=0 more=y ident=0x7448042c nxt=44)
+50   0x0000 (0)	2002::10	2002::11 200	      ESP (SPI=0x00035000) 
+51		2002::10	2002::11 180	      Echo (ping) request 
+52   0x56dc     2002::10	2002::11 248	      IPv6 fragment (off=1232 more=n ident=0xa20da5bc nxt=50)
 
-Yeah, I figure a small refactoring to use a passed task_struct can avoid
-the "current" uses in load_elf_binary(), etc, but the copy_to_user() is
-more of a problem. I have considered inverting the Makefile logic,
-though, and having binfmt_elf_test.c include binfmt_elf.c and have it
-just use a #define to redirect copy_to_user, kind of how all the compat
-handling is already done. But it'd be nice to have a "cleaner" mocking
-solution...
+esp_noneed_fragment has fixed above issues. Finally, it acted like below:
+1   0x6206 192.168.1.138   192.168.1.1 1316 Fragmented IP protocol (proto=Encap Security Payload 50, off=0, ID=6206) [Reassembled in #2]
+2   0x6206 2002::10	   2002::11    88   IPv6 fragment (off=0 more=y ident=0x1f440778 nxt=50)
+3   0x0000 2002::10	   2002::11    248  ICMPv6    Echo (ping) request 
 
-> 
-> > ---
-> >  fs/Kconfig.binfmt      | 17 +++++++++++
-> >  fs/binfmt_elf.c        |  4 +++
-> >  fs/binfmt_elf_test.c   | 64 ++++++++++++++++++++++++++++++++++++++++++
-> >  fs/compat_binfmt_elf.c |  2 ++
-> >  4 files changed, 87 insertions(+)
-> >  create mode 100644 fs/binfmt_elf_test.c
-> >
-> > diff --git a/fs/Kconfig.binfmt b/fs/Kconfig.binfmt
-> > index 4d5ae61580aa..8e14589ee9cc 100644
-> > --- a/fs/Kconfig.binfmt
-> > +++ b/fs/Kconfig.binfmt
-> > @@ -28,6 +28,23 @@ config BINFMT_ELF
-> >           ld.so (check the file <file:Documentation/Changes> for location and
-> >           latest version).
-> >
-> > +config BINFMT_ELF_KUNIT_TEST
-> > +       bool "Build KUnit tests for ELF binary support" if !KUNIT_ALL_TESTS
-> > +       depends on KUNIT=y && BINFMT_ELF=y
-> > +       default KUNIT_ALL_TESTS
-> > +       help
-> > +         This builds the ELF loader KUnit tests.
-> > +
-> > +         KUnit tests run during boot and output the results to the debug log
-> > +         in TAP format (https://testanything.org/). Only useful for kernel devs
-> 
-> Tangent: should we update the kunit style guide to not refer to TAP
-> anymore as it's not accurate?
-> The KTAP spec is live on kernel.org at
-> https://www.kernel.org/doc/html/latest/dev-tools/ktap.html
-> 
-> We can leave this patch as-is and update later, or have it be the
-> guinea pig for the new proposed wording.
+Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
+Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+---
+ net/ipv6/xfrm6_output.c   | 16 ++++++++++++++++
+ net/xfrm/xfrm_interface.c |  5 ++++-
+ 2 files changed, 20 insertions(+), 1 deletion(-)
 
-Oops, good point. I was actually thinking it doesn't make too much sense
-to keep repeating the same long boilerplate generally.
-
-> (I'm personally in favor of people not copy-pasting these paragraphs
-> in the first place, but that is what the style-guide currently
-> recommends)
-
-Let's change the guide? :)
-
-> 
-> > +         running KUnit test harness and are not for inclusion into a
-> > +         production build.
-> > +
-> > +         For more information on KUnit and unit tests in general please refer
-> > +         to the KUnit documentation in Documentation/dev-tools/kunit/.
-> > +
-> > +         If unsure, say N.
-> > +
-> >  config COMPAT_BINFMT_ELF
-> >         def_bool y
-> >         depends on COMPAT && BINFMT_ELF
-> > diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-> > index 76ff2af15ba5..9bea703ed1c2 100644
-> > --- a/fs/binfmt_elf.c
-> > +++ b/fs/binfmt_elf.c
-> > @@ -2335,3 +2335,7 @@ static void __exit exit_elf_binfmt(void)
-> >  core_initcall(init_elf_binfmt);
-> >  module_exit(exit_elf_binfmt);
-> >  MODULE_LICENSE("GPL");
-> > +
-> > +#ifdef CONFIG_BINFMT_ELF_KUNIT_TEST
-> > +#include "binfmt_elf_test.c"
-> > +#endif
-> > diff --git a/fs/binfmt_elf_test.c b/fs/binfmt_elf_test.c
-> > new file mode 100644
-> > index 000000000000..486ad419f763
-> > --- /dev/null
-> > +++ b/fs/binfmt_elf_test.c
-> > @@ -0,0 +1,64 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +#include <kunit/test.h>
-> > +
-> > +static void total_mapping_size_test(struct kunit *test)
-> > +{
-> > +       struct elf_phdr empty[] = {
-> > +               { .p_type = PT_LOAD, .p_vaddr = 0, .p_memsz = 0, },
-> > +               { .p_type = PT_INTERP, .p_vaddr = 10, .p_memsz = 999999, },
-> > +       };
-> > +       /*
-> > +        * readelf -lW /bin/mount | grep '^  .*0x0' | awk '{print "\t\t{ .p_type = PT_" \
-> > +        *                              $1 ", .p_vaddr = " $3 ", .p_memsz = " $6 ", },"}'
-> > +        */
-> > +       struct elf_phdr mount[] = {
-> > +               { .p_type = PT_PHDR, .p_vaddr = 0x00000040, .p_memsz = 0x0002d8, },
-> > +               { .p_type = PT_INTERP, .p_vaddr = 0x00000318, .p_memsz = 0x00001c, },
-> > +               { .p_type = PT_LOAD, .p_vaddr = 0x00000000, .p_memsz = 0x0033a8, },
-> > +               { .p_type = PT_LOAD, .p_vaddr = 0x00004000, .p_memsz = 0x005c91, },
-> > +               { .p_type = PT_LOAD, .p_vaddr = 0x0000a000, .p_memsz = 0x0022f8, },
-> > +               { .p_type = PT_LOAD, .p_vaddr = 0x0000d330, .p_memsz = 0x000d40, },
-> > +               { .p_type = PT_DYNAMIC, .p_vaddr = 0x0000d928, .p_memsz = 0x000200, },
-> > +               { .p_type = PT_NOTE, .p_vaddr = 0x00000338, .p_memsz = 0x000030, },
-> > +               { .p_type = PT_NOTE, .p_vaddr = 0x00000368, .p_memsz = 0x000044, },
-> > +               { .p_type = PT_GNU_PROPERTY, .p_vaddr = 0x00000338, .p_memsz = 0x000030, },
-> > +               { .p_type = PT_GNU_EH_FRAME, .p_vaddr = 0x0000b490, .p_memsz = 0x0001ec, },
-> > +               { .p_type = PT_GNU_STACK, .p_vaddr = 0x00000000, .p_memsz = 0x000000, },
-> > +               { .p_type = PT_GNU_RELRO, .p_vaddr = 0x0000d330, .p_memsz = 0x000cd0, },
-> > +       };
-> > +       size_t mount_size = 0xE070;
-> > +       /* https://lore.kernel.org/lkml/YfF18Dy85mCntXrx@fractal.localdomain */
-> 
-> Slight nit, it looks like that message wasn't sent to lkml.
-> lore gives a suggestion to change to
-> https://lore.kernel.org/linux-fsdevel/YfF18Dy85mCntXrx@fractal.localdomain/
-
-Ah, thank you. I was replacing the /r/ that used to be in that URL, and
-got lost. :)
-
+diff --git a/net/ipv6/xfrm6_output.c b/net/ipv6/xfrm6_output.c
+index d0d280077721..1ee643f8f5d5 100644
+--- a/net/ipv6/xfrm6_output.c
++++ b/net/ipv6/xfrm6_output.c
+@@ -45,6 +45,19 @@ static int __xfrm6_output_finish(struct net *net, struct sock *sk, struct sk_buf
+ 	return xfrm_output(sk, skb);
+ }
+ 
++static int esp_noneed_fragment(struct sk_buff *skb)
++{
++	struct frag_hdr *fh;
++	u8 prevhdr = ipv6_hdr(skb)->nexthdr;
++
++	if (prevhdr != NEXTHDR_FRAGMENT)
++		return 0;
++	fh = (struct frag_hdr *)(skb->data + sizeof(struct ipv6hdr));
++	if (fh->nexthdr == NEXTHDR_ESP || fh->nexthdr == NEXTHDR_AUTH)
++		return 1;
++	return 0;
++}
++
+ static int __xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct dst_entry *dst = skb_dst(skb);
+@@ -73,6 +86,9 @@ static int __xfrm6_output(struct net *net, struct sock *sk, struct sk_buff *skb)
+ 		xfrm6_local_rxpmtu(skb, mtu);
+ 		kfree_skb(skb);
+ 		return -EMSGSIZE;
++	} else if (toobig && esp_noneed_fragment(skb)) {
++		skb->ignore_df = 1;
++		goto skip_frag;
+ 	} else if (!skb->ignore_df && toobig && skb->sk) {
+ 		xfrm_local_error(skb, mtu);
+ 		kfree_skb(skb);
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 57448fc519fc..242351fffdeb 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -304,7 +304,10 @@ xfrmi_xmit2(struct sk_buff *skb, struct net_device *dev, struct flowi *fl)
+ 			if (mtu < IPV6_MIN_MTU)
+ 				mtu = IPV6_MIN_MTU;
+ 
+-			icmpv6_ndo_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
++			if (skb->len > 1280)
++				icmpv6_ndo_send(skb, ICMPV6_PKT_TOOBIG, 0, mtu);
++			else
++				goto xmit;
+ 		} else {
+ 			if (!(ip_hdr(skb)->frag_off & htons(IP_DF)))
+ 				goto xmit;
 -- 
-Kees Cook
+2.18.0
+
