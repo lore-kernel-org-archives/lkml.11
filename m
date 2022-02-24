@@ -2,114 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F003C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:11:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbiBXCK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:10:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42902 "EHLO
+        id S229996AbiBXCL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:11:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230012AbiBXCKz (ORCPT
+        with ESMTP id S229974AbiBXCLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:10:55 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3E21CF0B3
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:10:26 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id s1so421164plg.12
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:10:26 -0800 (PST)
+        Wed, 23 Feb 2022 21:11:55 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD843D69;
+        Wed, 23 Feb 2022 18:11:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZnYyCAf+hdzZPaSLfbrxFcyypRq31HWt0QkCGBGFrL0=;
-        b=h37je/lozqkhikqOTu3IGvHe+nLK0KNm8oY9hgpZZM5j8B6EkUFcaHMCGg7sas6KEP
-         5OQmnC/Kmd4pFkA8nL5z90Tv1In8T53po07djNVrq4oRAQIdJ0/O025JwGnUn6NwUpO4
-         BRo7mgX9IK6Z/zaBJWUDibiLcprRQq+KZq+2fBcD0NJvUNbKveqbtkWIetmy/zjiJOC3
-         s5OznjvRYi91RQoX0drMOtVjoDiyIoojBDgaJTn/XfGupUBeS6fgD23coiiuCQMVtTwQ
-         J12ea7XNE0K5fcwHtI4m63QNrparwJzIup8BbjyK8yQF4UJT+Iz8J32XWGx3Vkc1lAoh
-         Byyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZnYyCAf+hdzZPaSLfbrxFcyypRq31HWt0QkCGBGFrL0=;
-        b=qqT3D+R0roRB6kM+QyxocGuCPcJpl79VV0dTM91SQRzN22m9k0UUpOg6V/8G+FNxHz
-         pQNYjHl6eSJNGem9fumQ4IewCcO5flNFimIOB38ltK00NxipmPnBjeLEmJIKUYXmLvtk
-         uxuRC+BhqHhp+VDB4Ugp4t0NZ1MOp/ZtRtWcvfkL4N4gwZpF/R6bbNVtUgZg5F7S7q+4
-         ox36f7QVBTYOYZHF5FIYLXpBKgVIpwwM50FqDW3aewAYt+ltfcXxd64ysUhycUZItfw6
-         ysRZySHf4OFZAGLt8mb8qpKc/ru56YtmEeR1TpvLm2coeRcu/X/aw8y8tw8eOQXRbei2
-         2K7w==
-X-Gm-Message-State: AOAM5304FxslaGh9EXBXCCJjhqkpcFl4wngrI/L7jYt+az+ipjb0S/AN
-        LvimDmAJDn7nbXmwbVQr4LDT1A==
-X-Google-Smtp-Source: ABdhPJw2Rk8+ph45n2HaQvviEcQivEktRcnCj9JX+OTKugbwjD1rinTtyuEnbDe9efILwF8LiouLMw==
-X-Received: by 2002:a17:90b:110a:b0:1b9:eb62:7c00 with SMTP id gi10-20020a17090b110a00b001b9eb627c00mr492851pjb.67.1645668625737;
-        Wed, 23 Feb 2022 18:10:25 -0800 (PST)
-Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
-        by smtp.gmail.com with ESMTPSA id y23sm719167pgi.36.2022.02.23.18.10.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 18:10:25 -0800 (PST)
-Date:   Thu, 24 Feb 2022 10:10:17 +0800
-From:   Shawn Guo <shawn.guo@linaro.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>, kbuild-all@lists.01.org,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Maulik Shah <quic_mkshah@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 3/3] irqchip: Add Qualcomm MPM controller driver
-Message-ID: <20220224021017.GA269879@dragon>
-References: <20220223125536.230224-4-shawn.guo@linaro.org>
- <202202240730.8ES2LbM6-lkp@intel.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645668685; x=1677204685;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=fZyhYuwnNQimtogeAc+YQ3EaiDLzHnTREqeogFQmmrI=;
+  b=bERLsWhCZLj/ZLIGwVBNzuQsFDcycH1TMRsmkG6htHImLbF/IUH+GUzR
+   /aNUy0oHYJ0FTrxjXFDaoP4Rj6hSdyIqeT19Uf4pBBEW/9M6A/4BGyF+q
+   LADjbXLMFuQ7RQUq+kUvdpukOR6/4Z7uVO9TOtbzk5EEOFhNRQrNggkq+
+   E=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 23 Feb 2022 16:49:10 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 16:49:09 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 23 Feb 2022 16:49:09 -0800
+Received: from [10.48.243.226] (10.49.16.6) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Wed, 23 Feb
+ 2022 16:49:08 -0800
+Message-ID: <3abb0846-a26f-3d76-8936-cd23cf4387f1@quicinc.com>
+Date:   Wed, 23 Feb 2022 16:49:08 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202202240730.8ES2LbM6-lkp@intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 3/6][next] ath6kl: wmi: Replace one-element array with
+ flexible-array member in struct wmi_channel_list_reply
+Content-Language: en-US
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-hardening@vger.kernel.org>
+References: <cover.1645583264.git.gustavoars@kernel.org>
+ <30306253b1b5e6b8f5c0faba97e935eda4638020.1645583264.git.gustavoars@kernel.org>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <30306253b1b5e6b8f5c0faba97e935eda4638020.1645583264.git.gustavoars@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 07:43:21AM +0800, kernel test robot wrote:
-> Hi Shawn,
+On 2/22/2022 6:38 PM, Gustavo A. R. Silva wrote:
+> Replace one-element array with flexible-array member in struct
+> wmi_channel_list_reply.
 > 
-> I love your patch! Perhaps something to improve:
+> It's also worth noting that due to the flexible array transformation,
+> the size of struct wmi_channel_list_reply changed, see below.
 > 
-> [auto build test WARNING on tip/irq/core]
-> [also build test WARNING on robh/for-next linus/master v5.17-rc5 next-20220222]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
+> Before flex-array transformation:
 > 
-> url:    https://github.com/0day-ci/linux/commits/Shawn-Guo/Add-Qualcomm-MPM-irqchip-driver-support/20220223-210123
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git d2206fcabdfaff3958ab67cc5b8f63257e57b889
-> config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220224/202202240730.8ES2LbM6-lkp@intel.com/config)
-> compiler: aarch64-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/17f8a23f57bf6d0177f6ef6f78237b37bd853e8d
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Shawn-Guo/Add-Qualcomm-MPM-irqchip-driver-support/20220223-210123
->         git checkout 17f8a23f57bf6d0177f6ef6f78237b37bd853e8d
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/irqchip/
+> struct wmi_channel_list_reply {
+> 	u8                         reserved;             /*     0     1 */
+> 	u8                         num_ch;               /*     1     1 */
+> 	__le16                     ch_list[1];           /*     2     2 */
 > 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
+> 	/* size: 4, cachelines: 1, members: 3 */
+> 	/* last cacheline: 4 bytes */
+> };
 > 
-> All warnings (new ones prefixed by >>):
+> After flex-array transformation:
 > 
-> >> drivers/irqchip/qcom-mpm.c:210:21: warning: no previous prototype for 'get_mpm_gic_map' [-Wmissing-prototypes]
->      210 | struct mpm_gic_map *get_mpm_gic_map(struct qcom_mpm_priv *priv, int pin)
->          |                     ^~~~~~~~~~~~~~~
+> struct wmi_channel_list_reply {
+> 	u8                         reserved;             /*     0     1 */
+> 	u8                         num_ch;               /*     1     1 */
+> 	__le16                     ch_list[];            /*     2     0 */
+> 
+> 	/* size: 2, cachelines: 1, members: 3 */
+> 	/* last cacheline: 2 bytes */
+> };
+> 
+> So, the following change preserves the logic that if _len_ is at least
+> 4 bytes in size, this is the existence of at least one channel in
+> ch_list[] is being considered, then the execution jumps to call
+> ath6kl_wakeup_event(wmi->parent_dev);, otherwise _len_ is 2 bytes or
+> less and the code returns -EINVAL:
+> 
+> 	-       if (len < sizeof(struct wmi_channel_list_reply))
+> 	+       if (len <= sizeof(struct wmi_channel_list_reply))
+> 
+> This issue was found with the help of Coccinelle and audited and fixed,
+> manually.
+> 
+> Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> Link: https://github.com/KSPP/linux/issues/79
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+> Hi!
+> 
+> It'd be great if someone can confirm or comment on the following
+> changes described in the changelog text:
+> 
+> 	-       if (len < sizeof(struct wmi_channel_list_reply))
+> 	+       if (len <= sizeof(struct wmi_channel_list_reply))
 
-Oops!  The 'static' declaration got lost.  Will fix in the next version.
+My opinion is this can remain unchanged since being unchanged would 
+correctly handle a channel list with no channels whereas the original 
+code required that at least one channel be present.
 
-Shawn
+The test is really there just to make sure the entirety of the "fixed" 
+portion of the message is present.
+
+Ultimately it doesn't matter since no actual processing of the channel 
+list takes place.
+
+If actual processing took place, then it would make sense to have an 
+additional test to verify the len is large enough to handle num_ch entries.
+
+
+> 
+> Thanks
+> 
+>   drivers/net/wireless/ath/ath6kl/wmi.c | 2 +-
+>   drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
+> index bdfc057c5a82..049d75f31f3c 100644
+> --- a/drivers/net/wireless/ath/ath6kl/wmi.c
+> +++ b/drivers/net/wireless/ath/ath6kl/wmi.c
+> @@ -1240,7 +1240,7 @@ static int ath6kl_wmi_ratemask_reply_rx(struct wmi *wmi, u8 *datap, int len)
+>   
+>   static int ath6kl_wmi_ch_list_reply_rx(struct wmi *wmi, u8 *datap, int len)
+>   {
+> -	if (len < sizeof(struct wmi_channel_list_reply))
+> +	if (len <= sizeof(struct wmi_channel_list_reply))
+>   		return -EINVAL;
+>   
+>   	ath6kl_wakeup_event(wmi->parent_dev);
+> diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+> index 9e168752bec2..432e4f428a4a 100644
+> --- a/drivers/net/wireless/ath/ath6kl/wmi.h
+> +++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+> @@ -1373,7 +1373,7 @@ struct wmi_channel_list_reply {
+>   	u8 num_ch;
+>   
+>   	/* channel in Mhz */
+> -	__le16 ch_list[1];
+> +	__le16 ch_list[];
+>   } __packed;
+>   
+>   /* List of Events (target to host) */
+
+whether or not you modify the length check consider this:
+Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
