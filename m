@@ -2,89 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F1C0C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A06C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232413AbiBXSBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 13:01:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41446 "EHLO
+        id S232519AbiBXSFa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 13:05:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbiBXSBn (ORCPT
+        with ESMTP id S229662AbiBXSF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 13:01:43 -0500
-Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91AAB2556DD;
-        Thu, 24 Feb 2022 10:01:12 -0800 (PST)
-Received: from relay5-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::225])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id A3CB6CCFC0;
-        Thu, 24 Feb 2022 17:41:27 +0000 (UTC)
-Received: (Authenticated sender: hadess@hadess.net)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8C7601C007E;
-        Thu, 24 Feb 2022 17:41:19 +0000 (UTC)
-Message-ID: <f965c04f34aabe93fe8ef91bb4d1ce4d24159173.camel@hadess.net>
-Subject: Re: [PATCH bpf-next v1 0/6] Introduce eBPF support for HID devices
-From:   Bastien Nocera <hadess@hadess.net>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Date:   Thu, 24 Feb 2022 18:41:18 +0100
-In-Reply-To: <YhdsgokMMSEQ0Yc8@kroah.com>
-References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
-         <YhdsgokMMSEQ0Yc8@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Thu, 24 Feb 2022 13:05:28 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45FC674C7;
+        Thu, 24 Feb 2022 10:04:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=cJwoEaVvvYLAlik9YwBxkUiII/mzymj+DJDxr+/UFjI=; b=kaoXWa9/LCvq/dsK7GYIHAVRqj
+        t6h6MjOTEfYdrxdtvSuX4dAQS79bV95Y9zFfRDQolYgeq38GznJTO27YdmEQ6CUs0pQx1NGBfvZ01
+        q9G6ESlFU28pbqEmlS/csaNof3P44yXN8KrsmwYSnIIRjpWVlnBws3eO+kYS7QMPjMahm8JLEptdM
+        qF93cfb8cmSq1yrMF/Rd5B2XRIqmumgyIx62nupruebgcYIe9tNnBX0mQ4A8CcXKAU6MPlXLzoeyd
+        7Qudpxmr8qnqLceKGlRi1nvcChnRPWX5SfoavOvL77x0Lv/OC1Zu2s4D2AClLJjxAlM+H5JIL6KBE
+        by19IE4Q==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNITw-00Cgl5-K1; Thu, 24 Feb 2022 18:04:48 +0000
+Message-ID: <52f0922c-143a-8a40-b1e1-23d562ca6f80@infradead.org>
+Date:   Thu, 24 Feb 2022 10:04:42 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: mmotm 2022-02-23-21-20 uploaded
+ [drivers/scsi/hisi_sas/hisi_sas_main.ko]
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
+        linux-scsi@vger.kernel.org, John Garry <john.garry@huawei.com>
+References: <20220224052137.BFB10C340E9@smtp.kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220224052137.BFB10C340E9@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-02-24 at 12:31 +0100, Greg KH wrote:
-> On Thu, Feb 24, 2022 at 12:08:22PM +0100, Benjamin Tissoires wrote:
-> > Hi there,
-> > 
-> > This series introduces support of eBPF for HID devices.
-> > 
-> > I have several use cases where eBPF could be interesting for those
-> > input devices:
-> > 
-> > - simple fixup of report descriptor:
-> > 
-> > In the HID tree, we have half of the drivers that are "simple" and
-> > that just fix one key or one byte in the report descriptor.
-> > Currently, for users of such devices, the process of fixing them
-> > is long and painful.
-> > With eBPF, we could externalize those fixups in one external repo,
-> > ship various CoRe bpf programs and have those programs loaded at
-> > boot
-> > time without having to install a new kernel (and wait 6 months for
-> > the
-> > fix to land in the distro kernel)
-> 
-> Why would a distro update such an external repo faster than they
-> update
-> the kernel?  Many sane distros update their kernel faster than other
-> packages already, how about fixing your distro?  :)
-> 
-> I'm all for the idea of using ebpf for HID devices, but now we have
-> to
-> keep track of multiple packages to be in sync here.  Is this making
-> things harder overall?
 
-I don't quite understand how taking eBPF quirks for HID devices out of
-the kernel tree is different from taking suspend quirks out of the
-kernel tree:
-https://www.spinics.net/lists/linux-usb/msg204506.html
+
+On 2/23/22 21:21, Andrew Morton wrote:
+> The mm-of-the-moment snapshot 2022-02-23-21-20 has been uploaded to
+> 
+>    https://www.ozlabs.org/~akpm/mmotm/
+> 
+> mmotm-readme.txt says
+> 
+> README for mm-of-the-moment:
+> 
+> https://www.ozlabs.org/~akpm/mmotm/
+> 
+> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> more than once a week.
+> 
+> You will need quilt to apply these patches to the latest Linus release (5.x
+> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> https://ozlabs.org/~akpm/mmotm/series
+
+on  i386:
+
+ERROR: modpost: "sas_execute_ata_cmd" [drivers/scsi/hisi_sas/hisi_sas_main.ko] undefined!
+
+CONFIG_SCSI_SAS_ATTRS=y
+CONFIG_SCSI_SAS_LIBSAS=y
+# CONFIG_SCSI_SAS_ATA is not set
+CONFIG_SCSI_SAS_HOST_SMP=y
+
+
+-- 
+~Randy
