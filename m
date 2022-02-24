@@ -2,97 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C7E0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32571C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:55:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235035AbiBXXyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 18:54:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50460 "EHLO
+        id S235184AbiBXXzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 18:55:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234580AbiBXXyi (ORCPT
+        with ESMTP id S235029AbiBXXz3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 18:54:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F10311DB8BF;
-        Thu, 24 Feb 2022 15:54:07 -0800 (PST)
+        Thu, 24 Feb 2022 18:55:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8792C29A560;
+        Thu, 24 Feb 2022 15:54:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E57EB82A1B;
-        Thu, 24 Feb 2022 23:54:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D1AC340E9;
-        Thu, 24 Feb 2022 23:54:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24F1A61CC5;
+        Thu, 24 Feb 2022 23:54:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74BD4C340F1;
+        Thu, 24 Feb 2022 23:54:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645746845;
-        bh=8m28xb7jX3rywztpqXC+7Sf7/JfCaAm/fcFHne2Mfy4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=SFUz6Z502Ca7Kj0zNp0wvhF3BdzD+Zk/9kpXhzEoTRH+cCA0Bm7FQGGltf0D5VG6y
-         uv8yJchzr9kXT+6aTeqxkewFjyLWf0qvefF/i4VFjr2RIRk4fyhroRerr+/+2kzGQp
-         BaXfc73+w2CM3Z4us0WRerwLf+VBBnIxhlwWjxtiF2Z10ky3bsydBkCRJ9uve0l8LP
-         y/N6NA+t2aAHik9sHZkQRkP8HEZBIIMpEO8uyrkFTmcFm6Lq4BoJtBtNTLjs/vl/s2
-         dvj4uq4oU75qqgn7cda90FtLpZ6Paoh9Tf6K9B7VwvMuTKk7GWGfXF1oCK40lXxgp+
-         A6lSA9pQyExVQ==
-Date:   Thu, 24 Feb 2022 17:54:03 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Hongxing Zhu <hongxing.zhu@nxp.com>
-Cc:     "l.stach@pengutronix.de" <l.stach@pengutronix.de>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "jingoohan1@gmail.com" <jingoohan1@gmail.com>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        "francesco.dolcini@toradex.com" <francesco.dolcini@toradex.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        dl-linux-imx <linux-imx@nxp.com>
-Subject: Re: [PATCH v7 8/8] PCI: imx6: Add the compliance tests mode support
-Message-ID: <20220224235403.GA303878@bhelgaas>
+        s=k20201202; t=1645746898;
+        bh=h0W0ihc7og3/qJx0Lf4+tLkr6K8fm1aa6d2ppR0HTP8=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=ZBJVAiNpy3oz2xChv65YCHcJV4f8m9xepdeeRt+E6qJecxAKJFugHSwc+ERLmt7gQ
+         rNR3ytjy5Sjsonlvk+e8qItYAZu5fjY+0aMNbl35gyF66+/dtBI8dSs8l1Xi+8LeRz
+         vijuZSj59Axm1kuGrtv/KXf1D1PYo9OZc4plTQW49zoSOTvBqdWiUOuWXdqfUbZ3Ku
+         6CUj0GYUes5EbQ9sO8CrgzldwhcXT5PCNuqAM7MaabfMR/XYaqlfzmf2PcZTcGVeVq
+         sL+fnN4xzPFQUd/tweMW2PaD2dINNw4b2sNQBHX7qLuWMewPGj9Bm1UEqrNFyGap5T
+         voT9HaoHMxqvw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <AS8PR04MB8676DCB7CB8D94B0CBC97D0B8C3D9@AS8PR04MB8676.eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1645505785-2271-2-git-send-email-quic_rohiagar@quicinc.com>
+References: <1645505785-2271-1-git-send-email-quic_rohiagar@quicinc.com> <1645505785-2271-2-git-send-email-quic_rohiagar@quicinc.com>
+Subject: Re: [PATCH v4 1/5] dt-bindings: clock: Add A7 PLL binding for SDX65
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
+        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
+        mturquette@baylibre.com, robh+dt@kernel.org
+Date:   Thu, 24 Feb 2022 15:54:56 -0800
+User-Agent: alot/0.10
+Message-Id: <20220224235458.74BD4C340F1@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 07:50:09AM +0000, Hongxing Zhu wrote:
-> > -----Original Message-----
-> > From: Bjorn Helgaas <helgaas@kernel.org>
-> > Sent: 2022年2月24日 1:40
-> > To: Hongxing Zhu <hongxing.zhu@nxp.com>
-> > Cc: l.stach@pengutronix.de; bhelgaas@google.com; broonie@kernel.org;
-> > lorenzo.pieralisi@arm.com; jingoohan1@gmail.com; festevam@gmail.com;
-> > francesco.dolcini@toradex.com; linux-pci@vger.kernel.org;
-> > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
-> > kernel@pengutronix.de; dl-linux-imx <linux-imx@nxp.com>
-> > Subject: Re: [PATCH v7 8/8] PCI: imx6: Add the compliance tests mode support
+Quoting Rohit Agarwal (2022-02-21 20:56:21)
+> Add information for Cortex A7 PLL clock in Qualcomm
+> platform SDX65.
+>=20
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+> ---
 
-> > Is this a reference to a spec?  If so, I can't tell the name of the spec, the
-> > revision, or the section number.
-> Yes, it is a reference to a spec. How about change them to the following?
-> 
-> PCI: imx6: Add compliance tests mode support
-> 
-> Refer to the Chapter 3.2 System Board Signal Quality of PCI Express
-> Architecture PHY Test Specification Revision 2.0.
-> 
-> Signal quality tests (for example: jitter, differential eye opening and
-> so on) can be executed with devices in the polling.compliance state.
-> 
-> To let the device support polling.compliance state, the clocks and powers
-> shouldn't be turned off when the probe of device driver fails.
-> 
-> Based on CLB (Compliance Load Board) Test Fixture and so on test
-> equipments, the PHY link would be down during the compliance tests.
-> Refer to this scenario, add the i.MX PCIe compliance tests mode enable
-> support, and keep the clocks and powers on, and finish the driver probe
-> without error return.
-> 
-> Use the "pci_imx6.compliance=1" in kernel command line to enable the
-> compliance tests mode.
-
-Sounds good, thanks.
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
