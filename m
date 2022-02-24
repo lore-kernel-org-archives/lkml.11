@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1AC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:58:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiBXP6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:58:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        id S235566AbiBXP6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:58:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236858AbiBXP5t (ORCPT
+        with ESMTP id S236792AbiBXP53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:57:49 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3A2DE2EE
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:57:02 -0800 (PST)
+        Thu, 24 Feb 2022 10:57:29 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3715418C
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:56:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645718222; x=1677254222;
+  t=1645718208; x=1677254208;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=sqplZ36NTUAxVKTVx8J9Prykr0H/GFG/xm0iD1t8jgc=;
-  b=L2+R/oxfKnpqWHhYafWYN6DhXfvYV4hfNGyQ6OkUWjv/eyPpChaKhXJ0
-   tRX/a75cN6OVOWc3j775LT2Uw1i4ntQ56yIBtCbyd2Y54nqWVhUjeUZe7
-   kX6S0HiYdlaCkRQc6GhCUhrk55biWLQ4Qyj6DK/YwPyDApORQf3ZKMDIq
-   SqWOL18jrQ3pdL1MXWnDHEq+T/PeLlPMv3rRdF+x5TXJz//lYj6QT5NDR
-   IfwUB7hqSDLCrQpUg+NWY22bju/KnXoyo/2c33ExS7/9CSUhCytAoUa+k
-   byLy56G5fz928mlDq8dk8O9+2cpSOuYnRQIx6ltGKI/59Qi/QfsBbPICx
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="315487666"
+  bh=EvrY+fLFyt0AjjIeJc3eqvET5iI6uNtGs7idg2+y+vU=;
+  b=IMEor9lgUdDP/LZQmGxceSBuzCo6mLkKIOh96hRlcHpXVE7nBLakvA5n
+   QXpk/HZS0rgl7S5sFQyc8vvaojDVSHDynBB6gFMwQ3o39ohJUzgUgNxO4
+   o6FvrEuHcsTbLtuDKbV8LNs8y8ZDJhmZ5iDR2NdNvj/g1oSy3kEAZ1fIY
+   KgjNUVrX8mUefOk5uKhS2OtOdo6KrSLR0XKhZG0uWlv+R13JTZJhhn18q
+   Ta0yqVr6F7e47AfbQbEPecyqTUYJ6++R21nvqXjw7gdjicpJJ0KTEtMbG
+   SVHpaYe3Oi37NottHugXq9khZacDtkOXLoVyL3sCRDEGhLkCBqJ+sJBN2
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252186800"
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="315487666"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:31 -0800
+   d="scan'208";a="252186800"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:39 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="607458056"
+   d="scan'208";a="684315495"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 24 Feb 2022 07:56:24 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 07:56:32 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 68B3D763; Thu, 24 Feb 2022 17:56:34 +0200 (EET)
+        id 49005B0C; Thu, 24 Feb 2022 17:56:35 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,10 +51,12 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 05/30] x86/tdx: Extend the confidential computing API to support TDX guests
-Date:   Thu, 24 Feb 2022 18:56:05 +0300
-Message-Id: <20220224155630.52734-6-kirill.shutemov@linux.intel.com>
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv4 21/30] x86/acpi, x86/boot: Add multiprocessor wake-up support
+Date:   Thu, 24 Feb 2022 18:56:21 +0300
+Message-Id: <20220224155630.52734-22-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
 References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
@@ -64,129 +66,221 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Confidential Computing (CC) features (like string I/O unroll support,
-memory encryption/decryption support, etc) are conditionally enabled
-in the kernel using cc_platform_has() API. Since TDX guests also need
-to use these CC features, extend cc_platform_has() API and add TDX
-guest-specific CC attributes support.
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-Like AMD SME/SEV, TDX uses a bit in the page table entry to indicate
-encryption status of the page, but the polarity of the mask is
-opposite to AMD: if the bit is set the page is accessible to VMM.
+TDX cannot use INIT/SIPI protocol to bring up secondary CPUs because it
+requires assistance from untrusted VMM.
 
-Details about which bit in the page table entry to be used to indicate
-shared/private state can be determined by using the TDINFO TDCALL.
+For platforms that do not support SIPI/INIT, ACPI defines a wakeup
+model (using mailbox) via MADT multiprocessor wakeup structure. More
+details about it can be found in ACPI specification v6.4, the section
+titled "Multiprocessor Wakeup Structure". If a platform firmware
+produces the multiprocessor wakeup structure, then OS may use this
+new mailbox-based mechanism to wake up the APs.
 
+Add ACPI MADT wake structure parsing support for x86 platform and if
+MADT wake table is present, update apic->wakeup_secondary_cpu_64 with
+new API which uses MADT wake mailbox to wake-up CPU.
+
+Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/Kconfig     |  1 +
- arch/x86/coco/core.c |  4 ++++
- arch/x86/coco/tdx.c  | 43 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 48 insertions(+)
+ arch/x86/include/asm/apic.h |   5 ++
+ arch/x86/kernel/acpi/boot.c | 118 ++++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/apic/apic.c |  10 +++
+ 3 files changed, 133 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index c346d66b51fc..93e67842e369 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -884,6 +884,7 @@ config INTEL_TDX_GUEST
- 	bool "Intel TDX (Trust Domain Extensions) - Guest Support"
- 	depends on X86_64 && CPU_SUP_INTEL
- 	depends on X86_X2APIC
-+	select ARCH_HAS_CC_PLATFORM
- 	help
- 	  Support running as a guest under Intel TDX.  Without this support,
- 	  the guest kernel can not boot or run under TDX.
-diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
-index fc1365dd927e..9113baebbfd2 100644
---- a/arch/x86/coco/core.c
-+++ b/arch/x86/coco/core.c
-@@ -90,6 +90,8 @@ u64 cc_mkenc(u64 val)
- 	switch (vendor) {
- 	case CC_VENDOR_AMD:
- 		return val | cc_mask;
-+	case CC_VENDOR_INTEL:
-+		return val & ~cc_mask;
- 	default:
- 		return val;
- 	}
-@@ -100,6 +102,8 @@ u64 cc_mkdec(u64 val)
- 	switch (vendor) {
- 	case CC_VENDOR_AMD:
- 		return val & ~cc_mask;
-+	case CC_VENDOR_INTEL:
-+		return val | cc_mask;
- 	default:
- 		return val;
- 	}
-diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
-index 17365fd40ba2..74c6e68dd1b3 100644
---- a/arch/x86/coco/tdx.c
-+++ b/arch/x86/coco/tdx.c
-@@ -5,8 +5,17 @@
- #define pr_fmt(fmt)     "tdx: " fmt
+diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+index 35006e151774..bd8ae0a7010a 100644
+--- a/arch/x86/include/asm/apic.h
++++ b/arch/x86/include/asm/apic.h
+@@ -490,6 +490,11 @@ static inline unsigned int read_apic_id(void)
+ 	return apic->get_apic_id(reg);
+ }
  
- #include <linux/cpufeature.h>
-+#include <asm/coco.h>
- #include <asm/tdx.h>
- 
-+/* TDX module Call Leaf IDs */
-+#define TDX_GET_INFO			1
++#ifdef CONFIG_X86_64
++typedef int (*wakeup_cpu_handler)(int apicid, unsigned long start_eip);
++extern void acpi_wake_cpu_handler_update(wakeup_cpu_handler handler);
++#endif
 +
-+static struct {
-+	unsigned int gpa_width;
-+	unsigned long attributes;
-+} td_info __ro_after_init;
+ extern int default_apic_id_valid(u32 apicid);
+ extern int default_acpi_madt_oem_check(char *, char *);
+ extern void default_setup_apic_routing(void);
+diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
+index 5b6d1a95776f..99518eac2bbc 100644
+--- a/arch/x86/kernel/acpi/boot.c
++++ b/arch/x86/kernel/acpi/boot.c
+@@ -65,6 +65,15 @@ static u64 acpi_lapic_addr __initdata = APIC_DEFAULT_PHYS_BASE;
+ static bool acpi_support_online_capable;
+ #endif
+ 
++#ifdef CONFIG_X86_64
++/* Physical address of the Multiprocessor Wakeup Structure mailbox */
++static u64 acpi_mp_wake_mailbox_paddr;
++/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
++static struct acpi_madt_multiproc_wakeup_mailbox *acpi_mp_wake_mailbox;
++/* Lock to protect mailbox (acpi_mp_wake_mailbox) from parallel access */
++static DEFINE_SPINLOCK(mailbox_lock);
++#endif
++
+ #ifdef CONFIG_X86_IO_APIC
+ /*
+  * Locks related to IOAPIC hotplug
+@@ -336,6 +345,84 @@ acpi_parse_lapic_nmi(union acpi_subtable_headers * header, const unsigned long e
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_X86_64
++/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
++static int acpi_wakeup_cpu(int apicid, unsigned long start_ip)
++{
++	static physid_mask_t apic_id_wakemap = PHYSID_MASK_NONE;
++	u8 timeout;
++
++	/* Remap mailbox memory only for the first call to acpi_wakeup_cpu() */
++	if (physids_empty(apic_id_wakemap)) {
++		acpi_mp_wake_mailbox = memremap(acpi_mp_wake_mailbox_paddr,
++						sizeof(*acpi_mp_wake_mailbox),
++						MEMREMAP_WB);
++	}
++
++	/*
++	 * According to the ACPI specification r6.4, section titled
++	 * "Multiprocessor Wakeup Structure" the mailbox-based wakeup
++	 * mechanism cannot be used more than once for the same CPU.
++	 * Skip wakeups if they are attempted more than once.
++	 */
++	if (physid_isset(apicid, apic_id_wakemap)) {
++		pr_err("CPU already awake (APIC ID %x), skipping wakeup\n",
++		       apicid);
++		return -EINVAL;
++	}
++
++	spin_lock(&mailbox_lock);
++
++	/*
++	 * Mailbox memory is shared between firmware and OS. Firmware will
++	 * listen on mailbox command address, and once it receives the wakeup
++	 * command, CPU associated with the given apicid will be booted.
++	 *
++	 * The value of apic_id and wakeup_vector has to be set before updating
++	 * the wakeup command. To let compiler preserve order of writes, use
++	 * smp_store_release.
++	 */
++	smp_store_release(&acpi_mp_wake_mailbox->apic_id, apicid);
++	smp_store_release(&acpi_mp_wake_mailbox->wakeup_vector, start_ip);
++	smp_store_release(&acpi_mp_wake_mailbox->command,
++			  ACPI_MP_WAKE_COMMAND_WAKEUP);
++
++	/*
++	 * After writing the wakeup command, wait for maximum timeout of 0xFF
++	 * for firmware to reset the command address back zero to indicate
++	 * the successful reception of command.
++	 * NOTE: 0xFF as timeout value is decided based on our experiments.
++	 *
++	 * XXX: Change the timeout once ACPI specification comes up with
++	 *      standard maximum timeout value.
++	 */
++	timeout = 0xFF;
++	while (READ_ONCE(acpi_mp_wake_mailbox->command) && --timeout)
++		cpu_relax();
++
++	/* If timed out (timeout == 0), return error */
++	if (!timeout) {
++		/*
++		 * XXX: Is there a recovery path after timeout is hit?
++		 * Spec is unclear. Reset command to 0 if timeout is hit.
++		 */
++		acpi_mp_wake_mailbox->command = 0;
++		spin_unlock(&mailbox_lock);
++		return -EIO;
++	}
++
++	/*
++	 * If the CPU wakeup process is successful, store the
++	 * status in apic_id_wakemap to prevent re-wakeup
++	 * requests.
++	 */
++	physid_set(apicid, apic_id_wakemap);
++
++	spin_unlock(&mailbox_lock);
++
++	return 0;
++}
++#endif
+ #endif				/*CONFIG_X86_LOCAL_APIC */
+ 
+ #ifdef CONFIG_X86_IO_APIC
+@@ -1083,6 +1170,29 @@ static int __init acpi_parse_madt_lapic_entries(void)
+ 	}
+ 	return 0;
+ }
++
++#ifdef CONFIG_X86_64
++static int __init acpi_parse_mp_wake(union acpi_subtable_headers *header,
++				     const unsigned long end)
++{
++	struct acpi_madt_multiproc_wakeup *mp_wake;
++
++	if (!IS_ENABLED(CONFIG_SMP))
++		return -ENODEV;
++
++	mp_wake = (struct acpi_madt_multiproc_wakeup *)header;
++	if (BAD_MADT_ENTRY(mp_wake, end))
++		return -EINVAL;
++
++	acpi_table_print_madt_entry(&header->common);
++
++	acpi_mp_wake_mailbox_paddr = mp_wake->base_address;
++
++	acpi_wake_cpu_handler_update(acpi_wakeup_cpu);
++
++	return 0;
++}
++#endif				/* CONFIG_X86_64 */
+ #endif				/* CONFIG_X86_LOCAL_APIC */
+ 
+ #ifdef	CONFIG_X86_IO_APIC
+@@ -1278,6 +1388,14 @@ static void __init acpi_process_madt(void)
+ 
+ 				smp_found_config = 1;
+ 			}
++
++#ifdef CONFIG_X86_64
++			/*
++			 * Parse MADT MP Wake entry.
++			 */
++			acpi_table_parse_madt(ACPI_MADT_TYPE_MULTIPROC_WAKEUP,
++					      acpi_parse_mp_wake, 1);
++#endif
+ 		}
+ 		if (error == -EINVAL) {
+ 			/*
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index b70344bf6600..3c8f2c797a98 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -2551,6 +2551,16 @@ u32 x86_msi_msg_get_destid(struct msi_msg *msg, bool extid)
+ }
+ EXPORT_SYMBOL_GPL(x86_msi_msg_get_destid);
+ 
++#ifdef CONFIG_X86_64
++void __init acpi_wake_cpu_handler_update(wakeup_cpu_handler handler)
++{
++	struct apic **drv;
++
++	for (drv = __apicdrivers; drv < __apicdrivers_end; drv++)
++		(*drv)->wakeup_secondary_cpu_64 = handler;
++}
++#endif
 +
  /*
-  * Wrapper for standard use of __tdx_hypercall with no output aside from
-  * return code.
-@@ -25,6 +34,30 @@ static inline u64 _tdx_hypercall(u64 fn, u64 r12, u64 r13, u64 r14, u64 r15)
- 	return __tdx_hypercall(&args, 0);
- }
- 
-+static inline void tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
-+				   struct tdx_module_output *out)
-+{
-+	if (__tdx_module_call(fn, rcx, rdx, r8, r9, out))
-+		panic("TDCALL %lld failed (Buggy TDX module!)\n", fn);
-+}
-+
-+static void get_info(void)
-+{
-+	struct tdx_module_output out;
-+
-+	/*
-+	 * TDINFO TDX module call is used to get the TD execution environment
-+	 * information like GPA width, number of available vcpus, debug mode
-+	 * information, etc. More details about the ABI can be found in TDX
-+	 * Guest-Host-Communication Interface (GHCI), section 2.4.2 TDCALL
-+	 * [TDG.VP.INFO].
-+	 */
-+	tdx_module_call(TDX_GET_INFO, 0, 0, 0, 0, &out);
-+
-+	td_info.gpa_width = out.rcx & GENMASK(5, 0);
-+	td_info.attributes = out.rdx;
-+}
-+
- void __init tdx_early_init(void)
- {
- 	u32 eax, sig[3];
-@@ -37,5 +70,15 @@ void __init tdx_early_init(void)
- 
- 	setup_force_cpu_cap(X86_FEATURE_TDX_GUEST);
- 
-+	get_info();
-+
-+	cc_set_vendor(CC_VENDOR_INTEL);
-+
-+	/*
-+	 * The highest bit of a guest physical address is the "sharing" bit.
-+	 * Set it for shared pages and clear it for private pages.
-+	 */
-+	cc_set_mask(BIT_ULL(td_info.gpa_width - 1));
-+
- 	pr_info("Guest detected\n");
- }
+  * Override the generic EOI implementation with an optimized version.
+  * Only called during early boot when only one CPU is active and with
 -- 
 2.34.1
 
