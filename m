@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA45C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF70C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236030AbiBXPS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:18:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
+        id S235918AbiBXPTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:19:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235964AbiBXPS2 (ORCPT
+        with ESMTP id S235967AbiBXPS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 10:18:28 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B631E141FDA
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C199D1451F5
         for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:17:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=Yj19WDVgOEiJ0u+eDY2fpBdavc72lJgYztZwSidBut8=; b=huSxBs5/4Cw6YNoG7UFgt3t7Ns
-        8JTYhzjzZxMXNZPcxsVqdc5ldJU1s8lxQHnkQgl915iccJtGVP2ntyVayz+YDtwKo3c6KIGEqEaqy
-        a5edumCOltibzxLR4fYCktPvMWshH8ZUVY64O6Isj7MbvcD7/9QZbQUwnUugKjSJehkPoPeUoCuE6
-        4HNbXcjzFTedgxPuutn9CJCcrNNS4HN2LpTgoXkLbelKoqKNaOltnPOsF/GoLqQXDcXDhSYoLY0AQ
-        yuXdeOqq8LyZpPjxrTTXMgcZwR4yy41PgDLIWEXZFrjsV2tZY6JEEWk+BWgkz9V6l6FilVmn97BC0
-        AuDEAZpQ==;
+        bh=oN4zH3xswk0ayYGVDgmdGa4LrEpa+tXri6oapisKw7w=; b=knfEwDIEAydAmNRYzQ4SOu2R5y
+        WtI7RKVlF8419LE1TdZgnTVCDwg6/sMlz+ezwE8RN1tQLRuP7gBeHQtCpot6G5+lDzkAcybNpeM51
+        CaIyYXWQ01zcAYOhHy1eiDcPXKrAsT6TrrtPLcvU1BQY+NLdKxUV16tT9/nFQk34S1XGQw8xYuhWp
+        U5vxeVRV92C+CQ61EE1RkZ0cZ5CAP4gsx5CcYhgO438CSfse2VGsHdM40M0X4ZYlOrt0Zk7mbs9iN
+        H+1SSSn4rVk0j6wXoPHfoMMA+6Se5iQbrKhxjAIxuy9yran1AAOCxo4evhrjX0YObB4ADRpzN1X3I
+        OaYMpiQA==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNFs2-00CeLW-JQ; Thu, 24 Feb 2022 15:17:30 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNFs3-004s1x-6P; Thu, 24 Feb 2022 15:17:31 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 66687300727;
-        Thu, 24 Feb 2022 16:17:28 +0100 (CET)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2725D300C67;
+        Thu, 24 Feb 2022 16:17:29 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 24EFD29E75E4D; Thu, 24 Feb 2022 16:17:28 +0100 (CET)
-Message-ID: <20220224151322.190822141@infradead.org>
+        id 356FB29E75E53; Thu, 24 Feb 2022 16:17:28 +0100 (CET)
+Message-ID: <20220224151322.365217607@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 24 Feb 2022 15:51:41 +0100
+Date:   Thu, 24 Feb 2022 15:51:44 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v2 03/39] x86/module: Fix the paravirt vs alternative order
+Subject: [PATCH v2 06/39] x86/ibt: Add ANNOTATE_NOENDBR
 References: <20220224145138.952963315@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,45 +55,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ever since commit 4e6292114c741 ("x86/paravirt: Add new features for
-paravirt patching") there is an ordering dependency between patching
-paravirt ops and patching alternatives, the module loader still
-violates this.
+In order to have objtool warn about code references to !ENDBR
+instruction, we need an annotation to allow this for non-control-flow
+instances -- consider text range checks, text patching, or return
+trampolines etc.
 
-Fixes: 4e6292114c741 ("x86/paravirt: Add new features for paravirt patching")
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/kernel/module.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ include/linux/objtool.h |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
---- a/arch/x86/kernel/module.c
-+++ b/arch/x86/kernel/module.c
-@@ -273,6 +273,14 @@ int module_finalize(const Elf_Ehdr *hdr,
- 			retpolines = s;
- 	}
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -77,6 +77,12 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD_FP(func)
+ #endif
  
-+	/*
-+	 * See alternative_instructions() for the ordering rules between the
-+	 * various patching types.
-+	 */
-+	if (para) {
-+		void *pseg = (void *)para->sh_addr;
-+		apply_paravirt(pseg, pseg + para->sh_size);
-+	}
- 	if (retpolines) {
- 		void *rseg = (void *)retpolines->sh_addr;
- 		apply_retpolines(rseg, rseg + retpolines->sh_size);
-@@ -290,11 +298,6 @@ int module_finalize(const Elf_Ehdr *hdr,
- 					    tseg, tseg + text->sh_size);
- 	}
++#define ANNOTATE_NOENDBR					\
++	"986: \n\t"						\
++	".pushsection .discard.noendbr\n\t"			\
++	_ASM_PTR " 986b\n\t"					\
++	".popsection\n\t"
++
+ #else /* __ASSEMBLY__ */
  
--	if (para) {
--		void *pseg = (void *)para->sh_addr;
--		apply_paravirt(pseg, pseg + para->sh_size);
--	}
--
- 	/* make jump label nops */
- 	jump_label_apply_nops(me);
+ /*
+@@ -129,6 +135,13 @@ struct unwind_hint {
+ 	.popsection
+ .endm
  
++.macro ANNOTATE_NOENDBR
++.Lhere_\@:
++	.pushsection .discard.noendbr
++	.quad	.Lhere_\@
++	.popsection
++.endm
++
+ #endif /* __ASSEMBLY__ */
+ 
+ #else /* !CONFIG_STACK_VALIDATION */
+@@ -139,12 +152,15 @@ struct unwind_hint {
+ 	"\n\t"
+ #define STACK_FRAME_NON_STANDARD(func)
+ #define STACK_FRAME_NON_STANDARD_FP(func)
++#define ANNOTATE_NOENDBR
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+ .macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
++.macro ANNOTATE_NOENDBR
++.endm
+ #endif
+ 
+ #endif /* CONFIG_STACK_VALIDATION */
 
 
