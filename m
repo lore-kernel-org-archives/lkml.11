@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84816C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AACBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:57:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236764AbiBXP6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:58:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
+        id S236853AbiBXP6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:58:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236718AbiBXP5Q (ORCPT
+        with ESMTP id S236754AbiBXP5Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 10:57:16 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9DD1D32D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:56:39 -0800 (PST)
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E47E22B38
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:56:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645718199; x=1677254199;
+  t=1645718201; x=1677254201;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Nx39V8by9O+7Km3Oh4t8SlBikR+pt9SMuFh5fskeUTc=;
-  b=EvVM3qTMkNSn1qbLcf09bt6x7dAUI44PV0zTApsPc0lHacOtFsegeqUG
-   700gnx/o6/9UVW0m5OEPAjpUjcDN5061nXt72tBgbZ6nFvyL/+nl1wwgS
-   Cixv59Dm8LAKpZuWO12QdhzTcZX8wLZOXcTsfHByNPec2Cgci9n+XB7MZ
-   saarN82xh03E6Stc/dvvveqRAX7P+nd3YW5138TEyEY7T8R5WRug0lZCI
-   Fd7rNo+O8yJRM/OtL49605HcJKT8KYOU2wEGqeepm60nsu0vPBab2q8j4
-   PI6KiQBaVG7x8YI1Oa8w5sLeIZLGsZ8FewRKVBWlUmSmAqVTSnpT6rNrw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="249849330"
+  bh=4CAGEue28CSAv5dFniItlUtImlUxHadBv6bonwqT43o=;
+  b=meMp58/xVrf1FjBEWfAu7Wzw8ApyavONxnLL+Q9ETOF3RrTXDaky7bco
+   Crl6e8Imbd0GvOJeODsbJlGEZEZVYN30jet3PUgnqiqbieyZsFu7YuFwW
+   8ez1dRUp7nrU3HpEPqbPsoXWeGv0b+AFwIBvL0gqvd35cbqAHkh5HOHiY
+   N3ciX0PNsT50Lk6FbuCS3RxwdsZez3lDMyd5O8znWjAEq1yqov4fh4erQ
+   yQjPDmaaEr9h3Ny7QAPGPDOQe3uJX/T8d7sZfuF/ZHtiGd75MTT84RCr3
+   HC2UQO4JlHPfX6zrB0YHUe8iyLMeWZic+AhRY6HCMX8DQoNs1wtRWB/wg
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="251094406"
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="249849330"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:38 -0800
+   d="scan'208";a="251094406"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:40 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="628513019"
+   d="scan'208";a="639761340"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 24 Feb 2022 07:56:32 -0800
+  by orsmga004.jf.intel.com with ESMTP; 24 Feb 2022 07:56:32 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id BCA71C98; Thu, 24 Feb 2022 17:56:35 +0200 (EET)
+        id 8C257B83; Thu, 24 Feb 2022 17:56:35 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,10 +51,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 30/30] Documentation/x86: Document TDX kernel architecture
-Date:   Thu, 24 Feb 2022 18:56:30 +0300
-Message-Id: <20220224155630.52734-31-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv4 26/30] x86/mm/cpa: Add support for TDX shared memory
+Date:   Thu, 24 Feb 2022 18:56:26 +0300
+Message-Id: <20220224155630.52734-27-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
 References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
@@ -64,233 +64,167 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Intel TDX protects guest memory from VMM access. Any memory that is
+required for communication with the VMM must be explicitly shared.
 
-Document the TDX guest architecture details like #VE support,
-shared memory, etc.
+It is a two-step process: the guest sets the shared bit in the page
+table entry and notifies VMM about the change. The notification happens
+using MapGPA hypercall.
 
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Conversion back to private memory requires clearing the shared bit,
+notifying VMM with MapGPA hypercall following with accepting the memory
+with AcceptPage hypercall.
+
+Provide a TDX version of x86_platform.guest.* callbacks. It makes
+__set_memory_enc_pgtable() work right in TDX guest.
+
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- Documentation/x86/index.rst |   1 +
- Documentation/x86/tdx.rst   | 196 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 197 insertions(+)
- create mode 100644 Documentation/x86/tdx.rst
+ arch/x86/coco/core.c |   1 +
+ arch/x86/coco/tdx.c  | 101 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 102 insertions(+)
 
-diff --git a/Documentation/x86/index.rst b/Documentation/x86/index.rst
-index f498f1d36cd3..382e53ca850a 100644
---- a/Documentation/x86/index.rst
-+++ b/Documentation/x86/index.rst
-@@ -24,6 +24,7 @@ x86-specific Documentation
-    intel-iommu
-    intel_txt
-    amd-memory-encryption
-+   tdx
-    pti
-    mds
-    microcode
-diff --git a/Documentation/x86/tdx.rst b/Documentation/x86/tdx.rst
-new file mode 100644
-index 000000000000..a0b603ac49ca
---- /dev/null
-+++ b/Documentation/x86/tdx.rst
-@@ -0,0 +1,196 @@
-+.. SPDX-License-Identifier: GPL-2.0
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index 54344122e2fe..9778cf4c6901 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -21,6 +21,7 @@ static bool intel_cc_platform_has(enum cc_attr attr)
+ 	switch (attr) {
+ 	case CC_ATTR_GUEST_UNROLL_STRING_IO:
+ 	case CC_ATTR_HOTPLUG_DISABLED:
++	case CC_ATTR_GUEST_MEM_ENCRYPT:
+ 		return true;
+ 	default:
+ 		return false;
+diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
+index 6306ef19584f..da2ae399ea71 100644
+--- a/arch/x86/coco/tdx.c
++++ b/arch/x86/coco/tdx.c
+@@ -10,10 +10,15 @@
+ #include <asm/vmx.h>
+ #include <asm/insn.h>
+ #include <asm/insn-eval.h>
++#include <asm/x86_init.h>
+ 
+ /* TDX module Call Leaf IDs */
+ #define TDX_GET_INFO			1
+ #define TDX_GET_VEINFO			3
++#define TDX_ACCEPT_PAGE			6
 +
-+=====================================
-+Intel Trust Domain Extensions (TDX)
-+=====================================
++/* TDX hypercall Leaf IDs */
++#define TDVMCALL_MAP_GPA		0x10001
+ 
+ /* MMIO direction */
+ #define EPT_READ	0
+@@ -456,6 +461,98 @@ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve)
+ 	return ret;
+ }
+ 
++static bool tdx_tlb_flush_required(bool enc)
++{
++	/*
++	 * TDX guest is responsible for flushing caches on private->shared
++	 * transition. VMM is responsible for flushing on shared->private.
++	 */
++	return !enc;
++}
 +
-+Intel's Trust Domain Extensions (TDX) protect confidential guest VMs
-+from the host and physical attacks by isolating the guest register
-+state and by encrypting the guest memory. In TDX, a special TDX module
-+sits between the host and the guest, and runs in a special mode and
-+manages the guest/host separation.
++static bool tdx_cache_flush_required(void)
++{
++	return true;
++}
 +
-+Since the host cannot directly access guest registers or memory, much
-+normal functionality of a hypervisor (such as trapping MMIO, some MSRs,
-+some CPUIDs, and some other instructions) has to be moved into the
-+guest. This is implemented using a Virtualization Exception (#VE) that
-+is handled by the guest kernel. Some #VEs are handled inside the guest
-+kernel, but some require the hypervisor (VMM) to be involved. The TD
-+hypercall mechanism allows TD guests to call TDX module or hypervisor
-+function.
++static bool accept_page(phys_addr_t gpa, enum pg_level pg_level)
++{
++	/*
++	 * Pass the page physical address to the TDX module to accept the
++	 * pending, private page.
++	 *
++	 * Bits 2:0 of GPA encode page size: 0 - 4K, 1 - 2M, 2 - 1G.
++	 */
++	switch (pg_level) {
++	case PG_LEVEL_4K:
++		break;
++	case PG_LEVEL_2M:
++		gpa |= 1;
++		break;
++	case PG_LEVEL_1G:
++		gpa |= 2;
++		break;
++	default:
++		return false;
++	}
 +
-+#VE Exceptions:
-+===============
++	return !__tdx_module_call(TDX_ACCEPT_PAGE, gpa, 0, 0, 0, NULL);
++}
 +
-+In TDX guests, #VE Exceptions are delivered to TDX guests in following
-+scenarios:
++/*
++ * Inform the VMM of the guest's intent for this physical page: shared with
++ * the VMM or private to the guest.  The VMM is expected to change its mapping
++ * of the page in response.
++ */
++static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, bool enc)
++{
++	phys_addr_t start = __pa(vaddr);
++	phys_addr_t end = __pa(vaddr + numpages * PAGE_SIZE);
 +
-+* Execution of certain instructions (see list below)
-+* Certain MSR accesses.
-+* CPUID usage (only for certain leaves)
-+* Shared memory access (including MMIO)
++	if (!enc) {
++		start |= cc_mkdec(0);
++		end |= cc_mkdec(0);
++	}
 +
-+#VE due to instruction execution
-+---------------------------------
++	/*
++	 * Notify the VMM about page mapping conversion. More info about ABI
++	 * can be found in TDX Guest-Host-Communication Interface (GHCI),
++	 * section "TDG.VP.VMCALL<MapGPA>"
++	 */
++	if (_tdx_hypercall(TDVMCALL_MAP_GPA, start, end - start, 0, 0))
++		return false;
 +
-+Intel TDX dis-allows execution of certain instructions in non-root
-+mode. Execution of these instructions would lead to #VE or #GP.
++	/* private->shared conversion  requires only MapGPA call */
++	if (!enc)
++		return true;
 +
-+Details are,
++	/*
++	 * For shared->private conversion, accept the page using
++	 * TDX_ACCEPT_PAGE TDX module call.
++	 */
++	while (start < end) {
++		/* Try if 1G page accept is possible */
++		if (!(start & ~PUD_MASK) && end - start >= PUD_SIZE &&
++		    accept_page(start, PG_LEVEL_1G)) {
++			start += PUD_SIZE;
++			continue;
++		}
 +
-+List of instructions that can cause a #VE is,
++		/* Try if 2M page accept is possible */
++		if (!(start & ~PMD_MASK) && end - start >= PMD_SIZE &&
++		    accept_page(start, PG_LEVEL_2M)) {
++			start += PMD_SIZE;
++			continue;
++		}
 +
-+* String I/O (INS, OUTS), IN, OUT
-+* HLT
-+* MONITOR, MWAIT
-+* WBINVD, INVD
-+* VMCALL
++		if (!accept_page(start, PG_LEVEL_4K))
++			return false;
++		start += PAGE_SIZE;
++	}
 +
-+List of instructions that can cause a #GP is,
++	return true;
++}
 +
-+* All VMX instructions: INVEPT, INVVPID, VMCLEAR, VMFUNC, VMLAUNCH,
-+  VMPTRLD, VMPTRST, VMREAD, VMRESUME, VMWRITE, VMXOFF, VMXON
-+* ENCLS, ENCLV
-+* GETSEC
-+* RSM
-+* ENQCMD
+ void __init tdx_early_init(void)
+ {
+ 	u32 eax, sig[3];
+@@ -486,5 +583,9 @@ void __init tdx_early_init(void)
+ 	 */
+ 	cc_set_mask(BIT_ULL(td_info.gpa_width - 1));
+ 
++	x86_platform.guest.enc_cache_flush_required = tdx_cache_flush_required;
++	x86_platform.guest.enc_tlb_flush_required = tdx_tlb_flush_required;
++	x86_platform.guest.enc_status_change_finish = tdx_enc_status_changed;
 +
-+#VE due to MSR access
-+----------------------
-+
-+In TDX guest, MSR access behavior can be categorized as,
-+
-+* Native supported (also called "context switched MSR")
-+  No special handling is required for these MSRs in TDX guests.
-+* #GP triggered
-+  Dis-allowed MSR read/write would lead to #GP.
-+* #VE triggered
-+  All MSRs that are not natively supported or dis-allowed
-+  (triggers #GP) will trigger #VE. To support access to
-+  these MSRs, it needs to be emulated using TDCALL.
-+
-+Look Intel TDX Module Specification, sec "MSR Virtualization" for the complete
-+list of MSRs that fall under the categories above.
-+
-+#VE due to CPUID instruction
-+----------------------------
-+
-+In TDX guests, most of CPUID leaf/sub-leaf combinations are virtualized by
-+the TDX module while some trigger #VE. Whether the leaf/sub-leaf triggers #VE
-+defined in the TDX spec.
-+
-+VMM during the TD initialization time (using TDH.MNG.INIT) configures if
-+a feature bits in specific leaf-subleaf are exposed to TD guest or not.
-+
-+#VE on Memory Accesses
-+----------------------
-+
-+A TD guest is in control of whether its memory accesses are treated as
-+private or shared.  It selects the behavior with a bit in its page table
-+entries.
-+
-+#VE on Shared Pages
-+-------------------
-+
-+Access to shared mappings can cause a #VE. The hypervisor controls whether
-+access of shared mapping causes a #VE, so the guest must be careful to only
-+reference shared pages it can safely handle a #VE, avoid nested #VEs.
-+
-+Content of shared mapping is not trusted since shared memory is writable
-+by the hypervisor. Shared mappings are never used for sensitive memory content
-+like stacks or kernel text, only for I/O buffers and MMIO regions. The kernel
-+will not encounter shared mappings in sensitive contexts like syscall entry
-+or NMIs.
-+
-+#VE on Private Pages
-+--------------------
-+
-+Some accesses to private mappings may cause #VEs.  Before a mapping is
-+accepted (AKA in the SEPT_PENDING state), a reference would cause a #VE.
-+But, after acceptance, references typically succeed.
-+
-+The hypervisor can cause a private page reference to fail if it chooses
-+to move an accepted page to a "blocked" state.  However, if it does
-+this, page access will not generate a #VE.  It will, instead, cause a
-+"TD Exit" where the hypervisor is required to handle the exception.
-+
-+Linux #VE handler
-+-----------------
-+
-+Both user/kernel #VE exceptions are handled by the tdx_handle_virt_exception()
-+handler. If successfully handled, the instruction pointer is incremented to
-+complete the handling process. If failed to handle, it is treated as a regular
-+exception and handled via fixup handlers.
-+
-+In TD guests, #VE nesting (a #VE triggered before handling the current one
-+or AKA syscall gap issue) problem is handled by TDX module ensuring that
-+interrupts, including NMIs, are blocked. The hardware blocks interrupts
-+starting with #VE delivery until TDGETVEINFO is called.
-+
-+The kernel must avoid triggering #VE in entry paths: do not touch TD-shared
-+memory, including MMIO regions, and do not use #VE triggering MSRs,
-+instructions, or CPUID leaves that might generate #VE.
-+
-+MMIO handling:
-+==============
-+
-+In non-TDX VMs, MMIO is usually implemented by giving a guest access to a
-+mapping which will cause a VMEXIT on access, and then the VMM emulates the
-+access. That's not possible in TDX guests because VMEXIT will expose the
-+register state to the host. TDX guests don't trust the host and can't have
-+their state exposed to the host.
-+
-+In TDX the MMIO regions are instead configured to trigger a #VE
-+exception in the guest. The guest #VE handler then emulates the MMIO
-+instructions inside the guest and converts them into a controlled TDCALL
-+to the host, rather than completely exposing the state to the host.
-+
-+MMIO addresses on x86 are just special physical addresses. They can be
-+accessed with any instruction that accesses memory. However, the
-+introduced instruction decoding method is limited. It is only designed
-+to decode instructions like those generated by io.h macros.
-+
-+MMIO access via other means (like structure overlays) may result in
-+MMIO_DECODE_FAILED and an oops.
-+
-+Shared memory:
-+==============
-+
-+Intel TDX doesn't allow the VMM to access guest private memory. Any
-+memory that is required for communication with VMM must be shared
-+explicitly by setting the bit in the page table entry. The shared bit
-+can be enumerated with TDX_GET_INFO.
-+
-+After setting the shared bit, the conversion must be completed with
-+MapGPA hypercall. The call informs the VMM about the conversion between
-+private/shared mappings.
-+
-+set_memory_decrypted() converts a range of pages to shared.
-+set_memory_encrypted() converts memory back to private.
-+
-+Device drivers are the primary user of shared memory, but there's no
-+need in touching every driver. DMA buffers and ioremap()'ed regions are
-+converted to shared automatically.
-+
-+TDX uses SWIOTLB for most DMA allocations. The SWIOTLB buffer is
-+converted to shared on boot.
-+
-+For coherent DMA allocation, the DMA buffer gets converted on the
-+allocation. Check force_dma_unencrypted() for details.
-+
-+References
-+==========
-+
-+More details about TDX module (and its response for MSR, memory access,
-+IO, CPUID etc) can be found at,
-+
-+https://www.intel.com/content/dam/develop/external/us/en/documents/tdx-module-1.0-public-spec-v0.931.pdf
-+
-+More details about TDX hypercall and TDX module call ABI can be found
-+at,
-+
-+https://www.intel.com/content/dam/develop/external/us/en/documents/intel-tdx-guest-hypervisor-communication-interface-1.0-344426-002.pdf
-+
-+More details about TDVF requirements can be found at,
-+
-+https://www.intel.com/content/dam/develop/external/us/en/documents/tdx-virtual-firmware-design-guide-rev-1.01.pdf
+ 	pr_info("Guest detected\n");
+ }
 -- 
 2.34.1
 
