@@ -2,151 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8FD6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C583DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234221AbiBXL6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 06:58:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58158 "EHLO
+        id S234230AbiBXL77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 06:59:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234222AbiBXL56 (ORCPT
+        with ESMTP id S231480AbiBXL75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 06:57:58 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5040BFA205;
-        Thu, 24 Feb 2022 03:57:17 -0800 (PST)
-Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K4BFQ6pP7z685Ym;
-        Thu, 24 Feb 2022 19:56:10 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Thu, 24 Feb 2022 12:57:15 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 24 Feb 2022 11:57:12 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, Xingui Yang <yangxingui@huawei.com>,
-        Qi Liu <liuqi115@huawei.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH 6/6] scsi: hisi_sas: Modify v3 HW SSP underflow error processing
-Date:   Thu, 24 Feb 2022 19:51:29 +0800
-Message-ID: <1645703489-87194-7-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1645703489-87194-1-git-send-email-john.garry@huawei.com>
-References: <1645703489-87194-1-git-send-email-john.garry@huawei.com>
+        Thu, 24 Feb 2022 06:59:57 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB9D488A3;
+        Thu, 24 Feb 2022 03:59:27 -0800 (PST)
+Date:   Thu, 24 Feb 2022 11:59:23 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1645703965;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Un/NH0FpeYtHbG3p/fyCPWObkycsAIo47PeAtxUHTb0=;
+        b=CGOce7O32vXi6vI8Uha67YhRidGdg+a4HjEMkKUd2T1AMIlm3YyxhljnhIoaEiHwmi+eYl
+        ZjwfB5G/pA7///DqLfpCXVH1yxgQ4rCW99z0ziiPXNU2XKUZGJgsmfeF8Wh+Ys98BHrT7a
+        TrcE2PaK1j7AW1+ls5VUMCsKyUe+3H104Sd7MB/YQX2LMXpwzDXIdXfyqiLkjtCl/tb47y
+        +ZD/pd0hp82KMJ0y0PHFJvtLQFUinHvBT8yo/GGiwd55TJi5eTOibM1/TkR/Jz7QWpK6bv
+        qyua01F8dPoGpEuTN1z9N12RW4JrVH6uo2B34Nxl5wfo7v9DYHx9tGBriuTS4A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1645703965;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Un/NH0FpeYtHbG3p/fyCPWObkycsAIo47PeAtxUHTb0=;
+        b=holsPH304lb5Vigr0Sz+PGQJcTp4iLr4qMVcK2ql1OlDPXlcThiP7RuAVkQGjB8iIPmhaO
+        blkYlW9b6S91yBAw==
+From:   "tip-bot2 for Kirill A. Shutemov" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/cc] x86/coco: Add API to handle encryption mask
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Borislav Petkov <bp@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220222185740.26228-5-kirill.shutemov@linux.intel.com>
+References: <20220222185740.26228-5-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Message-ID: <164570396398.16921.6051735447275836024.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xingui Yang <yangxingui@huawei.com>
+The following commit has been merged into the x86/cc branch of tip:
 
-In case of SSP underflow allow the response frame IU to be examined for
-setting the response stat value rather than always setting
-SAS_DATA_UNDERRUN.
+Commit-ID:     b577f542f93cbba57f8d6185ef1fb13a41ddf162
+Gitweb:        https://git.kernel.org/tip/b577f542f93cbba57f8d6185ef1fb13a41ddf162
+Author:        Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+AuthorDate:    Tue, 22 Feb 2022 21:57:40 +03:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Wed, 23 Feb 2022 19:14:29 +01:00
 
-This will mean that we call sas_ssp_task_response() in those scenarios
-and may send sense data to upper layer.
+x86/coco: Add API to handle encryption mask
 
-Such a condition would be for bad blocks were we just reporting an
-underflow error to upper layer, but now the sense data will tell
-immediately that the media is faulty.
+AMD SME/SEV uses a bit in the page table entries to indicate that the
+page is encrypted and not accessible to the VMM.
 
-Signed-off-by: Xingui Yang <yangxingui@huawei.com>
-Signed-off-by: Qi Liu <liuqi115@huawei.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
+TDX uses a similar approach, but the polarity of the mask is opposite to
+AMD: if the bit is set the page is accessible to VMM.
+
+Provide vendor-neutral API to deal with the mask: cc_mkenc() and
+cc_mkdec() modify given address to make it encrypted/decrypted. It can
+be applied to phys_addr_t, pgprotval_t or page table entry value.
+
+pgprot_encrypted() and pgprot_decrypted() reimplemented using new
+helpers.
+
+The implementation will be extended to cover TDX.
+
+pgprot_decrypted() is used by drivers (i915, virtio_gpu, vfio).
+cc_mkdec() called by pgprot_decrypted(). Export cc_mkdec().
+
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
+Link: https://lore.kernel.org/r/20220222185740.26228-5-kirill.shutemov@linux.intel.com
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 39 +++++++++++++++++---------
- 1 file changed, 26 insertions(+), 13 deletions(-)
+ arch/x86/coco/core.c               | 27 +++++++++++++++++++++++++++
+ arch/x86/include/asm/coco.h        | 18 ++++++++++++++++++
+ arch/x86/include/asm/pgtable.h     | 13 +++++++------
+ arch/x86/mm/mem_encrypt_identity.c |  1 +
+ arch/x86/mm/pat/set_memory.c       |  5 +++--
+ 5 files changed, 56 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index ad3e2db0f520..914ae4e82f5e 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -406,6 +406,8 @@
- #define CMPLT_HDR_ERROR_PHASE_MSK   (0xff << CMPLT_HDR_ERROR_PHASE_OFF)
- #define CMPLT_HDR_RSPNS_XFRD_OFF	10
- #define CMPLT_HDR_RSPNS_XFRD_MSK	(0x1 << CMPLT_HDR_RSPNS_XFRD_OFF)
-+#define CMPLT_HDR_RSPNS_GOOD_OFF	11
-+#define CMPLT_HDR_RSPNS_GOOD_MSK	(0x1 << CMPLT_HDR_RSPNS_GOOD_OFF)
- #define CMPLT_HDR_ERX_OFF		12
- #define CMPLT_HDR_ERX_MSK		(0x1 << CMPLT_HDR_ERX_OFF)
- #define CMPLT_HDR_ABORT_STAT_OFF	13
-@@ -2140,7 +2142,7 @@ static irqreturn_t fatal_axi_int_v3_hw(int irq_no, void *p)
- 	return IRQ_HANDLED;
- }
+diff --git a/arch/x86/coco/core.c b/arch/x86/coco/core.c
+index 476dcd1..fc1365d 100644
+--- a/arch/x86/coco/core.c
++++ b/arch/x86/coco/core.c
+@@ -14,6 +14,7 @@
+ #include <asm/processor.h>
  
--static void
-+static bool
- slot_err_v3_hw(struct hisi_hba *hisi_hba, struct sas_task *task,
- 	       struct hisi_sas_slot *slot)
+ static enum cc_vendor vendor __ro_after_init;
++static u64 cc_mask __ro_after_init;
+ 
+ static bool intel_cc_platform_has(enum cc_attr attr)
  {
-@@ -2158,6 +2160,15 @@ slot_err_v3_hw(struct hisi_hba *hisi_hba, struct sas_task *task,
- 	switch (task->task_proto) {
- 	case SAS_PROTOCOL_SSP:
- 		if (dma_rx_err_type & RX_DATA_LEN_UNDERFLOW_MSK) {
-+			/*
-+			 * If returned response frame is incorrect because of data underflow,
-+			 * but I/O information has been written to the host memory, we examine
-+			 * response IU.
-+			 */
-+			if (!(complete_hdr->dw0 & CMPLT_HDR_RSPNS_GOOD_MSK) &&
-+				(complete_hdr->dw0 & CMPLT_HDR_RSPNS_XFRD_MSK))
-+				return false;
-+
- 			ts->residual = trans_tx_fail_type;
- 			ts->stat = SAS_DATA_UNDERRUN;
- 		} else if (dw3 & CMPLT_HDR_IO_IN_TARGET_MSK) {
-@@ -2189,6 +2200,7 @@ slot_err_v3_hw(struct hisi_hba *hisi_hba, struct sas_task *task,
- 	default:
- 		break;
- 	}
-+	return true;
+@@ -84,7 +85,33 @@ bool cc_platform_has(enum cc_attr attr)
  }
+ EXPORT_SYMBOL_GPL(cc_platform_has);
  
- static void slot_complete_v3_hw(struct hisi_hba *hisi_hba,
-@@ -2262,19 +2274,20 @@ static void slot_complete_v3_hw(struct hisi_hba *hisi_hba,
- 	if ((dw0 & CMPLT_HDR_CMPLT_MSK) == 0x3) {
- 		u32 *error_info = hisi_sas_status_buf_addr_mem(slot);
++u64 cc_mkenc(u64 val)
++{
++	switch (vendor) {
++	case CC_VENDOR_AMD:
++		return val | cc_mask;
++	default:
++		return val;
++	}
++}
++
++u64 cc_mkdec(u64 val)
++{
++	switch (vendor) {
++	case CC_VENDOR_AMD:
++		return val & ~cc_mask;
++	default:
++		return val;
++	}
++}
++EXPORT_SYMBOL_GPL(cc_mkdec);
++
+ __init void cc_set_vendor(enum cc_vendor v)
+ {
+ 	vendor = v;
+ }
++
++__init void cc_set_mask(u64 mask)
++{
++	cc_mask = mask;
++}
+diff --git a/arch/x86/include/asm/coco.h b/arch/x86/include/asm/coco.h
+index e49f9dd..3d98c3a 100644
+--- a/arch/x86/include/asm/coco.h
++++ b/arch/x86/include/asm/coco.h
+@@ -2,6 +2,8 @@
+ #ifndef _ASM_X86_COCO_H
+ #define _ASM_X86_COCO_H
  
--		slot_err_v3_hw(hisi_hba, task, slot);
--		if (ts->stat != SAS_DATA_UNDERRUN)
--			dev_info(dev, "erroneous completion iptt=%d task=%pK dev id=%d addr=%016llx CQ hdr: 0x%x 0x%x 0x%x 0x%x Error info: 0x%x 0x%x 0x%x 0x%x\n",
--				 slot->idx, task, sas_dev->device_id,
--				 SAS_ADDR(device->sas_addr),
--				 dw0, dw1, complete_hdr->act, dw3,
--				 error_info[0], error_info[1],
--				 error_info[2], error_info[3]);
--		if (unlikely(slot->abort)) {
--			sas_task_abort(task);
--			return;
-+		if (slot_err_v3_hw(hisi_hba, task, slot)) {
-+			if (ts->stat != SAS_DATA_UNDERRUN)
-+				dev_info(dev, "erroneous completion iptt=%d task=%pK dev id=%d addr=%016llx CQ hdr: 0x%x 0x%x 0x%x 0x%x Error info: 0x%x 0x%x 0x%x 0x%x\n",
-+					slot->idx, task, sas_dev->device_id,
-+					SAS_ADDR(device->sas_addr),
-+					dw0, dw1, complete_hdr->act, dw3,
-+					error_info[0], error_info[1],
-+					error_info[2], error_info[3]);
-+			if (unlikely(slot->abort)) {
-+				sas_task_abort(task);
-+				return;
-+			}
-+			goto out;
- 		}
--		goto out;
++#include <asm/types.h>
++
+ enum cc_vendor {
+ 	CC_VENDOR_NONE,
+ 	CC_VENDOR_AMD,
+@@ -10,5 +12,21 @@ enum cc_vendor {
+ };
+ 
+ void cc_set_vendor(enum cc_vendor v);
++void cc_set_mask(u64 mask);
++
++#ifdef CONFIG_ARCH_HAS_CC_PLATFORM
++u64 cc_mkenc(u64 val);
++u64 cc_mkdec(u64 val);
++#else
++static inline u64 cc_mkenc(u64 val)
++{
++	return val;
++}
++
++static inline u64 cc_mkdec(u64 val)
++{
++	return val;
++}
++#endif
+ 
+ #endif /* _ASM_X86_COCO_H */
+diff --git a/arch/x86/include/asm/pgtable.h b/arch/x86/include/asm/pgtable.h
+index 8a9432f..62ab07e 100644
+--- a/arch/x86/include/asm/pgtable.h
++++ b/arch/x86/include/asm/pgtable.h
+@@ -15,17 +15,12 @@
+ 		     cachemode2protval(_PAGE_CACHE_MODE_UC_MINUS)))	\
+ 	 : (prot))
+ 
+-/*
+- * Macros to add or remove encryption attribute
+- */
+-#define pgprot_encrypted(prot)	__pgprot(__sme_set(pgprot_val(prot)))
+-#define pgprot_decrypted(prot)	__pgprot(__sme_clr(pgprot_val(prot)))
+-
+ #ifndef __ASSEMBLY__
+ #include <linux/spinlock.h>
+ #include <asm/x86_init.h>
+ #include <asm/pkru.h>
+ #include <asm/fpu/api.h>
++#include <asm/coco.h>
+ #include <asm-generic/pgtable_uffd.h>
+ #include <linux/page_table_check.h>
+ 
+@@ -38,6 +33,12 @@ void ptdump_walk_pgd_level_debugfs(struct seq_file *m, struct mm_struct *mm,
+ void ptdump_walk_pgd_level_checkwx(void);
+ void ptdump_walk_user_pgd_level_checkwx(void);
+ 
++/*
++ * Macros to add or remove encryption attribute
++ */
++#define pgprot_encrypted(prot)	__pgprot(cc_mkenc(pgprot_val(prot)))
++#define pgprot_decrypted(prot)	__pgprot(cc_mkdec(pgprot_val(prot)))
++
+ #ifdef CONFIG_DEBUG_WX
+ #define debug_checkwx()		ptdump_walk_pgd_level_checkwx()
+ #define debug_checkwx_user()	ptdump_walk_user_pgd_level_checkwx()
+diff --git a/arch/x86/mm/mem_encrypt_identity.c b/arch/x86/mm/mem_encrypt_identity.c
+index 06314ae..b43bc24 100644
+--- a/arch/x86/mm/mem_encrypt_identity.c
++++ b/arch/x86/mm/mem_encrypt_identity.c
+@@ -604,5 +604,6 @@ out:
+ 	if (sme_me_mask) {
+ 		physical_mask &= ~sme_me_mask;
+ 		cc_set_vendor(CC_VENDOR_AMD);
++		cc_set_mask(sme_me_mask);
  	}
+ }
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index b407211..1441db6 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -1989,6 +1989,7 @@ int set_memory_global(unsigned long addr, int numpages)
+  */
+ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+ {
++	pgprot_t empty = __pgprot(0);
+ 	struct cpa_data cpa;
+ 	int ret;
  
- 	switch (task->task_proto) {
--- 
-2.26.2
-
+@@ -1999,8 +2000,8 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+ 	memset(&cpa, 0, sizeof(cpa));
+ 	cpa.vaddr = &addr;
+ 	cpa.numpages = numpages;
+-	cpa.mask_set = enc ? __pgprot(_PAGE_ENC) : __pgprot(0);
+-	cpa.mask_clr = enc ? __pgprot(0) : __pgprot(_PAGE_ENC);
++	cpa.mask_set = enc ? pgprot_encrypted(empty) : pgprot_decrypted(empty);
++	cpa.mask_clr = enc ? pgprot_decrypted(empty) : pgprot_encrypted(empty);
+ 	cpa.pgd = init_mm.pgd;
+ 
+ 	/* Must avoid aliasing mappings in the highmem code */
