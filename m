@@ -2,111 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 801D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234345AbiBXNci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:32:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48006 "EHLO
+        id S235000AbiBXNcm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:32:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235015AbiBXNca (ORCPT
+        with ESMTP id S235006AbiBXNcd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:32:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9EB3BBC4;
-        Thu, 24 Feb 2022 05:31:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 51907B825CD;
-        Thu, 24 Feb 2022 13:31:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08064C340EC;
-        Thu, 24 Feb 2022 13:31:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645709509;
-        bh=aDgHwHLlaNIdtT43THiW9lzUoMz27o+RJiZVrVu89lA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Omn8gcOAjIRuISt5tat3NXRjzlGmWi7T2wUJ14F8/pN7QWw+zUUOYj1skVjaw7sGg
-         F5CdZJinP5eRORKVojyF01K9Xsb+pNhv1M9lXETcLn/Qg0RGtnAlba8GyLeinovXpW
-         kxlThjKdBDmOEG8ldZCOabHP0jfQnKBN3VP5bFxPclMovzoltwpPqgQEFnayjr6VWn
-         N8wPH6mnLWjfNf5Zeg4FCSgzXYld6G45soYxWCJzxcWjPE9Wv3W0p5RGFM0SffTFHc
-         fby1miGrzcV8vipUL4ujRbiW5+7YBykSFFQEGX0NzzNRfUm3B7a3vc2D3hBzZdF99x
-         s6nNQXxO/5kuQ==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nNEDk-0003j0-Iy; Thu, 24 Feb 2022 14:31:49 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Felix Becker <linux.felixbecker2@gmx.de>,
-        stable@vger.kernel.org
-Subject: [PATCH] USB: serial: simple: add Nokia phone driver
-Date:   Thu, 24 Feb 2022 14:31:09 +0100
-Message-Id: <20220224133109.10523-1-johan@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 24 Feb 2022 08:32:33 -0500
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33B354F8C
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:31:57 -0800 (PST)
+Received: by mail-pf1-x430.google.com with SMTP id u16so1850772pfg.12
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:31:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=vB1qPinuIx5GJjxM9OclEcDCM4HkOuUdI7J7QIrR8QM=;
+        b=CMWX0MHQCq61Rcj3Lh1fYx6ag2pjCyHBbAm3PFhe8VuNHoL4dmtuRGbuoEkThL3SLs
+         /CZAsggglroair2/MduxqDWQIqBnmYYEojzVncOpv9ZLaA06+XaNo8CMJr/ZDwKGevNi
+         OPrU1ZsR15gYoyDeMerIHUzqjy0fKD5EWJsHLaKAFr0YrURkU35895YhEBeCHOWZWM/F
+         j965QZkZWovbjAZkxMaEInABShRIzQzyoQmrDd1O0WUIV6Ih1Puc+sVpJj+h/a2tHvS+
+         Hsz9K8gtVF/9yFbK1kxfdJCJ5MoM776lDhCoyh1lidRmpz/mSQq6ya0rMp9HNui6rFBE
+         B4EQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=vB1qPinuIx5GJjxM9OclEcDCM4HkOuUdI7J7QIrR8QM=;
+        b=3qtoJBJgn5IFFMS9+wFAw8tZf/2vr5EZd39s0BehhtOJNbTOIzlVBiCzHOKmtw7Tc/
+         yFYoSSxV7Kan4nCzjsTptM3QM24n9nPDg3YmXNxf5EvEydAW59AJy2YUiEbzQbavRlNi
+         q4zvbGEiGL7F1fM3NDRjwNDatLHmXO5I9yL7wO/b38ZbBaNbdln3DOOcQWhjyBcE7qNm
+         eOZ1sczTe2P/1+xVthFN0DCWCN9wLkxTPeuWs9gSKpnq8l7LrzyaUaLgJZR+8Hp3ZHfi
+         glJQJONQ8dodR/kUZ2FdwV4JTIBA9Di5KSMlQBnA6Xc3nWNXRem/pHOINQFuLge/O9HL
+         +LsQ==
+X-Gm-Message-State: AOAM533ChE/tDsgMkMjEo1VxcZpZvKGVVtbNwFffvqgVu3tqk41ceDFM
+        Tvf6xHJDcPokRpDk0V3KDHg=
+X-Google-Smtp-Source: ABdhPJyJwrxYkxGuYUqzQh0P8T0d3Irzg87pct15JGOUsVd4Muoy4g6GUZ84E+A1ouGwDfgLhI4fbw==
+X-Received: by 2002:a65:4348:0:b0:375:9840:b064 with SMTP id k8-20020a654348000000b003759840b064mr1083683pgq.270.1645709516842;
+        Thu, 24 Feb 2022 05:31:56 -0800 (PST)
+Received: from ip-172-31-19-208.ap-northeast-1.compute.internal (ec2-18-181-137-102.ap-northeast-1.compute.amazonaws.com. [18.181.137.102])
+        by smtp.gmail.com with ESMTPSA id q1sm3404717pfs.112.2022.02.24.05.31.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 05:31:56 -0800 (PST)
+Date:   Thu, 24 Feb 2022 13:31:51 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     linux-mm@kvack.org, Roman Gushchin <guro@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH 3/5] mm/slab: Do not call kmalloc_large() for unsupported
+ size
+Message-ID: <YheIxyO/2lcD+aBR@ip-172-31-19-208.ap-northeast-1.compute.internal>
+References: <20220221105336.522086-1-42.hyeyoo@gmail.com>
+ <20220221105336.522086-4-42.hyeyoo@gmail.com>
+ <8915b858-b46d-0acd-bebd-80a0c9882a7e@suse.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8915b858-b46d-0acd-bebd-80a0c9882a7e@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a new "simple" driver for certain Nokia phones, including Nokia 130
-(RM-1035) which exposes two serial ports in "charging only" mode.
+On Thu, Feb 24, 2022 at 01:48:47PM +0100, Vlastimil Babka wrote:
+> On 2/21/22 11:53, Hyeonggon Yoo wrote:
+> > SLAB's kfree() does not support freeing an object that is allocated from
+> > kmalloc_large(). Fix this as SLAB do not pass requests larger than
+> > KMALLOC_MAX_CACHE_SIZE directly to page allocator.
+> 
+> AFAICS this issue is limited to build-time constant sizes. Might be better
+> to make this a build error rather than build-time NULL?
 
-Reported-by: Felix Becker <linux.felixbecker2@gmx.de>
-Link: https://lore.kernel.org/r/20220208201506.6c65834d@gmx.de
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/usb/serial/Kconfig             | 1 +
- drivers/usb/serial/usb-serial-simple.c | 7 +++++++
- 2 files changed, 8 insertions(+)
+Right. And sounds better. But what about another direction as Matthew said:
+passing large requests to page allocator like SLUB?
 
-diff --git a/drivers/usb/serial/Kconfig b/drivers/usb/serial/Kconfig
-index de5c01257060..ef8d1c73c754 100644
---- a/drivers/usb/serial/Kconfig
-+++ b/drivers/usb/serial/Kconfig
-@@ -66,6 +66,7 @@ config USB_SERIAL_SIMPLE
- 		- Libtransistor USB console
- 		- a number of Motorola phones
- 		- Motorola Tetra devices
-+		- Nokia mobile phones
- 		- Novatel Wireless GPS receivers
- 		- Siemens USB/MPI adapter.
- 		- ViVOtech ViVOpay USB device.
-diff --git a/drivers/usb/serial/usb-serial-simple.c b/drivers/usb/serial/usb-serial-simple.c
-index bd23a7cb1be2..c95dfe4a6f0f 100644
---- a/drivers/usb/serial/usb-serial-simple.c
-+++ b/drivers/usb/serial/usb-serial-simple.c
-@@ -91,6 +91,11 @@ DEVICE(moto_modem, MOTO_IDS);
- 	{ USB_DEVICE(0x0cad, 0x9016) }	/* TPG2200 */
- DEVICE(motorola_tetra, MOTOROLA_TETRA_IDS);
- 
-+/* Nokia mobile phone driver */
-+#define NOKIA_IDS()			\
-+	{ USB_DEVICE(0x0421, 0x069a) }	/* Nokia 130 (RM-1035) */
-+DEVICE_N(nokia, NOKIA_IDS, 2);
-+
- /* Novatel Wireless GPS driver */
- #define NOVATEL_IDS()			\
- 	{ USB_DEVICE(0x09d7, 0x0100) }	/* NovAtel FlexPack GPS */
-@@ -123,6 +128,7 @@ static struct usb_serial_driver * const serial_drivers[] = {
- 	&vivopay_device,
- 	&moto_modem_device,
- 	&motorola_tetra_device,
-+	&nokia_device,
- 	&novatel_gps_device,
- 	&hp4x_device,
- 	&suunto_device,
-@@ -140,6 +146,7 @@ static const struct usb_device_id id_table[] = {
- 	VIVOPAY_IDS(),
- 	MOTO_IDS(),
- 	MOTOROLA_TETRA_IDS(),
-+	NOKIA_IDS(),
- 	NOVATEL_IDS(),
- 	HP4X_IDS(),
- 	SUUNTO_IDS(),
+I think it's better for maintenance. Any obstacles for this direction?
+
+Thank you!
+
+> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+
 -- 
-2.34.1
-
+Hyeonggon
