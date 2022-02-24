@@ -2,246 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD29C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6255C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233910AbiBXTo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:44:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33332 "EHLO
+        id S233991AbiBXTof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:44:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233076AbiBXToY (ORCPT
+        with ESMTP id S233076AbiBXToe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 14:44:24 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD4D31C6EF2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:43:53 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id cm8so4395243edb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:43:53 -0800 (PST)
+        Thu, 24 Feb 2022 14:44:34 -0500
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2A21C6EF3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:44:03 -0800 (PST)
+Received: by mail-oi1-x229.google.com with SMTP id x193so4593998oix.0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:44:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cT6VTaPBAvZcJT0C07jbq6jkkSfnrkv3DOfnLzZ77CM=;
-        b=cph9wo/cKs42xh7OHpJ1L4/fItWA1YtsVsR8Di5tl2igWrI3LjGzwy+GTVPrIL3I1Z
-         GPmf1B0NtZnAEE3hGPmw8LkPPA+8eTx1vMqrbiZJvC6TMFfHROnbmMiYXNJp8huLI+gx
-         qO7LzfpbfGtaHrKawj/KVlZawWWAemhDdkG+FfRsf2zbCwRLYY8yk1hUtHQPAc+vZfmk
-         RxJzf8gEOCvxp1Kuikw1mJyQ5GskvlzG3ChUBTmfgr88rXLMULIcbZFULMD36AaKUC3e
-         HhchVJPs5IExtwcXN/IpVT84JaqinlITjSuAktAm60Cw3JGxFH3MCqXm65fyUBe1lLZi
-         IxIA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=6UcRxp9kACZzHXhxXXBrsGjD5/thuvHHqLsrvWRzW00=;
+        b=PFItRgf8j7HlA6HdmRScXwKPDVRfwrJ36SO6Y5iraV/GbbXg6KIjYbQ6PJ2NmojuRE
+         qRe/6NNxoZJZkG32eaoXaJ4bo4o1pKwEr1bNLMc+GDs15oVKvHhnHmqZY1EFqO3eVmVk
+         ZYarZsHNQ2bhMM7InZ8YeoJRUsf2macfGXo5q/ddJnkxou2zmlWyXeVg1RsaSh1NiI5w
+         dC8I+vMQz1ne4JrMWZAffB1QQYNF7+omLeHdccmzgRc41qHOk9zoLNSTGYxYwmp95rse
+         7q+k+Gcs4qnfIThFZ42fS2R34fjd6AMJVoczHtc7/NAr0Hde1thEopz9nHRW8Ojt+gEB
+         WfYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cT6VTaPBAvZcJT0C07jbq6jkkSfnrkv3DOfnLzZ77CM=;
-        b=LXPJ7g9199ZFylDr9Hpl5H0EZgxNKvPPwHu0C06bD1lS7ta+8HPaEzYMwjBXZFy/UI
-         enOnU3c90nmPfpu+pnyj8jwIxrJin2nvm8TnivCRkahqHSmKSqiBB3K/RtW6sWFgPKhU
-         kdbXxP1HOudJnTIGhLwoFX4Ad+ryi1HOMEhp9pdZZxxFnUjYqLimNU5YkMT2MWBABzUd
-         IJOp0GuuRLBkXJQKDwf9E4wvAijNlWTUqpcNJBnBl7YlNNeCw0r60GUrBi6tJQe/tOf+
-         2vTkCYqzkKQDKbi/bmRNS+GF0KoW5wTbnMyq04YcXQ9QrxbdpNH2JDRvDr1WCJqNIKVp
-         RSuw==
-X-Gm-Message-State: AOAM533suIoXeqR+3dx1kSrb6Rx/R9hngGgxHe7R3itOdnI47NX0hbMf
-        HFDXwm5T8TYs3Mlj2i78E0evbvLoLsbFiAuMGV2gKQ==
-X-Google-Smtp-Source: ABdhPJwrdy9Ks+AvYVAONIODLhAaLZ43j966hZvJwXtEANqW/+4iWi8AF6gH87RMvVRxu+szCttnMs6KWkl6HKVvHdU=
-X-Received: by 2002:a05:6402:2546:b0:412:d0eb:2a4a with SMTP id
- l6-20020a056402254600b00412d0eb2a4amr3924248edb.306.1645731832090; Thu, 24
- Feb 2022 11:43:52 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=6UcRxp9kACZzHXhxXXBrsGjD5/thuvHHqLsrvWRzW00=;
+        b=b8cna4okEbyMHfXHN93FB6a+rBWpddO6jqFM9v8dfysDH4TvEuN4aShnSKiwK5221A
+         ju71fuLAhlljpcuJqL08ZMZWNSh3SLTGPMH+1SSsCdd+EZJVOzMBZS+N8DVMJa8DnxSP
+         I+hye98rskOtmhID7p+3F8oIPpcEyXJNbERpMmYj6dF3SSYqmr5xF/9H6zITWScLAj3X
+         3QIgbvKf3i5G4ZGde5kqDKq0NpZRjIJ0oP3J0i8oifwdCzQ4r6BpYZ4kpb372NwXjEDx
+         iASLfWiaAUanRkikZO/QG9RBsc9O0zBILcPWAYxtnEDNXlsxJckwyA6mEOCBxkNUEJ+B
+         lm9g==
+X-Gm-Message-State: AOAM530rNQ9DjZLENJYRmoV1XAVxDmbpXROxVvSFSz7jNCDiCNjZ2Rxj
+        ACpH43HZ/q6D9MYP4HTL5pQ3GA==
+X-Google-Smtp-Source: ABdhPJzJZxAk+ZQGlBdXsfRylXvvpesnKNFw1w9vNrvRvXXh73PSKeSctBeyKlfNVy+CtA+slIMWfA==
+X-Received: by 2002:a05:6808:1aa9:b0:2d4:958a:ec5a with SMTP id bm41-20020a0568081aa900b002d4958aec5amr2220715oib.275.1645731843125;
+        Thu, 24 Feb 2022 11:44:03 -0800 (PST)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id o22-20020a0568080bd600b002d49b19bc2fsm253363oik.23.2022.02.24.11.44.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 11:44:02 -0800 (PST)
+Date:   Thu, 24 Feb 2022 13:44:00 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>
+Cc:     agross@kernel.org, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: dts: qcom: Add chosen node information for SDX65.
+Message-ID: <YhfgAL8z6rO+zU3w@builder.lan>
+References: <1644574845-23248-1-git-send-email-quic_rohiagar@quicinc.com>
 MIME-Version: 1.0
-References: <20220224055145.1853657-1-keescook@chromium.org>
-In-Reply-To: <20220224055145.1853657-1-keescook@chromium.org>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Thu, 24 Feb 2022 11:43:40 -0800
-Message-ID: <CAGS_qxrRi0zvGnoi-Ne=wp8xkuFKPzNj9d57eq=51gg5gwX=eA@mail.gmail.com>
-Subject: Re: [PATCH] lib: stackinit: Convert to KUnit
-To:     Kees Cook <keescook@chromium.org>
-Cc:     David Gow <davidgow@google.com>, Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1644574845-23248-1-git-send-email-quic_rohiagar@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 9:51 PM Kees Cook <keescook@chromium.org> wrote:
->
+On Fri 11 Feb 04:20 CST 2022, Rohit Agarwal wrote:
 
-<snip>
+> Add chosen node in the base dtsi file of SDX65.
+> 
 
+While this happens to be the same on most boards, it is still a
+board-specific decision which UART is the debug uart, or if there is one
+at all...
 
->  /* Userspace headers. */
-> +#define _GNU_SOURCE
->  #include <stdio.h>
->  #include <stdint.h>
-> +#include <stdlib.h>
->  #include <string.h>
->  #include <stdbool.h>
->  #include <errno.h>
->  #include <sys/types.h>
->
->  /* Linux kernel-ism stubs for stand-alone userspace build. */
+So this property should remain in the dts.
 
-This is neat and esp. so that it works.
-But may I ask, what's the value of using this vs UML?
+Thanks,
+Bjorn
 
-Given this has changed into mainly just a KUnit-compatibility layer,
-it feels like it can maybe live as a standalone file, if there's ever
-interest in doing this for other tests.
-
-It feels like something that will never quite be "supported", but I
-find it neat enough I'd have fun sending some patches to make it more
-realistic.
-
-> -#define KBUILD_MODNAME         "stackinit"
-> -#define pr_fmt(fmt)            KBUILD_MODNAME ": " fmt
-> -#define pr_err(fmt, ...)       fprintf(stderr, pr_fmt(fmt), ##__VA_ARGS__)
-> -#define pr_warn(fmt, ...)      fprintf(stderr, pr_fmt(fmt), ##__VA_ARGS__)
-> -#define pr_info(fmt, ...)      fprintf(stdout, pr_fmt(fmt), ##__VA_ARGS__)
-> -#define __init                 /**/
-> -#define __exit                 /**/
-> +#define TEST_PASS      0
-> +#define TEST_SKIP      1
-> +#define TEST_FAIL      2
-> +struct kunit {
-> +       int status;
-> +       char *msg;
-> +};
-> +struct kunit_case {
-> +        void (*run_case)(struct kunit *test);
-> +        const char *name;
-> +};
-> +struct kunit_suite {
-> +       const char *name;
-> +       const struct kunit_case *test_cases;
-> +};
-> +#define KUNIT_CASE(test_name) { .run_case = test_name, .name = #test_name }
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+> ---
+>  arch/arm/boot/dts/qcom-sdx65-mtp.dts | 4 ----
+>  arch/arm/boot/dts/qcom-sdx65.dtsi    | 4 ++++
+>  2 files changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/qcom-sdx65-mtp.dts b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
+> index 59457da..3a75c21 100644
+> --- a/arch/arm/boot/dts/qcom-sdx65-mtp.dts
+> +++ b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
+> @@ -14,10 +14,6 @@
+>  	aliases {
+>  		serial0 = &blsp1_uart3;
+>  	};
+> -
+> -	chosen {
+> -		stdout-path = "serial0:115200n8";
+> -	};
+>  };
+>  
+>  &blsp1_uart3 {
+> diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
+> index 796641d..653df15 100644
+> --- a/arch/arm/boot/dts/qcom-sdx65.dtsi
+> +++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
+> @@ -17,6 +17,10 @@
+>  	qcom,msm-id = <458 0x10000>, <483 0x10000>, <509 0x10000>;
+>  	interrupt-parent = <&intc>;
+>  
+> +	chosen {
+> +		stdout-path = "serial0:115200n8";
+> +	};
 > +
-> +#define KUNIT_ASSERT_TRUE_MSG(test, expr, fmt, ...)                    \
-> +do {                                                                   \
-> +       if (!(expr)) {                                                  \
-> +               if (test->status != TEST_SKIP)                          \
-> +                       test->status = TEST_FAIL;                       \
-> +               if (test->msg)                                          \
-> +                       free(test->msg);                                \
-> +               asprintf(&test->msg, fmt, ##__VA_ARGS__);               \
-> +       }                                                               \
-> +} while (0)
-
-This looks more like KUNIT_EXPECT_TRUE_MSG(), since this macro won't
-abort the test if the expectation fails.
-
-Looking at the code, it looks like we do want the ability to abort.
-Perhaps we can do what Googletest does in C++ and just add in a `return;`?
-
-It has some annoying implications, like using them from helper
-functions doesn't work as one would expect.
-But people seem to be doing fine with that tradeoff in C++ land.
-
-> +
-> +#define KUNIT_ASSERT_EQ_MSG(test, left, right, fmt, ...)               \
-> +       KUNIT_ASSERT_TRUE_MSG(test, (left) == (right), fmt, ##__VA_ARGS__)
-
-Very optional:
-
-It might be nice to show the expressions automatically on failure.
-We could implement that via something like
-
-KUNIT_ASSERT_TRUE_MSG(test, (left) == (right), #left " != " #right ":
-" fmt, ##__VA_ARGS__);
-
-E.g.
-KUNIT_ASSERT_EQ_MSG(test, 2+2, 5, "math is broken")
-=> 2+2 != 5: math is broken
-
-But I can see that being a bit too complicated to want to do here.
-And the failure messages we had before are already decent at giving context.
-
-> +
-> +#define kunit_skip(test, fmt, ...)                                     \
-> +do {                                                                   \
-> +       test->status = TEST_SKIP;                                       \
-> +       if (test->msg)                                                  \
-> +               free(test->msg);                                        \
-> +       asprintf(&test->msg, fmt, ##__VA_ARGS__);                       \
-> +} while (0)
-
-Similarly, this has no control flow implications, so the current
-semantics match kunit_mark_skipped().
-
-But looking at the code, I think we want to abort early here too.
-
-> +
->  #define __user                 /**/
->  #define noinline               __attribute__((__noinline__))
->  #define __aligned(x)           __attribute__((__aligned__(x)))
-> @@ -59,16 +102,44 @@ typedef uint16_t           u16;
->  typedef uint32_t               u32;
->  typedef uint64_t               u64;
->
-> -#define module_init(func)      static int (*do_init)(void) = func
-> -#define module_exit(func)      static void (*do_exit)(void) = func
-> -#define MODULE_LICENSE(str)    int main(void) {                \
-> -                                       int rc;                 \
-> -                                       /* License: str */      \
-> -                                       rc = do_init();         \
-> -                                       if (rc == 0)            \
-> -                                               do_exit();      \
-> -                                       return rc;              \
-> -                               }
-> +#define MODULE_LICENSE(str)    /* */
-> +
-> +int do_kunit_test_suite(struct kunit_suite *suite)
-> +{
-> +       const struct kunit_case *test_case;
-> +       int rc = 0;
-> +
-> +       for (test_case = suite->test_cases; test_case->run_case; test_case++) {
-> +               struct kunit test = { };
-> +
-> +               test_case->run_case(&test);
-> +               switch (test.status) {
-> +               default:
-> +               case TEST_FAIL:
-> +                       fprintf(stderr, "FAIL: %s%s%s", test_case->name,
-> +                               test.msg ? ": " : "",
-> +                               test.msg ?: "\n");
-> +                       rc = 1;
-> +                       break;
-> +               case TEST_SKIP:
-> +                       fprintf(stdout, "XFAIL: %s%s%s", test_case->name,
-> +                               test.msg ? ": " : "",
-> +                               test.msg ?: "\n");
-> +                       break;
-> +               case TEST_PASS:
-> +                       fprintf(stdout, "ok: %s\n", test_case->name);
-> +                       break;
-> +               }
-> +               if (test.msg)
-> +                       free(test.msg);
-> +       }
-> +       return rc;
-> +}
-> +
-> +#define kunit_test_suite(suite)                                        \
-> +int main(void) {                                               \
-> +       return do_kunit_test_suite(&(suite));                   \
-> +}
-
-very optional:
-emulating kunit_test_suites() might be more future-proof here, if we
-ever want to setup more suites.
-There's little reason to do so right now given the lack of init and
-exit support.
-
-Like the stuff above, it wouldn't be hard to do, but I can see it not
-being worth the extra code, i.e.
-
-#define kunit_test_suites(suites...) \
-  int main(void) {
-     static struct kunit_suite *suites =[] = { __VA_ARGS__ };
-     int i, ret = 0;
-     for (i = 0; i < ARRAY_SIZE(suites); ++i)
-       ret += do_kunit_test_suite(suites[i]);
-     return ret;
-   }
+>  	memory {
+>  		device_type = "memory";
+>  		reg = <0 0>;
+> -- 
+> 2.7.4
+> 
