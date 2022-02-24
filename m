@@ -2,144 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3942AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 656FAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235872AbiBXPO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:14:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
+        id S235887AbiBXPPg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:15:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234658AbiBXPO5 (ORCPT
+        with ESMTP id S234588AbiBXPPe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:14:57 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB29E20C1AD;
-        Thu, 24 Feb 2022 07:14:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645715666; x=1677251666;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=M9jUeqkAyXzUagmCp47/FBC2qMpfYy6GI2kmKFu82Vs=;
-  b=c1Z96K5ysj31cGdt8WJXOzdHu7NsQakTHhMDrsI9R5GqJnSnLW2bc5pB
-   7Rnc+ibb1V16l79QTmssQAEuPMfyEscZLEilLJ7EOvWBjz7vjXhtHrEWz
-   05aHxmdzSw7aVXBUZm67ajBRq0B29ybXq+NilmCszSRVL59jl2XA9WXIp
-   JrsjiOXvn9uBAaOU+ZE3fOB+JWgc5ZPi85tpQXTECMS2De0wLyjssncLu
-   jQmhAOF+airFJspmgyc9/IOv7YpITpPxqqZp5VzlWZeNkxp4Gb/8ibfFd
-   ZmBCrWPPeWDsO2tZG5XxjW5pXAc3K8qPpVHAOZ7A5ix7ER6zUl+tC6uxZ
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,134,1643698800"; 
-   d="scan'208";a="154768329"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Feb 2022 08:14:24 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 24 Feb 2022 08:14:24 -0700
-Received: from [10.12.73.51] (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 24 Feb 2022 08:14:22 -0700
-Message-ID: <0c9cd109-6e8e-9e26-a9d7-fae8b79bc6e3@microchip.com>
-Date:   Thu, 24 Feb 2022 16:14:22 +0100
+        Thu, 24 Feb 2022 10:15:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B02819F451
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:15:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645715703;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cy7lPs8Raa8m7UjZ2Ss4NoHQLXafIaQ5zMCDtis8zls=;
+        b=ZsReY8OzzYKdeNSSw6Vfwl1esgJUOwHiOxg1UdNAnGILRqdc1Dk8VrvrvIluO/2aWdjXJ5
+        SacpSoZBEWtq6eR6t95jvdR4yckMHFUEQlBzsCmDrb2YjzuFUgf1UqASYd6JCfySVCECf/
+        e2Y5sqRbb7mMKzw7TvXxQKdK3HMmOpM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-130-p1WSv2OiM1mYVvpecrHF2Q-1; Thu, 24 Feb 2022 10:15:00 -0500
+X-MC-Unique: p1WSv2OiM1mYVvpecrHF2Q-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 22D8CFC80;
+        Thu, 24 Feb 2022 15:14:59 +0000 (UTC)
+Received: from starship (unknown [10.40.195.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DAB9A7FFF2;
+        Thu, 24 Feb 2022 15:14:54 +0000 (UTC)
+Message-ID: <cbc04a96e59c86a1ad77dcbdc10fabfb45066c89.camel@redhat.com>
+Subject: Re: [PATCH v2 14/18] KVM: x86/mmu: avoid indirect call for get_cr3
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Date:   Thu, 24 Feb 2022 17:14:53 +0200
+In-Reply-To: <YhegVBUzv+qnKATS@google.com>
+References: <20220217210340.312449-1-pbonzini@redhat.com>
+         <20220217210340.312449-15-pbonzini@redhat.com>
+         <207674f05d63a8b1a0edd1a35f6453aa8532200e.camel@redhat.com>
+         <YhegVBUzv+qnKATS@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4] ARM: dts: at91: sama7g5: Add crypto nodes
-Content-Language: en-US
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        <claudiu.beznea@microchip.com>, <alexandre.belloni@bootlin.com>
-CC:     <robh+dt@kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kavyasree.kotagiri@microchip.com>
-References: <20220208105646.226623-1-tudor.ambarus@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20220208105646.226623-1-tudor.ambarus@microchip.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08/02/2022 at 11:56, Tudor Ambarus wrote:
-> Describe and enable the AES, SHA and TDES crypto IPs. Tested with the
-> extra run-time self tests of the registered crypto algorithms.
+On Thu, 2022-02-24 at 15:12 +0000, Sean Christopherson wrote:
+> On Thu, Feb 24, 2022, Maxim Levitsky wrote:
+> > Not sure though if that is worth it though. IMHO it would be better to
+> > convert mmu callbacks (and nested ops callbacks, etc) to static calls.
 > 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> nested_ops can utilize static_call(), mmu hooks cannot.  static_call() patches
+> the code, which means there cannot be multiple targets at any given time.  The
+> "static" part refers to the target not changing, generally for the lifetime of
+> the kernel/module in question.  Even with TDP that doesn't hold true due to
+> nested virtualization.
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Queued for 5.18.
+Ah, right, I forgot that static_call patches the call sites.
+
 Best regards,
-   Nicolas
+	Maxim Levitsky
 
-> ---
-> v4: use the generic "crypto" node name for all the crypto nodes,
-> as recommended by the DT specification. Add Claudiu's R-b tag.
 > 
-> v3: remove explicit status = "okay", as it's already the default case
-> when not specified at all.
+> We could selectively use INDIRECT_CALL_*() for some of the MMU calls, but given
+> how few cases and targets we really care about, I prefer our homebrewed manual
+> checks as theres less macro maze to navigate.
 > 
-> v2:
-> - add label to the tdes node
-> - update commit description and specify testing method
-> - put clocks and clock-names properties before dmas and dma-names
->    because the clocks are mandatory, while DMA is optional for TDES and SHA
+> E.g. to convert the TDP fault case
 > 
->   arch/arm/boot/dts/sama7g5.dtsi | 32 ++++++++++++++++++++++++++++++++
->   1 file changed, 32 insertions(+)
+> diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
+> index 1d0c1904d69a..940ec6a9d284 100644
+> --- a/arch/x86/kvm/mmu.h
+> +++ b/arch/x86/kvm/mmu.h
+> @@ -3,6 +3,8 @@
+>  #define __KVM_X86_MMU_H
 > 
-> diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
-> index 7972cb8c2562..2453a6901313 100644
-> --- a/arch/arm/boot/dts/sama7g5.dtsi
-> +++ b/arch/arm/boot/dts/sama7g5.dtsi
-> @@ -393,6 +393,27 @@ pit64b1: timer@e1804000 {
->   			clock-names = "pclk", "gclk";
->   		};
->   
-> +		aes: crypto@e1810000 {
-> +			compatible = "atmel,at91sam9g46-aes";
-> +			reg = <0xe1810000 0x100>;
-> +			interrupts = <GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&pmc PMC_TYPE_PERIPHERAL 27>;
-> +			clock-names = "aes_clk";
-> +			dmas = <&dma0 AT91_XDMAC_DT_PERID(1)>,
-> +			       <&dma0 AT91_XDMAC_DT_PERID(2)>;
-> +			dma-names = "tx", "rx";
-> +		};
+>  #include <linux/kvm_host.h>
+> +#include <linux/indirect_call_wrapper.h>
 > +
-> +		sha: crypto@e1814000 {
-> +			compatible = "atmel,at91sam9g46-sha";
-> +			reg = <0xe1814000 0x100>;
-> +			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&pmc PMC_TYPE_PERIPHERAL 83>;
-> +			clock-names = "sha_clk";
-> +			dmas = <&dma0 AT91_XDMAC_DT_PERID(48)>;
-> +			dma-names = "tx";
-> +		};
+>  #include "kvm_cache_regs.h"
+>  #include "cpuid.h"
+> 
+> @@ -169,7 +171,8 @@ struct kvm_page_fault {
+>         bool map_writable;
+>  };
+> 
+> -int kvm_tdp_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault);
+> +INDIRECT_CALLABLE_DECLARE(int kvm_tdp_page_fault(struct kvm_vcpu *vcpu,
+> +                                                struct kvm_page_fault *fault));
+> 
+>  extern int nx_huge_pages;
+>  static inline bool is_nx_huge_page_enabled(void)
+> @@ -196,11 +199,9 @@ static inline int kvm_mmu_do_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+>                 .req_level = PG_LEVEL_4K,
+>                 .goal_level = PG_LEVEL_4K,
+>         };
+> -#ifdef CONFIG_RETPOLINE
+> -       if (fault.is_tdp)
+> -               return kvm_tdp_page_fault(vcpu, &fault);
+> -#endif
+> -       return vcpu->arch.mmu->page_fault(vcpu, &fault);
+> +       struct kvm_mmu *mmu = vcpu->arch.mmu;
 > +
->   		flx0: flexcom@e1818000 {
->   			compatible = "atmel,sama5d2-flexcom";
->   			reg = <0xe1818000 0x200>;
-> @@ -475,6 +496,17 @@ trng: rng@e2010000 {
->   			status = "disabled";
->   		};
->   
-> +		tdes: crypto@e2014000 {
-> +			compatible = "atmel,at91sam9g46-tdes";
-> +			reg = <0xe2014000 0x100>;
-> +			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&pmc PMC_TYPE_PERIPHERAL 96>;
-> +			clock-names = "tdes_clk";
-> +			dmas = <&dma0 AT91_XDMAC_DT_PERID(54)>,
-> +			       <&dma0 AT91_XDMAC_DT_PERID(53)>;
-> +			dma-names = "tx", "rx";
-> +		};
-> +
->   		flx4: flexcom@e2018000 {
->   			compatible = "atmel,sama5d2-flexcom";
->   			reg = <0xe2018000 0x200>;
+> +       return INDIRECT_CALL_1(mmu->page_fault, kvm_tdp_page_fault, vcpu, &fault);
+>  }
+> 
+>  /*
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index c1deaec795c2..a3ad1bc58859 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -4055,7 +4055,8 @@ int kvm_handle_page_fault(struct kvm_vcpu *vcpu, u64 error_code,
+>  }
+>  EXPORT_SYMBOL_GPL(kvm_handle_page_fault);
+> 
+> -int kvm_tdp_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+> +INDIRECT_CALLABLE_SCOPE int kvm_tdp_page_fault(struct kvm_vcpu *vcpu,
+> +                                              struct kvm_page_fault *fault)
+>  {
+>         while (fault->max_level > PG_LEVEL_4K) {
+>                 int page_num = KVM_PAGES_PER_HPAGE(fault->max_level);
+> 
 
 
--- 
-Nicolas Ferre
