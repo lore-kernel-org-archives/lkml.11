@@ -2,150 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC22C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234353AbiBXM2X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:28:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39100 "EHLO
+        id S234357AbiBXM2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:28:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234303AbiBXM2V (ORCPT
+        with ESMTP id S231905AbiBXM23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:28:21 -0500
+        Thu, 24 Feb 2022 07:28:29 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDA721728A0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:27:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22A70175860
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:27:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645705670;
+        s=mimecast20190719; t=1645705678;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oAPSavxMw1gj5XJMFm/UX3hZtPsS8GU5YjgnhG2ojNg=;
-        b=K+2DHu/Gz8BjlIoK0l4leBNaCgY1PN+GqgFVN25iyovtGbK532YthDFQF7fW4vqnKwvrpU
-        iwWikUFyZHz+AmkLQyJ5qiDS6Hh+EvYA78+AiY7D31Mj4heJA/kyxzVezeAg4idDKafCSw
-        VJiYvHeKTx/0UPAXit3j4sWL3JdbjRY=
+        bh=RXAvt29aks092V89TFuSrIQhc1KpFNVRX0HPI0UZk40=;
+        b=L7ZOEFCGhNmnwstDHcZSuV/62aOUVpzvyqT5iYfzbhGFvJ2SxehwiWClxiZUlEHtfwIfcI
+        UBT0BHAUwJyLSctQmYjiKYdf9YbOVQpsh94VOH2rqC/BZZqJjkdVXQXj1fOI83qaVN1m7v
+        LGFOG1CwH01pvg7QZVEJ2So6kwNheq8=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-629-M6vh_8m6M5mAyCCpJ2S4KQ-1; Thu, 24 Feb 2022 07:27:48 -0500
-X-MC-Unique: M6vh_8m6M5mAyCCpJ2S4KQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+ us-mta-577-PCUaTtRzMeag2gOqQMBV7w-1; Thu, 24 Feb 2022 07:27:55 -0500
+X-MC-Unique: PCUaTtRzMeag2gOqQMBV7w-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ED8AC1854E21;
-        Thu, 24 Feb 2022 12:27:46 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0CD8483287;
-        Thu, 24 Feb 2022 12:27:39 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 0F204416D862; Thu, 24 Feb 2022 09:27:14 -0300 (-03)
-Date:   Thu, 24 Feb 2022 09:27:14 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Aaron Tomlin <atomlin@atomlin.com>
-Cc:     Frederic Weisbecker <frederic@kernel.org>,
-        Christoph Lameter <cl@linux.com>, tglx@linutronix.de,
-        mingo@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Phil Auld <pauld@redhat.com>
-Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
- idle tick was stopped too
-Message-ID: <Yhd5olg9CjXSAf2s@fuller.cnet>
-References: <20220203214339.1889971-1-atomlin@redhat.com>
- <20220217124729.GA743618@lothringen>
- <20220217142615.xqtiydixvnumyvei@ava.usersys.com>
- <20220217163205.GA748087@lothringen>
- <20220218125454.utlgmuhijklzr3if@ava.usersys.com>
- <20220219154616.pwsvh445x3vn7ltf@ava.usersys.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E12221006AA6;
+        Thu, 24 Feb 2022 12:27:51 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.160])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CF4552634C;
+        Thu, 24 Feb 2022 12:27:28 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH RFC 02/13] mm/hugetlb: take src_mm->write_protect_seq in copy_hugetlb_page_range()
+Date:   Thu, 24 Feb 2022 13:26:03 +0100
+Message-Id: <20220224122614.94921-3-david@redhat.com>
+In-Reply-To: <20220224122614.94921-1-david@redhat.com>
+References: <20220224122614.94921-1-david@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220219154616.pwsvh445x3vn7ltf@ava.usersys.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 19, 2022 at 03:46:16PM +0000, Aaron Tomlin wrote:
-> On Fri 2022-02-18 12:54 +0000, Aaron Tomlin wrote:
-> > On Thu 2022-02-17 17:32 +0100, Frederic Weisbecker wrote:
-> > > > If I understand correctly, in the context of nohz_full, since such work is
-> > > > deferred, it will only be handled in a scenario when the periodic/or
-> > > > scheduling-clock tick is enabled i.e. the timer was reprogrammed on exit
-> > > > from idle.
-> > > 
-> > > Oh I see, it's a deferrable delayed work...
-> > > Then I can see two other issues:
-> > > 
-> > > 1) Can an interrupt in idle modify the vmstat and thus trigger the need to
-> > >    flush it? 
+Let's do it just like copy_page_range(), taking the seqlock and making
+sure the mmap_lock is held in write mode.
 
-Yes. Page allocation and page freeing for example.
+This allows for add a VM_BUG_ON to page_needs_cow_for_dma() and
+properly synchronizes cocnurrent fork() with GUP-fast of hugetlb pages,
+which will be relevant for further changes.
 
-   6   3730  ../mm/page_alloc.c <<rmqueue>>
-             __mod_zone_freepage_state(zone, -(1 << order),
-   4   1096  ../mm/page_alloc.c <<__free_one_page>>
-             __mod_zone_freepage_state(zone, -(1 << order),
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+ include/linux/mm.h | 4 ++++
+ mm/hugetlb.c       | 8 ++++++--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-> > >    I believe it's the case and then the problem goes beyond nohz_full
-> > >    because if the idle interrupt fired while the tick is stopped and didn't set
-> > >    TIF_RESCHED, we go back to sleep without calling quiet_vmstat().
-> > 
-> > Yes: e.g. a nohz_full CPU, in idle code, could indeed receive a reschedule
-> > IPI; re-enable local IRQs and generic idle code sees the TIF_NEED_RESCHED
-> > flag against the idle task. Additionally, the selected task could
-> > indirectly released a few pages [to satisfy a low-memory condition] and
-> > modify CPU-specific vmstat data i.e. vm_stat_diff[NR_FREE_PAGES].
-> > 
-> > 
-> > > 2) What if we are running task A in kernel mode while the tick is stopped
-> > >    (nohz_full). Task A modifies the vmstat and goes to userspace for a long
-> > >    while.
-> > > Your patch fixes case 1) but not case 2). The problem is that TIMER_DEFERRABLE
-> > > should really be about dynticks-idle only and not dynticks-full. I've always
-> > > been afraid about enforcing that rule though because that would break old
-> > > noise-free setups. But perhaps I should...
-> > 
-> > If I understand correctly, I agree. For the latter case, nothing can be
-> > done unfortunately since the scheduling-clock tick is stopped.
-> 
-> Hi Frederic,
-> 
-> As far vmstat_updateas I understand, in the context of nohz_full, options are indeed
-> limited; albeit, if we can ensure CPU-specific vmstat data is folded on
-> return to idle [when required] then this should be good enough.
-
-I suppose the desired behaviour, with the deferred timer for vmstat_sync, is:
-
-"Allow the per-CPU vmstats to be out of sync, but for a maximum of 
-sysctl_stat_interval".
-
-But Aaron, vmstat_shepherd should be ensuring that per-CPU vmstat_update
-work are queued, if the per-CPU vmstat are out of sync.
-
-And:
-
-static void
-trigger_dyntick_cpu(struct timer_base *base, struct timer_list *timer)
-{
-        if (!is_timers_nohz_active())
-                return;
-
-        /*
-         * TODO: This wants some optimizing similar to the code below, but we
-         * will do that when we switch from push to pull for deferrable timers.
-         */
-        if (timer->flags & TIMER_DEFERRABLE) {
-                if (tick_nohz_full_cpu(base->cpu))
-                        wake_up_nohz_cpu(base->cpu);
-                return;
-        }
-
- * @TIMER_DEFERRABLE: A deferrable timer will work normally when the
- * system is busy, but will not cause a CPU to come out of idle just
- * to service it; instead, the timer will be serviced when the CPU
- * eventually wakes up with a subsequent non-deferrable timer.
-
-You'd want that vmstat_update to execute regardless of whether there are 
-armed non-deferrable timers.
-
-Should fix both 1 and 2 AFAICS.
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index a12291cfe5dd..b29cb8bacd59 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1323,6 +1323,8 @@ static inline bool is_cow_mapping(vm_flags_t flags)
+ /*
+  * This should most likely only be called during fork() to see whether we
+  * should break the cow immediately for a page on the src mm.
++ *
++ * The caller has to hold the PT lock and the vma->vm_mm->->write_protect_seq.
+  */
+ static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
+ 					  struct page *page)
+@@ -1330,6 +1332,8 @@ static inline bool page_needs_cow_for_dma(struct vm_area_struct *vma,
+ 	if (!is_cow_mapping(vma->vm_flags))
+ 		return false;
+ 
++	VM_BUG_ON(!(raw_read_seqcount(&vma->vm_mm->write_protect_seq) & 1));
++
+ 	if (!test_bit(MMF_HAS_PINNED, &vma->vm_mm->flags))
+ 		return false;
+ 
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 61895cc01d09..e2e2d0f3f259 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -4710,6 +4710,8 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+ 					vma->vm_start,
+ 					vma->vm_end);
+ 		mmu_notifier_invalidate_range_start(&range);
++		mmap_assert_write_locked(src);
++		raw_write_seqcount_begin(&src->write_protect_seq);
+ 	} else {
+ 		/*
+ 		 * For shared mappings i_mmap_rwsem must be held to call
+@@ -4842,10 +4844,12 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
+ 		spin_unlock(dst_ptl);
+ 	}
+ 
+-	if (cow)
++	if (cow) {
++		raw_write_seqcount_end(&src->write_protect_seq);
+ 		mmu_notifier_invalidate_range_end(&range);
+-	else
++	} else {
+ 		i_mmap_unlock_read(mapping);
++	}
+ 
+ 	return ret;
+ }
+-- 
+2.35.1
 
