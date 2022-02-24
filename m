@@ -2,146 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 051C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25853C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:16:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233512AbiBXTRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:17:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
+        id S233541AbiBXTRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:17:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233499AbiBXTRM (ORCPT
+        with ESMTP id S233500AbiBXTRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 14:17:12 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6853C6586
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:16:41 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id x193so4429742oix.0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:16:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cvWS3oa5I3x2kAQ3Snct7Bstqa7gnrjNdhiuEziq/dU=;
-        b=JkG9j4xtSW7YFux2DfQ1IWJkCHhW6PI9tpZ3Eolo5e3HTQjgG7/eJewkdn9n4nFLcJ
-         LMv6iYPulUryfWvUfTDyp6uGHOFOvEWfPfY8a302Mstq7k4TVNT2OE5E3WybkWTZNDAM
-         rPJVC5+IaLwafCUep7U8BUKAP/efw5JhRnbrMY0aD7jDXwkv4SBHfPdCaGVw+IkswTwt
-         bUYNXfueXk0AlOKRAp4li5srTypoWsgWi+EjGN0erU6UrF7oN22gLb7B/7b6bd4flwGr
-         +txPSk2EtRJjsDIMhBaZgBSmg2K/zmCNP3NEKZYfgV3ZP0xn8UGrIt6D9kCpUTU2eGGa
-         rmAA==
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0569465A5;
+        Thu, 24 Feb 2022 11:16:41 -0800 (PST)
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-2d646fffcc2so9150657b3.4;
+        Thu, 24 Feb 2022 11:16:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cvWS3oa5I3x2kAQ3Snct7Bstqa7gnrjNdhiuEziq/dU=;
-        b=Y2kwJLuKD89Ic9uG58qXD7T31UOhH8YRq7hVLg4FMCSxy8t20k2Gx7BdmeRdr64tFG
-         MdgDJUrwHOBO7+P9Rh4ArVd16/LH5kvXESvfggMxfYrcaWH9yxYd4ISbasHldr3Vek6i
-         cpEtMGP3cTtJ6cbiBd8jxh33AKnipHvtVlkyfgv8SuuBAM6nde9A+mHuC30HNSiNKEun
-         5a4S1WKwjqkfMEKWLIa925YalXwwn7ZKyyNJ2K4wNqxAdIt9ePlcelxnbyN6AnFmXJIN
-         1TI1PtIc7b0giYghBkWAXHqRSFniQ0NB3WeC+0oOXEjmDU9agVV0TTDsd5SxH0xhsG7s
-         k0ew==
-X-Gm-Message-State: AOAM533d1OPqxKCC0B6XutH2Fj5vTJonq2/lDuS2bSb6Cmvof+4iL8ZG
-        37mcDWgFc1LIL41TMQwmUfU=
-X-Google-Smtp-Source: ABdhPJwm/qYulK2RcECTOgOP4yxZGphxfccVIGc7Dihv+vNvytMvIjB30p9z1/iUQFqG7fhxa7wRhA==
-X-Received: by 2002:aca:643:0:b0:2d3:fce2:d82e with SMTP id 64-20020aca0643000000b002d3fce2d82emr7942829oig.209.1645730200760;
-        Thu, 24 Feb 2022 11:16:40 -0800 (PST)
-Received: from localhost.localdomain (189-47-54-110.dsl.telesp.net.br. [189.47.54.110])
-        by smtp.gmail.com with ESMTPSA id w3-20020a056830110300b005af14392276sm79509otq.62.2022.02.24.11.16.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 11:16:40 -0800 (PST)
-From:   Magali Lemes <magalilemes00@gmail.com>
-To:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     siqueirajordao@riseup.net, mwen@igalia.com, maira.canal@usp.br,
-        isabbasso@riseup.net, Magali Lemes <magalilemes00@gmail.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] drm/amd/display: Use NULL instead of 0
-Date:   Thu, 24 Feb 2022 16:15:50 -0300
-Message-Id: <20220224191551.69103-4-magalilemes00@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220224191551.69103-1-magalilemes00@gmail.com>
-References: <20220224191551.69103-1-magalilemes00@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IUBHyJhD/KgAkIiV2RaqQW67XtJAXXd9nyxXUgBYd+8=;
+        b=xmCxb8EJfK76+POmTfYM9mbNTC6pWjh/VVrtDD+BfLpp6NagHDrdRO6fYHSwOWtvO/
+         RQc+JXnIG/DvKyKu6xobmfyE90zRFaVTiMlQvh5YUiZ+Z9ywSkSYapY63Z7EQiHgh8LC
+         umUNRohsJLoIHpZqCYVPX1cf6tSCcfSojB5XY2ciWtEE7W9qaUBkOIbtE/u16WyAaMtc
+         aG2tPkeUmh4rWj8QEQvhytZSUg2b55zsL16sRrUwvWcHgZUFTEjUimlNZFUXRwUSlU74
+         +vs5lXxx5aRwF7IaINgTf2UJgVn91Fy8ovYMx/v3NwXAR4kFZXt6AnJqiPoNrhnzZkoF
+         ZaDw==
+X-Gm-Message-State: AOAM533uuuDCkYXCk4Vs5pBW5YXLtJZNkihEzH6liBKtanDZmujWYkTA
+        39puREbC93yuYXiAfbZWyB6KbqlEMcMhKsMM1bv2JnAD
+X-Google-Smtp-Source: ABdhPJwlZGubhCnX68XVrLcLN4c3fJbq3VhKaQJBE+UAKi1zMOMeO+k7nAQqhyZlc6X/07qpRK2LmjQnSSIWQ+Btda0=
+X-Received: by 2002:a81:b65f:0:b0:2d6:d29c:63fd with SMTP id
+ h31-20020a81b65f000000b002d6d29c63fdmr4053544ywk.196.1645730201257; Thu, 24
+ Feb 2022 11:16:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220223002024.55026-1-chuansheng.liu@intel.com>
+In-Reply-To: <20220223002024.55026-1-chuansheng.liu@intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 24 Feb 2022 20:16:30 +0100
+Message-ID: <CAJZ5v0iAkRQuoA+TDU46fR+Xek5rB=tiMNTJ-M28RSyHz2RKiQ@mail.gmail.com>
+Subject: Re: [PATCH] thermal: int340x: fix memory leak in int3400_notify()
+To:     Chuansheng Liu <chuansheng.liu@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Silence the following sparse warnings:
+On Wed, Feb 23, 2022 at 1:33 AM Chuansheng Liu <chuansheng.liu@intel.com> wrote:
+>
+> It is easy to hit the below memory leaks in my TigerLake platform:
+>
+> --
+> unreferenced object 0xffff927c8b91dbc0 (size 32):
+>   comm "kworker/0:2", pid 112, jiffies 4294893323 (age 83.604s)
+>   hex dump (first 32 bytes):
+>     4e 41 4d 45 3d 49 4e 54 33 34 30 30 20 54 68 65  NAME=INT3400 The
+>     72 6d 61 6c 00 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b a5  rmal.kkkkkkkkkk.
+>   backtrace:
+>     [<ffffffff9c502c3e>] __kmalloc_track_caller+0x2fe/0x4a0
+>     [<ffffffff9c7b7c15>] kvasprintf+0x65/0xd0
+>     [<ffffffff9c7b7d6e>] kasprintf+0x4e/0x70
+>     [<ffffffffc04cb662>] int3400_notify+0x82/0x120 [int3400_thermal]
+>     [<ffffffff9c8b7358>] acpi_ev_notify_dispatch+0x54/0x71
+>     [<ffffffff9c88f1a7>] acpi_os_execute_deferred+0x17/0x30
+>     [<ffffffff9c2c2c0a>] process_one_work+0x21a/0x3f0
+>     [<ffffffff9c2c2e2a>] worker_thread+0x4a/0x3b0
+>     [<ffffffff9c2cb4dd>] kthread+0xfd/0x130
+>     [<ffffffff9c201c1f>] ret_from_fork+0x1f/0x30
+> ---
+>
+> Fix it by calling kfree() accordingly.
+>
+> Fixes: 38e44da59130 ("thermal: int3400_thermal: process "thermal table
+> changed" event")
+>
+> Cc: linux-pm@vger.kernel.org
+> Cc: stable@vger.kernel.org
+> Cc: rafael@kernel.org
+> Cc: srinivas.pandruvada@linux.intel.com
+> Signed-off-by: Chuansheng Liu <chuansheng.liu@intel.com>
 
-../drivers/gpu/drm/amd/amdgpu/../display/dc/dce112/dce112_resource.c:865:16:
-sparse: warning: Using plain integer as NULL pointer
+Applied as a fix for 5.17-rc, thanks!
 
-../drivers/gpu/drm/amd/amdgpu/../display/dc/dce110/dce110_hw_sequencer.c:1588:84:
-sparse: warning: Using plain integer as NULL pointer
+Srinivas, any concerns?
 
-../drivers/gpu/drm/amd/amdgpu/../display/dc/dce110/dce110_hw_sequencer.c:2725:84:
-sparse: warning: Using plain integer as NULL pointer
-
-../drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_resource.c:1919:16:
-sparse: warning: Using plain integer as NULL pointer
-
-Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
----
- drivers/gpu/drm/amd/display/dc/core/dc_resource.c           | 2 +-
- drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c | 4 ++--
- drivers/gpu/drm/amd/display/dc/dce112/dce112_resource.c     | 4 +---
- 3 files changed, 4 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-index 4367a6e0c224..cc8e60ec35c6 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
-@@ -1924,7 +1924,7 @@ static struct audio *find_first_free_audio(
- 			return pool->audios[i];
- 		}
- 	}
--	return 0;
-+	return NULL;
- }
- 
- /*
-diff --git a/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
-index ace04e2ed34e..8378b80e8517 100644
---- a/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
-@@ -1585,7 +1585,7 @@ static enum dc_status apply_single_controller_ctx_to_hw(
- 			hws->funcs.enable_stream_timing(pipe_ctx, context, dc);
- 	}
- 
--	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != 0;
-+	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != NULL;
- 
- 	pipe_ctx->stream->link->psr_settings.psr_feature_enabled = false;
- 
-@@ -2722,7 +2722,7 @@ static void dce110_program_front_end_for_pipe(
- 
- 	pipe_ctx->plane_res.xfm->funcs->transform_set_gamut_remap(pipe_ctx->plane_res.xfm, &adjust);
- 
--	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != 0;
-+	pipe_ctx->plane_res.scl_data.lb_params.alpha_en = pipe_ctx->bottom_pipe != NULL;
- 
- 	program_scaler(dc, pipe_ctx);
- 
-diff --git a/drivers/gpu/drm/amd/display/dc/dce112/dce112_resource.c b/drivers/gpu/drm/amd/display/dc/dce112/dce112_resource.c
-index ee55cda854bf..8104c0c67f78 100644
---- a/drivers/gpu/drm/amd/display/dc/dce112/dce112_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dce112/dce112_resource.c
-@@ -858,11 +858,9 @@ static struct clock_source *find_matching_pll(
- 		return pool->clock_sources[DCE112_CLK_SRC_PLL4];
- 	case TRANSMITTER_UNIPHY_F:
- 		return pool->clock_sources[DCE112_CLK_SRC_PLL5];
--	default:
--		return NULL;
- 	}
- 
--	return 0;
-+	return NULL;
- }
- 
- static enum dc_status build_mapped_resource(
--- 
-2.25.1
-
+> ---
+>  drivers/thermal/intel/int340x_thermal/int3400_thermal.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> index 72acb1f61849..4f478812cb51 100644
+> --- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> +++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+> @@ -404,6 +404,10 @@ static void int3400_notify(acpi_handle handle,
+>         thermal_prop[3] = kasprintf(GFP_KERNEL, "EVENT=%d", therm_event);
+>         thermal_prop[4] = NULL;
+>         kobject_uevent_env(&priv->thermal->device.kobj, KOBJ_CHANGE, thermal_prop);
+> +       kfree(thermal_prop[0]);
+> +       kfree(thermal_prop[1]);
+> +       kfree(thermal_prop[2]);
+> +       kfree(thermal_prop[3]);
+>  }
+>
+>  static int int3400_thermal_get_temp(struct thermal_zone_device *thermal,
+> --
+> 2.25.0.rc2
+>
