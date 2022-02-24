@@ -2,108 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BF59C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EBFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234411AbiBXMds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:33:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52072 "EHLO
+        id S234424AbiBXMeS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:34:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234389AbiBXMdl (ORCPT
+        with ESMTP id S234416AbiBXMeP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:33:41 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023F1192E3F
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:33:12 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id e13so1587029plh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:33:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ndo93wIjxvP8kHvXABnHYUiq6F07JiSbtJBf2BQ08oo=;
-        b=BZYuyaV4jmz2dR1NyMZzPD4ZhoiPdfWB/5CClaaUzQhwZw5M9ufL/dcF+OSHfN9XJY
-         RKYvoovcWx6cpD3AlhbbuVtZuhNbUTyZhq07db/1IzRc9cD/z0jZJ6xYKQOe9zEBGwh1
-         Yo9nW0v1PFDweGcEAna9EOkTPhCqtY/9hyxJvjonbISFD2KLQjNQiazEW+9JlvbBwGYH
-         /bY3MLIh2Gueb7RHuQH7k7nSf1OmiRJfiQuKWHg3zTIrns7Ko3UZrxeRsjGxHIDeFvYH
-         SQdfE19sEozOwunVDfo1gHFgR1hJ0TYRPkuJqx/zbnfmOai9I9VYjO0f1jzfFszSnhBt
-         FIGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ndo93wIjxvP8kHvXABnHYUiq6F07JiSbtJBf2BQ08oo=;
-        b=zbujdjy+CbHWcampHSfkvr+nkFKxs6wIHYZfBkn19KgvgqGCOEK2OIDa3WVP2LHJG1
-         IG+tjtZM5FN8s/wZGtEXbvkTyk0PidH0af0JN7+L1KHL6OZEHDrxjox4Tqyrt/wtdZ0B
-         AxOpvJczWKnlXJQNsy8bHikWs4dccpSGGiEm5n0PXs7wRX2OFfdqq9I9JZxKDWMhBJnT
-         hOpWLOFt3LPZq4MVCUb9b9xp035q75UHk8vCrW5LjT2wN/jlu0t2UfHMEONQcpUzIwXu
-         ECCXrwZr1kL9Fx/mqhaFYW9OPwjB5f5gJQrPONlrOGOBoplm3hKkwAfVmUrsmGUpwQX5
-         uk4Q==
-X-Gm-Message-State: AOAM5331zXRaGpB9A548r2senvpOLTNtP63NK8yYouyrLWGENHT/KXnh
-        b8Y1CzEDr6cdGDjSdRBgDcjyMQ==
-X-Google-Smtp-Source: ABdhPJx3F0jqYy8AAvIIkDv1/khHxroXYxJdxMJUxEBDrXj1JojYslfhxmsN58K8sPwmvtaZBZNJkg==
-X-Received: by 2002:a17:902:f647:b0:14f:c37d:34ec with SMTP id m7-20020a170902f64700b0014fc37d34ecmr2350409plg.6.1645705991469;
-        Thu, 24 Feb 2022 04:33:11 -0800 (PST)
-Received: from localhost.localdomain ([223.179.129.209])
-        by smtp.gmail.com with ESMTPSA id ep5-20020a17090ae64500b001bc56af507dsm6237567pjb.47.2022.02.24.04.33.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 04:33:11 -0800 (PST)
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
-        agross@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-phy@lists.infradead.org,
-        robh+dt@kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 2/2] dt-bindings: phy: qcom,qmp: Describe 'vdda-max-microamp' & 'vdda-pll-max-microamp' properties
-Date:   Thu, 24 Feb 2022 18:02:48 +0530
-Message-Id: <20220224123248.67073-2-bhupesh.sharma@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220224123248.67073-1-bhupesh.sharma@linaro.org>
-References: <20220224123248.67073-1-bhupesh.sharma@linaro.org>
+        Thu, 24 Feb 2022 07:34:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E84D02804C0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:33:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645706020;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QWdKc7kD/Q/4rS5vi3P5eDrUhZz3GFyt+nP81Uz1mas=;
+        b=P1tQ5Ll7hiii5uu3wKncxuZd29lz+P8M1FcAPqbqtG2Ax6yrQccTuslGZran0Q4YOS8orO
+        5ZCSSUdK5BHICaxtoNDopsglmnLM8NnonuxsTvFVj+WoG9l+ca/P3Nia4ndl/MnqJKn/ur
+        vm3YTgNT7AHwqIcnlQ7UPzcMxdUZRuU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-139-_LaSqInlMl2xFN2Y1YreTQ-1; Thu, 24 Feb 2022 07:33:34 -0500
+X-MC-Unique: _LaSqInlMl2xFN2Y1YreTQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B00651EA;
+        Thu, 24 Feb 2022 12:33:31 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.160])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 18FB52635E;
+        Thu, 24 Feb 2022 12:32:54 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>
+Subject: [PATCH RFC 10/13] mm/gup: disallow follow_page(FOLL_PIN)
+Date:   Thu, 24 Feb 2022 13:26:11 +0100
+Message-Id: <20220224122614.94921-11-david@redhat.com>
+In-Reply-To: <20220224122614.94921-1-david@redhat.com>
+References: <20220224122614.94921-1-david@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since a few boards based on QCoM qmp phy use the
-'vdda-max-microamp' & 'vdda-pll-max-microamp' properties to
-describe the ufs phy nodes, add them to the dt-bindings doc as well.
+We want to change the way we handle R/O pins on anonymous pages that
+might be shared: if we detect a possibly shared anonymous page --
+mapped R/O and not !PageAnonExclusive() -- we want to trigger unsharing
+via a page fault, resulting in an exclusive anonymous page that can be
+pinned reliably without getting replaced via COW on the next write
+fault.
 
-This fixes the following '$ make dtbs_check' warning(s):
+However, the required page fault will be problematic for follow_page():
+in contrast to ordinary GUP, follow_page() doesn't trigger faults
+internally. So we would have to end up failing a R/O pin via
+follow_page(), although there is something mapped R/O into the page
+table, which might be rather surprising.
 
-sm8350-microsoft-surface-duo2.dt.yaml: phy@1d87000:
-  'vdda-max-microamp', 'vdda-pll-max-microamp' do not match any of
-   the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
+We don't seem to have follow_page(FOLL_PIN) users, and it's a purely
+internal MM function. Let's just make our life easier and the semantics of
+follow_page() clearer by just disallowing FOLL_PIN for follow_page()
+completely.
 
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Vinod Koul <vkoul@kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ mm/gup.c     | 3 +++
+ mm/hugetlb.c | 8 +++++---
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-index 746a929c63bb..a481442c897a 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
-@@ -92,6 +92,14 @@ properties:
-     minItems: 1
-     maxItems: 3
+diff --git a/mm/gup.c b/mm/gup.c
+index a9d4d724aef7..7127e789d210 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -875,6 +875,9 @@ struct page *follow_page(struct vm_area_struct *vma, unsigned long address,
+ 	if (vma_is_secretmem(vma))
+ 		return NULL;
  
-+  vdda-max-microamp:
-+    description:
-+      Specifies max. load that can be drawn from phy supply.
++	if (foll_flags & FOLL_PIN)
++		return NULL;
 +
-+  vdda-pll-max-microamp:
-+    description:
-+      Specifies max. load that can be drawn from pll supply.
-+
-   vdda-phy-supply:
-     description:
-       Phandle to a regulator supply to PHY core block.
+ 	page = follow_page_mask(vma, address, foll_flags, &ctx);
+ 	if (ctx.pgmap)
+ 		put_dev_pagemap(ctx.pgmap);
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 0c2f3d500487..8aaca8becf97 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -6693,9 +6693,11 @@ follow_huge_pmd(struct mm_struct *mm, unsigned long address,
+ 	spinlock_t *ptl;
+ 	pte_t pte;
+ 
+-	/* FOLL_GET and FOLL_PIN are mutually exclusive. */
+-	if (WARN_ON_ONCE((flags & (FOLL_PIN | FOLL_GET)) ==
+-			 (FOLL_PIN | FOLL_GET)))
++	/*
++	 * FOLL_PIN is not supported for follow_page(). Ordinary GUP goes via
++	 * follow_hugetlb_page().
++	 */
++	if (WARN_ON_ONCE(flags & FOLL_PIN))
+ 		return NULL;
+ 
+ retry:
 -- 
 2.35.1
 
