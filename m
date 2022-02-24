@@ -2,57 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42836C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F505C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235234AbiBXNrL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:47:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
+        id S235232AbiBXNtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:49:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234800AbiBXNrH (ORCPT
+        with ESMTP id S234912AbiBXNtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:47:07 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F13F260E;
-        Thu, 24 Feb 2022 05:46:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=gxscHiRXDPIyMrsKXNUkNH4px+oy0V+KUOkv72mWuVw=; b=W5s183Ho0CMMKKdZeTEai8uAkD
-        6rkQXwgL+y7l9Y5rwLXIDauHK/Bkor0tliB1UBHmxMO03lhT3dKbRNdBUhy8dkYzwWxCwvkqj2WF1
-        XC4XXkDmI9IrI06at45scfu0bIqHucDoeEOh8LfT50g5Q8tELVTpJ24GCwGBKno9u+OnK6YEJ5V4x
-        ZlsSrUckXdvpEpyUQ/d2JCle9cD6MOaf/pniPDY4cPXgkqtdZTfx9UYsmuu/Vmd9ey3LkirsXt+Rz
-        zmkeXrmQuf3P9fz4tbGRoeIQvXXaYIh+m6963EssX0PCAIwomRD8RR+MvdsX7Dvunz6b7lgop7/is
-        UAkAqYmg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNERy-000zvW-8x; Thu, 24 Feb 2022 13:46:30 +0000
-Date:   Thu, 24 Feb 2022 05:46:30 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     "Wang Jianchao (Kuaishou)" <jianchao.wan9@gmail.com>
-Cc:     Jens Axboe <axboe@kernel.dk>, Josef Bacik <jbacik@fb.com>,
-        Tejun Heo <tj@kernel.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC V5 10/16] blk-wbt: get rid of wbt_enable/disable_default()
-Message-ID: <YheMNqrhxp6r/AhH@infradead.org>
-References: <20220224090654.54671-1-jianchao.wan9@gmail.com>
- <20220224090654.54671-11-jianchao.wan9@gmail.com>
+        Thu, 24 Feb 2022 08:49:01 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CD7B1A58E9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:48:31 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id r10so984941wma.2
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:48:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Y6XYZppzb13xLXqFFu+ajD27M8IiQ/biSpno2EH25M0=;
+        b=pEivyOT5ulYJ8VlQWq8msOTtZSHSfZ3oZPUoczvtNyW+oR7jRcikMolq3eXuAZuWnq
+         Vo7G7UQYSLQS0rglQVYbgOqlITssODljoBqsytok35C+pTOd9pIDMHBl810MjPXGlCJx
+         VsdzPJnC0Kd3XSLme+oVSIQWGpVm39LZ0M0ZxSnex0iUmBEKYT2ZP4HZgdY7cju/NyEC
+         cK5bOhh+4t549hq3mQ/MjrZjyFhAwxgNgvvy7S2+GE24uOeAsP4PxCJbr/MJTzHhzDsH
+         QLDMkwXvg2t92O0erAHUS5k+sQ0BoChgQla9C8vWsH+IA1/c9oyPF5M26Hh8RNsMzI4q
+         dp5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Y6XYZppzb13xLXqFFu+ajD27M8IiQ/biSpno2EH25M0=;
+        b=LT7juEBKFjzXgjTcuw0z5n+3zRT2+Kv36k60LKpAwj8sUKe+HWsuzmr/i/ctC0leYY
+         ofNjkMDdWQezsq8tIsQLhg9tYtAVa/jlv0qIzJWS6QmnfgwjunSmNsymFe8rPEVhYJuK
+         RRRnnx4XReTlETTBROu2NF7R8Kgxjd5upcEtnlPnnr4V04WR8fRTaUVIUHEgGPF4XfNc
+         oIz9xbb0mAOw0MbSKBhemDZF9hfmOGljOWqu7u5+V09a/rufzsgQ8v5LEBd4Sz68xHYn
+         jbITjiBQKjrhf3CMEigoX/ldJtI9frlyXlNGs/WNvBYXS3jYEdST9uGlzovYcQvxE+wo
+         LJHw==
+X-Gm-Message-State: AOAM532vyt3UXsNeKJ+dDng/RK9b0bfxeAyn5d24y134b5adfd9ekS6T
+        DyCR8wv5phFnPDBF7DCWVuElQQ==
+X-Google-Smtp-Source: ABdhPJxPuK1rTPTgTvRp50LaZ8ASOalj6sW2lj7K+Rp12o9MnZHsT3Lejh0FWmothSCI/ZmmSiC4Dw==
+X-Received: by 2002:a1c:7216:0:b0:37b:f84d:d56e with SMTP id n22-20020a1c7216000000b0037bf84dd56emr11654546wmc.177.1645710509675;
+        Thu, 24 Feb 2022 05:48:29 -0800 (PST)
+Received: from [10.205.160.65] ([95.83.233.50])
+        by smtp.gmail.com with ESMTPSA id b14sm809513wrj.101.2022.02.24.05.48.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 05:48:29 -0800 (PST)
+Message-ID: <4fa6664a-2362-b9eb-f279-12bcbf567e5e@conchuod.ie>
+Date:   Thu, 24 Feb 2022 13:51:58 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224090654.54671-11-jianchao.wan9@gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: i2c: microchip,corei2c: Fix indentation of
+ compatible items
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Conor Dooley <Conor.Dooley@microchip.com>
+Cc:     Wolfram Sang <wsa@kernel.org>, Daire.McNamara@microchip.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <365d32c63c2fe080866be60c32dddd0f3634d19d.1645705789.git.geert@linux-m68k.org>
+ <97b69b3a-bf17-6a43-bf96-da19822051b3@microchip.com>
+ <CAMuHMdXGQDqMagqzD8VNYm2oucE=_nas9mM2sT_RoW2GKhr4vw@mail.gmail.com>
+ <ae6b0849-a3e3-33fe-b540-6dc77c868f4b@microchip.com>
+ <CAMuHMdV5ghvAze-zOVAm9LSv9261PE0hh3nxyv5db18azmo2=w@mail.gmail.com>
+ <YheLklKvZqR1qY90@robh.at.kernel.org>
+From:   Conor Dooley <mail@conchuod.ie>
+In-Reply-To: <YheLklKvZqR1qY90@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 05:06:48PM +0800, Wang Jianchao (Kuaishou) wrote:
-> wbt_enable_default() is used to open wbt feature by default.
-> wbt_disable_default() is only employed by bfq which has similar
-> writeback throttling mechanism. This kind of policy should be
-> selected by the user instead of being set in kernel. This patch
-> get rid of the interfaces and let the user configure appropricate
-> blk-rq-qos policy by themselves.
 
-This drastically changes the user visible behavior.
+
+On 24/02/2022 13:43, Rob Herring wrote:
+> On Thu, Feb 24, 2022 at 02:34:18PM +0100, Geert Uytterhoeven wrote:
+>> Hi Conor,
+>>
+>> On Thu, Feb 24, 2022 at 2:15 PM <Conor.Dooley@microchip.com> wrote:
+>>> On 24/02/2022 12:58, Geert Uytterhoeven wrote:
+>>>> On Thu, Feb 24, 2022 at 1:55 PM <Conor.Dooley@microchip.com> wrote:
+>>>>> On 24/02/2022 12:31, Geert Uytterhoeven wrote:
+>>>>>> make dt_binding_check:
+>>>>>>
+>>>>>>        Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml:19:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+>>>>>
+>>>>> Hey Geert,
+>>>>> I've run dt_binding_check locally but I dont get a warning, is there
+>>>>> something I am missing?
+>>>>
+>>>> Interesting. Are you using the latest dtschema?
+>>>> https://github.com/devicetree-org/dt-schema.git
+>>>
+>>> I was on v2021.12, but have now tried v2022.01 & master
+>>> (2022.2.dev1+gf677c85).
+>>>
+>>> Is there something other than running "make dt_binding_check" in a fresh
+>>> checkout that I need to do?
+>>
+>> You did update your installation after the fresh[1] checkout?
+>>
+>> $ cd dt-schema
+>> $ pip3 install -e .
+>>
+>> [1] What about "git pull"? ;-)
+> 
+> yamllint is not installed. It's optional from the kbuild perspective.
+
+Safe to say I won't forget yamllint next time I do an os reinstall..
+
+Thanks.
