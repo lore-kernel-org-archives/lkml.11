@@ -2,145 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D244C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234302AbiBXMaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:30:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
+        id S234329AbiBXMbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:31:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234288AbiBXMag (ORCPT
+        with ESMTP id S231460AbiBXMbH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:30:36 -0500
+        Thu, 24 Feb 2022 07:31:07 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4EA162649AD
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:30:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 37CC3264987
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:30:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645705806;
+        s=mimecast20190719; t=1645705837;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=zhqDRec0VOKot1t14KWHy23p5AtjEJVAkoghtw0kzkE=;
-        b=Rmwb9dFfH7jYK88ZeAalN3MmvdJloZll1ef3SMxsahyxCN07vqcI277qNK1NpeFD0aKtw0
-        /AVVz2eLCiRcQTrAt39sUML1Bs6G5WyPF9nxs2bG7kHqk3blG6IvkiR4jJaO/Mi1Anyear
-        DnFb55NTsEB71xwUO0MfzsCExsKMuQs=
+        bh=AqOiTimbhwMR6JdlyxUT8Se6t3oyzrlLLdGUoWlPRkk=;
+        b=XEjV0eMLw9BRwrlhnYjKrHKMOeEGTlUNEPHN9O91WpebEY4/KXJk0HjytO9yUTd7oMCVFk
+        IijxeH976fJuTB1w21xWW9m8Snt0pIi3hKbgoyH8VxU5hrNF9Cl1BTOYRrNVlRUqm4LSI6
+        22h+5oUh9C2Lv998SN1mIMHvN8G9vLI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-53-C2te0jKPMjmNIiCZmNMFvw-1; Thu, 24 Feb 2022 07:30:01 -0500
-X-MC-Unique: C2te0jKPMjmNIiCZmNMFvw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+ us-mta-125-Px0M8utHMYCc6ouXz-mjKA-1; Thu, 24 Feb 2022 07:30:36 -0500
+X-MC-Unique: Px0M8utHMYCc6ouXz-mjKA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7CC3A80D6AD;
-        Thu, 24 Feb 2022 12:29:57 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.160])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3218C2634C;
-        Thu, 24 Feb 2022 12:29:32 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH RFC 06/13] mm/rmap: pass rmap flags to hugepage_add_anon_rmap()
-Date:   Thu, 24 Feb 2022 13:26:07 +0100
-Message-Id: <20220224122614.94921-7-david@redhat.com>
-In-Reply-To: <20220224122614.94921-1-david@redhat.com>
-References: <20220224122614.94921-1-david@redhat.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AC89C1854E27;
+        Thu, 24 Feb 2022 12:30:34 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 66F5B7BB6C;
+        Thu, 24 Feb 2022 12:30:34 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 80720416D862; Thu, 24 Feb 2022 09:30:11 -0300 (-03)
+Date:   Thu, 24 Feb 2022 09:30:11 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Aaron Tomlin <atomlin@atomlin.com>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Christoph Lameter <cl@linux.com>, tglx@linutronix.de,
+        mingo@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Phil Auld <pauld@redhat.com>
+Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
+ idle tick was stopped too
+Message-ID: <Yhd6UxWH3FQHg+eF@fuller.cnet>
+References: <20220203214339.1889971-1-atomlin@redhat.com>
+ <20220217124729.GA743618@lothringen>
+ <20220217142615.xqtiydixvnumyvei@ava.usersys.com>
+ <20220217163205.GA748087@lothringen>
+ <20220218125454.utlgmuhijklzr3if@ava.usersys.com>
+ <20220219154616.pwsvh445x3vn7ltf@ava.usersys.com>
+ <Yhd5olg9CjXSAf2s@fuller.cnet>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yhd5olg9CjXSAf2s@fuller.cnet>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's prepare for passing RMAP_EXCLUSIVE, similarly as we do for
-page_add_anon_rmap() now. RMAP_COMPOUND is implicit for hugetlb
-pages and ignored.
+On Thu, Feb 24, 2022 at 09:27:14AM -0300, Marcelo Tosatti wrote:
+> On Sat, Feb 19, 2022 at 03:46:16PM +0000, Aaron Tomlin wrote:
+> > On Fri 2022-02-18 12:54 +0000, Aaron Tomlin wrote:
+> > > On Thu 2022-02-17 17:32 +0100, Frederic Weisbecker wrote:
+> > > > > If I understand correctly, in the context of nohz_full, since such work is
+> > > > > deferred, it will only be handled in a scenario when the periodic/or
+> > > > > scheduling-clock tick is enabled i.e. the timer was reprogrammed on exit
+> > > > > from idle.
+> > > > 
+> > > > Oh I see, it's a deferrable delayed work...
+> > > > Then I can see two other issues:
+> > > > 
+> > > > 1) Can an interrupt in idle modify the vmstat and thus trigger the need to
+> > > >    flush it? 
+> 
+> Yes. Page allocation and page freeing for example.
+> 
+>    6   3730  ../mm/page_alloc.c <<rmqueue>>
+>              __mod_zone_freepage_state(zone, -(1 << order),
+>    4   1096  ../mm/page_alloc.c <<__free_one_page>>
+>              __mod_zone_freepage_state(zone, -(1 << order),
+> 
+> > > >    I believe it's the case and then the problem goes beyond nohz_full
+> > > >    because if the idle interrupt fired while the tick is stopped and didn't set
+> > > >    TIF_RESCHED, we go back to sleep without calling quiet_vmstat().
+> > > 
+> > > Yes: e.g. a nohz_full CPU, in idle code, could indeed receive a reschedule
+> > > IPI; re-enable local IRQs and generic idle code sees the TIF_NEED_RESCHED
+> > > flag against the idle task. Additionally, the selected task could
+> > > indirectly released a few pages [to satisfy a low-memory condition] and
+> > > modify CPU-specific vmstat data i.e. vm_stat_diff[NR_FREE_PAGES].
+> > > 
+> > > 
+> > > > 2) What if we are running task A in kernel mode while the tick is stopped
+> > > >    (nohz_full). Task A modifies the vmstat and goes to userspace for a long
+> > > >    while.
+> > > > Your patch fixes case 1) but not case 2). The problem is that TIMER_DEFERRABLE
+> > > > should really be about dynticks-idle only and not dynticks-full. I've always
+> > > > been afraid about enforcing that rule though because that would break old
+> > > > noise-free setups. But perhaps I should...
 
-Signed-off-by: David Hildenbrand <david@redhat.com>
----
- include/linux/rmap.h | 2 +-
- mm/migrate.c         | 2 +-
- mm/rmap.c            | 8 +++++---
- 3 files changed, 7 insertions(+), 5 deletions(-)
-
-diff --git a/include/linux/rmap.h b/include/linux/rmap.h
-index f230e86b4587..593a4566420f 100644
---- a/include/linux/rmap.h
-+++ b/include/linux/rmap.h
-@@ -174,7 +174,7 @@ void page_add_file_rmap(struct page *, bool);
- void page_remove_rmap(struct page *, bool);
- 
- void hugepage_add_anon_rmap(struct page *, struct vm_area_struct *,
--			    unsigned long);
-+			    unsigned long, int);
- void hugepage_add_new_anon_rmap(struct page *, struct vm_area_struct *,
- 				unsigned long);
- 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index d4d72a15224c..709cb11d5b81 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -238,7 +238,7 @@ static bool remove_migration_pte(struct page *page, struct vm_area_struct *vma,
- 			pte = pte_mkhuge(pte);
- 			pte = arch_make_huge_pte(pte, shift, vma->vm_flags);
- 			if (PageAnon(new))
--				hugepage_add_anon_rmap(new, vma, pvmw.address);
-+				hugepage_add_anon_rmap(new, vma, pvmw.address, 0);
- 			else
- 				page_dup_file_rmap(new, true);
- 			set_huge_pte_at(vma->vm_mm, pvmw.address, pvmw.pte, pte);
-diff --git a/mm/rmap.c b/mm/rmap.c
-index 902ebf99d147..bafdb7f70cec 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -2409,9 +2409,11 @@ void rmap_walk_locked(struct page *page, struct rmap_walk_control *rwc)
-  * The following two functions are for anonymous (private mapped) hugepages.
-  * Unlike common anonymous pages, anonymous hugepages have no accounting code
-  * and no lru code, because we handle hugepages differently from common pages.
-+ *
-+ * RMAP_COMPOUND is ignored.
-  */
--void hugepage_add_anon_rmap(struct page *page,
--			    struct vm_area_struct *vma, unsigned long address)
-+void hugepage_add_anon_rmap(struct page *page, struct vm_area_struct *vma,
-+			    unsigned long address, int flags)
- {
- 	struct anon_vma *anon_vma = vma->anon_vma;
- 	int first;
-@@ -2421,7 +2423,7 @@ void hugepage_add_anon_rmap(struct page *page,
- 	/* address might be in next vma when migration races vma_adjust */
- 	first = atomic_inc_and_test(compound_mapcount_ptr(page));
- 	if (first)
--		__page_set_anon_rmap(page, vma, address, 0);
-+		__page_set_anon_rmap(page, vma, address, flags & RMAP_EXCLUSIVE);
- }
- 
- void hugepage_add_new_anon_rmap(struct page *page,
--- 
-2.35.1
+Can't grasp the sentence above "The problem is that ...".
+What rule?
 
