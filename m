@@ -2,476 +2,548 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE72C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:21:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28216C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230150AbiBXFWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 00:22:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
+        id S230193AbiBXFXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 00:23:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230159AbiBXFWO (ORCPT
+        with ESMTP id S229987AbiBXFWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 00:22:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8872AD5;
-        Wed, 23 Feb 2022 21:21:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AD02B8243F;
-        Thu, 24 Feb 2022 05:21:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFB10C340E9;
-        Thu, 24 Feb 2022 05:21:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1645680097;
-        bh=8vhPo1w0WPy/cl8Lvx4/uC1zv4KEm3p28PU6gOUoRXk=;
-        h=Date:To:From:Subject:From;
-        b=aLmFnHNl8VbMCtWrIVBJBkwdXCAjn7G//VNIQYucHhu2vRGMs/XK3eijViRw9kaNb
-         qoQt6fo7cfODGLulz6PuHXbOo3nlR1CCyaKU7bzyOM2PMrPlmlAT1onHlN1GBnyhxs
-         Rv6H28lN7eLAcnS5qLQ2MrC6rGttNUC3EldOk6B8=
-Date:   Wed, 23 Feb 2022 21:21:36 -0800
-To:     broonie@kernel.org, mhocko@suse.cz, sfr@canb.auug.org.au,
-        linux-next@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        mm-commits@vger.kernel.org, akpm@linux-foundation.org
-From:   Andrew Morton <akpm@linux-foundation.org>
-Subject: mmotm 2022-02-23-21-20 uploaded
-Message-Id: <20220224052137.BFB10C340E9@smtp.kernel.org>
+        Thu, 24 Feb 2022 00:22:52 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB18AEF2C
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:22:21 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d6994a6942so11337117b3.17
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:22:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=K66ess7r5mHhZ+jyrx/v31ubR1dLR/5O6RljnD9TbJk=;
+        b=LozXqHfMaTDJaEwKzPinWRR8XkqdwYysp39GImtwCrM0+rogfw04rb+mueZhhhGfGL
+         23FdMdHjfPe/ucA5NO1Ps2x7QWVTIJkn5r3/w8An+6Yu/OFB26uda3T3TViaharQGbj+
+         7lqzJTjK+W3cWbsaENJ9QW4K/1yBNzLwviodZJ0Bmop3eVKvP4pz+i1Le2m2DPlNVJkU
+         D6YZicoBfCDZKRojOUD0ad+qD2XesbCuBtMdPnkVExspbT66sEOb2LAjVrIpfal4EMKl
+         1ZUgGHWlikvJtJGdsQ/1RJ+WivRUeJ3YDFLrF3XG6Nm86ZogXR2B4GecgXGAI7R39qwJ
+         v2Ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=K66ess7r5mHhZ+jyrx/v31ubR1dLR/5O6RljnD9TbJk=;
+        b=VYFnqsKnVM73Ypg+UWQl2bzXvRSsh64vOifx3aNwomG0L8fe4DYIsPCamvGhdLw50A
+         a9n0phaQHY22L0rAE7guaENbbStXAGyMpEe/w/wSNa15hszm48AcPAX9e/7dYq3Ih4Ae
+         n9oFlO38WgTflhwnQygwE/4Hks/wPgMTiAGbRoA/Sgn6b15fmV1CJUocpQPwuaLkdFeO
+         ctCx5RfvCDTwpg6z4mDP2QDXpz8k+qrVXVH6Kq7f1di3Fu8SayixpWHMB60LyMsiM+YJ
+         NwS4TpBEolF3pz/OrTpuux5BpV1mBeLuyhN0l/ug+MUBTtkd+qO9ANoP7bvurGSjHmiF
+         rnqA==
+X-Gm-Message-State: AOAM533ME/YaqJabvqboqfDHsEABNOoOU1QFawAfnjCdCHl2zIp5N9jv
+        fJ8/n/DtoaEMUu7UoomOly1zgNle0MO4FwAoqA==
+X-Google-Smtp-Source: ABdhPJw/I4KRWgId8HIW9zGlW2JOH88r+9WEJZxHfHet2WVfgtVJ4oQgjoWSFqxv0u3Uw07d8ZDDCNzupW/Z9K00hw==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:415c:9be0:c461:440a])
+ (user=kaleshsingh job=sendgmr) by 2002:a25:2e45:0:b0:624:3b7e:7ffa with SMTP
+ id b5-20020a252e45000000b006243b7e7ffamr988328ybn.293.1645680141135; Wed, 23
+ Feb 2022 21:22:21 -0800 (PST)
+Date:   Wed, 23 Feb 2022 21:13:42 -0800
+In-Reply-To: <20220224051439.640768-1-kaleshsingh@google.com>
+Message-Id: <20220224051439.640768-8-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220224051439.640768-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
+Subject: [PATCH v3 7/8] KVM: arm64: Unwind and dump nVHE HYP stacktrace
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
+        tabba@google.com, surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The mm-of-the-moment snapshot 2022-02-23-21-20 has been uploaded to
+Unwind the stack in EL1, when CONFIG_NVHE_EL2_DEBUG is enabled. This is
+possible because CONFIG_NVHE_EL2_DEBUG disables the host stage 2 protection
+which allows host to access the hypervisor stack pages in EL1.
 
-   https://www.ozlabs.org/~akpm/mmotm/
+Unwinding and dumping hyp call traces is gated on CONFIG_NVHE_EL2_DEBUG
+to avoid the potential leaking of information to the host.
 
-mmotm-readme.txt says
+A simple stack overflow test produces the following output:
 
-README for mm-of-the-moment:
+[  580.376051][  T412] kvm: nVHE hyp panic at: ffffffc0116145c4!
+[  580.378034][  T412] kvm [412]: nVHE HYP call trace:
+[  580.378591][  T412] kvm [412]:  [<ffffffc011614934>]
+[  580.378993][  T412] kvm [412]:  [<ffffffc01160fa48>]
+[  580.379386][  T412] kvm [412]:  [<ffffffc0116145dc>]  // Non-terminating recursive call
+[  580.379772][  T412] kvm [412]:  [<ffffffc0116145dc>]
+[  580.380158][  T412] kvm [412]:  [<ffffffc0116145dc>]
+[  580.380544][  T412] kvm [412]:  [<ffffffc0116145dc>]
+[  580.380928][  T412] kvm [412]:  [<ffffffc0116145dc>]
+. . .
 
-https://www.ozlabs.org/~akpm/mmotm/
+Since nVHE hyp symbols are not included by kallsyms to avoid issues
+with aliasing, we fallback to the vmlinux addresses. Symbolizing the
+addresses is handled in the next patch in this series.
 
-This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
-more than once a week.
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+---
 
-You will need quilt to apply these patches to the latest Linus release (5.x
-or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
-https://ozlabs.org/~akpm/mmotm/series
+Changes in v3:
+  - The nvhe hyp stack unwinder now makes use of the core logic from the
+    regular kernel unwinder to avoid duplication, per Mark
 
-The file broken-out.tar.gz contains two datestamp files: .DATE and
-.DATE-yyyy-mm-dd-hh-mm-ss.  Both contain the string yyyy-mm-dd-hh-mm-ss,
-followed by the base kernel version against which this patch series is to
-be applied.
+Changes in v2:
+  - Add cpu_prepare_nvhe_panic_info()
+  - Move updating the panic info to hyp_panic(), so that unwinding also
+    works for conventional nVHE Hyp-mode.
 
-This tree is partially included in linux-next.  To see which patches are
-included in linux-next, consult the `series' file.  Only the patches
-within the #NEXT_PATCHES_START/#NEXT_PATCHES_END markers are included in
-linux-next.
+ arch/arm64/include/asm/kvm_asm.h    |  19 +++
+ arch/arm64/include/asm/stacktrace.h |  12 ++
+ arch/arm64/kernel/stacktrace.c      | 210 +++++++++++++++++++++++++---
+ arch/arm64/kvm/Kconfig              |   5 +-
+ arch/arm64/kvm/arm.c                |   2 +-
+ arch/arm64/kvm/handle_exit.c        |   3 +
+ arch/arm64/kvm/hyp/nvhe/switch.c    |  18 +++
+ 7 files changed, 243 insertions(+), 26 deletions(-)
 
+diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
+index 2e277f2ed671..16efdf150a37 100644
+--- a/arch/arm64/include/asm/kvm_asm.h
++++ b/arch/arm64/include/asm/kvm_asm.h
+@@ -176,6 +176,25 @@ struct kvm_nvhe_init_params {
+ 	unsigned long vtcr;
+ };
+ 
++#ifdef CONFIG_NVHE_EL2_DEBUG
++/*
++ * Used by the host in EL1 to dump the nVHE hypervisor backtrace on
++ * hyp_panic. This is possible because CONFIG_NVHE_EL2_DEBUG disables
++ * the host stage 2 protection. See: __hyp_do_panic()
++ *
++ * @hyp_stack_base:             hyp VA of the hyp_stack base.
++ * @hyp_overflow_stack_base:    hyp VA of the hyp_overflow_stack base.
++ * @fp:                         hyp FP where the backtrace begins.
++ * @pc:                         hyp PC where the backtrace begins.
++ */
++struct kvm_nvhe_panic_info {
++	unsigned long hyp_stack_base;
++	unsigned long hyp_overflow_stack_base;
++	unsigned long fp;
++	unsigned long pc;
++};
++#endif /* CONFIG_NVHE_EL2_DEBUG */
++
+ /* Translate a kernel address @ptr into its equivalent linear mapping */
+ #define kvm_ksym_ref(ptr)						\
+ 	({								\
+diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
+index e77cdef9ca29..18611a51cf14 100644
+--- a/arch/arm64/include/asm/stacktrace.h
++++ b/arch/arm64/include/asm/stacktrace.h
+@@ -22,6 +22,10 @@ enum stack_type {
+ 	STACK_TYPE_OVERFLOW,
+ 	STACK_TYPE_SDEI_NORMAL,
+ 	STACK_TYPE_SDEI_CRITICAL,
++#ifdef CONFIG_NVHE_EL2_DEBUG
++	STACK_TYPE_KVM_NVHE_HYP,
++	STACK_TYPE_KVM_NVHE_OVERFLOW,
++#endif /* CONFIG_NVHE_EL2_DEBUG */
+ 	__NR_STACK_TYPES
+ };
+ 
+@@ -147,4 +151,12 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
+ 	return false;
+ }
+ 
++#ifdef CONFIG_NVHE_EL2_DEBUG
++void kvm_nvhe_dump_backtrace(unsigned long hyp_offset);
++#else
++static inline void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
++{
++}
++#endif /* CONFIG_NVHE_EL2_DEBUG */
++
+ #endif	/* __ASM_STACKTRACE_H */
+diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+index e4103e085681..6ec85cb69b1f 100644
+--- a/arch/arm64/kernel/stacktrace.c
++++ b/arch/arm64/kernel/stacktrace.c
+@@ -15,6 +15,8 @@
+ 
+ #include <asm/irq.h>
+ #include <asm/pointer_auth.h>
++#include <asm/kvm_asm.h>
++#include <asm/kvm_hyp.h>
+ #include <asm/stack_pointer.h>
+ #include <asm/stacktrace.h>
+ 
+@@ -64,26 +66,15 @@ NOKPROBE_SYMBOL(start_backtrace);
+  * records (e.g. a cycle), determined based on the location and fp value of A
+  * and the location (but not the fp value) of B.
+  */
+-static int notrace unwind_frame(struct task_struct *tsk,
+-				struct stackframe *frame)
++static int notrace __unwind_frame(struct stackframe *frame, struct stack_info *info,
++		unsigned long (*translate_fp)(unsigned long, enum stack_type))
+ {
+ 	unsigned long fp = frame->fp;
+-	struct stack_info info;
+-
+-	if (!tsk)
+-		tsk = current;
+-
+-	/* Final frame; nothing to unwind */
+-	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
+-		return -ENOENT;
+ 
+ 	if (fp & 0x7)
+ 		return -EINVAL;
+ 
+-	if (!on_accessible_stack(tsk, fp, 16, &info))
+-		return -EINVAL;
+-
+-	if (test_bit(info.type, frame->stacks_done))
++	if (test_bit(info->type, frame->stacks_done))
+ 		return -EINVAL;
+ 
+ 	/*
+@@ -94,28 +85,62 @@ static int notrace unwind_frame(struct task_struct *tsk,
+ 	 *
+ 	 * TASK -> IRQ -> OVERFLOW -> SDEI_NORMAL
+ 	 * TASK -> SDEI_NORMAL -> SDEI_CRITICAL -> OVERFLOW
++	 * KVM_NVHE_HYP -> KVM_NVHE_OVERFLOW
+ 	 *
+ 	 * ... but the nesting itself is strict. Once we transition from one
+ 	 * stack to another, it's never valid to unwind back to that first
+ 	 * stack.
+ 	 */
+-	if (info.type == frame->prev_type) {
++	if (info->type == frame->prev_type) {
+ 		if (fp <= frame->prev_fp)
+ 			return -EINVAL;
+ 	} else {
+ 		set_bit(frame->prev_type, frame->stacks_done);
+ 	}
+ 
++	/* Record fp as prev_fp before attempting to get the next fp */
++	frame->prev_fp = fp;
++
++	/*
++	 * If fp is not from the current address space perform the
++	 * necessary translation before dereferencing it to get next fp.
++	 */
++	if (translate_fp)
++		fp = translate_fp(fp, info->type);
++	if (!fp)
++		return -EINVAL;
++
+ 	/*
+ 	 * Record this frame record's values and location. The prev_fp and
+-	 * prev_type are only meaningful to the next unwind_frame() invocation.
++	 * prev_type are only meaningful to the next __unwind_frame() invocation.
+ 	 */
+ 	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
+ 	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
+-	frame->prev_fp = fp;
+-	frame->prev_type = info.type;
+-
+ 	frame->pc = ptrauth_strip_insn_pac(frame->pc);
++	frame->prev_type = info->type;
++
++	return 0;
++}
++
++static int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
++{
++	unsigned long fp = frame->fp;
++	struct stack_info info;
++	int err;
++
++	if (!tsk)
++		tsk = current;
++
++	/* Final frame; nothing to unwind */
++	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
++		return -ENOENT;
++
++	if (!on_accessible_stack(tsk, fp, 16, &info))
++		return -EINVAL;
++
++	err = __unwind_frame(frame, &info, NULL);
++	if (err)
++		return err;
+ 
+ #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+ 	if (tsk->ret_stack &&
+@@ -143,20 +168,27 @@ static int notrace unwind_frame(struct task_struct *tsk,
+ }
+ NOKPROBE_SYMBOL(unwind_frame);
+ 
+-static void notrace walk_stackframe(struct task_struct *tsk,
+-				    struct stackframe *frame,
+-				    bool (*fn)(void *, unsigned long), void *data)
++static void notrace __walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
++		bool (*fn)(void *, unsigned long), void *data,
++		int (*unwind_frame_fn)(struct task_struct *tsk, struct stackframe *frame))
+ {
+ 	while (1) {
+ 		int ret;
+ 
+ 		if (!fn(data, frame->pc))
+ 			break;
+-		ret = unwind_frame(tsk, frame);
++		ret = unwind_frame_fn(tsk, frame);
+ 		if (ret < 0)
+ 			break;
+ 	}
+ }
++
++static void notrace walk_stackframe(struct task_struct *tsk,
++				    struct stackframe *frame,
++				    bool (*fn)(void *, unsigned long), void *data)
++{
++	__walk_stackframe(tsk, frame, fn, data, unwind_frame);
++}
+ NOKPROBE_SYMBOL(walk_stackframe);
+ 
+ static bool dump_backtrace_entry(void *arg, unsigned long where)
+@@ -210,3 +242,135 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+ 
+ 	walk_stackframe(task, &frame, consume_entry, cookie);
+ }
++
++#ifdef CONFIG_NVHE_EL2_DEBUG
++DECLARE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
++DECLARE_KVM_NVHE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack);
++DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
++
++static inline bool kvm_nvhe_on_overflow_stack(unsigned long sp, unsigned long size,
++				 struct stack_info *info)
++{
++	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
++	unsigned long low = (unsigned long)panic_info->hyp_overflow_stack_base;
++	unsigned long high = low + PAGE_SIZE;
++
++	return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_OVERFLOW, info);
++}
++
++static inline bool kvm_nvhe_on_hyp_stack(unsigned long sp, unsigned long size,
++				 struct stack_info *info)
++{
++	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
++	unsigned long low = (unsigned long)panic_info->hyp_stack_base;
++	unsigned long high = low + PAGE_SIZE;
++
++	return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_HYP, info);
++}
++
++static inline bool kvm_nvhe_on_accessible_stack(unsigned long sp, unsigned long size,
++				       struct stack_info *info)
++{
++	if (info)
++		info->type = STACK_TYPE_UNKNOWN;
++
++	if (kvm_nvhe_on_hyp_stack(sp, size, info))
++		return true;
++	if (kvm_nvhe_on_overflow_stack(sp, size, info))
++		return true;
++
++	return false;
++}
++
++static unsigned long kvm_nvhe_hyp_stack_kern_va(unsigned long addr)
++{
++	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
++	unsigned long hyp_base, kern_base, hyp_offset;
++
++	hyp_base = (unsigned long)panic_info->hyp_stack_base;
++	hyp_offset = addr - hyp_base;
++
++	kern_base = (unsigned long)*this_cpu_ptr(&kvm_arm_hyp_stack_page);
++
++	return kern_base + hyp_offset;
++}
++
++static unsigned long kvm_nvhe_overflow_stack_kern_va(unsigned long addr)
++{
++	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
++	unsigned long hyp_base, kern_base, hyp_offset;
++
++	hyp_base = (unsigned long)panic_info->hyp_overflow_stack_base;
++	hyp_offset = addr - hyp_base;
++
++	kern_base = (unsigned long)this_cpu_ptr_nvhe_sym(hyp_overflow_stack);
++
++	return kern_base + hyp_offset;
++}
++
++/*
++ * Convert KVM nVHE hypervisor stack VA to a kernel VA.
++ *
++ * The nVHE hypervisor stack is mapped in the flexible 'private' VA range, to allow
++ * for guard pages below the stack. Consequently, the fixed offset address
++ * translation macros won't work here.
++ *
++ * The kernel VA is calculated as an offset from the kernel VA of the hypervisor
++ * stack base. See: kvm_nvhe_hyp_stack_kern_va(),  kvm_nvhe_overflow_stack_kern_va()
++ */
++static unsigned long kvm_nvhe_stack_kern_va(unsigned long addr,
++					enum stack_type type)
++{
++	switch (type) {
++	case STACK_TYPE_KVM_NVHE_HYP:
++		return kvm_nvhe_hyp_stack_kern_va(addr);
++	case STACK_TYPE_KVM_NVHE_OVERFLOW:
++		return kvm_nvhe_overflow_stack_kern_va(addr);
++	default:
++		return 0UL;
++	}
++}
++
++static int notrace kvm_nvhe_unwind_frame(struct task_struct *tsk,
++					struct stackframe *frame)
++{
++	struct stack_info info;
++
++	if (!kvm_nvhe_on_accessible_stack(frame->fp, 16, &info))
++		return -EINVAL;
++
++	return  __unwind_frame(frame, &info, kvm_nvhe_stack_kern_va);
++}
++
++static bool kvm_nvhe_dump_backtrace_entry(void *arg, unsigned long where)
++{
++	unsigned long va_mask = GENMASK_ULL(vabits_actual - 1, 0);
++	unsigned long hyp_offset = (unsigned long)arg;
++
++	where &= va_mask;	/* Mask tags */
++	where += hyp_offset;	/* Convert to kern addr */
++
++	kvm_err("[<%016lx>] %pB\n", where, (void *)where);
++
++	return true;
++}
++
++static void notrace kvm_nvhe_walk_stackframe(struct task_struct *tsk,
++				    struct stackframe *frame,
++				    bool (*fn)(void *, unsigned long), void *data)
++{
++	__walk_stackframe(tsk, frame, fn, data, kvm_nvhe_unwind_frame);
++}
++
++void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
++{
++	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
++	struct stackframe frame;
++
++	start_backtrace(&frame, panic_info->fp, panic_info->pc);
++	pr_err("nVHE HYP call trace:\n");
++	kvm_nvhe_walk_stackframe(NULL, &frame, kvm_nvhe_dump_backtrace_entry,
++					(void *)hyp_offset);
++	pr_err("---- end of nVHE HYP call trace ----\n");
++}
++#endif /* CONFIG_NVHE_EL2_DEBUG */
+diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
+index 8a5fbbf084df..75f2c8255ff0 100644
+--- a/arch/arm64/kvm/Kconfig
++++ b/arch/arm64/kvm/Kconfig
+@@ -51,8 +51,9 @@ config NVHE_EL2_DEBUG
+ 	depends on KVM
+ 	help
+ 	  Say Y here to enable the debug mode for the non-VHE KVM EL2 object.
+-	  Failure reports will BUG() in the hypervisor. This is intended for
+-	  local EL2 hypervisor development.
++	  Failure reports will BUG() in the hypervisor; and panics will print
++	  the hypervisor call stack. This is intended for local EL2 hypervisor
++	  development.
+ 
+ 	  If unsure, say N.
+ 
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index 7a23630c4a7f..66c07c04eb52 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -49,7 +49,7 @@ DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
+ 
+ DECLARE_KVM_HYP_PER_CPU(unsigned long, kvm_hyp_vector);
+ 
+-static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
++DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
+ unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
+ DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
+ 
+diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
+index e3140abd2e2e..ff69dff33700 100644
+--- a/arch/arm64/kvm/handle_exit.c
++++ b/arch/arm64/kvm/handle_exit.c
+@@ -17,6 +17,7 @@
+ #include <asm/kvm_emulate.h>
+ #include <asm/kvm_mmu.h>
+ #include <asm/debug-monitors.h>
++#include <asm/stacktrace.h>
+ #include <asm/traps.h>
+ 
+ #include <kvm/arm_hypercalls.h>
+@@ -326,6 +327,8 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
+ 		kvm_err("nVHE hyp panic at: %016llx!\n", elr_virt + hyp_offset);
+ 	}
+ 
++	kvm_nvhe_dump_backtrace(hyp_offset);
++
+ 	/*
+ 	 * Hyp has panicked and we're going to handle that by panicking the
+ 	 * kernel. The kernel offset will be revealed in the panic so we're
+diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
+index efc20273a352..b8ecffc47424 100644
+--- a/arch/arm64/kvm/hyp/nvhe/switch.c
++++ b/arch/arm64/kvm/hyp/nvhe/switch.c
+@@ -37,6 +37,22 @@ DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
+ #ifdef CONFIG_NVHE_EL2_DEBUG
+ DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack)
+ 	__aligned(16);
++DEFINE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
++
++static inline void cpu_prepare_nvhe_panic_info(void)
++{
++	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr(&kvm_panic_info);
++	struct kvm_nvhe_init_params *params = this_cpu_ptr(&kvm_init_params);
++
++	panic_info->hyp_stack_base = (unsigned long)(params->stack_hyp_va - PAGE_SIZE);
++	panic_info->hyp_overflow_stack_base = (unsigned long)this_cpu_ptr(hyp_overflow_stack);
++	panic_info->fp = (unsigned long)__builtin_frame_address(0);
++	panic_info->pc = _THIS_IP_;
++}
++ #else
++static inline void cpu_prepare_nvhe_panic_info(void)
++{
++}
+ #endif
+ 
+ static void __activate_traps(struct kvm_vcpu *vcpu)
+@@ -360,6 +376,8 @@ asmlinkage void __noreturn hyp_panic(void)
+ 	struct kvm_cpu_context *host_ctxt;
+ 	struct kvm_vcpu *vcpu;
+ 
++	cpu_prepare_nvhe_panic_info();
++
+ 	host_ctxt = &this_cpu_ptr(&kvm_host_data)->host_ctxt;
+ 	vcpu = host_ctxt->__hyp_running_vcpu;
+ 
+-- 
+2.35.1.473.g83b2b277ed-goog
 
-A full copy of the full kernel tree with the linux-next and mmotm patches
-already applied is available through git within an hour of the mmotm
-release.  Individual mmotm releases are tagged.  The master branch always
-points to the latest release, so it's constantly rebasing.
-
-	https://github.com/hnaz/linux-mm
-
-The directory https://www.ozlabs.org/~akpm/mmots/ (mm-of-the-second)
-contains daily snapshots of the -mm tree.  It is updated more frequently
-than mmotm, and is untested.
-
-A git copy of this tree is also available at
-
-	https://github.com/hnaz/linux-mm
-
-
-
-This mmotm tree contains the following patches against 5.17-rc5:
-(patches marked "*" will be included in linux-next)
-
-  origin.patch
-* maintainers-add-sysctl-next-git-tree.patch
-* mm-hugetlb-fix-kernel-crash-with-hugetlb-mremap.patch
-* kasan-test-prevent-cache-merging-in-kmem_cache_double_destroy.patch
-* hugetlbfs-fix-a-truncation-issue-in-hugepages-parameter.patch
-* mm-fix-use-after-free-bug-when-mm-mmap-is-reused-after-being-freed.patch
-* selftest-vm-fix-map_fixed_noreplace-test-failure.patch
-* maintainers-add-myself-as-a-memcg-co-maintainer.patch
-* maintainers-remove-myself-from-memcg-maintainers.patch
-* maintainers-slab-add-roman-as-reviewer-git-tree.patch
-* mailmap-update-roman-gushchins-email.patch
-* selftests-memfd-clean-up-mapping-in-mfd_fail_write.patch
-* coredump-also-dump-first-pages-of-non-executable-elf-libraries.patch
-* mm-fix-panic-in-__alloc_pages.patch
-* selftests-vm-cleanup-hugetlb-file-after-mremap-test.patch
-* mm-refactor-vm_area_struct-anon_vma_name-usage-code.patch
-* mm-prevent-vm_area_struct-anon_name-refcount-saturation.patch
-* mm-fix-use-after-free-when-anon-vma-name-is-used-after-vma-is-freed.patch
-* userfaultfd-mark-uffd_wp-regardless-of-vm_write-flag.patch
-* proc-kpageflags-prevent-an-integer-overflow-in-stable_page_flags.patch
-* proc-kpageflags-do-not-use-uninitialized-struct-pages.patch
-* procfs-prevent-unpriveleged-processes-accessing-fdinfo-dir.patch
-* scripts-spellingtxt-add-more-spellings-to-spellingtxt.patch
-* ntfs-add-sanity-check-on-allocation-size.patch
-* ocfs2-cleanup-some-return-variables.patch
-* fs-ocfs2-fix-comments-mentioning-i_mutex.patch
-* ocfs2-reflink-deadlock-when-clone-file-to-the-same-directory-simultaneously.patch
-* ocfs2-clear-links-count-in-ocfs2_mknod-if-an-error-occurs.patch
-* ocfs2-fix-ocfs2-corrupt-when-iputting-an-inode.patch
-* doc-convert-subsection-to-section-in-gfph.patch
-* mm-document-and-polish-read-ahead-code.patch
-* mm-improve-cleanup-when-readpages-doesnt-process-all-pages.patch
-* fuse-remove-reliance-on-bdi-congestion.patch
-* nfs-remove-reliance-on-bdi-congestion.patch
-* ceph-remove-reliance-on-bdi-congestion.patch
-* remove-inode_congested.patch
-* remove-bdi_congested-and-wb_congested-and-related-functions.patch
-* remove-bdi_congested-and-wb_congested-and-related-functions-fix.patch
-* f2fs-replace-congestion_wait-calls-with-io_schedule_timeout.patch
-* block-bfq-ioschedc-use-false-rather-than-blk_rw_async.patch
-* remove-congestion-tracking-framework.patch
-* mount-warn-only-once-about-timestamp-range-expiration.patch
-  mm.patch
-* mm-sparse-vmemmap-add-a-pgmap-argument-to-section-activation.patch
-* mm-sparse-vmemmap-refactor-core-of-vmemmap_populate_basepages-to-helper.patch
-* mm-hugetlb_vmemmap-move-comment-block-to-documentation-vm.patch
-* mm-sparse-vmemmap-improve-memory-savings-for-compound-devmaps.patch
-* mm-page_alloc-reuse-tail-struct-pages-for-compound-devmaps.patch
-* kasan-page_alloc-deduplicate-should_skip_kasan_poison.patch
-* kasan-page_alloc-move-tag_clear_highpage-out-of-kernel_init_free_pages.patch
-* kasan-page_alloc-merge-kasan_free_pages-into-free_pages_prepare.patch
-* kasan-page_alloc-simplify-kasan_poison_pages-call-site.patch
-* kasan-page_alloc-init-memory-of-skipped-pages-on-free.patch
-* kasan-drop-skip_kasan_poison-variable-in-free_pages_prepare.patch
-* mm-clarify-__gfp_zerotags-comment.patch
-* kasan-only-apply-__gfp_zerotags-when-memory-is-zeroed.patch
-* kasan-page_alloc-refactor-init-checks-in-post_alloc_hook.patch
-* kasan-page_alloc-merge-kasan_alloc_pages-into-post_alloc_hook.patch
-* kasan-page_alloc-combine-tag_clear_highpage-calls-in-post_alloc_hook.patch
-* kasan-page_alloc-move-setpageskipkasanpoison-in-post_alloc_hook.patch
-* kasan-page_alloc-move-kernel_init_free_pages-in-post_alloc_hook.patch
-* kasan-page_alloc-rework-kasan_unpoison_pages-call-site.patch
-* kasan-clean-up-metadata-byte-definitions.patch
-* kasan-define-kasan_vmalloc_invalid-for-sw_tags.patch
-* kasan-x86-arm64-s390-rename-functions-for-modules-shadow.patch
-* kasan-vmalloc-drop-outdated-vm_kasan-comment.patch
-* kasan-reorder-vmalloc-hooks.patch
-* kasan-add-wrappers-for-vmalloc-hooks.patch
-* kasan-vmalloc-reset-tags-in-vmalloc-functions.patch
-* kasan-fork-reset-pointer-tags-of-vmapped-stacks.patch
-* kasan-arm64-reset-pointer-tags-of-vmapped-stacks.patch
-* kasan-fork-reset-pointer-tags-of-vmapped-stacks-fix.patch
-* kasan-vmalloc-add-vmalloc-tagging-for-sw_tags.patch
-* kasan-vmalloc-arm64-mark-vmalloc-mappings-as-pgprot_tagged.patch
-* kasan-vmalloc-unpoison-vm_alloc-pages-after-mapping.patch
-* kasan-mm-only-define-___gfp_skip_kasan_poison-with-hw_tags.patch
-* kasan-page_alloc-allow-skipping-unpoisoning-for-hw_tags.patch
-* kasan-page_alloc-allow-skipping-memory-init-for-hw_tags.patch
-* kasan-vmalloc-add-vmalloc-tagging-for-hw_tags.patch
-* kasan-vmalloc-only-tag-normal-vmalloc-allocations.patch
-* kasan-arm64-dont-tag-executable-vmalloc-allocations.patch
-* kasan-mark-kasan_arg_stacktrace-as-__initdata.patch
-* kasan-clean-up-feature-flags-for-hw_tags-mode.patch
-* kasan-add-kasanvmalloc-command-line-flag.patch
-* kasan-allow-enabling-kasan_vmalloc-and-sw-hw_tags.patch
-* arm64-select-kasan_vmalloc-for-sw-hw_tags-modes.patch
-* kasan-documentation-updates.patch
-* kasan-improve-vmalloc-tests.patch
-* kasan-improve-vmalloc-tests-fix.patch
-* kasan-improve-vmalloc-tests-fix-2.patch
-* kasan-improve-vmalloc-tests-fix-3.patch
-* kasan-improve-vmalloc-tests-fix-3-fix.patch
-* mm-memremap-avoid-calling-kasan_remove_zero_shadow-for-device-private-memory.patch
-* kasan-test-support-async-again-and-asymm-modes-for-hw_tags.patch
-* mm-kasan-remove-unnecessary-config_kasan-option.patch
-* kasan-update-function-name-in-comments.patch
-* kasan-print-virtual-mapping-info-in-reports.patch
-* tools-vm-page_owner_sortc-sort-by-stacktrace-before-culling.patch
-* tools-vm-page_owner_sortc-sort-by-stacktrace-before-culling-fix.patch
-* tools-vm-page_owner_sortc-support-sorting-by-stack-trace.patch
-* tools-vm-page_owner_sortc-add-switch-between-culling-by-stacktrace-and-txt.patch
-* tools-vm-page_owner_sortc-support-sorting-pid-and-time.patch
-* tools-vm-page_owner_sortc-two-trivial-fixes.patch
-* tools-vm-page_owner_sortc-delete-invalid-duplicate-code.patch
-* documentation-vm-page_ownerrst-update-the-documentation.patch
-* documentation-vm-page_ownerrst-update-the-documentation-fix.patch
-* docs-vm-fix-unexpected-indentation-warns-in-page_owner.patch
-* documentation-vm-page_ownerrst-fix-commends.patch
-* lib-vsprintf-avoid-redundant-work-with-0-size.patch
-* mm-page_owner-use-scnprintf-to-avoid-excessive-buffer-overrun-check.patch
-* mm-page_owner-print-memcg-information.patch
-* mm-page_owner-record-task-command-name.patch
-* mm-page_ownerc-record-tgid.patch
-* tools-vm-page_owner_sortc-fix-the-instructions-for-use.patch
-* mm-unexport-page_init_poison.patch
-* filemap-remove-find_get_pages.patch
-* mm-fix-invalid-page-pointer-returned-with-foll_pin-gups.patch
-* mm-gup-follow_pfn_pte-eexist-cleanup.patch
-* mm-gup-remove-unused-pin_user_pages_locked.patch
-* mm-change-lookup_node-to-use-get_user_pages_fast.patch
-* mm-gup-remove-unused-get_user_pages_locked.patch
-* tmpfs-support-for-file-creation-time.patch
-* memcg-replace-in_interrupt-with-in_task.patch
-* memcg-add-per-memcg-total-kernel-memory-stat.patch
-* mm-memcg-mem_cgroup_per_node-is-already-set-to-0-on-allocation.patch
-* mm-memcg-retrieve-parent-memcg-from-cssparent.patch
-* memcg-refactor-mem_cgroup_oom.patch
-* memcg-unify-force-charging-conditions.patch
-* selftests-memcg-test-high-limit-for-single-entry-allocation.patch
-* memcg-synchronously-enforce-memoryhigh-for-large-overcharges.patch
-* mm-memcg-revert-mm-memcg-optimize-user-context-object-stock-access.patch
-* mm-memcg-disable-threshold-event-handlers-on-preempt_rt.patch
-* mm-memcg-protect-per-cpu-counter-by-disabling-preemption-on-preempt_rt-where-needed.patch
-* mm-memcg-opencode-the-inner-part-of-obj_cgroup_uncharge_pages-in-drain_obj_stock.patch
-* mm-memcg-protect-memcg_stock-with-a-local_lock_t.patch
-* mm-memcg-disable-migration-instead-of-preemption-in-drain_all_stock.patch
-* mm-memcontrol-return-1-from-cgroupmemory-__setup-handler.patch
-* mm-generalize-arch_has_filter_pgprot.patch
-* mm-merge-pte_mkhuge-call-into-arch_make_huge_pte.patch
-* mm-remove-mmu_gathers-storage-from-remaining-architectures.patch
-* mm-thp-fix-wrong-cache-flush-in-remove_migration_pmd.patch
-* mm-fix-missing-cache-flush-for-all-tail-pages-of-compound-page.patch
-* mm-hugetlb-fix-missing-cache-flush-in-copy_huge_page_from_user.patch
-* mm-hugetlb-fix-missing-cache-flush-in-hugetlb_mcopy_atomic_pte.patch
-* mm-shmem-fix-missing-cache-flush-in-shmem_mfill_atomic_pte.patch
-* mm-userfaultfd-fix-missing-cache-flush-in-mcopy_atomic_pte-and-__mcopy_atomic.patch
-* mm-replace-multiple-dcache-flush-with-flush_dcache_folio.patch
-* mm-dont-skip-swap-entry-even-if-zap_details-specified.patch
-* mm-dont-skip-swap-entry-even-if-zap_details-specified-v5.patch
-* mm-rename-zap_skip_check_mapping-to-should_zap_page.patch
-* mm-change-zap_detailszap_mapping-into-even_cows.patch
-* mm-rework-swap-handling-of-zap_pte_range.patch
-* mm-mmap-return-1-from-stack_guard_gap-__setup-handler.patch
-* mm-debug_vm_pgtable-drop-protection_map-usage.patch
-* mm-mmap-clarify-protection_map-indices.patch
-* mm-mmap-add-new-config-arch_has_vm_get_page_prot.patch
-* powerpc-mm-enable-arch_has_vm_get_page_prot.patch
-* arm64-mm-enable-arch_has_vm_get_page_prot.patch
-* sparc-mm-enable-arch_has_vm_get_page_prot.patch
-* mips-mm-enable-arch_has_vm_get_page_prot.patch
-* m68k-mm-enable-arch_has_vm_get_page_prot.patch
-* arm-mm-enable-arch_has_vm_get_page_prot.patch
-* x86-mm-enable-arch_has_vm_get_page_prot.patch
-* x86-mm-enable-arch_has_vm_get_page_prot-fix.patch
-* mm-mmap-drop-protection_map.patch
-* mm-mmap-drop-arch_filter_pgprot.patch
-* mm-mmap-drop-arch_vm_get_page_pgprot.patch
-* s390-mm-enable-arch_has_vm_get_page_prot.patch
-* riscv-mm-enable-arch_has_vm_get_page_prot.patch
-* alpha-mm-enable-arch_has_vm_get_page_prot.patch
-* sh-mm-enable-arch_has_vm_get_page_prot.patch
-* arc-mm-enable-arch_has_vm_get_page_prot.patch
-* csky-mm-enable-arch_has_vm_get_page_prot.patch
-* extensa-mm-enable-arch_has_vm_get_page_prot.patch
-* parisc-mm-enable-arch_has_vm_get_page_prot.patch
-* openrisc-mm-enable-arch_has_vm_get_page_prot.patch
-* um-mm-enable-arch_has_vm_get_page_prot.patch
-* microblaze-mm-enable-arch_has_vm_get_page_prot.patch
-* nios2-mm-enable-arch_has_vm_get_page_prot.patch
-* hexagon-mm-enable-arch_has_vm_get_page_prot.patch
-* nds32-mm-enable-arch_has_vm_get_page_prot.patch
-* ia64-mm-enable-arch_has_vm_get_page_prot.patch
-* mm-mmap-drop-generic-vm_get_page_prot.patch
-* mm-mmap-drop-arch_has_vm_get_page_prot.patch
-* mm-use-helper-function-range_in_vma.patch
-* fix-shmem-huge-page-failed-to-set-f_seal_write-attribute-problem.patch
-* mm-sparse-make-mminit_validate_memmodel_limits-static.patch
-* mm-vmalloc-remove-unneeded-function-forward-declaration.patch
-* mm-vmalloc-move-draining-areas-out-of-caller-context.patch
-* mm-vmalloc-add-adjust_search_size-parameter.patch
-* mm-vmalloc-eliminate-an-extra-orig_gfp_mask.patch
-* mm-vmallocc-fix-unused-function-warning.patch
-* vmap-dont-allow-invalid-pages.patch
-* mm-page_alloc-avoid-merging-non-fallbackable-pageblocks-with-others.patch
-* mm-page_alloc-add-same-penalty-is-enough-to-get-round-robin-order.patch
-* mm-page_alloc-add-penalty-to-local_node.patch
-* mm-mmzonec-use-try_cmpxchg-in-page_cpupid_xchg_last.patch
-* mm-discard-__gfp_atomic.patch
-* mm-mmzoneh-remove-unused-macros.patch
-* mm-page_alloc-dont-pass-pfn-to-free_unref_page_commit.patch
-* cma-factor-out-minimum-alignment-requirement.patch
-* mm-enforce-pageblock_order-max_order.patch
-* mm-page_alloc-mark-pagesets-as-__maybe_unused.patch
-* mm-pages_allocc-dont-create-zone_movable-beyond-the-end-of-a-node.patch
-* mm-page_alloc-fetch-the-correct-pcp-buddy-during-bulk-free.patch
-* mm-page_alloc-track-range-of-active-pcp-lists-during-bulk-free.patch
-* mm-page_alloc-simplify-how-many-pages-are-selected-per-pcp-list-during-bulk-free.patch
-* mm-page_alloc-drain-the-requested-list-first-during-bulk-free.patch
-* mm-page_alloc-free-pages-in-a-single-pass-during-bulk-free.patch
-* mm-page_alloc-limit-number-of-high-order-pages-on-pcp-during-bulk-free.patch
-* mm-page_alloc-do-not-prefetch-buddies-during-bulk-free.patch
-* arch-x86-mm-numa-do-not-initialize-nodes-twice.patch
-* arch-x86-mm-numa-do-not-initialize-nodes-twice-v2.patch
-* mm-count-time-in-drain_all_pages-during-direct-reclaim-as-memory-pressure.patch
-* mm-hwpoison-remove-obsolete-comment.patch
-* mm-hwpoison-fix-error-page-recovered-but-reported-not-recovered.patch
-* mm-clean-up-hwpoison-page-cache-page-in-fault-path.patch
-* mm-memory-failurec-minor-clean-up-for-memory_failure_dev_pagemap.patch
-* mm-memory-failurec-catch-unexpected-efault-from-vma_address.patch
-* mm-memory-failurec-rework-the-signaling-logic-in-kill_proc.patch
-* mm-memory-failurec-fix-race-with-changing-page-more-robustly.patch
-* mm-memory-failurec-remove-pageslab-check-in-hwpoison_filter_dev.patch
-* mm-memory-failurec-rework-the-try_to_unmap-logic-in-hwpoison_user_mappings.patch
-* mm-memory-failurec-remove-obsolete-comment-in-__soft_offline_page.patch
-* mm-memory-failurec-remove-unnecessary-pagetranstail-check.patch
-* mm-hwpoison-inject-support-injecting-hwpoison-to-free-page.patch
-* mm-hwpoison-inject-support-injecting-hwpoison-to-free-page-fix.patch
-* mm-hwpoison-avoid-the-impact-of-hwpoison_filter-return-value-on-mce-handler.patch
-* mm-hwpoison-add-in-use-hugepage-hwpoison-filter-judgement.patch
-* mm-hugetlb-free-the-2nd-vmemmap-page-associated-with-each-hugetlb-page.patch
-* mm-hugetlb-replace-hugetlb_free_vmemmap_enabled-with-a-static_key.patch
-* mm-sparsemem-use-page-table-lock-to-protect-kernel-pmd-operations.patch
-* selftests-vm-add-a-hugetlb-test-case.patch
-* mm-sparsemem-move-vmemmap-related-to-hugetlb-to-config_hugetlb_page_free_vmemmap.patch
-* mm-hugetlb-generalize-arch_want_general_hugetlb.patch
-* hugetlb-clean-up-potential-spectre-issue-warnings.patch
-* hugetlb-clean-up-potential-spectre-issue-warnings-v2.patch
-* mm-hugetlb-use-helper-macro-__attr_rw.patch
-* userfaultfd-provide-unmasked-address-on-page-fault.patch
-* mm-mempolicy-convert-from-atomic_t-to-refcount_t-on-mempolicy-refcnt.patch
-* mm-mempolicy-convert-from-atomic_t-to-refcount_t-on-mempolicy-refcnt-fix.patch
-* mm-migration-add-trace-events-for-thp-migrations.patch
-* mm-migration-add-trace-events-for-base-page-and-hugetlb-migrations.patch
-* mmmigrate-fix-establishing-demotion-target.patch
-* mm-cma-provide-option-to-opt-out-from-exposing-pages-on-activation-failure.patch
-* powerpc-fadump-opt-out-from-freeing-pages-on-cma-activation-failure.patch
-* numa-balancing-add-page-promotion-counter.patch
-* numa-balancing-optimize-page-placement-for-memory-tiering-system.patch
-* memory-tiering-skip-to-scan-fast-memory.patch
-* mm-page_io-fix-psi-memory-pressure-error-on-cold-swapins.patch
-* mm-vmstat-add-event-for-ksm-swapping-in-copy.patch
-* mm-ksm-use-helper-macro-__attr_rw.patch
-* mm-hwpoison-check-the-subpage-not-the-head-page.patch
-* mm-balloon_compaction-make-balloon-page-compaction-callbacks-static.patch
-* mm-fix-race-between-madv_free-reclaim-and-blkdev-direct-io-read.patch
-* mm-memory_hotplug-make-arch_alloc_nodedata-independent-on-config_memory_hotplug.patch
-* mm-handle-uninitialized-numa-nodes-gracefully.patch
-* mm-handle-uninitialized-numa-nodes-gracefully-fix.patch
-* mm-memory_hotplug-drop-arch_free_nodedata.patch
-* mm-memory_hotplug-reorganize-new-pgdat-initialization.patch
-* mm-make-free_area_init_node-aware-of-memory-less-nodes.patch
-* memcg-do-not-tweak-node-in-alloc_mem_cgroup_per_node_info.patch
-* drivers-base-memory-add-memory-block-to-memory-group-after-registration-succeeded.patch
-* drivers-base-node-consolidate-node-device-subsystem-initialization-in-node_dev_init.patch
-* mm-memory_hotplug-remove-obsolete-comment-of-__add_pages.patch
-* mm-memory_hotplug-remove-obsolete-comment-of-__add_pages-fix.patch
-* mm-memory_hotplug-avoid-calling-zone_intersects-for-zone_normal.patch
-* mm-memory_hotplug-clean-up-try_offline_node.patch
-* mm-memory_hotplug-fix-misplaced-comment-in-offline_pages.patch
-* drivers-base-node-rename-link_mem_sections-to-register_memory_block_under_node.patch
-* drivers-base-memory-determine-and-store-zone-for-single-zone-memory-blocks.patch
-* drivers-base-memory-clarify-adding-and-removing-of-memory-blocks.patch
-* mm-rmap-convert-from-atomic_t-to-refcount_t-on-anon_vma-refcount.patch
-* mm-zswapc-allow-handling-just-same-value-filled-pages.patch
-* mm-remove-usercopy_warn.patch
-* mm-uninline-copy_overflow.patch
-* mm-usercopy-return-1-from-hardened_usercopy-__setup-handler.patch
-* highmem-document-kunmap_local.patch
-* highmem-document-kunmap_local-v2.patch
-* mm-highmem-remove-unnecessary-done-label.patch
-* mm-kfence-remove-unnecessary-config_kfence-option.patch
-* mm-hmmc-remove-unneeded-local-variable-ret.patch
-* mm-damon-dbgfs-init_regions-use-target-index-instead-of-target-id.patch
-* docs-admin-guide-mm-damon-usage-update-for-changed-initail_regions-file-input.patch
-* mm-damon-core-move-damon_set_targets-into-dbgfs.patch
-* mm-damon-remove-the-target-id-concept.patch
-* mm-damon-remove-redundant-page-validation.patch
-* mm-damon-rename-damon_primitives-to-damon_operations.patch
-* mm-damon-let-monitoring-operations-can-be-registered-and-selected.patch
-* mm-damon-paddrvaddr-register-themselves-to-damon-in-subsys_initcall.patch
-* mm-damon-reclaim-use-damon_select_ops-instead-of-damon_vpa_set_operations.patch
-* mm-damon-dbgfs-use-damon_select_ops-instead-of-damon_vpa_set_operations.patch
-* mm-damon-dbgfs-use-operations-id-for-knowing-if-the-target-has-pid.patch
-* mm-damon-dbgfs-test-fix-is_target_id-change.patch
-* mm-damon-paddrvaddr-remove-damon_pva_target_validset_operations.patch
-* mm-damon-remove-unnecessary-config_damon-option.patch
-* docs-vm-damon-call-low-level-monitoring-primitives-the-operations.patch
-* docs-vm-damon-design-update-damon-idle-page-tracking-interference-handling.patch
-* docs-damon-update-outdated-term-regions-update-interval.patch
-* info-task-hung-in-generic_file_write_iter.patch
-* info-task-hung-in-generic_file_write-fix.patch
-* kernel-hung_taskc-monitor-killed-tasks.patch
-* proc-alloc-path_max-bytes-for-proc-pid-fd-symlinks.patch
-* proc-alloc-path_max-bytes-for-proc-pid-fd-symlinks-fix.patch
-* proc-vmcore-fix-possible-deadlock-on-concurrent-mmap-and-read.patch
-* proc-vmcore-fix-vmcore_alloc_buf-kernel-doc-comment.patch
-* proc-sysctl-make-protected_-world-readable.patch
-* kernel-ksysfsc-use-helper-macro-__attr_rw.patch
-* kconfigdebug-make-debug_info-selectable-from-a-choice.patch
-* kconfigdebug-make-debug_info-selectable-from-a-choice-fix.patch
-* include-drop-pointless-__compiler_offsetof-indirection.patch
-* ilog2-force-inlining-of-__ilog2_u32-and-__ilog2_u64.patch
-* bitfield-add-explicit-inclusions-to-the-example.patch
-* lz4-fix-lz4_decompress_safe_partial-read-out-of-bound.patch
-* checkpatch-prefer-module_licensegpl-over-module_licensegpl-v2.patch
-* checkpatch-add-fix-option-for-some-trailing_statements.patch
-* checkpatch-add-early_param-exception-to-blank-line-after-struct-function-test.patch
-* fs-binfmt_elf-fix-at_phdr-for-unusual-elf-files.patch
-* fs-binfmt_elf-fix-at_phdr-for-unusual-elf-files-v5.patch
-* fs-binfmt_elf-refactor-load_elf_binary-function.patch
-* elf-fix-overflow-in-total-mapping-size-calculation.patch
-* binfmt-move-more-stuff-undef-config_coredump.patch
-* kallsyms-print-module-name-in-%ps-s-case-when-kallsyms-is-disabled.patch
-* init-use-ktime_us_delta-to-make-initcall_debug-log-more-precise.patch
-* inith-improve-__setup-and-early_param-documentation.patch
-* init-mainc-return-1-from-handled-__setup-functions.patch
-* init-mainc-silence-some-wunused-parameter-warnings.patch
-* fs-pipe-use-kvcalloc-to-allocate-a-pipe_buffer-array.patch
-* fs-pipe-local-vars-has-to-match-types-of-proper-pipe_inode_info-fields.patch
-* minix-fix-bug-when-opening-a-file-with-o_direct.patch
-* fat-use-pointer-to-simple-type-in-put_user.patch
-* exec-force-single-empty-string-when-argv-is-empty.patch
-* exec-force-single-empty-string-when-argv-is-empty-fix.patch
-* selftests-exec-test-for-empty-string-on-null-argv.patch
-* kexec-make-crashk_res-crashk_low_res-and-crash_notes-symbols-always-visible.patch
-* riscv-mm-init-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
-* x86-setup-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
-* arm64-mm-use-is_enabledconfig_kexec_core-instead-of-ifdef.patch
-* docs-kdump-update-description-about-sysfs-file-system-support.patch
-* docs-kdump-add-scp-example-to-write-out-the-dump-file.patch
-* panic-unset-panic_on_warn-inside-panic.patch
-* ubsan-no-need-to-unset-panic_on_warn-in-ubsan_epilogue.patch
-* kasan-no-need-to-unset-panic_on_warn-in-end_report.patch
-* docs-sysctl-kernel-add-missing-bit-to-panic_print.patch
-* docs-sysctl-kernel-add-missing-bit-to-panic_print-fix.patch
-* panic-add-option-to-dump-all-cpus-backtraces-in-panic_print.patch
-* kcov-split-ioctl-handling-into-locked-and-unlocked-parts.patch
-* kcov-properly-handle-subsequent-mmap-calls.patch
-* kernel-resource-fix-kfree-of-bootmem-memory-again.patch
-* selftests-set-the-build-variable-to-absolute-path.patch
-* selftests-add-and-export-a-kernel-uapi-headers-path.patch
-* selftests-correct-the-headers-install-path.patch
-* selftests-futex-add-the-uapi-headers-include-variable.patch
-* selftests-kvm-add-the-uapi-headers-include-variable.patch
-* selftests-landlock-add-the-uapi-headers-include-variable.patch
-* selftests-net-add-the-uapi-headers-include-variable.patch
-* selftests-mptcp-add-the-uapi-headers-include-variable.patch
-* selftests-vm-add-the-uapi-headers-include-variable.patch
-* selftests-vm-remove-dependecy-from-internal-kernel-macros.patch
-* selftests-kselftest-framework-provide-finished-helper.patch
-* selftests-use-isystem-instead-of-i-to-include-headers.patch
-* revert-ubsan-kcsan-dont-combine-sanitizer-with-kcov-on-clang.patch
-* ipc-mqueue-use-get_tree_nodev-in-mqueue_get_tree.patch
-  linux-next.patch
-  linux-next-rejects.patch
-  drivers-gpu-drm-dp-drm_dpc-fix-build.patch
-* mm-rmap-fix-argument-list-that-the-kdoc-format-and-script-verified.patch
-* selftest-vm-add-utilh-and-and-move-helper-functions-there.patch
-* selftest-vm-add-helpers-to-detect-page_size-and-page_shift.patch
-* mm-enable-madv_dontneed-for-hugetlb-mappings.patch
-* selftests-vm-add-hugetlb-madvise-madv_dontneed-madv_remove-test.patch
-* userfaultfd-selftests-enable-hugetlb-remap-and-remove-event-testing.patch
-* mm-optimize-do_wp_page-for-exclusive-pages-in-the-swapcache.patch
-* mm-optimize-do_wp_page-for-fresh-pages-in-local-lru-pagevecs.patch
-* mm-slightly-clarify-ksm-logic-in-do_swap_page.patch
-* mm-streamline-cow-logic-in-do_swap_page.patch
-* mm-huge_memory-streamline-cow-logic-in-do_huge_pmd_wp_page.patch
-* mm-khugepaged-remove-reuse_swap_page-usage.patch
-* mm-swapfile-remove-stale-reuse_swap_page.patch
-* mm-huge_memory-remove-stale-page_trans_huge_mapcount.patch
-  make-sure-nobodys-leaking-resources.patch
-  releasing-resources-with-children.patch
-  mutex-subsystem-synchro-test-module.patch
-  mutex-subsystem-synchro-test-module-fix.patch
-  kernel-forkc-export-kernel_thread-to-modules.patch
-  workaround-for-a-pci-restoring-bug.patch
