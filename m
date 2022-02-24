@@ -2,73 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B02C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F2CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233521AbiBXKjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:39:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48112 "EHLO
+        id S233533AbiBXKj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:39:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231714AbiBXKjo (ORCPT
+        with ESMTP id S233524AbiBXKjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:39:44 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98EC525A321
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 02:39:14 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id e140so2857870ybh.9
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 02:39:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ceIcUX/9qXWYi7bqd3UebABFIg2gF7nv6q+zr1MeNJA=;
-        b=JmXSJsusXt5h6HUCTku7gcagy4uYEZ7ywKo+0SGtujyt7clN5JUq5ZuepwcUwQk/on
-         9rEIiHtqJJaNRs1a35zVx+X7vrS9HQfAJSo2Zkku3QGSBkG3HQ1q4mTRJ8hp/F/on/Md
-         xVLWuo4oNNVHHjH/dyApKEySNU450JWRWle2sXNMijhFTHnQAt1vm4cAD+N1P8aVoDTB
-         z4LpMFV9yCr19JRL/RaQT0nle1Qw/SOAJTpup2wcqj2bARfqHbn5uvs4zMj+8vm1z26f
-         7VizGQfr89XRWpprdZOGxrH/6UzSvAP5LOzJq5KvfoyoNkDgWz0i81p0ov6SN2346RI9
-         chyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ceIcUX/9qXWYi7bqd3UebABFIg2gF7nv6q+zr1MeNJA=;
-        b=jPW91biXWyk/s59dMCazeViotVgByB6IoaGGO7tbPi33pulzueuIonEmyejkGVhaT/
-         OyEb9BRd9ZeczvlpmuDLrNutTz3gVZaC0PHU0s2UQdeaMG+ceZQmGVWeH8v4AzBzk8u7
-         RD9TEysZE5/Gl1AIT9lGVzyuoAnPAYm4ItfRz5wLU1P1RJVq9Soukl+g0x7QdQfTgpYG
-         dto+usGOgzYKfDKWZX9oX7UlvqUzfJp+8d9BrHecwBeFEc/ngRGgunxVctSfR0YjDPf2
-         7DXlSXwVDJ8oYQevufZCeV6Ov39F5Uce8tN66MvbjTldSi4mCQJ7UAgWHbDeK9lGXBMo
-         JQog==
-X-Gm-Message-State: AOAM5327W4LluS0l9Lmj7mx3+hVo7KK8BVN3cW/gjhh5E7RllqSYiWRl
-        UEF1pAGlFtljhF1/0flyFtwZO7nEMylitAESjYFISw==
-X-Google-Smtp-Source: ABdhPJz3rD+Awu54HUU3fKPBSSEc5phjmDzLwguk2UzHmyPEJOLNMV0P940MHAEMLH2MnG0YfcW+SJYZBu3cDe+Ip5Y=
-X-Received: by 2002:a25:3d47:0:b0:624:7b42:9f0f with SMTP id
- k68-20020a253d47000000b006247b429f0fmr1833401yba.254.1645699153839; Thu, 24
- Feb 2022 02:39:13 -0800 (PST)
+        Thu, 24 Feb 2022 05:39:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3227728AD8B
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 02:39:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAA48B81C4A
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:39:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75D07C340E9;
+        Thu, 24 Feb 2022 10:39:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645699160;
+        bh=JE74vM6F239/HyTrEDsqOE00ec9BmQ42Y4OdvszfnpU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qAs+hGS6Ri7GNCE9Har0J+LPVD+ewhbDdPU45i37O7fJZZKp9bcyVQb4eE4Jvb94e
+         4P7PTXOxSwb3MNglKP4zsZgu0734lr6EMTGVUWMidtpZi/GhVgwZ526WxmlhJoS4TG
+         YRULgtIp5lITDHTUl9XTZCrjWmaMCwnAGOoYJNecxrXJ6mmAhqGJGnTvqePx+ruLxE
+         ykAsn+5JTIlB+HnsujxgbU1U9Oqd14UR0JDzrh6Cer3YxKsG6gNuVywh/pMQBr6qml
+         W5n6O49t1pX+X4FoiLqeMlFzNIxpXPXlFriizE+cwWKxUdjN7brcP0yLpz3y41GVEr
+         BKjT6Li1tOwig==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nNBWo-00A9YD-5V; Thu, 24 Feb 2022 10:39:18 +0000
 MIME-Version: 1.0
-References: <20220222112731.33479-1-linmiaohe@huawei.com>
-In-Reply-To: <20220222112731.33479-1-linmiaohe@huawei.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Thu, 24 Feb 2022 18:38:36 +0800
-Message-ID: <CAMZfGtVUJC0i_1ccQE3wAFwR+GVQ5gfz=y0Abo6T0czb6zOPtg@mail.gmail.com>
-Subject: Re: [PATCH] mm/hugetlb: use helper macro __ATTR_RW
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Date:   Thu, 24 Feb 2022 10:39:17 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Philip Li <philip.li@intel.com>,
+        Kalesh Singh <kaleshsingh@google.com>,
+        kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, Will Deacon <will@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Fuad Tabba <tabba@google.com>, surenb@google.com,
+        Android Kernel Team <kernel-team@android.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Joey Gouly <joey.gouly@arm.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kvmarm <kvmarm@lists.cs.columbia.edu>
+Subject: Re: [kbuild-all] Re: [PATCH v2 6/9] KVM: arm64: Detect and handle
+ hypervisor stack overflows
+In-Reply-To: <CAMj1kXHsNsQXbeeS1zcy+xYA7kSE5apbLpChohfvkABS7Z6jKg@mail.gmail.com>
+References: <20220222165212.2005066-7-kaleshsingh@google.com>
+ <202202231727.L621fVgD-lkp@intel.com> <875yp63ptg.wl-maz@kernel.org>
+ <YhYpvfZaSjrAtkZp@rli9-dbox> <cb750267af0636c49d2f8aa354f086a5@kernel.org>
+ <CAMj1kXHsNsQXbeeS1zcy+xYA7kSE5apbLpChohfvkABS7Z6jKg@mail.gmail.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <89c48bd2a9b32b4607d1515714fa3c1b@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: ardb@kernel.org, philip.li@intel.com, kaleshsingh@google.com, lkp@intel.com, llvm@lists.linux.dev, kbuild-all@lists.01.org, will@kernel.org, qperret@google.com, tabba@google.com, surenb@google.com, kernel-team@android.com, catalin.marinas@arm.com, james.morse@arm.com, alexandru.elisei@arm.com, suzuki.poulose@arm.com, mark.rutland@arm.com, pasha.tatashin@soleen.com, joey.gouly@arm.com, pcc@google.com, ascull@google.com, pbonzini@redhat.com, yuzenghui@huawei.com, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, kvmarm@lists.cs.columbia.edu
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 7:28 PM Miaohe Lin <linmiaohe@huawei.com> wrote:
->
-> Use helper macro __ATTR_RW to define HSTATE_ATTR to make code more
-> clear. Minor readability improvement.
->
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+On 2022-02-23 12:56, Ard Biesheuvel wrote:
+> On Wed, 23 Feb 2022 at 13:54, Marc Zyngier <maz@kernel.org> wrote:
+>> 
+>> On 2022-02-23 12:34, Philip Li wrote:
+>> > On Wed, Feb 23, 2022 at 09:16:59AM +0000, Marc Zyngier wrote:
+>> >> On Wed, 23 Feb 2022 09:05:18 +0000,
+>> >> kernel test robot <lkp@intel.com> wrote:
+>> >> >
+>> >> > Hi Kalesh,
+>> >> >
+>> >> > Thank you for the patch! Perhaps something to improve:
+>> >> >
+>> >> > [auto build test WARNING on cfb92440ee71adcc2105b0890bb01ac3cddb8507]
+>> >> >
+>> >> > url:    https://github.com/0day-ci/linux/commits/Kalesh-Singh/KVM-arm64-Hypervisor-stack-enhancements/20220223-010522
+>> >> > base:   cfb92440ee71adcc2105b0890bb01ac3cddb8507
+>> >> > config: arm64-randconfig-r011-20220221 (https://download.01.org/0day-ci/archive/20220223/202202231727.L621fVgD-lkp@intel.com/config)
+>> >> > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+>> >> > reproduce (this is a W=1 build):
+>> >> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>> >> >         chmod +x ~/bin/make.cross
+>> >> >         # install arm64 cross compiling tool for clang build
+>> >> >         # apt-get install binutils-aarch64-linux-gnu
+>> >> >         # https://github.com/0day-ci/linux/commit/7fe99fd40f7c4b2973218045ca5b9c9160524db1
+>> >> >         git remote add linux-review https://github.com/0day-ci/linux
+>> >> >         git fetch --no-tags linux-review Kalesh-Singh/KVM-arm64-Hypervisor-stack-enhancements/20220223-010522
+>> >> >         git checkout 7fe99fd40f7c4b2973218045ca5b9c9160524db1
+>> >> >         # save the config file to linux build tree
+>> >> >         mkdir build_dir
+>> >> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash arch/arm64/
+>> >> >
+>> >> > If you fix the issue, kindly add following tag as appropriate
+>> >> > Reported-by: kernel test robot <lkp@intel.com>
+>> >> >
+>> >> > All warnings (new ones prefixed by >>):
+>> >> >
+>> >> >    include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
+>> >> >    #define NULL ((void *)0)
+>> >> >                 ^~~~~~~~~~~
+>> >> >    arch/arm64/kvm/hyp/nvhe/switch.c:200:27: warning: initializer overrides prior initialization of this subobject [-Winitializer-overrides]
+>> >> >            [ESR_ELx_EC_FP_ASIMD]           = kvm_hyp_handle_fpsimd,
+>> >> >                                              ^~~~~~~~~~~~~~~~~~~~~
+>> >> >    arch/arm64/kvm/hyp/nvhe/switch.c:196:28: note: previous initialization is here
+>> >> >            [0 ... ESR_ELx_EC_MAX]          = NULL,
+>> >> >                                              ^~~~
+>> >> >    include/linux/stddef.h:8:14: note: expanded from macro 'NULL'
+>> >> >    #define NULL ((void *)0)
+>> >> >                 ^~~~~~~~~~~
+>> >>
+>> >> Kalesh, please ignore this nonsense. There may be things to improve,
+>> >> but this is *NOT* one of them.
+>> >>
+>> >> These reports are pretty useless, and just lead people to ignore real
+>> >> bug reports.
+>> >
+>> > Hi Kalesh, sorry there're some irrelevant issues mixed in the report,
+>> > kindly ignore them. And the valuable ones are the new ones that
+>> > prefixed by >>, as the below one in original report.
+>> >
+>> >>> arch/arm64/kvm/hyp/nvhe/switch.c:372:17: warning: no previous
+>> >>> prototype for function 'hyp_panic_bad_stack' [-Wmissing-prototypes]
+>> >    void __noreturn hyp_panic_bad_stack(void)
+>> >                    ^
+>> 
+>> This is only called from assembly code, so a prototype wouldn't bring
+>> much.
+>> 
+> 
+> Should probably be marked as 'asmlinkage' then. I've suggested many
+> times already that this bogus diagnostic should either be disabled, or
+> disregard 'asmlinkage' symbols.
 
-More simple.
+Yes, asmlinkage is definitely missing.
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+But it is pretty obvious that the robot people aren't interested in
+fixing this particular issue, given how long we have been suggesting
+this...
+
+         M.
+-- 
+Jazz is not dead. It just smells funny...
