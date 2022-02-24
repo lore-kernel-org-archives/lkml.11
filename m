@@ -2,131 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:28:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 895FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234973AbiBXN3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:29:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41244 "EHLO
+        id S234913AbiBXNba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:31:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234933AbiBXN3D (ORCPT
+        with ESMTP id S229478AbiBXNb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:29:03 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63290B7C42;
-        Thu, 24 Feb 2022 05:28:33 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id a8so4321924ejc.8;
-        Thu, 24 Feb 2022 05:28:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=U8ApFWalU/hZbExAJu9JWeDMkdzMfCYpGYwY4Mu/h8M=;
-        b=ZDdWZqYPv3xo+qzcqesSu1qnNyPqCyHCU4OTXzCSqSQwhRi/qS6kNmN0325KLkNBaf
-         r5hW/WSKtbo/Y3wpevI8uC1ygyW+hfhYeF6OKt0pRzS8tz2idVleGnvW3w8N5Ba4efMI
-         o07e3JtoB3WlJQd2LYHDboHxsjYgCXqPsSbKc3vdAXQ3CxG6ziQYkkrf/Sqm0DGNQZBd
-         i+ScYOWJobDhFC6MnjaW+Df4s+NSMMqI9aCfXnxuxDbbLArHOaRUn737n94EqPromu7j
-         uBZ01kJ9YM2QwHUBwPrXopvtLI3T4Xzelj4TcPsh9a4oem3kUy6HLEvRy0Hqgbe2zRan
-         x6nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=U8ApFWalU/hZbExAJu9JWeDMkdzMfCYpGYwY4Mu/h8M=;
-        b=mSfpzz9WMmjsZK2nAqVsTpl9OmHvcWK62CsnLCK+CP95m7zGU4CtH2CrNjYLpM2k89
-         T5HuuyO1JqCraXuT97ua35kbJ7dGeH63xpQMuOp5EjrSzjCpa03IvvxUaSknUmbAzxNq
-         7cGEgjzhmQKwtFaqOg0c3Ueb3WpnYkc2sVkflPJG84q8n26uW28YCdJ3HbDbzMLcb21F
-         viYV1Nn5BA2bMoggn9zNw8HKSBzE/9qzfHPn6PZgNWSdAVGJKT5jQj8ppc/zjd7ECDlz
-         F4i6ugfHN6tx+2MHV0nKjiTifCG6pmnFHEZf+TOh8STmmYMb9pnEbvmMCOqq5IuoUpKP
-         dqzA==
-X-Gm-Message-State: AOAM531jlZKDfHms1T9V5VFIwnPBJ/IsCoB8tVaQpoVIqo5B2drpCND+
-        Hn7b+5W+i1u3h3gxxSFF8gCOizTzSAQ=
-X-Google-Smtp-Source: ABdhPJwPx6i2k9MdRnfKfvY56jx4rXDQln+lmVh3vJlUwi4M0boQKgn4cQwqDpz1f0/3cxt8jrbl7g==
-X-Received: by 2002:a17:906:4b11:b0:6d1:ba2:5bdb with SMTP id y17-20020a1709064b1100b006d10ba25bdbmr2270099eju.61.1645709311805;
-        Thu, 24 Feb 2022 05:28:31 -0800 (PST)
-Received: from orome ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id b4sm1332753edu.105.2022.02.24.05.28.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 05:28:30 -0800 (PST)
-Date:   Thu, 24 Feb 2022 14:27:58 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>,
-        Lee Jones <lee.jones@linaro.org>,
+        Thu, 24 Feb 2022 08:31:29 -0500
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B17EB7C7D;
+        Thu, 24 Feb 2022 05:30:58 -0800 (PST)
+X-UUID: c5ae9ddf238040a5a679bb039aed8d6f-20220224
+X-UUID: c5ae9ddf238040a5a679bb039aed8d6f-20220224
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <allen-kh.cheng@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 352981464; Thu, 24 Feb 2022 21:30:53 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 24 Feb 2022 21:30:50 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 24 Feb 2022 21:30:50 +0800
+From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+To:     Jassi Brar <jaswinder.singh@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH] dt-bindings: pwm: mtk-disp: add compatible string for
- MT8183 SoC
-Message-ID: <YheH3uAzJCoPVyin@orome>
-References: <20220207112657.18246-1-allen-kh.cheng@mediatek.com>
- <20220207125158.t5362u2dddccdmsq@pengutronix.de>
- <f6633fc82c4fa899c7f4ca27d9751d9e61fb90ac.camel@mediatek.com>
- <20220208091029.iwnepc343djtcvq5@pengutronix.de>
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     Jassi Brar <jassisinghbrar@gmail.com>,
+        Linux-ALSA <alsa-devel@alsa-project.org>, <tzungbi@google.com>,
+        <cujomalainey@google.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <sound-open-firmware@alsa-project.org>,
+        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Subject: [RESEND v17 0/2] mtk: add ADSP mailbox controller for MT8195
+Date:   Thu, 24 Feb 2022 21:30:43 +0800
+Message-ID: <20220224133045.23903-1-allen-kh.cheng@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="0RdXHY+yV2W/4ltL"
-Content-Disposition: inline
-In-Reply-To: <20220208091029.iwnepc343djtcvq5@pengutronix.de>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Mediatek ADSP IPC is used to send notification or short message 
+between processors with dsp. It will place the message to the
+share buffer and will access the ADSP mailbox registers to kick
+dsp. Two mailboxes used to send notification or short message 
+between processors with dsp.
 
---0RdXHY+yV2W/4ltL
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patchset was tested and confirmed on MT8195 cherry board.
 
-On Tue, Feb 08, 2022 at 10:10:29AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> Hello,
->=20
-> On Tue, Feb 08, 2022 at 12:28:23PM +0800, allen-kh.cheng wrote:
-> > Thank you for your suggestions.
-> > We will send another patch for .yaml format.
-> >=20
-> > About the last reminder, sorry, I don=E2=80=99t get that.=20
-> > Do you mean upper/lower case letters in an email address?
->=20
-> exactly. I don't know how picky Thierry (who is responsible to pick up
-> this patch or not) is, but a 100% match is the safe bet.
+Based on tag: next-20220223, linux-next/master
 
-Email isn't generally case sensitive, so I don't care all that much if
-they case differs. Ultimately the username part of an email address and
-the domain should match to clarify that both are the same person.
+changes since v16:
+- fix WARNING: modpost: missing MODULE_LICENSE() in drivers/mailbox
+  /mtk-adsp-mailbox.o. Add MODULE_LICENSE in the last line.
+- Due to WARNING: Missing or malformed SPDX-License-Identifier tag
+  in line 1 in checkpatch, we don't remove SPDX-License in line 1.
 
-There are also circumstances where it can make sense to have sender and
-author differ, like for example if your corporate email tends to butcher
-patches.
+changes since v15:
+- add paragraphs to describe the config symbols fully
 
-In this case it's fairly obvious that sender and author are the same
-person, so I've applied this as-is.
+changes since v14:
+- add inline for get_mtk_adsp_mbox_priv
 
-Thanks,
-Thierry
+changes since v13:
+- rebase on v5.16-rc8
+- add back ptr check from of_device_get_match_data
 
---0RdXHY+yV2W/4ltL
-Content-Type: application/pgp-signature; name="signature.asc"
+changes since v12:
+- remove of_device_get_match_data ptr check:
+  of_device_get_match_data(dev) will never going to return NULL.
+  driver probe with compatible mediatek,mt8195-adsp-mbox.
 
------BEGIN PGP SIGNATURE-----
+changes since v11:
+- remove useless MODULE_LICENSE
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIXh94ACgkQ3SOs138+
-s6FyyQ/+O6qlN6bd84T6E93BHOHVbJc9Hg4VTzKRkidnyBGqSibA50ETyN9Dp8ds
-OMon+0lkvEsU4dqgzbW4P7PygDbXUJQUwP4isAN9MVRJKHiuWaWFlJ9udehLsU5d
-6D+2KfUjvG7vXxmGToSan3xPlKjCcccCqYcduQxEixalh0nzR088O0JJXHncX4a6
-3CQOhfiyKL3cDcLbg/eQZ+/PZKZu9sLOXKuhw4Nh7DruZ+b8rYIS7DM7imKxp51K
-vZQnuP9qnMuAkgXKoh2p+Tf3zar2yf2zQj9gPodaS8p8ljfaeYJVA5uNoGE4jLgg
-c3I6WdGR93ErKJXglYsWSs0caFMBrdONAjbWHysHuEE8UhIanh/K6TRgCSAeLx5e
-QIzSYpb/p27CyuTOiDK8EysrEVmLZeio/Z8yJJ2FUSEEZjc/lK4Do6xviBxwpkRV
-N5yYZ1sMtpTB4HqExgRC/sEMGGlNbvRnLjco77dOdN0m9W2QYY9gDfI2iuMGsjuc
-+A5mVTSyj+/eQJyvFH3kzUy8D+FDtR2c7fr85jGXmGziuMJi2c+IMR5mn/u3X4tz
-7JBXnR6cyiycJ1gk3XR92M1QWZq2baSrMd68rtDx88ZMhfJDzMqSv8znq7Et9+fT
-638mkXNwHKgLrzDmMaCFpg1UBZznMwHiqxGFa0jt2Ed+axL1mq0=
-=XDqO
------END PGP SIGNATURE-----
+changes since v10:
+- split up v9 into two separate submissions
 
---0RdXHY+yV2W/4ltL--
+changes since v9:
+- rename adsp_mbox_chan_ops to mtk_adsp_mbox_chan_ops
+
+changes since v8:
+- remove struct adsp_mbox_ch_info
+- add get_mtk_adsp_mbox_priv
+- use mtk_adsp_mbox_priv va_mboxreg address in adsp mbox driver
+- add struct mtk_adsp_mbox_cfg for DSP mbox register offset
+- remove adsp mbox register offset hard code define
+- remove mtk-adsp-ipc.h reference in adsp mbox driver
+
+changes since v7:
+- add mtk prefix for adsp ipc functions
+- rename adsp_mbox_ch_info to mtk_adsp_mbox_ch_info
+- remove incorrect reviewers in commit message
+
+changes since v6:
+- dt-bindings: change example dtsi node.
+- rename config MTK_ADSP_IPC_MBOX to MTK_ADSP_MBOX
+- remove unused variable
+- add reviewers
+
+changes since v5:
+- remove some redundant code
+
+changes since v4:
+- use switch ... case in adsp_ipc_recv
+- add error handling path for chan_name pointer
+- refine some code to be concise
+
+changes since v3:
+- reorder MTK_ADSP_IPC_MBOX config
+- remove some redundant code
+- remove lock in mtk-adsp-mailbox
+
+changes since v2:
+- separate adsp_mailbox into two instances
+
+changes since v1:
+- fix dt_binding_check error
+
+Allen-KH Cheng (2):
+  dt-bindings: mailbox: mtk,adsp-mbox: add mtk adsp-mbox document
+  mailbox: mediatek: add support for adsp mailbox controller
+
+ .../bindings/mailbox/mtk,adsp-mbox.yaml       |  52 ++++++
+ drivers/mailbox/Kconfig                       |   9 +
+ drivers/mailbox/Makefile                      |   2 +
+ drivers/mailbox/mtk-adsp-mailbox.c            | 176 ++++++++++++++++++
+ 4 files changed, 239 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml
+ create mode 100644 drivers/mailbox/mtk-adsp-mailbox.c
+
+-- 
+2.18.0
+
