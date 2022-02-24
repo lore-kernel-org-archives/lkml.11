@@ -2,264 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 14:36:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 14:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235564AbiBXOhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 09:37:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53004 "EHLO
+        id S235576AbiBXOiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 09:38:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiBXOhS (ORCPT
+        with ESMTP id S235570AbiBXOiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 09:37:18 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D2EDF2A
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 06:36:47 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id e13so1877854plh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 06:36:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=foEHGISvceeirQWRazzPV0pifLTSmT5usJfyGjpriGQ=;
-        b=QDLPWLRRaeQ66cHFHYP5OutKf8qruLs+AQEhs0kJqQzFZ45o/ezLVu/xImsfciORmN
-         BV39vBlp2a61IkHGQRZqsgaP9czf0YFNeXQidiUEuzz9oGeFJU3deW/WepUJPD9dqCvU
-         IqO/D+5Isk/fBbRLJsxGlMpGz9c+Xtbzc6No6WDzrejH08ayN1PtpygUbRjqc6ygZX7w
-         O30kxRs0q4wGkpro2fSJ7ik6/4rZ7XKsvqT3oRYP1H2YfICZqgFOnS7WBt9AzP/stQoX
-         wfrtu+26zc82fHb+HsFn8ciEiPNvCcSoVhU8FcRRHPRU5zf0mz6ROoMw2/6UmX5p4LKN
-         HxyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=foEHGISvceeirQWRazzPV0pifLTSmT5usJfyGjpriGQ=;
-        b=TCRL7xDKBXwK7kzO/WN86sUWDs8Q2F3bsg3PQaafVTWKfpNGDfL82lzGJz3bbvwaeL
-         4embd5kiASXvxmteWiwoqEG8ybTrkQ6P6v7tUeJhU8fYzB0S/UjM5Me50DcFp+kV1jTa
-         bMd8XYq8ICZVvLVPa0i5yHIsnmGqmjOcReFHDFgKS+moH2pwa7894EkC0qX4bHIqXgjf
-         Yzz2JoiRhqdjKF+b7v1LsEVdCdYZPNFncLzbHpGT4kvoPWc00FlpB9+CJiTksgfaW/Lw
-         dU3+VyTP0zjhJ3AGuT6VgjikVickvl9+FjpZNP50VKOZDlqQkFaN5aZ6PAHMSk4i9kqn
-         sXRA==
-X-Gm-Message-State: AOAM530zsCl/95GidbfS2ADNg/aZc96+11O2lrEJi1e6MDq3F9V0LlOq
-        jymjsiCg0BOXzyo3gDicByy66w==
-X-Google-Smtp-Source: ABdhPJx3jN+Kv16eWiht1uwBtXYpb4270WKN0dvIQ/Lbnbn7D0kINEWJxRSJrURzpfmuMpVva3SexA==
-X-Received: by 2002:a17:902:bb89:b0:14d:85a7:6eea with SMTP id m9-20020a170902bb8900b0014d85a76eeamr3104772pls.158.1645713406690;
-        Thu, 24 Feb 2022 06:36:46 -0800 (PST)
-Received: from [10.94.58.189] ([139.177.225.254])
-        by smtp.gmail.com with ESMTPSA id n37sm3012154pgl.48.2022.02.24.06.36.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 06:36:46 -0800 (PST)
-Message-ID: <091879a2-c5a0-2512-ce43-ae2efa869f5b@bytedance.com>
-Date:   Thu, 24 Feb 2022 22:36:39 +0800
+        Thu, 24 Feb 2022 09:38:18 -0500
+X-Greylist: delayed 909 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 06:37:44 PST
+Received: from matoro.tk (unknown [IPv6:2600:1700:4b10:9d80::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 137329D0C2;
+        Thu, 24 Feb 2022 06:37:42 -0800 (PST)
+DKIM-Signature: a=rsa-sha256; bh=U1Serj9HWMW/oXYgmC1Rsp6t8gZrl/v31HBeiGDPdW4=;
+ c=relaxed/relaxed; d=matoro.tk;
+ h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
+ i=@matoro.tk; s=20220111215046; t=1645712524; v=1; x=1646144524;
+ b=OYghG0ZP+iuW2kkTQeOuixHFPq878+wQ3HhdKX/+sGY09GTDTQFDIubVowj2KCUAMa6hGg5z
+ emJxwo7k7iwM+JXu+3yE3DQsx9HG4ZBJFjS7BSFq9MSKfoo49MhkWqwuAJEne4d1p2n+MK3w3H8
+ nhuIW5JuvEJLWhiNLUwOESPgCTRpscLtEwNsfWc0aDp2LixMpHlSmIO3VnR7RTqooKC9CJ452ta
+ UM/qxfqM6Nlt5xE5jAS8lL/ueEDBCRO0qXA1nFOqZlgmtbsnnC34+1V9rWsHe+kOSZvMMUBiJFB
+ K4HJAmTDISfkfJWq4HoGTEVo0ctw8pdW/tc5RR+gFhe9y5izzW0GcfFP8gvPREsJRbIYTHEZveH
+ NJIUWtL5448BOMyUyVZJd8eXKj7O6wIfQYM5zT+W6lbbIGrxx6rNVZYEZmPnkite3l2zZVqeykW
+ dCiw9yfIpH+X2yA4GZY9Gcn3xQzZozeYYlW/Q97jERXi6XkljbaZD4a3xtRGCiHv3oNAuM+Dq7w
+ wbitZLVe9+B/0pgWjr3tva2lqhvnaBM4DX13iSpzOlTQPjc59ofE0WA1pB734Psd/WzIez+xhhJ
+ 5uI3scCkVBLSXtxRDzqLthxm5AUzUYmDZ28l+DVLASRcTR9KsEqNWlrE/Qss9Etj2UT9EQdVjTg
+ RrbyoJjcB0U=
+Received: by matoro.tk (envelope-sender
+ <matoro_mailinglist_kernel@matoro.tk>) with ESMTPS id f168343e; Thu, 24 Feb
+ 2022 09:22:04 -0500
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [RFC PATCH 1/5] sched/fair: record overloaded cpus
-Content-Language: en-US
-To:     "Gautham R. Shenoy" <gautham.shenoy@amd.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        linux-kernel@vger.kernel.org, srikar@linux.vnet.ibm.com,
-        aubrey.li@intel.com, Abel Wu <wuyun.abel@bytedance.com>
-References: <20220217154403.6497-1-wuyun.abel@bytedance.com>
- <20220217154403.6497-2-wuyun.abel@bytedance.com>
- <YhcvUV/jW7yr0Sn+@BLR-5CG11610CF.amd.com>
-From:   Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <YhcvUV/jW7yr0Sn+@BLR-5CG11610CF.amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Date:   Thu, 24 Feb 2022 09:22:04 -0500
+From:   matoro <matoro_mailinglist_kernel@matoro.tk>
+To:     John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        Anthony Yznaga <anthony.yznaga@oracle.com>,
+        matoro_bugzilla_kernel@matoro.tk,
+        Andrew Morton <akpm@linux-foundation.org>,
+        regressions@lists.linux.dev, linux-ia64@vger.kernel.org,
+        Linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: regression: Bug 215601 - gcc segv at startup on ia64
+In-Reply-To: <7e3a93e7-1300-8460-30fb-789180a745eb@physik.fu-berlin.de>
+References: <a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info>
+ <823f70be-7661-0195-7c97-65673dc7c12a@leemhuis.info>
+ <03497313-A472-4152-BD28-41C35E4E824E@chromium.org>
+ <94c3be49-0262-c613-e5f5-49b536985dde@physik.fu-berlin.de>
+ <9A1F30F8-3DE2-4075-B103-81D891773246@chromium.org>
+ <4e42e754-d87e-5f6b-90db-39b4700ee0f1@physik.fu-berlin.de>
+ <202202232030.B408F0E895@keescook>
+ <7e3a93e7-1300-8460-30fb-789180a745eb@physik.fu-berlin.de>
+Message-ID: <65ed8ab4fad779fadf572fb737dfb789@matoro.tk>
+X-Sender: matoro_mailinglist_kernel@matoro.tk
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Gautham, thanks for your comment!
+Hi Kees, I can provide live ssh access to my system exhibiting the 
+issue.  My system is a lot more stable due to using openrc rather than 
+systemd, for me GCC seems to be the only binary affected.  Would that be 
+helpful?
 
-On 2/24/22 3:10 PM, Gautham R. Shenoy wrote:
-> Hello Abel,
+On 2022-02-24 04:33, John Paul Adrian Glaubitz wrote:
+> Hi Kees!
 > 
-> (+ Aubrey Li, Srikar)
+> On 2/24/22 06:16, Kees Cook wrote:
+>>> You should be able to extract the binaries from this initrd image and 
+>>> the "mount" command,
+>>> for example, should be one of the affected binaries.
+>> 
+>> In dmesg, do you see any of these reports?
+>> 
+>>                 pr_info("%d (%s): Uhuuh, elf segment at %px requested 
+>> but the memory is mapped already\n",
+>>                         task_pid_nr(current), current->comm, (void 
+>> *)addr);
 > 
-> On Thu, Feb 17, 2022 at 11:43:57PM +0800, Abel Wu wrote:
->> An CFS runqueue is considered overloaded when there are
->> more than one pullable non-idle tasks on it (since sched-
->> idle cpus are treated as idle cpus). And idle tasks are
->> counted towards rq->cfs.idle_h_nr_running, that is either
->> assigned SCHED_IDLE policy or placed under idle cgroups.
->>
->> The overloaded cfs rqs can cause performance issues to
->> both task types:
->>
->>    - for latency critical tasks like SCHED_NORMAL,
->>      time of waiting in the rq will increase and
->>      result in higher pct99 latency, and
->>
->>    - batch tasks may not be able to make full use
->>      of cpu capacity if sched-idle rq exists, thus
->>      presents poorer throughput.
->>
->> The mask of overloaded cpus is updated in periodic tick
->> and the idle path at the LLC domain basis. This cpumask
->> will also be used in SIS as a filter, improving idle cpu
->> searching.
+> I'll check that.
 > 
-> This is an interesting approach to minimise the tail latencies by
-> keeping track of the overloaded cpus in the LLC so that
-> idle/sched-idle CPUs can pull from them. This approach contrasts with the
-> following approaches that were previously tried :
+>> I don't see anything out of order in the "mount" binary from the above
+>> initrd. What does "readelf -lW" show for the GCC you're seeing 
+>> failures
+>> on?
 > 
-> 1. Maintain the idle cpumask at the LLC level by Aubrey Li
->     https://lore.kernel.org/all/1615872606-56087-1-git-send-email-aubrey.li@intel.com/
-
-It's a similar approach from different sight in SIS. Both have pros and
-cons, and I couldn't tell which one is more appropriate..
-While since SIS can fail in finding one idle cpu due to scaling issues,
-the sched-idle load balancing might be a valuable supplement to that to
-consume the idle/sched-idle cpus.
-
->     
-> 2. Maintain the identity of the idle core itself at the LLC level, by Srikar :
->     https://lore.kernel.org/lkml/20210513074027.543926-3-srikar@linux.vnet.ibm.com/
-
-The efforts done by Srikar seems focused on idle core searching, which
-has a different goal from my approach I think.
-The case of short running tasks pointed out by Vincent should not be a
-problem in updating the overloaded cpu mask/counter, since they are not
-updated either when cpu becomes busy, or when cpu frequently goes idle
-during a tick period.
-
+> I'm not 100% sure whether it's the mount binary that is affected. What
+> happens is that once init takes over,
+> I'm seeing multiple "Segmentation Fault" message on the console until
+> I'm dropped to the initrd shell.
 > 
-> There have been concerns in the past about having to update the shared
-> mask/counter at regular intervals. Srikar, Aubrey any thoughts on this
-> ?
+> I can check what dmesg says.
 > 
-
-I'm afraid I didn't fully catch up with these loops, it is appreciated
-if someone can shed some light, thanks!
-
-> 
-> 
->>
->> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
->> ---
->>   include/linux/sched/topology.h | 10 ++++++++++
->>   kernel/sched/core.c            |  1 +
->>   kernel/sched/fair.c            | 43 ++++++++++++++++++++++++++++++++++++++++++
->>   kernel/sched/sched.h           |  6 ++++++
->>   kernel/sched/topology.c        |  4 +++-
->>   5 files changed, 63 insertions(+), 1 deletion(-)
->>
->> diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
->> index 56cffe42abbc..03c9c81dc886 100644
->> --- a/include/linux/sched/topology.h
->> +++ b/include/linux/sched/topology.h
->> @@ -81,6 +81,16 @@ struct sched_domain_shared {
->>   	atomic_t	ref;
->>   	atomic_t	nr_busy_cpus;
->>   	int		has_idle_cores;
->> +
->> +	/*
->> +	 * The above varibles are used in idle path and
->> +	 * select_task_rq, and the following two are
->> +	 * mainly updated in tick. They are all hot but
->> +	 * for different usage, so start a new cacheline
->> +	 * to avoid false sharing.
->> +	 */
->> +	atomic_t	nr_overloaded	____cacheline_aligned;
->> +	unsigned long	overloaded[];	/* Must be last */
->>   };
->>   
->>   struct sched_domain {
->> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
->> index 1d863d7f6ad7..a6da2998ec49 100644
->> --- a/kernel/sched/core.c
->> +++ b/kernel/sched/core.c
->> @@ -9423,6 +9423,7 @@ void __init sched_init(void)
->>   		rq->wake_stamp = jiffies;
->>   		rq->wake_avg_idle = rq->avg_idle;
->>   		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
->> +		rq->overloaded = 0;
->>   
->>   		INIT_LIST_HEAD(&rq->cfs_tasks);
->>   
->> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
->> index 5c4bfffe8c2c..0a0438c3319b 100644
->> --- a/kernel/sched/fair.c
->> +++ b/kernel/sched/fair.c
->> @@ -6968,6 +6968,46 @@ balance_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
->>   
->>   	return newidle_balance(rq, rf) != 0;
->>   }
->> +
->> +static inline int cfs_rq_overloaded(struct rq *rq)
->> +{
->> +	return rq->cfs.h_nr_running - rq->cfs.idle_h_nr_running > 1;
->> +}
->> +
->> +/* Must be called with rq locked */
->> +static void update_overload_status(struct rq *rq)
->> +{
->> +	struct sched_domain_shared *sds;
->> +	int overloaded = cfs_rq_overloaded(rq);
->> +	int cpu = cpu_of(rq);
->> +
->> +	lockdep_assert_rq_held(rq);
->> +
->> +	if (rq->overloaded == overloaded)
->> +		return;
->> +
->> +	rcu_read_lock();
->> +	sds = rcu_dereference(per_cpu(sd_llc_shared, cpu));
->> +	if (unlikely(!sds))
->> +		goto unlock;
->> +
->> +	if (overloaded) {
->> +		cpumask_set_cpu(cpu, sdo_mask(sds));
->> +		atomic_inc(&sds->nr_overloaded);
->> +	} else {
->> +		cpumask_clear_cpu(cpu, sdo_mask(sds));
->> +		atomic_dec(&sds->nr_overloaded);
->> +	}
->> +
->> +	rq->overloaded = overloaded;
->> +unlock:
->> +	rcu_read_unlock();
->> +}
->> +
->> +#else
->> +
->> +static inline void update_overload_status(struct rq *rq) { }
->> +
->>   #endif /* CONFIG_SMP */
->>   
->>   static unsigned long wakeup_gran(struct sched_entity *se)
->> @@ -7315,6 +7355,8 @@ done: __maybe_unused;
->>   	if (new_tasks > 0)
->>   		goto again;
->>   
->> +	update_overload_status(rq);
->> +
-> 
-> So here, we are calling update_overload_status() after
-> newidle_balance(). If we had pulled a single task as a part of
-> newidle_balance(), in your current code, we do not update the overload
-> status. While this should get remedied in the next tick, should we
-> move update_overload_status(rq) prior to the new_tasks > 0 check ?
-
-A single task won't change the overloaded status :)
-And I think it would be better not do an update even if pulled several
-tasks because that would break the rate limit which is undesired.
-
-Best Regards,
-	Abel
-
-> 
-> 
-> --
-> Thanks and Regards
-> gautham.
+> Adrian
