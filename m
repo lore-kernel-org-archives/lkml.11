@@ -2,87 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 817B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75406C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:39:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230055AbiBXQjX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:39:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58816 "EHLO
+        id S229903AbiBXQji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:39:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbiBXQjP (ORCPT
+        with ESMTP id S229654AbiBXQjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:39:15 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2C418647C
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:38:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645720724; x=1677256724;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=do58zTcSW3wRCK7YgRM0MT0AqvfNz5U5/d4kKegF3ZI=;
-  b=LfpeOD2PI9ddtF64wTb3ZTmVIyjbvz3htj/sSqwgCE98mMAAPnnN19B5
-   r/og+i42ekh/6r4ItxoYl8PveUKd3A0w/sJsLn17JtYz+n9KM373DGl4g
-   /LjZjT5X44t/0wdSvQm8tdNYMWbYzxDfaK+5PuymAqvZQ8Zz2F4G8RsgW
-   3Nnp3r8AKoQNa4k2WPHXQrRv5WL87GG7YoM4cjs2ATj5bxQv1Vu6WAW7+
-   bqkpR/0WU4bsJ+5VjGK6QeB4Q43oIyLnLPxQP9fMNsiceFN42xLZr3HmM
-   P3Hy+oNpxQRcQlXVqpWXqqvY1cVcQ8T2p9AyNVZbo16sSW+1YjEhFsJkc
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="232896806"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="232896806"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 08:16:14 -0800
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="548811314"
-Received: from vpirogov-mobl.amr.corp.intel.com (HELO [10.252.137.68]) ([10.252.137.68])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 08:16:13 -0800
-Message-ID: <938a31f5-d77b-ba95-ea24-46ac00b9cbb8@intel.com>
-Date:   Thu, 24 Feb 2022 08:16:08 -0800
+        Thu, 24 Feb 2022 11:39:35 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83C8F14CCA3;
+        Thu, 24 Feb 2022 08:39:05 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id q17so3684553edd.4;
+        Thu, 24 Feb 2022 08:39:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8ww14R/0doMbb1GnnkQOuIVoZujutPBK0hfKVk+ApXY=;
+        b=BT7WEMy0rlnh82V+S8R5fT/DjCHh1QvgOhGph5OTDiiTsVhFskdqRaungLGpCGw5vk
+         iS0gSSf81Y8cCkqzcWFYC/lFfyQi0YS/Ude/pkXSYOrp7TqrtfcEQG7EOBYczW5WSe/I
+         JdV4ljZWsJZj+RquInApUvlaOl3RGG47yhK3XIkwO9b/d+IcvcyCqO+uxmRr2e4ep2ML
+         5PG4ZZdZFZO9ZbndOnm6DHwUbTJwNGodKfYteXQ6lJ/qSfiJMfXuMm2PCMt/2XSHc3q9
+         3Pw+L8cDv5VXqbHJCvcxq8ehEgx3mm0qudnH4Qj7LqJrvORB3xGAoq848aAivyf3xWGd
+         6ZZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8ww14R/0doMbb1GnnkQOuIVoZujutPBK0hfKVk+ApXY=;
+        b=Q+o7HgbUerLvuYF1w20Rw/CPOlLn4lNV9PiHNq5ZZWLLCFYr7ZkcOCvU0o9h6DrgCk
+         kOS60f7u5Ve5rAL3tLdZO6/qha8GcSvVgnwxp+pzBqDjvv6LrqJWvMPh4PQpPRlGr2+5
+         kMloSzOqx4KV8xipVQTwSkJhf0z27UDIS+kWtwak4vRcjHbPu9823ZEJ6Y1G0eQsPbLD
+         P36PQ8whfbwDKZPYovBnGlFQgONDvU+j3ijm+B+vKyhfMRfNUwKsJH8hL2u7BT6eUzt5
+         MhEA27jRWPqPF0HehRoWcsqfeCD8H7FT+A204h2at5h8eNFW9gyD7oq4i0+Wf3TeW9fW
+         J6aw==
+X-Gm-Message-State: AOAM532gErARLF7PTqLVGgr6B0SRl0N+z1ux6L2HjvnteRo73mDqSCm9
+        /BlRM2xkgwmC3KzO9y5XK0U=
+X-Google-Smtp-Source: ABdhPJwJoHH32eVYGJKm8Bcye+DcONzdjP7VEdHc1ObU8Z95hbpmJAqjIx539QkZIjEd/tLs2VJtKA==
+X-Received: by 2002:a05:6402:1435:b0:410:d2e1:e6dc with SMTP id c21-20020a056402143500b00410d2e1e6dcmr3160043edx.138.1645720743929;
+        Thu, 24 Feb 2022 08:39:03 -0800 (PST)
+Received: from orome ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id g15sm1775861edb.11.2022.02.24.08.39.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 08:39:02 -0800 (PST)
+Date:   Thu, 24 Feb 2022 17:39:00 +0100
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Prathamesh Shete <pshete@nvidia.com>
+Cc:     linus.walleij@linaro.org, bgolaszewski@baylibre.com,
+        jonathanh@nvidia.com, linux-gpio@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+        smangipudi@nvidia.com, Manish Bhardwaj <mbhardwaj@nvidia.com>
+Subject: Re: [PATCH] gpio: tegra186: add Tegra234 PMC compatible in GPIO
+ driver
+Message-ID: <Yhe0pCpfeCpyfPWg@orome>
+References: <20220224082409.12559-1-pshete@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
- <20220224155630.52734-3-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv4 02/30] x86/tdx: Detect running as a TDX guest in early
- boot
-In-Reply-To: <20220224155630.52734-3-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="lsEbeFBk5FrbFEHX"
+Content-Disposition: inline
+In-Reply-To: <20220224082409.12559-1-pshete@nvidia.com>
+User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/24/22 07:56, Kirill A. Shutemov wrote:
-> From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> 
-> In preparation of extending cc_platform_has() API to support TDX guest,
-> use CPUID instruction to detect support for TDX guests in the early
-> boot code (via tdx_early_init()). Since copy_bootdata() is the first
-> user of cc_platform_has() API, detect the TDX guest status before it.
-> 
-> Define a synthetic feature flag (X86_FEATURE_TDX_GUEST) and set this
-> bit in a valid TDX guest platform.
-> 
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Reviewed-by: Andi Kleen <ak@linux.intel.com>
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 
-I'm glad this *finally* converged on an X86_FEATURE flag alone.  Thanks
-for fixing up the text:
+--lsEbeFBk5FrbFEHX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+On Thu, Feb 24, 2022 at 01:54:09PM +0530, Prathamesh Shete wrote:
+> From: Manish Bhardwaj <mbhardwaj@nvidia.com>
+>=20
+> Using this patch we are adding PMC compatible string for
+> Tegra234 in GPIO driver so the irq hierarchy can be set.
+
+s/irq/IRQ/, but otherwise looks good:
+
+Acked-by: Thierry Reding <treding@nvidia.com>
+
+--lsEbeFBk5FrbFEHX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIXtKQACgkQ3SOs138+
+s6F4Bg//bdcp/cCBhMmhRROLgl8W/gI7aGWofrewPJUM28kDVshWPUyxxzCm99Ly
++ebwJ2ILgqPSloqFOwPM7cQzzhEGupRzTWGp2/e9PWlQmBW2t7J0Ft8bmI25cyyB
+YBnK6OlkFij7lHnVsVj2ECbcyBtOL6oc8se/Q55twiPfQihY2hOZF3NoVmiPNcBt
+q7XJMUTqfvMDHPqduey9FDVSexlPm5GPGVw8WcojxCAuasYL2brNhkCUFO1714Dg
+UeUff2CSR/0Dr1SX37YbqcfhOZpMJS6xQMnrsStdC96LDn7DRvvRC1ljO3v/2w7x
+435QsTn2s84ynQQr7ACVFfkALwm3UNSvSIx4oubv0vsjx6bQ30FG4cTKqtvrMbzw
+hnWtEb8zsHtvQ9HdPzMSA/2LlZ9F+aFsaaoOF2ni0EOreSKX3rPVx5Q2mf7iyHnH
+KJdRAZFNisiHvf9PcFFN5omlbDx6AuTuzMFJAxYf43TsMeaoowkS4+LNFwiRrmN/
+08wq0xy8Gw6ig0n5sKNEhDcOPAnqBH6Mh8abWJKWP8dvXCEirVCpFxSACS+5sKEJ
+pU9JSQgvSUovlCw/AfuezB/35+VQ9yBASf0e+YWje9Pk4Qb2BGmlyjR60zkDUcYn
+KxewUtg5lqh1hajjfTFAncrIK9omiTkxW57Z7fFBbI/0QbAMaE4=
+=e1QQ
+-----END PGP SIGNATURE-----
+
+--lsEbeFBk5FrbFEHX--
