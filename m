@@ -2,265 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0259C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:01:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6603DC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:02:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbiBXXCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 18:02:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47200 "EHLO
+        id S230403AbiBXXDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 18:03:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230009AbiBXXCP (ORCPT
+        with ESMTP id S232290AbiBXXC7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 18:02:15 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8DB24132E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 15:01:43 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id c6so4941201edk.12
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 15:01:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=X3EtjfKbehA9fHwRWa8Y/OMrArkCeB4aGDlGlg7yqZE=;
-        b=EGGqn11IUoyPVh7ZX1J8KqIGXWqgP7ARc8OdnJp+yNG7aExkjOIfpv60wE5TdCK6J4
-         2w4kzsZ3/Us3jfzoPonBoqnWqXO241j7d5Tz4Ys2fa59Ri9j1SyLf6upmuIoXmlAcZhI
-         ZQdEfS3Yk9sJWED8XDL5i3J8JZjo6nS9A6mWLLPc/bvaF7JIk7fxjV2eY++vKrc8KtWH
-         pMhnRVnObTFaC2kCu6T2Zwul7y54cTcbbQRyhd9XMmzKtVApM3mhnZtiKv+yvjo1a6OL
-         lPUbVfB95VXyXmBEEK6enG4rh+/OTZ3E8oGWIrX06c5SSo/KpHZCUASLyxQodnprymMZ
-         6EPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=X3EtjfKbehA9fHwRWa8Y/OMrArkCeB4aGDlGlg7yqZE=;
-        b=Ni0JW/SWZX2Vdfe9xV6AVdlfrITh6c5mVZQqfDKwt4SYrU8pnmhjbNzz7YclXyf5OL
-         4v2LKMATAq6NhEH+2vjmURe7PVs/p+Ak6mZrJbgT8OOlQ+MxKWkyjTF/HwgqyPTnyhfo
-         V1yLamPTJIfp8rqKlx+umAlczClIu3OpMTbk00ZVYVql0kE7MynxLi3Dsqn4qOcBRsBl
-         GLLI6PjlGyEgZOcYiv7P+TEtH4LfCQve4mTgE6lV39M/gOlQFuK4/PEdDXdMqe/yRKd4
-         4KRNJIDj7dwHBz6Zy7oWdvvRfFz/VzQKrHKp5klHo7PNYzqvbuZ81Zj5431xVhNvHpkR
-         Q7pg==
-X-Gm-Message-State: AOAM530ffehAJfpdtO/w3mGXSdJOzyDbEj2wSvzf9q32LQQ8Gb+B/cGS
-        p3rjJxj46qrz6rgl+2V4hL1QextBwV9uvx2oDvo=
-X-Google-Smtp-Source: ABdhPJycirbyAqbZ13XeIBPPBICl1WRVjb08/FUcXd+gGs+PAjuKX/EybFir/ArHyRHz7Se4xE8DUFqGSMvDZgPQNI8=
-X-Received: by 2002:aa7:d2c8:0:b0:410:e248:48eb with SMTP id
- k8-20020aa7d2c8000000b00410e24848ebmr4471404edr.325.1645743702061; Thu, 24
- Feb 2022 15:01:42 -0800 (PST)
+        Thu, 24 Feb 2022 18:02:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B0117774C;
+        Thu, 24 Feb 2022 15:02:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F449B829E5;
+        Thu, 24 Feb 2022 23:02:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C49C340F1;
+        Thu, 24 Feb 2022 23:02:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645743744;
+        bh=kF7xhxhVV3/bWnQwbLdu6duLu2w9N/GwgTupT/4oAJQ=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=WUN7wDzxBt9c0C08JqGPJCv2ef2rZ/jgSUT8ruBVdg4UGd/19a8l65RIY+iCCEXfy
+         TqRgIrV1ZLJalq591/8oRBvKVJlZnHYjOKZa5Uo3OlMMc2fYTXFtoRyvK3lRf0h91W
+         KekZiLnxDOTxdp47ZfUtdrc+kZmvl+cAIF3KKSyh+XnLrAVYhgbIbbhvbFPvHqhHp3
+         5AFmf4UdGwWmuagBIDS+RrSyFiHi5CDdqQGXET3oY6JYl48S31SlJ4QCnTfvhNEWhL
+         sDRt+NjNAzewSJd6yqLMCMgdJlyPBjA0q3w+kiZv9WQs9d2cZC7c85tcoJiCArlqRX
+         bL3o+8Mg4scxw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-From:   Dave Airlie <airlied@gmail.com>
-Date:   Fri, 25 Feb 2022 09:01:30 +1000
-Message-ID: <CAPM=9twsapa3kN3wkRfpqT7dZPDbFePicHm8TT8yVnwqH6aZyA@mail.gmail.com>
-Subject: [git pull] drm fixes for 5.17-rc6
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220219152818.4319-4-kabel@kernel.org>
+References: <20220219152818.4319-1-kabel@kernel.org> <20220219152818.4319-4-kabel@kernel.org>
+Subject: Re: [PATCH v9 3/6] serial: mvebu-uart: implement UART clock driver for configuring UART base clock
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Gregory Clement <gregory.clement@bootlin.com>,
+        Pali =?utf-8?q?Roh=C3=A1r?= <pali@kernel.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Marek =?utf-8?q?Beh=C3=BAn?= <kabel@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marek =?utf-8?q?Beh=C3=BAn?= <kabel@kernel.org>
+Date:   Thu, 24 Feb 2022 15:02:22 -0800
+User-Agent: alot/0.10
+Message-Id: <20220224230224.A0C49C340F1@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey,
+Quoting Marek Beh=C3=BAn (2022-02-19 07:28:15)
+> From: Pali Roh=C3=A1r <pali@kernel.org>
+>=20
+> Implement a new device driver for controlling UART clocks on Marvell
+> Armada 3700 SoC. This device driver is loaded for devices which match
+> the compatible string "marvell,armada-3700-uart-clock".
+>=20
+> There are more pitfalls related to UART clocks:
+> - both UARTs use same parent clock source (which can be xtal or one of
+>   the TBG clocks),
+> - if a TBG clock is used as the parent clock, there are two additional
+>   divisors that can both be configured to divide the rate by 1, 2, ... 6,
+>   but these divisors are again shared between the two UART controllers
+>   on the SOC,
+> - the configuration of the parent clock source and divisors is done in
+>   the address space of the first UART controller, UART1. Clocks can be
+>   gated separately for UART1 and UART2, but this setting also lives in
+>   the address space of UART1,
+> - Marvell's Functional Specification for Armada 3720 document has the
+>   clock gating bits swapped, so the one described to gate UART1 clock
+>   actually gates UART2 and vice versa,
+> - each UART has it's own "special divisor", and this uses the parent
+>   clock described above. These divisors are configure in each UART's
+>   address space separately.
+>=20
+> Thus the driver for UART2 controller needs to have access to UART1
+> address space, since UART1 address space contains some bits exclusive
+> for UART2 and also some bits which are shared between UART1 and UART2.
+>=20
+> Also, during boot, when early console is active on one of the UARTs,
+> and we want to switch parent clock from xtal (default) to TBG (to be
+> more flexible with baudrates), the driver changing UART clocks also
+> needs to be able to change the "special divisor", so that the baudrate
+> of earlycon is not changed when swtiching to normal console. Thus the
+> clock driver also needs to be able to access UART2 register space,
+> for UART2's "special divisor".
+>=20
+> For these reasons, this new UART clock driver does not use
+> ioremap_resource(), but only ioremap() to prevent resource conflicts
+> between UART clock driver and UART driver.
+>=20
+> We need to share only two 32-bit registers between the UART driver and
+> the UART clock driver:
+> - UART Clock Control
+> - UART 2 Baud Rate Divisor
+> Access to these two registers are protected by one spinlock to prevent
+> any conflicts. Access is required only during probing, when changing
+> baudrate or during suspend/resume.
+>=20
+> Hardware can be configured to use one of following clocks as UART parent
+> clock: TBG-A-P, TBG-B-P, TBG-A-S, TBG-B-S, xtal. Not every clock is
+> usable for higher buadrates. Any subset can be specified in the
+> device-tree and the driver will choose the best one which also still
+> supports the mandatory baudrate of 9600 Bd. For smooth boot log output
+> it is needed to specify clock used by early console, otherwise garbage
+> would be printed on UART during probe of UART clock driver and
+> transitioning from early console to normal console.
+>=20
+> We are implementing this to be able to configure TBG clock as UART
+> parent clock, which is required to be able to achieve higher baudrates
+> than 230400 Bd. We achieve this by referencing this new UART clock
+> device node in UART's device node. UART clock device driver
+> automatically chooses the best clock source for UART driver.
+>=20
+> Until now, UART's device-tree node needed to reference one of the static
+> clocks (xtal or one of the TBGs) as parent clock in the `clocks`
+> phandle - the parent clock which was configured before booting the
+> kernel. If bootloader changed UART's parent clock, it needed to change
+> the `clocks` phandle in DTB correspondingly before booting.
+>=20
+> From now on both the old mechanism (xtal or TBG referenced as parent
+> clock in `clocks` phandle) and the new one (UART clock referenced in the
+> `clocks` phandle) are supported, to provide full backward compatibility
+> with existing DTS files, full backward compatibility with existing boot
+> loaders, and to provide new features (runtime clock configuration to
+> allow higher baudrates than 230400 Bd). New features are available only
+> with new DTS files.
+>=20
+> There was also a discussion about how the UART node and the
+> clock-controller node could be wrapped together in a new binding [1, 2].
+> As explained there, this is not possible if we want to keep backwards
+> compatibility with existing bootloaders, and thus we are doing this by
+> putting the UART clock-controller node inside the UART1 node.
+>=20
+> [1] https://lore.kernel.org/linux-serial/20220120000651.in7s6nazif5qjkme@=
+pali/
+> [2] https://lore.kernel.org/linux-serial/20220125204006.A6D09C340E0@smtp.=
+kernel.org/
+>=20
+> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
+> Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
+> Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
+> ---
 
-Regular drm fixes pull, i915, amdgpu and tegra mostly, all pretty small.
-
-I'm in quarantine at home for next 7 days, shouldn't interrupt things,
-but might be erratic if anyone is looking for me.
-
-Dave.
-
-drm-fixes-2022-02-25:
-drm fixes for 5.17-rc6
-
-core:
-- edid: Always set RGB444
-
-tegra:
-- tegra186 suspend/resume fixes
-- syncpoint wait fix
-- build warning fix
-- eDP on older devices fix
-
-amdgpu:
-- Display FP fix
-- PCO powergating fix
-- RDNA2 OEM SKU stability fixes
-- Display PSR fix
-- PCI ASPM fix
-- Display link encoder fix for TEST_COMMIT
-- Raven2 suspend/resume fix
-- Fix a regression in virtual display support
-- GPUVM eviction fix
-
-i915:
-- Fix QGV handling on ADL-P+
-- Fix bw atomic check when switching between SAGV vs. no SAGV
-- Disconnect PHYs left connected by BIOS on disabled ports
-- Fix SAVG to no SAGV transitions on TGL+
-- Print PHY name properly on calibration error (DG2)
-
-imx:
-- dcss: Select GEM CMA helpers
-
-radeon:
-- Fix some variables's type
-
-vc4:
-- Fix codec cleanup
-- Fix PM reference counting
-The following changes since commit cfb92440ee71adcc2105b0890bb01ac3cddb8507=
-:
-
-  Linux 5.17-rc5 (2022-02-20 13:07:20 -0800)
-
-are available in the Git repository at:
-
-  git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-02-25
-
-for you to fetch changes up to ecf8a99f4807c17fa310a83067a95964cedd9ac1:
-
-  Merge tag 'drm-intel-fixes-2022-02-24' of
-git://anongit.freedesktop.org/drm/drm-intel into drm-fixes (2022-02-25
-05:51:04 +1000)
-
-----------------------------------------------------------------
-drm fixes for 5.17-rc6
-
-core:
-- edid: Always set RGB444
-
-tegra:
-- tegra186 suspend/resume fixes
-- syncpoint wait fix
-- build warning fix
-- eDP on older devices fix
-
-amdgpu:
-- Display FP fix
-- PCO powergating fix
-- RDNA2 OEM SKU stability fixes
-- Display PSR fix
-- PCI ASPM fix
-- Display link encoder fix for TEST_COMMIT
-- Raven2 suspend/resume fix
-- Fix a regression in virtual display support
-- GPUVM eviction fix
-
-i915:
-- Fix QGV handling on ADL-P+
-- Fix bw atomic check when switching between SAGV vs. no SAGV
-- Disconnect PHYs left connected by BIOS on disabled ports
-- Fix SAVG to no SAGV transitions on TGL+
-- Print PHY name properly on calibration error (DG2)
-
-imx:
-- dcss: Select GEM CMA helpers
-
-radeon:
-- Fix some variables's type
-
-vc4:
-- Fix codec cleanup
-- Fix PM reference counting
-
-----------------------------------------------------------------
-Bas Nieuwenhuizen (1):
-      drm/amd/display: Protect update_bw_bounding_box FPU code.
-
-Chen Gong (1):
-      drm/amdgpu: do not enable asic reset for raven2
-
-Christian K=C3=B6nig (1):
-      drm/radeon: fix variable type
-
-Dave Airlie (4):
-      Merge tag 'drm-misc-fixes-2022-02-23' of
-git://anongit.freedesktop.org/drm/drm-misc into drm-fixes
-      Merge tag 'drm/tegra/for-5.17-rc6' of
-https://gitlab.freedesktop.org/drm/tegra into drm-fixes
-      Merge tag 'amd-drm-fixes-5.17-2022-02-23' of
-https://gitlab.freedesktop.org/agd5f/linux into drm-fixes
-      Merge tag 'drm-intel-fixes-2022-02-24' of
-git://anongit.freedesktop.org/drm/drm-intel into drm-fixes
-
-Dmitry Osipenko (1):
-      gpu: host1x: Fix hang on Tegra186+
-
-Evan Quan (2):
-      drm/amdgpu: disable MMHUB PG for Picasso
-      drm/amd/pm: fix some OEM SKU specific stability issues
-
-Guchun Chen (2):
-      Revert "drm/amdgpu: add modifiers in amdgpu_vkms_plane_init()"
-      drm/amdgpu: bypass tiling flag check in virtual display case (v2)
-
-Imre Deak (1):
-      drm/i915: Disconnect PHYs left connected by BIOS on disabled ports
-
-Jon Hunter (1):
-      drm/tegra: Fix cast to restricted __le32
-
-Mario Limonciello (1):
-      drm/amd: Check if ASPM is enabled from PCIe subsystem
-
-Matt Roper (1):
-      drm/i915/dg2: Print PHY name properly on calibration error
-
-Maxime Ripard (3):
-      drm/vc4: hdmi: Unregister codec device on unbind
-      drm/vc4: crtc: Fix runtime_pm reference counting
-      drm/edid: Always set RGB444
-
-Michel D=C3=A4nzer (1):
-      drm/amd/display: For vblank_disable_immediate, check PSR is really us=
-ed
-
-Mikko Perttunen (1):
-      gpu: host1x: Always return syncpoint value when waiting
-
-Nicholas Kazlauskas (1):
-      drm/amd/display: Fix stream->link_enc unassigned during stream remova=
-l
-
-Qiang Yu (1):
-      drm/amdgpu: check vm ready by amdgpu_vm->evicting flag
-
-Rudi Heitbaum (1):
-      drm/imx/dcss: i.MX8MQ DCSS select DRM_GEM_CMA_HELPER
-
-Thierry Reding (1):
-      drm/tegra: dpaux: Populate AUX bus
-
-Ville Syrj=C3=A4l=C3=A4 (3):
-      drm/i915: Widen the QGV point mask
-      drm/i915: Correctly populate use_sagv_wm for all pipes
-      drm/i915: Fix bw atomic check when switching between SAGV vs. no SAGV
-
- drivers/gpu/drm/amd/amdgpu/amdgpu_display.c        |  2 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c            |  3 ++
- drivers/gpu/drm/amd/amdgpu/amdgpu_vkms.c           |  3 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c             |  9 ++++--
- drivers/gpu/drm/amd/amdgpu/soc15.c                 |  9 ++++--
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c  | 17 ++++++-----
- .../amd/display/dc/clk_mgr/dcn30/dcn30_clk_mgr.c   |  2 ++
- drivers/gpu/drm/amd/display/dc/core/dc.c           |  7 +++--
- drivers/gpu/drm/amd/display/dc/core/dc_resource.c  |  4 ---
- .../drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c    | 32 ++++++++++++++++++=
-+-
- drivers/gpu/drm/drm_edid.c                         |  2 +-
- drivers/gpu/drm/i915/display/intel_bw.c            | 18 +++++++++--
- drivers/gpu/drm/i915/display/intel_bw.h            |  8 ++---
- drivers/gpu/drm/i915/display/intel_snps_phy.c      |  2 +-
- drivers/gpu/drm/i915/display/intel_tc.c            | 26 ++++++++++++----
- drivers/gpu/drm/i915/intel_pm.c                    | 22 +++++++-------
- drivers/gpu/drm/imx/dcss/Kconfig                   |  1 +
- drivers/gpu/drm/radeon/radeon_uvd.c                |  8 ++---
- drivers/gpu/drm/tegra/Kconfig                      |  1 +
- drivers/gpu/drm/tegra/dpaux.c                      |  7 +++++
- drivers/gpu/drm/tegra/falcon.c                     |  2 +-
- drivers/gpu/drm/vc4/vc4_crtc.c                     |  8 +++--
- drivers/gpu/drm/vc4/vc4_hdmi.c                     |  8 +++++
- drivers/gpu/drm/vc4/vc4_hdmi.h                     |  1 +
- drivers/gpu/host1x/syncpt.c                        | 35 +++++++-----------=
-----
- 25 files changed, 156 insertions(+), 81 deletions(-)
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
