@@ -2,202 +2,282 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95563C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:08:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC64C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230116AbiBXQJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:09:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
+        id S230178AbiBXQJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:09:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230046AbiBXQJE (ORCPT
+        with ESMTP id S230180AbiBXQJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:09:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C656718886B;
-        Thu, 24 Feb 2022 08:08:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22192616A0;
-        Thu, 24 Feb 2022 16:07:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF009C340E9;
-        Thu, 24 Feb 2022 16:06:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645718820;
-        bh=kJbsQ1SyKQBcOIF90Cd1CS9YzTGxK6ab/SLif+LghU8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=T9i/B7IRZEAXJ/7wh6925nd6jnClctyy/1vPiIO23Oose0eEdyjSEauAwZRk/ETkQ
-         FoGh+Vfrscfs7Fk4DqAsLLSxtnVdnLv0Zo7Rq2R1PZGKVVKxcLUeV037TNDv9RXJK8
-         MVZtl3XeslsOUcPFY8uEbA06OD2c6rE8txj4iXXLUi5i9vpzreq/lwgYUhcgQNK0Pq
-         Qqn23dL1pGaRKqCMtLlpdEhr507X/JEvc2RwMr6pnbENNK55hjZ11NhSAPwHH0OH9k
-         Z2xQN+vA+wQTjaoF7HhXxFijeWzotPrHb+lc3ZBcrWQcdmmLmWxt/i3VXBbSFKKlZC
-         LM9tHRR9QXQ6A==
-From:   broonie@kernel.org
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Date:   Thu, 24 Feb 2022 16:06:54 +0000
-Message-Id: <20220224160654.3751264-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        Thu, 24 Feb 2022 11:09:17 -0500
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E177D180D3F
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:08:33 -0800 (PST)
+Received: by mail-ot1-f50.google.com with SMTP id w3-20020a056830060300b005ad10e3becaso1581155oti.3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:08:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JxRxbTHGWpM6LinUy2bx0RAfmxNnmv6jDVYuPv13Y+o=;
+        b=TRzb7c0853MCln/5rUw7eWHXFWjqRLB76I/d2vospZtWGTEtK0SrGv0VIO+RgFw2p9
+         /if2veVvLENpTgXEkAl/rYa6cOvAV816g6f576FUBhtj5Cx0Yxzkk14vgrxbBDh1Riud
+         hJqQemJParbNuTYW/qgoN0ydKS82DxYqoWHZNN1sOOG+S1je4swCNCtWOB+vsb+M1rRX
+         XgGsMamwPvifUO94cxs8uiEWXulBLATjXkb6COoZcXmvemBk0CnzyP/ej3+U8dbWkCyz
+         QNxfI+SRN4Hjf8J4HqbWdmJ8Oz67v2+nt06XvgUeKByENdcudjuyNY2p0p4FfYKAvgDt
+         T5uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JxRxbTHGWpM6LinUy2bx0RAfmxNnmv6jDVYuPv13Y+o=;
+        b=cIMtDOFIhSg2+ScuKXgSEy3xZwG4OYbmKCcLf9/IitHPLenoI0knLiEmiDzpv8c6TE
+         NgdJDoNouFIL00bNbPvxl7+OuHurEZcbNOn8pwVgKdSt26xO5f39CEdYHrsWA12kt78B
+         Cv8vVOLeNgbg9ZN6SqgI8YA5wdBqPVcbIfKYzWc5irbIpn3aiG/Q1pdAXp20ONXJYpMa
+         yZlsxzQ83g0UxYu2Cc+GRuXJmSV3uSyi6fJJW58cIdtPGmyXS/ob3r0UM9Low4TDjwMS
+         h/gbxiacy16D6e/aeu7svrV1uQTyMc2RBIomLzjkzThZJJ9PL0AVDT9+OHjO4C441tS0
+         Vx4g==
+X-Gm-Message-State: AOAM533WR1IPh0lcI6o/qr1iq+0sz3Vp/yKOCH08Va0S0l6zUQOtJ/JM
+        4qGnF8XmUhFfbMbIrot5o9PlyQ==
+X-Google-Smtp-Source: ABdhPJzDGApI0w+pifxCK8TLr/4Zs4P8LMKK2l+r4mEIpT7ZbRIx3k2WSHh9sW473rdKuSwPChmMRg==
+X-Received: by 2002:a4a:2714:0:b0:31b:ffc2:cc53 with SMTP id l20-20020a4a2714000000b0031bffc2cc53mr1135382oof.13.1645718805575;
+        Thu, 24 Feb 2022 08:06:45 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id s9sm1212573ooq.28.2022.02.24.08.06.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 08:06:44 -0800 (PST)
+Date:   Thu, 24 Feb 2022 08:08:43 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 05/16] clk: qcom: gcc-ipq806x: convert parent_names to
+ parent_data
+Message-ID: <YhetizewLY5SqcJl@ripper>
+References: <20220217235703.26641-1-ansuelsmth@gmail.com>
+ <20220217235703.26641-6-ansuelsmth@gmail.com>
+ <YhcAHQdtvSeROhT+@builder.lan>
+ <Yhen5cLB32wGmhxu@Ansuel-xps.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yhen5cLB32wGmhxu@Ansuel-xps.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On Thu 24 Feb 07:45 PST 2022, Ansuel Smith wrote:
 
-Today's linux-next merge of the net-next tree got conflicts in:
+> On Wed, Feb 23, 2022 at 09:48:45PM -0600, Bjorn Andersson wrote:
+> > On Thu 17 Feb 17:56 CST 2022, Ansuel Smith wrote:
+> > 
+> > > Convert parent_names to parent_data to modernize the driver.
+> > > Where possible use parent_hws directly.
+> > > 
+> > 
+> > Really nice to see this kind of cleanup. Unfortunately I have two
+> > comments below.
+> > 
+> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > ---
+> > >  drivers/clk/qcom/gcc-ipq806x.c | 286 ++++++++++++++++++++-------------
+> > >  1 file changed, 173 insertions(+), 113 deletions(-)
+> > > 
+> > > diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
+> > > index 34cddf461dba..828383c30322 100644
+> > > --- a/drivers/clk/qcom/gcc-ipq806x.c
+> > > +++ b/drivers/clk/qcom/gcc-ipq806x.c
+> > > @@ -25,6 +25,10 @@
+> > >  #include "clk-hfpll.h"
+> > >  #include "reset.h"
+> > >  
+> > > +static const struct clk_parent_data gcc_pxo[] = {
+> > > +	{ .fw_name = "pxo" },
+> > 
+> > I expect that this will break booting these boards with existing dtb,
+> > because there's not yet a clocks <&pxo_board> in the gcc node.
+> >
+> 
+> Considering the lack of device using ipq806x in the kernel and the fact
+> that we add the clocks to the global dtsi should we care? The breakage
+> will be present on boards that use custom kernel anyway so in theory
+> shouldn't be that hard to refresh the dtsi.
+> 
+> > If you also add .name = "pxo" here that it should still fall back to map
+> > to the board clock registered in gcc_ipq806x_probe() and once we have
+> > passed 1-2 kernel releases we can clean out the old mapping.
+> > 
+> 
+> Just to make sure, you are suggesting to put 2 entry (fw_name AND name)
+> or replace the fw_name with the generic name variable? 
+> 
 
-  drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-  drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+What you have (.fw_name = "pxo") is perfect looking forward, but if
+nothing else the clock and dts drivers are merged through different
+paths up to Torvalds so merging the set as is in a single go might
+actually break things for a while, even for you.
 
-between commits:
+So if we go { .fw_name = "pxo", .name = "pxo" } we should handle both
+the new and old dts. And I'm fine with saying that as soon as we see the
+dts change landed in a release we drop the .name - if there aren't users
+mixing and matching kernel and dtbs.
 
-  fb7e76ea3f3b6 ("net/mlx5e: TC, Skip redundant ct clear actions")
-  c63741b426e11 ("net/mlx5e: Fix MPLSoUDP encap to use MPLS action information")
+> Anyway thanks for the review!
+> 
 
-from the net tree and commits:
+Thank you for the nice work!
 
-  09bf97923224f ("net/mlx5e: TC, Move pedit_headers_action to parse_attr")
-  09bf97923224f ("net/mlx5e: TC, Move pedit_headers_action to parse_attr")
-  3b49a7edec1df ("net/mlx5e: TC, Reject rules with multiple CT actions")
+Regards,
+Bjorn
 
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-index 9cc844bd00f59..9f6a3b7620321 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/act.h
-@@ -17,13 +17,14 @@ struct mlx5e_tc_act_parse_state {
- 	struct mlx5e_tc_flow *flow;
- 	struct netlink_ext_ack *extack;
- 	bool ct_clear;
-+	u32 actions;
-+	bool ct;
- 	bool encap;
- 	bool decap;
- 	bool mpls_push;
- 	bool ptype_host;
- 	const struct ip_tunnel_info *tun_info;
- 	struct mlx5e_mpls_info mpls_info;
--	struct pedit_headers_action hdrs[__PEDIT_CMD_MAX];
- 	int ifindexes[MLX5_MAX_FLOW_FWD_VPORTS];
- 	int if_count;
- 	struct mlx5_tc_ct_priv *ct_priv;
-@@ -32,7 +33,8 @@ struct mlx5e_tc_act_parse_state {
- struct mlx5e_tc_act {
- 	bool (*can_offload)(struct mlx5e_tc_act_parse_state *parse_state,
- 			    const struct flow_action_entry *act,
--			    int act_index);
-+			    int act_index,
-+			    struct mlx5_flow_attr *attr);
- 
- 	int (*parse_action)(struct mlx5e_tc_act_parse_state *parse_state,
- 			    const struct flow_action_entry *act,
-@@ -42,6 +44,15 @@ struct mlx5e_tc_act {
- 	int (*post_parse)(struct mlx5e_tc_act_parse_state *parse_state,
- 			  struct mlx5e_priv *priv,
- 			  struct mlx5_flow_attr *attr);
-+
-+	bool (*is_multi_table_act)(struct mlx5e_priv *priv,
-+				   const struct flow_action_entry *act,
-+				   struct mlx5_flow_attr *attr);
-+};
-+
-+struct mlx5e_tc_flow_action {
-+	unsigned int num_entries;
-+	struct flow_action_entry **entries;
- };
- 
- extern struct mlx5e_tc_act mlx5e_tc_act_drop;
-@@ -74,4 +85,19 @@ mlx5e_tc_act_init_parse_state(struct mlx5e_tc_act_parse_state *parse_state,
- 			      struct flow_action *flow_action,
- 			      struct netlink_ext_ack *extack);
- 
-+void
-+mlx5e_tc_act_reorder_flow_actions(struct flow_action *flow_action,
-+				  struct mlx5e_tc_flow_action *flow_action_reorder);
-+
-+int
-+mlx5e_tc_act_post_parse(struct mlx5e_tc_act_parse_state *parse_state,
-+			struct flow_action *flow_action,
-+			struct mlx5_flow_attr *attr,
-+			enum mlx5_flow_namespace_type ns_type);
-+
-+int
-+mlx5e_tc_act_set_next_post_act(struct mlx5e_tc_flow *flow,
-+			       struct mlx5_flow_attr *attr,
-+			       struct mlx5_flow_attr *next_attr);
-+
- #endif /* __MLX5_EN_TC_ACT_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
-index 58cc33f1363d2..6e63d898d3d53 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
-@@ -8,13 +8,14 @@
- static bool
- tc_act_can_offload_ct(struct mlx5e_tc_act_parse_state *parse_state,
- 		      const struct flow_action_entry *act,
--		      int act_index)
-+		      int act_index,
-+		      struct mlx5_flow_attr *attr)
- {
-+	bool clear_action = act->ct.action & TCA_CT_ACT_CLEAR;
- 	struct netlink_ext_ack *extack = parse_state->extack;
- 
--	if (flow_flag_test(parse_state->flow, SAMPLE)) {
--		NL_SET_ERR_MSG_MOD(extack,
--				   "Sample action with connection tracking is not supported");
-+	if (parse_state->ct && !clear_action) {
-+		NL_SET_ERR_MSG_MOD(extack, "Multiple CT actions are not supported");
- 		return false;
- 	}
- 
-@@ -40,18 +41,34 @@ tc_act_parse_ct(struct mlx5e_tc_act_parse_state *parse_state,
- 	if (err)
- 		return err;
- 
--	flow_flag_set(parse_state->flow, CT);
- 
- 	if (mlx5e_is_eswitch_flow(parse_state->flow))
- 		attr->esw_attr->split_count = attr->esw_attr->out_count;
- 
- 	parse_state->ct_clear = clear_action;
-+	if (!clear_action) {
-+		attr->flags |= MLX5_ATTR_FLAG_CT;
-+		flow_flag_set(parse_state->flow, CT);
-+		parse_state->ct = true;
-+	}
- 
- 	return 0;
- }
- 
-+static bool
-+tc_act_is_multi_table_act_ct(struct mlx5e_priv *priv,
-+			     const struct flow_action_entry *act,
-+			     struct mlx5_flow_attr *attr)
-+{
-+	if (act->ct.action & TCA_CT_ACT_CLEAR)
-+		return false;
-+
-+	return true;
-+}
-+
- struct mlx5e_tc_act mlx5e_tc_act_ct = {
- 	.can_offload = tc_act_can_offload_ct,
- 	.parse_action = tc_act_parse_ct,
-+	.is_multi_table_act = tc_act_is_multi_table_act_ct,
- };
- 
+> > > +};
+> > > +
+> > >  static struct clk_pll pll0 = {
+> > >  	.l_reg = 0x30c4,
+> > >  	.m_reg = 0x30c8,
+> > > @@ -35,7 +39,7 @@ static struct clk_pll pll0 = {
+> > >  	.status_bit = 16,
+> > >  	.clkr.hw.init = &(struct clk_init_data){
+> > >  		.name = "pll0",
+> > > -		.parent_names = (const char *[]){ "pxo" },
+> > > +		.parent_data = gcc_pxo,
+> > >  		.num_parents = 1,
+> > >  		.ops = &clk_pll_ops,
+> > >  	},
+> > > @@ -46,7 +50,9 @@ static struct clk_regmap pll0_vote = {
+> > >  	.enable_mask = BIT(0),
+> > >  	.hw.init = &(struct clk_init_data){
+> > >  		.name = "pll0_vote",
+> > > -		.parent_names = (const char *[]){ "pll0" },
+> > > +		.parent_hws = (const struct clk_hw*[]){
+> > > +			&pll0.clkr.hw,
+> > > +		},
+> > >  		.num_parents = 1,
+> > >  		.ops = &clk_pll_vote_ops,
+> > >  	},
+> > > @@ -62,7 +68,7 @@ static struct clk_pll pll3 = {
+> > >  	.status_bit = 16,
+> > >  	.clkr.hw.init = &(struct clk_init_data){
+> > >  		.name = "pll3",
+> > > -		.parent_names = (const char *[]){ "pxo" },
+> > > +		.parent_data = gcc_pxo,
+> > >  		.num_parents = 1,
+> > >  		.ops = &clk_pll_ops,
+> > >  	},
+> > > @@ -89,7 +95,7 @@ static struct clk_pll pll8 = {
+> > >  	.status_bit = 16,
+> > >  	.clkr.hw.init = &(struct clk_init_data){
+> > >  		.name = "pll8",
+> > > -		.parent_names = (const char *[]){ "pxo" },
+> > > +		.parent_data = gcc_pxo,
+> > >  		.num_parents = 1,
+> > >  		.ops = &clk_pll_ops,
+> > >  	},
+> > > @@ -100,7 +106,9 @@ static struct clk_regmap pll8_vote = {
+> > >  	.enable_mask = BIT(8),
+> > >  	.hw.init = &(struct clk_init_data){
+> > >  		.name = "pll8_vote",
+> > > -		.parent_names = (const char *[]){ "pll8" },
+> > > +		.parent_hws = (const struct clk_hw*[]){
+> > > +			&pll8.clkr.hw,
+> > > +		},
+> > >  		.num_parents = 1,
+> > >  		.ops = &clk_pll_vote_ops,
+> > >  	},
+> > > @@ -123,7 +131,7 @@ static struct hfpll_data hfpll0_data = {
+> > >  static struct clk_hfpll hfpll0 = {
+> > >  	.d = &hfpll0_data,
+> > >  	.clkr.hw.init = &(struct clk_init_data){
+> > > -		.parent_names = (const char *[]){ "pxo" },
+> > > +		.parent_data = gcc_pxo,
+> > >  		.num_parents = 1,
+> > >  		.name = "hfpll0",
+> > >  		.ops = &clk_ops_hfpll,
+> > > @@ -149,7 +157,7 @@ static struct hfpll_data hfpll1_data = {
+> > >  static struct clk_hfpll hfpll1 = {
+> > >  	.d = &hfpll1_data,
+> > >  	.clkr.hw.init = &(struct clk_init_data){
+> > > -		.parent_names = (const char *[]){ "pxo" },
+> > > +		.parent_data = gcc_pxo,
+> > >  		.num_parents = 1,
+> > >  		.name = "hfpll1",
+> > >  		.ops = &clk_ops_hfpll,
+> > > @@ -175,7 +183,7 @@ static struct hfpll_data hfpll_l2_data = {
+> > >  static struct clk_hfpll hfpll_l2 = {
+> > >  	.d = &hfpll_l2_data,
+> > >  	.clkr.hw.init = &(struct clk_init_data){
+> > > -		.parent_names = (const char *[]){ "pxo" },
+> > > +		.parent_data = gcc_pxo,
+> > >  		.num_parents = 1,
+> > >  		.name = "hfpll_l2",
+> > >  		.ops = &clk_ops_hfpll,
+> > > @@ -194,7 +202,7 @@ static struct clk_pll pll14 = {
+> > >  	.status_bit = 16,
+> > >  	.clkr.hw.init = &(struct clk_init_data){
+> > >  		.name = "pll14",
+> > > -		.parent_names = (const char *[]){ "pxo" },
+> > > +		.parent_data = gcc_pxo,
+> > >  		.num_parents = 1,
+> > >  		.ops = &clk_pll_ops,
+> > >  	},
+> > > @@ -205,7 +213,9 @@ static struct clk_regmap pll14_vote = {
+> > >  	.enable_mask = BIT(14),
+> > >  	.hw.init = &(struct clk_init_data){
+> > >  		.name = "pll14_vote",
+> > > -		.parent_names = (const char *[]){ "pll14" },
+> > > +		.parent_hws = (const struct clk_hw*[]){
+> > > +			&pll14.clkr.hw,
+> > > +		},
+> > >  		.num_parents = 1,
+> > >  		.ops = &clk_pll_vote_ops,
+> > >  	},
+> > > @@ -238,7 +248,7 @@ static struct clk_pll pll18 = {
+> > >  	.freq_tbl = pll18_freq_tbl,
+> > >  	.clkr.hw.init = &(struct clk_init_data){
+> > >  		.name = "pll18",
+> > > -		.parent_names = (const char *[]){ "pxo" },
+> > > +		.parent_data = gcc_pxo,
+> > >  		.num_parents = 1,
+> > >  		.ops = &clk_pll_ops,
+> > >  	},
+> > > @@ -259,9 +269,9 @@ static const struct parent_map gcc_pxo_pll8_map[] = {
+> > >  	{ P_PLL8, 3 }
+> > >  };
+> > >  
+> > > -static const char * const gcc_pxo_pll8[] = {
+> > > -	"pxo",
+> > > -	"pll8_vote",
+> > > +static const struct clk_parent_data gcc_pxo_pll8[] = {
+> > > +	{ .fw_name = "pxo" },
+> > > +	{ .hw = &pll8_vote.hw },
+> > >  };
+> > >  
+> > >  static const struct parent_map gcc_pxo_pll8_cxo_map[] = {
+> > > @@ -270,10 +280,10 @@ static const struct parent_map gcc_pxo_pll8_cxo_map[] = {
+> > >  	{ P_CXO, 5 }
+> > >  };
+> > >  
+> > > -static const char * const gcc_pxo_pll8_cxo[] = {
+> > > -	"pxo",
+> > > -	"pll8_vote",
+> > > -	"cxo",
+> > > +static const struct clk_parent_data gcc_pxo_pll8_cxo[] = {
+> > > +	{ .fw_name = "pxo" },
+> > > +	{ .hw = &pll8_vote.hw },
+> > > +	{ .fw_name = "cxo" },
+> > 
+> > As with "pxo", I think you need a .name = "cxo" here as well.
+> > 
+> > Regards,
+> > Bjorn
+> 
+> -- 
+> 	Ansuel
