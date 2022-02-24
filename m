@@ -2,236 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B70C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:03:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DCFCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:03:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231991AbiBXRED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:04:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
+        id S232032AbiBXREL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:04:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232403AbiBXRDK (ORCPT
+        with ESMTP id S231881AbiBXRC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 12:03:10 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657341CBAB7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:00:15 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nNHSx-0002ML-Er; Thu, 24 Feb 2022 17:59:43 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nNHSv-00139d-Ma; Thu, 24 Feb 2022 17:59:40 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nNHSt-005Go7-SU; Thu, 24 Feb 2022 17:59:39 +0100
-Date:   Thu, 24 Feb 2022 17:59:39 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, Luca Weiss <luca@z3ntu.xyz>,
-        Doug Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v13 2/2] leds: Add driver for Qualcomm LPG
-Message-ID: <20220224165939.4275x7mzp7qpl2kj@pengutronix.de>
-References: <20220218183116.2261770-1-bjorn.andersson@linaro.org>
- <20220218183116.2261770-2-bjorn.andersson@linaro.org>
+        Thu, 24 Feb 2022 12:02:27 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2083.outbound.protection.outlook.com [40.107.244.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2012CA0E9;
+        Thu, 24 Feb 2022 08:59:21 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BKdKFu1PeZi/lzGRp8rGVO4YZ129XIGbF77UFA3awwHTrDRlK7D59LDJTLq0Kbd2BnRkIj/pElHMSRysQXlyh6Pou/v+G6LT5amTIR+hBVXw1KlXIitjm0coinzV0o61xjiyvegq+pfw1hl9VzYKNlJxjefMyp1cC8GOIqo7HfXBG2rJFNxNgHnZaCM2WQC0Jy528hIzJ4BkwBCzIll2owmZcm6KNVQx9EyvmVspbO9YMmwg7+lSo69rth5KyBGgyZiulGuaxlwNPp3Q2z0HwXpOJDlnjZwGmvVrfyc6te0j2ShXNfyBanlEktdY4s3IVuvwmAtz7SWdFBiSkMykSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XJTocnhKOp+K4CopHK+WzJCTU8rJlZFjYl1tpOvoZ8w=;
+ b=VeXwgVzJmyZZ+BzSEt2r/BeBux/DM89+WFM6U8t7QxdQq8micv4nSYL4Y1HFdBqqbzt/UduyL1Cj34I+i0Z38H1KbJpSZbe1vInOpx9UcufsrtG+HtTkQ3bzQTNE3OQvcDsiKYDJRM9nKIMg06oYTDHYBOE6nnpWlOjUlllGdLJQDqKOmlMt6TN+F/1kD4jGv9YsJOH7prkQjQmIRlDiI+rX/dZGo0H3wdyY+JFU586ls8Mtt27ExY5tMG3nTMwToqpcTz2IBd2iN9TFMpyTN7JL0JFC9wsBPkCfuaA8tIUMytcF6lX3dQfEC6gTW4Mguk3TOgiTNc54S55btQO55A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XJTocnhKOp+K4CopHK+WzJCTU8rJlZFjYl1tpOvoZ8w=;
+ b=2genpiNJVu4OKIHA18PbkSEy/01opFcG4NgxabqMq6kRbT5Tp2NE2dbmb3QQvWBiizAsZ64Jj+P9I9fC1ghDuT3W7aAcy82jhpMlc2chbqrXc8KG4Sra1bB2v9O0+fKtqP2RDViUbYdckexWjlieRX1Ee3t0oNvCCel+MytlvKg=
+Received: from DM3PR14CA0138.namprd14.prod.outlook.com (2603:10b6:0:53::22) by
+ BN8PR12MB3442.namprd12.prod.outlook.com (2603:10b6:408:43::33) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5017.22; Thu, 24 Feb 2022 16:59:12 +0000
+Received: from DM6NAM11FT024.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:0:53:cafe::d7) by DM3PR14CA0138.outlook.office365.com
+ (2603:10b6:0:53::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22 via Frontend
+ Transport; Thu, 24 Feb 2022 16:59:12 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT024.mail.protection.outlook.com (10.13.172.159) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 16:59:12 +0000
+Received: from sbrijesh-desktop.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 24 Feb
+ 2022 10:59:04 -0600
+From:   Brijesh Singh <brijesh.singh@amd.com>
+To:     <x86@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kvm@vger.kernel.org>, <linux-efi@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>,
+        <linux-coco@lists.linux.dev>, <linux-mm@kvack.org>
+CC:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        "Vitaly Kuznetsov" <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        "Peter Zijlstra" <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        <brijesh.ksingh@gmail.com>, <tony.luck@intel.com>,
+        <marcorr@google.com>, <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Brijesh Singh <brijesh.singh@amd.com>
+Subject: [PATCH v11 41/45] x86/sev: Register SEV-SNP guest request platform device
+Date:   Thu, 24 Feb 2022 10:56:21 -0600
+Message-ID: <20220224165625.2175020-42-brijesh.singh@amd.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220224165625.2175020-1-brijesh.singh@amd.com>
+References: <20220224165625.2175020-1-brijesh.singh@amd.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="vypeaeqkhphwiwzw"
-Content-Disposition: inline
-In-Reply-To: <20220218183116.2261770-2-bjorn.andersson@linaro.org>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e6060f8e-fa33-48f6-bea3-08d9f7b6fb53
+X-MS-TrafficTypeDiagnostic: BN8PR12MB3442:EE_
+X-Microsoft-Antispam-PRVS: <BN8PR12MB34425BFA34D09F219C108DB8E53D9@BN8PR12MB3442.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XebzrOAsrOJmm1vC6dJDMhmlwCbBaFhix6eBkrvV9pV4ORloglcC8V6Rcr5vPINpi0ZB5rrJ2IUnCwPG3kY1F3TlbUMAcfJYHF/Ma5bzfAYAVzg3JhZhDrJDW2e+qThKeuiu6uSOZd1nv2b+mHOs8GGyltPE7ReOZQyv7EqkZ+pNVZoX8Z8lCY0j8p2O0C2Trdo4fkH3d0VvKlqyEpt2Q0wubV7AS0FNZ9i69+P4ckCMSgB5y0gt5JMPSVg6UUNHd9FqGHs1skINRNeWkLGmer++mMAwL35tVjO5PfLIoRDjpBcYGQz+PWeo+3+cdjWvdR3LAokZtBBqWjaIcwB4gPVRRmFSzN0RqiozQEUoVCT2u3ihcx5XS0dlfVaOsB6GS1QsCQcM1VNjmS4cENM9iu6Czg2IHpXFCeqRHpFzSKApU1NnvmpBnM52Ikf/t1+BaVB1VtH0K9c7HSe4L9F4p8HQI9Txtd+onil1Dc2kt4aOMel9ta/A7K++jn+0wPBNCbAEKHYciJO24KphYO653kuuFDzjKNaL1WDEEkkZAjfp5k+S5X3S09LrkT3jFmDUBZcOsGa7IdMLKzv6vWtM2xAGdqvQToIJv86wsVmijXW9k+D2lWIfLk7fLpTzvmP876nS942OvIOpK6EIPOJ3kGSnZRnIt6IFPn/XucgQO+dxuV2RBrGvpLJ/luoLeTgk/rbwdoP4SWo5wRIFLnJZkgASvyvETqNxXDLKNQc+jDQ=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(26005)(186003)(40460700003)(83380400001)(47076005)(16526019)(1076003)(2616005)(426003)(336012)(7406005)(2906002)(36756003)(44832011)(86362001)(36860700001)(7416002)(8936002)(316002)(54906003)(81166007)(110136005)(356005)(70586007)(70206006)(8676002)(82310400004)(4326008)(5660300002)(508600001)(7696005)(6666004)(36900700001)(2101003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 16:59:12.1220
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6060f8e-fa33-48f6-bea3-08d9f7b6fb53
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT024.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3442
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Version 2 of the GHCB specification providesa  Non Automatic Exit (NAE)
+event type that can be used by the SEV-SNP guest to communicate with the
+PSP without risk from a malicious hypervisor who wishes to read, alter,
+drop or replay the messages sent.
 
---vypeaeqkhphwiwzw
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+SNP_LAUNCH_UPDATE can insert two special pages into the guest’s memory:
+the secrets page and the CPUID page. The PSP firmware populates the
+contents of the secrets page. The secrets page contains encryption keys
+used by the guest to interact with the firmware. Because the secrets
+page is encrypted with the guest’s memory encryption key, the hypervisor
+cannot read the keys. See SEV-SNP firmware spec for further details on
+the secrets page format.
 
-On Fri, Feb 18, 2022 at 10:31:16AM -0800, Bjorn Andersson wrote:
-> The Light Pulse Generator (LPG) is a PWM-block found in a wide range of
-> PMICs from Qualcomm. These PMICs typically comes with 1-8 LPG instances,
-> with their output being routed to various other components, such as
-> current sinks or GPIOs.
->=20
-> Each LPG instance can operate on fixed parameters or based on a shared
-> lookup-table, altering the duty cycle over time. This provides the means
-> for hardware assisted transitions of LED brightness.
->=20
-> A typical use case for the fixed parameter mode is to drive a PWM
-> backlight control signal, the driver therefor allows each LPG instance
-> to be exposed to the kernel either through the LED framework or the PWM
-> framework.
->=20
-> A typical use case for the LED configuration is to drive RGB LEDs in
-> smartphones etc, for which the driver supports multiple channels to be
-> ganged up to a MULTICOLOR LED. In this configuration the pattern
-> generators will be synchronized, to allow for multi-color patterns.
->=20
-> The idea of modelling this as a LED driver ontop of a PWM driver was
-> considered, but setting the properties related to patterns does not fit
-> in the PWM API. Similarly the idea of just duplicating the lower bits in
-> a PWM and LED driver separately was considered, but this would not allow
-> the PWM channels and LEDs to be configured on a per-board basis. The
-> driver implements the more complex LED interface, and provides a PWM
-> interface on the side of that, in the same driver.
->=20
-> Tested-by: Luca Weiss <luca@z3ntu.xyz>
-> Tested-by: Doug Anderson <dianders@chromium.org>
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
-> Changes since v12:
-> - Initialize ret in lpg_pwm_apply()
->=20
-> Changes since v11:
-> - Extended commit message to cover decision to put pwm_chip in the LED dr=
-iver
-> - Added Documentation, in particular for the hw_pattern format
-> - Added a lock to synchronize requests from LED and PWM frameworks
-> - Turned out that the 9bit selector differs per channel in some PMICs, so
->   replaced bitmask in lpg_data with lookup based on QPNP SUBTYPE
-> - Fixed kerneldoc for the struct device pointer in struct lpg
-> - Rewrote conditional in lut_free() to make it easier to read
-> - Corrected and deduplicated max_period expression in lpg_calc_freq()
-> - Extended nom/dom to numerator/denominator in lpg_calc_freq()
-> - Replaced 1 << 9 with LPG_RESOLUTION in one more place in lpg_calc_freq()
-> - Use FIELD_PREP() in lpg_apply_freq() as masks was introduced for readin=
-g the
->   same in get_state()
-> - Cleaned up the pattern format, to allow specifying both low and high pa=
-use
->   with and without pingpong mode.
-> - Only update frequency and pwm_value if PWM channel is enabled in lpg_pw=
-m_apply
-> - Make lpg_pwm_get_state() read the hardware state, in order to pick up e=
-=2Eg.
->   bootloader backlight configuration
-> - Use devm_bitmap_zalloc() to allocate the lut_bitmap
-> - Use dev_err_probe() in lpg_probe()
-> - Extended Kconfig help text to mention module name and satisfy checkpatch
->=20
->  Documentation/leds/leds-qcom-lpg.rst |   76 ++
->  drivers/leds/Kconfig                 |    3 +
->  drivers/leds/Makefile                |    3 +
->  drivers/leds/rgb/Kconfig             |   18 +
->  drivers/leds/rgb/Makefile            |    3 +
->  drivers/leds/rgb/leds-qcom-lpg.c     | 1401 ++++++++++++++++++++++++++
->  6 files changed, 1504 insertions(+)
->  create mode 100644 Documentation/leds/leds-qcom-lpg.rst
->  create mode 100644 drivers/leds/rgb/Kconfig
->  create mode 100644 drivers/leds/rgb/Makefile
->  create mode 100644 drivers/leds/rgb/leds-qcom-lpg.c
->=20
-> diff --git a/Documentation/leds/leds-qcom-lpg.rst b/Documentation/leds/le=
-ds-qcom-lpg.rst
-> new file mode 100644
-> index 000000000000..d4825a289888
-> --- /dev/null
-> +++ b/Documentation/leds/leds-qcom-lpg.rst
-> @@ -0,0 +1,76 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-> +Kernel driver for Qualcomm LPG
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D
-> +
-> +Description
-> +-----------
-> +
-> +The Qualcomm LPG can be found in a variety of Qualcomm PMICs and consist=
-s of a
-> +number of PWM channels, a programmable pattern lookup table and a RGB LED
-> +current sink.
-> +
-> +To facilitate the various use cases, the LPG channels can be exposed as
-> +individual LEDs, grouped together as RGB LEDs or otherwise be accessed a=
-s PWM
-> +channels. The output of each PWM channel is routed to other hardware
-> +blocks, such as the RGB current sink, GPIO pins etc.
-> +
-> +The each PWM channel can operate with a period between 27us and 384 seco=
-nds and
-> +has a 9 bit resolution of the duty cycle.
-> +
-> +In order to provide support for status notifications with the CPU subsys=
-tem in
-> +deeper idle states the LPG provides pattern support. This consists of a =
-shared
-> +lookup table of brightness values and per channel properties to select t=
-he
-> +range within the table to use, the rate and if the pattern should repeat.
-> +
-> +The pattern for a channel can be programmed using the "pattern" trigger,=
- using
-> +the hw_pattern attribute.
-> +
-> +/sys/class/leds/<led>/hw_pattern
-> +--------------------------------
-> +
-> +Specify a hardware pattern for a Qualcomm LPG LED.
-> +
-> +The pattern is a series of brightness and hold-time pairs, with the hold=
--time
-> +expressed in milliseconds. The hold time is a property of the pattern an=
-d must
-> +therefor be identical for each element in the pattern (except for the pa=
-uses
-> +described below).
-> +
-> +Simple pattern::
-> +
-> +    "255 500 0 500"
-> +
-> +        ^
-> +        |
-> +    255 +----+    +----+
-> +	|    |    |    |      ...
-> +      0 |    +----+    +----
-> +        +---------------------->
-> +	0    5   10   15     time (100ms)
+Create a platform device that the SEV-SNP guest driver can bind to get
+the platform resources such as encryption key and message id to use to
+communicate with the PSP. The SEV-SNP guest driver provides a userspace
+interface to get the attestation report, key derivation, extended
+attestation report etc.
 
-you're mixing tabs and spaces here, I suggest to use spaces only. Not
-sure you want to respin for that.
+Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+---
+ arch/x86/include/asm/sev.h |  4 +++
+ arch/x86/kernel/sev.c      | 56 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 60 insertions(+)
 
-(I didn't look into the rest of the driver, but assume it's fine.)
+diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
+index 9830ee1d6ef0..ca977493eb72 100644
+--- a/arch/x86/include/asm/sev.h
++++ b/arch/x86/include/asm/sev.h
+@@ -95,6 +95,10 @@ struct snp_req_data {
+ 	unsigned int data_npages;
+ };
+ 
++struct snp_guest_platform_data {
++	u64 secrets_gpa;
++};
++
+ #ifdef CONFIG_AMD_MEM_ENCRYPT
+ extern struct static_key_false sev_es_enable_key;
+ extern void __sev_es_ist_enter(struct pt_regs *regs);
+diff --git a/arch/x86/kernel/sev.c b/arch/x86/kernel/sev.c
+index cafced2237f3..7784067df7fa 100644
+--- a/arch/x86/kernel/sev.c
++++ b/arch/x86/kernel/sev.c
+@@ -19,6 +19,9 @@
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/cpumask.h>
++#include <linux/efi.h>
++#include <linux/platform_device.h>
++#include <linux/io.h>
+ 
+ #include <asm/cpu_entry_area.h>
+ #include <asm/stacktrace.h>
+@@ -2148,3 +2151,56 @@ int snp_issue_guest_request(u64 exit_code, struct snp_req_data *input, unsigned
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(snp_issue_guest_request);
++
++static struct platform_device guest_req_device = {
++	.name		= "snp-guest",
++	.id		= -1,
++};
++
++static u64 get_secrets_page(void)
++{
++	u64 pa_data = boot_params.cc_blob_address;
++	struct cc_blob_sev_info info;
++	void *map;
++
++	/*
++	 * The CC blob contains the address of the secrets page, check if the
++	 * blob is present.
++	 */
++	if (!pa_data)
++		return 0;
++
++	map = early_memremap(pa_data, sizeof(info));
++	memcpy(&info, map, sizeof(info));
++	early_memunmap(map, sizeof(info));
++
++	/* smoke-test the secrets page passed */
++	if (!info.secrets_phys || info.secrets_len != PAGE_SIZE)
++		return 0;
++
++	return info.secrets_phys;
++}
++
++static int __init snp_init_platform_device(void)
++{
++	struct snp_guest_platform_data data;
++	u64 gpa;
++
++	if (!cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
++		return -ENODEV;
++
++	gpa = get_secrets_page();
++	if (!gpa)
++		return -ENODEV;
++
++	data.secrets_gpa = gpa;
++	if (platform_device_add_data(&guest_req_device, &data, sizeof(data)))
++		return -ENODEV;
++
++	if (platform_device_register(&guest_req_device))
++		return -ENODEV;
++
++	pr_info("SNP guest platform device initialized.\n");
++	return 0;
++}
++device_initcall(snp_init_platform_device);
+-- 
+2.25.1
 
-Best regards
-Uwe
-
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---vypeaeqkhphwiwzw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIXuXcACgkQwfwUeK3K
-7Ams5wf+MyshgmoyVbFd/VtoEJNG+8bLx/KFx6APd8Kl+8oj/EFWOfBDYU9GDKLw
-EsQrVAoJ0gQg/K6hMTUAsN/gwhInmrb4aDHy3Ot1GWBNMoTXiADdF84G6X9avKoF
-Qii16MnMTN95w6CbsDf41DIwjWv+RgIISVztXKjFBWvuL8EaLeMVgcpEIKw/j7JH
-/0BBSbAZmY0039nhyPeVSJhW8IAX0eAhlwN4pTHvbXZ99P5TIFSuOZu9mEROr2FV
-1VbQfq1KRCbxCpKwPiLyKKBsmVHve6nSH6EDOycwu+twmgAiJMk8u4wKpysRClFw
-eKlrJ+QUoNrzwBxmbDphCRvapeddng==
-=X7KB
------END PGP SIGNATURE-----
-
---vypeaeqkhphwiwzw--
