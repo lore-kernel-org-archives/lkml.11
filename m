@@ -2,270 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79CF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F44AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:23:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233781AbiBXTVm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:21:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52932 "EHLO
+        id S233813AbiBXTXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:23:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233705AbiBXTVa (ORCPT
+        with ESMTP id S232351AbiBXTXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 14:21:30 -0500
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA941D6810
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:20:59 -0800 (PST)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-2d726bd83a2so7410707b3.20
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:20:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=5/X2V+LUb5lUAOXbMwMCBLiJRGGwZlFxW0+/UOkBjzQ=;
-        b=I7rTEbob1KpJ25AxqDD6poFdpTi6PO5gSy3hmZbF6mAkZG2JGgNI8NaJK4M4f/qLdo
-         heJBewx4DQLBI06OpVCsai0xlqX4FDjJy4Doy5Wp+1iws5KDD4UmaCWrmXXsXjrr14mD
-         5oJ9akJgQf583BcLputTjpd0vzhxJ086QOHZCk9DkcLx/a3RRMX6MMo1LtPwQKKjHB9v
-         Eeh8DM/Dh4oR9SyUw2Te7AyVLCCMQ/ds4a5Dtb+nbzL0oTRDrP5nkdoM6cwsClvi3rSE
-         bFLOagVBxroRoa/N6pO0rTLENMkaoc6eE4uOkpH5EADcjsAfcGZtqLxsOyOvHlHFg71S
-         Unjw==
+        Thu, 24 Feb 2022 14:23:36 -0500
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13C420B16E;
+        Thu, 24 Feb 2022 11:23:05 -0800 (PST)
+Received: by mail-oi1-f173.google.com with SMTP id 12so4351727oix.12;
+        Thu, 24 Feb 2022 11:23:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=5/X2V+LUb5lUAOXbMwMCBLiJRGGwZlFxW0+/UOkBjzQ=;
-        b=QOvWpoIy457jLFKCgVImrWz3YomyayntplKM50y6Huge7dRlDwb+/jgWJHet+YQrgF
-         MFJFopX7VABFEcAzmBH1EhGcX1ugM7P9AGuUOfxY15M3GmndxlsB3p4pECElVp7H8OOE
-         ojumWOMWOG0c1c9McbmccTYMx6O26EakvQgLl/j+hH7PTvn+M4dE5BvxA7RVP4VClFtY
-         tRBh+I3mDFGzdG+/1lOYPY5CwHjJGe41ADy1dwH/MZIVOKFTS5r6Dp+DtUIuyc7RERII
-         ZCGdl68EUMdscAj5CIjMI2Mbf28JC17G3Pmc0XmW8vUneLjY/soLr/07B+Ocvzq2xqjf
-         0bew==
-X-Gm-Message-State: AOAM530uPwJOic5sDSHykLP0BslBX2OI+VNMyquRh92CO/PoaakG3vTI
-        VhrBQhxwDpmK3GkCixiwqwaIEoY7d9GkBw==
-X-Google-Smtp-Source: ABdhPJx4s6dYkJwPQXgMCaM3MkzCoRxl//hffVWfyTTKPUGs5Zfx2oIKatlg/xsI5gXq0xHURGV1kT6EU86Y6g==
-X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:96e5:fbf5:15ed:8b6f])
- (user=dlatypov job=sendgmr) by 2002:a25:8748:0:b0:624:783e:d501 with SMTP id
- e8-20020a258748000000b00624783ed501mr3853640ybn.127.1645730458610; Thu, 24
- Feb 2022 11:20:58 -0800 (PST)
-Date:   Thu, 24 Feb 2022 11:20:35 -0800
-In-Reply-To: <20220224192036.2388302-1-dlatypov@google.com>
-Message-Id: <20220224192036.2388302-2-dlatypov@google.com>
-Mime-Version: 1.0
-References: <20220224192036.2388302-1-dlatypov@google.com>
-X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH v2 2/3] kunit: tool: refactor how we plumb metadata into JSON
-From:   Daniel Latypov <dlatypov@google.com>
-To:     brendanhiggins@google.com, davidgow@google.com
-Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
-        Daniel Latypov <dlatypov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9vXsvKJlW7AxtBGaO+YUrlsDVwA2t7tuHb+ZPnQHnEo=;
+        b=lAG4qt7sf0vmmmGz0f75kNpOhl9lzOOFYRILikP76o15PUuGvgQNsr1tvOKp8DtygD
+         y5L+CV5nOQqnklw3cUDLhsEgJsll2YER4iS9e6orMW6HQnHzSJSvj5deEaQmzRBrvx2p
+         qeOA+DODZAQRwEMc6kOiwasxu3lv0myk69ZghJB6rX1OX19cLHPdcWwD5F9UqNX5XIOd
+         Qf1L7mAq23j77F1rkECD5ufEZayTeO8rWoeJFqe0YlmIjFEUVRT+DJTNuAteJZjpVNJO
+         yueV5cyLXKMuKWNKUun6VSniDugwJl3mNlyt3NuQeBdVDI3N0TquzRiGDdTm6tl6Wc3m
+         dkDg==
+X-Gm-Message-State: AOAM530jOm0d9cNEjoAEKerjU+UbbcRTvSqcHPiOoCKgyQI0x16ClYDx
+        zCOFYbpN6n4swdblKy2aNA==
+X-Google-Smtp-Source: ABdhPJyT5jyQjcrWS/WBfCkV0FKO13pGnYEJLcEIEnOQ4brqwyu8lTKgq6ivu/QQZeN+nm909DyY2A==
+X-Received: by 2002:a05:6870:1b0f:b0:b4:10eb:c070 with SMTP id hl15-20020a0568701b0f00b000b410ebc070mr1908975oab.161.1645730584925;
+        Thu, 24 Feb 2022 11:23:04 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id bc24-20020a056808171800b002d722aead50sm176027oib.27.2022.02.24.11.23.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 11:23:03 -0800 (PST)
+Received: (nullmailer pid 3438427 invoked by uid 1000);
+        Thu, 24 Feb 2022 19:23:02 -0000
+Date:   Thu, 24 Feb 2022 13:23:02 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     jassisinghbrar@gmail.com, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        linux-imx@nxp.com, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        krzysztof.kozlowski@canonical.com, daniel.baluta@nxp.com,
+        Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH V4 2/5] dt-bindings: mailbox: imx-mu: add i.MX93 S4 MU
+ support
+Message-ID: <YhfbFi4Cl1TfWqX7@robh.at.kernel.org>
+References: <20220223023157.3478540-1-peng.fan@oss.nxp.com>
+ <20220223023157.3478540-3-peng.fan@oss.nxp.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220223023157.3478540-3-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When using --json, kunit.py run/exec/parse will produce results in
-KernelCI json format.
-As part of that, we include the build_dir that was used, and we
-(incorrectly) hardcode in the arch, etc.
+On Wed, Feb 23, 2022 at 10:31:54AM +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Similar to i.MX8ULP S4 MU, i.MX93 MU is dedicated for communication
+> between Sentinel and Cortex-A cores from hardware design, it could not be
+> reused for other purpose.
+> 
+> However i.MX93 S4 MU use separate tx/rx interrupt, so update
+> interrupts and add interrupt-names property.
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  .../devicetree/bindings/mailbox/fsl,mu.yaml   | 27 ++++++++++++++++++-
+>  1 file changed, 26 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml b/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
+> index 6d056d5e16bf..f5f9d501845d 100644
+> --- a/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
+> +++ b/Documentation/devicetree/bindings/mailbox/fsl,mu.yaml
+> @@ -29,6 +29,7 @@ properties:
+>        - const: fsl,imx8ulp-mu
+>        - const: fsl,imx8-mu-scu
+>        - const: fsl,imx8-mu-seco
+> +      - const: fsl,imx93-mu-s4
+>        - const: fsl,imx8ulp-mu-s4
+>        - items:
+>            - const: fsl,imx93-mu
+> @@ -55,7 +56,13 @@ properties:
+>      maxItems: 1
+>  
+>    interrupts:
+> -    maxItems: 1
+> +    minItems: 1
 
-We'll want a way to plumb more values (as well as the correct `arch`),
-so this patch groups those fields into kunit_json.Metadata type.
-This patch should have no user visible changes.
+I still don't think you tested this with 2 items. You need minItems and 
+maxItems.
 
-And since we only used build_dir in KunitParseRequest for json, we can
-now move it out of that struct and add it into KunitExecRequest, which
-needs it and used to get it via inheritance.
+> +
+> +  interrupt-names:
+> +    minItems: 1
+> +    items:
+> +      - const: tx
+> +      - const: rx
+>  
+>    "#mbox-cells":
+>      description: |
+> @@ -90,6 +97,24 @@ required:
+>    - interrupts
+>    - "#mbox-cells"
+>  
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          enum:
+> +            - fsl,imx93-mu-s4
+> +    then:
+> +      properties:
+> +        interrupt-names:
+> +          minItems: 2
+> +        interrupts:
+> +          maxItems: 2
 
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: David Gow <davidgow@google.com>
----
- tools/testing/kunit/kunit.py           | 16 +++++++-------
- tools/testing/kunit/kunit_json.py      | 29 ++++++++++++++++++--------
- tools/testing/kunit/kunit_tool_test.py |  9 ++++----
- 3 files changed, 33 insertions(+), 21 deletions(-)
+s/maxItems/minItems/
 
-diff --git a/tools/testing/kunit/kunit.py b/tools/testing/kunit/kunit.py
-index 4cb91d191f1d..7dd6ed42141f 100755
---- a/tools/testing/kunit/kunit.py
-+++ b/tools/testing/kunit/kunit.py
-@@ -47,11 +47,11 @@ class KunitBuildRequest(KunitConfigRequest):
- @dataclass
- class KunitParseRequest:
- 	raw_output: Optional[str]
--	build_dir: str
- 	json: Optional[str]
- 
- @dataclass
- class KunitExecRequest(KunitParseRequest):
-+	build_dir: str
- 	timeout: int
- 	alltests: bool
- 	filter_glob: str
-@@ -153,6 +153,8 @@ def exec_tests(linux: kunit_kernel.LinuxSourceTree, request: KunitExecRequest) -
- 				test_glob = request.filter_glob.split('.', maxsplit=2)[1]
- 				filter_globs = [g + '.'+ test_glob for g in filter_globs]
- 
-+	metadata = kunit_json.Metadata(build_dir=request.build_dir)
-+
- 	test_counts = kunit_parser.TestCounts()
- 	exec_time = 0.0
- 	for i, filter_glob in enumerate(filter_globs):
-@@ -165,7 +167,7 @@ def exec_tests(linux: kunit_kernel.LinuxSourceTree, request: KunitExecRequest) -
- 			filter_glob=filter_glob,
- 			build_dir=request.build_dir)
- 
--		_, test_result = parse_tests(request, run_result)
-+		_, test_result = parse_tests(request, metadata, run_result)
- 		# run_kernel() doesn't block on the kernel exiting.
- 		# That only happens after we get the last line of output from `run_result`.
- 		# So exec_time here actually contains parsing + execution time, which is fine.
-@@ -189,7 +191,7 @@ def _map_to_overall_status(test_status: kunit_parser.TestStatus) -> KunitStatus:
- 	else:
- 		return KunitStatus.TEST_FAILURE
- 
--def parse_tests(request: KunitParseRequest, input_data: Iterable[str]) -> Tuple[KunitResult, kunit_parser.Test]:
-+def parse_tests(request: KunitParseRequest, metadata: kunit_json.Metadata, input_data: Iterable[str]) -> Tuple[KunitResult, kunit_parser.Test]:
- 	parse_start = time.time()
- 
- 	test_result = kunit_parser.Test()
-@@ -216,8 +218,7 @@ def parse_tests(request: KunitParseRequest, input_data: Iterable[str]) -> Tuple[
- 	if request.json:
- 		json_str = kunit_json.get_json_result(
- 					test=test_result,
--					def_config='kunit_defconfig',
--					build_dir=request.build_dir)
-+					metadata=metadata)
- 		if request.json == 'stdout':
- 			print(json_str)
- 		else:
-@@ -504,10 +505,11 @@ def main(argv, linux=None):
- 		else:
- 			with open(cli_args.file, 'r', errors='backslashreplace') as f:
- 				kunit_output = f.read().splitlines()
-+		# We know nothing about how the result was created!
-+		metadata = kunit_json.Metadata()
- 		request = KunitParseRequest(raw_output=cli_args.raw_output,
--					    build_dir='',
- 					    json=cli_args.json)
--		result, _ = parse_tests(request, kunit_output)
-+		result, _ = parse_tests(request, metadata, kunit_output)
- 		if result.status != KunitStatus.SUCCESS:
- 			sys.exit(1)
- 	else:
-diff --git a/tools/testing/kunit/kunit_json.py b/tools/testing/kunit/kunit_json.py
-index 14a480d3308a..0a7e29a315ed 100644
---- a/tools/testing/kunit/kunit_json.py
-+++ b/tools/testing/kunit/kunit_json.py
-@@ -6,6 +6,7 @@
- # Copyright (C) 2020, Google LLC.
- # Author: Heidi Fahim <heidifahim@google.com>
- 
-+from dataclasses import dataclass
- import json
- import os
- 
-@@ -14,6 +15,13 @@ import kunit_parser
- from kunit_parser import Test, TestStatus
- from typing import Any, Dict
- 
-+@dataclass
-+class Metadata:
-+	"""Stores metadata about this run to include in get_json_result()."""
-+	arch: str = 'UM'
-+	def_config: str = 'kunit_defconfig'
-+	build_dir: str = ''
-+
- JsonObj = Dict[str, Any]
- 
- _status_map: Dict[TestStatus, str] = {
-@@ -22,14 +30,13 @@ _status_map: Dict[TestStatus, str] = {
- 	TestStatus.TEST_CRASHED: "ERROR",
- }
- 
--def _get_group_json(test: Test, def_config: str, build_dir: str) -> JsonObj:
-+def _get_group_json(test: Test, common_fields: JsonObj) -> JsonObj:
- 	sub_groups = []  # List[JsonObj]
- 	test_cases = []  # List[JsonObj]
- 
- 	for subtest in test.subtests:
- 		if subtest.subtests:
--			sub_group = _get_group_json(subtest, def_config,
--				build_dir)
-+			sub_group = _get_group_json(subtest, common_fields)
- 			sub_groups.append(sub_group)
- 			continue
- 		status = _status_map.get(subtest.status, "FAIL")
-@@ -37,19 +44,23 @@ def _get_group_json(test: Test, def_config: str, build_dir: str) -> JsonObj:
- 
- 	test_group = {
- 		"name": test.name,
--		"arch": "UM",
--		"defconfig": def_config,
--		"build_environment": build_dir,
- 		"sub_groups": sub_groups,
- 		"test_cases": test_cases,
-+	}
-+	test_group.update(common_fields)
-+	return test_group
-+
-+def get_json_result(test: Test, metadata: Metadata) -> str:
-+	common_fields = {
-+		"arch": metadata.arch,
-+		"defconfig": metadata.def_config,
-+		"build_environment": metadata.build_dir,
- 		"lab_name": None,
- 		"kernel": None,
- 		"job": None,
- 		"git_branch": "kselftest",
- 	}
--	return test_group
- 
--def get_json_result(test: Test, def_config: str, build_dir: str) -> str:
--	test_group = _get_group_json(test, def_config, build_dir)
-+	test_group = _get_group_json(test, common_fields)
- 	test_group["name"] = "KUnit Test Group"
- 	return json.dumps(test_group, indent=4)
-diff --git a/tools/testing/kunit/kunit_tool_test.py b/tools/testing/kunit/kunit_tool_test.py
-index a3c036a620b2..60806994683c 100755
---- a/tools/testing/kunit/kunit_tool_test.py
-+++ b/tools/testing/kunit/kunit_tool_test.py
-@@ -468,8 +468,7 @@ class KUnitJsonTest(unittest.TestCase):
- 			test_result = kunit_parser.parse_run_tests(file)
- 			json_obj = kunit_json.get_json_result(
- 				test=test_result,
--				def_config='kunit_defconfig',
--				build_dir='.kunit')
-+				metadata=kunit_json.Metadata())
- 		return json.loads(json_obj)
- 
- 	def test_failed_test_json(self):
-@@ -691,7 +690,7 @@ class KUnitMainTest(unittest.TestCase):
- 		self.linux_source_mock.run_kernel.return_value = ['TAP version 14', 'init: random output'] + want
- 
- 		got = kunit._list_tests(self.linux_source_mock,
--				     kunit.KunitExecRequest(None, '.kunit', None, 300, False, 'suite*', None, 'suite'))
-+				     kunit.KunitExecRequest(None, None, '.kunit', 300, False, 'suite*', None, 'suite'))
- 
- 		self.assertEqual(got, want)
- 		# Should respect the user's filter glob when listing tests.
-@@ -706,7 +705,7 @@ class KUnitMainTest(unittest.TestCase):
- 
- 		# Should respect the user's filter glob when listing tests.
- 		mock_tests.assert_called_once_with(mock.ANY,
--				     kunit.KunitExecRequest(None, '.kunit', None, 300, False, 'suite*.test*', None, 'suite'))
-+				     kunit.KunitExecRequest(None, None, '.kunit', 300, False, 'suite*.test*', None, 'suite'))
- 		self.linux_source_mock.run_kernel.assert_has_calls([
- 			mock.call(args=None, build_dir='.kunit', filter_glob='suite.test*', timeout=300),
- 			mock.call(args=None, build_dir='.kunit', filter_glob='suite2.test*', timeout=300),
-@@ -719,7 +718,7 @@ class KUnitMainTest(unittest.TestCase):
- 
- 		# Should respect the user's filter glob when listing tests.
- 		mock_tests.assert_called_once_with(mock.ANY,
--				     kunit.KunitExecRequest(None, '.kunit', None, 300, False, 'suite*', None, 'test'))
-+				     kunit.KunitExecRequest(None, None, '.kunit', 300, False, 'suite*', None, 'test'))
- 		self.linux_source_mock.run_kernel.assert_has_calls([
- 			mock.call(args=None, build_dir='.kunit', filter_glob='suite.test1', timeout=300),
- 			mock.call(args=None, build_dir='.kunit', filter_glob='suite.test2', timeout=300),
--- 
-2.35.1.574.g5d30c73bfb-goog
-
+> +
+> +    else:
+> +      properties:
+> +        interrupts:
+> +          maxItems: 1
+> +
+>  additionalProperties: false
+>  
+>  examples:
+> -- 
+> 2.25.1
+> 
+> 
