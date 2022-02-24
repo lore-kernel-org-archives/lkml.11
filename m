@@ -2,103 +2,344 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229654AbiBXR5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:57:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54232 "EHLO
+        id S232571AbiBXR6B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:58:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232519AbiBXR5U (ORCPT
+        with ESMTP id S232524AbiBXR57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 12:57:20 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFB6D4BB8B
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:56:48 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id g39so5204490lfv.10
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:56:48 -0800 (PST)
+        Thu, 24 Feb 2022 12:57:59 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D016662F
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:57:27 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id e13so2463606plh.3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:57:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TMceaaXnV0bDbvJSiP9ofcWLsC6a8Q6tO19sa8u3A0o=;
-        b=bYR2fdhQXZXtx52UFpQTKptu0+tKWepDRJYaSASQht99wn3VdFnIB4nTaKEwcTSwdj
-         9Y87wvLFaLqj5V5tKYfUmequSJmSMbEEC0W2q5XZLBYUTZVR06/y19JLh4eq/k4Gribx
-         M7XZANv8s8gcguKECoEtGWenFqs3zgJrcWIXo=
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4cyzICQ/23bHkeHtwzkbDtebSfIDfHBmF44TmpxS3Qs=;
+        b=QZHtEKtUvZANVn2ElYT0MVq8L/sw0zRAND1G1+7+T2vN4rMWTQslOFNc01eWURY+2B
+         sy0EKF687Is70s9G179bTT4gb7OQj+aQvL7fNGMlm6ZA8EcAnbYhS2KBw8jCxSfkagq+
+         NucZ/R5TLUf/99L9ngjjYTgdH5a/n6N1tEKoBktikDcP1aWmcVutEpP4UHTORBHS9qay
+         VyS3Euibr59HFzGcQDm5Yb7u3hl49gPPn7xuZGLRjDMT13qhnDD4l6inYvCW8iV01vNz
+         aHx07dUlEYNNW1X1TiCzN3QQXMEUIWH8zIPIAR3ST5+sQ2z8sYlghZ5x1NpIC2rYLmfR
+         XjLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TMceaaXnV0bDbvJSiP9ofcWLsC6a8Q6tO19sa8u3A0o=;
-        b=KIPy+x5h8dtY/gVDUUibPm0UgpQ2LrmmFme7xYYJ66h2taH5xR3LH9JzVSTBtbk4AH
-         2G0ewSYCxz50YXjFM/5iFooNi7ZHHGDjhPvTeGbVwWrbXf3B4og7ioK5jlkQfjrsHCTh
-         ojcz0WVWg7Oi4lElilQVW1nnIZdTJYDHGY2R5qGeroNx1J3eRnPjxLl6YCAJmON8Zb1D
-         /HaloESumJWmBp6WsX9fxstaXxFY/6Az8qboRSca5VZBDmFMSOoCkoz3eU+y30gIM87U
-         /t4WVIYwUHEIbFoUGemjOJYCB7O4tfLfa6qWN9gJ5OgxZ4tkapamvAApim0CpmhvS8mw
-         oxeg==
-X-Gm-Message-State: AOAM533mXkCkMLeKg+Tj1H2PeiijQ+TJqwm6CVk1zzhOlqfIGhNd7aFX
-        AqggGbwtR8yyJwXxE5H8aN2mhHSUWChwuz5eUO8=
-X-Google-Smtp-Source: ABdhPJzT2jVdsvn2vNqgeVtm7SN29d5AplgTqY/hl92GToSTiOhWZlLEB8jpq9ZFRDUotY33ewZQnQ==
-X-Received: by 2002:ac2:4893:0:b0:443:3b8d:b54f with SMTP id x19-20020ac24893000000b004433b8db54fmr2370822lfc.73.1645725406673;
-        Thu, 24 Feb 2022 09:56:46 -0800 (PST)
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com. [209.85.167.52])
-        by smtp.gmail.com with ESMTPSA id 1-20020a2e1641000000b002463630a11asm23294ljw.140.2022.02.24.09.56.43
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 09:56:44 -0800 (PST)
-Received: by mail-lf1-f52.google.com with SMTP id m14so5246355lfu.4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:56:43 -0800 (PST)
-X-Received: by 2002:ac2:5313:0:b0:443:99c1:7e89 with SMTP id
- c19-20020ac25313000000b0044399c17e89mr2345835lfh.531.1645725402991; Thu, 24
- Feb 2022 09:56:42 -0800 (PST)
-MIME-Version: 1.0
-References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
- <20220217184829.1991035-4-jakobkoschel@gmail.com> <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
- <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <86C4CE7D-6D93-456B-AA82-F8ADEACA40B7@gmail.com>
- <YhdfEIwI4EdtHdym@kroah.com>
-In-Reply-To: <YhdfEIwI4EdtHdym@kroah.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 24 Feb 2022 09:56:26 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wh87tDvKyuTF+NXBPLrRt=bOszP_N2nf5nkf4knX8SxrQ@mail.gmail.com>
-Message-ID: <CAHk-=wh87tDvKyuTF+NXBPLrRt=bOszP_N2nf5nkf4knX8SxrQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jakob <jakobkoschel@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergman <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=4cyzICQ/23bHkeHtwzkbDtebSfIDfHBmF44TmpxS3Qs=;
+        b=NWIE3xLTipT6lklPL2hzrmFvOwypHlgbrDHplQ1O9x63RfcNVpmWMqLWK5Zs2dYm5t
+         FBkK+WnjFSprabisLPIIcFkVZvQBvbFh9e63g5sM4vWLh6uES/+eP/0LlskH+BUb2Re7
+         KkUmkIFJ51liuHgIligLdOznm7cishv/bNRAiEFAfaof2rgrWOdx1bJ3Cu3ao8qywrdJ
+         Hno/312lkgU3EnyBDXf3FaN5H3vx7c4lA5eXm7qmfgiA4BHlsvlIPzk8yulIVw3Q+EOh
+         KFnQs4n1Wf8K1qK+zLnJqe4Ejfsy85JCnmQKX40z9BH0xk8pQgmtuYrIhz9inU7OkZwG
+         AfDg==
+X-Gm-Message-State: AOAM533qVGwCGsvk3KLAFfHbIS5MWutC0wY3hE/E44fU+BBfoDIZ8ZvM
+        tKEJgNCdTsMRKLDvNE/2S7aDkf4bgADuuA==
+X-Google-Smtp-Source: ABdhPJyVgqSJ004YUstyik+jYZz4EuPzBWmUx2Fjtwy+WACEd9Ui4gBxtYL98zOt7vqmGF1V37Iq4w==
+X-Received: by 2002:a17:902:e74e:b0:14f:f1c0:aaed with SMTP id p14-20020a170902e74e00b0014ff1c0aaedmr3958082plf.19.1645725447254;
+        Thu, 24 Feb 2022 09:57:27 -0800 (PST)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id b9-20020a056a000cc900b004f3581ae086sm183340pfv.16.2022.02.24.09.57.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 09:57:26 -0800 (PST)
+Date:   Thu, 24 Feb 2022 09:57:26 -0800 (PST)
+X-Google-Original-Date: Thu, 24 Feb 2022 09:56:39 PST (-0800)
+Subject:     Re: [PATCH V6 17/20] riscv: compat: vdso: Add setup additional pages implementation
+In-Reply-To: <20220224085410.399351-18-guoren@kernel.org>
+CC:     guoren@kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        anup@brainfault.org, Greg KH <gregkh@linuxfoundation.org>,
+        liush@allwinnertech.com, wefu@redhat.com, drew@beagleboard.org,
+        wangjunqiang@iscas.ac.cn, Christoph Hellwig <hch@lst.de>,
+        linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        x86@kernel.org, guoren@linux.alibaba.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     guoren@kernel.org
+Message-ID: <mhng-985c5e53-71d5-4d94-b9ff-deff7f834fc5@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 2:33 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Thu, 24 Feb 2022 00:54:07 PST (-0800), guoren@kernel.org wrote:
+> From: Guo Ren <guoren@linux.alibaba.com>
 >
-> So, to follow the proposed solution in this thread, the following change
-> is the "correct" one to make, right?
+> Reconstruct __setup_additional_pages() by appending vdso info
+> pointer argument to meet compat_vdso_info requirement. And change
+> vm_special_mapping *dm, *cm initialization into static.
+>
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/riscv/include/asm/elf.h |   5 ++
+>  arch/riscv/include/asm/mmu.h |   1 +
+>  arch/riscv/kernel/vdso.c     | 103 +++++++++++++++++++++++------------
+>  3 files changed, 74 insertions(+), 35 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/elf.h b/arch/riscv/include/asm/elf.h
+> index 3a4293dc7229..d87d3bcc758d 100644
+> --- a/arch/riscv/include/asm/elf.h
+> +++ b/arch/riscv/include/asm/elf.h
+> @@ -134,5 +134,10 @@ do {    if ((ex).e_ident[EI_CLASS] == ELFCLASS32)		\
+>  typedef compat_ulong_t			compat_elf_greg_t;
+>  typedef compat_elf_greg_t		compat_elf_gregset_t[ELF_NGREG];
+>
+> +extern int compat_arch_setup_additional_pages(struct linux_binprm *bprm,
+> +					      int uses_interp);
+> +#define compat_arch_setup_additional_pages \
+> +				compat_arch_setup_additional_pages
+> +
+>  #endif /* CONFIG_COMPAT */
+>  #endif /* _ASM_RISCV_ELF_H */
+> diff --git a/arch/riscv/include/asm/mmu.h b/arch/riscv/include/asm/mmu.h
+> index 0099dc116168..cedcf8ea3c76 100644
+> --- a/arch/riscv/include/asm/mmu.h
+> +++ b/arch/riscv/include/asm/mmu.h
+> @@ -16,6 +16,7 @@ typedef struct {
+>  	atomic_long_t id;
+>  #endif
+>  	void *vdso;
+> +	void *vdso_info;
+>  #ifdef CONFIG_SMP
+>  	/* A local icache flush is needed before user execution can resume. */
+>  	cpumask_t icache_stale_mask;
+> diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
+> index a9436a65161a..f864811aa011 100644
+> --- a/arch/riscv/kernel/vdso.c
+> +++ b/arch/riscv/kernel/vdso.c
+> @@ -23,6 +23,9 @@ struct vdso_data {
+>  #endif
+>
+>  extern char vdso_start[], vdso_end[];
+> +#ifdef CONFIG_COMPAT
+> +extern char compat_vdso_start[], compat_vdso_end[];
+> +#endif
+>
+>  enum vvar_pages {
+>  	VVAR_DATA_PAGE_OFFSET,
+> @@ -30,6 +33,11 @@ enum vvar_pages {
+>  	VVAR_NR_PAGES,
+>  };
+>
+> +enum rv_vdso_map {
+> +	RV_VDSO_MAP_VVAR,
+> +	RV_VDSO_MAP_VDSO,
+> +};
+> +
+>  #define VVAR_SIZE  (VVAR_NR_PAGES << PAGE_SHIFT)
+>
+>  /*
+> @@ -52,12 +60,6 @@ struct __vdso_info {
+>  	struct vm_special_mapping *cm;
+>  };
+>
+> -static struct __vdso_info vdso_info __ro_after_init = {
+> -	.name = "vdso",
+> -	.vdso_code_start = vdso_start,
+> -	.vdso_code_end = vdso_end,
+> -};
+> -
+>  static int vdso_mremap(const struct vm_special_mapping *sm,
+>  		       struct vm_area_struct *new_vma)
+>  {
+> @@ -66,37 +68,33 @@ static int vdso_mremap(const struct vm_special_mapping *sm,
+>  	return 0;
+>  }
+>
+> -static int __init __vdso_init(void)
+> +static void __init __vdso_init(struct __vdso_info *vdso_info)
+>  {
+>  	unsigned int i;
+>  	struct page **vdso_pagelist;
+>  	unsigned long pfn;
+>
+> -	if (memcmp(vdso_info.vdso_code_start, "\177ELF", 4)) {
+> -		pr_err("vDSO is not a valid ELF object!\n");
+> -		return -EINVAL;
+> -	}
+> +	if (memcmp(vdso_info->vdso_code_start, "\177ELF", 4))
+> +		panic("vDSO is not a valid ELF object!\n");
+>
+> -	vdso_info.vdso_pages = (
+> -		vdso_info.vdso_code_end -
+> -		vdso_info.vdso_code_start) >>
+> +	vdso_info->vdso_pages = (
+> +		vdso_info->vdso_code_end -
+> +		vdso_info->vdso_code_start) >>
+>  		PAGE_SHIFT;
+>
+> -	vdso_pagelist = kcalloc(vdso_info.vdso_pages,
+> +	vdso_pagelist = kcalloc(vdso_info->vdso_pages,
+>  				sizeof(struct page *),
+>  				GFP_KERNEL);
+>  	if (vdso_pagelist == NULL)
+> -		return -ENOMEM;
+> +		panic("vDSO kcalloc failed!\n");
+>
+>  	/* Grab the vDSO code pages. */
+> -	pfn = sym_to_pfn(vdso_info.vdso_code_start);
+> +	pfn = sym_to_pfn(vdso_info->vdso_code_start);
+>
+> -	for (i = 0; i < vdso_info.vdso_pages; i++)
+> +	for (i = 0; i < vdso_info->vdso_pages; i++)
+>  		vdso_pagelist[i] = pfn_to_page(pfn + i);
+>
+> -	vdso_info.cm->pages = vdso_pagelist;
+> -
+> -	return 0;
+> +	vdso_info->cm->pages = vdso_pagelist;
+>  }
+>
+>  #ifdef CONFIG_TIME_NS
+> @@ -116,13 +114,14 @@ int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
+>  {
+>  	struct mm_struct *mm = task->mm;
+>  	struct vm_area_struct *vma;
+> +	struct __vdso_info *vdso_info = mm->context.vdso_info;
+>
+>  	mmap_read_lock(mm);
+>
+>  	for (vma = mm->mmap; vma; vma = vma->vm_next) {
+>  		unsigned long size = vma->vm_end - vma->vm_start;
+>
+> -		if (vma_is_special_mapping(vma, vdso_info.dm))
+> +		if (vma_is_special_mapping(vma, vdso_info->dm))
+>  			zap_page_range(vma, vma->vm_start, size);
+>  	}
+>
+> @@ -187,11 +186,6 @@ static vm_fault_t vvar_fault(const struct vm_special_mapping *sm,
+>  	return vmf_insert_pfn(vma, vmf->address, pfn);
+>  }
+>
+> -enum rv_vdso_map {
+> -	RV_VDSO_MAP_VVAR,
+> -	RV_VDSO_MAP_VDSO,
+> -};
+> -
+>  static struct vm_special_mapping rv_vdso_maps[] __ro_after_init = {
+>  	[RV_VDSO_MAP_VVAR] = {
+>  		.name   = "[vvar]",
+> @@ -203,25 +197,44 @@ static struct vm_special_mapping rv_vdso_maps[] __ro_after_init = {
+>  	},
+>  };
+>
+> +static struct __vdso_info vdso_info __ro_after_init = {
+> +	.name = "vdso",
+> +	.vdso_code_start = vdso_start,
+> +	.vdso_code_end = vdso_end,
+> +	.dm = &rv_vdso_maps[RV_VDSO_MAP_VVAR],
+> +	.cm = &rv_vdso_maps[RV_VDSO_MAP_VDSO],
+> +};
+> +
+> +#ifdef CONFIG_COMPAT
+> +static struct __vdso_info compat_vdso_info __ro_after_init = {
+> +	.name = "compat_vdso",
+> +	.vdso_code_start = compat_vdso_start,
+> +	.vdso_code_end = compat_vdso_end,
+> +	.dm = &rv_vdso_maps[RV_VDSO_MAP_VVAR],
+> +	.cm = &rv_vdso_maps[RV_VDSO_MAP_VDSO],
+> +};
+> +#endif
+> +
+>  static int __init vdso_init(void)
+>  {
+> -	vdso_info.dm = &rv_vdso_maps[RV_VDSO_MAP_VVAR];
+> -	vdso_info.cm = &rv_vdso_maps[RV_VDSO_MAP_VDSO];
+> +	__vdso_init(&vdso_info);
+> +	__vdso_init(&compat_vdso_info);
 
-That would indeed be my preference.
+An autobuilder is pointing out an issue here.  I'm assuming just an `#if 
+defined(CONFIG_COMPAT)` will fix it, I'm OK squashing that in if it's 
+the only issue -- a fixed one never hurts, though ;)
 
-If we ever are able to change
+I'll try to take another look soon.
 
-        list_for_each_entry(tmp, &ep->queue, queue)...
-
-to simply declare 'tmp' as the right type itself, then the e need to do
-
-        struct gr_request *tmp;
-
-outside the loop goes away, and this kind of "set a variable that is
-declared in the outside context" becomes the only way to do things.
-
-                    Linus
+> -	return __vdso_init();
+> +	return 0;
+>  }
+>  arch_initcall(vdso_init);
+>
+>  static int __setup_additional_pages(struct mm_struct *mm,
+>  				    struct linux_binprm *bprm,
+> -				    int uses_interp)
+> +				    int uses_interp,
+> +				    struct __vdso_info *vdso_info)
+>  {
+>  	unsigned long vdso_base, vdso_text_len, vdso_mapping_len;
+>  	void *ret;
+>
+>  	BUILD_BUG_ON(VVAR_NR_PAGES != __VVAR_PAGES);
+>
+> -	vdso_text_len = vdso_info.vdso_pages << PAGE_SHIFT;
+> +	vdso_text_len = vdso_info->vdso_pages << PAGE_SHIFT;
+>  	/* Be sure to map the data page */
+>  	vdso_mapping_len = vdso_text_len + VVAR_SIZE;
+>
+> @@ -232,16 +245,18 @@ static int __setup_additional_pages(struct mm_struct *mm,
+>  	}
+>
+>  	ret = _install_special_mapping(mm, vdso_base, VVAR_SIZE,
+> -		(VM_READ | VM_MAYREAD | VM_PFNMAP), vdso_info.dm);
+> +		(VM_READ | VM_MAYREAD | VM_PFNMAP), vdso_info->dm);
+>  	if (IS_ERR(ret))
+>  		goto up_fail;
+>
+>  	vdso_base += VVAR_SIZE;
+>  	mm->context.vdso = (void *)vdso_base;
+> +	mm->context.vdso_info = (void *)vdso_info;
+> +
+>  	ret =
+>  	   _install_special_mapping(mm, vdso_base, vdso_text_len,
+>  		(VM_READ | VM_EXEC | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC),
+> -		vdso_info.cm);
+> +		vdso_info->cm);
+>
+>  	if (IS_ERR(ret))
+>  		goto up_fail;
+> @@ -253,6 +268,24 @@ static int __setup_additional_pages(struct mm_struct *mm,
+>  	return PTR_ERR(ret);
+>  }
+>
+> +#ifdef CONFIG_COMPAT
+> +int compat_arch_setup_additional_pages(struct linux_binprm *bprm,
+> +				       int uses_interp)
+> +{
+> +	struct mm_struct *mm = current->mm;
+> +	int ret;
+> +
+> +	if (mmap_write_lock_killable(mm))
+> +		return -EINTR;
+> +
+> +	ret = __setup_additional_pages(mm, bprm, uses_interp,
+> +							&compat_vdso_info);
+> +	mmap_write_unlock(mm);
+> +
+> +	return ret;
+> +}
+> +#endif
+> +
+>  int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+>  {
+>  	struct mm_struct *mm = current->mm;
+> @@ -261,7 +294,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
+>  	if (mmap_write_lock_killable(mm))
+>  		return -EINTR;
+>
+> -	ret = __setup_additional_pages(mm, bprm, uses_interp);
+> +	ret = __setup_additional_pages(mm, bprm, uses_interp, &vdso_info);
+>  	mmap_write_unlock(mm);
+>
+>  	return ret;
