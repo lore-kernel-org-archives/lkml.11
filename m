@@ -2,140 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1414FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0775C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233546AbiBXTRe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:17:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38324 "EHLO
+        id S233578AbiBXTSx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:18:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233549AbiBXTR3 (ORCPT
+        with ESMTP id S233565AbiBXTSs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 14:17:29 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B549E0A7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:16:49 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id q5so4354685oij.6
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:16:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7IUvVKF5Pch8a16lx0MT86rwIlpqNss44lNM/kW3WVs=;
-        b=ne21DyBH+0ZWEGvMo7Kz56PYmwP1GgCVw3i0R6NVkPQJMYyrc8sPuQItlSuHxv9VRc
-         TXB7pCjba4j8XT/WvxjkN5JbZ1sdP2juBJu7YA/ESnLTa6kEBA+4SmpalQ92HXMMye1F
-         4MGZrYTIq1WdT977vBFe17BmposVWu8IjvsLstrHzkC6RtNDiizXLvU2JJmv/a2ZOnSv
-         6E4A/Z5M/vw965DFZA5o7kFCzhF56hgh4aeI2bscy2u0xjPAuhU7qy2gCRwDTZKwYDkC
-         kr92WaJmPK7uTAOkB7Qdp3Cb739BrYnK8/uIhE9jrM30wlrmccSBM61ZnYAtOUSDvnWG
-         wyDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7IUvVKF5Pch8a16lx0MT86rwIlpqNss44lNM/kW3WVs=;
-        b=OzU36oGaYS7FxCtc6ezLsEm2nCFV09j/82aHIad/heffckNyxc3iVISMe7KcLAdj6f
-         65hy7bBTufHfLLaASvFWznzQc8jPqeZeilX36pcELHTkyf/peuUapjiiWQsZewe9jGpd
-         32H6OA5U0n3rhajEAzEH0VLo5hFb3OF7js9/Tw0InSeI07TrJV0jJIFWeXuwJbtL5EaG
-         BZqLmTAQzBDeV1GWL0Tgb1AQwB38kNi3Z3FUbOdEm/05t+qv3l9KyET7HWHkibsERTyi
-         m2ZlvZeAgPrnDV32OiV5s/92xoYvBTAX5XcCW0eDByq1izGlLJlJ1DfCm23oxWGzIYvy
-         chYw==
-X-Gm-Message-State: AOAM533AsVcsm9prMv7d0oes2EyqeLdFspZyHvsv82mZBsVYivNXvMMQ
-        IEiWqM22sG03e9+G+5IOQm4=
-X-Google-Smtp-Source: ABdhPJxoXP+tSpCWcygc2lcQGw4uSvebv9aB+dvrgCiioebX38US3T6IU0aiiIwLKSTXbzn8q6EPgw==
-X-Received: by 2002:a05:6870:d1ca:b0:d6:87d5:4ab7 with SMTP id b10-20020a056870d1ca00b000d687d54ab7mr5944097oac.331.1645730208809;
-        Thu, 24 Feb 2022 11:16:48 -0800 (PST)
-Received: from localhost.localdomain (189-47-54-110.dsl.telesp.net.br. [189.47.54.110])
-        by smtp.gmail.com with ESMTPSA id w3-20020a056830110300b005af14392276sm79509otq.62.2022.02.24.11.16.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 11:16:48 -0800 (PST)
-From:   Magali Lemes <magalilemes00@gmail.com>
-To:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     siqueirajordao@riseup.net, mwen@igalia.com, maira.canal@usp.br,
-        isabbasso@riseup.net, Magali Lemes <magalilemes00@gmail.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        kernel test robot <lkp@intel.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] drm/amd/display: Turn functions into static
-Date:   Thu, 24 Feb 2022 16:15:51 -0300
-Message-Id: <20220224191551.69103-5-magalilemes00@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220224191551.69103-1-magalilemes00@gmail.com>
-References: <20220224191551.69103-1-magalilemes00@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Thu, 24 Feb 2022 14:18:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6C0B2D60;
+        Thu, 24 Feb 2022 11:18:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8716261675;
+        Thu, 24 Feb 2022 19:18:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E723AC340F2;
+        Thu, 24 Feb 2022 19:18:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645730297;
+        bh=bvJuOGgcV0Fdc1Qx5ON/8sJfaSUvZC0OjbxexBKrqls=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=QS1tESOCJZ4rkmg9Ut/jk1Wnt9ILhLx+c45eIzb5b9XMOd+mpLBkUD7R2QLZ6La47
+         xRAHsKCkTOFEU6n0DaLKdeX8rsHb56SHK6AVOpsydOJlkk5AU3uie1F2XeuXIVsGAv
+         1dJYFVzq6L4m1bTHRex5NDPEqvK8KKHtdvuI+bXnFGSQpgvq9q9QWUlgYpwSyb/ZQ3
+         pm6IlawEkmsj6UdVZM/gMgEdKl+06mqnEpGWBZ89va6z6qs7l2hHGSJlIgu5DltxMZ
+         uSIQxuKnTpY2NVDSvMH9BNfad+kaTzWl8PKDhw6JjE1bYkpgynCmJ3oUKe+oPV6pqZ
+         hNqP7ppfOxyYw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D3FC2EAC081;
+        Thu, 24 Feb 2022 19:18:16 +0000 (UTC)
+Subject: Re: [GIT PULL] Devicetree fixes for v5.17, take 2
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <Yha/383yJgJFHqPR@robh.at.kernel.org>
+References: <Yha/383yJgJFHqPR@robh.at.kernel.org>
+X-PR-Tracked-List-Id: <devicetree.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yha/383yJgJFHqPR@robh.at.kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-5.17-2
+X-PR-Tracked-Commit-Id: 0c0822bcb73f154d96ee648644ec5a8628e3b864
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 91318b29a81cf51451ecf1c0054898f67dc26d87
+Message-Id: <164573029686.2860.6703762335601163588.pr-tracker-bot@kernel.org>
+Date:   Thu, 24 Feb 2022 19:18:16 +0000
+To:     Rob Herring <robh@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Frank Rowand <frowand.list@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Silence [-Wmissing-prototypes] sparse warnings from the display folder
-such as:
+The pull request you sent on Wed, 23 Feb 2022 17:14:39 -0600:
 
-../drivers/gpu/drm/amd/amdgpu/../display/dc/clk_mgr/dcn315/dcn315_smu.c:126:5: warning: no previous prototype for ‘dcn315_smu_send_msg_with_param’ [-Wmissing-prototypes]
-  126 | int dcn315_smu_send_msg_with_param(
-      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-fixes-for-5.17-2
 
-Cc: Qingqing Zhuo (Lillian) <qingqing.zhuo@amd.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
----
- .../gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c    | 2 +-
- drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_smu.c    | 4 ++--
- .../gpu/drm/amd/display/dc/irq/dcn315/irq_service_dcn315.c    | 2 +-
- 3 files changed, 4 insertions(+), 4 deletions(-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/91318b29a81cf51451ecf1c0054898f67dc26d87
 
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
-index d66633bef2b3..357f89b4a8e0 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c
-@@ -430,7 +430,7 @@ static unsigned int find_clk_for_voltage(
- 	return 0;
- }
- 
--void dcn315_clk_mgr_helper_populate_bw_params(
-+static void dcn315_clk_mgr_helper_populate_bw_params(
- 		struct clk_mgr_internal *clk_mgr,
- 		struct integrated_info *bios_info,
- 		const DpmClocks_315_t *clock_table)
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_smu.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_smu.c
-index a60543258a5b..831fd1494d60 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_smu.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_smu.c
-@@ -123,7 +123,7 @@ static uint32_t dcn315_smu_wait_for_response(struct clk_mgr_internal *clk_mgr, u
- 	return res_val;
- }
- 
--int dcn315_smu_send_msg_with_param(
-+static int dcn315_smu_send_msg_with_param(
- 		struct clk_mgr_internal *clk_mgr,
- 		unsigned int msg_id, unsigned int param)
- {
-@@ -181,7 +181,7 @@ int dcn315_smu_set_dispclk(struct clk_mgr_internal *clk_mgr, int requested_dispc
- 
- 	return actual_dispclk_set_mhz * 1000;
- }
--int dcn315_smu_set_voltage_via_phyclk(struct clk_mgr_internal *clk_mgr, int requested_phyclk_khz)
-+static int dcn315_smu_set_voltage_via_phyclk(struct clk_mgr_internal *clk_mgr, int requested_phyclk_khz)
- {
- 	int actual_phypclk_set_mhz = -1;
- 
-diff --git a/drivers/gpu/drm/amd/display/dc/irq/dcn315/irq_service_dcn315.c b/drivers/gpu/drm/amd/display/dc/irq/dcn315/irq_service_dcn315.c
-index 33367773699b..e722171f0d2d 100644
---- a/drivers/gpu/drm/amd/display/dc/irq/dcn315/irq_service_dcn315.c
-+++ b/drivers/gpu/drm/amd/display/dc/irq/dcn315/irq_service_dcn315.c
-@@ -42,7 +42,7 @@
- #define DCN_BASE__INST0_SEG4                       0x02403C00
- #define DCN_BASE__INST0_SEG5                       0
- 
--enum dc_irq_source to_dal_irq_source_dcn315(
-+static enum dc_irq_source to_dal_irq_source_dcn315(
- 		struct irq_service *irq_service,
- 		uint32_t src_id,
- 		uint32_t ext_id)
+Thank you!
+
 -- 
-2.25.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
