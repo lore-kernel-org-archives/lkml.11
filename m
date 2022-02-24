@@ -2,84 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF910C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 03:44:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DBBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 03:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229730AbiBXDo7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 22:44:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51694 "EHLO
+        id S229737AbiBXDrd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 22:47:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229716AbiBXDo6 (ORCPT
+        with ESMTP id S229498AbiBXDrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 22:44:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D7ED25A315;
-        Wed, 23 Feb 2022 19:44:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F23C1615E6;
-        Thu, 24 Feb 2022 03:44:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE95C340E9;
-        Thu, 24 Feb 2022 03:44:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645674268;
-        bh=jZ6awLcE6M5IwYTyD00u231l2Hv6lyuBrW+r29jU1AU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=InANoN3hy8jAhaH2B3j97Zd8hO6j23VdWyYcfJ9Wsp07n9vZdFBPvgkMSpv6u4jCV
-         xfPjW2tmBsKmRAbyVSDNWHleKvVxbtWB5XL/i9djj0io+zeo0rXe9KPzvgP37/y7Ii
-         hmXRoo2wrXQazsfVWHejRSM/TplI4Qk3/Tu/DXwS8k6Z5uiLopl/4l+zrTbB5tgTcX
-         KckeDPWP5At6RQWXepyTRojXoFjQ22mcOAEL7S4T4/5EBjTjbTngreaeDTg2RGYhpo
-         QXSiNFsOuq1S1/JjueU14B2dynucftb9jssvKCpbbuwEmDIyp09sVSLY08VfzD4IJz
-         YyAUofYAHx3Wg==
-Date:   Wed, 23 Feb 2022 19:44:26 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marek =?UTF-8?B?TWFyY3p5a293c2tpLUfDs3JlY2tp?= 
-        <marmarek@invisiblethingslab.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Michael Brown <mcb30@ipxe.org>, Wei Liu <wei.liu@kernel.org>,
-        Paul Durrant <paul@xen.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        xen-devel@lists.xenproject.org (moderated list:XEN NETWORK BACKEND
-        DRIVER),
-        netdev@vger.kernel.org (open list:XEN NETWORK BACKEND DRIVER)
-Subject: Re: [PATCH v2 1/2] Revert "xen-netback: remove 'hotplug-status'
- once it has served its purpose"
-Message-ID: <20220223194426.6948b28c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20220222001817.2264967-1-marmarek@invisiblethingslab.com>
-References: <20220222001817.2264967-1-marmarek@invisiblethingslab.com>
+        Wed, 23 Feb 2022 22:47:32 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1660EF2134
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 19:47:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645674423; x=1677210423;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KodhdAbbNZod9ou3AoHUtlw4o/O32STQ/o5jOLIceTY=;
+  b=lE18S+mQlbmZLh7WJI8tG74s9xEdMdaOvDZYwdPlvGeE17fBNzjqI7Yg
+   HyPWrPui4NEGMZdHclv17fyZr/v93muMDmRF4zOV9RazbT5NMW7sPXLUF
+   r3QZ6tIoZoHiL1FGx9PhPWOd8mAcazE8tnhiNkszgTE++IiWiiBOvc4nc
+   OhaTg+0Xt6PMIxlpJ6FW99dzOA8FNy0fr5RZTRaWrxXOBSJKNqbhKydk9
+   52cp9b6G2Ks6Y1Jqf5ooL9oexj57E5/4xAh2FkgDBW29yBSM3mAbno4X3
+   fgJcicJcm0f1LZO0nzNGKPsTFpU2HsxEZCKM5qVBtZ5RO1erAG647iEoi
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232117468"
+X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
+   d="scan'208";a="232117468"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 19:47:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
+   d="scan'208";a="543563792"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 23 Feb 2022 19:47:01 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nN55p-0002E5-3x; Thu, 24 Feb 2022 03:47:01 +0000
+Date:   Thu, 24 Feb 2022 11:46:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/cleanups] BUILD SUCCESS
+ 4509d950a6764d18a99776614513d280cca422d8
+Message-ID: <6216ff83.BsJg2w5csrKmw2NT%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Feb 2022 01:18:16 +0100 Marek Marczykowski-G=C3=B3recki wrote:
-> This reverts commit 1f2565780e9b7218cf92c7630130e82dcc0fe9c2.
->=20
-> The 'hotplug-status' node should not be removed as long as the vif
-> device remains configured. Otherwise the xen-netback would wait for
-> re-running the network script even if it was already called (in case of
-> the frontent re-connecting). But also, it _should_ be removed when the
-> vif device is destroyed (for example when unbinding the driver) -
-> otherwise hotplug script would not configure the device whenever it
-> re-appear.
->=20
-> Moving removal of the 'hotplug-status' node was a workaround for nothing
-> calling network script after xen-netback module is reloaded. But when
-> vif interface is re-created (on xen-netback unbind/bind for example),
-> the script should be called, regardless of who does that - currently
-> this case is not handled by the toolstack, and requires manual
-> script call. Keeping hotplug-status=3Dconnected to skip the call is wrong
-> and leads to not configured interface.
->=20
-> More discussion at
-> https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ip=
-xe.org/T/#u
->=20
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Marek Marczykowski-G=C3=B3recki <marmarek@invisiblethingsl=
-ab.com>
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/cleanups
+branch HEAD: 4509d950a6764d18a99776614513d280cca422d8  x86/pat: Remove the unused set_pages_array_wt() function
 
-Wei, Paul, do these look good?
+elapsed time: 725m
+
+configs tested: 125
+configs skipped: 104
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                          randconfig-c001
+sh                             espt_defconfig
+arc                              alldefconfig
+sh                          rsk7201_defconfig
+sh                          rsk7269_defconfig
+mips                           jazz_defconfig
+mips                           gcw0_defconfig
+arm                         s3c6400_defconfig
+h8300                    h8300h-sim_defconfig
+sh                           sh2007_defconfig
+arm                       aspeed_g5_defconfig
+powerpc                     tqm8555_defconfig
+sh                            migor_defconfig
+nios2                         10m50_defconfig
+sh                            titan_defconfig
+powerpc                      ep88xc_defconfig
+ia64                             alldefconfig
+arm                           tegra_defconfig
+nds32                               defconfig
+powerpc                 linkstation_defconfig
+sh                   sh7770_generic_defconfig
+arm                  randconfig-c002-20220223
+arm                  randconfig-c002-20220224
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+parisc                              defconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc64                            defconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                                defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64                        randconfig-a002
+x86_64                        randconfig-a004
+x86_64                        randconfig-a006
+i386                          randconfig-a003
+i386                          randconfig-a001
+i386                          randconfig-a005
+x86_64                        randconfig-a013
+x86_64                        randconfig-a011
+x86_64                        randconfig-a015
+i386                          randconfig-a014
+i386                          randconfig-a012
+i386                          randconfig-a016
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+
+clang tested configs:
+powerpc              randconfig-c003-20220223
+x86_64                        randconfig-c007
+arm                  randconfig-c002-20220223
+mips                 randconfig-c004-20220223
+i386                          randconfig-c001
+riscv                randconfig-c006-20220223
+powerpc                      walnut_defconfig
+arm                           omap1_defconfig
+powerpc                        icon_defconfig
+powerpc                      obs600_defconfig
+powerpc                     ppa8548_defconfig
+arm                          imote2_defconfig
+arm                         bcm2835_defconfig
+arm                           spitz_defconfig
+powerpc                      ppc44x_defconfig
+powerpc                 xes_mpc85xx_defconfig
+powerpc                       ebony_defconfig
+mips                      bmips_stb_defconfig
+powerpc                      acadia_defconfig
+mips                           ip27_defconfig
+powerpc                   microwatt_defconfig
+arm                    vt8500_v6_v7_defconfig
+arm                        magician_defconfig
+x86_64                        randconfig-a001
+x86_64                        randconfig-a003
+x86_64                        randconfig-a005
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220223
+hexagon              randconfig-r041-20220223
+riscv                randconfig-r042-20220223
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
