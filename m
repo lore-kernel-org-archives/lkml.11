@@ -2,147 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA8AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 03:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE35C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 03:43:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbiBXDnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 22:43:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
+        id S229673AbiBXDnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 22:43:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiBXDnc (ORCPT
+        with ESMTP id S229666AbiBXDnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 22:43:32 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D400254562
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 19:43:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645674183; x=1677210183;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ms/Xul2z61Kdw7dANi6ZFHet41fbNqkpg5veI2ABXj4=;
-  b=MKTrN9C2dqkl9nMQ2d9okCctkBxviIpWK9YdbqWNtZoYZ/fwAJDcQ9zt
-   jJ4kk7e/fJM10LCts/9+SupQZGwOSh/+LhGy0BWKRvuPEFU1zcaD0Vrm7
-   4gxME7gsuLrQyCxMs8Z3rSIIRLi28j5vIA5Ny3xfX63lOoQt7WXFqUzO5
-   8XsufEgrnAkobhovZKWkrJRnNaNduMHSBd88VoZ61SL7YZgIJijRFsF2w
-   MyX+mlI5cszU/Q3kTuBPyt35hN46Vy5qSn1Q4ny7Y82Hzr24bK9ncqrFT
-   kc18jXrrOAs7enKuzhLCK191emkREW2q5cpWEeGA2CngDg661XQOoNZj8
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="252335888"
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="252335888"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 19:43:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="508709207"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 23 Feb 2022 19:43:01 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nN51w-0002CN-Iu; Thu, 24 Feb 2022 03:43:00 +0000
-Date:   Thu, 24 Feb 2022 11:42:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [peterz-queue:x86/wip.ibt 42/42]
- arch/x86/kernel/alternative.c:538:30: warning: passing argument 1 of
- 'is_endbr' makes integer from pointer without a cast
-Message-ID: <202202241157.jQc2OHWz-lkp@intel.com>
+        Wed, 23 Feb 2022 22:43:39 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCB425A30B
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 19:43:09 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id i5so1243545oih.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 19:43:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LQV2Ce0Cqm3fFzgko900zEq9hMhH+dYL1BenORkgZSE=;
+        b=cLYZ+u45ycfZDh38NHEb/21XbNgNJUZG3on3NOdklDWSJ7PYJ+mdinq7E890TK38OQ
+         tSkQUxI/xCNA/cht+qvJAbH0cwiq7f7N3rXRxmjZbGS3GHMwWBev1n1I02+bJN7zW90S
+         Y73yWgHuDPVmf6+iArbNDFcrS1A79n7D5oRnf5N/FJ8ywVtznp2wcRdZ9W46JWcAonIF
+         XUk4j4BQcWTfayGWJUrM4yxLtlsHnLKU4H2WPmutQHSw3DikI6o0QvBR6/NDcFEpdp1e
+         5No0/Xf00aVJsSrQu/9VrUfDI9OA88oOlURFV1yzpkIuS88PD7aWFFrnlzjG3lTTSP1/
+         +wIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LQV2Ce0Cqm3fFzgko900zEq9hMhH+dYL1BenORkgZSE=;
+        b=zaQlrdfLY3t74AVhSesWNPUfBp+LwRZYfUa62hVS/vdIexGotlKLwcb4SpwlxsiBv7
+         1q4EZ5DmqlLabV/54wAVkT8V8d7UdkxhWUyPKE77cTqpKVCkXT+Vp5gDRfGhuTe8gY+e
+         4S0fBvIEVqsOvDqAfAtEegDEc0TnJDV5kwfOeFsJ/wiIFnPHWOVLLIrIWTNOaodnLaE2
+         avcN1PXtJ5FgaGRX/+thuqBVlgELAe6hoPslHofUKo6syWAF9pSu14NdqidKPnFaZkMm
+         dW1TK2diXW/3ofQ+tj/0Bty2i5MH88YONO+hA614ZDq0EYv1rytowHIvqWfbi06od2Xs
+         hxTw==
+X-Gm-Message-State: AOAM5311Qg33BLXqos2BTuXSmE9LA9aGL/O5kbVIcJy35BSLRlLMUi6w
+        CrSpz5KMnEMWxPHfM94vHAICAg==
+X-Google-Smtp-Source: ABdhPJzgnESy4fUgWr9qkHrfCBVEALdcwUFNttweBpXgPrGC9ko/0af5qYzPPWqA86hfZugFItirDw==
+X-Received: by 2002:aca:32c1:0:b0:2ce:6ee7:2c9f with SMTP id y184-20020aca32c1000000b002ce6ee72c9fmr6192858oiy.205.1645674189114;
+        Wed, 23 Feb 2022 19:43:09 -0800 (PST)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id e9sm604775oos.19.2022.02.23.19.43.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 19:43:08 -0800 (PST)
+Date:   Wed, 23 Feb 2022 21:43:06 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 04/16] clk: qcom: gcc-ipq806x: fix wrong naming for
+ gcc_pxo_pll8_pll0
+Message-ID: <Yhb+yiSIBmO9iJNs@builder.lan>
+References: <20220217235703.26641-1-ansuelsmth@gmail.com>
+ <20220217235703.26641-5-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220217235703.26641-5-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
-head:   27b6438f414b6a37b60dcd90c8980397586d49db
-commit: 27b6438f414b6a37b60dcd90c8980397586d49db [42/42] x86/alternative: Use .ibt_endbr_sites to seal indirect calls
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220224/202202241157.jQc2OHWz-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=27b6438f414b6a37b60dcd90c8980397586d49db
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue x86/wip.ibt
-        git checkout 27b6438f414b6a37b60dcd90c8980397586d49db
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/
+On Thu 17 Feb 17:56 CST 2022, Ansuel Smith wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Parent gcc_pxo_pll8_pll0 had the parent definition and parent map
+> swapped. Fix this naming error.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 
-All warnings (new ones prefixed by >>):
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-   In file included from arch/x86/include/asm/bug.h:86,
-                    from include/linux/bug.h:5,
-                    from include/linux/cpumask.h:14,
-                    from arch/x86/include/asm/cpumask.h:5,
-                    from arch/x86/include/asm/msr.h:11,
-                    from arch/x86/include/asm/processor.h:22,
-                    from arch/x86/include/asm/timex.h:5,
-                    from include/linux/timex.h:65,
-                    from include/linux/time32.h:13,
-                    from include/linux/time.h:60,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13,
-                    from arch/x86/kernel/alternative.c:4:
-   arch/x86/kernel/alternative.c: In function 'apply_ibt_endbr':
->> arch/x86/kernel/alternative.c:538:30: warning: passing argument 1 of 'is_endbr' makes integer from pointer without a cast [-Wint-conversion]
-     538 |   if (WARN_ON_ONCE(!is_endbr(&endbr)))
-         |                              ^~~~~~
-         |                              |
-         |                              u32 * {aka unsigned int *}
-   include/asm-generic/bug.h:104:25: note: in definition of macro 'WARN_ON_ONCE'
-     104 |  int __ret_warn_on = !!(condition);   \
-         |                         ^~~~~~~~~
-   In file included from arch/x86/include/asm/linkage.h:6,
-                    from include/linux/linkage.h:8,
-                    from arch/x86/include/asm/cache.h:5,
-                    from include/linux/cache.h:6,
-                    from include/linux/time.h:5,
-                    from include/linux/stat.h:19,
-                    from include/linux/module.h:13,
-                    from arch/x86/kernel/alternative.c:4:
-   arch/x86/include/asm/ibt.h:34:42: note: expected 'unsigned int' but argument is of type 'u32 *' {aka 'unsigned int *'}
-      34 | static inline bool is_endbr(unsigned int val)
-         |                             ~~~~~~~~~~~~~^~~
-
-
-vim +/is_endbr +538 arch/x86/kernel/alternative.c
-
-   523	
-   524	/*
-   525	 * Generated by: objtool --ibt-seal
-   526	 */
-   527	void __init_or_module noinline apply_ibt_endbr(s32 *start, s32 *end)
-   528	{
-   529		s32 *s;
-   530	
-   531		for (s = start; s < end; s++) {
-   532			void *addr = (void *)s + *s;
-   533			u32 endbr;
-   534	
-   535			if (WARN_ON_ONCE(get_kernel_nofault(endbr, addr)))
-   536				continue;
-   537	
- > 538			if (WARN_ON_ONCE(!is_endbr(&endbr)))
-   539				continue;
-   540	
-   541			DPRINTK("ENDBR at: %pS (%px)", addr, addr);
-   542	
-   543			/*
-   544			 * When we have IBT, the lack of ENDBR will trigger #CP
-   545			 * When we don't have IBT, explicitly trigger #UD
-   546			 */
-   547			DUMP_BYTES(((u8*)addr), 4, "%px: orig: ", addr);
-   548			DUMP_BYTES(((u8*)ud1_endbr), 4, "%px: repl: ", addr);
-   549			text_poke_early(addr, ud1_endbr, 4);
-   550		}
-   551	}
-   552	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> ---
+>  drivers/clk/qcom/gcc-ipq806x.c | 20 ++++++++++----------
+>  1 file changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
+> index d6b7adb4be38..34cddf461dba 100644
+> --- a/drivers/clk/qcom/gcc-ipq806x.c
+> +++ b/drivers/clk/qcom/gcc-ipq806x.c
+> @@ -291,13 +291,13 @@ static const char * const gcc_pxo_pll3[] = {
+>  	"pll3",
+>  };
+>  
+> -static const struct parent_map gcc_pxo_pll8_pll0[] = {
+> +static const struct parent_map gcc_pxo_pll8_pll0_map[] = {
+>  	{ P_PXO, 0 },
+>  	{ P_PLL8, 3 },
+>  	{ P_PLL0, 2 }
+>  };
+>  
+> -static const char * const gcc_pxo_pll8_pll0_map[] = {
+> +static const char * const gcc_pxo_pll8_pll0[] = {
+>  	"pxo",
+>  	"pll8_vote",
+>  	"pll0_vote",
+> @@ -1993,7 +1993,7 @@ static struct clk_rcg usb30_master_clk_src = {
+>  	},
+>  	.s = {
+>  		.src_sel_shift = 0,
+> -		.parent_map = gcc_pxo_pll8_pll0,
+> +		.parent_map = gcc_pxo_pll8_pll0_map,
+>  	},
+>  	.freq_tbl = clk_tbl_usb30_master,
+>  	.clkr = {
+> @@ -2001,7 +2001,7 @@ static struct clk_rcg usb30_master_clk_src = {
+>  		.enable_mask = BIT(11),
+>  		.hw.init = &(struct clk_init_data){
+>  			.name = "usb30_master_ref_src",
+> -			.parent_names = gcc_pxo_pll8_pll0_map,
+> +			.parent_names = gcc_pxo_pll8_pll0,
+>  			.num_parents = 3,
+>  			.ops = &clk_rcg_ops,
+>  			.flags = CLK_SET_RATE_GATE,
+> @@ -2063,7 +2063,7 @@ static struct clk_rcg usb30_utmi_clk = {
+>  	},
+>  	.s = {
+>  		.src_sel_shift = 0,
+> -		.parent_map = gcc_pxo_pll8_pll0,
+> +		.parent_map = gcc_pxo_pll8_pll0_map,
+>  	},
+>  	.freq_tbl = clk_tbl_usb30_utmi,
+>  	.clkr = {
+> @@ -2071,7 +2071,7 @@ static struct clk_rcg usb30_utmi_clk = {
+>  		.enable_mask = BIT(11),
+>  		.hw.init = &(struct clk_init_data){
+>  			.name = "usb30_utmi_clk",
+> -			.parent_names = gcc_pxo_pll8_pll0_map,
+> +			.parent_names = gcc_pxo_pll8_pll0,
+>  			.num_parents = 3,
+>  			.ops = &clk_rcg_ops,
+>  			.flags = CLK_SET_RATE_GATE,
+> @@ -2133,7 +2133,7 @@ static struct clk_rcg usb_hs1_xcvr_clk_src = {
+>  	},
+>  	.s = {
+>  		.src_sel_shift = 0,
+> -		.parent_map = gcc_pxo_pll8_pll0,
+> +		.parent_map = gcc_pxo_pll8_pll0_map,
+>  	},
+>  	.freq_tbl = clk_tbl_usb,
+>  	.clkr = {
+> @@ -2141,7 +2141,7 @@ static struct clk_rcg usb_hs1_xcvr_clk_src = {
+>  		.enable_mask = BIT(11),
+>  		.hw.init = &(struct clk_init_data){
+>  			.name = "usb_hs1_xcvr_src",
+> -			.parent_names = gcc_pxo_pll8_pll0_map,
+> +			.parent_names = gcc_pxo_pll8_pll0,
+>  			.num_parents = 3,
+>  			.ops = &clk_rcg_ops,
+>  			.flags = CLK_SET_RATE_GATE,
+> @@ -2197,7 +2197,7 @@ static struct clk_rcg usb_fs1_xcvr_clk_src = {
+>  	},
+>  	.s = {
+>  		.src_sel_shift = 0,
+> -		.parent_map = gcc_pxo_pll8_pll0,
+> +		.parent_map = gcc_pxo_pll8_pll0_map,
+>  	},
+>  	.freq_tbl = clk_tbl_usb,
+>  	.clkr = {
+> @@ -2205,7 +2205,7 @@ static struct clk_rcg usb_fs1_xcvr_clk_src = {
+>  		.enable_mask = BIT(11),
+>  		.hw.init = &(struct clk_init_data){
+>  			.name = "usb_fs1_xcvr_src",
+> -			.parent_names = gcc_pxo_pll8_pll0_map,
+> +			.parent_names = gcc_pxo_pll8_pll0,
+>  			.num_parents = 3,
+>  			.ops = &clk_rcg_ops,
+>  			.flags = CLK_SET_RATE_GATE,
+> -- 
+> 2.34.1
+> 
