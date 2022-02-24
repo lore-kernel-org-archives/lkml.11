@@ -2,189 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39422C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1597CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:33:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229746AbiBXJeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:34:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49300 "EHLO
+        id S232798AbiBXJeT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:34:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232798AbiBXJdx (ORCPT
+        with ESMTP id S232836AbiBXJeL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:33:53 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C04726A39E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:33:23 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id iq13-20020a17090afb4d00b001bc4437df2cso1546076pjb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:33:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Um2hOoO992A8z0y3YtWZVlugWm1fUhrmcXQ/7RYGwh8=;
-        b=dmY9TiLAQ/Sks9iO7V4G62Iq0F4qlBMW21+hDyL33W+fC59uEKCeH1kQPz7H/qXr4X
-         SvVBePgkVfp2+ZdtGoFrz4RZA/MnbhKe1Y+gZUU8kHjNRYAdc+x2DtDHGt3jwK9Cb00C
-         TkG5V3K39mgV+oebLPqYz8Hv/fUqlOzTKV7wyjPfam74HRRaVwDI7B29oSg2sxF4/xTS
-         np6kqdrSTbTA3AohcQZa4LYTE0N5FePEQb0d0FnaZdZkN0Kn0Sn2o1Ce6tFhYruXHP2Q
-         8nmbW3JYmXV0GJJDCQj3unSGk3/Cwdu+a9DjeDZp2/Fy96EP0/UCgyNTa256oPuvM3oB
-         Vgkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Um2hOoO992A8z0y3YtWZVlugWm1fUhrmcXQ/7RYGwh8=;
-        b=h1lUJsGUAHfF28f63cqi4NXMb5056811/rHYkhfe331SZnyatMIF2JBZR2/hapxS7a
-         M3BiWterxHcCBbysHHEB89sWOHeIEUllfaKM/akGm/9GUs6YU4GeNQeaWXG2Dslq0ewa
-         fogfn3hdSWUagB35k219fahxSlxJMtfHnXxEHt45weO5UWvtni1tChxxC4ww3KtBiAaE
-         yAk+0XAcru8YsXwHDsWtH9qney1MGGh9leO2GAHSebPpzctNUTRpHT3zeofhG1Ql/MBX
-         JoOnBr2J1pWAfhpbP62DepTp+vG3E7gnM5HCvv62IWjqzIvTJ3JPAxY5lqdiKn2R5gYE
-         9n9A==
-X-Gm-Message-State: AOAM53176vKfcjPKADi9auTmiNenDc52nyDbIJEWGPm/jukOlfxxIMIH
-        wbVOYtz8duLVPYzj/gTCIwc9zQ==
-X-Google-Smtp-Source: ABdhPJxLfTLxRibEEIi3LQRH2mR/4H/gW2oqwevUc7iY2J2LFlnQXH9WaCZ0SWn98k92VCGYf8fjjQ==
-X-Received: by 2002:a17:90a:4891:b0:1b9:81c:8774 with SMTP id b17-20020a17090a489100b001b9081c8774mr1930738pjh.8.1645695202689;
-        Thu, 24 Feb 2022 01:33:22 -0800 (PST)
-Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.251])
-        by smtp.gmail.com with ESMTPSA id 13sm2530988pfx.122.2022.02.24.01.33.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 01:33:22 -0800 (PST)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     rostedt@goodmis.org, mark.rutland@arm.com, mingo@redhat.com,
-        tglx@linutronix.de, catalin.marinas@arm.com, will@kernel.org,
-        dave.hansen@linux.intel.com, broonie@kernel.org
-Cc:     x86@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        qirui.001@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v3 2/3] x86/ftrace: cleanup graph tracer
-Date:   Thu, 24 Feb 2022 17:32:50 +0800
-Message-Id: <20220224093251.49971-2-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220224093251.49971-1-zhouchengming@bytedance.com>
-References: <20220224093251.49971-1-zhouchengming@bytedance.com>
+        Thu, 24 Feb 2022 04:34:11 -0500
+Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C6E27AA0B;
+        Thu, 24 Feb 2022 01:33:28 -0800 (PST)
+Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
+          by outpost.zedat.fu-berlin.de (Exim 4.94)
+          with esmtps (TLS1.2)
+          tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+          (envelope-from <glaubitz@zedat.fu-berlin.de>)
+          id 1nNAUz-000i1n-8T; Thu, 24 Feb 2022 10:33:21 +0100
+Received: from dynamic-077-191-226-024.77.191.pool.telefonica.de ([77.191.226.24] helo=[192.168.1.9])
+          by inpost2.zedat.fu-berlin.de (Exim 4.94)
+          with esmtpsa (TLS1.2)
+          tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+          (envelope-from <glaubitz@physik.fu-berlin.de>)
+          id 1nNAUz-003DW5-1K; Thu, 24 Feb 2022 10:33:21 +0100
+Message-ID: <7e3a93e7-1300-8460-30fb-789180a745eb@physik.fu-berlin.de>
+Date:   Thu, 24 Feb 2022 10:33:20 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: regression: Bug 215601 - gcc segv at startup on ia64
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Thorsten Leemhuis <regressions@leemhuis.info>,
+        Anthony Yznaga <anthony.yznaga@oracle.com>,
+        matoro_bugzilla_kernel@matoro.tk,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        linux-ia64@vger.kernel.org,
+        Linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>
+References: <a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info>
+ <823f70be-7661-0195-7c97-65673dc7c12a@leemhuis.info>
+ <03497313-A472-4152-BD28-41C35E4E824E@chromium.org>
+ <94c3be49-0262-c613-e5f5-49b536985dde@physik.fu-berlin.de>
+ <9A1F30F8-3DE2-4075-B103-81D891773246@chromium.org>
+ <4e42e754-d87e-5f6b-90db-39b4700ee0f1@physik.fu-berlin.de>
+ <202202232030.B408F0E895@keescook>
+From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
+In-Reply-To: <202202232030.B408F0E895@keescook>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Original-Sender: glaubitz@physik.fu-berlin.de
+X-Originating-IP: 77.191.226.24
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Put CONFIG_DYNAMIC_FTRACE related code after prepare_ftrace_return(),
-in which we define ftrace_graph_func() for graph_ops in
-DYNAMIC_FTRACE_WITH_ARGS case, then define ftrace_graph_caller
-enable and disable functions in the #else case to override.
+Hi Kees!
 
-Since ftrace_graph_caller enable and disable functions have weak
-versions in Ftrace core code, we don't need to override them in the
-DYNAMIC_FTRACE_WITH_ARGS case. This patch is just a cleanup,
-doesn't have functional changes actually.
+On 2/24/22 06:16, Kees Cook wrote:
+>> You should be able to extract the binaries from this initrd image and the "mount" command,
+>> for example, should be one of the affected binaries.
+> 
+> In dmesg, do you see any of these reports?
+> 
+>                 pr_info("%d (%s): Uhuuh, elf segment at %px requested but the memory is mapped already\n",
+>                         task_pid_nr(current), current->comm, (void *)addr);
 
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
- arch/x86/kernel/ftrace.c | 78 +++++++++++++++++-----------------------
- 1 file changed, 32 insertions(+), 46 deletions(-)
+I'll check that.
 
-diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
-index 7cc540e6de0c..e49c9d3e986b 100644
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -583,51 +583,6 @@ void arch_ftrace_trampoline_free(struct ftrace_ops *ops)
- #endif /* CONFIG_DYNAMIC_FTRACE */
- 
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
--
--#ifdef CONFIG_DYNAMIC_FTRACE
--
--#ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
--extern void ftrace_graph_call(void);
--static const char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
--{
--	return text_gen_insn(JMP32_INSN_OPCODE, (void *)ip, (void *)addr);
--}
--
--static int ftrace_mod_jmp(unsigned long ip, void *func)
--{
--	const char *new;
--
--	new = ftrace_jmp_replace(ip, (unsigned long)func);
--	text_poke_bp((void *)ip, new, MCOUNT_INSN_SIZE, NULL);
--	return 0;
--}
--
--int ftrace_enable_ftrace_graph_caller(void)
--{
--	unsigned long ip = (unsigned long)(&ftrace_graph_call);
--
--	return ftrace_mod_jmp(ip, &ftrace_graph_caller);
--}
--
--int ftrace_disable_ftrace_graph_caller(void)
--{
--	unsigned long ip = (unsigned long)(&ftrace_graph_call);
--
--	return ftrace_mod_jmp(ip, &ftrace_stub);
--}
--#else /* !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
--int ftrace_enable_ftrace_graph_caller(void)
--{
--	return 0;
--}
--
--int ftrace_disable_ftrace_graph_caller(void)
--{
--	return 0;
--}
--#endif /* CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
--#endif /* !CONFIG_DYNAMIC_FTRACE */
--
- /*
-  * Hook the return address and push it in the stack of return addrs
-  * in current thread info.
-@@ -666,6 +621,8 @@ void prepare_ftrace_return(unsigned long ip, unsigned long *parent,
- 	ftrace_test_recursion_unlock(bit);
- }
- 
-+#ifdef CONFIG_DYNAMIC_FTRACE
-+
- #ifdef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
- void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
- 		       struct ftrace_ops *op, struct ftrace_regs *fregs)
-@@ -675,6 +632,35 @@ void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
- 
- 	prepare_ftrace_return(ip, (unsigned long *)stack, 0);
- }
--#endif
-+#else
-+extern void ftrace_graph_call(void);
-+static const char *ftrace_jmp_replace(unsigned long ip, unsigned long addr)
-+{
-+	return text_gen_insn(JMP32_INSN_OPCODE, (void *)ip, (void *)addr);
-+}
- 
-+static int ftrace_mod_jmp(unsigned long ip, void *func)
-+{
-+	const char *new;
-+
-+	new = ftrace_jmp_replace(ip, (unsigned long)func);
-+	text_poke_bp((void *)ip, new, MCOUNT_INSN_SIZE, NULL);
-+	return 0;
-+}
-+
-+int ftrace_enable_ftrace_graph_caller(void)
-+{
-+	unsigned long ip = (unsigned long)(&ftrace_graph_call);
-+
-+	return ftrace_mod_jmp(ip, &ftrace_graph_caller);
-+}
-+
-+int ftrace_disable_ftrace_graph_caller(void)
-+{
-+	unsigned long ip = (unsigned long)(&ftrace_graph_call);
-+
-+	return ftrace_mod_jmp(ip, &ftrace_stub);
-+}
-+#endif /* CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
-+#endif /* CONFIG_DYNAMIC_FTRACE */
- #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
+> I don't see anything out of order in the "mount" binary from the above
+> initrd. What does "readelf -lW" show for the GCC you're seeing failures
+> on?
+
+I'm not 100% sure whether it's the mount binary that is affected. What happens is that once init takes over,
+I'm seeing multiple "Segmentation Fault" message on the console until I'm dropped to the initrd shell.
+
+I can check what dmesg says.
+
+Adrian
+
 -- 
-2.20.1
+ .''`.  John Paul Adrian Glaubitz
+: :' :  Debian Developer - glaubitz@debian.org
+`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
+  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
 
