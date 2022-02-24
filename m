@@ -2,115 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90FE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236275AbiBXP34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:29:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51554 "EHLO
+        id S236288AbiBXP36 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:29:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236353AbiBXP1v (ORCPT
+        with ESMTP id S236264AbiBXP3z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:27:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC62B331
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:27:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645716440;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MAFlX29r2KocHOYLyVsUNd705D3xbKBcnZPFz8ETr5w=;
-        b=DcP7wAJ/xWa5FQzVwbXUjzEUpm40N5SS7/SHQI2caXjXGkWsdGdQuxFMPSMIqZdYLGlg0X
-        +iicDnENU/biRFkJ/nkqSe5phcmb2qLf9J0D3BVnJMXyUZWRl+9HMArABc/IIqwdz+knkG
-        ZxzcE/hB2xRNJFOKrtjtMlpISJqSDsI=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-116-eAxkZpMeO5OB6AQscmBY1w-1; Thu, 24 Feb 2022 10:27:19 -0500
-X-MC-Unique: eAxkZpMeO5OB6AQscmBY1w-1
-Received: by mail-ej1-f71.google.com with SMTP id h22-20020a1709060f5600b006b11a2d3dcfso1381297ejj.4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:27:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MAFlX29r2KocHOYLyVsUNd705D3xbKBcnZPFz8ETr5w=;
-        b=POh9ST87pU7g1yYjS8QzRw88/qAysJNsjUxo/o3jCyrlwlpb4P8qP0Kqdkf3kfZW9H
-         y0DlQnrKELVoGJfn/0tSq4UpOxUaI3hNiZKhl8+vpRXIVvzulb8C/S+AjUIMBUQRCs2F
-         6fjdYjXVit0Sky/6CSZGrf4yBI6cfWtog+rzN3boUaRjMw1ivXgPUdKI/+yn9JoV2Q6t
-         7bhVL+UA4c0IHhTYJfFihtCUVmvULYnLl+pKGTDHRbEZHswIlfYYJY2ZEW64MPwahvHH
-         QKVG1CFi1lGGoymOYiQ6F/uPOffiGEzDRHTeE/CGedFmuBTZZVqfr/nUfOE85h+h2iXc
-         rPcQ==
-X-Gm-Message-State: AOAM530z4cCVcljQSormw4GskAknSUnjL7pMaZxno7YxLJEYnnbz66zC
-        5VCnd+QAtSE7ZXm9d2lDp02EhGMVZU0HzEsgvxJHGgMEarm5r1PjADHfzPtGHGXAk0OetJja6o9
-        PO18RXvN56aX9I84Bm2hRrdBW
-X-Received: by 2002:a17:906:82cf:b0:6d0:3d6:8f27 with SMTP id a15-20020a17090682cf00b006d003d68f27mr2673100ejy.236.1645716438208;
-        Thu, 24 Feb 2022 07:27:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzwmZPM11UQ+T6MJpkRf/wgOctq2SgXxXTorPBAnahVhFkr1lHSs4O3wwVIy145b56udQuU4Q==
-X-Received: by 2002:a17:906:82cf:b0:6d0:3d6:8f27 with SMTP id a15-20020a17090682cf00b006d003d68f27mr2673087ejy.236.1645716438047;
-        Thu, 24 Feb 2022 07:27:18 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id g3sm1499354ejz.180.2022.02.24.07.27.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 07:27:17 -0800 (PST)
-Message-ID: <abc99baf-dfd0-96a8-78e7-703c927eb484@redhat.com>
-Date:   Thu, 24 Feb 2022 16:27:16 +0100
+        Thu, 24 Feb 2022 10:29:55 -0500
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89EE1BE4C2
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:29:22 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:598d:7788:288b:e4f])
+        by michel.telenet-ops.be with bizsmtp
+        id z3VK260070fvPgN063VKob; Thu, 24 Feb 2022 16:29:19 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nNG3S-001rz5-NJ; Thu, 24 Feb 2022 16:29:18 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nNG3S-00Ciky-9h; Thu, 24 Feb 2022 16:29:18 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+Cc:     linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] clk: COMMON_CLK_LAN966X should depend on SOC_LAN966
+Date:   Thu, 24 Feb 2022 16:29:17 +0100
+Message-Id: <eb102eae05e5667b9bd342a0c387f7f262d24bda.1645716471.git.geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] tools/power/x86/intel-speed-select: Remove unneeded
- semicolon
-Content-Language: en-US
-To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>
-Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        srinivas.pandruvada@linux.intel.com, cgel.zte@gmail.com
-References: <20220223093633.1934362-1-deng.changcheng@zte.com.cn>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220223093633.1934362-1-deng.changcheng@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rafael,
+The LAN966x Generic Clock Controller is only present on Microchip
+LAN966x SoCs.  Hence add a dependency on SOC_LAN966, to prevent asking
+the user about this driver when configuring a kernel without LAN966x SoC
+support.
 
-On 2/23/22 10:36, cgel.zte@gmail.com wrote:
-> From: Changcheng Deng <deng.changcheng@zte.com.cn>
-> 
-> Fix the following coccicheck review:
-> tools/power/x86/intel-speed-select/hfi-events.c: 147: Unneeded semicolon
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
+Fixes: 54104ee023333e3b ("clk: lan966x: Add lan966x SoC clock driver")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/clk/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Can you add this to your thermal-hfi branch please?
-
-Regards,
-
-Hans
-
-
-> ---
->  tools/power/x86/intel-speed-select/hfi-events.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/power/x86/intel-speed-select/hfi-events.c b/tools/power/x86/intel-speed-select/hfi-events.c
-> index e85676711372..2f871c108236 100644
-> --- a/tools/power/x86/intel-speed-select/hfi-events.c
-> +++ b/tools/power/x86/intel-speed-select/hfi-events.c
-> @@ -144,7 +144,7 @@ static int family_handler(struct nl_msg *msg, void *arg)
->  			continue;
->  		res->id = nla_get_u32(tb2[CTRL_ATTR_MCAST_GRP_ID]);
->  		break;
-> -	};
-> +	}
->  
->  	return 0;
->  }
+diff --git a/drivers/clk/Kconfig b/drivers/clk/Kconfig
+index c390e26dadf471f5..1c82a3e1129d4342 100644
+--- a/drivers/clk/Kconfig
++++ b/drivers/clk/Kconfig
+@@ -232,6 +232,7 @@ config COMMON_CLK_GEMINI
+ 
+ config COMMON_CLK_LAN966X
+ 	bool "Generic Clock Controller driver for LAN966X SoC"
++	depends on SOC_LAN966 || COMPILE_TEST
+ 	help
+ 	  This driver provides support for Generic Clock Controller(GCK) on
+ 	  LAN966X SoC. GCK generates and supplies clock to various peripherals
+-- 
+2.25.1
 
