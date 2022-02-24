@@ -2,548 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28216C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5487C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:23:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230193AbiBXFXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 00:23:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55340 "EHLO
+        id S230188AbiBXFXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 00:23:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbiBXFWw (ORCPT
+        with ESMTP id S229869AbiBXFX3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 00:22:52 -0500
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB18AEF2C
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:22:21 -0800 (PST)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d6994a6942so11337117b3.17
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:22:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=K66ess7r5mHhZ+jyrx/v31ubR1dLR/5O6RljnD9TbJk=;
-        b=LozXqHfMaTDJaEwKzPinWRR8XkqdwYysp39GImtwCrM0+rogfw04rb+mueZhhhGfGL
-         23FdMdHjfPe/ucA5NO1Ps2x7QWVTIJkn5r3/w8An+6Yu/OFB26uda3T3TViaharQGbj+
-         7lqzJTjK+W3cWbsaENJ9QW4K/1yBNzLwviodZJ0Bmop3eVKvP4pz+i1Le2m2DPlNVJkU
-         D6YZicoBfCDZKRojOUD0ad+qD2XesbCuBtMdPnkVExspbT66sEOb2LAjVrIpfal4EMKl
-         1ZUgGHWlikvJtJGdsQ/1RJ+WivRUeJ3YDFLrF3XG6Nm86ZogXR2B4GecgXGAI7R39qwJ
-         v2Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=K66ess7r5mHhZ+jyrx/v31ubR1dLR/5O6RljnD9TbJk=;
-        b=VYFnqsKnVM73Ypg+UWQl2bzXvRSsh64vOifx3aNwomG0L8fe4DYIsPCamvGhdLw50A
-         a9n0phaQHY22L0rAE7guaENbbStXAGyMpEe/w/wSNa15hszm48AcPAX9e/7dYq3Ih4Ae
-         n9oFlO38WgTflhwnQygwE/4Hks/wPgMTiAGbRoA/Sgn6b15fmV1CJUocpQPwuaLkdFeO
-         ctCx5RfvCDTwpg6z4mDP2QDXpz8k+qrVXVH6Kq7f1di3Fu8SayixpWHMB60LyMsiM+YJ
-         NwS4TpBEolF3pz/OrTpuux5BpV1mBeLuyhN0l/ug+MUBTtkd+qO9ANoP7bvurGSjHmiF
-         rnqA==
-X-Gm-Message-State: AOAM533ME/YaqJabvqboqfDHsEABNOoOU1QFawAfnjCdCHl2zIp5N9jv
-        fJ8/n/DtoaEMUu7UoomOly1zgNle0MO4FwAoqA==
-X-Google-Smtp-Source: ABdhPJw/I4KRWgId8HIW9zGlW2JOH88r+9WEJZxHfHet2WVfgtVJ4oQgjoWSFqxv0u3Uw07d8ZDDCNzupW/Z9K00hw==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:415c:9be0:c461:440a])
- (user=kaleshsingh job=sendgmr) by 2002:a25:2e45:0:b0:624:3b7e:7ffa with SMTP
- id b5-20020a252e45000000b006243b7e7ffamr988328ybn.293.1645680141135; Wed, 23
- Feb 2022 21:22:21 -0800 (PST)
-Date:   Wed, 23 Feb 2022 21:13:42 -0800
-In-Reply-To: <20220224051439.640768-1-kaleshsingh@google.com>
-Message-Id: <20220224051439.640768-8-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220224051439.640768-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [PATCH v3 7/8] KVM: arm64: Unwind and dump nVHE HYP stacktrace
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Scull <ascull@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+        Thu, 24 Feb 2022 00:23:29 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7095623584E;
+        Wed, 23 Feb 2022 21:23:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645680180; x=1677216180;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=1VYAA0otK3uOMli0TWlsKVdJIhmRQYoEYeddYTO8BbE=;
+  b=X2pC1XiUnUWS3a8FrN6aTIGageWov3vKaNle3d7IWjtB+7/dlEXMNird
+   B+erECVOfvjYXE7Ey+LdpahGvw+d9wZPffkI5d2eiQv8DjqyVYp0b7+Fx
+   Y1Q82fkaXXxOAW2tqTaIVbK7L2y6bmsWt3TlFw21aKGdxOVtD++dV/ZUT
+   OOPjkNCZAqavYszQuiF7d7wStTFpfRh5L4sBekKH5nzEdOHU+Rh1yJllx
+   OnPdrst708d/14mwf8tD4QuJosMS4JISKrmHr6r70yXgiTY2LakeP1yap
+   Dwb6mNLQfX9H7PbJVrLQL7JqCzVjp4yI3g+3WXiuYqtoe//K1JN0/SaSt
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="338590956"
+X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
+   d="scan'208";a="338590956"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 21:23:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
+   d="scan'208";a="684159597"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by fmsmga001.fm.intel.com with ESMTP; 23 Feb 2022 21:22:53 -0800
+Message-ID: <10a96a85-d7e9-7ac6-9c8d-f0e8b4597f01@linux.intel.com>
+Date:   Thu, 24 Feb 2022 13:21:24 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 01/11] iommu: Add dma ownership management interfaces
+Content-Language: en-US
+To:     Robin Murphy <robin.murphy@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>
+References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
+ <20220218005521.172832-2-baolu.lu@linux.intel.com>
+ <f830c268-daca-8e8f-a429-0c80496a7273@arm.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <f830c268-daca-8e8f-a429-0c80496a7273@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unwind the stack in EL1, when CONFIG_NVHE_EL2_DEBUG is enabled. This is
-possible because CONFIG_NVHE_EL2_DEBUG disables the host stage 2 protection
-which allows host to access the hypervisor stack pages in EL1.
+On 2/24/22 2:00 AM, Robin Murphy wrote:
+> On 2022-02-18 00:55, Lu Baolu wrote:
+> [...]
+>> +/**
+>> + * iommu_group_claim_dma_owner() - Set DMA ownership of a group
+>> + * @group: The group.
+>> + * @owner: Caller specified pointer. Used for exclusive ownership.
+>> + *
+>> + * This is to support backward compatibility for vfio which manages
+>> + * the dma ownership in iommu_group level. New invocations on this
+>> + * interface should be prohibited.
+>> + */
+>> +int iommu_group_claim_dma_owner(struct iommu_group *group, void *owner)
+>> +{
+>> +    int ret = 0;
+>> +
+>> +    mutex_lock(&group->mutex);
+>> +    if (group->owner_cnt) {
+> 
+> To clarify the comment buried in the other thread, I really think we 
+> should just unconditionally flag the error here...
+> 
+>> +        if (group->owner != owner) {
+>> +            ret = -EPERM;
+>> +            goto unlock_out;
+>> +        }
+>> +    } else {
+>> +        if (group->domain && group->domain != group->default_domain) {
+>> +            ret = -EBUSY;
+>> +            goto unlock_out;
+>> +        }
+>> +
+>> +        group->owner = owner;
+>> +        if (group->domain)
+>> +            __iommu_detach_group(group->domain, group);
+>> +    }
+>> +
+>> +    group->owner_cnt++;
+>> +unlock_out:
+>> +    mutex_unlock(&group->mutex);
+>> +
+>> +    return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_group_claim_dma_owner);
+>> +
+>> +/**
+>> + * iommu_group_release_dma_owner() - Release DMA ownership of a group
+>> + * @group: The group.
+>> + *
+>> + * Release the DMA ownership claimed by iommu_group_claim_dma_owner().
+>> + */
+>> +void iommu_group_release_dma_owner(struct iommu_group *group)
+>> +{
+>> +    mutex_lock(&group->mutex);
+>> +    if (WARN_ON(!group->owner_cnt || !group->owner))
+>> +        goto unlock_out;
+>> +
+>> +    if (--group->owner_cnt > 0)
+>> +        goto unlock_out;
+> 
+> ...and equivalently just set owner_cnt directly to 0 here. I don't see a 
+> realistic use-case for any driver to claim the same group more than 
+> once, and allowing it in the API just feels like opening up various 
+> potential corners for things to get out of sync.
 
-Unwinding and dumping hyp call traces is gated on CONFIG_NVHE_EL2_DEBUG
-to avoid the potential leaking of information to the host.
+Yeah! Both make sense to me. I will also drop the owner token in the API
+as it's unnecessary anymore after the change.
 
-A simple stack overflow test produces the following output:
+> I think that's the only significant concern I have left with the series 
+> as a whole - you can consider my other grumbles non-blocking :)
 
-[  580.376051][  T412] kvm: nVHE hyp panic at: ffffffc0116145c4!
-[  580.378034][  T412] kvm [412]: nVHE HYP call trace:
-[  580.378591][  T412] kvm [412]:  [<ffffffc011614934>]
-[  580.378993][  T412] kvm [412]:  [<ffffffc01160fa48>]
-[  580.379386][  T412] kvm [412]:  [<ffffffc0116145dc>]  // Non-terminating recursive call
-[  580.379772][  T412] kvm [412]:  [<ffffffc0116145dc>]
-[  580.380158][  T412] kvm [412]:  [<ffffffc0116145dc>]
-[  580.380544][  T412] kvm [412]:  [<ffffffc0116145dc>]
-[  580.380928][  T412] kvm [412]:  [<ffffffc0116145dc>]
-. . .
+Thank you and very appreciated for your time!
 
-Since nVHE hyp symbols are not included by kallsyms to avoid issues
-with aliasing, we fallback to the vmlinux addresses. Symbolizing the
-addresses is handled in the next patch in this series.
-
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
-
-Changes in v3:
-  - The nvhe hyp stack unwinder now makes use of the core logic from the
-    regular kernel unwinder to avoid duplication, per Mark
-
-Changes in v2:
-  - Add cpu_prepare_nvhe_panic_info()
-  - Move updating the panic info to hyp_panic(), so that unwinding also
-    works for conventional nVHE Hyp-mode.
-
- arch/arm64/include/asm/kvm_asm.h    |  19 +++
- arch/arm64/include/asm/stacktrace.h |  12 ++
- arch/arm64/kernel/stacktrace.c      | 210 +++++++++++++++++++++++++---
- arch/arm64/kvm/Kconfig              |   5 +-
- arch/arm64/kvm/arm.c                |   2 +-
- arch/arm64/kvm/handle_exit.c        |   3 +
- arch/arm64/kvm/hyp/nvhe/switch.c    |  18 +++
- 7 files changed, 243 insertions(+), 26 deletions(-)
-
-diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
-index 2e277f2ed671..16efdf150a37 100644
---- a/arch/arm64/include/asm/kvm_asm.h
-+++ b/arch/arm64/include/asm/kvm_asm.h
-@@ -176,6 +176,25 @@ struct kvm_nvhe_init_params {
- 	unsigned long vtcr;
- };
- 
-+#ifdef CONFIG_NVHE_EL2_DEBUG
-+/*
-+ * Used by the host in EL1 to dump the nVHE hypervisor backtrace on
-+ * hyp_panic. This is possible because CONFIG_NVHE_EL2_DEBUG disables
-+ * the host stage 2 protection. See: __hyp_do_panic()
-+ *
-+ * @hyp_stack_base:             hyp VA of the hyp_stack base.
-+ * @hyp_overflow_stack_base:    hyp VA of the hyp_overflow_stack base.
-+ * @fp:                         hyp FP where the backtrace begins.
-+ * @pc:                         hyp PC where the backtrace begins.
-+ */
-+struct kvm_nvhe_panic_info {
-+	unsigned long hyp_stack_base;
-+	unsigned long hyp_overflow_stack_base;
-+	unsigned long fp;
-+	unsigned long pc;
-+};
-+#endif /* CONFIG_NVHE_EL2_DEBUG */
-+
- /* Translate a kernel address @ptr into its equivalent linear mapping */
- #define kvm_ksym_ref(ptr)						\
- 	({								\
-diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
-index e77cdef9ca29..18611a51cf14 100644
---- a/arch/arm64/include/asm/stacktrace.h
-+++ b/arch/arm64/include/asm/stacktrace.h
-@@ -22,6 +22,10 @@ enum stack_type {
- 	STACK_TYPE_OVERFLOW,
- 	STACK_TYPE_SDEI_NORMAL,
- 	STACK_TYPE_SDEI_CRITICAL,
-+#ifdef CONFIG_NVHE_EL2_DEBUG
-+	STACK_TYPE_KVM_NVHE_HYP,
-+	STACK_TYPE_KVM_NVHE_OVERFLOW,
-+#endif /* CONFIG_NVHE_EL2_DEBUG */
- 	__NR_STACK_TYPES
- };
- 
-@@ -147,4 +151,12 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
- 	return false;
- }
- 
-+#ifdef CONFIG_NVHE_EL2_DEBUG
-+void kvm_nvhe_dump_backtrace(unsigned long hyp_offset);
-+#else
-+static inline void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
-+{
-+}
-+#endif /* CONFIG_NVHE_EL2_DEBUG */
-+
- #endif	/* __ASM_STACKTRACE_H */
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index e4103e085681..6ec85cb69b1f 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -15,6 +15,8 @@
- 
- #include <asm/irq.h>
- #include <asm/pointer_auth.h>
-+#include <asm/kvm_asm.h>
-+#include <asm/kvm_hyp.h>
- #include <asm/stack_pointer.h>
- #include <asm/stacktrace.h>
- 
-@@ -64,26 +66,15 @@ NOKPROBE_SYMBOL(start_backtrace);
-  * records (e.g. a cycle), determined based on the location and fp value of A
-  * and the location (but not the fp value) of B.
-  */
--static int notrace unwind_frame(struct task_struct *tsk,
--				struct stackframe *frame)
-+static int notrace __unwind_frame(struct stackframe *frame, struct stack_info *info,
-+		unsigned long (*translate_fp)(unsigned long, enum stack_type))
- {
- 	unsigned long fp = frame->fp;
--	struct stack_info info;
--
--	if (!tsk)
--		tsk = current;
--
--	/* Final frame; nothing to unwind */
--	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
--		return -ENOENT;
- 
- 	if (fp & 0x7)
- 		return -EINVAL;
- 
--	if (!on_accessible_stack(tsk, fp, 16, &info))
--		return -EINVAL;
--
--	if (test_bit(info.type, frame->stacks_done))
-+	if (test_bit(info->type, frame->stacks_done))
- 		return -EINVAL;
- 
- 	/*
-@@ -94,28 +85,62 @@ static int notrace unwind_frame(struct task_struct *tsk,
- 	 *
- 	 * TASK -> IRQ -> OVERFLOW -> SDEI_NORMAL
- 	 * TASK -> SDEI_NORMAL -> SDEI_CRITICAL -> OVERFLOW
-+	 * KVM_NVHE_HYP -> KVM_NVHE_OVERFLOW
- 	 *
- 	 * ... but the nesting itself is strict. Once we transition from one
- 	 * stack to another, it's never valid to unwind back to that first
- 	 * stack.
- 	 */
--	if (info.type == frame->prev_type) {
-+	if (info->type == frame->prev_type) {
- 		if (fp <= frame->prev_fp)
- 			return -EINVAL;
- 	} else {
- 		set_bit(frame->prev_type, frame->stacks_done);
- 	}
- 
-+	/* Record fp as prev_fp before attempting to get the next fp */
-+	frame->prev_fp = fp;
-+
-+	/*
-+	 * If fp is not from the current address space perform the
-+	 * necessary translation before dereferencing it to get next fp.
-+	 */
-+	if (translate_fp)
-+		fp = translate_fp(fp, info->type);
-+	if (!fp)
-+		return -EINVAL;
-+
- 	/*
- 	 * Record this frame record's values and location. The prev_fp and
--	 * prev_type are only meaningful to the next unwind_frame() invocation.
-+	 * prev_type are only meaningful to the next __unwind_frame() invocation.
- 	 */
- 	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
- 	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
--	frame->prev_fp = fp;
--	frame->prev_type = info.type;
--
- 	frame->pc = ptrauth_strip_insn_pac(frame->pc);
-+	frame->prev_type = info->type;
-+
-+	return 0;
-+}
-+
-+static int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
-+{
-+	unsigned long fp = frame->fp;
-+	struct stack_info info;
-+	int err;
-+
-+	if (!tsk)
-+		tsk = current;
-+
-+	/* Final frame; nothing to unwind */
-+	if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
-+		return -ENOENT;
-+
-+	if (!on_accessible_stack(tsk, fp, 16, &info))
-+		return -EINVAL;
-+
-+	err = __unwind_frame(frame, &info, NULL);
-+	if (err)
-+		return err;
- 
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
- 	if (tsk->ret_stack &&
-@@ -143,20 +168,27 @@ static int notrace unwind_frame(struct task_struct *tsk,
- }
- NOKPROBE_SYMBOL(unwind_frame);
- 
--static void notrace walk_stackframe(struct task_struct *tsk,
--				    struct stackframe *frame,
--				    bool (*fn)(void *, unsigned long), void *data)
-+static void notrace __walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
-+		bool (*fn)(void *, unsigned long), void *data,
-+		int (*unwind_frame_fn)(struct task_struct *tsk, struct stackframe *frame))
- {
- 	while (1) {
- 		int ret;
- 
- 		if (!fn(data, frame->pc))
- 			break;
--		ret = unwind_frame(tsk, frame);
-+		ret = unwind_frame_fn(tsk, frame);
- 		if (ret < 0)
- 			break;
- 	}
- }
-+
-+static void notrace walk_stackframe(struct task_struct *tsk,
-+				    struct stackframe *frame,
-+				    bool (*fn)(void *, unsigned long), void *data)
-+{
-+	__walk_stackframe(tsk, frame, fn, data, unwind_frame);
-+}
- NOKPROBE_SYMBOL(walk_stackframe);
- 
- static bool dump_backtrace_entry(void *arg, unsigned long where)
-@@ -210,3 +242,135 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
- 
- 	walk_stackframe(task, &frame, consume_entry, cookie);
- }
-+
-+#ifdef CONFIG_NVHE_EL2_DEBUG
-+DECLARE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
-+DECLARE_KVM_NVHE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack);
-+DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
-+
-+static inline bool kvm_nvhe_on_overflow_stack(unsigned long sp, unsigned long size,
-+				 struct stack_info *info)
-+{
-+	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-+	unsigned long low = (unsigned long)panic_info->hyp_overflow_stack_base;
-+	unsigned long high = low + PAGE_SIZE;
-+
-+	return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_OVERFLOW, info);
-+}
-+
-+static inline bool kvm_nvhe_on_hyp_stack(unsigned long sp, unsigned long size,
-+				 struct stack_info *info)
-+{
-+	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-+	unsigned long low = (unsigned long)panic_info->hyp_stack_base;
-+	unsigned long high = low + PAGE_SIZE;
-+
-+	return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_HYP, info);
-+}
-+
-+static inline bool kvm_nvhe_on_accessible_stack(unsigned long sp, unsigned long size,
-+				       struct stack_info *info)
-+{
-+	if (info)
-+		info->type = STACK_TYPE_UNKNOWN;
-+
-+	if (kvm_nvhe_on_hyp_stack(sp, size, info))
-+		return true;
-+	if (kvm_nvhe_on_overflow_stack(sp, size, info))
-+		return true;
-+
-+	return false;
-+}
-+
-+static unsigned long kvm_nvhe_hyp_stack_kern_va(unsigned long addr)
-+{
-+	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-+	unsigned long hyp_base, kern_base, hyp_offset;
-+
-+	hyp_base = (unsigned long)panic_info->hyp_stack_base;
-+	hyp_offset = addr - hyp_base;
-+
-+	kern_base = (unsigned long)*this_cpu_ptr(&kvm_arm_hyp_stack_page);
-+
-+	return kern_base + hyp_offset;
-+}
-+
-+static unsigned long kvm_nvhe_overflow_stack_kern_va(unsigned long addr)
-+{
-+	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-+	unsigned long hyp_base, kern_base, hyp_offset;
-+
-+	hyp_base = (unsigned long)panic_info->hyp_overflow_stack_base;
-+	hyp_offset = addr - hyp_base;
-+
-+	kern_base = (unsigned long)this_cpu_ptr_nvhe_sym(hyp_overflow_stack);
-+
-+	return kern_base + hyp_offset;
-+}
-+
-+/*
-+ * Convert KVM nVHE hypervisor stack VA to a kernel VA.
-+ *
-+ * The nVHE hypervisor stack is mapped in the flexible 'private' VA range, to allow
-+ * for guard pages below the stack. Consequently, the fixed offset address
-+ * translation macros won't work here.
-+ *
-+ * The kernel VA is calculated as an offset from the kernel VA of the hypervisor
-+ * stack base. See: kvm_nvhe_hyp_stack_kern_va(),  kvm_nvhe_overflow_stack_kern_va()
-+ */
-+static unsigned long kvm_nvhe_stack_kern_va(unsigned long addr,
-+					enum stack_type type)
-+{
-+	switch (type) {
-+	case STACK_TYPE_KVM_NVHE_HYP:
-+		return kvm_nvhe_hyp_stack_kern_va(addr);
-+	case STACK_TYPE_KVM_NVHE_OVERFLOW:
-+		return kvm_nvhe_overflow_stack_kern_va(addr);
-+	default:
-+		return 0UL;
-+	}
-+}
-+
-+static int notrace kvm_nvhe_unwind_frame(struct task_struct *tsk,
-+					struct stackframe *frame)
-+{
-+	struct stack_info info;
-+
-+	if (!kvm_nvhe_on_accessible_stack(frame->fp, 16, &info))
-+		return -EINVAL;
-+
-+	return  __unwind_frame(frame, &info, kvm_nvhe_stack_kern_va);
-+}
-+
-+static bool kvm_nvhe_dump_backtrace_entry(void *arg, unsigned long where)
-+{
-+	unsigned long va_mask = GENMASK_ULL(vabits_actual - 1, 0);
-+	unsigned long hyp_offset = (unsigned long)arg;
-+
-+	where &= va_mask;	/* Mask tags */
-+	where += hyp_offset;	/* Convert to kern addr */
-+
-+	kvm_err("[<%016lx>] %pB\n", where, (void *)where);
-+
-+	return true;
-+}
-+
-+static void notrace kvm_nvhe_walk_stackframe(struct task_struct *tsk,
-+				    struct stackframe *frame,
-+				    bool (*fn)(void *, unsigned long), void *data)
-+{
-+	__walk_stackframe(tsk, frame, fn, data, kvm_nvhe_unwind_frame);
-+}
-+
-+void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
-+{
-+	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
-+	struct stackframe frame;
-+
-+	start_backtrace(&frame, panic_info->fp, panic_info->pc);
-+	pr_err("nVHE HYP call trace:\n");
-+	kvm_nvhe_walk_stackframe(NULL, &frame, kvm_nvhe_dump_backtrace_entry,
-+					(void *)hyp_offset);
-+	pr_err("---- end of nVHE HYP call trace ----\n");
-+}
-+#endif /* CONFIG_NVHE_EL2_DEBUG */
-diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
-index 8a5fbbf084df..75f2c8255ff0 100644
---- a/arch/arm64/kvm/Kconfig
-+++ b/arch/arm64/kvm/Kconfig
-@@ -51,8 +51,9 @@ config NVHE_EL2_DEBUG
- 	depends on KVM
- 	help
- 	  Say Y here to enable the debug mode for the non-VHE KVM EL2 object.
--	  Failure reports will BUG() in the hypervisor. This is intended for
--	  local EL2 hypervisor development.
-+	  Failure reports will BUG() in the hypervisor; and panics will print
-+	  the hypervisor call stack. This is intended for local EL2 hypervisor
-+	  development.
- 
- 	  If unsure, say N.
- 
-diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-index 7a23630c4a7f..66c07c04eb52 100644
---- a/arch/arm64/kvm/arm.c
-+++ b/arch/arm64/kvm/arm.c
-@@ -49,7 +49,7 @@ DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
- 
- DECLARE_KVM_HYP_PER_CPU(unsigned long, kvm_hyp_vector);
- 
--static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
-+DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
- unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
- DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
- 
-diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
-index e3140abd2e2e..ff69dff33700 100644
---- a/arch/arm64/kvm/handle_exit.c
-+++ b/arch/arm64/kvm/handle_exit.c
-@@ -17,6 +17,7 @@
- #include <asm/kvm_emulate.h>
- #include <asm/kvm_mmu.h>
- #include <asm/debug-monitors.h>
-+#include <asm/stacktrace.h>
- #include <asm/traps.h>
- 
- #include <kvm/arm_hypercalls.h>
-@@ -326,6 +327,8 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
- 		kvm_err("nVHE hyp panic at: %016llx!\n", elr_virt + hyp_offset);
- 	}
- 
-+	kvm_nvhe_dump_backtrace(hyp_offset);
-+
- 	/*
- 	 * Hyp has panicked and we're going to handle that by panicking the
- 	 * kernel. The kernel offset will be revealed in the panic so we're
-diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
-index efc20273a352..b8ecffc47424 100644
---- a/arch/arm64/kvm/hyp/nvhe/switch.c
-+++ b/arch/arm64/kvm/hyp/nvhe/switch.c
-@@ -37,6 +37,22 @@ DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
- #ifdef CONFIG_NVHE_EL2_DEBUG
- DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack)
- 	__aligned(16);
-+DEFINE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
-+
-+static inline void cpu_prepare_nvhe_panic_info(void)
-+{
-+	struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr(&kvm_panic_info);
-+	struct kvm_nvhe_init_params *params = this_cpu_ptr(&kvm_init_params);
-+
-+	panic_info->hyp_stack_base = (unsigned long)(params->stack_hyp_va - PAGE_SIZE);
-+	panic_info->hyp_overflow_stack_base = (unsigned long)this_cpu_ptr(hyp_overflow_stack);
-+	panic_info->fp = (unsigned long)__builtin_frame_address(0);
-+	panic_info->pc = _THIS_IP_;
-+}
-+ #else
-+static inline void cpu_prepare_nvhe_panic_info(void)
-+{
-+}
- #endif
- 
- static void __activate_traps(struct kvm_vcpu *vcpu)
-@@ -360,6 +376,8 @@ asmlinkage void __noreturn hyp_panic(void)
- 	struct kvm_cpu_context *host_ctxt;
- 	struct kvm_vcpu *vcpu;
- 
-+	cpu_prepare_nvhe_panic_info();
-+
- 	host_ctxt = &this_cpu_ptr(&kvm_host_data)->host_ctxt;
- 	vcpu = host_ctxt->__hyp_running_vcpu;
- 
--- 
-2.35.1.473.g83b2b277ed-goog
-
+Best regards,
+baolu
