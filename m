@@ -2,84 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98418C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02690C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230088AbiBXC3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:29:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50380 "EHLO
+        id S230100AbiBXCbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:31:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbiBXC3E (ORCPT
+        with ESMTP id S230077AbiBXCbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:29:04 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8092325E1;
-        Wed, 23 Feb 2022 18:28:35 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id j2so1172240ybu.0;
-        Wed, 23 Feb 2022 18:28:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1jzhpJXBre7yHc86UG5PVCm8y9Mu8t3447N2sB9WANg=;
-        b=ToY+jX97i0xupoPH8/daC/7m7PKOfD7autEAGocAXYDPM0bowwaZuAcX1jfdiRN1Jk
-         7SOVKzALkgM1o3MjVfCdnA/ZpJ24YjoRtDjF8YPby0lNutBs1TKdzHMuVGCFHt4dc3g4
-         z9vRm4HUB6S+mbBTYroDFU+9bfUDI4XOCOBWB2ZSp7UJQZks3l1uFOpDkQ+IiVHZPPOd
-         KQd/VB8LR4iu4t8rk5izmBc5tH38ZPzGn0oxNYUcC9pccMjFeufJMZtx8TW6NTEU8s8v
-         D92MWEcvLT65xq+kDvZGM0CvzAOE6cGki6kTGKrX/pZwEjr/9Nb0j+iqOr2whpUO4WOx
-         1vSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1jzhpJXBre7yHc86UG5PVCm8y9Mu8t3447N2sB9WANg=;
-        b=LL9oKRvpvSGJ+5FFT+OXacSKVJaJnOyG9aMpXhX7+cqTPSIspTemZuhADW+kPIov4z
-         seVgZrmlpQGP700Lj3WN8R9zxmcZObP3Hrlg5BlZ6Rhb44CJvdAKvw8di+Nku/cRHFlr
-         faOw5QRaxFG3oAgnePLZvyupNsI63xbzGsGAcbMJj2TlygdUgNK4x/sBeak5KOlKYQGw
-         QkrE5ttm1Msomhm1xGJH5wRW84SA8Wvc2uKNCsuR+1N7YRK6LDu1QZ/MkhAavwAfsz9o
-         VDZcdLr7KDp1c/A4CxSWsjxL8teH14ZsH8W0BTso1WxhNSEQjkJNcSmYjTwwUnhfB0WQ
-         WCsA==
-X-Gm-Message-State: AOAM5305hYGZg9qft/dRuym6MO3f4IcLJLNZdiSxMjfjKXJQSk86hCDa
-        PhV3O8rrWlXRrAOVfvkWixPGTSJIrRUfQ9KMias=
-X-Google-Smtp-Source: ABdhPJzlU+jtgY+MLg4AYm9dcUHUaxWzNeLoHMwMdFO/neEQ85ZmSiOndCm64y9U5VxFqdzfkdRsxg2ajagao4bgh0U=
-X-Received: by 2002:a25:b5c4:0:b0:623:a42e:476b with SMTP id
- d4-20020a25b5c4000000b00623a42e476bmr587997ybg.245.1645669714940; Wed, 23 Feb
- 2022 18:28:34 -0800 (PST)
+        Wed, 23 Feb 2022 21:31:45 -0500
+X-Greylist: delayed 460 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 18:31:15 PST
+Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58A602325EF
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:31:15 -0800 (PST)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowADX35sk7BZi16QYAQ--.48527S2;
+        Thu, 24 Feb 2022 10:23:33 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     lee.jones@linaro.org
+Cc:     linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] mfd: mc13xxx: Add check for mc13xxx_irq_request
+Date:   Thu, 24 Feb 2022 10:23:31 +0800
+Message-Id: <20220224022331.3208275-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220223231752.52241-1-ppbuk5246@gmail.com> <YhbCGDzlTWp2OJzI@zeniv-ca.linux.org.uk>
- <CAM7-yPTM6FNuT4vs2EuKAKitTWMTHw_XzKVggxQJzn5hqbBHpw@mail.gmail.com>
- <CAM7-yPSk35UoGmRY_rCo2=RryBvwbQEjeWfL2tz1ADUosCXNjw@mail.gmail.com>
- <878ru1umcu.fsf@email.froward.int.ebiederm.org> <CAM7-yPTPZXPxhtwvvH6KqpRng2idxZiNCLsJHXbWM4ge1wqsBQ@mail.gmail.com>
- <87h78pknm1.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <87h78pknm1.fsf@email.froward.int.ebiederm.org>
-From:   Yun Levi <ppbuk5246@gmail.com>
-Date:   Thu, 24 Feb 2022 11:28:24 +0900
-Message-ID: <CAM7-yPSmmfgAAGiK+oQq8JD0Xu9S-Ys-WaBPgM8XU5Jgdm-NjA@mail.gmail.com>
-Subject: Re: [PATCH] fs/exec.c: Avoid a race in formats
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        linux-fsdevel@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowADX35sk7BZi16QYAQ--.48527S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrtF17urWrWFy3Cr17KrWkCrg_yoWkJrc_WF
+        y5Xrn7WryUtr17Aw4vvFy3CrWFvr4Dur4Sg3WktFs3t3yUtF97XrnIq3s8Jr4rZrWDJFW3
+        JrnrAr4xZFnrtjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+        Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4U
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUXVWUAwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI
+        42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUgVyxUUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 11:25 AM Eric W. Biederman
-<ebiederm@xmission.com> wrote:
-> I took a quick look and unregistering in the module exit routine looks
-> safe, as set_binfmt takes a module reference, and so prevents the module
-> from being unloaded.
->
-> If you can find a bug with existing in-kernel code that would be
-> interesting.  Otherwise you are making up assumptions that don't current
-> match the code and saying the code is bugging with respect to
-> assumptions that do not hold.
->
-> The code in the kernel is practical not an implementation of some
-> abstract that is robust for every possible use case.
->
-> Eric
+As the potential failure of the devm_request_threaded_irq(),
+it should be better to check the return value of the
+mc13xxx_irq_request() and return error if fails.
 
-Thanks and sorry for making a noise.
+Fixes: 8e00593557c3 ("mfd: Add mc13892 support to mc13xxx")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/mfd/mc13xxx-core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/mfd/mc13xxx-core.c b/drivers/mfd/mc13xxx-core.c
+index 8a4f1d90dcfd..1000572761a8 100644
+--- a/drivers/mfd/mc13xxx-core.c
++++ b/drivers/mfd/mc13xxx-core.c
+@@ -323,8 +323,10 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
+ 		adc1 |= MC13783_ADC1_ATOX;
+ 
+ 	dev_dbg(mc13xxx->dev, "%s: request irq\n", __func__);
+-	mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
++	ret = mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
+ 			mc13xxx_handler_adcdone, __func__, &adcdone_data);
++	if (ret)
++		goto out;
+ 
+ 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC0, adc0);
+ 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC1, adc1);
+-- 
+2.25.1
+
