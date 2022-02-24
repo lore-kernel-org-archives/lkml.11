@@ -2,176 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A6E3C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A216C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:32:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229503AbiBXBcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:32:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58862 "EHLO
+        id S229554AbiBXBct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:32:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiBXBcF (ORCPT
+        with ESMTP id S229470AbiBXBcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:32:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E18365CB;
-        Wed, 23 Feb 2022 17:31:34 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1595460FCE;
-        Thu, 24 Feb 2022 01:24:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50B24C340EF;
-        Thu, 24 Feb 2022 01:24:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645665854;
-        bh=eQfAZltdUG4mDqD4yPpgabYWAEQGMIeeu2UXiTgjl3w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QVOThs1DJLpp6RKm2WBRauaEH8PdlgXau2pkVIP9BoUePiXZAswrcyc3PXFBbQikt
-         2oDtpaFdnWG6hYqPJlHRvEAGOxkucDmBdsjdEEEl4TDyJ/Z4fh1eDueJSKU13Jdy7Z
-         BAE0PxVMNxXPjnhAOM76bNuwBKoAXHF5p5gr1cyhLBdqcFqblu8khZO8Y4NsE79lpc
-         cQ7nQQ4niDH79xmBJaLIgAk+trPJHBiMjLD0YDawtNOATJOUvgvyngxuAyWFqD1dkp
-         mC6fTvwjyna6qMzaIgjSyEdM7doPBd0NG3N31GP1n9vDEzZOUJ6xqocB9B/MI97R1q
-         MG91fUK1cZUfQ==
-Date:   Wed, 23 Feb 2022 17:24:12 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 7/8] ima: support fs-verity file digest based version
- 3 signatures
-Message-ID: <YhbePM/BiRCzL3bn@sol.localdomain>
-References: <20220211214310.119257-1-zohar@linux.ibm.com>
- <20220211214310.119257-8-zohar@linux.ibm.com>
+        Wed, 23 Feb 2022 20:32:47 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A062B43395;
+        Wed, 23 Feb 2022 17:32:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645666338; x=1677202338;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=t8MPPK30DtlCQHux+g7xPcTxNihra4Q/dwbimkdpxrg=;
+  b=rUwKrA9ix9IdpjqmYQBuTpPDneIU7hqxFUn7vqzlvKramSrnBp0Oe12y
+   9FiJtftDsJx0mSS1eEMPDpY6cSuxeJz+0RdDok4L+V2fTyM5o5KCQ0Wsu
+   O6YbD9N/32hsYqsYPIrrNViutbYjpOHNTFHEeuP1KdnSiMAdsaKGyj0du
+   c=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 23 Feb 2022 16:48:05 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 16:48:05 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 23 Feb 2022 16:48:05 -0800
+Received: from [10.48.243.226] (10.49.16.6) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Wed, 23 Feb
+ 2022 16:48:04 -0800
+Message-ID: <657eecf0-a5d5-a9c0-2954-dbc865f33a7f@quicinc.com>
+Date:   Wed, 23 Feb 2022 16:48:04 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220211214310.119257-8-zohar@linux.ibm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 1/6][next] ath6kl: wmi: Replace one-element array with
+ flexible-array member in struct wmi_begin_scan_cmd
+Content-Language: en-US
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-hardening@vger.kernel.org>
+References: <cover.1645583264.git.gustavoars@kernel.org>
+ <af3e7cf6101586a6de9710d8f1302763aa7c6396.1645583264.git.gustavoars@kernel.org>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <af3e7cf6101586a6de9710d8f1302763aa7c6396.1645583264.git.gustavoars@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 04:43:09PM -0500, Mimi Zohar wrote:
-> Instead of calculating a regular file hash and verifying the signature
-> stored in the 'security.ima' xattr against the calculated file hash, get
-> fs-verity's file digest and verify the signature (version 3) stored in
-> 'security.ima' against the digest.
+On 2/22/2022 6:38 PM, Gustavo A. R. Silva wrote:
+> Replace one-element array with flexible-array member in struct
+> wmi_begin_scan_cmd. Also, make use of the struct_size() helper.
 > 
-> The policy rule 'appraise_type=' option is extended to support 'sigv3',
-> which is initiality limited to fs-verity.
+> This issue was found with the help of Coccinelle and audited and fixed,
+> manually.
 > 
-> The fs-verity 'appraise' rules are identified by the 'digest-type=verity'
-> option and require the 'appraise_type=sigv3' option.  The following
-> 'appraise' policy rule requires fsverity file digests.  (The rule may be
-> constrained, for example based on a fsuuid or LSM label.)
+> Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> Link: https://github.com/KSPP/linux/issues/79
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+>   drivers/net/wireless/ath/ath6kl/wmi.c | 9 ++-------
+>   drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
+>   2 files changed, 3 insertions(+), 8 deletions(-)
 > 
-> Basic fs-verity policy rule example:
->   appraise func=BPRM_CHECK digest_type=verity appraise_type=sigv3
-> 
-> Lastly, for IMA to differentiate between the original IMA signature
-> from an fs-verity signature a new 'xattr_type' named IMA_VERITY_DIGSIG
-> is defined.
+> diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
+> index bd1ef6334997..e1c950014f3e 100644
+> --- a/drivers/net/wireless/ath/ath6kl/wmi.c
+> +++ b/drivers/net/wireless/ath/ath6kl/wmi.c
+> @@ -2008,7 +2008,7 @@ int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
+>   	struct ieee80211_supported_band *sband;
+>   	struct sk_buff *skb;
+>   	struct wmi_begin_scan_cmd *sc;
+> -	s8 size, *supp_rates;
+> +	s8 *supp_rates;
+>   	int i, band, ret;
+>   	struct ath6kl *ar = wmi->parent_dev;
+>   	int num_rates;
+> @@ -2023,18 +2023,13 @@ int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
+>   						num_chan, ch_list);
+>   	}
+>   
+> -	size = sizeof(struct wmi_begin_scan_cmd);
+> -
+>   	if ((scan_type != WMI_LONG_SCAN) && (scan_type != WMI_SHORT_SCAN))
+>   		return -EINVAL;
+>   
+>   	if (num_chan > WMI_MAX_CHANNELS)
+>   		return -EINVAL;
+>   
+> -	if (num_chan)
+> -		size += sizeof(u16) * (num_chan - 1);
+> -
+> -	skb = ath6kl_wmi_get_new_buf(size);
+> +	skb = ath6kl_wmi_get_new_buf(struct_size(sc, ch_list, num_chan));
+>   	if (!skb)
+>   		return -ENOMEM;
+>   
+> diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+> index 784940ba4c90..322539ed9c12 100644
+> --- a/drivers/net/wireless/ath/ath6kl/wmi.h
+> +++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+> @@ -863,7 +863,7 @@ struct wmi_begin_scan_cmd {
+>   	u8 num_ch;
+>   
+>   	/* channels in Mhz */
+> -	__le16 ch_list[1];
+> +	__le16 ch_list[];
+>   } __packed;
+>   
+>   /* wmi_start_scan_cmd is to be deprecated. Use
 
-I'm having a hard time understanding this patch.  Can you please describe the
-motivation for doing things, not just the things themselves, and make sure the
-explanation is understandable to someone who isn't an IMA expert?
 
-> diff --git a/Documentation/ABI/testing/ima_policy b/Documentation/ABI/testing/ima_policy
-> index ff3c906738cb..508053b8dd0a 100644
-> --- a/Documentation/ABI/testing/ima_policy
-> +++ b/Documentation/ABI/testing/ima_policy
-> @@ -47,7 +47,7 @@ Description:
->  			fgroup:= decimal value
->  		  lsm:  are LSM specific
->  		  option:
-> -			appraise_type:= [imasig] [imasig|modsig]
-> +			appraise_type:= [imasig] | [imasig|modsig] | [sigv3]
->  			appraise_flag:= [check_blacklist]
->  			Currently, blacklist check is only for files signed with appended
->  			signature.
-> @@ -153,9 +153,27 @@ Description:
->  
->  			appraise func=SETXATTR_CHECK appraise_algos=sha256,sha384,sha512
->  
-> -		Example of 'measure' rule requiring fs-verity's digests on a
-> -		particular filesystem with indication of type of digest in
-> -		the measurement list.
-> +		Example of a 'measure' rule requiring fs-verity's digests
-> +		with indication of type of digest in the measurement list.
->  
->  			measure func=FILE_CHECK digest_type=verity \
-> -				fsuuid=... template=ima-ngv2
-> +				template=ima-ngv2
-> +
-> +		Example of 'measure' and 'appraise' rules requiring fs-verity
-> +		signatures (version 3) stored in security.ima xattr.
-> +
-> +		The 'measure' rule specifies the 'ima-sig' template option,
-> +		which includes the file signature in the measurement list.
-> +
-> +			measure func=BPRM_CHECK digest_type=verity \
-> +				template=ima-sig
-> +
-> +		The 'appraise' rule specifies the type and signature version
-> +		(sigv3) required.
-> +
-> +			appraise func=BPRM_CHECK digest_type=verity \
-> +				appraise_type=sigv3
-> +
-> +		All of these policy rules could, for example, be constrained
-> +		either based on a filesystem's UUID (fsuuid) or based on LSM
-> +		labels.
 
-Is there documentation for what the appraise_type argument means, or does it
-just need to be reverse engineered from the above example?
-
-> + - 'sig': the file signature, based on either the file's/fsverity's digest[1],
-> +   or the EVM portable signature if the file signature is not found;
-
-This sentence doesn't make sense.  How can it be the file signature if the
-"file signature is not found"?
-
-> @@ -303,6 +321,12 @@ static int xattr_verify(enum ima_hooks func, struct integrity_iint_cache *iint,
->  	case EVM_IMA_XATTR_DIGSIG:
->  		set_bit(IMA_DIGSIG, &iint->atomic_flags);
->  
-> +		if (iint->flags & (IMA_DIGSIG_REQUIRED | IMA_VERITY_REQUIRED)) {
-> +			*cause = "verity-signature-required";
-> +			*status = INTEGRITY_FAIL;
-> +			break;
-> +		}
-
-Shouldn't this check whether *both* of these flags are set?
-
-> diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima/ima_policy.c
-> index 28aca1f9633b..d3006cc22ab1 100644
-> --- a/security/integrity/ima/ima_policy.c
-> +++ b/security/integrity/ima/ima_policy.c
-> @@ -1311,6 +1311,12 @@ static bool ima_validate_rule(struct ima_rule_entry *entry)
->  	    !(entry->flags & IMA_MODSIG_ALLOWED))
->  		return false;
->  
-> +	/* Ensure APPRAISE verity file implies a v3 signature */
-> +	if (entry->action == APPRAISE &&
-> +	    (entry->flags & IMA_VERITY_REQUIRED) &&
-> +	    !(entry->flags & IMA_DIGSIG_REQUIRED))
-> +		return false;
-
-This comment doesn't seem to match the code.
-
-> diff --git a/security/integrity/ima/ima_template_lib.c b/security/integrity/ima/ima_template_lib.c
-> index d370fca04de4..ecbe61c53d40 100644
-> --- a/security/integrity/ima/ima_template_lib.c
-> +++ b/security/integrity/ima/ima_template_lib.c
-> @@ -495,7 +495,8 @@ int ima_eventsig_init(struct ima_event_data *event_data,
->  {
->  	struct evm_ima_xattr_data *xattr_value = event_data->xattr_value;
->  
-> -	if ((!xattr_value) || (xattr_value->type != EVM_IMA_XATTR_DIGSIG))
-> +	if (!xattr_value ||
-> +	    !(xattr_value->type & (EVM_IMA_XATTR_DIGSIG | IMA_VERITY_DIGSIG)))
->  		return ima_eventevmsig_init(event_data, field_data);
-
-This is OR-ing together values that aren't bit flags.
-
-- Eric
+Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
