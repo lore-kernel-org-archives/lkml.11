@@ -2,89 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 605DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F525C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234061AbiBXLTJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 06:19:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59614 "EHLO
+        id S234062AbiBXLWG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 06:22:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233955AbiBXLSK (ORCPT
+        with ESMTP id S230236AbiBXLWE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 06:18:10 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D61D16E7D2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:40 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id r10so746515wma.2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LfKStxRvgTEmdqhNQGyq07ydIW9Hyz4sxw/jfz5hVYw=;
-        b=r7/l65/1oIcrXfeQMVC71/5ogGArMOi/oLoSasc+FcBBcXlOrqSYFlPWedgjDjMnhb
-         gJmBZPCFhf71QLIyP9+ilt7CBR2VUVRTLRCr26CThISQ0VBSERN11vsNDHWjlHRgxrkD
-         iInDeLhpIy1O4W/EuP2sxdzBVIyuOM5FQ0JgZakch9wTfzx7N88xoJcfl3B1iPtNRmW0
-         3wuTRxjxYWr7DjdNt6Bde8ukt47mSQWK8R2m+BwzXpzoyejcUo2XAo02FPoOyMU9kpTM
-         yaNA4iW3xIKaNLZ7S2vvWNQh9PLo7AFZ8cFCp2eZVC6mgT8D0uej0iayS4bTrbmCiIqA
-         uclQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LfKStxRvgTEmdqhNQGyq07ydIW9Hyz4sxw/jfz5hVYw=;
-        b=vpqqez3A9aTDtIhUjkPI8vfFXXKaH2qMpTENmMpZUcWa40J++4sohyjI3c4mUFZY4o
-         Y+jMzQ52j/MZZJENwQfr1KbdZJs3SV0K8vr+aKAlf1xlqMsnZ1bOWCZqtIOz25qkuFli
-         eT6H368/xRCfdsGcdhOdk+15vG7qZRUgQRDjQFl+MIUlOXTD8eB3M/6phMFAGeIVzzru
-         mj+PB0EOvHIn1SPb8NfPnKxdFj/KK9k3ZGOELsSn9M57lb2rM/VjdvYCiKQyUWZIgg2O
-         Iu7lgxV+X+dZEqhFNi58ZpPxS0vjdd9uCxnZJLn+QIbuDpamv5v7h0IBjLqoafxgoa6x
-         F+0w==
-X-Gm-Message-State: AOAM533MO6cPuif+MoRbQuIdHhUOGKy8WmiA/u5cWJ+cy7LBR7oomG2e
-        hsH579H+1r/SNZvNvnH9IgBj1w==
-X-Google-Smtp-Source: ABdhPJzYjVTN9x+GL1LFM9oLjla4Nv5U4uIq7XL0Lqv3bedGcqZkNI5nSpYhXrImHNanSLu+5Isiog==
-X-Received: by 2002:a1c:a7ca:0:b0:380:e40f:c31a with SMTP id q193-20020a1ca7ca000000b00380e40fc31amr1874845wme.85.1645701459163;
-        Thu, 24 Feb 2022 03:17:39 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id t4sm2245737wmj.10.2022.02.24.03.17.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 03:17:38 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     broonie@kernel.org
-Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v2 15/16] ASoC: codecs: wcd938x: add simple clk stop support
-Date:   Thu, 24 Feb 2022 11:17:17 +0000
-Message-Id: <20220224111718.6264-16-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220224111718.6264-1-srinivas.kandagatla@linaro.org>
-References: <20220224111718.6264-1-srinivas.kandagatla@linaro.org>
+        Thu, 24 Feb 2022 06:22:04 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4259B1CE;
+        Thu, 24 Feb 2022 03:21:31 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id F23651F37F;
+        Thu, 24 Feb 2022 11:21:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645701690; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oJU8mNCuvdPjtG+kxUCL1MNwiSJQCMqrnSDUyRWAPys=;
+        b=fbrLd3uYGGuF/+gtgOTc42jy43SBVwMaRLN9Jyjq5Q7kJTFS2NCF/eGWTFihYz3ZuVAO/W
+        2Xu155AIWIa5aQE2Yn3kqLHhqurbQ+J8vibQwWSMCIjzpjO7ODhCKl7S5JRnMnSDIvcz3I
+        KEd7y3uTKgMSv9d0SiU2rdws2TYqFRI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645701690;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oJU8mNCuvdPjtG+kxUCL1MNwiSJQCMqrnSDUyRWAPys=;
+        b=pimrS9guo0/mLaKBn4sTcUW5Kr+erSaQ5pN956+PIe12zIFsX+NuJKBHZAHm8mzWD0gQgZ
+        YGrZG6YXWfuNI4BA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 82DF6139F3;
+        Thu, 24 Feb 2022 11:21:29 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id IsL4HDlqF2IHWAAAMHmgww
+        (envelope-from <lhenriques@suse.de>); Thu, 24 Feb 2022 11:21:29 +0000
+Received: from localhost (brahms.olymp [local])
+        by brahms.olymp (OpenSMTPD) with ESMTPA id b5956cca;
+        Thu, 24 Feb 2022 11:21:43 +0000 (UTC)
+From:   =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+To:     Jeff Layton <jlayton@kernel.org>, Xiubo Li <xiubli@redhat.com>,
+        Ilya Dryomov <idryomov@gmail.com>
+Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>
+Subject: [RFC PATCH] ceph: add support for encrypted snapshot names
+Date:   Thu, 24 Feb 2022 11:21:42 +0000
+Message-Id: <20220224112142.18052-1-lhenriques@suse.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mark WCD938x as clock stop capable.
+Since filenames in encrypted directories are already encrypted and shown
+as a base64-encoded string when the directory is locked, snapshot names
+should show a similar behaviour.
 
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
 ---
- sound/soc/codecs/wcd938x-sdw.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/ceph/dir.c   | 15 +++++++++++++++
+ fs/ceph/inode.c | 10 +++++++++-
+ 2 files changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/wcd938x-sdw.c b/sound/soc/codecs/wcd938x-sdw.c
-index 1fa05ec7459a..1bf3c06a2b62 100644
---- a/sound/soc/codecs/wcd938x-sdw.c
-+++ b/sound/soc/codecs/wcd938x-sdw.c
-@@ -249,6 +249,7 @@ static int wcd9380_probe(struct sdw_slave *pdev,
- 					SDW_SCP_INT1_BUS_CLASH |
- 					SDW_SCP_INT1_PARITY;
- 	pdev->prop.lane_control_support = true;
-+	pdev->prop.simple_clk_stop_capable = true;
- 	if (wcd->is_tx) {
- 		pdev->prop.source_ports = GENMASK(WCD938X_MAX_SWR_PORTS, 0);
- 		pdev->prop.src_dpn_prop = wcd938x_dpn_prop;
--- 
-2.21.0
+Support on the MDS for names that'll be > MAX_NAME when base64 encoded is
+still TBD.  I thought it would be something easy to do, but snapshots
+don't seem to make use of the CDir/CDentry (which is where alternate_name
+is stored on the MDS).  I'm still looking into this, but I may need some
+help there :-(
 
+Cheers,
+--
+Luís
+
+diff --git a/fs/ceph/dir.c b/fs/ceph/dir.c
+index a449f4a07c07..20ae600ee7cd 100644
+--- a/fs/ceph/dir.c
++++ b/fs/ceph/dir.c
+@@ -1065,6 +1065,13 @@ static int ceph_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 		op = CEPH_MDS_OP_MKSNAP;
+ 		dout("mksnap dir %p snap '%pd' dn %p\n", dir,
+ 		     dentry, dentry);
++		/* XXX missing support for alternate_name in snapshots */
++		if (IS_ENCRYPTED(dir) && (dentry->d_name.len >= 189)) {
++			dout("encrypted snapshot name too long: %pd len: %d\n",
++			     dentry, dentry->d_name.len);
++			err = -ENAMETOOLONG;
++			goto out;
++		}
+ 	} else if (ceph_snap(dir) == CEPH_NOSNAP) {
+ 		dout("mkdir dir %p dn %p mode 0%ho\n", dir, dentry, mode);
+ 		op = CEPH_MDS_OP_MKDIR;
+@@ -1109,6 +1116,14 @@ static int ceph_mkdir(struct user_namespace *mnt_userns, struct inode *dir,
+ 	    !req->r_reply_info.head->is_target &&
+ 	    !req->r_reply_info.head->is_dentry)
+ 		err = ceph_handle_notrace_create(dir, dentry);
++
++	/*
++	 * If we have created a snapshot we need to clear the cache, otherwise
++	 * snapshot will show encrypted filenames in readdir.
++	 */
++	if (ceph_snap(dir) == CEPH_SNAPDIR)
++		d_drop(dentry);
++
+ out_req:
+ 	ceph_mdsc_put_request(req);
+ out:
+diff --git a/fs/ceph/inode.c b/fs/ceph/inode.c
+index 8b0832271fdf..080824610b73 100644
+--- a/fs/ceph/inode.c
++++ b/fs/ceph/inode.c
+@@ -182,6 +182,13 @@ struct inode *ceph_get_snapdir(struct inode *parent)
+ 	ci->i_rbytes = 0;
+ 	ci->i_btime = ceph_inode(parent)->i_btime;
+ 
++	/* if encrypted, just borough fscrypt_auth from parent */
++	if (IS_ENCRYPTED(parent)) {
++		struct ceph_inode_info *pci = ceph_inode(parent);
++		inode->i_flags |= S_ENCRYPTED;
++		ci->fscrypt_auth_len = pci->fscrypt_auth_len;
++		ci->fscrypt_auth = pci->fscrypt_auth;
++	}
+ 	if (inode->i_state & I_NEW) {
+ 		inode->i_op = &ceph_snapdir_iops;
+ 		inode->i_fop = &ceph_snapdir_fops;
+@@ -632,7 +639,8 @@ void ceph_free_inode(struct inode *inode)
+ 
+ 	kfree(ci->i_symlink);
+ #ifdef CONFIG_FS_ENCRYPTION
+-	kfree(ci->fscrypt_auth);
++	if (ceph_snap(inode) != CEPH_SNAPDIR)
++		kfree(ci->fscrypt_auth);
+ #endif
+ 	fscrypt_free_inode(inode);
+ 	kmem_cache_free(ceph_inode_cachep, ci);
