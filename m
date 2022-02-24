@@ -2,74 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A358C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5290CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:16:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233484AbiBXTQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:16:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36046 "EHLO
+        id S233490AbiBXTQ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:16:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233449AbiBXTQq (ORCPT
+        with ESMTP id S233491AbiBXTQ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 14:16:46 -0500
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38F5622C6C2;
-        Thu, 24 Feb 2022 11:16:16 -0800 (PST)
-Received: by mail-oi1-f178.google.com with SMTP id q5so4351398oij.6;
-        Thu, 24 Feb 2022 11:16:16 -0800 (PST)
+        Thu, 24 Feb 2022 14:16:56 -0500
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21FDF25293A
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:16:25 -0800 (PST)
+Received: by mail-ot1-x330.google.com with SMTP id g6-20020a9d6486000000b005acf9a0b644so1993025otl.12
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:16:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TLiWpOnxapYAVvT4QJds8jwsCUqpq+N+eb8iJ1oxqPc=;
+        b=FoSBsHzIox96KnpJAyliB1ZiuIjpzEzM4XYDkOlGoqloV5Eo7EZVSPu2ErTj4vLJMi
+         upYaLfSb0X91GX+xn6TnAobrbP6ERdOB5KlZcpaoe7UbiAWgiKPgTlQEtKxHSzdLcHMS
+         lOjpOydbBexU4vm5IkOYAkImwvyLuVtkbedyi2e7M1I2TfUrXXZR7/AB5zitxIeKy/IC
+         x1F5Q91iYENsXt8Yd24tfJgrSbsl/BS2PPenavqRHuQd9YmcfFKmky7rirOq5DXnIC0b
+         XSj6nBARIPzqtJUo0WYZfR72ddf+6yWvaL9fNzHTsevpQcAYyyylt8lzDJ2QWRku7DVr
+         pJNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CIZ8l9ggHI+ksF9ySGra6oc3DHVzkCgMYu8j36TV9TY=;
-        b=V1oPulW0uWMcspy/r6BqCt7k8/DIqWeMrZ6i4gF6Di9jeANNXqZW3dMBTEXVChxlET
-         sG9WTxKweaP2tbClGbSbDd/gE74s8QdWievEbT01C4jQQmaAb6l8HN5bkeiR4nCb8UVA
-         mSvPfRywBZPiu1Pa4GOP5O6jw6zfCMUB9UUoTf3nbHaKrs9it8+BmHTSZFI0pU8j8vvB
-         01eXZdvgA1LZ1h1J5eUNDTDAGvmLqAqRuY/r8xp8H0k+HHPia/dgWvUJPIAeWwXCLsIK
-         Zr4+ITj65WTjhFLTLlUdAf2xpugKqAtXk0FqkMXQBsyLVgxRrZF1GwdX07L7RYnauNez
-         Je+w==
-X-Gm-Message-State: AOAM533C8pvp7+kwD6fa8CMIYnPkf5Ji4i7UFsnVuc8jEX6ETR+hdjHv
-        izdg+DqNF2y4zmrY0bLIoQ==
-X-Google-Smtp-Source: ABdhPJwxUu9mkz92flMo29/vSvMvRas73bEu7/GHucHHjC7qW5h3B9JoZfONOkccBnWTGnjHJiY6/g==
-X-Received: by 2002:aca:6083:0:b0:2cb:5570:7564 with SMTP id u125-20020aca6083000000b002cb55707564mr8499482oib.57.1645730175518;
-        Thu, 24 Feb 2022 11:16:15 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 9-20020a9d0c09000000b005afabd759cfsm80036otr.65.2022.02.24.11.16.14
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TLiWpOnxapYAVvT4QJds8jwsCUqpq+N+eb8iJ1oxqPc=;
+        b=2TVwU4CgMxzCnJ95mhXm86L5/HgKOJhppcczago7Mvjivsi6tAVhyDTplDH9TNEe31
+         IGgORZgESmzMR9PYdFHSNxV2sXjSyY1GG65vAT+QwN8lAS/lKlERLkd6SOgQwn344OeK
+         qABOFdI42QM62zx7B5gqGxXX/0ymleElAdS4Yk6Xh2L1Li1Ka0OAwY/2SoqrstwDDc8x
+         00xD+1iTEilR8jVHNpFuKgiVhubKTTu/jQxkMPMMet7pGhoxSsslaDk3YlLalbvT477F
+         jKf6YjSvuSt//SItCDc850p/hKrG78gaanrSRyiiVFt506atoCJQmJJAUEZA6njEyBow
+         wsIw==
+X-Gm-Message-State: AOAM532bGQxMS+sONWXy0bstob0VkmxIMgWI2JR5yNkqXZvnPuvE0vxm
+        0VU5yd7su4KEM3y/1EcES/0=
+X-Google-Smtp-Source: ABdhPJzBXhUKmpv0W6RRc6cmrcAkgPuFrtLmZVXDFelgeLtmLNAIwubxdHBKS6Tl11+U/IW4kchtiQ==
+X-Received: by 2002:a9d:6e09:0:b0:5ad:1fcd:bfd0 with SMTP id e9-20020a9d6e09000000b005ad1fcdbfd0mr1532004otr.312.1645730183457;
+        Thu, 24 Feb 2022 11:16:23 -0800 (PST)
+Received: from localhost.localdomain (189-47-54-110.dsl.telesp.net.br. [189.47.54.110])
+        by smtp.gmail.com with ESMTPSA id w3-20020a056830110300b005af14392276sm79509otq.62.2022.02.24.11.16.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 11:16:14 -0800 (PST)
-Received: (nullmailer pid 3428805 invoked by uid 1000);
-        Thu, 24 Feb 2022 19:16:13 -0000
-Date:   Thu, 24 Feb 2022 13:16:13 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>
-Cc:     linux-mediatek@lists.infradead.org,
-        dri-devel@lists.freedesktop.org, p.zabel@pengutronix.de,
-        hsinyi@chromium.org, devicetree@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        yongqiang.niu@mediatek.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        matthias.bgg@gmail.com, fparent@baylibre.com, daniel@ffwll.ch,
-        airlied@linux.ie, jassisinghbrar@gmail.com, chunkuang.hu@kernel.org
-Subject: Re: [PATCH v4,1/5] dt-bindings: arm: mediatek: mmsys: add support
- for MT8186
-Message-ID: <YhfZff2KIPdOm53H@robh.at.kernel.org>
-References: <20220222052803.3570-1-rex-bc.chen@mediatek.com>
- <20220222052803.3570-2-rex-bc.chen@mediatek.com>
+        Thu, 24 Feb 2022 11:16:23 -0800 (PST)
+From:   Magali Lemes <magalilemes00@gmail.com>
+To:     harry.wentland@amd.com, sunpeng.li@amd.com,
+        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch
+Cc:     siqueirajordao@riseup.net, mwen@igalia.com, maira.canal@usp.br,
+        isabbasso@riseup.net, Magali Lemes <magalilemes00@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/4] drm/amd/display: Adjust functions documentation
+Date:   Thu, 24 Feb 2022 16:15:48 -0300
+Message-Id: <20220224191551.69103-2-magalilemes00@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220224191551.69103-1-magalilemes00@gmail.com>
+References: <20220224191551.69103-1-magalilemes00@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220222052803.3570-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Feb 2022 13:27:59 +0800, Rex-BC Chen wrote:
-> Add "mediatek,mt8186-mmsys" to binding document.
-> 
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> ---
->  .../devicetree/bindings/arm/mediatek/mediatek,mmsys.yaml         | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Part of the documentation of the 'dc_process_dmub_aux_transfer_async'
+function was misplaced, being put together with the
+‘dc_enable_dmub_notifications’ documentation. This caused the following
+warning:
 
-Acked-by: Rob Herring <robh@kernel.org>
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:3757: warning:
+expecting prototype for dc_process_dmub_aux_transfer_async(). Prototype
+was for dc_enable_dmub_notifications() instead
+
+This commit fixes the warning by placing the function documentations in
+their right place.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
+---
+ drivers/gpu/drm/amd/display/dc/core/dc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index b1ce3c0cf477..61e3bb99375f 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -3737,8 +3737,8 @@ bool dc_is_dmub_outbox_supported(struct dc *dc)
+ 	return dc->debug.enable_dmub_aux_for_legacy_ddc;
+ }
+ 
+-/**
+- * dc_process_dmub_aux_transfer_async - Submits aux command to dmub via inbox message
++/*
++ *****************************************************************************
+  *  Function: dc_enable_dmub_notifications
+  *
+  *  @brief
+@@ -3780,7 +3780,7 @@ void dc_enable_dmub_outbox(struct dc *dc)
+ }
+ 
+ /**
+- *****************************************************************************
++ * dc_process_dmub_aux_transfer_async - Submits aux command to dmub via inbox message
+  *                                      Sets port index appropriately for legacy DDC
+  * @dc: dc structure
+  * @link_index: link index
+-- 
+2.25.1
+
