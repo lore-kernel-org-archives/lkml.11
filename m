@@ -2,84 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C36C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 03:50:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB4CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 03:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbiBXDvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 22:51:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58054 "EHLO
+        id S229627AbiBXDwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 22:52:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiBXDvF (ORCPT
+        with ESMTP id S229458AbiBXDwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 22:51:05 -0500
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F38720D82F;
-        Wed, 23 Feb 2022 19:50:35 -0800 (PST)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 21O3o9DG002766
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 23 Feb 2022 22:50:10 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 2BFEF15C0036; Wed, 23 Feb 2022 22:50:09 -0500 (EST)
-Date:   Wed, 23 Feb 2022 22:50:09 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Dave Chinner <david@fromorbit.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Lee Jones <lee.jones@linaro.org>, linux-ext4@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Chinner <dchinner@redhat.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        "Darrick J . Wong" <darrick.wong@oracle.com>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, cluster-devel@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [REPORT] kernel BUG at fs/ext4/inode.c:2620 - page_buffers()
-Message-ID: <YhcAcfY1pZTl3sId@mit.edu>
-References: <Yg0m6IjcNmfaSokM@google.com>
- <82d0f4e4-c911-a245-4701-4712453592d9@nvidia.com>
- <Yg8bxiz02WBGf6qO@mit.edu>
- <Yg9QGm2Rygrv+lMj@kroah.com>
- <YhbE2nocBMtLc27C@mit.edu>
- <20220224014842.GM59715@dread.disaster.area>
+        Wed, 23 Feb 2022 22:52:31 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FD3144F4B
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 19:52:00 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id c6so1407525ybk.3
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 19:52:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=C3V/dtxV15Mn7k63x16wvKI7YuLTRLAtDoW+UZHVNSQ=;
+        b=JpTyQ9fwmnCkQTdb4pTZ4OG7pAZVm7gwL2969nPUypAx3k22so+gM3I0W2ci/jvCA5
+         BDPZMmcHgO3YLsB+3wl8ORdfR8CU0QCz0p728ige4gFTPcamGc/2PpHz7ciUiyqBI3Tu
+         X9cjP50jWu0UKjTUkHmEzjal1OhvJNpAH3BzU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=C3V/dtxV15Mn7k63x16wvKI7YuLTRLAtDoW+UZHVNSQ=;
+        b=pdoZ82FJ+Id06QVbFv85/zPHupUmixNVcqxA3TsM32JmpFNQAXhzGlIR1vqpqsdWfr
+         vVq4Wj3KxVzQEF+Kj/B1KjIdADekqWRTKp/ys2ORLg1BfREPUlKcR7YJBYL26oEN/urJ
+         wazcmDy6Q535te/vrPLjmL4yix3amf3WxG9e0BwYHaBEDTDy/joJZWvYqpGdwfVXWwnh
+         tHtlsjvCoihPymfa62sLeQJpDeG2be9gjec2otN3OO2ZiRPAM14gc+ci6N6EJVRsfmgn
+         Su4HqMayIrhD4G1Acv9NVYIYz5LkDtM+GGnMAwtIVAmDdA3VbKrG49DW9JUzpH60Mpw+
+         4QXQ==
+X-Gm-Message-State: AOAM533sFdz+L5bdHKUAdZ0Hq6510CrqwFbbwzpZb0ySqPW63jKThpoV
+        N+RAFjoRreW5Li3xDDWoqgQbFk86VPeTWcqGTTdWdw==
+X-Google-Smtp-Source: ABdhPJyiaPY/OEbo9lDvhKxowTvqVlkhYSSAXktn3qviviBrH2qstZAw3K9LBrLE61G6q3rwWoSQxKBMDVgyXk0nark=
+X-Received: by 2002:a25:a486:0:b0:61d:a523:acd0 with SMTP id
+ g6-20020a25a486000000b0061da523acd0mr753461ybi.203.1645674719716; Wed, 23 Feb
+ 2022 19:51:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224014842.GM59715@dread.disaster.area>
+References: <20220201174643.843102-1-nfraprado@collabora.com>
+In-Reply-To: <20220201174643.843102-1-nfraprado@collabora.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Thu, 24 Feb 2022 11:51:48 +0800
+Message-ID: <CAGXv+5HbBroWkR4gLA2EXOcki4wgZ6XahO1J-VOctgKX5K9k7w@mail.gmail.com>
+Subject: Re: [PATCH v2] arm64: dts: mt8183: jacuzzi: Fix bus properties in
+ anx's DSI endpoint
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
+Cc:     Robert Foss <robert.foss@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Xin Ji <xji@analogixsemi.com>, kernel@collabora.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 12:48:42PM +1100, Dave Chinner wrote:
-> > Fair enough; on the other hand, we could also view this as making ext4
-> > more robust against buggy code in other subsystems, and while other
-> > file systems may be losing user data if they are actually trying to do
-> > remote memory access to file-backed memory, apparently other file
-> > systems aren't noticing and so they're not crashing.
-> 
-> Oh, we've noticed them, no question about that.  We've got bug
-> reports going back years for systems being crashed, triggering BUGs
-> and/or corrupting data on both XFS and ext4 filesystems due to users
-> trying to run RDMA applications with file backed pages.
+Hi,
 
-Is this issue causing XFS to crash?  I didn't know that.
+(CC-ed DRM bridge maintainers and the dri-devel ML)
 
-I tried the Syzbot reproducer with XFS mounted, and it didn't trigger
-any crashes.  I'm sure data was getting corrupted, but I figured I
-should bring ext4 to the XFS level of "at least we're not reliably
-killing the kernel".
+On Wed, Feb 2, 2022 at 1:47 AM N=C3=ADcolas F. R. A. Prado
+<nfraprado@collabora.com> wrote:
+>
+> mt8183-kukui-jacuzzi has an anx7625 bridge connected to the output of
+> its DSI host. However, after commit fd0310b6fe7d ("drm/bridge: anx7625:
+> add MIPI DPI input feature"), a bus-type property started being required
+> in the endpoint node by the driver to indicate whether it is DSI or DPI.
+>
+> Add the missing bus-type property and set it to 5
+> (V4L2_FWNODE_BUS_TYPE_PARALLEL) so that the driver has its input
+> configured to DSI and the display pipeline can probe correctly.
 
-On ext4, an unprivileged process can use process_vm_writev(2) to crash
-the system.  I don't know how quickly we can get a fix into mm/gup.c,
-but if some other kernel path tries calling set_page_dirty() on a
-file-backed page without first asking permission from the file system,
-it seems to be nice if the file system doesn't BUG() --- as near as I
-can tell, xfs isn't crashing in this case, but ext4 is.
+Don't people find it odd that this is setting the bus-type to "parallel"
+(5) for the device to use DSI? Instead of "MIPI CSI-2 D-PHY" (4) or even
+"MIPI CSI-2 C-PHY" (1) which is specified in the binding? It's completely
+backwards.
 
-					- Ted
+Would it be possible to fix the binding and driver at this point?
+
+
+Thanks
+ChenYu
+
+> While at it, also set the data-lanes property that was also introduced
+> in that same commit, so that we don't rely on the default value.
+>
+> Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
+> Signed-off-by: N=C3=ADcolas F. R. A. Prado <nfraprado@collabora.com>
+>
+> ---
+> v1: https://lore.kernel.org/all/20220120224204.773117-1-nfraprado@collabo=
+ra.com
+>
+> Changes in v2:
+> - (thanks Rob) Use proper format when refering to commit in commit
+>   message as pointed out by checkpatch
+>
+>  arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi b/arc=
+h/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+> index 8f7bf33f607d..e8f133dc96b9 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
+> @@ -171,6 +171,8 @@ port@0 {
+>
+>                         anx7625_in: endpoint {
+>                                 remote-endpoint =3D <&dsi_out>;
+> +                               bus-type =3D <5>;
+> +                               data-lanes =3D <0 1 2 3>;
+>                         };
+>                 };
+>
+> --
+> 2.35.1
+>
+>
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
