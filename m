@@ -2,155 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 192FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA29C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236913AbiBXP5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:57:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43508 "EHLO
+        id S229992AbiBXQAI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:00:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236722AbiBXP5P (ORCPT
+        with ESMTP id S229558AbiBXQAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:57:15 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBC912AB9
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:56:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645718198; x=1677254198;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YLRcyqnwpgSRCqcWi/554Dc1Exapi/lSv6TTC7rFRfU=;
-  b=NCCx4kGDZ8i5wLzY5z1y0AzOdxZ1PMxFE5Kt/Y7+QUm8osDNg15y9ZRj
-   2thigD4f+6W+sVwERAdXphypefivjZjL3Fk/RUS6EM4Q5DE3f2RfDB9Cy
-   dIjjjzGLvCE6M0j3xXHY5osXSCvkjnvTr74j4ltAzy8Bpo3ylUdEkEFi7
-   +akf40Qc767YfPN3HMqjuwIcdr+ABlRA4cnVQP/XwFe0bC+iBNlbVNDSL
-   MVliHyOY0i55AwxYq+QlS2y3x4vO5dy7v+9GF0G8obcSdVR2vuNBefzCz
-   hKhf2kb0TlXiuZNcLM+tOZmWEo6swhwJ0edBW7V9/WWhseHnI6apE+qfS
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="235773407"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="235773407"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="684315440"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 07:56:25 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id CE8A4A3F; Thu, 24 Feb 2022 17:56:34 +0200 (EET)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 13/30] x86: Adjust types used in port I/O helpers
-Date:   Thu, 24 Feb 2022 18:56:13 +0300
-Message-Id: <20220224155630.52734-14-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
-References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
+        Thu, 24 Feb 2022 11:00:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26AE17EDB9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:59:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEA9CB826B1
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 15:58:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05C9CC340E9;
+        Thu, 24 Feb 2022 15:58:48 +0000 (UTC)
+Date:   Thu, 24 Feb 2022 10:58:47 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        joao@overdrivepizza.com, hjl.tools@gmail.com, jpoimboe@redhat.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, mbenes@suse.cz,
+        alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
+Message-ID: <20220224105847.5c899324@gandalf.local.home>
+In-Reply-To: <20220225005520.c69be2fbdbd28028361792d9@kernel.org>
+References: <20220224145138.952963315@infradead.org>
+        <20220224151322.714815604@infradead.org>
+        <20220225005520.c69be2fbdbd28028361792d9@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change port I/O helpers to use u8/u16/u32 instead of unsigned
-char/short/int for values. Use u16 instead of int for port number.
+On Fri, 25 Feb 2022 00:55:20 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-It aligns the helpers with implementation in boot stub in preparation
-for consolidation.
+> >  unsigned long ftrace_location(unsigned long ip)
+> >  {
+> > -	return ftrace_location_range(ip, ip);
+> > +	struct dyn_ftrace *rec;
+> > +	unsigned long offset;
+> > +	unsigned long size;
+> > +
+> > +	rec = lookup_rec(ip, ip);
+> > +	if (!rec) {
+> > +		if (!kallsyms_lookup_size_offset(ip, &size, &offset))
+> > +			goto out;
+> > +
+> > +		if (!offset)  
+> 
+> Isn't this 'if (offset)' ?
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
----
- arch/x86/include/asm/io.h | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+No, the point to only look for the fentry location if the ip passed in
+points to the start of the function. IOW, +0 offset.
 
-diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-index f6d91ecb8026..638c1a2a82e0 100644
---- a/arch/x86/include/asm/io.h
-+++ b/arch/x86/include/asm/io.h
-@@ -258,37 +258,37 @@ static inline void slow_down_io(void)
- #endif
- 
- #define BUILDIO(bwl, bw, type)						\
--static inline void out##bwl(unsigned type value, int port)		\
-+static inline void out##bwl(type value, u16 port)			\
- {									\
- 	asm volatile("out" #bwl " %" #bw "0, %w1"			\
- 		     : : "a"(value), "Nd"(port));			\
- }									\
- 									\
--static inline unsigned type in##bwl(int port)				\
-+static inline type in##bwl(u16 port)					\
- {									\
--	unsigned type value;						\
-+	type value;							\
- 	asm volatile("in" #bwl " %w1, %" #bw "0"			\
- 		     : "=a"(value) : "Nd"(port));			\
- 	return value;							\
- }									\
- 									\
--static inline void out##bwl##_p(unsigned type value, int port)		\
-+static inline void out##bwl##_p(type value, u16 port)			\
- {									\
- 	out##bwl(value, port);						\
- 	slow_down_io();							\
- }									\
- 									\
--static inline unsigned type in##bwl##_p(int port)			\
-+static inline type in##bwl##_p(u16 port)				\
- {									\
--	unsigned type value = in##bwl(port);				\
-+	type value = in##bwl(port);					\
- 	slow_down_io();							\
- 	return value;							\
- }									\
- 									\
--static inline void outs##bwl(int port, const void *addr, unsigned long count) \
-+static inline void outs##bwl(u16 port, const void *addr, unsigned long count) \
- {									\
- 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {		\
--		unsigned type *value = (unsigned type *)addr;		\
-+		type *value = (type *)addr;				\
- 		while (count) {						\
- 			out##bwl(*value, port);				\
- 			value++;					\
-@@ -301,10 +301,10 @@ static inline void outs##bwl(int port, const void *addr, unsigned long count) \
- 	}								\
- }									\
- 									\
--static inline void ins##bwl(int port, void *addr, unsigned long count)	\
-+static inline void ins##bwl(u16 port, void *addr, unsigned long count)	\
- {									\
- 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {		\
--		unsigned type *value = (unsigned type *)addr;		\
-+		type *value = (type *)addr;				\
- 		while (count) {						\
- 			*value = in##bwl(port);				\
- 			value++;					\
-@@ -317,9 +317,9 @@ static inline void ins##bwl(int port, void *addr, unsigned long count)	\
- 	}								\
- }
- 
--BUILDIO(b, b, char)
--BUILDIO(w, w, short)
--BUILDIO(l, , int)
-+BUILDIO(b, b, u8)
-+BUILDIO(w, w, u16)
-+BUILDIO(l,  , u32)
- 
- #define inb inb
- #define inw inw
--- 
-2.34.1
+-- Steve
 
+
+> 
+> > +			rec = lookup_rec(ip - offset, (ip - offset) + size);
+> > +	}
+> > +
+> > +	if (rec)
+> > +		return rec->ip;
+> > +
+> > +out:
+> > +	return 0;
