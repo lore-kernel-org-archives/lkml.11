@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC1DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:45:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1776BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:45:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236309AbiBXPpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:45:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
+        id S236638AbiBXPp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:45:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiBXPpw (ORCPT
+        with ESMTP id S232725AbiBXPpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:45:52 -0500
+        Thu, 24 Feb 2022 10:45:53 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723237EA02
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:45:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0126B7EA02;
+        Thu, 24 Feb 2022 07:45:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645717522; x=1677253522;
+  t=1645717524; x=1677253524;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=9+DVXx/isU6uWI6/XyBC0Lnisob2NuO5FXAXMzKIKQQ=;
-  b=WBsP2n9bNrkP9pFry6jEh1+v2K8hyyU9aGn2TAtmb5dYtcSu9RI2g0z6
-   G09Yak9efLf04yCdoy3hZPJUyWxUwnZcsvREkFQt5/R03tB0kbFosqSwN
-   bcK9CiFovVzEdV0DDqC1zCkz1u2UmnW4hoyjp2IWwQ5nMe7yC2BkMcdUc
-   VRzoxEJgwhk5nXvlku6U8LypIq5UUC3JRrhjESiuQywkeMlCIDm1wt7A3
-   yB3+MRPkDXjallKxxjCTNGuso/118aSgGES2/AK3+c9ov9J35XWe62cqV
-   MhNgCz7WfsC0tbpfL94rkaQzu2xHRmi4Q1Kl7wKo9926BdTdAG7UiHpk9
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="239663581"
+  bh=zg871vrIEgDmnoahtU2xZXU7HgaRjVw+9Mzig81rIO0=;
+  b=QM5WMO+rBgKyzLXp8nm/DiXxHSP3ptY7t91zIR7e2XQcmquvHuj8JkOw
+   fI/DxpSvaRAWbdyxBlHvW42pm+vRaMaRze0OBXrivVt5cwQ7uSP/eH66P
+   DvhFkBoXHpMppi00eGHd3OUq/rI88HMUaQjkpvNz3E2B84bKEBEyDJyUq
+   5n9Y9TlWdR73r+a7NNFxnhl5mdaqibReOfiaLXuFFDR+emeB3yXWeQ8lz
+   OUYTCuK3vlCwFXjB5V5S0u0YKSyokVjIpGfyWkF8aJbN5qm4z+VoukMTW
+   +ILROZHJINtNvXzsg4oBsN4KBdlDF/jSPM7hndjJYKshohz5qs5rhTfdF
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="239663596"
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="239663581"
+   d="scan'208";a="239663596"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:45:04 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:45:07 -0800
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="533178468"
+   d="scan'208";a="533178494"
 Received: from ronakmeh-mobl1.amr.corp.intel.com (HELO [10.212.97.131]) ([10.212.97.131])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:45:04 -0800
-Message-ID: <522ab282-ecc2-4186-2d77-f6241e255109@linux.intel.com>
-Date:   Thu, 24 Feb 2022 09:29:25 -0600
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:45:05 -0800
+Message-ID: <3dbed2f1-0c6d-9ba6-232f-db57ec9097ce@linux.intel.com>
+Date:   Thu, 24 Feb 2022 09:41:35 -0600
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v2 14/16] ASoC: codecs: wsa881x: add runtime pm support
+Subject: Re: [PATCH v2 1/3] soundwire: qcom: add runtime pm support
 Content-Language: en-US
 To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        broonie@kernel.org
-Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        quic_srivasam@quicinc.com
-References: <20220224111718.6264-1-srinivas.kandagatla@linaro.org>
- <20220224111718.6264-15-srinivas.kandagatla@linaro.org>
+        robh+dt@kernel.org, vkoul@kernel.org,
+        yung-chuan.liao@linux.intel.com
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alsa-devel@alsa-project.org, quic_srivasam@quicinc.com
+References: <20220224133125.6674-1-srinivas.kandagatla@linaro.org>
+ <20220224133125.6674-2-srinivas.kandagatla@linaro.org>
 From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220224111718.6264-15-srinivas.kandagatla@linaro.org>
+In-Reply-To: <20220224133125.6674-2-srinivas.kandagatla@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -60,20 +60,73 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+>  static const struct snd_soc_dai_ops qcom_swrm_pdm_dai_ops = {
+> @@ -1197,12 +1224,23 @@ static int qcom_swrm_get_port_config(struct qcom_swrm_ctrl *ctrl)
+>  static int swrm_reg_show(struct seq_file *s_file, void *data)
+>  {
+>  	struct qcom_swrm_ctrl *swrm = s_file->private;
+> -	int reg, reg_val;
+> +	int reg, reg_val, ret;
+> +
+> +	ret = pm_runtime_get_sync(swrm->dev);
+> +	if (ret < 0 && ret != -EACCES) {
+> +		dev_err_ratelimited(swrm->dev,
+> +				    "pm_runtime_get_sync failed in %s, ret %d\n",
+> +				    __func__, ret);
+> +		pm_runtime_put_noidle(swrm->dev);
+> +	}
+>  
+>  	for (reg = 0; reg <= SWR_MSTR_MAX_REG_ADDR; reg += 4) {
+>  		swrm->reg_read(swrm, reg, &reg_val);
+>  		seq_printf(s_file, "0x%.3x: 0x%.2x\n", reg, reg_val);
+>  	}
+> +	pm_runtime_mark_last_busy(swrm->dev);
+> +	pm_runtime_put_autosuspend(swrm->dev);
+> +
 
-On 2/24/22 05:17, Srinivas Kandagatla wrote:
-> WSA881x codecs can not cope up with clk stop and requires a full reset after suspend.
-> WSA SoundWire Controller connected to this instances do a full soft reset on suspend.
+question: is there a reason why this specific set of reg_read() is
+surrounded pm_runtime stuff? Is this saying that in all other case where
+the callback is used, the controller is already resumed and fully
+operational? That's be worthy of a comment.
 
-is it the manager or peripheral that cannot cope with clock stop?
+> struct qcom_swrm_ctrl *swrm
+> struct qcom_swrm_ctrl *ctrl
 
-> @@ -1124,6 +1136,7 @@ static int wsa881x_probe(struct sdw_slave *pdev,
->  	pdev->prop.sink_ports = GENMASK(WSA881X_MAX_SWR_PORTS, 0);
->  	pdev->prop.sink_dpn_prop = wsa_sink_dpn_prop;
->  	pdev->prop.scp_int1_mask = SDW_SCP_INT1_BUS_CLASH | SDW_SCP_INT1_PARITY;
-> +	pdev->prop.simple_clk_stop_capable = true;
+nit-pick: it helps reviewers when the same variable name is used
+consistently.
 
-here it's pretty clear the peripheral is capable of supporting clock
-stop, no?
+> +static int __maybe_unused swrm_runtime_suspend(struct device *dev)
+> +{
+> +	struct qcom_swrm_ctrl *ctrl = dev_get_drvdata(dev);
+> +	int ret;
+> +
+> +	if (!ctrl->clock_stop_not_supported) {
+> +		/* Mask bus clash interrupt */
+> +		ctrl->intr_mask &= ~SWRM_INTERRUPT_STATUS_MASTER_CLASH_DET;
+> +		ctrl->reg_write(ctrl, SWRM_INTERRUPT_MASK_ADDR, ctrl->intr_mask);
+> +		ctrl->reg_write(ctrl, SWRM_INTERRUPT_CPU_EN, ctrl->intr_mask);
+> +	}
+> +	/* Prepare slaves for clock stop */
+> +	ret = sdw_bus_prep_clk_stop(&ctrl->bus);
+> +	if (ret < 0) {
 
-Something's not clear between the commit message and the code.
+if (ret < 0 && ret != -ENODATA) {
+
+?
+
+> +		dev_err(dev, "prepare clock stop failed %d", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = sdw_bus_clk_stop(&ctrl->bus);
+> +	if (ret < 0 && ret != -ENODATA) {
+> +		dev_err(dev, "bus clock stop failed %d", ret);
+> +		return ret;
+> +	}
+> +
+> +	clk_disable_unprepare(ctrl->hclk);
+> +
+> +	usleep_range(300, 305);
+> +
+> +	return 0;
+> +}
