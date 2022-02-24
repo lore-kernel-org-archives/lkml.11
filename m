@@ -2,128 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C06C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 771C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234737AbiBXNDV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:03:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57770 "EHLO
+        id S234767AbiBXNE6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:04:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234644AbiBXNDT (ORCPT
+        with ESMTP id S234759AbiBXNE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:03:19 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C576F1B0BE4;
-        Thu, 24 Feb 2022 05:02:49 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id m22so1969274pja.0;
-        Thu, 24 Feb 2022 05:02:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=KmRf75qCveSuYPiB5ylSj3DCA7hKJMZwh2SvGTJxYZc=;
-        b=HgvWDWVjZwTyTyjNJk7JGG0cjpWy0j5P8hy66zuV1DedXyfHIsIbs2uYNPIIMGo+mF
-         SotPVMxz9dU1ADWzt9a902+g1bgF7IjoG12/jloc2Ih1T9uZ7sSnJsQZww2Fz3sw2iLc
-         Bx6iOqG0qFPXiTP19vYsQjWSoc+zJDIW0BYeuQYnjKBQblhf4pkLSpvfQr+3OF1J9qSN
-         53JJrhcrm6uk5pT+KfiQEdPMHHers59l7/cP5LHG9VcGR7m0G2l8t9t1XsrqvGTP3ONz
-         0bEeuWwoSuMvmrRsf8QeookE9+ME8X1Az0upSXv7z82lDh2Rfd2Su+27NQayENtF+rgV
-         t5LA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=KmRf75qCveSuYPiB5ylSj3DCA7hKJMZwh2SvGTJxYZc=;
-        b=nhuKJSuF+fKl3CoveAFqVw15BdpK8dKF5G6wlA2hSo0iguRLMwJ9iD3PD9uJSqu9QO
-         C1awktcOUW4TwYKfXjVc+dOLvHLbjnQHoSqADRR5Uywtplc5SobeXNKfLo9QB2RVHVhq
-         3eUz0CHpaSTqKR3A78iNF+HZGSfWH2pdkAEjxx3x/PPgg6zH/vUa9/GljZhrBPjv4luv
-         l9Gn3VxzLsNnMO4qeym5RCe6dE0hBiwriSRFf21smoTqDNZ6GL0iyKuC9LUcFQun/JpN
-         luAXsv3UG/LccX3CjkJIgL178zas9x9C784pg+JgOfXiEwvQK5sQISIRuuuKJ+BGgJ0r
-         hlrw==
-X-Gm-Message-State: AOAM530U7Ar5WC/t1vsB3wBfPOz0d7vhSG7YUIA/Djty/Q3W5PFat32Z
-        j4mCgE1dmvRHhjiLauWoMWc=
-X-Google-Smtp-Source: ABdhPJwxRaWj+QYLoEbry0cL/J97Ox7OrI8FluGuWmLRB9H16HKsqGHi1JxYqLrqi4HQ+xsosQwWWw==
-X-Received: by 2002:a17:90b:1d91:b0:1b9:d5fd:3c8a with SMTP id pf17-20020a17090b1d9100b001b9d5fd3c8amr14467088pjb.213.1645707769252;
-        Thu, 24 Feb 2022 05:02:49 -0800 (PST)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id s5sm2589044pgo.37.2022.02.24.05.02.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 05:02:48 -0800 (PST)
-Message-ID: <7b136049-a3ba-0eb5-8717-364d773ff914@gmail.com>
-Date:   Thu, 24 Feb 2022 22:02:46 +0900
+        Thu, 24 Feb 2022 08:04:57 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2058.outbound.protection.outlook.com [40.107.243.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801BD230E67
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:04:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lXxge798+u2laUxazW1AUd3GM4r4ykqssILeIiO+6bEmgdE6AZ9oT+u6NvFP+rR7nKKTkcGA9owA1ABWdt2x0x749nzLq44MBNBPETZ4o5I6Khyun20cVRZeQ1/qKtfwAcCOkc5Hdn0pUDFyOgm4JC0p6KjJKRu+bahDPmE0RdO6TVlHWBx9oBGsXH8N6LhJr4GSAx5p3sq7WmFrh+md88LgQi3QOcDiXEs4bHS+SehgIeVMTPLS6laChcgiJrFAATvci/sSGgVGkTAxvi+JX2e3TrF/lFZJeFf0ziUlLaBPacsufO1+eqU47mCcdt1lRigTMfsKGl+5Hx16ZqgwPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rpYv0mDMa0aVPKZoFjszqWQz603uotNAjfEcP88BVVY=;
+ b=ZROmKQyWnLdC9EqPG25gHijZJ8fISF4hGWlx150ST+jedGcK0dMrd0iPXv/I32VSobk1WxTCNAolutJXHc/EKNpqyEGacqh0aYQVmDWfRwalB7daGNKuRSVEyyvij4ULJ2OBSrgNKWabfQpiq0jiLpTGFrZc8pAYI/GQh3FqR011d5S9NXtF3p+WRl/w2wA0TFA6K2kkuOWv1Ka3OC3kchn/omDdYs5gLGpRF7bSe0WwATrkMqZXPEO1z5g1dFcx2a29SFTF3z59xhTaCvcrafc6Ei9ygyyg3hSbOvDPj1MQi7MgL3Ha9BnwD1tKKJZvN0n3MrLb+TTTtjdNkRdk5Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rpYv0mDMa0aVPKZoFjszqWQz603uotNAjfEcP88BVVY=;
+ b=A+LKdWHDNARsujfZSc6+mga1WF0zG9c88s9rW5MMCdLoPbw5iDpqn3+rgx719WnQTYX49O6yhwScjcExLBInNv6TsE14CxnhMnVXusNp8BT1B2EVo1cHj1PVGB5e4zfnl95vLq6klLkRzV/B0CKXR/4g4PJwD7Z6KYO0JktIt44XvSo8sDaSkWp2qr3G76wnjRST4pO9xgxpe79GtjYZzs4eo7UCT22a8VEQfnGh47L9UgeKKODvI3nDfq8/TqFO3xy2oQL0eR3QQopQJcMAQb+uV8OHHdolEloRrJJ0vtOUbfKtEySfVyh8J7SXyYgVBpKzEBAl77G/steZPovUZw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH2PR12MB4181.namprd12.prod.outlook.com (2603:10b6:610:a8::16)
+ by DM5PR12MB1546.namprd12.prod.outlook.com (2603:10b6:4:8::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5017.24; Thu, 24 Feb 2022 13:04:24 +0000
+Received: from CH2PR12MB4181.namprd12.prod.outlook.com
+ ([fe80::287d:b5f6:ed76:64ba]) by CH2PR12MB4181.namprd12.prod.outlook.com
+ ([fe80::287d:b5f6:ed76:64ba%3]) with mapi id 15.20.5017.024; Thu, 24 Feb 2022
+ 13:04:24 +0000
+Date:   Thu, 24 Feb 2022 09:04:23 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 05/11] iommu/vt-d: Remove DEFER_DEVICE_DOMAIN_INFO
+Message-ID: <20220224130423.GH6413@nvidia.com>
+References: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
+ <20220214025704.3184654-6-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220214025704.3184654-6-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: MN2PR10CA0036.namprd10.prod.outlook.com
+ (2603:10b6:208:120::49) To CH2PR12MB4181.namprd12.prod.outlook.com
+ (2603:10b6:610:a8::16)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?B?VG9tYXN6IFdhcm5pZcWCxYJv?= <tomasz.warniello@gmail.com>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-From:   Akira Yokosawa <akiyks@gmail.com>
-Subject: [PATCH v2] docs: scripts/kernel-doc: Detect absence of FILE arg
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: acc81f2b-ff79-4f2e-f981-08d9f7962e7a
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1546:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB15469D4B715CA68099A4D318C23D9@DM5PR12MB1546.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gE2Er5W4OQVqS+1XMBpCc9WtAlSw4hpGchVUczoJX8ewM8+wvzfhP+05YDtJfLuiwPgekG8hMLtgbVDJ/SggqKfVutFJjWfcDhZufUvwCblyaJaL+KxgwLE0JjWTcRtXiaNYlBuGjj7OKhLERXVTNHzSjYvLyU2rxIB9Cpqa3RVmXZmOZFVyrn6YzWw2kYp8ImU1nvv9exvp/pWma4M9ByRnhbHKnz0FWfxsgFEhumqT7tjpFe2vnrcngtMD8s+xD9VXBojeBX/70YDeakjVlWlGQC5qvdEoE4R89WWINjtMtcTXZFxy5c6ZnmcWH6jB7DmrRhFurscPu67veVLHePqE4Tpfpq4nsBiQLa+Ob5+09ENTdOFSWVFKddXRrXQK3JwafMY3eg6SMO5V46tlUy8B7c5wgUsoY+TR5k6WwNJwaRAkIFGrwhm+qshgIbSfuN/h6BpPCtGu6fC1+3z5mKVscWHJIZar3OQO5uya1pEkcLXyso9HVkbBpxQIKU4HiHdyNBND2uhp3Y14JdjX1TyqiMRp+Qu3HJkABCLKN2ybc2YjYZQo/oZYAm0ixdcgpZSGlo5S49ecH7gtw+N8IDDefUT6o47PGgLHncUvjWV0NE3OzzqPlakkUkRYqyugLX7qr1k37oTyZGkB3lqLSw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB4181.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(66946007)(2616005)(66556008)(186003)(26005)(66476007)(8676002)(6512007)(6916009)(6486002)(54906003)(1076003)(86362001)(508600001)(316002)(38100700002)(4326008)(5660300002)(36756003)(33656002)(8936002)(2906002)(4744005)(7416002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xutYdIwMmKwUjhs7gBqgzkTHsy6ankKqk4Rrjoia0Ob5UJLkFSDNg0Bm7ZpM?=
+ =?us-ascii?Q?7dbYk21Pane753Ll41wxl95to48oYBgAGvzTv+CHY+32TmJ82KVqtt9qh/Wt?=
+ =?us-ascii?Q?fn/EJQcW8RP/OUtG9NxKL31Qon9l6UOONWfPSanGm9hzyXF3e2hDh3z0B/TU?=
+ =?us-ascii?Q?P5cmLM2XKlqL5kxXX//j9HQZe3Z/VeYx8kG4ywD/PtdAWwZHjp4jlU0GIJ2j?=
+ =?us-ascii?Q?OaEKsLn0DWFy3UAxQPaqLMN55QH0nLHrERC7Gnm/x0tuR4MUi4dFvWGqpm5v?=
+ =?us-ascii?Q?ytICWrGAKlSi9tJKbK6jq7E95gjWYe7c6zonE53rqFwp2j8Ke30bg+X/r04J?=
+ =?us-ascii?Q?YB619qFDvOSGNZ1fTfFiCW3Lg9flA9Tq8hZKwkVjYTULESe+gPQVhafrYair?=
+ =?us-ascii?Q?KRqO/GJb4xVJXnOPhvpc7sP9dtQffNmECIHWqKgp6IgoHmSgGqA9mF67d0yl?=
+ =?us-ascii?Q?NkOppb2VeDR1wwf/QJweQiQiuB5sRgJP9dPZKQc4GsG8iuWF+owaSTEg/leX?=
+ =?us-ascii?Q?nfCOHGkvkLuxqg1pcnl39BEUqYeRzxrnrCoYt66VRjlpQgeYrh2yYjyhgyM6?=
+ =?us-ascii?Q?Xa7md6NJowpgfeGpL/5icahKr0DEVKWiUij/5rd9LNTjvqleSLjyQ0jEtQLL?=
+ =?us-ascii?Q?Qnn6ToOXVhSm0nZR2BDcTaLOA2ijseY7jD3zCva3BawQDdsyBpoJCPXRbbjb?=
+ =?us-ascii?Q?fJdnrxvZnstnr9gBG8NUvHn9j968GdEvkxVSvmrRUmkjELAMxR0EMN0O+/V9?=
+ =?us-ascii?Q?vmErzdORnN9P38qwK1i4yt1ngLdfNVFx+ZQBdSg1RjLArUaJKPvcxAUEXZ/0?=
+ =?us-ascii?Q?7fmadYUW4dSeQGvOlUhm8YWeny1w4zMrnYT2JIMGULum+j5KXm50NVXwlvo5?=
+ =?us-ascii?Q?hxxGmUBZu+n51rXMC9UYc5hgHLi0xAJI96kHU1ei4OnifJHFiQu2h0J2hm2d?=
+ =?us-ascii?Q?z+qhIOa3kKknKpmzsJbA3oAiIBZFNG22xHNX6w8QmVZ5CSlG2Pc+1vCf7Otv?=
+ =?us-ascii?Q?PQHN80jMjvI/Jod04x1EFILV+pE8O8v6USs75BGsm3H/TdHX3NbiYDkAh9UK?=
+ =?us-ascii?Q?D1wLod4rP23F/YIXZHmz+jeK+6fXnI7CFN6lYNQfhieOAVSoL8x/EAtJl5ir?=
+ =?us-ascii?Q?P0fWrhawdCwzbLM2Gl7NpgNEq/aVwJBqWGw6EY0eXTeNSyHs6+HuY6R4w5KM?=
+ =?us-ascii?Q?M1efauzsD/TLiwr8+rS9JTRqOAl4y/kCF5q79cL5Vc8NOzsgdNmrzGGFDsgV?=
+ =?us-ascii?Q?JuCvKmQxe8pik/3f2mlCo2MtM/hpaPoSkJM7kV6fVbpJmwsIgO+IN2hKqlYZ?=
+ =?us-ascii?Q?UpS+NWLyjF7+D1Ih6GOXY0jhGN7iXPW1+i8p7ZquP9BDxURUvL1Oa1Wh3rw2?=
+ =?us-ascii?Q?474uxC070fnBeWyfNtXTni1GbkE9rZw3IhSa0CFF3JoIOpcBlSt4bO0LMjJi?=
+ =?us-ascii?Q?JC3Vbr+C8wQ8fiO0wtFwZhl+0YPOx6BydZVzE09LB7UsPOXzywHloNg2Lw2g?=
+ =?us-ascii?Q?iefw11GReNgNKA8f7iZ6UEdL3ApXv3XhR5etBU9fCdV7hhqDbtMCiZVVSwjl?=
+ =?us-ascii?Q?qQJMiRuj55DCV5sTVVI=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: acc81f2b-ff79-4f2e-f981-08d9f7962e7a
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB4181.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 13:04:24.7383
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xXIXvRh8Sg1goaB12cmMOrYddVkMPLU/DuYpd/oo5MkLZ7w+6BNADI2OBjDGedSH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1546
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, when there is no FILE argument following a switch such
-as -man, -rst, or -none, kernel-doc exits with a warning from perl
-(long msg folded):
+On Mon, Feb 14, 2022 at 10:56:58AM +0800, Lu Baolu wrote:
 
-    Use of uninitialized value $ARGV[0] in pattern match (m//)
-    at ./scripts/kernel-doc line 438.
+> diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+> index db7a0ca73626..ed796eea4581 100644
+> --- a/drivers/iommu/intel/debugfs.c
+> +++ b/drivers/iommu/intel/debugfs.c
+> @@ -344,7 +344,8 @@ static void pgtable_walk_level(struct seq_file *m, struct dma_pte *pde,
+>  
+>  static int show_device_domain_translation(struct device *dev, void *data)
+>  {
+> -	struct dmar_domain *domain = find_domain(dev);
+> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +	struct dmar_domain *domain = info->domain;
 
-, which is unhelpful.
+It might be nice to someday call 'struct device_domain_info' something
+clearer since it is now the dev_iommu_priv..
 
-Improve the behavior by adding a check at the bottom of parsing
-loop.
-If the argument is absent, display help text and exit with
-the code of 1 (via usage()).
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Tomasz Warnie=C5=82=C5=82o <tomasz.warniello@gmail.com>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
-Changes since v1 [1]:
-  - No code change
-  - Amend subject and reword the whole changelog.
-  - The message from perl is not an error but a warning.
-     (I thank Tomasz for pointing it out.)
-
-I thought the change of exit code might affect sphinx-build processing,
-and tested with several runs of "make htmldocs" and "make pdfdocs".
-So far, I've not seen any regression.
-
-[1] v1: https://lore.kernel.org/r/1c71e5d2-f87e-6c8e-6176-e5ce42e4d41b@gm=
-ail.com
-
-        Thanks, Akira
---
- scripts/kernel-doc | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/scripts/kernel-doc b/scripts/kernel-doc
-index 3106b7536b89..faefe2977f0e 100755
---- a/scripts/kernel-doc
-+++ b/scripts/kernel-doc
-@@ -494,7 +494,11 @@ while ($ARGV[0] =3D~ m/^--?(.*)/) {
- 	}
-     } else {
- 	# Unknown argument
--        usage();
-+	usage();
-+    }
-+    if ($#ARGV < 0){
-+	print "No FILE!\n";
-+	usage();
-     }
- }
-=20
-
-base-commit: b62ef3a1cca0553613adce16515f3640400725b4
---=20
-2.17.1
-
+Jason
