@@ -2,334 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5829CC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D129C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:08:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbiBXFGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 00:06:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33162 "EHLO
+        id S230087AbiBXFJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 00:09:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiBXFGj (ORCPT
+        with ESMTP id S229715AbiBXFJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 00:06:39 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F473234023;
-        Wed, 23 Feb 2022 21:06:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645679169; x=1677215169;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=U7f8LlXFoOldvk1lVMQCofNeheZhhHppftkOlnZeRd4=;
-  b=fMiusDqYsubgM7pAojrXR2kNl+FJMPdWMTNmh7r+CMuiBLho6P+IO98+
-   i+2d3ROs5Hsc+pml9cHm9YApDW/4ZTjutY6eN41Ntl7wqKHjo0b57620H
-   bH49+KXIYWh2BqQya+3E+EXw8f68PeY78yBQ7/tM8S4upYBK6v1dnw+e8
-   jA9qCfWR7WoA+tXAssNlOaFY32VoBwajB6E2KtwRTLOP15hHDF82h9cOn
-   1vC4Quygc4IaM9Nzgv3m013mBztvxgRfLK43RyuMc/Lw2ODfct4EvqiWV
-   twiE2oTYtl+F9QrcfCTC5wjbALI582HuikljiOsx2Gzn9mkMql7C5+8P7
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="250979557"
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="250979557"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 21:06:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="684156805"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Feb 2022 21:06:03 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nN6KJ-0002Hs-0U; Thu, 24 Feb 2022 05:06:03 +0000
-Date:   Thu, 24 Feb 2022 13:05:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@chromium.org>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Kalyan Thota <quic_kalyant@quicinc.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Krishna Manikandan <quic_mkrishn@quicinc.com>,
-        Mark Yacoub <markyacoub@google.com>,
-        Jessica Zhang <quic_jesszhan@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        David Heidelberg <david@ixit.cz>, Xu Wang <vulab@iscas.ac.cn>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/msm: Avoid dirtyfb stalls on video mode displays
-Message-ID: <202202241211.iXHxUcF2-lkp@intel.com>
-References: <20220219193957.577054-1-robdclark@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Thu, 24 Feb 2022 00:09:13 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78E9165C26;
+        Wed, 23 Feb 2022 21:08:43 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3A53A212B8;
+        Thu, 24 Feb 2022 05:08:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645679322; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fvie5WjINF2XGuRYy4JLCTZ9z0jDxYZyBje3chiMYAU=;
+        b=1l/5mEs+6B3/VXgYICSwyNHJ7RHI1SknXQ/8jjpB7rdKIdJugA4IqQsyOM1TCV9QVONhfH
+        Xyc1z/4fiv56fsMF5dVoEqrD2GG/IRZDdTugEgqLsIgtG+XQrfzewvJpGDqUUpMuBZFC2d
+        lHl0Q/7b06PtV/VUSuswlJ2wm6M8vtU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645679322;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fvie5WjINF2XGuRYy4JLCTZ9z0jDxYZyBje3chiMYAU=;
+        b=PgnnkBfPxMfuL4hmd2LHwGDkf7ie5M5so/ATJb1QG4DdwCINRTFMhTZKevWqG4kJTmgScR
+        2ggPnpttKn2uIrBA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1B63813343;
+        Thu, 24 Feb 2022 05:08:39 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 90EwMtcSF2JTBQAAMHmgww
+        (envelope-from <neilb@suse.de>); Thu, 24 Feb 2022 05:08:39 +0000
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220219193957.577054-1-robdclark@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+MIME-Version: 1.0
+From:   "NeilBrown" <neilb@suse.de>
+To:     "J. Bruce Fields" <bfields@fieldses.org>
+Cc:     "Al Viro" <viro@zeniv.linux.org.uk>,
+        "Linux NFS Mailing List" <linux-nfs@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        "LKML" <linux-kernel@vger.kernel.org>,
+        "Daire Byrne" <daire@dneg.com>,
+        "Andreas Dilger" <adilger.kernel@dilger.ca>
+Subject: Re: [PATCH/RFC] VFS: support parallel updates in the one directory.
+In-reply-to: <20220222190751.GA7766@fieldses.org>
+References: <164549669043.5153.2021348013072574365@noble.neil.brown.name>,
+ <20220222190751.GA7766@fieldses.org>
+Date:   Thu, 24 Feb 2022 16:08:36 +1100
+Message-id: <164567931673.25116.15009501732764258663@noble.neil.brown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
+On Wed, 23 Feb 2022, J. Bruce Fields wrote:
+> For what it's worth, I applied this to recent upstream (038101e6b2cd)
+> and fed it through my usual scripts--tests all passed, but I did see
+> this lockdep warning.
+>=20
+> I'm not actually sure what was running at the time--probably just cthon.
+>=20
+> --b.
+>=20
+> [  142.679891] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> [  142.680883] WARNING: possible circular locking dependency detected
+> [  142.681999] 5.17.0-rc5-00005-g64e79f877311 #1778 Not tainted
+> [  142.682970] ------------------------------------------------------
+> [  142.684059] test1/4557 is trying to acquire lock:
+> [  142.684881] ffff888023d85398 (DENTRY_PAR_UPDATE){+.+.}-{0:0}, at: d_lock=
+_update_nested+0x5/0x6a0
+> [  142.686421]=20
+>                but task is already holding lock:
+> [  142.687171] ffff88801f618bd0 (&type->i_mutex_dir_key#6){++++}-{3:3}, at:=
+ path_openat+0x7cb/0x24a0
+> [  142.689098]=20
+>                which lock already depends on the new lock.
+>=20
+> [  142.690045]=20
+>                the existing dependency chain (in reverse order) is:
+> [  142.691171]=20
+>                -> #1 (&type->i_mutex_dir_key#6){++++}-{3:3}:
+> [  142.692285]        down_write+0x82/0x130
+> [  142.692844]        vfs_rmdir+0xbd/0x560
+> [  142.693351]        do_rmdir+0x33d/0x400
 
-I love your patch! Perhaps something to improve:
+Thanks.  I hadn't tested rmdir :-)
 
-[auto build test WARNING on drm/drm-next]
-[also build test WARNING on drm-intel/for-linux-next drm-tip/drm-tip v5.17-=
-rc5 next-20220223]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+"rmdir" and "open(O_CREATE)" take these locks in the opposite order.
 
-url:    https://github.com/0day-ci/linux/commits/Rob-Clark/drm-msm-Avoid-di=
-rtyfb-stalls-on-video-mode-displays/20220220-185344
-base:   git://anongit.freedesktop.org/drm/drm drm-next
-config: mips-randconfig-r021-20220224 (https://download.01.org/0day-ci/arch=
-ive/20220224/202202241211.iXHxUcF2-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc=
-04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=3D1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/=
-make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/0day-ci/linux/commit/e5d737074c502ff040a67f7fe=
-1f8a9e2a308dec9
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Rob-Clark/drm-msm-Avoid-dirtyfb-st=
-alls-on-video-mode-displays/20220220-185344
-        git checkout e5d737074c502ff040a67f7fe1f8a9e2a308dec9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dclang make.cross W=3D=
-1 O=3Dbuild_dir ARCH=3Dmips SHELL=3D/bin/bash drivers/gpu/drm/msm/
+I think the simplest fix might be to change the inode_lock(_shared) taken
+on the dir in open_last_Lookups() to use I_MUTEX_PARENT.  That is
+consistent with unlink and rmdir etc which use I_MUTEX_PARENT on the
+parent.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+open() doesn't currently use I_MUTEX_PARENT because it never needs to
+lock the child.  But as it *is* a parent that is being locked, using
+I_MUTEX_PARENT probably make more sense.
 
-All warnings (new ones prefixed by >>):
+--- a/fs/namei.c
++++ b/fs/namei.c
+@@ -3513,9 +3513,9 @@ static const char *open_last_lookups(struct nameidata *=
+nd,
+ 	}
+ 	shared =3D !!(dir->d_inode->i_flags & S_PAR_UPDATE);
+ 	if ((open_flag & O_CREAT) && !shared)
+-		inode_lock(dir->d_inode);
++		inode_lock_nested(dir->d_inode, I_MUTEX_PARENT);
+ 	else
+-		inode_lock_shared(dir->d_inode);
++		inode_lock_shared_nested(dir->d_inode, I_MUTEX_PARENT);
+ 	dentry =3D lookup_open(nd, file, op, got_write);
+ 	if (!IS_ERR(dentry) && (file->f_mode & FMODE_CREATED))
+ 		fsnotify_create(dir->d_inode, dentry);
 
->> drivers/gpu/drm/msm/msm_fb.c:47:27: warning: unused variable 'plane_stat=
-e'
-   struct drm_plane_state
-   ^
-   fatal error: error in backend: Nested variants found in inline asm strin=
-g: ' .set push
-   .set mips64r2
-   .if ( 0x00 ) !=3D -1)) 0x00 ) !=3D -1)) : ($( static struct ftrace_branc=
-h_data __attribute__((__aligned__(4))) __attribute__((__section__("_ftrace_=
-branch"))) __if_trace =3D $( .func =3D __func__, .file =3D "arch/mips/inclu=
-de/asm/atomic.h", .line =3D 156, $); 0x00 ) !=3D -1)) : $))) ) && ( 0 ); .s=
-et push; .set mips64r2; .rept 1; sync 0x00; .endr; .set pop; .else; ; .endif
-   1: ll $1, $2 # atomic_fetch_sub
-   subu $0, $1, $3
-   sc $0, $2
-   beqz $0, 1b
-   .set pop
-   move $0, $1
-   '
-   PLEASE submit a bug report to https://github.com/llvm/llvm-project/issue=
-s/ and include the crash backtrace, preprocessed source, and associated run=
- script.
-   Stack dump:
-   0. Program arguments: clang -Wp,-MMD,drivers/gpu/drm/msm/.msm_fb.o.d -no=
-stdinc -Iarch/mips/include -I./arch/mips/include/generated -Iinclude -I./in=
-clude -Iarch/mips/include/uapi -I./arch/mips/include/generated/uapi -Iinclu=
-de/uapi -I./include/generated/uapi -include include/linux/compiler-version.=
-h -include include/linux/kconfig.h -include include/linux/compiler_types.h =
--D__KERNEL__ -DVMLINUX_LOAD_ADDRESS=3D0xffffffff84000000 -DLINKER_LOAD_ADDR=
-ESS=3D0x84000000 -DDATAOFFSET=3D0 -Qunused-arguments -fmacro-prefix-map=3D=
-=3D -DKBUILD_EXTRA_WARN1 -Wall -Wundef -Werror=3Dstrict-prototypes -Wno-tri=
-graphs -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE -Werror=3Dim=
-plicit-function-declaration -Werror=3Dimplicit-int -Werror=3Dreturn-type -W=
-no-format-security -std=3Dgnu89 --target=3Dmipsel-linux -fintegrated-as -We=
-rror=3Dunknown-warning-option -Werror=3Dignored-optimization-argument -mno-=
-check-zero-division -mabi=3D32 -G 0 -mno-abicalls -fno-pic -pipe -msoft-flo=
-at -DGAS_HAS_SET_HARDFLOAT -Wa,-msoft-float -ffreestanding -EL -fno-stack-c=
-heck -march=3Dmips32 -Wa,--trap -DTOOLCHAIN_SUPPORTS_VIRT -Iarch/mips/inclu=
-de/asm/mach-ralink -Iarch/mips/include/asm/mach-ralink/mt7620 -Iarch/mips/i=
-nclude/asm/mach-generic -fno-asynchronous-unwind-tables -fno-delete-null-po=
-inter-checks -Wno-frame-address -Wno-address-of-packed-member -Os -Wframe-l=
-arger-than=3D1024 -fno-stack-protector -Wimplicit-fallthrough -Wno-gnu -mno=
--global-merge -Wno-unused-but-set-variable -Wno-unused-const-variable -ftri=
-vial-auto-var-init=3Dpattern -fno-stack-clash-protection -pg -Wdeclaration-=
-after-statement -Wvla -Wno-pointer-sign -Wcast-function-type -Wno-array-bou=
-nds -fno-strict-overflow -fno-stack-check -Werror=3Ddate-time -Werror=3Dinc=
-ompatible-pointer-types -Wextra -Wunused -Wno-unused-parameter -Wmissing-de=
-clarations -Wmissing-format-attribute -Wmissing-prototypes -Wold-style-defi=
-nition -Wmissing-include-dirs -Wunused-but-set-variable -Wunused-const-vari=
-able -Wno-missing-field-initializers -Wno-sign-compare -Wno-type-limits -I =
-drivers/gpu/drm/msm -I drivers/gpu/drm/msm/disp/dpu1 -I drivers/gpu/drm/msm=
- -I ./drivers/gpu/drm/msm -ffunction-sections -fdata-sections -DKBUILD_MODF=
-ILE=3D"drivers/gpu/drm/msm/msm" -DKBUILD_BASENAME=3D"msm_fb" -DKBUILD_MODNA=
-ME=3D"msm" -D__KBUILD_MODNAME=3Dkmod_msm -c -o drivers/gpu/drm/msm/msm_fb.o=
- drivers/gpu/drm/msm/msm_fb.c
-   1. <eof> parser at end of file
-   2. Code generation
-   3. Running pass 'Function Pass Manager' on module 'drivers/gpu/drm/msm/m=
-sm_fb.c'.
-   4. Running pass 'Mips Assembly Printer' on function '@msm_framebuffer_cr=
-eate'
-   #0 0x000055e0318e4d7f Signals.cpp:0:0
-   #1 0x000055e0318e2c5c llvm::sys::CleanupOnSignal(unsigned long) (/opt/cr=
-oss/clang-d271fc04d5/bin/clang-15+0x348ec5c)
-   #2 0x000055e031822fd7 llvm::CrashRecoveryContext::HandleExit(int) (/opt/=
-cross/clang-d271fc04d5/bin/clang-15+0x33cefd7)
-   #3 0x000055e0318db30e llvm::sys::Process::Exit(int, bool) (/opt/cross/cl=
-ang-d271fc04d5/bin/clang-15+0x348730e)
-   #4 0x000055e02f506ccb (/opt/cross/clang-d271fc04d5/bin/clang-15+0x10b2cc=
-b)
-   #5 0x000055e031829a8c llvm::report_fatal_error(llvm::Twine const&, bool)=
- (/opt/cross/clang-d271fc04d5/bin/clang-15+0x33d5a8c)
-   #6 0x000055e0325335c0 llvm::AsmPrinter::emitInlineAsm(llvm::MachineInstr=
- const (/opt/cross/clang-d271fc04d5/bin/clang-15+0x40df5c0)
-   #7 0x000055e03252f4f4 llvm::AsmPrinter::emitFunctionBody() (/opt/cross/c=
-lang-d271fc04d5/bin/clang-15+0x40db4f4)
-   #8 0x000055e02ff70887 llvm::MipsAsmPrinter::runOnMachineFunction(llvm::M=
-achineFunction&) (/opt/cross/clang-d271fc04d5/bin/clang-15+0x1b1c887)
-   #9 0x000055e030c2d54d llvm::MachineFunctionPass::runOnFunction(llvm::Fun=
-ction&) (.part.53) MachineFunctionPass.cpp:0:0
-   #10 0x000055e031074807 llvm::FPPassManager::runOnFunction(llvm::Function=
-&) (/opt/cross/clang-d271fc04d5/bin/clang-15+0x2c20807)
-   #11 0x000055e031074981 llvm::FPPassManager::runOnModule(llvm::Module&) (=
-/opt/cross/clang-d271fc04d5/bin/clang-15+0x2c20981)
-   #12 0x000055e0310754ff llvm::legacy::PassManagerImpl::run(llvm::Module&)=
- (/opt/cross/clang-d271fc04d5/bin/clang-15+0x2c214ff)
-   #13 0x000055e031bff147 clang::EmitBackendOutput(clang::DiagnosticsEngine=
-&, clang::HeaderSearchOptions const&, clang::CodeGenOptions const&, clang::=
-TargetOptions const&, clang::LangOptions const&, llvm::StringRef, clang::Ba=
-ckendAction, std::unique_ptr<llvm::raw_pwrite_stream, std::default_delete<l=
-lvm::raw_pwrite_stream> >) (/opt/cross/clang-d271fc04d5/bin/clang-15+0x37ab=
-147)
-   #14 0x000055e03284d693 clang::BackendConsumer::HandleTranslationUnit(cla=
-ng::ASTContext&) (/opt/cross/clang-d271fc04d5/bin/clang-15+0x43f9693)
-   #15 0x000055e0333286e9 clang::ParseAST(clang::Sema&, bool, bool) (/opt/c=
-ross/clang-d271fc04d5/bin/clang-15+0x4ed46e9)
-   #16 0x000055e03284c4cf clang::CodeGenAction::ExecuteAction() (/opt/cross=
-/clang-d271fc04d5/bin/clang-15+0x43f84cf)
-   #17 0x000055e03224f561 clang::FrontendAction::Execute() (/opt/cross/clan=
-g-d271fc04d5/bin/clang-15+0x3dfb561)
-   #18 0x000055e0321e5faa clang::CompilerInstance::ExecuteAction(clang::Fro=
-ntendAction&) (/opt/cross/clang-d271fc04d5/bin/clang-15+0x3d91faa)
-   #19 0x000055e032313cbb (/opt/cross/clang-d271fc04d5/bin/clang-15+0x3ebfc=
-bb)
-   #20 0x000055e02f50827c cc1_main(llvm::ArrayRef<char char (/opt/cross/cla=
-ng-d271fc04d5/bin/clang-15+0x10b427c)
-   #21 0x000055e02f504f4b ExecuteCC1Tool(llvm::SmallVectorImpl<char driver.=
-cpp:0:0
-   #22 0x000055e03207ed95 void llvm::function_ref<void ()>::callback_fn<cla=
-ng::driver::CC1Command::Execute(llvm::ArrayRef<llvm::Optional<llvm::StringR=
-ef> >, std::__cxx11::basic_string<char, std::char_traits<char>, std::alloca=
-tor<char> const::'lambda'()>(long) Job.cpp:0:0
-   #23 0x000055e031822e93 llvm::CrashRecoveryContext::RunSafely(llvm::funct=
-ion_ref<void ()>) (/opt/cross/clang-d271fc04d5/bin/clang-15+0x33cee93)
-   #24 0x000055e03207f68e clang::driver::CC1Command::Execute(llvm::ArrayRef=
-<llvm::Optional<llvm::StringRef> >, std::__cxx11::basic_string<char, std::c=
-har_traits<char>, std::allocator<char> const (.part.216) Job.cpp:0:0
-   #25 0x000055e032054267 clang::driver::Compilation::ExecuteCommand(clang:=
-:driver::Command const&, clang::driver::Command const (/opt/cross/clang-d27=
-1fc04d5/bin/clang-15+0x3c00267)
-   #26 0x000055e032054c47 clang::driver::Compilation::ExecuteJobs(clang::dr=
-iver::JobList const&, llvm::SmallVectorImpl<std::pair<int, clang::driver::C=
-ommand >&) const (/opt/cross/clang-d271fc04d5/bin/clang-15+0x3c00c47)
-   #27 0x000055e03205e2f9 clang::driver::Driver::ExecuteCompilation(clang::=
-driver::Compilation&, llvm::SmallVectorImpl<std::pair<int, clang::driver::C=
-ommand >&) (/opt/cross/clang-d271fc04d5/bin/clang-15+0x3c0a2f9)
-   #28 0x000055e02f42d63f main (/opt/cross/clang-d271fc04d5/bin/clang-15+0x=
-fd963f)
-   #29 0x00007f8e07c7ed0a __libc_start_main (/lib/x86_64-linux-gnu/libc.so.=
-6+0x26d0a)
-   #30 0x000055e02f504a6a _start (/opt/cross/clang-d271fc04d5/bin/clang-15+=
-0x10b0a6a)
-   clang-15: error: clang frontend command failed with exit code 70 (use -v=
- to see invocation)
-   clang version 15.0.0 (git://gitmirror/llvm_project d271fc04d5b97b12e6b79=
-7c6067d3c96a8d7470e)
-   Target: mipsel-unknown-linux
-   Thread model: posix
-   InstalledDir: /opt/cross/clang-d271fc04d5/bin
-   clang-15: note: diagnostic msg:
-   Makefile arch drivers fs include kernel nr_bisected scripts source usr
-
-
-vim +/plane_state +47 drivers/gpu/drm/msm/msm_fb.c
-
-    23=09
-    24	static struct drm_framebuffer *msm_framebuffer_init(struct drm_devic=
-e *dev,
-    25			const struct drm_mode_fb_cmd2 *mode_cmd, struct drm_gem_object **b=
-os);
-    26=09
-    27	static int msm_framebuffer_dirtyfb(struct drm_framebuffer *fb,
-    28					   struct drm_file *file_priv, unsigned int flags,
-    29					   unsigned int color, struct drm_clip_rect *clips,
-    30					   unsigned int num_clips)
-    31	{
-    32		struct msm_drm_private *priv =3D fb->dev->dev_private;
-    33		struct drm_modeset_acquire_ctx ctx;
-    34		struct drm_plane *plane;
-    35		bool needs_flush =3D false;
-    36		int ret =3D 0;
-    37=09
-    38		/*
-    39		 * When called from ioctl, we are interruptible, but not when called
-    40		 * internally (ie. defio worker)
-    41		 */
-    42		drm_modeset_acquire_init(&ctx,
-    43			file_priv ? DRM_MODESET_ACQUIRE_INTERRUPTIBLE : 0);
-    44=09
-    45	retry:
-    46		drm_for_each_plane(plane, fb->dev) {
-  > 47			struct drm_plane_state *plane_state;
-    48			struct drm_crtc *crtc;
-    49=09
-    50			ret =3D drm_modeset_lock(&plane->mutex, &ctx);
-    51			if (ret)
-    52				goto out;
-    53=09
-    54			if (plane->state->fb !=3D fb) {
-    55				drm_modeset_unlock(&plane->mutex);
-    56				continue;
-    57			}
-    58=09
-    59			crtc =3D plane->state->crtc;
-    60=09
-    61			ret =3D drm_modeset_lock(&crtc->mutex, &ctx);
-    62			if (ret)
-    63				goto out;
-    64=09
-    65			if (priv->kms->funcs->needs_dirtyfb(crtc)) {
-    66				needs_flush =3D true;
-    67				break;
-    68			}
-    69		}
-    70=09
-    71	out:
-    72		if (ret =3D=3D -EDEADLK) {
-    73			ret =3D drm_modeset_backoff(&ctx);
-    74			if (!ret)
-    75				goto retry;
-    76		}
-    77=09
-    78		drm_modeset_drop_locks(&ctx);
-    79		drm_modeset_acquire_fini(&ctx);
-    80=09
-    81		if (needs_flush) {
-    82			ret =3D drm_atomic_helper_dirtyfb(fb, file_priv, flags,
-    83							color, clips, num_clips);
-    84		}
-    85=09
-    86		return ret;
-    87	}
-    88=09
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thanks,
+NeilBrown
