@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E19C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0CA5C4321E
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:57:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236758AbiBXP5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:57:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42630 "EHLO
+        id S234887AbiBXP55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:57:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236735AbiBXP5P (ORCPT
+        with ESMTP id S236744AbiBXP5Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:57:15 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC2DBC35
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:56:36 -0800 (PST)
+        Thu, 24 Feb 2022 10:57:16 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E86213F0D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:56:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645718197; x=1677254197;
+  t=1645718199; x=1677254199;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=q+/r8F1XDpTWhhoX3MZMSCevaK2OCR1Drl1YYmHJWuo=;
-  b=nFIaytt13pbDo2M2D0eTpAiNFiedIdjOEH6tvj9qwz0qi1lyr5xO2sXR
-   6cmRC/Ja6qcQyf68pHwv0Oct+m1fE88hY8Z93/W/0R/lfaa3XcYxOTcnC
-   5AOSum1bSmo9NTVowh45Xdqt0OpAg6WsoHINGpQIpTj7FMbxAnhYt7uLH
-   aqOTDQAqERn7O7k1+1twv7W+kLm8yfyPvT+ZOBD1ZVRQQnRxTV5FERpdH
-   UweKALfehEBGuXklVM5az47aaYAhfyb3/gapjuIUoAIc8nt6jnZo20Ell
-   opn1rmFs9UkPV+BD8h+xhSp3z1DsQ48mYeH6AuQclTK20qQhIYfUQc+QQ
+  bh=lXpXnqHgBTt6gemnRt9hvNQT9EZcKtGJffMpNv8p8yw=;
+  b=SwBCz7IkPqmKqgSRA9yr5G3D2q3MBR2KFTynfr3eWcJFI43XCL8Yk2QM
+   TTdik2549q/moQf0/36BYO/amp/plr6Xkhl14kg0z3Jc31ptEDNTMGl/S
+   rsl+5TW26fhSv3mtsMje+8621RLW3PenAEMa2yz/j403z8iegkg1UhY/u
+   YRGBdfgyFayM3Yto66N63Qu1EuLwPAym7qNLTlB8tpWOh1s64RsvypZWD
+   liZ9wR05e//5m9LPjJ9vBIqsS2Yn643gNUYnyWGdMkV57F16Kxb0m4x9f
+   cAsXJ0nxS00RXQugTqTaMFRvX7Q/hESfpfDj972FT+nLykOx0HhiKA7pq
    A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="251094352"
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="232241506"
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="251094352"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:32 -0800
+   d="scan'208";a="232241506"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:38 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="628512999"
+   d="scan'208";a="543744510"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 24 Feb 2022 07:56:25 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 24 Feb 2022 07:56:31 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id DB665A4C; Thu, 24 Feb 2022 17:56:34 +0200 (EET)
+        id 38296ADD; Thu, 24 Feb 2022 17:56:35 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -51,10 +51,11 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 14/30] x86: Consolidate port I/O helpers
-Date:   Thu, 24 Feb 2022 18:56:14 +0300
-Message-Id: <20220224155630.52734-15-kirill.shutemov@linux.intel.com>
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv4 20/30] x86/boot: Add a trampoline for booting APs via firmware handoff
+Date:   Thu, 24 Feb 2022 18:56:20 +0300
+Message-Id: <20220224155630.52734-21-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
 References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
@@ -64,187 +65,198 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are two implementations of port I/O helpers: one in the kernel and
-one in the boot stub.
+From: Sean Christopherson <sean.j.christopherson@intel.com>
 
-Move the helpers required for both to <asm/shared/io.h> and use the one
-implementation everywhere.
+Historically, x86 platforms have booted secondary processors (APs)
+using INIT followed by the start up IPI (SIPI) messages. In regular
+VMs, this boot sequence is supported by the VMM emulation. But such a
+wakeup model is fatal for secure VMs like TDX in which VMM is an
+untrusted entity. To address this issue, a new wakeup model was added
+in ACPI v6.4, in which firmware (like TDX virtual BIOS) will help boot
+the APs. More details about this wakeup model can be found in ACPI
+specification v6.4, the section titled "Multiprocessor Wakeup Structure".
 
+Since the existing trampoline code requires processors to boot in real
+mode with 16-bit addressing, it will not work for this wakeup model
+(because it boots the AP in 64-bit mode). To handle it, extend the
+trampoline code to support 64-bit mode firmware handoff. Also, extend
+IDT and GDT pointers to support 64-bit mode hand off.
+
+There is no TDX-specific detection for this new boot method. The kernel
+will rely on it as the sole boot method whenever the new ACPI structure
+is present.
+
+The ACPI table parser for the MADT multiprocessor wake up structure and
+the wakeup method that uses this structure will be added by the following
+patch in this series.
+
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/boot/boot.h             | 35 +-------------------------------
- arch/x86/boot/compressed/misc.h  |  2 +-
- arch/x86/include/asm/io.h        | 22 ++------------------
- arch/x86/include/asm/shared/io.h | 34 +++++++++++++++++++++++++++++++
- 4 files changed, 38 insertions(+), 55 deletions(-)
- create mode 100644 arch/x86/include/asm/shared/io.h
+ arch/x86/include/asm/apic.h              |  2 ++
+ arch/x86/include/asm/realmode.h          |  1 +
+ arch/x86/kernel/smpboot.c                | 12 ++++++--
+ arch/x86/realmode/rm/header.S            |  1 +
+ arch/x86/realmode/rm/trampoline_64.S     | 38 ++++++++++++++++++++++++
+ arch/x86/realmode/rm/trampoline_common.S | 12 +++++++-
+ 6 files changed, 63 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/boot/boot.h b/arch/x86/boot/boot.h
-index 34c9dbb6a47d..22a474c5b3e8 100644
---- a/arch/x86/boot/boot.h
-+++ b/arch/x86/boot/boot.h
-@@ -23,6 +23,7 @@
- #include <linux/edd.h>
- #include <asm/setup.h>
- #include <asm/asm.h>
-+#include <asm/shared/io.h>
- #include "bitops.h"
- #include "ctype.h"
- #include "cpuflags.h"
-@@ -35,40 +36,6 @@ extern struct boot_params boot_params;
+diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+index 48067af94678..35006e151774 100644
+--- a/arch/x86/include/asm/apic.h
++++ b/arch/x86/include/asm/apic.h
+@@ -328,6 +328,8 @@ struct apic {
  
- #define cpu_relax()	asm volatile("rep; nop")
+ 	/* wakeup_secondary_cpu */
+ 	int	(*wakeup_secondary_cpu)(int apicid, unsigned long start_eip);
++	/* wakeup secondary CPU using 64-bit wakeup point */
++	int	(*wakeup_secondary_cpu_64)(int apicid, unsigned long start_eip);
  
--/* Basic port I/O */
--static inline void outb(u8 v, u16 port)
--{
--	asm volatile("outb %0,%1" : : "a" (v), "dN" (port));
--}
--static inline u8 inb(u16 port)
--{
--	u8 v;
--	asm volatile("inb %1,%0" : "=a" (v) : "dN" (port));
--	return v;
--}
--
--static inline void outw(u16 v, u16 port)
--{
--	asm volatile("outw %0,%1" : : "a" (v), "dN" (port));
--}
--static inline u16 inw(u16 port)
--{
--	u16 v;
--	asm volatile("inw %1,%0" : "=a" (v) : "dN" (port));
--	return v;
--}
--
--static inline void outl(u32 v, u16 port)
--{
--	asm volatile("outl %0,%1" : : "a" (v), "dN" (port));
--}
--static inline u32 inl(u16 port)
--{
--	u32 v;
--	asm volatile("inl %1,%0" : "=a" (v) : "dN" (port));
--	return v;
--}
--
- static inline void io_delay(void)
- {
- 	const u16 DELAY_PORT = 0x80;
-diff --git a/arch/x86/boot/compressed/misc.h b/arch/x86/boot/compressed/misc.h
-index 0d8e275a9d96..8a253e85f990 100644
---- a/arch/x86/boot/compressed/misc.h
-+++ b/arch/x86/boot/compressed/misc.h
-@@ -22,11 +22,11 @@
- #include <linux/linkage.h>
- #include <linux/screen_info.h>
- #include <linux/elf.h>
--#include <linux/io.h>
- #include <asm/page.h>
- #include <asm/boot.h>
- #include <asm/bootparam.h>
- #include <asm/desc_defs.h>
-+#include <asm/shared/io.h>
+ 	void	(*inquire_remote_apic)(int apicid);
  
- #include "tdx.h"
- 
-diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
-index 638c1a2a82e0..a1eb218a49f8 100644
---- a/arch/x86/include/asm/io.h
-+++ b/arch/x86/include/asm/io.h
-@@ -44,6 +44,7 @@
- #include <asm/page.h>
- #include <asm/early_ioremap.h>
- #include <asm/pgtable_types.h>
-+#include <asm/shared/io.h>
- 
- #define build_mmio_read(name, size, type, reg, barrier) \
- static inline type name(const volatile void __iomem *addr) \
-@@ -258,20 +259,6 @@ static inline void slow_down_io(void)
+diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
+index 331474b150f1..fd6f6e5b755a 100644
+--- a/arch/x86/include/asm/realmode.h
++++ b/arch/x86/include/asm/realmode.h
+@@ -25,6 +25,7 @@ struct real_mode_header {
+ 	u32	sev_es_trampoline_start;
  #endif
+ #ifdef CONFIG_X86_64
++	u32	trampoline_start64;
+ 	u32	trampoline_pgd;
+ #endif
+ 	/* ACPI S3 wakeup */
+diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+index 617012f4619f..6269dd126dba 100644
+--- a/arch/x86/kernel/smpboot.c
++++ b/arch/x86/kernel/smpboot.c
+@@ -1088,6 +1088,11 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle,
+ 	unsigned long boot_error = 0;
+ 	unsigned long timeout;
  
- #define BUILDIO(bwl, bw, type)						\
--static inline void out##bwl(type value, u16 port)			\
--{									\
--	asm volatile("out" #bwl " %" #bw "0, %w1"			\
--		     : : "a"(value), "Nd"(port));			\
--}									\
--									\
--static inline type in##bwl(u16 port)					\
--{									\
--	type value;							\
--	asm volatile("in" #bwl " %w1, %" #bw "0"			\
--		     : "=a"(value) : "Nd"(port));			\
--	return value;							\
--}									\
--									\
- static inline void out##bwl##_p(type value, u16 port)			\
- {									\
- 	out##bwl(value, port);						\
-@@ -320,10 +307,8 @@ static inline void ins##bwl(u16 port, void *addr, unsigned long count)	\
- BUILDIO(b, b, u8)
- BUILDIO(w, w, u16)
- BUILDIO(l,  , u32)
-+#undef BUILDIO
- 
--#define inb inb
--#define inw inw
--#define inl inl
- #define inb_p inb_p
- #define inw_p inw_p
- #define inl_p inl_p
-@@ -331,9 +316,6 @@ BUILDIO(l,  , u32)
- #define insw insw
- #define insl insl
- 
--#define outb outb
--#define outw outw
--#define outl outl
- #define outb_p outb_p
- #define outw_p outw_p
- #define outl_p outl_p
-diff --git a/arch/x86/include/asm/shared/io.h b/arch/x86/include/asm/shared/io.h
-new file mode 100644
-index 000000000000..6707cd555f0c
---- /dev/null
-+++ b/arch/x86/include/asm/shared/io.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_X86_SHARED_IO_H
-+#define _ASM_X86_SHARED_IO_H
-+
-+#include <linux/types.h>
-+
-+#define BUILDIO(bwl, bw, type)						\
-+static inline void out##bwl(type value, u16 port)			\
-+{									\
-+	asm volatile("out" #bwl " %" #bw "0, %w1"			\
-+		     : : "a"(value), "Nd"(port));			\
-+}									\
-+									\
-+static inline type in##bwl(u16 port)					\
-+{									\
-+	type value;							\
-+	asm volatile("in" #bwl " %w1, %" #bw "0"			\
-+		     : "=a"(value) : "Nd"(port));			\
-+	return value;							\
-+}
-+
-+BUILDIO(b, b, u8)
-+BUILDIO(w, w, u16)
-+BUILDIO(l,  , u32)
-+#undef BUILDIO
-+
-+#define inb inb
-+#define inw inw
-+#define inl inl
-+#define outb outb
-+#define outw outw
-+#define outl outl
-+
++#ifdef CONFIG_X86_64
++	/* If 64-bit wakeup method exists, use the 64-bit mode trampoline IP */
++	if (apic->wakeup_secondary_cpu_64)
++		start_ip = real_mode_header->trampoline_start64;
 +#endif
+ 	idle->thread.sp = (unsigned long)task_pt_regs(idle);
+ 	early_gdt_descr.address = (unsigned long)get_cpu_gdt_rw(cpu);
+ 	initial_code = (unsigned long)start_secondary;
+@@ -1129,11 +1134,14 @@ static int do_boot_cpu(int apicid, int cpu, struct task_struct *idle,
+ 
+ 	/*
+ 	 * Wake up a CPU in difference cases:
+-	 * - Use the method in the APIC driver if it's defined
++	 * - Use a method from the APIC driver if one defined, with wakeup
++	 *   straight to 64-bit mode preferred over wakeup to RM.
+ 	 * Otherwise,
+ 	 * - Use an INIT boot APIC message for APs or NMI for BSP.
+ 	 */
+-	if (apic->wakeup_secondary_cpu)
++	if (apic->wakeup_secondary_cpu_64)
++		boot_error = apic->wakeup_secondary_cpu_64(apicid, start_ip);
++	else if (apic->wakeup_secondary_cpu)
+ 		boot_error = apic->wakeup_secondary_cpu(apicid, start_ip);
+ 	else
+ 		boot_error = wakeup_cpu_via_init_nmi(cpu, start_ip, apicid,
+diff --git a/arch/x86/realmode/rm/header.S b/arch/x86/realmode/rm/header.S
+index 8c1db5bf5d78..2eb62be6d256 100644
+--- a/arch/x86/realmode/rm/header.S
++++ b/arch/x86/realmode/rm/header.S
+@@ -24,6 +24,7 @@ SYM_DATA_START(real_mode_header)
+ 	.long	pa_sev_es_trampoline_start
+ #endif
+ #ifdef CONFIG_X86_64
++	.long	pa_trampoline_start64
+ 	.long	pa_trampoline_pgd;
+ #endif
+ 	/* ACPI S3 wakeup */
+diff --git a/arch/x86/realmode/rm/trampoline_64.S b/arch/x86/realmode/rm/trampoline_64.S
+index cc8391f86cdb..ae112a91592f 100644
+--- a/arch/x86/realmode/rm/trampoline_64.S
++++ b/arch/x86/realmode/rm/trampoline_64.S
+@@ -161,6 +161,19 @@ SYM_CODE_START(startup_32)
+ 	ljmpl	$__KERNEL_CS, $pa_startup_64
+ SYM_CODE_END(startup_32)
+ 
++SYM_CODE_START(pa_trampoline_compat)
++	/*
++	 * In compatibility mode.  Prep ESP and DX for startup_32, then disable
++	 * paging and complete the switch to legacy 32-bit mode.
++	 */
++	movl	$rm_stack_end, %esp
++	movw	$__KERNEL_DS, %dx
++
++	movl	$X86_CR0_PE, %eax
++	movl	%eax, %cr0
++	ljmpl   $__KERNEL32_CS, $pa_startup_32
++SYM_CODE_END(pa_trampoline_compat)
++
+ 	.section ".text64","ax"
+ 	.code64
+ 	.balign 4
+@@ -169,6 +182,20 @@ SYM_CODE_START(startup_64)
+ 	jmpq	*tr_start(%rip)
+ SYM_CODE_END(startup_64)
+ 
++SYM_CODE_START(trampoline_start64)
++	/*
++	 * APs start here on a direct transfer from 64-bit BIOS with identity
++	 * mapped page tables.  Load the kernel's GDT in order to gear down to
++	 * 32-bit mode (to handle 4-level vs. 5-level paging), and to (re)load
++	 * segment registers.  Load the zero IDT so any fault triggers a
++	 * shutdown instead of jumping back into BIOS.
++	 */
++	lidt	tr_idt(%rip)
++	lgdt	tr_gdt64(%rip)
++
++	ljmpl	*tr_compat(%rip)
++SYM_CODE_END(trampoline_start64)
++
+ 	.section ".rodata","a"
+ 	# Duplicate the global descriptor table
+ 	# so the kernel can live anywhere
+@@ -182,6 +209,17 @@ SYM_DATA_START(tr_gdt)
+ 	.quad	0x00cf93000000ffff	# __KERNEL_DS
+ SYM_DATA_END_LABEL(tr_gdt, SYM_L_LOCAL, tr_gdt_end)
+ 
++SYM_DATA_START(tr_gdt64)
++	.short	tr_gdt_end - tr_gdt - 1	# gdt limit
++	.long	pa_tr_gdt
++	.long	0
++SYM_DATA_END(tr_gdt64)
++
++SYM_DATA_START(tr_compat)
++	.long	pa_trampoline_compat
++	.short	__KERNEL32_CS
++SYM_DATA_END(tr_compat)
++
+ 	.bss
+ 	.balign	PAGE_SIZE
+ SYM_DATA(trampoline_pgd, .space PAGE_SIZE)
+diff --git a/arch/x86/realmode/rm/trampoline_common.S b/arch/x86/realmode/rm/trampoline_common.S
+index 5033e640f957..4331c32c47f8 100644
+--- a/arch/x86/realmode/rm/trampoline_common.S
++++ b/arch/x86/realmode/rm/trampoline_common.S
+@@ -1,4 +1,14 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ 	.section ".rodata","a"
+ 	.balign	16
+-SYM_DATA_LOCAL(tr_idt, .fill 1, 6, 0)
++
++/*
++ * When a bootloader hands off to the kernel in 32-bit mode an
++ * IDT with a 2-byte limit and 4-byte base is needed. When a boot
++ * loader hands off to a kernel 64-bit mode the base address
++ * extends to 8-bytes. Reserve enough space for either scenario.
++ */
++SYM_DATA_START_LOCAL(tr_idt)
++	.short  0
++	.quad   0
++SYM_DATA_END(tr_idt)
 -- 
 2.34.1
 
