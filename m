@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41BA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:26:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6544AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231801AbiBXR1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:27:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40270 "EHLO
+        id S231905AbiBXR1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:27:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231570AbiBXR0v (ORCPT
+        with ESMTP id S231768AbiBXR1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 12:26:51 -0500
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 259CC278C8B
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:26:21 -0800 (PST)
-Received: by mail-pj1-x1049.google.com with SMTP id cx10-20020a17090afd8a00b001bcc9f08296so1186731pjb.2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:26:21 -0800 (PST)
+        Thu, 24 Feb 2022 12:27:11 -0500
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC139278CBF
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:26:26 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id x18-20020a170902b41200b0014fc2665bddso1423532plr.0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:26:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=f7YVBmCb6IbcPz2I9pSRMYsNCE3tvWzh5vUe6Npy1Ak=;
-        b=GIp3dFeze4hYb6KlcHmjeEgFI+VrVtEnbRgjGd32qlKA2YNcGaWP5tT+SNeDb5id8S
-         OdR8AlBGI5a6PQqilkbfUfvxWLDDf+IXhx8WG/NOwhGsskYyy/CHYj+Zno+qpTUQEIZ2
-         KaW+a/lIWjQmpI6XnKUUswrx/dBC3jyJp2SbUuhnRxsWZYjCUrDzAr/OCUvz7RrfQQSp
-         V847UnL1nDMpusfG3u00l5lwbJkA8sSm6L1nHUC1cnsF35YkXe/TyPAjoHlSTAEQPe8k
-         6QTrumKamOpp/qNO1f2Gc08fFiPg0Rz7NRXpzm4NEsT6QCisj6F+6SFEBlavPRBdSjqT
-         A+iA==
+        bh=b6uNiWvgAwogCk/jxX+wM4vHns+UEbCP4x0AKJLO+4Q=;
+        b=h+4yAjVxpHpHUG9ZXzKDxIY+XLIBSv6S2i9Dizt7ZsHBT6ZQPOVwypGOZXKBNUg6DZ
+         R6n9PG3mnByfdNrm8n/8ktstVfOHvp/Ref4D+MPm4vuwgKFo4gTWrv7W38u0oQKvhnxi
+         Bc+teTfh7/CqaXBRR3MXfqLp30xNrKZPqHJhTjpFdSvBNQUJb6opdmPm7JNfTOliqfz7
+         +lNPqy0LF97Pb3uCq/4tTwWMkFYwLB+f6iUL/onr8Z86zLRqVweT0wANPb0ELlZb9XmW
+         sKD0BqPMfSCeVVNxMxORAmwxagVX3bmp6ivji2USJVMpXim36w50UMdzJYYiaax+rIQe
+         I7Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=f7YVBmCb6IbcPz2I9pSRMYsNCE3tvWzh5vUe6Npy1Ak=;
-        b=fHrEiZDRdSkjUYY1rhF/SCRWjrx3gYowqF5AIkOtdJVb0j9f38JVAN9uhESMyiRm5H
-         e3jqp/P0Z5q7etLTIHJzNuIE4aQW0wipRuQiviQ6C0fv6ewbDoGq1RZMCa4W4cSIVpMn
-         J9akRtPTqmol4gDd1HqZbT5EVaOgcD5UfOmOJe/OH9yTj5/zqaAuNymE+APWY1atmF+T
-         aHr66ZyaabW786lUMmE9yNKbu+5W1UHZHSz418NLOZIfnzqmtTvER6TV/zuuzTOn3qT2
-         AHS/T9VH67q4c8zabz9AFVHcLB+SJENOTRlOmqOTZsfDZ/1mLBPnCUtWd6ALx+peCxbN
-         chmQ==
-X-Gm-Message-State: AOAM531U3Co9cV07kaIPscoZaU2dEXalyG/INEYgLhsWDy2S0/a4Y6jT
-        8+MiC7fabFoazK+1EBaZQP2grY9ULi19
-X-Google-Smtp-Source: ABdhPJxSCGu3k55BbAvghObP6sR447q+n09jYrxk+9b6zOi1NDp47823WoeG/9N4MDL4UVSEZtw++WwQmJLQ
+        bh=b6uNiWvgAwogCk/jxX+wM4vHns+UEbCP4x0AKJLO+4Q=;
+        b=kGQuPP9gBxU8cRtxPFXIdAH1MSqItkid/BgbPheqqPH7b5+BKhkkoZrSvsgpWrQpf7
+         V5hPX42O7PqQszlsCIZctGtcJ0dUbY89c1tkr798UPeiM+3EN5JlcVlAfFFlncQ/S6J1
+         gWS0eprcsxHBhcb6dKaIlOkhUxbYvVMPy0WwdIYYBJSeUbN1sF0N22tJZewpPyNMoTi1
+         pxQfS3gGzOE0WmptdlNuwSkHV4jfjH/qxwTgx3RKtoNUrs1i2Cu/IE8JKvY8AWqVsdYb
+         Dl2nJCoQ6x/oP2asfVb6zQYwPvudDjsxKkPqp/E3SKmo25RQyIOtoPpwnvDXkkTQiEfp
+         fOJQ==
+X-Gm-Message-State: AOAM530tLq+3pw9Ygi53bbQPVk0cmOgD0D5Q1bItDIioTuAvgkqCEPAc
+        ckvO8CDM8fOsgRK9eG8qbUKq9mcbq/Xm
+X-Google-Smtp-Source: ABdhPJwk7AgkVcTxMVZ+wEFay2w+mClV6dcietIwRyKAlHhoCWyT1LJHKiM+ia3GXTfTot6zyZ3GOK98LzI0
 X-Received: from rananta-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1bcc])
- (user=rananta job=sendgmr) by 2002:a05:6a00:1aca:b0:4e1:a2b6:5b9 with SMTP id
- f10-20020a056a001aca00b004e1a2b605b9mr3807079pfv.4.1645723580479; Thu, 24 Feb
- 2022 09:26:20 -0800 (PST)
-Date:   Thu, 24 Feb 2022 17:25:52 +0000
+ (user=rananta job=sendgmr) by 2002:a17:902:930b:b0:14d:b0c0:1f71 with SMTP id
+ bc11-20020a170902930b00b0014db0c01f71mr3700280plb.113.1645723586271; Thu, 24
+ Feb 2022 09:26:26 -0800 (PST)
+Date:   Thu, 24 Feb 2022 17:25:54 +0000
 In-Reply-To: <20220224172559.4170192-1-rananta@google.com>
-Message-Id: <20220224172559.4170192-7-rananta@google.com>
+Message-Id: <20220224172559.4170192-9-rananta@google.com>
 Mime-Version: 1.0
 References: <20220224172559.4170192-1-rananta@google.com>
 X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH v4 06/13] KVM: arm64: Add standard hypervisor firmware register
+Subject: [PATCH v4 08/13] Docs: KVM: Add doc for the bitmap firmware registers
 From:   Raghavendra Rao Ananta <rananta@google.com>
 To:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
         James Morse <james.morse@arm.com>,
@@ -73,161 +73,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce the firmware register to hold the standard hypervisor
-service calls (owner value 5) as a bitmap. The bitmap represents
-the features that'll be enabled for the guest, as configured by
-the user-space. Currently, this includes support only for
-Paravirtualized time, represented by bit-0.
+Add the documentation for the bitmap firmware registers in
+psci.rst. This includes the details for KVM_REG_ARM_STD_BMAP,
+KVM_REG_ARM_STD_HYP_BMAP, and KVM_REG_ARM_VENDOR_HYP_BMAP
+registers.
 
-The register is also added to the kvm_arm_vm_scope_fw_regs[] list
-as it maintains its state per-VM.
+Since the document is growing to carry other hypercall related
+information, make necessary adjustments to present the document
+in a generic sense, rather than being PSCI focused.
 
 Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
 ---
- arch/arm64/include/asm/kvm_host.h |  2 ++
- arch/arm64/include/uapi/asm/kvm.h |  4 ++++
- arch/arm64/kvm/guest.c            |  1 +
- arch/arm64/kvm/hypercalls.c       | 20 +++++++++++++++++++-
- include/kvm/arm_hypercalls.h      |  3 +++
- 5 files changed, 29 insertions(+), 1 deletion(-)
+ Documentation/virt/kvm/arm/psci.rst | 83 ++++++++++++++++++++++-------
+ 1 file changed, 65 insertions(+), 18 deletions(-)
 
-diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-index 1909ced3208f..318148b69279 100644
---- a/arch/arm64/include/asm/kvm_host.h
-+++ b/arch/arm64/include/asm/kvm_host.h
-@@ -105,9 +105,11 @@ struct kvm_arch_memory_slot {
-  * struct kvm_hvc_desc: KVM ARM64 hypercall descriptor
-  *
-  * @hvc_std_bmap: Bitmap of standard secure service calls
-+ * @hvc_std_hyp_bmap: Bitmap of standard hypervisor service calls
-  */
- struct kvm_hvc_desc {
- 	u64 hvc_std_bmap;
-+	u64 hvc_std_hyp_bmap;
- };
+diff --git a/Documentation/virt/kvm/arm/psci.rst b/Documentation/virt/kvm/arm/psci.rst
+index d52c2e83b5b8..bc5c2886ca23 100644
+--- a/Documentation/virt/kvm/arm/psci.rst
++++ b/Documentation/virt/kvm/arm/psci.rst
+@@ -1,32 +1,32 @@
+ .. SPDX-License-Identifier: GPL-2.0
  
- struct kvm_arch {
-diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
-index 2decc30d6b84..9a2caead7359 100644
---- a/arch/arm64/include/uapi/asm/kvm.h
-+++ b/arch/arm64/include/uapi/asm/kvm.h
-@@ -295,6 +295,10 @@ struct kvm_arm_copy_mte_tags {
- #define KVM_REG_ARM_STD_BIT_TRNG_V1_0		BIT(0)
- #define KVM_REG_ARM_STD_BMAP_BIT_MAX		0       /* Last valid bit */
+-=========================================
+-Power State Coordination Interface (PSCI)
+-=========================================
++=======================
++ARM Hypercall Interface
++=======================
  
-+#define KVM_REG_ARM_STD_HYP_BMAP		KVM_REG_ARM_FW_BMAP_REG(1)
-+#define KVM_REG_ARM_STD_HYP_BIT_PV_TIME		BIT(0)
-+#define KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX	0       /* Last valid bit */
+-KVM implements the PSCI (Power State Coordination Interface)
+-specification in order to provide services such as CPU on/off, reset
+-and power-off to the guest.
++KVM handles the hypercall services as requested by the guests. New hypercall
++services are regularly made available by the ARM specification or by KVM (as
++vendor services) if they make sense from a virtualization point of view.
+ 
+-The PSCI specification is regularly updated to provide new features,
+-and KVM implements these updates if they make sense from a virtualization
+-point of view.
+-
+-This means that a guest booted on two different versions of KVM can
+-observe two different "firmware" revisions. This could cause issues if
+-a given guest is tied to a particular PSCI revision (unlikely), or if
+-a migration causes a different PSCI version to be exposed out of the
+-blue to an unsuspecting guest.
++This means that a guest booted on two different versions of KVM can observe
++two different "firmware" revisions. This could cause issues if a given guest
++is tied to a particular version of a hypercall service, or if a migration
++causes a different version to be exposed out of the blue to an unsuspecting
++guest.
+ 
+ In order to remedy this situation, KVM exposes a set of "firmware
+ pseudo-registers" that can be manipulated using the GET/SET_ONE_REG
+ interface. These registers can be saved/restored by userspace, and set
+-to a convenient value if required.
++to a convenient value as required.
+ 
+-The following register is defined:
++The following registers are defined:
+ 
+ * KVM_REG_ARM_PSCI_VERSION:
+ 
++  KVM implements the PSCI (Power State Coordination Interface)
++  specification in order to provide services such as CPU on/off, reset
++  and power-off to the guest.
 +
- /* SVE registers */
- #define KVM_REG_ARM64_SVE		(0x15 << KVM_REG_ARM_COPROC_SHIFT)
+   - Only valid if the vcpu has the KVM_ARM_VCPU_PSCI_0_2 feature set
+     (and thus has already been initialized)
+   - Returns the current PSCI version on GET_ONE_REG (defaulting to the
+@@ -74,4 +74,51 @@ The following register is defined:
+     KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2_NOT_REQUIRED:
+       The workaround is always active on this vCPU or it is not needed.
  
-diff --git a/arch/arm64/kvm/guest.c b/arch/arm64/kvm/guest.c
-index d66e6c742bbe..c42426d6137e 100644
---- a/arch/arm64/kvm/guest.c
-+++ b/arch/arm64/kvm/guest.c
-@@ -66,6 +66,7 @@ static const u64 kvm_arm_vm_scope_fw_regs[] = {
- 	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1,
- 	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2,
- 	KVM_REG_ARM_STD_BMAP,
-+	KVM_REG_ARM_STD_HYP_BMAP,
- };
- 
- /**
-diff --git a/arch/arm64/kvm/hypercalls.c b/arch/arm64/kvm/hypercalls.c
-index 48c126c3da72..ebc0cc26cf2e 100644
---- a/arch/arm64/kvm/hypercalls.c
-+++ b/arch/arm64/kvm/hypercalls.c
-@@ -75,6 +75,10 @@ static bool kvm_hvc_call_supported(struct kvm_vcpu *vcpu, u32 func_id)
- 	case ARM_SMCCC_TRNG_RND64:
- 		return kvm_arm_fw_reg_feat_enabled(hvc_desc->hvc_std_bmap,
- 						KVM_REG_ARM_STD_BIT_TRNG_V1_0);
-+	case ARM_SMCCC_HV_PV_TIME_FEATURES:
-+	case ARM_SMCCC_HV_PV_TIME_ST:
-+		return kvm_arm_fw_reg_feat_enabled(hvc_desc->hvc_std_hyp_bmap,
-+					KVM_REG_ARM_STD_HYP_BIT_PV_TIME);
- 	default:
- 		/* By default, allow the services that aren't listed here */
- 		return true;
-@@ -83,6 +87,7 @@ static bool kvm_hvc_call_supported(struct kvm_vcpu *vcpu, u32 func_id)
- 
- int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
- {
-+	struct kvm_hvc_desc *hvc_desc = &vcpu->kvm->arch.hvc_desc;
- 	u32 func_id = smccc_get_function(vcpu);
- 	u64 val[4] = {SMCCC_RET_NOT_SUPPORTED};
- 	u32 feature;
-@@ -134,7 +139,10 @@ int kvm_hvc_call_handler(struct kvm_vcpu *vcpu)
- 			}
- 			break;
- 		case ARM_SMCCC_HV_PV_TIME_FEATURES:
--			val[0] = SMCCC_RET_SUCCESS;
-+			if (kvm_arm_fw_reg_feat_enabled(
-+					hvc_desc->hvc_std_hyp_bmap,
-+					KVM_REG_ARM_STD_HYP_BIT_PV_TIME))
-+				val[0] = SMCCC_RET_SUCCESS;
- 			break;
- 		}
- 		break;
-@@ -179,6 +187,7 @@ static const u64 kvm_arm_fw_reg_ids[] = {
- 	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_1,
- 	KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_2,
- 	KVM_REG_ARM_STD_BMAP,
-+	KVM_REG_ARM_STD_HYP_BMAP,
- };
- 
- void kvm_arm_init_hypercalls(struct kvm *kvm)
-@@ -186,6 +195,7 @@ void kvm_arm_init_hypercalls(struct kvm *kvm)
- 	struct kvm_hvc_desc *hvc_desc = &kvm->arch.hvc_desc;
- 
- 	hvc_desc->hvc_std_bmap = ARM_SMCCC_STD_FEATURES;
-+	hvc_desc->hvc_std_hyp_bmap = ARM_SMCCC_STD_HYP_FEATURES;
- }
- 
- int kvm_arm_get_fw_num_regs(struct kvm_vcpu *vcpu)
-@@ -272,6 +282,9 @@ int kvm_arm_get_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
- 	case KVM_REG_ARM_STD_BMAP:
- 		val = READ_ONCE(hvc_desc->hvc_std_bmap);
- 		break;
-+	case KVM_REG_ARM_STD_HYP_BMAP:
-+		val = READ_ONCE(hvc_desc->hvc_std_hyp_bmap);
-+		break;
- 	default:
- 		return -ENOENT;
- 	}
-@@ -294,6 +307,10 @@ static int kvm_arm_set_fw_reg_bmap(struct kvm_vcpu *vcpu, u64 reg_id, u64 val)
- 		fw_reg_bmap = &hvc_desc->hvc_std_bmap;
- 		fw_reg_features = ARM_SMCCC_STD_FEATURES;
- 		break;
-+	case KVM_REG_ARM_STD_HYP_BMAP:
-+		fw_reg_bmap = &hvc_desc->hvc_std_hyp_bmap;
-+		fw_reg_features = ARM_SMCCC_STD_HYP_FEATURES;
-+		break;
- 	default:
- 		return -ENOENT;
- 	}
-@@ -398,6 +415,7 @@ int kvm_arm_set_fw_reg(struct kvm_vcpu *vcpu, const struct kvm_one_reg *reg)
- 
- 		return 0;
- 	case KVM_REG_ARM_STD_BMAP:
-+	case KVM_REG_ARM_STD_HYP_BMAP:
- 		return kvm_arm_set_fw_reg_bmap(vcpu, reg_id, val);
- 	default:
- 		return -ENOENT;
-diff --git a/include/kvm/arm_hypercalls.h b/include/kvm/arm_hypercalls.h
-index 64d30b452809..a1cb6e839c74 100644
---- a/include/kvm/arm_hypercalls.h
-+++ b/include/kvm/arm_hypercalls.h
-@@ -9,6 +9,9 @@
- #define ARM_SMCCC_STD_FEATURES \
- 	GENMASK_ULL(KVM_REG_ARM_STD_BMAP_BIT_MAX, 0)
- 
-+#define ARM_SMCCC_STD_HYP_FEATURES \
-+	GENMASK_ULL(KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX, 0)
+-.. [1] https://developer.arm.com/-/media/developer/pdf/ARM_DEN_0070A_Firmware_interfaces_for_mitigating_CVE-2017-5715.pdf
++Contrary to the above registers, the following registers exposes the hypercall
++services in the form of a feature-bitmap. This bitmap is translated to the
++services that are exposed to the guest. There is a register defined per service
++call owner and can be accessed via GET/SET_ONE_REG interface.
 +
- int kvm_hvc_call_handler(struct kvm_vcpu *vcpu);
- 
- static inline u32 smccc_get_function(struct kvm_vcpu *vcpu)
++By default, these registers are set with the upper limit of the features that
++are supported. User-space can discover this configuration via GET_ONE_REG. If
++unsatisfied, the user-space can write back the desired bitmap back via
++SET_ONE_REG. The features for the registers that are untouched, probably because
++userspace isn't aware of them, will be exposed as is to the guest.
++
++The psuedo-firmware bitmap register are as follows:
++
++* KVM_REG_ARM_STD_BMAP:
++    Controls the bitmap of the ARM Standard Secure Service Calls.
++
++  The following bits are accepted:
++
++    KVM_REG_ARM_STD_BIT_TRNG_V1_0:
++      The bit represents the services offered under v1.0 of ARM True Random
++      Number Generator (TRNG) specification, ARM DEN0098.
++
++* KVM_REG_ARM_STD_HYP_BMAP:
++    Controls the bitmap of the ARM Standard Hypervisor Service Calls.
++
++  The following bits are accepted:
++
++    KVM_REG_ARM_STD_HYP_BIT_PV_TIME:
++      The bit represents the Paravirtualized Time service as represented by
++      ARM DEN0057A.
++
++* KVM_REG_ARM_VENDOR_HYP_BMAP:
++    Controls the bitmap of the Vendor specific Hypervisor Service Calls.
++
++  The following bits are accepted:
++
++    KVM_REG_ARM_VENDOR_HYP_BIT_PTP:
++      The bit represents the Precision Time Protocol KVM service.
++
++Errors:
++
++    =======  =============================================================
++    -ENOENT   Unknown register accessed.
++    -EBUSY    Attempt a 'write' to the register after the VM has started.
++    -EINVAL   Invalid bitmap written to the register.
++    =======  =============================================================
++
++.. [1] https://developer.arm.com/-/media/developer/pdf/ARM_DEN_0070A_Firmware_interfaces_for_mitigating_CVE-2017-5715.pdf
+\ No newline at end of file
 -- 
 2.35.1.473.g83b2b277ed-goog
 
