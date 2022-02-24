@@ -2,297 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BA3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 03:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C96F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 03:27:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229500AbiBXD0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 22:26:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32916 "EHLO
+        id S229546AbiBXD2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 22:28:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229473AbiBXD0o (ORCPT
+        with ESMTP id S229473AbiBXD2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 22:26:44 -0500
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E205820C1BD
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 19:26:14 -0800 (PST)
-Received: by mail-ot1-x336.google.com with SMTP id p12-20020a05683019cc00b005af1442c9e9so434971otp.13
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 19:26:14 -0800 (PST)
+        Wed, 23 Feb 2022 22:28:01 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1E5144F5C;
+        Wed, 23 Feb 2022 19:27:32 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id l9so133850pls.6;
+        Wed, 23 Feb 2022 19:27:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=on9uKzhYwhweFCf7oKVhfgEYko95i4/WUYrvIP0RTh8=;
-        b=cf2SIGl7qEZZ35vEtrjchIJROC+VBCHm8ieSMJbnyzNLy/6Oy3/nbIQgeoaHJ5PDhP
-         we/r2F7Bdh+5d925PQkFdcQKzpvDiiFQN7PUd2e/VHB5R+h+M+gCNtrvI4aJpmxEH8g1
-         /xPmRVU9M7A3dYQRCwPRy5Fwd/DON54lJWqOR4N6Onx5UHsAm05UCxkt46fiPtEkmzsO
-         FQkjmYloVmegueTVRGf3gBwz82CC/Vj+ApB/GfJG8k/nZjyTXRv5bxDTVc5B5SF6qbw5
-         SVUnljrsfqTGSLbzU9MIJq0ZVvpeFyupq2fWuErvA588KcGbJkCly+nNBQch5HVfSZ/T
-         a/3w==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:organization;
+        bh=4RCSOSz1s5gUcQ6WfXIYAmExC36/ZKP+g8T1y22c4Rk=;
+        b=jDvi5G8KTlANR/St8z6PYv5+G60GaBXmUyvu/kwrDo6ylbezT3pnrPP3toMbRK3JoX
+         YQprI8a4xvp2zofCcR6iIOnuXOE63yoOU0cysaKUHlQgFBY1NWqtQZyB+jA7qarBlz0Y
+         bP3siFOxTu6ue8fR1+rlEAwpTZWizlo5xrguHK1TNcOVZ/eJp+cYnz2xDlpU0N2erIur
+         nJw2UCdlKk/dJpBqofk4dR2Dw0zUBnIaM7BRx5LGNk82I6RxHjjBHl97BKkU8rt/ZXSX
+         wR/WgO4cl6CilagNCc2/9ylcHDPhBmtjDonNryluNmosmf+62iWw2eFMgPzvxiYAFp0r
+         Ux2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=on9uKzhYwhweFCf7oKVhfgEYko95i4/WUYrvIP0RTh8=;
-        b=AIa7VXeXjNSjdivlLi4a0V8efTgK68zBepCyr85tP7PZiBUf3AH8zyVhW3IoVI5cLh
-         HPFTDPvIZOkip27fZIzIO8HnKBOeJGsZfXqOKTmt2BtAIj5/uk0faWuyeThM5QQ7YBNE
-         L6b6DcqzgbxkTyBtJB5/KCMbX6DBN4i5wsg9c7O2+9jIYplUQGNjM7ME/xJxUivqBxNK
-         Sh2lDJea//K2V8JC6EElZBA44QFBjN7JQTiTVR7KZs2PWks4axktoIPDRS4wyI/Ea+Tm
-         jp0IjB1dFJk1ufTXHR4vjFcmxQOBPtpGPspipUNqd7rCL9VZVeTx7H56hN3P7o41Zt/0
-         Y7pg==
-X-Gm-Message-State: AOAM533OT6IW3/l8gjE5I6vkNxsmaUCPLyKeCEwUB9V3fS6a3UbmuY21
-        +/vc2RHMG88r2ggaK74b/MJMfVLPQEwYxg==
-X-Google-Smtp-Source: ABdhPJx0t/baNQZIQ1Fhsp08N+U5PnUxdY2SAXMYI8Gr8J2zArlZuLhUaYTFliNf2BUItuJ2wDK56w==
-X-Received: by 2002:a9d:5f15:0:b0:5af:5928:d5a1 with SMTP id f21-20020a9d5f15000000b005af5928d5a1mr236017oti.343.1645673174040;
-        Wed, 23 Feb 2022 19:26:14 -0800 (PST)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id g11sm763472oan.35.2022.02.23.19.26.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:organization;
+        bh=4RCSOSz1s5gUcQ6WfXIYAmExC36/ZKP+g8T1y22c4Rk=;
+        b=AvAgycDrmraUCx7627+YWaeF736ws/yj+tV3NzimNSNb0/OuhvWt4Q9VKNK1NF3HS6
+         p8HTOAeVGjbdIiAdk3XQkgAuyYab3Z9P7wW8Q9L4BGpmPMIObQU96UBpogZGA+cNSJ/4
+         rvIoEj7RvJOInzabbBbid7KYvSH/KBQhDkNTwT6s9YF+C4YIcx1PEWrjhqnlHcU1LQyL
+         T9FGQdRhvlZONJHepLeygFd37MLcm+aHc9i/qcy/FjZR4f46ynwuDyNyt1kVnA7hp62J
+         hVF3MJ/QeJquUeZaLr1M1ah/4tzEmBjuRp+x6tuP6JKX1iR12Ktu2S8PR9/QnW4gSkgh
+         9lEw==
+X-Gm-Message-State: AOAM531Yay3xIJF8aJCeuoXJtWu+ElKWZEEbxelzVq3l4OC7r86JkSnK
+        1laiVMPk1D46PT/gbYWdMgfcGtJ1Mxdk7T2zfWI=
+X-Google-Smtp-Source: ABdhPJyKhS1aReVHpv/3raEn/PB1VNmKG8Hq7CWSk0Nke9SsOu18fuXvALWndQcfnDFQXviBWiFkqg==
+X-Received: by 2002:a17:90a:9288:b0:1bc:568b:55bc with SMTP id n8-20020a17090a928800b001bc568b55bcmr768005pjo.9.1645673252087;
+        Wed, 23 Feb 2022 19:27:32 -0800 (PST)
+Received: from localhost.localdomain ([123.201.194.48])
+        by smtp.googlemail.com with ESMTPSA id 23-20020a17090a0d5700b001bc3c650e01sm7236178pju.1.2022.02.23.19.27.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 19:26:13 -0800 (PST)
-Date:   Wed, 23 Feb 2022 19:28:11 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Deepak Kumar Singh <quic_deesin@quicinc.com>
-Cc:     quic_clew@quicinc.com, mathieu.poirier@linaro.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, Andy Gross <agross@kernel.org>
-Subject: Re: [PATCH V4 2/2] soc: qcom: smem: validate fields of shared
- structures
-Message-ID: <Yhb7S2mwkEIcZO5X@ripper>
-References: <1644849974-8043-1-git-send-email-quic_deesin@quicinc.com>
- <1644849974-8043-2-git-send-email-quic_deesin@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1644849974-8043-2-git-send-email-quic_deesin@quicinc.com>
+        Wed, 23 Feb 2022 19:27:31 -0800 (PST)
+From:   Dharmendra Singh <dharamhans87@gmail.com>
+To:     miklos@szeredi.hu
+Cc:     Dharmendra Singh <dharamhans87@gmail.com>,
+        linux-fsdevel@vger.kernel.org, fuse-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] FUSE: Implement atomic lookup + open
+Date:   Thu, 24 Feb 2022 08:53:35 +0530
+Message-Id: <20220224032337.19284-1-dharamhans87@gmail.com>
+X-Mailer: git-send-email 2.17.1
+Organization: DDN STORAGE
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 14 Feb 06:46 PST 2022, Deepak Kumar Singh wrote:
+FUSE, as of now, makes aggressive lookup calls into libfuse in certain code
+paths. These lookup calls possibly can be avoided in some cases. Incoming
+two patches addresses the issue of aggressive lookup calls.
 
-> Structures in shared memory that can be modified by remote
-> processors may have untrusted values, they should be validated
-> before use.
-> 
-> Adding proper validation before using fields of shared
-> structures.
+First patch handles the case where we open first time a file/dir or create
+a file (O_CREAT) but do a lookup first on it. After lookup is performed
+we make another call into libfuse to open the file. Now these two separate
+calls into libfuse can be combined and performed as a single call into
+libfuse.
 
-I'm not able to find patch 1/2, did you send it out or is it just me
-being unlucky finding it?
+Second patch handles the case when we are opening an already existing file
+(positive dentry). Before this open call, we re-validate the inode and
+this re-validation does a lookup on the file and verify the inode.
+This separate lookup also can be avoided (for non-dir) and combined
+with open call into libfuse.
 
-> 
-> Signed-off-by: Deepak Kumar Singh <quic_deesin@quicinc.com>
-> ---
->  drivers/soc/qcom/smem.c | 81 +++++++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 68 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/soc/qcom/smem.c b/drivers/soc/qcom/smem.c
-> index 96444ff..644844b 100644
-> --- a/drivers/soc/qcom/smem.c
-> +++ b/drivers/soc/qcom/smem.c
-> @@ -367,13 +367,18 @@ static int qcom_smem_alloc_private(struct qcom_smem *smem,
->  	struct smem_partition_header *phdr;
->  	size_t alloc_size;
->  	void *cached;
-> +	void *p_end;
->  
->  	phdr = (struct smem_partition_header __force *)part->virt_base;
-> +	p_end = (void *)phdr + part->size;
->  
->  	hdr = phdr_to_first_uncached_entry(phdr);
->  	end = phdr_to_last_uncached_entry(phdr);
->  	cached = phdr_to_last_cached_entry(phdr);
->  
-> +	if (WARN_ON((void *)end > p_end || (void *)cached > p_end))
+Here is the link to libfuse patches which implement atomic open
 
-cached is a void * already, do you really need to cast it?
+https://github.com/d-hans/libfuse/commit/5255ce89decac71912e25b3cb4d79ebac538a456
+https://github.com/d-hans/libfuse/commit/346b9feb2de5b6ff2b15882a38d7de0a0768c17c
+https://github.com/d-hans/libfuse/commit/ac010dac446a9267b619afb138ab315d6c6eeb3e
 
-> +		return -EINVAL;
-> +
->  	while (hdr < end) {
->  		if (hdr->canary != SMEM_PRIVATE_CANARY)
->  			goto bad_canary;
-> @@ -383,6 +388,9 @@ static int qcom_smem_alloc_private(struct qcom_smem *smem,
->  		hdr = uncached_entry_next(hdr);
->  	}
->  
-> +	if (WARN_ON((void *)hdr > p_end))
-> +		return -EINVAL;
-> +
->  	/* Check that we don't grow into the cached region */
->  	alloc_size = sizeof(*hdr) + ALIGN(size, 8);
->  	if ((void *)hdr + alloc_size > cached) {
-> @@ -501,6 +509,8 @@ static void *qcom_smem_get_global(struct qcom_smem *smem,
->  	struct smem_header *header;
->  	struct smem_region *region;
->  	struct smem_global_entry *entry;
-> +	u64 entry_offset;
-> +	u32 e_size;
->  	u32 aux_base;
->  	unsigned i;
->  
-> @@ -515,9 +525,13 @@ static void *qcom_smem_get_global(struct qcom_smem *smem,
->  		region = &smem->regions[i];
->  
->  		if ((u32)region->aux_base == aux_base || !aux_base) {
-> +			e_size = le32_to_cpu(entry->size);
-> +			entry_offset = le32_to_cpu(entry->offset);
-> +
->  			if (size != NULL)
-> -				*size = le32_to_cpu(entry->size);
-> -			return region->virt_base + le32_to_cpu(entry->offset);
-> +				*size = e_size;
-> +
-> +			return region->virt_base + entry_offset;
 
-The only change I see here is that you read entry->size regardless of
-size being requested or not, so I don't see any "sanity checking" here.
+Dharmendra Singh (2):
+  FUSE: Implement atomic lookup + open
+  FUSE: Avoid lookup in d_revalidate()
 
->  		}
->  	}
->  
-> @@ -531,8 +545,12 @@ static void *qcom_smem_get_private(struct qcom_smem *smem,
->  {
->  	struct smem_private_entry *e, *end;
->  	struct smem_partition_header *phdr;
-> +	void *item_ptr, *p_end;
-> +	u32 padding_data;
-> +	u32 e_size;
->  
->  	phdr = (struct smem_partition_header __force *)part->virt_base;
-> +	p_end = (void *)phdr + part->size;
->  
->  	e = phdr_to_first_uncached_entry(phdr);
->  	end = phdr_to_last_uncached_entry(phdr);
-> @@ -542,36 +560,65 @@ static void *qcom_smem_get_private(struct qcom_smem *smem,
->  			goto invalid_canary;
->  
->  		if (le16_to_cpu(e->item) == item) {
-> -			if (size != NULL)
-> -				*size = le32_to_cpu(e->size) -
-> -					le16_to_cpu(e->padding_data);
-> +			if (size != NULL) {
-> +				e_size = le32_to_cpu(e->size);
-> +				padding_data = le16_to_cpu(e->padding_data);
->  
-> -			return uncached_entry_to_item(e);
-> +				if (WARN_ON(e_size > part->size || padding_data > e_size))
-> +					return ERR_PTR(-EINVAL);
-> +
-> +				*size = e_size - padding_data;
-> +			}
-> +
-> +			item_ptr = uncached_entry_to_item(e);
-> +			if (WARN_ON(item_ptr > p_end))
-> +				return ERR_PTR(-EINVAL);
-> +
-> +			return item_ptr;
->  		}
->  
->  		e = uncached_entry_next(e);
->  	}
->  
-> +	if (WARN_ON((void *)e > p_end))
-> +		return ERR_PTR(-EINVAL);
-> +
->  	/* Item was not found in the uncached list, search the cached list */
->  
->  	e = phdr_to_first_cached_entry(phdr, part->cacheline);
->  	end = phdr_to_last_cached_entry(phdr);
->  
-> +	if (WARN_ON((void *)e < (void *)phdr || (void *)end > p_end))
-> +		return ERR_PTR(-EINVAL);
-> +
->  	while (e > end) {
->  		if (e->canary != SMEM_PRIVATE_CANARY)
->  			goto invalid_canary;
->  
->  		if (le16_to_cpu(e->item) == item) {
-> -			if (size != NULL)
-> -				*size = le32_to_cpu(e->size) -
-> -					le16_to_cpu(e->padding_data);
-> +			if (size != NULL) {
-> +				e_size = le32_to_cpu(e->size);
-> +				padding_data = le16_to_cpu(e->padding_data);
-> +
-> +				if (WARN_ON(e_size > part->size || padding_data > e_size))
-> +					return ERR_PTR(-EINVAL);
-> +
-> +				*size = e_size - padding_data;
-> +			}
-> +
-> +			item_ptr = cached_entry_to_item(e);
-> +			if (WARN_ON(item_ptr < (void *)phdr))
-> +				return ERR_PTR(-EINVAL);
->  
-> -			return cached_entry_to_item(e);
-> +			return item_ptr;
->  		}
->  
->  		e = cached_entry_next(e, part->cacheline);
->  	}
->  
-> +	if (WARN_ON((void *)e < (void *)phdr))
-> +		return ERR_PTR(-EINVAL);
-> +
->  	return ERR_PTR(-ENOENT);
->  
->  invalid_canary:
-> @@ -648,14 +695,23 @@ int qcom_smem_get_free_space(unsigned host)
->  		phdr = part->virt_base;
->  		ret = le32_to_cpu(phdr->offset_free_cached) -
->  		      le32_to_cpu(phdr->offset_free_uncached);
-> +
-> +		if (ret > le32_to_cpu(part->size))
-> +			return -EINVAL;
->  	} else if (__smem->global_partition.virt_base) {
->  		part = &__smem->global_partition;
->  		phdr = part->virt_base;
->  		ret = le32_to_cpu(phdr->offset_free_cached) -
->  		      le32_to_cpu(phdr->offset_free_uncached);
-> +
-> +		if (ret > le32_to_cpu(part->size))
-> +			return -EINVAL;
->  	} else {
->  		header = __smem->regions[0].virt_base;
->  		ret = le32_to_cpu(header->available);
-> +
-> +		if (ret > __smem->regions[0].size)
-> +			return -EINVAL;
->  	}
->  
->  	return ret;
-> @@ -918,13 +974,12 @@ qcom_smem_enumerate_partitions(struct qcom_smem *smem, u16 local_host)
->  static int qcom_smem_map_toc(struct qcom_smem *smem, struct smem_region *region)
+ fs/fuse/dir.c             | 170 +++++++++++++++++++++++++++++++++-----
+ fs/fuse/file.c            |  30 ++++++-
+ fs/fuse/fuse_i.h          |  13 ++-
+ fs/fuse/inode.c           |   4 +-
+ fs/fuse/ioctl.c           |   2 +-
+ include/uapi/linux/fuse.h |   2 +
+ 6 files changed, 195 insertions(+), 26 deletions(-)
 
-I presume this function was introduced in patch 1?
+-- 
+2.17.1
 
->  {
->  	u32 ptable_start;
-> -	int ret;
-
-Below changes doesn't affect "ret", so it should probably have been
-removed in the previous patch.
-
->  
->  	/* map starting 4K for smem header */
-> -	region->virt_base = devm_ioremap_wc(dev, region->aux_base, SZ_4K);
-> +	region->virt_base = devm_ioremap_wc(smem->dev, region->aux_base, SZ_4K);
-
-I don't see "dev" in the scope here, did this compile after patch 1?
-
->  	ptable_start = region->aux_base + region->size - SZ_4K;
->  	/* map last 4k for toc */
-> -	smem->ptable = devm_ioremap_wc(dev, ptable_start, SZ_4K);
-> +	smem->ptable = devm_ioremap_wc(smem->dev, ptable_start, SZ_4K);
-
-Ditto.
-
-Regards,
-Bjorn
-
->  
->  	if (!region->virt_base || !smem->ptable)
->  		return -ENOMEM;
-> -- 
-> 2.7.4
-> 
