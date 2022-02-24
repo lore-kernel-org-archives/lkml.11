@@ -2,364 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B6EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73763C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229876AbiBXB7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:59:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50326 "EHLO
+        id S229839AbiBXCAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:00:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbiBXB7N (ORCPT
+        with ESMTP id S229870AbiBXCAr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:59:13 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46D7369E1;
-        Wed, 23 Feb 2022 17:58:43 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id d28so710217wra.4;
-        Wed, 23 Feb 2022 17:58:43 -0800 (PST)
+        Wed, 23 Feb 2022 21:00:47 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1504948E51
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:00:18 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id 12so509684pgd.0
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:00:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5rO8/LEXc8vM3CDmgvs8mKLJED1noP9X5+MoNpw+Ok0=;
-        b=Uyjxgeh5FujIzp/Qs7XcrKOgPspWCmm3j4YwHcybjMdQpVCpXvODLfh8eeC6egAAPm
-         lO4jgQLPk7eMQDpnEgdFwqJUIDun+TPNErJ/Nn0g1VihOrGH7emgQO2RSOcnogjFYHqu
-         OFMMqFyxGF9pO3pfNJWmBHPmGOwGsDCtQoNbJ5WigSgk4d8K67UIurgQCJEMBThVsrZE
-         zBxgGiBPoTe3jbBUpt6dGipoYhk2ONLsE+OiwPzC4djvP/00e/eZTxgg/j+mBclJ2UxN
-         80NX4srtuMgVuibN0dpPj4dXnpEaCZGw+jnwDGzSL/+X/sa77g6zxnVvhgUEELz2zxgV
-         YdOg==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=NXr8GTsfYUYw0E0HQ3a+CoAAlfrMzhnvy9nZp4X3tWk=;
+        b=R5KDWon3/vHUDah33e/t2MCOcg8+WvOy4PFJc9cewBZqDsdjhhrSrf2LtCjXe8jnDB
+         Eho9SihI3A/Jy616fyW/fv4b3GMm9Jy+fhqjYFIbchhyJBqZtuRJsCLUqC4x+Vhnm/8+
+         3oVq8fzQWMOuqFEuA32pMpswFEfhMyvZNcDtxziyHpE/F2PgEfvLj17KNn4opIpPYtZz
+         ZhuND6C7hPe6wa5ZTKYuyMjVjwqWhr/Nq/xrAtAw/xYiCVaR1c2pdebb/gVJrKdRABED
+         RXEDNO/DW0iUjAJNqb+iIDWs70N/ViIM4LIBqJa3srBF9wPA7AXONlM8pO5dIptW8iWa
+         apmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=5rO8/LEXc8vM3CDmgvs8mKLJED1noP9X5+MoNpw+Ok0=;
-        b=d0C6rzRZCPYeSWJGWH0qcFiI8MHvtxq+aVp19+hRkbZgTUOMxWy4NnlwsQgcgt1xue
-         X9D5o0w6JAOntSJGNMn+q2wb2cqUykyn64773knH6dbKLWjrWPj1KDvHxuqjJKcW5hPl
-         PGbPol+SxMqYK9mYUYchuvJquO69XM2RGIHBkTY4nhFAzg9iFTPI1fAS2D6feyWtRrlk
-         /gnTS6lcByquS01BLPpvZLGa3f+CqiibvokbZ1coU7LnRYqniobEYQ75dE86tRBwfkBj
-         3rc/RpFAWTAhasZ1+bRfi7ZSCZC5R3lTa6VGAs51jVeWKH81Heg4qdGxrCWlP++cMzQ9
-         mgRQ==
-X-Gm-Message-State: AOAM532hK0y6b/i4iQN7xf8i3zQgaKekquf3pYcJL/3dmV68JQVT5P4V
-        eLy3OXaDaldVsEEw748fQGxC0cH3i1cWFA==
-X-Google-Smtp-Source: ABdhPJxKcByP/UB49bHSwwyNWSEaiKbkz1n8otZcIpxCd7fVBiEQvA6l9+FZj7lO+q0FDoGW/Hpbpw==
-X-Received: by 2002:adf:f6c3:0:b0:1e4:9b8f:8f72 with SMTP id y3-20020adff6c3000000b001e49b8f8f72mr185345wrp.287.1645664053805;
-        Wed, 23 Feb 2022 16:54:13 -0800 (PST)
-Received: from ubuntu.localdomain ([80.89.73.160])
-        by smtp.googlemail.com with ESMTPSA id j27sm1024334wrd.32.2022.02.23.16.54.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 16:54:13 -0800 (PST)
-From:   Toms Atteka <cpp.code.lv@gmail.com>
-To:     netdev@vger.kernel.org, pshelar@ovn.org, davem@davemloft.net,
-        kuba@kernel.org, dev@openvswitch.org, linux-kernel@vger.kernel.org
-Cc:     Toms Atteka <cpp.code.lv@gmail.com>
-Subject: [PATCH net-next v8] net: openvswitch: IPv6: Add IPv6 extension header support
-Date:   Wed, 23 Feb 2022 16:54:09 -0800
-Message-Id: <20220224005409.411626-1-cpp.code.lv@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=NXr8GTsfYUYw0E0HQ3a+CoAAlfrMzhnvy9nZp4X3tWk=;
+        b=Y8ANCFRKKWB8lWg0eHI16ACPVkYrSnjZ8+gYz/dRkEtj2sMedoB/CVgBy1aqqQwoik
+         ql2NRd41s7cBc1wuVmp6GwU8579VXUNfZSpzdqVoSnxyluG+6OC66csRtZtgayIfnzNR
+         8TIBAXehLMw+KmZe4zx3MVPjsfp/iohYNLcgN46NQGvFBzdtn2HrKla+kqH6N61ghrKA
+         FijkfBbhnjy+cvn8y20/fWp9UCeZQCb/tMHmMNgH8gbFCqjgm9/UR1maEbVxNchBxXgJ
+         KPwBjGUVMJEamFi71TTmotFi0wljCHcqzgnq1zonVapwevU956cdYMgjhFJo0AslynqW
+         OI9g==
+X-Gm-Message-State: AOAM532x7xEtO6iL/AR5bauHBsrJBDsvidooDnnvGI4ZQXLUv+esGAwV
+        Jrv6xitMap20tGV4N0XZZ3DDxw==
+X-Google-Smtp-Source: ABdhPJw60uK/G32Bqxmg7RPw5lHoatBIlDVI1bpoaEesoX0yIl5b4opaBu9Eh5Km5H4jWJdc+VmSLw==
+X-Received: by 2002:a62:7846:0:b0:4c7:f23e:1fd7 with SMTP id t67-20020a627846000000b004c7f23e1fd7mr569904pfc.67.1645668017590;
+        Wed, 23 Feb 2022 18:00:17 -0800 (PST)
+Received: from [10.70.253.117] ([139.177.225.250])
+        by smtp.gmail.com with ESMTPSA id h5sm843774pfc.69.2022.02.23.18.00.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 18:00:17 -0800 (PST)
+Message-ID: <cd6720c7-bcc9-3938-4730-90fe551408ef@bytedance.com>
+Date:   Thu, 24 Feb 2022 10:00:11 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [External] Re: [PATCH v2 1/2] ftrace: cleanup ftrace_graph_caller
+ enable and disable
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     mingo@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+        broonie@kernel.org, mark.rutland@arm.com, tglx@linutronix.de,
+        bp@alien8.de, dave.hansen@linux.intel.com,
+        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        qirui.001@bytedance.com
+References: <20220223090132.10114-1-zhouchengming@bytedance.com>
+ <20220223201725.4cbb6d8a@rorschach.local.home>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <20220223201725.4cbb6d8a@rorschach.local.home>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This change adds a new OpenFlow field OFPXMT_OFB_IPV6_EXTHDR and
-packets can be filtered using ipv6_ext flag.
+On 2022/2/24 9:17 上午, Steven Rostedt wrote:
+> On Wed, 23 Feb 2022 17:01:31 +0800
+> Chengming Zhou <zhouchengming@bytedance.com> wrote:
+> 
+>> diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
+>> index 7cc540e6de0c..c119ef7a9295 100644
+>> --- a/arch/x86/kernel/ftrace.c
+>> +++ b/arch/x86/kernel/ftrace.c
+>> @@ -615,18 +615,8 @@ int ftrace_disable_ftrace_graph_caller(void)
+>>  
+>>  	return ftrace_mod_jmp(ip, &ftrace_stub);
+>>  }
+>> -#else /* !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+>> -int ftrace_enable_ftrace_graph_caller(void)
+>> -{
+>> -	return 0;
+>> -}
+>> -
+>> -int ftrace_disable_ftrace_graph_caller(void)
+>> -{
+>> -	return 0;
+>> -}
+>> -#endif /* CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+>> -#endif /* !CONFIG_DYNAMIC_FTRACE */
+>> +#endif /* !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
+>> +#endif /* CONFIG_DYNAMIC_FTRACE */
+> 
+> Since you are cleaning this up, and the above starts with:
+> 
+> #ifdef CONFIG_DYNAMIC_FTRACE
+> 
+> #ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
+> 
+> 
+> They were separate because of the #else that you just removed. I would
+> recommend consolidate them into a single #ifdef:
+> 
+> #if defined(CONFIG_DYNAMIC_FTRACE) && !defined(CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS)
+> 
+> [..]
+> 
+> #endif /* CONFIG_DYNAMIC_FTRACE && !CONFIG_HAVE_DYNAMI_FTRACE_WITH_ARGS */
+> 
 
-Signed-off-by: Toms Atteka <cpp.code.lv@gmail.com>
-Acked-by: Pravin B Shelar <pshelar@ovn.org>
----
- include/uapi/linux/openvswitch.h |   6 ++
- net/openvswitch/flow.c           | 140 +++++++++++++++++++++++++++++++
- net/openvswitch/flow.h           |  14 ++++
- net/openvswitch/flow_netlink.c   |  26 +++++-
- 4 files changed, 184 insertions(+), 2 deletions(-)
+Good suggestion, this is better.
 
-diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-index 150bcff49b1c..9d1710f20505 100644
---- a/include/uapi/linux/openvswitch.h
-+++ b/include/uapi/linux/openvswitch.h
-@@ -351,6 +351,7 @@ enum ovs_key_attr {
- 	OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV4,   /* struct ovs_key_ct_tuple_ipv4 */
- 	OVS_KEY_ATTR_CT_ORIG_TUPLE_IPV6,   /* struct ovs_key_ct_tuple_ipv6 */
- 	OVS_KEY_ATTR_NSH,       /* Nested set of ovs_nsh_key_* */
-+	OVS_KEY_ATTR_IPV6_EXTHDRS,  /* struct ovs_key_ipv6_exthdr */
- 
- #ifdef __KERNEL__
- 	OVS_KEY_ATTR_TUNNEL_INFO,  /* struct ip_tunnel_info */
-@@ -430,6 +431,11 @@ struct ovs_key_ipv6 {
- 	__u8   ipv6_frag;	/* One of OVS_FRAG_TYPE_*. */
- };
- 
-+/* separate structure to support backward compatibility with older user space */
-+struct ovs_key_ipv6_exthdrs {
-+	__u16  hdrs;
-+};
-+
- struct ovs_key_tcp {
- 	__be16 tcp_src;
- 	__be16 tcp_dst;
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index f6cd24fd530c..8df73d86b968 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -241,6 +241,144 @@ static bool icmphdr_ok(struct sk_buff *skb)
- 				  sizeof(struct icmphdr));
- }
- 
-+/**
-+ * get_ipv6_ext_hdrs() - Parses packet and sets IPv6 extension header flags.
-+ *
-+ * @skb: buffer where extension header data starts in packet
-+ * @nh: ipv6 header
-+ * @ext_hdrs: flags are stored here
-+ *
-+ * OFPIEH12_UNREP is set if more than one of a given IPv6 extension header
-+ * is unexpectedly encountered. (Two destination options headers may be
-+ * expected and would not cause this bit to be set.)
-+ *
-+ * OFPIEH12_UNSEQ is set if IPv6 extension headers were not in the order
-+ * preferred (but not required) by RFC 2460:
-+ *
-+ * When more than one extension header is used in the same packet, it is
-+ * recommended that those headers appear in the following order:
-+ *      IPv6 header
-+ *      Hop-by-Hop Options header
-+ *      Destination Options header
-+ *      Routing header
-+ *      Fragment header
-+ *      Authentication header
-+ *      Encapsulating Security Payload header
-+ *      Destination Options header
-+ *      upper-layer header
-+ */
-+static void get_ipv6_ext_hdrs(struct sk_buff *skb, struct ipv6hdr *nh,
-+			      u16 *ext_hdrs)
-+{
-+	u8 next_type = nh->nexthdr;
-+	unsigned int start = skb_network_offset(skb) + sizeof(struct ipv6hdr);
-+	int dest_options_header_count = 0;
-+
-+	*ext_hdrs = 0;
-+
-+	while (ipv6_ext_hdr(next_type)) {
-+		struct ipv6_opt_hdr _hdr, *hp;
-+
-+		switch (next_type) {
-+		case IPPROTO_NONE:
-+			*ext_hdrs |= OFPIEH12_NONEXT;
-+			/* stop parsing */
-+			return;
-+
-+		case IPPROTO_ESP:
-+			if (*ext_hdrs & OFPIEH12_ESP)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			if ((*ext_hdrs & ~(OFPIEH12_HOP | OFPIEH12_DEST |
-+					   OFPIEH12_ROUTER | IPPROTO_FRAGMENT |
-+					   OFPIEH12_AUTH | OFPIEH12_UNREP)) ||
-+			    dest_options_header_count >= 2) {
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			}
-+			*ext_hdrs |= OFPIEH12_ESP;
-+			break;
-+
-+		case IPPROTO_AH:
-+			if (*ext_hdrs & OFPIEH12_AUTH)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			if ((*ext_hdrs &
-+			     ~(OFPIEH12_HOP | OFPIEH12_DEST | OFPIEH12_ROUTER |
-+			       IPPROTO_FRAGMENT | OFPIEH12_UNREP)) ||
-+			    dest_options_header_count >= 2) {
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			}
-+			*ext_hdrs |= OFPIEH12_AUTH;
-+			break;
-+
-+		case IPPROTO_DSTOPTS:
-+			if (dest_options_header_count == 0) {
-+				if (*ext_hdrs &
-+				    ~(OFPIEH12_HOP | OFPIEH12_UNREP))
-+					*ext_hdrs |= OFPIEH12_UNSEQ;
-+				*ext_hdrs |= OFPIEH12_DEST;
-+			} else if (dest_options_header_count == 1) {
-+				if (*ext_hdrs &
-+				    ~(OFPIEH12_HOP | OFPIEH12_DEST |
-+				      OFPIEH12_ROUTER | OFPIEH12_FRAG |
-+				      OFPIEH12_AUTH | OFPIEH12_ESP |
-+				      OFPIEH12_UNREP)) {
-+					*ext_hdrs |= OFPIEH12_UNSEQ;
-+				}
-+			} else {
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			}
-+			dest_options_header_count++;
-+			break;
-+
-+		case IPPROTO_FRAGMENT:
-+			if (*ext_hdrs & OFPIEH12_FRAG)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			if ((*ext_hdrs & ~(OFPIEH12_HOP |
-+					   OFPIEH12_DEST |
-+					   OFPIEH12_ROUTER |
-+					   OFPIEH12_UNREP)) ||
-+			    dest_options_header_count >= 2) {
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			}
-+			*ext_hdrs |= OFPIEH12_FRAG;
-+			break;
-+
-+		case IPPROTO_ROUTING:
-+			if (*ext_hdrs & OFPIEH12_ROUTER)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			if ((*ext_hdrs & ~(OFPIEH12_HOP |
-+					   OFPIEH12_DEST |
-+					   OFPIEH12_UNREP)) ||
-+			    dest_options_header_count >= 2) {
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			}
-+			*ext_hdrs |= OFPIEH12_ROUTER;
-+			break;
-+
-+		case IPPROTO_HOPOPTS:
-+			if (*ext_hdrs & OFPIEH12_HOP)
-+				*ext_hdrs |= OFPIEH12_UNREP;
-+			/* OFPIEH12_HOP is set to 1 if a hop-by-hop IPv6
-+			 * extension header is present as the first
-+			 * extension header in the packet.
-+			 */
-+			if (*ext_hdrs == 0)
-+				*ext_hdrs |= OFPIEH12_HOP;
-+			else
-+				*ext_hdrs |= OFPIEH12_UNSEQ;
-+			break;
-+
-+		default:
-+			return;
-+		}
-+
-+		hp = skb_header_pointer(skb, start, sizeof(_hdr), &_hdr);
-+		if (!hp)
-+			break;
-+		next_type = hp->nexthdr;
-+		start += ipv6_optlen(hp);
-+	};
-+}
-+
- static int parse_ipv6hdr(struct sk_buff *skb, struct sw_flow_key *key)
- {
- 	unsigned short frag_off;
-@@ -256,6 +394,8 @@ static int parse_ipv6hdr(struct sk_buff *skb, struct sw_flow_key *key)
- 
- 	nh = ipv6_hdr(skb);
- 
-+	get_ipv6_ext_hdrs(skb, nh, &key->ipv6.exthdrs);
-+
- 	key->ip.proto = NEXTHDR_NONE;
- 	key->ip.tos = ipv6_get_dsfield(nh);
- 	key->ip.ttl = nh->hop_limit;
-diff --git a/net/openvswitch/flow.h b/net/openvswitch/flow.h
-index 758a8c77f736..073ab73ffeaa 100644
---- a/net/openvswitch/flow.h
-+++ b/net/openvswitch/flow.h
-@@ -32,6 +32,19 @@ enum sw_flow_mac_proto {
- #define SW_FLOW_KEY_INVALID	0x80
- #define MPLS_LABEL_DEPTH       3
- 
-+/* Bit definitions for IPv6 Extension Header pseudo-field. */
-+enum ofp12_ipv6exthdr_flags {
-+	OFPIEH12_NONEXT = 1 << 0,   /* "No next header" encountered. */
-+	OFPIEH12_ESP    = 1 << 1,   /* Encrypted Sec Payload header present. */
-+	OFPIEH12_AUTH   = 1 << 2,   /* Authentication header present. */
-+	OFPIEH12_DEST   = 1 << 3,   /* 1 or 2 dest headers present. */
-+	OFPIEH12_FRAG   = 1 << 4,   /* Fragment header present. */
-+	OFPIEH12_ROUTER = 1 << 5,   /* Router header present. */
-+	OFPIEH12_HOP    = 1 << 6,   /* Hop-by-hop header present. */
-+	OFPIEH12_UNREP  = 1 << 7,   /* Unexpected repeats encountered. */
-+	OFPIEH12_UNSEQ  = 1 << 8    /* Unexpected sequencing encountered. */
-+};
-+
- /* Store options at the end of the array if they are less than the
-  * maximum size. This allows us to get the benefits of variable length
-  * matching for small options.
-@@ -121,6 +134,7 @@ struct sw_flow_key {
- 				struct in6_addr dst;	/* IPv6 destination address. */
- 			} addr;
- 			__be32 label;			/* IPv6 flow label. */
-+			u16 exthdrs;	/* IPv6 extension header flags */
- 			union {
- 				struct {
- 					struct in6_addr src;
-diff --git a/net/openvswitch/flow_netlink.c b/net/openvswitch/flow_netlink.c
-index fd1f809e9bc1..8b4124820f7d 100644
---- a/net/openvswitch/flow_netlink.c
-+++ b/net/openvswitch/flow_netlink.c
-@@ -346,7 +346,7 @@ size_t ovs_key_attr_size(void)
- 	/* Whenever adding new OVS_KEY_ FIELDS, we should consider
- 	 * updating this function.
- 	 */
--	BUILD_BUG_ON(OVS_KEY_ATTR_TUNNEL_INFO != 29);
-+	BUILD_BUG_ON(OVS_KEY_ATTR_TUNNEL_INFO != 30);
- 
- 	return    nla_total_size(4)   /* OVS_KEY_ATTR_PRIORITY */
- 		+ nla_total_size(0)   /* OVS_KEY_ATTR_TUNNEL */
-@@ -369,7 +369,8 @@ size_t ovs_key_attr_size(void)
- 		+ nla_total_size(2)   /* OVS_KEY_ATTR_ETHERTYPE */
- 		+ nla_total_size(40)  /* OVS_KEY_ATTR_IPV6 */
- 		+ nla_total_size(2)   /* OVS_KEY_ATTR_ICMPV6 */
--		+ nla_total_size(28); /* OVS_KEY_ATTR_ND */
-+		+ nla_total_size(28)  /* OVS_KEY_ATTR_ND */
-+		+ nla_total_size(2);  /* OVS_KEY_ATTR_IPV6_EXTHDRS */
- }
- 
- static const struct ovs_len_tbl ovs_vxlan_ext_key_lens[OVS_VXLAN_EXT_MAX + 1] = {
-@@ -437,6 +438,8 @@ static const struct ovs_len_tbl ovs_key_lens[OVS_KEY_ATTR_MAX + 1] = {
- 		.len = sizeof(struct ovs_key_ct_tuple_ipv6) },
- 	[OVS_KEY_ATTR_NSH]       = { .len = OVS_ATTR_NESTED,
- 				     .next = ovs_nsh_key_attr_lens, },
-+	[OVS_KEY_ATTR_IPV6_EXTHDRS] = {
-+		.len = sizeof(struct ovs_key_ipv6_exthdrs) },
- };
- 
- static bool check_attr_len(unsigned int attr_len, unsigned int expected_len)
-@@ -1597,6 +1600,17 @@ static int ovs_key_from_nlattrs(struct net *net, struct sw_flow_match *match,
- 		attrs &= ~(1 << OVS_KEY_ATTR_IPV6);
- 	}
- 
-+	if (attrs & (1ULL << OVS_KEY_ATTR_IPV6_EXTHDRS)) {
-+		const struct ovs_key_ipv6_exthdrs *ipv6_exthdrs_key;
-+
-+		ipv6_exthdrs_key = nla_data(a[OVS_KEY_ATTR_IPV6_EXTHDRS]);
-+
-+		SW_FLOW_KEY_PUT(match, ipv6.exthdrs,
-+				ipv6_exthdrs_key->hdrs, is_mask);
-+
-+		attrs &= ~(1ULL << OVS_KEY_ATTR_IPV6_EXTHDRS);
-+	}
-+
- 	if (attrs & (1 << OVS_KEY_ATTR_ARP)) {
- 		const struct ovs_key_arp *arp_key;
- 
-@@ -2099,6 +2113,7 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
- 		ipv4_key->ipv4_frag = output->ip.frag;
- 	} else if (swkey->eth.type == htons(ETH_P_IPV6)) {
- 		struct ovs_key_ipv6 *ipv6_key;
-+		struct ovs_key_ipv6_exthdrs *ipv6_exthdrs_key;
- 
- 		nla = nla_reserve(skb, OVS_KEY_ATTR_IPV6, sizeof(*ipv6_key));
- 		if (!nla)
-@@ -2113,6 +2128,13 @@ static int __ovs_nla_put_key(const struct sw_flow_key *swkey,
- 		ipv6_key->ipv6_tclass = output->ip.tos;
- 		ipv6_key->ipv6_hlimit = output->ip.ttl;
- 		ipv6_key->ipv6_frag = output->ip.frag;
-+
-+		nla = nla_reserve(skb, OVS_KEY_ATTR_IPV6_EXTHDRS,
-+				  sizeof(*ipv6_exthdrs_key));
-+		if (!nla)
-+			goto nla_put_failure;
-+		ipv6_exthdrs_key = nla_data(nla);
-+		ipv6_exthdrs_key->hdrs = output->ipv6.exthdrs;
- 	} else if (swkey->eth.type == htons(ETH_P_NSH)) {
- 		if (nsh_key_to_nlattr(&output->nsh, is_mask, skb))
- 			goto nla_put_failure;
--- 
-2.25.1
+Thanks.
 
+> 
+> -- Steve
+> 
+> 
+>>  
+>>  /*
+>>   * Hook the return address and push it in the stack of return addrs
+>> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+>> index f9feb197b2da..60ae009e6684 100644
