@@ -2,136 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23157C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:42:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229726AbiBXBme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:42:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
+        id S229718AbiBXBnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiBXBm2 (ORCPT
+        with ESMTP id S229807AbiBXBnD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:42:28 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBE260ABF
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:41:58 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id y24so1385985lfg.1
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:41:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=torvalds.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V0FFBkvIcjFMOM0hqUZNjmDF0t+Ha0Kl81ed03YkD3w=;
-        b=GFTM2OY9vWIE39i8WbpocEunkuGykh61viUOA48wsUSJffRZoZlqa5icjLYhxM3N+m
-         DKb9PvkkIZn5iYFbTaqaXYOIv7wagx+TBn+qjRDwmj0eY8Dliq8aLNw02KfWObzbcyQ/
-         4rNhuNeMr4UAGG+y8fPMgvU7IgR711a1AM7IOJj07uM1WtLcRDXCrrGdLdr7qxs+tDmK
-         8QwvhC3Z7oK33d06ETfSjgfhoDAQ4nWVZI/AM9EEk6a+ylMTMo8IiFcerUWNREyKfDVm
-         LIu84/FrGcky24qdwdKZfwBBil//MBUS7mgm21lImxN/1SYkkrAS7jhBVSk/149bXMyA
-         gFfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V0FFBkvIcjFMOM0hqUZNjmDF0t+Ha0Kl81ed03YkD3w=;
-        b=dWly1pMxNT1rbfHrHsoCzxVHpOJHTUV1UwFAIHEVzRQNm6YPUsn1yzMmdRC+44xc0Y
-         0Swl5QuYC9jkvEMUwSSHBN1exAKA6ivBICHRmZhgqFVNI40vemoia7LY5osrp1YchLRx
-         qRY4O4QxDelIfQH50slCQm7+/fvrO4TN5GERcsj4MR70NMvyAJMtjrTHz47ftfKqNyZS
-         GMzhF2NHJjn77KZuEQTHlyEh+Me+OREK1vPEFR+/lypHraWm0yBZ0OyLxSajQcUKyndv
-         KtFRxAoREK9w4mPMQN5qYd6SuqM4QWSyeEjcxVyd6YlFGxPC8+nSS6Y28YCoGfS5ww5h
-         S1pQ==
-X-Gm-Message-State: AOAM530DppI8cpD3pJd+PQ4oNqnzwMCBsTQeYvZpJczNIlXdSsbSPoxM
-        e+u9QncirCj9JjbmPxxqZZgjLmvucdNSV9tI27YE2Q==
-X-Google-Smtp-Source: ABdhPJxrHmZdK6XMjwOn4d/RYaqX5Cxen9btOowPzWsadcRuB7ZhpiGfM3EaLPc7ca8Ocp7bBOOOTW9+VLPRBV26s3Y=
-X-Received: by 2002:ac2:4d91:0:b0:443:127b:558a with SMTP id
- g17-20020ac24d91000000b00443127b558amr363692lfe.542.1645666917210; Wed, 23
- Feb 2022 17:41:57 -0800 (PST)
-MIME-Version: 1.0
-References: <20220207121800.5079-1-mkoutny@suse.com> <e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr>
- <20220215101150.GD21589@blackbody.suse.cz> <87zgmi5rhm.fsf@email.froward.int.ebiederm.org>
- <87fso91n0v.fsf_-_@email.froward.int.ebiederm.org> <CAHk-=wjX3VK8QRMDUWwigCTKdHJt0ESXh0Hy5HNaXf7YkEdCAA@mail.gmail.com>
- <878ru1qcos.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <878ru1qcos.fsf@email.froward.int.ebiederm.org>
-From:   Linus Torvalds <linus@torvalds.org>
-Date:   Wed, 23 Feb 2022 17:41:41 -0800
-Message-ID: <CAHk-=wgW8+vmqhx4t+uFiZL==8Ac5VWTqCm_oshA0e47B73qPw@mail.gmail.com>
-Subject: Re: How should rlimits, suid exec, and capabilities interact?
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Linux API <linux-api@vger.kernel.org>,
-        Etienne Dechamps <etienne@edechamps.fr>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        Wed, 23 Feb 2022 20:43:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72C50574A4;
+        Wed, 23 Feb 2022 17:42:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C830B82334;
+        Thu, 24 Feb 2022 01:17:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBD05C340E7;
+        Thu, 24 Feb 2022 01:16:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645665419;
+        bh=vNEbvywmyUr4OP031dUp7aKTPfYS8dSy6+FIPFhmc/8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=pYTcjxH4oc/8QnPy2E8blXq7rVjRxsCT5wct71mKQj9iTZAltPIAtSpLHZQVOVA8G
+         PbeJlxMJYtnAuVzkg/r2xIeK0sHQ/cKrvxTmcOQbqIYeTJeXNbg7lFDCkurxfd07LC
+         GyluwP3DTDBMyw2vv3k6l8k6pwTyuXsmbOC1/+a5eDQdJPX1xVOBt5tw9arcdQF6EJ
+         sl6tcRc6VAU6PU/61pxzv8HDreNB9yNKNHl2wzkL3v6wxNjQz1wyq7ST1zVpVaiDLj
+         nOFVbRwJPpGHQ8scaFgZ7jOXwRnOc07d9JXEQYQTHJ2Y3YeVSV/E3uqzqF4jW8o5NL
+         SGGV06C2DGHAg==
+From:   broonie@kernel.org
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Hugh Dickins <hughd@google.com>,
+        "Liam R . Howlett" <Liam.Howlett@oracle.com>,
+        "Liam R . Howlett" <Liam.Howlett@Oracle.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Containers <containers@lists.linux-foundation.org>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Security Officers <security@kernel.org>,
-        Neil Brown <neilb@cse.unsw.edu.au>, NeilBrown <neilb@suse.de>,
-        "Serge E. Hallyn" <serge@hallyn.com>, Jann Horn <jannh@google.com>,
-        Andy Lutomirski <luto@kernel.org>, Willy Tarreau <w@1wt.eu>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the folio tree with the maple tree
+Date:   Thu, 24 Feb 2022 01:16:53 +0000
+Message-Id: <20220224011653.1380557-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 5:24 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->
-> Question: Running a suid program today charges the activity of that
-> program to the user who ran that program, not to the user the program
-> runs as.  Does anyone see a problem with charging the user the program
-> runs as?
+Hi all,
 
-So I think that there's actually two independent issues with limits
-when you have situations like this where the actual user might be
-ambiguous.
+Today's linux-next merge of the folio tree got a conflict in:
 
- - the "who to charge" question
+  mm/mmap.c
 
- - the "how do we *check* the limit" question
+between commit:
 
-and honestly, I think that when it comes to suid binaries, the first
-question is fundamentally ambiguous, because it almost certainly
-depends on the user.
+  f0b1293f7ebbb ("mm/mmap: Reorganize munmap to use maple states")
 
-Which to me implies that there probably isn't an answer that is always
-right, and that what you should look at is that second option.
+from the maple tree and commit:
 
-So I would actually suggest that the "execute a suid binary" should
-charge the real user, but *because* it is suid, it should then not
-check the limit (or, perhaps, should check the hard limit?).
+  a213e5cf71cbc ("mm/munlock: delete munlock_vma_pages_all(), allow oomreap")
 
-You have to charge somebody, but at that point it's a bit ambiguous
-whether it should be allowed.
+from the folio tree.
 
-Exactly so that if you're over a process limit (or something similar -
-think "too many files open" or whatever because you screwed up and
-opened everything) you could still log in as yourself (ssh/login
-charges some admin thing, which probably has high limits or is
-unlimited), and hopefully get shell access, and then be able to "exec
-sudo" to actually get admin access that should be disabled from the
-network.
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
 
-The above is just one (traditional) example of a fork/open bomb case
-where a user isn't really able to no longer function as himself, but
-wants to fix things (maybe the user has another terminal open, but
-then he can hopefully use a shell-buiiltin 'kill' instead).
+I have absolutely no confindence in this resolution.
 
-And I'm not saying it's "the thing that needs to work". I'm more
-making up an example.
+diff --cc mm/mmap.c
+index 1b3600152f6f5,64b5985b5295c..0000000000000
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@@ -2286,32 -2780,38 +2286,37 @@@ int split_vma(struct mm_struct *mm, str
+  	return __split_vma(mm, vma, addr, new_below);
+  }
+  
+ -/* Munmap is split into 2 main parts -- this part which finds
+ +/*
+ + * do_mas_align_munmap() - munmap the aligned region from @start to @end.
+ + * @mas: The maple_state, ideally set up to alter the correct tree location.
+ + * @vma: The starting vm_area_struct
+ + * @mm: The mm_struct
+ + * @start: The aligned start address to munmap.
+ + * @end: The aligned end address to munmap.
+ + * @uf: The userfaultfd list_head
+ + * @downgrade: Set to true to attempt a write downgrade of the mmap_sem
+ + *
+ + * If @downgrade is true, check return code for potential release of the lock.
+++ *
+++ * Munmap is split into 2 main parts -- this part which finds
++  * what needs doing, and the areas themselves, which do the
++  * work.  This now handles partial unmappings.
++  * Jeremy Fitzhardinge <jeremy@goop.org>
+   */
+ -int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
+ -		struct list_head *uf, bool downgrade)
+ -{
+ -	unsigned long end;
+ -	struct vm_area_struct *vma, *prev, *last;
+ -
+ -	if ((offset_in_page(start)) || start > TASK_SIZE || len > TASK_SIZE-start)
+ -		return -EINVAL;
+ -
+ -	len = PAGE_ALIGN(len);
+ -	end = start + len;
+ -	if (len == 0)
+ -		return -EINVAL;
+ -
+ -	/*
+ -	 * arch_unmap() might do unmaps itself.  It must be called
+ -	 * and finish any rbtree manipulation before this code
+ -	 * runs and also starts to manipulate the rbtree.
+ -	 */
+ -	arch_unmap(mm, start, end);
+ -
+ -	/* Find the first overlapping VMA where start < vma->vm_end */
+ -	vma = find_vma_intersection(mm, start, end);
+ -	if (!vma)
+ -		return 0;
+ -	prev = vma->vm_prev;
+ -
+ +static int
+ +do_mas_align_munmap(struct ma_state *mas, struct vm_area_struct *vma,
+ +		    struct mm_struct *mm, unsigned long start,
+ +		    unsigned long end, struct list_head *uf, bool downgrade)
+ +{
+ +	struct vm_area_struct *prev, *next;
+ +	struct maple_tree mt_detach;
+ +	int count = 0;
+ +	MA_STATE(mas_detach, &mt_detach, start, end - 1);
+ +	mt_init_flags(&mt_detach, MM_MT_FLAGS);
+ +	mt_set_external_lock(&mt_detach, &mm->mmap_lock);
+ +
+ +	mas->last = end - 1;
+ +	prev = next = NULL;
+  	/*
+  	 * If we need to split any vma, do it now to save pain later.
+  	 *
+@@@ -3107,13 -3127,8 +3112,12 @@@ void exit_mmap(struct mm_struct *mm
+  		 * Nothing can be holding mm->mmap_lock here and the above call
+  		 * to mmu_notifier_release(mm) ensures mmu notifier callbacks in
+  		 * __oom_reap_task_mm() will not block.
+ +		 *
+ +		 * This needs to be done before unlocking the VMAs in the loop
+ +		 * below which clears VM_LOCKED, otherwise the oom reaper cannot
+ +		 * reliably test it.
+  		 */
+  		(void)__oom_reap_task_mm(mm);
+- 
+  		set_bit(MMF_OOM_SKIP, &mm->flags);
+  	}
 
-So I'm only saying that the above actually has two examples to the two
-sides of the coin: "login" lowering privileges to a user that may be
-over some limit - and succeeding despite that - and 'suid' succeeding
-despite the original user perhaps being over-committed.
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 2ddf1caf90488..d469555df0a21 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2373,10 +2373,8 @@ do_mas_align_munmap(struct ma_state *mas, struct vm_area_struct *vma,
+ 		BUG_ON(next->vm_start > end);
+ #endif
+ 		vma_mas_store(next, &mas_detach);
+-		if (next->vm_flags & VM_LOCKED) {
++		if (next->vm_flags & VM_LOCKED)
+ 			mm->locked_vm -= vma_pages(next);
+-			munlock_vma_pages_all(next);
+-		}
+ 	}
+ 
+ 	next = mas_find(mas, ULONG_MAX);
+@@ -2906,10 +2904,8 @@ static int do_brk_munmap(struct ma_state *mas, struct vm_area_struct *vma,
+ 	}
+ 
+ 	unmap_pages = vma_pages(&unmap);
+-	if (vma->vm_flags & VM_LOCKED) {
++	if (vma->vm_flags & VM_LOCKED)
+ 		mm->locked_vm -= unmap_pages;
+-		munlock_vma_pages_range(&unmap, newbrk, oldbrk);
+-	}
+ 
+ 	next = mas_next(mas, ULONG_MAX);
+ 	mmap_write_downgrade(mm);
+@@ -3130,10 +3126,8 @@ void exit_mmap(struct mm_struct *mm)
+ 	rwsem_acquire(&mm->mmap_lock.dep_map, 0, 0, _THIS_IP_);
+ 	if (mm->locked_vm) {
+ 		mas_for_each(&mas, vma, ULONG_MAX) {
+-			if (vma->vm_flags & VM_LOCKED) {
++			if (vma->vm_flags & VM_LOCKED)
+ 				mm->locked_vm -= vma_pages(vma);
+-				munlock_vma_pages_all(vma);
+-			}
+ 		}
+ 		mas_set(&mas, 0);
+ 	}
 
-So it's intended exactly as an example of "picking the new or the old
-user would be wrong in either case if you check limits at the
-transition point".
-
-Hmm?
-
-            Linus
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 2ddf1caf90488..d469555df0a21 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -2373,10 +2373,8 @@ do_mas_align_munmap(struct ma_state *mas, struct vm_area_struct *vma,
+ 		BUG_ON(next->vm_start > end);
+ #endif
+ 		vma_mas_store(next, &mas_detach);
+-		if (next->vm_flags & VM_LOCKED) {
++		if (next->vm_flags & VM_LOCKED)
+ 			mm->locked_vm -= vma_pages(next);
+-			munlock_vma_pages_all(next);
+-		}
+ 	}
+ 
+ 	next = mas_find(mas, ULONG_MAX);
+@@ -2906,10 +2904,8 @@ static int do_brk_munmap(struct ma_state *mas, struct vm_area_struct *vma,
+ 	}
+ 
+ 	unmap_pages = vma_pages(&unmap);
+-	if (vma->vm_flags & VM_LOCKED) {
++	if (vma->vm_flags & VM_LOCKED)
+ 		mm->locked_vm -= unmap_pages;
+-		munlock_vma_pages_range(&unmap, newbrk, oldbrk);
+-	}
+ 
+ 	next = mas_next(mas, ULONG_MAX);
+ 	mmap_write_downgrade(mm);
+@@ -3130,10 +3126,8 @@ void exit_mmap(struct mm_struct *mm)
+ 	rwsem_acquire(&mm->mmap_lock.dep_map, 0, 0, _THIS_IP_);
+ 	if (mm->locked_vm) {
+ 		mas_for_each(&mas, vma, ULONG_MAX) {
+-			if (vma->vm_flags & VM_LOCKED) {
++			if (vma->vm_flags & VM_LOCKED)
+ 				mm->locked_vm -= vma_pages(vma);
+-				munlock_vma_pages_all(vma);
+-			}
+ 		}
+ 		mas_set(&mas, 0);
+ 	}
