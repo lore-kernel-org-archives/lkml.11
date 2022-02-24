@@ -2,119 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C126C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:50:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E7C5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230166AbiBXCug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:50:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
+        id S230168AbiBXCu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:50:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbiBXCua (ORCPT
+        with ESMTP id S230113AbiBXCuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:50:30 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966A1166E14
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:50:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645671001; x=1677207001;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=FouP27on1rIZsc+WeEjVArGu53XGah9tgEmvJYeMwfA=;
-  b=NVvbnWSQJTHyKZ7ZsQpjyrBCMslAK/sPT537nIl+49U+LgHHGF+DPpQ7
-   daEAIPDTViSa2NeuE+eZh6v2uf21cwfRyU9f6fDFxWL6H6fBMET5tGI5l
-   TtHWih9RvVpCzZ2o0jEffPJMzadV7//hz4SqWjqwBxidoSK9WYxDxQCvt
-   kKNlKcfxZz8Hrqkr1dxR61UZATS1gGbyJwgunyJQpcfHV21rUtEDo/5CP
-   2M9VxgM5QPyJZokYogWiH/7jpYg6qAEppgt3VQUvl0VN0LdcqjL+hpdb1
-   hSyPu3H4CNfFCf2M/CfIwNhrkfIIPr+PobG9aygXLrstibX+MNPfl70Yw
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232757134"
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="232757134"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 18:50:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="508696083"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 23 Feb 2022 18:49:59 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nN4Cd-000297-7c; Thu, 24 Feb 2022 02:49:59 +0000
-Date:   Thu, 24 Feb 2022 10:49:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [peterz-queue:x86/wip.ibt 22/42] kernel/bpf/trampoline.c:154:26:
- warning: passing argument 1 of 'ftrace_location' makes integer from pointer
- without a cast
-Message-ID: <202202241056.xqhnicOb-lkp@intel.com>
+        Wed, 23 Feb 2022 21:50:55 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62945237437;
+        Wed, 23 Feb 2022 18:50:26 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id v4so772073pjh.2;
+        Wed, 23 Feb 2022 18:50:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=0pXW77xbSqoqd07SPOdMy6+frewnUErjG3BJoCU9xDQ=;
+        b=BLl5H9NX6YUNRD93h7c/vngLNJjudh/21VVtQn4DmFm4iDSShGw+uLt07zvfShhW07
+         dBYZBERO7cmVboh9TwHp4FnA0CzWX/LLjG/N9A4qmDJc5UgIOmuW9HBCw4Jqf0OUHbsN
+         ju92gxmIxzoNxkGEBgCoHLq0olkXCLU1qmV91MD/PB7gdQlmtmr8FSSTFasK5a17Dibc
+         jiOodnBm1xqhGEo+nLPFpXvTQlQH7f2ma5h9pNIJdcUVegGGpIjCsFujiF88i4MZXsyJ
+         CHvy3p+RAGAQvwJKOxFy+hPumyv6LsvMokjYvbhpB0iuqqvs9VOli87W8AT8tO1xriAE
+         EXLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=0pXW77xbSqoqd07SPOdMy6+frewnUErjG3BJoCU9xDQ=;
+        b=A7gx/tmD8EZ+KsSnFgwjsbzZRrt3IMALyhPROB22cfqeS6r61OaKl7lm51pU80KYpY
+         GAG4BXOCH4gSQjbtA/taZ0WPmHmQiXkwZdkHS8qp3CIo0mVJmmXklXDps/NIGWJEmfdk
+         /bOC4jRN1bRE71Ii6xkcrKQV3pQWQplowyK+aZM6ji3hv1pWmM0WS6DEsYv9wmcQpzJR
+         4Sw35iwpZsiM9sIThaLox7Wf39m0JcLB+KJxtZV3q5BsMNKH7GTSDVMDKBlgk5PUHKEf
+         hHuL0h4YxyeZEoQVgNiaTRxX2wISoylbfczlYOBRq7f/bCEK2VxilJY1aftDbx2hKJvC
+         P7eA==
+X-Gm-Message-State: AOAM5334HNE+ouKYRUtGi0jue34lTE82T3qWFs6SRU0ZXwFRny3rYITi
+        gnt8TtIyYq4wvTjeCqhP3s4=
+X-Google-Smtp-Source: ABdhPJz24dHKQmcXqS7azyJDfNBw3zXK87BYAbvO4kajEuZofKqEzzgChDHeA43qUG4bxXTECXNDiA==
+X-Received: by 2002:a17:90a:fb84:b0:1bc:4d16:51fb with SMTP id cp4-20020a17090afb8400b001bc4d1651fbmr12561044pjb.22.1645671025820;
+        Wed, 23 Feb 2022 18:50:25 -0800 (PST)
+Received: from [172.20.119.15] ([61.16.102.69])
+        by smtp.gmail.com with ESMTPSA id 84sm906752pfx.181.2022.02.23.18.50.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 18:50:25 -0800 (PST)
+Message-ID: <7489a7f8-2589-29de-1c95-b99d1d9b1850@gmail.com>
+Date:   Thu, 24 Feb 2022 10:50:22 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [RFC V4 1/6] blk: prepare to make blk-rq-qos pluggable and
+ modular
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Jens Axboe <axboe@kernel.dk>, Josef Bacik <jbacik@fb.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220217031349.98561-1-jianchao.wan9@gmail.com>
+ <20220217031349.98561-2-jianchao.wan9@gmail.com>
+ <YhUbCH+dhKkgMirE@slm.duckdns.org>
+ <2e17c058-8917-4a37-896e-1093446339f6@gmail.com>
+ <39db454d-ca30-fb42-3d72-899efa34fb78@gmail.com>
+ <YhapCurbiI21WYmm@slm.duckdns.org>
+ <efd94670-9d6d-5651-358c-2f88646298cd@gmail.com>
+ <Yhbod7pJ1X4CGhEZ@slm.duckdns.org>
+From:   Wang Jianchao <jianchao.wan9@gmail.com>
+In-Reply-To: <Yhbod7pJ1X4CGhEZ@slm.duckdns.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
-head:   27b6438f414b6a37b60dcd90c8980397586d49db
-commit: 28a2850ec958722056cb6679cf68567905223971 [22/42] x86/bpf: Add ENDBR instructions to prologue and trampoline
-config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220224/202202241056.xqhnicOb-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=28a2850ec958722056cb6679cf68567905223971
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue x86/wip.ibt
-        git checkout 28a2850ec958722056cb6679cf68567905223971
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   kernel/bpf/trampoline.c: In function 'register_fentry':
->> kernel/bpf/trampoline.c:154:26: warning: passing argument 1 of 'ftrace_location' makes integer from pointer without a cast [-Wint-conversion]
-     154 |  faddr = ftrace_location(ip);
-         |                          ^~
-         |                          |
-         |                          void *
-   In file included from kernel/bpf/trampoline.c:6:
-   include/linux/ftrace.h:792:59: note: expected 'long unsigned int' but argument is of type 'void *'
-     792 | static inline unsigned long ftrace_location(unsigned long ip)
-         |                                             ~~~~~~~~~~~~~~^~
 
 
-vim +/ftrace_location +154 kernel/bpf/trampoline.c
+On 2022/2/24 10:07 上午, Tejun Heo wrote:
+> Hello,
+> 
+> On Thu, Feb 24, 2022 at 09:51:04AM +0800, Wang Jianchao wrote:
+>> The initial version of this patchset has two targets：
+>> (1) Add a sysfs interface to open/close the policy per device. Then we needn't
+>>     waste cpu cycles and memory if the device doesn't need the policy.
+>> (2) Make the policies modular, then it easy to maintain the code of policy in
+>>     production environment as we only need to close the policy and replace the
+>>     .ko file.
+>>
+>> The loading module when open policy in sysfs interface is just to avoid modprobe
+>> manually. There is similar operation when switch io scheduler.
+> 
+> Each rq-qos mechanism already needs and has a way to turn off itself.
+> There's no reason to add another layer on top. If the current way of
+> disabling isn't efficient, we should improve that instead of adding a new
+> layer of interface on top.
 
-   146	
-   147	/* first time registering */
-   148	static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
-   149	{
-   150		void *ip = tr->func.addr;
-   151		unsigned long faddr;
-   152		int ret;
-   153	
- > 154		faddr = ftrace_location(ip);
-   155		if (faddr)
-   156			tr->func.ftrace_managed = true;
-   157	
-   158		if (bpf_trampoline_module_get(tr))
-   159			return -ENOENT;
-   160	
-   161		if (tr->func.ftrace_managed)
-   162			ret = register_ftrace_direct((long)ip, (long)new_addr);
-   163		else
-   164			ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr);
-   165	
-   166		if (ret)
-   167			bpf_trampoline_module_put(tr);
-   168		return ret;
-   169	}
-   170	
+Yes, right now, every policy has their own way to turn off, but we always need to
+iterate the rqos list and enter into the policy's callback to check it. And every
+blkio cgroup needs to allocate memory for it even we don't use it.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I don't this patchset is adding a new layer, but blk-rq-qos layer has been already
+there , we just add a unified interface to open/close the policies.
+
+Thanks
+Jianchao
