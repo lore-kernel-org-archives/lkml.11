@@ -2,142 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E88C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:01:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39108C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229918AbiBXCB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:01:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59466 "EHLO
+        id S229946AbiBXCDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:03:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229901AbiBXCBz (ORCPT
+        with ESMTP id S229901AbiBXCDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:01:55 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D31D915B3EF;
-        Wed, 23 Feb 2022 18:01:26 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id b35so913201ybi.13;
-        Wed, 23 Feb 2022 18:01:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gDzVZls32Tn+CgZQqLjQPwA2ePA8pNdpM8QzmA533pc=;
-        b=OQw7yyeyEfFjC3dZHjfMUxfYBAU6NRghHcNxQF46CLKtKLTCRbMhhIOy/86n2j985E
-         0Vmj9b1akLS6fQiSBG5w/PNqCfUgNLZuvwpZcDO65I+hCX7QbLCusXXBrrErXdl4uqUA
-         h2GGW+pwPYI2ZnE/6se/UMP+7x4QsMf040AkEqX1ftBaJHRMN7yJ7VqGzTZ4SQWkUylL
-         6VCJ5jMq3ANhXUTxzd7HHKyKp5vZs/WIibePxYqzWgwrjVvib+nKCq5gMjuwlfJgh1Tx
-         VTDst8A4foBg6aCtgMiMJc8yBoXtifMA2RumB//CZdWVFYSm/w2MTrF1xCxz/SG8yauR
-         yAMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gDzVZls32Tn+CgZQqLjQPwA2ePA8pNdpM8QzmA533pc=;
-        b=wNPqZabYgXD/XJ4yIhSHEiuOZXw3ry0mKdiDVeLZlA4U32hYbaN/6XjNN51T7TrnGf
-         2uM3tvw0F7+LZ00xdgFnLKIYuyatcJmaCcLVig7wXWVKhG/1B1c7ermGE0UtmTq6xhJ5
-         lyhl/FMOaUs5BVdRtn+emwG6GFd9wreoH4U88yPzE8n+2CdVPe8T5Lpd1/rt1A2c3q+M
-         o9jGj6uqJ1szJISGhoRNy6lOlhxw0eA9exCrMdv5K9xxZHB0OiSLBfZwDg8OOhJs+HF1
-         btURGBikcTP6rVPjkWzF6mupEGRk9vnreWVjYBI91ZWFo/3n4F1kaRxZ7vSwZ0H/J28t
-         lCQQ==
-X-Gm-Message-State: AOAM531NA4+65DHJqUt6DRFfIVBT9FI5suU+1Bxzj64XlusMlvbD/7o/
-        JpFSuW3wLAbkcQr5RDCJZpTQqBHhDKZh6J47B8mcSkAM5xlRPw==
-X-Google-Smtp-Source: ABdhPJwBkfAmaXuOhrLE426LrrsjRbaXAoxNnVJ3cgIzCOgY7z7HXNhGXPYupIwMI7HYn8OiRm7Xoc5MQ0loQQ/Trk4=
-X-Received: by 2002:a25:241:0:b0:61e:fb6e:8f33 with SMTP id
- 62-20020a250241000000b0061efb6e8f33mr278196ybc.413.1645663892466; Wed, 23 Feb
- 2022 16:51:32 -0800 (PST)
+        Wed, 23 Feb 2022 21:03:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D926D3AF1;
+        Wed, 23 Feb 2022 18:03:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96521B82353;
+        Thu, 24 Feb 2022 02:03:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F0E3C340EF;
+        Thu, 24 Feb 2022 02:02:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645668181;
+        bh=EXpllbxcrzgy7E+Zt2uuVgOjp9g+9BSyx9ZaGI0tTVo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=faeUHNWaYLfZSiJ4uIY+ASRZvlhyg/uXc127ROH28PiChoKZIJSn+3GRjGVPF59sG
+         Kzyfec5SbDcoKwZW+lnIIPn11eGoJ35Z7YOidN8l2wQDO8XJ619Cm2vut4cfZEMgHv
+         HSKzSQEgLUuAQsGr+Sasn0Yie0k91zocR6xFEs8qdnd2zBUY2BalFU4W+E5z/HUPnL
+         UqYadScjgWRJjqD+xGtsMPjqRIUUK7IBzTI6buZsrmyCNxbYrb5czNtyeTAvs9VL4F
+         4jnBrMMf2tVDLlinx6h+VKthmJOa+969A+czt1Q+Ho0PS/+ABGfSYOQritsgS5z79t
+         Jz6hOAnaACxtA==
+Date:   Thu, 24 Feb 2022 02:02:56 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Hugh Dickins <hughd@google.com>,
+        "Liam R . Howlett" <Liam.Howlett@oracle.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the folio tree with the maple tree
+Message-ID: <YhbnUNKjN5SBWKwD@sirena.org.uk>
+References: <20220224011653.1380557-1-broonie@kernel.org>
 MIME-Version: 1.0
-References: <20220223231752.52241-1-ppbuk5246@gmail.com> <YhbCGDzlTWp2OJzI@zeniv-ca.linux.org.uk>
- <CAM7-yPTM6FNuT4vs2EuKAKitTWMTHw_XzKVggxQJzn5hqbBHpw@mail.gmail.com>
- <CAM7-yPSk35UoGmRY_rCo2=RryBvwbQEjeWfL2tz1ADUosCXNjw@mail.gmail.com> <878ru1umcu.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <878ru1umcu.fsf@email.froward.int.ebiederm.org>
-From:   Yun Levi <ppbuk5246@gmail.com>
-Date:   Thu, 24 Feb 2022 09:51:21 +0900
-Message-ID: <CAM7-yPTPZXPxhtwvvH6KqpRng2idxZiNCLsJHXbWM4ge1wqsBQ@mail.gmail.com>
-Subject: Re: [PATCH] fs/exec.c: Avoid a race in formats
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        linux-fsdevel@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uiHEU8A1LLzcf4og"
+Content-Disposition: inline
+In-Reply-To: <20220224011653.1380557-1-broonie@kernel.org>
+X-Cookie: I smell a wumpus.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Mostly of what has been happening with binary formats lately is code
-> removal.
->
-> So I humbly suggest the best defense against misuse by modules is to
-> simply remove "EXPORT_SYMBOL(__register_binfmt)".
 
-It could be a solution. but that means the kernel doesn't allow
-dynamic binfmt using modules too.
-I think the best safe way to remove registered binfmt is ...
+--uiHEU8A1LLzcf4og
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-unregister binfmt list first ---- (1)
-synchronize_rcu_task();
-// tasklist stack-check...
-unload module.
+On Thu, Feb 24, 2022 at 01:16:53AM +0000, broonie@kernel.org wrote:
 
-But for this, there shouldn't happen in the above situation of (1).
-If unregister_binfmt has this problem.. I think there is no way to
-unload safely for dynamic registered binfmt via module.
+> I have absolutely no confindence in this resolution.
 
+Pretty sure that the resolution is bogus and I've broken boot (at least
+=66rom some quick testing).  Not confirmed that this merge is the cause
+though, I'll take a closer look tomorrow.  Any help from someone who's
+looked at this code before would be much appreciated.
 
+> diff --cc mm/mmap.c
+> index 1b3600152f6f5,64b5985b5295c..0000000000000
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@@ -2286,32 -2780,38 +2286,37 @@@ int split_vma(struct mm_struct *mm, str
+>   	return __split_vma(mm, vma, addr, new_below);
+>   }
+>  =20
+>  -/* Munmap is split into 2 main parts -- this part which finds
+>  +/*
+>  + * do_mas_align_munmap() - munmap the aligned region from @start to @en=
+d.
+>  + * @mas: The maple_state, ideally set up to alter the correct tree loca=
+tion.
+>  + * @vma: The starting vm_area_struct
+>  + * @mm: The mm_struct
+>  + * @start: The aligned start address to munmap.
+>  + * @end: The aligned end address to munmap.
+>  + * @uf: The userfaultfd list_head
+>  + * @downgrade: Set to true to attempt a write downgrade of the mmap_sem
+>  + *
+>  + * If @downgrade is true, check return code for potential release of th=
+e lock.
+> ++ *
+> ++ * Munmap is split into 2 main parts -- this part which finds
+> +  * what needs doing, and the areas themselves, which do the
+> +  * work.  This now handles partial unmappings.
+> +  * Jeremy Fitzhardinge <jeremy@goop.org>
+>    */
+>  -int __do_munmap(struct mm_struct *mm, unsigned long start, size_t len,
+>  -		struct list_head *uf, bool downgrade)
+>  -{
+>  -	unsigned long end;
+>  -	struct vm_area_struct *vma, *prev, *last;
+>  -
+>  -	if ((offset_in_page(start)) || start > TASK_SIZE || len > TASK_SIZE-st=
+art)
+>  -		return -EINVAL;
+>  -
+>  -	len =3D PAGE_ALIGN(len);
+>  -	end =3D start + len;
+>  -	if (len =3D=3D 0)
+>  -		return -EINVAL;
+>  -
+>  -	/*
+>  -	 * arch_unmap() might do unmaps itself.  It must be called
+>  -	 * and finish any rbtree manipulation before this code
+>  -	 * runs and also starts to manipulate the rbtree.
+>  -	 */
+>  -	arch_unmap(mm, start, end);
+>  -
+>  -	/* Find the first overlapping VMA where start < vma->vm_end */
+>  -	vma =3D find_vma_intersection(mm, start, end);
+>  -	if (!vma)
+>  -		return 0;
+>  -	prev =3D vma->vm_prev;
+>  -
+>  +static int
+>  +do_mas_align_munmap(struct ma_state *mas, struct vm_area_struct *vma,
+>  +		    struct mm_struct *mm, unsigned long start,
+>  +		    unsigned long end, struct list_head *uf, bool downgrade)
+>  +{
+>  +	struct vm_area_struct *prev, *next;
+>  +	struct maple_tree mt_detach;
+>  +	int count =3D 0;
+>  +	MA_STATE(mas_detach, &mt_detach, start, end - 1);
+>  +	mt_init_flags(&mt_detach, MM_MT_FLAGS);
+>  +	mt_set_external_lock(&mt_detach, &mm->mmap_lock);
+>  +
+>  +	mas->last =3D end - 1;
+>  +	prev =3D next =3D NULL;
+>   	/*
+>   	 * If we need to split any vma, do it now to save pain later.
+>   	 *
+> @@@ -3107,13 -3127,8 +3112,12 @@@ void exit_mmap(struct mm_struct *mm
+>   		 * Nothing can be holding mm->mmap_lock here and the above call
+>   		 * to mmu_notifier_release(mm) ensures mmu notifier callbacks in
+>   		 * __oom_reap_task_mm() will not block.
+>  +		 *
+>  +		 * This needs to be done before unlocking the VMAs in the loop
+>  +		 * below which clears VM_LOCKED, otherwise the oom reaper cannot
+>  +		 * reliably test it.
+>   		 */
+>   		(void)__oom_reap_task_mm(mm);
+> -=20
+>   		set_bit(MMF_OOM_SKIP, &mm->flags);
+>   	}
+>=20
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index 2ddf1caf90488..d469555df0a21 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -2373,10 +2373,8 @@ do_mas_align_munmap(struct ma_state *mas, struct v=
+m_area_struct *vma,
+>  		BUG_ON(next->vm_start > end);
+>  #endif
+>  		vma_mas_store(next, &mas_detach);
+> -		if (next->vm_flags & VM_LOCKED) {
+> +		if (next->vm_flags & VM_LOCKED)
+>  			mm->locked_vm -=3D vma_pages(next);
+> -			munlock_vma_pages_all(next);
+> -		}
+>  	}
+> =20
+>  	next =3D mas_find(mas, ULONG_MAX);
+> @@ -2906,10 +2904,8 @@ static int do_brk_munmap(struct ma_state *mas, str=
+uct vm_area_struct *vma,
+>  	}
+> =20
+>  	unmap_pages =3D vma_pages(&unmap);
+> -	if (vma->vm_flags & VM_LOCKED) {
+> +	if (vma->vm_flags & VM_LOCKED)
+>  		mm->locked_vm -=3D unmap_pages;
+> -		munlock_vma_pages_range(&unmap, newbrk, oldbrk);
+> -	}
+> =20
+>  	next =3D mas_next(mas, ULONG_MAX);
+>  	mmap_write_downgrade(mm);
+> @@ -3130,10 +3126,8 @@ void exit_mmap(struct mm_struct *mm)
+>  	rwsem_acquire(&mm->mmap_lock.dep_map, 0, 0, _THIS_IP_);
+>  	if (mm->locked_vm) {
+>  		mas_for_each(&mas, vma, ULONG_MAX) {
+> -			if (vma->vm_flags & VM_LOCKED) {
+> +			if (vma->vm_flags & VM_LOCKED)
+>  				mm->locked_vm -=3D vma_pages(vma);
+> -				munlock_vma_pages_all(vma);
+> -			}
+>  		}
+>  		mas_set(&mas, 0);
+>  	}
+>=20
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index 2ddf1caf90488..d469555df0a21 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -2373,10 +2373,8 @@ do_mas_align_munmap(struct ma_state *mas, struct v=
+m_area_struct *vma,
+>  		BUG_ON(next->vm_start > end);
+>  #endif
+>  		vma_mas_store(next, &mas_detach);
+> -		if (next->vm_flags & VM_LOCKED) {
+> +		if (next->vm_flags & VM_LOCKED)
+>  			mm->locked_vm -=3D vma_pages(next);
+> -			munlock_vma_pages_all(next);
+> -		}
+>  	}
+> =20
+>  	next =3D mas_find(mas, ULONG_MAX);
+> @@ -2906,10 +2904,8 @@ static int do_brk_munmap(struct ma_state *mas, str=
+uct vm_area_struct *vma,
+>  	}
+> =20
+>  	unmap_pages =3D vma_pages(&unmap);
+> -	if (vma->vm_flags & VM_LOCKED) {
+> +	if (vma->vm_flags & VM_LOCKED)
+>  		mm->locked_vm -=3D unmap_pages;
+> -		munlock_vma_pages_range(&unmap, newbrk, oldbrk);
+> -	}
+> =20
+>  	next =3D mas_next(mas, ULONG_MAX);
+>  	mmap_write_downgrade(mm);
+> @@ -3130,10 +3126,8 @@ void exit_mmap(struct mm_struct *mm)
+>  	rwsem_acquire(&mm->mmap_lock.dep_map, 0, 0, _THIS_IP_);
+>  	if (mm->locked_vm) {
+>  		mas_for_each(&mas, vma, ULONG_MAX) {
+> -			if (vma->vm_flags & VM_LOCKED) {
+> +			if (vma->vm_flags & VM_LOCKED)
+>  				mm->locked_vm -=3D vma_pages(vma);
+> -				munlock_vma_pages_all(vma);
+> -			}
+>  		}
+>  		mas_set(&mas, 0);
+>  	}
 
-On Thu, Feb 24, 2022 at 9:42 AM Eric W. Biederman <ebiederm@xmission.com> wrote:
->
-> Yun Levi <ppbuk5246@gmail.com> writes:
->
-> > On Thu, Feb 24, 2022 at 8:59 AM Yun Levi <ppbuk5246@gmail.com> wrote:
-> >>
-> >> On Thu, Feb 24, 2022 at 8:24 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
-> >> >
-> >> > On Thu, Feb 24, 2022 at 08:17:52AM +0900, Levi Yun wrote:
-> >> > > Suppose a module registers its own binfmt (custom) and formats is like:
-> >> > >
-> >> > > +---------+    +----------+    +---------+
-> >> > > | custom  | -> |  format1 | -> | format2 |
-> >> > > +---------+    +----------+    +---------+
-> >> > >
-> >> > > and try to call unregister_binfmt with custom NOT in __exit stage.
-> >> >
-> >> > Explain, please.  Why would anyone do that?  And how would such
-> >> > module decide when it's safe to e.g. dismantle data structures
-> >> > used by methods of that binfmt, etc.?
-> >> > Could you give more detailed example?
-> >>
-> >> I think if someone wants to control their own binfmt via "ioctl" not
-> >> on time on LOAD.
-> >> For example, someone wants to control exec (notification,
-> >> allow/disallow and etc..)
-> >> and want to enable and disable own's control exec via binfmt reg / unreg
-> >> In that situation, While the module is loaded, binfmt is still live
-> >> and can be reused by
-> >> reg/unreg to enable/disable his exec' control.
-> >>
-> >> module can decide it's safe to unload by tracing the stack and
-> >> confirming whether some tasks in the custom binfmt's function after it
-> >> unregisters its own binfmt.
-> >>
-> >> > Because it looks like papering over an inherently unsafe use of binfmt interfaces..
-> >>
-> >> I think the above example it's quite a trick and stupid.  it's quite
-> >> unsafe to use as you mention.
-> >> But, misuse allows that situation to happen without any warning.
-> >> As a robustness, I just try to avoid above situation But,
-> >> I think it's better to restrict unregister binfmt unregister only when
-> >> there is no module usage.
-> >
-> > And not only stupid exmaple,
-> > if someone loadable custom binfmt register in __init and __exit via
-> > register and unregister_binfmt,
-> > I think that situation could happen.
->
-> Mostly of what has been happening with binary formats lately is code
-> removal.
->
-> So I humbly suggest the best defense against misuse by modules is to
-> simply remove "EXPORT_SYMBOL(__register_binfmt)".
->
-> Eric
+--uiHEU8A1LLzcf4og
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIW51AACgkQJNaLcl1U
+h9CDIgf+PNAZqmioo7XTL+teW4wUw6cpBd6At28RWKb62OZTTlD49gaUNvx/Dc2H
+gW/dwGYy8FHZ5WskOJskcZvjDnY7sGrwcDbcxnSBqKyNyHEf6a5excVzF96dRSTM
+vUDf2hcf3rM8ULNU0CyGzHuSFavMpTroQqnG3QoPl7lpHLnS1/WZ/D8Zk4y4FNPm
++pLrSsdWusWXoKjVgHcZdNs5o6orDSrZpLBG7Hnd09rm30RNdPg2JFShihfmxkga
+qrC4KcpqgQ/6fI89qe4qYTfwUOZCIe/g9+NiN7sG0wOoz9oHNlZDY0MdANXOOkE1
+GIAM2lVyeSgjw/MDRfd813P2sj93JA==
+=olE7
+-----END PGP SIGNATURE-----
+
+--uiHEU8A1LLzcf4og--
