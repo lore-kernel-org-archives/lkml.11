@@ -2,93 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58F3DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FABC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:16:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233451AbiBXTQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:16:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35830 "EHLO
+        id S233461AbiBXTQq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:16:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233400AbiBXTQf (ORCPT
+        with ESMTP id S233456AbiBXTQn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 14:16:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5603722BE9B;
-        Thu, 24 Feb 2022 11:16:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C9CB1615BB;
-        Thu, 24 Feb 2022 19:16:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2104C340E9;
-        Thu, 24 Feb 2022 19:16:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645730163;
-        bh=qB8qemRRRaLkFJrye31RKyup6LLCc2VuCT44GCj/z9U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LAsw1TyCXxh22Ra0Cdql/3p8erSOEF7S/8LQWLSGrlKxIqe7IMAV8lizj7wYi8lyN
-         f38J9oG7VvLvRGs3IABZfYUbpYJEBt7PdbrAiC3pXtew4NvBFBJ8kFx9UPHMqM9hfE
-         VJH+gGFHCK9K7VK6grS4czn3Be+Xiw9EJPUB2V6IifJQKs1QWGXbzGrrDjH42UHHua
-         uUFRTOb6fzvCDjs8Ugolwfqd/BnIJ07YqiIjTDROZcMgccTCKmZOqlenLTqBE2XNKk
-         za4gq+CRLzwojfbHdCEujcqp9h7onLST6jWOkkwqjmbdlkIZ2MKizwY5Ma5jdWOLPs
-         JEXzsibVVqUZQ==
-Date:   Thu, 24 Feb 2022 21:15:58 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Yajun Deng <yajun.deng@linux.dev>
-Cc:     jgg@nvidia.com, linux-rdma@vger.kernel.org,
+        Thu, 24 Feb 2022 14:16:43 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B319238904
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:16:12 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id l25so4309641oic.13
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:16:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=n40igkM5fpLZE91wSpHa85KT0DIax0l2iCyVpysGJcc=;
+        b=CzbgbwcVGX/WBH4XbrVbhqDUPdTI9ZHKQWSiHWJyt3saQW/NNWRgDAx+ambOI6/gYy
+         WRUNWx4uXp8eU0gbNmuRHgN2DCrlNxAps4mDLs34bVqxsQhc0F6P8KczHctuOHAyw4NQ
+         uEBQhlY8ng/tyr684AZO6AVCkgbnY0DHryBUC0LHHMAWQT8gIqAWpiSkVRvFqkGnxrSP
+         PXFpwWCk+39h4HW2ydih+hOCGW4bIdw916DQnSGQWn30OgWLDjexpPl5bdoS52+8A+K4
+         vnmq0LI+ErF4X/JNTUzphCrP+04w3WtqMVQ91bG/YW3n7dpUVkOAScYljG9GSiwyhKJc
+         SGsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=n40igkM5fpLZE91wSpHa85KT0DIax0l2iCyVpysGJcc=;
+        b=c0VPgaO8La+EhV5lX7s8h26ytswtD82NjiNtuvJjSqX55MBUj+cB70YgkV1ZCXJU5x
+         T+pp7bXl5rTDurFFhVdiN/O3EdHC2AOFknyIs1AN3QReDrNvQcuWlgh2qbEqD3XoHz7g
+         z2/3eLA27W/MGcxSsQHpZRFb1wFu9zKxYfUV/n5qUddpLpbZpXDO9/8pCoAWyw2KDfQY
+         NGUWZv9tWm+yI/4ruInIsk/Zqe6mfDKQMdD9ouZH7OUXVW0cheos85XvTlDCK57xTKg5
+         uF63yNhawE8ehKI61IbjVVW2NdI/Srq8SABzPm8PB3amOvnmbBdo51aXPpJsV2v6KMqN
+         o+gg==
+X-Gm-Message-State: AOAM530WKyqGpHVqyvBSZHNLVh9HJrp6fT5Lnhop6fA83SEEN4gbWzWc
+        GWDKTza6sd0UmZJ06hap64Q=
+X-Google-Smtp-Source: ABdhPJyQKFGospMUmtjTUcVamd2qh9gUUUs4aJXtYL05staz72GZsPMYAdf2vzZDxTEY9Ymhmuz1+Q==
+X-Received: by 2002:a05:6808:ecd:b0:2cd:90e5:25cb with SMTP id q13-20020a0568080ecd00b002cd90e525cbmr7785276oiv.128.1645730171832;
+        Thu, 24 Feb 2022 11:16:11 -0800 (PST)
+Received: from localhost.localdomain (189-47-54-110.dsl.telesp.net.br. [189.47.54.110])
+        by smtp.gmail.com with ESMTPSA id w3-20020a056830110300b005af14392276sm79509otq.62.2022.02.24.11.16.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 11:16:10 -0800 (PST)
+From:   Magali Lemes <magalilemes00@gmail.com>
+To:     airlied@linux.ie, alexander.deucher@amd.com,
+        christian.koenig@amd.com, daniel@ffwll.ch, harry.wentland@amd.com,
+        Rodrigo.Siqueira@amd.com, sunpeng.li@amd.com, Xinhui.Pan@amd.com
+Cc:     siqueirajordao@riseup.net, mwen@igalia.com, maira.canal@usp.br,
+        isabbasso@riseup.net, Magali Lemes <magalilemes00@gmail.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH for-next] RDMA/core: Remove unnecessary statements
-Message-ID: <YhfZbgaz1Hec8xNG@unreal>
-References: <20220223074901.201506-1-yajun.deng@linux.dev>
+Subject: [PATCH 0/4] Address a few compilation warnings
+Date:   Thu, 24 Feb 2022 16:15:47 -0300
+Message-Id: <20220224191551.69103-1-magalilemes00@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220223074901.201506-1-yajun.deng@linux.dev>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 03:49:01PM +0800, Yajun Deng wrote:
-> The rdma_zalloc_drv_obj() in __ib_alloc_pd() would zero pd, it unnecessary
-> add NULL to the object in struct pd.
-> 
-> The uverbs_free_pd() already return busy if pd->usecnt is true, there is
-> no need to add a warning.
-> 
-> Signed-off-by: Yajun Deng <yajun.deng@linux.dev>
-> ---
->  drivers/infiniband/core/verbs.c | 7 -------
->  1 file changed, 7 deletions(-)
-> 
-> diff --git a/drivers/infiniband/core/verbs.c b/drivers/infiniband/core/verbs.c
-> index e821dc94a43e..03bc9d34c13d 100644
-> --- a/drivers/infiniband/core/verbs.c
-> +++ b/drivers/infiniband/core/verbs.c
-> @@ -268,8 +268,6 @@ struct ib_pd *__ib_alloc_pd(struct ib_device *device, unsigned int flags,
->  		return ERR_PTR(-ENOMEM);
->  
->  	pd->device = device;
-> -	pd->uobject = NULL;
-> -	pd->__internal_mr = NULL;
->  	atomic_set(&pd->usecnt, 0);
-^^^^^^^^ this line should be removed too.
+This patchset addresses a few warnings reported by the Kernel Test Robot and
+sparse.
 
->  	pd->flags = flags;
->  
-> @@ -341,11 +339,6 @@ int ib_dealloc_pd_user(struct ib_pd *pd, struct ib_udata *udata)
->  		pd->__internal_mr = NULL;
->  	}
->  
-> -	/* uverbs manipulates usecnt with proper locking, while the kabi
-> -	 * requires the caller to guarantee we can't race here.
-> -	 */
-> -	WARN_ON(atomic_read(&pd->usecnt));
-> -
+Magali Lemes (4):
+  drm/amd/display: Adjust functions documentation
+  drm/amd/display: Add conditional around function
+  drm/amd/display: Use NULL instead of 0
+  drm/amd/display: Turn functions into static
 
-ib_dealloc_pd_user() is called not only in uverbs_free_pd(), but in ib_dealloc_pd() too.
-So commit message is not really correct.
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_helpers.c   | 4 +++-
+ .../gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_clk_mgr.c  | 2 +-
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn315/dcn315_smu.c  | 4 ++--
+ drivers/gpu/drm/amd/display/dc/core/dc.c                    | 6 +++---
+ drivers/gpu/drm/amd/display/dc/core/dc_resource.c           | 2 +-
+ drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c | 4 ++--
+ drivers/gpu/drm/amd/display/dc/dce112/dce112_resource.c     | 4 +---
+ .../gpu/drm/amd/display/dc/irq/dcn315/irq_service_dcn315.c  | 2 +-
+ 8 files changed, 14 insertions(+), 14 deletions(-)
 
-Of course, ib_dealloc_pd() is kernel verb and doesn't use ->usecnt at all.
+-- 
+2.25.1
 
-Thanks,
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
