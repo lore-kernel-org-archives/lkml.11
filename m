@@ -2,96 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F31F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230028AbiBXAdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 19:33:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51458 "EHLO
+        id S229831AbiBXAeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 19:34:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiBXAcx (ORCPT
+        with ESMTP id S229530AbiBXAeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 19:32:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD6C83002;
-        Wed, 23 Feb 2022 16:32:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1732B82285;
-        Thu, 24 Feb 2022 00:32:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510E8C340E7;
-        Thu, 24 Feb 2022 00:32:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645662741;
-        bh=3xhiKUuBO/ryIwyB50Q0hQEcWFfrZ0Emh0O02qSTEMU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=i5wkIRMOyyVvPD3+fM5IBNwt4clMFh0hZf35VQl6Iiz8a4IwBBUhXOPJK7fHuff4a
-         k7ueAeRuV9vyD4M0rwnp2MIIjslqqcMBg1cTUXUo3CT4+iC0by2I/3RvZGxcwN0p4Z
-         H6tQPRNssU9kBpy23l0zk0tboR/EkNEIUtGdwZLCY2BiozFiIFXerYnIv6kxa9XMzI
-         NkICB4tQpRACKKbG/evS8MAR+uet6jbqGAUaEBxhoQG8b/8SmZ0zT5FMTeN+qiiUgY
-         7siTbLF4/dGfG+3Y5koaYXDEknZXYy1Kcsa1/aloim3dcbRUehEB6VUX6yA3r37Evl
-         jLKHbB4Luz7lA==
-Date:   Wed, 23 Feb 2022 16:32:19 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 4/8] ima: define a new template field 'd-type' and a
- new template 'ima-ngv2'
-Message-ID: <YhbSE/k4mElcehDN@sol.localdomain>
-References: <20220211214310.119257-1-zohar@linux.ibm.com>
- <20220211214310.119257-5-zohar@linux.ibm.com>
+        Wed, 23 Feb 2022 19:34:18 -0500
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394E79318F
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:33:49 -0800 (PST)
+Received: by mail-qk1-x731.google.com with SMTP id n185so549746qke.5
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:33:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AXLSRzCjsZCFoAyswTHwstLfgcPocf6IJntD36q7k5Q=;
+        b=eXo4RTiBDfKvcK3zjsVQUbB5xRiFtVQPIcgfPkctoWbFm5mnw9b/rvv7i7W/blEnBC
+         yIc5bKXcG1pxnlC0SRfWI5IDbeG0z3AZX3nQHmQHc113lD6Ol5OZ2tS74G+kNbIpat1S
+         l2koJ9Bkk6iHOLOt0wQmQQ2nbaKX3GYVJzBJISlswiX/aKcziR17YdIj0OELDv5KI37/
+         dvnuxypDL6azczfOlAZUUWle1zoc4hheSw3nVaAqiT9YpEGYVaSrD6iUaorNjL/zZVSV
+         Ci3XLLXkSLWxebo0p8uOW6BT3b9e7L/3SBI7yIwiQbVWMq95CTdtytdFiiwQrPyOiCF+
+         4Hcg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AXLSRzCjsZCFoAyswTHwstLfgcPocf6IJntD36q7k5Q=;
+        b=12DpJbFk9GIkOTMQuxtUboQSddVZ9FkRfmH6ZwL+wa3hHs7KVHrT/rVOQGwcQ3DyZz
+         25WZa8FloB7M10ZFpEETN9gwWzG44EHgDW2Ps8Qe9qwHlPzGo5OLjCwzk+8Qyrqc36DL
+         a7vMfUqUeghpI5I87ijOseqIk5DkkcAO9tY8JTorz7fVg7ZEwBLRrHQFpCej578vQFP/
+         bgmFAGoMmEjeLcLMQJe/46EL+VW9+CQt65WMvjZAgdlCXxBCtxbm0ksOIpFke3bX7yBQ
+         kDSWi6Ek1DpJoFObwT6kX39R7rbbeydarHTSqebWVPtQdcZJ4xzJMPxbaC7g6YhCdnVC
+         DMgA==
+X-Gm-Message-State: AOAM531oVyGLNCdHEBY4nH/ByeyTA0H+kPJ75sVJV6DLDYWxDY1Pdkqq
+        +iKQrTxxX39G/igj6y7uPqnJZ2FkTiYLz3Lp3Go/Ng==
+X-Google-Smtp-Source: ABdhPJyH1H6InszUaBtbaqZ275mDiIyZuB59Sdfd5+Ui+46/fsxVuxWpwD4DpXN8ISi2NArkYmB9ZgKngl+DZhH3h3U=
+X-Received: by 2002:a37:b287:0:b0:607:afb3:2c1d with SMTP id
+ b129-20020a37b287000000b00607afb32c1dmr212265qkf.221.1645662828189; Wed, 23
+ Feb 2022 16:33:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220211214310.119257-5-zohar@linux.ibm.com>
+References: <20220224000531.1265030-1-haoluo@google.com> <CAEf4Bzb44WR2LiYchxB5JZ=Jdie6FEEi90mh=SCv07v4h4W11w@mail.gmail.com>
+In-Reply-To: <CAEf4Bzb44WR2LiYchxB5JZ=Jdie6FEEi90mh=SCv07v4h4W11w@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Wed, 23 Feb 2022 16:33:37 -0800
+Message-ID: <CA+khW7h4bL3qUst4nDy6LDmx73xVA_ch=PLc=o=v2iJNbGn21A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] bpf: Cache the last valid build_id.
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Blake Jones <blakejones@google.com>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 04:43:06PM -0500, Mimi Zohar wrote:
-> In preparation to differentiate between regular IMA file hashes and
-> fs-verity's file digests, define a new template field named 'd-type'.
-> Define a new template named 'ima-ngv2', which includes the new 'd-type'
-> field.
-> 
-> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-> ---
->  security/integrity/ima/ima_template.c     |  3 +++
->  security/integrity/ima/ima_template_lib.c | 13 +++++++++++++
->  security/integrity/ima/ima_template_lib.h |  2 ++
->  3 files changed, 18 insertions(+)
-> 
-> diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
-> index db1ad6d7a57f..b321342e5bee 100644
-> --- a/security/integrity/ima/ima_template.c
-> +++ b/security/integrity/ima/ima_template.c
-> @@ -19,6 +19,7 @@ enum header_fields { HDR_PCR, HDR_DIGEST, HDR_TEMPLATE_NAME,
->  static struct ima_template_desc builtin_templates[] = {
->  	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
->  	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
-> +	{.name = "ima-ngv2", .fmt = "d-ng|n-ng|d-type"},
->  	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
->  	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
->  	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
-> @@ -40,6 +41,8 @@ static const struct ima_template_field supported_fields[] = {
->  	 .field_show = ima_show_template_digest_ng},
->  	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
->  	 .field_show = ima_show_template_string},
-> +	{.field_id = "d-type", .field_init = ima_eventdigest_type_init,
-> +	 .field_show = ima_show_template_string},
->  	{.field_id = "sig", .field_init = ima_eventsig_init,
->  	 .field_show = ima_show_template_sig},
->  	{.field_id = "buf", .field_init = ima_eventbuf_init,
+On Wed, Feb 23, 2022 at 4:11 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Feb 23, 2022 at 4:05 PM Hao Luo <haoluo@google.com> wrote:
+> >
+> > For binaries that are statically linked, consecutive stack frames are
+> > likely to be in the same VMA and therefore have the same build id.
+> > As an optimization for this case, we can cache the previous frame's
+> > VMA, if the new frame has the same VMA as the previous one, reuse the
+> > previous one's build id. We are holding the MM locks as reader across
+> > the entire loop, so we don't need to worry about VMA going away.
+> >
+> > Tested through "stacktrace_build_id" and "stacktrace_build_id_nmi" in
+> > test_progs.
+> >
+> > Suggested-by: Greg Thelen <gthelen@google.com>
+> > Signed-off-by: Hao Luo <haoluo@google.com>
+> > ---
+>
+> LGTM. Can you share performance numbers before and after?
+>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+>
 
-I notice that the "d-ng" field already contains both the hash algorithm and the
-hash itself, in the form <algorithm>:<hash>.  Wouldn't it make more sense to
-define a "d-ngv2" field that contains <type>:<algorithm>:<hash>?  After all,
-both the type and algorithm are required to interpret the hash.
+Thanks Andrii.
 
-Or in other words, what about the hash type is different from the hash algorithm
-that would result in them needing different handling here?
+On a real-world workload, we observed that 66% of cpu cycles in
+__bpf_get_stackid() were spent on build_id_parse() and find_vma().
+This was before.
 
-- Eric
+We haven't evaluated the performance with this patch yet. This
+optimization seems straightforward, so we plan to upstream it first
+and then retest.
