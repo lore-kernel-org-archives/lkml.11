@@ -2,115 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A0D5C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235605AbiBXWkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 17:40:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35118 "EHLO
+        id S235644AbiBXWlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 17:41:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233516AbiBXWks (ORCPT
+        with ESMTP id S235618AbiBXWlv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 17:40:48 -0500
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801D62036CE
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 14:40:18 -0800 (PST)
-Received: by mail-io1-f72.google.com with SMTP id f9-20020a5ec709000000b00640c72b204eso2564052iop.22
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 14:40:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=8Zh3sOhU6fOzqR7hpmIplwNHGdnKUf8vJ5NprxHVyM8=;
-        b=arZgx2bwLns1Ewr8E0zxGKIFLMHSqy/Q4zjtf1lc7gMthPw/TTapwk9HKQ7PoPbq2e
-         3Xxm9H6CeXo8Vc6n/JB0qzLy8gbBl2eIRNgbZ8/cTFE+3oIvBFHoR6pbEYknHIZ26XJC
-         KjYmHUzf7qwYDz/OO8RJWD3BQt9q9LrD1hlkJiqPFxefTcCCJWAzYDjo5dH5yOkpH+Ef
-         Nyf8t6E5R1vIoWoM0jNNgK62vKjfh3tdiOu1pka3qd3B75ENSqP3JqdCncrX8rU3WZtE
-         iu4+eraisLfwffYBji8D6H2E8IC5wEWqSdIJFOY+nKvf12Q4ZiWLksIWUuKtiC2FI/nE
-         tPLA==
-X-Gm-Message-State: AOAM532c51jCJ/3lAEpaypNE47qsj+Uf9ynfqA2K2/ZqtjCLFogfBhpo
-        KOtpHEzmx/rpJVw5in7Zj3wfjuqU94Ld83s4haRvBMP+k4fT
-X-Google-Smtp-Source: ABdhPJx5uaPerUDlzu6f+Yb7dkVPhZ6cg/hvYB2Gp0wJlvJxg1lc0wtQgaqyMoGBwXhkdViGgzidxlDmqAsHmiIjeh/FbpQnj1nM
-MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1489:b0:2c2:92fe:9688 with SMTP id
- n9-20020a056e02148900b002c292fe9688mr3729978ilk.177.1645742417833; Thu, 24
- Feb 2022 14:40:17 -0800 (PST)
-Date:   Thu, 24 Feb 2022 14:40:17 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000034f53905d8cb4470@google.com>
-Subject: [syzbot] UBSAN: shift-out-of-bounds in minix_count_free_blocks
-From:   syzbot <syzbot+2f142b57f2af27974fda@syzkaller.appspotmail.com>
-To:     aeb@cwi.nl, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        viro@zeniv.linux.org.uk
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 24 Feb 2022 17:41:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8C720A961;
+        Thu, 24 Feb 2022 14:41:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AEAB961B5A;
+        Thu, 24 Feb 2022 22:41:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 71E5FC340EF;
+        Thu, 24 Feb 2022 22:41:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645742480;
+        bh=6bHoV+lUxtRfl3apjlzEPflf4+DoMaFgFMJBftrb0aM=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=Qxv1L9oFseVqYlkFcFdKqLoFb7SgGOtg7wrvdTKw+vHxmdrXk/BSZfl4Bn/zb+uag
+         gE24XnqCnlOFQruBYTcAx3fGEMCOFwXQBWlYj2qcRJiKilY510MAWEBSy/xfW6Csbs
+         RgLDoZ3dvjIB8tai/s4sd3zjuEdsMhlZES6oIXGmAuyR+RVuWp6ei98spU8jxMm5Jp
+         H+18QdCqqH/31iPY+mFbuGS/hWkrKVf3nFp99f5RWAIF7BxOi/O/NppHKjbk+9zQ4f
+         Y2gzQ/1ckAMD/krHTQSVkZliilQcps90ZgCXIWLtCayQJu+iijPpqznPKH14FiZsMH
+         sWfyrt6OQBeWg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5DA02E6D3DE;
+        Thu, 24 Feb 2022 22:41:20 +0000 (UTC)
+Subject: Re: [GIT PULL] perf tools fixes for v5.17: 3rd batch
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220224184122.510643-1-acme@kernel.org>
+References: <20220224184122.510643-1-acme@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220224184122.510643-1-acme@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.17-2022-02-24
+X-PR-Tracked-Commit-Id: 13e741b834538a225512912608f0182079fc64e2
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 7ee022567bf9e2e0b3cd92461a2f4986ecc99673
+Message-Id: <164574248037.13100.2233624727906017520.pr-tracker-bot@kernel.org>
+Date:   Thu, 24 Feb 2022 22:41:20 +0000
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Clark Williams <williams@redhat.com>,
+        Kate Carcia <kcarcia@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        German Gomez <german.gomez@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The pull request you sent on Thu, 24 Feb 2022 15:41:22 -0300:
 
-syzbot found the following issue on:
+> git://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git tags/perf-tools-fixes-for-v5.17-2022-02-24
 
-HEAD commit:    23d04328444a Merge tag 'for-5.17/parisc-4' of git://git.ke..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1275258e700000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=15187fc11a461d83
-dashboard link: https://syzkaller.appspot.com/bug?extid=2f142b57f2af27974fda
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=134ea112700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1038b52e700000
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/7ee022567bf9e2e0b3cd92461a2f4986ecc99673
 
-Bisection is inconclusive: the issue happens on the oldest tested release.
+Thank you!
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=132d548e700000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=10ad548e700000
-console output: https://syzkaller.appspot.com/x/log.txt?x=172d548e700000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+2f142b57f2af27974fda@syzkaller.appspotmail.com
-
-loop0: detected capacity change from 0 to 24
-MINIX-fs: mounting unchecked file system, running fsck is recommended
-================================================================================
-UBSAN: shift-out-of-bounds in fs/minix/bitmap.c:103:3
-shift exponent 34 is too large for 32-bit type 'unsigned int'
-CPU: 0 PID: 3594 Comm: syz-executor300 Not tainted 5.17.0-rc5-syzkaller-00021-g23d04328444a #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:151
- __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x187 lib/ubsan.c:330
- minix_count_free_blocks.cold+0x16/0x1b fs/minix/bitmap.c:103
- minix_statfs+0x22a/0x490 fs/minix/inode.c:381
- statfs_by_dentry+0x133/0x210 fs/statfs.c:66
- vfs_statfs fs/statfs.c:90 [inline]
- user_statfs+0xa9/0x160 fs/statfs.c:105
- __do_sys_statfs+0x7a/0xf0 fs/statfs.c:195
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7ff02930fdd9
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffe6c051938 EFLAGS: 00000246 ORIG_RAX: 0000000000000089
-RAX: ffffffffffffffda RBX: 0030656c69662f2e RCX: 00007ff02930fdd9
-RDX: 00007ff0292ce3a3 RSI: 0000000000000000 RDI: 0000000020000140
-RBP: 00007ff0292cf670 R08: 0000000000000000 R09: 0000000000000000
-R10: 00007ffe6c051800 R11: 0000000000000246 R12: 00007ff0292cf700
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- </TASK>
-================================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
