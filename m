@@ -2,158 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 192FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:59:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236909AbiBXP7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:59:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42542 "EHLO
+        id S236913AbiBXP5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:57:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236796AbiBXP7V (ORCPT
+        with ESMTP id S236722AbiBXP5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:59:21 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D176C19BE4E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:58:19 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id j17so442783wrc.0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:58:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=cHggUxZ2d6PFKqdQLzVPT8UbBPpze8bsOzv1kvrdrlo=;
-        b=uLqbKonlTeDMASK8EgJjQw1+cd5N+/lABIBHk1MxzHAA8xedvKecOXkanT+MpMCDK3
-         eGhDQZKUrTZu920ISxBr2+tWsr8lS8FbKyZdKUvefRAN6YNFzoaT81b3EeXKiRDHuPC3
-         l1EO3GOyA/9C10IfLSl4MoTC99veIjsaWNCrYfY438nN4/dDv2EWQK+FOYOpHd6fJR/n
-         AOo+3vdrXDzla6QR+RLClnVI8NIgpiH/liMgoqBYyNLgIJLTOO1j5Dop6cvv0PvImon3
-         p8WPmE1zElfiLAR4zGn+b+2/2DjzqRATz5PGci7lF5cHat+OQEd/S76f3wbadlMBnWyY
-         QiaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=cHggUxZ2d6PFKqdQLzVPT8UbBPpze8bsOzv1kvrdrlo=;
-        b=EZa4o0/iGWCLtA1srnWMxbKoW+uHODGddOSUNUQF6DZ1BB6hWPzeuPiDJklKUknwJi
-         tdtFe5e2Vy4tqxLMxHRnmczKn6RoBXSwT4XLyYUcirbQ/hbP36n2GZQiWyKpMzimPNE+
-         pu37HdgSohVJlBTKlvHAkMkr1k95tKMlGlqAnXuTss9oUCoSXPB281HdC6Y9Eb3w4/AJ
-         VgMdRO+M0HbEBQL5rbNl5jXTGBjWsxvLWMsFdf9FXw8PyszqJXHZbPok8er1cTsfyPAL
-         i6w8HIJjYaYXtNVzoOoYt7NWY2LclQV7cSOHhLokLNAcag2WrERERkyrsGuS5EHcKJt+
-         CzyQ==
-X-Gm-Message-State: AOAM532LW3wtEqfkpyOLyWtKMezTL6RwZadJMINIUoxWTOfc0kzrc/r9
-        oS5IEq+cGD6rnhsT+SBGEP7wCQ==
-X-Google-Smtp-Source: ABdhPJybbfb1DD6u3EohFr6j+SFN/2b6PczIRrH7DpwSghsm9siYp0NGbochHvlp1lJ++O8pqoiL1w==
-X-Received: by 2002:adf:f1ca:0:b0:1ed:e2d7:b5f3 with SMTP id z10-20020adff1ca000000b001ede2d7b5f3mr2828386wro.75.1645718298367;
-        Thu, 24 Feb 2022 07:58:18 -0800 (PST)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id n4-20020a7bc5c4000000b0037e0c62604fsm3007605wmk.14.2022.02.24.07.58.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 07:58:17 -0800 (PST)
-Message-ID: <be9c99ac-ebdb-e0c1-669b-1257f630f267@linaro.org>
-Date:   Thu, 24 Feb 2022 15:58:16 +0000
+        Thu, 24 Feb 2022 10:57:15 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBC912AB9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:56:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645718198; x=1677254198;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=YLRcyqnwpgSRCqcWi/554Dc1Exapi/lSv6TTC7rFRfU=;
+  b=NCCx4kGDZ8i5wLzY5z1y0AzOdxZ1PMxFE5Kt/Y7+QUm8osDNg15y9ZRj
+   2thigD4f+6W+sVwERAdXphypefivjZjL3Fk/RUS6EM4Q5DE3f2RfDB9Cy
+   dIjjjzGLvCE6M0j3xXHY5osXSCvkjnvTr74j4ltAzy8Bpo3ylUdEkEFi7
+   +akf40Qc767YfPN3HMqjuwIcdr+ABlRA4cnVQP/XwFe0bC+iBNlbVNDSL
+   MVliHyOY0i55AwxYq+QlS2y3x4vO5dy7v+9GF0G8obcSdVR2vuNBefzCz
+   hKhf2kb0TlXiuZNcLM+tOZmWEo6swhwJ0edBW7V9/WWhseHnI6apE+qfS
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="235773407"
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="235773407"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="684315440"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 07:56:25 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id CE8A4A3F; Thu, 24 Feb 2022 17:56:34 +0200 (EET)
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv4 13/30] x86: Adjust types used in port I/O helpers
+Date:   Thu, 24 Feb 2022 18:56:13 +0300
+Message-Id: <20220224155630.52734-14-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
+References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/3] soundwire: qcom: add runtime pm support
-Content-Language: en-US
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        robh+dt@kernel.org, vkoul@kernel.org,
-        yung-chuan.liao@linux.intel.com
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org, quic_srivasam@quicinc.com
-References: <20220224133125.6674-1-srinivas.kandagatla@linaro.org>
- <20220224133125.6674-2-srinivas.kandagatla@linaro.org>
- <3dbed2f1-0c6d-9ba6-232f-db57ec9097ce@linux.intel.com>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <3dbed2f1-0c6d-9ba6-232f-db57ec9097ce@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Change port I/O helpers to use u8/u16/u32 instead of unsigned
+char/short/int for values. Use u16 instead of int for port number.
 
+It aligns the helpers with implementation in boot stub in preparation
+for consolidation.
 
-On 24/02/2022 15:41, Pierre-Louis Bossart wrote:
-> 
->>   static const struct snd_soc_dai_ops qcom_swrm_pdm_dai_ops = {
->> @@ -1197,12 +1224,23 @@ static int qcom_swrm_get_port_config(struct qcom_swrm_ctrl *ctrl)
->>   static int swrm_reg_show(struct seq_file *s_file, void *data)
->>   {
->>   	struct qcom_swrm_ctrl *swrm = s_file->private;
->> -	int reg, reg_val;
->> +	int reg, reg_val, ret;
->> +
->> +	ret = pm_runtime_get_sync(swrm->dev);
->> +	if (ret < 0 && ret != -EACCES) {
->> +		dev_err_ratelimited(swrm->dev,
->> +				    "pm_runtime_get_sync failed in %s, ret %d\n",
->> +				    __func__, ret);
->> +		pm_runtime_put_noidle(swrm->dev);
->> +	}
->>   
->>   	for (reg = 0; reg <= SWR_MSTR_MAX_REG_ADDR; reg += 4) {
->>   		swrm->reg_read(swrm, reg, &reg_val);
->>   		seq_printf(s_file, "0x%.3x: 0x%.2x\n", reg, reg_val);
->>   	}
->> +	pm_runtime_mark_last_busy(swrm->dev);
->> +	pm_runtime_put_autosuspend(swrm->dev);
->> +
-> 
-> question: is there a reason why this specific set of reg_read() is
-> surrounded pm_runtime stuff? Is this saying that in all other case where
-> the callback is used, the controller is already resumed and fully
-> operational? That's be worthy of a comment.
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ arch/x86/include/asm/io.h | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-controller register reads require clk to be ON, which might not be 
-always ON. In suspended case we switch off the clocks.
+diff --git a/arch/x86/include/asm/io.h b/arch/x86/include/asm/io.h
+index f6d91ecb8026..638c1a2a82e0 100644
+--- a/arch/x86/include/asm/io.h
++++ b/arch/x86/include/asm/io.h
+@@ -258,37 +258,37 @@ static inline void slow_down_io(void)
+ #endif
+ 
+ #define BUILDIO(bwl, bw, type)						\
+-static inline void out##bwl(unsigned type value, int port)		\
++static inline void out##bwl(type value, u16 port)			\
+ {									\
+ 	asm volatile("out" #bwl " %" #bw "0, %w1"			\
+ 		     : : "a"(value), "Nd"(port));			\
+ }									\
+ 									\
+-static inline unsigned type in##bwl(int port)				\
++static inline type in##bwl(u16 port)					\
+ {									\
+-	unsigned type value;						\
++	type value;							\
+ 	asm volatile("in" #bwl " %w1, %" #bw "0"			\
+ 		     : "=a"(value) : "Nd"(port));			\
+ 	return value;							\
+ }									\
+ 									\
+-static inline void out##bwl##_p(unsigned type value, int port)		\
++static inline void out##bwl##_p(type value, u16 port)			\
+ {									\
+ 	out##bwl(value, port);						\
+ 	slow_down_io();							\
+ }									\
+ 									\
+-static inline unsigned type in##bwl##_p(int port)			\
++static inline type in##bwl##_p(u16 port)				\
+ {									\
+-	unsigned type value = in##bwl(port);				\
++	type value = in##bwl(port);					\
+ 	slow_down_io();							\
+ 	return value;							\
+ }									\
+ 									\
+-static inline void outs##bwl(int port, const void *addr, unsigned long count) \
++static inline void outs##bwl(u16 port, const void *addr, unsigned long count) \
+ {									\
+ 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {		\
+-		unsigned type *value = (unsigned type *)addr;		\
++		type *value = (type *)addr;				\
+ 		while (count) {						\
+ 			out##bwl(*value, port);				\
+ 			value++;					\
+@@ -301,10 +301,10 @@ static inline void outs##bwl(int port, const void *addr, unsigned long count) \
+ 	}								\
+ }									\
+ 									\
+-static inline void ins##bwl(int port, void *addr, unsigned long count)	\
++static inline void ins##bwl(u16 port, void *addr, unsigned long count)	\
+ {									\
+ 	if (cc_platform_has(CC_ATTR_GUEST_UNROLL_STRING_IO)) {		\
+-		unsigned type *value = (unsigned type *)addr;		\
++		type *value = (type *)addr;				\
+ 		while (count) {						\
+ 			*value = in##bwl(port);				\
+ 			value++;					\
+@@ -317,9 +317,9 @@ static inline void ins##bwl(int port, void *addr, unsigned long count)	\
+ 	}								\
+ }
+ 
+-BUILDIO(b, b, char)
+-BUILDIO(w, w, short)
+-BUILDIO(l, , int)
++BUILDIO(b, b, u8)
++BUILDIO(w, w, u16)
++BUILDIO(l,  , u32)
+ 
+ #define inb inb
+ #define inw inw
+-- 
+2.34.1
 
-Other places so far that I have seen is that controller is either 
-already resumed or clk is on (interrupt case) and resume case.
-
-
-
->> struct qcom_swrm_ctrl *swrm
->> struct qcom_swrm_ctrl *ctrl
-> 
-> nit-pick: it helps reviewers when the same variable name is used
-> consistently.
-
-Yes, I did notice this, but for some reason I forgot to fix it.
-
-> 
->> +static int __maybe_unused swrm_runtime_suspend(struct device *dev)
->> +{
->> +	struct qcom_swrm_ctrl *ctrl = dev_get_drvdata(dev);
->> +	int ret;
->> +
->> +	if (!ctrl->clock_stop_not_supported) {
->> +		/* Mask bus clash interrupt */
->> +		ctrl->intr_mask &= ~SWRM_INTERRUPT_STATUS_MASTER_CLASH_DET;
->> +		ctrl->reg_write(ctrl, SWRM_INTERRUPT_MASK_ADDR, ctrl->intr_mask);
->> +		ctrl->reg_write(ctrl, SWRM_INTERRUPT_CPU_EN, ctrl->intr_mask);
->> +	}
->> +	/* Prepare slaves for clock stop */
->> +	ret = sdw_bus_prep_clk_stop(&ctrl->bus);
->> +	if (ret < 0) {
-> 
-> if (ret < 0 && ret != -ENODATA) {
-> 
-> ?
-> 
->> +		dev_err(dev, "prepare clock stop failed %d", ret);
->> +		return ret;
->> +	}
->> +
->> +	ret = sdw_bus_clk_stop(&ctrl->bus);
->> +	if (ret < 0 && ret != -ENODATA) {
->> +		dev_err(dev, "bus clock stop failed %d", ret);
->> +		return ret;
->> +	}
->> +
->> +	clk_disable_unprepare(ctrl->hclk);
->> +
->> +	usleep_range(300, 305);
->> +
->> +	return 0;
->> +}
