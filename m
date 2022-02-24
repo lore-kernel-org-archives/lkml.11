@@ -2,68 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5529EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:25:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4859CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236187AbiBXPZs convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:25:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
+        id S236217AbiBXP0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:26:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236107AbiBXPZo (ORCPT
+        with ESMTP id S236056AbiBXPZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:25:44 -0500
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D7322A284;
-        Thu, 24 Feb 2022 07:25:13 -0800 (PST)
-Date:   Thu, 24 Feb 2022 15:25:01 +0000
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 2/2] pwm: jz4740: Add support for X1000 SoC
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>, robh+dt@kernel.org,
-        linux-mips@vger.kernel.org, linux-pwm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <PTET7R.D6X3F4XL0K3E1@crapouillou.net>
-In-Reply-To: <YheK4+t9w5IeHiDT@orome>
-References: <20220209231141.20184-1-aidanmacdonald.0x0@gmail.com>
-        <20220209231141.20184-2-aidanmacdonald.0x0@gmail.com>
-        <2SMA7R.9OBQWV0ONR102@crapouillou.net> <YheK4+t9w5IeHiDT@orome>
+        Thu, 24 Feb 2022 10:25:49 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1118A22A2B4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:25:18 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id hw13so5087278ejc.9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:25:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8bKHwHd9wrNVqM17Oa3exsITsVuSL3cS/OZaCl9ltdU=;
+        b=Xu14nMrdL/kEer+3zNMAoJu75pcDa/4wbBn87Aq91UuLQXEwfPwsOfgSRU4uufnmA7
+         +qKlGVqeIjGlUAbmRb1cf4snlXfZmBEg1wyREArT+I18vzgOlZgPrIyiejvoLrPPlhga
+         1+poolq+DiL1yPIQ34m7Uy7poHA9pT6p2wDh9pgdWpMFaB2J9t83hJGna8kyGbkVaI1B
+         3wPn7yE/bueB0kzwy2+wEtLQn/oeP2TyHvvkhgUd+VRs6UZOyWU4Ts/dvlI4YxWJuouX
+         oxVktOY0T9gO2sahD52w/uNdkwU1tF2bA0zbho4nXrRHuku14R3Z2xVKoXKasOjsU2jG
+         gv6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=8bKHwHd9wrNVqM17Oa3exsITsVuSL3cS/OZaCl9ltdU=;
+        b=ELfE5+B4slrS86V+lpQtgRAvYCGpsUAWRMLl+lWcCp7EIKNKBEDWl3uu3NL3ZC1LAh
+         UNN7bsf4XqCH9TZDWvwOQY8+XbZXQmB6Moa1ZUCRzJ/Ds07q8k2TXClRBr5+rD35vywA
+         3bkkg6W6FjvTjhY//RrZg9l5GKAVxfgXwyjk3hwsBcIZjs9ZCl1d7qlPcV0t6+bTOutK
+         wDXv70jmIErlgDIK1eXkPKgPHTWQFQbD04w2BeMRva7cPCC1gD1F0AHP10ccLoyqgf1y
+         4SjgmkBkdkqJTIcjD+6YtHiVC30G5GIR98a3fC+0oDsY7YRSvCLiS88D0UWl2vWUEPWt
+         Uj/g==
+X-Gm-Message-State: AOAM533jZVF/rpsxauVZLeSl6iHFp0nnut5kRh+jT+2jD9zl7f/5p2kY
+        LJsLOoPGeJP6hva/JbUYp6c=
+X-Google-Smtp-Source: ABdhPJzdcnTid5+1b8gpHvm6zGYUVRj5BmDXAL6rYfBuRhTnrWv3XXZCJSqhWEaGX1ZLmRLi86sJFA==
+X-Received: by 2002:a17:906:8d8:b0:6d2:131d:be51 with SMTP id o24-20020a17090608d800b006d2131dbe51mr2612370eje.564.1645716316455;
+        Thu, 24 Feb 2022 07:25:16 -0800 (PST)
+Received: from stitch.. (80.71.140.73.ipv4.parknet.dk. [80.71.140.73])
+        by smtp.gmail.com with ESMTPSA id s11sm1509693edt.10.2022.02.24.07.25.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 07:25:16 -0800 (PST)
+Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+To:     linux-riscv@lists.infradead.org
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jason Baron <jbaron@akamai.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Alexandre Ghiti <alex@ghiti.fr>, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 0/8] Add RISC-V asm/insn.h header
+Date:   Thu, 24 Feb 2022 16:24:48 +0100
+Message-Id: <20220224152456.493365-1-kernel@esmil.dk>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+This series adds a RISC-V asm/insn.h header to consolidate instruction
+generation and manipulation similar to arm64's asm/insn.h.
 
-Le jeu., févr. 24 2022 at 14:40:51 +0100, Thierry Reding 
-<thierry.reding@gmail.com> a écrit :
-> On Mon, Feb 14, 2022 at 12:02:26PM +0000, Paul Cercueil wrote:
->>  Hi Aidan,
->> 
->>  Le mer., févr. 9 2022 at 23:11:42 +0000, Aidan MacDonald
->>  <aidanmacdonald.0x0@gmail.com> a écrit :
->>  > The X1000 has the same TCU / PWM hardware as other Ingenic SoCs,
->>  > but it has only 5 channels.
->>  >
->>  > Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
->>  > ---
->>  >  arch/mips/boot/dts/ingenic/x1000.dtsi | 13 +++++++++++++
->>  >  drivers/pwm/pwm-jz4740.c              |  5 +++++
->> 
->>  Please put the driver and device tree changes into separate patches.
-> 
-> Seemed a shame not to take this, so I've manually removed the DTS
-> changes and applied this to the PWM tree.
-> 
-> Aidan, probably best to resend the DTS snippet as a separate patch,
-> unless Paul also wants to apply this manually.
+The first three patches are preparatory patches fixing unaligned access
+in module relocations and moving unneded definitions out of asm/module.h
+and asm/ftrace.h.
+Patch 4 adds the header and the remaining patches converts module
+relocation, plt entry, jump label and dynamic ftrace code to use it.
 
-I am not the arch/mips/ maintainer, so a separate patch would be needed 
-anyway, yes.
+The only obvious code left to convert is the BPF JIT(s).
 
-Cheers,
--Paul
+This series depends on the module relocation range check fix here:
+https://lore.kernel.org/linux-riscv/20220223191257.143694-1-kernel@esmil.dk/
 
+Changes since v2:
+- Split the range check fix out and send it separately.
+- Convert "if (IS_DEFINED(CONFIG_32BIT))" to #ifdef to avoid compiler
+  warning on rv32. Thanks kernel test robot!
+- Add sp register, load/store instructions and RISCV_INSN_REG_L,
+  RISCV_INSN_REG_S and RISC_INSN_SZREG macros to work on both rv32 and
+  rv64 to the asm/insn.h header.
+- Add patch moving unneded definitions out of out asm/ftrace.h and a
+  patch converting kernel/ftrace.c to use the header.
+
+Changes since v1:
+- Send the right patches.
+
+Emil Renner Berthing (8):
+  riscv: Avoid unaligned access when relocating modules
+  riscv: Remove unneeded definitions from asm/module.h
+  riscv: Remove unneeded definitions from asm/ftrace.h
+  riscv: Add asm/insn.h header
+  riscv: Use asm/insn.h for module relocations
+  riscv: Use asm/insn.h to generate plt entries
+  riscv: Use asm/insn.h for jump labels
+  riscv: Use asm/insn.h for dynamic ftrace
+
+ arch/riscv/include/asm/ftrace.h     |  35 +----
+ arch/riscv/include/asm/insn.h       | 151 ++++++++++++++++++
+ arch/riscv/include/asm/module.h     |  87 ----------
+ arch/riscv/kernel/ftrace.c          |  56 ++++---
+ arch/riscv/kernel/jump_label.c      |  12 +-
+ arch/riscv/kernel/module-sections.c |  71 +++++++++
+ arch/riscv/kernel/module.c          | 236 +++++++++++++---------------
+ 7 files changed, 364 insertions(+), 284 deletions(-)
+ create mode 100644 arch/riscv/include/asm/insn.h
+
+-- 
+2.35.1
 
