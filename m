@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 756E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A412C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:49:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231168AbiBXQuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:50:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41400 "EHLO
+        id S231176AbiBXQuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:50:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230387AbiBXQtg (ORCPT
+        with ESMTP id S230462AbiBXQth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:49:36 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA451B71AA;
-        Thu, 24 Feb 2022 08:48:53 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id p9so543965wra.12;
-        Thu, 24 Feb 2022 08:48:53 -0800 (PST)
+        Thu, 24 Feb 2022 11:49:37 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CBF61CD9FF;
+        Thu, 24 Feb 2022 08:49:01 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id r10so606453wrp.3;
+        Thu, 24 Feb 2022 08:49:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=+5VyF9R5qg35oA2HOfIMNY2uyOZcGkyjiMySfjemwzQ=;
-        b=ZA9s47j3zqu62IsneLKAOG6OV9LLOwuVlGjSlWLjSOxdoQ7GLq3f0S28oRwYj7FLkL
-         2mrXnOerxY/bt9eaNfjyZ0KRZovs8fTv/DM9euKJHi9mD2CIHTQGRLBbeY8Xm1Z3KtC3
-         ZBaByH8UqfpdgUYBqkoZnkyFst/ReE7HceKMtDeZlsCCfPJfwsC+H/K3Hu5JK8O+UMgM
-         +07yW4zX+jF09vF75kg4lsG98ZX36H4U+UfdcxQertQnkKjrLJDepujF/zqKTtKOjfAS
-         yAMCiXaWy98gXZTOjYjB/yY2kvlLVvIhDzaKfVqomGkozt6o6qRq5iUIM9FS4PaRghD1
-         cFfw==
+        bh=cc/EjjQVTzpSxPIn9B48rvEfAxhfCuLg0CsFHUnC6wU=;
+        b=D6KWuaK2Qa49n0SO/DryM0q7YdXx9hyCrsFAcGFWwW92YFAlrCgZjrQAu34GV0+lxZ
+         LSnU4qsAhZuGBM12I5JlI+H+dm8W6szX6AJA/LzvZf3nZFYN0/86lgVIc5ebMrsIDI5f
+         3Bsg13TbEBx3XECJqRSv7qNtm82cnEJSnh7T0vd8y4Ay4HzEUrCD3wQ3KkLRIoFXdujH
+         g3qk5cq044Fow+Sr5wwlkKyzK6Cy+8VsxVRp1CI3P9KZCGhg/Fq6YIbYoIiGIwCD9oMB
+         NkNOpn0ItmCEpRU+l4owpMYsJxkqxsiUS/WnX0TwCkPOooHI84gV77Hs2AqeRemzvE8s
+         q3rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+5VyF9R5qg35oA2HOfIMNY2uyOZcGkyjiMySfjemwzQ=;
-        b=Va1PNd95xhfse7xwtCYqI4WoteOWRsHirCQgEOJot8xzS1YL4EAL15/Y59Tq6h4Lj4
-         /miMUcy9osj4PKG/hPlk+pTFWtzRtL/ZAydG6UMdBld13IcaWFzeBjlvBM9TR83KLrBx
-         4/rR9IvXUA993Xw4PiKMM/jEpzzkiMGIldq3AQ+qtFY6H6UgQOjC093SAA1wYv7H9Fy0
-         5ynM93aPR/U6XxsiBdEhSqlc07elT5ILuvhD+9/N9vvYRCd0QxbxY+JyQt/tYjaWVrvt
-         gfFgjhYOsl2jVPsBVa2xDb6ArdjMvQUCa1LDKuBMhj8EBs5trpVvejje1DwA2ao+RvWQ
-         zOcg==
-X-Gm-Message-State: AOAM531iZcugamt0J/UK2neinvgCLHUkfLuHrdcd3yFmPFFFblrwDIvz
-        oYCwHM1g5tPGM64snlUM3+g=
-X-Google-Smtp-Source: ABdhPJwql7hK9Cj5MFOAeW0uaE5zsiqGHufEeNZWVzs+Nt0x6gbxbc1qiPvcd3JNT2v6CJ/7QtBdVQ==
-X-Received: by 2002:adf:ec10:0:b0:1e4:b3e3:2ef8 with SMTP id x16-20020adfec10000000b001e4b3e32ef8mr2916779wrn.183.1645721331984;
-        Thu, 24 Feb 2022 08:48:51 -0800 (PST)
+        bh=cc/EjjQVTzpSxPIn9B48rvEfAxhfCuLg0CsFHUnC6wU=;
+        b=WWxhO5KLASOxf+zgBa4SjcA467eGrAvuYGzaqoM+FWPCcTTLOVdCSKWo52K+Q2KVX/
+         wezAZqZoUusl0ghEm5ahS6cFUtGUU6ixxJjAXQ+GCpCkhCO5dBxbyZsziI7VZ46SJ+SP
+         23tnOmQXsMFKBPcToxoCI/irHbu62bZ8LVH+4Wp4kEyE/x/hHcGT1VLTNwzsc8nnpJTu
+         PqitwOz/lC2zoOkmjctOO5XLoS+F+iLPkOf7qFCDayLlknUNakuHfeRpUY+T/m2kS4IF
+         VChgWRH9CMn5erAK1eFg9GJTpzy2pxK5PNhr0OueQk5x2jF7m+xDIF8g64xyDP76eCe4
+         F8kA==
+X-Gm-Message-State: AOAM532VJ43uyNBuomVNwdsEQvB24J/lyqsgIA/u0k4LS4o3ff7vmWMa
+        PmQxRazQo2meErLGJwhE/u0=
+X-Google-Smtp-Source: ABdhPJw9ei33LKMOQzgitxsBdECJ63ZP2r+J5WsHTIgcsumOuU8PDWGvlyidZNU7+lC8YcZIV7bqIw==
+X-Received: by 2002:adf:f991:0:b0:1ed:c156:b6e3 with SMTP id f17-20020adff991000000b001edc156b6e3mr3028891wrr.411.1645721340027;
+        Thu, 24 Feb 2022 08:49:00 -0800 (PST)
 Received: from Ansuel-xps.localdomain ([5.170.140.187])
-        by smtp.googlemail.com with ESMTPSA id k18sm2694095wrp.104.2022.02.24.08.48.50
+        by smtp.googlemail.com with ESMTPSA id k18sm2694095wrp.104.2022.02.24.08.48.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 08:48:51 -0800 (PST)
+        Thu, 24 Feb 2022 08:48:59 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,9 +59,9 @@ To:     Andy Gross <agross@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 09/15] clk: qcom: clk-rcg: add clk_rcg_floor_ops ops
-Date:   Thu, 24 Feb 2022 17:48:25 +0100
-Message-Id: <20220224164831.21475-10-ansuelsmth@gmail.com>
+Subject: [PATCH v5 13/15] dt-bindings: reset: add ipq8064 ce5 resets
+Date:   Thu, 24 Feb 2022 17:48:29 +0100
+Message-Id: <20220224164831.21475-14-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220224164831.21475-1-ansuelsmth@gmail.com>
 References: <20220224164831.21475-1-ansuelsmth@gmail.com>
@@ -71,70 +71,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add clk_rcg_floor_ops for clock that can't provide a stable freq and
-require to use a floor freq to provide the requested frequency.
+Add ipq8064 ce5 resets needed for CryptoEngine gcc driver.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
 ---
- drivers/clk/qcom/clk-rcg.c | 24 ++++++++++++++++++++++++
- drivers/clk/qcom/clk-rcg.h |  1 +
- 2 files changed, 25 insertions(+)
+ include/dt-bindings/reset/qcom,gcc-ipq806x.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/clk/qcom/clk-rcg.c b/drivers/clk/qcom/clk-rcg.c
-index a9d181d6be21..88845baa7f84 100644
---- a/drivers/clk/qcom/clk-rcg.c
-+++ b/drivers/clk/qcom/clk-rcg.c
-@@ -526,6 +526,19 @@ static int clk_rcg_set_rate(struct clk_hw *hw, unsigned long rate,
- 	return __clk_rcg_set_rate(rcg, f);
- }
+diff --git a/include/dt-bindings/reset/qcom,gcc-ipq806x.h b/include/dt-bindings/reset/qcom,gcc-ipq806x.h
+index 26b6f9200620..020c9cf18751 100644
+--- a/include/dt-bindings/reset/qcom,gcc-ipq806x.h
++++ b/include/dt-bindings/reset/qcom,gcc-ipq806x.h
+@@ -163,5 +163,10 @@
+ #define NSS_CAL_PRBS_RST_N_RESET			154
+ #define NSS_LCKDT_RST_N_RESET				155
+ #define NSS_SRDS_N_RESET				156
++#define CRYPTO_ENG1_RESET				157
++#define CRYPTO_ENG2_RESET				158
++#define CRYPTO_ENG3_RESET				159
++#define CRYPTO_ENG4_RESET				160
++#define CRYPTO_AHB_RESET				161
  
-+static int clk_rcg_set_floor_rate(struct clk_hw *hw, unsigned long rate,
-+				  unsigned long parent_rate)
-+{
-+	struct clk_rcg *rcg = to_clk_rcg(hw);
-+	const struct freq_tbl *f;
-+
-+	f = qcom_find_freq_floor(rcg->freq_tbl, rate);
-+	if (!f)
-+		return -EINVAL;
-+
-+	return __clk_rcg_set_rate(rcg, f);
-+}
-+
- static int clk_rcg_bypass_set_rate(struct clk_hw *hw, unsigned long rate,
- 				unsigned long parent_rate)
- {
-@@ -816,6 +829,17 @@ const struct clk_ops clk_rcg_ops = {
- };
- EXPORT_SYMBOL_GPL(clk_rcg_ops);
- 
-+const struct clk_ops clk_rcg_floor_ops = {
-+	.enable = clk_enable_regmap,
-+	.disable = clk_disable_regmap,
-+	.get_parent = clk_rcg_get_parent,
-+	.set_parent = clk_rcg_set_parent,
-+	.recalc_rate = clk_rcg_recalc_rate,
-+	.determine_rate = clk_rcg_determine_rate,
-+	.set_rate = clk_rcg_set_floor_rate,
-+};
-+EXPORT_SYMBOL_GPL(clk_rcg_floor_ops);
-+
- const struct clk_ops clk_rcg_bypass_ops = {
- 	.enable = clk_enable_regmap,
- 	.disable = clk_disable_regmap,
-diff --git a/drivers/clk/qcom/clk-rcg.h b/drivers/clk/qcom/clk-rcg.h
-index 99efcc7f8d88..00cea508d49e 100644
---- a/drivers/clk/qcom/clk-rcg.h
-+++ b/drivers/clk/qcom/clk-rcg.h
-@@ -86,6 +86,7 @@ struct clk_rcg {
- };
- 
- extern const struct clk_ops clk_rcg_ops;
-+extern const struct clk_ops clk_rcg_floor_ops;
- extern const struct clk_ops clk_rcg_bypass_ops;
- extern const struct clk_ops clk_rcg_bypass2_ops;
- extern const struct clk_ops clk_rcg_pixel_ops;
+ #endif
 -- 
 2.34.1
 
