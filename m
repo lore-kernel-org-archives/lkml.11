@@ -2,81 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 224A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B409C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229728AbiBXBoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:44:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
+        id S229759AbiBXBpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:45:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbiBXBoT (ORCPT
+        with ESMTP id S229739AbiBXBpQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:44:19 -0500
-Received: from out199-11.us.a.mail.aliyun.com (out199-11.us.a.mail.aliyun.com [47.90.199.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87889FBF16
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:43:49 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V5LKxlS_1645667025;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V5LKxlS_1645667025)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 24 Feb 2022 09:43:45 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] mm/rmap: Fix argument list that the kdoc format and script verified.
-Date:   Thu, 24 Feb 2022 09:43:44 +0800
-Message-Id: <20220224014344.99537-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Wed, 23 Feb 2022 20:45:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B653813C9D7;
+        Wed, 23 Feb 2022 17:44:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69013B81FCD;
+        Thu, 24 Feb 2022 01:44:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DC0CC340E7;
+        Thu, 24 Feb 2022 01:44:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645667084;
+        bh=XHH/uO/8KeWnauMtq/0M/7XsURJLAWgKWhTDuS/j7PU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DJ5uOTxE695TQwqvHCCjvBDx1V9zfQteuN6RqddIxwLzmtMtU0YQF/Hbkg//oY47S
+         xDTaqE9t1p2533ns/ODCeWx1Yf+G9SergWl28ujncQdNY8B5VjGvbGMYaaSB2oM6ra
+         yDW7APgEakixM3iUJbsBFGDH4TKZj9nMls4vF2YHZylU9E4L91Ju4jvzwRJfkMl5ke
+         Uiy0wihAareamqkPNxn0XZgpxhwTQbIsA22QZl/QQyGt4S5K1fOFXuKX/l/L4+RhOE
+         m3oaJQvnoVZLcS4t5jOOiXg+GEMe+jpgfOqxBVogydXmG4FWlUtgCaSyb7WDYce+co
+         WjICUFmHg6BKg==
+From:   broonie@kernel.org
+To:     Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: linux-next: Tree for Feb 23
+Date:   Thu, 24 Feb 2022 01:44:40 +0000
+Message-Id: <20220224014440.1397777-1-broonie@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The warnings were found by running scripts/kernel-doc, which is
-caused by using 'make W=1'.
+Hi all,
 
-mm/rmap.c:1684: warning: Function parameter or member 'folio' not
-described in 'try_to_unmap'
-mm/rmap.c:1684: warning: Excess function parameter 'page' description in
-'try_to_unmap'
-mm/rmap.c:2086: warning: Function parameter or member 'folio' not
-described in 'folio_make_device_exclusive'
-mm/rmap.c:2086: warning: expecting prototype for
-page_make_device_exclusive(). Prototype was for
-folio_make_device_exclusive() instead
+Note that today's -next again does not include the akpm tree since it's
+been a long day and the conflicts especially with the mm code seemed
+more than it was wise for me to attempt.  I'll have another go tomorrow
+but no guarantees, I got further today.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- mm/rmap.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Changes since 20220222:
 
-diff --git a/mm/rmap.c b/mm/rmap.c
-index d27d79ec11b7..ebcf17d8ac1c 100644
---- a/mm/rmap.c
-+++ b/mm/rmap.c
-@@ -1671,7 +1671,7 @@ static int page_not_mapped(struct folio *folio)
- 
- /**
-  * try_to_unmap - try to remove all page table mappings to a page
-- * @page: the page to get unmapped
-+ * @folio: The folio we're currently operating on.
-  * @flags: action and flags
-  *
-  * Tries to remove all the page table entries which are mapping this
-@@ -2068,8 +2068,8 @@ static bool page_make_device_exclusive_one(struct folio *folio,
- }
- 
- /**
-- * page_make_device_exclusive - mark the page exclusively owned by a device
-- * @page: the page to replace page table entries for
-+ * folio_make_device_exclusive - mark the page exclusively owned by a device
-+ * @folio: The folio we're currently operating on.
-  * @mm: the mm_struct where the page is expected to be mapped
-  * @address: address where the page is expected to be mapped
-  * @owner: passed to MMU_NOTIFY_EXCLUSIVE range notifier callbacks
--- 
-2.20.1.7.g153144c
+The drm-intel tree gained a conflict with the drm-intel-fixes tree.
 
+The drm-tegra tree gained a conflict with the drm tree.
+
+The mfd tree gained a build failure, I used the version from yesterday
+instead.
+
+The kvm tree gained a conflict with the kvm-fixes tree.
+
+The nvmem tree gained a conflict with the spi tree.
+
+The nvmem tree gained a conflict with the char-misc tree.
+
+I applied a fix for the build failure in the maple tree so merged
+today's version.
+
+The folio tree gained several conflicts with the maple tree.
+
+Non-merge commits (relative to Linus' tree): 7020
+ 7614 files changed, 874525 insertions(+), 213969 deletions(-)
+
+----------------------------------------------------------------------------
+
+I have created today's linux-next tree at
+git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+(patches at http://www.kernel.org/pub/linux/kernel/next/ ).  If you
+are tracking the linux-next tree using git, you should not use "git pull"
+to do so as that will try to merge the new linux-next release with the
+old one.  You should use "git fetch" and checkout or reset to the new
+master.
+
+You can see which trees have been included by looking in the Next/Trees
+file in the source.  There are also quilt-import.log and merge.log
+files in the Next directory.  Between each merge, the tree was built
+with a defconfig for arm64, an allmodconfig for x86_64, a
+multi_v7_defconfig for arm and a native build of tools/perf. After the
+final fixups (if any), I do an x86_64 modules_install followed by builds
+for x86_64 allnoconfig, arm64 allnoconfig, arm64 allyesconfig and i386,
+and arm64 and htmldocs.
+
+Below is a summary of the state of the merge.
+
+I am currently merging 346 trees (counting Linus' and 93 trees of bug
+fix patches pending for the current merge release).
+
+Stats about the size of the tree over time can be seen at
+http://neuling.org/linux-next-size.html .
+
+Status of my local build tests will be at
+http://kisskb.ellerman.id.au/linux-next .  If maintainers want to give
+advice about cross compilers/configs that work, we are always open to add
+more builds.
+
+Thanks to Randy Dunlap for doing many randconfig builds.  And to Paul
+Gortmaker for triage and bug fixes.
