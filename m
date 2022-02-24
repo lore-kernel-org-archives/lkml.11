@@ -2,98 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F499C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05EE3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233172AbiBXTEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:04:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
+        id S233179AbiBXTFK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:05:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiBXTEl (ORCPT
+        with ESMTP id S229664AbiBXTFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 14:04:41 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA14A1E017D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:04:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645729450; x=1677265450;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=cia5oKJxlQnNWcyfcLJl3PXOjDFqv+fRs+nhPfQzUzs=;
-  b=bhvBpWkgDoU/8DrgmU2pmaNGFxGu4MDjhqgBBmtPz+qze63oI9+WG9rK
-   y2M8CTRetnBaIbqvZjfZolbYvCjdt2QUk3yAwyyhQibi2wQ+9SIX1uBUb
-   aLAb45el28xZZTdqwMzp63kf1fZC9F3CFRNUufFSONJoPjcvn5VqzJajf
-   hcGpNfpoe4d7W7F7pCV1E75KIoF+MlKXgwvxq6nuvuKTfzXR6qA5gpNBs
-   WRO7NvKAoihu9YVcwjT7elTy1o/PvyhG08xfoWz+u/BXFAxuX5/fD9Wtg
-   WfgSN0pIqi4gBSlVCrB50RBknconvYA9lLVJgNdpv9r1gLqLIlBaPv9uR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="239725205"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="239725205"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 11:04:10 -0800
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="548895003"
-Received: from vpirogov-mobl.amr.corp.intel.com (HELO [10.252.137.68]) ([10.252.137.68])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 11:04:09 -0800
-Message-ID: <51b6613d-eabd-941d-19b2-95b33ec27e99@intel.com>
-Date:   Thu, 24 Feb 2022 11:04:04 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Thu, 24 Feb 2022 14:05:09 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F011E374A
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:04:37 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id d17so2722258pfl.0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:04:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wPvD9Gbqoy/qSwZ/Jj2R/mlZJWwVO08mdUGWoTeC1ZI=;
+        b=P3yON3e2F3MbMPzXGu/EMsX6wlfjxoTboKHsW3S64YsnexcSvFG1ucFfHWL11kWvav
+         OiQxfKB7qkoNybQDJd/X2kEKjuxXaJCkwo+4zB1D2+JJMhpDEOYlyfq+dSIR0PANiLXG
+         pOGeMFc1nb/FCM/MfkYIjZ92VONRE02wh7SImG9vNCTEdMS8Jvat2p1ovnZ3k+I/nS+V
+         ym40djl+vnzXLR+Wgo4GIJHl+Pm/1P7vEc9RbN896G5JpgOOXGi4+U7qexaxBC1KIeet
+         mxiOcvdZ0AAdXf6G3hds/0nQCjFdltFtSMxx/V/qul7PZJayxsOjp0dyLm2Il7QsjCtE
+         b8bQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wPvD9Gbqoy/qSwZ/Jj2R/mlZJWwVO08mdUGWoTeC1ZI=;
+        b=vqkWF9AJyczHB0cH1vj0ftnjv89F9nMvFOoAM7jLr3N2oD6zFZJJjdU63qCKIyT6pK
+         7QLU/f0QlBmigAdXzbTbaQPI8b6wVnyUe483uzOwsYpkCLYmn6rBzmsouPsiwT+FvmMU
+         7zmekFo3/VihGoc1984R+6+Xs4Zrf4oorJOBPUc5QzuVoMHa5mHmpkvzyzNgoee/OwCC
+         C+AY6l4Y7Ihr9YQtDKa08CpPLFVtWsMYNvdXog6zftxWuqQpvygXFsqGeRuHk9d06Nhk
+         KF4/Okze0HR9cDMPVGAHJ4yIzTxjEYzRr9vOqf36qiNKtGAYlpxIliR4dg/+a2+Q6E6G
+         6xrg==
+X-Gm-Message-State: AOAM530PVdcWOVPObyWkVHURcWkPY5ICG+ALMTMY6UJpIAfg0rvagDxO
+        iouaUOMbhBNPLxYMKbpZbGXl3Q==
+X-Google-Smtp-Source: ABdhPJxAmvbetZX6uTkPL9i4aCsT2i5ttGl2YHFTLp1XUUlx+jEgiHHhnC0BmaM3LeB4HByu2wdxsw==
+X-Received: by 2002:a65:6201:0:b0:369:4a47:aff1 with SMTP id d1-20020a656201000000b003694a47aff1mr3254756pgv.238.1645729476627;
+        Thu, 24 Feb 2022 11:04:36 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id e2-20020a056a00162200b004e0a8002697sm209500pfc.123.2022.02.24.11.04.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 11:04:35 -0800 (PST)
+Date:   Thu, 24 Feb 2022 19:04:32 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
         tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
         hpa@zytor.com, jgross@suse.com, jmattson@google.com,
         joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        pbonzini@redhat.com, sdeep@vmware.com, tony.luck@intel.com,
+        vkuznets@redhat.com, wanpengli@tencent.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv4 09/30] x86/tdx: Add MSR support for TDX guests
+Message-ID: <YhfWwHE4nZfQWPCl@google.com>
 References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
- <20220224155630.52734-11-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv4 10/30] x86/tdx: Handle CPUID via #VE
-In-Reply-To: <20220224155630.52734-11-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <20220224155630.52734-10-kirill.shutemov@linux.intel.com>
+ <67dfdb0c-c483-ec3c-4fb8-57086ffde9bf@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <67dfdb0c-c483-ec3c-4fb8-57086ffde9bf@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/24/22 07:56, Kirill A. Shutemov wrote:
->  static bool virt_exception_user(struct pt_regs *regs, struct ve_info *ve)
->  {
-> -	pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
-> -	return false;
-> +	switch (ve->exit_reason) {
-> +	case EXIT_REASON_CPUID:
-> +		return handle_cpuid(regs);
-> +	default:
-> +		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
-> +		return false;
-> +	}
->  }
+On Thu, Feb 24, 2022, Dave Hansen wrote:
+> On 2/24/22 07:56, Kirill A. Shutemov wrote:
+> > diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
+> > index 0a2e6be0cdae..89992593a209 100644
+> > --- a/arch/x86/coco/tdx.c
+> > +++ b/arch/x86/coco/tdx.c
+> > @@ -116,6 +116,44 @@ void __cpuidle tdx_safe_halt(void)
+> >  		WARN_ONCE(1, "HLT instruction emulation failed\n");
+> >  }
+> >  
+> > +static bool read_msr(struct pt_regs *regs)
+> > +{
+> > +	struct tdx_hypercall_args args = {
+> > +		.r10 = TDX_HYPERCALL_STANDARD,
+> > +		.r11 = EXIT_REASON_MSR_READ,
+> 
+> Just a minor note: these "EXIT_REASON_FOO"'s in r11 are effectively
+> *the* hypercall being made, right?
+> 
+> The hypercall is being made in response to what would have otherwise
+> been a MSR read VMEXIT.  But, it's a *bit* goofy to see them here when
+> the TDX guest isn't doing any kind of VMEXIT.
 
-What does this mean for userspace?  What kinds of things are we ceding
-to the (untrusted) VMM to supply to userspace?
-
->  /* Handle the kernel #VE */
-> @@ -200,6 +235,8 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
->  		return read_msr(regs);
->  	case EXIT_REASON_MSR_WRITE:
->  		return write_msr(regs);
-> +	case EXIT_REASON_CPUID:
-> +		return handle_cpuid(regs);
->  	default:
->  		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
->  		return false;
-What kinds of random CPUID uses in the kernel at runtime need this
-handling?  Is it really OK that we let the VMM inject arbitrary CPUID
-values into random CPUID uses in the kernel... silently?
-
-Is this better than just returning 0's, for instance?
+But the TDX guest is doing a VM-Exit, that's all TDCALL is, an exit to the host.
+r10 states that this is a GHCI-standard hypercall, r11 holds the reason why the
+guest is exiting to the host.  The guest could pretty it up by redefining all the
+VM-Exit reasons as TDX_REQUEST_MSR_READ or whatever, but IMO diverging from
+directly using EXIT_REASON_* will be annoying in the long run, e.g. will make it
+more difficult to grep KVM + kernel to understand the end-to-end flow.
