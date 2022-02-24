@@ -2,105 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3797C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72BCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232221AbiBXRnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:43:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52990 "EHLO
+        id S232240AbiBXRnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:43:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbiBXRnI (ORCPT
+        with ESMTP id S232171AbiBXRnQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 12:43:08 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5D42177E6;
-        Thu, 24 Feb 2022 09:42:37 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 305E11F37C;
-        Thu, 24 Feb 2022 17:42:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645724556;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oHRcXNAyVVLBmzjtITjvYsLkaLmEBNuckTKDj2JF/sQ=;
-        b=qjReW5R4Uw6x5aNoKjevXfGCZdphemqRh+9z7KgeK3+PdYeNitd3JjyDgtrF3cOvwLPNcB
-        l2aZuvycJ72O/Pz5lP05+t5WE7B0FcDV6FDiGRlVv7YF6pFhEy3P9EPo4H5EXxqMYtNvv7
-        p9XPBICZw3U8HzfYz2NYBH77pGILyI8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645724556;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oHRcXNAyVVLBmzjtITjvYsLkaLmEBNuckTKDj2JF/sQ=;
-        b=bP3zwb+almDjPEBWW1T5UZXt9hS5kwf0Isr6ycFHkERR7tAq0C/x9r4nhTzdINjCy5ksIS
-        gO2TXUQiUS1GncAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BCD7713B15;
-        Thu, 24 Feb 2022 17:42:35 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id EjarK4vDF2J4GwAAMHmgww
-        (envelope-from <pvorel@suse.cz>); Thu, 24 Feb 2022 17:42:35 +0000
-Date:   Thu, 24 Feb 2022 18:42:29 +0100
-From:   Petr Vorel <pvorel@suse.cz>
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     zohar@linux.ibm.com, dvyukov@google.com, ebiggers@kernel.org,
-        jmorris@namei.org, keescook@chromium.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, serge@hallyn.com
-Subject: Re: [PATCH 2/2] integrity: double check iint_cache was initialized
-Message-ID: <YhfDhYQYZTU0clAf@pevik>
-Reply-To: Petr Vorel <pvorel@suse.cz>
-References: <20210322154207.6802-2-zohar@linux.ibm.com>
- <20220224142025.2587-1-pvorel@suse.cz>
- <418628ea-f524-05a1-8bfc-a688fa2d625d@schaufler-ca.com>
+        Thu, 24 Feb 2022 12:43:16 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 790532177F8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:42:45 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id bg10so5963787ejb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:42:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s6RSUvrfQyVDu1K4DQ7l1PJWccys/B56pfoP2UXlTjM=;
+        b=CMiJRr3TZReunnWs7oexaEgQRHI+PZN2gbfEQ7stEIebHxwsxa2vItFFPHfDG8XqfE
+         4y29FK3bqoQAkbrH5qXUm+UtofHgO2s+n0WQ2uTHbmyI4nW03QAd25PsvnIBzyHNNleO
+         hpu+HCU7qnlyXL5HWf1fvT86HG2hr4T+bGsSI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s6RSUvrfQyVDu1K4DQ7l1PJWccys/B56pfoP2UXlTjM=;
+        b=YSE7Vug2pX2/f2mpk1XUzqH1YfW/mi4C5bEyKgJtsG0MTxCaxjDny6LF410VBSpjlI
+         tlSQ2laDXQfQs+en511cIQ7jzktcKofmkjPrwGMAPJC4xaI9Iu4MPJ86uE4FXXTVXssb
+         u09f5xcjEDaRGKZcOchX6Sz4HwS1sKwtR0/tFdh6ZABWcl9mdTgamWe7NODPpHi7Kw6u
+         TUc8NaqNqlfwjbLp/7aNktyZOW69in/CUiKs5A7c0aqKrZjYtEHeuI3Ng6VRIpNaod/s
+         /XmWrIoA0YpRz3XiHZXoy/FSEfnhgP12BBjaC2skuMcMutmw5yYZNKqkXC59u7bXt+St
+         HZYg==
+X-Gm-Message-State: AOAM5311Oq5iA+RgoHtQjv1uF6Kfh9Qq6uFATBhDSGoxB6cAc2kd87jC
+        +iLwJnKM7azh02E47upd9YByuhF8mhzT3rf835Q=
+X-Google-Smtp-Source: ABdhPJzDw2T+X9DS171ab1+lb5jbJDqerabo2n3zSnT429nVt0SgAj6kIn20CQDLcXsJYf+cp3eJxA==
+X-Received: by 2002:a17:907:3347:b0:6ce:6bc4:d18a with SMTP id yr7-20020a170907334700b006ce6bc4d18amr3149231ejb.612.1645724563838;
+        Thu, 24 Feb 2022 09:42:43 -0800 (PST)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id w20-20020a50f114000000b00405ef64c174sm55058edl.57.2022.02.24.09.42.43
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 09:42:43 -0800 (PST)
+Received: by mail-wr1-f52.google.com with SMTP id s1so790824wrg.10
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:42:43 -0800 (PST)
+X-Received: by 2002:a2e:aaa2:0:b0:244:bf42:3e6e with SMTP id
+ bj34-20020a2eaaa2000000b00244bf423e6emr2668077ljb.176.1645724242833; Thu, 24
+ Feb 2022 09:37:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <418628ea-f524-05a1-8bfc-a688fa2d625d@schaufler-ca.com>
+References: <20220224122614.94921-1-david@redhat.com> <20220224122614.94921-7-david@redhat.com>
+In-Reply-To: <20220224122614.94921-7-david@redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 24 Feb 2022 09:37:06 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whV9vGhSniUj1hPgK66ejeqzHBiPGhFnHxM1hp9-w_wxQ@mail.gmail.com>
+Message-ID: <CAHk-=whV9vGhSniUj1hPgK66ejeqzHBiPGhFnHxM1hp9-w_wxQ@mail.gmail.com>
+Subject: Re: [PATCH RFC 06/13] mm/rmap: pass rmap flags to hugepage_add_anon_rmap()
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Casey,
+On Thu, Feb 24, 2022 at 4:30 AM David Hildenbrand <david@redhat.com> wrote:
+>
+> -                               hugepage_add_anon_rmap(new, vma, pvmw.address);
+> +                               hugepage_add_anon_rmap(new, vma, pvmw.address, 0);
 
-> On 2/24/2022 6:20 AM, Petr Vorel wrote:
-> > Hi Mimi, Tetsuo, Kees, all,
+This now has the same "what does 0 mean?" issue.
 
-> > FYI this commit merged as 92063f3ca73a ("integrity: double check iint_cache was initialized")
-> > is the reason for openSUSE distro installer going back from lsm= to deprecated
-> > security= when filling default grub parameters because security=apparmor or
-> > security=selinux does not break boot when used with ima_policy=tcb, unlike
-> > using lsm.
+(And grepping for RMAP_, I notice that we have a namespace clash, with
+xfs and kvm also using "RMAP_xyz" for their own things. Oh wel, at
+least they don't look like they'd ever mix).
 
-> OK, color me confused. Integrity isn't an LSM. It doesn't
-> call security_add_hooks().
-Really: "Initially I also questioned making "integrity" an LSM.  Perhaps it's
-time to reconsider." [1]
-
-> > @Kees, @Mimi sure, people who use ima_policy=tcb will just remove lsm parameter
-> > or add "integrity" to it but I wonder whether there could be "integrity"
-> > automatic inclusion when using ima_policy=tcb. Although the point of lsm= (and
-> > CONFIG_LSM) is to have *ordered* list of enabled LSMs and it wouldn't be clear
-> > on which place.
-
-> Why would adding integrity to the lsm= make sense? It's not an LSM.
-
-> Sorry, but something is wrong here.
-np. I explained that: try to boot with "ima_policy=tcb lsm=" or "ima_policy=tcb
-lsm=whatever" (whatever != integrity).
-
-Also have look at commit 92063f3ca73a ("integrity: double check iint_cache was
-initialized") which explain why it's needed.
-
-Kind regards,
-Petr
-
-[1] https://lore.kernel.org/linux-integrity/3ed2004413e0ac07c7bd6f10294d6b6fac6fdbf3.camel@linux.ibm.com/
+            Linus
