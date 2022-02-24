@@ -2,127 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 275EEC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D64C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234443AbiBXMi4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:38:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
+        id S234450AbiBXMj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:39:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234426AbiBXMix (ORCPT
+        with ESMTP id S231701AbiBXMjz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:38:53 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E7B19E71C;
-        Thu, 24 Feb 2022 04:38:23 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id f11so2602801ljq.11;
-        Thu, 24 Feb 2022 04:38:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=YTBia43ww2BpFzmoJ0cJeExRHMVTq6qsE5DA8fpwhGk=;
-        b=bZnSSWo0O6ywYIPw3PSgJNmqA1t4zCw88y+wSC1loGKWU4l0MJLOAAaAScezJw2Gz3
-         T4dQzU3rlLniO0pqxNoy7i4iDvipOrXW7/9f/8mLGbYWgTI0MoeGw/j1PGx76kwHY8ec
-         KnWrkWf5YetKqrOm/Zr08ZI1/re8sklh9hqslg16ZGdqLr5L/x6FfnbJyVO525YFC/2w
-         4nRql6wGBGxEI6a67at+3ztbEHTkCd5xpK1TRqduBMWFaf+TLZUx0wwcr8WfL7a0pVFq
-         ZqPr5guZQufLJHQd0NUIq/vUieLHfiuk4IOXW+N4j/0I9mb6ohmfJm1e2GwFudcXjyMm
-         kpzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=YTBia43ww2BpFzmoJ0cJeExRHMVTq6qsE5DA8fpwhGk=;
-        b=Ck5pLPwUqEaPF+72lwWND++O6EQ0gylEymTAmg09CbHA6L4xoMHaN5V2cdcgwhE+mD
-         mlCrvRVN9BJa/Je6l0BdfN6g4+hqGiHH+1wAvFU1SmlV6NyouS6IoRgnO6/IzU1qhelb
-         xP6OJ4zb803nIOTfZpHEvjRwynqngUw0qt4kwaGfA1l2sGOUh0Xln/3W0P0U6ai6GdQZ
-         PoJmgQcdjzK/0y9d7ZdvbNCBt0+kvmXEyiiDf5fFmWwtVyxYw97aFjZCb/yiQR15PLng
-         r6g1aBsOJDeQZ1EcfLKPidxuihr4nRemKfkqyZ2aKZt6WA5UjuJA11oT+nkg0z+6wQEv
-         YcrA==
-X-Gm-Message-State: AOAM530MPQJHHjbpu/NE7vjqMZ1/6GVRakLRh4IhPbPKFBbuRUXEb7s8
-        mqA3h2yk7pVhMFs8yy6V4BE=
-X-Google-Smtp-Source: ABdhPJwignEIbwikb1ZfQLmHLENOGH+okHSbzNNPd7lMH3hjRuVM2pjvj+0FJN+uZYnba4DecqC0Zw==
-X-Received: by 2002:a2e:9c82:0:b0:246:20c:d62d with SMTP id x2-20020a2e9c82000000b00246020cd62dmr1769885lji.39.1645706301325;
-        Thu, 24 Feb 2022 04:38:21 -0800 (PST)
-Received: from orome (p200300e41f0a6900000000000000043a.dip0.t-ipconnect.de. [2003:e4:1f0a:6900::43a])
-        by smtp.gmail.com with ESMTPSA id 25sm341778lju.70.2022.02.24.04.38.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 04:38:20 -0800 (PST)
-Date:   Thu, 24 Feb 2022 13:38:18 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Julius Werner <jwerner@chromium.org>,
-        Dmitry Osipenko <digetx@gmail.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        linux-tegra <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH 3/3] ARM: dts: Update jedec,lpddr2 revision-id binding
-Message-ID: <Yhd8OoJQer86kTZ8@orome>
-References: <20220224003421.3440124-1-jwerner@chromium.org>
- <20220224003421.3440124-4-jwerner@chromium.org>
- <ec0c90b9-58a9-669f-fe4a-73e60df335d5@canonical.com>
+        Thu, 24 Feb 2022 07:39:55 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9322804DB;
+        Thu, 24 Feb 2022 04:39:24 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K4CCD07MVz4xdl;
+        Thu, 24 Feb 2022 23:39:19 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1645706360;
+        bh=8EGa3eVWgTEde2gYL1wkBviDfIH/E8ovFgLPoK3d+ZA=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=Z7jT6vn3oi7dj7yRyZFUSJ33xHIOjzEkBxgWvQED7rbUeElVkn5TZSjvGL1xgTjTU
+         03oa7LTrNlJnR5xoPnkT2cPYIWZpWl+0VkAnpTkpKUzASb9zNA+jtrRcjMyLU+9KZh
+         QoeXdMDJ//OWfvhkt8lZwRbVAbA6nh5BeatTk1bKLM1SQdJNQzkH+sgatR9dJx1wOu
+         iwe7fQ9bU3sa9rcDzhO6w27FgQDYgyKwNMg6TEh0pL9qBhm1hNdJ6EEjzpzFBMlosz
+         8ybLHAXvgTLwGIQZ05zC+27evp33N91vl97MnWqYxfKWVV+3agjufpv1hUNGqdNlTL
+         Xx1LzKpeo8xoQ==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Anders Roxell <anders.roxell@linaro.org>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 2/3] powerpc: fix build errors
+In-Reply-To: <20220223135820.2252470-2-anders.roxell@linaro.org>
+References: <20220223135820.2252470-1-anders.roxell@linaro.org>
+ <20220223135820.2252470-2-anders.roxell@linaro.org>
+Date:   Thu, 24 Feb 2022 23:39:16 +1100
+Message-ID: <871qzsphfv.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="WI3zOMv/g7nKQzbJ"
-Content-Disposition: inline
-In-Reply-To: <ec0c90b9-58a9-669f-fe4a-73e60df335d5@canonical.com>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Anders,
 
---WI3zOMv/g7nKQzbJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks for these, just a few comments below ...
 
-On Thu, Feb 24, 2022 at 08:29:27AM +0100, Krzysztof Kozlowski wrote:
-> On 24/02/2022 01:34, Julius Werner wrote:
-> > This patch updates the tegra20-asus-tf101 device tree to replace the
-> > deprecated `revision-id1` binding with the new `revision-id` binding in
-> > its "jedec,lpddr2"-compatible node. This was the only DTS in the tree
-> > using this binding.
-> >=20
-> > The revision-id2 (mode register 7) of this memory chip was not given in
-> > the existing device tree, so let's assume 0 for now until it becomes
-> > relevant.
-> >=20
-> > Signed-off-by: Julius Werner <jwerner@chromium.org>
-> > ---
-> >  arch/arm/boot/dts/tegra20-asus-tf101.dts | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> Please use scripts/get_maintainer.pl to get the list of people/lists to
-> CC. You skipped here Tegra maintainers, so no one would pick up this patc=
-h.
->=20
-> I bounced the mail to Jonathan, Thierry and linux-tegra (+Cc), so
-> hopefully they will get it. If not, series might need resend with proper
-> addresses.
+Anders Roxell <anders.roxell@linaro.org> writes:
+> Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
+> 2.37.90.20220207) the following build error shows up:
+>
+>  {standard input}: Assembler messages:
+>  {standard input}:1190: Error: unrecognized opcode: `stbcix'
+>  {standard input}:1433: Error: unrecognized opcode: `lwzcix'
+>  {standard input}:1453: Error: unrecognized opcode: `stbcix'
+>  {standard input}:1460: Error: unrecognized opcode: `stwcix'
+>  {standard input}:1596: Error: unrecognized opcode: `stbcix'
+>  ...
+>
+> Rework to add assembler directives [1] around the instruction. Going
+> through the them one by one shows that the changes should be safe.  Like
+> __get_user_atomic_128_aligned() is only called in p9_hmi_special_emu(),
+> which according to the name is specific to power9.  And __raw_rm_read*()
+> are only called in things that are powernv or book3s_hv specific.
+>
+> [1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
+>
+> Cc: <stable@vger.kernel.org>
+> Co-developed-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+> ---
+>  arch/powerpc/include/asm/io.h        | 46 +++++++++++++++++++++++-----
+>  arch/powerpc/include/asm/uaccess.h   |  3 ++
+>  arch/powerpc/platforms/powernv/rng.c |  6 +++-
+>  3 files changed, 46 insertions(+), 9 deletions(-)
+>
+> diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
+> index beba4979bff9..5ff6dec489f8 100644
+> --- a/arch/powerpc/include/asm/io.h
+> +++ b/arch/powerpc/include/asm/io.h
+> @@ -359,25 +359,37 @@ static inline void __raw_writeq_be(unsigned long v, volatile void __iomem *addr)
+>   */
+>  static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
+>  {
+> -	__asm__ __volatile__("stbcix %0,0,%1"
+> +	__asm__ __volatile__(".machine \"push\"\n"
+> +			     ".machine \"power6\"\n"
+> +			     "stbcix %0,0,%1\n"
+> +			     ".machine \"pop\"\n"
+>  		: : "r" (val), "r" (paddr) : "memory");
 
-Thanks for the bounce. Applied.
+As Segher said it'd be cleaner without the embedded quotes.
 
-Thierry
+> @@ -441,7 +465,10 @@ static inline unsigned int name(unsigned int port)	\
+>  	unsigned int x;					\
+>  	__asm__ __volatile__(				\
+>  		"sync\n"				\
+> +		".machine \"push\"\n"			\
+> +		".machine \"power6\"\n"			\
+>  		"0:"	op "	%0,0,%1\n"		\
+> +		".machine \"pop\"\n"			\
+>  		"1:	twi	0,%0,0\n"		\
+>  		"2:	isync\n"			\
+>  		"3:	nop\n"				\
+> @@ -465,7 +492,10 @@ static inline void name(unsigned int val, unsigned int port) \
+>  {							\
+>  	__asm__ __volatile__(				\
+>  		"sync\n"				\
+> +		".machine \"push\"\n"			\
+> +		".machine \"power6\"\n"			\
+>  		"0:" op " %0,0,%1\n"			\
+> +		".machine \"pop\"\n"			\
+>  		"1:	sync\n"				\
+>  		"2:\n"					\
+>  		EX_TABLE(0b, 2b)			\
 
---WI3zOMv/g7nKQzbJ
-Content-Type: application/pgp-signature; name="signature.asc"
+It's not visible from the diff, but the above two are __do_in_asm and
+__do_out_asm and are inside an ifdef CONFIG_PPC32.
 
------BEGIN PGP SIGNATURE-----
+AFAICS they're only used for:
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIXfDkACgkQ3SOs138+
-s6G+ORAAg/sBMMlJ0fFhz4VQL1VHXYPddtDio0E2a0Fxz1brLxvze1tEIhtar5FE
-YLxPRjHrqCHovvmnvwLcp3daPAV/V9vD3t+YUMwn/ivLyBtWm9YoVXs+adB0zewE
-S3/8SQZp7/OUjNLyKDYTRkYdytYbKBS1qivB9Ar6fnZcBeGBv/IC4xTiA3uNV8iT
-GZdflbyjjHwhrQYdJPJZdh4gWFk7SMTjw33U7TtvfFyim1Iw4bYUBK0KpH5W2Rdk
-OcNdC98r3JI1YQuwcTG8ODGAXA+86a+qF254/+ImVo11N9aSJoxepXrBxRx2SuPJ
-p8+rYSwSK0BSO7P7gc6qMh9BFovWBwOWfjLcAWQrBXtAWnwLVa55eZJpV1oT138X
-/uyMxjr9387K+7zzx5QXYJH5KVjLCBfVmjNHB6GYr3VFUsJAcU35cOySPjrUbCkr
-QRQc6VxUzth5KcxNUzAtesswUfiaoRsabBxe8wkbqdJpd5jV2tDwCp0muDT5xtdI
-dSfh3wk14xitPzs4FGVt77ZLRzaWqPA4jc6UYE89H1A7TCDFeT1G/4601Z2lBjn0
-sXqh+zNNZmGMbVAk34G/ysMQZD8hBGJlKiCDtoqNv4bDZc4ol96RgD/zDN7TAR5W
-MmPXSiCwUAOtlhUu0PMnOIAgzUGLVmdYyBzB6RWHGUqCWGmuRqo=
-=foIM
------END PGP SIGNATURE-----
+__do_in_asm(_rec_inb, "lbzx")
+__do_in_asm(_rec_inw, "lhbrx")
+__do_in_asm(_rec_inl, "lwbrx")
+__do_out_asm(_rec_outb, "stbx")
+__do_out_asm(_rec_outw, "sthbrx")
+__do_out_asm(_rec_outl, "stwbrx")
 
---WI3zOMv/g7nKQzbJ--
+Which are all old instructions, so I don't think we need the machine
+power6 for those two macros?
+
+> diff --git a/arch/powerpc/platforms/powernv/rng.c b/arch/powerpc/platforms/powernv/rng.c
+> index b4386714494a..5bf30ef6d928 100644
+> --- a/arch/powerpc/platforms/powernv/rng.c
+> +++ b/arch/powerpc/platforms/powernv/rng.c
+> @@ -43,7 +43,11 @@ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
+>  	unsigned long parity;
+>  
+>  	/* Calculate the parity of the value */
+> -	asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
+> +	asm (".machine \"push\"\n"
+> +	     ".machine \"power7\"\n"
+> +	     "popcntd %0,%1\n"
+> +	     ".machine \"pop\"\n"
+> +	     : "=r" (parity) : "r" (val));
+
+This was actually present in an older CPU, but it doesn't really matter,
+this is fine.
+
+cheers
