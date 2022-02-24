@@ -2,150 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E535C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 224A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiBXBoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:44:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51346 "EHLO
+        id S229728AbiBXBoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:44:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbiBXBoN (ORCPT
+        with ESMTP id S229747AbiBXBoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:44:13 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EBD1D19B7;
-        Wed, 23 Feb 2022 17:43:43 -0800 (PST)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K3vmP4nwgzdfT6;
-        Thu, 24 Feb 2022 09:03:33 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 24 Feb 2022 09:04:46 +0800
-Received: from [10.67.109.84] (10.67.109.84) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 24 Feb
- 2022 09:04:45 +0800
-Message-ID: <c60419f8-422b-660d-8254-291182a06cbe@huawei.com>
-Date:   Thu, 24 Feb 2022 09:04:45 +0800
+        Wed, 23 Feb 2022 20:44:19 -0500
+Received: from out199-11.us.a.mail.aliyun.com (out199-11.us.a.mail.aliyun.com [47.90.199.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87889FBF16
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:43:49 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V5LKxlS_1645667025;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V5LKxlS_1645667025)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 24 Feb 2022 09:43:45 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] mm/rmap: Fix argument list that the kdoc format and script verified.
+Date:   Thu, 24 Feb 2022 09:43:44 +0800
+Message-Id: <20220224014344.99537-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH sysctl-next] kernel/kexec_core: move kexec_core sysctls
- into its own file
-To:     Baoquan He <bhe@redhat.com>
-CC:     <ebiederm@xmission.com>, <mcgrof@kernel.org>,
-        <keescook@chromium.org>, <yzaikin@google.com>,
-        <kexec@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <zengweilin@huawei.com>,
-        <chenjianguo3@huawei.com>, <nixiaoming@huawei.com>,
-        <qiuguorui1@huawei.com>, <young.liuyang@huawei.com>
-References: <20220223030318.213093-1-yingelin@huawei.com>
- <YhXwkTCwt3a4Dn9T@MiWiFi-R3L-srv>
-From:   yingelin <yingelin@huawei.com>
-In-Reply-To: <YhXwkTCwt3a4Dn9T@MiWiFi-R3L-srv>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.109.84]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The warnings were found by running scripts/kernel-doc, which is
+caused by using 'make W=1'.
 
-在 2022/2/23 16:30, Baoquan He 写道:
-> On 02/23/22 at 11:03am, yingelin wrote:
->> This move the kernel/kexec_core.c respective sysctls to its own file.
-> Hmm, why is the move needed?
->
-> With my understanding, sysctls are all put in kernel/sysctl.c,
-> why is kexec special?
+mm/rmap.c:1684: warning: Function parameter or member 'folio' not
+described in 'try_to_unmap'
+mm/rmap.c:1684: warning: Excess function parameter 'page' description in
+'try_to_unmap'
+mm/rmap.c:2086: warning: Function parameter or member 'folio' not
+described in 'folio_make_device_exclusive'
+mm/rmap.c:2086: warning: expecting prototype for
+page_make_device_exclusive(). Prototype was for
+folio_make_device_exclusive() instead
 
-kernel/sysctl.c is a kitchen sink where everyone leaves their dirty dishes,
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ mm/rmap.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-this makes it very difficult to maintain. The proc sysctl maintainers do 
-not want to
+diff --git a/mm/rmap.c b/mm/rmap.c
+index d27d79ec11b7..ebcf17d8ac1c 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -1671,7 +1671,7 @@ static int page_not_mapped(struct folio *folio)
+ 
+ /**
+  * try_to_unmap - try to remove all page table mappings to a page
+- * @page: the page to get unmapped
++ * @folio: The folio we're currently operating on.
+  * @flags: action and flags
+  *
+  * Tries to remove all the page table entries which are mapping this
+@@ -2068,8 +2068,8 @@ static bool page_make_device_exclusive_one(struct folio *folio,
+ }
+ 
+ /**
+- * page_make_device_exclusive - mark the page exclusively owned by a device
+- * @page: the page to replace page table entries for
++ * folio_make_device_exclusive - mark the page exclusively owned by a device
++ * @folio: The folio we're currently operating on.
+  * @mm: the mm_struct where the page is expected to be mapped
+  * @address: address where the page is expected to be mapped
+  * @owner: passed to MMU_NOTIFY_EXCLUSIVE range notifier callbacks
+-- 
+2.20.1.7.g153144c
 
-know what sysctl knobs you wish to add for your own piece of code, we
-
-just care about the core logic.
-
-This patch moves the kexec sysctls to the place where they actually 
-belong to help
-
-with this maintenance.
-
->> Signed-off-by: yingelin <yingelin@huawei.com>
->> ---
->>   kernel/kexec_core.c | 20 ++++++++++++++++++++
->>   kernel/sysctl.c     | 13 -------------
->>   2 files changed, 20 insertions(+), 13 deletions(-)
->>
->> diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
->> index 68480f731192..e57339d49439 100644
->> --- a/kernel/kexec_core.c
->> +++ b/kernel/kexec_core.c
->> @@ -936,6 +936,26 @@ int kimage_load_segment(struct kimage *image,
->>   struct kimage *kexec_image;
->>   struct kimage *kexec_crash_image;
->>   int kexec_load_disabled;
->> +static struct ctl_table kexec_core_sysctls[] = {
->> +	{
->> +		.procname	= "kexec_load_disabled",
->> +		.data		= &kexec_load_disabled,
->> +		.maxlen		= sizeof(int),
->> +		.mode		= 0644,
->> +		/* only handle a transition from default "0" to "1" */
->> +		.proc_handler	= proc_dointvec_minmax,
->> +		.extra1		= SYSCTL_ONE,
->> +		.extra2		= SYSCTL_ONE,
->> +	},
->> +	{ }
->> +};
->> +
->> +static int __init kexec_core_sysctl_init(void)
->> +{
->> +	register_sysctl_init("kernel", kexec_core_sysctls);
->> +	return 0;
->> +}
->> +late_initcall(kexec_core_sysctl_init);
->>   
->>   /*
->>    * No panic_cpu check version of crash_kexec().  This function is called
->> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
->> index ae5e59396b5d..00e97c6d6576 100644
->> --- a/kernel/sysctl.c
->> +++ b/kernel/sysctl.c
->> @@ -61,7 +61,6 @@
->>   #include <linux/capability.h>
->>   #include <linux/binfmts.h>
->>   #include <linux/sched/sysctl.h>
->> -#include <linux/kexec.h>
->>   #include <linux/bpf.h>
->>   #include <linux/mount.h>
->>   #include <linux/userfaultfd_k.h>
->> @@ -1839,18 +1838,6 @@ static struct ctl_table kern_table[] = {
->>   		.proc_handler	= tracepoint_printk_sysctl,
->>   	},
->>   #endif
->> -#ifdef CONFIG_KEXEC_CORE
->> -	{
->> -		.procname	= "kexec_load_disabled",
->> -		.data		= &kexec_load_disabled,
->> -		.maxlen		= sizeof(int),
->> -		.mode		= 0644,
->> -		/* only handle a transition from default "0" to "1" */
->> -		.proc_handler	= proc_dointvec_minmax,
->> -		.extra1		= SYSCTL_ONE,
->> -		.extra2		= SYSCTL_ONE,
->> -	},
->> -#endif
->>   #ifdef CONFIG_MODULES
->>   	{
->>   		.procname	= "modprobe",
->> -- 
->> 2.26.2
->>
-> .
