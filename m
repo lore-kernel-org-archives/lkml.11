@@ -2,143 +2,363 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E453BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 20:00:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCCFC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 20:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234159AbiBXUBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 15:01:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
+        id S234184AbiBXUCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 15:02:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232224AbiBXUBN (ORCPT
+        with ESMTP id S234171AbiBXUCu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 15:01:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE472763F9;
-        Thu, 24 Feb 2022 12:00:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3B91B82684;
-        Thu, 24 Feb 2022 20:00:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6924C340E9;
-        Thu, 24 Feb 2022 20:00:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645732840;
-        bh=SQaeb0Kta1h/s7fQ+4T22hNjVzetgs4lJusjv4G1iW0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=aax4l6Htvnug8mbTTCX0X2rLTjQUq6JeR+ueffcTenNILwwCX0flGWbvC3gLcJ6tA
-         LIh0hvw+Bbd4wOD+R8WWkcXInjD/9/0jYzDDCJgngg0AP70xSThZhi+xoRqNk2k57S
-         CZRuK6sIXueEnpj9OiYbnawB7IF086gcluUXoeYhoLInJcsG3QP8kljM56vsMmO0nL
-         /YS4U7y0DFUMJwrxWivKuA85OBpeIBAp3XuUSCNqMoGWt7d6xBjNGn0zesXPqr7gIX
-         eMs+OPAknzWIlasB15qWJ+spE8ujhHQYTziWSeHJ7iJl0ihM5++9OEaRHnYQt8UNyK
-         pgum76xmSyGAg==
-Date:   Thu, 24 Feb 2022 14:08:39 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jeff Johnson <quic_jjohnson@quicinc.com>
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 4/6][next] ath6kl: wmi: Replace one-element array with
- flexible-array member in struct wmi_connect_event
-Message-ID: <20220224200839.GA1292927@embeddedor>
-References: <cover.1645583264.git.gustavoars@kernel.org>
- <8a0e347615a3516980fd8b6ad2dc4864a880613b.1645583264.git.gustavoars@kernel.org>
- <6106494b-a1b3-6b57-8b44-b9528127533b@quicinc.com>
+        Thu, 24 Feb 2022 15:02:50 -0500
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF691E6969;
+        Thu, 24 Feb 2022 12:02:20 -0800 (PST)
+Received: by mail-oi1-f169.google.com with SMTP id a6so4615337oid.9;
+        Thu, 24 Feb 2022 12:02:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uedvPxvru999L4vgj2q5uq5iRESaLZhX48+CA+dn1+0=;
+        b=NIX7lYRI45+15OSNByuYt0izTuDtM4ey+UfnwpeDasE/MG8WaLbP62vtaaXBeYZBb6
+         6Wx9mNS93OaoGf+4HuNIkI0HTjML1HvzgABj8vgVUqrqRi0+xx/Nt2K0fOQxG9FalRPD
+         BnfwWdr9IIi0wVppIovG0aFTjK+8ROj+5+Xnh0tDwRrbs038tYIIvDQcO5s1RHGymB/j
+         ecQchAxhz1kMh4P0cufEKlN9Z5svZ6AF+3EUs+YW7R7IEJLJANTzr+rZnXZhSxBiLhK/
+         N7aQjJ+GnbRsOrr35qNc/LdedaeEjYiC2TaJ7MTaIKLIu9EWly/nNZl8AHaKPk8pM3oG
+         bIYA==
+X-Gm-Message-State: AOAM531FwLedRMOUvVZnWgzhLzBoISyIiElMp0m2kN/RGsJnhTNpUh+0
+        p/k1+ZASlIU/JAUbTdhQ42wAgs6y/g==
+X-Google-Smtp-Source: ABdhPJxLGIbY8FsUbbz87B0pq1utelsQk4ZOpCnHfYtFJQF2N8nhOaBkTJk1r90Sj5qT25JpGXVRXA==
+X-Received: by 2002:aca:61c3:0:b0:2ce:6ee7:2cc7 with SMTP id v186-20020aca61c3000000b002ce6ee72cc7mr7734686oib.245.1645732939488;
+        Thu, 24 Feb 2022 12:02:19 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id u13-20020a9d720d000000b005af257c1cc3sm203864otj.5.2022.02.24.12.02.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 12:02:18 -0800 (PST)
+Received: (nullmailer pid 3494011 invoked by uid 1000);
+        Thu, 24 Feb 2022 20:02:17 -0000
+Date:   Thu, 24 Feb 2022 14:02:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+Cc:     devicetree@vger.kernel.org, git@xilinx.com,
+        michal.simek@xilinx.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] dt-bindings: mailbox: zynqmp_ipi: convert to yaml
+Message-ID: <YhfkSbn0aGWztr9K@robh.at.kernel.org>
+References: <20220218125808.29952-1-shubhrajyoti.datta@xilinx.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6106494b-a1b3-6b57-8b44-b9528127533b@quicinc.com>
+In-Reply-To: <20220218125808.29952-1-shubhrajyoti.datta@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 04:50:18PM -0800, Jeff Johnson wrote:
-> On 2/22/2022 6:38 PM, Gustavo A. R. Silva wrote:
-> > Replace one-element array with flexible-array member in struct
-> > wmi_connect_event.
-> > 
-> > It's also worth noting that due to the flexible array transformation,
-> > the size of struct wmi_connect_event changed (now the size is 1 byte
-> > smaller), and in order to preserve the logic of before the transformation,
-> > the following change is needed:
-> > 
-> > 	-       if (len < sizeof(struct wmi_connect_event))
-> > 	+       if (len <= sizeof(struct wmi_connect_event))
-> > 
-> > This issue was found with the help of Coccinelle and audited and fixed,
-> > manually.
-> > 
-> > Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-> > Link: https://github.com/KSPP/linux/issues/79
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> > ---
-> > Hi!
-> > 
-> > It'd be great if someone can confirm or comment on the following
-> > changes described in the changelog text:
-> > 
-> >          -       if (len < sizeof(struct wmi_connect_event))
-> >          +       if (len <= sizeof(struct wmi_connect_event))
-> > 
-> > Thanks
-> > 
-> >   drivers/net/wireless/ath/ath6kl/wmi.c | 2 +-
-> >   drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
-> >   2 files changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
-> > index 049d75f31f3c..ccdccead688e 100644
-> > --- a/drivers/net/wireless/ath/ath6kl/wmi.c
-> > +++ b/drivers/net/wireless/ath/ath6kl/wmi.c
-> > @@ -857,7 +857,7 @@ static int ath6kl_wmi_connect_event_rx(struct wmi *wmi, u8 *datap, int len,
-> >   	struct wmi_connect_event *ev;
-> >   	u8 *pie, *peie;
-> > -	if (len < sizeof(struct wmi_connect_event))
-> > +	if (len <= sizeof(struct wmi_connect_event))
+On Fri, Feb 18, 2022 at 06:28:08PM +0530, Shubhrajyoti Datta wrote:
+> Convert the ipi doc to yaml.
 > 
-> this is another case where IMO the original code can remain since all it is
-> really checking is to see if the entire "fixed" portion is present. in
-> reality if there was just one byte of assoc_info the response would actually
-> be invalid.
-
-I see; that's actually what I needed to be clarified. I wasn't sure if
-a channel list with no channels was valid and expected. Now I see it is. :)
-
-> what is missing is logic that verifies len is large enough to hold the
-> payload that is advertised via the beacon_ie_len, assoc_req_len, &
-> assoc_resp_len members. without this even if you change the initial len
-> check you can have a condition where len says there is one u8 in assoc_info
-> (and pass the initial test) but the other three members indicate that much
-> more data is present.
+> Signed-off-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> ---
+>  v2:
+>   Fix the warnings reported by Rob
+>  v3:
+>   Run dtbs_check
 > 
-> but that is a pre-existing shortcoming that should be handled with a
-> separate patch.
-
-Yeah; I'll consider extending this series to include a patch for that.
-
-> >   		return -EINVAL;
-> >   	ev = (struct wmi_connect_event *) datap;
-> > diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
-> > index 432e4f428a4a..6b064e669d87 100644
-> > --- a/drivers/net/wireless/ath/ath6kl/wmi.h
-> > +++ b/drivers/net/wireless/ath/ath6kl/wmi.h
-> > @@ -1545,7 +1545,7 @@ struct wmi_connect_event {
-> >   	u8 beacon_ie_len;
-> >   	u8 assoc_req_len;
-> >   	u8 assoc_resp_len;
-> > -	u8 assoc_info[1];
-> > +	u8 assoc_info[];
-> >   } __packed;
-> >   /* Disconnect Event */
+>  .../mailbox/xlnx,zynqmp-ipi-mailbox.txt       | 127 ------------------
+>  .../mailbox/xlnx,zynqmp-ipi-mailbox.yaml      | 126 +++++++++++++++++
+>  2 files changed, 126 insertions(+), 127 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.txt
+>  create mode 100644 Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml
 > 
-> whether or not you modify the length check consider this:
-> Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+> diff --git a/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.txt b/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.txt
+> deleted file mode 100644
+> index ad76edccf881..000000000000
+> --- a/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.txt
+> +++ /dev/null
+> @@ -1,127 +0,0 @@
+> -Xilinx IPI Mailbox Controller
+> -========================================
+> -
+> -The Xilinx IPI(Inter Processor Interrupt) mailbox controller is to manage
+> -messaging between two Xilinx Zynq UltraScale+ MPSoC IPI agents. Each IPI
+> -agent owns registers used for notification and buffers for message.
+> -
+> -               +-------------------------------------+
+> -               | Xilinx ZynqMP IPI Controller        |
+> -               +-------------------------------------+
+> -    +--------------------------------------------------+
+> -ATF                    |                     |
+> -                       |                     |
+> -                       |                     |
+> -    +--------------------------+             |
+> -                       |                     |
+> -                       |                     |
+> -    +--------------------------------------------------+
+> -            +------------------------------------------+
+> -            |  +----------------+   +----------------+ |
+> -Hardware    |  |  IPI Agent     |   |  IPI Buffers   | |
+> -            |  |  Registers     |   |                | |
+> -            |  |                |   |                | |
+> -            |  +----------------+   +----------------+ |
+> -            |                                          |
+> -            | Xilinx IPI Agent Block                   |
+> -            +------------------------------------------+
+> -
+> -
+> -Controller Device Node:
+> -===========================
+> -Required properties:
+> ---------------------
+> -IPI agent node:
+> -- compatible:		Shall be: "xlnx,zynqmp-ipi-mailbox"
+> -- interrupt-parent:	Phandle for the interrupt controller
+> -- interrupts:		Interrupt information corresponding to the
+> -			interrupt-names property.
+> -- xlnx,ipi-id:		local Xilinx IPI agent ID
+> -- #address-cells:	number of address cells of internal IPI mailbox nodes
+> -- #size-cells:		number of size cells of internal IPI mailbox nodes
+> -
+> -Internal IPI mailbox node:
+> -- reg:			IPI buffers address ranges
+> -- reg-names:		Names of the reg resources. It should have:
+> -			* local_request_region
+> -			  - IPI request msg buffer written by local and read
+> -			    by remote
+> -			* local_response_region
+> -			  - IPI response msg buffer written by local and read
+> -			    by remote
+> -			* remote_request_region
+> -			  - IPI request msg buffer written by remote and read
+> -			    by local
+> -			* remote_response_region
+> -			  - IPI response msg buffer written by remote and read
+> -			    by local
+> -- #mbox-cells:		Shall be 1. It contains:
+> -			* tx(0) or rx(1) channel
+> -- xlnx,ipi-id:		remote Xilinx IPI agent ID of which the mailbox is
+> -			connected to.
+> -
+> -Optional properties:
+> ---------------------
+> -- method:              The method of accessing the IPI agent registers.
+> -                       Permitted values are: "smc" and "hvc". Default is
+> -                       "smc".
+> -
+> -Client Device Node:
+> -===========================
+> -Required properties:
+> ---------------------
+> -- mboxes:		Standard property to specify a mailbox
+> -			(See ./mailbox.txt)
+> -- mbox-names:		List of identifier  strings for each mailbox
+> -			channel.
+> -
+> -Example:
+> -===========================
+> -	zynqmp_ipi {
+> -		compatible = "xlnx,zynqmp-ipi-mailbox";
+> -		interrupt-parent = <&gic>;
+> -		interrupts = <0 29 4>;
+> -		xlnx,ipi-id = <0>;
+> -		#address-cells = <1>;
+> -		#size-cells = <1>;
+> -		ranges;
+> -
+> -		/* APU<->RPU0 IPI mailbox controller */
+> -		ipi_mailbox_rpu0: mailbox@ff990400 {
+> -			reg = <0xff990400 0x20>,
+> -			      <0xff990420 0x20>,
+> -			      <0xff990080 0x20>,
+> -			      <0xff9900a0 0x20>;
+> -			reg-names = "local_request_region",
+> -				    "local_response_region",
+> -				    "remote_request_region",
+> -				    "remote_response_region";
+> -			#mbox-cells = <1>;
+> -			xlnx,ipi-id = <1>;
+> -		};
+> -		/* APU<->RPU1 IPI mailbox controller */
+> -		ipi_mailbox_rpu1: mailbox@ff990440 {
+> -			reg = <0xff990440 0x20>,
+> -			      <0xff990460 0x20>,
+> -			      <0xff990280 0x20>,
+> -			      <0xff9902a0 0x20>;
+> -			reg-names = "local_request_region",
+> -				    "local_response_region",
+> -				    "remote_request_region",
+> -				    "remote_response_region";
+> -			#mbox-cells = <1>;
+> -			xlnx,ipi-id = <2>;
+> -		};
+> -	};
+> -	rpu0 {
+> -		...
+> -		mboxes = <&ipi_mailbox_rpu0 0>,
+> -			 <&ipi_mailbox_rpu0 1>;
+> -		mbox-names = "tx", "rx";
+> -	};
+> -	rpu1 {
+> -		...
+> -		mboxes = <&ipi_mailbox_rpu1 0>,
+> -			 <&ipi_mailbox_rpu1 1>;
+> -		mbox-names = "tx", "rx";
+> -	};
+> diff --git a/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml b/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml
+> new file mode 100644
+> index 000000000000..6d65448ae838
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mailbox/xlnx,zynqmp-ipi-mailbox.yaml
+> @@ -0,0 +1,126 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/mailbox/xlnx,zynqmp-ipi-mailbox.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: Xilinx IPI(Inter Processor Interrupt) mailbox controller
+> +
+> +description: |
+> +  The Xilinx IPI(Inter Processor Interrupt) mailbox controller is to manage
+> +  messaging between two Xilinx Zynq UltraScale+ MPSoC IPI agents. Each IPI
+> +  agent owns registers used for notification and buffers for message.
+> +
+> +               +-------------------------------------+
+> +               | Xilinx ZynqMP IPI Controller        |
+> +               +-------------------------------------+
+> +    +--------------------------------------------------+
+> +  TF-A                   |                     |
+> +                         |                     |
+> +                         |                     |
+> +      +--------------------------+             |
+> +                         |                     |
+> +                         |                     |
+> +       +--------------------------------------------------+
 
-Great. :)
+Doesn't look like this is formatted correctly.
 
-Thanks a lot for the feedback!
---
-Gustavo
+> +              +------------------------------------------+
+> +              |  +----------------+   +----------------+ |
+> +  Hardware    |  |  IPI Agent     |   |  IPI Buffers   | |
+> +              |  |  Registers     |   |                | |
+> +              |  |                |   |                | |
+> +              |  +----------------+   +----------------+ |
+> +              |                                          |
+> +              | Xilinx IPI Agent Block                   |
+> +              +------------------------------------------+
+> +
+> +maintainers:
+> +  - Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: xlnx,zynqmp-ipi-mailbox
+> +
+> +  method:
+> +    description: |
+> +                 The method of calling the PM-API firmware layer.
 
+> +                 Permitted values are.
+> +                 - "smc" : SMC #0, following the SMCCC
+> +                 - "hvc" : HVC #0, following the SMCCC
+> +                 Default is smc.
+
+All this can be expressed as a schema.
+
+> +
+> +  '#address-cells':
+> +    const: 2
+> +
+> +  '#size-cells':
+> +    const: 2
+> +
+> +  xlnx,ipi-id:
+> +    allOf:
+
+Don't need allOf.
+
+> +      - $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      Remote Xilinx IPI agent ID of which the mailbox is connected to.
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  child-node:
+
+You have a child node called 'child-node'?
+
+> +    description: Internal ipi mailbox node
+> +    type: object  # DT nodes are json objects
+> +    properties:
+> +      xlnx,ipi-id:
+> +        allOf:
+
+Don't need allOf.
+
+> +          - $ref: /schemas/types.yaml#/definitions/uint32
+> +        description:
+> +          Remote Xilinx IPI agent ID of which the mailbox is connected to.
+> +
+> +      "#mbox-cells":
+> +        const: 1
+> +        description:
+> +          It contains  tx(0) or rx(1) channel IPI id number.
+> +
+> +      reg:
+> +        maxItems: 4
+> +
+> +      reg-names:
+> +        items:
+> +          - const: local_request_region
+> +          - const: local_response_region
+> +          - const: remote_request_region
+> +          - const: remote_response_region
+> +
+> +required:
+> +  - compatible
+> +  - interrupts
+> +  - '#address-cells'
+> +  - '#size-cells'
+> +
+> +additionalProperties: true
+
+This is never correct to be true except for common, incomplete schemas.
+
+> +
+> +examples:
+> +  - |
+> +    zynqmp_ipi {
+> +      compatible = "xlnx,zynqmp-ipi-mailbox";
+> +      interrupts = <0 29 4>;
+> +      xlnx,ipi-id = <0>;
+> +      #address-cells = <2>;
+> +      #size-cells = <2>;
+
+You dropped 'ranges'.
+
+> +
+> +      ipi_mailbox_rpu0: mailbox@ff9905c0 {
+> +        reg = <0x0 0xff9905c0 0x0 0x20>,
+> +              <0x0 0xff9905e0 0x0 0x20>,
+> +              <0x0 0xff990e80 0x0 0x20>,
+> +              <0x0 0xff990ea0 0x0 0x20>;
+> +        reg-names = "local_request_region",
+> +              "local_response_region",
+> +              "remote_request_region",
+> +              "remote_response_region";
+> +        #mbox-cells = <1>;
+> +        xlnx,ipi-id = <4>;
+> +      };
+> +    };
+> +
+> +    rpu0 {
+> +      mboxes = <&ipi_mailbox_rpu0 0>,
+> +               <&ipi_mailbox_rpu0 1>;
+> +      mbox-names = "tx", "rx";
+> +    };
+> +...
+> -- 
+> 2.17.1
+> 
+> 
