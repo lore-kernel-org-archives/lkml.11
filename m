@@ -2,104 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2075C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4821C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230131AbiBXCZQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:25:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39418 "EHLO
+        id S230136AbiBXCZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:25:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230074AbiBXCZP (ORCPT
+        with ESMTP id S230134AbiBXCZR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:25:15 -0500
+        Wed, 23 Feb 2022 21:25:17 -0500
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D46C122C6FE
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:24:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F052B22EDC8;
+        Wed, 23 Feb 2022 18:24:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645669486; x=1677205486;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=YbRBSSWOu+EklGcdgUzstcqOBzhi9A/f9C5QAcIY1t0=;
-  b=PLnEfk5I7AjfPSvbkGEloznXsfE5DALe1uCa1HxdHGoO+mZe7zsCFcMK
-   XgCz4S/s1xk6oen92WUcK62c6gGye6TlPTi8t9OsT6CL0QlnICkhEP7jT
-   ZgoGQNtzZYqFTlt2CRnHWb/NqShQZgk3WIqmw8Bq5qbZlnbmCzozHdaTf
-   3Xr08jAfQDxFXfcxk5FipoF1hKkeDA6BHJDP3SDvKKcT0f0rL6xVdHL9H
-   Gpyg5UKoCvZ20+PUPCmpTAngNJMWfg/q8xeBCW85pgiAXabDJJoZ4QCE7
-   AccOKduKe8R1FptdKTJvVQn/FF+R+0bOjB4RBqUGMS5KAqXMMbBP+h0KR
+  t=1645669489; x=1677205489;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=fjSEafBb8ES86rUzsH60Lncm24g7M9CE/uM19ybBuVk=;
+  b=D5kqjrQMcyRQp7ovkBK7UBZ02i6B7vkoyQvI9ZV0ycNWVQEYXOFabKvS
+   ZQ5u+7tD+L/OTipiN+7aZMDKtDEKSEFbZ9dzglBrn4lNaIi4asiycsTHi
+   j1Kxnphm3pjmxUw43LMPi5Gx/7LE+Tk/GTZogpCoFpfQEuWzDeSfbv86/
+   IK1LXUiS4bpk+ER9W0smh9xp9ddAFM6II511xlT14ylbpSxuipqiXFV97
+   IcgyImXEu+rHdSiLqaubo4mLlfqQst/UPdH71uTh9UnKchdXffDD3sbPk
+   qJz8/jOTN7Ndx9LO882Pp1MnmHujLANtJnuELjQXHTnvlBpSmyFr/hUlj
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="235626073"
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="235628028"
 X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="235626073"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 16:46:55 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="235628028"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 16:59:21 -0800
 X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="548509742"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 23 Feb 2022 16:46:54 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nN2HV-00022b-RN; Thu, 24 Feb 2022 00:46:53 +0000
-Date:   Thu, 24 Feb 2022 08:45:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: [mingo-tip:sched/headers 12/2340]
- include/linux/entry-common.h:11:10: fatal error: asm/entry-common.h: No such
- file or directory
-Message-ID: <202202240812.Ynrlsu5B-lkp@intel.com>
+   d="scan'208";a="508666398"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.11])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 16:59:12 -0800
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Aneesh Kumar <aneesh.kumar@linux.ibm.com>,
+        Barry Song <21cnbao@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Kernel Page Reclaim v2 <page-reclaim@google.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Donald Carr <d@chaos-reins.com>,
+        Holger =?utf-8?Q?Hoffst=C3=A4tte?= 
+        <holger@applied-asynchrony.com>,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>
+Subject: Re: [PATCH v7 05/12] mm: multigenerational LRU: minimal implementation
+References: <20220208081902.3550911-1-yuzhao@google.com>
+        <20220208081902.3550911-6-yuzhao@google.com>
+        <87bkyy56nv.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <CAOUHufbekcu09DyEZAkJNRq_1qKaf_xibXQNeAVK=rsGBn9Z4Q@mail.gmail.com>
+Date:   Thu, 24 Feb 2022 08:59:10 +0800
+In-Reply-To: <CAOUHufbekcu09DyEZAkJNRq_1qKaf_xibXQNeAVK=rsGBn9Z4Q@mail.gmail.com>
+        (Yu Zhao's message of "Wed, 23 Feb 2022 02:36:13 -0700")
+Message-ID: <87y2213wrl.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   97c5eeb4de3ad324ed2a4656b46465299cfd010a
-commit: e66f6481a8c748ce2d4b37a3d5e10c4dd0d65e80 [12/2340] sched/headers: Reorganize, clean up and optimize kernel/sched/core.c dependencies
-config: arm64-randconfig-r033-20220223 (https://download.01.org/0day-ci/archive/20220224/202202240812.Ynrlsu5B-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=e66f6481a8c748ce2d4b37a3d5e10c4dd0d65e80
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout e66f6481a8c748ce2d4b37a3d5e10c4dd0d65e80
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
+Yu Zhao <yuzhao@google.com> writes:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> On Wed, Feb 23, 2022 at 1:28 AM Huang, Ying <ying.huang@intel.com> wrote:
+>>
+>> Hi, Yu,
+>>
+>> Yu Zhao <yuzhao@google.com> writes:
+>>
+>> > To avoid confusions, the terms "promotion" and "demotion" will be
+>> > applied to the multigenerational LRU, as a new convention; the terms
+>> > "activation" and "deactivation" will be applied to the active/inactive
+>> > LRU, as usual.
+>>
+>> In the memory tiering related commits and patchset, for example as follows,
+>>
+>> commit 668e4147d8850df32ca41e28f52c146025ca45c6
+>> Author: Yang Shi <yang.shi@linux.alibaba.com>
+>> Date:   Thu Sep 2 14:59:19 2021 -0700
+>>
+>>     mm/vmscan: add page demotion counter
+>>
+>> https://lore.kernel.org/linux-mm/20220221084529.1052339-1-ying.huang@intel.com/
+>>
+>> "demote" and "promote" is used for migrating pages between different
+>> types of memory.  Is it better for us to avoid overloading these words
+>> too much to avoid the possible confusion?
+>
+> Given that LRU and migration are usually different contexts, I think
+> we'd be fine, unless we want a third pair of terms.
 
-Note: the mingo-tip/sched/headers HEAD 97c5eeb4de3ad324ed2a4656b46465299cfd010a builds fine.
-      It only hurts bisectability.
+This is true before memory tiering is introduced.  In systems with
+multiple types memory (called memory tiering), LRU is used to identify
+pages to be migrated to the slow memory node.  Please take a look at
+can_demote(), which is called in shrink_page_list().
 
-All errors (new ones prefixed by >>):
+>> > +static int get_swappiness(struct mem_cgroup *memcg)
+>> > +{
+>> > +     return mem_cgroup_get_nr_swap_pages(memcg) >= MIN_LRU_BATCH ?
+>> > +            mem_cgroup_swappiness(memcg) : 0;
+>> > +}
+>>
+>> After we introduced demotion support in Linux kernel.  The anonymous
+>> pages in the fast memory node could be demoted to the slow memory node
+>> via the page reclaiming mechanism as in the following commit.  Can you
+>> consider that too?
+>
+> Sure. How do I check whether there is still space on the slow node?
 
-   In file included from kernel/sched/core.c:66:
->> include/linux/entry-common.h:11:10: fatal error: asm/entry-common.h: No such file or directory
-      11 | #include <asm/entry-common.h>
-         |          ^~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
+You can always check the watermark of the slow node.  But now, we
+actually don't check that (as in demote_page_list()), instead we will
+wake up kswapd of the slow node.  The intended behavior is something
+like,
 
+  DRAM -> PMEM -> disk
 
-vim +11 include/linux/entry-common.h
-
-142781e108b13b Thomas Gleixner 2020-07-22  10  
-142781e108b13b Thomas Gleixner 2020-07-22 @11  #include <asm/entry-common.h>
-142781e108b13b Thomas Gleixner 2020-07-22  12  
-
-:::::: The code at line 11 was first introduced by commit
-:::::: 142781e108b13b2b0e8f035cfb5bfbbc8f14d887 entry: Provide generic syscall entry functionality
-
-:::::: TO: Thomas Gleixner <tglx@linutronix.de>
-:::::: CC: Thomas Gleixner <tglx@linutronix.de>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Best Regards,
+Huang, Ying
