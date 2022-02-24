@@ -2,74 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D23D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D300C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233625AbiBXTTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:19:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42486 "EHLO
+        id S233669AbiBXTTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:19:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233589AbiBXTSx (ORCPT
+        with ESMTP id S229672AbiBXTSx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 14:18:53 -0500
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF90B7C5C;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E49AB2D60;
         Thu, 24 Feb 2022 11:18:22 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id C97C55BF;
-        Thu, 24 Feb 2022 19:18:21 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net C97C55BF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1645730301; bh=QpnPzN1Dxj5KrJrh6AIXHjdoV4hb+s0gFbvHykrXUjE=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=tIKRxV2dsyOyFzgKkcSQG7pbHkJPcpwJf7rkFH7Rx1SdQCCN9Am7ffK1tBafyrzQL
-         qzHSCyw8SAzkd13aMw1eCndK9BqMqUjHpDqWjuvuVUVeeCnmOia6EqFwiRUK5Levgm
-         y307809jwHAw7jV3okINSOAAbza5KssNv4/cypg7+T+FHrdmKMsXQxj/+OpV5SflrS
-         Gh2g+aAVxnWt3j5iSZYu8UaMAiPzhFxH+KuTzySttNzlhHNEzBGOyyf7vTm5wGaTnF
-         +azNYKvN8he5N2gkOUo2o1HMXaYtwogj4Ix0IOdsqlb1ckvr/Bb0jaiKAt2sg0i5EB
-         0EcyGoEFHI9ig==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
-Cc:     akpm@linux-foundation.org, sfr@canb.auug.org.au,
-        hanshenghong2019@email.szu.edu.cn, weizhenliang@huawei.com,
-        georgi.djakov@linaro.org, skhan@linuxfoundation.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
-Subject: Re: [PATCH] Documentation/vm/page_owner.rst: fix commends
-In-Reply-To: <20220223134104.2663-1-caoyixuan2019@email.szu.edu.cn>
-References: <20220223134104.2663-1-caoyixuan2019@email.szu.edu.cn>
-Date:   Thu, 24 Feb 2022 12:18:21 -0700
-Message-ID: <87h78okr9e.fsf@meer.lwn.net>
-MIME-Version: 1.0
-Content-Type: text/plain
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5B3DB82811;
+        Thu, 24 Feb 2022 19:18:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6A450C340EF;
+        Thu, 24 Feb 2022 19:18:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645730299;
+        bh=rLjAuMorIwNKQVNLUP1CAEZ/ZXBoch9vnNpWrzqm8Io=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=NCwHUoV9D+y5N9QSa6wQYL1NkVLZ1f1b0l+4YlLFVl5rP5yJ4zAqpFZKJCUWKi6Jg
+         xstPxOcqrJRce5yXyn7WlpAZa51rZfRCAgLg0yDANRm/+rJxTFadF1naC1zCCXBjaH
+         1n4nX50j1/PqCBEVO3wZxGvo4Vt/+7sd/tDTOVaRFAznkQs42trCsz1wW5VaD7FSoJ
+         xSC1gDKl54E1kzijeleF7nLGdTf/ZI3ybMQPSPCAtAZO95uliHz7Oj4caj8OYaLWwc
+         OJyYJ7UWIqgKkOq9PHM2AGLtcq5OTIMwXT5G8Dp5lXmSnjDAhD07rV5iYhKebpITsj
+         GSpQbDLhLOWCw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5337FEAC081;
+        Thu, 24 Feb 2022 19:18:19 +0000 (UTC)
+Subject: Re: [GIT PULL] SELinux fixes for v5.17 (#2)
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAHC9VhQHW1UOfu5wDOnNHwTK7FF4SyTx1OCBd9o6izB+69H9EQ@mail.gmail.com>
+References: <CAHC9VhQHW1UOfu5wDOnNHwTK7FF4SyTx1OCBd9o6izB+69H9EQ@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAHC9VhQHW1UOfu5wDOnNHwTK7FF4SyTx1OCBd9o6izB+69H9EQ@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git tags/selinux-pr-20220223
+X-PR-Tracked-Commit-Id: ce2fc710c9d2b25afc710f49bb2065b4439a62bc
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 54134be6580364ab98db09eb8070a09bb02e37ae
+Message-Id: <164573029933.2860.8304778085304115082.pr-tracker-bot@kernel.org>
+Date:   Thu, 24 Feb 2022 19:18:19 +0000
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Yixuan Cao <caoyixuan2019@email.szu.edu.cn> writes:
+The pull request you sent on Wed, 23 Feb 2022 16:20:33 -0500:
 
-> There are some commends that need to be fixed.
->
-> Thanks for Shuah Khan's constructive suggestions.
-> The commends have been fixed as follows.
->
-> a. So, if you'd like to use it, you need
-> to add "page_owner=on" into your boot cmdline.
->
-> Here, "into" has been replaced with "to".
->
-> b. ...page owner is disabled in runtime due to no
-> enabling, boot option, runtime overhead is marginal.
->
-> Here, "no" has been replaced with "not".
->
-> Signed-off-by: Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
-> ---
->  Documentation/vm/page_owner.rst | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git tags/selinux-pr-20220223
 
-Applied (with some changelog cleanups), thanks.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/54134be6580364ab98db09eb8070a09bb02e37ae
 
-jon
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
