@@ -2,121 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EBC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1880C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234342AbiBXMbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:31:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43628 "EHLO
+        id S234357AbiBXMb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:31:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231460AbiBXMbe (ORCPT
+        with ESMTP id S229737AbiBXMb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:31:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6AE91264987
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:31:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645705864;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a7/3du5HvRrnFGXwjxtGM6+I7ouu7VFk3hP1L/xSkXg=;
-        b=ambV93SgtrFiwEjLeT2YKVAGSLVROmhRaRD5x+Sq+iuznPLcgbIxN/kd27kCrBFTflxLud
-        5GLaLdfUXowa63Abj5fyUE0afjbLBbKf4bRIerFCH1liuUxwSRFzt7cZXCWtChxqDc3QII
-        nVvcjCJiU1/2EKJSdD1ewqMLosJo8yE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-245-V9iCVZ-EMhqdNW1jv_ymsg-1; Thu, 24 Feb 2022 07:31:01 -0500
-X-MC-Unique: V9iCVZ-EMhqdNW1jv_ymsg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 24C77804312;
-        Thu, 24 Feb 2022 12:30:58 +0000 (UTC)
-Received: from t480s.redhat.com (unknown [10.39.194.160])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F17F826576;
-        Thu, 24 Feb 2022 12:29:57 +0000 (UTC)
-From:   David Hildenbrand <david@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mike Rapoport <rppt@linux.ibm.com>,
-        Yang Shi <shy828301@gmail.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
-        Roman Gushchin <guro@fb.com>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Peter Xu <peterx@redhat.com>,
-        Donald Dutile <ddutile@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Pedro Gomes <pedrodemargomes@gmail.com>,
-        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
-        David Hildenbrand <david@redhat.com>
-Subject: [PATCH RFC 07/13] mm/rmap: use page_move_anon_rmap() when reusing a mapped PageAnon() page exclusively
-Date:   Thu, 24 Feb 2022 13:26:08 +0100
-Message-Id: <20220224122614.94921-8-david@redhat.com>
-In-Reply-To: <20220224122614.94921-1-david@redhat.com>
-References: <20220224122614.94921-1-david@redhat.com>
+        Thu, 24 Feb 2022 07:31:56 -0500
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B72B26F4DB
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:31:26 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:598d:7788:288b:e4f])
+        by xavier.telenet-ops.be with bizsmtp
+        id z0XP2600C0fvPgN010XPhT; Thu, 24 Feb 2022 13:31:23 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nNDHG-001jJe-Ta; Thu, 24 Feb 2022 13:31:22 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1nNDHG-00CPGI-52; Thu, 24 Feb 2022 13:31:22 +0100
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Wolfram Sang <wsa@kernel.org>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Daire McNamara <daire.mcnamara@microchip.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] dt-bindings: i2c: microchip,corei2c: Fix indentation of compatible items
+Date:   Thu, 24 Feb 2022 13:31:21 +0100
+Message-Id: <365d32c63c2fe080866be60c32dddd0f3634d19d.1645705789.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We want to mark anonymous pages exclusive, and when using
-page_move_anon_rmap() we know that we are the exclusive user, as
-properly documented. This is a preparation for marking anonymous pages
-exclusive in page_move_anon_rmap().
+make dt_binding_check:
 
-In both instances, we're holding page lock and are sure that we're the
-exclusive owner (page_count() == 1). hugetlb already properly uses
-page_move_anon_rmap() in the write fault handler.
+    Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml:19:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
 
-Signed-off-by: David Hildenbrand <david@redhat.com>
+Fixes: f1bd6661946b20d1 ("dt-bindings: i2c: add bindings for microchip mpfs i2c")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- mm/huge_memory.c | 2 ++
- mm/memory.c      | 1 +
- 2 files changed, 3 insertions(+)
+ Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 2ca137e01e84..7b9e76ba3f2f 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -1317,6 +1317,8 @@ vm_fault_t do_huge_pmd_wp_page(struct vm_fault *vmf)
- 		try_to_free_swap(page);
- 	if (page_count(page) == 1) {
- 		pmd_t entry;
-+
-+		page_move_anon_rmap(page, vma);
- 		entry = pmd_mkyoung(orig_pmd);
- 		entry = maybe_pmd_mkwrite(pmd_mkdirty(entry), vma);
- 		if (pmdp_set_access_flags(vma, haddr, vmf->pmd, entry, 1))
-diff --git a/mm/memory.c b/mm/memory.c
-index c2f1c2428303..1ab0dfbec288 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3307,6 +3307,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 		 * and the page is locked, it's dark out, and we're wearing
- 		 * sunglasses. Hit it.
- 		 */
-+		page_move_anon_rmap(page, vma);
- 		unlock_page(page);
- 		wp_page_reuse(vmf);
- 		return VM_FAULT_WRITE;
+diff --git a/Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml b/Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
+index c8e605fbb8a6b3d0..7bad4b946a349c8b 100644
+--- a/Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
++++ b/Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml
+@@ -16,8 +16,8 @@ properties:
+   compatible:
+     oneOf:
+       - items:
+-        - const: microchip,mpfs-i2c # Microchip PolarFire SoC compatible SoCs
+-        - const: microchip,corei2c-rtl-v7 # Microchip Fabric based i2c IP core
++          - const: microchip,mpfs-i2c # Microchip PolarFire SoC compatible SoCs
++          - const: microchip,corei2c-rtl-v7 # Microchip Fabric based i2c IP core
+       - const: microchip,corei2c-rtl-v7 # Microchip Fabric based i2c IP core
+ 
+   reg:
 -- 
-2.35.1
+2.25.1
 
