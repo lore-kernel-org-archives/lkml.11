@@ -2,140 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD11C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:31:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96709C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234886AbiBXNbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:31:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46236 "EHLO
+        id S234980AbiBXNcO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:32:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234931AbiBXNbo (ORCPT
+        with ESMTP id S234963AbiBXNcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:31:44 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFABA16DAC1;
-        Thu, 24 Feb 2022 05:31:14 -0800 (PST)
-X-UUID: ff5219ca17794558bf9d6e13a2e86fe2-20220224
-X-UUID: ff5219ca17794558bf9d6e13a2e86fe2-20220224
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1339800806; Thu, 24 Feb 2022 21:31:08 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 24 Feb 2022 21:31:07 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 24 Feb
- 2022 21:31:07 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 24 Feb 2022 21:31:06 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Jassi Brar <jaswinder.singh@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     Jassi Brar <jassisinghbrar@gmail.com>,
-        Linux-ALSA <alsa-devel@alsa-project.org>, <tzungbi@google.com>,
-        <cujomalainey@google.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        "Mark Brown" <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <sound-open-firmware@alsa-project.org>,
-        Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v17 1/2] dt-bindings: mailbox: mtk,adsp-mbox: add mtk adsp-mbox document
-Date:   Thu, 24 Feb 2022 21:30:44 +0800
-Message-ID: <20220224133045.23903-2-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220224133045.23903-1-allen-kh.cheng@mediatek.com>
-References: <20220224133045.23903-1-allen-kh.cheng@mediatek.com>
+        Thu, 24 Feb 2022 08:32:11 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E1D20F78
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:31:41 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id d17so3044792wrc.9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:31:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UmVaZe5WSxDiTqf74Pc2xrLlr9buKqJFnFD7mGOeeZQ=;
+        b=X+4hbVuuPt44tTksNFwLknPj3qpjpjuhlAwO2hCrkvTD87j39VczB7GvnEIzthjT/e
+         WOdbn8iXn1qe0tGbWLvewZ/UezZ39LrTIwtnT1f7l7F00geI/ii4e+VtMj8dUO/rhu7s
+         /IgoenmAxZztegUykln+ZJHB6srH3RkMz2rRcrvuDPN2E7+NNwcwtDCeobU5bJldZ0ZX
+         /Oz98ktWfKU61kq1DQfZ6s5ZoQeiScjnu1IG8zMskHj2QlS5AvBHBVTZPmdcSvPYqCSi
+         ihQapqvmYJLweLPHEOO2lxc9bfnl85KgaAISDgIW/nUPH2Q6Sp9m5zsMvojK47xWkBpS
+         7ZoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UmVaZe5WSxDiTqf74Pc2xrLlr9buKqJFnFD7mGOeeZQ=;
+        b=oSUTEz0JC86F6jj1ED2jgzdYSurFUXzIOpHI5Wrdnb8X69OgrWYtywdag4C1oTBVmB
+         Nc9P7j4w5Za77z3q8z72rTsZpDijOWQ2EFCJk48V8LTdMLqN+mEZm+6Beo8admQ3O9J4
+         Kkoxmof9xtVfZDLcIQqWMV0T9Qrl0m6KbA0ozvIsJW0U7PhZao3sT9CvrSRxhxe9k0vV
+         JQMbMYc6LkLS48/A0rSk/vFKspbEL3V9JDMvFp5LnWWd8SQFDiZk4/aHXaxPhiI4e8o2
+         SWFBRoILOEqW4W4ePfgvmi/XHAhzV6RE11ewDDvvuxlbQ5/QgwGb/z9fqcYUjf9ZGgJ2
+         8hGg==
+X-Gm-Message-State: AOAM530QhXij5xfHngrNq7ic7boM67KL/UkIsmQliHNVjt/zGNRcaEay
+        zLQuPGBY7QTWA6jOQXt0Hgsjlw==
+X-Google-Smtp-Source: ABdhPJzGxwrAIaDsnmbLEemWdu2TqUsgbnEEJsfcoRpGlvqbPOOKjtAfW3tLr1uHErzQNUzrhyE1mw==
+X-Received: by 2002:a5d:46c9:0:b0:1ea:9cab:c2e4 with SMTP id g9-20020a5d46c9000000b001ea9cabc2e4mr2173369wrs.1.1645709500156;
+        Thu, 24 Feb 2022 05:31:40 -0800 (PST)
+Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.gmail.com with ESMTPSA id e33-20020a05600c4ba100b003810c690ba2sm2019142wmp.3.2022.02.24.05.31.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 05:31:39 -0800 (PST)
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To:     robh+dt@kernel.org, vkoul@kernel.org,
+        yung-chuan.liao@linux.intel.com
+Cc:     pierre-louis.bossart@linux.intel.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        quic_srivasam@quicinc.com,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH v2 0/3] soundwire: qcom: add pm runtime support
+Date:   Thu, 24 Feb 2022 13:31:22 +0000
+Message-Id: <20220224133125.6674-1-srinivas.kandagatla@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+This patchset adds pm runtime support to Qualcomm SounWire Controller using
+SoundWire Clock Stop and Wake up using Headset events on supported instances and
+instances like WSA which do not support clock stop a soft reset of controller
+along with full rest of slaves is done to resume from a low power state.
 
-This patch adds document for mediatek adsp mbox
+Tested it on SM8250 MTP and Dragon Board DB845c
 
-Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../bindings/mailbox/mtk,adsp-mbox.yaml       | 52 +++++++++++++++++++
- 1 file changed, 52 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml
+--srini
 
-diff --git a/Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml b/Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml
-new file mode 100644
-index 000000000000..25756837797f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mailbox/mtk,adsp-mbox.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mailbox/mtk,adsp-mbox.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Mediatek ADSP mailbox
-+
-+maintainers:
-+  - Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
-+
-+description: |
-+  The MTK ADSP mailbox Inter-Processor Communication (IPC) enables the SoC
-+  to ommunicate with ADSP by passing messages through two mailbox channels.
-+  The MTK ADSP mailbox IPC also provides the ability for one processor to
-+  signal the other processor using interrupts.
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: mediatek,mt8195-adsp-mbox
-+
-+  "#mbox-cells":
-+    const: 0
-+
-+  reg:
-+    description:
-+      Physical address base for dsp mbox registers.
-+
-+  interrupts:
-+    description:
-+      adsp mbox interrupt
-+
-+required:
-+  - compatible
-+  - "#mbox-cells"
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    adsp_mailbox0:mailbox@10816000 {
-+        compatible = "mediatek,mt8195-adsp-mbox";
-+        #mbox-cells = <0>;
-+        reg = <0x10816000 0x1000>;
-+        interrupts = <GIC_SPI 702 IRQ_TYPE_LEVEL_HIGH 0>;
-+    };
+Changes since v1:
+ - updated wake irq to not deal with slave pm runtime directly.
+ - added delay after soft reset of SoundWire controller where clock stop is not supported
+
+
+Srinivas Kandagatla (3):
+  soundwire: qcom: add runtime pm support
+  dt-bindings: soundwire: qcom: document optional wake irq
+  soundwire: qcom: add in-band wake up interrupt support
+
+ .../bindings/soundwire/qcom,sdw.txt           |   2 +-
+ drivers/soundwire/qcom.c                      | 202 +++++++++++++++++-
+ 2 files changed, 202 insertions(+), 2 deletions(-)
+
 -- 
-2.18.0
+2.21.0
 
