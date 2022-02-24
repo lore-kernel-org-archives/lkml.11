@@ -2,104 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 771EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0893C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233105AbiBXSw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 13:52:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60012 "EHLO
+        id S233085AbiBXSxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 13:53:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbiBXSw4 (ORCPT
+        with ESMTP id S232221AbiBXSxh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 13:52:56 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875941F635D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:52:26 -0800 (PST)
+        Thu, 24 Feb 2022 13:53:37 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A679B24CCCB
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:53:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645728746; x=1677264746;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=w7MLgSozzXyrQ89B/PuCkyqNyePTml2zwIjW2nPnuOM=;
-  b=dekrrvRFfPqLf5SB++EQBocz2wWitmz9IOmar7vRTJjB/UumiVEmKxVR
-   yi8VUhwN49BYdEalI2AOclf76P4ynKfT3DJnYb5c6yJViclnL9HiqePDR
-   XGj5tSDVXXn5i+7J8icEm5RywYcLb3a65rElKoQ4do0z8BmWaj0zl3y2y
-   y7q1tVzDHF89h5qwkY5wpeXswFGJ8fP533iWhjZUZIqzuYWr/FOgg6oww
-   xa+66tOCOg8p3pwc8rLEuZNifqyTBPZRh2jyLx8iYAm9OUJ76pxZOc/yM
-   rRLoPVyeXYGEHJyYzPU+nbidfrmiMh/9JazH4MrdTM0ysBJ3LMciIjG6S
+  t=1645728785; x=1677264785;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=wyHJ3jK0TD+XAV49h9bt7bsXcAYfdoq9QfnG7CEkZuU=;
+  b=XoUSDPYOkhDIxpKrlYpxDS48MeS6c9nZhe4Sl1dGFHNS5M8q6hu/uwHi
+   ijINu8hRExIlA0WYTBwChYtCRJpsrTnrJUyiiDGlUmdMbbqpUof6MhFbI
+   9qedQLlTjGk5MLj/ijjkTm4NPsJt9fzTdNZYefpUopjg6SzfboA8aw0mT
+   tJ/wpFjJ319eod/8gC1wStd9auk5uBTBs63fxoLQwU7XZPAIb1eKwFj+e
+   ZTrfSeNT3ZbiHvjBws8rhFxe7IGrVtMOcx3530N3N+nEtGZIh8IGV4WVI
+   RB3YiMOxYd1mMYKKjfsxk8kmZQdHTNO/LIJRUmL9Eawt/r7FGOxdXHLKp
    Q==;
 X-IronPort-AV: E=Sophos;i="5.90,134,1643698800"; 
-   d="scan'208";a="163542603"
+   d="scan'208";a="149904865"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Feb 2022 11:52:25 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Feb 2022 11:53:04 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 24 Feb 2022 11:52:25 -0700
-Received: from [10.12.73.51] (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 24 Feb 2022 11:52:24 -0700
-Message-ID: <931a3b21-c6e7-18b7-b666-da0bdd98a204@microchip.com>
-Date:   Thu, 24 Feb 2022 19:52:23 +0100
+ 15.1.2375.17; Thu, 24 Feb 2022 11:53:04 -0700
+Received: from [10.12.73.51] (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 24 Feb 2022 11:53:03 -0700
+Message-ID: <10b47a94-7059-8a17-d963-e17c7f391415@microchip.com>
+Date:   Thu, 24 Feb 2022 19:53:02 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] ARM: configs: at91: sama7: Enable NAND / SMC
+Subject: Re: [PATCH] ARM: configs: at91: sama7: Enable UBIFS_FS
 Content-Language: en-US
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-CC:     <claudiu.beznea@microchip.com>, <eugen.hristev@microchip.com>,
-        <codrin.ciubotariu@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220111125641.903624-1-tudor.ambarus@microchip.com>
 From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        <claudiu.beznea@microchip.com>, <alexandre.belloni@bootlin.com>
+CC:     <linux@armlinux.org.uk>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220202070244.150022-1-tudor.ambarus@microchip.com>
+ <eb1d1014-7e88-b79c-8404-891b87c917f0@microchip.com>
 Organization: microchip
-In-Reply-To: <20220111125641.903624-1-tudor.ambarus@microchip.com>
+In-Reply-To: <eb1d1014-7e88-b79c-8404-891b87c917f0@microchip.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/01/2022 at 13:56, Tudor Ambarus wrote:
-> Enable the Static Memory Controller. Tested with Micron MT29F4G08ABAEAWP
-> NAND flash. Software error correction is not needed, as the SMC includes
-> a PMECC error correction hardware module.
+On 03/02/2022 at 12:16, Nicolas Ferre wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> On 02/02/2022 at 08:02, Tudor Ambarus wrote:
+>> sama7g5 contains a Static Memory Controller that can communicate with
+>> NAND flashes. Enable UBIFS_FS in case one wants to put an ubifs rootfs
+>> on a NAND flash. CONFIG_CRYPTO_LZO and CONFIG_CRYPTO_DEFLATE appear as
+>> removed because they are selected by CONFIG_UBIFS_FS.
+>>
+>> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+> 
+> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> Thanks Tudor. Best regards,
+>     Nicolas
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
 Applied to at91-defconfig for 5.18.
-
-Thanks, regards,
+Regards,
    Nicolas
 
-> ---
->   arch/arm/configs/sama7_defconfig | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
+
 > 
-> diff --git a/arch/arm/configs/sama7_defconfig b/arch/arm/configs/sama7_defconfig
-> index 0368068e04d9..342d9f30d9d2 100644
-> --- a/arch/arm/configs/sama7_defconfig
-> +++ b/arch/arm/configs/sama7_defconfig
-> @@ -82,6 +82,9 @@ CONFIG_DEVTMPFS_MOUNT=y
->   CONFIG_MTD=y
->   CONFIG_MTD_TESTS=m
->   CONFIG_MTD_CMDLINE_PARTS=y
-> +CONFIG_MTD_RAW_NAND=y
-> +CONFIG_MTD_NAND_ATMEL=y
-> +# CONFIG_MTD_NAND_ECC_SW_HAMMING is not set
->   CONFIG_MTD_SPI_NOR=y
->   CONFIG_BLK_DEV_LOOP=y
->   CONFIG_BLK_DEV_RAM=y
-> @@ -174,7 +177,6 @@ CONFIG_DMATEST=y
->   CONFIG_STAGING=y
->   CONFIG_MICROCHIP_PIT64B=y
->   # CONFIG_IOMMU_SUPPORT is not set
-> -# CONFIG_ATMEL_EBI is not set
->   CONFIG_IIO=y
->   CONFIG_IIO_SW_TRIGGER=y
->   CONFIG_AT91_SAMA5D2_ADC=y
+>> ---
+>>    arch/arm/configs/sama7_defconfig | 4 ++--
+>>    1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/arch/arm/configs/sama7_defconfig b/arch/arm/configs/sama7_defconfig
+>> index 342d9f30d9d2..c12278174579 100644
+>> --- a/arch/arm/configs/sama7_defconfig
+>> +++ b/arch/arm/configs/sama7_defconfig
+>> @@ -86,6 +86,7 @@ CONFIG_MTD_RAW_NAND=y
+>>    CONFIG_MTD_NAND_ATMEL=y
+>>    # CONFIG_MTD_NAND_ECC_SW_HAMMING is not set
+>>    CONFIG_MTD_SPI_NOR=y
+>> +CONFIG_MTD_UBI=y
+>>    CONFIG_BLK_DEV_LOOP=y
+>>    CONFIG_BLK_DEV_RAM=y
+>>    CONFIG_BLK_DEV_RAM_COUNT=1
+>> @@ -187,6 +188,7 @@ CONFIG_EXT3_FS=y
+>>    CONFIG_FANOTIFY=y
+>>    CONFIG_VFAT_FS=y
+>>    CONFIG_TMPFS=y
+>> +CONFIG_UBIFS_FS=y
+>>    CONFIG_NFS_FS=y
+>>    CONFIG_ROOT_NFS=y
+>>    CONFIG_NLS_CODEPAGE_437=y
+>> @@ -194,8 +196,6 @@ CONFIG_NLS_CODEPAGE_850=y
+>>    CONFIG_NLS_ISO8859_1=y
+>>    CONFIG_NLS_UTF8=y
+>>    CONFIG_LSM="N"
+>> -CONFIG_CRYPTO_DEFLATE=y
+>> -CONFIG_CRYPTO_LZO=y
+>>    # CONFIG_CRYPTO_HW is not set
+>>    CONFIG_CRC_CCITT=y
+>>    CONFIG_CRC_ITU_T=y
+> 
+> 
+> --
+> Nicolas Ferre
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 
 
 -- 
