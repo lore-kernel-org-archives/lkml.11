@@ -2,105 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9769C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E17CDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234573AbiBXMwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:52:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        id S234580AbiBXMwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:52:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234532AbiBXMwc (ORCPT
+        with ESMTP id S234489AbiBXMwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:52:32 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B989E20C197
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:52:01 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id l1-20020a7bcf01000000b0037f881182a8so3422338wmg.2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:52:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=1y26t3z5KmogzVzaRXh0xZ8+wk/glRrMhjsYhZ6NNpI=;
-        b=l2A1dmVsQ69rlhJLpwmjB2fa5bCE62/fs+1myFe5KswaVzqgXHDHZY7BxwuN52LfTn
-         ymTtWt2+ah81VG9+r5VUl5lNt2WVOVR6Tq11NsK8KqEpv9JqtUt2MDK5I/tWDCl9RnPj
-         vdgtWMbOrNX+Mmjry8sGIgAq5kCtZ+cnHNaZTQXMvjzd5SYbmelX7LpVgIgWahuqvk4D
-         RHlYhGzcC/oZ/IaL80XYnes0EJhMDujLWZPB1eKIAS4TjUxGK9P8pOwIMdElCbMzRA0k
-         ZFCpcCz0AgM4QtJKVREFOeObRlFPS6X3vG+EaQs7fne0jrOwx6In2PQ01gHTP9i4ro4X
-         /FrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=1y26t3z5KmogzVzaRXh0xZ8+wk/glRrMhjsYhZ6NNpI=;
-        b=ciyqjlIZe7rVTMkmR6VJQDv5NQk4Pr/S3PCv9KhjfNONb0siC7L1MUHitz/JIIixJW
-         LB5CeFrZhA1AOmqqYQaLN61UUOFKubuHzbZKJS2Mfc9hnRX16OmpxBGvJbRsGoI0sSoF
-         URyDcODYpzXzdZLPc0+srn5yHPY7BCpwhsfSZuaOyR6h6+X5s2//DlVJxSZqoeCXd2yb
-         AScXwhdFb67uoQPI73tSxI3PlX2Mgmmypt/i6+fRBoNe5ud4vhfaZQ1PuyKQzTQYSt+o
-         NnZ1ZFriLEpDaXJ4+bwZC5v3IPr0zNQP39+w/tqTNWwE5tQYR6iZ2E6Y35wtzQHJeLwJ
-         WQfw==
-X-Gm-Message-State: AOAM532OdcpkZg3plzvHLh5hD6Lb4u9hVuiruu+NijZttLZwgAXNU+s5
-        LylbekB2gXM0sIxWb3egWP1kLg==
-X-Google-Smtp-Source: ABdhPJxx0eBVNp8nFphGUFZsIuvZMVUId0v9AZP4IrgzocOtHXpv/ScIaresc8g3bEGwUO/d7+aBPg==
-X-Received: by 2002:a05:600c:4f83:b0:37c:d057:3efe with SMTP id n3-20020a05600c4f8300b0037cd0573efemr11320753wmq.143.1645707120272;
-        Thu, 24 Feb 2022 04:52:00 -0800 (PST)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id c6sm2538733wmb.25.2022.02.24.04.51.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 04:51:59 -0800 (PST)
-Date:   Thu, 24 Feb 2022 12:51:57 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Thierry Reding <thierry.reding@gmail.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Douglas Anderson <dianders@chromium.org>,
-        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH 1/4] dt-bindings: pwm: google,cros-ec: include generic
- pwm schema
-Message-ID: <Yhd/bXqehm98C/Jo@google.com>
-References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com>
- <20220214081916.162014-2-krzysztof.kozlowski@canonical.com>
- <Yhd9CjAbI7MJu56L@orome>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yhd9CjAbI7MJu56L@orome>
+        Thu, 24 Feb 2022 07:52:47 -0500
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 900AA20D527
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:52:15 -0800 (PST)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxSMl8fxdizHIGAA--.7452S2;
+        Thu, 24 Feb 2022 20:52:13 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] MIPS: Refactor early_parse_mem() to fix mem= parameter
+Date:   Thu, 24 Feb 2022 20:52:12 +0800
+Message-Id: <1645707132-10121-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9DxSMl8fxdizHIGAA--.7452S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Zr15JF17tFyUXF1rCFyrCrg_yoW8uFW3pw
+        1Sv34fKr4DtF9rZaySyrn3W345Aw1vkFy2qay2krn5J3Wjkr1UGr1IgFW5Zry2qryxJ3W0
+        qF1ktFy0g39Fy3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkq14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Xr1l
+        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
+        0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUUJ733UUUUU==
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Feb 2022, Thierry Reding wrote:
+According to Documentation/admin-guide/kernel-parameters.txt,
+the kernel command-line parameter mem= means "Force usage of
+a specific amount of memory", but when add "mem=3G" to the
+command-line, kernel boot hangs in sparse_init().
 
-> On Mon, Feb 14, 2022 at 09:19:13AM +0100, Krzysztof Kozlowski wrote:
-> > Include generic pwm.yaml schema, which enforces PWM node naming.  Keep
-> > the old name in bindings as deprecated.
-> > 
-> > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> > ---
-> >  Documentation/devicetree/bindings/mfd/google,cros-ec.yaml    | 4 ++++
-> >  .../devicetree/bindings/pwm/google,cros-ec-pwm.yaml          | 5 ++++-
-> >  2 files changed, 8 insertions(+), 1 deletion(-)
-> 
-> Applied, thanks.
+This commit is similar with the implementation of the other
+archs such as arm64, powerpc and riscv, refactor the function
+early_parse_mem() and then use memblock_enforce_memory_limit()
+to limit the memory size.
 
-Super, thanks T.
+With this patch, when add "mem=3G" to the command-line, the
+kernel boots successfully, we can see the following messages:
 
+  [    0.000000] Memory limited to 3072MB
+  ...
+  [    0.000000] Memory: 2991952K/3145728K available (...)
+
+After login, the output of free command is consistent with the
+above log.
+
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ arch/mips/kernel/setup.c | 25 ++++++++-----------------
+ 1 file changed, 8 insertions(+), 17 deletions(-)
+
+diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
+index f979adf..2917412 100644
+--- a/arch/mips/kernel/setup.c
++++ b/arch/mips/kernel/setup.c
+@@ -339,27 +339,15 @@ static void __init bootmem_init(void)
+ #endif	/* CONFIG_SGI_IP27 */
+ 
+ static int usermem __initdata;
++static phys_addr_t memory_limit;
+ 
+ static int __init early_parse_mem(char *p)
+ {
+-	phys_addr_t start, size;
+-
+-	/*
+-	 * If a user specifies memory size, we
+-	 * blow away any automatically generated
+-	 * size.
+-	 */
+-	if (usermem == 0) {
+-		usermem = 1;
+-		memblock_remove(memblock_start_of_DRAM(),
+-			memblock_end_of_DRAM() - memblock_start_of_DRAM());
+-	}
+-	start = 0;
+-	size = memparse(p, &p);
+-	if (*p == '@')
+-		start = memparse(p + 1, &p);
++	if (!p)
++		return 1;
+ 
+-	memblock_add(start, size);
++	memory_limit = memparse(p, &p) & PAGE_MASK;
++	pr_notice("Memory limited to %lldMB\n", memory_limit >> 20);
+ 
+ 	return 0;
+ }
+@@ -633,6 +621,9 @@ static void __init arch_mem_init(char **cmdline_p)
+ 
+ 	parse_early_param();
+ 
++	/* Limit the memory size via mem= command-line parameter */
++	memblock_enforce_memory_limit(memory_limit);
++
+ 	if (usermem)
+ 		pr_info("User-defined physical RAM map overwrite\n");
+ 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.1.0
+
