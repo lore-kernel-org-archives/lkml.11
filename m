@@ -2,376 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EAFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42232C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230241AbiBXF2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 00:28:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35838 "EHLO
+        id S230254AbiBXFau (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 00:30:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230243AbiBXF2i (ORCPT
+        with ESMTP id S229596AbiBXFat (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 00:28:38 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A68717DB91;
-        Wed, 23 Feb 2022 21:28:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645680487; x=1677216487;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=l3zbq8UACd8GKV5WqLd47NqI3mPHoaYOUrN/HoneL5o=;
-  b=GYyu+DEU4aWFAQ2dWX+uIA62NBTWFX7lY12WKdeLuL3EoMFG7bFqeHKf
-   HgxAjD91GIPwNXgzvqDtqcWaacMVjLL5E4xR89cW21A6EIv1nyFlOvMZ6
-   9fiXUYs1BY643OU1DTZLIl40lz2XX+rT7XCtMT1b0yF5pb1mDXGCWnUv4
-   OaXJISTxFfb8hqTnzZ3qmoLMoAXm+YymJk+D1szc2Kb9hz78o3sEsb3m8
-   Q1lCAsUIAquBQj0i8q1qLhqfAx9xsa3cO1EJe4kQPBeUa+tYClb0enAV2
-   r8bYD58lsqeBNAy7zAEOmoTyqU/VbgID5wZcAcdpUuCKN/5rkQHgslPr/
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="232128583"
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="232128583"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 21:28:06 -0800
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="639594960"
-Received: from xingzhen-mobl.ccr.corp.intel.com (HELO [10.238.2.171]) ([10.238.2.171])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 21:27:57 -0800
-Message-ID: <41ef1e0e-c4a4-4828-a573-a92cd9425615@linux.intel.com>
-Date:   Thu, 24 Feb 2022 13:27:55 +0800
+        Thu, 24 Feb 2022 00:30:49 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ADAD22EDF2;
+        Wed, 23 Feb 2022 21:30:20 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id u20so2017545lff.2;
+        Wed, 23 Feb 2022 21:30:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=ssbTILFe2u43gFml3/5OETrelKmGcJxKqHN6FlLabWo=;
+        b=SIjxS4N0yIePoISFjFKUFxVDjaveHK9Y+Q+jNGLW6OIX9byTGcx9Cu1VmqCPM2Ps7T
+         yX3I/Pwk2Au59eJkLSlCDmYKEfEeKe7QOx/niDMTLXAe5JDtj06VC8teeseMDeDUgIz/
+         DxwdodRptKOZMTeh90zv2E7bIs/xwcJQ+h+lLq0XEdDPHYZeEzQgkZGscbwonR1pTOWR
+         R93mguwWuVCD6EqkmD1LLFlWHpNCrwLA9ZnrR6E304aPgBMf2Od02wuLXG3T1bfSB+Op
+         lo8dG9OuO1ZLAeXAnWRN/lKPboj0H0Pb63Vxi6cF+R3f3STq0JmWHpGZU90yy2t9pbR9
+         rIJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=ssbTILFe2u43gFml3/5OETrelKmGcJxKqHN6FlLabWo=;
+        b=d+aKIad1sHXhDXIo8S0oXx4cl3m/JQs/sgKWP/QCIuVSIlS0n+wplWdUxfFOXA0pk9
+         k9CBGTE6Zh0O6I4+N0SpG7bTBeSspzLFS2Gm42zpG/Y/rFJdkbuxyX0vxYdK7fdfub1v
+         WiyLDWz4vV8bEsgJXa/+bZrxCb3v6zk/X0IrYV7MLFips09s4kI1Lbov3215zblUfT52
+         2p6DvL63cjKqpq+9nStakYhPXSNmSkQBrxb3x8AlYfuaChw891FYEZpMQsghH9bSi1fg
+         QCczd4hp5Axln8a7NlDaT424lXz7lgbZW01T8UrHSyMlP254Z1qzoK4wl0nk13AL5bV1
+         xOpw==
+X-Gm-Message-State: AOAM532TJ0Jcm3ZC6c6LA6VgHAPQCLN8Koh9U32s9XzGmF5EoXwl9+l2
+        OfN8QJV5Cj9F+lpbHa2/ta0PmZok+/zaUbnF1dKOYrnvXwc=
+X-Google-Smtp-Source: ABdhPJwIy0Ji5zP1BBlRg4CD/cIVUb39yK2WuQ6mQEy9VidIcSlv+KBlFCEmEw+2ck3fajrpAUO4zpWxyuTu99Ap/yM=
+X-Received: by 2002:a05:6512:c09:b0:438:df07:a97e with SMTP id
+ z9-20020a0565120c0900b00438df07a97emr769819lfu.667.1645680618344; Wed, 23 Feb
+ 2022 21:30:18 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 2/2] perf vendor events intel: Add uncore event list for
- Alderlake
-Content-Language: en-US
-To:     Ian Rogers <irogers@google.com>
-Cc:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        alexander.shishkin@intel.com, jolsa@redhat.com,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        adrian.hunter@intel.com, ak@linux.intel.com,
-        kan.liang@linux.intel.com
-References: <20220223110135.1943210-1-zhengjun.xing@linux.intel.com>
- <CAP-5=fXWZ1vJqfU4TXedGVYNpj-RjVsQsrtggnGMZQR9C0-Yew@mail.gmail.com>
-From:   Xing Zhengjun <zhengjun.xing@linux.intel.com>
-In-Reply-To: <CAP-5=fXWZ1vJqfU4TXedGVYNpj-RjVsQsrtggnGMZQR9C0-Yew@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From:   Steve French <smfrench@gmail.com>
+Date:   Wed, 23 Feb 2022 23:30:07 -0600
+Message-ID: <CAH2r5mv7Z7XmyWgp5K8ZshA1OiMBTNGU-v8FdmwwkZaNNe=4wA@mail.gmail.com>
+Subject: [LSF/MM/BPF TOPIC] making O_TMPFILE more atomic
+To:     lsf-pc@lists.linux-foundation.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Currently creating tmpfiles on Linux can be problematic because the
+tmpfile is not created and opened at the same time  (vfs_tmpfile calls
+into the fs, then later vfs_open is called to open the tmpfile).   For
+some filesystems it would be more natural to create and open the
+tmpfile as one operation (because the action of creating the file on
+some filesystems returns an open handle, so closing it then reopening
+it would cause the tmpfile to be deleted).
 
-
-On 2/24/2022 12:48 AM, Ian Rogers wrote:
-> On Tue, Feb 22, 2022 at 7:02 PM <zhengjun.xing@linux.intel.com> wrote:
->>
->> From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
->>
->> Add JSON uncore events for Alderlake to perf.
->>
->> Based on JSON list v1.06:
->>
->> https://download.01.org/perfmon/ADL/
-> 
-> Acked-by: Ian Rogers <irogers@google.com>
-> 
-> Could you post the uncore csv file on:
-> https://github.com/intel/event-converter-for-linux-perf
-> For example, the skylakex one is:
-> https://github.com/intel/event-converter-for-linux-perf/blob/master/perf-uncore-events-skx.csv
-
-Thanks. The ADL uncore csv file has been posted in the convert tool.
-
-> 
-> Thanks,
-> Ian
-> 
->> Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
->> ---
->>   .../arch/x86/alderlake/uncore-memory.json     | 222 ++++++++++++++++++
->>   .../arch/x86/alderlake/uncore-other.json      |  40 ++++
->>   2 files changed, 262 insertions(+)
->>   create mode 100644 tools/perf/pmu-events/arch/x86/alderlake/uncore-memory.json
->>   create mode 100644 tools/perf/pmu-events/arch/x86/alderlake/uncore-other.json
->>
->> diff --git a/tools/perf/pmu-events/arch/x86/alderlake/uncore-memory.json b/tools/perf/pmu-events/arch/x86/alderlake/uncore-memory.json
->> new file mode 100644
->> index 000000000000..d82d6f62a6fb
->> --- /dev/null
->> +++ b/tools/perf/pmu-events/arch/x86/alderlake/uncore-memory.json
->> @@ -0,0 +1,222 @@
->> +[
->> +    {
->> +        "BriefDescription": "Number of clocks",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x01",
->> +        "EventName": "UNC_M_CLOCKTICKS",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Incoming VC0 read request",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x02",
->> +        "EventName": "UNC_M_VC0_REQUESTS_RD",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Incoming VC0 write request",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x03",
->> +        "EventName": "UNC_M_VC0_REQUESTS_WR",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Incoming VC1 read request",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x04",
->> +        "EventName": "UNC_M_VC1_REQUESTS_RD",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Incoming VC1 write request",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x05",
->> +        "EventName": "UNC_M_VC1_REQUESTS_WR",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Incoming read prefetch request from IA",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x0A",
->> +        "EventName": "UNC_M_PREFETCH_RD",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Any Rank at Hot state",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x19",
->> +        "EventName": "UNC_M_DRAM_THERMAL_HOT",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Any Rank at Warm state",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x1A",
->> +        "EventName": "UNC_M_DRAM_THERMAL_WARM",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "incoming read request page status is Page Hit",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x1C",
->> +        "EventName": "UNC_M_DRAM_PAGE_HIT_RD",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "incoming read request page status is Page Empty",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x1D",
->> +        "EventName": "UNC_M_DRAM_PAGE_EMPTY_RD",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "incoming read request page status is Page Miss",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x1E",
->> +        "EventName": "UNC_M_DRAM_PAGE_MISS_RD",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "incoming write request page status is Page Hit",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x1F",
->> +        "EventName": "UNC_M_DRAM_PAGE_HIT_WR",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "incoming write request page status is Page Empty",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x20",
->> +        "EventName": "UNC_M_DRAM_PAGE_EMPTY_WR",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "incoming write request page status is Page Miss",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x21",
->> +        "EventName": "UNC_M_DRAM_PAGE_MISS_WR",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Read CAS command sent to DRAM",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x22",
->> +        "EventName": "UNC_M_CAS_COUNT_RD",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Write CAS command sent to DRAM",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x23",
->> +        "EventName": "UNC_M_CAS_COUNT_WR",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "ACT command for a read request sent to DRAM",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x24",
->> +        "EventName": "UNC_M_ACT_COUNT_RD",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "ACT command for a write request sent to DRAM",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x25",
->> +        "EventName": "UNC_M_ACT_COUNT_WR",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "ACT command sent to DRAM",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x26",
->> +        "EventName": "UNC_M_ACT_COUNT_TOTAL",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "PRE command sent to DRAM for a read/write request",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x27",
->> +        "EventName": "UNC_M_PRE_COUNT_PAGE_MISS",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "PRE command sent to DRAM due to page table idle timer expiration",
->> +        "Counter": "0,1,2,3,4",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x28",
->> +        "EventName": "UNC_M_PRE_COUNT_IDLE",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Counts every 64B read  request entering the Memory Controller 0 to DRAM (sum of all channels)",
->> +        "CounterType": "FREERUN",
->> +        "EventName": "UNC_MC0_RDCAS_COUNT_FREERUN",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Counts every 64B read request entering the Memory Controller 1 to DRAM (sum of all channels)",
->> +        "Counter": "3",
->> +        "CounterType": "FREERUN",
->> +        "EventName": "UNC_MC1_RDCAS_COUNT_FREERUN",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Counts every 64B write request entering the Memory Controller 0 to DRAM (sum of all channels). Each write request counts as a new request incrementing this counter. However, same cache line write requests (both full and partial) are combined to a single 64 byte data transfer to DRAM",
->> +        "Counter": "1",
->> +        "CounterType": "FREERUN",
->> +        "EventName": "UNC_MC0_WRCAS_COUNT_FREERUN",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    },
->> +    {
->> +        "BriefDescription": "Counts every 64B write request entering the Memory Controller 1 to DRAM (sum of all channels). Each write request counts as a new request incrementing this counter. However, same cache line write requests (both full and partial) are combined to a single 64 byte data transfer to DRAM",
->> +        "Counter": "4",
->> +        "CounterType": "FREERUN",
->> +        "EventName": "UNC_MC1_WRCAS_COUNT_FREERUN",
->> +        "PerPkg": "1",
->> +        "Unit": "iMC"
->> +    }
->> +]
->> diff --git a/tools/perf/pmu-events/arch/x86/alderlake/uncore-other.json b/tools/perf/pmu-events/arch/x86/alderlake/uncore-other.json
->> new file mode 100644
->> index 000000000000..50de82c29944
->> --- /dev/null
->> +++ b/tools/perf/pmu-events/arch/x86/alderlake/uncore-other.json
->> @@ -0,0 +1,40 @@
->> +[
->> +    {
->> +        "BriefDescription": "This 48-bit fixed counter counts the UCLK cycles",
->> +        "Counter": "Fixed",
->> +        "CounterType": "PGMABLE",
->> +       "EventCode": "0xff",
->> +        "EventName": "UNC_CLOCK.SOCKET",
->> +        "PerPkg": "1",
->> +        "Unit": "CLOCK"
->> +    },
->> +    {
->> +        "BriefDescription": "Counts the number of coherent and in-coherent requests initiated by IA cores, processor graphic units, or LLC",
->> +        "Counter": "0,1",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x81",
->> +        "EventName": "UNC_ARB_TRK_REQUESTS.ALL",
->> +        "PerPkg": "1",
->> +        "UMask": "0x01",
->> +        "Unit": "ARB"
->> +    },
->> +    {
->> +        "BriefDescription": "Number of requests allocated in Coherency Tracker",
->> +        "Counter": "0,1",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x84",
->> +        "EventName": "UNC_ARB_COH_TRK_REQUESTS.ALL",
->> +        "PerPkg": "1",
->> +        "UMask": "0x01",
->> +        "Unit": "ARB"
->> +    },
->> +    {
->> +        "BriefDescription": "Each cycle counts number of all outgoing valid entries in ReqTrk. Such entry is defined as valid from its allocation in ReqTrk till deallocation. Accounts for Coherent and non-coherent traffic",
->> +        "CounterType": "PGMABLE",
->> +        "EventCode": "0x80",
->> +        "EventName": "UNC_ARB_TRK_OCCUPANCY.ALL",
->> +        "PerPkg": "1",
->> +        "UMask": "0x01",
->> +        "Unit": "ARB"
->> +    }
->> +]
->> --
->> 2.25.1
->>
+I would like to discuss whether the function do_tmpfile (which creates
+and then opens the tmpfile) could have an option for a filesystem to
+do this as one operation which would allow it to be more atomic and
+allow it to work on a wider variety of filesystems.
 
 -- 
-Zhengjun Xing
+Thanks,
+
+Steve
