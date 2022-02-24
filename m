@@ -2,117 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F13C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:39:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14690C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233541AbiBXKkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:40:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50460 "EHLO
+        id S233576AbiBXKm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:42:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233494AbiBXKkO (ORCPT
+        with ESMTP id S233562AbiBXKmw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:40:14 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E39F28AD8B;
-        Thu, 24 Feb 2022 02:39:45 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id 195so1378795pgc.6;
-        Thu, 24 Feb 2022 02:39:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2Vh5cP09KPpUBAiHzIJdfbvku1bTkEPxJPZgY/cAC6g=;
-        b=n1De8gS0CLlFYpKENSHsqTOWS+rniNCEhj7lh0xhcPZq7fUWd2DjB5YwXkjb64d+tJ
-         jJnc6aav14lN/jwq/0LLT4j2sAnYXi3SknpAP7hBow4mx5jwvR0g5Jnl4pb3QNDy4N7o
-         U7kvWYSIdIXRgfCvcB4Z4lhPpOf7MEV0wG+yuYxcK8/GA34xVC+yzDsqodAhBa2BM08e
-         Uv9/ixkD9q3l7GLW6D9b/qIs+JMUZ55l4crhFwcwS0CCxFmEuK1ycVmsdrJLnIwBZdoq
-         qjfASEq/ymAiU/MPTQyNEbpWEBpc3CSUh+S3Du+iDYqqP7uiBO346zVKcjG2MbrH4Gtb
-         rFzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2Vh5cP09KPpUBAiHzIJdfbvku1bTkEPxJPZgY/cAC6g=;
-        b=C84+C+iPb2SXyKs9llTZwdFgFKfB0G7A6+Ca6BABcsT2yCqT0NHSYxiSf1qEkUpjQJ
-         N6ER5qbPXWzIKnshnLvHRta5yxyHGD1VAOfOJjGa0YaGuFsas5Rd5mMgxm0xdfuxHWua
-         fUICiZoVt8PGle7L9GV9ySp2nil5QXAwgLi1eIAZYo/dKkK55Gs73fBG3dg0ocC+4EyG
-         KGAfsvuBaFnDmAIvblHUGNqrVdqgtNGt0tYi+uBggVUYPtrjrlXu7zHR0eu9/OcBJeH0
-         2YojUEaEeJzmXFZebAvnZnkpyXXXRqPsWZIurQ5NEClCyIzyoqB2dUI2KstPjIh3Jylj
-         8Sww==
-X-Gm-Message-State: AOAM531gNaYM+UsTp/p2pEbayHRvWQybMNpp65KDFclqZvxjUgpJVmU3
-        SE5xn6fMupvuTm1fE1/Rc5d+rKuiPCHnQ/rc
-X-Google-Smtp-Source: ABdhPJyKDl17e3IrZ6PDMsRujoK/pWk4njV+gyUOCkB+5cRcl/CAaY2OVgqBQXC/x7gKlf/HNWWYyw==
-X-Received: by 2002:a63:e249:0:b0:36c:4f1f:95e0 with SMTP id y9-20020a63e249000000b0036c4f1f95e0mr1786299pgj.381.1645699184682;
-        Thu, 24 Feb 2022 02:39:44 -0800 (PST)
-Received: from localhost.localdomain ([157.255.44.219])
-        by smtp.gmail.com with ESMTPSA id t2sm2984555pfj.211.2022.02.24.02.39.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 02:39:44 -0800 (PST)
-From:   Harold Huang <baymaxhuang@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     jasowang@redhat.com, Harold Huang <baymaxhuang@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] tun: support NAPI to accelerate packet processing
-Date:   Thu, 24 Feb 2022 18:38:51 +0800
-Message-Id: <20220224103852.311369-1-baymaxhuang@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        Thu, 24 Feb 2022 05:42:52 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C0FE16A5AA;
+        Thu, 24 Feb 2022 02:42:22 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D288E1F37F;
+        Thu, 24 Feb 2022 10:42:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645699340; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=un0BuqJuVU1sQinMUaFtlLJAo+Lpb+W/ppoYZ+BlX8g=;
+        b=eUgnJqMNMhrsuPaaKDC61tdG0ULuVATBZqrbXZVSyS94IBluKCFDdWdpZj7qpihfVrbpvK
+        3QtT0lMV2PeOadwn4RbM6SVBH2FI4/OYKmYpl2Ad2B4jJdJXNQcz8GWXFnRBxoIPVb9Di/
+        69xH5Cc8FAE2KFKULBzA+bHCfp0KdHo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645699340;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=un0BuqJuVU1sQinMUaFtlLJAo+Lpb+W/ppoYZ+BlX8g=;
+        b=h0J/heLskiTMueR9Db4IvRC3vPtuEudjanAG3sfvRbDxd7P4sDhuhhjKhPSfAbsvcIXY25
+        PHdX08wy60TaT/AA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AFBE3132C1;
+        Thu, 24 Feb 2022 10:42:20 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ypukKQxhF2LkQwAAMHmgww
+        (envelope-from <jslaby@suse.cz>); Thu, 24 Feb 2022 10:42:20 +0000
+Message-ID: <b8e3d88c-2340-2247-2e1a-37c089d9065a@suse.cz>
+Date:   Thu, 24 Feb 2022 11:42:20 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCH 1/5] tty: serial: define UART_LCR_WLEN() macro
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220224095517.30872-1-jslaby@suse.cz>
+ <20220224095558.30929-1-jslaby@suse.cz> <YhdZjDO2mBgjSLep@kroah.com>
+From:   Jiri Slaby <jslaby@suse.cz>
+In-Reply-To: <YhdZjDO2mBgjSLep@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In tun, NAPI is supported and we can also use NAPI in the path of
-batched XDP buffs to accelerate packet processing. What is more, after
-we use NPAI, GRO is also supported. The iperf shows that the throughput
-could be improved from 4.5Gbsp to 9.2Gbps per stream.
+On 24. 02. 22, 11:10, Greg KH wrote:
+> On Thu, Feb 24, 2022 at 10:55:54AM +0100, Jiri Slaby wrote:
+>> Define a generic UART_LCR_WLEN() macro with a size argument. It can be
+>> used to encode byte size into an LCR value. Therefore we can use it to
+>> simplify the drivers using tty_get_char_size() in the next patches.
+>>
+>> Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+>> ---
+>>   include/uapi/linux/serial_reg.h | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/include/uapi/linux/serial_reg.h b/include/uapi/linux/serial_reg.h
+>> index f51bc8f36813..c9d5ff6dd4c6 100644
+>> --- a/include/uapi/linux/serial_reg.h
+>> +++ b/include/uapi/linux/serial_reg.h
+>> @@ -111,6 +111,7 @@
+>>   #define UART_LCR_WLEN6		0x01 /* Wordlength: 6 bits */
+>>   #define UART_LCR_WLEN7		0x02 /* Wordlength: 7 bits */
+>>   #define UART_LCR_WLEN8		0x03 /* Wordlength: 8 bits */
+>> +#define UART_LCR_WLEN(x)	((x) - 5)
+> 
+> I'm all for this, but why does it need to be in a uapi .h file?
 
-Reported-at: https://lore.kernel.org/netdev/CAHJXk3Y9_Fh04sakMMbcAkef7kOTEc-kf84Ne3DtWD7EAp13cg@mail.gmail.com/T/#t
-Signed-off-by: Harold Huang <baymaxhuang@gmail.com>
----
- drivers/net/tun.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+I'd love to put it somewhere else. But I didn't find an appropriate 
+place. Should I put it simply to
+include/linux/serial_core.h
+or
+include/linux/serial.h
+? Or create a new:
+include/linux/serial_reg.h
+to contain only this def?
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index fed85447701a..4e1cea659b42 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -2388,6 +2388,7 @@ static int tun_xdp_one(struct tun_struct *tun,
- 	struct virtio_net_hdr *gso = &hdr->gso;
- 	struct bpf_prog *xdp_prog;
- 	struct sk_buff *skb = NULL;
-+	struct sk_buff_head *queue;
- 	u32 rxhash = 0, act;
- 	int buflen = hdr->buflen;
- 	int err = 0;
-@@ -2464,7 +2465,14 @@ static int tun_xdp_one(struct tun_struct *tun,
- 	    !tfile->detached)
- 		rxhash = __skb_get_hash_symmetric(skb);
- 
--	netif_receive_skb(skb);
-+	if (tfile->napi_enabled) {
-+		queue = &tfile->sk.sk_write_queue;
-+		spin_lock(&queue->lock);
-+		__skb_queue_tail(queue, skb);
-+		spin_unlock(&queue->lock);
-+	} else {
-+		netif_receive_skb(skb);
-+	}
- 
- 	/* No need to disable preemption here since this function is
- 	 * always called with bh disabled
-@@ -2507,6 +2515,9 @@ static int tun_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
- 		if (flush)
- 			xdp_do_flush();
- 
-+		if (tfile->napi_enabled)
-+			napi_schedule(&tfile->napi);
-+
- 		rcu_read_unlock();
- 		local_bh_enable();
- 
+thanks,
 -- 
-2.27.0
-
+js
+suse labs
