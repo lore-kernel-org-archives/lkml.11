@@ -2,69 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D300C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:18:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B10DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:19:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233669AbiBXTTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:19:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42456 "EHLO
+        id S232203AbiBXTT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:19:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229672AbiBXTSx (ORCPT
+        with ESMTP id S229672AbiBXTTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 14:18:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E49AB2D60;
-        Thu, 24 Feb 2022 11:18:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5B3DB82811;
-        Thu, 24 Feb 2022 19:18:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6A450C340EF;
-        Thu, 24 Feb 2022 19:18:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645730299;
-        bh=rLjAuMorIwNKQVNLUP1CAEZ/ZXBoch9vnNpWrzqm8Io=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=NCwHUoV9D+y5N9QSa6wQYL1NkVLZ1f1b0l+4YlLFVl5rP5yJ4zAqpFZKJCUWKi6Jg
-         xstPxOcqrJRce5yXyn7WlpAZa51rZfRCAgLg0yDANRm/+rJxTFadF1naC1zCCXBjaH
-         1n4nX50j1/PqCBEVO3wZxGvo4Vt/+7sd/tDTOVaRFAznkQs42trCsz1wW5VaD7FSoJ
-         xSC1gDKl54E1kzijeleF7nLGdTf/ZI3ybMQPSPCAtAZO95uliHz7Oj4caj8OYaLWwc
-         OJyYJ7UWIqgKkOq9PHM2AGLtcq5OTIMwXT5G8Dp5lXmSnjDAhD07rV5iYhKebpITsj
-         GSpQbDLhLOWCw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5337FEAC081;
-        Thu, 24 Feb 2022 19:18:19 +0000 (UTC)
-Subject: Re: [GIT PULL] SELinux fixes for v5.17 (#2)
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAHC9VhQHW1UOfu5wDOnNHwTK7FF4SyTx1OCBd9o6izB+69H9EQ@mail.gmail.com>
-References: <CAHC9VhQHW1UOfu5wDOnNHwTK7FF4SyTx1OCBd9o6izB+69H9EQ@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAHC9VhQHW1UOfu5wDOnNHwTK7FF4SyTx1OCBd9o6izB+69H9EQ@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git tags/selinux-pr-20220223
-X-PR-Tracked-Commit-Id: ce2fc710c9d2b25afc710f49bb2065b4439a62bc
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 54134be6580364ab98db09eb8070a09bb02e37ae
-Message-Id: <164573029933.2860.8304778085304115082.pr-tracker-bot@kernel.org>
-Date:   Thu, 24 Feb 2022 19:18:19 +0000
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        selinux@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Thu, 24 Feb 2022 14:19:51 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DD71B84C9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:19:21 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id t7-20020a17090a3b4700b001bc366c58faso4065006pjf.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:19:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=6f9rSiA8EDiLaM0B3Hbnw5EwlveWA1Ldae2Sb5yxk2E=;
+        b=nYJn+JKr12seAv5JQcy4T/E/n76x8MDX/iXirgCs53CzjHGjFOUmeQrE6nQME0NUV9
+         Fpwv3tE+MsTwzmB+Ownnv6AEFF1n4PWha7w/4fPcmAqhEmXW17wxq0w4CoN19+LiDgzt
+         Jqw7k/erIlmjJ5BROlluuf+jTnMA419Gj7aWUksZY6jt9C5xHfz/WtQ/cBUjiXRxeZ1n
+         LY14I9NvSXVWBJdL9QeZhvKd8GXiM1WgYh56HUextaDrM9L4qxPzSJvpy5lMQLIinias
+         ynpjRNCjhbR+sFQTIjwvVjSbUT6W9mTd9QSL18S8JT1dmR+obQcV7koaA9Dx7otk2I2+
+         Mm0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=6f9rSiA8EDiLaM0B3Hbnw5EwlveWA1Ldae2Sb5yxk2E=;
+        b=AMGLI/O4vQ0vJge2fyOY89GbcQOKlqEl2j7mMFJ4YZ/CcTrV8PUKCBHsGKexmFApuI
+         M5VwTUU4A9Z224aw6gcdiz+v0kSp+NSaMx/ahXk3albsNohv+THM4VwaTR6nX2F9vc9t
+         08G8O+H9645jI5fNtm28MIf0icVgEQcHcHi2TbrocFUw8qKl3zyfyJYvpSqAtgY5JBve
+         HL8+ZE9yMgKDOvHf9d2dSUT9Q4+kewPRhwIb3JHElNuE6jgJRFVgjt2U/ksPaRZhVLjv
+         gv4T/pVzy+nuOwJCBTlGiaPEqIv0mK6qPAo3EQfcwBcvi4KycvyrQlZgHLnAG5hpFu1H
+         y6Ew==
+X-Gm-Message-State: AOAM533I1ryuuy9+Ue3FMCo1atI0ptRWSYKFo5nShqLGSuF5hxJPnF40
+        DkjCbUjkBuWHvIiI5sd3ZR7d0ALSGkA=
+X-Google-Smtp-Source: ABdhPJwTtPCp8FpXcgbnEpGrzBD/c5OI5FBmvcnkI6RURmACggq+OZbnWqT2dHgZJXdzmC35I3K6bAfTJvc=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:1f07:b0:4e1:3335:9dd6 with SMTP id
+ be7-20020a056a001f0700b004e133359dd6mr4030287pfb.76.1645730360871; Thu, 24
+ Feb 2022 11:19:20 -0800 (PST)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Thu, 24 Feb 2022 19:19:15 +0000
+Message-Id: <20220224191917.3508476-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
+Subject: [PATCH 0/2] KVM: VMX: Revert back to refreshing HOST_CR3 at ->run
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wanpeng Li <kernellwp@gmail.com>,
+        Lai Jiangshan <laijs@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 23 Feb 2022 16:20:33 -0500:
+Revert back to refreshing vmcs.HOST_CR3 in vmx_vcpu_run(), the PCID in
+CR3 can be bumped in KVM context if KVM triggers code patching of any
+kind, e.g. when updating the apic_hw_disabled static key in response to
+a WRMSR(APIC_BASE).
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git tags/selinux-pr-20220223
+Sean Christopherson (2):
+  Revert "KVM: VMX: Save HOST_CR3 in vmx_set_host_fs_gs()"
+  Revert "KVM: VMX: Save HOST_CR3 in vmx_prepare_switch_to_guest()"
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/54134be6580364ab98db09eb8070a09bb02e37ae
+ arch/x86/kvm/vmx/nested.c | 11 ++++++++---
+ arch/x86/kvm/vmx/vmx.c    | 28 +++++++++++++++++-----------
+ arch/x86/kvm/vmx/vmx.h    |  5 ++---
+ 3 files changed, 27 insertions(+), 17 deletions(-)
 
-Thank you!
 
+base-commit: 8b9c948fd3c1cbd8fed00646e11651cf3d4c86cc
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.35.1.574.g5d30c73bfb-goog
+
