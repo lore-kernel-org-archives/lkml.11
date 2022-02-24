@@ -2,195 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A26DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:46:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE83C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:46:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235209AbiBXNqj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:46:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51372 "EHLO
+        id S235225AbiBXNq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:46:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231439AbiBXNqh (ORCPT
+        with ESMTP id S231439AbiBXNq4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:46:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C5026F4E6;
-        Thu, 24 Feb 2022 05:46:06 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD74561B38;
-        Thu, 24 Feb 2022 13:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4884C340E9;
-        Thu, 24 Feb 2022 13:46:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645710365;
-        bh=jnbdT8UDAZtAA54FrGhoPcolloNf7HRAUDbtYfwfctw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=IZrqtq2kceQS0Sq/mXjgWYuG/quLzDYr5v0h0g4VvsREdaekkp+FMtShpRfUNSGTS
-         1WIqmWBTkrWPqKLKuhDqisz1YeQJzLkCq9IMN8xPFgeBAuAkmMNf32u0ApbO9Wr0DX
-         Pl7/dtQrhGSKQHkybcvZ7OOwIJuQjLOE8xZW0+VxTxtoHcVI0AJRUVajJGJhBtIFsR
-         csu01x5+6DlNYc7zKoL1WvSkbfmfD8KDPeuU7qMlVuq0Ba4DovHY8mEvaq//wKnbNt
-         g8W5tHvwc4RvGnOq2Q3yUs1gasJVOI3PvnzmhDdWpa0XqYK/zLC0oOy14LvyTFMOh1
-         t6SBPIzc2LkPQ==
-From:   broonie@kernel.org
-To:     David Sterba <dsterba@suse.cz>
-Cc:     David Sterba <dsterba@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Qu Wenruo <wqu@suse.com>,
-        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>
-Subject: linux-next: manual merge of the btrfs tree with the btrfs-fixes tree
-Date:   Thu, 24 Feb 2022 13:44:27 +0000
-Message-Id: <20220224134427.3208381-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        Thu, 24 Feb 2022 08:46:56 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB33C27AA35
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:46:26 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id v2-20020a7bcb42000000b0037b9d960079so3539338wmj.0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:46:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fE7kl2GhZCQLmfysy3Jz8Q5rFJOjnbH3GgpHqDMSeJg=;
+        b=rv0aGpluioskNTfLPijWXUXmUgO1Csy1GuyIJGrZ9VWydqKZSfq/olkTeEL6+M5jqm
+         vA9zrwS9nP0w30Fj2n+MIHm3iobZnSk8Qbaay8GSSWcs8OcTzssPLEEoQ1t2mmVst9Ma
+         JxBcB1ieYaQ7pjwelUGXRwiO/mDHAXjJSRNSZoQeSCyEzsewt0TU/MSJ7X4dn1HjU4t/
+         3MXY/QhzzD7TUJsG4EJf84mlhBtN0/Yw1nZ1/7dOHdwgPrve4uHjtMcQQa4HPXA0umQr
+         QgaW1+cj3LC1+AxFqKmVNGizKTLIwKeyBN2TSsgau79mRPaiu8sI6+zfhDXESazxgLuy
+         UhOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fE7kl2GhZCQLmfysy3Jz8Q5rFJOjnbH3GgpHqDMSeJg=;
+        b=F4qh8VTWnSvwM11k5+ZdXya2XLcat6ZWndmkUPPop0smhON7Q4NDLUQl+XVIuXtj+g
+         12nWMQqj2fZZJ7fkw7j3lAzqBNRamtUO0YKto9AQBAh+Kjx2onw06el3roNSGDCU+Exf
+         f5Cx10O2fNcw4S30cw0DEoj4Q2nT2oHYszEpi3JUD2SAKxsjbkZuvFtQSv5aMNYCGBot
+         e8By86H10y9CKZQKrwvjZpfeK2QD14t/BoxkEgUAqWGYmjvyf546P5WITvOhIEG8+4ny
+         4wmfn3sTgRCnLe3nsxphQVT3dlLdv7AmO1pcXgoaEPz+KSb8OY2FsbYQWTmSiPgOf1bD
+         T3ag==
+X-Gm-Message-State: AOAM531ZqMtJ0yeEKILQC6afaLMvwdMB4h0EscquPkiHBClGast5YyHR
+        Xe+ZQP8UxPRYEO4mUlrk8upZAw==
+X-Google-Smtp-Source: ABdhPJyh9rNJY6AS+e904Xmv+hju2DcFQtoseCfyBNBL9hQgNOxtDno2T3TB9eCXAs5sdguoqBwM3g==
+X-Received: by 2002:a1c:c910:0:b0:37d:1f4a:224e with SMTP id f16-20020a1cc910000000b0037d1f4a224emr11543849wmb.124.1645710385222;
+        Thu, 24 Feb 2022 05:46:25 -0800 (PST)
+Received: from [10.205.160.65] ([95.83.233.50])
+        by smtp.gmail.com with ESMTPSA id u12sm2792859wrs.2.2022.02.24.05.46.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 05:46:24 -0800 (PST)
+Message-ID: <d64555a6-79ce-bff0-bb06-bc0b02fa27ff@conchuod.ie>
+Date:   Thu, 24 Feb 2022 13:49:53 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: i2c: microchip,corei2c: Fix indentation of
+ compatible items
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Conor Dooley <Conor.Dooley@microchip.com>
+Cc:     Wolfram Sang <wsa@kernel.org>, Daire.McNamara@microchip.com,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <365d32c63c2fe080866be60c32dddd0f3634d19d.1645705789.git.geert@linux-m68k.org>
+ <97b69b3a-bf17-6a43-bf96-da19822051b3@microchip.com>
+ <CAMuHMdXGQDqMagqzD8VNYm2oucE=_nas9mM2sT_RoW2GKhr4vw@mail.gmail.com>
+ <ae6b0849-a3e3-33fe-b540-6dc77c868f4b@microchip.com>
+ <CAMuHMdV5ghvAze-zOVAm9LSv9261PE0hh3nxyv5db18azmo2=w@mail.gmail.com>
+From:   Conor Dooley <mail@conchuod.ie>
+In-Reply-To: <CAMuHMdV5ghvAze-zOVAm9LSv9261PE0hh3nxyv5db18azmo2=w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
-
-Today's linux-next merge of the btrfs tree got conflicts in:
-
-  fs/btrfs/ctree.h
-  fs/btrfs/file.c
-  fs/btrfs/inode.c
-  fs/btrfs/ioctl.c
-  fs/btrfs/lzo.c
-
-between commit:
-
-  2ac3e062af024 ("btrfs: reduce extent threshold for autodefrag")
-  741b23a970a79 ("btrfs: prevent copying too big compressed lzo segment")
-  26fbac2517fca ("btrfs: autodefrag: only scan one inode once")
-  966d879bafaaf ("btrfs: defrag: allow defrag_one_cluster() to skip large extent which is not a target")
-  d5633b0dee02d ("btrfs: defrag: bring back the old file extent search behavior")
-
-from the btrfs-fixes tree and commit:
-
-  13b2f7ab699a5 ("btrfs: close the gap between inode_should_defrag() and autodefrag extent size threshold")
-  48b433a2ef82a ("btrfs: add lzo workspace buffer length constants")
-  db360c49d476f ("btrfs: autodefrag: only scan one inode once")
-  e6c69fcbee7ef ("btrfs: defrag: use control structure in btrfs_defrag_file()")
-  6b17743d934ec ("btrfs: defrag: bring back the old file extent search behavior")
-
-from the btrfs tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
-diff --cc fs/btrfs/ctree.h
-index 947f04789389e,5a569bc756c3c..0000000000000
---- a/fs/btrfs/ctree.h
-+++ b/fs/btrfs/ctree.h
-diff --cc fs/btrfs/file.c
-index 01111ee06e1ef,8815981447034..0000000000000
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-diff --cc fs/btrfs/inode.c
-index 76e530f76e3cf,44e8d28182b7f..0000000000000
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-diff --cc fs/btrfs/ioctl.c
-index 8d47ec5fc4f44,998bf48e5ce29..0000000000000
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@@ -1435,16 -1460,16 +1461,23 @@@ static int defrag_collect_targets(struc
-  			goto add;
-  
-  		/* Skip too large extent */
-- 		if (range_len >= extent_thresh)
-+ 		if (range_len >= ctrl->extent_thresh)
-+ 			goto next;
-+ 
-+ 		/*
-+ 		 * Skip extents already at its max capacity, this is mostly for
-+ 		 * compressed extents, which max cap is only 128K.
-+ 		 */
-+ 		if (em->len >= get_extent_max_capacity(em))
-  			goto next;
-  
- +		/*
- +		 * Skip extents already at its max capacity, this is mostly for
- +		 * compressed extents, which max cap is only 128K.
- +		 */
- +		if (em->len >= get_extent_max_capacity(em))
- +			goto next;
- +
-  		next_mergeable = defrag_check_next_extent(&inode->vfs_inode, em,
-  							  locked);
-  		if (!next_mergeable) {
-@@@ -1683,19 -1715,11 +1723,20 @@@ static int defrag_one_cluster(struct bt
-  			break;
-  		}
-  
-- 		if (max_sectors)
-+ 		if (ctrl->max_sectors_to_defrag)
-  			range_len = min_t(u32, range_len,
-- 				(max_sectors - *sectors_defragged) * sectorsize);
-+ 					  (ctrl->max_sectors_to_defrag -
-+ 					   ctrl->sectors_defragged) * sectorsize);
-  
- +		/*
- +		 * If defrag_one_range() has updated last_scanned_ret,
- +		 * our range may already be invalid (e.g. hole punched).
- +		 * Skip if our range is before last_scanned_ret, as there is
- +		 * no need to defrag the range anymore.
- +		 */
- +		if (entry->start + range_len <= *last_scanned_ret)
- +			continue;
- +
-  		if (ra)
-  			page_cache_sync_readahead(inode->vfs_inode.i_mapping,
-  				ra, NULL, entry->start >> PAGE_SHIFT,
-@@@ -1834,13 -1879,11 +1898,10 @@@ int btrfs_defrag_file(struct inode *ino
-  			break;
-  		}
-  		if (do_compress)
-- 			BTRFS_I(inode)->defrag_compress = compress_type;
-- 		ret = defrag_one_cluster(BTRFS_I(inode), ra, cur,
-- 				cluster_end + 1 - cur, extent_thresh,
-- 				newer_than, do_compress, &sectors_defragged,
-- 				max_to_defrag, &last_scanned);
- -			BTRFS_I(inode)->defrag_compress = ctrl->compress;
-+ 		ret = defrag_one_cluster(BTRFS_I(inode), ra, ctrl, cur,
-+ 					 cluster_end + 1 - cur);
-  
-- 		if (sectors_defragged > prev_sectors_defragged)
-+ 		if (ctrl->sectors_defragged > prev_sectors_defragged)
-  			balance_dirty_pages_ratelimited(inode->i_mapping);
-  
-  		btrfs_inode_unlock(inode, 0);
-diff --cc fs/btrfs/lzo.c
-index e6e28a9c79877,430ad36b8b080..0000000000000
---- a/fs/btrfs/lzo.c
-+++ b/fs/btrfs/lzo.c
 
 
-diff --git a/fs/btrfs/ioctl.c b/fs/btrfs/ioctl.c
-index 7d3542893a165..5ef7c08b24b89 100644
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -1734,7 +1734,7 @@ static int defrag_one_cluster(struct btrfs_inode *inode,
- 		 * Skip if our range is before last_scanned_ret, as there is
- 		 * no need to defrag the range anymore.
- 		 */
--		if (entry->start + range_len <= *last_scanned_ret)
-+		if (entry->start + range_len <= ctrl->last_scanned)
- 			continue;
- 
- 		if (ra)
-@@ -1760,7 +1760,7 @@ static int defrag_one_cluster(struct btrfs_inode *inode,
- 		kfree(entry);
- 	}
- 	if (ret >= 0)
--		*last_scanned_ret = max(*last_scanned_ret, start + len);
-+		ctrl->last_scanned = max(ctrl->last_scanned, start + len);
- 	return ret;
- }
- 
+On 24/02/2022 13:34, Geert Uytterhoeven wrote:
+> Hi Conor,
+> 
+> On Thu, Feb 24, 2022 at 2:15 PM <Conor.Dooley@microchip.com> wrote:
+>> On 24/02/2022 12:58, Geert Uytterhoeven wrote:
+>>> On Thu, Feb 24, 2022 at 1:55 PM <Conor.Dooley@microchip.com> wrote:
+>>>> On 24/02/2022 12:31, Geert Uytterhoeven wrote:
+>>>>> make dt_binding_check:
+>>>>>
+>>>>>        Documentation/devicetree/bindings/i2c/microchip,corei2c.yaml:19:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+>>>>
+>>>> Hey Geert,
+>>>> I've run dt_binding_check locally but I dont get a warning, is there
+>>>> something I am missing?
+>>>
+>>> Interesting. Are you using the latest dtschema?
+>>> https://github.com/devicetree-org/dt-schema.git
+>>
+>> I was on v2021.12, but have now tried v2022.01 & master
+>> (2022.2.dev1+gf677c85).
+>>
+>> Is there something other than running "make dt_binding_check" in a fresh
+>> checkout that I need to do?
+> 
+> You did update your installation after the fresh[1] checkout?
+> 
+> $ cd dt-schema
+> $ pip3 install -e .
+> 
+> [1] What about "git pull"? ;-)
+> 
+
+I went for the option of "pip3 install 
+git+https://github.com/devicetree-org/dt-schema.git@master"
+If I alter check_dtschema_version to spit out the version, its as 
+expected. The checkout was of Linux not the dt-schema.
+
+I have found the issue however, realised just before Rob pointed it out 
+that I missed yamllint when I reinstalled my OS recently.
