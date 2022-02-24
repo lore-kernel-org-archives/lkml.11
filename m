@@ -2,91 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B56EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D31E4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230402AbiBXQvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:51:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42344 "EHLO
+        id S230307AbiBXQvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:51:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231152AbiBXQvE (ORCPT
+        with ESMTP id S229810AbiBXQvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:51:04 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8355E1D06E3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:50:28 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nNHJx-00013C-V6; Thu, 24 Feb 2022 17:50:26 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nNHJx-00138Z-TI; Thu, 24 Feb 2022 17:50:25 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nNHJw-005Gmy-GY; Thu, 24 Feb 2022 17:50:24 +0100
-Date:   Thu, 24 Feb 2022 17:50:24 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Max Kellermann <max.kellermann@gmail.com>
-Cc:     linux-pwm@vger.kernel.org, thierry.reding@gmail.com,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        andrey@lebedev.lt, stable@vger.kernel.org
-Subject: Re: [PATCH 2/3] pwm-sun4i: calculate "delay_jiffies" directly,
- eliminate absolute time
-Message-ID: <20220224165024.c76hawufdbe32rjj@pengutronix.de>
-References: <20220125123429.3490883-1-max.kellermann@gmail.com>
- <20220125123429.3490883-2-max.kellermann@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6rwb7qkkozklm54a"
-Content-Disposition: inline
-In-Reply-To: <20220125123429.3490883-2-max.kellermann@gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+        Thu, 24 Feb 2022 11:51:38 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5247BD2C5;
+        Thu, 24 Feb 2022 08:51:07 -0800 (PST)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21OFFAkX031473;
+        Thu, 24 Feb 2022 16:16:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=yqHL87504nAZ1oZxHURRiF32LNq/unDOPPKMbX8ZaNg=;
+ b=A82d6JUGoq7dzu7Ouyd7z6wzw3RZTdYPgTq+RHsEijA+I+Ghi7VQag+8zB8J/AlLGeIL
+ SmpprGlwnFebxyI0JBQyKEAI31onSC+Emccpgm2Jlr5XFLAfjTWRGGZIRL2xzig5lCW8
+ KWGeCUjhAzFL2ExF2AZKbMxOXxTwuMbjwrzWGnB8C1H47iQh1aaRGWPfb3S9Uit7dD4+
+ QZGqaHiptX2rvfheQbrkblGHKCbH7+voIyqqEqV75zlD/noyusLkwiWZFW5YUUf0kDLE
+ dZEmCLzmdIEMcRcCY0INyuCbrZZYLjhkrLzyah/ZKKpdo31pE3850lNSJuLJD61K/vfT rQ== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3edh6xpjam-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 24 Feb 2022 16:16:58 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21OG77kF002898;
+        Thu, 24 Feb 2022 16:16:56 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06fra.de.ibm.com with ESMTP id 3eaqtk114t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 24 Feb 2022 16:16:56 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21OG6BV747317492
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Feb 2022 16:06:11 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4B382A4040;
+        Thu, 24 Feb 2022 16:16:53 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 77B29A4057;
+        Thu, 24 Feb 2022 16:16:52 +0000 (GMT)
+Received: from sig-9-65-86-89.ibm.com (unknown [9.65.86.89])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 24 Feb 2022 16:16:52 +0000 (GMT)
+Message-ID: <b89ec5792da3c284f8e5e058c5568482beccf00d.camel@linux.ibm.com>
+Subject: Re: [PATCH v5 4/8] ima: define a new template field 'd-type' and a
+ new template 'ima-ngv2'
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 24 Feb 2022 11:16:51 -0500
+In-Reply-To: <YhbSE/k4mElcehDN@sol.localdomain>
+References: <20220211214310.119257-1-zohar@linux.ibm.com>
+         <20220211214310.119257-5-zohar@linux.ibm.com>
+         <YhbSE/k4mElcehDN@sol.localdomain>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: amlH_6L_r5yAerddFZgbRhMWxqrmxiS4
+X-Proofpoint-ORIG-GUID: amlH_6L_r5yAerddFZgbRhMWxqrmxiS4
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-24_03,2022-02-24_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 clxscore=1015 bulkscore=0 adultscore=0 mlxscore=0
+ suspectscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
+ lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2202240095
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 2022-02-23 at 16:32 -0800, Eric Biggers wrote:
+> On Fri, Feb 11, 2022 at 04:43:06PM -0500, Mimi Zohar wrote:
+> > In preparation to differentiate between regular IMA file hashes and
+> > fs-verity's file digests, define a new template field named 'd-type'.
+> > Define a new template named 'ima-ngv2', which includes the new 'd-type'
+> > field.
+> > 
+> > Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+> > ---
+> >  security/integrity/ima/ima_template.c     |  3 +++
+> >  security/integrity/ima/ima_template_lib.c | 13 +++++++++++++
+> >  security/integrity/ima/ima_template_lib.h |  2 ++
+> >  3 files changed, 18 insertions(+)
+> > 
+> > diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
+> > index db1ad6d7a57f..b321342e5bee 100644
+> > --- a/security/integrity/ima/ima_template.c
+> > +++ b/security/integrity/ima/ima_template.c
+> > @@ -19,6 +19,7 @@ enum header_fields { HDR_PCR, HDR_DIGEST, HDR_TEMPLATE_NAME,
+> >  static struct ima_template_desc builtin_templates[] = {
+> >  	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
+> >  	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
+> > +	{.name = "ima-ngv2", .fmt = "d-ng|n-ng|d-type"},
+> >  	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
+> >  	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
+> >  	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
+> > @@ -40,6 +41,8 @@ static const struct ima_template_field supported_fields[] = {
+> >  	 .field_show = ima_show_template_digest_ng},
+> >  	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
+> >  	 .field_show = ima_show_template_string},
+> > +	{.field_id = "d-type", .field_init = ima_eventdigest_type_init,
+> > +	 .field_show = ima_show_template_string},
+> >  	{.field_id = "sig", .field_init = ima_eventsig_init,
+> >  	 .field_show = ima_show_template_sig},
+> >  	{.field_id = "buf", .field_init = ima_eventbuf_init,
+> 
+> I notice that the "d-ng" field already contains both the hash algorithm and the
+> hash itself, in the form <algorithm>:<hash>.  Wouldn't it make more sense to
+> define a "d-ngv2" field that contains <type>:<algorithm>:<hash>?  After all,
+> both the type and algorithm are required to interpret the hash.
+> 
+> Or in other words, what about the hash type is different from the hash algorithm
+> that would result in them needing different handling here?
 
---6rwb7qkkozklm54a
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks, Eric.  I really like your suggestion.  Currently, type is
+defined as either "ima" or "verity".   Are you ok with prefixing each
+record with these strings?
 
-On Tue, Jan 25, 2022 at 01:34:28PM +0100, Max Kellermann wrote:
-> Basically this code did "jiffies + period - jiffies", and we can
-> simply eliminate the "jiffies" time stamp here.
->=20
-> Cc: stable@vger.kernel.org
+-- 
+thanks,
 
-I don't see how this is relevant for stable, but the change looks fine:
+Mimi
 
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---6rwb7qkkozklm54a
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIXt0wACgkQwfwUeK3K
-7Amqdwf9GAUan7K0PAFqHgtejdhyiyyrO0YjnQfmhJ9PO4uWvoqYsHaNVop+fEWs
-bmMj2jq6FJBUkS1l6Ee+x4itJrIbW/iyamW6msOWSsVbE9+Kr9ceA/WsJNtogq3N
-isv+YGmB6jNxq9WMeZZjMZQG5Q04VqGsS6n8MFO/IFVThkDu5hKebT9UO4p9KSml
-FzfHDNUKnuZXJ8v0XLyi0tTYc21iEbIAbTga/jYYVgEtVAIzdJg/OXRvijve8IDN
-qlx0KK5tI7yNvMk9KqEhwtqJbILqGYRZVaH48mgbQ1I8jLmgC2lACUFkaU6j5YLe
-9wpJbUXX4PA25AXQ0acWJoz2B8w4tA==
-=xfcm
------END PGP SIGNATURE-----
-
---6rwb7qkkozklm54a--
