@@ -2,273 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 07:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFDCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 07:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231509AbiBXHLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 02:11:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        id S231486AbiBXH2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 02:28:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231160AbiBXHLG (ORCPT
+        with ESMTP id S230128AbiBXH2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 02:11:06 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2050.outbound.protection.outlook.com [40.107.244.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05505230E48
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:10:36 -0800 (PST)
+        Thu, 24 Feb 2022 02:28:14 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C1D160FDC
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:27:44 -0800 (PST)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21O65ufK019924;
+        Thu, 24 Feb 2022 07:27:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=UgNcQuGd6gDpW+vMwosUWuu5tOpscqKDyJbMpmhX7zw=;
+ b=vDMuSvb+eQ8jMmLEssIKEsfxR2DwhP1AspPqkZAE/E1nfrV7yY5kJEaLgVVYghW97mV9
+ CGvxtzWilRUhvMOeSD81jOKzKmSecve00SlnFev+oFoKyffZnSeJALupHl2nyVPD87CX
+ pu+NJgE90peClI9d9jkSaIvj5PlLvo41eXfLixsfwtiAqe+bi5W3yAMNAJ0xbwX0FnbS
+ 881NkmesnMqVn0FXNZV9Q6b8EoNELunk9flV1oHU+D0nWC7e7BtO8EhdEnW30dK9n8IR
+ X4nX8RvzJRYYVUDfvQkoHXmQI0g8sQd5sNZYEWS4E0XCI/anNIxbD4grkcWpLQ5Ml3Vq FA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ect7aphty-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Feb 2022 07:27:32 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21O7QWO0086210;
+        Thu, 24 Feb 2022 07:27:31 GMT
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2177.outbound.protection.outlook.com [104.47.73.177])
+        by aserp3020.oracle.com with ESMTP id 3eb483965p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 24 Feb 2022 07:27:31 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Koy543w8iCKnvN1ShaMwFG5kRWEYh8hWeb4slVA84qzMcuX/5qPQp8NM++exuJXFeZhluEHj2h1pG+3j5P4Pvv86m7INcky9nj5GJe595OBZad9tDUd/2prJCEBBzhbstnhETEhcA+rMFc+4cpgiPROxKCLLRW48ROAqYUDN3QOmPzZ1IFuVr0UNZDwwg9QruyrrIJbipzelUPBr+4MQzzt4FP070MA/ifyKt1JDZhL/1YPLS2xMl1J+quUa1aIHrlkpjs+hrlCFIG/PDjGdfsYK+XqBNAY272B3DvrnnFZZQKn2JNNY8qozxKEKO/7cnHfnDzwFLtCO3uw/LbGsLQ==
+ b=TpKdjmCa7+jbSS+cYzrttmTBecaMvZeTNq18LIZefmDRGKz4d65z0Z6AvORvmaAAQJy1nA4DEviVcpbKhPjNil0gZjqj2qVKlcs3krtiEq3Ui2oYMhUNHAdzbY0ZTlZt4Uht7SzEE9N/r0hxhQ2K/zDXWAfy5n7SJ/VVJ3aoa420BOhnB+LWZpxu8mD9nf7ZRQmt9sn7i6IA92CXEmGnyHfWqvax6tkSFPHCrZOXtjg3qVF2gZQQ9v5WEFIWHWN44i9ZApqiqSdkjO5aQXJg5w4X+kcK9cCi5dRFeCxBG09kIkcpzVCwLJRSQtPsMXa90wsTaA0NbLitxx/5ILIkEg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lUZKEGlOF9YvYmCKgQ+WuSLmetOPuUwFABNkoF9Kj08=;
- b=hjlQG2bk+ATLpuPqtacFl3uqdGpdhVNr66lIDFz7e6QDB4GJjQHKEbQ/eCgULXhzGN3W/39gWv0Cqymc7oTXvxwGCtnaqcsYJv7IOuxieF9O4PhZrCzx8pF8YQe5gvazcXDDuQAPwwT3ouP5HrP0Tlr9JIts4/q9E+5Hv0VicxKmLpjMJuB6MhQB/2MC5WqjhAh62nO8T9qnP7fnR7q+UFaiAnzGnsQ5gOqEu7a9TAhhjvQBG4ZtIzcKQaPA/bIdPyDZ3sZmi3WvcyWX66H34mgzXIcio/NbN51xsYBFipAJx5hiMn7jPZ6KOvMxmpAzYa2aEwqhbPTa7+rnMqvu2Q==
+ bh=UgNcQuGd6gDpW+vMwosUWuu5tOpscqKDyJbMpmhX7zw=;
+ b=bLxUGcEVFj8OL7iYCDemifhnATjZoTLmglJw/eYhT/Y6rqzM2Z1QW178yP7w9bsjU+QpOWz1aDTh705dgceuLeHh/j9yCXuirIZuqnDIRN3MsH4vFjsoUiWmenj4P8o4LEWERjNkX5Kfrp7aRMfO/dgGbDFgmF3EWGiupGc7KlURiqCOWAQ1YatmOom9c1/XWlMpaaW8N/1qtuLmvekx5IF+yTtpEFaor+8jbvdLWwy/ODJSbXZtrFtCV+87aLzNxHef0ALoe4KgIiQat3T7skREGc2TwHve4g26+E8K8HccZGKakeIu+Xy6JN1vnZzFe4bgk4kJUikd+vaklJWukw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lUZKEGlOF9YvYmCKgQ+WuSLmetOPuUwFABNkoF9Kj08=;
- b=CtVqb4AJ7VkqEfjpTllZhxm4pPTGKo8DvRj16TYro4fXSG1w5nnfIf1xI8Gjk5ZcQ12HBjScO5f7DL7/1CffRu7uY8MV7JQcRmXX8JI0aF0dLYgwfrE1J9Hhj8uVgECAYhJWMu+w6i5Hz4mV3m0QsfSqpQ8pfkrx68CckzvZS5A=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BYAPR12MB3286.namprd12.prod.outlook.com (2603:10b6:a03:139::15)
- by DM6PR12MB4580.namprd12.prod.outlook.com (2603:10b6:5:2a8::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Thu, 24 Feb
- 2022 07:10:30 +0000
-Received: from BYAPR12MB3286.namprd12.prod.outlook.com
- ([fe80::84ae:1499:eca9:558b]) by BYAPR12MB3286.namprd12.prod.outlook.com
- ([fe80::84ae:1499:eca9:558b%4]) with mapi id 15.20.5017.022; Thu, 24 Feb 2022
- 07:10:30 +0000
-Date:   Thu, 24 Feb 2022 12:40:09 +0530
-From:   "Gautham R. Shenoy" <gautham.shenoy@amd.com>
-To:     Abel Wu <wuyun.abel@bytedance.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        linux-kernel@vger.kernel.org, srikar@linux.vnet.ibm.com,
-        aubrey.li@intel.com
-Subject: Re: [RFC PATCH 1/5] sched/fair: record overloaded cpus
-Message-ID: <YhcvUV/jW7yr0Sn+@BLR-5CG11610CF.amd.com>
-References: <20220217154403.6497-1-wuyun.abel@bytedance.com>
- <20220217154403.6497-2-wuyun.abel@bytedance.com>
+ bh=UgNcQuGd6gDpW+vMwosUWuu5tOpscqKDyJbMpmhX7zw=;
+ b=TWuKxKhDvWYIOWqhn7wjspdkPtmTfGwiZIR4t/FKXKNgsS0drEN+1QZpBeCkS+L8ssAPXOHsInQD5F7Q5c7hQfL6557V8K1TFase7kEaR/JgIIH3Gy4EbzwoULPxPmx2JiPYRs07BevGd8aaELQanG1lj+sKpdsfMiygVCM2sDI=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by BY5PR10MB4356.namprd10.prod.outlook.com
+ (2603:10b6:a03:210::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Thu, 24 Feb
+ 2022 07:27:29 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.4995.027; Thu, 24 Feb 2022
+ 07:27:28 +0000
+Date:   Thu, 24 Feb 2022 10:27:17 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Tong Zhang <ztong0001@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Colin Ian King <colin.i.king@googlemail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Saurav Girepunje <saurav.girepunje@gmail.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Johan Hovold <johan@kernel.org>, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] staging: rtl8192u: rework init and exit function
+Message-ID: <20220224072717.GJ3943@kadam>
+References: <YhPI5iDRUpzYWDyY@kroah.com>
+ <20220224064033.1530924-3-ztong0001@gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220217154403.6497-2-wuyun.abel@bytedance.com>
-X-ClientProxiedBy: BM1PR0101CA0038.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:b00:1a::24) To BYAPR12MB3286.namprd12.prod.outlook.com
- (2603:10b6:a03:139::15)
+In-Reply-To: <20220224064033.1530924-3-ztong0001@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MR1P264CA0120.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:50::12) To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 502f5b24-b0f6-433e-cb33-08d9f764bd94
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4580:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB4580855D9E2A523B06AB2934963D9@DM6PR12MB4580.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 83b3c465-04dc-45e4-6c7b-08d9f7671cb4
+X-MS-TrafficTypeDiagnostic: BY5PR10MB4356:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR10MB435671E96CDA9B8A6FBD7A758E3D9@BY5PR10MB4356.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jMGSb1uugpiLzVcSVasxrW4DS9S41ET+ET7SkDe4bFuaGTkzFKrkOI49tzsBHWc7Ukzn9zY9FL5n9kQQBznITifpIF2eIuvb/k+VXtiO3rMtIOdJFGI+R0jis83WVR9eZHkYpzzdqHeOy/jT8J+dI+pv065JP+9O4uaWKxjgAY7lfVX4Gk/RsG30xLYI2SI1YXDwPW5wne37kyOhrakZi+qMkh1OBWi+EyykPBExe7DEaC/hVpNCyKFnazLdrbFJsDHkFDuMgcgYxv5BaPyq342AkSJL460+6w1rPtL1+MEDO8h4AGVPAyh6eY4VgWVlvIBlM6Sq8l7gLNUKw8jz48//VIwnn4aFozJfwNnz6550iFw5i6OlfxjfHUvWOvFqbVTReCRopgwz/F89Wa356GzSXJXvz3PutkpieAa6uGMX1ydmMvBOTYzIj/ie6JW1RmRPNELuT63a6HY2DB0fwzhZ5/bNrUPiGOJher6VjMxQxqhmqJBigm173GN32xdmxQOzVXgDBTI2s0ZLu+XpVbx9CRDnb6V99hx/9n0VOLhxaz/lwRCw3AVnAkSmDOOIDn+JOck+qJC29fCP1hzBQwIpVizgGICwz9YetOk3HsWJG6kP59zhAk6qyCyAhDhfXc+c8COE5Yfzr5/muD6GZbg7sUMltyzRbg9dcUlpGU3wNp9n9OvwNicQ17v5MMuVnvgPynYyFC7wR/cglHAGu9U55facKB7eiNj/PbNNlq9v+ISzjo8YZXquUlUk7SePno9rRFdMsdd7jApSdsx+Cg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3286.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(54906003)(6916009)(86362001)(316002)(8936002)(6506007)(66556008)(66476007)(8676002)(4326008)(66946007)(6666004)(83380400001)(6512007)(2906002)(7416002)(5660300002)(38100700002)(26005)(186003)(6486002)(508600001)(966005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: kx27gdiT0t7Ja0Jx19MVcHxHjzE9XXUDERW0zjdzxbhAiJE0zz/agG+uJdJqB4MFbU5Z6ZZQi7VjC+0ivrkYWhHFPTQU4Kyh5g93E3o9cOTE46Dl7sZJKEoOfHx4xquIzkVXOsfUdTL5ZnNEvWAPS1mfHZ72umw2fr2GEPbiUUp3jxLav4iXpfqrQbSFghRtUaGGpwZiDsvmRdEz1xZqiew1A2WJjxmWOA3Rkzt+z2iguRavf542eB3JhPDTQYnpCqBc9dIPSJCmPUa0BtuVlA01VkXq62OGFhK4xSoxAOoPhpiBFBoYgalQzFzalM3OoDd/EEisKxl5cspLTbWOma0hV/ClecSvVwFUctVeI2M6rKub+BPTmYHMXlQi/my9ydomXHdX0eYtDnYvUJf5KtqMHKhhiO21j1Nb/bcMtqpzy5TCIiyhl+mM5CwEi6NLd+Ovz/yruWuhoiMSEt6nSE0f3YQaiQjV5WRC4i/WcuCVNi5duQEDmPFnCd95z6e5M5aG/2W3oVBWEF2vpDQBLCvckVp3kNzwYhph0ezbib52LDuhjkX/2BvXK5pqmD9rGYvwh7KHmg/c9rTJhUbrPQHQ8Xk3We3rSxmCm/HHuLRWKW0hcAOjD5NaaqTjoNipuA+sw+dqsJJDzbJrslPa53wQYhAn6QmRLtUbgk3iCdz5tzV8b1MJrkDsVICEap/eghbeWK/Cu03Aoc1/ofcItg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(5660300002)(38350700002)(4744005)(186003)(66946007)(66476007)(2906002)(33656002)(9686003)(6512007)(33716001)(6666004)(38100700002)(7416002)(1076003)(26005)(66556008)(6506007)(86362001)(52116002)(508600001)(4326008)(8936002)(44832011)(6916009)(54906003)(8676002)(316002)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jBvdgJyqfobwag7GJ+W8gduJLh3elE+kl9I1bakSaukyf8V/ZvmNtmCwM5DL?=
- =?us-ascii?Q?A8juAivDmPzZ1Vqvn/oJLztVnvIHSMK5vZs385Tz/s7dvW4JPolutr95kXk5?=
- =?us-ascii?Q?wg66o4zxHu1/lLZDj/ZBThpkLGTPzRJilHpolSHWYi8IeIB+ZqBWZ3WZZUAz?=
- =?us-ascii?Q?uv6UirNvQkM+QF2SY8/Gce4xzKQmgATBDZDuRov8s7TdHHP8qnZ+JSPEaxnk?=
- =?us-ascii?Q?aYpsHVWnnoSfvFOhdIwpPYcJWVY35/VeiZpx2trS3CU+I+oh8P5P2RA+b17f?=
- =?us-ascii?Q?Gtr/CIaHMu3a4l1SXETpMYj9KrGEpa6vM5Kt0gh8V7ogO8OSmFzj3JGlmI6/?=
- =?us-ascii?Q?iGLZ+B21fVB+fSSeiOeUQdXX56CDX+WgajpwxIYrybGa0e8Mgy2q7ZMpBhzy?=
- =?us-ascii?Q?8v+tzLMtFIYrNfp7s9pSKxT9emIwwiBJSrQjENKaqgmIWFQlXqUPpHzubmyg?=
- =?us-ascii?Q?MVyfePNd61gH2o/CIDp0zMuLSnM/kXlEdMy0ZbzLnv4E6jpPlS9bItg3RWDT?=
- =?us-ascii?Q?I+saMzb+oV0TpWqvHrvOX9xMQ6DYXJIqjHMedZ1ibpkNdKAp4cqRK61xIuWH?=
- =?us-ascii?Q?ZXZTI3nNydIgx6gvGzE1RI+cBl29eAYi0HP8odiNsr6HK6OGTxhWIp6XMkS6?=
- =?us-ascii?Q?8tdTKXFKK3xxlDTgvvC2V7WE0d/Kztmq1PIBPOd6HIfUqQtFia4/4MrkfDkI?=
- =?us-ascii?Q?hrLZsWBOdv19Yi/0CMS2g7NCy4DvIG0pEzug+mfH7sfEnR/763jga6ypTjx9?=
- =?us-ascii?Q?etYVkqGu5nbTwZb+aCjio7TtJ53se9MsPS0z4XQY/Af0WfQ1l1Wb1SBm9diE?=
- =?us-ascii?Q?ynb2MKurnqOq+osSIDg5ZSxjEyGtZCxAat2k3rBESKtEq/cIkjLS7QcCFyfp?=
- =?us-ascii?Q?KcfdKArU6jNnEi19kTE993evnLCmUyLOX1IDd7fMI3E94G0Rl7BUWXny1XbS?=
- =?us-ascii?Q?GzcX0ukg11L67kIL9R28cFDqI+NLIvmcJy0o+PufxHpRjDxEDBz0VayAbD+i?=
- =?us-ascii?Q?w80u+x65Y5OgPM6HkScR6DUB4H5tx34mCdg51tXMDbCW+3abJKeoCGsAK++e?=
- =?us-ascii?Q?csoEFV0ziCnjijlyaAA61BIymS5A7uZgxAz8gUpF+O7qqWTJwPah9shyPVUP?=
- =?us-ascii?Q?Uk+9uQQ19VLbS8N5YzGFOaBBAWdM7sNth3XRzmGLEzn9OSjsvBGJ5O0/+rrM?=
- =?us-ascii?Q?i9vWYNsXc9T5eR2hmnPnHvGDqaiedKztDyGm9mofAa/j/c4QBIPgdkxDpV27?=
- =?us-ascii?Q?55UvSd/LwDtQ1lmoyOA09ATcXWwb4Sm5CpLd34pntBCElDwlVomqaA7nKGfd?=
- =?us-ascii?Q?ot3Dxax9QSLU3KuOW7ErnPLaXbTknkKCVTtbEGKYZxNvJV3oNwL/aRpXxUU3?=
- =?us-ascii?Q?3up5A0y6B8oBWrR/CEEnvZutG0sNFVN0K/GbYvgZx5cylFzCUFOR0rg7yGl2?=
- =?us-ascii?Q?bRybf4GCADsN7ISvAgFyy13mtVmCh8Z9zZukHysgkfkmeDEmuvhtSBrcsC07?=
- =?us-ascii?Q?aNbjIaSfmxEE841FInR5ZRoX9ZgBNR9aMou+za3EsknNXILCKPgdx417camc?=
- =?us-ascii?Q?3FdJhdpqL0tGFDIw4cH4aLrRAknxAf7RY1mXrEpZJQ4+JMbAVJ3rOZkBj9Og?=
- =?us-ascii?Q?XN9Bv3IxD9TyBVHgm9Fe5n8=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 502f5b24-b0f6-433e-cb33-08d9f764bd94
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3286.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?byu7h3F5LDf4BcmcMS0V4HrmixnNsswgyfdB1qycBrNqZJC04DPEeb/cJ1gg?=
+ =?us-ascii?Q?hoPC0Mguzt1KoaMd8dhkGl81//Eoei+zV1WJHbe28mvm+t1w5dYgtKWg19sA?=
+ =?us-ascii?Q?qYwnFRCdfhuYf02M8a7zC45+u84yTcA0usoboSf8fEQvYsQ1ozlbbRauvtGL?=
+ =?us-ascii?Q?FlOp/+4c210FwdvQMJYkA6zHcOO7jiBXxE61LUrJ4Fr1Hpzq0t2Sl4qLCPpg?=
+ =?us-ascii?Q?vp6aWVNNwjasEKnbghFkOkTkvp5fi4gpFiNYrc5hDXfglVKfRaLfz5V88e4M?=
+ =?us-ascii?Q?MKZGFO9Ze8RFwfa0EQskgMp42w9nSTvPp4xye6+r+g8uzo1gq9Sa8RxMxGwM?=
+ =?us-ascii?Q?L17Qs/CUEe3Ewf6Xz4zphu7c7W1Hhs40qbP08ghtf7KyK/Si4i7+WhDbtvmF?=
+ =?us-ascii?Q?DXc28A4/0Xisosw5OJ4397e6U/y1Pe0ME6rEXS+RlUPDkdv06jGyOlRlV4T8?=
+ =?us-ascii?Q?UXwMKayzcr6/eEu4H7UOkN3DbBBtfq3GSGpqmQSRIaOkN7Q+c33eGOVip+zF?=
+ =?us-ascii?Q?N9i33liv1ctWkxDZ0UAe1Nff4E5QH0wGeQLf59MaelC39Eszc2+VAQHh3OF1?=
+ =?us-ascii?Q?o7xdn9qTsmIbStSEM8cVFiZwFsmxtYOYo0bGJyUeQ3A070dbSFMKkUAZYzls?=
+ =?us-ascii?Q?PQUtNpSyxfLCs/jv4pEcKkI3SguedlWpSeXam+j2U8d7xjEftdAzwurolXVi?=
+ =?us-ascii?Q?lSrbfLSAoaJ5/rRAf4QHFkDG5AdUOc4QqjS2F2VDfxXKJ+5vqpNGv7Qczfop?=
+ =?us-ascii?Q?PmTvT1ZAPlZP3qIS1SB9MiE2DDZ6t7lQRRS6TKcDQzNTyatt9nhrqay3ektz?=
+ =?us-ascii?Q?Y/F5bYn3Q25UHZEZ9KPLkMPFxW4KDJWOy6q4vsdT0x71ijnGZw7qw0jidpsS?=
+ =?us-ascii?Q?r+7KXvMs7Wjx93rQGyuauCyYZcuwvzlJFwARWjoCN7Ri2I2v/1mvyTzc+GAs?=
+ =?us-ascii?Q?d2hEbhIgm0j5Zx7g7t4w3NR+hce3DJdkdkf2hjCRTgA6CNQTlVAFel4VdH/y?=
+ =?us-ascii?Q?HsUQklOmPs8gq30Sh+Ezq64/VYa80lSrYx9cm+bFqNWnE8tnoVOUceCkyELb?=
+ =?us-ascii?Q?6cUnCR9zmQNzbANBm7zeFwyTb5fLJhLKJ+XbMsd8CMJKX6zRyv/+Dzz+bsyV?=
+ =?us-ascii?Q?TKhRvyy+01Pie411gkc5gMRIwOFcjdi4oJAhEPETE7cILH3XKRrSWGJOgzMI?=
+ =?us-ascii?Q?c8aleC+y0fctyzPIVBnhrbsIS4B9KVOsGKAiS+lK4/+ZJvdxDdhGcFM/Lz+U?=
+ =?us-ascii?Q?FtbcOXc/5CqhzE1PnqxZje5xTAiZ5C28oNBmLewpwIaj02oS6LjTpznirCUV?=
+ =?us-ascii?Q?qKjoRibWWN4+XXnQuVmNnfd9sl2wBR5YfuEk+WhxNKr+vspSkHx9mGqHkTxp?=
+ =?us-ascii?Q?35RttlLtX3SyamYFMBaPwZX77TmLEQPOBpIjNrDL3m/VAJ+LDVLLHW5Wrw52?=
+ =?us-ascii?Q?+cBdjM41Cnw4AA6ExzHeIMhGIBgBr5pPN7wwF+TqOm0ij2+d3fJvkKVayN2G?=
+ =?us-ascii?Q?os+0BAnlYn6pWDFMAM8WuPKWuT7RUz/VMGRmXgc6/JymFpDd/YTV2M51G3rD?=
+ =?us-ascii?Q?WJMuM7tMw4UjypmxIyo3iWSGtBP6D+kmtG/dlp3KkqkNGudA9KiT7pMRoQMC?=
+ =?us-ascii?Q?pJZxwNeDq04OVHEnnN9OOR5yo3jMIpRJEMW/BQSHwWtyT/tL6FY/gQZ4MXue?=
+ =?us-ascii?Q?IR4K/w=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 83b3c465-04dc-45e4-6c7b-08d9f7671cb4
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 07:10:30.3289
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 07:27:28.8507
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oOz6CPDS60f0MupCQImv48UHS0JXkdv10rue5XjBBhcObxuPYAvZpObf3nXqBHYaeK/grzK/k+3jzUbahQ/1Dw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4580
+X-MS-Exchange-CrossTenant-UserPrincipalName: BVWygGREqOmejYoPa1cWOspmT+NSgERE+WYwuZ5cxipSKLbHE39KcMh2dh/NRrd/0FCj+xg5Uxq7xdKHXZmTsNRoppcSDZ27K6UMqXCzh2M=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB4356
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10267 signatures=681306
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0
+ mlxlogscore=999 adultscore=0 bulkscore=0 phishscore=0 suspectscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202240043
+X-Proofpoint-GUID: Nn-VDZjFpE5vN0G3l2PQL_GbLkicQm4l
+X-Proofpoint-ORIG-GUID: Nn-VDZjFpE5vN0G3l2PQL_GbLkicQm4l
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Abel,
-
-(+ Aubrey Li, Srikar)
-
-On Thu, Feb 17, 2022 at 11:43:57PM +0800, Abel Wu wrote:
-> An CFS runqueue is considered overloaded when there are
-> more than one pullable non-idle tasks on it (since sched-
-> idle cpus are treated as idle cpus). And idle tasks are
-> counted towards rq->cfs.idle_h_nr_running, that is either
-> assigned SCHED_IDLE policy or placed under idle cgroups.
+On Wed, Feb 23, 2022 at 10:40:31PM -0800, Tong Zhang wrote:
+> The init and exit functions are not releasing resource properly. An error
+> can be observed when we load/unload/load r8192u_usb module due to this
+> issue. This patch rework init and exit functions to do proper resource
+> release on init error and module unload.
+> The __exit attribute is stripped from some functions since they are now
+> being used by module init functions.
 > 
-> The overloaded cfs rqs can cause performance issues to
-> both task types:
+> [  493.068012] proc_dir_entry 'net/ieee80211' already registered
+> [  493.271973]  proc_mkdir+0x18/0x20
+> [  493.272136]  ieee80211_debug_init+0x28/0xde8 [r8192u_usb]
+> [  493.272404]  rtl8192_usb_module_init+0x10/0x161 [r8192u_usb]
 > 
->   - for latency critical tasks like SCHED_NORMAL,
->     time of waiting in the rq will increase and
->     result in higher pct99 latency, and
+> [   13.910616] proc_dir_entry 'net/rtl819xU' already registered
+> [   13.918931]  proc_mkdir+0x18/0x20
+> [   13.919098]  rtl8192_usb_module_init+0x142/0x16d [r8192u_usb]
 > 
->   - batch tasks may not be able to make full use
->     of cpu capacity if sched-idle rq exists, thus
->     presents poorer throughput.
-> 
-> The mask of overloaded cpus is updated in periodic tick
-> and the idle path at the LLC domain basis. This cpumask
-> will also be used in SIS as a filter, improving idle cpu
-> searching.
+> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
 
-This is an interesting approach to minimise the tail latencies by
-keeping track of the overloaded cpus in the LLC so that
-idle/sched-idle CPUs can pull from them. This approach contrasts with the
-following approaches that were previously tried :
+Good!  Thanks!
 
-1. Maintain the idle cpumask at the LLC level by Aubrey Li
-   https://lore.kernel.org/all/1615872606-56087-1-git-send-email-aubrey.li@intel.com/
-   
-2. Maintain the identity of the idle core itself at the LLC level, by Srikar :
-   https://lore.kernel.org/lkml/20210513074027.543926-3-srikar@linux.vnet.ibm.com/
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-There have been concerns in the past about having to update the shared
-mask/counter at regular intervals. Srikar, Aubrey any thoughts on this
-?
+regards,
+dan carpenter
 
-
-
-> 
-> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
-> ---
->  include/linux/sched/topology.h | 10 ++++++++++
->  kernel/sched/core.c            |  1 +
->  kernel/sched/fair.c            | 43 ++++++++++++++++++++++++++++++++++++++++++
->  kernel/sched/sched.h           |  6 ++++++
->  kernel/sched/topology.c        |  4 +++-
->  5 files changed, 63 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
-> index 56cffe42abbc..03c9c81dc886 100644
-> --- a/include/linux/sched/topology.h
-> +++ b/include/linux/sched/topology.h
-> @@ -81,6 +81,16 @@ struct sched_domain_shared {
->  	atomic_t	ref;
->  	atomic_t	nr_busy_cpus;
->  	int		has_idle_cores;
-> +
-> +	/*
-> +	 * The above varibles are used in idle path and
-> +	 * select_task_rq, and the following two are
-> +	 * mainly updated in tick. They are all hot but
-> +	 * for different usage, so start a new cacheline
-> +	 * to avoid false sharing.
-> +	 */
-> +	atomic_t	nr_overloaded	____cacheline_aligned;
-> +	unsigned long	overloaded[];	/* Must be last */
->  };
->  
->  struct sched_domain {
-> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-> index 1d863d7f6ad7..a6da2998ec49 100644
-> --- a/kernel/sched/core.c
-> +++ b/kernel/sched/core.c
-> @@ -9423,6 +9423,7 @@ void __init sched_init(void)
->  		rq->wake_stamp = jiffies;
->  		rq->wake_avg_idle = rq->avg_idle;
->  		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
-> +		rq->overloaded = 0;
->  
->  		INIT_LIST_HEAD(&rq->cfs_tasks);
->  
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 5c4bfffe8c2c..0a0438c3319b 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -6968,6 +6968,46 @@ balance_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
->  
->  	return newidle_balance(rq, rf) != 0;
->  }
-> +
-> +static inline int cfs_rq_overloaded(struct rq *rq)
-> +{
-> +	return rq->cfs.h_nr_running - rq->cfs.idle_h_nr_running > 1;
-> +}
-> +
-> +/* Must be called with rq locked */
-> +static void update_overload_status(struct rq *rq)
-> +{
-> +	struct sched_domain_shared *sds;
-> +	int overloaded = cfs_rq_overloaded(rq);
-> +	int cpu = cpu_of(rq);
-> +
-> +	lockdep_assert_rq_held(rq);
-> +
-> +	if (rq->overloaded == overloaded)
-> +		return;
-> +
-> +	rcu_read_lock();
-> +	sds = rcu_dereference(per_cpu(sd_llc_shared, cpu));
-> +	if (unlikely(!sds))
-> +		goto unlock;
-> +
-> +	if (overloaded) {
-> +		cpumask_set_cpu(cpu, sdo_mask(sds));
-> +		atomic_inc(&sds->nr_overloaded);
-> +	} else {
-> +		cpumask_clear_cpu(cpu, sdo_mask(sds));
-> +		atomic_dec(&sds->nr_overloaded);
-> +	}
-> +
-> +	rq->overloaded = overloaded;
-> +unlock:
-> +	rcu_read_unlock();
-> +}
-> +
-> +#else
-> +
-> +static inline void update_overload_status(struct rq *rq) { }
-> +
->  #endif /* CONFIG_SMP */
->  
->  static unsigned long wakeup_gran(struct sched_entity *se)
-> @@ -7315,6 +7355,8 @@ done: __maybe_unused;
->  	if (new_tasks > 0)
->  		goto again;
->  
-> +	update_overload_status(rq);
-> +
-
-So here, we are calling update_overload_status() after
-newidle_balance(). If we had pulled a single task as a part of
-newidle_balance(), in your current code, we do not update the overload
-status. While this should get remedied in the next tick, should we
-move update_overload_status(rq) prior to the new_tasks > 0 check ?
-
-
---
-Thanks and Regards
-gautham.
