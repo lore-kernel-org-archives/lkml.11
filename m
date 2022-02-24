@@ -2,91 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08146C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:46:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235703AbiBXWqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 17:46:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53328 "EHLO
+        id S235722AbiBXWq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 17:46:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235687AbiBXWqP (ORCPT
+        with ESMTP id S235600AbiBXWqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 17:46:15 -0500
-Received: from outgoing-stata.csail.mit.edu (outgoing-stata.csail.mit.edu [128.30.2.210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE5AD17F6A7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 14:45:43 -0800 (PST)
-Received: from [128.177.79.46] (helo=[10.118.101.22])
-        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.82)
-        (envelope-from <srivatsa@csail.mit.edu>)
-        id 1nNMTD-000HIG-7O; Thu, 24 Feb 2022 17:20:19 -0500
-Subject: [PATCH v5 1/3] MAINTAINERS: Update maintainers for paravirt ops and
- VMware hypervisor interface
-From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
-To:     jgross@suse.com, x86@kernel.org, pv-drivers@vmware.com,
-        tglx@linutronix.de, bp@alien8.de
-Cc:     Alexey Makhalov <amakhalov@vmware.com>,
-        Deep Shah <sdeep@vmware.com>, sdeep@vmware.com,
-        vithampi@vmware.com, amakhalov@vmware.com, keerthanak@vmware.com,
-        srivatsab@vmware.com, anishs@vmware.com,
-        linux-kernel@vger.kernel.org, namit@vmware.com, joe@perches.com,
-        kuba@kernel.org, rostedt@goodmis.org, srivatsa@csail.mit.edu
-Date:   Thu, 24 Feb 2022 14:24:22 -0800
-Message-ID: <164574143710.654750.17342470717937593195.stgit@csail.mit.edu>
-In-Reply-To: <164574138686.654750.10250173565414769119.stgit@csail.mit.edu>
-References: <164574138686.654750.10250173565414769119.stgit@csail.mit.edu>
-User-Agent: StGit/1.4
+        Thu, 24 Feb 2022 17:46:54 -0500
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C5B29DD74;
+        Thu, 24 Feb 2022 14:46:24 -0800 (PST)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id DCEAA1C0B7F; Thu, 24 Feb 2022 23:46:22 +0100 (CET)
+Date:   Thu, 24 Feb 2022 23:46:22 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>, mingo@redhat.com,
+        shuah@kernel.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 4.19 09/13] selftests/ftrace: Do not trace
+ do_softirq because of PREEMPT_RT
+Message-ID: <20220224224622.GD6522@duo.ucw.cz>
+References: <20220223023152.242065-1-sashal@kernel.org>
+ <20220223023152.242065-9-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="4zI0WCX1RcnW9Hbu"
+Content-Disposition: inline
+In-Reply-To: <20220223023152.242065-9-sashal@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 
-Deep has decided to transfer the joint-maintainership of paravirt ops
-to Srivatsa, and the maintainership of the VMware hypervisor interface
-to Srivatsa and Alexey. Update the MAINTAINERS file to reflect this
-change, and also add Alexey as a reviewer for paravirt ops.
+--4zI0WCX1RcnW9Hbu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
-Acked-by: Alexey Makhalov <amakhalov@vmware.com>
-Acked-by: Deep Shah <sdeep@vmware.com>
-Cc: Juergen Gross <jgross@suse.com>
----
+On Tue 2022-02-22 21:31:48, Sasha Levin wrote:
+> From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>=20
+> [ Upstream commit 6fec1ab67f8d60704cc7de64abcfd389ab131542 ]
+>=20
+> The PREEMPT_RT patchset does not use do_softirq() function thus trying
+> to filter for do_softirq fails for such kernel:
+>=20
+>   echo do_softirq
+>   ftracetest: 81: echo: echo: I/O error
+>=20
+> Choose some other visible function for the test.  The function does not
+> have to be actually executed during the test, because it is only testing
+> filter API interface.
 
- MAINTAINERS |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+This needs -rt patch even on mainline, right?
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d492bb6a9c66..9325debf5365 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14609,7 +14609,8 @@ F:	include/uapi/linux/ppdev.h
- 
- PARAVIRT_OPS INTERFACE
- M:	Juergen Gross <jgross@suse.com>
--M:	Deep Shah <sdeep@vmware.com>
-+M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
-+R:	Alexey Makhalov <amakhalov@vmware.com>
- M:	"VMware, Inc." <pv-drivers@vmware.com>
- L:	virtualization@lists.linux-foundation.org
- L:	x86@kernel.org
-@@ -20647,10 +20648,13 @@ S:	Maintained
- F:	drivers/misc/vmw_balloon.c
- 
- VMWARE HYPERVISOR INTERFACE
--M:	Deep Shah <sdeep@vmware.com>
-+M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
-+M:	Alexey Makhalov <amakhalov@vmware.com>
- M:	"VMware, Inc." <pv-drivers@vmware.com>
- L:	virtualization@lists.linux-foundation.org
-+L:	x86@kernel.org
- S:	Supported
-+T:	git git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/vmware
- F:	arch/x86/include/asm/vmware.h
- F:	arch/x86/kernel/cpu/vmware.c
- 
+It is certainly not needed in -stable branches.
+
+Best regards,
+
+								Pavel
 
 
+> +++ b/tools/testing/selftests/ftrace/test.d/ftrace/func_set_ftrace_file.tc
+> @@ -33,7 +33,7 @@ do_reset
+> =20
+>  FILTER=3Dset_ftrace_filter
+>  FUNC1=3D"schedule"
+> -FUNC2=3D"do_softirq"
+> +FUNC2=3D"scheduler_tick"
+> =20
+>  ALL_FUNCS=3D"#### all functions enabled ####"
+
+
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--4zI0WCX1RcnW9Hbu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYhgKvgAKCRAw5/Bqldv6
+8k1QAJ0dLY9MiXUuLtpLd68WDfYLmHVHDgCeL2mSqReE5mPxz6I5P3J2uT6BV8I=
+=yWFJ
+-----END PGP SIGNATURE-----
+
+--4zI0WCX1RcnW9Hbu--
