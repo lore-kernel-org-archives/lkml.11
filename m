@@ -2,108 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA68C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CCA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233159AbiBXJ5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:57:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50178 "EHLO
+        id S233122AbiBXJ5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:57:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233151AbiBXJ46 (ORCPT
+        with ESMTP id S229661AbiBXJ5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:56:58 -0500
-Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com [209.85.221.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC80E28ADA9;
-        Thu, 24 Feb 2022 01:56:22 -0800 (PST)
-Received: by mail-vk1-f177.google.com with SMTP id k9so879774vki.4;
-        Thu, 24 Feb 2022 01:56:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UaaU3qYErVihNgxgJw4SHNwOEGx/UhY/ytg286+tR04=;
-        b=JPlbGO8qyl9Dzq1lI5Tgm2np3C9+me2aiPspPVq0QzqjKmt1CUefYd/0T43Ykz1dt6
-         nEge7XJqToKfs3LhCraxdNsFYLBjf7V4ZRR5BDeEUH02AmklI2FUn5PxGd9CHSA078Kt
-         ihtC+iiz77d4FiJ8HdcaPBm47ATGJ5Ca2ZeUIYgvrb+NxOacoQNn4BZ2OnT7IjYe56QU
-         y5wQi4BlZNkYVs/g+SCB1RqAA7g67ME2xMy2EKY5e50Kn2HELIVVtZIWHA95zjwD5EOj
-         vXufRzsX8b09jI3vytBUc3fhMzYjIVKwkQ4/gYs9Tn9njl+Jl3AERL0oCaGLEYhNly6U
-         +mDA==
-X-Gm-Message-State: AOAM531CzzHZl7SlmcC1MKPPF1OlF0bGXhonduA/fTEItZwF0Cweh0F9
-        eF7hAc6Wi0atOJMeF2aE+P35TFbWG7bjcw==
-X-Google-Smtp-Source: ABdhPJynvsEgIoJZ2AoCZok9nIYdyhMjWHm927h9o3VujvqmAS1n0AYSWp7++DenJOLYDcbLSK8JoA==
-X-Received: by 2002:a1f:1c4:0:b0:321:bdee:acbd with SMTP id 187-20020a1f01c4000000b00321bdeeacbdmr727554vkb.39.1645696581613;
-        Thu, 24 Feb 2022 01:56:21 -0800 (PST)
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
-        by smtp.gmail.com with ESMTPSA id b78sm315516vka.56.2022.02.24.01.56.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 01:56:21 -0800 (PST)
-Received: by mail-ua1-f54.google.com with SMTP id g15so610508ual.11;
-        Thu, 24 Feb 2022 01:56:21 -0800 (PST)
-X-Received: by 2002:a9f:360f:0:b0:341:8a12:8218 with SMTP id
- r15-20020a9f360f000000b003418a128218mr737932uad.14.1645696580955; Thu, 24 Feb
- 2022 01:56:20 -0800 (PST)
+        Thu, 24 Feb 2022 04:57:49 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA7317070;
+        Thu, 24 Feb 2022 01:57:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1645696617;
+        bh=C332AhrDIlzT/2XoIViHK7bqj7AuxbydaVZvJnTmdTY=;
+        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
+        b=hJUDoDIkTmmgyqDMp8CywHnVIVZ3QH2hSBdSRJ/Bj1cIMUHXRaCP2kzsxKQf3KqpU
+         +zXZdIV1+07BbWCj5OMsQQ1DItLvef4gmAzMCPw7evTwyJa2O0IsHi2jhWsRJhGbuW
+         bEZmbU62/9JcQIJRHCH52WlWTwprii0DJ5E6+Hg8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.net (mrgmx005
+ [212.227.17.184]) with ESMTPSA (Nemesis) id 1MdvqW-1nuqze24EY-00b2BT; Thu, 24
+ Feb 2022 10:56:57 +0100
+Message-ID: <205e5941-6ae0-0482-b083-874daf0e5a46@gmx.com>
+Date:   Thu, 24 Feb 2022 17:56:49 +0800
 MIME-Version: 1.0
-References: <20220224060448.1856091-1-keescook@chromium.org>
- <CAMuHMdVioQLy_T2LimgWdfWM=j=fomfpayuS1mbXnBLZj4gGQA@mail.gmail.com>
- <d75f1259c3e64387a161ebcb0448d594@AcuMS.aculab.com> <CAMuHMdWtQ+B-01ZOwZNvgQ7pndNsP3V90_jHdR=RS4K7O3Vk9g@mail.gmail.com>
- <95b9c3e8227a4892b26cc0384d1782c2@AcuMS.aculab.com>
-In-Reply-To: <95b9c3e8227a4892b26cc0384d1782c2@AcuMS.aculab.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 24 Feb 2022 10:56:09 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdU6msvi0j=mS28GFYbm+uMRk7PkYe+zOM4sDmOVxeibLQ@mail.gmail.com>
-Message-ID: <CAMuHMdU6msvi0j=mS28GFYbm+uMRk7PkYe+zOM4sDmOVxeibLQ@mail.gmail.com>
-Subject: Re: [PATCH] m68k: Implement "current_stack_pointer"
-To:     David Laight <David.Laight@aculab.com>,
-        Kees Cook <keescook@chromium.org>
-Cc:     linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Content-Language: en-US
+To:     Yujie Liu <yujie.liu@intel.com>, Qu Wenruo <wqu@suse.com>,
+        Souptick Joarder <jrdr.linux@gmail.com>
+Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        dsterba@suse.com, nathan@kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, kernel test robot <lkp@intel.com>
+References: <20220220144606.5695-1-jrdr.linux@gmail.com>
+ <0a2e57ad-2973-ea01-ceda-3262cde1f5aa@gmx.com>
+ <CAFqt6zZsv+bMwbdqrcOMCZE08O_q7DGa0ejVAbokLybsSch5fw@mail.gmail.com>
+ <a1d126df-a5ee-d47d-bfaa-95b3b221e41a@suse.com>
+ <b2536c4b-bf0f-a2ff-58cf-ef7d17acaf48@intel.com>
+From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
+Subject: Re: [PATCH] btrfs: Initialize ret to 0 in scrub_simple_mirror()
+In-Reply-To: <b2536c4b-bf0f-a2ff-58cf-ef7d17acaf48@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Y3w1cSk5CyKdUvcBcH7SHZzqBGO/AIkIUDmfQ9EPXDacHy9yCkt
+ iWTDFG9uPyOGG1CPtqA9esJUdBnRE2wgJjaTjEslssQMomDhUs6xOpBzM8xva9tuPsgzwmn
+ aQ6hrmpUtRXDR6v2FS9fWTI7nUE+N1dU4/0vKJsiu4JcEQCVv0M3ZqwUMurYcTYXV34MdR1
+ t1UBkDFYBapvZeJbgLNEg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:CbhHkVsKYkI=:DQAbSz6tP7yo27vVEv4KXt
+ hvq+4l5HUVTtY6s00/JFu/ScxELHHs0dbAOr1/9rJ9p9PA0+M+oQuTrIwAG+GJlIH/aFwt/So
+ nJ6NelIwIsDTPT07YPhnbRxYrGIL+/U1LPw5hR3t81/Ob1Adw7PA/8If/cf/O7Qu9NhMBfHXM
+ gROkD9sUW7kxM/RMgPq8mRGADR+t2UG+07kNTcf7RJYPz5oDA+mzRHvblLXPDl9BkZixP3A7P
+ +cFqX2NBSOUNsp8YG7T0j1ZGoX937LRl+hjO2UHB5iMg0bNgCYpGwGdCxRR1dbLDPMvqelXRd
+ xbQZRCfxdV4d2xh2okzc1JBapcRQ7+oq4WwHCYBlYqPipT4vEDGY81V08da+O9oHYbC3gTM+V
+ 2pFEpzyGVxTDSCGzF4y/DocAI5a1sxjHro75/yOIOjk56WWXfjBxXVJBBGaOeUNH9/MJtDGFh
+ FY6wvRToF9BG8pz+pDPtZTwSMurj7AD6O5M8kF797CKoda1P6ZLhf/20xD2NiwVxjyaLaebEe
+ 24gl7XyMASYCePg9NoL3Nf1sCtZ/soPmGH4vlI0swDF3b7NI/ydZrpthqi2x/tEDKATTVk5W8
+ VHTCJUCF9ShkwxqWQb8BUT5DxFdIuCta5KnK2DLGkCPiGMUgmcwDMByLrUpKL1Pcl8bNsUCD5
+ L5iVU49GThrr17KYHtHmZ9ZnIFbSOSvP55/utbicc9W1CDTvRH8XD76LjXvW57chSi3Apfa4N
+ g/rNA6afPA/O9O4o5VWkAOv998SmxkPEFVgwWfTDfONbiRVhvT7yOWg74+XOLFJAvGM2VEjFq
+ 9We4p8P3uLYYtIY2XOtc1phZfcwtlHlwOvd2K1EbQuHQdpsJrSyOzTUnhZOvq4+YZNBz72SGO
+ CGh6zf7s3E3pGXjmzHOBEyMdr2IPi2zmnQxyid3TdnAjkEZST2GG0NzKOjuDc66rTi8G1XXeS
+ U8fo3tegY07Uv8tVBsaYo1c5YVbeIUuL/GIao5tRht86M18Lb/BH1wjgS7OXBgoGnB/0eTD+6
+ W/5mjOJvz2Sl8zFK8W6jzpqPAIq8O3Vlzi2sTpiCPB5bXqOGmt4+GdXBQlL9clfw4XeU+e7w9
+ ob6skbFR+w2eKk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David, Kees,
 
-On Thu, Feb 24, 2022 at 10:54 AM David Laight <David.Laight@aculab.com> wrote:
-> From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Sent: 24 February 2022 09:17
-> >
-> > On Thu, Feb 24, 2022 at 10:12 AM David Laight <David.Laight@aculab.com> wrote:
-> > > From: Geert Uytterhoeven
-> > > > Sent: 24 February 2022 08:59
-> > > ...
-> > > > > +register unsigned long current_stack_pointer __asm__("sp");
-> > > >
-> > > > I don't know what HARDENED_USERCOPY does, so I don't know if you need
-> > > > "usp" (see rdusp()) or "sp"?
-> > >
-> > > HARDENED_USERCOPY significantly slows down some systems calls
-> > > (especially things like sendmsg()) by trying to run-time verify
-> > > that the kernel buffer doesn't overrun a stack frame or kmalloc()ed
-> >
-> > Kernel stack frame of user stack frame?
+
+On 2022/2/24 17:48, Yujie Liu wrote:
+> Hi,
 >
-> Kernel, the kernel doesn't care if the user stack gets trashed.
+> Sorry for the noise of this false alert.
 
-OK.
+No problem at all, in fact your bots are awesome detecting real bugs
+like previously it detects some uninitialized values from my patches.
 
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Kudos to your guys!
+LKP bots really rocks.
 
-Kees: Do you want me to queue this in the m68k for-v5.18 branch, or do
-you want to take it yourself, together with the HARDENED_USERCOPY work?
-In case of the latter:
-Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
+>
+> For clang analyzer reports, usually we do internal check firstly. We'll
+> send out the
+> report only when we think that it is highly possible to be a true alert.
 
-Please let me know. Thanks!
+BTW, do performance benchmarks also go through the same procedure?
 
-Gr{oetje,eeting}s,
+Although your bots are awesome at detect compiling warning/errors,
+sometimes it's not that straightforward to reproduce the same
+performance regressions.
 
-                        Geert
+So it may be worthy some extra steps to verify certain performance
+regressions.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Thanks,
+Qu
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>
+> We scanned our report history and found this report was produced on
+> 1/26, but it was
+> still in the internal check domain and was not likely to be sent to Qu
+> or mailing lists,
+> so we are kind of confusing about this consequence.
+>
+> Souptick, could you help to provide the original report by link or
+> attachment?
+> Then we can do some check to figure out whether we have any flaw in our
+> process.
+>
+> Thanks,
+> Yujie
+>
+> On 2/22/2022 16:04, Qu Wenruo wrote:
+>>
+>>
+>> On 2022/2/22 15:50, Souptick Joarder wrote:
+>>> On Mon, Feb 21, 2022 at 5:46 AM Qu Wenruo <quwenruo.btrfs@gmx.com>
+>>> wrote:
+>>>>
+>>>>
+>>>>
+>>>> On 2022/2/20 22:46, Souptick Joarder wrote:
+>>>>> From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
+>>>>>
+>>>>> Kernel test robot reported below warning ->
+>>>>> fs/btrfs/scrub.c:3439:2: warning: Undefined or garbage value
+>>>>> returned to caller [clang-analyzer-core.uninitialized.UndefReturn]
+>>>>>
+>>>>> Initialize ret to 0.
+>>>>>
+>>>>> Reported-by: kernel test robot <lkp@intel.com>
+>>>>> Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+>>>>
+>>>> Although the patch is not yet merged, but I have to say, it's a
+>>>> false alert.
+>>>
+>>> Yes, I agree it is a false positive but this patch will at least keep
+>>> kernel test robot happy :)
+>>
+>> I'd say we should enhance the compiler to fix the false alert.
+>>
+>> Thus adding LLVM list here is correct.
+>>
+>>
+>> To me, the root problem is that, we lack the hint to allow clang to
+>> know that, @logical_length passed in would not cause u64 overflow.
+>>
+>> Unfortunately the sanity check to prevent overflow is hidden far away
+>> inside tree-checker.c.
+>>
+>> Maybe some ASSERT() for overflow check would help LLVM to know that?
+>>
+>> Thanks,
+>> Qu
+>>
+>>>>
+>>>> Firstly, the while loop will always get at least one run.
+>>>>
+>>>> Secondly, in that loop, we either set ret to some error value and
+>>>> break,
+>>>> or after at least one find_first_extent_item() and scrub_extent() cal=
+l,
+>>>> we increase cur_logical and reached the limit of the while loop and
+>>>> exit.
+>>>>
+>>>> So there is no possible routine to leave @ret uninitialized and
+>>>> returned
+>>>> to caller.
+>>>>
+>>>> Thanks,
+>>>> Qu
+>>>>
+>>>>> ---
+>>>>> =C2=A0=C2=A0 fs/btrfs/scrub.c | 2 +-
+>>>>> =C2=A0=C2=A0 1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/fs/btrfs/scrub.c b/fs/btrfs/scrub.c
+>>>>> index 4baa8e43d585..5ca7e5ffbc96 100644
+>>>>> --- a/fs/btrfs/scrub.c
+>>>>> +++ b/fs/btrfs/scrub.c
+>>>>> @@ -3325,7 +3325,7 @@ static int scrub_simple_mirror(struct
+>>>>> scrub_ctx *sctx,
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const u32 max_length =3D SZ_64K=
+;
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct btrfs_path path =3D {};
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u64 cur_logical =3D logical_sta=
+rt;
+>>>>> -=C2=A0=C2=A0=C2=A0=C2=A0 int ret;
+>>>>> +=C2=A0=C2=A0=C2=A0=C2=A0 int ret =3D 0;
+>>>>>
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* The range must be inside the=
+ bg */
+>>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ASSERT(logical_start >=3D bg->s=
+tart &&
+>>>
+>>
