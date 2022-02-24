@@ -2,114 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F246C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17CC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232788AbiBXJdv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:33:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48892 "EHLO
+        id S232499AbiBXJdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:33:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232665AbiBXJds (ORCPT
+        with ESMTP id S232769AbiBXJdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:33:48 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7114279912
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:33:17 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id e13so1193994plh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:33:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OMIZP6Tn3aNghkB6sgI2t3mcM1DU0EefBNvEwhIXg7s=;
-        b=bnEy6oVHEjlP6py1RGQ0IRdAQo4si4xNGKMak2bDSmFVhT/YCK1CEGuYOIbwi++MOH
-         HDVaq2kou8+Etgm4eE/ZDBKxbttvjPsu3aTYLgzyNZAFVHDcvAazo+iwf54kNC1GSYLf
-         gS786hKTlL+//CkSxzrqDxFb42sSpgLOzMgklp0O0843cj4ehroSkJtkOaWNL4A7UmEa
-         7WrLdrx2ezjrLjOeQl1w1gkJtWGrvjlsCBgFpPLHFOj2B5PcYe9P6DwwFj0ZrxhvA9DR
-         pFLdmbdzkvH3IXjpKjQrSNn5L7+QtMLWFd4L8C4/ezw4UZV+enXIQB3h03U8ww+o34hx
-         H87w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=OMIZP6Tn3aNghkB6sgI2t3mcM1DU0EefBNvEwhIXg7s=;
-        b=kLJUaMIQhFSNaWn1dncIJu8oEuhHRAgl3Y+hPJS/6M7ciOfQsswIJ3nhX6FhhSV+iK
-         T1G8rz9ozy/FZDeVrfUL8V0Olsyndj/P9zKzEpgamkfIxcVB+iswsLx9fBLk8oqWYe81
-         Li13uNn6UvAFKSQg+WnWKw48FG/HY5DhaZ9kS3wz/xlldvlTK78otNXFD3NlMZicagLv
-         CG8qbwX2/ZndmWc3bfEbJg8q7E4irGPc7ymIH9I85/ePPtrtQ871awEBfcNrWFp2KVPU
-         6/40ELIs3wYNVEy+P3y4HhhTmegbQ0/gfhnoN6835RoU+MPogmznMgBFThZ3hw92lyOC
-         wXJA==
-X-Gm-Message-State: AOAM532y8yEoohEW79RgU+bv5hF+AwtguIjoHHOpr0UbHU+jCMr1llLm
-        50h26NmP1+4CpbKRYZKYcJAJqA==
-X-Google-Smtp-Source: ABdhPJxS5+gNrTAaOlz3Mv8zDTadsNwcTzdsmY8lcyo257Y5g5dxXtYn+i5IXdMYEZsOgTaSV9MuYA==
-X-Received: by 2002:a17:902:bc82:b0:14f:2b9c:4aa with SMTP id bb2-20020a170902bc8200b0014f2b9c04aamr1623688plb.145.1645695197232;
-        Thu, 24 Feb 2022 01:33:17 -0800 (PST)
-Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.251])
-        by smtp.gmail.com with ESMTPSA id 13sm2530988pfx.122.2022.02.24.01.33.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 01:33:16 -0800 (PST)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     rostedt@goodmis.org, mark.rutland@arm.com, mingo@redhat.com,
-        tglx@linutronix.de, catalin.marinas@arm.com, will@kernel.org,
-        dave.hansen@linux.intel.com, broonie@kernel.org
-Cc:     x86@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        qirui.001@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v3 1/3] ftrace: cleanup ftrace_graph_caller enable and disable
-Date:   Thu, 24 Feb 2022 17:32:49 +0800
-Message-Id: <20220224093251.49971-1-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 24 Feb 2022 04:33:51 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8633C26A3AC;
+        Thu, 24 Feb 2022 01:33:21 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52667ED1;
+        Thu, 24 Feb 2022 01:33:21 -0800 (PST)
+Received: from [10.57.8.211] (unknown [10.57.8.211])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5F7F13F70D;
+        Thu, 24 Feb 2022 01:33:19 -0800 (PST)
+Message-ID: <9c8f15a3-563f-3bed-61a4-2f72b0c20e89@arm.com>
+Date:   Thu, 24 Feb 2022 09:33:18 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 3/4] OPP: Add support of "opp-microwatt" for advanced
+ EM registration
+Content-Language: en-US
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        rafael@kernel.org, daniel.lezcano@linaro.org, nm@ti.com,
+        sboyd@kernel.org, mka@chromium.org, dianders@chromium.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org
+References: <20220224081131.27282-1-lukasz.luba@arm.com>
+ <20220224081131.27282-4-lukasz.luba@arm.com>
+ <20220224091346.xmnpj27vllpa4cuy@vireshk-i7>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <20220224091346.xmnpj27vllpa4cuy@vireshk-i7>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ftrace_enable_ftrace_graph_caller() and
-ftrace_disable_ftrace_graph_caller() are used to do special
-hooks for graph tracer, which are not needed on some ARCHs
-that use graph_ops:func function to install return_hooker.
 
-So introduce the weak version in Ftrace core code to prepare
-for cleanup.
 
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
- kernel/trace/ftrace.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+On 2/24/22 09:13, Viresh Kumar wrote:
+> On 24-02-22, 08:11, Lukasz Luba wrote:
+>> diff --git a/drivers/opp/of.c b/drivers/opp/of.c
+>>   
+>> +/*
+>> + * Callback function provided to the Energy Model framework upon registration.
+>> + * It provides the power used by @dev at @kHz if it is the frequency of an
+>> + * existing OPP, or at the frequency of the first OPP above @kHz otherwise
+>> + * (see dev_pm_opp_find_freq_ceil()). This function updates @kHz to the ceiled
+>> + * frequency and @mW to the associated power.
+>> + *
+>> + * Returns 0 on success or a proper -EINVAL value in case of error.
+>> + */
+>> +static int __maybe_unused
+>> +_get_opp_power(unsigned long *mW, unsigned long *kHz, struct device *dev)
+> 
+> Lets call it _get_dt_opp_power() or _get_dt_power() ?
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index f9feb197b2da..60ae009e6684 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -2704,6 +2704,26 @@ int __weak ftrace_arch_code_modify_post_process(void)
- 	return 0;
- }
- 
-+#ifdef CONFIG_FUNCTION_GRAPH_TRACER
-+/*
-+ * archs can override this function if they must do something
-+ * to enable hook for graph tracer.
-+ */
-+int __weak ftrace_enable_ftrace_graph_caller(void)
-+{
-+	return 0;
-+}
-+
-+/*
-+ * archs can override this function if they must do something
-+ * to disable hook for graph tracer.
-+ */
-+int __weak ftrace_disable_ftrace_graph_caller(void)
-+{
-+	return 0;
-+}
-+#endif
-+
- void ftrace_modify_all_code(int command)
- {
- 	int update = command & FTRACE_UPDATE_TRACE_FUNC;
--- 
-2.20.1
+OK, I'll return to _get_dt_power()
 
+> 
+>> +{
+>> +	struct dev_pm_opp *opp;
+>> +	unsigned long opp_freq, opp_power;
+>> +
+>> +	/* Find the right frequency and related OPP */
+>> +	opp_freq = *kHz * 1000;
+>> +	opp = dev_pm_opp_find_freq_ceil(dev, &opp_freq);
+>> +	if (IS_ERR(opp))
+>> +		return -EINVAL;
+>> +
+>> +	opp_power = dev_pm_opp_get_power(opp);
+> 
+> As I said in 2/4, this should really give the total instead.
+
+make sense
+
+> 
+>> +	dev_pm_opp_put(opp);
+>> +	if (!opp_power)
+>> +		return -EINVAL;
+>> +
+>> +	*kHz = opp_freq / 1000;
+>> +	*mW = opp_power / 1000;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>   /*
+>>    * Callback function provided to the Energy Model framework upon registration.
+>>    * This computes the power estimated by @dev at @kHz if it is the frequency
+>> @@ -1488,6 +1520,24 @@ static int __maybe_unused _get_power(unsigned long *mW, unsigned long *kHz,
+>>   	return 0;
+>>   }
+>>   
+>> +static bool _of_has_opp_microwatt_property(struct device *dev)
+>> +{
+>> +	unsigned long power, freq = 0;
+>> +	struct dev_pm_opp *opp;
+>> +
+>> +	/* Check if at least one OPP has needed property */
+>> +	opp = dev_pm_opp_find_freq_ceil(dev, &freq);
+>> +	if (IS_ERR(opp))
+>> +		return false;
+>> +
+>> +	power = dev_pm_opp_get_power(opp);
+>> +	dev_pm_opp_put(opp);
+>> +	if (!power)
+> 
+> What if this particular frequency has 0 power mentioned for some
+> reason :)
+
+If that power 0 would be allowed here, then in next step when EM
+calls active_power() we check !power and report dev_err().
+IPA design would also not accept the power=0
+
+> 
+> Instead of this heavy stuff, just pick the first OPP from the opp
+> table and see its power-value.
+
+It is the first opp: freq=0.
+You mean by parsing the the DT node instead, like I had in v2 version?
+
+> 
+>> +		return false;
+>> +
+>> +	return true;
+>> +}
+>> +
+>>   /**
+>>    * dev_pm_opp_of_register_em() - Attempt to register an Energy Model
+>>    * @dev		: Device for which an Energy Model has to be registered
+>> @@ -1517,6 +1567,14 @@ int dev_pm_opp_of_register_em(struct device *dev, struct cpumask *cpus)
+>>   		goto failed;
+>>   	}
+>>   
+>> +	/* First, try to find more precised Energy Model in DT */
+>> +	if (_of_has_opp_microwatt_property(dev)) {
+>> +		struct em_data_callback em_dt_cb = EM_DATA_CB(_get_opp_power);
+>> +
+>> +		return em_dev_register_perf_domain(dev, nr_opp, &em_dt_cb,
+>> +						   cpus, true);
+>> +	}
+>> +
+> 
+> We have another em_dev_register_perf_domain() down the line, lets keep
+> only one such call and get it a callback that should be set in an
+> if/else loop.
+
+OK
