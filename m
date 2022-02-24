@@ -2,95 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 326D8C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A045C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:31:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbiBXQbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:31:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
+        id S229892AbiBXQbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:31:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229674AbiBXQbU (ORCPT
+        with ESMTP id S229674AbiBXQbk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:31:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2639E28D386
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:30:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645720239;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=prgZNdV4s/mPu6PlnmJr/hT5U+BTnmvKi0C0dZguK/8=;
-        b=YLpBltOEnyXqzsjhQWnvDLFHAZVZaNF0IKHtePrFeGGHaDvauxVsLCI1QMMAgv8yOXqD7h
-        zqYfPUjLdQug/8AGhxq8sS0GKO2lxbvexoMBlcCpdyB7SQcgvOmB0MP5h0kW+AgjEWXUNk
-        vji3xGhj3FnxOibYTy85O6xxD+h63Eo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-215-wNvCV_4TOIWtOCStLWJrxA-1; Thu, 24 Feb 2022 11:30:36 -0500
-X-MC-Unique: wNvCV_4TOIWtOCStLWJrxA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AEE551854E21;
-        Thu, 24 Feb 2022 16:30:34 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0B5AF10016F2;
-        Thu, 24 Feb 2022 16:30:31 +0000 (UTC)
-Message-ID: <c9e8ca945fc08f502701c4df7c9fffa1f5f0c001.camel@redhat.com>
-Subject: Re: [RFC PATCH 01/13] KVM: SVM: Add warning when encounter invalid
- APIC ID
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Thu, 24 Feb 2022 18:30:30 +0200
-In-Reply-To: <20220221021922.733373-2-suravee.suthikulpanit@amd.com>
-References: <20220221021922.733373-1-suravee.suthikulpanit@amd.com>
-         <20220221021922.733373-2-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Thu, 24 Feb 2022 11:31:40 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E7628D386
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:31:00 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id i5so3284851oih.1
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:31:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UtvGHwpTPxnNK4df830HsbQ5tqR9fciM9/AXkb63doE=;
+        b=ezsfkKAm3SoATQ8pbdZnOmKRIPKE6xVK9TxybTM5YRuqZBED0GKI+NSlQKXYJNU6a9
+         wUhfHlw1PQYC9gUeoQbyNVCKCxFtT6ARNpmAz0vNLaysBNBKvGynHBIoc6aFC6oIQenf
+         fLbC9wytOC33ipG/dDymdMC8C962u/ItTirw3NV39yarM02FPLSk0q4W8hk6vJYIcQT6
+         xXB7Sp+1WoiBxpxytz/VKqSH8llpk12Q0WCpLXGFQd/aV+63jfag7c029qhb0DFsjE4z
+         Kj3OqWnAVTlniXK45mmZO5L3RoNpOtjKeX7D8Fa12mJX5E4hxgutUXHVapL7kAQm5u9I
+         LuFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UtvGHwpTPxnNK4df830HsbQ5tqR9fciM9/AXkb63doE=;
+        b=Nzn6+2syRfViEqnVJCQKmQwMLKvaaiJeDZux1w0C3uo2IE8nq8WGopaAeqbRUraIAu
+         7LJ/bSTnGfM97NIxuV16bGOU0x8qcrnzAZLKStp1dxV8EiFZS9WgOJDJSIv1ZqKpG7jW
+         tK+rJ6x6TYGgH8zbkfvp2hNMhX5sr0A24PVwMVtyyhBwROTPVgGyoxC4AyaXy5anzn0k
+         itfcGVLBYM7Q3ooorIR19opzf+nrNfrm6NkYp9SGD4M4i/syn3AoQOAl8W825i4Y3BBv
+         u1LmfgIkC3r5Ja5bsBmueZPJGrJWDJQ/h3Y5X91h8/dBtOzKHWka0OSTIzoLNrd/k0ga
+         Ua+g==
+X-Gm-Message-State: AOAM531nCo3AaV0cZtUkljjbrZg1mu/UQctCImx0uu55C6GX/Hbger0u
+        P0akUO5Vn4ueZq+jQ5pBKuKWHurz5Rc5AA==
+X-Google-Smtp-Source: ABdhPJyLngbnCzXVfVhLUeGhokc4vEYxVcUw8ZYCKRZ1+I+U+Abro1TlFcBGQ9rXJ+VjKw2M1RmFmw==
+X-Received: by 2002:a05:6870:4410:b0:d3:1505:36c8 with SMTP id u16-20020a056870441000b000d3150536c8mr6822284oah.300.1645719214522;
+        Thu, 24 Feb 2022 08:13:34 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id g18sm1365629otp.17.2022.02.24.08.13.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 08:13:33 -0800 (PST)
+Date:   Thu, 24 Feb 2022 08:15:32 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 07/16] clk: qcom: gcc-ipq806x: drop hardcoded pxo and
+ cxo source clk
+Message-ID: <YhevJB2nY/X6sWnS@ripper>
+References: <20220217235703.26641-1-ansuelsmth@gmail.com>
+ <20220217235703.26641-8-ansuelsmth@gmail.com>
+ <YhcAdq4ouQenhn2f@builder.lan>
+ <YhepQc3k8l1g5NZ/@Ansuel-xps.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhepQc3k8l1g5NZ/@Ansuel-xps.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-02-20 at 20:19 -0600, Suravee Suthikulpanit wrote:
-> Current logic checks if avic_get_physical_id_entry() fails to
-> get the entry, and return error. This could silently cause
-> AVIC to fail to operate.  Therefore, add WARN_ON to help
-> report this error.
+On Thu 24 Feb 07:50 PST 2022, Ansuel Smith wrote:
+
+> On Wed, Feb 23, 2022 at 09:50:14PM -0600, Bjorn Andersson wrote:
+> > On Thu 17 Feb 17:56 CST 2022, Ansuel Smith wrote:
+> > 
+> > > We now define these clk in dts. Drop pxo and cxo hardcoded in the gcc
+> > > probe function.
+> > > 
+> > 
+> > As noted on the previous patch, this breaks booting with existing dtbs.
+> > So I would like to split this with 1-2 releases in between to avoid any
+> > problems.
+> > 
+> > Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > 
+> > on the change though.
+> > 
+> > Regards,
+> > Bjorn
+> >
 > 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/kvm/svm/avic.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> Should I change this and register these clks only if they are not present?
 > 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index f07956f15d3b..472445aaaf42 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -447,8 +447,10 @@ static int avic_handle_apic_id_update(struct kvm_vcpu *vcpu)
->  
->  	old = avic_get_physical_id_entry(vcpu, vcpu->vcpu_id);
->  	new = avic_get_physical_id_entry(vcpu, id);
-> -	if (!new || !old)
-> +	if (!new || !old) {
-> +		WARN_ON(1);
->  		return 1;
-> +	}
->  
->  	/* We need to move physical_id_entry to new offset */
->  	*new = *old;
 
-I about to purge all of this code, and disallow setting the apicid regardles
-if x2apic, or plain xapic was used at least when AVIC is enabled.
-I really hope for this to be accepted, so we won't need to fix this code.
+The .fw_name will match against clock-names to resolve a phandle to
+e.g. &pxo_board and if not found should fall back to matching by .name
+and finding these clocks. So I don't see a conflict in keeping them
+around.
 
-Best regards,
-	Maxim Levitsky
+Once we know that the dts change is in place I think we should merge
+this as is.
 
+Regards,
+Bjorn
+
+> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > ---
+> > >  drivers/clk/qcom/gcc-ipq806x.c | 11 +----------
+> > >  1 file changed, 1 insertion(+), 10 deletions(-)
+> > > 
+> > > diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
+> > > index f6db7247835e..a4bf78fe8678 100644
+> > > --- a/drivers/clk/qcom/gcc-ipq806x.c
+> > > +++ b/drivers/clk/qcom/gcc-ipq806x.c
+> > > @@ -3119,23 +3119,14 @@ MODULE_DEVICE_TABLE(of, gcc_ipq806x_match_table);
+> > >  
+> > >  static int gcc_ipq806x_probe(struct platform_device *pdev)
+> > >  {
+> > > -	struct device *dev = &pdev->dev;
+> > >  	struct regmap *regmap;
+> > >  	int ret;
+> > >  
+> > > -	ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 25000000);
+> > > -	if (ret)
+> > > -		return ret;
+> > > -
+> > > -	ret = qcom_cc_register_board_clk(dev, "pxo_board", "pxo", 25000000);
+> > > -	if (ret)
+> > > -		return ret;
+> > > -
+> > >  	ret = qcom_cc_probe(pdev, &gcc_ipq806x_desc);
+> > >  	if (ret)
+> > >  		return ret;
+> > >  
+> > > -	regmap = dev_get_regmap(dev, NULL);
+> > > +	regmap = dev_get_regmap(&pdev->dev, NULL);
+> > >  	if (!regmap)
+> > >  		return -ENODEV;
+> > >  
+> > > -- 
+> > > 2.34.1
+> > > 
+> 
+> -- 
+> 	Ansuel
