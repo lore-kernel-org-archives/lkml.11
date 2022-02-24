@@ -2,97 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4560CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4262BC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233176AbiBXKHY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:07:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
+        id S233244AbiBXKH5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:07:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232889AbiBXKHP (ORCPT
+        with ESMTP id S233215AbiBXKHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:07:15 -0500
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF0F2252F;
-        Thu, 24 Feb 2022 02:06:42 -0800 (PST)
-Received: from [185.156.123.69] (helo=phil.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1nNB17-0008WC-GT; Thu, 24 Feb 2022 11:06:33 +0100
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Uwe =?ISO-8859-1?Q?Kleine=2DK=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        devicetree@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH 1/4] dt-bindings: pwm: google,cros-ec: include generic pwm schema
-Date:   Thu, 24 Feb 2022 11:06:30 +0100
-Message-ID: <1817486.VeUe9BSz9F@phil>
-In-Reply-To: <YhdXyBvAbdHzc4gH@google.com>
-References: <20220214081916.162014-1-krzysztof.kozlowski@canonical.com> <3248917.W5uN0jUHDo@phil> <YhdXyBvAbdHzc4gH@google.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+        Thu, 24 Feb 2022 05:07:50 -0500
+X-Greylist: delayed 609 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 02:07:20 PST
+Received: from mail.thorsis.com (mail.thorsis.com [92.198.35.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76345151C71;
+        Thu, 24 Feb 2022 02:07:19 -0800 (PST)
+Date:   Thu, 24 Feb 2022 10:56:59 +0100
+From:   Alexander Dahl <ada@thorsis.com>
+To:     Thorsten Leemhuis <linux@leemhuis.info>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stefano Zacchiroli <zack@upsilon.cc>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Laura Abbott <labbott@kernel.org>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Wenwen Wang <wenwen@cs.uga.edu>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] Documentation/process: Add Researcher Guidelines
+Message-ID: <YhdWa41bXssNVrE3@ada-deb-carambola.ifak-system.com>
+Mail-Followup-To: Thorsten Leemhuis <linux@leemhuis.info>,
+        Kees Cook <keescook@chromium.org>, Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stefano Zacchiroli <zack@upsilon.cc>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Laura Abbott <labbott@kernel.org>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Wenwen Wang <wenwen@cs.uga.edu>, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20220224001403.1307377-1-keescook@chromium.org>
+ <974cf8f2-06f3-99a5-9a77-6d7b7cc8271a@leemhuis.info>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <974cf8f2-06f3-99a5-9a77-6d7b7cc8271a@leemhuis.info>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Donnerstag, 24. Februar 2022, 11:02:48 CET schrieb Lee Jones:
-> On Wed, 23 Feb 2022, Heiko Stuebner wrote:
+Hello Thorsten,
+
+Am Thu, Feb 24, 2022 at 09:19:24AM +0100 schrieb Thorsten Leemhuis:
+> On 24.02.22 01:14, Kees Cook wrote:
+> > +If you are a first time contributor it is recommended that the patch
+> > +itself be vetted by others privately before being posted to public lists.
+> > +(This is required if you have been explicitly told your patches need
+> > +more careful internal review.) These people are expected to have their
+> > +"Reviewed-by" tag included in the resulting patch. Finding another
+> > +developer familiar with Linux contribution, especially within your own
+> > +organization, and having them help with reviews before sending them to
+> > +the public mailing lists tends to significantly improve the quality of the
+> > +resulting patches, and there by reduces the burden on other developers.
 > 
-> > Hi Lee,
-> > 
-> > Am Mittwoch, 23. Februar 2022, 10:16:01 CET schrieb Lee Jones:
-> > > On Mon, 14 Feb 2022, Krzysztof Kozlowski wrote:
-> > > 
-> > > > Include generic pwm.yaml schema, which enforces PWM node naming.  Keep
-> > > > the old name in bindings as deprecated.
-> > > > 
-> > > > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> > > > ---
-> > > >  Documentation/devicetree/bindings/mfd/google,cros-ec.yaml    | 4 ++++
-> > > 
-> > > Acked-by: Lee Jones <lee.jones@linaro.org>
-> > 
-> > what is your expectation regarding this patch?
-> > 
-> > Are you planning to merge it or are you expecting this to go through
-> > some other tree?
-> > 
-> > The binding-change here is backward-comaptible in that the old
-> > node-name is still in it, only marked as deprecated, so in theory
-> > this patch should be able to be applied on its own without
-> > causing defects.
+> I like the section, but I wonder why it's needed here. Is there anything
+> specific to patches produced from research in it there I missed when
+> reading it? If not: Wouldn't it be better to include that section as a
+> TLDR in Documentation/process/submitting-patches.rst and point there
+> instead? We already have at least two places describing how to submit
+> patches, creating yet another one (even if it's just in such a brief
+> version) somehow feels slightly wrong to me.
 > 
-> In an ideal world, it would be broken up and I would take the MFD
-> part.   Is that possible or are there dependencies?
+> OTOH I fully understand that having things in one place has it's
+> benefits. If that's wanted, why not put that text as TLDR in
+> submitting-patches.rst and maintain a copy here? Sure, keeping things in
+> sync has downsides, but I'd say it's the lesser evil. A copy could also
+> be avoided by briefly mentioning some of the important bits found in
+> another document; that's the approach I took in my patches regarding
+> regressions. To quote:
 
-That is also what Krzysztof had in mind - see his reply to patch4.
-Binding going through the MFD tree and soc maintainers applying
-the individual dts patches.
+Without further opinion on the topic or content itself: 
+If there's need to have "copied" parts of the documentation available
+in different places, why not put that to a separate file and include
+it in all places which need it?  
+This would solve the manual synchronization issue.  
+Did that in other projects using sphinx/rst already.  
+Only thing you have to keep an eye on is whether the surrounding
+context at places of the include still matches the included piece.
 
-As written the binding change is backward compatible, so no harm.
-
-I was just confused by the "Acked-by" and wanted to clarify how you
-see it ;-)
-
-
-Heiko
-
-
-
-
+Greets
+Alex
 
