@@ -2,143 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72328C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C41AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234295AbiBXM1l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:27:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
+        id S234300AbiBXM1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:27:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232673AbiBXM1k (ORCPT
+        with ESMTP id S234293AbiBXM1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:27:40 -0500
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6EDBBE10
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:27:10 -0800 (PST)
-Received: by mail-oi1-x233.google.com with SMTP id j2so2258088oie.7
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:27:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nwPQWibcxWFMgXyN9ojVzSP3LzP6lHj2lJ3iUxgMjZo=;
-        b=UBXR2MWYL/s+kIoqgRGAYAptEH4Pc/nZimkfWIwawk2UW5OrLBRBIriDI+z5GgP8K2
-         oN5Rh18Lml+7Bn+qfKh11yqwH8Xr6ium0CITxUAYF/VtkBUn9F9Naa3DN24atWoDEirn
-         Iw6npN0oSb16EtzPL1tg8TP9yNcT4GoI3MkBnWQIXGsXW/fTT92AKS/5+ewrtpAjJyKv
-         YtouZoIqplRqkGT7FlRhU5i+rEslOCdT5HNqp3Np7DGOoy+X0sKaBN7fUyyYNOSwLw12
-         Jfcr/RVp8xnyU7eAq6n92RFOWtamJgnHZTa9bsP/dNcGunwXcAF2ZN/cUb44hwFZREoz
-         hbBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nwPQWibcxWFMgXyN9ojVzSP3LzP6lHj2lJ3iUxgMjZo=;
-        b=velMIMxpH0hRpiaD87oqLSm4kGKjylPFcRXvRSovBN7yYzab3pETNecHHUb7Mw/Qzr
-         1DyK/InedgO5L1j01L+L/YWiisk5sD1/GukJM42U3QPmjKiu6RmJr3P5OBHjcKAfEq56
-         HNMnDh4cZEVpX171P9OeZECtEdWVjeSyxXbOvdd6uI7b1MvDEqQ0bY8d8IR/VfBGibH/
-         nqmid5RnP8uTAwUQl5n+UaAeOWXG5kmwSdy9L5QTVB2x5dTiOPjQHy+rYLlnWDdGw/Y9
-         8i10eqNUeRDSTsQ+JMA8nlNK+pOsYgSBy0RlyYKvQbReUvPFPo5jBXC8S17A29DfamW5
-         OaOQ==
-X-Gm-Message-State: AOAM531U/ZOWjZteNiyj6dSpOmj1ukDJIw5LSI5BeLThnLIP9Rad93X/
-        BGADoZwOCgV3q2mZ0o5onyJdTiVB92N5uK/iP1/aZw==
-X-Google-Smtp-Source: ABdhPJyrrakVNa5pcRaScIuNmvHmY+CpOg3ZbilxQyabTPfLuKc9DpV3Splz80s2X3grapbHSv8hLTMNiuCNYtZoQl4=
-X-Received: by 2002:a05:6808:ec1:b0:2d6:52f:6405 with SMTP id
- q1-20020a0568080ec100b002d6052f6405mr5741674oiv.124.1645705629835; Thu, 24
- Feb 2022 04:27:09 -0800 (PST)
+        Thu, 24 Feb 2022 07:27:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D58AFF68F0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:27:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645705633;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=L9tmzf6xkiy/OZgxsG8syLdqfMDOTNvu60rU9Nxz5Ow=;
+        b=ckrGI9n18tfIdti5iltLBGK/bjzAYKZ0TbLB4rS+9/Tlc4nZV9RCdqVoKMD/SHUzjFgpQp
+        U1SxGz4PFwhAStCLjGfE8dmYEn/Y0hBDvS1THUm6fO0kGarYZ+9oDS8A3WaUCDdT9jJ9h1
+        6j7Q0n9mAdQU08ilGTiRTlLEDC1f8zg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-37-WPmpDH2xPzSfDdRxY2HaIA-1; Thu, 24 Feb 2022 07:27:10 -0500
+X-MC-Unique: WPmpDH2xPzSfDdRxY2HaIA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3187A804310;
+        Thu, 24 Feb 2022 12:27:06 +0000 (UTC)
+Received: from t480s.redhat.com (unknown [10.39.194.160])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B3C342634C;
+        Thu, 24 Feb 2022 12:26:15 +0000 (UTC)
+From:   David Hildenbrand <david@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>, linux-mm@kvack.org,
+        David Hildenbrand <david@redhat.com>,
+        Khalid Aziz <khalid.aziz@oracle.com>
+Subject: [PATCH RFC 00/13] mm: COW fixes part 2: reliable GUP pins of anonymous pages
+Date:   Thu, 24 Feb 2022 13:26:01 +0100
+Message-Id: <20220224122614.94921-1-david@redhat.com>
 MIME-Version: 1.0
-References: <20220224051439.640768-1-kaleshsingh@google.com> <20220224051439.640768-7-kaleshsingh@google.com>
-In-Reply-To: <20220224051439.640768-7-kaleshsingh@google.com>
-From:   Fuad Tabba <tabba@google.com>
-Date:   Thu, 24 Feb 2022 12:26:33 +0000
-Message-ID: <CA+EHjTwhpjDDnKRU3QrJysgMhYH7eTi2_LrWpxCArLoP-1-BrQ@mail.gmail.com>
-Subject: Re: [PATCH v3 6/8] KVM: arm64: Add hypervisor overflow stack
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        surenb@google.com, kernel-team@android.com,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        Zenghui Yu <yuzenghui@huawei.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kalesh,
+This series is the result of the discussion on the previous approach [2].
+More information on the general COW issues can be found there. It is based
+on [1], which resides in -mm and -next:
+	[PATCH v3 0/9] mm: COW fixes part 1: fix the COW security issue for
+	THP and swap
 
-On Thu, Feb 24, 2022 at 5:21 AM Kalesh Singh <kaleshsingh@google.com> wrote:
->
-> Allocate and switch to 16-byte aligned secondary stack on overflow. This
-> provides us stack space to better handle overflows; and is used in
-> a subsequent patch to dump the hypervisor stacktrace. The overflow stack
-> is only allocated if CONFIG_NVHE_EL2_DEBUG is enabled, as hypervisor
-> stacktraces is a debug feature dependent on CONFIG_NVHE_EL2_DEBUG.
->
-> Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> ---
->  arch/arm64/kvm/hyp/nvhe/host.S   | 5 +++++
->  arch/arm64/kvm/hyp/nvhe/switch.c | 5 +++++
->  2 files changed, 10 insertions(+)
->
-> diff --git a/arch/arm64/kvm/hyp/nvhe/host.S b/arch/arm64/kvm/hyp/nvhe/host.S
-> index 749961bfa5ba..367a01e8abed 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/host.S
-> +++ b/arch/arm64/kvm/hyp/nvhe/host.S
-> @@ -179,6 +179,10 @@ SYM_FUNC_END(__host_hvc)
->         b       hyp_panic
->
->  .L__hyp_sp_overflow\@:
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +       /* Switch to the overflow stack */
-> +       adr_this_cpu sp, hyp_overflow_stack + PAGE_SIZE, x0
-> +#else
->         /*
->          * Reset SP to the top of the stack, to allow handling the hyp_panic.
->          * This corrupts the stack but is ok, since we won't be attempting
-> @@ -186,6 +190,7 @@ SYM_FUNC_END(__host_hvc)
->          */
+I keep the latest state, including some hacky selftest on:
+	https://github.com/davidhildenbrand/linux/tree/cow_fixes_part_2
 
-Nit: Maybe you should update this comment as well, since whether it
-corrupts the stack or not depends on what happens above with
-CONFIG_NVHE_EL2_DEBUG.
+This series fixes memory corruptions when a GUP pin (FOLL_PIN) was taken
+on an anonymous page and COW logic fails to detect exclusivity of the page
+to then replacing the anonymous page by a copy in the page table: The
+GUP pin lost synchronicity with the pages mapped into the page tables.
 
-Thanks,
-/fuad
+This issue, including other related COW issues, has been summarized in [3]
+under 3):
+"
+  3. Intra Process Memory Corruptions due to Wrong COW (FOLL_PIN)
 
->         ldr_this_cpu    x0, kvm_init_params + NVHE_INIT_STACK_HYP_VA, x1
->         mov     sp, x0
-> +#endif
->
->         bl      hyp_panic_bad_stack
->         ASM_BUG()
-> diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
-> index 703a5d3f611b..efc20273a352 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/switch.c
-> +++ b/arch/arm64/kvm/hyp/nvhe/switch.c
-> @@ -34,6 +34,11 @@ DEFINE_PER_CPU(struct kvm_host_data, kvm_host_data);
->  DEFINE_PER_CPU(struct kvm_cpu_context, kvm_hyp_ctxt);
->  DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
->
-> +#ifdef CONFIG_NVHE_EL2_DEBUG
-> +DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack)
-> +       __aligned(16);
-> +#endif
-> +
->  static void __activate_traps(struct kvm_vcpu *vcpu)
->  {
->         u64 val;
-> --
-> 2.35.1.473.g83b2b277ed-goog
->
+  page_maybe_dma_pinned() is used to check if a page may be pinned for
+  DMA (using FOLL_PIN instead of FOLL_GET). While false positives are
+  tolerable, false negatives are problematic: pages that are pinned for
+  DMA must not be added to the swapcache. If it happens, the (now pinned)
+  page could be faulted back from the swapcache into page tables
+  read-only. Future write-access would detect the pinning and COW the
+  page, losing synchronicity. For the interested reader, this is nicely
+  documented in feb889fb40fa ("mm: don't put pinned pages into the swap
+  cache").
+
+  Peter reports [8] that page_maybe_dma_pinned() as used is racy in some
+  cases and can result in a violation of the documented semantics:
+  giving false negatives because of the race.
+
+  There are cases where we call it without properly taking a per-process
+  sequence lock, turning the usage of page_maybe_dma_pinned() racy. While
+  one case (clear_refs SOFTDIRTY tracking, see below) seems to be easy to
+  handle, there is especially one rmap case (shrink_page_list) that's hard
+  to fix: in the rmap world, we're not limited to a single process.
+
+  The shrink_page_list() issue is really subtle. If we race with
+  someone pinning a page, we can trigger the same issue as in the FOLL_GET
+  case. See the detail section at the end of this mail on a discussion how
+  bad this can bite us with VFIO or other FOLL_PIN user.
+
+  It's harder to reproduce, but I managed to modify the O_DIRECT
+  reproducer to use io_uring fixed buffers [15] instead, which ends up
+  using FOLL_PIN | FOLL_WRITE | FOLL_LONGTERM to pin buffer pages and can
+  similarly trigger a loss of synchronicity and consequently a memory
+  corruption.
+
+  Again, the root issue is that a write-fault on a page that has
+  additional references results in a COW and thereby a loss of
+  synchronicity and consequently a memory corruption if two parties
+  believe they are referencing the same page.
+"
+
+This series makes GUP pins (R/O and R/W) on anonymous pages fully reliable,
+especially also taking care of concurrent pinning via GUP-fast,
+for example, also fully fixing an issue reported regarding NUMA
+balancing [4] recently. While doing that, it further reduces "unnecessary
+COWs", especially when we don't fork()/KSM and don't swapout, and fixes the
+COW security for hugetlb for FOLL_PIN.
+
+In summary, we track via a pageflag (PG_anon_exclusive) whether a mapped
+anonymous page is exclusive. Exclusive anonymous pages that are mapped
+R/O can directly be mapped R/W by the COW logic in the write fault handler.
+Exclusive anonymous pages that want to be shared (fork(), KSM) first have
+to mark a mapped anonymous page shared -- which will fail if there are
+GUP pins on the page. GUP is only allowed to take a pin on anonymous pages
+that is exclusive. The PT lock is the primary mechanism to synchronize
+modifications of PG_anon_exclusive. GUP-fast is synchronized either via the
+src_mm->write_protect_seq or via clear/invalidate+flush of the relevant
+page table entry.
+
+Special care has to be taken about swap, migration, and THPs (whereby a
+PMD-mapping can be converted to a PTE mapping and we have to track
+information for subpages). Besides these, we let the rmap code handle most
+magic. For reliable R/O pins of anonymous pages, we need FAULT_FLAG_UNSHARE
+logic as part of our previous approach [2], however, it's now 100% mapcount
+free and I further simplified it a bit.
+
+  #1 is a fix
+  #3-#7 are mostly rmap preparations for PG_anon_exclusive handling
+  #8 introduces PG_anon_exclusive
+  #9 uses PG_anon_exclusive and make R/W pins of anonymous pages
+   reliable
+  #10 is a preparation for reliable R/O pins
+  #11 and #12 is reused/modified GUP-triggered unsharing for R/O GUP pins
+   make R/O pins of anonymous pages reliable
+  #13 adds sanity check when (un)pinning anonymous pages
+
+I'm not proud about patch #8, suggestions welcome. Patch #9 contains
+excessive explanations and the main logic for R/W pins. #11 and #12
+resemble what we proposed in the previous approach [2]. I consider the
+general approach of #13 very nice and helpful, and I remember Linus even
+envisioning something like that for finding BUGs, although we might want to
+implement the sanity checks eventually differently
+
+It passes my growing set of tests for "wrong COW" and "missed COW",
+including the ones in [30 -- I'd really appreciate some experienced eyes
+to take a close look at corner cases. Only tested on x86_64, testing with
+CONT-mapped hugetlb pages on arm64 might be interesting.
+
+Once we converted relevant users of FOLL_GET (e.g., O_DIRECT) to FOLL_PIN,
+the issue described in [3] under 2) will be fixed as well. Further, once
+that's in place we can streamline our COW logic for hugetlb to rely on
+page_count() as well and fix any possible COW security issues.
+
+Don't be scared by the diff stats, it includes a lot of comments and the
+PG_anon_exclusive introduction is a bit "code consuming" due to PG_slab.
+
+[1] https://lkml.kernel.org/r/20220131162940.210846-1-david@redhat.com
+[2] https://lkml.kernel.org/r/20211217113049.23850-1-david@redhat.com
+[3] https://lore.kernel.org/r/3ae33b08-d9ef-f846-56fb-645e3b9b4c66@redhat.com
+[4] https://bugzilla.kernel.org/show_bug.cgi?id=215616
+
+David Hildenbrand (13):
+  mm/rmap: fix missing swap_free() in try_to_unmap() after
+    arch_unmap_one() failed
+  mm/hugetlb: take src_mm->write_protect_seq in
+    copy_hugetlb_page_range()
+  mm/memory: slightly simplify copy_present_pte()
+  mm/rmap: split page_dup_rmap() into page_dup_file_rmap() and
+    page_try_dup_anon_rmap()
+  mm/rmap: remove do_page_add_anon_rmap()
+  mm/rmap: pass rmap flags to hugepage_add_anon_rmap()
+  mm/rmap: use page_move_anon_rmap() when reusing a mapped PageAnon()
+    page exclusively
+  mm/page-flags: reuse PG_slab as PG_anon_exclusive for PageAnon() pages
+  mm: remember exclusively mapped anonymous pages with PG_anon_exclusive
+  mm/gup: disallow follow_page(FOLL_PIN)
+  mm: support GUP-triggered unsharing of anonymous pages
+  mm/gup: trigger FAULT_FLAG_UNSHARE when R/O-pinning a possibly shared
+    anonymous page
+  mm/gup: sanity-check with CONFIG_DEBUG_VM that anonymous pages are
+    exclusive when (un)pinning
+
+ fs/proc/page.c                 |   3 +-
+ include/linux/mm.h             |  46 +++++++-
+ include/linux/mm_types.h       |   8 ++
+ include/linux/page-flags.h     | 124 ++++++++++++++++++++-
+ include/linux/rmap.h           |  87 ++++++++++++++-
+ include/linux/swap.h           |  15 ++-
+ include/linux/swapops.h        |  25 +++++
+ include/trace/events/mmflags.h |   2 +-
+ mm/gup.c                       |  96 +++++++++++++++-
+ mm/huge_memory.c               | 125 ++++++++++++++++-----
+ mm/hugetlb.c                   | 133 +++++++++++++++-------
+ mm/ksm.c                       |  15 ++-
+ mm/memory-failure.c            |  24 +++-
+ mm/memory.c                    | 197 ++++++++++++++++++++-------------
+ mm/memremap.c                  |  11 ++
+ mm/migrate.c                   |  46 ++++++--
+ mm/mprotect.c                  |   8 +-
+ mm/page_alloc.c                |  13 +++
+ mm/rmap.c                      |  75 +++++++++----
+ mm/swapfile.c                  |   2 +-
+ 20 files changed, 849 insertions(+), 206 deletions(-)
+
+-- 
+2.35.1
+
