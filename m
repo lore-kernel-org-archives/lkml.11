@@ -2,192 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78AB8C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E47C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235461AbiBXWXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 17:23:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54502 "EHLO
+        id S233601AbiBXW01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 17:26:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234205AbiBXWXU (ORCPT
+        with ESMTP id S229873AbiBXW0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 17:23:20 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E872177CA;
-        Thu, 24 Feb 2022 14:22:50 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id b22so3106699pls.7;
-        Thu, 24 Feb 2022 14:22:50 -0800 (PST)
+        Thu, 24 Feb 2022 17:26:25 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87B024776C;
+        Thu, 24 Feb 2022 14:25:54 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id l1-20020a7bcf01000000b0037f881182a8so655102wmg.2;
+        Thu, 24 Feb 2022 14:25:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KC38Q9auprSBL2KXS5vTL8BZyOlr0l+99ezAwIh0Alk=;
-        b=Fl47mfGKhSwRhjWAN2q9gQAHA0ODonroy6a5ZTZuMuaIbiVEFaorM/YC1NB1o70+3F
-         Nmfkh6rpxVY3nJmSSuGu3QTtuOfdxjizbCfXh60POt+T8vuZMfVojdoC6yYJnG6Ziwby
-         WZmED/nJSmEEeHY5EU9iUcP8xw5qoqR5fLhPuL/Z6ceS39ui35QcI79ee1VRuw3cxy9I
-         HatF/gUOA9mPpnJjlvGy5mit4GCMY07rBwrfrIDWNHB29eTYaD29IFqNvErH4Vc3SuVZ
-         rOhnPoREDEt0hmj5JoX+9/G3o3ZG5kj67W4GooYQhZSie0glAHTRnm3D7+ifOETj+wuJ
-         //6g==
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=5Hq+lkEI7xZAlQDIMuYtBf6mGhY9G0mOAIjlBDnfBJQ=;
+        b=UmRLmKwpE1vdy/e/gx1tql3bdI9YzVWhMpPcU+NWPLBnuDoWgL1aO2Rlx5UDnW7HZ4
+         WTN+x/0uEDZB9Q8AAVtYm+Hc1LFwTVPJtWC1HWryGizlzOZBx4BD9xpvbVoGN7rbxn+q
+         GhHZzHqivndkrhTRy/QT6QLI45H//UB4k3kFyBMN3MMK5TpsaBzseujqJ8twOKRH4JUL
+         8zaMJcdJ3uF80PJDGcQij9lBXEugImGeZqEbaxbZPaIamgGZC9fd6hBuj4UPQKVJwVuN
+         jSSHHxIfRvcc2+JAMwrRxtgX0oU63/3ZuIsbunWnu0OZ+sovRWF1uHgbpKx2gke9qwH1
+         k4/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KC38Q9auprSBL2KXS5vTL8BZyOlr0l+99ezAwIh0Alk=;
-        b=B/AVlbmYfBpnJ2NSndN5q5BaGr7b3FSbMi+k9ReT1LVIPN34tv31nyla5gaVS+tjaT
-         E/uwK3106PwoXOXbtGPelAfBX06vDzHVPKBjGwdxH4GZEPiGndClsiQ8j9W1IKNlCLug
-         jpKT+7uRm8KVxHwtNI0WnfWjCQagpE7tKM6cHVal1Ul2o9ym0njnW2Fdz0TFPIzlnOYK
-         ZcYhH6zUojbIKOxTvMFFALcvLNr2riaWW0cp+cqLNulXGYbQ4gTNigjRp9r9F2+MeK/W
-         +2s6mQPe2NFZ34Za0cp89w9VQyKRStmhlXigRBd6mmkI6BjMQgD4rnO+VG/sGeSR3ezi
-         80FA==
-X-Gm-Message-State: AOAM5310xneCN07o0ZKe8a1XtSMwdlnDywNDGhUNEof2uNEO/KIykEzc
-        NbVpj94R5t0IZ3yFaj/n6F0=
-X-Google-Smtp-Source: ABdhPJzallEYPS+l4SgLT9ah/U3MzuX2cTvZpiM9CTLd8ytUd2EJAFjf/cxgotvtqPmkd2n+G8lKSg==
-X-Received: by 2002:a17:90b:4ac4:b0:1ba:3b4:d3c with SMTP id mh4-20020a17090b4ac400b001ba03b40d3cmr202228pjb.201.1645741369032;
-        Thu, 24 Feb 2022 14:22:49 -0800 (PST)
-Received: from localhost ([2601:1c0:5200:a6:307:a401:7b76:c6e5])
-        by smtp.gmail.com with ESMTPSA id m6-20020a056a00080600b004e1bb196743sm561169pfk.5.2022.02.24.14.22.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 14:22:48 -0800 (PST)
-From:   Rob Clark <robdclark@gmail.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@chromium.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] drm/msm: Add MSM_SUBMIT_FENCE_SN_IN
-Date:   Thu, 24 Feb 2022 14:23:21 -0800
-Message-Id: <20220224222321.60653-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=5Hq+lkEI7xZAlQDIMuYtBf6mGhY9G0mOAIjlBDnfBJQ=;
+        b=A7zPC1KXUb4OyQGrMZNtDyKmRELSWGGdgAqt/Xq3s/YQjEdArmzqy1cAQTfXRSpjqy
+         C03O1nCoT6zsOiyTJ2eM2bYnXs2nY2beJMUJmY3tkMrT2MxflsckCnPVDIDJG8PuxvXs
+         tN16fSctKXUiN4xlk8HxaJl+hTzipXkZ+BYrgzgv5dOD+LM5dVlIpWJUXBl3+88c7aAf
+         rxKb9o4x4q3Q5YBPyiMO5qT2Dle0FYf+pZMiZcEM3GenFBJluwkJRkujFf4jb6Pg2V+N
+         eGHxKjwUi2RW0g16+mptJ+K7mQfGm2t4NLFpUthv0f5b8SQKqZFjr6W7JqxdwsHMFUo7
+         Gy2A==
+X-Gm-Message-State: AOAM5309M7mEpS6ChzlOLPX+cZ9D7SEdKH/CmZhpNdOnSR1Rud/UH/aD
+        J4pTRZLDpfxeW1wFXSzljxTiqTTRGwJ6YA==
+X-Google-Smtp-Source: ABdhPJxAylXwKa6WLKIXu7tstKIYLTuu9eCaUqpuTayQnJ4/I+oczd3YohQZ1CirB2jbeWmzjPyq/A==
+X-Received: by 2002:a05:600c:6019:b0:380:f8bc:ddf3 with SMTP id az25-20020a05600c601900b00380f8bcddf3mr168068wmb.117.1645741553544;
+        Thu, 24 Feb 2022 14:25:53 -0800 (PST)
+Received: from [192.168.0.210] (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.googlemail.com with ESMTPSA id k19-20020a05600c479300b00380e461a4d2sm4638224wmo.0.2022.02.24.14.25.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 14:25:53 -0800 (PST)
+Message-ID: <13f987a0-197a-d0db-6f97-c7358d4723da@gmail.com>
+Date:   Thu, 24 Feb 2022 22:25:51 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     "David E. Box" <david.e.box@linux.intel.com>
+Cc:     Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org
+From:   "Colin King (gmail)" <colin.i.king@gmail.com>
+Subject: re: platform/x86: Add Intel Software Defined Silicon driver
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+Hi,
 
-Add a way for userspace to specify the sequence number fence used to
-track completion of the submit.  As the seqno fence is simply an
-incrementing counter which is local to the submitqueue, it is easy for
-userspace to know the next value.
+Static analysis with clang scan has detected a potential issue in the 
+following commit:
 
-This is useful for native userspace drivers in a vm guest, as the guest
-to host roundtrip can have high latency.  Assigning the fence seqno in
-the guest userspace allows the guest to continue without waiting for
-response from the host.
+commit 2546c60004309ede8e2d1d5341e0decd90e057bf
+Author: David E. Box <david.e.box@linux.intel.com>
+Date:   Fri Feb 11 17:32:50 2022 -0800
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/gpu/drm/msm/msm_drv.c        |  3 +-
- drivers/gpu/drm/msm/msm_gem_submit.c | 42 ++++++++++++++++++++++++----
- include/uapi/drm/msm_drm.h           |  4 ++-
- 3 files changed, 41 insertions(+), 8 deletions(-)
+     platform/x86: Add Intel Software Defined Silicon driver
 
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index 30fd18ca88c4..16f37f3d9061 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -41,9 +41,10 @@
-  * - 1.6.0 - Syncobj support
-  * - 1.7.0 - Add MSM_PARAM_SUSPENDS to access suspend count
-  * - 1.8.0 - Add MSM_BO_CACHED_COHERENT for supported GPUs (a6xx)
-+ * - 1.9.0 - Add MSM_SUBMIT_FENCE_SN_IN
-  */
- #define MSM_VERSION_MAJOR	1
--#define MSM_VERSION_MINOR	8
-+#define MSM_VERSION_MINOR	9
- #define MSM_VERSION_PATCHLEVEL	0
- 
- static const struct drm_mode_config_funcs mode_config_funcs = {
-diff --git a/drivers/gpu/drm/msm/msm_gem_submit.c b/drivers/gpu/drm/msm/msm_gem_submit.c
-index 6cfa984dee6a..c6d60c8d286d 100644
---- a/drivers/gpu/drm/msm/msm_gem_submit.c
-+++ b/drivers/gpu/drm/msm/msm_gem_submit.c
-@@ -872,16 +872,46 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
- 
- 	submit->nr_cmds = i;
- 
-+	/*
-+	 * If using userspace provided seqno fence, validate that the id
-+	 * is available before arming sched job.  Since access to fence_idr
-+	 * is serialized on the queue lock, the slot should be still avail
-+	 * after the job is armed
-+	 */
-+	if ((args->flags & MSM_SUBMIT_FENCE_SN_IN) &&
-+			idr_find(&queue->fence_idr, args->fence)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
- 	drm_sched_job_arm(&submit->base);
- 
- 	submit->user_fence = dma_fence_get(&submit->base.s_fence->finished);
- 
--	/*
--	 * Allocate an id which can be used by WAIT_FENCE ioctl to map back
--	 * to the underlying fence.
--	 */
--	submit->fence_id = idr_alloc_cyclic(&queue->fence_idr,
--			submit->user_fence, 1, INT_MAX, GFP_KERNEL);
-+	if (args->flags & MSM_SUBMIT_FENCE_SN_IN) {
-+		/*
-+		 * Userspace has assigned the seqno fence that it wants
-+		 * us to use.  It is an error to pick a fence sequence
-+		 * number that is not available.
-+		 */
-+		submit->fence_id = args->fence;
-+		ret = idr_alloc_u32(&queue->fence_idr, submit->user_fence,
-+				    &submit->fence_id, submit->fence_id,
-+				    GFP_KERNEL);
-+		/*
-+		 * We've already validated that the fence_id slot is valid,
-+		 * so if idr_alloc_u32 failed, it is a kernel bug
-+		 */
-+		WARN_ON(ret);
-+	} else {
-+		/*
-+		 * Allocate an id which can be used by WAIT_FENCE ioctl to map
-+		 * back to the underlying fence.
-+		 */
-+		submit->fence_id = idr_alloc_cyclic(&queue->fence_idr,
-+						    submit->user_fence, 1,
-+						    INT_MAX, GFP_KERNEL);
-+	}
- 	if (submit->fence_id < 0) {
- 		ret = submit->fence_id = 0;
- 		submit->fence_id = 0;
-diff --git a/include/uapi/drm/msm_drm.h b/include/uapi/drm/msm_drm.h
-index 6b8fffc28a50..6cd45a7f6947 100644
---- a/include/uapi/drm/msm_drm.h
-+++ b/include/uapi/drm/msm_drm.h
-@@ -227,6 +227,7 @@ struct drm_msm_gem_submit_bo {
- #define MSM_SUBMIT_SUDO          0x10000000 /* run submitted cmds from RB */
- #define MSM_SUBMIT_SYNCOBJ_IN    0x08000000 /* enable input syncobj */
- #define MSM_SUBMIT_SYNCOBJ_OUT   0x04000000 /* enable output syncobj */
-+#define MSM_SUBMIT_FENCE_SN_IN   0x02000000 /* userspace passes in seqno fence */
- #define MSM_SUBMIT_FLAGS                ( \
- 		MSM_SUBMIT_NO_IMPLICIT   | \
- 		MSM_SUBMIT_FENCE_FD_IN   | \
-@@ -234,6 +235,7 @@ struct drm_msm_gem_submit_bo {
- 		MSM_SUBMIT_SUDO          | \
- 		MSM_SUBMIT_SYNCOBJ_IN    | \
- 		MSM_SUBMIT_SYNCOBJ_OUT   | \
-+		MSM_SUBMIT_FENCE_SN_IN   | \
- 		0)
- 
- #define MSM_SUBMIT_SYNCOBJ_RESET 0x00000001 /* Reset syncobj after wait. */
-@@ -253,7 +255,7 @@ struct drm_msm_gem_submit_syncobj {
-  */
- struct drm_msm_gem_submit {
- 	__u32 flags;          /* MSM_PIPE_x | MSM_SUBMIT_x */
--	__u32 fence;          /* out */
-+	__u32 fence;          /* out (or in with MSM_SUBMIT_FENCE_SN_IN flag) */
- 	__u32 nr_bos;         /* in, number of submit_bo's */
- 	__u32 nr_cmds;        /* in, number of submit_cmd's */
- 	__u64 bos;            /* in, ptr to array of submit_bo's */
--- 
-2.35.1
+The issue is as follows:
+
+static int sdsi_mbox_read(struct sdsi_priv *priv, struct sdsi_mbox_info 
+*info, size_t *data_size)
+{
+         int ret;
+
+         lockdep_assert_held(&priv->mb_lock);
+
+         ret = sdsi_mbox_acquire(priv, info);
+         if (ret)
+                 return ret;
+
+Note: the return above does not assign a value to *data_size
+
+
+         return sdsi_mbox_cmd_read(priv, info, data_size);
+}
+
+
+static long state_certificate_read(struct file *filp, struct kobject *kobj,
+                                    struct bin_attribute *attr, char 
+*buf, loff_t off,
+                                    size_t count)
+{
+         struct device *dev = kobj_to_dev(kobj);
+         struct sdsi_priv *priv = dev_get_drvdata(dev);
+         u64 command = SDSI_CMD_READ_STATE;
+         struct sdsi_mbox_info info;
+         size_t size;
+                ^
+Note: size is not initialized
+
+         int ret;
+
+         if (!priv->sdsi_enabled)
+                 return -EPERM;
+
+         if (off)
+                 return 0;
+
+         /* Buffer for return data */
+         info.buffer = kmalloc(SDSI_SIZE_READ_MSG, GFP_KERNEL);
+         if (!info.buffer)
+                 return -ENOMEM;
+
+         info.payload = &command;
+         info.size = sizeof(command);
+
+         ret = mutex_lock_interruptible(&priv->mb_lock);
+         if (ret)
+                 goto free_buffer;
+         ret = sdsi_mbox_read(priv, &info, &size);
+
+Note: a failure in scsi_mbox_read can lead to variable size not being 
+assigned a value.
+
+         mutex_unlock(&priv->mb_lock);
+         if (ret < 0)
+                 goto free_buffer;
+
+Note: failure with ret < 0 going to free_buffer
+
+         if (size > count)
+                 size = count;
+
+         memcpy(buf, info.buffer, size);
+
+free_buffer:
+         kfree(info.buffer);
+
+         if (ret)
+                 return ret;
+
+         return size;
+
+Note: uninitialized value in size being returned. This is an error.
+
+}
 
