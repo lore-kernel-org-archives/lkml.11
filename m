@@ -2,100 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F31F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 933B4C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:34:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbiBXAeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 19:34:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59062 "EHLO
+        id S230124AbiBXAfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 19:35:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiBXAeS (ORCPT
+        with ESMTP id S229890AbiBXAfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 19:34:18 -0500
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 394E79318F
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:33:49 -0800 (PST)
-Received: by mail-qk1-x731.google.com with SMTP id n185so549746qke.5
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:33:49 -0800 (PST)
+        Wed, 23 Feb 2022 19:35:13 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12C89EB92
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:34:39 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id 132so318390pga.5
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:34:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AXLSRzCjsZCFoAyswTHwstLfgcPocf6IJntD36q7k5Q=;
-        b=eXo4RTiBDfKvcK3zjsVQUbB5xRiFtVQPIcgfPkctoWbFm5mnw9b/rvv7i7W/blEnBC
-         yIc5bKXcG1pxnlC0SRfWI5IDbeG0z3AZX3nQHmQHc113lD6Ol5OZ2tS74G+kNbIpat1S
-         l2koJ9Bkk6iHOLOt0wQmQQ2nbaKX3GYVJzBJISlswiX/aKcziR17YdIj0OELDv5KI37/
-         dvnuxypDL6azczfOlAZUUWle1zoc4hheSw3nVaAqiT9YpEGYVaSrD6iUaorNjL/zZVSV
-         Ci3XLLXkSLWxebo0p8uOW6BT3b9e7L/3SBI7yIwiQbVWMq95CTdtytdFiiwQrPyOiCF+
-         4Hcg==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vG/5kA9N04CwQy4bX0Kb6i3wWo0eXRHeMpuwd4x5Q/c=;
+        b=jiBcPWY52X9e/uzNvYV2TiVy3I2p7YH1Aio3N86LL3F6hY5MTAQMANosqFD3oDYCbm
+         pgoTOF75+LpesRgDwHVx00c6vatB+Z2rNe1WdvV0OHVVZbQb/7k6LvYYt0J9mWxi5Ezv
+         iovAxNryPBhK2YpLzNMuk11LODuxTMATgAerI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AXLSRzCjsZCFoAyswTHwstLfgcPocf6IJntD36q7k5Q=;
-        b=12DpJbFk9GIkOTMQuxtUboQSddVZ9FkRfmH6ZwL+wa3hHs7KVHrT/rVOQGwcQ3DyZz
-         25WZa8FloB7M10ZFpEETN9gwWzG44EHgDW2Ps8Qe9qwHlPzGo5OLjCwzk+8Qyrqc36DL
-         a7vMfUqUeghpI5I87ijOseqIk5DkkcAO9tY8JTorz7fVg7ZEwBLRrHQFpCej578vQFP/
-         bgmFAGoMmEjeLcLMQJe/46EL+VW9+CQt65WMvjZAgdlCXxBCtxbm0ksOIpFke3bX7yBQ
-         kDSWi6Ek1DpJoFObwT6kX39R7rbbeydarHTSqebWVPtQdcZJ4xzJMPxbaC7g6YhCdnVC
-         DMgA==
-X-Gm-Message-State: AOAM531oVyGLNCdHEBY4nH/ByeyTA0H+kPJ75sVJV6DLDYWxDY1Pdkqq
-        +iKQrTxxX39G/igj6y7uPqnJZ2FkTiYLz3Lp3Go/Ng==
-X-Google-Smtp-Source: ABdhPJyH1H6InszUaBtbaqZ275mDiIyZuB59Sdfd5+Ui+46/fsxVuxWpwD4DpXN8ISi2NArkYmB9ZgKngl+DZhH3h3U=
-X-Received: by 2002:a37:b287:0:b0:607:afb3:2c1d with SMTP id
- b129-20020a37b287000000b00607afb32c1dmr212265qkf.221.1645662828189; Wed, 23
- Feb 2022 16:33:48 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vG/5kA9N04CwQy4bX0Kb6i3wWo0eXRHeMpuwd4x5Q/c=;
+        b=reTy+Os+F4DATZr90xh+KvG1GdzPM6haKJ2ema3yRPkukCeCAV9F4HUeqjqR6YEuSb
+         mDK6BXgEJum5pesN6LvB0wmFWgQ3Lmlt57pj4niEkriTheMlOxsdmQ2Bt9EgjdI6VyLo
+         a6vU6NdBSIKYgGc6X4i+Wd0vwp12yoqLKyZs2d7ot5Ss1hJkxIHTNSWnsHZ7gYQyA1vl
+         uwefTb7rOXIWh5Hxy+zNarQUEK9ZeWRgDKBQs9reB5QhCt2/O4gJ5//+lyyJdPUAKcIJ
+         /+0f4aaXMQT5bFZWy82URrnoiNMMxd8PWPQvcky6H5CVK89GLCjgc4VBH6etcovGWrkW
+         VN6Q==
+X-Gm-Message-State: AOAM533ghT7GwztjUA9KQIfQpMsyF/BSbGteT9K84DuXp5GUQHlOz/tj
+        Wi/yaM5WjtLvTLYX00uQti/q9JuSoAxoSw==
+X-Google-Smtp-Source: ABdhPJzB30yXUg/ww0v2ftOzZv01+PA4tr9dDxl1M4WmeEwfAF4LbeQR2yIc+HYO7spA6z9bda51cQ==
+X-Received: by 2002:a63:4d52:0:b0:343:8d41:eb12 with SMTP id n18-20020a634d52000000b003438d41eb12mr267178pgl.527.1645662879182;
+        Wed, 23 Feb 2022 16:34:39 -0800 (PST)
+Received: from jwerner-p920.mtv.corp.google.com ([2620:15c:202:201:e321:1e1b:f71e:33c])
+        by smtp.gmail.com with ESMTPSA id ms7-20020a17090b234700b001bc7e6fc01csm4100344pjb.40.2022.02.23.16.34.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 16:34:38 -0800 (PST)
+From:   Julius Werner <jwerner@chromium.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Dmitry Osipenko <digetx@gmail.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Julius Werner <jwerner@chromium.org>
+Subject: [PATCH v3 1/3] dt-bindings: memory: lpddr2: Adjust revision ID property to match lpddr3
+Date:   Wed, 23 Feb 2022 16:34:19 -0800
+Message-Id: <20220224003421.3440124-2-jwerner@chromium.org>
+X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
+In-Reply-To: <20220224003421.3440124-1-jwerner@chromium.org>
+References: <20220224003421.3440124-1-jwerner@chromium.org>
 MIME-Version: 1.0
-References: <20220224000531.1265030-1-haoluo@google.com> <CAEf4Bzb44WR2LiYchxB5JZ=Jdie6FEEi90mh=SCv07v4h4W11w@mail.gmail.com>
-In-Reply-To: <CAEf4Bzb44WR2LiYchxB5JZ=Jdie6FEEi90mh=SCv07v4h4W11w@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Wed, 23 Feb 2022 16:33:37 -0800
-Message-ID: <CA+khW7h4bL3qUst4nDy6LDmx73xVA_ch=PLc=o=v2iJNbGn21A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] bpf: Cache the last valid build_id.
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Blake Jones <blakejones@google.com>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Greg Thelen <gthelen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 4:11 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Wed, Feb 23, 2022 at 4:05 PM Hao Luo <haoluo@google.com> wrote:
-> >
-> > For binaries that are statically linked, consecutive stack frames are
-> > likely to be in the same VMA and therefore have the same build id.
-> > As an optimization for this case, we can cache the previous frame's
-> > VMA, if the new frame has the same VMA as the previous one, reuse the
-> > previous one's build id. We are holding the MM locks as reader across
-> > the entire loop, so we don't need to worry about VMA going away.
-> >
-> > Tested through "stacktrace_build_id" and "stacktrace_build_id_nmi" in
-> > test_progs.
-> >
-> > Suggested-by: Greg Thelen <gthelen@google.com>
-> > Signed-off-by: Hao Luo <haoluo@google.com>
-> > ---
->
-> LGTM. Can you share performance numbers before and after?
->
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
->
+Commit 3539a2 (dt-bindings: memory: lpddr2: Add revision-id properties)
+added the properties `revision-id1` and `revision-id2` to the
+"jedec,lpddr2" binding. The "jedec,lpddr3" binding already had a single
+array property `revision-id` for the same purpose. For consistency
+between related memory types, this patch deprecates the LPDDR2
+properties and instead adds a property in the same style as for LPDDR3
+to that binding.
 
-Thanks Andrii.
+Signed-off-by: Julius Werner <jwerner@chromium.org>
+---
+ .../memory-controllers/ddr/jedec,lpddr2.yaml    | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-On a real-world workload, we observed that 66% of cpu cycles in
-__bpf_get_stackid() were spent on build_id_parse() and find_vma().
-This was before.
+Changelog:
 
-We haven't evaluated the performance with this patch yet. This
-optimization seems straightforward, so we plan to upstream it first
-and then retest.
+- v2:
+  - Updated commit message to fill in commit reference to earlier patch
+- v3:
+  - Added `items` specification with `minimum` and `maximum` values to
+    `revision-id` binding
+  - Updated binding example to preserve previous revision ID values
+
+diff --git a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr2.yaml b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr2.yaml
+index 25ed0266f6dd3d..e9d0936861b779 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr2.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/ddr/jedec,lpddr2.yaml
+@@ -30,12 +30,26 @@ properties:
+     maximum: 255
+     description: |
+       Revision 1 value of SDRAM chip. Obtained from device datasheet.
++      Property is deprecated, use revision-id instead.
++    deprecated: true
+ 
+   revision-id2:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     maximum: 255
+     description: |
+       Revision 2 value of SDRAM chip. Obtained from device datasheet.
++      Property is deprecated, use revision-id instead.
++    deprecated: true
++
++  revision-id:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    description: |
++      Revision IDs read from Mode Register 6 and 7. One byte per uint32 cell (i.e. <MR6 MR7>).
++    minItems: 2
++    maxItems: 2
++    items:
++      minimum: 0
++      maximum: 255
+ 
+   density:
+     $ref: /schemas/types.yaml#/definitions/uint32
+@@ -164,8 +178,7 @@ examples:
+         compatible = "elpida,ECB240ABACN", "jedec,lpddr2-s4";
+         density = <2048>;
+         io-width = <32>;
+-        revision-id1 = <1>;
+-        revision-id2 = <0>;
++        revision-id = <1 0>;
+ 
+         tRPab-min-tck = <3>;
+         tRCD-min-tck = <3>;
+-- 
+2.31.0
+
