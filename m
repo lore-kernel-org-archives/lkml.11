@@ -2,97 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E123CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2806C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234711AbiBXVYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 16:24:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36712 "EHLO
+        id S234736AbiBXVYi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 16:24:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234710AbiBXVYZ (ORCPT
+        with ESMTP id S234704AbiBXVYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 16:24:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEC421A1C5D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 13:23:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645737824;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=BY7N70q7sXGBDdrQKQWopMeqmb4Jr71LPGZFNt/ZGqQ=;
-        b=KRogMAUMzGH4l7DdfYCt2dNv2QHeQb3CTLhhV57h8tH1o68rgOC2Fv/r6vL0xpslMJx3io
-        Xv4ZTiCT9/h1BPfE2gxLJT2rDu4gjXv7ocipi5HsjpYZws/GeXpZAFay8n+VIDacfu3Nrs
-        Yl0beAD6CEDtBhcvhMQs5gz4YnJFeeE=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-308-zcU2IoA2NpWysQiJlhj-0w-1; Thu, 24 Feb 2022 16:23:43 -0500
-X-MC-Unique: zcU2IoA2NpWysQiJlhj-0w-1
-Received: by mail-qv1-f72.google.com with SMTP id hu9-20020a056214234900b0042c4017aeb3so4154658qvb.14
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 13:23:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BY7N70q7sXGBDdrQKQWopMeqmb4Jr71LPGZFNt/ZGqQ=;
-        b=EeJIBWElRwdXUa0PyOYqEoa1siMr8aCQ0ETD1E40hYy1+noQw+JIZXaJBtMzSj6+r9
-         rk/cnmXG6Bo8pkGvIok4o5sv7PgtFmtdaMldAC9FZR1666XfoF4lu5MZtbB+p4EmhlDE
-         LwkbAUM81I+ZYxqTPz/dBJXj/YsRSkqzvKuDmPqsnscKcVFc3Uyc7jgdpovaL0ovKMxa
-         BbNSSNhsNiwwv+HbPXwVGP65QaudgV2Bsshqz/1HmtBkCX3FNPspiAYZ0R64KN9056MT
-         JQwbm6QKYOo0kqR/Xt6wLgDt0S3a5YK6gRLuV5qlb7NwAxh8M3skpMCR6K88UvqpzM5l
-         Q8DQ==
-X-Gm-Message-State: AOAM532aoV4DaeUjIICKU7iqNPKFIHbMeEF+JEu4EsKOrYZTsV9Ty12p
-        9cPxOCqqV8FBs8wUiFaYoSoFzTWJiA+8hrN//27996MzMw8Au/fp8XIg1Hqopv+Vhx7Uir05654
-        /bU/SgCrXPanja7pws8gySYYi
-X-Received: by 2002:ac8:5b0d:0:b0:2dd:d99a:9b6e with SMTP id m13-20020ac85b0d000000b002ddd99a9b6emr4144680qtw.643.1645737822550;
-        Thu, 24 Feb 2022 13:23:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzCZfIYg09SRdJR3eRunjCHeN4Ra4Qf2OqWmWgdEOCswGYk7JiiMJOOGgH5rjNSKefuUMHdug==
-X-Received: by 2002:ac8:5b0d:0:b0:2dd:d99a:9b6e with SMTP id m13-20020ac85b0d000000b002ddd99a9b6emr4144664qtw.643.1645737822344;
-        Thu, 24 Feb 2022 13:23:42 -0800 (PST)
-Received: from halaneylaptop.redhat.com (068-184-200-203.res.spectrum.com. [68.184.200.203])
-        by smtp.gmail.com with ESMTPSA id l7-20020a37f507000000b0047b528ef416sm340999qkk.93.2022.02.24.13.23.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 13:23:41 -0800 (PST)
-From:   Andrew Halaney <ahalaney@redhat.com>
-To:     corbet@lwn.net
-Cc:     peterz@infradead.org, mingo@redhat.com, will@kernel.org,
-        longman@redhat.com, boqun.feng@gmail.com,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Halaney <ahalaney@redhat.com>,
-        Leah Leshchinsky <lleshchi@redhat.com>
-Subject: [PATCH] Documentation/locking/locktypes: Fix PREEMPT_RT _bh() description
-Date:   Thu, 24 Feb 2022 15:23:12 -0600
-Message-Id: <20220224212312.2601153-1-ahalaney@redhat.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 24 Feb 2022 16:24:34 -0500
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2053.outbound.protection.outlook.com [40.107.93.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F31428D39C;
+        Thu, 24 Feb 2022 13:24:02 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=asjasaJnOD4hoBGXX4hDepP1e/8fY4LcREcSCDCiT4wwnaj8YbBLw4v3A2ymB8a0z//b1jehsUbbclWyaKUzQrkH7Pjq2Saxs/cKMGOxokekDLKLnbqUdGY5k93h1NK+jOUzxftSHRdww7B2XANOR9boWI3f7Lj+rrMeBYwjcbGOtzLq5mP34V8YddF8peomwOplrFH3EU9HjfMzBHTTD4su577lpN+QmZY7HqsQZT2UJImm9s+wxInjf/Kup2JQHc2s1sVUx0WdP4jLS0Gbo8pwwCAU9wVFv1huFGPqBGSrXgN+lOOVHmJ+hZX/6JPffj9eppFc7ohN6qvdgxKViA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fayfmbkixtZKWYN9V7C0LB9cq4o4jjIrmGTXP0klWjM=;
+ b=hYe1Yskgmh+iccbNtUiPKpTpywgNZVMaD+N1OlX5Jon8Ck1WqDAX8vlV7MuRlXHvhTdqa6vft9h6/K+24/sLB0RDo7b1NBjl79ZRYuLVlHPOhmajGWyEv8vyARnsTZLbwOOXYVhp+7KII3VeRfwRzvnNUfK3dknvYodcIvSLedbYcYYQaGf1lW1O1G9xApzMwi6L5yqzh4aEaj1a/rtrrtofewB5obTYwg+aco6LGfumFVVaGhaPCjdgWVQTNXVrv1fr5AWNl7ILkV8DXezGrDd9188SeWo999TXzK+yqQOW7zGF+t0jB9MdA2qcmqFpILJUbLaR2amB4LTAhIG/Ow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fayfmbkixtZKWYN9V7C0LB9cq4o4jjIrmGTXP0klWjM=;
+ b=QV3Obu1hDmmIY6yxReVhggH4bd3grzpryDvwupHLDd5foNIHzyKJaar6JS2In/tnnu6AyLdR4yB4UXL37uZ0UN9vBgMEQGGAmDqnqYplNr2ofUbV9udTQ6Voc1yhZPhikbPQbIAHCqaGoli9cuIhRWOcpr70lfNDsaVFYrUNq3s=
+Received: from DM5PR19CA0008.namprd19.prod.outlook.com (2603:10b6:3:151::18)
+ by CH2PR02MB6325.namprd02.prod.outlook.com (2603:10b6:610:1::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Thu, 24 Feb
+ 2022 21:23:59 +0000
+Received: from DM3NAM02FT017.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:3:151:cafe::98) by DM5PR19CA0008.outlook.office365.com
+ (2603:10b6:3:151::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4951.19 via Frontend
+ Transport; Thu, 24 Feb 2022 21:23:59 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT017.mail.protection.outlook.com (10.13.5.6) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:23:59 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 24 Feb 2022 13:23:58 -0800
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:23:58 -0800
+Envelope-to: eperezma@redhat.com,
+ jasowang@redhat.com,
+ mst@redhat.com,
+ lingshan.zhu@intel.com,
+ sgarzare@redhat.com,
+ xieyongji@bytedance.com,
+ elic@nvidia.com,
+ si-wei.liu@oracle.com,
+ parav@nvidia.com,
+ longpeng2@huawei.com,
+ virtualization@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org,
+ kvm@vger.kernel.org,
+ netdev@vger.kernel.org
+Received: from [10.170.66.102] (port=59620 helo=xndengvm004102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <gautam.dawar@xilinx.com>)
+        id 1nNLag-00095B-1T; Thu, 24 Feb 2022 13:23:58 -0800
+From:   Gautam Dawar <gautam.dawar@xilinx.com>
+CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
+        <tanujk@xilinx.com>, <eperezma@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Longpeng <longpeng2@huawei.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: [RFC PATCH v2 02/19] virtio-vdpa: don't set callback if virtio doesn't need it
+Date:   Fri, 25 Feb 2022 02:52:42 +0530
+Message-ID: <20220224212314.1326-3-gdawar@xilinx.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20220224212314.1326-1-gdawar@xilinx.com>
+References: <20201216064818.48239-1-jasowang@redhat.com>
+ <20220224212314.1326-1-gdawar@xilinx.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5bd0fbb9-d48f-44df-2373-08d9f7dbf8c1
+X-MS-TrafficTypeDiagnostic: CH2PR02MB6325:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR02MB6325DC0F2D7EAFB8EF03DCF6B13D9@CH2PR02MB6325.namprd02.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: H3udrbFCGmIMv9ULcvARZdT/taccJu3kV8Wz+sUfpindovajGLlZQRcpaFymCNpB0ODSWHIgrrhmU5FLoYaiCh9wMM6wxz8Ggqlc5xA9hT8GzvJ/Q/RCsNE1frHTt0asGj8MnFxLEfYnnMdf3jYhITbQBBPfOeYF5XwhAUt10wy6i/M54WZr2O+nLqTTOTEKvpal46r6VgfJoA7chqiVrYPLHQFpuPChjGItf1b4dKaQgy3CSu0tl6YKXOnCXPXY0q865Mpr0n6ihhJKVBRHdJzVt4stx2OQRwv/vMJ63siCGol1xMj1x8L69S1Mu+JK7G02OBJhZknUV0T6UzyTCfvoDRW7Lj1xYTMhMSV+DJUUBYFvRJGVPHAcavxsLGMxGaIBvuJrXoD2nzk6pKBu3JoaRrG2fbLjUsgC/VQNgRT2LmxU/BNCdl2czWibY0UVmI9cAYM7emBIcONMgVQL/h7e9lM5kr3467hE2S/DY+JOxBFa+Z/LvZGEQ2EILrWZy79LLmcftih7+igz7omMbW/pM8QNUPm689mtaJXeMTcmGXEDDdbD3vXJw83X5roL31Pz8FUj+woLW+hUb+py+B/X53nMupx6lpu7el4zmEP8HEgGffSBNNG4ZGDX6c9BPip9nMh+OE8pHcQVmv1F78UcfRxv63D685Mt1U2b94BP3FeS7KcTkaEU+tKodw2LZoIwgW6Pn61epjxJKhObW1mDAXYGO6tClB2b/fZdFOw=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(82310400004)(47076005)(7416002)(8936002)(83380400001)(508600001)(2906002)(6666004)(5660300002)(1076003)(9786002)(8676002)(316002)(36860700001)(4326008)(356005)(54906003)(109986005)(2616005)(7636003)(7696005)(44832011)(70586007)(26005)(70206006)(426003)(40460700003)(36756003)(336012)(4744005)(186003)(102446001)(266003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:23:59.2004
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5bd0fbb9-d48f-44df-2373-08d9f7dbf8c1
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT017.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6325
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With PREEMPT_RT the _bh() version of a spinlock leaves preemption
-enabled, align the doc to say that instead of the opposite.
+There's no need for setting callbacks for the driver that doesn't care
+about that.
 
-Reported-by: Leah Leshchinsky <lleshchi@redhat.com>
-Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
 ---
- Documentation/locking/locktypes.rst | 2 +-
+ drivers/virtio/virtio_vdpa.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/locking/locktypes.rst b/Documentation/locking/locktypes.rst
-index 4fd7b70fcde1..bfa75ea1b66a 100644
---- a/Documentation/locking/locktypes.rst
-+++ b/Documentation/locking/locktypes.rst
-@@ -247,7 +247,7 @@ based on rt_mutex which changes the semantics:
-    Non-PREEMPT_RT kernels disable preemption to get this effect.
+diff --git a/drivers/virtio/virtio_vdpa.c b/drivers/virtio/virtio_vdpa.c
+index 7767a7f0119b..bc74ba5fa717 100644
+--- a/drivers/virtio/virtio_vdpa.c
++++ b/drivers/virtio/virtio_vdpa.c
+@@ -184,7 +184,7 @@ virtio_vdpa_setup_vq(struct virtio_device *vdev, unsigned int index,
+ 	}
  
-    PREEMPT_RT kernels use a per-CPU lock for serialization which keeps
--   preemption disabled. The lock disables softirq handlers and also
-+   preemption enabled. The lock disables softirq handlers and also
-    prevents reentrancy due to task preemption.
- 
- PREEMPT_RT kernels preserve all other spinlock_t semantics:
+ 	/* Setup virtqueue callback */
+-	cb.callback = virtio_vdpa_virtqueue_cb;
++	cb.callback = callback ? virtio_vdpa_virtqueue_cb : NULL;
+ 	cb.private = info;
+ 	ops->set_vq_cb(vdpa, index, &cb);
+ 	ops->set_vq_num(vdpa, index, virtqueue_get_vring_size(vq));
 -- 
-2.35.1
+2.25.0
 
