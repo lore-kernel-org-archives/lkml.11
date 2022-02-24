@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D742C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 752BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:18:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236010AbiBXPSn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:18:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42236 "EHLO
+        id S236016AbiBXPSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:18:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235942AbiBXPS1 (ORCPT
+        with ESMTP id S235887AbiBXPS1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 10:18:27 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8348144F40
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8473144F50
         for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:17:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=0GRAegTdgi3auRe/t63t5h8YTp9nrb+yNH0x1eayzck=; b=gEnnCA4LkdGpaiBOUBx5uvctSM
-        hA18IdgDuH1l+O9WKKRyfjdW1TP7vt5doa0927zINmAr73ACwuguCoVIE33u9pOdivJhGbCS/m8Bs
-        TRdwNIyoWOc1dtqnlanlEqdO7wcnN53lVjKgeV53DgiB2ActM77Z5NFh/Hi/TjlQo24c5eM2GU5UI
-        BWhLByNeQLhDaQyJ0HQNam2IhjmjFBV7DqOwrMp0X68jbV47lmVYUENKwYjcSdjz5wCbu5e1NPqgo
-        D+/scCjnqxubV7w3KPmJZGvsV89cvAx8JquGval9Hr0htK5tV/ZZYwQwUk4tQ21TAK+IOecsZUV/9
-        XcNgduNw==;
+        bh=a6IWm4C6Obidss01Y9wcw6csVMD5JQt2aqoiYu7MCak=; b=vBtDg76dVSxrWKw1Q1feIKm7gU
+        dQKFc/UU8ALhARGkecrBSbbVYj2LRH4AmNcICgHhldZ1Jln4NFPTNAiOOgwd8UiC7l2oEIEVrerP+
+        GeGmhra9wKCn8v6mUuU8JxzhTT/hoNIeRgkBSrOxPLVXyDJAJLA5c+iQiX7/UPgF6vN0baYRHeVb+
+        uiaCKqp9I5TxP+Mg9EjiBrIbP2nmEAt564Sf2sPT07FkSQlETTwzeBIo3EcFzin+V+hLMD5iJ0S29
+        7P6fHx3geDfsARf2OntEHY3Q95SuBOsTrtpGyHWv3zqrSSgZicjt2JZj+Gd6rRjxKwZZ0pAHu19ZP
+        y6WQv3jQ==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
         by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNFs2-004s1n-K0; Thu, 24 Feb 2022 15:17:30 +0000
+        id 1nNFs3-004s20-8i; Thu, 24 Feb 2022 15:17:31 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 62142300483;
-        Thu, 24 Feb 2022 16:17:28 +0100 (CET)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 3104D301218;
+        Thu, 24 Feb 2022 16:17:29 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 2229629E75E4B; Thu, 24 Feb 2022 16:17:28 +0100 (CET)
-Message-ID: <20220224151322.130666048@infradead.org>
+        id 4D3D529E75E5F; Thu, 24 Feb 2022 16:17:28 +0100 (CET)
+Message-ID: <20220224151322.714815604@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 24 Feb 2022 15:51:40 +0100
+Date:   Thu, 24 Feb 2022 15:51:50 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v2 02/39] static_call: Avoid building empty .static_call_sites
+Subject: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
 References: <20220224145138.952963315@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,33 +55,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Without CONFIG_HAVE_STATIC_CALL_INLINE there's no point in creating
-the .static_call_sites section and it's related symbols.
+Have ftrace_location() search the symbol for the __fentry__ location
+when it isn't at func+0 and use this for {,un}register_ftrace_direct().
 
+This avoids a whole bunch of assumptions about __fentry__ being at
+func+0.
+
+Suggested-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- include/asm-generic/vmlinux.lds.h |    4 ++++
- 1 file changed, 4 insertions(+)
+ kernel/trace/ftrace.c |   30 ++++++++++++++++++++++++++++--
+ 1 file changed, 28 insertions(+), 2 deletions(-)
 
---- a/include/asm-generic/vmlinux.lds.h
-+++ b/include/asm-generic/vmlinux.lds.h
-@@ -398,6 +398,7 @@
- 	KEEP(*(__jump_table))						\
- 	__stop___jump_table = .;
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -1578,7 +1578,24 @@ unsigned long ftrace_location_range(unsi
+  */
+ unsigned long ftrace_location(unsigned long ip)
+ {
+-	return ftrace_location_range(ip, ip);
++	struct dyn_ftrace *rec;
++	unsigned long offset;
++	unsigned long size;
++
++	rec = lookup_rec(ip, ip);
++	if (!rec) {
++		if (!kallsyms_lookup_size_offset(ip, &size, &offset))
++			goto out;
++
++		if (!offset)
++			rec = lookup_rec(ip - offset, (ip - offset) + size);
++	}
++
++	if (rec)
++		return rec->ip;
++
++out:
++	return 0;
+ }
  
-+#ifdef CONFIG_HAVE_STATIC_CALL_INLINE
- #define STATIC_CALL_DATA						\
- 	. = ALIGN(8);							\
- 	__start_static_call_sites = .;					\
-@@ -406,6 +407,9 @@
- 	__start_static_call_tramp_key = .;				\
- 	KEEP(*(.static_call_tramp_key))					\
- 	__stop_static_call_tramp_key = .;
-+#else
-+#define STATIC_CALL_DATA
-+#endif
+ /**
+@@ -5110,11 +5127,16 @@ int register_ftrace_direct(unsigned long
+ 	struct ftrace_func_entry *entry;
+ 	struct ftrace_hash *free_hash = NULL;
+ 	struct dyn_ftrace *rec;
+-	int ret = -EBUSY;
++	int ret = -ENODEV;
  
- /*
-  * Allow architectures to handle ro_after_init data on their
+ 	mutex_lock(&direct_mutex);
+ 
++	ip = ftrace_location(ip);
++	if (!ip)
++		goto out_unlock;
++
+ 	/* See if there's a direct function at @ip already */
++	ret = -EBUSY;
+ 	if (ftrace_find_rec_direct(ip))
+ 		goto out_unlock;
+ 
+@@ -5222,6 +5244,10 @@ int unregister_ftrace_direct(unsigned lo
+ 
+ 	mutex_lock(&direct_mutex);
+ 
++	ip = ftrace_location(ip);
++	if (!ip)
++		goto out_unlock;
++
+ 	entry = find_direct_entry(&ip, NULL);
+ 	if (!entry)
+ 		goto out_unlock;
 
 
