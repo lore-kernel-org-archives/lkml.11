@@ -2,84 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32F51C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91648C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:56:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230409AbiBXR4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:56:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52446 "EHLO
+        id S232536AbiBXR5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:57:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232481AbiBXR4m (ORCPT
+        with ESMTP id S232515AbiBXR5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 12:56:42 -0500
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDDA3279469;
-        Thu, 24 Feb 2022 09:56:11 -0800 (PST)
-Received: from [192.168.88.87] (unknown [36.78.50.60])
-        by gnuweeb.org (Postfix) with ESMTPSA id 5107C7E2A3;
-        Thu, 24 Feb 2022 17:56:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1645725371;
-        bh=7y0qBUn+4Mr6bFU20/TGub2HSOx+UgE/hIlmL27DAVc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=D7aZtVyLlCng7VVCYtJk2rzO6vsimwfxamI03avJnlQmAyFkNPTTJvxRG/Jg4tl2j
-         5kpRJDZD/gyCBx4UAGS2cJcv8MDcy4kUXgdLKzLClwG429hsY2UFpZdVVzeUPepMQK
-         INoaznkuuMgo01rQR2SB2xknWIZXiTNtbEDJXCq1KhUMNil0//085azpQLy/txcx6U
-         L/91ntrOD5KGFdQYd6JErvSfH71zayGAoklWMSA7Qnv/VSqfKxK5n7+uF3sc1NEiG3
-         +PBfs1ansVMY3NUFhUiz2zYBPhLkV7FF/oOL8Wlkqgj4uGSOntQvG73n2+YnhRhNcJ
-         Hak+Nrgofj+EQ==
-Message-ID: <5188759c-fd7a-4dbb-0f56-db74200603a8@gnuweeb.org>
-Date:   Fri, 25 Feb 2022 00:56:02 +0700
+        Thu, 24 Feb 2022 12:57:15 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9237736E1E
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:56:42 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id n25-20020a05600c3b9900b00380f41e51e6so279095wms.2
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:56:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0eQeP3GzjSxs3bFEsWrl0jof0V3c/zOR378LhVu6aVM=;
+        b=eb+djR6grT5DoJHqSaYa43YmTmUXIY1zzrWUkx3lm8dwxaudIuXSEpFreKjqauj0nZ
+         rq8S6FDFEMmkBWqAtIWnb5OvW2qU+eA1vhVR0Cao8KakyZvplVi5P8SPgsN5MSG5xZEy
+         bD2DoMr4NXO1WqW6vWNEq0O2y6BdMU0FcLHQwg4+5xzxjxIkoHrN0Q7rAP4ehLcbfLh9
+         WuJwhQrf4mF9OiTa4Oic677/toW3IEbTDPTlZKrtV9ydwGfz3bGBW7qA3CYoKLnYxxmY
+         1UtIQYyoHhb9hXqGveElUe0IhklJ7bSMf1m1kTXBrBfZj+VF5/yEetss9ZTjOdhJ8TPE
+         dSwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0eQeP3GzjSxs3bFEsWrl0jof0V3c/zOR378LhVu6aVM=;
+        b=Go0Ef0sbOi8RuGcBTWE9Y8J4O2KbWNzTkdkY9iBUTDy4193G+o0skOZOA146U97Sks
+         2vVGxOFfP3QUe+PGDaBzxYkLhc6Y4LfmNA812Zue+ALg7nMo6jyWY0ZpnbSQU35RNzDO
+         8XG+kJB625TyimpsAuItLXrheITW5mZG/lXRdutzJLYI88/o+m3z+LioNWA7RzgOfxk7
+         qfRHwpt2yxtzS8DMLD3ecVbXL4SBBki0upfqHn7SyD7Ntz3fleuEigLVOCW1gmZQfuo5
+         C1F/oZCEtOo2lLznISy+f2rhRP+O/ruekrMSOS9TCVo3mz+741kE+/nMz1Cmbzk03sfX
+         1Vmg==
+X-Gm-Message-State: AOAM533YKlBGz+rNq2ABF/6cvDJFZT4zLq5Y3BBzCWW0dIiQyNcsnK/M
+        oXrRcb9F6d4/apxvi3pxXDO1CU+FhyiGiUCxhpRmyw==
+X-Google-Smtp-Source: ABdhPJzYW+HNNpZCuNrYQ+PqbU6fJhTMCkFS76nSOqdlNgbBezGKlNVWKEYvrhVOCHiGYxSgEJIQGaqr9FHR5gjgLks=
+X-Received: by 2002:a05:600c:218d:b0:37f:a920:9705 with SMTP id
+ e13-20020a05600c218d00b0037fa9209705mr3264121wme.86.1645725401178; Thu, 24
+ Feb 2022 09:56:41 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] ASoC: SOF: Intel: Fix NULL ptr dereference when ENOMEM
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Daniel Baluta <daniel.baluta@nxp.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Keyon Jie <yang.jie@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.com>, stable@vger.kernel.org,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-References: <20220224145124.15985-1-ammarfaizi2@gnuweeb.org>
- <Yhe/3rELNfFOdU4L@sirena.org.uk>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-In-Reply-To: <Yhe/3rELNfFOdU4L@sirena.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220224051439.640768-1-kaleshsingh@google.com>
+ <20220224051439.640768-7-kaleshsingh@google.com> <CA+EHjTwhpjDDnKRU3QrJysgMhYH7eTi2_LrWpxCArLoP-1-BrQ@mail.gmail.com>
+In-Reply-To: <CA+EHjTwhpjDDnKRU3QrJysgMhYH7eTi2_LrWpxCArLoP-1-BrQ@mail.gmail.com>
+From:   Kalesh Singh <kaleshsingh@google.com>
+Date:   Thu, 24 Feb 2022 09:56:30 -0800
+Message-ID: <CAC_TJve3wW91UMtCNHeDSZ8hspySmuYO2WgEYEH3Dk=Uj+GkJw@mail.gmail.com>
+Subject: Re: [PATCH v3 6/8] KVM: arm64: Add hypervisor overflow stack
+To:     Fuad Tabba <tabba@google.com>
+Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Walbran <qwandor@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        kvmarm@lists.cs.columbia.edu, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/25/22 12:26 AM, Mark Brown wrote:
-> On Thu, Feb 24, 2022 at 09:51:24PM +0700, Ammar Faizi wrote:
->> From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
->>
->> Do not call snd_dma_free_pages() when snd_dma_alloc_pages() returns
->> -ENOMEM because it leads to a NULL pointer dereference bug.
->>
->> The dmesg says:
->>
->>    <6>[109482.497835][T138537] usb 1-2: Manufacturer: SIGMACHIP
->>    <6>[109482.502506][T138537] input: SIGMACHIP USB Keyboard as /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0/0003:1C4F:0002.000D/input/input34
->>    <6>[109482.558976][T138537] hid-generic 0003:1C4F:0002.000D: input,hidraw1: USB HID v1.10 Keyboard [SIGMACHIP USB Keyboard] on usb-0000:00:14.0-2/input0
->>    <6>[109482.561653][T138537] input: SIGMACHIP USB Keyboard Consumer Control as /devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.1/0003:1C4F:0002.000E/input/input35
-> 
-> Please think hard before including complete backtraces in upstream
-> reports, they are very large and contain almost no useful information
-> relative to their size so often obscure the relevant content in your
-> message. If part of the backtrace is usefully illustrative (it often is
-> for search engines if nothing else) then it's usually better to pull out
-> the relevant sections.
+On Thu, Feb 24, 2022 at 4:27 AM Fuad Tabba <tabba@google.com> wrote:
+>
+> Hi Kalesh,
+>
+> On Thu, Feb 24, 2022 at 5:21 AM Kalesh Singh <kaleshsingh@google.com> wrote:
+> >
+> > Allocate and switch to 16-byte aligned secondary stack on overflow. This
+> > provides us stack space to better handle overflows; and is used in
+> > a subsequent patch to dump the hypervisor stacktrace. The overflow stack
+> > is only allocated if CONFIG_NVHE_EL2_DEBUG is enabled, as hypervisor
+> > stacktraces is a debug feature dependent on CONFIG_NVHE_EL2_DEBUG.
+> >
+> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+> > ---
+> >  arch/arm64/kvm/hyp/nvhe/host.S   | 5 +++++
+> >  arch/arm64/kvm/hyp/nvhe/switch.c | 5 +++++
+> >  2 files changed, 10 insertions(+)
+> >
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/host.S b/arch/arm64/kvm/hyp/nvhe/host.S
+> > index 749961bfa5ba..367a01e8abed 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/host.S
+> > +++ b/arch/arm64/kvm/hyp/nvhe/host.S
+> > @@ -179,6 +179,10 @@ SYM_FUNC_END(__host_hvc)
+> >         b       hyp_panic
+> >
+> >  .L__hyp_sp_overflow\@:
+> > +#ifdef CONFIG_NVHE_EL2_DEBUG
+> > +       /* Switch to the overflow stack */
+> > +       adr_this_cpu sp, hyp_overflow_stack + PAGE_SIZE, x0
+> > +#else
+> >         /*
+> >          * Reset SP to the top of the stack, to allow handling the hyp_panic.
+> >          * This corrupts the stack but is ok, since we won't be attempting
+> > @@ -186,6 +190,7 @@ SYM_FUNC_END(__host_hvc)
+> >          */
+>
+> Nit: Maybe you should update this comment as well, since whether it
+> corrupts the stack or not depends on what happens above with
+> CONFIG_NVHE_EL2_DEBUG.
 
-I will strip the irrelevant information in the v2.
+Ack, will update it in the next version.
 
--- 
-Ammar Faizi
+Thanks,
+Kalesh
+>
+> Thanks,
+> /fuad
+>
+> >         ldr_this_cpu    x0, kvm_init_params + NVHE_INIT_STACK_HYP_VA, x1
+> >         mov     sp, x0
+> > +#endif
+> >
+> >         bl      hyp_panic_bad_stack
+> >         ASM_BUG()
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
+> > index 703a5d3f611b..efc20273a352 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/switch.c
+> > +++ b/arch/arm64/kvm/hyp/nvhe/switch.c
+> > @@ -34,6 +34,11 @@ DEFINE_PER_CPU(struct kvm_host_data, kvm_host_data);
+> >  DEFINE_PER_CPU(struct kvm_cpu_context, kvm_hyp_ctxt);
+> >  DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
+> >
+> > +#ifdef CONFIG_NVHE_EL2_DEBUG
+> > +DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack)
+> > +       __aligned(16);
+> > +#endif
+> > +
+> >  static void __activate_traps(struct kvm_vcpu *vcpu)
+> >  {
+> >         u64 val;
+> > --
+> > 2.35.1.473.g83b2b277ed-goog
+> >
