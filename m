@@ -2,67 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9762AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:17:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E73C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235957AbiBXPSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:18:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
+        id S235974AbiBXPS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:18:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235942AbiBXPRz (ORCPT
+        with ESMTP id S235844AbiBXPS0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:17:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACCF957179;
-        Thu, 24 Feb 2022 07:17:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65086B82695;
-        Thu, 24 Feb 2022 15:17:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD497C340E9;
-        Thu, 24 Feb 2022 15:17:20 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 10:17:19 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Petr Mladek <pmladek@suse.com>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "live-patching@vger.kernel.org" <live-patching@vger.kernel.org>
-Subject: Re: [PATCH v2 02/13] tracing: Fix selftest config check for
- function graph start up test
-Message-ID: <20220224101719.51eafc60@gandalf.local.home>
-In-Reply-To: <9e62f80a-86b1-05d7-d5b7-a209b2c4f106@csgroup.eu>
-References: <cover.1640017960.git.christophe.leroy@csgroup.eu>
-        <bdc7e594e13b0891c1d61bc8d56c94b1890eaed7.1640017960.git.christophe.leroy@csgroup.eu>
-        <74775d33-2e54-96ab-4546-57eb2c9e50e0@csgroup.eu>
-        <20220224095316.67729e2b@gandalf.local.home>
-        <9e62f80a-86b1-05d7-d5b7-a209b2c4f106@csgroup.eu>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Thu, 24 Feb 2022 10:18:26 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FBF141FDC
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:17:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Subject:Cc:To:From:Date:Message-ID:
+        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=VjjxYc6tdAv69TRcKyX/ZQ7TSRpmvIcVA3HNv3EAMpo=; b=verhR6D6Ik3pIT9p42/cOkId1b
+        +5V3GLpJwhYO1+YhX5HDIiQNm/z3Two9YXaCekNXS1cuGc37LHrqHCIzw65eXqgclUiGR2EYZCCx9
+        Y4N9+AKZ+LBsycgIOdhxfof0j+DI0hwoa5sEbE243aFx+8JwK5ziTfgqg6tiHPxlFnOVBMDySX9M4
+        zi4FqN7qyU4XS3UtxZm5lJGNmgPUkIq+WKWRnZ9A/T3tDGiaWxG3NrR3whCDvOYAvqwWE+Z0wv2sW
+        6NgUpu+wofnhVen5cR3BnoWzM5mf6gAyEcjUMPnPL8c/W4GEtuT43ri7PQ/1MWIoYvFfWskj6opjO
+        y8/12kKg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNFs2-004s1p-K2; Thu, 24 Feb 2022 15:17:30 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 606D0300472;
+        Thu, 24 Feb 2022 16:17:28 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
+        id 1B31029E75E47; Thu, 24 Feb 2022 16:17:28 +0100 (CET)
+Message-ID: <20220224145138.952963315@infradead.org>
+User-Agent: quilt/0.66
+Date:   Thu, 24 Feb 2022 15:51:38 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com
+Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com
+Subject: [PATCH v2 00/39] x86: Kernel IBT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Feb 2022 15:13:12 +0000
-Christophe Leroy <christophe.leroy@csgroup.eu> wrote:
+Hi,
 
-> > But I'm working on a series to send to Linus. I can pick this patch up, as
-> > it touches just my code.
-> >   
-> 
-> That would be great, thanks.
+This is an even more complete Kernel IBT implementation.
 
-It's in my queue and running through my tests, which take 7 to 13 hours to
-complete (depending on the changes).
+Since last time (in no specific order):
 
--- Steve
+ - Reworked Xen and paravirt bits lots (andyhpp)
+ - Reworked entry annotation (jpoimboe)
+ - Renamed CONFIG symbol to CONFIG_X86_KERNEL_IBT (redgecomb)
+ - Pinned CR4_CET (kees)
+ - Added __noendbr to CET control functions (kees)
+ - kexec (redgecomb)
+ - made function-graph, kprobes and bpf not explode (rostedt)
+ - cleanups and split ups (jpoimboe, mbenes)
+ - reworked whole module objtool (nathanchance)
+ - attempted and failed at making Clang go
+
+Specifically to clang; I made clang-13 explode by rediscovering:
+https://reviews.llvm.org/D111108, then I tried clang-14 but it looks like
+ld.lld is still generating .plt entries out of thin air.
+
+Also, I know the very first patch is somewhat controversial amonst the clang
+people, but I really think the current state of affairs is abysmal and this
+lets me at least use clang.
+
+Patches are also available here:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/wip.ibt
+
+This series is on top of tip/master along with the linkage patches from Mark:
+
+  https://lore.kernel.org/all/20220216162229.1076788-1-mark.rutland@arm.com/
+
+Enjoy!
+
