@@ -2,101 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8F1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:08:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbiBXQIk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:08:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
+        id S229833AbiBXQI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:08:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230382AbiBXQId (ORCPT
+        with ESMTP id S229937AbiBXQIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:08:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E6E17EDA1;
-        Thu, 24 Feb 2022 08:07:51 -0800 (PST)
+        Thu, 24 Feb 2022 11:08:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBB5194AA7
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:08:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 329D76179C;
-        Thu, 24 Feb 2022 16:04:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87D2AC340EC;
-        Thu, 24 Feb 2022 16:04:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C1C66174D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 16:07:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA22CC340E9;
+        Thu, 24 Feb 2022 16:07:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645718654;
-        bh=jWymqgAfcR3qfS82nYoUUc+s4THWcAw77Lv/fLqZeHs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VabpdoNHIcm5/kDkYE0JsGzkAuL1Vu3lh9leQX9oYtKdf1JOHFzhmjAHgUrLuH+pa
-         pE8tAwzkQ3Mfe/q0S1NpFUDifbW3oA9eosOKPtqHxhm2VxX4MA79dbR4JGTzG+Kmqa
-         56eTw1xPUqlWsvKSMgpE9LMQ7kKsYS3gBpaJ2CRAgNnQFz6tIAwBenWIdSPGHbv0em
-         rc+plY3fkKWk/6EcaT9eOxEgzSimHWjGKgGIfRjoBJ5fpLJ1KsJJHjOTQvQSB8V9cs
-         LDulc5OVBeKGu+zXjQw75iauwMAwvQUEy/E/94fNp8HvQCYgbQW/io6nXvDGtR+sJa
-         dOA6jaultOxgg==
-Date:   Thu, 24 Feb 2022 09:04:08 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Jakob <jakobkoschel@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>, llvm@lists.linux.dev
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-Message-ID: <YheseEX+xD5q1aAd@dev-arch.archlinux-ax161>
-References: <20220217184829.1991035-1-jakobkoschel@gmail.com>
- <20220217184829.1991035-4-jakobkoschel@gmail.com>
- <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
- <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com>
- <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
- <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
- <CAK8P3a0DOC3s7x380XR_kN8UYQvkRqvE5LkHQfK2-KzwhcYqQQ@mail.gmail.com>
- <CAHk-=wicJ0VxEmnpb8=TJfkSDytFuf+dvQJj8kFWj0OF2FBZ9w@mail.gmail.com>
- <CAK8P3a2b_RtXkhQ2pwqbZ1zz6QtjaWwD4em_MCF_wGXRwZirKA@mail.gmail.com>
- <CAHk-=wh97QY9fEQUK6zMVQwaQ_JWDvR=R+TxQ_0OYrMHQ+egvQ@mail.gmail.com>
+        s=k20201202; t=1645718847;
+        bh=Z3+x1SIV9VOetp2p+0THAAyY/l8As1yQ1l0nOvyh4Z8=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=HTqylMlxNFaTe6EnEmYyjQUVi05GaviKofzAWOsskUtS0bDU6vhKnG1YPX4gV58d8
+         6tsqZgEDoSELSkQVlI2XCjDJgjbJcSjg9En8hYEDwp1+pgxYWbta+cchr0+DYENBH3
+         zKIUetZPB5kQ/j4CdBHCuZH4wOtU0MAlEDmFd7vwQ6dlrPIqOQBHipsHoExCFOgYi5
+         vE/9zMEsUJuE4oyI/hC6aDuZ0oh/OSOf6cGTJtkRZEsUiwV8fAPUG2GOaxuAXVmVgf
+         QPhUR9qheftZxEE09uINE/qvbLjg9hHpEblFzDwG2nPzwG7ZmX/OBCG1BBfEnapMQd
+         NeyMVRLLfXKeQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Carl Huang <quic_cjhuang@quicinc.com>, kbuild-all@lists.01.org,
+        ath10k@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Baochen Qiang <quic_bqiang@quicinc.com>,
+        Wen Gong <quic_wgong@quicinc.com>, ath11k@lists.infradead.org
+Subject: Re: [kvalo-ath:pending 37/42] drivers/net/wireless/ath/ath11k/wow.c:467:5: error: redefinition of 'ath11k_wow_init'
+References: <202202230812.uOGgSw5k-lkp@intel.com>
+Date:   Thu, 24 Feb 2022 18:07:21 +0200
+In-Reply-To: <202202230812.uOGgSw5k-lkp@intel.com> (kernel test robot's
+        message of "Wed, 23 Feb 2022 08:52:44 +0800")
+Message-ID: <87zgmgtfie.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wh97QY9fEQUK6zMVQwaQ_JWDvR=R+TxQ_0OYrMHQ+egvQ@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 01:53:39PM -0800, Linus Torvalds wrote:
-> On Wed, Feb 23, 2022 at 1:46 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> >
-> > > Ok, so we should be able to basically convert '--std=gnu89' into
-> > > '--std=gnu11 -Wno-shift-negative-value' with no expected change of
-> > > behavior.
-> >
-> > Yes, I think that is correct.
-> 
-> Ok, somebody please remind me, and let's just try this early in the
-> 5.18 merge window.
-> 
-> Because at least for me, doing
-> 
-> -                  -std=gnu89
-> +                  -std=gnu11 -Wno-shift-negative-value
-> 
-> for KBUILD_CFLAGS works fine both in my gcc and clang builds. But
-> that's obviously just one version of each.
++ ath11k
 
-I ran that diff through my set of clang builds on
-v5.17-rc5-21-g23d04328444a and only found one issue:
+kernel test robot <lkp@intel.com> writes:
 
-https://github.com/ClangBuiltLinux/linux/issues/1603
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git pending
+> head:   4136ddcfda28450e2d01173e37300b95c8687d9b
+> commit: cae84a492cacd9b4eecaafd5dab33f5beba8806e [37/42] ath11k: Add basic WoW functionalities
+> config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220223/202202230812.uOGgSw5k-lkp@intel.com/config)
+> compiler: m68k-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?id=cae84a492cacd9b4eecaafd5dab33f5beba8806e
+>         git remote add kvalo-ath https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git
+>         git fetch --no-tags kvalo-ath pending
+>         git checkout cae84a492cacd9b4eecaafd5dab33f5beba8806e
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    drivers/net/wireless/ath/ath11k/wow.c:357:5: warning: no previous prototype for 'ath11k_wow_op_suspend' [-Wmissing-prototypes]
+>      357 | int ath11k_wow_op_suspend(struct ieee80211_hw *hw,
+>          |     ^~~~~~~~~~~~~~~~~~~~~
+>    drivers/net/wireless/ath/ath11k/wow.c:416:6: warning: no previous
+> prototype for 'ath11k_wow_op_set_wakeup' [-Wmissing-prototypes]
+>      416 | void ath11k_wow_op_set_wakeup(struct ieee80211_hw *hw, bool enabled)
+>          |      ^~~~~~~~~~~~~~~~~~~~~~~~
+>    drivers/net/wireless/ath/ath11k/wow.c:425:5: warning: no previous
+> prototype for 'ath11k_wow_op_resume' [-Wmissing-prototypes]
+>      425 | int ath11k_wow_op_resume(struct ieee80211_hw *hw)
+>          |     ^~~~~~~~~~~~~~~~~~~~
+>>> drivers/net/wireless/ath/ath11k/wow.c:467:5: error: redefinition of
+>>> 'ath11k_wow_init'
+>      467 | int ath11k_wow_init(struct ath11k *ar)
+>          |     ^~~~~~~~~~~~~~~
+>    In file included from drivers/net/wireless/ath/ath11k/core.h:26,
+>                     from drivers/net/wireless/ath/ath11k/wow.c:11:
+>    drivers/net/wireless/ath/ath11k/wow.h:40:19: note: previous definition of 'ath11k_wow_init' with type 'int(struct ath11k *)'
+>       40 | static inline int ath11k_wow_init(struct ath11k *ar)
+>          |                   ^~~~~~~~~~~~~~~
+>    drivers/net/wireless/ath/ath11k/wow.c: In function 'ath11k_wow_init':
+>>> drivers/net/wireless/ath/ath11k/wow.c:482:22: error: 'struct wiphy'
+>>> has no member named 'wowlan'
+>      482 |         ar->hw->wiphy->wowlan = &ar->wow.wowlan_support;
+>          |                      ^~
 
-I think that should be fixed on the clang side. Once it is, I think we
-could just disable that warning in those translation units for older
-versions of clang to keep the status quo.
+I was able to reproduce the errors by disabling CONFIG_PM. I fixed them
+and pushed the new patch to the pending branch:
 
-Cheers,
-Nathan
+https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?h=pending&id=624c999c214f02004c2f996aa6ce3a17dfbebd18
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
