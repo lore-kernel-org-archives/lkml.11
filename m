@@ -2,138 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:24:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 280D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:26:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233396AbiBXKZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:25:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33482 "EHLO
+        id S233398AbiBXK0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:26:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233356AbiBXKZB (ORCPT
+        with ESMTP id S232354AbiBXK0m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:25:01 -0500
-Received: from re-prd-fep-044.btinternet.com (mailomta28-re.btinternet.com [213.120.69.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA0028B61E;
-        Thu, 24 Feb 2022 02:24:31 -0800 (PST)
-Received: from re-prd-rgout-001.btmx-prd.synchronoss.net ([10.2.54.4])
-          by re-prd-fep-044.btinternet.com with ESMTP
-          id <20220224102429.DPND28912.re-prd-fep-044.btinternet.com@re-prd-rgout-001.btmx-prd.synchronoss.net>;
-          Thu, 24 Feb 2022 10:24:29 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=btinternet.com; s=btmx201904; t=1645698269; 
-        bh=/sWckLMjg0ydzalpLHN/ixGkCu+XOlE1ayvL2CxaNS4=;
-        h=From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version;
-        b=sEAfxWBRnPoOgiKvmtWugrHpS2MTT2t1wPWyWOtENolESSPFznKsIj15iwrmQcI4Kt9Iw74UvQHQAEDNnzsCcHuw9XSvHxGsc/8qgevY/u5UcCze6N2f8HYWgbbpgY76aP+G4wZvQT40hGAgFFzq55Ef67Et4/tTFu8c0xGcZ0+fIU3i13CKUhEI5LHHCZ+ZmHLBy0iFqQOyd4Tjry5NhnWiIUlhQRTuCXKNzs4T++Y5FgN7Oewh9Dg0ZHPlde8/JnzbHwW+nxxfwZ0gkw/wdpUh2oMTTxnzRngKSvk11enzGfbfhfz4MG61i0G8iIdod7dr8+4msHkAJfxc/h2nfg==
-Authentication-Results: btinternet.com;
-    auth=pass (PLAIN) smtp.auth=richard_c_haines@btinternet.com;
-    bimi=skipped
-X-SNCR-Rigid: 613A8CC3160038FB
-X-Originating-IP: [109.158.127.121]
-X-OWM-Source-IP: 109.158.127.121 (GB)
-X-OWM-Env-Sender: richard_c_haines@btinternet.com
-X-VadeSecure-score: verdict=clean score=0/300, class=clean
-X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedvvddrledvgddugecutefuodetggdotefrodftvfcurfhrohhfihhlvgemuceutffkvffkuffjvffgnffgvefqofdpqfgfvfenuceurghilhhouhhtmecufedtudenucenucfjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomheptfhitghhrghrugcujfgrihhnvghsuceorhhitghhrghruggptggphhgrihhnvghssegsthhinhhtvghrnhgvthdrtghomheqnecuggftrfgrthhtvghrnheptdefleejjeejtdeiieevhfelkeelgefgleefveevteegffffudelhfevudeltdfgnecuffhomhgrihhnpegthhgvtghkrdhsvggtuhhrihhthienucfkphepuddtledrudehkedruddvjedruddvudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopehlohgtrghlhhhoshhtrdhlohgtrghlughomhgrihhnpdhinhgvthepuddtledrudehkedruddvjedruddvuddpmhgrihhlfhhrohhmpehrihgthhgrrhgupggtpghhrghinhgvshessghtihhnthgvrhhnvghtrdgtohhmpdhnsggprhgtphhtthhopeelpdhrtghpthhtohepuggvmhhiohgsvghnohhurhesghhmrghilhdrtghomhdprhgtphhtthhopegvphgrrhhishesphgrrhhishhplhgrtggvrdhorhhgpdhrtghpthhtohepjhgvfhhfvhesghhoohhglhgvrdgtohhmpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthht
-        ohepphgruhhlsehprghulhdqmhhoohhrvgdrtghomhdprhgtphhtthhopehrihgthhgrrhgupggtpghhrghinhgvshessghtihhnthgvrhhnvghtrdgtohhmpdhrtghpthhtohepshgvlhhinhhugidqrhgvfhhpohhlihgthiesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehsvghlihhnuhigsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepshhtvghphhgvnhdrshhmrghllhgvhidrfihorhhksehgmhgrihhlrdgtohhm
-X-RazorGate-Vade-Verdict: clean 0
-X-RazorGate-Vade-Classification: clean
-X-SNCR-hdrdom: btinternet.com
-Received: from localhost.localdomain (109.158.127.121) by re-prd-rgout-001.btmx-prd.synchronoss.net (5.8.716.04) (authenticated as richard_c_haines@btinternet.com)
-        id 613A8CC3160038FB; Thu, 24 Feb 2022 10:24:29 +0000
-From:   Richard Haines <richard_c_haines@btinternet.com>
-To:     paul@paul-moore.com, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, demiobenour@gmail.com
-Cc:     selinux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        selinux-refpolicy@vger.kernel.org, jeffv@google.com,
-        Richard Haines <richard_c_haines@btinternet.com>
-Subject: [PATCH V3] security/selinux: Always allow FIOCLEX and FIONCLEX
-Date:   Thu, 24 Feb 2022 10:24:17 +0000
-Message-Id: <20220224102417.42268-1-richard_c_haines@btinternet.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 24 Feb 2022 05:26:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED7A28B63E;
+        Thu, 24 Feb 2022 02:26:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 92E04B8251F;
+        Thu, 24 Feb 2022 10:26:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D17CC340E9;
+        Thu, 24 Feb 2022 10:26:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645698365;
+        bh=/Muanj6F0P6ufCvutPrTXUCoq7899wGHsyaNdapLJ/c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UB/f4wtXoXjeoOoprgTWU0+Q6hMuQJevM8Z3J7ySKbAtBir7Co9Cpbd6+z4CU2x6d
+         oTXgr0yanU2PEyYMuB0kJRr8NUezbnfVe6Fz9S8iXAW9gQCPdu7cfm8+jrVWEjid5h
+         FEoN5NIWk2LKmpOOy+vjnSrHFsdXugIUXbpNZ6TXOqJmMJ/R2llShw3tZdubbhOdJp
+         aOXdnKiHiDbQaNo73O23C1os+p7lL1KdVwR1K8tSha5qwbZNf0QzsBlwvWUk1R8G86
+         7sUTloCGrnAez6efRTZknVkxRQlAfplKjta/QV1y1mTBDttnnAgxM3HB/cRx/4Cw6g
+         i1d3jDcOwbm/Q==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nNBJy-00A9Ij-Pn; Thu, 24 Feb 2022 10:26:02 +0000
+Date:   Thu, 24 Feb 2022 10:26:02 +0000
+Message-ID: <874k4o4l39.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Elliot Berman <quic_eberman@quicinc.com>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-kernel@vger.kernel.org, Trilok Soni <quic_tsoni@quicinc.com>,
+        Murali Nalajala <quic_mnalajala@quicinc.com>,
+        Srivatsa Vaddagiri <quic_svaddagiri@quicinc.com>,
+        Carl van Schaik <quic_cvanscha@quicinc.com>,
+        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>
+Subject: Re: [PATCH 03/11] arm64: gunyah: Add Gunyah hypercalls ABI
+In-Reply-To: <YhdZen7MwdAIJMsu@lakrids>
+References: <20220223233729.1571114-1-quic_eberman@quicinc.com>
+        <20220223233729.1571114-4-quic_eberman@quicinc.com>
+        <YhdZen7MwdAIJMsu@lakrids>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: quic_eberman@quicinc.com, mark.rutland@arm.com, bjorn.andersson@linaro.org, linux-kernel@vger.kernel.org, quic_tsoni@quicinc.com, quic_mnalajala@quicinc.com, quic_svaddagiri@quicinc.com, quic_cvanscha@quicinc.com, agross@kernel.org, linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, lorenzo.pieralisi@arm.com, sudeep.holla@arm.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
-always allows too.  Furthermore, a failed FIOCLEX could result in a file
-descriptor being leaked to a process that should not have access to it.
+Thanks Mark for roping me in.
 
-As this patch removes access controls, a policy capability needs to be
-enabled in policy to always allow these ioctls.
+On Thu, 24 Feb 2022 10:10:02 +0000,
+Mark Rutland <mark.rutland@arm.com> wrote:
+> 
+> Hi,
+> 
+> As a general thing, this is the *only* patch from this series which has
+> been Cc'd to linux-arm-kernel, which makes it practically impossible to
+> understand the context for this, which is somewhat frustrating.
+> 
+> Looking on lore.kernel.org I see that the entire series was Cc'd to
+> linux-arm-msm, but most people don't subscribe to that list. If you send
+> one patch in a series to a list, please send the *entire* series there.
+> 
+> On Wed, Feb 23, 2022 at 03:37:21PM -0800, Elliot Berman wrote:
+> > Add initial support to perform Gunyah hypercalls. The arm64 ABI for
+> > Gunyah hypercalls generally follows the AAPCS64, and can be summarized:
+> >  - Function identifier is passed through the imm operand
+> >  - [r0,r7] are parameter and result registers
+> >  - [r8-r18] are temporary and saved by the caller (VM)
+> >  - [r19-r31] are preserved and saved by the hypervisor
+> >
+> > The preprocessor macors for creating the necessary HVC instruction
+> > roughly follows the SMCCC 1.1 implementation in
+> > include/linux/arm-smccc.h.
+> 
+> I've added the SMCCC maintainers (myself, Lorenzo, and SUdeep) to Cc,
+> and also Marc who was involvedi n prior discussions in this area. Please
+> Cc us on any future patches adding HVC or SMCC interfaces (SMCCC or
+> otherwise).
 
-Based-on-patch-by: Demi Marie Obenour <demiobenour@gmail.com>
-Signed-off-by: Richard Haines <richard_c_haines@btinternet.com>
----
-V2 Change: Control via a policy capability.
-V3 Change: Update switch check.
+In general, please Cc all the interested parties with the whole
+series. Random patches randomly cc'd out of context are pretty useless
+and only lead to them being ignored.
 
- security/selinux/hooks.c                   | 6 ++++++
- security/selinux/include/policycap.h       | 1 +
- security/selinux/include/policycap_names.h | 3 ++-
- security/selinux/include/security.h        | 7 +++++++
- 4 files changed, 16 insertions(+), 1 deletion(-)
+> 
+> We've previously said NO to any new hypercall mechanisms which do not
+> follow SMCCC. There is no reason to fragment this space further; please
+> use SMCCC (which your hypervisor must already implement in part if it
+> exposes PSCI to a guest).
+> 
+> NAK to this non-SMCCC interface.
 
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index 5b6895e4f..d369c2d82 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -3745,6 +3745,12 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
- 					    CAP_OPT_NONE, true);
- 		break;
- 
-+	case FIOCLEX:
-+	case FIONCLEX:
-+		if (!selinux_policycap_ioctl_skip_cloexec())
-+			error = ioctl_has_perm(cred, file, FILE__IOCTL, (u16) cmd);
-+		break;
-+
- 	/* default case assumes that the command will go
- 	 * to the file's ioctl() function.
- 	 */
-diff --git a/security/selinux/include/policycap.h b/security/selinux/include/policycap.h
-index 2ec038efb..44d73dc32 100644
---- a/security/selinux/include/policycap.h
-+++ b/security/selinux/include/policycap.h
-@@ -11,6 +11,7 @@ enum {
- 	POLICYDB_CAPABILITY_CGROUPSECLABEL,
- 	POLICYDB_CAPABILITY_NNP_NOSUID_TRANSITION,
- 	POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS,
-+	POLICYDB_CAPABILITY_IOCTL_CLOEXEC,
- 	__POLICYDB_CAPABILITY_MAX
- };
- #define POLICYDB_CAPABILITY_MAX (__POLICYDB_CAPABILITY_MAX - 1)
-diff --git a/security/selinux/include/policycap_names.h b/security/selinux/include/policycap_names.h
-index b89289f09..ebd64afe1 100644
---- a/security/selinux/include/policycap_names.h
-+++ b/security/selinux/include/policycap_names.h
-@@ -12,7 +12,8 @@ const char *selinux_policycap_names[__POLICYDB_CAPABILITY_MAX] = {
- 	"always_check_network",
- 	"cgroup_seclabel",
- 	"nnp_nosuid_transition",
--	"genfs_seclabel_symlinks"
-+	"genfs_seclabel_symlinks",
-+	"ioctl_skip_cloexec"
- };
- 
- #endif /* _SELINUX_POLICYCAP_NAMES_H_ */
-diff --git a/security/selinux/include/security.h b/security/selinux/include/security.h
-index ac0ece013..8a789c22b 100644
---- a/security/selinux/include/security.h
-+++ b/security/selinux/include/security.h
-@@ -219,6 +219,13 @@ static inline bool selinux_policycap_genfs_seclabel_symlinks(void)
- 	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS]);
- }
- 
-+static inline bool selinux_policycap_ioctl_skip_cloexec(void)
-+{
-+	struct selinux_state *state = &selinux_state;
-+
-+	return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_IOCTL_CLOEXEC]);
-+}
-+
- struct selinux_policy_convert_data;
- 
- struct selinux_load_state {
+Agreed. We pushed back on that for Hyper-V, and I don't see a reason
+for changing tack on that.
+
+The calling convention exists for a reason: portability. If this
+hypervisor is to be "independent of any high-level OS kernel" (as it
+is being advertised), then it must already implement SMCCC.
+
+What is the issue with properly supporting SMCCC for all interactions
+with the hypervisor and not reinventing a square wheel?
+
+Thanks,
+
+	M.
+
 -- 
-2.35.1
-
+Without deviation from the norm, progress is not possible.
