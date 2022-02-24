@@ -2,108 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C954FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5935C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:40:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbiBXAfY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 19:35:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35610 "EHLO
+        id S229642AbiBXAlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 19:41:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229947AbiBXAfN (ORCPT
+        with ESMTP id S229569AbiBXAlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 19:35:13 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967F59EBB2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:34:40 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id x18so417593pfh.5
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:34:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=gL3XTGq5gUROAVlMpm5UUf8rBYQ3NN/e4SMIW+cAkbs=;
-        b=C4Rwg+RXOE2nLS9hHfaHBhxlxsndRx3kbfna2NfsUdZ3XpJQ5AADxr5uwaG260StFf
-         6dnGtOShKtq3c29HEH35A3y13TZqQ9JgnufIEZ1nU8zOKrimmg+qFqpAQIXasCV44575
-         TVJzBGqfbzWcTV65qxGiCssqAQmdcLROSZQfI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=gL3XTGq5gUROAVlMpm5UUf8rBYQ3NN/e4SMIW+cAkbs=;
-        b=QqYx0HcbsbJdRalRVZ+m5ZyyNN7zX/Fww4jwLj2gvsFkriAcsXIp881wOn6tmWvvPH
-         oVQp/pHfquAdeyva7Bmlrs6y0oGachuNmjnMlMB0Jf8a9MhDHqkk/vB5yNANNuh8zuHa
-         Chyl87Bh9BvXNvECniQWtfZy4cu5rfPcqBKcwkzqhRpyFNg0zbFbXmTe02NIceevJpj2
-         76ETdUDady9lM1gf7levmD71HcOXemzHw5nJdB0mAIzPLLvY1iyJEECarbhh2F2DBLnz
-         y/uFu+SBD6i6/qwfoVC2zWYmBf8QFBvdqAhvE4YfMWxygYbxUANEtkSOoaaFevZHMLUw
-         S0hg==
-X-Gm-Message-State: AOAM531VNpA1PI4H4Yx7jwA/mXNheOyWmBh88jGsiynG7kxZSru6lvPp
-        8UMB+tl5QoqhoxG88BSev0Sksg==
-X-Google-Smtp-Source: ABdhPJxfcv9LTi9fBh7Sk0mFa56j247B7kDzJ4ZLZMn7uUMjmf4tjsmzTnpNBeSPYQ6RV0PGjwdj2A==
-X-Received: by 2002:a63:602:0:b0:373:efe4:8a24 with SMTP id 2-20020a630602000000b00373efe48a24mr269659pgg.287.1645662880090;
-        Wed, 23 Feb 2022 16:34:40 -0800 (PST)
-Received: from jwerner-p920.mtv.corp.google.com ([2620:15c:202:201:e321:1e1b:f71e:33c])
-        by smtp.gmail.com with ESMTPSA id ms7-20020a17090b234700b001bc7e6fc01csm4100344pjb.40.2022.02.23.16.34.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 16:34:39 -0800 (PST)
-From:   Julius Werner <jwerner@chromium.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Dmitry Osipenko <digetx@gmail.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Julius Werner <jwerner@chromium.org>
-Subject: [PATCH 2/3] memory: Update of_memory lpddr2 revision-id binding
-Date:   Wed, 23 Feb 2022 16:34:20 -0800
-Message-Id: <20220224003421.3440124-3-jwerner@chromium.org>
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-In-Reply-To: <20220224003421.3440124-1-jwerner@chromium.org>
-References: <20220224003421.3440124-1-jwerner@chromium.org>
+        Wed, 23 Feb 2022 19:41:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057EFCB90A;
+        Wed, 23 Feb 2022 16:40:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ADE360ED9;
+        Thu, 24 Feb 2022 00:40:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C336FC340E7;
+        Thu, 24 Feb 2022 00:40:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645663237;
+        bh=ziQOSAhDXJgwY7NYsTem4a1wH3ZzbHa8A+6fyznxquM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kAo7N29V5pBSN6BCtjwBlK2qvGJyvHu6e3bicy24IRCFChqTDY+Lj/X+iDrnaLZEh
+         qc/xAO4FbdWU/H6YHvXC+UxyGzXlO0sZq5p+A5+VrKbxsKg+KK2MuKegyTlsmsdZnZ
+         y2Fh3P7ldogrybdjrZ9Wuv40kk3wgK4rb2DdtUXK7ZK3BQkyF9D5W18K2I9QMtH1Eb
+         my+3L/S5StoTdWu2AgX3VQDQOGcDyXyAaJ8AmguyJSGVKj5bRNBMytKXBV2gm2xRwg
+         KIA9j9NKZEPUzdbiN5wOU03rUXKQ7AG0ExxPg25NEb7xu1aVcfNbbm2AQgkZBUJUhr
+         eE/16o3aU6cGQ==
+Date:   Wed, 23 Feb 2022 16:40:36 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 5/8] ima: permit fsverity's file digests in the IMA
+ measurement list
+Message-ID: <YhbUBJbQ+nCN515p@sol.localdomain>
+References: <20220211214310.119257-1-zohar@linux.ibm.com>
+ <20220211214310.119257-6-zohar@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220211214310.119257-6-zohar@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch updates the code parsing the "jedec,lpddr2" device tree
-binding to use the new `revision-id` property instead of the deprecated
-`revision-id1` and `revision-id2` properties if available.
+On Fri, Feb 11, 2022 at 04:43:07PM -0500, Mimi Zohar wrote:
+> diff --git a/Documentation/ABI/testing/ima_policy b/Documentation/ABI/testing/ima_policy
+> index 839fab811b18..ff3c906738cb 100644
+> --- a/Documentation/ABI/testing/ima_policy
+> +++ b/Documentation/ABI/testing/ima_policy
+> @@ -51,6 +51,9 @@ Description:
+>  			appraise_flag:= [check_blacklist]
+>  			Currently, blacklist check is only for files signed with appended
+>  			signature.
+> +			digest_type:= verity
+> +			    Require fs-verity's file digest instead of the
+> +			    regular IMA file hash.
+>  			keyrings:= list of keyrings
+>  			(eg, .builtin_trusted_keys|.ima). Only valid
+>  			when action is "measure" and func is KEY_CHECK.
+> @@ -149,3 +152,10 @@ Description:
+>  		security.ima xattr of a file:
+>  
+>  			appraise func=SETXATTR_CHECK appraise_algos=sha256,sha384,sha512
+> +
+> +		Example of 'measure' rule requiring fs-verity's digests on a
+> +		particular filesystem with indication of type of digest in
+> +		the measurement list.
+> +
+> +			measure func=FILE_CHECK digest_type=verity \
+> +				fsuuid=... template=ima-ngv2
+> diff --git a/Documentation/security/IMA-templates.rst b/Documentation/security/IMA-templates.rst
+> index 1a91d92950a7..1e3fe986764e 100644
+> --- a/Documentation/security/IMA-templates.rst
+> +++ b/Documentation/security/IMA-templates.rst
+> @@ -69,6 +69,8 @@ descriptors by adding their identifier to the format string
+>     algorithm (field format: [<hash algo>:]digest, where the digest
+>     prefix is shown only if the hash algorithm is not SHA1 or MD5);
+>   - 'd-modsig': the digest of the event without the appended modsig;
+> + - 'd-type': differentiate between fs-verity's Merkle tree based file hash
+> +   from a regular IMA file hash measurement.
+>   - 'n-ng': the name of the event, without size limitations;
+>   - 'sig': the file signature, or the EVM portable signature if the file
+>     signature is not found;
+> @@ -106,3 +108,8 @@ currently the following methods are supported:
+>     the ``ima_template=`` parameter;
+>   - register a new template descriptor with custom format through the kernel
+>     command line parameter ``ima_template_fmt=``.
 
-Signed-off-by: Julius Werner <jwerner@chromium.org>
----
- drivers/memory/of_memory.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+Is there more IMA documentation elsewhere, or is this everything?  These files
+are hard to follow.
 
-diff --git a/drivers/memory/of_memory.c b/drivers/memory/of_memory.c
-index b94408954d85cc..454a0e6d544cac 100644
---- a/drivers/memory/of_memory.c
-+++ b/drivers/memory/of_memory.c
-@@ -316,14 +316,21 @@ const struct lpddr2_info
- 	struct property *prop;
- 	const char *cp;
- 	int err;
--
--	err = of_property_read_u32(np, "revision-id1", &info.revision_id1);
--	if (err)
--		info.revision_id1 = -ENOENT;
--
--	err = of_property_read_u32(np, "revision-id2", &info.revision_id2);
--	if (err)
--		info.revision_id2 = -ENOENT;
-+	u32 revision_id[2];
-+
-+	err = of_property_read_u32_array(np, "revision-id", revision_id, 2);
-+	if (!err) {
-+		info.revision_id1 = revision_id[0];
-+		info.revision_id2 = revision_id[1];
-+	} else {
-+		err = of_property_read_u32(np, "revision-id1", &info.revision_id1);
-+		if (err)
-+			info.revision_id1 = -ENOENT;
-+
-+		err = of_property_read_u32(np, "revision-id2", &info.revision_id2);
-+		if (err)
-+			info.revision_id2 = -ENOENT;
-+	}
- 
- 	err = of_property_read_u32(np, "io-width", &info.io_width);
- 	if (err)
--- 
-2.31.0
+> diff --git a/security/integrity/integrity.h b/security/integrity/integrity.h
+> index daf49894fd7d..39a999877013 100644
+> --- a/security/integrity/integrity.h
+> +++ b/security/integrity/integrity.h
+> @@ -32,7 +32,7 @@
+>  #define IMA_HASHED		0x00000200
+>  
+>  /* iint policy rule cache flags */
+> -#define IMA_NONACTION_FLAGS	0xff000000
+> +#define IMA_NONACTION_FLAGS	0xff800000
+>  #define IMA_DIGSIG_REQUIRED	0x01000000
+>  #define IMA_PERMIT_DIRECTIO	0x02000000
+>  #define IMA_NEW_FILE		0x04000000
+> @@ -40,6 +40,8 @@
+>  #define IMA_FAIL_UNVERIFIABLE_SIGS	0x10000000
+>  #define IMA_MODSIG_ALLOWED	0x20000000
+>  #define IMA_CHECK_BLACKLIST	0x40000000
+> +#define IMA_VERITY_REQUIRED	0x80000000
+> +#define IMA_VERITY_DIGEST	0x00800000
 
+How about defining these flags in numerical order?
+
+- Eric
