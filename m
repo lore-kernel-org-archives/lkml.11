@@ -2,101 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC8BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFEC3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:08:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232509AbiBXJIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:08:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47990 "EHLO
+        id S232494AbiBXJIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:08:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232524AbiBXJIO (ORCPT
+        with ESMTP id S232490AbiBXJIi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:08:14 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B62113AEA;
-        Thu, 24 Feb 2022 01:07:44 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id ba20so2565444qvb.1;
-        Thu, 24 Feb 2022 01:07:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dBBa+m5WJxw/OTFjHbJ6+LeZpWFvvqiydygw9xKnoS4=;
-        b=Oc1r7lycBzB3aLDcGUGQxFXlvv19N4fMyOjhtgCRpBK/C7i6dmxBn41c7urKYHy/7Y
-         wMImarxg2DfHr7BAQf/EBepVdRTaJjyUOjmueW+6FfgK1vDuYO0EDesmtqsdFHCTeLJ4
-         bRkrB0Q1mOvAwCbi0VaLO8jV8O4YLiSwo+W+36lTzwn+o6ySkVR9jYwyDTvdl5dZLn88
-         h7yiv5O1qfhMDT/fO4WT/PdXYiAm6lpwJmkXWDW/R3mq67P8iu+/PTrgh7A2IBsaBs3v
-         Y93l+nYGYpLIkXID9oWSYxvstcXwUTSoljipiZu/W5GiaJ2c7tiX/hRfucnqcvr3+xtn
-         obuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dBBa+m5WJxw/OTFjHbJ6+LeZpWFvvqiydygw9xKnoS4=;
-        b=G2yxsDiGHmroVAfTubKgW+VhgH4AQ0pAHRoCvT13Ovlce5/mLQQTfNEr2fuKnKvLTL
-         OwwLG1S+LVHSBnGnSPygUheA1DKNWYZAn7m4lzOZrNicjjkIQmK2Fhmo48M0YFlY/cZ8
-         hKJzKXsOHX2LL4W9M4jkOe/czRE0T4BuT5qUyUbInSNaNiZB5QJteWRhgevrf0Zz/rOM
-         IjsUKzylgNY6l8YmWHfpjw0X6C5JvxC73gvPsCMrE30nN0N/Q9R6r3+TK/nOLXArCDWG
-         VR/ACr06neDaMBssgjiaWFNSaqKJqBxT04rG9JamY9YprHSELJIQYTim0qD7MyXOsq73
-         urWw==
-X-Gm-Message-State: AOAM533rHKZ5ykrKRFcfvQL7BGhUiuTdsC2ketKKWnEqkvMhjn8ijH85
-        dgebe24s7m7pU9rDtA73+Kk=
-X-Google-Smtp-Source: ABdhPJx0rn7zCTJSTevgT6ltmxUujV0ZykC+hrr/6rizOnVOLzaVlBpjaiaz5XmZbJRqt7I7bndUPA==
-X-Received: by 2002:ac8:7d90:0:b0:2de:7561:b2fc with SMTP id c16-20020ac87d90000000b002de7561b2fcmr1398833qtd.435.1645693663781;
-        Thu, 24 Feb 2022 01:07:43 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id bk19sm1053110qkb.125.2022.02.24.01.07.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 01:07:43 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: deng.changcheng@zte.com.cn
-To:     njavali@marvell.com
-Cc:     mrangankar@marvell.com, GR-QLogic-Storage-Upstream@marvell.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] scsi: qla4xxx: Remove unneeded variable
-Date:   Thu, 24 Feb 2022 09:07:35 +0000
-Message-Id: <20220224090735.1967816-1-deng.changcheng@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 24 Feb 2022 04:08:38 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8DB17E350;
+        Thu, 24 Feb 2022 01:08:08 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 3CD9A1F39D;
+        Thu, 24 Feb 2022 09:08:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1645693687; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SOS58/Bk0jKt+GavRMbVhq34RQGZyQEnbVqDH0PQCGE=;
+        b=ZsfDmmWGDWnxshaHwmwmEhWUX1QGdDuJiNaD2YQ/OFV33n6U2JmpLg5dRYmwsJ9kESmK+8
+        Wo5dp0J8aD/XZvDrZYXZ7S58V7FkfrX8My0Qqwl7Vppn0K6YwNU3nJI1avf9pNEGV90Wgr
+        yrHGX2DgwyafYkezoGxqX6Utxbg6mLY=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 20AD7A3BC5;
+        Thu, 24 Feb 2022 09:08:07 +0000 (UTC)
+Date:   Thu, 24 Feb 2022 10:08:06 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     David Vernet <void@manifault.com>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
+        joe.lawrence@redhat.com, corbet@lwn.net, kernel-team@fb.com
+Subject: Re: [PATCH v3] livepatch: Skip livepatch tests if ftrace cannot be
+ configured
+Message-ID: <YhdK9pjtyiKW8j3J@alley>
+References: <20220216161100.3243100-1-void@manifault.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216161100.3243100-1-void@manifault.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changcheng Deng <deng.changcheng@zte.com.cn>
+On Wed 2022-02-16 08:11:01, David Vernet wrote:
+> livepatch has a set of selftests that are used to validate the behavior of
+> the livepatching subsystem.  One of the testcases in the livepatch
+> testsuite is test-ftrace.sh, which among other things, validates that
+> livepatching gracefully fails when ftrace is disabled.  In the event that
+> ftrace cannot be disabled using 'sysctl kernel.ftrace_enabled=0', the test
+> will fail later due to it unexpectedly successfully loading the
+> test_klp_livepatch module.
+> 
+> While the livepatch selftests are careful to remove any of the livepatch
+> test modules between testcases to avoid this situation, ftrace may still
+> fail to be disabled if another trace is active on the system that was
+> enabled with FTRACE_OPS_FL_PERMANENT.  For example, any active BPF programs
+> that use trampolines will cause this test to fail due to the trampoline
+> being implemented with register_ftrace_direct().  The following is an
+> example of such a trace:
+> 
+> tcp_drop (1) R I D      tramp: ftrace_regs_caller+0x0/0x58
+> (call_direct_funcs+0x0/0x30)
+>         direct-->bpf_trampoline_6442550536_0+0x0/0x1000
+> 
+> In order to make the test more resilient to system state that is out of its
+> control, this patch updates set_ftrace_enabled() to detect sysctl failures,
+> and skip the testrun when appropriate.
+> 
+> Suggested-by: Petr Mladek <pmladek@suse.com>
+> Signed-off-by: David Vernet <void@manifault.com>
 
-Remove unneeded variable used to store return value.
+The patch has been committed into livepatch/livepatch.git,
+branch for-5.18/selftests-fixes.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
----
- drivers/scsi/qla4xxx/ql4_os.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/scsi/qla4xxx/ql4_os.c b/drivers/scsi/qla4xxx/ql4_os.c
-index d64eda961412..b49c38416fb9 100644
---- a/drivers/scsi/qla4xxx/ql4_os.c
-+++ b/drivers/scsi/qla4xxx/ql4_os.c
-@@ -3640,7 +3640,6 @@ static int qla4xxx_copy_to_fwddb_param(struct iscsi_bus_flash_session *sess,
- 				       struct dev_db_entry *fw_ddb_entry)
- {
- 	uint16_t options;
--	int rc = 0;
- 
- 	options = le16_to_cpu(fw_ddb_entry->options);
- 	SET_BITVAL(conn->is_fw_assigned_ipv6,  options, BIT_11);
-@@ -3739,7 +3738,7 @@ static int qla4xxx_copy_to_fwddb_param(struct iscsi_bus_flash_session *sess,
- 
- 	COPY_ISID(fw_ddb_entry->isid, sess->isid);
- 
--	return rc;
-+	return 0;
- }
- 
- static void qla4xxx_copy_to_sess_conn_params(struct iscsi_conn *conn,
--- 
-2.25.1
-
+Best Regards,
+Petr
