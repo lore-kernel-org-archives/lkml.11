@@ -2,286 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB59C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:28:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234875AbiBXV2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 16:28:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
+        id S234923AbiBXV3D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 16:29:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232412AbiBXV2p (ORCPT
+        with ESMTP id S234565AbiBXV3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 16:28:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6F56661F;
-        Thu, 24 Feb 2022 13:28:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB7C6618FA;
-        Thu, 24 Feb 2022 21:28:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D40B9C340E9;
-        Thu, 24 Feb 2022 21:28:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645738093;
-        bh=3m3DlKMGILFVebpMDl5vuVCQeiAAEm489IHqF6lES3E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=ISH09f3hGYHdaQAbuCQV8zv/YyL39jJUon+kbaT+W0a3XyAgGs6rKqvJaXNDzT8SZ
-         VrDN/517WxDdOLk0mf34olqFdiyXkhMif71/jNbYdmVFupnSF4h6h1sjAsrF//dVWz
-         pcrVrs99h2HgADQdeGleVVSIOTltul2+eGXwD7sO/BPCSv55oHXqz5SJNnntdcrHRi
-         WoNSzQEMbK3E1G48XBKHE/wjxWU7NET0PUeiRxxNFS7k+BNzZDoAkCKuW6Np/oi2Cq
-         st5pJnnPnTm6UjAjUBt3uzNtFiCutWNNdm1yXWu7L96tSBd7ACMr0NTNMFXfmFwQYO
-         OdfQ60hTbHdJg==
-Date:   Thu, 24 Feb 2022 15:28:11 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/6] PCI: mvebu: Add support for sending
- Set_Slot_Power_Limit message
-Message-ID: <20220224212811.GA291001@bhelgaas>
+        Thu, 24 Feb 2022 16:29:00 -0500
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2074.outbound.protection.outlook.com [40.107.94.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CA9190B43;
+        Thu, 24 Feb 2022 13:28:30 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HCb5rJthZbIAxErIeI2ptOYuEyRGbBi9iaOQqbO58Fvp5OPqu/WSV4kJU+IdVaHdPfERpreBAHpjCe2AHutmfJp7nVJw6d0581nkbcVA3hhWlkOsLwqa6u2QAtMjwGu+73zzX+0sb16d8V6U1YZ9Lh9ixW3lHSH5/on/HezVrAm5hQjQEurOQeD8rg6Q/WpJollS+S4Rr1qDxkqCPpyVE5pWAAwO1mjgw9CK/6f6fTBotEgDKbSYIgKrIoHALBc/+JrCNrSj18KPD/U8KLH36VuyfiC8uIXcKFmABMMlVmgCPuTYhlKJxfzmpwJrpTqgX+w4L1lGQpM1OIF8xNGzMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dggSplGGDZO0vUuyz9yCOEXlnVMwK3uzZ3/hX6LuJoE=;
+ b=H2tLPoU5dqlJisc+VwAfzj+kU315LssLq+bZoHHpK+WO+Yj3jFc38bZC/Ho4ZWlVxS2VwTFfdSMaHKdJBY0PxiuG4q9c10q4y5osm02GgbMwvTCc7U8TXDsfUnONvuxVSBQ3QsTSNpKzs1O25Nx5GSl3FJSUG75GMNYy8tQDRg4B+RFrldnJhGvvIukjVQjeYXWClHGETD0o1zcFYeMnHO1M3XMfejaF1LkE/3Jvrz73dWbl4vAXtDeE4AbD8hBf5EbHIqxL2xJ12VkECpSJT6z2b32hdSJYOmSZp0Fon/M45HlhGcLgbuZ4Uo7kQYPK8gdYXB8mAu/YVPy+fI251A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dggSplGGDZO0vUuyz9yCOEXlnVMwK3uzZ3/hX6LuJoE=;
+ b=ICWuiIWwIUOyvw4iWsP57aoIpTqcO8Kj0TgqS7SIT02BVYYmvxpsaGvL+kdayA1AFWOGamn54H9/fLxmKzRNh9He+gtogJiq2uR0BUqTDrXUAhI5KRPw8qD5IOWopq8N95zl94bFBXdiBd3V+2sY8aMMmK0OyHi9RMd6d+wpom8=
+Received: from DS7PR06CA0054.namprd06.prod.outlook.com (2603:10b6:8:54::34) by
+ BL0PR02MB4276.namprd02.prod.outlook.com (2603:10b6:208:46::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5017.22; Thu, 24 Feb 2022 21:28:28 +0000
+Received: from DM3NAM02FT031.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:8:54:cafe::15) by DS7PR06CA0054.outlook.office365.com
+ (2603:10b6:8:54::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.23 via Frontend
+ Transport; Thu, 24 Feb 2022 21:28:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT031.mail.protection.outlook.com (10.13.4.184) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:28:27 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 24 Feb 2022 13:28:27 -0800
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:28:27 -0800
+Envelope-to: eperezma@redhat.com,
+ jasowang@redhat.com,
+ mst@redhat.com,
+ lingshan.zhu@intel.com,
+ sgarzare@redhat.com,
+ xieyongji@bytedance.com,
+ elic@nvidia.com,
+ si-wei.liu@oracle.com,
+ parav@nvidia.com,
+ longpeng2@huawei.com,
+ virtualization@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org,
+ kvm@vger.kernel.org,
+ netdev@vger.kernel.org
+Received: from [10.170.66.102] (port=59620 helo=xndengvm004102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <gautam.dawar@xilinx.com>)
+        id 1nNLf0-00095B-JZ; Thu, 24 Feb 2022 13:28:27 -0800
+From:   Gautam Dawar <gautam.dawar@xilinx.com>
+CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
+        <tanujk@xilinx.com>, <eperezma@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Longpeng <longpeng2@huawei.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: [RFC PATCH v2 16/19] vdpa_sim: advertise VIRTIO_NET_F_MTU
+Date:   Fri, 25 Feb 2022 02:52:56 +0530
+Message-ID: <20220224212314.1326-17-gdawar@xilinx.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20220224212314.1326-1-gdawar@xilinx.com>
+References: <20201216064818.48239-1-jasowang@redhat.com>
+ <20220224212314.1326-1-gdawar@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220222163158.1666-6-pali@kernel.org>
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e09f82f1-321c-4f0c-c699-08d9f7dc98d4
+X-MS-TrafficTypeDiagnostic: BL0PR02MB4276:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR02MB427662F596D72854210532A0B13D9@BL0PR02MB4276.namprd02.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: O+xajR0OTZvyW9qDp3UNIawqoV9HE2fFCg3wvpn5EnsNBs1GFqWKaY3+cuXUATku4DP0Rbm8XT5JN1+GuD6Zd1Z4+tXXCx8P33PVKTC5woLKDgxIPJogDg6b8soNxXo1FPWcnZb56bhxC+KtlpUFIlCal3xrF/I2NsPDU9/F+fpckW98U9O876IKWB6h9+yfS9IeqE0FaunDpSAwZzGlpaD8w83Jjhzvh3MjtMK4VOQH2eUX5XSm0LlpzCm8hBm2CY08eQaueH7m2Vv8Rds7MoxvbML40rM+mGejWhjEcENKrald2lDTlCdtoG5lUzL26Iv1tQE12v7PV0KzDr+valelZUiSB7t+BMVEORR/VjxcUgamJabPsbHsPZd1TN/SpjfJpuSqGoarnC3e03pFkgmlKNxuHNCD9p6HLCmjCm7DM4EIWqqlA26aCFWs0NgozBaNOhitaxBmupOtCGU6I2ifOvvNJxOo1vibd5h46bLLnjwXmJC5M9yWMJtl7RicvjCbewvYDmHhJreT0ylfpLD0M4IQbl3uKKEoO9/rCBkPncMykb/KNGupYr1XI9d4JlBj4LsGvr4DAorsnzchbqXUGjY0s044+TMoe4sdfa2lfCS7k43BqpTDbCTFDQR/ycWTPm0IBghIOpKqdOKf8fs2qv9L3qLVz22m1awKmfkMpTdZXv5lvDcAPSBQ2aTvkAXtWu4L7NgKvBf6HReVKA==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(8936002)(7416002)(316002)(4744005)(9786002)(70586007)(2906002)(70206006)(54906003)(8676002)(508600001)(26005)(5660300002)(83380400001)(82310400004)(6666004)(7696005)(36756003)(2616005)(1076003)(7636003)(336012)(186003)(426003)(44832011)(4326008)(356005)(109986005)(36860700001)(47076005)(102446001)(266003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:28:27.7489
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e09f82f1-321c-4f0c-c699-08d9f7dc98d4
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT031.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR02MB4276
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 05:31:57PM +0100, Pali Rohár wrote:
-> This PCIe message is sent automatically by mvebu HW when link changes
-> status from down to up.
+We've already reported maximum mtu via config space, so let's
+advertise the feature.
 
-I *think* the intent of the above is:
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+---
+ drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-  If DT supplies the 'slot-power-limit-milliwatt' property, program
-  the value in the Slot Power Limit in the Slot Capabilities register
-  and program the Root Port to send a Set_Slot_Power_Limit Message
-  when the Link transitions to DL_Up.
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+index d5324f6fd8c7..ff22cc56f40b 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+@@ -26,7 +26,8 @@
+ #define DRV_LICENSE  "GPL v2"
+ 
+ #define VDPASIM_NET_FEATURES	(VDPASIM_FEATURES | \
+-				 (1ULL << VIRTIO_NET_F_MAC))
++				 (1ULL << VIRTIO_NET_F_MAC) | \
++				 (1ULL << VIRTIO_NET_F_MTU));
+ 
+ #define VDPASIM_NET_VQ_NUM	2
+ 
+-- 
+2.25.0
 
-PCIe r6.0, sec 2.2.8.5 and 7.5.3.9, also say Set_Slot_Power_Limit must
-be sent on a config write to Slot Capabilities.  I don't really
-understand that, since AFAICS, everything in that register is
-read-only.  But there must be some use case for forcing a message.
-
-> Slot power limit is read from DT property 'slot-power-limit-milliwatt' and
-> set to mvebu HW. When this DT property is not specified then driver treat
-> it as "Slot Capabilities register has not yet been initialized".
-
-Does this last sentence mean "the Slot Power Limit is set to 0W
-(Value = 00h and Scale = 00b = 1.0x) and Auto Slot Power Limit Disable
-is set, so Set_Slot_Power_Limit Messages will never be sent"?
-
-> Signed-off-by: Pali Rohár <pali@kernel.org>
-> ---
->  drivers/pci/controller/pci-mvebu.c | 85 ++++++++++++++++++++++++++++--
->  1 file changed, 80 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-> index a75d2b9196f9..c786feec4d17 100644
-> --- a/drivers/pci/controller/pci-mvebu.c
-> +++ b/drivers/pci/controller/pci-mvebu.c
-> @@ -66,6 +66,12 @@
->  #define  PCIE_STAT_BUS                  0xff00
->  #define  PCIE_STAT_DEV                  0x1f0000
->  #define  PCIE_STAT_LINK_DOWN		BIT(0)
-> +#define PCIE_SSPL_OFF		0x1a0c
-> +#define  PCIE_SSPL_VALUE_SHIFT		0
-> +#define  PCIE_SSPL_VALUE_MASK		GENMASK(7, 0)
-> +#define  PCIE_SSPL_SCALE_SHIFT		8
-> +#define  PCIE_SSPL_SCALE_MASK		GENMASK(9, 8)
-> +#define  PCIE_SSPL_ENABLE		BIT(16)
->  #define PCIE_RC_RTSTA		0x1a14
->  #define PCIE_DEBUG_CTRL         0x1a60
->  #define  PCIE_DEBUG_SOFT_RESET		BIT(20)
-> @@ -111,6 +117,8 @@ struct mvebu_pcie_port {
->  	struct mvebu_pcie_window iowin;
->  	u32 saved_pcie_stat;
->  	struct resource regs;
-> +	u8 slot_power_limit_value;
-> +	u8 slot_power_limit_scale;
->  	struct irq_domain *intx_irq_domain;
->  	raw_spinlock_t irq_lock;
->  	int intx_irq;
-> @@ -239,7 +247,7 @@ static void mvebu_pcie_setup_wins(struct mvebu_pcie_port *port)
->  
->  static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
->  {
-> -	u32 ctrl, lnkcap, cmd, dev_rev, unmask;
-> +	u32 ctrl, lnkcap, cmd, dev_rev, unmask, sspl;
->  
->  	/* Setup PCIe controller to Root Complex mode. */
->  	ctrl = mvebu_readl(port, PCIE_CTRL_OFF);
-> @@ -292,6 +300,20 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
->  	/* Point PCIe unit MBUS decode windows to DRAM space. */
->  	mvebu_pcie_setup_wins(port);
->  
-> +	/*
-> +	 * Program Root Complex to automatically sends Set Slot Power Limit
-> +	 * PCIe Message when changing status from Dl-Down to Dl-Up and valid
-> +	 * slot power limit was specified.
-
-s/Root Complex/Root Port/, right?  AFAIK the message would be sent by
-a Downstream Port, i.e., a Root Port in this case.
-
-s/sends/send/
-s/Set Slot Power Limit/Set_Slot_Power_Limit/ to match spec usage (also
-below)
-s/Dl-Down/DL_Down/ to match spec usage
-s/Dl-Up/DL_Up/ ditto
-
-> +	 */
-> +	sspl = mvebu_readl(port, PCIE_SSPL_OFF);
-> +	sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
-> +	if (port->slot_power_limit_value && port->slot_power_limit_scale) {
-> +		sspl |= port->slot_power_limit_value << PCIE_SSPL_VALUE_SHIFT;
-> +		sspl |= port->slot_power_limit_scale << PCIE_SSPL_SCALE_SHIFT;
-> +		sspl |= PCIE_SSPL_ENABLE;
-> +	}
-> +	mvebu_writel(port, sspl, PCIE_SSPL_OFF);
-> +
->  	/* Mask all interrupt sources. */
->  	mvebu_writel(port, ~PCIE_INT_ALL_MASK, PCIE_INT_UNMASK_OFF);
->  
-> @@ -628,9 +650,16 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
->  			  (PCI_EXP_LNKSTA_DLLLA << 16) : 0);
->  		break;
->  
-> -	case PCI_EXP_SLTCTL:
-> -		*value = PCI_EXP_SLTSTA_PDS << 16;
-> +	case PCI_EXP_SLTCTL: {
-> +		u16 slotsta = le16_to_cpu(bridge->pcie_conf.slotsta);
-> +		u32 val = 0;
-> +		if (!(mvebu_readl(port, PCIE_SSPL_OFF) & PCIE_SSPL_ENABLE))
-> +			val |= PCI_EXP_SLTCTL_ASPL_DISABLE;
-> +		/* PCI_EXP_SLTCTL is 32-bit and contains also slot status bits */
-
-This comment is a little bit confusing because PCI_EXP_SLTCTL is not
-actually 32 bits; it's 16 bits.  It's just that we "read" 32 bits,
-which includes both PCI_EXP_SLTCTL and PCI_EXP_SLTSTA.  If you use
-"PCI_EXP_SLTCTL", I think it would be helpful to also say
-"PCI_EXP_SLTSTA" instead of "slot status bits".
-
-> +		val |= slotsta << 16;
-> +		*value = val;
->  		break;
-> +	}
->  
->  	case PCI_EXP_RTSTA:
->  		*value = mvebu_readl(port, PCIE_RC_RTSTA);
-> @@ -774,6 +803,19 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
->  		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_LNKCTL);
->  		break;
->  
-> +	case PCI_EXP_SLTCTL:
-> +		if ((mask & PCI_EXP_SLTCTL_ASPL_DISABLE) &&
-> +		    port->slot_power_limit_value &&
-> +		    port->slot_power_limit_scale) {
-> +			u32 sspl = mvebu_readl(port, PCIE_SSPL_OFF);
-> +			if (new & PCI_EXP_SLTCTL_ASPL_DISABLE)
-> +				sspl &= ~PCIE_SSPL_ENABLE;
-> +			else
-> +				sspl |= PCIE_SSPL_ENABLE;
-> +			mvebu_writel(port, sspl, PCIE_SSPL_OFF);
-
-IIUC, the behavior of PCI_EXP_SLTCTL_ASPL_DISABLE as observed by
-software that sets it and reads it back will depend on whether the DT
-contains "slot-power-limit-milliwatt".
-
-If there is no DT property, port->slot_power_limit_value will be zero
-and PCIE_SSPL_ENABLE will never be set.  So if I clear
-PCI_EXP_SLTCTL_ASPL_DISABLE, then read it back, it looks like it will
-read as being set.  That's not what I would expect from the spec
-(PCIe r6.0, sec 7.5.3.10).
-
-> +		}
-> +		break;
-> +
->  	case PCI_EXP_RTSTA:
->  		/*
->  		 * PME Status bit in Root Status Register (PCIE_RC_RTSTA)
-> @@ -868,8 +910,26 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
->  	/*
->  	 * Older mvebu hardware provides PCIe Capability structure only in
->  	 * version 1. New hardware provides it in version 2.
-> +	 * Enable slot support which is emulated.
->  	 */
-> -	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver);
-> +	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver | PCI_EXP_FLAGS_SLOT);
-> +
-> +	/*
-> +	 * Set Presence Detect State bit permanently as there is no support for
-> +	 * unplugging PCIe card from the slot. Assume that PCIe card is always
-> +	 * connected in slot.
-> +	 *
-> +	 * Set physical slot number to port+1 as mvebu ports are indexed from
-> +	 * zero and zero value is reserved for ports within the same silicon
-> +	 * as Root Port which is not mvebu case.
-> +	 *
-> +	 * Also set correct slot power limit.
-> +	 */
-> +	bridge->pcie_conf.slotcap = cpu_to_le32(
-> +		(port->slot_power_limit_value << PCI_EXP_SLTCAP_SPLV_SHIFT) |
-> +		(port->slot_power_limit_scale << PCI_EXP_SLTCAP_SPLS_SHIFT) |
-> +		((port->port+1) << PCI_EXP_SLTCAP_PSN_SHIFT));
-> +	bridge->pcie_conf.slotsta = cpu_to_le16(PCI_EXP_SLTSTA_PDS);
->  
->  	bridge->subsystem_vendor_id = ssdev_id & 0xffff;
->  	bridge->subsystem_id = ssdev_id >> 16;
-> @@ -1191,6 +1251,7 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
->  {
->  	struct device *dev = &pcie->pdev->dev;
->  	enum of_gpio_flags flags;
-> +	u32 slot_power_limit;
->  	int reset_gpio, ret;
->  	u32 num_lanes;
->  
-> @@ -1291,6 +1352,15 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
->  		port->reset_gpio = gpio_to_desc(reset_gpio);
->  	}
->  
-> +	slot_power_limit = of_pci_get_slot_power_limit(child,
-> +				&port->slot_power_limit_value,
-> +				&port->slot_power_limit_scale);
-> +	if (slot_power_limit)
-> +		dev_info(dev, "%s: Slot power limit %u.%uW\n",
-> +			 port->name,
-> +			 slot_power_limit / 1000,
-> +			 (slot_power_limit / 100) % 10);
-> +
->  	port->clk = of_clk_get_by_name(child, NULL);
->  	if (IS_ERR(port->clk)) {
->  		dev_err(dev, "%s: cannot get clock\n", port->name);
-> @@ -1587,7 +1657,7 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
->  {
->  	struct mvebu_pcie *pcie = platform_get_drvdata(pdev);
->  	struct pci_host_bridge *bridge = pci_host_bridge_from_priv(pcie);
-> -	u32 cmd;
-> +	u32 cmd, sspl;
->  	int i;
->  
->  	/* Remove PCI bus with all devices. */
-> @@ -1624,6 +1694,11 @@ static int mvebu_pcie_remove(struct platform_device *pdev)
->  		/* Free config space for emulated root bridge. */
->  		pci_bridge_emul_cleanup(&port->bridge);
->  
-> +		/* Disable sending Set Slot Power Limit PCIe Message. */
-> +		sspl = mvebu_readl(port, PCIE_SSPL_OFF);
-> +		sspl &= ~(PCIE_SSPL_VALUE_MASK | PCIE_SSPL_SCALE_MASK | PCIE_SSPL_ENABLE);
-> +		mvebu_writel(port, sspl, PCIE_SSPL_OFF);
-> +
->  		/* Disable and clear BARs and windows. */
->  		mvebu_pcie_disable_wins(port);
->  
-> -- 
-> 2.20.1
-> 
