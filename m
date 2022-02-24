@@ -2,137 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 847D6C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 14:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 14:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235569AbiBXOej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 09:34:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        id S235564AbiBXOhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 09:37:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiBXOeh (ORCPT
+        with ESMTP id S229478AbiBXOhS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 09:34:37 -0500
-Received: from sender4-of-o53.zoho.com (sender4-of-o53.zoho.com [136.143.188.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F4FC17C42D;
-        Thu, 24 Feb 2022 06:34:07 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1645713241; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=a2yP1eGWHJyFYuvvR0QzdSal/MWDJJaJuTeqB4usNG8KbWwSK3Ct+FrnBqOYyycZpd9AtYjEa9e7CGf4xS1Y8sUHgpCi2bA/RVBOy5y+ZsqbqpzXztCW40eA8s45jpAkeomqbCfYiwWdogNqVUtFHUcic/zjJ79wpU6ouzmw1b0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1645713241; h=Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=IDDq3qUkg76DaAOYUNIA+BRPtQ+rE1rKtDNhQGp2Sho=; 
-        b=TlT6rVhNaBCWNuFc5frijsLy8KJpXUsjD+flFfekqShtQkTDZm4vFvilUjpcjtZ1QS6Twux2SB13xrvP2WOKmPU2rhxRkv9ZElOgnstfBvwaDe44UGqIXxfT0hauwAiuUWl52yvj0NlUmBpfW2fviPAgfVDmj+WRVH147hFwkIg=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=anirudhrb.com;
-        spf=pass  smtp.mailfrom=mail@anirudhrb.com;
-        dmarc=pass header.from=<mail@anirudhrb.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1645713241;
-        s=zoho; d=anirudhrb.com; i=mail@anirudhrb.com;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Transfer-Encoding;
-        bh=IDDq3qUkg76DaAOYUNIA+BRPtQ+rE1rKtDNhQGp2Sho=;
-        b=g0XUBmmFZAMBq42bbuQ7x6iIJcsDynd5M2tIbn0bXfQtMyw+9FltNYuejiEP1R7b
-        lWd1MC44to+x2CTPmuNs4pYFMAucmdpSesGYCsBO3B/rG9ElRyqUe/JYV6xeWn28vz4
-        lrWux5nhh3OPAcnNnQTryzkOarTdjprLeL/eTvgw=
-Received: from localhost.localdomain (49.207.201.56 [49.207.201.56]) by mx.zohomail.com
-        with SMTPS id 1645713237614465.3614118955155; Thu, 24 Feb 2022 06:33:57 -0800 (PST)
-From:   Anirudh Rayabharam <mail@anirudhrb.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     mail@anirudhrb.com,
-        syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] vhost: fix hung thread due to erroneous iotlb entries
-Date:   Thu, 24 Feb 2022 20:03:20 +0530
-Message-Id: <20220224143320.3751-1-mail@anirudhrb.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 24 Feb 2022 09:37:18 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41D2EDF2A
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 06:36:47 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id e13so1877854plh.3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 06:36:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=foEHGISvceeirQWRazzPV0pifLTSmT5usJfyGjpriGQ=;
+        b=QDLPWLRRaeQ66cHFHYP5OutKf8qruLs+AQEhs0kJqQzFZ45o/ezLVu/xImsfciORmN
+         BV39vBlp2a61IkHGQRZqsgaP9czf0YFNeXQidiUEuzz9oGeFJU3deW/WepUJPD9dqCvU
+         IqO/D+5Isk/fBbRLJsxGlMpGz9c+Xtbzc6No6WDzrejH08ayN1PtpygUbRjqc6ygZX7w
+         O30kxRs0q4wGkpro2fSJ7ik6/4rZ7XKsvqT3oRYP1H2YfICZqgFOnS7WBt9AzP/stQoX
+         wfrtu+26zc82fHb+HsFn8ciEiPNvCcSoVhU8FcRRHPRU5zf0mz6ROoMw2/6UmX5p4LKN
+         HxyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=foEHGISvceeirQWRazzPV0pifLTSmT5usJfyGjpriGQ=;
+        b=TCRL7xDKBXwK7kzO/WN86sUWDs8Q2F3bsg3PQaafVTWKfpNGDfL82lzGJz3bbvwaeL
+         4embd5kiASXvxmteWiwoqEG8ybTrkQ6P6v7tUeJhU8fYzB0S/UjM5Me50DcFp+kV1jTa
+         bMd8XYq8ICZVvLVPa0i5yHIsnmGqmjOcReFHDFgKS+moH2pwa7894EkC0qX4bHIqXgjf
+         Yzz2JoiRhqdjKF+b7v1LsEVdCdYZPNFncLzbHpGT4kvoPWc00FlpB9+CJiTksgfaW/Lw
+         dU3+VyTP0zjhJ3AGuT6VgjikVickvl9+FjpZNP50VKOZDlqQkFaN5aZ6PAHMSk4i9kqn
+         sXRA==
+X-Gm-Message-State: AOAM530zsCl/95GidbfS2ADNg/aZc96+11O2lrEJi1e6MDq3F9V0LlOq
+        jymjsiCg0BOXzyo3gDicByy66w==
+X-Google-Smtp-Source: ABdhPJx3jN+Kv16eWiht1uwBtXYpb4270WKN0dvIQ/Lbnbn7D0kINEWJxRSJrURzpfmuMpVva3SexA==
+X-Received: by 2002:a17:902:bb89:b0:14d:85a7:6eea with SMTP id m9-20020a170902bb8900b0014d85a76eeamr3104772pls.158.1645713406690;
+        Thu, 24 Feb 2022 06:36:46 -0800 (PST)
+Received: from [10.94.58.189] ([139.177.225.254])
+        by smtp.gmail.com with ESMTPSA id n37sm3012154pgl.48.2022.02.24.06.36.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 06:36:46 -0800 (PST)
+Message-ID: <091879a2-c5a0-2512-ce43-ae2efa869f5b@bytedance.com>
+Date:   Thu, 24 Feb 2022 22:36:39 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [RFC PATCH 1/5] sched/fair: record overloaded cpus
+Content-Language: en-US
+To:     "Gautham R. Shenoy" <gautham.shenoy@amd.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        linux-kernel@vger.kernel.org, srikar@linux.vnet.ibm.com,
+        aubrey.li@intel.com, Abel Wu <wuyun.abel@bytedance.com>
+References: <20220217154403.6497-1-wuyun.abel@bytedance.com>
+ <20220217154403.6497-2-wuyun.abel@bytedance.com>
+ <YhcvUV/jW7yr0Sn+@BLR-5CG11610CF.amd.com>
+From:   Abel Wu <wuyun.abel@bytedance.com>
+In-Reply-To: <YhcvUV/jW7yr0Sn+@BLR-5CG11610CF.amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In vhost_iotlb_add_range_ctx(), range size can overflow to 0 when
-start is 0 and last is ULONG_MAX. One instance where it can happen
-is when userspace sends an IOTLB message with iova=size=uaddr=0
-(vhost_process_iotlb_msg). So, an entry with size = 0, start = 0,
-last = ULONG_MAX ends up in the iotlb. Next time a packet is sent,
-iotlb_access_ok() loops indefinitely due to that erroneous entry.
+Hi Gautham, thanks for your comment!
 
-	Call Trace:
-	 <TASK>
-	 iotlb_access_ok+0x21b/0x3e0 drivers/vhost/vhost.c:1340
-	 vq_meta_prefetch+0xbc/0x280 drivers/vhost/vhost.c:1366
-	 vhost_transport_do_send_pkt+0xe0/0xfd0 drivers/vhost/vsock.c:104
-	 vhost_worker+0x23d/0x3d0 drivers/vhost/vhost.c:372
-	 kthread+0x2e9/0x3a0 kernel/kthread.c:377
-	 ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
-	 </TASK>
+On 2/24/22 3:10 PM, Gautham R. Shenoy wrote:
+> Hello Abel,
+> 
+> (+ Aubrey Li, Srikar)
+> 
+> On Thu, Feb 17, 2022 at 11:43:57PM +0800, Abel Wu wrote:
+>> An CFS runqueue is considered overloaded when there are
+>> more than one pullable non-idle tasks on it (since sched-
+>> idle cpus are treated as idle cpus). And idle tasks are
+>> counted towards rq->cfs.idle_h_nr_running, that is either
+>> assigned SCHED_IDLE policy or placed under idle cgroups.
+>>
+>> The overloaded cfs rqs can cause performance issues to
+>> both task types:
+>>
+>>    - for latency critical tasks like SCHED_NORMAL,
+>>      time of waiting in the rq will increase and
+>>      result in higher pct99 latency, and
+>>
+>>    - batch tasks may not be able to make full use
+>>      of cpu capacity if sched-idle rq exists, thus
+>>      presents poorer throughput.
+>>
+>> The mask of overloaded cpus is updated in periodic tick
+>> and the idle path at the LLC domain basis. This cpumask
+>> will also be used in SIS as a filter, improving idle cpu
+>> searching.
+> 
+> This is an interesting approach to minimise the tail latencies by
+> keeping track of the overloaded cpus in the LLC so that
+> idle/sched-idle CPUs can pull from them. This approach contrasts with the
+> following approaches that were previously tried :
+> 
+> 1. Maintain the idle cpumask at the LLC level by Aubrey Li
+>     https://lore.kernel.org/all/1615872606-56087-1-git-send-email-aubrey.li@intel.com/
 
-Reported by syzbot at:
-	https://syzkaller.appspot.com/bug?extid=0abd373e2e50d704db87
+It's a similar approach from different sight in SIS. Both have pros and
+cons, and I couldn't tell which one is more appropriate..
+While since SIS can fail in finding one idle cpu due to scaling issues,
+the sched-idle load balancing might be a valuable supplement to that to
+consume the idle/sched-idle cpus.
 
-To fix this, do two things:
+>     
+> 2. Maintain the identity of the idle core itself at the LLC level, by Srikar :
+>     https://lore.kernel.org/lkml/20210513074027.543926-3-srikar@linux.vnet.ibm.com/
 
-1. Return -EINVAL in vhost_chr_write_iter() when userspace asks to map
-   a range with size 0.
-2. Fix vhost_iotlb_add_range_ctx() to handle the range [0, ULONG_MAX]
-   by splitting it into two entries.
+The efforts done by Srikar seems focused on idle core searching, which
+has a different goal from my approach I think.
+The case of short running tasks pointed out by Vincent should not be a
+problem in updating the overloaded cpu mask/counter, since they are not
+updated either when cpu becomes busy, or when cpu frequently goes idle
+during a tick period.
 
-Reported-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-Tested-by: syzbot+0abd373e2e50d704db87@syzkaller.appspotmail.com
-Signed-off-by: Anirudh Rayabharam <mail@anirudhrb.com>
----
+> 
+> There have been concerns in the past about having to update the shared
+> mask/counter at regular intervals. Srikar, Aubrey any thoughts on this
+> ?
+> 
 
-Changes in v2:
-1. Don't reject range [0, ULONG_MAX], split it instead.
-2. Validate msg.size in vhost_chr_write_iter().
+I'm afraid I didn't fully catch up with these loops, it is appreciated
+if someone can shed some light, thanks!
 
-v1: https://lore.kernel.org/lkml/20220221195303.13560-1-mail@anirudhrb.com/
+> 
+> 
+>>
+>> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
+>> ---
+>>   include/linux/sched/topology.h | 10 ++++++++++
+>>   kernel/sched/core.c            |  1 +
+>>   kernel/sched/fair.c            | 43 ++++++++++++++++++++++++++++++++++++++++++
+>>   kernel/sched/sched.h           |  6 ++++++
+>>   kernel/sched/topology.c        |  4 +++-
+>>   5 files changed, 63 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
+>> index 56cffe42abbc..03c9c81dc886 100644
+>> --- a/include/linux/sched/topology.h
+>> +++ b/include/linux/sched/topology.h
+>> @@ -81,6 +81,16 @@ struct sched_domain_shared {
+>>   	atomic_t	ref;
+>>   	atomic_t	nr_busy_cpus;
+>>   	int		has_idle_cores;
+>> +
+>> +	/*
+>> +	 * The above varibles are used in idle path and
+>> +	 * select_task_rq, and the following two are
+>> +	 * mainly updated in tick. They are all hot but
+>> +	 * for different usage, so start a new cacheline
+>> +	 * to avoid false sharing.
+>> +	 */
+>> +	atomic_t	nr_overloaded	____cacheline_aligned;
+>> +	unsigned long	overloaded[];	/* Must be last */
+>>   };
+>>   
+>>   struct sched_domain {
+>> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+>> index 1d863d7f6ad7..a6da2998ec49 100644
+>> --- a/kernel/sched/core.c
+>> +++ b/kernel/sched/core.c
+>> @@ -9423,6 +9423,7 @@ void __init sched_init(void)
+>>   		rq->wake_stamp = jiffies;
+>>   		rq->wake_avg_idle = rq->avg_idle;
+>>   		rq->max_idle_balance_cost = sysctl_sched_migration_cost;
+>> +		rq->overloaded = 0;
+>>   
+>>   		INIT_LIST_HEAD(&rq->cfs_tasks);
+>>   
+>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+>> index 5c4bfffe8c2c..0a0438c3319b 100644
+>> --- a/kernel/sched/fair.c
+>> +++ b/kernel/sched/fair.c
+>> @@ -6968,6 +6968,46 @@ balance_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+>>   
+>>   	return newidle_balance(rq, rf) != 0;
+>>   }
+>> +
+>> +static inline int cfs_rq_overloaded(struct rq *rq)
+>> +{
+>> +	return rq->cfs.h_nr_running - rq->cfs.idle_h_nr_running > 1;
+>> +}
+>> +
+>> +/* Must be called with rq locked */
+>> +static void update_overload_status(struct rq *rq)
+>> +{
+>> +	struct sched_domain_shared *sds;
+>> +	int overloaded = cfs_rq_overloaded(rq);
+>> +	int cpu = cpu_of(rq);
+>> +
+>> +	lockdep_assert_rq_held(rq);
+>> +
+>> +	if (rq->overloaded == overloaded)
+>> +		return;
+>> +
+>> +	rcu_read_lock();
+>> +	sds = rcu_dereference(per_cpu(sd_llc_shared, cpu));
+>> +	if (unlikely(!sds))
+>> +		goto unlock;
+>> +
+>> +	if (overloaded) {
+>> +		cpumask_set_cpu(cpu, sdo_mask(sds));
+>> +		atomic_inc(&sds->nr_overloaded);
+>> +	} else {
+>> +		cpumask_clear_cpu(cpu, sdo_mask(sds));
+>> +		atomic_dec(&sds->nr_overloaded);
+>> +	}
+>> +
+>> +	rq->overloaded = overloaded;
+>> +unlock:
+>> +	rcu_read_unlock();
+>> +}
+>> +
+>> +#else
+>> +
+>> +static inline void update_overload_status(struct rq *rq) { }
+>> +
+>>   #endif /* CONFIG_SMP */
+>>   
+>>   static unsigned long wakeup_gran(struct sched_entity *se)
+>> @@ -7315,6 +7355,8 @@ done: __maybe_unused;
+>>   	if (new_tasks > 0)
+>>   		goto again;
+>>   
+>> +	update_overload_status(rq);
+>> +
+> 
+> So here, we are calling update_overload_status() after
+> newidle_balance(). If we had pulled a single task as a part of
+> newidle_balance(), in your current code, we do not update the overload
+> status. While this should get remedied in the next tick, should we
+> move update_overload_status(rq) prior to the new_tasks > 0 check ?
 
----
- drivers/vhost/iotlb.c | 10 ++++++++++
- drivers/vhost/vhost.c |  5 +++++
- 2 files changed, 15 insertions(+)
+A single task won't change the overloaded status :)
+And I think it would be better not do an update even if pulled several
+tasks because that would break the rate limit which is undesired.
 
-diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-index 670d56c879e5..a7e126db34d9 100644
---- a/drivers/vhost/iotlb.c
-+++ b/drivers/vhost/iotlb.c
-@@ -57,6 +57,16 @@ int vhost_iotlb_add_range_ctx(struct vhost_iotlb *iotlb,
- 	if (last < start)
- 		return -EFAULT;
- 
-+	/* If the range being mapped is [0, ULONG_MAX], split it into two entries
-+	 * otherwise its size would overflow u64.
-+	 */
-+	if (start == 0 && last == ULONG_MAX) {
-+		u64 mid = last / 2;
-+		vhost_iotlb_add_range_ctx(iotlb, start, mid, addr, perm, opaque);
-+		addr += mid - start + 1;
-+		start = mid + 1;
-+	}
-+
- 	if (iotlb->limit &&
- 	    iotlb->nmaps == iotlb->limit &&
- 	    iotlb->flags & VHOST_IOTLB_FLAG_RETIRE) {
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 59edb5a1ffe2..55475fd59fb7 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -1170,6 +1170,11 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
- 		goto done;
- 	}
- 
-+	if (msg.size == 0) {
-+		ret = -EINVAL;
-+		goto done;
-+	}
-+
- 	if (dev->msg_handler)
- 		ret = dev->msg_handler(dev, &msg);
- 	else
--- 
-2.35.1
+Best Regards,
+	Abel
 
+> 
+> 
+> --
+> Thanks and Regards
+> gautham.
