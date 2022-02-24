@@ -2,68 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D6AC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 556F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232855AbiBXXvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 18:51:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39030 "EHLO
+        id S234097AbiBXXwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 18:52:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229806AbiBXXvG (ORCPT
+        with ESMTP id S229806AbiBXXwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 18:51:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9EC294567;
-        Thu, 24 Feb 2022 15:50:35 -0800 (PST)
+        Thu, 24 Feb 2022 18:52:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1487B458B;
+        Thu, 24 Feb 2022 15:52:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AF0A6B82A1F;
-        Thu, 24 Feb 2022 23:50:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87E8EC340E9;
-        Thu, 24 Feb 2022 23:50:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9541661CBF;
+        Thu, 24 Feb 2022 23:52:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD98FC340E9;
+        Thu, 24 Feb 2022 23:52:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645746633;
-        bh=/R22wQvyMzwte2Vqe2Nqf1fgMov7Hgz6rWLBAX3GlW0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U9o0db8t6TsUIOvX4rBO2ho4uCsAQPzUlwQHITccDbdp5hV5zoC0sTpDt+W3rEf5/
-         L1CjJkpssWhk6jbRAv4e3nk7Y42vas80vN5qAYMQKW/8SQ9JrqH7QgKMjmNAPjQoQM
-         HGJgs+ncgba8sv58MgeVPLoHa4pyJV0dco/nlMjy7LT1oHaWYcTTQSLFYfr9QnB5K8
-         IuxU9MfJKEVzqcgA6F0x2QEqnVSavkY5Nkwmk0Sjoc3dUBd/aCn5VU5YwCVyC5IG+E
-         d23oIT5YkY51XLMeBwB7AisLe++ACKRI3UtxlH97yojo9xKPpdxPVAsVbp9SVNaPFF
-         6lt/GlgcRliWA==
-Date:   Thu, 24 Feb 2022 17:58:32 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Jeff Johnson <quic_jjohnson@quicinc.com>
-Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH v2 2/6][next] ath6kl: wmi: Replace one-element array with
- flexible-array member in struct wmi_start_scan_cmd
-Message-ID: <20220224235832.GA1312501@embeddedor>
-References: <cover.1645736204.git.gustavoars@kernel.org>
- <8b33c6d86a6bd40b5688cf118b4b35850db8d8c7.1645736204.git.gustavoars@kernel.org>
- <b6cd3d69-12a4-693a-e48f-d769c79fc455@quicinc.com>
+        s=k20201202; t=1645746728;
+        bh=zVAGv3GzIY0CmGHccO6MTpPuZ0cGji1luXzfksNlM2M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=kCSNhdmjCNFp4p3nEZo05DvtkYaTYatl89i6A6bnh2GoE1LafejZW2+LdT+xyn9p9
+         vFysfr3uU3CN1goYGDWRGNKLLknLWL4gwXq4LwSu/xs2AfSKORCBht3dm2YESZuJkC
+         QTihOOdWAM03oTBu5HCC9wQYShduFbcLphU9XZZOZ2w+HR8xeoLGBBRX0Da60zkFuO
+         Gw55uOtn72xOyN5dsOgPR66lVXrDqagidhgfw1lK88dhzevhVz/lXIRWDLrY+G2rDT
+         B2vC1ShfZifdcQml58IDHz2aBNdppV0ayqFTRcbx14EaEZyzuuUqWcpsrE30jKvDVw
+         +pVWnNSGt5bFQ==
+Date:   Thu, 24 Feb 2022 17:52:06 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: Re: [PATCH v2 05/11] pci: use helper for safer setting of
+ driver_override
+Message-ID: <20220224235206.GA302751@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b6cd3d69-12a4-693a-e48f-d769c79fc455@quicinc.com>
+In-Reply-To: <f7347531-8aa4-c011-d405-dea93e29779f@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 03:35:07PM -0800, Jeff Johnson wrote:
-
-[..]
-
+On Thu, Feb 24, 2022 at 08:49:15AM +0100, Krzysztof Kozlowski wrote:
+> On 23/02/2022 22:51, Bjorn Helgaas wrote:
+> > In subject, to match drivers/pci/ convention, do something like:
+> > 
+> >   PCI: Use driver_set_override() instead of open-coding
+> > 
+> > On Wed, Feb 23, 2022 at 08:13:04PM +0100, Krzysztof Kozlowski wrote:
+> >> Use a helper for seting driver_override to reduce amount of duplicated
+> >> code.
+> >> @@ -567,31 +567,15 @@ static ssize_t driver_override_store(struct device *dev,
+> >>  				     const char *buf, size_t count)
+> >>  {
+> >>  	struct pci_dev *pdev = to_pci_dev(dev);
+> >> -	char *driver_override, *old, *cp;
+> >> +	int ret;
+> >>  
+> >>  	/* We need to keep extra room for a newline */
+> >>  	if (count >= (PAGE_SIZE - 1))
+> >>  		return -EINVAL;
+> > 
+> > This check makes no sense in the new function.  Michael alluded to
+> > this as well.
 > 
-> my e-mail client hung while reviewing v1, so now giving
+> I am not sure if I got your comment properly. You mean here:
+> 1. Move this check to driver_set_override()?
+> 2. Remove the check entirely?
+
+I was mistaken about the purpose of the comment and the check.  I
+thought it had to do with *this* function, and this function doesn't
+add a newline, and there's no obvious connection with PAGE_SIZE.
+
+But looking closer, I think the "extra room for a newline" is really
+to make sure that *driver_override_show()* can add a newline and have
+it still fit within the PAGE_SIZE sysfs limit.
+
+Most driver_override_*() functions have the same comment, so maybe
+this was obvious to everybody except me :)  I do see that spi.c adds
+"when displaying value" at the end, which helps a lot.
+
+Sorry for the wild goose chase.
+
+> >> -	driver_override = kstrndup(buf, count, GFP_KERNEL);
+> >> -	if (!driver_override)
+> >> -		return -ENOMEM;
+> >> -
+> >> -	cp = strchr(driver_override, '\n');
+> >> -	if (cp)
+> >> -		*cp = '\0';
+> >> -
+> >> -	device_lock(dev);
+> >> -	old = pdev->driver_override;
+> >> -	if (strlen(driver_override)) {
+> >> -		pdev->driver_override = driver_override;
+> >> -	} else {
+> >> -		kfree(driver_override);
+> >> -		pdev->driver_override = NULL;
+> >> -	}
+> >> -	device_unlock(dev);
+> >> -
+> >> -	kfree(old);
+> >> +	ret = driver_set_override(dev, &pdev->driver_override, buf);
+> >> +	if (ret)
+> >> +		return ret;
+> >>  
+> >>  	return count;
+> >>  }
+> >> -- 
+> >> 2.32.0
+> >>
+> >>
+> >> _______________________________________________
+> >> linux-arm-kernel mailing list
+> >> linux-arm-kernel@lists.infradead.org
+> >> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 > 
-> Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
-
-Thanks, Jeff.
-
---
-Gustavo
+> 
+> Best regards,
+> Krzysztof
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
