@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33022C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 04:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D87EC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 04:02:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiBXEBs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 23:01:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42356 "EHLO
+        id S229846AbiBXECc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 23:02:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiBXEBq (ORCPT
+        with ESMTP id S229630AbiBXEC3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 23:01:46 -0500
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57ACA25D258
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 20:01:17 -0800 (PST)
-Received: by mail-ot1-x329.google.com with SMTP id j3-20020a9d7683000000b005aeed94f4e9so501555otl.6
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 20:01:17 -0800 (PST)
+        Wed, 23 Feb 2022 23:02:29 -0500
+Received: from mail-oo1-xc36.google.com (mail-oo1-xc36.google.com [IPv6:2607:f8b0:4864:20::c36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E421163D42
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 20:02:00 -0800 (PST)
+Received: by mail-oo1-xc36.google.com with SMTP id j7-20020a4ad6c7000000b0031c690e4123so1698532oot.11
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 20:02:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=RPBh5QvRvQ76MFJIjmBhbU4YJ3EpkpvomZu3C1exFBk=;
-        b=S2RBFk1Nhcd/PgqzBcu3n7EEPBGXVyUDQEGzZim9bquciNRrMHMOA7Ir6fT+NUGbi8
-         U5dzX5OEA8DtBxi8Fj/Stw17bIqk52i3DlcjCrK3AOes4Fx0IvKBuSKt92imHvojfOWX
-         luk2JiKSyxR4Z/a/4QExJ+Qx7H6rBpamjXzdzHXm2YwLdVoz+fwMsO9FYBdVvkBz/rIj
-         yQegj8JhSG4CsnmMedfFc/uhZX/8bf+FZDb277oc8iuL3DOdrFhi1uqt5q4eTUOwf1P3
-         pYPsLfmgzkNXo8x8acZR/mtFiMpuR76ff372uz4wj5+BL6mitrRfDL7uqhddU8yQZP7e
-         KieQ==
+        bh=C47SZnnj7WECDuYywW/3ttGfgdVHSBmqkuTNTlr6sy0=;
+        b=wgHtC2xqvLpVn9xvxBmqgieyVAnVQx7kC2I6olcvde4IiGA5Z4XAaTUTu9u/DdBwLK
+         t5fLCkNWes9Y7YQ15yGJX8DPWjXoBpJQCgvLsK+vcDTwyN53ToQkaB2ia+ZcjlDxPb97
+         tFZ+Yg3ZJh5V6i6RfGhxHg0iX4mWoX147AA3P8UZOuRwf2ub7oF4dmm7mIXqj5RDHNn7
+         NeSucNPDFQqlqEK9aOJOWWjz1oIpZImbPg4oru8o7EYgWEvshg2RCVLqhZirmSsZ8LHq
+         Hk98r6+8ZBq05q8MNJJqcgpoYtJPL+mQS8uMffNOnpOioENmIn1fPUQEaDNH6e/Pmv32
+         zC8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=RPBh5QvRvQ76MFJIjmBhbU4YJ3EpkpvomZu3C1exFBk=;
-        b=SGliz4bwqU//6MggVpe9S8BfzqPIuudrQk0k1mV7DOaan30SVq4bwtJkYl28ZMWA20
-         UOQMMnhkKrtxCny7UPIceif3fIP7i5TD6mqc1FsW6wwSkTyom1yBuxfq760wh8AThg29
-         QUrP0KPrPWdIs8peVUfhA49u5u6rH+oMlTzBrCGoVN1s3GwSrByoaen//Nkrz0RN7WzW
-         Rk+bOyS9laibdRwI7ybya2Zpkv/H3qYg4xrdYhtU3b5+u2wUdcZTkUZUw3qahM44Bef6
-         qPIZqOUYIILBaB/jrH9SDPSv/TTr4+eVr5jyY4dXC+4T8i0oTgW0+LDha1Oj+6mpVhvA
-         aTrQ==
-X-Gm-Message-State: AOAM530NaHRBaJwjq/fnnudodlZqf8QkU4eJjBHFD1BhFj8Z2wEqq0CT
-        sJoT0Cijkad1IlT4/qEkLLYhgA==
-X-Google-Smtp-Source: ABdhPJw21QcCeH/Of1Vl1QVpGrnoUDzHjaV0o0z84SXiiQkRKiiPfy4c32mjGj1BunxOE6GtLKy2oA==
-X-Received: by 2002:a9d:6b8c:0:b0:5ac:fdf0:df66 with SMTP id b12-20020a9d6b8c000000b005acfdf0df66mr261446otq.199.1645675276724;
-        Wed, 23 Feb 2022 20:01:16 -0800 (PST)
+        bh=C47SZnnj7WECDuYywW/3ttGfgdVHSBmqkuTNTlr6sy0=;
+        b=QgyvDgLZcgOP241lI4Deme72ZMwJKsO2rlV19ySA+West56wami5DtPjY7BOMUJ3Iw
+         pgUBYfQzDsdDPPK+J9kOZ8pLGxox6y1UwrufofWCxPLsJzLoVhAi6lCWbMO1ipuwOpe7
+         oUKdoq3iqVQdGRPSsJGdbUlrvZEMAscltDjErwrwRke7eFvEEcHEZnYJiWgqWseMYJkk
+         iHDM8k5gTgclt1ucWjUgFeCN721FGNJ66VfRfKI5XMAbiNa107ERcTsiRkjaDjB/YUDY
+         SobpGgJl1+FOtAXAz+y2sQmZ8NGtpu1mIsQeyN/bK4HECQtoWs3qHdPWQW/iAkj+GEsg
+         vBVQ==
+X-Gm-Message-State: AOAM5324XqqLsrDlwvqE2Xaq/xTepoerYPXbxTExEed81fNubx9zumML
+        8+7u6EDv8ciAuO9+Sg9g2WUMFg==
+X-Google-Smtp-Source: ABdhPJwRTIhc2pUV92EutkmS/7Hg8M5b85r/Ho9yqDpZXPRCP+sSPj++3hAKbZ0FJffQTa20D2wzhQ==
+X-Received: by 2002:a05:6870:2892:b0:ce:c0c9:6c6 with SMTP id gy18-20020a056870289200b000cec0c906c6mr5355157oab.280.1645675319819;
+        Wed, 23 Feb 2022 20:01:59 -0800 (PST)
 Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id s14sm909100oae.21.2022.02.23.20.01.15
+        by smtp.gmail.com with ESMTPSA id a32sm1023981oaf.10.2022.02.23.20.01.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Feb 2022 20:01:16 -0800 (PST)
-Date:   Wed, 23 Feb 2022 22:01:14 -0600
+        Wed, 23 Feb 2022 20:01:59 -0800 (PST)
+Date:   Wed, 23 Feb 2022 22:01:57 -0600
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
 To:     Ansuel Smith <ansuelsmth@gmail.com>
 Cc:     Andy Gross <agross@kernel.org>,
@@ -59,56 +59,43 @@ Cc:     Andy Gross <agross@kernel.org>,
         Taniya Das <tdas@codeaurora.org>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 12/16] dt-bindings: clock: add ipq8064 ce5 clk define
-Message-ID: <YhcDCnMFRppk3Mo+@builder.lan>
+Subject: Re: [PATCH v4 14/16] dt-bindings: reset: add ipq8064 ce5 resets
+Message-ID: <YhcDNW7Ylg1GRglG@builder.lan>
 References: <20220217235703.26641-1-ansuelsmth@gmail.com>
- <20220217235703.26641-13-ansuelsmth@gmail.com>
+ <20220217235703.26641-15-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220217235703.26641-13-ansuelsmth@gmail.com>
+In-Reply-To: <20220217235703.26641-15-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 17 Feb 17:56 CST 2022, Ansuel Smith wrote:
+On Thu 17 Feb 17:57 CST 2022, Ansuel Smith wrote:
 
-> Add ipq8064 ce5 clk define needed for CryptoEngine in gcc driver.
+> Add ipq8064 ce5 resets needed for CryptoEngine gcc driver.
 > 
 
 Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
 > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > ---
->  include/dt-bindings/clock/qcom,gcc-ipq806x.h | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+>  include/dt-bindings/reset/qcom,gcc-ipq806x.h | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> diff --git a/include/dt-bindings/clock/qcom,gcc-ipq806x.h b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
-> index 7deec14a6dee..02262d2ac899 100644
-> --- a/include/dt-bindings/clock/qcom,gcc-ipq806x.h
-> +++ b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
-> @@ -240,7 +240,7 @@
->  #define PLL14					232
->  #define PLL14_VOTE				233
->  #define PLL18					234
-> -#define CE5_SRC					235
-> +#define CE5_A_CLK				235
->  #define CE5_H_CLK				236
->  #define CE5_CORE_CLK				237
->  #define CE3_SLEEP_CLK				238
-> @@ -283,5 +283,8 @@
->  #define EBI2_AON_CLK				281
->  #define NSSTCM_CLK_SRC				282
->  #define NSSTCM_CLK				283
-
-You don't like 284?
-
-Regards,
-Bjorn
-
-> +#define CE5_A_CLK_SRC				285
-> +#define CE5_H_CLK_SRC				286
-> +#define CE5_CORE_CLK_SRC			287
+> diff --git a/include/dt-bindings/reset/qcom,gcc-ipq806x.h b/include/dt-bindings/reset/qcom,gcc-ipq806x.h
+> index 26b6f9200620..020c9cf18751 100644
+> --- a/include/dt-bindings/reset/qcom,gcc-ipq806x.h
+> +++ b/include/dt-bindings/reset/qcom,gcc-ipq806x.h
+> @@ -163,5 +163,10 @@
+>  #define NSS_CAL_PRBS_RST_N_RESET			154
+>  #define NSS_LCKDT_RST_N_RESET				155
+>  #define NSS_SRDS_N_RESET				156
+> +#define CRYPTO_ENG1_RESET				157
+> +#define CRYPTO_ENG2_RESET				158
+> +#define CRYPTO_ENG3_RESET				159
+> +#define CRYPTO_ENG4_RESET				160
+> +#define CRYPTO_AHB_RESET				161
 >  
 >  #endif
 > -- 
