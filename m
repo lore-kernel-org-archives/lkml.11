@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:10:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233310AbiBXTLG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:11:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46796 "EHLO
+        id S233317AbiBXTLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:11:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiBXTLD (ORCPT
+        with ESMTP id S233296AbiBXTLE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 14:11:03 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEB7F20DB1F
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:10:33 -0800 (PST)
+        Thu, 24 Feb 2022 14:11:04 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D7F120DB2E
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:10:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645729833; x=1677265833;
+  t=1645729834; x=1677265834;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=OFXhX5BHPoiyCzftDXmBe7qGYMY+MXINhMiZIOvCd2k=;
-  b=KaTh5GIJK4VW+kWcmi7AoE8kaWZa+44vBFU9WTekenlTT8+t/POWdHpi
-   zKlBt0WxPaJjvY7syOwHqAhGYZtMxNWNda178SAugu5654XN0frxvKCGs
-   9F8fPInZfoOkIGxfSpx8TF1ODa4Lii7HJS7Yxajpisc3nVrN+PrPL/Kmo
-   YufOLoxtVYGbacW9QorO5WchzcrUQzxBYfNWMJbIk5OPIsRdzlkP1LKbA
-   vLCY2mxJ3bqiYlw7rdVsSschXaJ7kxql7LL6D5GCBO9M8vmIqmTTV5Mh4
-   /UCxS9bppgs1Q18JLePb7oCmjaR7TP4iaQHtF/+/lGl1miXCUT8OJMILq
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="251155234"
+  bh=HaQfjHlK/TOUx0USrUGLMW9tdvbyzyyT+DQI7d9FpSY=;
+  b=Vg2evt6Y9vSpiMGJ8MEbFkWstXvX2AyC+d1o7icHWZW1UGqSUgjbduYz
+   awl6lGLraUzKMhcZbjTjEypQ1+/b7NjOIMPE5oe2IPdTAnVW2YKa16NjB
+   mgt28UnUJz/JTZ7JO7WaCI3c18Sw5zYB/6biQomiTAUCc44q4dLACTqlD
+   3G4pgZ3EBndPwBwiC9nro3vcTrFDaNawoslfEg4w+giqoWcCyeFzn18qv
+   qsy1iz3vpq0mol/NyY4RntFEnLqBf+J1XVTt4fEiXX6TQucmZqBqo2TNG
+   VUQUyU/rwyT70JaRdSPEZSHY1lgJ32pfubAnnLDTrCow/RnrHez4iYhl7
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="232299778"
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="251155234"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 11:10:33 -0800
+   d="scan'208";a="232299778"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 11:10:33 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="684388990"
+   d="scan'208";a="777164724"
 Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 11:10:32 -0800
+  by fmsmga006.fm.intel.com with ESMTP; 24 Feb 2022 11:10:32 -0800
 Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1nNJVX-0003Ob-ME; Thu, 24 Feb 2022 19:10:31 +0000
-Date:   Fri, 25 Feb 2022 03:09:52 +0800
+        id 1nNJVX-0003Oh-NB; Thu, 24 Feb 2022 19:10:31 +0000
+Date:   Fri, 25 Feb 2022 03:10:15 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Guo Ren <guoren@linux.alibaba.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [csky-linux:riscv_compat_v6 17/20] arch/riscv/kernel/vdso.c:221:15:
- error: use of undeclared identifier 'compat_vdso_info'
-Message-ID: <202202250133.pL6WVC3v-lkp@intel.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: s390-linux-ld: clk-lan966x.c:undefined reference to
+ `devm_ioremap_resource'
+Message-ID: <202202250246.PWe7AMU9-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -56,47 +56,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/c-sky/csky-linux riscv_compat_v6
-head:   4aafa1859382d5a159bdafe2956453feafd38845
-commit: 77ed3d205a86f67815d8d074ff26e73ac1905772 [17/20] riscv: compat: vdso: Add setup additional pages implementation
-config: riscv-buildonly-randconfig-r003-20220223 (https://download.01.org/0day-ci/archive/20220225/202202250133.pL6WVC3v-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+Hi Horatiu,
+
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   23d04328444a8fa0ca060c5e532220dac8e8bc26
+commit: 5ad5915dea0047a6376d8f809ea3470ef68b1f92 clk: lan966x: Extend lan966x clock driver for clock gating support
+date:   3 months ago
+config: s390-randconfig-r004-20220223 (https://download.01.org/0day-ci/archive/20220225/202202250246.PWe7AMU9-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/c-sky/csky-linux/commit/77ed3d205a86f67815d8d074ff26e73ac1905772
-        git remote add csky-linux https://github.com/c-sky/csky-linux
-        git fetch --no-tags csky-linux riscv_compat_v6
-        git checkout 77ed3d205a86f67815d8d074ff26e73ac1905772
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5ad5915dea0047a6376d8f809ea3470ef68b1f92
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 5ad5915dea0047a6376d8f809ea3470ef68b1f92
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
->> arch/riscv/kernel/vdso.c:221:15: error: use of undeclared identifier 'compat_vdso_info'
-           __vdso_init(&compat_vdso_info);
-                        ^
-   1 error generated.
-
-
-vim +/compat_vdso_info +221 arch/riscv/kernel/vdso.c
-
-   217	
-   218	static int __init vdso_init(void)
-   219	{
-   220		__vdso_init(&vdso_info);
- > 221		__vdso_init(&compat_vdso_info);
-   222	
-   223		return 0;
-   224	}
-   225	arch_initcall(vdso_init);
-   226	
+   s390-linux-ld: drivers/clk/clk-lan966x.o: in function `lan966x_clk_probe':
+   clk-lan966x.c:(.text+0x392): undefined reference to `devm_platform_ioremap_resource'
+>> s390-linux-ld: clk-lan966x.c:(.text+0x498): undefined reference to `devm_ioremap_resource'
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
