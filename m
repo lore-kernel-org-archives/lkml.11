@@ -2,500 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA19C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C11C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233944AbiBXLNw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 06:13:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S233883AbiBXLOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 06:14:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233962AbiBXLNP (ORCPT
+        with ESMTP id S233759AbiBXLOC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 06:13:15 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE072905A6;
-        Thu, 24 Feb 2022 03:12:43 -0800 (PST)
-Received: from kwepemi500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K49B06WJHzbbjh;
-        Thu, 24 Feb 2022 19:08:08 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- kwepemi500020.china.huawei.com (7.221.188.8) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Thu, 24 Feb 2022 19:12:41 +0800
-Received: from localhost.localdomain (10.67.164.66) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 24 Feb 2022 19:12:40 +0800
-From:   Qi Liu <liuqi115@huawei.com>
-To:     <will@kernel.org>, <mark.rutland@arm.com>, <john.garry@huawei.com>,
-        <acme@kernel.org>
-CC:     <linux-perf-users@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-Subject: [PATCH v2 1/2] drivers/perf: hisi: Add Support for CPA PMU
-Date:   Thu, 24 Feb 2022 19:11:28 +0800
-Message-ID: <20220224111129.41416-2-liuqi115@huawei.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20220224111129.41416-1-liuqi115@huawei.com>
-References: <20220224111129.41416-1-liuqi115@huawei.com>
+        Thu, 24 Feb 2022 06:14:02 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D997293A23;
+        Thu, 24 Feb 2022 03:13:32 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id h17-20020a17090acf1100b001bc68ecce4aso5391553pju.4;
+        Thu, 24 Feb 2022 03:13:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:cc:references:in-reply-to:mime-version
+         :message-id:content-transfer-encoding;
+        bh=WjQC5Y7ro/c9MdCjVexTb0YJtz1qK4y19XmmyHlyFew=;
+        b=Jirg0vziGW8V3SRKvS+PjhON7lmoM4owOMTYOfacsP7PA1kucpsNi1ShKnC1Xkovyw
+         o6U9yMSJlGTp/9bdcko9RMowA7lWuUecDmFzi+XEIU8N0VGjsiQpJZu1tXNBvuyMs/p2
+         rbCJzpbTs4etXqH/zrJ3B4vY3NwUmDan5gFm5+guije2IkK/PL83p0+na++9vFREa4W4
+         ArHXY4YXbYTIFTn95zCxQOQz6HcTe5XGs4vkROZUfpVuMcPdX7MbSwcnlAglD3ApP9Jx
+         lWwz3Oy0jJU+P8hF7OM/qdSde4sPYz/DR+kmgZ6Fea+azQZS46sldPZe+9sBPmJhsJ8u
+         +1sQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:cc:references:in-reply-to
+         :mime-version:message-id:content-transfer-encoding;
+        bh=WjQC5Y7ro/c9MdCjVexTb0YJtz1qK4y19XmmyHlyFew=;
+        b=OXfcT3gaQXUYsOKyjXe8G0KpcQNzY6fAwSVcEwqEXDi7iZEfDmpAGj7J8mDaa6XSeT
+         XigByXl8jIvnJWhReya6PZud4k/wl59JY0g/mEMw7CGxNWcR1V9P7D1Pifi8r5qihEbY
+         55bxZRJqLfuQzMOMrbcQOP8Xc2tBNtd++JUcldSMnDYAp7c2k5UVkO+4sf2H08AzCvES
+         kVgEmRILFF5DdAxGb+2HiwZQsRoKeE1yHIoAv8saY5mkyjZyqmibJUZYibQrepEN0Ugs
+         54g0fJ+tA5siI6pWMUoiAMxIpEjBLYsaWLKUoF0+2nyVts3lX+oYp72CvQ/TJdqAPBiP
+         xxdw==
+X-Gm-Message-State: AOAM533YDA5ahYS4HzQtB6oXH67JHwU3ADguuR3fJT4sfNoRDXFMK1p7
+        nTb9mjHN2BhfeeVR+qhJfnM=
+X-Google-Smtp-Source: ABdhPJyounr1R+DBw3MY3a4cGgCM4BABVn40lZPd0jyri1ZanC2IX019OiKZipTBZMe59x5+BtL/Dw==
+X-Received: by 2002:a17:90b:400c:b0:1bc:7190:5696 with SMTP id ie12-20020a17090b400c00b001bc71905696mr2284455pjb.109.1645701211364;
+        Thu, 24 Feb 2022 03:13:31 -0800 (PST)
+Received: from localhost (115-64-212-59.static.tpgi.com.au. [115.64.212.59])
+        by smtp.gmail.com with ESMTPSA id q1sm2911458pfs.112.2022.02.24.03.13.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 03:13:30 -0800 (PST)
+Date:   Thu, 24 Feb 2022 21:13:25 +1000
+From:   Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH 2/3] powerpc: fix build errors
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Anders Roxell <anders.roxell@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "# 3.4.x" <stable@vger.kernel.org>
+References: <20220223135820.2252470-1-anders.roxell@linaro.org>
+        <20220223135820.2252470-2-anders.roxell@linaro.org>
+        <1645670923.t0z533n7uu.astroid@bobo.none>
+        <1645678884.dsm10mudmp.astroid@bobo.none>
+        <CAK8P3a28XEN7aH-WdR=doBQKGskiTAeNsjbfvaD5YqEZNM=v0g@mail.gmail.com>
+        <1645694174.z03tip9set.astroid@bobo.none>
+        <CAK8P3a1LgZkAV2wX03hAgx527MuiFt5ABWFp1bGdsTGc=8OmMg@mail.gmail.com>
+In-Reply-To: <CAK8P3a1LgZkAV2wX03hAgx527MuiFt5ABWFp1bGdsTGc=8OmMg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+Message-Id: <1645700767.qxyu8a9wl9.astroid@bobo.none>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On HiSilicon Hip09 platform, there is a CPA(Coherency Protocol Agent) on
-each SICL (Super I/O Cluster) which implements packet format translation,
-route parsing and traffic statistic.
+Excerpts from Arnd Bergmann's message of February 24, 2022 8:20 pm:
+> On Thu, Feb 24, 2022 at 11:11 AM Nicholas Piggin <npiggin@gmail.com> wrot=
+e:
+>> Excerpts from Arnd Bergmann's message of February 24, 2022 6:55 pm:
+>> > On Thu, Feb 24, 2022 at 6:05 AM Nicholas Piggin <npiggin@gmail.com> wr=
+ote:
+>> > We had the same thing on Arm a few years ago when binutils
+>> > started enforcing this more strictly, and it does catch actual
+>> > bugs. I think annotating individual inline asm statements is
+>> > the best choice here, as that documents what the intention is.
+>>
+>> A few cases where there are differences in privileged instructions
+>> (that won't be compiler generated), that will be done anyway.
+>>
+>> For new instructions added to the ISA though? I think it's ugly and
+>> unecesaary. There is no ambiguity about the intention when you see
+>> a lharx instruction is there?
+>>
+>> It would delinate instructions that can't be used on all processors
+>> but I don't see  much advantage there, it's not an exhaustive check
+>> because we have other restrictions on instructions in the kernel
+>> environment. And why would inline asm be special but not the rest
+>> of the asm? Would you propose to put these .machine directives
+>> everywhere in thousands of lines of asm code in the kernel? I
+>> don't know that it's an improvement. And inline asm is a small
+>> fraction of instructions.
+>=20
+> Most of the code is fine, as we tend to only build .S files that
+> are for the given target CPU,
 
-CPA PMU has separate PMU registers which the driver can program freely and
-interrupt is supported to handle counter overflow. Let's support its driver
-under the framework of HiSilicon uncore PMU driver.
+That's not true on powerpc at least. grep FTR_SECTION.
 
-Signed-off-by: Qi Liu <liuqi115@huawei.com>
----
- drivers/perf/hisilicon/Makefile              |   2 +-
- drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c | 401 +++++++++++++++++++
- include/linux/cpuhotplug.h                   |   1 +
- 3 files changed, 403 insertions(+), 1 deletion(-)
- create mode 100644 drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
+Not all of them are different ISA, but it's more than just the
+CPU_FTR_ARCH ones which only started about POWER7.
 
-diff --git a/drivers/perf/hisilicon/Makefile b/drivers/perf/hisilicon/Makefile
-index 506ed39e3266..6be83517acaa 100644
---- a/drivers/perf/hisilicon/Makefile
-+++ b/drivers/perf/hisilicon/Makefile
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-$(CONFIG_HISI_PMU) += hisi_uncore_pmu.o hisi_uncore_l3c_pmu.o \
- 			  hisi_uncore_hha_pmu.o hisi_uncore_ddrc_pmu.o hisi_uncore_sllc_pmu.o \
--			  hisi_uncore_pa_pmu.o
-+			  hisi_uncore_pa_pmu.o hisi_uncore_cpa_pmu.o
- 
- obj-$(CONFIG_HISI_PCIE_PMU) += hisi_pcie_pmu.o
-diff --git a/drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c b/drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
-new file mode 100644
-index 000000000000..00573719f148
---- /dev/null
-+++ b/drivers/perf/hisilicon/hisi_uncore_cpa_pmu.c
-@@ -0,0 +1,401 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * HiSilicon SoC CPA(Coherency Protocol Agent) uncore Hardware event counters support
-+ *
-+ * Copyright (C) 2022 HiSilicon Limited
-+ * Author: Qi Liu <liuqi115@huawei.com>
-+ *
-+ * This code is based on the uncore PMUs like arm-cci and arm-ccn.
-+ */
-+
-+#include <linux/acpi.h>
-+#include <linux/bug.h>
-+#include <linux/cpuhotplug.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/list.h>
-+#include <linux/smp.h>
-+
-+#include "hisi_uncore_pmu.h"
-+
-+/* CPA register definition */
-+#define CPA_PERF_CTRL		0x1c00
-+#define CPA_EVENT_CTRL		0x1c04
-+#define CPA_INT_MASK		0x1c70
-+#define CPA_INT_STATUS		0x1c78
-+#define CPA_INT_CLEAR		0x1c7c
-+#define CPA_EVENT_TYPE0		0x1c80
-+#define CPA_VERSION		0x1cf0
-+#define CPA_CNT0_LOWER		0x1d00
-+#define CPA_CFG_REG		0x0534
-+
-+/* CPA operation command */
-+#define CPA_PERF_CTRL_EN	BIT_ULL(0)
-+#define CPA_EVTYPE_MASK		0xffUL
-+#define CPA_PM_CTRL		BIT_ULL(9)
-+
-+/* CPA has 8-counters */
-+#define CPA_NR_COUNTERS		0x8
-+#define CPA_COUNTER_BITS	64
-+#define CPA_NR_EVENTS		0xff
-+#define CPA_REG_OFFSET		0x8
-+
-+static u32 hisi_cpa_pmu_get_counter_offset(int idx)
-+{
-+	return (CPA_CNT0_LOWER + idx * CPA_REG_OFFSET);
-+}
-+
-+static u64 hisi_cpa_pmu_read_counter(struct hisi_pmu *cpa_pmu,
-+				     struct hw_perf_event *hwc)
-+{
-+	return readq(cpa_pmu->base + hisi_cpa_pmu_get_counter_offset(hwc->idx));
-+}
-+
-+static void hisi_cpa_pmu_write_counter(struct hisi_pmu *cpa_pmu,
-+				       struct hw_perf_event *hwc, u64 val)
-+{
-+	writeq(val, cpa_pmu->base + hisi_cpa_pmu_get_counter_offset(hwc->idx));
-+}
-+
-+static void hisi_cpa_pmu_write_evtype(struct hisi_pmu *cpa_pmu, int idx, u32 type)
-+{
-+	u32 reg, reg_idx, shift, val;
-+
-+	/*
-+	 * Select the appropriate event select register(CPA_EVENT_TYPE0/1).
-+	 * There are 2 event select registers for the 8 hardware counters.
-+	 * Event code is 8-bits and for the former 4 hardware counters,
-+	 * CPA_EVENT_TYPE0 is chosen. For the latter 4 hardware counters,
-+	 * CPA_EVENT_TYPE1 is chosen.
-+	 */
-+	reg = CPA_EVENT_TYPE0 + (idx / 4) * 4;
-+	reg_idx = idx % 4;
-+	shift = CPA_REG_OFFSET * reg_idx;
-+
-+	/* Write event code to CPA_EVENT_TYPEx Register */
-+	val = readl(cpa_pmu->base + reg);
-+	val &= ~(CPA_EVTYPE_MASK << shift);
-+	val |= type << shift;
-+	writel(val, cpa_pmu->base + reg);
-+}
-+
-+static void hisi_cpa_pmu_start_counters(struct hisi_pmu *cpa_pmu)
-+{
-+	u32 val;
-+
-+	val = readl(cpa_pmu->base + CPA_PERF_CTRL);
-+	val |= CPA_PERF_CTRL_EN;
-+	writel(val, cpa_pmu->base + CPA_PERF_CTRL);
-+}
-+
-+static void hisi_cpa_pmu_stop_counters(struct hisi_pmu *cpa_pmu)
-+{
-+	u32 val;
-+
-+	val = readl(cpa_pmu->base + CPA_PERF_CTRL);
-+	val &= ~(CPA_PERF_CTRL_EN);
-+	writel(val, cpa_pmu->base + CPA_PERF_CTRL);
-+}
-+
-+static void hisi_cpa_pmu_disable_pm(struct hisi_pmu *cpa_pmu)
-+{
-+	u32 val;
-+
-+	val = readl(cpa_pmu->base + CPA_CFG_REG);
-+	val |= CPA_PM_CTRL;
-+	writel(val, cpa_pmu->base + CPA_CFG_REG);
-+}
-+
-+static void hisi_cpa_pmu_enable_pm(struct hisi_pmu *cpa_pmu)
-+{
-+	u32 val;
-+
-+	val = readl(cpa_pmu->base + CPA_CFG_REG);
-+	val &= ~CPA_PM_CTRL;
-+	writel(val, cpa_pmu->base + CPA_CFG_REG);
-+}
-+
-+static void hisi_cpa_pmu_enable_counter(struct hisi_pmu *cpa_pmu, struct hw_perf_event *hwc)
-+{
-+	u32 val;
-+
-+	/* Enable counter index in CPA_EVENT_CTRL register */
-+	val = readl(cpa_pmu->base + CPA_EVENT_CTRL);
-+	val |= 1 << hwc->idx;
-+	writel(val, cpa_pmu->base + CPA_EVENT_CTRL);
-+
-+	/* Power management should be disabled before counting. */
-+	hisi_cpa_pmu_disable_pm(cpa_pmu);
-+}
-+
-+static void hisi_cpa_pmu_disable_counter(struct hisi_pmu *cpa_pmu, struct hw_perf_event *hwc)
-+{
-+	u32 val;
-+
-+	hisi_cpa_pmu_enable_pm(cpa_pmu);
-+
-+	/* Clear counter index in CPA_EVENT_CTRL register */
-+	val = readl(cpa_pmu->base + CPA_EVENT_CTRL);
-+	val &= ~(1UL << hwc->idx);
-+	writel(val, cpa_pmu->base + CPA_EVENT_CTRL);
-+}
-+
-+static void hisi_cpa_pmu_enable_counter_int(struct hisi_pmu *cpa_pmu, struct hw_perf_event *hwc)
-+{
-+	u32 val;
-+
-+	/* Write 0 to enable interrupt */
-+	val = readl(cpa_pmu->base + CPA_INT_MASK);
-+	val &= ~(1UL << hwc->idx);
-+	writel(val, cpa_pmu->base + CPA_INT_MASK);
-+}
-+
-+static void hisi_cpa_pmu_disable_counter_int(struct hisi_pmu *cpa_pmu, struct hw_perf_event *hwc)
-+{
-+	u32 val;
-+
-+	/* Write 1 to mask interrupt */
-+	val = readl(cpa_pmu->base + CPA_INT_MASK);
-+	val |= 1 << hwc->idx;
-+	writel(val, cpa_pmu->base + CPA_INT_MASK);
-+}
-+
-+static u32 hisi_cpa_pmu_get_int_status(struct hisi_pmu *cpa_pmu)
-+{
-+	return readl(cpa_pmu->base + CPA_INT_STATUS);
-+}
-+
-+static void hisi_cpa_pmu_clear_int_status(struct hisi_pmu *cpa_pmu, int idx)
-+{
-+	writel(1 << idx, cpa_pmu->base + CPA_INT_CLEAR);
-+}
-+
-+static const struct acpi_device_id hisi_cpa_pmu_acpi_match[] = {
-+	{ "HISI0281", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(acpi, hisi_cpa_pmu_acpi_match);
-+
-+static int hisi_cpa_pmu_init_data(struct platform_device *pdev,
-+				  struct hisi_pmu *cpa_pmu)
-+{
-+	if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
-+				     &cpa_pmu->sccl_id)) {
-+		dev_err(&pdev->dev, "Can not read cpa_pmu sccl-id\n");
-+		return -EINVAL;
-+	}
-+
-+	cpa_pmu->ccl_id = -1;
-+
-+	if (device_property_read_u32(&pdev->dev, "hisilicon,idx-id",
-+				     &cpa_pmu->index_id)) {
-+		dev_err(&pdev->dev, "Cannot read idx-id\n");
-+		return -EINVAL;
-+	}
-+
-+	cpa_pmu->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(cpa_pmu->base))
-+		return PTR_ERR(cpa_pmu->base);
-+
-+	cpa_pmu->identifier = readl(cpa_pmu->base + CPA_VERSION);
-+
-+	return 0;
-+}
-+
-+static struct attribute *hisi_cpa_pmu_format_attr[] = {
-+	HISI_PMU_FORMAT_ATTR(event, "config:0-15"),
-+	NULL
-+};
-+
-+static const struct attribute_group hisi_cpa_pmu_format_group = {
-+	.name = "format",
-+	.attrs = hisi_cpa_pmu_format_attr,
-+};
-+
-+static struct attribute *hisi_cpa_pmu_events_attr[] = {
-+	HISI_PMU_EVENT_ATTR(cpa_cycles,		0x00),
-+	HISI_PMU_EVENT_ATTR(cpa_p1_wr_dat,	0x61),
-+	HISI_PMU_EVENT_ATTR(cpa_p1_rd_dat,	0x62),
-+	HISI_PMU_EVENT_ATTR(cpa_p0_wr_dat,	0xE1),
-+	HISI_PMU_EVENT_ATTR(cpa_p0_rd_dat,	0xE2),
-+	NULL
-+};
-+
-+static const struct attribute_group hisi_cpa_pmu_events_group = {
-+	.name = "events",
-+	.attrs = hisi_cpa_pmu_events_attr,
-+};
-+
-+static DEVICE_ATTR(cpumask, 0444, hisi_cpumask_sysfs_show, NULL);
-+
-+static struct attribute *hisi_cpa_pmu_cpumask_attrs[] = {
-+	&dev_attr_cpumask.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group hisi_cpa_pmu_cpumask_attr_group = {
-+	.attrs = hisi_cpa_pmu_cpumask_attrs,
-+};
-+
-+static struct device_attribute hisi_cpa_pmu_identifier_attr =
-+	__ATTR(identifier, 0444, hisi_uncore_pmu_identifier_attr_show, NULL);
-+
-+static struct attribute *hisi_cpa_pmu_identifier_attrs[] = {
-+	&hisi_cpa_pmu_identifier_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group hisi_cpa_pmu_identifier_group = {
-+	.attrs = hisi_cpa_pmu_identifier_attrs,
-+};
-+
-+static const struct attribute_group *hisi_cpa_pmu_attr_groups[] = {
-+	&hisi_cpa_pmu_format_group,
-+	&hisi_cpa_pmu_events_group,
-+	&hisi_cpa_pmu_cpumask_attr_group,
-+	&hisi_cpa_pmu_identifier_group,
-+	NULL
-+};
-+
-+static const struct hisi_uncore_ops hisi_uncore_cpa_pmu_ops = {
-+	.write_evtype           = hisi_cpa_pmu_write_evtype,
-+	.get_event_idx		= hisi_uncore_pmu_get_event_idx,
-+	.start_counters		= hisi_cpa_pmu_start_counters,
-+	.stop_counters		= hisi_cpa_pmu_stop_counters,
-+	.enable_counter		= hisi_cpa_pmu_enable_counter,
-+	.disable_counter	= hisi_cpa_pmu_disable_counter,
-+	.enable_counter_int	= hisi_cpa_pmu_enable_counter_int,
-+	.disable_counter_int	= hisi_cpa_pmu_disable_counter_int,
-+	.write_counter		= hisi_cpa_pmu_write_counter,
-+	.read_counter		= hisi_cpa_pmu_read_counter,
-+	.get_int_status		= hisi_cpa_pmu_get_int_status,
-+	.clear_int_status	= hisi_cpa_pmu_clear_int_status,
-+};
-+
-+static int hisi_cpa_pmu_dev_probe(struct platform_device *pdev,
-+				  struct hisi_pmu *cpa_pmu)
-+{
-+	int ret;
-+
-+	ret = hisi_cpa_pmu_init_data(pdev, cpa_pmu);
-+	if (ret)
-+		return ret;
-+
-+	ret = hisi_uncore_pmu_init_irq(cpa_pmu, pdev);
-+	if (ret)
-+		return ret;
-+
-+	cpa_pmu->counter_bits = CPA_COUNTER_BITS;
-+	cpa_pmu->check_event = CPA_NR_EVENTS;
-+	cpa_pmu->pmu_events.attr_groups = hisi_cpa_pmu_attr_groups;
-+	cpa_pmu->ops = &hisi_uncore_cpa_pmu_ops;
-+	cpa_pmu->num_counters = CPA_NR_COUNTERS;
-+	cpa_pmu->dev = &pdev->dev;
-+	cpa_pmu->on_cpu = -1;
-+
-+	return 0;
-+}
-+
-+static int hisi_cpa_pmu_probe(struct platform_device *pdev)
-+{
-+	struct hisi_pmu *cpa_pmu;
-+	char *name;
-+	int ret;
-+
-+	cpa_pmu = devm_kzalloc(&pdev->dev, sizeof(*cpa_pmu), GFP_KERNEL);
-+	if (!cpa_pmu)
-+		return -ENOMEM;
-+
-+	ret = hisi_cpa_pmu_dev_probe(pdev, cpa_pmu);
-+	if (ret)
-+		return ret;
-+
-+	ret = cpuhp_state_add_instance(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE,
-+				       &cpa_pmu->node);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Error %d registering hotplug\n", ret);
-+		return ret;
-+	}
-+
-+	name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "hisi_sicl%d_cpa%u", cpa_pmu->sccl_id - 1,
-+			      cpa_pmu->index_id);
-+
-+	cpa_pmu->pmu = (struct pmu) {
-+		.name		= name,
-+		.module		= THIS_MODULE,
-+		.task_ctx_nr	= perf_invalid_context,
-+		.event_init	= hisi_uncore_pmu_event_init,
-+		.pmu_enable	= hisi_uncore_pmu_enable,
-+		.pmu_disable	= hisi_uncore_pmu_disable,
-+		.add		= hisi_uncore_pmu_add,
-+		.del		= hisi_uncore_pmu_del,
-+		.start		= hisi_uncore_pmu_start,
-+		.stop		= hisi_uncore_pmu_stop,
-+		.read		= hisi_uncore_pmu_read,
-+		.attr_groups	= cpa_pmu->pmu_events.attr_groups,
-+		.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
-+	};
-+
-+	ret = perf_pmu_register(&cpa_pmu->pmu, name, -1);
-+	if (ret) {
-+		dev_err(cpa_pmu->dev, "CPA PMU register failed\n");
-+		cpuhp_state_remove_instance_nocalls(
-+			CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE, &cpa_pmu->node);
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, cpa_pmu);
-+	return ret;
-+}
-+
-+static int hisi_cpa_pmu_remove(struct platform_device *pdev)
-+{
-+	struct hisi_pmu *cpa_pmu = platform_get_drvdata(pdev);
-+
-+	perf_pmu_unregister(&cpa_pmu->pmu);
-+	cpuhp_state_remove_instance_nocalls(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE,
-+					    &cpa_pmu->node);
-+	return 0;
-+}
-+
-+static struct platform_driver hisi_cpa_pmu_driver = {
-+	.driver = {
-+		.name = "hisi_cpa_pmu",
-+		.acpi_match_table = ACPI_PTR(hisi_cpa_pmu_acpi_match),
-+		.suppress_bind_attrs = true,
-+	},
-+	.probe = hisi_cpa_pmu_probe,
-+	.remove = hisi_cpa_pmu_remove,
-+};
-+
-+static int __init hisi_cpa_pmu_module_init(void)
-+{
-+	int ret;
-+
-+	ret = cpuhp_setup_state_multi(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE,
-+				      "AP_PERF_ARM_HISI_CPA_ONLINE",
-+				      hisi_uncore_pmu_online_cpu,
-+				      hisi_uncore_pmu_offline_cpu);
-+	if (ret) {
-+		pr_err("CPA PMU: setup hotplug: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = platform_driver_register(&hisi_cpa_pmu_driver);
-+	if (ret)
-+		cpuhp_remove_multi_state(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE);
-+
-+	return ret;
-+}
-+module_init(hisi_cpa_pmu_module_init);
-+
-+static void __exit hisi_cpa_pmu_module_exit(void)
-+{
-+	platform_driver_unregister(&hisi_cpa_pmu_driver);
-+	cpuhp_remove_multi_state(CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE);
-+}
-+module_exit(hisi_cpa_pmu_module_exit);
-+
-+MODULE_DESCRIPTION("HiSilicon SoC CPA uncore PMU driver");
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Qi Liu <liuqi115@huawei.com>");
-diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
-index 411a428ace4d..d55063719904 100644
---- a/include/linux/cpuhotplug.h
-+++ b/include/linux/cpuhotplug.h
-@@ -220,6 +220,7 @@ enum cpuhp_state {
- 	CPUHP_AP_PERF_S390_SF_ONLINE,
- 	CPUHP_AP_PERF_ARM_CCI_ONLINE,
- 	CPUHP_AP_PERF_ARM_CCN_ONLINE,
-+	CPUHP_AP_PERF_ARM_HISI_CPA_ONLINE,
- 	CPUHP_AP_PERF_ARM_HISI_DDRC_ONLINE,
- 	CPUHP_AP_PERF_ARM_HISI_HHA_ONLINE,
- 	CPUHP_AP_PERF_ARM_HISI_L3_ONLINE,
--- 
-2.24.0
+> the explicit .machine directives are
+> only needed when you have a file that mixes instructions for
+> incompatible machines, using a runtime detection.
 
+Right. There are .S files are in that category. And a lot of
+it for inline and .S we probably skirt entirely due to using raw=20
+instruction encoding because of old toolchains (which gets no error=20
+checking at all) which we really should tidy up and trim.
+
+>=20
+>> Right that should be caught if you just pass -m<superset> architecture
+>> to the assembler that does not include the mtpmr. 32-bit is a lot more
+>> complicated than 64s like this though, so it's pssible in some cases
+>> you will want more checking and -m<subset> + some .machine directives
+>> will work better.
+>>
+>> Once you add the .machine directive to your inline asm though, you lose
+>> *all* such static checking for the instruction. So it's really not a
+>> panacea and has its own downsides.
+>=20
+> Again, there should be a minimum number of those .machine directives
+> in inline asm as well, which tends to work out fine as long as the
+> entire kernel is built with the correct -march=3D option for the minimum
+> supported CPU, and stays away from inline asm that requires a higher
+> CPU level.
+
+There's really no advantage to them, and they're ugly and annoying
+and if we applied the concept consistently for all asm they would grow=20
+to a very large number.
+
+The idea they'll give you good static checking just doesn't really
+pan out.
+
+Thanks,
+Nick
