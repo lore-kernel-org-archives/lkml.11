@@ -2,148 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B03DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0161C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232552AbiBXJ01 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:26:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46304 "EHLO
+        id S232743AbiBXJ2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:28:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232087AbiBXJ0Z (ORCPT
+        with ESMTP id S232300AbiBXJ2l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:26:25 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4D5279919;
-        Thu, 24 Feb 2022 01:25:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645694756; x=1677230756;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/gu7eQvzK90N7g7on/O4htPHyJktgVUTYPAZjxIQVF8=;
-  b=fCElD1003i8OLwwe5De1ByyM+lwpOq4TmbIiwGx1Ovo/59KsEX4QCXn1
-   zsqAg77X0z4nHyNkbCOr3TvYbr/FQQoCOkmiG0K4RFCx8EZRvplUKzE4N
-   dGVi5N2shJEDPCLQ98FaMpTjmylOs5Fm3GGw5HTPHfMs4g5TK2PWDMDpY
-   5Q43huP7BQFJVOmsLJvQqCxNPmF/p8NuCuQ4EnDXHCX1cXJUeHz+sLDod
-   DW04Fzg0Mfcw4IDpLA/7GVFk0PjQJnTU+z8Cp4mi5diy3Nh4dM/6DqBX2
-   9u4H76wsaoMxNrFY4l77Sc6P/X2HEnR+X/FJiDrtbrU8FtaQSymbZNlef
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="239586016"
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="239586016"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 01:25:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="639654731"
-Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by orsmga004.jf.intel.com with ESMTP; 24 Feb 2022 01:25:50 -0800
-From:   Tianfei zhang <tianfei.zhang@intel.com>
-To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
-        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     corbet@lwn.net, Tianfei Zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v1] fpga: dfl: check feature type before parse irq info
-Date:   Thu, 24 Feb 2022 04:22:42 -0500
-Message-Id: <20220224092242.127081-1-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.26.2
+        Thu, 24 Feb 2022 04:28:41 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC60822A24D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:28:11 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id y189so2606177ybe.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:28:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=ygp7HmSMQP3Q+rbTx5g2DkVDCEdl+SFVfMjp/BmaoiI=;
+        b=cepL0hdCN9UbyCzkOyV9cQEdxhgUijKh9zmmcDO5ikU473yp2AMOZcJXilqLRa0sFX
+         zfJ9F6q5gR/6iBDSs/MWKl5HIY9yjtZF5m5sa1Ox3N3Gu4/ncdRBYcD3fvzUBnuQqtrM
+         nAUWwm6kL8VdrogYpBrNw18wLKWFmZd6DDEvOI6D4H+mHJGqcA8phVZheJzRPgN7lv64
+         eRe0E1LIuKHztxG7hg2oe7Qf66pC89aNTF/Ig8zlbtlXZZhzOOy4WbazNK2qNpt4Zstb
+         gznQQkwisI3iIEeReJZnQLwDvvvJDXee/MNMui+50vNhX2zNwhqzm+l5ZvFAoJxzA9Pw
+         B3iw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=ygp7HmSMQP3Q+rbTx5g2DkVDCEdl+SFVfMjp/BmaoiI=;
+        b=naiPiAmKHcq3gX/LZQ6CpNIrk5CTtbAVb1+idF/Q1YiQEXjs+0y9Q83La3R9ehJGOI
+         TBG0vygysShQt7RsXlQMV3+tCqWl7vV89HCt2Dj7QOEn0u7EotKFU9qX6oI6LX/fz+7h
+         u8NssHHVZoJRMgjORdIntLsbae7LHUi+ARTKKbved7bA1WCu2et5uNr1IJFIVccvTBpv
+         89GdqX5yDDuxgMXv7XilglGbam3eNptu1ZOMQWfK6UnHo1c+53/2E36qrSv5QDlkYpAU
+         QOgyGaEuTEMQ1hKkpqRZXBdbHcsopSLnZnMyHW5MmL4KFpHiI0iMbDZnW258FOURTCgs
+         Oc2w==
+X-Gm-Message-State: AOAM531xoFplGuVERi2vhFLPfp+UoI0Nm8N/iAEmN63L9iIikbgwbDe9
+        zsK10JL8K/eJ4HqbBIoDOR/NNj0yZN38SJr4653x5w==
+X-Google-Smtp-Source: ABdhPJxscph16DkI7QPkYWvFXGKPAB18KesE5yybvpBkL5Qinq23VhWYa9sR4nWUBegylDrScVJnGI8fPsI6IwGs7nc=
+X-Received: by 2002:a25:6993:0:b0:624:55af:336c with SMTP id
+ e141-20020a256993000000b0062455af336cmr1603707ybc.412.1645694890926; Thu, 24
+ Feb 2022 01:28:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 24 Feb 2022 14:57:59 +0530
+Message-ID: <CA+G9fYs_8ww=Mi4o4XXjQxL2XJiTiAUbMd1WF08zL+FoiA7GRw@mail.gmail.com>
+Subject: [next] LTP: readahead02.c:295: TFAIL: readahead failed to save any I/O
+To:     LTP List <ltp@lists.linux.it>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org, regressions@lists.linux.dev,
+        lkft-triage@lists.linaro.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Peter Xu <peterx@redhat.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianfei Zhang <tianfei.zhang@intel.com>
+On Linux next 20220222 tag LTP syscalls test case readahead02 failed.
+Please find detail test output on below link [1]
 
-The feature ID of "Port User Interrupt" and the
-"PMCI Subsystem" are identical, 0x12, but one is for FME,
-other is for Port. It should check the feature type While
-parsing the irq info in parse_feature_irqs().
+test failed log:
+--------------------
+readahead02.c:181: TPASS: offset is still at 0 as expected
+readahead02.c:285: TINFO: read_testfile(0) took: 37567 usec
+readahead02.c:286: TINFO: read_testfile(1) took: 37263 usec
+readahead02.c:288: TINFO: read_testfile(0) read: 0 bytes
+readahead02.c:290: TINFO: read_testfile(1) read: 0 bytes
+readahead02.c:295: TFAIL: readahead failed to save any I/O
 
-Fixes: 8d021039cbb5 ("fpga: dfl: parse interrupt info for feature devices on enumeration")
-Link: https://lore.kernel.org/linux-fpga/BN9PR11MB54833D7636348D62F931526CE33A9@BN9PR11MB5483.namprd11.prod.outlook.com/
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
----
- Documentation/fpga/dfl.rst |  5 +++++
- drivers/fpga/dfl.c         | 38 ++++++++++++++++++++++----------------
- 2 files changed, 27 insertions(+), 16 deletions(-)
+--
+Linaro LKFT
+https://lkft.linaro.org
 
-diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
-index ef9eec71f6f3..9ce418da1876 100644
---- a/Documentation/fpga/dfl.rst
-+++ b/Documentation/fpga/dfl.rst
-@@ -502,6 +502,11 @@ Developer only needs to provide a sub feature driver with matched feature id.
- FME Partial Reconfiguration Sub Feature driver (see drivers/fpga/dfl-fme-pr.c)
- could be a reference.
- 
-+Individual DFL drivers are bound DFL devices based on Feature Type and Feature ID.
-+The definition of Feature Type and Feature ID can be found:
-+
-+https://github.com/OPAE/linux-dfl-feature-id/blob/master/dfl-feature-ids.rst
-+
- Location of DFLs on a PCI Device
- ================================
- The original method for finding a DFL on a PCI device assumed the start of the
-diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index 599bb21d86af..6bff39ff21a0 100644
---- a/drivers/fpga/dfl.c
-+++ b/drivers/fpga/dfl.c
-@@ -940,9 +940,12 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
- {
- 	void __iomem *base = binfo->ioaddr + ofst;
- 	unsigned int i, ibase, inr = 0;
-+	enum dfl_id_type type;
- 	int virq;
- 	u64 v;
- 
-+	type = feature_dev_id_type(binfo->feature_dev);
-+
- 	/*
- 	 * Ideally DFL framework should only read info from DFL header, but
- 	 * current version DFL only provides mmio resources information for
-@@ -957,22 +960,25 @@ static int parse_feature_irqs(struct build_feature_devs_info *binfo,
- 	 * code will be added. But in order to be compatible to old version
- 	 * DFL, the driver may still fall back to these quirks.
- 	 */
--	switch (fid) {
--	case PORT_FEATURE_ID_UINT:
--		v = readq(base + PORT_UINT_CAP);
--		ibase = FIELD_GET(PORT_UINT_CAP_FST_VECT, v);
--		inr = FIELD_GET(PORT_UINT_CAP_INT_NUM, v);
--		break;
--	case PORT_FEATURE_ID_ERROR:
--		v = readq(base + PORT_ERROR_CAP);
--		ibase = FIELD_GET(PORT_ERROR_CAP_INT_VECT, v);
--		inr = FIELD_GET(PORT_ERROR_CAP_SUPP_INT, v);
--		break;
--	case FME_FEATURE_ID_GLOBAL_ERR:
--		v = readq(base + FME_ERROR_CAP);
--		ibase = FIELD_GET(FME_ERROR_CAP_INT_VECT, v);
--		inr = FIELD_GET(FME_ERROR_CAP_SUPP_INT, v);
--		break;
-+	if (type == PORT_ID) {
-+		switch (fid) {
-+		case PORT_FEATURE_ID_UINT:
-+			v = readq(base + PORT_UINT_CAP);
-+			ibase = FIELD_GET(PORT_UINT_CAP_FST_VECT, v);
-+			inr = FIELD_GET(PORT_UINT_CAP_INT_NUM, v);
-+			break;
-+		case PORT_FEATURE_ID_ERROR:
-+			v = readq(base + PORT_ERROR_CAP);
-+			ibase = FIELD_GET(PORT_ERROR_CAP_INT_VECT, v);
-+			inr = FIELD_GET(PORT_ERROR_CAP_SUPP_INT, v);
-+			break;
-+		}
-+	} else if (type == FME_ID) {
-+		if (fid == FME_FEATURE_ID_GLOBAL_ERR) {
-+			v = readq(base + FME_ERROR_CAP);
-+			ibase = FIELD_GET(FME_ERROR_CAP_INT_VECT, v);
-+			inr = FIELD_GET(FME_ERROR_CAP_SUPP_INT, v);
-+		}
- 	}
- 
- 	if (!inr) {
--- 
-2.26.2
-
+[1] https://lkft.validation.linaro.org/scheduler/job/4607403#L16941
