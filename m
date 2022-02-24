@@ -2,90 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 06:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 06:07:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230506AbiBXGHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 01:07:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55616 "EHLO
+        id S231138AbiBXGHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 01:07:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbiBXGHf (ORCPT
+        with ESMTP id S230513AbiBXGHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 01:07:35 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 412885EBCD
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 22:07:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645682826; x=1677218826;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=gEhGUaD8oPJf4/lhLNSulzbS/gmsCvN7ZBmdIarR2AM=;
-  b=c63Ysc2RVf61VdfbC/lRButzZ+bxnrE3bEftL11QKcawT+GtWJV05ZbO
-   CibxxIcEGdfcD9mW1Wx/Gses5UC5gPyw/pij5I9R6ChNa7eAeincbr7m4
-   CB8xXokUSzhycRRV9wMa1nPXp8M07vtjnN//fWtU8Mr152fuE08Xeii7d
-   6WsRJCBFEsvw75G705nW5gZO2hC594tnxzHkjyVUSuU9SXXpq8PwE1q3U
-   UoAywQ3YaoNGwoHXG9RdR7/Y/QPEYoNRjUOmq+VoZZML3Fg38fpX7QyA+
-   eRE/sSVh42k/u2dQSylv/gqSo7PqyExjaYy2KhE1cJzP+99w+41kHB7H9
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="249739934"
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="249739934"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 22:07:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="637715291"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 23 Feb 2022 22:07:04 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nN7HM-0002Kf-4O; Thu, 24 Feb 2022 06:07:04 +0000
-Date:   Thu, 24 Feb 2022 14:06:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vijayanand Jitta <vjitta@codeaurora.org>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:google/android/kernel/common/android-gs-raviole-5.10-android12-qpr1-d
- 1049/8858] (.rodata+0x0): multiple definition of `__crc_si_swapinfo';
- arch/s390/appldata/appldata_base.o:(.rodata+0x0): first defined here
-Message-ID: <202202241314.H48PleNt-lkp@intel.com>
+        Thu, 24 Feb 2022 01:07:49 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905AC268349
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 22:07:19 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id lw4so2047921ejb.12
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 22:07:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=kP+89y0hoRnShyoLp/hNYbJCaD/1tG2cQQ5MHA+Qy84=;
+        b=kwRnAaTapnRDvQFCX4erZ72wwBBIgT9aehZ1b407m0CDNloA8vSdFrLuPx0M7uHYYr
+         Z4d8Zd7Ous/XLZ8pl5j/P95yQwa+vGnhnb0m4OBf2SnigJ2PLxaxpoOyRTLQix2L0Asg
+         XYnk1fboddBNDJUconnfgW0y4b/X7ndWiQqqUijhrsavc2KBKbfLjeSxvPIIAsjDiJka
+         BuxkiqUPVTDxcaMSe/uXpFUpdvLe+w1G5O/PIPAmLnOpno7mwOz3Jq+isx3Us0w6nlld
+         Qvrdpj32vpP2hwfT8X0rAuyHIySqL92HKUgwwRGlnQ26VcMxzOtw2jvTEfASqrT5ZJFS
+         kABA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=kP+89y0hoRnShyoLp/hNYbJCaD/1tG2cQQ5MHA+Qy84=;
+        b=yA8NPyFtYpJ102c7244P04SrP+Z1xmyKdzzb6OufObiwwJti46Qd7wsu6KzaVSv9Hu
+         wyw42TyQn8YwSuoh4F8LZFc0G/gSAWH+ERFeYc8TAFNpXPizUTs81mnzyA3x0McQJ15F
+         8UWWm5v6wwr4z7DrrPz84FujS0lbxhm/maYN/c5GoU2gUVWHnGgswVw/1/ZFl4jy/wu2
+         pjL2ZmwJwYcMsI8IVYRaXAxzgS7qBdFRwF2QzT8uFwaLYuDAqcrFsmgEk/6UCtXIC3f4
+         VIlK6iM+Wigz5Ifdv8OqS9/MlAJNJ/NJtg10KlPC6REjxyTETgyLZ+Pj6/N/utMiCBL/
+         1Z7A==
+X-Gm-Message-State: AOAM533qZsvFgjTtJUDT9IDF0n9AUNhXOCrhc/aZLDobDoLxTMo2hD2y
+        X1CswN55d1fG2BMXjn1LjLV29Y6fSbOCner4jZsg/w==
+X-Google-Smtp-Source: ABdhPJzZgf+9TEGQb6iMcXtXFm9emtSA5v0uMfoaoiwA1lFfvD2e9TdWMjBamDP38FG17rD1IP935MHFoxCFr7G2kCA=
+X-Received: by 2002:a17:906:c12:b0:6cc:ec90:31f3 with SMTP id
+ s18-20020a1709060c1200b006ccec9031f3mr961140ejf.369.1645682837863; Wed, 23
+ Feb 2022 22:07:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220224054332.1852813-1-keescook@chromium.org>
+In-Reply-To: <20220224054332.1852813-1-keescook@chromium.org>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Wed, 23 Feb 2022 22:07:04 -0800
+Message-ID: <CAGS_qxp8cjG5jCX-7ziqHcy2gq_MqL8kU01-joFD_W9iPG08EA@mail.gmail.com>
+Subject: Re: [PATCH] binfmt_elf: Introduce KUnit test
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Eric Biederman <ebiederm@xmission.com>,
+        David Gow <davidgow@google.com>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        =?UTF-8?B?TWFnbnVzIEdyb8Of?= <magnus.gross@rwth-aachen.de>,
+        kunit-dev@googlegroups.com, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vijayanand,
+On Wed, Feb 23, 2022 at 9:43 PM Kees Cook <keescook@chromium.org> wrote:
+>
+> Adds simple KUnit test for some binfmt_elf internals: specifically a
+> regression test for the problem fixed by commit 8904d9cd90ee ("ELF:
+> fix overflow in total mapping size calculation").
+>
+> Cc: Eric Biederman <ebiederm@xmission.com>
+> Cc: David Gow <davidgow@google.com>
+> Cc: Alexey Dobriyan <adobriyan@gmail.com>
+> Cc: "Magnus Gro=C3=9F" <magnus.gross@rwth-aachen.de>
+> Cc: kunit-dev@googlegroups.com
+> Cc: linux-fsdevel@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+> I'm exploring ways to mock copy_to_user() for more tests in here.
+> kprobes doesn't seem to let me easily hijack a function...
 
-FYI, the error/warning still remains.
+Yeah, there doesn't seem to be a good way to do so. It seems more
+feasible if one is willing to write arch-specific code, but I'm not
+quite sure if that works either.
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android-gs-raviole-5.10-android12-qpr1-d
-head:   9771767708df4fcf51cd1642e041c804a86e740c
-commit: 5e07d2eb085f9060663d0f5601dd486bf6fc2010 [1049/8858] ANDROID: mm: Export si_swapinfo
-config: s390-debug_defconfig (https://download.01.org/0day-ci/archive/20220224/202202241314.H48PleNt-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/5e07d2eb085f9060663d0f5601dd486bf6fc2010
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android-gs-raviole-5.10-android12-qpr1-d
-        git checkout 5e07d2eb085f9060663d0f5601dd486bf6fc2010
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
+https://kunit.dev/mocking.html has some thoughts on this.
+Not sure if there's anything there that would be useful to you, but
+perhaps it can give you some ideas.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> ---
+>  fs/Kconfig.binfmt      | 17 +++++++++++
+>  fs/binfmt_elf.c        |  4 +++
+>  fs/binfmt_elf_test.c   | 64 ++++++++++++++++++++++++++++++++++++++++++
+>  fs/compat_binfmt_elf.c |  2 ++
+>  4 files changed, 87 insertions(+)
+>  create mode 100644 fs/binfmt_elf_test.c
+>
+> diff --git a/fs/Kconfig.binfmt b/fs/Kconfig.binfmt
+> index 4d5ae61580aa..8e14589ee9cc 100644
+> --- a/fs/Kconfig.binfmt
+> +++ b/fs/Kconfig.binfmt
+> @@ -28,6 +28,23 @@ config BINFMT_ELF
+>           ld.so (check the file <file:Documentation/Changes> for location=
+ and
+>           latest version).
+>
+> +config BINFMT_ELF_KUNIT_TEST
+> +       bool "Build KUnit tests for ELF binary support" if !KUNIT_ALL_TES=
+TS
+> +       depends on KUNIT=3Dy && BINFMT_ELF=3Dy
+> +       default KUNIT_ALL_TESTS
+> +       help
+> +         This builds the ELF loader KUnit tests.
+> +
+> +         KUnit tests run during boot and output the results to the debug=
+ log
+> +         in TAP format (https://testanything.org/). Only useful for kern=
+el devs
 
-All errors (new ones prefixed by >>):
+Tangent: should we update the kunit style guide to not refer to TAP
+anymore as it's not accurate?
+The KTAP spec is live on kernel.org at
+https://www.kernel.org/doc/html/latest/dev-tools/ktap.html
 
-   s390-linux-ld: mm/swapfile.o: in function `__crc_si_swapinfo':
->> (.rodata+0x0): multiple definition of `__crc_si_swapinfo'; arch/s390/appldata/appldata_base.o:(.rodata+0x0): first defined here
+We can leave this patch as-is and update later, or have it be the
+guinea pig for the new proposed wording.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+(I'm personally in favor of people not copy-pasting these paragraphs
+in the first place, but that is what the style-guide currently
+recommends)
+
+> +         running KUnit test harness and are not for inclusion into a
+> +         production build.
+> +
+> +         For more information on KUnit and unit tests in general please =
+refer
+> +         to the KUnit documentation in Documentation/dev-tools/kunit/.
+> +
+> +         If unsure, say N.
+> +
+>  config COMPAT_BINFMT_ELF
+>         def_bool y
+>         depends on COMPAT && BINFMT_ELF
+> diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+> index 76ff2af15ba5..9bea703ed1c2 100644
+> --- a/fs/binfmt_elf.c
+> +++ b/fs/binfmt_elf.c
+> @@ -2335,3 +2335,7 @@ static void __exit exit_elf_binfmt(void)
+>  core_initcall(init_elf_binfmt);
+>  module_exit(exit_elf_binfmt);
+>  MODULE_LICENSE("GPL");
+> +
+> +#ifdef CONFIG_BINFMT_ELF_KUNIT_TEST
+> +#include "binfmt_elf_test.c"
+> +#endif
+> diff --git a/fs/binfmt_elf_test.c b/fs/binfmt_elf_test.c
+> new file mode 100644
+> index 000000000000..486ad419f763
+> --- /dev/null
+> +++ b/fs/binfmt_elf_test.c
+> @@ -0,0 +1,64 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +#include <kunit/test.h>
+> +
+> +static void total_mapping_size_test(struct kunit *test)
+> +{
+> +       struct elf_phdr empty[] =3D {
+> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0, .p_memsz =3D 0, },
+> +               { .p_type =3D PT_INTERP, .p_vaddr =3D 10, .p_memsz =3D 99=
+9999, },
+> +       };
+> +       /*
+> +        * readelf -lW /bin/mount | grep '^  .*0x0' | awk '{print "\t\t{ =
+.p_type =3D PT_" \
+> +        *                              $1 ", .p_vaddr =3D " $3 ", .p_mem=
+sz =3D " $6 ", },"}'
+> +        */
+> +       struct elf_phdr mount[] =3D {
+> +               { .p_type =3D PT_PHDR, .p_vaddr =3D 0x00000040, .p_memsz =
+=3D 0x0002d8, },
+> +               { .p_type =3D PT_INTERP, .p_vaddr =3D 0x00000318, .p_mems=
+z =3D 0x00001c, },
+> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x00000000, .p_memsz =
+=3D 0x0033a8, },
+> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x00004000, .p_memsz =
+=3D 0x005c91, },
+> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x0000a000, .p_memsz =
+=3D 0x0022f8, },
+> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x0000d330, .p_memsz =
+=3D 0x000d40, },
+> +               { .p_type =3D PT_DYNAMIC, .p_vaddr =3D 0x0000d928, .p_mem=
+sz =3D 0x000200, },
+> +               { .p_type =3D PT_NOTE, .p_vaddr =3D 0x00000338, .p_memsz =
+=3D 0x000030, },
+> +               { .p_type =3D PT_NOTE, .p_vaddr =3D 0x00000368, .p_memsz =
+=3D 0x000044, },
+> +               { .p_type =3D PT_GNU_PROPERTY, .p_vaddr =3D 0x00000338, .=
+p_memsz =3D 0x000030, },
+> +               { .p_type =3D PT_GNU_EH_FRAME, .p_vaddr =3D 0x0000b490, .=
+p_memsz =3D 0x0001ec, },
+> +               { .p_type =3D PT_GNU_STACK, .p_vaddr =3D 0x00000000, .p_m=
+emsz =3D 0x000000, },
+> +               { .p_type =3D PT_GNU_RELRO, .p_vaddr =3D 0x0000d330, .p_m=
+emsz =3D 0x000cd0, },
+> +       };
+> +       size_t mount_size =3D 0xE070;
+> +       /* https://lore.kernel.org/lkml/YfF18Dy85mCntXrx@fractal.localdom=
+ain */
+
+Slight nit, it looks like that message wasn't sent to lkml.
+lore gives a suggestion to change to
+https://lore.kernel.org/linux-fsdevel/YfF18Dy85mCntXrx@fractal.localdomain/
