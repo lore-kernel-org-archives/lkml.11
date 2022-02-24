@@ -2,71 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8888C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD25C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233387AbiBXTNt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 14:13:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55496 "EHLO
+        id S233374AbiBXTOz convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 14:14:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233368AbiBXTNm (ORCPT
+        with ESMTP id S232606AbiBXTOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 14:13:42 -0500
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E405B1B45E0;
-        Thu, 24 Feb 2022 11:13:09 -0800 (PST)
-Received: by mail-oi1-f169.google.com with SMTP id j2so4324349oie.7;
-        Thu, 24 Feb 2022 11:13:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gO8mKD6oJQ6SsGZ1I3LRYKRxuk0QWc4mtMbDlxXHmEM=;
-        b=pOutkRGX+/pdJLCYtne1o8lIgMRc97Ah3bm5Nd+IgYYrGB5QQfcMWCA49Zy5dF25pG
-         uZzdb9/m5Ee2lq6x44+45J12TC6LiG7EyCGcNFZW1Ctnll+kgHV75Eb4/Xq8jfDCMuXu
-         TF4ZanIZZUjVwYrStQdgnOEyhiFH5f89bzGZJ0R3Sio5LFWJXt2JZ7HdKJDbz9HuPi0t
-         1Gp257ecbZQ1OiIadeOpRDuK8zGOBaQzKQbn5GJ/sI6Odq3/YcybaGfQ24VI8vWnRbsm
-         zCftI8MxhA337ghZD3bWebQLPWBpwpAiIRF6DL8jyHYIp+wshihWM9qnwH85Qr6a5qEb
-         OoHw==
-X-Gm-Message-State: AOAM530bUFrufUBEv2aBI7O+LpC+OolmdwyUIh54nATanNFTKlgzMFM/
-        59xLDV7d7IBZIh/IHnFF0g==
-X-Google-Smtp-Source: ABdhPJxSE2V4KzoGxO8uB42dcagdW3rigyxskipbEsYfE+yS/5sBDwcT03JhXoRbpihZKx8vJtrYDg==
-X-Received: by 2002:a05:6870:1114:b0:d6:d4df:ce9c with SMTP id 20-20020a056870111400b000d6d4dfce9cmr1396319oaf.19.1645729989268;
-        Thu, 24 Feb 2022 11:13:09 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id 9-20020a9d0c09000000b005afabd759cfsm76526otr.65.2022.02.24.11.13.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 11:13:08 -0800 (PST)
-Received: (nullmailer pid 3424377 invoked by uid 1000);
-        Thu, 24 Feb 2022 19:13:07 -0000
-Date:   Thu, 24 Feb 2022 13:13:07 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Marcello Sylvester Bauer <sylv@sylv.io>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Jean Delvare <jdelvare@suse.com>
-Subject: Re: [PATCH v4 1/4] dt-bindings: vendor-prefixes: add Vicor
- Corporation
-Message-ID: <YhfYw/Q6v3K1uCvV@robh.at.kernel.org>
-References: <cover.1645435888.git.sylv@sylv.io>
- <5b487a0b68d58b64022662f1e527ac80a6ad81ef.1645435888.git.sylv@sylv.io>
+        Thu, 24 Feb 2022 14:14:54 -0500
+Received: from mxout04.lancloud.ru (mxout04.lancloud.ru [45.84.86.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F5F22A2AF
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:14:19 -0800 (PST)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 7DC08208A54C
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Denis Glazkov <d.glazkov@omp.ru>
+CC:     Denis Glazkov <d.glazkov@omp.ru>,
+        Mehmet Kayaalp <mkayaalp@linux.vnet.ibm.com>,
+        Mimi Zohar <zohar@linux.vnet.ibm.com>,
+        "David Howells" <dhowells@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH] insert-sys-cert: fix memory leak in the error handling block
+Thread-Topic: [PATCH] insert-sys-cert: fix memory leak in the error handling
+ block
+Thread-Index: AQHYKbFY9tSzHb5Ryk2rPh8KT5ToJg==
+Date:   Thu, 24 Feb 2022 19:04:28 +0000
+Message-ID: <20220224190343.142692-1-d.glazkov@omp.ru>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [192.168.11.137]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5b487a0b68d58b64022662f1e527ac80a6ad81ef.1645435888.git.sylv@sylv.io>
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 21 Feb 2022 10:42:04 +0100, Marcello Sylvester Bauer wrote:
-> Add vendor prefix for Vicor Corporation.
-> 
-> Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
-> ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+In the `read_file` function of `insert-sys-cert.c` script, if
+the data is read incorrectly, the memory allocated for the `buf`
+array is not freed.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Fixes: c4c361059585 ("KEYS: Reserve an extra certificate symbol for inserting without recompiling")
+Signed-off-by: Denis Glazkov <d.glazkov@omp.ru>
+---
+ scripts/insert-sys-cert.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/scripts/insert-sys-cert.c b/scripts/insert-sys-cert.c
+index 8902836c2342..b98a0b12f16f 100644
+--- a/scripts/insert-sys-cert.c
++++ b/scripts/insert-sys-cert.c
+@@ -251,6 +251,7 @@ static char *read_file(char *file_name, int *size)
+ 	if (read(fd, buf, *size) != *size) {
+ 		perror("File read failed");
+ 		close(fd);
++		free(buf);
+ 		return NULL;
+ 	}
+ 	close(fd);
+-- 
+2.25.1
