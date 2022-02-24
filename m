@@ -2,107 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5146BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:40:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD583C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:40:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232920AbiBXSkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 13:40:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37008 "EHLO
+        id S232937AbiBXSkl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 13:40:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiBXSkb (ORCPT
+        with ESMTP id S229778AbiBXSkh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 13:40:31 -0500
-X-Greylist: delayed 166129 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 10:39:59 PST
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0CC25D6FC;
-        Thu, 24 Feb 2022 10:39:59 -0800 (PST)
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 91D231BF203;
-        Thu, 24 Feb 2022 18:39:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1645727998;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ekM1W1uzOOxfBmlQ7EQovp83hvSwhF7Ii2bJO1V+DjA=;
-        b=Sg9IJ5Z1f7t8z9TDjBOQ+4Q4gutrAaWI9EO8jWgu1v/s90TYOBuytik28VhCe2s5DSIMU2
-        X3Tg8bDOWONL/MiRpodw2q83J69VOdIhpor0Fdol52NDbYplXMhjonfxZlYtEPgUT7JoEX
-        srwv1EBOIMIXT5D7GDhbZFz1khD5DectJmTWjdRiyZlbMEIEos9Xbp/uMs/6Sg8zik1jAo
-        7Ge/yJY9L4BQ1JPHUMX4jDNeXaoIkPt1Xzkl7xoGWDXaUEg8qmFviUho5eh7yMwdZUiodP
-        G+0Ljc1J8oasASN0u+vkVVOroUM7DTQveVQvzDoB56f6HSxBMgoP/0P9qupS3g==
-Date:   Thu, 24 Feb 2022 19:39:52 +0100
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Wolfram Sang <wsa@kernel.org>, Peter Rosin <peda@axentia.se>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-i2c@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [RFC 00/10] add support for fwnode in i2c mux system and sfp
-Message-ID: <YhfQ+MCYxrdDqN9J@piout.net>
-References: <20220221162652.103834-1-clement.leger@bootlin.com>
- <20220224154040.2633a4e4@fixe.home>
- <2d3278ef-0126-7b93-319b-543b17bccdc2@redhat.com>
- <YhelOFYKBsfQ8SRW@sirena.org.uk>
- <YhfLG6wlFvYY3YU8@paasikivi.fi.intel.com>
+        Thu, 24 Feb 2022 13:40:37 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52B925F359
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:40:03 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id z7so4128454oid.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:40:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=JG8OwsrxHVatgWkESDwLdKHhhAoyBfhLVcqDq6Xl4j8=;
+        b=Nue9dIyLnLRe51dVkAI9WgHex7MOMePw8sXd9sVZ39rl9dgLANUQngeIVHGPbKj6eV
+         3O1kZoMWMcr61E8XZwkNNSfVhBdJLiHZAiFspq0RiIXI2UqCFSvgde2iSFiEHH28tvqd
+         a/Sc0t6/OxUTUQWKB4AllUyv3M9MW1ZPZ/KO8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=JG8OwsrxHVatgWkESDwLdKHhhAoyBfhLVcqDq6Xl4j8=;
+        b=nakehaM/3waBEl/tr8JSIGHBywAGteaiPvf9vfrwkOCd5eO7kLPdf0k8By/lfQr7ge
+         2j4rIOEXoRq0iK775SeaFmLPLnd+FlOlmbLQ75fa7Tifm+32BGkc9Yw/rvnKY8pRWxb5
+         zVWaBUUfIKjcvFoPbrl2WB9mlfMpx4rjyinEhA184IcNKYBa7kCQ/LKkitIrgQJM1gEr
+         vzWcUeqfdmmbDxIS83qmGLPdaHEU6ACK0nqsh2ZZfCFIQc0ASe5bHtYTXDj8bzkIW4h1
+         /Iv/F2uAWRy4UvTfMFUIDoHtB5OAvvfVVEiOfVtKMTFrZsRt9Vq7OfDgqoxfdt7o6adF
+         ooLQ==
+X-Gm-Message-State: AOAM532zL4Smp6IlqU8Nv91TB6Hh+sn7FdYz+CHEqMrY+fobNameq/8d
+        hvWttkmNMF8rgE72EGT9PnyIKP4qX1YFOemQShWHgg==
+X-Google-Smtp-Source: ABdhPJx3XVZBAQZNQYSBRrLu+brA6da/H1Y+gwNqMyQmx/VI8HDEXVpWlfluK1fpgehTBZ551KVTM8WR/64X1gQR5m8=
+X-Received: by 2002:a05:6870:5829:b0:c8:9f42:f919 with SMTP id
+ r41-20020a056870582900b000c89f42f919mr1934057oap.54.1645728003149; Thu, 24
+ Feb 2022 10:40:03 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 24 Feb 2022 10:40:02 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhfLG6wlFvYY3YU8@paasikivi.fi.intel.com>
+In-Reply-To: <1645122930-23863-4-git-send-email-quic_khsieh@quicinc.com>
+References: <1645122930-23863-1-git-send-email-quic_khsieh@quicinc.com> <1645122930-23863-4-git-send-email-quic_khsieh@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 24 Feb 2022 10:40:02 -0800
+Message-ID: <CAE-0n50nMVEG5ccU=m0hNoyPnWvyugjRSXL9hoW=VOxm6+w2uw@mail.gmail.com>
+Subject: Re: [PATCH v4 3/3] drm/msm/dp: replace DRM_DEBUG_DP marco with drm_dbg_dp
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
+        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
+        dmitry.baryshkov@linaro.org, dri-devel@lists.freedesktop.org,
+        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org
+Cc:     quic_abhinavk@quicinc.com, quic_aravindh@quicinc.com,
+        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/02/2022 20:14:51+0200, Sakari Ailus wrote:
-> Hi Mark,
-> 
-> On Thu, Feb 24, 2022 at 03:33:12PM +0000, Mark Brown wrote:
-> > On Thu, Feb 24, 2022 at 03:58:04PM +0100, Hans de Goede wrote:
-> > 
-> > > As Mark already mentioned the regulator subsystem has shown to
-> > > be a bit problematic here, but you don't seem to need that?
-> > 
-> > I believe clocks are also potentially problematic for similar reasons
-> > (ACPI wants to handle those as part of the device level power management
-> > and/or should have native abstractions for them, and I think we also
-> > have board file provisions that work well for them and are less error
-> > prone than translating into an abstract data structure).
-> 
-> Per ACPI spec, what corresponds to clocks and regulators in DT is handled
-> through power resources. This is generally how things work in ACPI based
-> systems but there are cases out there where regulators and/or clocks are
-> exposed to software directly. This concerns e.g. camera sensors and lens
-> voice coils on some systems while rest of the devices in the system are
-> powered on and off the usual ACPI way.
-> 
-> So controlling regulators or clocks directly on an ACPI based system
-> wouldn't be exactly something new. All you need to do in that case is to
-> ensure that there's exactly one way regulators and clocks are controlled
-> for a given device. For software nodes this is a non-issue.
-> 
-> This does have the limitation that a clock or a regulator is either
-> controlled through power resources or relevant drivers, but that tends to
-> be the case in practice. But I presume it wouldn't be different with board
-> files.
-> 
+Quoting Kuogee Hsieh (2022-02-17 10:35:30)
+> Since DRM_DEBUG_DP is deprecated in favor of drm_dbg_dp(NULL, ...),
+> this patch replace all DRM_DEBUG_DP with drm_dbg_dp().
+>
+> Changes in v4:
+> -- replace (strucr drm_dev *)NULL with drm_dev
+>
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> ---
 
-In this use case, we don't need anything that is actually described in
-ACPI as all the clocks we need to control are on the device itself so I
-don't think this is relevant here.
-
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
