@@ -2,115 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2444C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:55:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24BE7C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235259AbiBXXz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 18:55:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54854 "EHLO
+        id S235499AbiBXX5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 18:57:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230496AbiBXXzy (ORCPT
+        with ESMTP id S233412AbiBXX5E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 18:55:54 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C5D8F29A560
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 15:55:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645746922;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9E09i9rW+J6vekvARH8o2H2vbvxRXniUVAYHryF0eTs=;
-        b=CqIDkKfruJOTODui8H/3ap9nDOI1RFWBH3xdZveh3H2XboSKzxm5jMm7ScugLF80Bx30uL
-        TJh2gY6j7gpYMvh+3INpUb9ma9fmYf23YNcLRf3GW4fWb2DGP/saYkk66x5jG16i3HoWca
-        q9SUmxB6zPaSa+e/R45Zt3apRh7J3w8=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-534--h95dIrbPQmesoYHqu14SA-1; Thu, 24 Feb 2022 18:55:21 -0500
-X-MC-Unique: -h95dIrbPQmesoYHqu14SA-1
-Received: by mail-qk1-f200.google.com with SMTP id i10-20020a05620a144a00b00648d4fa059dso4256876qkl.0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 15:55:21 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9E09i9rW+J6vekvARH8o2H2vbvxRXniUVAYHryF0eTs=;
-        b=LDfRCr/R7VTafGeIvdNbPPyZMSGBf5vDycoO6j+4xrXKMNCKeQuTfzNvOrdppLahW4
-         toZ+158NMztOxxLS3y7Ov1+W3vGASbszp8370WnHAI/MxJM6JFlZjm1vUWRbQpFFyYV3
-         HS2YqGMx33o0MJE8dEZEu67+prDOmjUQx9ndMNUtFhRw8MEgg2EUfM+qcv45QMgGni7z
-         FKIO3JehwRXJPLPF5xuBhHX9KrpM903Upf04LOJZcVmB8U1+hRDOBaycABv1NGbHv68z
-         EWnMeQrmr3F5r+5p1ICA5lO8HNP8YHMMVh6V/g6TTnMasIZZJYsuATINNWaKTm2Qarl2
-         beoQ==
-X-Gm-Message-State: AOAM532QlZ1ONxkxQ+B0M8aFS7vJrAq47HQoORRPDLnEVA4wJjlFNGkR
-        Sk0gv4MPilsSHUwksDK9TcA2gwICgEq7k+G4Z5viCGCJMwYQm+DoKrpDSGGit1e1w+sYhMfjAGr
-        X2q9yZ3Rbfed08fWhyUe6u3LG
-X-Received: by 2002:ac8:7f01:0:b0:2dd:bab8:6885 with SMTP id f1-20020ac87f01000000b002ddbab86885mr4816494qtk.130.1645746920637;
-        Thu, 24 Feb 2022 15:55:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy/VsATmojth2uqM5nUm6t1vpGEWqqogoXeU81tqIBlCIjhSne2BXUb+VcNp3pgGNjqCsI86Q==
-X-Received: by 2002:ac8:7f01:0:b0:2dd:bab8:6885 with SMTP id f1-20020ac87f01000000b002ddbab86885mr4816481qtk.130.1645746920419;
-        Thu, 24 Feb 2022 15:55:20 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id d4-20020a05620a136400b0060dda40b3ecsm509760qkl.30.2022.02.24.15.55.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 15:55:19 -0800 (PST)
-Date:   Thu, 24 Feb 2022 15:55:16 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 18/39] x86/ibt: Add IBT feature, MSR and #CP handling
-Message-ID: <20220224235516.qdikcfdl7jo35iu6@treble>
-References: <20220224145138.952963315@infradead.org>
- <20220224151323.069205370@infradead.org>
+        Thu, 24 Feb 2022 18:57:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B1BCF4;
+        Thu, 24 Feb 2022 15:56:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1597D61CC4;
+        Thu, 24 Feb 2022 23:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FC86C340E9;
+        Thu, 24 Feb 2022 23:56:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645746991;
+        bh=Bcw8mhZnxmHb7B1GOp2cD6Lk6Ab6pk8FChUbZq6MsAw=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=SoCrKuP/DYwSeLZt1z2EcFbpR4KSYDL+nIkHkBmjVmBtz7shUJ2pDi3RI8a7gcW6c
+         h1hO2eqYriq/Wq9SpVTiDvfKnSC5lfGOr3R+HqgJfXkciCnqFf/RJHrfcHVYSeCtie
+         v5yl1HYlJaePLyLtjAovbgXjIhTvcATkJ8m+kDT4WT5VmI0vzYN/7ho7AvLTsTAWi1
+         IEdRUOEUcFVGHInNsYkJVy3W2txKBq0OLMnc6xebKNF8FbB7c7awZisJA3ANSIEwlI
+         3P2V0eNaJ/7+F+MPRDlj+QtvJwCi0qVAUrTGI/CxEnb1RSD1Tt1lX6eaG8kGm4fSzT
+         otIeAzBKjXTJg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220224151323.069205370@infradead.org>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1645505785-2271-3-git-send-email-quic_rohiagar@quicinc.com>
+References: <1645505785-2271-1-git-send-email-quic_rohiagar@quicinc.com> <1645505785-2271-3-git-send-email-quic_rohiagar@quicinc.com>
+Subject: Re: [PATCH v4 2/5] clk: qcom: Add A7 PLL support for SDX65
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
+        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
+        mturquette@baylibre.com, robh+dt@kernel.org
+Date:   Thu, 24 Feb 2022 15:56:29 -0800
+User-Agent: alot/0.10
+Message-Id: <20220224235631.6FC86C340E9@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 03:51:56PM +0100, Peter Zijlstra wrote:
-> +static __always_inline void setup_cet(struct cpuinfo_x86 *c)
-> +{
-> +	u64 msr = CET_ENDBR_EN;
-> +
-> +	if (!HAS_KERNEL_IBT ||
-> +	    !cpu_feature_enabled(X86_FEATURE_IBT))
-> +		return;
+Quoting Rohit Agarwal (2022-02-21 20:56:22)
+> Update A7 PLL Kconfig to reflect support for SDX65.
+>=20
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+> ---
 
-If you add X86_FEATURE_BIT to arch/x86/include/asm/disabled-features.h,
-the HAS_KERNEL_IBT check becomes redundant.
-
-> +bool ibt_selftest(void)
-> +{
-> +	unsigned long ret;
-> +
-> +	asm ("1: lea 2f(%%rip), %%rax\n\t"
-> +	     ANNOTATE_RETPOLINE_SAFE
-> +	     "   jmp *%%rax\n\t"
-> +	     ASM_REACHABLE
-> +	     ANNOTATE_NOENDBR
-> +	     "2: nop\n\t"
-> +
-> +	     /* unsigned ibt_selftest_ip = 2b */
-> +	     ".pushsection .rodata,\"a\"\n\t"
-> +	     ".align 8\n\t"
-> +	     ".type ibt_selftest_ip, @object\n\t"
-> +	     ".size ibt_selftest_ip, 8\n\t"
-> +	     "ibt_selftest_ip:\n\t"
-> +	     ".quad 2b\n\t"
-> +	     ".popsection\n\t"
-
-It's still seems silly to make this variable in asm.
-
-Also .rodata isn't going to work for CPU hotplug.
-
--- 
-Josh
-
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
