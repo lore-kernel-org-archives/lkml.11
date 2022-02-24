@@ -2,98 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C15C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:08:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F06AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233212AbiBXKJM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:09:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45608 "EHLO
+        id S233252AbiBXKJy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:09:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231319AbiBXKJK (ORCPT
+        with ESMTP id S233227AbiBXKJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:09:10 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAA028A109;
-        Thu, 24 Feb 2022 02:08:40 -0800 (PST)
-Received: from mail-lj1-f182.google.com ([209.85.208.182]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1Mo6zD-1o2IUW1RQB-00pbU6; Thu, 24 Feb 2022 11:08:39 +0100
-Received: by mail-lj1-f182.google.com with SMTP id bn33so2071645ljb.6;
-        Thu, 24 Feb 2022 02:08:39 -0800 (PST)
-X-Gm-Message-State: AOAM532G8Nc3Lr+kfTgtRAzsLg/iGKWg5v1Px0de78F49wEhGEADs0E2
-        94bcPp89euS1fmF54swAl9txrZlXM7kDSpE9kGY=
-X-Google-Smtp-Source: ABdhPJzPVQaW1f3Bbzw+kTDiMg4Tajz+c6SJ2JtQUsJaSw6D1lJ8eGh3OG9MaDTzij1odC2MMgMswcl0VWfIMCexGbY=
-X-Received: by 2002:a5d:59aa:0:b0:1ed:9f45:c2ff with SMTP id
- p10-20020a5d59aa000000b001ed9f45c2ffmr1412807wrr.192.1645694019453; Thu, 24
- Feb 2022 01:13:39 -0800 (PST)
+        Thu, 24 Feb 2022 05:09:40 -0500
+Received: from mail.tintel.eu (mail.tintel.eu [51.83.127.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223D128AD96;
+        Thu, 24 Feb 2022 02:09:05 -0800 (PST)
+Received: from localhost (localhost [IPv6:::1])
+        by mail.tintel.eu (Postfix) with ESMTP id 50C8C434FC4A;
+        Thu, 24 Feb 2022 11:09:02 +0100 (CET)
+Received: from mail.tintel.eu ([IPv6:::1])
+        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10032)
+        with ESMTP id SFVhmd4-Hbc4; Thu, 24 Feb 2022 11:09:01 +0100 (CET)
+Received: from localhost (localhost [IPv6:::1])
+        by mail.tintel.eu (Postfix) with ESMTP id BBDAB434FC4B;
+        Thu, 24 Feb 2022 11:09:01 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.tintel.eu BBDAB434FC4B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux-ipv6.be;
+        s=502B7754-045F-11E5-BBC5-64595FD46BE8; t=1645697341;
+        bh=NsEziSD8zXGAxjibXFGFRrDDNKL9BST7ZKyzNe6aCCc=;
+        h=Message-ID:Date:MIME-Version:To:From;
+        b=cjdelavZb9bpnlZ24Xu1lGiiftDZaQ9y9quF0qr572LG3GfZefKKt9dUqmP7bjiLj
+         R1a8lWip6pBHta8VooDEz3xgPmIt8MdklEls7mtZKSqClTrUKqLM5TJBk0v+8Siyyx
+         keJo3orc3JNB7CeA95rH4x8IBQDcFtW6jFtaYZlc=
+X-Virus-Scanned: amavisd-new at mail.tintel.eu
+Received: from mail.tintel.eu ([IPv6:::1])
+        by localhost (mail.tintel.eu [IPv6:::1]) (amavisd-new, port 10026)
+        with ESMTP id 0BgzWEgqgmxJ; Thu, 24 Feb 2022 11:09:01 +0100 (CET)
+Received: from [IPV6:2001:67c:21bc:20::10] (unknown [IPv6:2001:67c:21bc:20::10])
+        (Authenticated sender: stijn@tintel.eu)
+        by mail.tintel.eu (Postfix) with ESMTPSA id E115A434FC4A;
+        Thu, 24 Feb 2022 11:09:00 +0100 (CET)
+Message-ID: <ac624e07-5310-438a-dce3-d2edb01e8031@linux-ipv6.be>
+Date:   Thu, 24 Feb 2022 12:08:59 +0200
 MIME-Version: 1.0
-References: <20220224085410.399351-1-guoren@kernel.org> <20220224085410.399351-17-guoren@kernel.org>
-In-Reply-To: <20220224085410.399351-17-guoren@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 24 Feb 2022 10:13:23 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a13_VBpTidoF_pUdV5g0MFqpSe17rgw=XUv69CCFCN0_g@mail.gmail.com>
-Message-ID: <CAK8P3a13_VBpTidoF_pUdV5g0MFqpSe17rgw=XUv69CCFCN0_g@mail.gmail.com>
-Subject: Re: [PATCH V6 16/20] riscv: compat: vdso: Add rv32 VDSO base code implementation
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
-        Anup Patel <anup@brainfault.org>,
-        gregkh <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:s5S3jWFc5RkWSW1T8zhfkjyFM+NtY1UTK5PZjDzVdrUIGCAi+dI
- 1HMN5WMb+Hx0SFXx6NYytdF/RHKuQjmxKquYmQeOY4IIuD8EZh1pQGcStz2/KiODy/IXQw1
- rR3LEQ6hrUugBHhsHBUc7/pMDiVlDZDiZrQ24lKsFeLjTelCk2E0iok+2h5fPKfXbu12FL8
- 6xq9n2NG0QYZrlyCMg3TA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NiNxplWOlyE=:cKTvBCD+xcsnkPA7P47Qo3
- 7LIAQUjMulhaEHwuIGgZJV+qdzepuabf9FmzSgmBt2fSUfDtN+WdH68SdgbXreVkFdN/u8vsO
- /2IOcRklgJiT4/hHojoNvx3Nr0Nq+4QHrBqwmrHCd8YKftGez64ervPAg4gAHdqFvyqcgH6zJ
- WoJXjZLSyo614T5KXcvUMo6k0s89/QZxmYzPzyhT1d3GjW0oH9QWwNtOVBM50UKNUVofEtSNU
- YEeOGt/Lz6jRukL4DhrJIWdPxtatgbtiuqfl6nxhWbZkQqFBUk+zHMV+bkRiBJd616S0W01GJ
- QWToZ6TQhWK02oemfQZc1mGczFNWPW7Om0UlrrtrsuCQFXbu8TA8SEzY3qYY47AzbStQUHoij
- OwG0oMMRHSBo1hbiZF8JQ5uhnKl3H+xYezmaZxEQrmCDBaMQWhTXy91WK1VwfV4yw2wclXkWp
- 4+gnwqaz9En6vLo4ULS06NJGq4Qheonqp2SBEuAW9kyDR0AHau5dD8+lnwvw+/LplMFeyo6Hw
- NJ9xsHWvj83zU9P+ZcsmRIliMnSwTLqwQ80U1M2S3pty23lFkULF1PEy9kDb03K+DiNxS6L+t
- wKeMKma+atCJd3T2XORM6KaPj/RmAcf94t27JBU6mF4jJkPWFZAxNuLbM4IzWbzjJDmMcNc6k
- +sbw7p1zwytolKDdL+LlACrbRds1w/SNWdQ1ZP3h6H5ql1HTjp6/dXUCoA0rPOkeJ5OAfJw6r
- 4MRUG/jUm2JV5nqc4YJIaQ5RsYKMNMlDpcxBSslA8vfoeJomInoailMTI4EK95VCutL8BWUQW
- uAj7JlXByDwzU4cLV/bUpiWZ2jFHzWp5GarE5btpKFCczLJ0Pg=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] libbpf: fix BPF_MAP_TYPE_PERF_EVENT_ARRAY auto-pinning
+Content-Language: en-GB
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Song Liu <song@kernel.org>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+References: <20220222204236.2192513-1-stijn@linux-ipv6.be>
+ <CAPhsuW6WgjL_atKCivbk5iMNBFHuSGcjAC0tdZYag2fOesUBKA@mail.gmail.com>
+ <CAEf4BzYuk2Rur-pae7gbuXSb=ayJ0fUREStdWyorWgd_q1D9zQ@mail.gmail.com>
+From:   Stijn Tintel <stijn@linux-ipv6.be>
+In-Reply-To: <CAEf4BzYuk2Rur-pae7gbuXSb=ayJ0fUREStdWyorWgd_q1D9zQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 9:54 AM <guoren@kernel.org> wrote:
+On 24/02/2022 01:15, Andrii Nakryiko wrote:
+> On Tue, Feb 22, 2022 at 6:37 PM Song Liu <song@kernel.org> wrote:
+>> On Tue, Feb 22, 2022 at 12:51 PM Stijn Tintel <stijn@linux-ipv6.be> wrote:
+>>> When a BPF map of type BPF_MAP_TYPE_PERF_EVENT_ARRAY doesn't have the
+>>> max_entries parameter set, this parameter will be set to the number of
+>>> possible CPUs. Due to this, the map_is_reuse_compat function will return
+>>> false, causing the following error when trying to reuse the map:
+>>>
+>>> libbpf: couldn't reuse pinned map at '/sys/fs/bpf/m_logging': parameter mismatch
+>>>
+>>> Fix this by checking against the number of possible CPUs if the
+>>> max_entries parameter is not set in the map definition.
+>>>
+>>> Fixes: 57a00f41644f ("libbpf: Add auto-pinning of maps when loading BPF objects")
+>>> Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
+>> Acked-by: Song Liu <songliubraving@fb.com>
+>>
+>> I think the following fix would be more future proof, but the patch
+>> as-is is better for
+>> stable backport? How about we add a follow up patch on top of current
+>> patch to fix
+>> def->max_entries once for all?
+> Keeping special logic for PERF_EVENT_ARRAY in one place is
+> preferrable. With this, the changes in map_is_reuse_compat() shouldn't
+> be necessary at all. Stijn, can you please send v2 with Song's
+> proposed changes?
 >
-> From: Guo Ren <guoren@linux.alibaba.com>
->
-> There is no vgettimeofday supported in rv32 that makes simple to
-> generate rv32 vdso code which only needs riscv64 compiler. Other
-> architectures need change compiler or -m (machine parameter) to
-> support vdso32 compiling. If rv32 support vgettimeofday (which
-> cause C compile) in future, we would add CROSS_COMPILE to support
-> that makes more requirement on compiler enviornment.
+Will do!
 
-I think it's just a bug that rv32 doesn't have the vdso version of the
-time syscalls. Fixing that is of course independent of the compat support,
-but I think you need that anyway, and it would be better to start
-out by building the compat vdso with the correct
-architecture level.
+Thanks,
+Stijn
 
-At least this should be a lot easier than on arch/arm64 because you
-can assume that an rv64 compiler is able to also build rv32 output.
-
-        Arnd
