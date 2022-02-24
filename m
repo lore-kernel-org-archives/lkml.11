@@ -2,150 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D877C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7A8C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232107AbiBXRa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:30:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54788 "EHLO
+        id S232156AbiBXRa5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:30:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231868AbiBXRaZ (ORCPT
+        with ESMTP id S232173AbiBXRay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 12:30:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9456E1D8A96
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:29:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645723764;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zOV5EV1UzXliH9U/EzhEDJEFZZoLbZzEL9tR71RF+1A=;
-        b=TNcj/xEzGik3AWkTtN7fEmpNUOCqO/Fk2zRzh6tNCV0gDNlUsOVOg/e7RKNc51w4aSbKVz
-        VlkKPGKD6ISJlyfJnxW+ZIAUMqmgw3Gmn7XSnoBlUBKzzQVvuYVjEUW6yhWkBUDBxmX0zw
-        JYpelPGpd+5TXRLe65wlw/OyNWADsOI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-508-Cq01rZ-aOKORCANWokIZVQ-1; Thu, 24 Feb 2022 12:29:21 -0500
-X-MC-Unique: Cq01rZ-aOKORCANWokIZVQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 74E2018766D0;
-        Thu, 24 Feb 2022 17:29:19 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E91AF866DD;
-        Thu, 24 Feb 2022 17:29:16 +0000 (UTC)
-Message-ID: <334aadda53c7837d71e7c9d11b772a4a66b58df3.camel@redhat.com>
-Subject: Re: [RFC PATCH 06/13] KVM: SVM: Add logic to determine x2APIC mode
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Thu, 24 Feb 2022 19:29:15 +0200
-In-Reply-To: <20220221021922.733373-7-suravee.suthikulpanit@amd.com>
-References: <20220221021922.733373-1-suravee.suthikulpanit@amd.com>
-         <20220221021922.733373-7-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Thu, 24 Feb 2022 12:30:54 -0500
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5ADD186B8F
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:30:17 -0800 (PST)
+Received: by mail-lj1-x234.google.com with SMTP id 29so3895910ljv.10
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:30:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m4hVCpcCFZnM0DwuIUgvXeClSraq3VQwNahMuo1dtAw=;
+        b=Vn4q9ExhzF6/aa6K4IV4Mv5h4cOBN4xQtQ1HVo+M+a1YLNz0Fy3+7AlJmErH2l9UvD
+         bQDBtN2Mro37hCGnk7PhBCU4Jma9IUyUSRwJU+NVM5AmChdlBYsTwV0mjijoYB1/oBtt
+         jkt3S8nOpa4Y4x0srqodxMrYyLsUiUlPr6CSs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m4hVCpcCFZnM0DwuIUgvXeClSraq3VQwNahMuo1dtAw=;
+        b=K9o1kCQq9gflsZ6Z4D60B1ZfHNt2LuAPtfJvj0hg31rFLoMCR8uX/5NiqTe/80OZeT
+         95AeoJfCQVs5eDOKtUV+H9WLG4dU0zaFYbl4jzXHEcfHxzyhCwEfRxYjAUXNk+Z+HZ+t
+         4OuKCMvsxHRnaUtN3EgLH8vgeBJ5HZNsLYgmUzeCX6l4b3gcHwsHKO24Xo8TgIRbfuLS
+         MXfexXVNEpyy9LirHq9G6U7oGXHFJcD4X4WxfSvIBk4FO3eeU5H/87gF7Q8t3nyq9cIl
+         jdRw0Dl3GG5NY/7Rpy9S9OuVLmbCorwx9z++xiByQlzQ84Rznfe9jinwo4Wn2CO714oE
+         knWA==
+X-Gm-Message-State: AOAM532+29bByAJv05/dRYgPgTmY/w3tM1auUheVxDJYkNeYs+CLnNGD
+        BVIRzzViujQVvJ+rPdEzOfHJHk512gUx/oAm/+c=
+X-Google-Smtp-Source: ABdhPJxjDkgWSFn9lnektae+1F417a4lAz69/UohGCXLocAlqnJ95SNtOza29eI676NNl5qfRP7S4A==
+X-Received: by 2002:a2e:980a:0:b0:241:c1e6:2664 with SMTP id a10-20020a2e980a000000b00241c1e62664mr2594166ljj.320.1645723815653;
+        Thu, 24 Feb 2022 09:30:15 -0800 (PST)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
+        by smtp.gmail.com with ESMTPSA id g13-20020a2ea4ad000000b0023382d8819esm20099ljm.69.2022.02.24.09.30.13
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 09:30:13 -0800 (PST)
+Received: by mail-lf1-f42.google.com with SMTP id m14so5127914lfu.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:30:13 -0800 (PST)
+X-Received: by 2002:ac2:4d91:0:b0:443:127b:558a with SMTP id
+ g17-20020ac24d91000000b00443127b558amr2528931lfe.542.1645723813162; Thu, 24
+ Feb 2022 09:30:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <20220224122614.94921-1-david@redhat.com> <20220224122614.94921-6-david@redhat.com>
+In-Reply-To: <20220224122614.94921-6-david@redhat.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 24 Feb 2022 09:29:56 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wh+NxEVxeKc_o1xyVsJAQNqpN1zyCHN96gPEK+DzXaeLw@mail.gmail.com>
+Message-ID: <CAHk-=wh+NxEVxeKc_o1xyVsJAQNqpN1zyCHN96gPEK+DzXaeLw@mail.gmail.com>
+Subject: Re: [PATCH RFC 05/13] mm/rmap: remove do_page_add_anon_rmap()
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mike Rapoport <rppt@linux.ibm.com>,
+        Yang Shi <shy828301@gmail.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Vlastimil Babka <vbabka@suse.cz>, Jann Horn <jannh@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Nadav Amit <namit@vmware.com>, Rik van Riel <riel@surriel.com>,
+        Roman Gushchin <guro@fb.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Peter Xu <peterx@redhat.com>,
+        Donald Dutile <ddutile@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Oleg Nesterov <oleg@redhat.com>, Jan Kara <jack@suse.cz>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Pedro Gomes <pedrodemargomes@gmail.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-02-20 at 20:19 -0600, Suravee Suthikulpanit wrote:
-> Introduce avic_update_vapic_bar(), which checks the x2APIC enable bit
-> of the APIC Base register and update the new struct vcpu_svm.x2apic_enabled
-> to keep track of current APIC mode of each vCPU,
-> 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/kvm/svm/avic.c | 13 +++++++++++++
->  arch/x86/kvm/svm/svm.c  |  4 ++++
->  arch/x86/kvm/svm/svm.h  |  2 ++
->  3 files changed, 19 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 1999076966fd..60f30e48d816 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -609,6 +609,19 @@ void avic_post_state_restore(struct kvm_vcpu *vcpu)
->  	avic_handle_ldr_update(vcpu);
->  }
->  
-> +void avic_update_vapic_bar(struct vcpu_svm *svm, u64 data)
-> +{
-> +	svm->vmcb->control.avic_vapic_bar = data & VMCB_AVIC_APIC_BAR_MASK;
-> +
-> +	/* Set x2APIC mode bit if guest enable x2apic mode. */
-> +	svm->x2apic_enabled = (avic_mode == AVIC_MODE_X2 &&
-> +			       kvm_apic_mode(data) == LAPIC_MODE_X2APIC);
-> +	pr_debug("vcpu_id:%d switch to %s\n", svm->vcpu.vcpu_id,
-> +		 svm->x2apic_enabled ? "x2APIC" : "xAPIC");
-> +	vmcb_mark_dirty(svm->vmcb, VMCB_AVIC);
-> +	kvm_vcpu_update_apicv(&svm->vcpu);
-> +}
-> +
->  void svm_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
->  {
->  	return;
-> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> index 3687026f2859..4e6dc1feeac7 100644
-> --- a/arch/x86/kvm/svm/svm.c
-> +++ b/arch/x86/kvm/svm/svm.c
-> @@ -2867,6 +2867,10 @@ static int svm_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr)
->  		svm->msr_decfg = data;
->  		break;
->  	}
-> +	case MSR_IA32_APICBASE:
-> +		if (kvm_vcpu_apicv_active(vcpu))
-> +			avic_update_vapic_bar(to_svm(vcpu), data);
-> +		fallthrough;
->  	default:
->  		return kvm_set_msr_common(vcpu, msr);
->  	}
-> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-> index 1a0bf6b853df..bfbebb933da2 100644
-> --- a/arch/x86/kvm/svm/svm.h
-> +++ b/arch/x86/kvm/svm/svm.h
-> @@ -225,6 +225,7 @@ struct vcpu_svm {
->  	u32 dfr_reg;
->  	struct page *avic_backing_page;
->  	u64 *avic_physical_id_cache;
-> +	bool x2apic_enabled;
->  
->  	/*
->  	 * Per-vcpu list of struct amd_svm_iommu_ir:
-> @@ -566,6 +567,7 @@ void avic_init_vmcb(struct vcpu_svm *svm);
->  int avic_incomplete_ipi_interception(struct kvm_vcpu *vcpu);
->  int avic_unaccelerated_access_interception(struct kvm_vcpu *vcpu);
->  int avic_init_vcpu(struct vcpu_svm *svm);
-> +void avic_update_vapic_bar(struct vcpu_svm *svm, u64 data);
->  void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu);
->  void avic_vcpu_put(struct kvm_vcpu *vcpu);
->  void avic_post_state_restore(struct kvm_vcpu *vcpu);
+On Thu, Feb 24, 2022 at 4:29 AM David Hildenbrand <david@redhat.com> wrote:
+>
+> ... and instead convert page_add_anon_rmap() to accept flags.
 
+Can you fix the comment above the RMAP_xyz definitions? That one still says
 
-Have you looked at how this is done on Intel's APICv side?
-You need to implement .set_virtual_apic_mode instead.
-(look at vmx_set_virtual_apic_mode)
+  /* bitflags for do_page_add_anon_rmap() */
 
-I also don't think you need x2apic_enabled boolean.
-You can already know if a vCPU uses apic or x2apic via
+that tnow no longer exists.
 
-kvm_get_apic_mode(vcpu);
+Also, while this kind of code isn't unusual, I think it's still confusing:
 
-in fact I don't think avic code should have any bookeeping in regard to x2apic/x2avic mode,
-but rather kvm's apic mode  (which is read directly from apic base msr (vcpu->arch.apic_base),
-should enable avic, or x2avic if possible, or inhibit avic if not possible.
+> +               page_add_anon_rmap(page, vma, addr, 0);
 
-e.g it should drive the bits in vmcb and such.
+because when reading that, at least I go "what does 0 mean? Is it a
+page offset, or what?"
 
-Best regards,
-	Maxim Levitsky
+It might be a good idea to simply add a
 
+  #define RMAP_PAGE 0x00
+
+or something like that, just to have the callers all make it obvious
+that we're talking about that RMAP_xyz bits - even if some of them may
+be default.
+
+(Then using an enum of a special type is something we do if we want to
+add extra clarity or sparse testing, I don't think there are enough
+users for that to make sense)
+
+               Linus
