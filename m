@@ -2,258 +2,336 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F3BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7813FC4332F
 	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234930AbiBXV1q convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 16:27:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43984 "EHLO
+        id S234843AbiBXV1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 16:27:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234842AbiBXV1h (ORCPT
+        with ESMTP id S234801AbiBXV1V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 16:27:37 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC7412622;
-        Thu, 24 Feb 2022 13:26:54 -0800 (PST)
-Received: from [192.168.1.107] ([37.4.249.169]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1M5Q6l-1nLyiq2iI9-001Ngp; Thu, 24 Feb 2022 22:26:41 +0100
-Subject: Re: [PATCH v5.1 2/2] ARM: dts: bcm2711: Add unicam CSI nodes
-To:     Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, sbranden@broadcom.com,
-        rjui@broadcom.com, f.fainelli@gmail.com, nsaenz@kernel.org,
-        robh+dt@kernel.org, laurent.pinchart@ideasonboard.com,
-        dave.stevenson@raspberrypi.com, naush@raspberrypi.com
-References: <20220208155027.891055-7-jeanmichel.hautbois@ideasonboard.com>
- <20220223143434.71853-1-jeanmichel.hautbois@ideasonboard.com>
- <20220223143434.71853-2-jeanmichel.hautbois@ideasonboard.com>
- <3fceae58-b43e-0034-19c2-078f18010001@i2se.com>
- <944bdedc-afbb-e427-bd1d-676f8ed21a48@ideasonboard.com>
-From:   Stefan Wahren <stefan.wahren@i2se.com>
-Autocrypt: addr=stefan.wahren@i2se.com; keydata=
- LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tClZlcnNpb246IEdudVBHIHYy
- CgptUUlOQkZ0NmdCTUJFQUN1Yi9wQmV2SHhidkplZnlaRzMySklObW4yYnNFUFgyNVY2ZmVq
- bXlZd21DR0tqRnRMCi9Eb1VNRVZIRHhDSjQ3Qk1YbzM0NGZIVjFDM0FudWRnTjFCZWhMb0J0
- TEh4bW5lQ3pnSDNLY1B0V1c3cHRqNEcKdEp2OUNRRFp5MjdTS29FUHh5YUk4Q0YweWdSeEpj
- NzJNOUk5d21zUFo1YlVIc0x1WVdNcVE3SmNSbVBzNkQ4ZwpCa2srOC95bmdFeU5FeHd4SnBS
- MXlsajVianhXREh5WVF2dUo1THpaS3VPOUxCM2xYVnNjNGJxWEVqYzZWRnVaCkZDQ2svc3lp
- by9ZaHNlOE4rUXN4N01RYWd6NHdLVWtRUWJmWGcxVnFrVG5BaXZYczQyVm5Ja211NWd6SXcv
- MHQKUkp2NTBGUmhIaHhweUtBSThCOG5oTjhRdng3TVZrUGM1dkRmZDN1R1lXNDdKUGhWUUJj
- VXdKd05rLzQ5RjllQQp2ZzJtdE1QRm5GT1JrV1VSdlArRzZGSmZtNitDdk92N1lmUDF1ZXdB
- aTRsbitKTzFnK2dqVklXbC9XSnB5MG5UCmlwZGZlSDlkSGtnU2lmUXVuWWN1Y2lzTXlvUmJG
- OTU1dENna0VZOUVNRWRZMXQ4aUdEaUNnWDZzNTBMSGJpM2sKNDUzdWFjcHhmUVhTYUF3UGtz
- bDhNa0NPc3YyZUVyNElOQ0hZUUR5WmljbEJ1dUNnOEVOYlI2QUdWdFpTUGNRYgplbnpTektS
- Wm9POUNhcUlEK2ZhdkxpQi9kaHptSEErOWJnSWhtWGZ2WFJMRFp6ZThwbzFkeXQzRTFzaFhp
- ZGRaClBBOE51SlZ6RUl0MmxtSTZWOHBaRHBuMjIxcmZLaml2UlFpYW9zNTRUZ1pqak1ZSTdu
- bko3ZTZ4endBUkFRQUIKdENCVGRHVm1ZVzRnVjJGb2NtVnVJRHgzWVdoeVpXNXpkRUJuYlhn
- dWJtVjBQb2tDTndRVEFRZ0FJUVVDWElkYwo0Z0liQXdVTENRZ0hBZ1lWQ0FrS0N3SUVGZ0lE
- QVFJZUFRSVhnQUFLQ1JDVWdld1BFWkR5MjFPVEQvOUdpWkxkCnRSWWNteVJKZ2x0aVFRekFp
- UWRjSUQ3OGxHb1dwL3grci92Y1U2YjZqdVl1ZVR3Z1Iwclc3djdsMklSQnlEN24KSEp4YSt0
- SVNvUVpCZ2hvbE1JZmI5TXRoR09KTENZNzdrL1FoQWhuMzJOR1prZWp3OXR6a3MvNDBtclpT
- VVQ4NApaeWJzUVhyTE0vSFI2VElJL0RlUEIwbktEM0ppcHBzMlVIUUQ5cUQySWpFd1NRUGxI
- akNPckVaaDQ1UFo3bTkrClo5M0x6aVRlc1dabFlRdUxpSndzNHJLcHRIVzFkL3dSZWxzaG1t
- NlFxY0wybDRDL2U0MGVEQjlncTRkU1poOVgKUEVZbGxpeU5RaDdhMkxTZHVtRTFyK2NTd0lq
- RS91ZHRSdmRPOWFLb0psT2JVSzVkTmpTUEg3d0tUYndkWGRZRApHUHdEaFhkNThOQXdyK1BY
- QmxQajB0STFMQ3ErTEJ4ZUt6aFdYK0dWcTlEb2pWanlVREV4Rk5Ga1h1b0M3ZzhtClY5VDB0
- ZUJpdVpSbm91WEt3VjJGcHRaT0hIN0JVRVd0a0t0aGgxZXRmT1dwaWdCemtVN2JQc2ZJWVQr
- cnk5dGIKMW9KK3Y0MVBOYXFaRW1QVXBKeHZmek5UN3Ayd01lRDdaajlmMHJ1YlJQdExBSjJR
- R2pyRkhzdVh3QU9xcHl6ZQoxOEVidHNZazBOMHp1SEVoY2orUEJJQmZoMFlJWWQ1MW9mNkdJ
- aU95UjlxMFhYdHBsVUo3VDIvSDF1UXFrWGxwCitnVzRWa2lmc2NJckl1eWZueFpXMTJlSXZq
- NnlicVdMN2FZS0dZbVQ2aUxDUGJIWXlZY2F5bDRFa0ZjckNGN0UKZTBXVC9zY1ZNaE8vNVgv
- SGFOQTVIQngvcjUycGdMY3Y0aTlNeExRbVUzUmxabUZ1SUZkaGFISmxiaUE4YzNSbApabUZ1
- TG5kaGFISmxia0JwTW5ObExtTnZiVDZKQWpnRUV3RUNBQ0lGQWx0NmdCTUNHd01HQ3drSUJ3
- TUNCaFVJCkFna0tDd1FXQWdNQkFoNEJBaGVBQUFvSkVKU0I3QThSa1BMYmpic1AvamdqYVNz
- NUh0bGtBSXZXUytGcm15N2MKaG5jT0F4TFRWL0Q2UkV3SU95R0poRkt3d29pck55UTJnOXZV
- YTNZQ1lDZjFmSjh3RWhhS09COWQwTHBNUm5MNApkRVQ4ZDgyMzhFL3BLK0hxTktpSXNKaHM2
- SnNLOFpnalZRR3JtbWZua0dyWisxdjBIQnV4ZGljZ0duUC9XdHVBClVsOGw2Mi9BTGJheXlq
- KzYxQ2xyc0V0UklhcU82N0xJWXdQaVBEUkkrWGlNek5pR3pIRi8xUTZHUjAyUkg2YTMKRjg5
- ejhhUHhjSGkxWnZDdDJ5a3o2VUVjaHpQMHI1Z3FGSisvTC9VcHU4ME1YaVk0djVlSWFCNTJn
- VlBnaXlNQQpsTDJkRHMxbUladm5yUkxSWTJ0YjNtQVlOa1Y1QjVJRFQzcGtXeTZrS281T0Nn
- SytZZFlPUjhGTloyb04ydDhPCnJLK1ZudGFLN01NU0tIbG1ZL3NPd3RSbEVoMU9CbXJjQ3dH
- d21wLzA1R2tSNDZmL0lzaFJWZUZPUmF3K0dBcXQKUDIrQ0ZhMkNOQS9JSG5aTm95aWtsRHpQ
- UUhVVUdzck5wcERyaFg5Sm1oQm1nMXYyeXdIMU5YdTFpRGZQMUJBdwpLZ29rdDVmNVVhUkY5
- c0FBNTN2V0V2YlVVTjllZXNGR0x6UFdkSkdRNWhwZC9WSDVJUXk5U0JyaC93SWNla3E1Cm4w
- a042cGJUSHhHRTUyU2kvTVZJa05UdURaM2FwbjJqbERaNHBPdHBCWEkydlAzYlBPK05pcUJa
- anNVM3R4TGkKV2R2MkZqeXp6NlhMUndlV1JZVkw1SGE2TER0eG9yMnZ1NlVQMDdwOXh6MXhS
- WmFPRFczb1lsSEZ6WXBhNFc1ZwpMSGIybEVrSXVVZlNjaWNHYmpqQXRDbFRkR1ZtWVc0Z1Yy
- Rm9jbVZ1SUR4emRHVm1ZVzR1ZDJGb2NtVnVRR2x1CkxYUmxZMmd1WTI5dFBva0NOd1FUQVFn
- QUlRVUNYSWRlaHdJYkF3VUxDUWdIQWdZVkNBa0tDd0lFRmdJREFRSWUKQVFJWGdBQUtDUkNV
- Z2V3UEVaRHkyeUhURC85VUY3UWxEa0d4elE3QWFDSTZOOTVpUWY4LzFvU1VhRE51Mlk2SQpL
- K0R6UXBiMVRiVE9yM1ZKd3dZOGEzT1d6NU5MU09MTVdlVnh0K29zTW1sUUlHdWJEM09EWko4
- aXpQbEcvSnJOCnQ1elNkbU41SUE1ZjNlc1dXUVZLdmdoWkFnVERxZHB2K1pIVzJFbXhuQUox
- dUxGWFhlUWQzVVpjQzVyMy9nL3YKU2FNbzl4ZWszSjVtTnVEbTcxbEVXc0FzL0JBY0ZjK3lu
- TGh4d0JXQld3c3Z3UjhiSHRKNURPTVd2YUt1RHNrcApJR0ZVZS9LYjJCK2pyYXZRM1RuNnMv
- SHFKTTBjZXhTSHo1cGUrMHNHdlArdDlKNzIzNEJGUXdlRkV4cmlleThVCkl4T3I0WEFiYWFi
- U3J5WW5VL3pWSDlVMWkyQUlRWk1XSkFldkN2VmdRL1UrTmVSaFh1ZGU5WVVtRE1EbzJzQjIK
- VkFGRUFxaUYyUVVIUEEybThhN0VPM3lmTDRyTWswaUh6TElLdmg2L3JIOFFDWThpM1h4VE5M
- OWlDTHpCV3UvTgpPbkNBYlMremx2TFphaVNNaDVFZnV4VHR2NFBsVmRFamY2MlArWkhJRDE2
- Z1VEd0VtYXpMQU1yeDY2NmpINWt1ClVDVFZ5bWJMMFR2Qis2TDZBUmw4QU55TTRBRG1rV2tw
- eU0yMmtDdUlTWUFFZlFSM3VXWFo5WWd4YVBNcWJWK3cKQnJoSmc0SGFONkM2eFRxR3YzcjRC
- MmFxYjc3L0NWb1JKMVo5Y3BIQ3dpT3pJYUFtdnl6UFU2TXhDRFhaOEZnWQpsVDR2MjNHNWlt
- SlAyemdYNXMrRjZBQ1VKOVVRUEQwdVRmK0o5RGEycitza2gvc1dPbloreWNvSE5CUXZvY1pF
- Ck5BSFFmN2tDRFFSYmVvQVRBUkFBMkhkMGZzRFZLNzJSTFNESGJ5ME9oZ0RjRGxWQk0yTSto
- WVlwTzNmWDFyKysKc2hpcVBLQ0hWQXNRNWJ4ZTdIbUppbUhhNEtLWXMya3YvbWx0L0NhdUNK
- Ly9wbWN5Y0JNN0d2d25Lem11WHp1QQpHbVZUWkM2V1I1TGtha0ZydEhPelZtc0VHcE52NVJj
- OWw2SFlGcExrYlNrVmk1U1BRWkp5K0VNZ01DRmdqclpmClZGNnlvdHdFMWFmN0hOdE1oTlBh
- TEROMW9VS0Y1aitSeVJnNWl3SnVDRGtuSGp3QlFWNHBndzIvNXZTOEE3WlEKdjJNYlcvVExF
- eXBLWGlmNzhJaGdBelh0RTJYck0xbi9vNlpINzFvUkZGS096NDJsRmR6ZHJTWDBZc3FYZ0hD
- WAo1Z0l0TGZxemoxcHNNYTlvMWVpTlRFbTFkVlFyVHFueXMwbDE4b2FsUk5zd1lsUW1uWUJ3
- cHdDa2FUSExNSHdLCmZHQmJvNWRMUEVzaHRWb3dJNm5zZ3FMVHlRSG1xSFlxVVpZSXBpZ21t
- QzNTd0JXWTFWNmZmVUVta3FwQUFDRW4KTDQvZ1Vnbjd5US81ZDBzZXFuQXEycFNCSE1VVW9D
- Y1R6RVFVV1ZraUR2M1JrN2hURm1oVHNNcTc4eHYyWFJzWApNUjZ5UWhTVFBGWkNZRFVFeEVs
- RXNTbzlGV0hXcjZ6SHlZY2M4cURMRnZHOUZQaG1RdVQyczlCbHg2Z0kzMjNHCm5FcTFsd1dQ
- SlZ6UDRqUWtKS0lBWHdGcHYrVzhDV0xxekRXT3ZkbHJEYVRhVk1zY0ZUZUg1VzZVcHJsNjVq
- cUYKUUdNcGNSR0NzOEdDVVcxM0gwSXlPdFF0d1dYQTRueStTTDgxcHZpQW1hU1hVOGxhS2FS
- dTkxVk9WYUY5ZjRzQQpFUUVBQVlrQ0h3UVlBUUlBQ1FVQ1czcUFFd0liREFBS0NSQ1VnZXdQ
- RVpEeTIrb1hELzljSEhSa0JaT2ZrbVNxCjE0U3Z4MDYyUHRVMEtWNDcwVFNucC9qV29ZSm5L
- SXczRzBtWElSZ3J0SDJkUHdwSWdWanNZeVJTVk1LbVNwdDUKWnJEZjlOdFRiTldnazhWb0xl
- WnpZRW8rSjNvUHFGclRNczNhWVl2N2U0K0pLNjk1WW5tUSttT0Q5bmlhOTE1dApyNUFaajk1
- VWZTVGx5VW15aWMxZDhvdnNmMWZQN1hDVVZSRmNSamZOZkRGMW9ML3BEZ01QNUdaMk93YVRl
- am15CkN1SGpNOElSMUNpYXZCcFlEbUJuVFlrN1B0aHk2YXRXdllsMGZ5L0NxYWpUS3N4Nytw
- OXh6aXU4WmZWWCtpS0IKQ2MrSGUrRURFZEdJRGh2TlovSVFIZk9CMlBVWFdHUytzOUZOVHhy
- L0E2bkxHWG5BOVk2dzkzaVBkWUl3eFM3SwpYTG9LSmVlMTBEamx6c1lzUmZsRk9XMFpPaVNp
- aElDWGlRVjF1cU02dHpGRzlndFJjaXVzNVVBdGhXYU8xT3dVClNDUW1mQ09tNGZ2TUlKSUE5
- cnh0b1M2T3FSUWNpRjNjcm1vMHJKQ3ROMmF3WmZnaThYRWlmN2Q2aGp2MEVLTTkKWFpvaUFa
- WVpEKy9pTG01VGFLV042b0dJdGkwVmpKdjhaWk9aT2ZDYjZ2cUZJa0pXK2FPdTRvclRMRk16
- MjhhbwpVM1F5V3BOQzhGRm1kWXNWdWE4czZnTjFOSWE2eTNxYS9aQjhiQS9pa3k1OUFFejRp
- RElScmdVek1FZzhBazdUCmZtMUtpWWVpVHRCRENvMjVCdlhqYnFzeXhrUUQxbmtSbTZGQVZ6
- RXVPUEllOEp1cVcyeEQ5aXhHWXZqVTVoa1IKZ0pwM2dQNWIrY25HM0xQcXF1UTJFNmdvS1VN
- TEFia0NEUVJiZmw5REFSQUFzRExjYStMbFAydm5mdEVHaHBjQQpCR1ZOUUVGbkdQckNhdVU2
- SGhOODA1V3RQVHRtc1JPdUp6cWdVVDBtcHFXSWZacTZzTXd5dkhLOVRzL0tIM0paClVWYlJD
- M3oyaDNLZmhIL0RhZjk1cGQ2bVBjL2g5dkYvT3kzK2VUV2hnR25QNmNBNWtsUitmTzFXaEc4
- VnJpWHYKck5lUkcyMHN6emplSG9jblNJY1Q1WHVaUjB1REhPaUd4T2l6MXNNUkZUR3h6R095
- MTlSOXJ2dTYzdGlJM2Q3dgpnYzc1T0NBZGtlQi9TZUNFbGFSdzBUZjdMWmJQampzRjI2M0JZ
- bk1mNGtrTkVLdnFXY1UyaWNNcCtxZXpqeW5CCnB2ZXVlMHJDVFFCWUFRbG9GQ1ZUR0hyV1dB
- NkQ0VzVPMkFmSWRJYzF1MUpDWnAyZjVMV1ZvVUZUVklyUW5RUVUKU0hDaWZyOU1aeExUdFBK
- ZFU1Mm9TUHczZGs0aExQOGlKSUx1dnYvYXZhakNzUVlIRXR3WXNiZUZaeGl1TGdscApBN1lj
- Sk5ObXBnQ3BNRDR3VWh2bEN0QUtOQlFXeXIyOTc2OThFUVRuNDZlQmVVNkttMkNpaFhrZ3dD
- eWY4ZXlLCkxFM3NYZXdhcTVrZ1pXdk5xNml1NXFZSVJCOXl3K2NYYzYwZE9aRE9scTkzWDVT
- QVJZemFvZXBrSHo0cmtMa1AKUG8rdENIeUhRUHNHblBYYzlXVDgwREM5Tm5KR2R2VWx5NXJk
- TUk0eHBaeWdlb2tqd293VlFsUFV1Y1M2TXluNwpmOHc4Y2dmQjdDMklBSWNEeDJwUC9IendY
- dmtDT1FOQTdtVjFsTTA4bitnVmtUcnpweGlwNURicTRDSW9ZeDJNCkpaVDhiR1JINlhqY1VE
- S2EwOVFoeVpzQUVRRUFBWWtFUkFRWUFRZ0FEd1VDVzM1ZlF3SWJBZ1VKQThKbkFBSXAKQ1JD
- VWdld1BFWkR5MjhGZElBUVpBUWdBQmdVQ1czNWZRd0FLQ1JCVnhETFBjVk1NamNkc0QvMFJo
- QXN1UVlPeQpyMTNCbDNOaFhrWUFaR3AyWkZER3VrZTdPU2tWOG9qT09UZFR5ei9jT1JHQ2J5
- ZEQrRGd2cUZ5VmRuT1hLZ08wCmxKbUd3ckdlTGRnZ0F2aDBpaHJwNU8wWVVKOWJCU1htR01t
- UVRZSC9BbUxUR2FkYnVqQ1dqNWZGVWtDeXd4aW0KSHV5MFBiMjRwelR2UzUwR1k1WStxSDBG
- SE5haWdka2tpV04zcnVnN0haRXUvQ3lsUFpqT1h6K0QxUVBNckV4dwo3ZC9NS2FiVis5YU5i
- UVlabGRJajk4UXd2VUYxS1N6YThqbFVJdnBoUnEyN0FUOGZER1lHUGZERU1nMmNCT2FlCkty
- N29uUXM0YjdhV082aWZEbHhRVHB6c3pvK0FuODA3Tk1TdFZFRmYrczNBaFZEM2U3bmY4SkJh
- dmJWckFlMGsKb20yNm96elBubnh6K2xxVlZ0dzZVazRYTUl6dGl4L0h3SFl3dUNuY1VYWndL
- MEkzeUFKd2pZd29vck9DaEozUwpFVWJKUVB0R3NneFJERXhWQkZlNk5MUC82MnhQOU82dGFj
- d09kYjBNbVAxYjM5cFJBVEM3YmdkMWxkVUxpNzVaCmxKckowL1NpVkVyb3FOWXk3OXRmbWdB
- WjJVeFptczlTckV5Nm85UVNmc24xYVh2K01QTDlKYUNHbWtQNnpiTFEKTm5kajBKY2FRbmtD
- MHZneWRPMUJtNk11OTZQOXVmbEtaY0FTNndtTE01SWRIT3lqTDg4d0h3anVjakFPQnRjdwpw
- MG9HVG5WT25Sc05ZU084VzhZWi9LZGJ1Nzg1ZGF6TXFKMmlOakFEdUJiZG02TjRqNUVkTW5r
- TG4wQklmUEpwCmRnbTR2bDJVcExqd1JHci9NM3dtbTVwdnMrNnVCN2hrL0ZKaUQvNGxsRU5Q
- NGVNMWg3U200aitWcTZOMSt6VEIKSVhKQWViSXFhc0RwNXlaUzdYcnk0STM2bjg1WEVZZkcw
- MWx0QXlob05WMkRPOFNJUlFwdWkydHErOVJQM1JLMQpKREJ4eEVKWTJFTzVKWjhNeGFQSFEw
- RFQwNWxSRmpLMkFsaGRFSXRqTGpwSjNmVW05c3FMeE1XeHpQNlV6M2lpCjJ1YTR1bnJ0Nk9D
- VHFRd2lqRi8zYlRXaXd2VkFBSG5NRlVpb1hzaEhhb2hWRGNWZm5lSU1mVjBiUUNYWWkzTnAK
- WTB2MFp3Y2lGSCtnU0M3cUQ2WE51aHBWR1NMNElpbGlGeS9TemNhSkV6QUhlTERTaFpQMkNX
- ZG5DNHZnbDM3dApocHg4aDU1WWhKbjZIU3VVelBnaGFLdFZCMmsrajdaZXlaK1NGeHA3SXVi
- SEN3TEhsUWhUNzVSd1EzaUF4S242CjBxajUxY1lUbnF4ZFpYVzZmSDNQa3VNellVNUdwcVIv
- MU9sNWMvd2ZJNmc2QW04eUtXLzBFVUx0K0tuNExGc1MKbTdZM201SDV2MTJVNkpCWXZWK3Ix
- M2paaW9zNEVFREU5M0Q1c05IMk1JeVJ6Q0RxMXpkZHQ0WHV5S0ZqUEtXMQo5aWJaRGZGVjdL
- dUNzdnVMMjNzQmMxc0NNb3ArRTFtVC9ReE9JQTZvRFQxTVFzdHdPVnVReURDdi9PdktTZ2Z6
- CjhGWEdMNkFQY2xqQ3FqOEFKaHhReXN4ZG9pUVA4bS92dStialdHR3Z4dzVzMWxncGlSRFRS
- VVBnY0pKTmFHWTIKVklEclpRaTROU2lOUTBOSWkrZGp1NGZOTW1DcFFxZzh0YkMzY0FhNnl3
- bTZvUUIxU0JobURYMmUxMWdSbGx1SQpPblRHUEUwSFRvM2w3MmxoYmc9PQo9cVpNVgotLS0t
- LUVORCBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCg==
-Message-ID: <d425a724-a3b6-b6b5-0197-1b82d01bbaf6@i2se.com>
-Date:   Thu, 24 Feb 2022 22:26:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Thu, 24 Feb 2022 16:27:21 -0500
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2043.outbound.protection.outlook.com [40.107.243.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD01C2DD67;
+        Thu, 24 Feb 2022 13:26:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VCZNZBFu9PjLuNs7DrPYXNRYGT+4DSm+h6O9KR6PWn5NblTejc8pCohYiO5CqHL/ZGg/E8z7cgIZO7eTiebjHWlYXJNARGTsjoK9oqzEZrdCOjK6ZMwsGPdMpnW3Coi24ldHdoFBnaOPaa48MgKjHhfC01w3d2NJnCMsE9vdaaQ1DZA3+o/xn5wObK0IG9wZklvWpOkSuRlqfpJw9nvR5gJHjABTIo0kBZrkj/mE/lHA5q/7xhuyyY+1+01PTpMRFhLwDipqsE93t8GwodOorJLUxRvX7PoNb9mOTv5ajD5jJA1zKueEjgGcpsOga0w5YCCdxc+upYf0TfaXB2xmYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4UMh827kCyqHeMys6i5nUx2W5HRE3fSujaJcYVcit8E=;
+ b=RoiGkTDHVSIrf6x+Ukek1Wy2nlm7NnDpanbcPXho5Obmc3CjLvb78e8BnRpRviViFddWyQqn96nfxqiaGQmRgySoCuNS4lVajbos/EOBLRAfw+uZnWQUywGjDdjfi5GxHROnu3GQymAAQCY+qAVgTgc2fF8MWrONeVbRtUjKmXph4iCd/Cuc2J0h0XuOUb45Go0GjDlQ2i1DaChH//MF2cRB195M012XNLsFmQLfNV9p6+y72K1Z/pPZWdOojCilnrtrP7JCLnvMVS/vx9VD02OxW2q9QzUCdgUmALr76uOUDozUGhDHfd6Ko8u6fjgHp8swjLhNLSF11RUnw95FOQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4UMh827kCyqHeMys6i5nUx2W5HRE3fSujaJcYVcit8E=;
+ b=ScsAmTpELrUQ2sXUlvdq9cwFTUaVfrRuB1OHOVG3ocv4e0VV2tePSmB6EkWpZekIF3eZBk/l3Fc0DzOZLJ9BtS3Zj7Tr3KIr16VmKtvIxHC04CRwOYS/gj3XiiHc1Ug4+ZeBSJG/eOumOXxgkeEx7ZpzQobp9TNZ3HiQxxKpUWk=
+Received: from DS7PR03CA0143.namprd03.prod.outlook.com (2603:10b6:5:3b4::28)
+ by PH0PR02MB8392.namprd02.prod.outlook.com (2603:10b6:510:10b::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Thu, 24 Feb
+ 2022 21:26:32 +0000
+Received: from DM3NAM02FT041.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:3b4:cafe::46) by DS7PR03CA0143.outlook.office365.com
+ (2603:10b6:5:3b4::28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24 via Frontend
+ Transport; Thu, 24 Feb 2022 21:26:32 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
+Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT041.mail.protection.outlook.com (10.13.5.133) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:26:31 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 24 Feb 2022 13:26:31 -0800
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:26:31 -0800
+Envelope-to: eperezma@redhat.com,
+ jasowang@redhat.com,
+ mst@redhat.com,
+ lingshan.zhu@intel.com,
+ sgarzare@redhat.com,
+ xieyongji@bytedance.com,
+ elic@nvidia.com,
+ si-wei.liu@oracle.com,
+ parav@nvidia.com,
+ longpeng2@huawei.com,
+ virtualization@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org,
+ kvm@vger.kernel.org,
+ netdev@vger.kernel.org
+Received: from [10.170.66.102] (port=59620 helo=xndengvm004102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <gautam.dawar@xilinx.com>)
+        id 1nNLd8-00095B-TL; Thu, 24 Feb 2022 13:26:31 -0800
+From:   Gautam Dawar <gautam.dawar@xilinx.com>
+CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
+        <tanujk@xilinx.com>, <eperezma@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Longpeng <longpeng2@huawei.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: [RFC PATCH v2 10/19] vhost-vdpa: introduce asid based IOTLB
+Date:   Fri, 25 Feb 2022 02:52:50 +0530
+Message-ID: <20220224212314.1326-11-gdawar@xilinx.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20220224212314.1326-1-gdawar@xilinx.com>
+References: <20201216064818.48239-1-jasowang@redhat.com>
+ <20220224212314.1326-1-gdawar@xilinx.com>
 MIME-Version: 1.0
-In-Reply-To: <944bdedc-afbb-e427-bd1d-676f8ed21a48@ideasonboard.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-Content-Language: en-US
-X-Provags-ID: V03:K1:ZrE06clxbKeO7OAp0zMzOW7vYXRSnp+fmTfJD8WH10o1DIxjhgP
- U6LHA4LUQQD0BfOQC1eJGSvGvfGPyBmO/tI6nDjiXZTCPkjanSbTmKxAqnMLvy2n+OMZZUM
- p2qW77OvNgpGoYjw0T871UpygxR4LRaEO4Vtjt0IBvaO5ByXFEXJ8NS9E/JjJtJkEL0vkW7
- OLIVYEt9fukllFHg7Gy3w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Bv/V19FHxwg=:RO0w+PKJTND2xVn87wdRcY
- TJoB0t8Xy2ICN8Oxc3oF2YqQRAbpgCFIjsHRP26VzQWrM4NBfo8TL9A98LqalHc31X0Op7E6a
- labigNcG2b/9r80XT9L30j0NNCO1FnNygujDZ+abinvIwstlysRlSm7GhowIf1TP7wSaePjI2
- a/7CXkretT83AJOcq2J+gU0CZSL64HA2CG00n2b1p/gknE9pF6cMv1R+jOO5iz1CQZJ3waJPT
- fkXcJgt3zhPTlj6Lr9IM2FI9270D/XBDhphO1YRxJYRGktBvyzJBYEkc4NCvKI8i6KxJhUz77
- FLl6iD8bPwBYMAOQZ6/nFHcKx+GriIdDod3Q0B7P8wJwfcLEnXFQzBVA7SVh5mTguh/Nl5o+m
- 70Ec42OZzqHlJqSHUBYwLEszHQldc0lu7mxTe+359enHiDXrqfGSBf/Dl6BgTMogkU92rQ30N
- +bzeuZGGCb6kPSPMpcDlKImjWXJp77coQ7/VpC+J8qwGBCF1FaNYzsClbHmceIEjmeR/ZNWwA
- l/qWSyx2J+uzSN9rifoxWnYk4e0WKV/jp2ubSufURUCKTH9/C3jKDGT9TKkDZ/6Kq7vEDItAO
- N0LzHgpxk8BB+jxpO3IMXceYIgOIsf6YdCUmTs5hyE/oV/cWXKzNGpAU7LOAlOVwag9i3nDFd
- 8wApXbSuUAciZ4gxuOa2nC7+qaqKHIXTE/K0Qx7SP7j3W/Iizo96aujzp5x5PtXSITolKPBTp
- FTkIZcqoPpwbfgLM
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6319486e-3a8f-4100-a64f-08d9f7dc53cb
+X-MS-TrafficTypeDiagnostic: PH0PR02MB8392:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR02MB8392D97AE481D2AF31F0AA6AB13D9@PH0PR02MB8392.namprd02.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5j9loyympihenahdZq4fPDJcdWBtmDSVifawbRM/kDANz3OkmhvZru37Fyz9njEyFQmitkyGg7O2JLQ+2Uu0xXtO12PDTIs2wkKIbShtY4tD1QfEEE4wQ7M5QehB8Qr8CJfBmnImyJJW/KEM5mN0hQd0V+8WbAh1OSnebwS6Q1sp0y1a3Zoo1XPPxrjh14Aujx5NnrkYPhEn41w2Io7kYJLmDlGhVmz0nZDDTUPrl1F7JSxBAmK1G4KKDfG7Cl/gQGv/OEkBifnbzcaI2ll955pFT3fV0PxMuxVJzVOB8PLydsr37AzKyskZqjd0bH8cUWBuVIrDkpK+VAFffH86KMKB5ZJwebaUFf8Mxpou1Ef1gXRLD9AlMXVIuEP4RpDm7y0nwTxBm5vwJOdVBQ6gEAUIO90/JOLraHJ5xIbkUAHNinUD6ukjd1Og7yUiHLN/LkAnsVwDgVRj8fCUMkf3g6FQjDUp1NZUt+Oj9Sl6NZl3WaP/trU0+oOXSA2UcYo3QsymfOlt+4wvdoZItlOCSb4bK9UHVGxGZolKT6mb+/N0Df32k1QXomTGBCP5wQkMBEGDyOqmt3jndyL3Y4EwI/orELrvKxcphC8tYs8ziyeo2JjkINB13/rsK4H4JbubcwQG/DIBG6Ezh/dTHd68DGYJ4PJFK7wI/SiypMemvmcSUDEY5pG5cHYIV6tlhAAOJTDfI/lUxT0PflqECgHbT2idvxS6H7TLpVTaSXAZBGY=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(26005)(109986005)(2616005)(508600001)(40460700003)(7696005)(6666004)(1076003)(82310400004)(7636003)(47076005)(356005)(186003)(4326008)(8676002)(54906003)(336012)(2906002)(426003)(316002)(36756003)(7416002)(5660300002)(36860700001)(70206006)(9786002)(44832011)(8936002)(83380400001)(70586007)(102446001)(266003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:26:31.9419
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6319486e-3a8f-4100-a64f-08d9f7dc53cb
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT041.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR02MB8392
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Michel,
+This patch converts the vhost-vDPA device to support multiple IOTLBs
+tagged via ASID via hlist. This will be used for supporting multiple
+address spaces in the following patches.
 
-Am 24.02.22 um 18:07 schrieb Jean-Michel Hautbois:
-> Hi Stefan,
->
-> On 24/02/2022 18:03, Stefan Wahren wrote:
->> Hi Jean-Michel,
->>
->> the version v5.1 is a little bit confusing, because it looks like to be
->> applied to stable linux-5.1, which is not intended.
->
-> Sorry for the confusion, I don't want to send a full v6 now, as it
-> will need to be rebased on top of the multiplexed streams series in
-> its v11 which is not yet posted on the ML :-).
->
->>
->> Am 23.02.22 um 15:34 schrieb Jean-Michel Hautbois:
->>> Add both MIPI CSI-2 nodes in the core bcm2711 tree. Use the 3-cells
->>> interrupt declaration, corresponding clocks and default as disabled.
->>>
->>> Thanks to Stefan Wahren for his guidance on how to deal with different
->>> RPi variants.
->>
->> Can you please explain why you split these patches from the original
->> series?
->
-> Because the firmware clocks are independent from the csi nodes and so,
-> it sounded logical to split it in half ?
-I don't think this should be split, because these belong together
-(dt-binding, driver, device tree changes).
->
->>
->> I didn't had the time to test, but applying these patches would
->> "disable" bcm2835-camera driver?
->
-> Wasn't it already the case ? It is intended, we don't want those to be
-> "okay" by default ? Or do I miss your point maybe (probably :-)) ?
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
+---
+ drivers/vhost/vdpa.c | 104 ++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 79 insertions(+), 25 deletions(-)
 
-With these 2 patches applied, both drivers won't work which is a
-regression. Yes, it would be the best to have unicam disabled per
-default and some kind of imx219 overlay should enable it. But at least
-the unexpected (not for you or me but all the other reviewer)
-consequence should have been in the commit log.
-
-From my understand the unicam driver is not a fully replacement for the
-bcm2835-camera or am i wrong?
-
-Best regards
-
->
-> Thanks,
-> JM
->
->>
->> Best regards
->> Stefan
->>
->>
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index d0aacc0cc79a..4e8b7c4809cd 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -33,13 +33,21 @@ enum {
+ 
+ #define VHOST_VDPA_DEV_MAX (1U << MINORBITS)
+ 
++#define VHOST_VDPA_IOTLB_BUCKETS 16
++
++struct vhost_vdpa_as {
++	struct hlist_node hash_link;
++	struct vhost_iotlb iotlb;
++	u32 id;
++};
++
+ struct vhost_vdpa {
+ 	struct vhost_dev vdev;
+ 	struct iommu_domain *domain;
+ 	struct vhost_virtqueue *vqs;
+ 	struct completion completion;
+ 	struct vdpa_device *vdpa;
+-	struct vhost_iotlb *iotlb;
++	struct hlist_head as[VHOST_VDPA_IOTLB_BUCKETS];
+ 	struct device dev;
+ 	struct cdev cdev;
+ 	atomic_t opened;
+@@ -49,12 +57,64 @@ struct vhost_vdpa {
+ 	struct eventfd_ctx *config_ctx;
+ 	int in_batch;
+ 	struct vdpa_iova_range range;
++	int used_as;
+ };
+ 
+ static DEFINE_IDA(vhost_vdpa_ida);
+ 
+ static dev_t vhost_vdpa_major;
+ 
++static struct vhost_vdpa_as *asid_to_as(struct vhost_vdpa *v, u32 asid)
++{
++	struct hlist_head *head = &v->as[asid % VHOST_VDPA_IOTLB_BUCKETS];
++	struct vhost_vdpa_as *as;
++
++	hlist_for_each_entry(as, head, hash_link)
++		if (as->id == asid)
++			return as;
++
++	return NULL;
++}
++
++static struct vhost_vdpa_as *vhost_vdpa_alloc_as(struct vhost_vdpa *v, u32 asid)
++{
++	struct hlist_head *head = &v->as[asid % VHOST_VDPA_IOTLB_BUCKETS];
++	struct vhost_vdpa_as *as;
++
++	if (asid_to_as(v, asid))
++		return NULL;
++
++	as = kmalloc(sizeof(*as), GFP_KERNEL);
++	if (!as)
++		return NULL;
++
++	vhost_iotlb_init(&as->iotlb, 0, 0);
++	as->id = asid;
++	hlist_add_head(&as->hash_link, head);
++	++v->used_as;
++
++	return as;
++}
++
++static int vhost_vdpa_remove_as(struct vhost_vdpa *v, u32 asid)
++{
++	struct vhost_vdpa_as *as = asid_to_as(v, asid);
++
++	/* Remove default address space is not allowed */
++	if (asid == 0)
++		return -EINVAL;
++
++	if (!as)
++		return -EINVAL;
++
++	hlist_del(&as->hash_link);
++	vhost_iotlb_reset(&as->iotlb);
++	kfree(as);
++	--v->used_as;
++
++	return 0;
++}
++
+ static void handle_vq_kick(struct vhost_work *work)
+ {
+ 	struct vhost_virtqueue *vq = container_of(work, struct vhost_virtqueue,
+@@ -554,15 +614,6 @@ static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v,
+ 	return vhost_vdpa_pa_unmap(v, iotlb, start, last);
+ }
+ 
+-static void vhost_vdpa_iotlb_free(struct vhost_vdpa *v)
+-{
+-	struct vhost_iotlb *iotlb = v->iotlb;
+-
+-	vhost_vdpa_iotlb_unmap(v, iotlb, 0ULL, 0ULL - 1);
+-	kfree(v->iotlb);
+-	v->iotlb = NULL;
+-}
+-
+ static int perm_to_iommu_flags(u32 perm)
+ {
+ 	int flags = 0;
+@@ -842,7 +893,8 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev, u32 asid,
+ 	struct vhost_vdpa *v = container_of(dev, struct vhost_vdpa, vdev);
+ 	struct vdpa_device *vdpa = v->vdpa;
+ 	const struct vdpa_config_ops *ops = vdpa->config;
+-	struct vhost_iotlb *iotlb = v->iotlb;
++	struct vhost_vdpa_as *as = asid_to_as(v, 0);
++	struct vhost_iotlb *iotlb = &as->iotlb;
+ 	int r = 0;
+ 
+ 	mutex_lock(&dev->mutex);
+@@ -953,6 +1005,13 @@ static void vhost_vdpa_set_iova_range(struct vhost_vdpa *v)
+ 	}
+ }
+ 
++static void vhost_vdpa_cleanup(struct vhost_vdpa *v)
++{
++	vhost_dev_cleanup(&v->vdev);
++	kfree(v->vdev.vqs);
++	vhost_vdpa_remove_as(v, 0);
++}
++
+ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+ {
+ 	struct vhost_vdpa *v;
+@@ -985,15 +1044,12 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+ 	vhost_dev_init(dev, vqs, nvqs, 0, 0, 0, false,
+ 		       vhost_vdpa_process_iotlb_msg);
+ 
+-	v->iotlb = vhost_iotlb_alloc(0, 0);
+-	if (!v->iotlb) {
+-		r = -ENOMEM;
+-		goto err_init_iotlb;
+-	}
++	if (!vhost_vdpa_alloc_as(v, 0))
++		goto err_alloc_as;
+ 
+ 	r = vhost_vdpa_alloc_domain(v);
+ 	if (r)
+-		goto err_alloc_domain;
++		goto err_alloc_as;
+ 
+ 	vhost_vdpa_set_iova_range(v);
+ 
+@@ -1001,11 +1057,8 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+ 
+ 	return 0;
+ 
+-err_alloc_domain:
+-	vhost_vdpa_iotlb_free(v);
+-err_init_iotlb:
+-	vhost_dev_cleanup(&v->vdev);
+-	kfree(vqs);
++err_alloc_as:
++	vhost_vdpa_cleanup(v);
+ err:
+ 	atomic_dec(&v->opened);
+ 	return r;
+@@ -1029,11 +1082,9 @@ static int vhost_vdpa_release(struct inode *inode, struct file *filep)
+ 	vhost_vdpa_clean_irq(v);
+ 	vhost_vdpa_reset(v);
+ 	vhost_dev_stop(&v->vdev);
+-	vhost_vdpa_iotlb_free(v);
+ 	vhost_vdpa_free_domain(v);
+ 	vhost_vdpa_config_put(v);
+ 	vhost_dev_cleanup(&v->vdev);
+-	kfree(v->vdev.vqs);
+ 	mutex_unlock(&d->mutex);
+ 
+ 	atomic_dec(&v->opened);
+@@ -1129,7 +1180,7 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+ 	const struct vdpa_config_ops *ops = vdpa->config;
+ 	struct vhost_vdpa *v;
+ 	int minor;
+-	int r;
++	int i, r;
+ 
+ 	/* Only support 1 address space and 1 groups */
+ 	if (vdpa->ngroups != 1 || vdpa->nas != 1)
+@@ -1177,6 +1228,9 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
+ 	init_completion(&v->completion);
+ 	vdpa_set_drvdata(vdpa, v);
+ 
++	for (i = 0; i < VHOST_VDPA_IOTLB_BUCKETS; i++)
++		INIT_HLIST_HEAD(&v->as[i]);
++
+ 	return 0;
+ 
+ err:
+-- 
+2.25.0
 
