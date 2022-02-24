@@ -2,101 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D655C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 708FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:17:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231226AbiBXRPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:15:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43276 "EHLO
+        id S230443AbiBXRRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:17:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229715AbiBXRPH (ORCPT
+        with ESMTP id S229755AbiBXRRu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 12:15:07 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17E6E29EB94;
-        Thu, 24 Feb 2022 09:14:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645722877; x=1677258877;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=BmfD8NEvTaMkyVp8i1s9El4tLSdJA8+UBXOTKmrm3QI=;
-  b=AzWf098aT//uHgdtBBSZY7kAseWscbBTHu5jZBwOIG74oyNHOXyzfg8f
-   KnQMsOa3Sz/b+93cMV+tvZJVUrfGQPfrtaRprYbgeM0Y4NdUEyTmjPWE0
-   4hWTw0IlJ8pG+4dXEE6IISctZHSuZMgvOQKPZTx6BhxdUJZDcDwnM46PF
-   Dtz7HDGD/NBGUliz2fcsklRF0g5uZxqnBZ3Yk7t6V7xXEfG6tvFB+8oYO
-   ltJe+4tc/Y77MPhiJEAW/pZVtPLd1nIZtN+t74JEg9IdxAjC1J+wmSkMf
-   gPOc9g6S+CgkcKoyYG0xGkwDMMyLWoIlSgt3IdoeeJ+MrDYgQEgh/ON97
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="313008314"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="313008314"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 09:14:09 -0800
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="548841064"
-Received: from vpirogov-mobl.amr.corp.intel.com (HELO [10.252.137.68]) ([10.252.137.68])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 09:14:09 -0800
-Message-ID: <33646f1e-da44-503a-c454-02658d512926@intel.com>
-Date:   Thu, 24 Feb 2022 09:14:05 -0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>, linux-sgx@vger.kernel.org
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>, stable@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-References: <20220222120342.5277-1-jarkko@kernel.org>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH v4] x86/sgx: Free backing memory after faulting the
- enclave page
-In-Reply-To: <20220222120342.5277-1-jarkko@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Thu, 24 Feb 2022 12:17:50 -0500
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0413177753;
+        Thu, 24 Feb 2022 09:17:20 -0800 (PST)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21OHC9uw018499;
+        Thu, 24 Feb 2022 11:12:09 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21OHC8Yn018496;
+        Thu, 24 Feb 2022 11:12:08 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Thu, 24 Feb 2022 11:12:07 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Nicholas Piggin <npiggin@gmail.com>
+Cc:     Anders Roxell <anders.roxell@linaro.org>, mpe@ellerman.id.au,
+        stable@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH 2/3] powerpc: fix build errors
+Message-ID: <20220224171207.GM614@gate.crashing.org>
+References: <20220223135820.2252470-1-anders.roxell@linaro.org> <20220223135820.2252470-2-anders.roxell@linaro.org> <1645670923.t0z533n7uu.astroid@bobo.none> <1645678884.dsm10mudmp.astroid@bobo.none>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1645678884.dsm10mudmp.astroid@bobo.none>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/22/22 04:03, Jarkko Sakkinen wrote:
-> +	if (pcmd_page_empty) {
-> +		pgoff_t pcmd_off = encl->size + PAGE_SIZE /* SECS */ +
-> +				   page_index * sizeof(struct sgx_pcmd);
-> +
-> +		sgx_encl_truncate_backing_page(encl, PFN_DOWN(pcmd_off));
-> +	}
-> +
->  	return ret;
->  }
->  
-> @@ -583,7 +613,7 @@ static struct page *sgx_encl_get_backing_page(struct sgx_encl *encl,
->  static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
->  				struct sgx_backing *backing)
->  {
-> -	pgoff_t pcmd_index = PFN_DOWN(encl->size) + 1 + (page_index >> 5);
-> +	pgoff_t pcmd_off = encl->size + PAGE_SIZE /* SECS */ + page_index * sizeof(struct sgx_pcmd);
+On Thu, Feb 24, 2022 at 03:05:28PM +1000, Nicholas Piggin wrote:
+> + * gcc 10 started to emit a .machine directive at the beginning of generated
+> + * .s files, which overrides assembler -Wa,-m<cpu> options passed down.
+> + * Unclear if this behaviour will be reverted.
 
-Jarkko, I really don't like how this looks.  The '/* SECS */' thing is
-pretty ugly and the comment in the middle of an arithmetic operation is
-just really hard to read.
+It will not be reverted.  If you need a certain .machine for some asm
+code, you should write just that!
 
-Then, there's the fact that this gem is copied-and-pasted.  Oh, and it
-looks a wee bit over 80 columns.
+> +#ifdef CONFIG_CC_IS_GCC
+> +#if (GCC_VERSION >= 100000)
+> +#if (CONFIG_AS_VERSION == 23800)
+> +asm(".machine any");
+> +#endif
+> +#endif
+> +#endif
+> +#endif /* __ASSEMBLY__ */
 
-I went to the trouble of writing a nice, fully-fleshed-out helper
-function for this with a comment included:
+Abusing toplevel asm like this is broken and you *will* end up with
+unhappiness all around.
 
-> https://lore.kernel.org/all/8afec431-4dfc-d8df-152b-76cca0e17ccb@intel.com/
 
-Was there a problem using that?  The change from the last version is:
-
-* Sanitized the offset calculations.
-
-Given that there have been multiple different calculations over the four
-versions so far, which version was right?  v3 or v4?
+Segher
