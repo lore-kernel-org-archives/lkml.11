@@ -2,110 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B409C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:44:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C01C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbiBXBpU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:45:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54876 "EHLO
+        id S229760AbiBXBqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:46:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiBXBpQ (ORCPT
+        with ESMTP id S229739AbiBXBqd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:45:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B653813C9D7;
-        Wed, 23 Feb 2022 17:44:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69013B81FCD;
-        Thu, 24 Feb 2022 01:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DC0CC340E7;
-        Thu, 24 Feb 2022 01:44:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645667084;
-        bh=XHH/uO/8KeWnauMtq/0M/7XsURJLAWgKWhTDuS/j7PU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DJ5uOTxE695TQwqvHCCjvBDx1V9zfQteuN6RqddIxwLzmtMtU0YQF/Hbkg//oY47S
-         xDTaqE9t1p2533ns/ODCeWx1Yf+G9SergWl28ujncQdNY8B5VjGvbGMYaaSB2oM6ra
-         yDW7APgEakixM3iUJbsBFGDH4TKZj9nMls4vF2YHZylU9E4L91Ju4jvzwRJfkMl5ke
-         Uiy0wihAareamqkPNxn0XZgpxhwTQbIsA22QZl/QQyGt4S5K1fOFXuKX/l/L4+RhOE
-         m3oaJQvnoVZLcS4t5jOOiXg+GEMe+jpgfOqxBVogydXmG4FWlUtgCaSyb7WDYce+co
-         WjICUFmHg6BKg==
-From:   broonie@kernel.org
-To:     Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: linux-next: Tree for Feb 23
-Date:   Thu, 24 Feb 2022 01:44:40 +0000
-Message-Id: <20220224014440.1397777-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        Wed, 23 Feb 2022 20:46:33 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EAC141FC2;
+        Wed, 23 Feb 2022 17:46:02 -0800 (PST)
+Received: from kwepemi500001.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K3wDl2BGGzbbnh;
+        Thu, 24 Feb 2022 09:24:39 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500001.china.huawei.com (7.221.188.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 24 Feb 2022 09:29:10 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 24 Feb 2022 09:29:10 +0800
+Subject: Re: [PATCH RFC] blk-mq: fix potential uaf for 'queue_hw_ctx'
+To:     Ming Lei <ming.lei@redhat.com>
+CC:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220223112601.2902761-1-yukuai3@huawei.com>
+ <YhZFITXtiL8Xaord@T590>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <df32802a-7dfb-3e80-359a-206c2be6ebe5@huawei.com>
+Date:   Thu, 24 Feb 2022 09:29:09 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <YhZFITXtiL8Xaord@T590>
+Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+ÔÚ 2022/02/23 22:30, Ming Lei Ð´µÀ:
+> On Wed, Feb 23, 2022 at 07:26:01PM +0800, Yu Kuai wrote:
+>> blk_mq_realloc_hw_ctxs() will free the 'queue_hw_ctx'(e.g. undate
+>> submit_queues through configfs for null_blk), while it might still be
+>> used from other context(e.g. switch elevator to none):
+>>
+>> t1					t2
+>> elevator_switch
+>>   blk_mq_unquiesce_queue
+>>    blk_mq_run_hw_queues
+>>     queue_for_each_hw_ctx
+>>      // assembly code for hctx = (q)->queue_hw_ctx[i]
+>>      mov    0x48(%rbp),%rdx -> read old queue_hw_ctx
+>>
+>> 					__blk_mq_update_nr_hw_queues
+>> 					 blk_mq_realloc_hw_ctxs
+>> 					  hctxs = q->queue_hw_ctx
+>> 					  q->queue_hw_ctx = new_hctxs
+>> 					  kfree(hctxs)
+>>      movslq %ebx,%rax
+>>      mov    (%rdx,%rax,8),%rdi ->uaf
+>>
+> 
+> Not only uaf on queue_hw_ctx, but also other similar issue on other
+> structures, and I think the correct and easy fix is to quiesce request
+> queue during updating nr_hw_queues, something like the following patch:
+> 
+> diff --git a/block/blk-mq.c b/block/blk-mq.c
+> index a05ce7725031..d8e7c3cce0dd 100644
+> --- a/block/blk-mq.c
+> +++ b/block/blk-mq.c
+> @@ -4467,8 +4467,10 @@ static void __blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set,
+>   	if (set->nr_maps == 1 && nr_hw_queues == set->nr_hw_queues)
+>   		return;
+>   
+> -	list_for_each_entry(q, &set->tag_list, tag_set_list)
+> +	list_for_each_entry(q, &set->tag_list, tag_set_list) {
+>   		blk_mq_freeze_queue(q);
+> +		blk_mq_quiesce_queue(q);
+> +	}
+>   	/*
+>   	 * Switch IO scheduler to 'none', cleaning up the data associated
+>   	 * with the previous scheduler. We will switch back once we are done
+> @@ -4518,8 +4520,10 @@ static void __blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set,
+>   	list_for_each_entry(q, &set->tag_list, tag_set_list)
+>   		blk_mq_elv_switch_back(&head, q);
+>   
+> -	list_for_each_entry(q, &set->tag_list, tag_set_list)
+> +	list_for_each_entry(q, &set->tag_list, tag_set_list) {
+> +		blk_mq_unquiesce_queue(q);
+>   		blk_mq_unfreeze_queue(q);
+> +	}
+>   }
+>   
+>   void blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set, int nr_hw_queues)
+Hi, Ming
 
-Note that today's -next again does not include the akpm tree since it's
-been a long day and the conflicts especially with the mm code seemed
-more than it was wise for me to attempt.  I'll have another go tomorrow
-but no guarantees, I got further today.
+If blk_mq_quiesce_queue() is called from __blk_mq_update_nr_hw_queues()
+first, and then swithing elevator to none won't trigger the problem. 
+However, what if blk_mq_unquiesce_queue() from switching elevator
+decrease quiesce_depth to 0 first, and then blk_mq_quiesce_queue() is
+called from __blk_mq_update_nr_hw_queues(), it seems to me such
+concurrent scenarios still exist.
 
-Changes since 20220222:
-
-The drm-intel tree gained a conflict with the drm-intel-fixes tree.
-
-The drm-tegra tree gained a conflict with the drm tree.
-
-The mfd tree gained a build failure, I used the version from yesterday
-instead.
-
-The kvm tree gained a conflict with the kvm-fixes tree.
-
-The nvmem tree gained a conflict with the spi tree.
-
-The nvmem tree gained a conflict with the char-misc tree.
-
-I applied a fix for the build failure in the maple tree so merged
-today's version.
-
-The folio tree gained several conflicts with the maple tree.
-
-Non-merge commits (relative to Linus' tree): 7020
- 7614 files changed, 874525 insertions(+), 213969 deletions(-)
-
-----------------------------------------------------------------------------
-
-I have created today's linux-next tree at
-git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-(patches at http://www.kernel.org/pub/linux/kernel/next/ ).  If you
-are tracking the linux-next tree using git, you should not use "git pull"
-to do so as that will try to merge the new linux-next release with the
-old one.  You should use "git fetch" and checkout or reset to the new
-master.
-
-You can see which trees have been included by looking in the Next/Trees
-file in the source.  There are also quilt-import.log and merge.log
-files in the Next directory.  Between each merge, the tree was built
-with a defconfig for arm64, an allmodconfig for x86_64, a
-multi_v7_defconfig for arm and a native build of tools/perf. After the
-final fixups (if any), I do an x86_64 modules_install followed by builds
-for x86_64 allnoconfig, arm64 allnoconfig, arm64 allyesconfig and i386,
-and arm64 and htmldocs.
-
-Below is a summary of the state of the merge.
-
-I am currently merging 346 trees (counting Linus' and 93 trees of bug
-fix patches pending for the current merge release).
-
-Stats about the size of the tree over time can be seen at
-http://neuling.org/linux-next-size.html .
-
-Status of my local build tests will be at
-http://kisskb.ellerman.id.au/linux-next .  If maintainers want to give
-advice about cross compilers/configs that work, we are always open to add
-more builds.
-
-Thanks to Randy Dunlap for doing many randconfig builds.  And to Paul
-Gortmaker for triage and bug fixes.
+Thanks,
+Kuai
+> 
+> 
+> 
+> Thanks,
+> Ming
+> 
+> .
+> 
