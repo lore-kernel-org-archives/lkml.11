@@ -2,132 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 027AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 14:59:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F5AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:00:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235702AbiBXPAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:00:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44890 "EHLO
+        id S235681AbiBXPBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:01:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234948AbiBXPAD (ORCPT
+        with ESMTP id S231255AbiBXPBW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:00:03 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D243426834C;
-        Thu, 24 Feb 2022 06:59:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645714769; x=1677250769;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ORDMBlKCGSdSfHM8GA+311LvkiZtIfohu3XDDYVXTUo=;
-  b=avyvOQmmF4BPcZcaesDapZhEzVsXUXhtWe2l+KWfsHByG3VsWz/xiho9
-   orMS5UNJokPWBNN1qxwpmasgdMXkoH6EcnL3PlNCLCxppWsvDnCzJiAW1
-   7hMlI60fhpXPG1L7lT6TIfoIwxm3W7sjc9/fdhtK3ssUsHpjvrM3ErPA9
-   /nJAxxD7vdf9MHdnRAUScamy7Cd0wMQHccULa8hLsiyvjYKKUQ5gTAiK1
-   gPMhgBhbo+VqII3LS/ENTDXCQ0dy7NbhFskK8WzIecVmd0RaC2Oex7j3f
-   Xw7dIIiCPVdcf6G6Rs5r8hcQe1OILPdufaeX10/UXR5YNJ1Sw2lkNRUID
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,134,1643698800"; 
-   d="scan'208";a="154765321"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Feb 2022 07:59:29 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 24 Feb 2022 07:59:29 -0700
-Received: from [10.12.73.51] (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Thu, 24 Feb 2022 07:59:26 -0700
-Message-ID: <d0c4262c-097d-18da-cb51-5409f6e02b61@microchip.com>
-Date:   Thu, 24 Feb 2022 15:59:26 +0100
+        Thu, 24 Feb 2022 10:01:22 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7FD281995
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:00:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645714852; x=1677250852;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=tlkgG5/zD2FYebIzfsX7WWTFrdTP4CjJ16M5c8J6vPE=;
+  b=hslIHviAFuOv67CYO+SM3A02g0ugehG8bvOZ+cUW9jPz90M9e+XckmyX
+   mA5uBmlq/lskwy9E5me2pkr/bFbGW//1VuGEDNk1YBTVQIQDbCxz76V9l
+   hQXliGnG7Nu+hXrb0KJdYZt+5kjJMbiJ3maSwWISj4Z8OANW0vj3BkDe7
+   sWOz6nTeWjnzQViM20CvDKs29J9vbK28Ek3B+iVPVjFMLnzdaGy99wav8
+   6gd67n7AzgiZxwist1cI1J4cTHo3g9cED1/SQgEURYPWCRXrWTx0NkTb8
+   46Fknau85nPHHVCJ50IV3ZjIJSyGQxZ/5l31jKEoEzBAwR9FYyH2g0QXt
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="276879840"
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="276879840"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:00:27 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="506343304"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 24 Feb 2022 07:00:25 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nNFbU-0003Cz-TQ; Thu, 24 Feb 2022 15:00:24 +0000
+Date:   Thu, 24 Feb 2022 22:59:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guo Ren <guoren@linux.alibaba.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Christoph Hellwig <hch@lst.de>
+Subject: [csky-linux:riscv_compat_v6 6/20]
+ arch/arm64/include/asm/compat.h:69:8: error: redefinition of 'compat_statfs'
+Message-ID: <202202242252.n1liBFbe-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 6/8] ARM: dts: at91: sama7g5: add opps
-Content-Language: en-US
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>,
-        <robh+dt@kernel.org>, <linux@armlinux.org.uk>,
-        <mturquette@baylibre.com>, <sboyd@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20211216141338.35144-1-claudiu.beznea@microchip.com>
- <20211216141338.35144-7-claudiu.beznea@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20211216141338.35144-7-claudiu.beznea@microchip.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/12/2021 at 15:13, Claudiu Beznea wrote:
-> Add OPPs for SAMA7G5 along with clock for CPU.
-> 
-> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+tree:   https://github.com/c-sky/csky-linux riscv_compat_v6
+head:   4aafa1859382d5a159bdafe2956453feafd38845
+commit: fab61ef3bef8834beeb845d608cc8df8ef7df0e2 [6/20] asm-generic: compat: Cleanup duplicate definitions
+config: arm64-buildonly-randconfig-r002-20220224 (https://download.01.org/0day-ci/archive/20220224/202202242252.n1liBFbe-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/c-sky/csky-linux/commit/fab61ef3bef8834beeb845d608cc8df8ef7df0e2
+        git remote add csky-linux https://github.com/c-sky/csky-linux
+        git fetch --no-tags csky-linux riscv_compat_v6
+        git checkout fab61ef3bef8834beeb845d608cc8df8ef7df0e2
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 prepare
 
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Queued in at91-dt branch.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Regards,
-   Nicolas
+All errors (new ones prefixed by >>):
 
-> ---
->   arch/arm/boot/dts/sama7g5.dtsi | 37 ++++++++++++++++++++++++++++++++++
->   1 file changed, 37 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
-> index 7039311bf678..22352ef5bc72 100644
-> --- a/arch/arm/boot/dts/sama7g5.dtsi
-> +++ b/arch/arm/boot/dts/sama7g5.dtsi
-> @@ -30,6 +30,43 @@ cpu0: cpu@0 {
->   			device_type = "cpu";
->   			compatible = "arm,cortex-a7";
->   			reg = <0x0>;
-> +			clocks = <&pmc PMC_TYPE_CORE PMC_CPUPLL>;
-> +			clock-names = "cpu";
-> +			operating-points-v2 = <&cpu_opp_table>;
-> +		};
-> +	};
-> +
-> +	cpu_opp_table: opp-table {
-> +		compatible = "operating-points-v2";
-> +
-> +		opp-90000000 {
-> +			opp-hz = /bits/ 64 <90000000>;
-> +			opp-microvolt = <1050000 1050000 1225000>;
-> +			clock-latency-ns = <320000>;
-> +		};
-> +
-> +		opp-250000000 {
-> +			opp-hz = /bits/ 64 <250000000>;
-> +			opp-microvolt = <1050000 1050000 1225000>;
-> +			clock-latency-ns = <320000>;
-> +		};
-> +
-> +		opp-600000000 {
-> +			opp-hz = /bits/ 64 <600000000>;
-> +			opp-microvolt = <1050000 1050000 1225000>;
-> +			clock-latency-ns = <320000>;
-> +		};
-> +
-> +		opp-800000000 {
-> +			opp-hz = /bits/ 64 <800000000>;
-> +			opp-microvolt = <1150000 1125000 1225000>;
-> +			clock-latency-ns = <320000>;
-> +		};
-> +
-> +		opp-1000000002 {
-> +			opp-hz = /bits/ 64 <1000000002>;
-> +			opp-microvolt = <1250000 1225000 1300000>;
-> +			clock-latency-ns = <320000>;
->   		};
->   	};
->   
+   In file included from arch/arm64/kernel/asm-offsets.c:10:
+   In file included from include/linux/arm_sdei.h:8:
+   In file included from include/acpi/ghes.h:5:
+   In file included from include/acpi/apei.h:9:
+   In file included from include/linux/acpi.h:13:
+   In file included from include/linux/irqdomain.h:35:
+   In file included from include/linux/of.h:17:
+   In file included from include/linux/kobject.h:20:
+   In file included from include/linux/sysfs.h:22:
+   In file included from include/linux/stat.h:6:
+   In file included from arch/arm64/include/asm/stat.h:13:
+>> arch/arm64/include/asm/compat.h:69:8: error: redefinition of 'compat_statfs'
+   struct compat_statfs {
+          ^
+   include/asm-generic/compat.h:80:8: note: previous definition is here
+   struct compat_statfs {
+          ^
+   1 error generated.
+   make[2]: *** [scripts/Makefile.build:121: arch/arm64/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1191: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
 
--- 
-Nicolas Ferre
+vim +/compat_statfs +69 arch/arm64/include/asm/compat.h
+
+3dd681d944f6d8 Will Deacon 2012-03-05  68  
+3dd681d944f6d8 Will Deacon 2012-03-05 @69  struct compat_statfs {
+3dd681d944f6d8 Will Deacon 2012-03-05  70  	int		f_type;
+3dd681d944f6d8 Will Deacon 2012-03-05  71  	int		f_bsize;
+3dd681d944f6d8 Will Deacon 2012-03-05  72  	int		f_blocks;
+3dd681d944f6d8 Will Deacon 2012-03-05  73  	int		f_bfree;
+3dd681d944f6d8 Will Deacon 2012-03-05  74  	int		f_bavail;
+3dd681d944f6d8 Will Deacon 2012-03-05  75  	int		f_files;
+3dd681d944f6d8 Will Deacon 2012-03-05  76  	int		f_ffree;
+3dd681d944f6d8 Will Deacon 2012-03-05  77  	compat_fsid_t	f_fsid;
+3dd681d944f6d8 Will Deacon 2012-03-05  78  	int		f_namelen;	/* SunOS ignores this field. */
+3dd681d944f6d8 Will Deacon 2012-03-05  79  	int		f_frsize;
+3dd681d944f6d8 Will Deacon 2012-03-05  80  	int		f_flags;
+3dd681d944f6d8 Will Deacon 2012-03-05  81  	int		f_spare[4];
+3dd681d944f6d8 Will Deacon 2012-03-05  82  };
+3dd681d944f6d8 Will Deacon 2012-03-05  83  
+
+:::::: The code at line 69 was first introduced by commit
+:::::: 3dd681d944f6d861f12ee03aff17a14342963330 arm64: 32-bit (compat) applications support
+
+:::::: TO: Will Deacon <will.deacon@arm.com>
+:::::: CC: Catalin Marinas <catalin.marinas@arm.com>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
