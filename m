@@ -2,84 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DECC0C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 304E6C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231864AbiBXMv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:51:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46694 "EHLO
+        id S234542AbiBXMwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:52:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232152AbiBXMvZ (ORCPT
+        with ESMTP id S232338AbiBXMwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:51:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274C11E2FEB;
-        Thu, 24 Feb 2022 04:50:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 24 Feb 2022 07:52:31 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47FA20C192
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:52:01 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3921618EE;
-        Thu, 24 Feb 2022 12:50:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E5FDC340E9;
-        Thu, 24 Feb 2022 12:50:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645707055;
-        bh=n605HSG0r5c7g9hGxY1ahwhO3mqEmcQZ6Pb773ajwMw=;
-        h=Date:From:To:Cc:Subject:From;
-        b=TVj4QacrP8aj4pBDB470ure0lkHkT0v80y3x1Xks0wZnoJO//dYSWju3fXKFw8b26
-         YhSYPBVj4mY9F7vEDiUQ9Eq5DRo7sPu7v+R/ak1NMn7eGAcBUzu8v7xEfWwiBZQke1
-         HsZVpNsIv4q2hpUnPHTDFYf+woZzJFEQQjXFeLOMA6kkC7g7EsSdlCwwqISBPI4j7J
-         KxFslM+1MxkJQdaTIpoWHiSdJEhMV0R8UNBmWwl/IVUzbg74YZNrrx8KW/vt7xSQq8
-         57jiclX+Qu6TdJSTVkwHZUW2ycfTtOizAuw4HiEc1eu3CgotWSXom5f1NPt7JYkJ1f
-         lNHA250EGsX1w==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1nNDaB-0007zw-8X; Thu, 24 Feb 2022 13:50:55 +0100
-Date:   Thu, 24 Feb 2022 13:50:55 +0100
-From:   Johan Hovold <johan@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] USB-serial fixes for 5.17-rc6
-Message-ID: <Yhd/L2uKGvBbuQUS@hovoldconsulting.com>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 6ADD01F44A;
+        Thu, 24 Feb 2022 12:52:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645707120; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/hEOHSk6mpdWOQGBOjCX5MvKKazQNk0J6qqzBVupACc=;
+        b=kd9qcHfB0uMRnvQRtQlnE/2aEw8n/2DqkEVkk4NCDppua4OsOt9r39jkr1e37OcLY7oi9x
+        8b6IJtKOCCx3+/MtXErSwIKnUYmLN4Iq0WzCphMhnF2I345uBcNsUSY4hmugGlLeO9KHG+
+        +QS7rib+SQSEWj9RVOGVLj2Yt2JzFZw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645707120;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/hEOHSk6mpdWOQGBOjCX5MvKKazQNk0J6qqzBVupACc=;
+        b=R/upWeR00uc1VkH7l85083qEPjAX6RcNX226l+2+LFBkeQhHyGwoncgYIQ6JYh4rAF9iuV
+        JVX5a87C5Qv087Ag==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4946D13AD9;
+        Thu, 24 Feb 2022 12:52:00 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id hF8dEXB/F2LJEAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 24 Feb 2022 12:52:00 +0000
+Message-ID: <2a7e0f81-8152-4e6b-6036-43c236da5013@suse.cz>
+Date:   Thu, 24 Feb 2022 13:52:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 4/5] mm/slub: Limit min_partial only in cache creation
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        David Rientjes <rientjes@google.com>
+Cc:     linux-mm@kvack.org, Roman Gushchin <guro@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>
+References: <20220221105336.522086-1-42.hyeyoo@gmail.com>
+ <20220221105336.522086-5-42.hyeyoo@gmail.com>
+ <91cc8ab-a0f0-2687-df99-10b2267c7a9@google.com>
+ <YhWsF/Bz89LpLa/g@ip-172-31-19-208.ap-northeast-1.compute.internal>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <YhWsF/Bz89LpLa/g@ip-172-31-19-208.ap-northeast-1.compute.internal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 754e0b0e35608ed5206d6a67a791563c631cec07:
+On 2/23/22 04:37, Hyeonggon Yoo wrote:
+> On Tue, Feb 22, 2022 at 03:48:16PM -0800, David Rientjes wrote:
+>> On Mon, 21 Feb 2022, Hyeonggon Yoo wrote:
+>> 
+>> > SLUB sets number of minimum partial slabs for node (min_partial) using
+>> > set_min_partial(). SLUB holds at least min_partial slabs even if they're empty
+>> > to avoid excessive use of page allocator.
+>> > 
+>> > set_min_partial() limits value of min_partial between MIN_PARTIAL and
+>> > MAX_PARTIAL. As set_min_partial() can be called by min_partial_store()
+>> > too, Only limit value of min_partial in kmem_cache_open() so that it
+>> > can be changed to value that a user wants.
+>> > 
+>> > Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+>> 
+>> I think this makes sense and there is no reason to limit the bounds that 
+>> may be set at runtime with undocumented behavior.
 
-  Linux 5.17-rc4 (2022-02-13 12:13:30 -0800)
+Right.
 
-are available in the Git repository at:
+> Thank you for comment.
+> 
+>> 
+>> However, since set_min_partial() is only setting the value in the 
+>> kmem_cache, could we remove the helper function entirely and fold it into 
+>> its two callers?
+> 
+> Right. We don't need to separate this as function. I'll update this
+> in next version. Thanks!
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git tags/usb-serial-5.17-rc6
-
-for you to fetch changes up to cfc4442c642d568014474b6718ccf65dc7ca6099:
-
-  USB: serial: option: add Telit LE910R1 compositions (2022-02-21 10:20:26 +0100)
-
-----------------------------------------------------------------
-USB-serial fixes for 5.17-rc6
-
-Here's a revert of a commit which erroneously added a device id used for
-the EPP/MEM mode of ch341 devices.
-
-Included are also some new modem device ids.
-
-All have been in linux-next with no reported issues.
-
-----------------------------------------------------------------
-Daniele Palmas (1):
-      USB: serial: option: add Telit LE910R1 compositions
-
-Dmytro Bagrii (1):
-      Revert "USB: serial: ch341: add new Product ID for CH341A"
-
-Slark Xiao (1):
-      USB: serial: option: add support for DW5829e
-
- drivers/usb/serial/ch341.c  |  1 -
- drivers/usb/serial/option.c | 12 ++++++++++++
- 2 files changed, 12 insertions(+), 1 deletion(-)
+Agreed, thanks!
