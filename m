@@ -2,138 +2,291 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5624DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0111C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbiBXCR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:17:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42476 "EHLO
+        id S230071AbiBXCWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:22:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229985AbiBXCRZ (ORCPT
+        with ESMTP id S230060AbiBXCWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:17:25 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCC304CD71;
-        Wed, 23 Feb 2022 18:16:55 -0800 (PST)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21O01Rop005376;
-        Thu, 24 Feb 2022 01:27:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=hxIe060VY8iAwZUhENZ7/n+sdp6TZCXyeb3v4M2Wzfg=;
- b=NH513txvmsg4gVHgZaJlJH0ksW5KqciXUN63BzU7ske5qgbUeEVLuANZJ8+ImdkvwQEg
- zzWeiy4cAV2innTnS77DiPJTZSmfOAHPptTRiAxhiTbWWsHNp+SmgHsep8Y9bkiBhdOy
- mR6qpX7Wncw/M9knjNM3udpn4Wu1cjqWJ+0SB/oIO8uX8gbweWcid0JXnSBHElHmzEZa
- mOWRgjQjnUt8q8N0x2b425ODO/1HnRazcxk8M+zZS1UxTKj7+ixjYyg8aY7zynGmaqIs
- zT/16r8nlwlS2BgYVgLpAoqKJsd2K2lAqRwH7SKVmjLifRZrZnyH3JWkiaSJEKSV9nKh lA== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3edsjt0nx1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Feb 2022 01:27:54 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21O18eAU011477;
-        Thu, 24 Feb 2022 01:27:52 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3eaqtjdq42-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Feb 2022 01:27:52 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21O1RoF741746892
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Feb 2022 01:27:50 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4842DA4054;
-        Thu, 24 Feb 2022 01:27:50 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 87F57A405C;
-        Thu, 24 Feb 2022 01:27:49 +0000 (GMT)
-Received: from sig-9-65-80-154.ibm.com (unknown [9.65.80.154])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 24 Feb 2022 01:27:49 +0000 (GMT)
-Message-ID: <c6d3fcf09a56ad3b3fcc011b7fd3b8207675ad8e.camel@linux.ibm.com>
-Subject: Re: [PATCH v5 3/8] fs-verity: define a function to return the
- integrity protected file digest
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-integrity@vger.kernel.org,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Wed, 23 Feb 2022 20:27:49 -0500
-In-Reply-To: <YhbeuQpGuDxEmi9o@sol.localdomain>
-References: <20220211214310.119257-1-zohar@linux.ibm.com>
-         <20220211214310.119257-4-zohar@linux.ibm.com>
-         <YhbKYZcWxmi4auJU@sol.localdomain>
-         <f322ae351dde71b92d7d4037d78190c7338ca710.camel@linux.ibm.com>
-         <YhbeuQpGuDxEmi9o@sol.localdomain>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 8Vdu6TyC8Uy-pK-MXoUpXs2me1Aohccl
-X-Proofpoint-GUID: 8Vdu6TyC8Uy-pK-MXoUpXs2me1Aohccl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-23_09,2022-02-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- malwarescore=0 suspectscore=0 clxscore=1015 adultscore=0 phishscore=0
- bulkscore=0 priorityscore=1501 mlxlogscore=999 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202240002
+        Wed, 23 Feb 2022 21:22:43 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865212C2
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:22:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645669334; x=1677205334;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=q/ad4OHSEt+J9R8R91laI6fqCULJUnXGCWiyyQbN0b4=;
+  b=Hh84bXidTZGUhqnapMe3YAZKSI1HKmXQ/VPG0qAPCJckC22u0/We4tJn
+   kL+1PncqJ+lrOixaRMS2TEy52KFLArKbpcA/J6ZgKFlFjIY8aZ0Oc4v2+
+   jxJoI2UI5iWoKyIg2vCRA8PPmuc7ksp8xrJ4wW80x3OjNyKRPKZV1wRtt
+   iy9g2cR0yq+HyeY3kpj3JtmgY36xYA4kiYGiD5xmU+PbxnwpnhC2t/RPV
+   JuA27jwiJJNRahLjhISpm+F0LVxilYe4duIgEwJsPhSGjW996ah14tcOO
+   yludoK15Bsf/1uQy1DgdZX+FnOkg8r/ix26YY3G6iew6J+uqhp93fvy7z
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="250946093"
+X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
+   d="scan'208";a="250946093"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 16:46:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
+   d="scan'208";a="543524072"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga007.fm.intel.com with ESMTP; 23 Feb 2022 16:46:54 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nN2HV-00022Z-Qm; Thu, 24 Feb 2022 00:46:53 +0000
+Date:   Thu, 24 Feb 2022 08:46:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hannes Reinecke <hare@suse.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [hare-scsi-devel:tls-upcall.v2 55/67] net/tls/tls_main.c:1062:26:
+ warning: format '%lu' expects argument of type 'long unsigned int', but
+ argument 5 has type 'size_t' {aka 'unsigned int'}
+Message-ID: <202202240853.dYMh2vPi-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-23 at 17:26 -0800, Eric Biggers wrote:
-> On Wed, Feb 23, 2022 at 08:21:01PM -0500, Mimi Zohar wrote:
-> > On Wed, 2022-02-23 at 15:59 -0800, Eric Biggers wrote:
-> > > On Fri, Feb 11, 2022 at 04:43:05PM -0500, Mimi Zohar wrote:
-> > > > +/**
-> > > > + * fsverity_get_digest() - get a verity file's digest
-> > > > + * @inode: inode to get digest of
-> > > > + * @digest: (out) pointer to the digest
-> > > > + * @alg: (out) pointer to the hash algorithm enumeration
-> > > > + *
-> > > > + * Return the file hash algorithm and digest of an fsverity protected file.
-> > > > + *
-> > > > + * Return: 0 on success, -errno on failure
-> > > > + */
-> > > > +int fsverity_get_digest(struct inode *inode,
-> > > > +			u8 digest[FS_VERITY_MAX_DIGEST_SIZE],
-> > > > +			enum hash_algo *alg)
-> > > > +{
-> > > > +	const struct fsverity_info *vi;
-> > > > +	const struct fsverity_hash_alg *hash_alg;
-> > > > +	int i;
-> > > > +
-> > > > +	vi = fsverity_get_info(inode);
-> > > > +	if (!vi)
-> > > > +		return -ENODATA; /* not a verity file */
-> > > 
-> > > Sorry for the slow reviews; I'm taking a look again now.  One question about
-> > > something I missed earlier: is the file guaranteed to have been opened before
-> > > this is called?  fsverity_get_info() only returns a non-NULL value if the file
-> > > has been opened at least once since the inode has been loaded into memory.  If
-> > > the inode has just been loaded into memory without being opened, for example due
-> > > to a call to stat(), then fsverity_get_info() will return NULL.
-> > > 
-> > > If the file is guaranteed to have been opened, then the code is fine, but the
-> > > comment for fsverity_get_digest() perhaps should be updated to mention this
-> > > assumption, given that it takes a struct inode rather than a struct file.
-> > > 
-> > > If the file is *not* guaranteed to have been opened, then it would be necessary
-> > > to make fsverity_get_digest() call ensure_verity_info() to set up the
-> > > fsverity_info.
-> > 
-> > Yes, fsverity_get_digest() is called as a result of a syscall - open,
-> > execve, mmap, etc.   
-> > Refer to the LSM hooks security_bprm_check() and security_mmap_file().
-> > ima_file_check() is called directly in do_open().
-> 
-> stat() is a syscall too, so the question is not whether this is being called as
-> a result of a syscall, but rather whether it's only being called while the file
-> is open (or at least previously opened).  Is the answer to that "yes"?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git tls-upcall.v2
+head:   ac729ea3c52bda460616c71d5f5fc47b2e64da6d
+commit: a6fbc57802543bef21b5327858ef990508375b4c [55/67] net/tls: fixup tls identity matching
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220224/202202240853.dYMh2vPi-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git/commit/?id=a6fbc57802543bef21b5327858ef990508375b4c
+        git remote add hare-scsi-devel https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git
+        git fetch --no-tags hare-scsi-devel tls-upcall.v2
+        git checkout a6fbc57802543bef21b5327858ef990508375b4c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash net/tls/
 
-yes
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
+All warnings (new ones prefixed by >>):
+
+   In file included from include/linux/kernel.h:20,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from net/tls/tls_main.c:34:
+   net/tls/tls_main.c: In function 'tls_identity_match':
+>> net/tls/tls_main.c:1062:26: warning: format '%lu' expects argument of type 'long unsigned int', but argument 5 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+    1062 |                 pr_debug("%s: non-matching src %s len %lu\n",
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:340:21: note: in definition of macro 'pr_fmt'
+     340 | #define pr_fmt(fmt) fmt
+         |                     ^~~
+   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
+     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
+     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:574:9: note: in expansion of macro 'dynamic_pr_debug'
+     574 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~
+   net/tls/tls_main.c:1062:17: note: in expansion of macro 'pr_debug'
+    1062 |                 pr_debug("%s: non-matching src %s len %lu\n",
+         |                 ^~~~~~~~
+   net/tls/tls_main.c:1062:57: note: format string is defined here
+    1062 |                 pr_debug("%s: non-matching src %s len %lu\n",
+         |                                                       ~~^
+         |                                                         |
+         |                                                         long unsigned int
+         |                                                       %u
+   In file included from include/linux/kernel.h:20,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from net/tls/tls_main.c:34:
+   net/tls/tls_main.c:1076:26: warning: format '%lu' expects argument of type 'long unsigned int', but argument 5 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+    1076 |                 pr_debug("%s: non-matching dst %s len %lu\n",
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:340:21: note: in definition of macro 'pr_fmt'
+     340 | #define pr_fmt(fmt) fmt
+         |                     ^~~
+   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
+     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
+     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:574:9: note: in expansion of macro 'dynamic_pr_debug'
+     574 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~
+   net/tls/tls_main.c:1076:17: note: in expansion of macro 'pr_debug'
+    1076 |                 pr_debug("%s: non-matching dst %s len %lu\n",
+         |                 ^~~~~~~~
+   net/tls/tls_main.c:1076:57: note: format string is defined here
+    1076 |                 pr_debug("%s: non-matching dst %s len %lu\n",
+         |                                                       ~~^
+         |                                                         |
+         |                                                         long unsigned int
+         |                                                       %u
+   In file included from include/linux/kernel.h:20,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from net/tls/tls_main.c:34:
+   net/tls/tls_main.c:1090:26: warning: format '%lu' expects argument of type 'long unsigned int', but argument 5 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+    1090 |                 pr_debug("%s: non-matching port %s len %lu\n",
+         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:340:21: note: in definition of macro 'pr_fmt'
+     340 | #define pr_fmt(fmt) fmt
+         |                     ^~~
+   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
+     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/dynamic_debug.h:162:9: note: in expansion of macro '_dynamic_func_call'
+     162 |         _dynamic_func_call(fmt, __dynamic_pr_debug,             \
+         |         ^~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:574:9: note: in expansion of macro 'dynamic_pr_debug'
+     574 |         dynamic_pr_debug(fmt, ##__VA_ARGS__)
+         |         ^~~~~~~~~~~~~~~~
+   net/tls/tls_main.c:1090:17: note: in expansion of macro 'pr_debug'
+    1090 |                 pr_debug("%s: non-matching port %s len %lu\n",
+         |                 ^~~~~~~~
+   net/tls/tls_main.c:1090:58: note: format string is defined here
+    1090 |                 pr_debug("%s: non-matching port %s len %lu\n",
+         |                                                        ~~^
+         |                                                          |
+         |                                                          long unsigned int
+         |                                                        %u
+   In file included from include/linux/kernel.h:20,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/mm_types_task.h:14,
+                    from include/linux/mm_types.h:5,
+                    from include/linux/buildid.h:5,
+                    from include/linux/module.h:14,
+                    from net/tls/tls_main.c:34:
+   net/tls/tls_main.c:1105:18: warning: format '%lu' expects argument of type 'long unsigned int', but argument 6 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+    1105 |         pr_debug("%s: match '%s' '%s' len %lu\n",
+         |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/printk.h:340:21: note: in definition of macro 'pr_fmt'
+     340 | #define pr_fmt(fmt) fmt
+         |                     ^~~
+   include/linux/dynamic_debug.h:152:9: note: in expansion of macro '__dynamic_func_call'
+     152 |         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+
+
+vim +1062 net/tls/tls_main.c
+
+  1014	
+  1015	static bool tls_identity_match(const struct key *key,
+  1016				       const struct key_match_data *match_data)
+  1017	{
+  1018		const char *src = key->description;
+  1019		const char *dst = NULL, *port = NULL, *id = NULL;
+  1020		const char *match_src, *match_dst, *match_port, *match_id;
+  1021		size_t src_len, dst_len, port_len, id_len;
+  1022	
+  1023		dst = strchr(src, ';');
+  1024		id_len = strlen(src);
+  1025		if (dst) {
+  1026			src_len = dst - src;
+  1027			if (!src_len)
+  1028				src = NULL;
+  1029			id_len -= src_len + 1;
+  1030			dst++;
+  1031			port = strchr(dst, ';');
+  1032			if (port) {
+  1033				dst_len = port - dst;
+  1034				if (!dst_len)
+  1035					dst = NULL;
+  1036				id_len -= dst_len + 1;
+  1037				port++;
+  1038				id = strchr(port, ';');
+  1039				if (id) {
+  1040					port_len = id - port;
+  1041					if (!port_len)
+  1042						port = NULL;
+  1043					id_len -= port_len + 1;
+  1044					id++;
+  1045				}
+  1046			}
+  1047		}
+  1048		pr_debug("%s: src %s dst %s port %s\n", __func__, src, dst, port);
+  1049		/* simple string-based IP address matching */
+  1050		/* hare: convert to sockaddr matching */
+  1051		match_src = match_data->raw_data;
+  1052		match_dst = strchr(match_src, ';');
+  1053		/* Parsing error */
+  1054		if (!match_dst) {
+  1055			pr_debug("%s: match dst missing\n", __func__);
+  1056			return false;
+  1057		}
+  1058		match_dst++;
+  1059		pr_debug("%s: match src %s\n", __func__, match_src);
+  1060		if (src && (match_dst - match_src) > 0 &&
+  1061		    memcmp(src, match_src, src_len)) {
+> 1062			pr_debug("%s: non-matching src %s len %lu\n",
+  1063				 __func__, src, src_len);
+  1064				return false;
+  1065		}
+  1066	
+  1067		match_port = strchr(match_dst, ';');
+  1068		if (!match_port) {
+  1069			pr_debug("%s: match port missing\n", __func__);
+  1070			return false;
+  1071		}
+  1072		match_port++;
+  1073		pr_debug("%s: match dst %s\n", __func__, match_dst);
+  1074		if (dst && (match_port - match_dst) > 0 &&
+  1075		    memcmp(dst, match_dst, dst_len)) {
+  1076			pr_debug("%s: non-matching dst %s len %lu\n",
+  1077				 __func__, dst, dst_len);
+  1078			return false;
+  1079		}
+  1080	
+  1081		match_id = strchr(match_port, ';');
+  1082		if (!match_id) {
+  1083			pr_debug("%s: match identity missing\n", __func__);
+  1084			return false;
+  1085		}
+  1086		match_id++;
+  1087		pr_debug("%s: match port %s\n", __func__, match_port);
+  1088		if (port && (match_id - match_port) > 0 &&
+  1089		    memcmp(port, match_port, port_len)) {
+  1090			pr_debug("%s: non-matching port %s len %lu\n",
+  1091				 __func__, port, port_len);
+  1092			return false;
+  1093		}
+  1094	
+  1095		/* No match ID specified: match agains all IDs */
+  1096		if (!match_id || !strlen(match_id)) {
+  1097			pr_debug("%s: match w/ no identity\n", __func__);
+  1098			return true;
+  1099		}
+  1100		/* Match ID specified, but no key ID: no match */
+  1101		if (!id) {
+  1102			pr_debug("%s: no identity to match\n", __func__);
+  1103			return false;
+  1104		}
+  1105		pr_debug("%s: match '%s' '%s' len %lu\n",
+  1106			 __func__, match_id, id, id_len);
+  1107		return !memcmp(id, match_id, id_len);
+  1108	}
+  1109	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
