@@ -2,124 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 14:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF72C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 14:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235521AbiBXOYM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 09:24:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39002 "EHLO
+        id S235513AbiBXOYX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 09:24:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235494AbiBXOX6 (ORCPT
+        with ESMTP id S232883AbiBXOYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 09:23:58 -0500
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34341637F3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 06:23:21 -0800 (PST)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2d641c31776so26571717b3.12
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 06:23:21 -0800 (PST)
+        Thu, 24 Feb 2022 09:24:18 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 068651637EC;
+        Thu, 24 Feb 2022 06:23:49 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id p14so4649483ejf.11;
+        Thu, 24 Feb 2022 06:23:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=GVCRdf20z2if/WXkRWAWqNzxqWMrdd3fec2HBGui9Y4=;
-        b=vpT0MGtjheNDD9UYyeQ9IF6ps2q6c5IYS7+YVX48yc4tWpxLckATwez9vl/fmKvKOu
-         Un5tTk7mFMOKmEWwBimuEknvcP6F2sB3NkCGOVULWA773CqcI2y5x05UrJOEey09Y1Qe
-         OJShbXk5oyDvWqTq2i9Ka5PCylSOR65FEwGo+hLe7OBJJig283XCAj/gVM7L7OOgVVkt
-         XNRb/aPlYGIrf3l6nSI8wk/DbPGeeiUIuLdESZg34GXkZggbWQM6xlBatPy6Dy+uJnjp
-         QWqq5zGiDQokTk0lCmwIrW6YT4xsP5OmXZCfFSVzLpNS4fCcMsnPPNCUwqQQerPw/0V7
-         QxZA==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5JGNf6R+a4FEuW/ji5APSj/Q79D/fkN75qzklV7FvH4=;
+        b=ZBGEBTFHNMUajRMJJjvqdUjh5iq8V84lSTRqwpuHGonlCbH1JWx56BLlCxbuwBnU4V
+         3rRTnO/lKVHMf81GYjl3cGgHJhjnHvuWSM6HigTBgsBRFc5drLxCHOdFcyZ5ofeOayca
+         UwgFJKncS3gat2G/p7XRXnQdLjX8LslPwHnIkTIU4pbMdQkzJ9UYrO5/g66XoxZXU6ta
+         K1RhwezAqIvD2cHIDYsRazZ/6SuQLa2599PhM7t1u5qQoTE0BUfr5NB/7lmK+lyPaxkP
+         tprkCo30QmxLisCXiPmOeEBFKVFHCrj7/yTrdBFl9moGgmAk/js3gITFxoF9f4XWTEx2
+         eX4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=GVCRdf20z2if/WXkRWAWqNzxqWMrdd3fec2HBGui9Y4=;
-        b=cEgWPjoJWoAqAXnFZ46jXO7NnDkJEdtbCxxG+wQ3gfeX5+ytvtkqx068eXn3EgQOSD
-         6eCYzpIk5egdPqUwCtrs8Np2J4phXdsFleiDdt0GJNDA+CgDOqx+RVhkCYiErw9KFthf
-         /0Ttm2pKEFxdrlX5ZzED/CW1uzjrTv0aSI9Qkc0/qsV1phYdQRfBr9RjANfbIgbQOYLg
-         vafKXvgHgg0UhkYzBSXNMSamDuYwR8+1rzr1pvO65xWkIV7r2sZN46TH/SrktZzo26WR
-         menvfEh1Sbks0JMb1YPnF/wzdeMwJXojqGaWcB75icjiAekElOn6lVQvAf1ek5hze/MG
-         iNWg==
-X-Gm-Message-State: AOAM530mpSwybQj1piA+bkfk5BbeugQSNyOk/ytgdhrOORqP6Zh2KtTc
-        SPQMVxLAh5/6tYmvf4fAzendxr++7bYe6S0Ft0hUXcCXzFz+0g==
-X-Google-Smtp-Source: ABdhPJy/5/6AxH9eFRdpjQp6L9u+IiFuFnYk1TdAAYF24CLqBAoWxW4orYo4f65bn53WsTGYXwmnMlZI0suLijbIyQ4=
-X-Received: by 2002:a81:7812:0:b0:2d0:8c2c:5159 with SMTP id
- t18-20020a817812000000b002d08c2c5159mr2626955ywc.120.1645712600221; Thu, 24
- Feb 2022 06:23:20 -0800 (PST)
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5JGNf6R+a4FEuW/ji5APSj/Q79D/fkN75qzklV7FvH4=;
+        b=iAb54/OUV2o8E1smbMJ2U1+myz3AJURIhWtw3vHCYYlEKd2aE781t4wv1A+po8JNGz
+         ZyL//KnedBV8+hbKylydMiQZY8irUISPYPEjiz5qtzp+eVesB7SMy/0PmuOdaVffuFl5
+         zRo8mXTDViAYOAR5Gjlic78YCuG4G6Xvh1THfdnTwcmh7D4H1P3qvZNNqzvJ3OIj5UTa
+         OVl326Lj6QBdI50pvK0SQg1BsaekJOI+Nbf+1xna8DYeEiuFsjGrYsNujpzJtGXhqIFP
+         fY31y8xMqkaDvG59jvFCSxz9f0Nlxs4a54GxDy8niKp4w9vfUdJVnBsCx599rKKTWYTQ
+         uFmA==
+X-Gm-Message-State: AOAM531EO6q92wMFEhdt+naMxPPD9Y49LvSd+ObEWRke9NnpZ4T8LS/e
+        N7g0F5P+QpE6TjuP2gyFQNs=
+X-Google-Smtp-Source: ABdhPJwGN4xiUcoXTD/FQvJ2bStNWBAE/ICRfkmV2/p1JQBTRb1PsXZeTnDslyeNkUZYvmeWUQkjSw==
+X-Received: by 2002:a17:906:b052:b0:6ce:88a5:e42a with SMTP id bj18-20020a170906b05200b006ce88a5e42amr2495431ejb.237.1645712627596;
+        Thu, 24 Feb 2022 06:23:47 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id n25sm1443342eds.89.2022.02.24.06.23.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 06:23:47 -0800 (PST)
+Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
+Message-ID: <3896e3b5-0e6c-858a-8e4f-732ab03b7286@redhat.com>
+Date:   Thu, 24 Feb 2022 15:23:43 +0100
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 24 Feb 2022 19:53:09 +0530
-Message-ID: <CA+G9fYuhipgPsHetpvBmD4GO7KGfhSRRAAgN2ZnoFUWiCKMy6Q@mail.gmail.com>
-Subject: [next] riscv/kernel/vdso.c:123:27: error: 'next' undeclared
-To:     open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Cc:     "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Tong Tiangen <tongtiangen@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        lkft-triage@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] KVM:nVMX: Make setup/unsetup under the same conditions
+Content-Language: en-US
+To:     Peng Hao <flyingpenghao@gmail.com>, seanjc@google.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220222104054.70286-1-flyingpeng@tencent.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220222104054.70286-1-flyingpeng@tencent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Please ignore this email if it is already reported]
+On 2/22/22 11:40, Peng Hao wrote:
+> From: Peng Hao <flyingpeng@tencent.com>
+> 
+> Make sure nested_vmx_hardware_setup/unsetup() are called in pairs under
+> the same conditions.  Calling nested_vmx_hardware_unsetup() when nested
+> is false "works" right now because it only calls free_page() on zero-
+> initialized pointers, but it's possible that more code will be added to
+> nested_vmx_hardware_unsetup() in the future.
+> 
+> Reviewed-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Peng Hao <flyingpeng@tencent.com>
+> ---
+>   arch/x86/kvm/vmx/vmx.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 75ed7d6f35cc..9fad3c73395a 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -7852,7 +7852,7 @@ static __init int hardware_setup(void)
+>   	vmx_set_cpu_caps();
+>   
+>   	r = alloc_kvm_area();
+> -	if (r)
+> +	if (r && nested)
+>   		nested_vmx_hardware_unsetup();
+>   
+>   	kvm_set_posted_intr_wakeup_handler(pi_wakeup_handler);
 
-Linux next-20220223 arch riscv builds failed due to following errors.
-Build configs:
-  - riscv-gcc-9-defconfig
-  - riscv-gcc-9-defconfig
-  - riscv-gcc-10-defconfig
-  - riscv-gcc-11-defconfig
+Queued, thanks.
 
-metadata:
-  git_ref: master
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-  git_sha: d4a0ae62a277377de396850ed4b709b6bd9b7326
-  git_describe: next-20220223
-  arch: riscv
-  toolchain: gcc-11
-
-Build error:
------------
-In file included from arch/riscv/kernel/vdso.c:10:
-arch/riscv/kernel/vdso.c: In function 'vdso_join_timens':
-arch/riscv/kernel/vdso.c:123:27: error: 'next' undeclared (first use
-in this function); did you mean 'net'?
-  123 |         for_each_vma(vmi, next) {
-      |                           ^~~~
-include/linux/mm.h:685:49: note: in definition of macro 'for_each_vma'
-  685 | #define for_each_vma(vmi, vma)          while ((vma =
-vma_next(&(vmi))) != NULL)
-      |                                                 ^~~
-arch/riscv/kernel/vdso.c:123:27: note: each undeclared identifier is
-reported only once for each function it appears in
-  123 |         for_each_vma(vmi, next) {
-      |                           ^~~~
-include/linux/mm.h:685:49: note: in definition of macro 'for_each_vma'
-  685 | #define for_each_vma(vmi, vma)          while ((vma =
-vma_next(&(vmi))) != NULL)
-      |                                                 ^~~
-make[3]: *** [scripts/Makefile.build:288: arch/riscv/kernel/vdso.o] Error 1
-make[3]: Target '__build' not remade because of errors.
-make[2]: *** [scripts/Makefile.build:614: arch/riscv/kernel] Error 2
-make[2]: Target '__build' not remade because of errors.
-make[1]: *** [Makefile:1971: arch/riscv] Error 2
-
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-Steps to reproduce:
-------------------
-# To install tuxmake on your system globally:
-# sudo pip3 install -U tuxmake
-
-tuxmake --runtime podman --target-arch riscv --toolchain gcc-11
---kconfig defconfig
-
---
-Linaro LKFT
-https://lkft.linaro.org
-
-[1] https://builds.tuxbuild.com/25XO99nwfQgKrWKz4yfBPYw0wyU/
+Paolo
