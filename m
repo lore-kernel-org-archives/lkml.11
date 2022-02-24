@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA93C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D37C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235952AbiBXPT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42682 "EHLO
+        id S236038AbiBXPUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:20:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235982AbiBXPSb (ORCPT
+        with ESMTP id S235983AbiBXPSb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 10:18:31 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD48E145635
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D06CB14EF72
         for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:17:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:References:
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:References:
         Subject:Cc:To:From:Date:Message-ID:Sender:Reply-To:Content-Transfer-Encoding:
         Content-ID:Content-Description:In-Reply-To;
-        bh=H5LNHgQS5iWSlIuTH5rZQRQTCvMu0SJcXk4UJIZt4Bw=; b=RjGdQcieKz4ShRAObRAP3xActB
-        7CJ850yButF61KVKD91NzYueBbqzlQ1o2Zr4JC3AVvkBehoTjf1QrpOBQT9SqrkV0DktCBI3SXrlE
-        cGcO0qREbLlzsD634fMlQo3IETdXzScvc2vnLi1z3cFRnrfQIPwaGvVAVonvLhAU0fIQ6B/0p/Mx4
-        JaNDPpNH0/wxo2RC7wfSi8bJZC3gXJdhFDAjmpDhKMCy6u0lk9ty9nfSVq4EzkcfazpIsnjyiVxz8
-        +NrXoXx88PJmhYV3SvQwZLYAzN6deHmywrrWjYZH4zdidvbg+/2cX0rHEwsQxXd4uKJCIwXqXggk+
-        lKXlRIUQ==;
+        bh=FPcqJTz/Xocj6COZ9oQu9lrBcpY/42nLHlfeH+QkjWM=; b=eTS8AeRWcAVEvFxwijWn7VqyVN
+        0yIifCblczY/dKOa3zTrtMNWcZuO+n3C3cFzISK8qOHjyE5UD33G2J4pKlecjD+awb/uPx5+SBo7r
+        F48Zg7qgLXB82/F6U8Bsofo5lxygzoZXU1fVgjgN7bDF9SIQGms8RHddCXZ2cHt/4qroUBnhaB5ri
+        cI17g875tvBuVeKJBQvPLBPz6w47VE69kHCrKpU+oot+t2Wj/akMQZ4TapUbMF++OpYsxTIyLzEiR
+        BscN3WUixqqtVBE5FE0ilzVx0UpULwgpYmDSpNCneDBGWMieauPtBaIMZQTvIp/0j5vcGDth/n7CF
+        xiJN4BTw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNFs3-00CeLx-Sz; Thu, 24 Feb 2022 15:17:32 +0000
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNFs3-004s1y-7Q; Thu, 24 Feb 2022 15:17:31 +0000
 Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 48545302D41;
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2634830076D;
         Thu, 24 Feb 2022 16:17:29 +0100 (CET)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 817852B354799; Thu, 24 Feb 2022 16:17:28 +0100 (CET)
-Message-ID: <20220224151323.481837663@infradead.org>
+        id 3CDAE29E75E57; Thu, 24 Feb 2022 16:17:28 +0100 (CET)
+Message-ID: <20220224151322.481071290@infradead.org>
 User-Agent: quilt/0.66
-Date:   Thu, 24 Feb 2022 15:52:03 +0100
+Date:   Thu, 24 Feb 2022 15:51:46 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         jpoimboe@redhat.com, andrew.cooper3@citrix.com
@@ -47,7 +47,7 @@ Cc:     linux-kernel@vger.kernel.org, peterz@infradead.org,
         samitolvanen@google.com, mark.rutland@arm.com,
         alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
         mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: [PATCH v2 25/39] x86/ibt,paravirt: Use text_gen_insn() for paravirt_patch()
+Subject: [PATCH v2 08/39] x86/linkage: Add ENDBR to SYM_FUNC_START*()
 References: <20220224145138.952963315@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,102 +55,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that writing direct JMP/CALL instructions is non-trivial, ensure
-we only have a single copy of all the relevant magic.
+Ensure the ASM functions have ENDBR on for IBT builds, this follows
+the ARM64 example. Unlike ARM64, we'll likely end up overwriting them
+with poison.
 
+Suggested-by: Mark Rutland <mark.rutland@arm.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- arch/x86/include/asm/text-patching.h |   20 ++++++++++++++------
- arch/x86/kernel/paravirt.c           |   23 +++--------------------
- 2 files changed, 17 insertions(+), 26 deletions(-)
+ arch/x86/include/asm/linkage.h |   39 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 39 insertions(+)
 
---- a/arch/x86/include/asm/text-patching.h
-+++ b/arch/x86/include/asm/text-patching.h
-@@ -97,16 +97,18 @@ union text_poke_insn {
- };
+--- a/arch/x86/include/asm/linkage.h
++++ b/arch/x86/include/asm/linkage.h
+@@ -3,6 +3,7 @@
+ #define _ASM_X86_LINKAGE_H
  
- static __always_inline
--void *text_gen_insn(u8 opcode, const void *addr, const void *dest)
-+void __text_gen_insn(void *buf, u8 opcode, const void *addr, const void *dest, int size)
- {
--	static union text_poke_insn insn; /* per instance */
--	int size = text_opcode_size(opcode);
-+	union text_poke_insn *insn = buf;
+ #include <linux/stringify.h>
++#include <asm/ibt.h>
+ 
+ #undef notrace
+ #define notrace __attribute__((no_instrument_function))
+@@ -34,5 +35,43 @@
+ 
+ #endif /* __ASSEMBLY__ */
+ 
++/*
++ * compressed and purgatory define this to disable EXPORT,
++ * hijack this same to also not emit ENDBR.
++ */
++#ifndef __DISABLE_EXPORTS
 +
-+	BUG_ON(size < text_opcode_size(opcode));
++/* SYM_FUNC_START -- use for global functions */
++#define SYM_FUNC_START(name)				\
++	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_NOALIGN -- use for global functions, w/o alignment */
++#define SYM_FUNC_START_NOALIGN(name)			\
++	SYM_START(name, SYM_L_GLOBAL, SYM_A_NONE)	\
++	ENDBR
++
++/* SYM_FUNC_START_LOCAL -- use for local functions */
++#define SYM_FUNC_START_LOCAL(name)			\
++	SYM_START(name, SYM_L_LOCAL, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_LOCAL_NOALIGN -- use for local functions, w/o alignment */
++#define SYM_FUNC_START_LOCAL_NOALIGN(name)		\
++	SYM_START(name, SYM_L_LOCAL, SYM_A_NONE)	\
++	ENDBR
++
++/* SYM_FUNC_START_WEAK -- use for weak functions */
++#define SYM_FUNC_START_WEAK(name)			\
++	SYM_START(name, SYM_L_WEAK, SYM_A_ALIGN)	\
++	ENDBR
++
++/* SYM_FUNC_START_WEAK_NOALIGN -- use for weak functions, w/o alignment */
++#define SYM_FUNC_START_WEAK_NOALIGN(name)		\
++	SYM_START(name, SYM_L_WEAK, SYM_A_NONE)		\
++	ENDBR
++
++#endif /* __DISABLE_EXPORTS */
++
+ #endif /* _ASM_X86_LINKAGE_H */
  
- 	/*
- 	 * Hide the addresses to avoid the compiler folding in constants when
- 	 * referencing code, these can mess up annotations like
- 	 * ANNOTATE_NOENDBR.
- 	 */
-+	OPTIMIZER_HIDE_VAR(insn);
- 	OPTIMIZER_HIDE_VAR(addr);
- 	OPTIMIZER_HIDE_VAR(dest);
- 
-@@ -115,19 +117,25 @@ void *text_gen_insn(u8 opcode, const voi
- 		dest += 4;
- #endif
- 
--	insn.opcode = opcode;
-+	insn->opcode = opcode;
- 
- 	if (size > 1) {
--		insn.disp = (long)dest - (long)(addr + size);
-+		insn->disp = (long)dest - (long)(addr + size);
- 		if (size == 2) {
- 			/*
- 			 * Ensure that for JMP8 the displacement
- 			 * actually fits the signed byte.
- 			 */
--			BUG_ON((insn.disp >> 31) != (insn.disp >> 7));
-+			BUG_ON((insn->disp >> 31) != (insn->disp >> 7));
- 		}
- 	}
-+}
- 
-+static __always_inline
-+void *text_gen_insn(u8 opcode, const void *addr, const void *dest)
-+{
-+	static union text_poke_insn insn; /* per instance */
-+	__text_gen_insn(&insn, opcode, addr, dest, text_opcode_size(opcode));
- 	return &insn.text;
- }
- 
---- a/arch/x86/kernel/paravirt.c
-+++ b/arch/x86/kernel/paravirt.c
-@@ -71,29 +71,12 @@ noinstr void paravirt_BUG(void)
- 	BUG();
- }
- 
--struct branch {
--	unsigned char opcode;
--	u32 delta;
--} __attribute__((packed));
--
- static unsigned paravirt_patch_call(void *insn_buff, const void *target,
- 				    unsigned long addr, unsigned len)
- {
--	const int call_len = 5;
--	struct branch *b = insn_buff;
--	unsigned long delta = (unsigned long)target - (addr+call_len);
--
--	if (len < call_len) {
--		pr_warn("paravirt: Failed to patch indirect CALL at %ps\n", (void *)addr);
--		/* Kernel might not be viable if patching fails, bail out: */
--		BUG_ON(1);
--	}
--
--	b->opcode = 0xe8; /* call */
--	b->delta = delta;
--	BUILD_BUG_ON(sizeof(*b) != call_len);
--
--	return call_len;
-+	__text_gen_insn(insn_buff, CALL_INSN_OPCODE,
-+			(void *)addr, target, CALL_INSN_SIZE);
-+	return CALL_INSN_SIZE;
- }
- 
- #ifdef CONFIG_PARAVIRT_XXL
 
 
