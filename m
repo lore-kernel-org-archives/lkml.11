@@ -2,137 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D31E4C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:51:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7EBAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230307AbiBXQvj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:51:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
+        id S230522AbiBXQvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:51:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229810AbiBXQvi (ORCPT
+        with ESMTP id S230437AbiBXQvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:51:38 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5247BD2C5;
-        Thu, 24 Feb 2022 08:51:07 -0800 (PST)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21OFFAkX031473;
-        Thu, 24 Feb 2022 16:16:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=yqHL87504nAZ1oZxHURRiF32LNq/unDOPPKMbX8ZaNg=;
- b=A82d6JUGoq7dzu7Ouyd7z6wzw3RZTdYPgTq+RHsEijA+I+Ghi7VQag+8zB8J/AlLGeIL
- SmpprGlwnFebxyI0JBQyKEAI31onSC+Emccpgm2Jlr5XFLAfjTWRGGZIRL2xzig5lCW8
- KWGeCUjhAzFL2ExF2AZKbMxOXxTwuMbjwrzWGnB8C1H47iQh1aaRGWPfb3S9Uit7dD4+
- QZGqaHiptX2rvfheQbrkblGHKCbH7+voIyqqEqV75zlD/noyusLkwiWZFW5YUUf0kDLE
- dZEmCLzmdIEMcRcCY0INyuCbrZZYLjhkrLzyah/ZKKpdo31pE3850lNSJuLJD61K/vfT rQ== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3edh6xpjam-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Feb 2022 16:16:58 +0000
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21OG77kF002898;
-        Thu, 24 Feb 2022 16:16:56 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06fra.de.ibm.com with ESMTP id 3eaqtk114t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 24 Feb 2022 16:16:56 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21OG6BV747317492
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 24 Feb 2022 16:06:11 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4B382A4040;
-        Thu, 24 Feb 2022 16:16:53 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 77B29A4057;
-        Thu, 24 Feb 2022 16:16:52 +0000 (GMT)
-Received: from sig-9-65-86-89.ibm.com (unknown [9.65.86.89])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 24 Feb 2022 16:16:52 +0000 (GMT)
-Message-ID: <b89ec5792da3c284f8e5e058c5568482beccf00d.camel@linux.ibm.com>
-Subject: Re: [PATCH v5 4/8] ima: define a new template field 'd-type' and a
- new template 'ima-ngv2'
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-integrity@vger.kernel.org,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 24 Feb 2022 11:16:51 -0500
-In-Reply-To: <YhbSE/k4mElcehDN@sol.localdomain>
-References: <20220211214310.119257-1-zohar@linux.ibm.com>
-         <20220211214310.119257-5-zohar@linux.ibm.com>
-         <YhbSE/k4mElcehDN@sol.localdomain>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: amlH_6L_r5yAerddFZgbRhMWxqrmxiS4
-X-Proofpoint-ORIG-GUID: amlH_6L_r5yAerddFZgbRhMWxqrmxiS4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-24_03,2022-02-24_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 clxscore=1015 bulkscore=0 adultscore=0 mlxscore=0
- suspectscore=0 mlxlogscore=999 phishscore=0 malwarescore=0
- lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202240095
+        Thu, 24 Feb 2022 11:51:43 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A0E117CB3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:51:10 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id q5so3399025oij.6
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:51:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=N8RCTotc4cmUTmsRA5J7naJcJh1Q7sGDDwovYyQT86k=;
+        b=fg9hkYcI5u3dbEw84om3H3LjBjjbFYuyGuZzo+47DtuUpbVS1U4m45qC/FWjkCJ0Fq
+         Eve4HcWP9XH/q1aMs4G4ocbr+xm+z0OIssB4urMuHCRuI/h6X87iF+ZPNhLWVkMUAt0+
+         MTrapkTrtRJFqglGwZ0sh0i1pHqLXoEFoC9Fcl+8BV0ksyQ4oiITyBSys7yZZhX4vEnF
+         C27Xn8uPVBu11qhWxaVSvdAR46bqzbW+nttpUdMm5PDNRVqQKBQFEYPhyBtPGYCFsVZo
+         XmjrNqjO8pHZW7S7UelvdUQw+nGMK8Y3c7Q5UP6CqicM2vNVAoClaawvVilgXSWCOjPg
+         4YOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=N8RCTotc4cmUTmsRA5J7naJcJh1Q7sGDDwovYyQT86k=;
+        b=MvygPEvd37AuNU5DNb9ymrXw8tZlSw+Eg3Bwdqut5ZN1TTVxrfYyeXrtq+qQ2X1mKM
+         Tp85ky20hSx1ac89KDTMSNf73ZUF0jqUYlJwFtblBRRoq9iZAYF9ei5InCXq2RohW8tZ
+         +DCFKlZUIC13I6ZOASn7awhBWkY8YeqHKcmQ6ffEv6jYkrhYfUiD8WbrNrbhBYp049hZ
+         Ncr22HmOUMQ8TIeyZRMMy3beYYBOAB3SoIhOAdJVeS/w87+yRCmE54Dk0QLPDo1PWv+b
+         5OoqHnFJ0y3W0pCMtGYqhlQtaCngZM5GM91agRgrfEOJeVjHSKA+FFome55Pc3zK4oi5
+         +4Rw==
+X-Gm-Message-State: AOAM532A3BQXF5DbUBfh3/IrlwcaPqE32FNNDBGnvBn8KEvtbLQpkQu4
+        OoGIRkaRT/eptxzO4VQ6svfYbw==
+X-Google-Smtp-Source: ABdhPJyH21pu5ycMxU9OVqYiNC++pfYrdMu5u7iIlq5TKIHOHUPz7vUGqYR/Y3LCAml5DLdoA8oD4g==
+X-Received: by 2002:a05:6808:1801:b0:2d7:206e:36fd with SMTP id bh1-20020a056808180100b002d7206e36fdmr3705715oib.3.1645721469908;
+        Thu, 24 Feb 2022 08:51:09 -0800 (PST)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id lc4-20020a056871418400b000c8a240183csm33827oab.25.2022.02.24.08.51.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 08:51:09 -0800 (PST)
+Date:   Thu, 24 Feb 2022 10:51:07 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>, Wei Xu <xuwei5@hisilicon.com>,
+        Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Jan Kotas <jank@cadence.com>, Li Wei <liwei213@huawei.com>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        Yaniv Gardi <ygardi@codeaurora.org>,
+        linux-scsi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v2 09/15] scsi: ufs: deprecate 'freq-table-hz' property
+Message-ID: <Yhe3e1coeUIGu+NB@builder.lan>
+References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
+ <20220222145854.358646-10-krzysztof.kozlowski@canonical.com>
+ <YhUodbzxx4wbr+gy@ripper>
+ <455a8a87-63e7-7864-f765-142be18d1fa8@canonical.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <455a8a87-63e7-7864-f765-142be18d1fa8@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-23 at 16:32 -0800, Eric Biggers wrote:
-> On Fri, Feb 11, 2022 at 04:43:06PM -0500, Mimi Zohar wrote:
-> > In preparation to differentiate between regular IMA file hashes and
-> > fs-verity's file digests, define a new template field named 'd-type'.
-> > Define a new template named 'ima-ngv2', which includes the new 'd-type'
-> > field.
+On Wed 23 Feb 03:15 CST 2022, Krzysztof Kozlowski wrote:
+
+> On 22/02/2022 19:16, Bjorn Andersson wrote:
+> > On Tue 22 Feb 06:58 PST 2022, Krzysztof Kozlowski wrote:
 > > 
-> > Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-> > ---
-> >  security/integrity/ima/ima_template.c     |  3 +++
-> >  security/integrity/ima/ima_template_lib.c | 13 +++++++++++++
-> >  security/integrity/ima/ima_template_lib.h |  2 ++
-> >  3 files changed, 18 insertions(+)
+> >> The 'freq-table-hz' is not correct in DT schema, because '-hz' suffix
+> >> defines uint32 type, not an array.  Therefore deprecate 'freq-table-hz'
+> >> and use 'freq-table' instead.
+> >>
 > > 
-> > diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
-> > index db1ad6d7a57f..b321342e5bee 100644
-> > --- a/security/integrity/ima/ima_template.c
-> > +++ b/security/integrity/ima/ima_template.c
-> > @@ -19,6 +19,7 @@ enum header_fields { HDR_PCR, HDR_DIGEST, HDR_TEMPLATE_NAME,
-> >  static struct ima_template_desc builtin_templates[] = {
-> >  	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
-> >  	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
-> > +	{.name = "ima-ngv2", .fmt = "d-ng|n-ng|d-type"},
-> >  	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
-> >  	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
-> >  	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
-> > @@ -40,6 +41,8 @@ static const struct ima_template_field supported_fields[] = {
-> >  	 .field_show = ima_show_template_digest_ng},
-> >  	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
-> >  	 .field_show = ima_show_template_string},
-> > +	{.field_id = "d-type", .field_init = ima_eventdigest_type_init,
-> > +	 .field_show = ima_show_template_string},
-> >  	{.field_id = "sig", .field_init = ima_eventsig_init,
-> >  	 .field_show = ima_show_template_sig},
-> >  	{.field_id = "buf", .field_init = ima_eventbuf_init,
+> > Patch looks good in itself, but why don't we use opp-table to describe
+> > the performance states?
+> > 
+> > In particular looking at the two columns of frequencies for various
+> > Qualcomm boards they require different performance-states.
+> > 
+> > A concrete example is sm8350.dtsi, which specifies 75MHz and 300MHz as
+> > the first frequency pair. The lower level requires the VDD_CX power rail
+> > to be at least &rpmhpd_opp_low_svs, the higher frequency has a
+> > required-opps of &rpmhpd_opp_nom.
+> > 
+> > 
+> > As this isn't possible to express in the current binding we've just been
+> > forced to always run at a higher voltage level and kept this in the todo
+> > list.
+> > 
+> > But rather than migrating freq-table-hz to freq-table and then having to
+> > introduce an opp table to express the power constraints, could we
+> > perhaps skip the intermediate step?
+> > 
+> > Or would you have any other suggestion about how we can represent the
+> > required-opps level together with the freq-table (if that's what we want
+> > to stick with).
 > 
-> I notice that the "d-ng" field already contains both the hash algorithm and the
-> hash itself, in the form <algorithm>:<hash>.  Wouldn't it make more sense to
-> define a "d-ngv2" field that contains <type>:<algorithm>:<hash>?  After all,
-> both the type and algorithm are required to interpret the hash.
+> Usage of OPP tables is interesting solution. It would solve your problem
+> of power rail levels. This would need several opp-tables - one for each
+> clock, which is not a big problem.
 > 
-> Or in other words, what about the hash type is different from the hash algorithm
-> that would result in them needing different handling here?
 
-Thanks, Eric.  I really like your suggestion.  Currently, type is
-defined as either "ima" or "verity".   Are you ok with prefixing each
-record with these strings?
+Ahh, so we can only have a single clock, but multiple regulators and
+interconnect paths tied to the opp table.
 
--- 
-thanks,
+We have a couple of cases where it would have been nice to be able to
+key the opp-table off some index (e.g. the UFS gear or PCI Gen) and
+control multiple clocks. So I think we need to look into this further...
 
-Mimi
+> The problem is that I do not have any UFS hardware (none of my Samsung
+> Exynos boards have UFS... I don't have even arm64 Exynos chips :( ), so
+> implementing it theoretically will be painful.
+> OTOH, I believe that having a working dtschema is very useful. Having
+> dtschema without errors/warnings is even worth some churn/intermediary work.
+> 
+> The intermediary work is also not that big. Once proper OPP is
+> implemented, we will have "just" two deprecated properties in the bindings.
+> 
 
+Fair enough, was just hoping to avoid the middle step. But that's fine,
+we'll continue to carry this on our todo list then.
+
+Thanks,
+Bjorn
