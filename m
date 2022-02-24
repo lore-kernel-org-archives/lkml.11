@@ -2,79 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA2B5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7ADEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233001AbiBXJt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:49:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
+        id S233006AbiBXJuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:50:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232999AbiBXJt4 (ORCPT
+        with ESMTP id S233003AbiBXJuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:49:56 -0500
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 01:49:25 PST
-Received: from esa4.hc1455-7.c3s2.iphmx.com (esa4.hc1455-7.c3s2.iphmx.com [68.232.139.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2DF15FC89
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:49:24 -0800 (PST)
-IronPort-SDR: MlR9ir+ODx2HYvf/DJX649bwc9SwkmCcol268/Ikf/j5u5WczFO7hPjUXGEZpA2gJP80x3Wfr8
- jr9hDwnodTydYuD1zDU0IGc16orgzUn2hhuNgZWx38zm6JAIiZNJNqs40grZhZxylSpUAVUEjt
- EvRWZWoeMP/X26c2rq6vaCbR8GsU0Y/TMXs9esiHNox0th7IRCkGygEZGzL1gMbLL08dSeIGCz
- qi8bqiiD9ZWWE7uc+G1bFuipmszAc19EUmU+iVP8febNwDivO04sOGvUHTe1O/5hXcUREDBMjx
- yzy+EVGCXmcr/aeas1NifpUg
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="63927949"
-X-IronPort-AV: E=Sophos;i="5.88,393,1635174000"; 
-   d="scan'208";a="63927949"
-Received: from unknown (HELO yto-r1.gw.nic.fujitsu.com) ([218.44.52.217])
-  by esa4.hc1455-7.c3s2.iphmx.com with ESMTP; 24 Feb 2022 18:48:20 +0900
-Received: from yto-m1.gw.nic.fujitsu.com (yto-nat-yto-m1.gw.nic.fujitsu.com [192.168.83.64])
-        by yto-r1.gw.nic.fujitsu.com (Postfix) with ESMTP id 2935410617
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 18:48:18 +0900 (JST)
-Received: from m3003.s.css.fujitsu.com (m3003.s.css.fujitsu.com [10.128.233.114])
-        by yto-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id 6C6E2D0437
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 18:48:16 +0900 (JST)
-Received: from localhost.localdomain (unknown [10.125.5.220])
-        by m3003.s.css.fujitsu.com (Postfix) with ESMTP id 45E6E200B431;
-        Thu, 24 Feb 2022 18:48:16 +0900 (JST)
-From:   Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
-To:     tglx@linutronix.de
-Cc:     geert+renesas@glider.be, linux-kernel@vger.kernel.org,
-        yamamoto.rei@jp.fujitsu.com
-Subject: [PATCH] hrtimer: Remove a warning message in hrtimer_interrupt()
-Date:   Thu, 24 Feb 2022 18:28:48 +0900
-Message-Id: <20220224092848.3755-1-yamamoto.rei@jp.fujitsu.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20211224023924.91851-1-yamamoto.rei@jp.fujitsu.com>
-References: <20211224023924.91851-1-yamamoto.rei@jp.fujitsu.com>
+        Thu, 24 Feb 2022 04:50:10 -0500
+Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com [209.85.222.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 228012819B2;
+        Thu, 24 Feb 2022 01:49:40 -0800 (PST)
+Received: by mail-ua1-f42.google.com with SMTP id p33so609901uap.8;
+        Thu, 24 Feb 2022 01:49:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9IkiN0VIfOnYW5l2ddoLdbKXjFAORIEW7LEcXcst+cU=;
+        b=W7Jc42pt22ZkEpdnueYEPN7U/0bcpQgFvPDq0tNlhrn6ZmfeDp8ieB0YLCYZUyookc
+         H2+H+FHS/7yFiiZ1Y48nj9namidksaxQHyp/6msHeDIxPXaEO9BGvM5IZfSEiIOERTeA
+         CB1QDfZgTOUnweMnG0TuNDJSHF6HEJP9xAg5RvzllKYCojK/34cuJz+oR0pqOnoCKtDU
+         H7zIsWVcApnxhI1WF3Z917xDTtzhAiAiGoAXxw88XQaBPSf2A+ktpUmIEGqZPxeR9Sx8
+         A3/9T06T4SeQYtSBfwx4qxyKbGBoS+PwiSrjFjgeUmzGl14iKJxEvBXnHpwNC2gJfOdS
+         iniw==
+X-Gm-Message-State: AOAM53149u0ntyYC1qqBiJO9bRlmUcCd1D7mJPJhjUpzeS/sA8XGvdWW
+        qdcxIsMbxbY9kUWPCGC2EUbyApUg/rPruA==
+X-Google-Smtp-Source: ABdhPJxWI0W/CyVSr5GWmiGwIMIRNdaGuMDum0EpH4QRfsA9DlmWB46r/KgbqAXgfSahbTiyIZ9YnA==
+X-Received: by 2002:ab0:b05:0:b0:342:2961:37ee with SMTP id b5-20020ab00b05000000b00342296137eemr735920uak.29.1645696179094;
+        Thu, 24 Feb 2022 01:49:39 -0800 (PST)
+Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com. [209.85.217.44])
+        by smtp.gmail.com with ESMTPSA id l187sm322879vke.6.2022.02.24.01.49.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 01:49:38 -0800 (PST)
+Received: by mail-vs1-f44.google.com with SMTP id t22so1513805vsa.4;
+        Thu, 24 Feb 2022 01:49:38 -0800 (PST)
+X-Received: by 2002:a05:6102:4411:b0:31b:6df1:3b80 with SMTP id
+ df17-20020a056102441100b0031b6df13b80mr761507vsb.5.1645696178512; Thu, 24 Feb
+ 2022 01:49:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+References: <20220224092114.25737-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220224092114.25737-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 24 Feb 2022 10:49:27 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWebGqoLeDcTYM9vKkdVpC0wCfcUSpV6gr+4wphzkacCg@mail.gmail.com>
+Message-ID: <CAMuHMdWebGqoLeDcTYM9vKkdVpC0wCfcUSpV6gr+4wphzkacCg@mail.gmail.com>
+Subject: Re: [PATCH] soc: renesas: Kconfig: Introduce ARCH_RZG2L config option
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Magnus Damm <magnus.damm@gmail.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It seems the warning message in hrtimer_interrupt() has
-no an intention.
-The required action for the warning message in hrtimer_interrupt() 
-is not clear.
-Remove this message not to confuse user.
+Hi Prabhakar,
 
-Signed-off-by: Rei Yamamoto <yamamoto.rei@jp.fujitsu.com>
----
- kernel/time/hrtimer.c | 1 -
- 1 file changed, 1 deletion(-)
+On Thu, Feb 24, 2022 at 10:21 AM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Renesas RZ/G2L, RZ/G2LC, RZ/G2UL and RZ/V2L SoC's have identical IP blocks
+> for which drivers are common. To avoid updating the Kconfig files for
+> drivers in common to each SoC, introduce the ARCH_RZG2L config option.
+> ARCH_RZG2L config option will be selected by the above mentioned SoC's and
+> ARCH_RZG2L config option will be used as a dependency for the drivers in
+> common.
+>
+> While at it, move PM and PM_GENERIC_DOMAINS under the ARCH_RZG2L
+> config option instead of adding it to individual SoC.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 
-diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 0ea8702eb516..4f4eb9d1f05a 100644
---- a/kernel/time/hrtimer.c
-+++ b/kernel/time/hrtimer.c
-@@ -1866,7 +1866,6 @@ void hrtimer_interrupt(struct clock_event_device *dev)
- 	else
- 		expires_next = ktime_add(now, delta);
- 	tick_program_event(expires_next, 1);
--	pr_warn_once("hrtimer: interrupt took %llu ns\n", ktime_to_ns(delta));
- }
- 
- /* called with interrupts disabled */
--- 
-2.27.0
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+i.e. will queue in renesas-devel for v5.18, so you can start updating
+dependencies after v5.18-rc1.
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
