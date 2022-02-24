@@ -2,81 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD714C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F4A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231868AbiBXI05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 03:26:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60886 "EHLO
+        id S231877AbiBXI1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 03:27:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230488AbiBXI0z (ORCPT
+        with ESMTP id S231742AbiBXI1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 03:26:55 -0500
+        Thu, 24 Feb 2022 03:27:39 -0500
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1722E26F4E2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 00:26:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBE8114761
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 00:27:09 -0800 (PST)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id C20681F43D;
-        Thu, 24 Feb 2022 08:26:24 +0000 (UTC)
+        by smtp-out2.suse.de (Postfix) with ESMTP id 7BD3D1F3A1;
+        Thu, 24 Feb 2022 08:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645691184; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1645691228; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=adxedwQWkr5jfagPKOdhZGUwUnLYqrYeTaIwwWUOYlE=;
-        b=FskKERZifrad1o6nZ0DWDHdrq+F/hS1tMewn8it5JtjAAcRDiFhVQ7B63thBQhiM2a3scE
-        Vfz2PbPm6MiVzipadsRGDOF6AS/jkET+2Ku20GNK9S8vSPK8kWL/rC4xSasAYpWCNFB3Ry
-        aqPSOJOgtuiVbc2CcuQaxgKPiIL5Mng=
-Received: from suse.cz (unknown [10.100.201.86])
+        bh=gSTuU8j1qrBHesfm8aUsNphEOTThQkaUDOZ+qeWaRwE=;
+        b=m3O/EhMObybgNG7yX7tVQU7By1jzUyt1VbZbeC2hmEzYUGOPTgJhBomaf9376RyINrZZvV
+        21IabhVIg/UbUP3HPvQomFHTpckMOCn+Au+pNNHYWTHD8yJFD2muUbZPk2PFHg7c/zMd//
+        jlSN8Qk3NWnaihpxM49ZAj1KjFxlGm4=
+Received: from suse.cz (unknown [10.100.216.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 76F46A3B8C;
-        Thu, 24 Feb 2022 08:26:20 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 09:26:24 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Vladimir Davydov <vdavydov.dev@gmail.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        by relay2.suse.de (Postfix) with ESMTPS id 31D9AA3B83;
+        Thu, 24 Feb 2022 08:27:04 +0000 (UTC)
+Date:   Thu, 24 Feb 2022 09:27:04 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
         linux-kernel@vger.kernel.org,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Johannes Weiner <hannes@cmpxchg.org>
-Subject: Re: [PATCH] MAINTAINERS: remove myself from memcg maintainers
-Message-ID: <YhdBMPcsc9g9kY8x@dhcp22.suse.cz>
-References: <4ad1f8da49d7b71c84a0c15bd5347f5ce704e730.1645608825.git.vdavydov.dev@gmail.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH printk v1 11/13] printk: reimplement console_lock for
+ proper kthread support
+Message-ID: <YhdBWBxL15j4Bq3h@alley>
+References: <20220207194323.273637-1-john.ogness@linutronix.de>
+ <20220207194323.273637-12-john.ogness@linutronix.de>
+ <Yg/HWcifuqLsS6cv@alley>
+ <87o8333l97.fsf@jogness.linutronix.de>
+ <YhTMDOHyXADh665V@alley>
+ <87h78pqz2h.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4ad1f8da49d7b71c84a0c15bd5347f5ce704e730.1645608825.git.vdavydov.dev@gmail.com>
+In-Reply-To: <87h78pqz2h.fsf@jogness.linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 23-02-22 12:37:42, Vladimir Davydov wrote:
-> Signed-off-by: Vladimir Davydov <vdavydov.dev@gmail.com>
-> Cc: Roman Gushchin <roman.gushchin@linux.dev>
-> Cc: Johannes Weiner <hannes@cmpxchg.org>
-> Cc: Michal Hocko <mhocko@kernel.org>
-
-Thanks for all your contributions!
-Acked-by: Michal Hocko <mhocko@suse.com>
-
-> ---
->  MAINTAINERS | 1 -
->  1 file changed, 1 deletion(-)
+On Wed 2022-02-23 18:26:54, John Ogness wrote:
+> On 2022-02-22, Petr Mladek <pmladek@suse.com> wrote:
+> >> With a mutex there is an owner. When another task tries to lock a
+> >> mutex, the scheduler knows which task must be scheduled to resolve
+> >> this true lock contention. (There are also other benefits relating to
+> >> priority inheritance, but I chose not to mention this.)
+> >
+> > This sounds interesting. Does scheduler wake up or prioritize
+> > mutex owners?
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 777cd6fa2b3d..cbadcffbff50 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -4913,7 +4913,6 @@ F:	kernel/cgroup/cpuset.c
->  CONTROL GROUP - MEMORY RESOURCE CONTROLLER (MEMCG)
->  M:	Johannes Weiner <hannes@cmpxchg.org>
->  M:	Michal Hocko <mhocko@kernel.org>
-> -M:	Vladimir Davydov <vdavydov.dev@gmail.com>
->  L:	cgroups@vger.kernel.org
->  L:	linux-mm@kvack.org
->  S:	Maintained
-> -- 
-> 2.25.1
+> Sorry, the only example of this is priority inheritance. But for
+> non-PREEMPT_RT there is no priority inheritance. The lock would need to
+> be an rtmutex for this ability, which probably doesn't make sense for
+> printk.
 
--- 
-Michal Hocko
-SUSE Labs
+Good to know.
+
+> The v2 commit message will focus on:
+> 
+> - the motivation for per-console locks is parallel printing
+> 
+> - explain about how disabling preemption is only necessary for direct
+>   printing via printk() because the caller may be holding
+>   system-critical and/or timing-sensitive locks (and also to allow the
+>   console owner/waiter logic to work correctly)
+> 
+> - correctly clarifying why the various types
+>   (semaphore/mutex/flag/atomic) were chosen to implement the printing
+>   sychronization between atomic-direct, non-atomic-direct, and kthreads
+>   (and I will explicitly remind the audience that mutex_trylock() cannot
+>   be used in atomic context)
+
+Sounds great.
+
+Thanks a lot for the hard work. It is very appreciated.
+
+Best Regards,
+Petr
