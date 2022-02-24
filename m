@@ -2,100 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDC9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:53:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7911CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229854AbiBXByI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:54:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
+        id S229846AbiBXByN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:54:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbiBXByB (ORCPT
+        with ESMTP id S229818AbiBXByC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:54:01 -0500
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02EC1ADA0
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:53:31 -0800 (PST)
-Received: by mail-oi1-x22d.google.com with SMTP id l25so961160oic.13
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:53:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uguiin8hqj3JoNBkgb0eMr70jISc6FMAupA0t7mvm1o=;
-        b=IlOu7IMOqx73TO7dDuzfNPmAqJSZqLKO4OlP+mtkpMIbjaEDsvu3XcsE87Anyov+DP
-         8uDUqpmoKnczLwJR2bfWpvpsV3o/SCjDh1R63xwkYiuxT5kMdw3RExyzVtN7vGtjqhsB
-         qtA01Xm1njDxUn5Tk1J4lQpPUzFN5SV3g2tpM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uguiin8hqj3JoNBkgb0eMr70jISc6FMAupA0t7mvm1o=;
-        b=bQr/V3OHbMQJ09phCNg7Ro4WhLLfPhuWsru9cKYXhObjUHCLsO17LjPp27IluKAHXb
-         hkzwdQefcw7xfYgYh95FrtIqKYOu8wcjx+U2vfdVy7s1QS7LuG0rd2tnq49Wlx7BFN1Z
-         VOPu1R26ovEMfVZzHADjLb9tWFLI602XxLZPJNeXubbDW3snGzXV/bWTuSAod2D5vdTF
-         UhoIkGA1vkQClKKZ6zb3bLcSALmYa4qhdoroGygTuFTOMeEc0n4O7y8RKFR+3w7k58/3
-         M3sRYjsQdesb7y/nqaMMEX6EJBUHWETll4AH6RS1ygp79MzACdJwYzs+7QyAqFRshbNE
-         d/7Q==
-X-Gm-Message-State: AOAM531Qk8a3doh40q/2scOSI9Wp7MrMJNWyrMlFBfoKqORVdr0E3J1V
-        7piv6g2eES3BEHvCQEfHfWGhWMKcTvYeVw==
-X-Google-Smtp-Source: ABdhPJyvnyS3vf4avP768zNV+lGSkU5aQSVUwCfNTPsgPVcLSbs1p2u52XorksQxgu/bzRJqFwqUHA==
-X-Received: by 2002:aca:643:0:b0:2d3:fce2:d82e with SMTP id 64-20020aca0643000000b002d3fce2d82emr5869068oig.209.1645664124020;
-        Wed, 23 Feb 2022 16:55:24 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id em32sm716001oab.28.2022.02.23.16.55.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 16:55:23 -0800 (PST)
-Subject: Re: [PATCH v7 10/10] cpupower: Add "perf" option to print AMD P-State
- information
-To:     Huang Rui <ray.huang@amd.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
-Cc:     "Sharma, Deepak" <Deepak.Sharma@amd.com>,
-        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>,
-        Steven Noonan <steven@valvesoftware.com>,
-        "Fontenot, Nathan" <Nathan.Fontenot@amd.com>,
-        "Su, Jinzhou (Joe)" <Jinzhou.Su@amd.com>,
-        "Du, Xiaojian" <Xiaojian.Du@amd.com>,
-        "Yuan, Perry" <Perry.Yuan@amd.com>,
-        "Meng, Li (Jassmine)" <Li.Meng@amd.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Giovanni Gherdovich <ggherdovich@suse.cz>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220222153426.2216974-1-ray.huang@amd.com>
- <20220222153426.2216974-11-ray.huang@amd.com> <YhWsBivPabbGoWr0@amd.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <9308042e-d820-551e-0f6f-b3f26a8a9bc8@linuxfoundation.org>
-Date:   Wed, 23 Feb 2022 17:55:21 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Wed, 23 Feb 2022 20:54:02 -0500
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56C225C4B;
+        Wed, 23 Feb 2022 17:53:32 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0V5Lhse3_1645663671;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V5Lhse3_1645663671)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 24 Feb 2022 08:47:52 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     kashyap.desai@broadcom.com
+Cc:     sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        jejb@linux.ibm.com, martin.petersen@oracle.com,
+        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] scsi: megasas: clean up some inconsistent indenting
+Date:   Thu, 24 Feb 2022 08:47:48 +0800
+Message-Id: <20220224004748.59442-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-In-Reply-To: <YhWsBivPabbGoWr0@amd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/22/22 8:37 PM, Huang Rui wrote:
-> On Tue, Feb 22, 2022 at 11:34:26PM +0800, Huang, Ray wrote:
->> Add "-r --perf" option in cpupower-frequency-info to get the performance
-> 
-> Thanks Shuah! There is one typo ("-r --perf" --> "-c --perf") here. Because
-> "r" is occupied by option character. Would you mind to correct it in the
-> commit log?
-> 
+Eliminate the follow smatch warning:
+drivers/scsi/megaraid/megaraid_sas_fusion.c:5104 megasas_reset_fusion()
+warn: inconsistent indenting
 
-Done. Commit amended in
-https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux.git
-cpupower branch for Linux 5.18-rc1
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/scsi/megaraid/megaraid_sas_fusion.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-thanks,
--- Shuah
+diff --git a/drivers/scsi/megaraid/megaraid_sas_fusion.c b/drivers/scsi/megaraid/megaraid_sas_fusion.c
+index c72364864bf4..aab600ef4cd6 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_fusion.c
++++ b/drivers/scsi/megaraid/megaraid_sas_fusion.c
+@@ -5101,8 +5101,8 @@ int megasas_reset_fusion(struct Scsi_Host *shost, int reason)
+ 				for (j = 0; j < MAX_LOGICAL_DRIVES_EXT; ++j) {
+ 					memset(fusion->stream_detect_by_ld[j],
+ 					0, sizeof(struct LD_STREAM_DETECT));
+-				 fusion->stream_detect_by_ld[j]->mru_bit_map
+-						= MR_STREAM_BITMAP;
++				fusion->stream_detect_by_ld[j]->mru_bit_map
++					= MR_STREAM_BITMAP;
+ 				}
+ 			}
+ 
+-- 
+2.20.1.7.g153144c
+
