@@ -2,104 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E64C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 19:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E453BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 20:00:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234128AbiBXUAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 15:00:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37764 "EHLO
+        id S234159AbiBXUBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 15:01:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233664AbiBXUAM (ORCPT
+        with ESMTP id S232224AbiBXUBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 15:00:12 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B597D2763F9
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:59:41 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id 12so4571890oix.12
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 11:59:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HBUQkf1c18D3IhqFKKwGMruvkg+pP4vMasYemb3Ge/g=;
-        b=cPb4xYwq2xRZS+pSueX4DQu6ZCDCLqP2zEW/h7owqO6uHVQvOrk1zoIh8Q1RdX66Qh
-         UhdMCHKoc+l6RL0gUHi2lJybdQa0+l+lOLGjDnsAT5lHaP+4HBKT1rlAzaGhHG4Z2ghY
-         TxnimbdvqiPMQABvzhR7jfiurKiOHqdg6HGzGpzfzTXyjPd1x1INf91bmhVlq8uCMp3K
-         LIxxahS79FRl4FMaUlNBEsgXQgq9fRfD4RhET4p6G1xG0tPxUxsRY4bgxnOoNE7aNzuC
-         18damqu6g9V8qVAkTVXzRO8LJfvD77VHUTqgCFd2mDt0R7UtU9F6YDh4t7uDieeiWIH6
-         3pwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HBUQkf1c18D3IhqFKKwGMruvkg+pP4vMasYemb3Ge/g=;
-        b=ZeIS+RgGmYF6LPPl1LeCv8zw8USF+fsKaDrB6KRwIwj/aQnCuDOl8hJIfINB3oSaTF
-         sbsQr1iHQhZWg6ArTRtZ5OcPP8BKdvCl5A3MWktX1B/T0diet7w4CPP9Qfkeu/7FfVzX
-         aGs4fHDQpPLgwt71J0z75CzfEjz2aLfRWOVJl7HN5qdkw5JJL1DuIw7v+ePK16v5wQbw
-         dNXqSQMpsuLvM7/b4DcY9lGazrkfMN2T3vL8+t9TbOi6jKiUZ7jAJvvBKQ2HoG4JP/hp
-         wc3t4EOPIKH+4U4vUwwD9wCChy7zngFVWuJjIAC434iPpERmA25qR/0pcsQCOUEwFFv5
-         6ePw==
-X-Gm-Message-State: AOAM531gSNtWMs5vGVDAHYB/jw/eR9y6MHgW01JTzaknMCjpYRyTKwVL
-        0cHcT7nJCygGI+Q0JLf+3mFzQA==
-X-Google-Smtp-Source: ABdhPJygt08vCBVo/UgfpVMiox5duayX+DsGCbmNeAge1yQH/WLLoKbK6XrUt+uABY6Q/U/7ApF/Uw==
-X-Received: by 2002:a05:6808:56b:b0:2d4:5f04:f2fa with SMTP id j11-20020a056808056b00b002d45f04f2famr8135225oig.96.1645732781147;
-        Thu, 24 Feb 2022 11:59:41 -0800 (PST)
-Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
-        by smtp.gmail.com with ESMTPSA id bf39-20020a056808192700b002d51f615f1csm235794oib.34.2022.02.24.11.59.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 11:59:40 -0800 (PST)
-Date:   Thu, 24 Feb 2022 13:59:38 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Sibi Sankar <quic_sibis@quicinc.com>
-Cc:     robh+dt@kernel.org, ohad@wizery.com, agross@kernel.org,
-        mathieu.poirier@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, evgreen@chromium.org,
-        dianders@chromium.org, swboyd@chromium.org, mka@chromium.org,
-        krzysztof.kozlowski@canonical.com
-Subject: Re: [PATCH 3/3] arm64: dts: qcom: sc7280: Add proxy interconnect
- requirements for modem
-Message-ID: <YhfjqsrHhbU36OqH@builder.lan>
-References: <1644813252-12897-1-git-send-email-quic_sibis@quicinc.com>
- <1644813252-12897-4-git-send-email-quic_sibis@quicinc.com>
+        Thu, 24 Feb 2022 15:01:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE472763F9;
+        Thu, 24 Feb 2022 12:00:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3B91B82684;
+        Thu, 24 Feb 2022 20:00:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6924C340E9;
+        Thu, 24 Feb 2022 20:00:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645732840;
+        bh=SQaeb0Kta1h/s7fQ+4T22hNjVzetgs4lJusjv4G1iW0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aax4l6Htvnug8mbTTCX0X2rLTjQUq6JeR+ueffcTenNILwwCX0flGWbvC3gLcJ6tA
+         LIh0hvw+Bbd4wOD+R8WWkcXInjD/9/0jYzDDCJgngg0AP70xSThZhi+xoRqNk2k57S
+         CZRuK6sIXueEnpj9OiYbnawB7IF086gcluUXoeYhoLInJcsG3QP8kljM56vsMmO0nL
+         /YS4U7y0DFUMJwrxWivKuA85OBpeIBAp3XuUSCNqMoGWt7d6xBjNGn0zesXPqr7gIX
+         eMs+OPAknzWIlasB15qWJ+spE8ujhHQYTziWSeHJ7iJl0ihM5++9OEaRHnYQt8UNyK
+         pgum76xmSyGAg==
+Date:   Thu, 24 Feb 2022 14:08:39 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jeff Johnson <quic_jjohnson@quicinc.com>
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH 4/6][next] ath6kl: wmi: Replace one-element array with
+ flexible-array member in struct wmi_connect_event
+Message-ID: <20220224200839.GA1292927@embeddedor>
+References: <cover.1645583264.git.gustavoars@kernel.org>
+ <8a0e347615a3516980fd8b6ad2dc4864a880613b.1645583264.git.gustavoars@kernel.org>
+ <6106494b-a1b3-6b57-8b44-b9528127533b@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1644813252-12897-4-git-send-email-quic_sibis@quicinc.com>
+In-Reply-To: <6106494b-a1b3-6b57-8b44-b9528127533b@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 13 Feb 22:34 CST 2022, Sibi Sankar wrote:
-
-> Add interconnects that are required to be proxy voted upon during modem
-> bootup on SC7280 SoCs.
+On Wed, Feb 23, 2022 at 04:50:18PM -0800, Jeff Johnson wrote:
+> On 2/22/2022 6:38 PM, Gustavo A. R. Silva wrote:
+> > Replace one-element array with flexible-array member in struct
+> > wmi_connect_event.
+> > 
+> > It's also worth noting that due to the flexible array transformation,
+> > the size of struct wmi_connect_event changed (now the size is 1 byte
+> > smaller), and in order to preserve the logic of before the transformation,
+> > the following change is needed:
+> > 
+> > 	-       if (len < sizeof(struct wmi_connect_event))
+> > 	+       if (len <= sizeof(struct wmi_connect_event))
+> > 
+> > This issue was found with the help of Coccinelle and audited and fixed,
+> > manually.
+> > 
+> > Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> > Link: https://github.com/KSPP/linux/issues/79
+> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> > ---
+> > Hi!
+> > 
+> > It'd be great if someone can confirm or comment on the following
+> > changes described in the changelog text:
+> > 
+> >          -       if (len < sizeof(struct wmi_connect_event))
+> >          +       if (len <= sizeof(struct wmi_connect_event))
+> > 
+> > Thanks
+> > 
+> >   drivers/net/wireless/ath/ath6kl/wmi.c | 2 +-
+> >   drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
+> >   2 files changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
+> > index 049d75f31f3c..ccdccead688e 100644
+> > --- a/drivers/net/wireless/ath/ath6kl/wmi.c
+> > +++ b/drivers/net/wireless/ath/ath6kl/wmi.c
+> > @@ -857,7 +857,7 @@ static int ath6kl_wmi_connect_event_rx(struct wmi *wmi, u8 *datap, int len,
+> >   	struct wmi_connect_event *ev;
+> >   	u8 *pie, *peie;
+> > -	if (len < sizeof(struct wmi_connect_event))
+> > +	if (len <= sizeof(struct wmi_connect_event))
 > 
+> this is another case where IMO the original code can remain since all it is
+> really checking is to see if the entire "fixed" portion is present. in
+> reality if there was just one byte of assoc_info the response would actually
+> be invalid.
 
-Looked at this again, and it makes me wonder why do we need to vote on
-the path LLCC -> EBI1 and why do we call that path "imem"?
+I see; that's actually what I needed to be clarified. I wasn't sure if
+a channel list with no channels was valid and expected. Now I see it is. :)
 
-Regards,
-Bjorn
-
-> Signed-off-by: Sibi Sankar <quic_sibis@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi | 2 ++
->  1 file changed, 2 insertions(+)
+> what is missing is logic that verifies len is large enough to hold the
+> payload that is advertised via the beacon_ie_len, assoc_req_len, &
+> assoc_resp_len members. without this even if you change the initial len
+> check you can have a condition where len says there is one u8 in assoc_info
+> (and pass the initial test) but the other three members indicate that much
+> more data is present.
 > 
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi b/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi
-> index 9f4a9c263c35..1969f4cf59fe 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-chrome-common.dtsi
-> @@ -89,6 +89,8 @@
->  	compatible = "qcom,sc7280-mss-pil";
->  	iommus = <&apps_smmu 0x124 0x0>, <&apps_smmu 0x488 0x7>;
->  	memory-region = <&mba_mem>, <&mpss_mem>;
-> +	interconnects = <&mc_virt MASTER_LLCC 0 &mc_virt SLAVE_EBI1 0>;
-> +	interconnect-names = "imem";
->  };
->  
->  /* Increase the size from 2.5MB to 8MB */
-> -- 
-> 2.7.4
+> but that is a pre-existing shortcoming that should be handled with a
+> separate patch.
+
+Yeah; I'll consider extending this series to include a patch for that.
+
+> >   		return -EINVAL;
+> >   	ev = (struct wmi_connect_event *) datap;
+> > diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+> > index 432e4f428a4a..6b064e669d87 100644
+> > --- a/drivers/net/wireless/ath/ath6kl/wmi.h
+> > +++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+> > @@ -1545,7 +1545,7 @@ struct wmi_connect_event {
+> >   	u8 beacon_ie_len;
+> >   	u8 assoc_req_len;
+> >   	u8 assoc_resp_len;
+> > -	u8 assoc_info[1];
+> > +	u8 assoc_info[];
+> >   } __packed;
+> >   /* Disconnect Event */
 > 
+> whether or not you modify the length check consider this:
+> Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+
+Great. :)
+
+Thanks a lot for the feedback!
+--
+Gustavo
+
