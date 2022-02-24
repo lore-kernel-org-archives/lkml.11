@@ -2,111 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B874EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:46:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F291C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233028AbiBXSqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 13:46:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
+        id S233034AbiBXSrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 13:47:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbiBXSqw (ORCPT
+        with ESMTP id S229850AbiBXSrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 13:46:52 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2029F26F4E6;
-        Thu, 24 Feb 2022 10:46:22 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id B76511F44D;
-        Thu, 24 Feb 2022 18:46:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645728380;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Jo3de60gyBESI2ouGzZS5RL2JSlQhCdM8gXY4xMzBOs=;
-        b=kNOLvc70HXVRxRopsApEBXGIU902arqlZjYvOjdCRowTTOYPHnZPVZFEfAOGfOJB4xDSDW
-        lyx9/a+TKlvABFHjqUor07olhBZjA1EKJV/nwmt/x0QDhLoel7yDwMHCFJ3BuhK8PvTSyq
-        dSwSf2SYSJ1nYVboUE/Hv2QPwX8Wy/E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645728380;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Jo3de60gyBESI2ouGzZS5RL2JSlQhCdM8gXY4xMzBOs=;
-        b=kTwanqTqSpurWusl15sqL7bJylD40Opo/bxXyzstRIUCuYXxghEqsOXyp0STv9HUOyPknC
-        bxVpWkGusyJPgVAw==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id AD994A3B83;
-        Thu, 24 Feb 2022 18:46:20 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id BBEA2DA818; Thu, 24 Feb 2022 19:42:31 +0100 (CET)
-Date:   Thu, 24 Feb 2022 19:42:31 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     dsterba@suse.cz, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v4] btrfs: add fs state details to error messages.
-Message-ID: <20220224184231.GZ12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <a059920460fe13f773fd9a2e870ceb9a8e3a105a.1645644489.git.sweettea-kernel@dorminy.me>
- <20220224132210.GS12643@twin.jikos.cz>
- <284ccc08-8de7-9188-19d8-20f4eda56cb4@dorminy.me>
+        Thu, 24 Feb 2022 13:47:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0714F4C7BC;
+        Thu, 24 Feb 2022 10:46:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 986FD61330;
+        Thu, 24 Feb 2022 18:46:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D12C340E9;
+        Thu, 24 Feb 2022 18:46:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645728397;
+        bh=ZRIL25zhAUg48lH14eqqeW0pLyxILXBHMP0S8m9bCk8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rJYqDXHH+3VfG6C0oUBM1moumLHVCfZOSUBStzhJSnkPn5razVF2pUe5QvFDOseLz
+         qPSHCjf8sHNwNwnSU7BUTyHscBURnYuSWzC5BZHdorLbmSLcWmAIVX8yDC2FZ5JuMX
+         wp5mFUZJ9AE3kSCbW9gcePCtAyMtC+OyARdeBQKRRhSc3fdVJEbv/cnPO9cu+gQaHB
+         4Tv9is8SNQy2h1lHZQMSkAbpwZxJTqZ46L+eMk/fBBlbxsyQSbSkt4t+apI8EtJ8q3
+         gvP4D5Ez446e8hNMu4Gfkh5bSk6fkNLkV32HxemvmMSjBq1IzCdzpNeUqk2TiMBnvL
+         HH1i2uRobvvqw==
+Date:   Thu, 24 Feb 2022 10:46:25 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 4/8] ima: define a new template field 'd-type' and a
+ new template 'ima-ngv2'
+Message-ID: <YhfSgeldgCcnzszw@sol.localdomain>
+References: <20220211214310.119257-1-zohar@linux.ibm.com>
+ <20220211214310.119257-5-zohar@linux.ibm.com>
+ <YhbSE/k4mElcehDN@sol.localdomain>
+ <b89ec5792da3c284f8e5e058c5568482beccf00d.camel@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <284ccc08-8de7-9188-19d8-20f4eda56cb4@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <b89ec5792da3c284f8e5e058c5568482beccf00d.camel@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 11:10:59AM -0500, Sweet Tea Dorminy wrote:
-> Awesome, thank you. I realized this morning that it might be technically 
-> slightly racy actually and would propose something like the following
+On Thu, Feb 24, 2022 at 11:16:51AM -0500, Mimi Zohar wrote:
+> On Wed, 2022-02-23 at 16:32 -0800, Eric Biggers wrote:
+> > On Fri, Feb 11, 2022 at 04:43:06PM -0500, Mimi Zohar wrote:
+> > > In preparation to differentiate between regular IMA file hashes and
+> > > fs-verity's file digests, define a new template field named 'd-type'.
+> > > Define a new template named 'ima-ngv2', which includes the new 'd-type'
+> > > field.
+> > > 
+> > > Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+> > > ---
+> > >  security/integrity/ima/ima_template.c     |  3 +++
+> > >  security/integrity/ima/ima_template_lib.c | 13 +++++++++++++
+> > >  security/integrity/ima/ima_template_lib.h |  2 ++
+> > >  3 files changed, 18 insertions(+)
+> > > 
+> > > diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
+> > > index db1ad6d7a57f..b321342e5bee 100644
+> > > --- a/security/integrity/ima/ima_template.c
+> > > +++ b/security/integrity/ima/ima_template.c
+> > > @@ -19,6 +19,7 @@ enum header_fields { HDR_PCR, HDR_DIGEST, HDR_TEMPLATE_NAME,
+> > >  static struct ima_template_desc builtin_templates[] = {
+> > >  	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
+> > >  	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
+> > > +	{.name = "ima-ngv2", .fmt = "d-ng|n-ng|d-type"},
+> > >  	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
+> > >  	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
+> > >  	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
+> > > @@ -40,6 +41,8 @@ static const struct ima_template_field supported_fields[] = {
+> > >  	 .field_show = ima_show_template_digest_ng},
+> > >  	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
+> > >  	 .field_show = ima_show_template_string},
+> > > +	{.field_id = "d-type", .field_init = ima_eventdigest_type_init,
+> > > +	 .field_show = ima_show_template_string},
+> > >  	{.field_id = "sig", .field_init = ima_eventsig_init,
+> > >  	 .field_show = ima_show_template_sig},
+> > >  	{.field_id = "buf", .field_init = ima_eventbuf_init,
+> > 
+> > I notice that the "d-ng" field already contains both the hash algorithm and the
+> > hash itself, in the form <algorithm>:<hash>.  Wouldn't it make more sense to
+> > define a "d-ngv2" field that contains <type>:<algorithm>:<hash>?  After all,
+> > both the type and algorithm are required to interpret the hash.
+> > 
+> > Or in other words, what about the hash type is different from the hash algorithm
+> > that would result in them needing different handling here?
 > 
-> static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
-> {
-> 	unsigned int bit;
-> +	unsigned long fs_state = READ_ONCE(info->fs_state);
-> 	unsigned int states_printed = 0;
-> 	char *curr = buf;
+> Thanks, Eric.  I really like your suggestion.  Currently, type is
+> defined as either "ima" or "verity".   Are you ok with prefixing each
+> record with these strings?
 > 
-> 	memcpy(curr, STATE_STRING_PREFACE, sizeof(STATE_STRING_PREFACE));
-> 	curr += sizeof(STATE_STRING_PREFACE) - 1;
-> 
-> -	for_each_set_bit(bit, &info->fs_state, sizeof(info->fs_state)) {
-> +	for_each_set_bit(bit, fs_state, sizeof(fs_state)) {
-> 
-> 
-> All the other interactions with info->fs_state are test/set/clear_bit,
-> which treat the argument as volatile and are therefore safe to do from
-> multiple threads. Without the READ_ONCE (reading it as a volatile),
-> the compiler or cpu could turn the reads of info->fs_state in
-> for_each_set_bit() into writes of random stuff into info->fs_state,
-> potentially clearing the state bits or filling them with garbage.
 
-I'm not sure I'm missing something, but I find the above hard to
-believe. Concurrent access to a variable from multiple threads may not
-produce consistent results, but random writes should not happen when
-we're just reading. The worst thing that could happen is a missing
-status bit reported, which is not a problem.
+As I mentioned before I think "full_hash" would be more descriptive than "ima".
+(All of this is part of IMA.)  It's up to you though.
 
-> Even if this is right, it'd be rare, but it would be exceeding weird
-> for a message to be logged listing an error and then future messages
-> be logged without any such state, or with a random collection of
-> garbage states.
-
-How would that happen? The volatile keyword is only a compiler hint not
-to do optimizations on the variable, what actually happens on the CPU
-level depends if the instruction is locked or not, so different threads
-may read different bits.
-You seem to imply that once a variable is not used with volatile
-semantics, even just for read, the result could lead to random writes
-because it's otherwise undefined.
+- Eric
