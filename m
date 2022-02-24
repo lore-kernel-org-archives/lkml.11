@@ -2,180 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D83C3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229690AbiBXBm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:42:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42952 "EHLO
+        id S229726AbiBXBme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:42:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229650AbiBXBmZ (ORCPT
+        with ESMTP id S229701AbiBXBm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:42:25 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EFF36165;
-        Wed, 23 Feb 2022 17:41:55 -0800 (PST)
+        Wed, 23 Feb 2022 20:42:28 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBBE260ABF
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:41:58 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id y24so1385985lfg.1
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:41:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645666916; x=1677202916;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Kt6QjyLYTRwOzZP9VnYhf/8ijLxJLwLct45EpDi/FbI=;
-  b=e44unWK+leFg2HKumixyVSRMsUotVMEW9UpzLnpFdW4Lan0wofscLHN8
-   +VThvWwhRaSj5bYN6C1r+1GpH6kN9k7JypVgqo2wacra/iP0yPMlZuCDJ
-   L73ODYqSXtJuCSf7n4u9/vzNCA3EOkAbEcaiOskloA5WB2wmaxYA7vyJQ
-   I=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Feb 2022 17:01:49 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 17:01:49 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Wed, 23 Feb 2022 17:01:49 -0800
-Received: from [10.48.243.226] (10.49.16.6) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Wed, 23 Feb
- 2022 17:01:48 -0800
-Message-ID: <3f408c80-cabf-5ba2-2014-2eb0550b73f9@quicinc.com>
-Date:   Wed, 23 Feb 2022 17:01:48 -0800
+        d=torvalds.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V0FFBkvIcjFMOM0hqUZNjmDF0t+Ha0Kl81ed03YkD3w=;
+        b=GFTM2OY9vWIE39i8WbpocEunkuGykh61viUOA48wsUSJffRZoZlqa5icjLYhxM3N+m
+         DKb9PvkkIZn5iYFbTaqaXYOIv7wagx+TBn+qjRDwmj0eY8Dliq8aLNw02KfWObzbcyQ/
+         4rNhuNeMr4UAGG+y8fPMgvU7IgR711a1AM7IOJj07uM1WtLcRDXCrrGdLdr7qxs+tDmK
+         8QwvhC3Z7oK33d06ETfSjgfhoDAQ4nWVZI/AM9EEk6a+ylMTMo8IiFcerUWNREyKfDVm
+         LIu84/FrGcky24qdwdKZfwBBil//MBUS7mgm21lImxN/1SYkkrAS7jhBVSk/149bXMyA
+         gFfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V0FFBkvIcjFMOM0hqUZNjmDF0t+Ha0Kl81ed03YkD3w=;
+        b=dWly1pMxNT1rbfHrHsoCzxVHpOJHTUV1UwFAIHEVzRQNm6YPUsn1yzMmdRC+44xc0Y
+         0Swl5QuYC9jkvEMUwSSHBN1exAKA6ivBICHRmZhgqFVNI40vemoia7LY5osrp1YchLRx
+         qRY4O4QxDelIfQH50slCQm7+/fvrO4TN5GERcsj4MR70NMvyAJMtjrTHz47ftfKqNyZS
+         GMzhF2NHJjn77KZuEQTHlyEh+Me+OREK1vPEFR+/lypHraWm0yBZ0OyLxSajQcUKyndv
+         KtFRxAoREK9w4mPMQN5qYd6SuqM4QWSyeEjcxVyd6YlFGxPC8+nSS6Y28YCoGfS5ww5h
+         S1pQ==
+X-Gm-Message-State: AOAM530DppI8cpD3pJd+PQ4oNqnzwMCBsTQeYvZpJczNIlXdSsbSPoxM
+        e+u9QncirCj9JjbmPxxqZZgjLmvucdNSV9tI27YE2Q==
+X-Google-Smtp-Source: ABdhPJxrHmZdK6XMjwOn4d/RYaqX5Cxen9btOowPzWsadcRuB7ZhpiGfM3EaLPc7ca8Ocp7bBOOOTW9+VLPRBV26s3Y=
+X-Received: by 2002:ac2:4d91:0:b0:443:127b:558a with SMTP id
+ g17-20020ac24d91000000b00443127b558amr363692lfe.542.1645666917210; Wed, 23
+ Feb 2022 17:41:57 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH 6/6][next] ath6kl: wmi: Replace one-element array with
- flexible-array member in struct wmi_aplist_event
-Content-Language: en-US
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-hardening@vger.kernel.org>
-References: <cover.1645583264.git.gustavoars@kernel.org>
- <c2116e10dd61869e17fa40a96f1e07a415820575.1645583264.git.gustavoars@kernel.org>
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <c2116e10dd61869e17fa40a96f1e07a415820575.1645583264.git.gustavoars@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.49.16.6]
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+References: <20220207121800.5079-1-mkoutny@suse.com> <e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr>
+ <20220215101150.GD21589@blackbody.suse.cz> <87zgmi5rhm.fsf@email.froward.int.ebiederm.org>
+ <87fso91n0v.fsf_-_@email.froward.int.ebiederm.org> <CAHk-=wjX3VK8QRMDUWwigCTKdHJt0ESXh0Hy5HNaXf7YkEdCAA@mail.gmail.com>
+ <878ru1qcos.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <878ru1qcos.fsf@email.froward.int.ebiederm.org>
+From:   Linus Torvalds <linus@torvalds.org>
+Date:   Wed, 23 Feb 2022 17:41:41 -0800
+Message-ID: <CAHk-=wgW8+vmqhx4t+uFiZL==8Ac5VWTqCm_oshA0e47B73qPw@mail.gmail.com>
+Subject: Re: How should rlimits, suid exec, and capabilities interact?
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Linux API <linux-api@vger.kernel.org>,
+        Etienne Dechamps <etienne@edechamps.fr>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Containers <containers@lists.linux-foundation.org>,
+        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
+        Security Officers <security@kernel.org>,
+        Neil Brown <neilb@cse.unsw.edu.au>, NeilBrown <neilb@suse.de>,
+        "Serge E. Hallyn" <serge@hallyn.com>, Jann Horn <jannh@google.com>,
+        Andy Lutomirski <luto@kernel.org>, Willy Tarreau <w@1wt.eu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/22/2022 6:39 PM, Gustavo A. R. Silva wrote:
-> Replace one-element array with flexible-array member in struct
-> wmi_aplist_event.
-> 
-> It's also worth noting that due to the flexible array transformation,
-> the size of struct wmi_aplist_event changed (now the size is 8-byte
-> smaller), and in order to preserve the logic of before the transformation,
-> the following change is needed:
-> 
->          -       if (len < sizeof(struct wmi_aplist_event))
->          +       if (len <= sizeof(struct wmi_aplist_event))
-> 
-> sizeof(struct wmi_aplist_event) before the flex-array transformation:
-> 
-> struct wmi_aplist_event {
-> 	u8                         ap_list_ver;          /*     0     1 */
-> 	u8                         num_ap;               /*     1     1 */
-> 	union wmi_ap_info          ap_list[1];           /*     2     8 */
-> 
-> 	/* size: 10, cachelines: 1, members: 3 */
-> 	/* last cacheline: 10 bytes */
-> };
-> 
-> sizeof(struct wmi_aplist_event) after the flex-array transformation:
-> 
-> struct wmi_aplist_event {
-> 	u8                         ap_list_ver;          /*     0     1 */
-> 	u8                         num_ap;               /*     1     1 */
-> 	union wmi_ap_info          ap_list[];            /*     2     0 */
-> 
-> 	/* size: 2, cachelines: 1, members: 3 */
-> 	/* last cacheline: 2 bytes */
-> };
-> 
-> Also, make use of the struct_size() helper and remove unneeded variable
-> ap_info_entry_size.
-> 
-> This issue was found with the help of Coccinelle and audited and fixed,
-> manually.
-> 
-> Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
-> Link: https://github.com/KSPP/linux/issues/79
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> ---
-> Hi!
-> 
-> It'd be great if someone can confirm or comment on the following
-> changes described in the changelog text:
-> 
->          -       if (len < sizeof(struct wmi_aplist_event))
->          +       if (len <= sizeof(struct wmi_aplist_event))
-> 
-> Thanks
-> 
->   drivers/net/wireless/ath/ath6kl/wmi.c | 7 ++-----
->   drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
->   2 files changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
-> index 645fb6cae3be..484d37e66ce6 100644
-> --- a/drivers/net/wireless/ath/ath6kl/wmi.c
-> +++ b/drivers/net/wireless/ath/ath6kl/wmi.c
-> @@ -1750,23 +1750,20 @@ static int ath6kl_wmi_snr_threshold_event_rx(struct wmi *wmi, u8 *datap,
->   
->   static int ath6kl_wmi_aplist_event_rx(struct wmi *wmi, u8 *datap, int len)
->   {
-> -	u16 ap_info_entry_size;
->   	struct wmi_aplist_event *ev = (struct wmi_aplist_event *) datap;
->   	struct wmi_ap_info_v1 *ap_info_v1;
->   	u8 index;
->   
-> -	if (len < sizeof(struct wmi_aplist_event) ||
-> +	if (len <= sizeof(struct wmi_aplist_event) ||
+On Wed, Feb 23, 2022 at 5:24 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>
+> Question: Running a suid program today charges the activity of that
+> program to the user who ran that program, not to the user the program
+> runs as.  Does anyone see a problem with charging the user the program
+> runs as?
 
-again IMO the original code is preferred since then we can handle a 
-0-length list
+So I think that there's actually two independent issues with limits
+when you have situations like this where the actual user might be
+ambiguous.
 
->   	    ev->ap_list_ver != APLIST_VER1)
->   		return -EINVAL;
->   
-> -	ap_info_entry_size = sizeof(struct wmi_ap_info_v1);
->   	ap_info_v1 = (struct wmi_ap_info_v1 *) ev->ap_list;
->   
->   	ath6kl_dbg(ATH6KL_DBG_WMI,
->   		   "number of APs in aplist event: %d\n", ev->num_ap);
->   
-> -	if (len < (int) (sizeof(struct wmi_aplist_event) +
-> -			 (ev->num_ap - 1) * ap_info_entry_size))
-> +	if (len < struct_size(ev, ap_list, ev->num_ap))
+ - the "who to charge" question
 
-and unlike the prior patches in this set, at least the original code 
-here had logic to validate len against the metadata that describes the 
-number of entries in the list. so this change is good, and also supports 
-a 0-length list
+ - the "how do we *check* the limit" question
 
->   		return -EINVAL;
->   
->   	/* AP list version 1 contents */
-> diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
-> index 6a7fc07cd9aa..a9732660192a 100644
-> --- a/drivers/net/wireless/ath/ath6kl/wmi.h
-> +++ b/drivers/net/wireless/ath/ath6kl/wmi.h
-> @@ -1957,7 +1957,7 @@ union wmi_ap_info {
->   struct wmi_aplist_event {
->   	u8 ap_list_ver;
->   	u8 num_ap;
-> -	union wmi_ap_info ap_list[1];
-> +	union wmi_ap_info ap_list[];
->   } __packed;
->   
->   /* Developer Commands */
+and honestly, I think that when it comes to suid binaries, the first
+question is fundamentally ambiguous, because it almost certainly
+depends on the user.
 
-whether or not you modify the length check consider this:
-Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
+Which to me implies that there probably isn't an answer that is always
+right, and that what you should look at is that second option.
+
+So I would actually suggest that the "execute a suid binary" should
+charge the real user, but *because* it is suid, it should then not
+check the limit (or, perhaps, should check the hard limit?).
+
+You have to charge somebody, but at that point it's a bit ambiguous
+whether it should be allowed.
+
+Exactly so that if you're over a process limit (or something similar -
+think "too many files open" or whatever because you screwed up and
+opened everything) you could still log in as yourself (ssh/login
+charges some admin thing, which probably has high limits or is
+unlimited), and hopefully get shell access, and then be able to "exec
+sudo" to actually get admin access that should be disabled from the
+network.
+
+The above is just one (traditional) example of a fork/open bomb case
+where a user isn't really able to no longer function as himself, but
+wants to fix things (maybe the user has another terminal open, but
+then he can hopefully use a shell-buiiltin 'kill' instead).
+
+And I'm not saying it's "the thing that needs to work". I'm more
+making up an example.
+
+So I'm only saying that the above actually has two examples to the two
+sides of the coin: "login" lowering privileges to a user that may be
+over some limit - and succeeding despite that - and 'suid' succeeding
+despite the original user perhaps being over-committed.
+
+So it's intended exactly as an example of "picking the new or the old
+user would be wrong in either case if you check limits at the
+transition point".
+
+Hmm?
+
+            Linus
