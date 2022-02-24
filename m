@@ -2,4812 +2,585 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 437B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232558AbiBXSIT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 13:08:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60270 "EHLO
+        id S232533AbiBXSJn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 13:09:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbiBXSIP (ORCPT
+        with ESMTP id S229662AbiBXSJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 13:08:15 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE0D5F8E0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:07:41 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id u3so1121492ybh.5
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:07:41 -0800 (PST)
+        Thu, 24 Feb 2022 13:09:40 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B101D67D5
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:09:07 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id r10so941089wrp.3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:09:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NyOSZlVg35ThmjS5z0bbO61kYSmC5af6gS3+eJEY4NI=;
-        b=XAsxtvsl7ObIHqouljHQ0d6OeKc1W6M3ciFa+2Hba6f+Tcxuxir0qAozODCkxyfcbN
-         VNabYcl+YuTV+chqwO8Vrf2bvDxeyl25+V550YakJwGIp0SyolvaYLMDOF7qKx8RgnrJ
-         ZOF6gIDgmHCIJXM7s5uSuEDAWufVE0SqnqTD94+cuvnScLWxyozMWEWnEfQoDHZcwh7G
-         0x8hmVYQWP5cHp/fvSa3rZDnEB8ArUS8QwIS/q987pif7GKyTuEoGrsaheyfY5z+ufYb
-         /wq4M0+gd7Z0hayqCLnvpAugajsNLFHi4Ge5WFwI7h5CmrrhASU1tE4VlH1iL6ZR4MzY
-         k7PA==
+         :cc;
+        bh=JBod19rkADe4RLTH6pIu+iewF45ltCOcT+bAF+Wv0jI=;
+        b=jbWx65rXhidUWKLzjE5t5/ELOwE9H4N7N1Py6DVq329fFUHtli6eeZN9hfBsWJ/VZg
+         JZBK/CdFrLEGqce2ZoQ9Wl3P5s2ApAyvLgpss0vbEIWK9I2Lf/N57ZOuoH5ccWswZ4Ss
+         7prwfrJSMgCv1bsliPkng8j4B9yloXNYc6hf4OgZBEo7WKGoxQxQ3MjRCy/SU1wPurNK
+         vuI2Z/Li4QP2k2hxhW0zNY2l/eo5ISqLSD9U+LTnSGGDYsjJhLKpRrgbbCuUWHerRBsA
+         ZygKhLNN1sV2ch5mVvtnMwFFaJuPbj3iw03WfuwBriXD/MXhG0lSCUo8yaeuirAX2jyZ
+         +Tsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NyOSZlVg35ThmjS5z0bbO61kYSmC5af6gS3+eJEY4NI=;
-        b=TaEtHX/x0pQOcAkjY76XvgXbY+jdpgz5B0CSXo7N0f/dMRj4TWHkecbLBgPaEYhF9M
-         PtSN4EKBApYvDPlVosdnufwi0nbJrR+yKB6s9ACA8dFflIkRIvaSrKTO5yTcL1xjilrY
-         lumPbyBnyOkNY000FwAT969vcpk9BTMHfw7ayCTu5hSy7QaHVWXUdjmtGdUBLU6PJPLL
-         Sm2zKqwex4/B7HAp2xRT0BA6wXfcUDijnUQSAB3C+JYgL4YfxQiII0Upfpe0+6cpiJ6t
-         2WcmewQKpsUQhuBGi2RkpP12RA1cvnQUPPb+L5Nu4V03UOCdULtT3CHHa6tntbsQZ9Ax
-         zgew==
-X-Gm-Message-State: AOAM533cFwzYq7emkkmBAvg/qCUskBkm3qfgem75Np6yPtD1rU3T0jR9
-        bnLYoXaWInzhK3aMYHW7+lM5EO3KZoUpv4Tlf2sqGwEBpos=
-X-Google-Smtp-Source: ABdhPJzrmaIu7XzvKeusXGyC1nJORaM+G3C/cPMhBRv8nGjOEanV4dIj4cYQEZz8beIELmuKmQ5yfy920N2YOHLAN8E=
-X-Received: by 2002:a25:aa34:0:b0:624:5b4c:5d4 with SMTP id
- s49-20020a25aa34000000b006245b4c05d4mr3614819ybi.124.1645726059242; Thu, 24
- Feb 2022 10:07:39 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=JBod19rkADe4RLTH6pIu+iewF45ltCOcT+bAF+Wv0jI=;
+        b=QbEv1w7BRLM3qNpG9427XPAczySaehsybjxprhCCVzixRujSdqGf2jRtAtmLtjNXCS
+         lDL/q/pPVzx7cliWoUH1OHoCfSGSwHvFyPshgBASuS67Dr8eFTs4FcAR3mTtUGZAbHTY
+         yQszp42sRMjIdvZBF8GicK5cz0EgW70mLxPPvl7CmUzNsg3ZZigOOjslRuL7w6ALUUXG
+         GVh9rd7YFU215a+85NGeeQuhmmHR0xN3TeS3mWC2vQ/hA5/UBzZy5lBv/8LeflhbjqD1
+         Zxmw++3va0IMW2Ni2E1HQLD5Ui7fuEMOFRasdx4eejdUdC3fd09Dax+Kw8BdtF/TI2un
+         CXsg==
+X-Gm-Message-State: AOAM530l4zjmJQX9tBSdMfTdrVVZnY6mEgFobjcFVRshYrgoC06kjzxk
+        v9AjFNds9w0Rx1JKL0cjGa5m2KP8uLj2qEXcKTVy4w==
+X-Google-Smtp-Source: ABdhPJw3fGngrJIeXA2AngyWEbeuzVREcXS2h92NXlwzoHHBHZ2ErN9+yU7GNB6Mu3tbLl54mrAmF7kecbeXj1BnSLA=
+X-Received: by 2002:a5d:4b87:0:b0:1ed:f948:7bcf with SMTP id
+ b7-20020a5d4b87000000b001edf9487bcfmr2752186wrt.699.1645726146117; Thu, 24
+ Feb 2022 10:09:06 -0800 (PST)
 MIME-Version: 1.0
-References: <20220224162329.1975081-1-zhengjun.xing@linux.intel.com>
-In-Reply-To: <20220224162329.1975081-1-zhengjun.xing@linux.intel.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Thu, 24 Feb 2022 10:07:25 -0800
-Message-ID: <CAP-5=fXrL3BwtmRZmaS+7U8JdT+WLEf-AE=AwVSD=yJQOzmO3g@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] perf vendor events intel: Add core event list for Alderlake
-To:     zhengjun.xing@linux.intel.com
-Cc:     acme@kernel.org, peterz@infradead.org, mingo@redhat.com,
-        alexander.shishkin@intel.com, jolsa@redhat.com,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        adrian.hunter@intel.com, ak@linux.intel.com,
-        kan.liang@linux.intel.com
+References: <20220224051439.640768-1-kaleshsingh@google.com>
+ <20220224051439.640768-8-kaleshsingh@google.com> <CA+EHjTwMvQzvyA2Nxq_TKNjM-0_XvTtoKPtBPVPjSn7cboBNUA@mail.gmail.com>
+In-Reply-To: <CA+EHjTwMvQzvyA2Nxq_TKNjM-0_XvTtoKPtBPVPjSn7cboBNUA@mail.gmail.com>
+From:   Kalesh Singh <kaleshsingh@google.com>
+Date:   Thu, 24 Feb 2022 10:08:55 -0800
+Message-ID: <CAC_TJvef9=gtidBJ1T1fEMY6prDAo8dTYr5uCiS=i3o03miuWg@mail.gmail.com>
+Subject: Re: [PATCH v3 7/8] KVM: arm64: Unwind and dump nVHE HYP stacktrace
+To:     Fuad Tabba <tabba@google.com>
+Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        "Cc: Android Kernel" <kernel-team@android.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Scull <ascull@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
+        <linux-arm-kernel@lists.infradead.org>,
+        kvmarm@lists.cs.columbia.edu, LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 12:25 AM <zhengjun.xing@linux.intel.com> wrote:
+On Thu, Feb 24, 2022 at 4:28 AM Fuad Tabba <tabba@google.com> wrote:
 >
-> From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+> Hi Kalesh,
 >
-> Add JSON core events for Alderlake to perf.
+> On Thu, Feb 24, 2022 at 5:22 AM Kalesh Singh <kaleshsingh@google.com> wrote:
+> >
+> > Unwind the stack in EL1, when CONFIG_NVHE_EL2_DEBUG is enabled. This is
+> > possible because CONFIG_NVHE_EL2_DEBUG disables the host stage 2 protection
+> > which allows host to access the hypervisor stack pages in EL1.
 >
-> It is a hybrid event list for both Atom and Core.
->
-> Based on JSON list v1.06:
->
-> https://download.01.org/perfmon/ADL/
->
-> Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+> For this comment to be clearer, and if my understanding is correct, I
+> think that it should say that CONFIG_NVHE_EL2_DEBUG allows host stage
+> 2 protection to be disabled on a hyp_panic. Otherwise, on reading the
+> comment one might think that CONFIG_NVHE_EL2_DEBUG runs without host
+> stage 2 protection at all.
 
-Acked-by: Ian Rogers <irogers@google.com>
+Your understanding is correct: the host stage 2  protection is only
+disabled on a hyp_panic(). I'll rephrase to make it clearer.
+
+>
+> >
+> > Unwinding and dumping hyp call traces is gated on CONFIG_NVHE_EL2_DEBUG
+> > to avoid the potential leaking of information to the host.
+> >
+> > A simple stack overflow test produces the following output:
+> >
+> > [  580.376051][  T412] kvm: nVHE hyp panic at: ffffffc0116145c4!
+> > [  580.378034][  T412] kvm [412]: nVHE HYP call trace:
+> > [  580.378591][  T412] kvm [412]:  [<ffffffc011614934>]
+> > [  580.378993][  T412] kvm [412]:  [<ffffffc01160fa48>]
+> > [  580.379386][  T412] kvm [412]:  [<ffffffc0116145dc>]  // Non-terminating recursive call
+> > [  580.379772][  T412] kvm [412]:  [<ffffffc0116145dc>]
+> > [  580.380158][  T412] kvm [412]:  [<ffffffc0116145dc>]
+> > [  580.380544][  T412] kvm [412]:  [<ffffffc0116145dc>]
+> > [  580.380928][  T412] kvm [412]:  [<ffffffc0116145dc>]
+> > . . .
+> >
+> > Since nVHE hyp symbols are not included by kallsyms to avoid issues
+> > with aliasing, we fallback to the vmlinux addresses. Symbolizing the
+> > addresses is handled in the next patch in this series.
+> >
+> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+> > ---
+> >
+> > Changes in v3:
+> >   - The nvhe hyp stack unwinder now makes use of the core logic from the
+> >     regular kernel unwinder to avoid duplication, per Mark
+> >
+> > Changes in v2:
+> >   - Add cpu_prepare_nvhe_panic_info()
+> >   - Move updating the panic info to hyp_panic(), so that unwinding also
+> >     works for conventional nVHE Hyp-mode.
+> >
+> >  arch/arm64/include/asm/kvm_asm.h    |  19 +++
+> >  arch/arm64/include/asm/stacktrace.h |  12 ++
+> >  arch/arm64/kernel/stacktrace.c      | 210 +++++++++++++++++++++++++---
+> >  arch/arm64/kvm/Kconfig              |   5 +-
+> >  arch/arm64/kvm/arm.c                |   2 +-
+> >  arch/arm64/kvm/handle_exit.c        |   3 +
+> >  arch/arm64/kvm/hyp/nvhe/switch.c    |  18 +++
+> >  7 files changed, 243 insertions(+), 26 deletions(-)
+> >
+> > diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
+> > index 2e277f2ed671..16efdf150a37 100644
+> > --- a/arch/arm64/include/asm/kvm_asm.h
+> > +++ b/arch/arm64/include/asm/kvm_asm.h
+> > @@ -176,6 +176,25 @@ struct kvm_nvhe_init_params {
+> >         unsigned long vtcr;
+> >  };
+> >
+> > +#ifdef CONFIG_NVHE_EL2_DEBUG
+> > +/*
+> > + * Used by the host in EL1 to dump the nVHE hypervisor backtrace on
+> > + * hyp_panic. This is possible because CONFIG_NVHE_EL2_DEBUG disables
+> > + * the host stage 2 protection. See: __hyp_do_panic()
+>
+> Same as my comment above.
+
+Ack
+>
+> > + *
+> > + * @hyp_stack_base:             hyp VA of the hyp_stack base.
+> > + * @hyp_overflow_stack_base:    hyp VA of the hyp_overflow_stack base.
+> > + * @fp:                         hyp FP where the backtrace begins.
+> > + * @pc:                         hyp PC where the backtrace begins.
+> > + */
+> > +struct kvm_nvhe_panic_info {
+> > +       unsigned long hyp_stack_base;
+> > +       unsigned long hyp_overflow_stack_base;
+> > +       unsigned long fp;
+> > +       unsigned long pc;
+> > +};
+> > +#endif /* CONFIG_NVHE_EL2_DEBUG */
+> > +
+> >  /* Translate a kernel address @ptr into its equivalent linear mapping */
+> >  #define kvm_ksym_ref(ptr)                                              \
+> >         ({                                                              \
+> > diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
+> > index e77cdef9ca29..18611a51cf14 100644
+> > --- a/arch/arm64/include/asm/stacktrace.h
+> > +++ b/arch/arm64/include/asm/stacktrace.h
+> > @@ -22,6 +22,10 @@ enum stack_type {
+> >         STACK_TYPE_OVERFLOW,
+> >         STACK_TYPE_SDEI_NORMAL,
+> >         STACK_TYPE_SDEI_CRITICAL,
+> > +#ifdef CONFIG_NVHE_EL2_DEBUG
+> > +       STACK_TYPE_KVM_NVHE_HYP,
+> > +       STACK_TYPE_KVM_NVHE_OVERFLOW,
+> > +#endif /* CONFIG_NVHE_EL2_DEBUG */
+> >         __NR_STACK_TYPES
+> >  };
+> >
+> > @@ -147,4 +151,12 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
+> >         return false;
+> >  }
+> >
+> > +#ifdef CONFIG_NVHE_EL2_DEBUG
+> > +void kvm_nvhe_dump_backtrace(unsigned long hyp_offset);
+> > +#else
+> > +static inline void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
+> > +{
+> > +}
+> > +#endif /* CONFIG_NVHE_EL2_DEBUG */
+> > +
+> >  #endif /* __ASM_STACKTRACE_H */
+> > diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
+> > index e4103e085681..6ec85cb69b1f 100644
+> > --- a/arch/arm64/kernel/stacktrace.c
+> > +++ b/arch/arm64/kernel/stacktrace.c
+> > @@ -15,6 +15,8 @@
+> >
+> >  #include <asm/irq.h>
+> >  #include <asm/pointer_auth.h>
+> > +#include <asm/kvm_asm.h>
+> > +#include <asm/kvm_hyp.h>
+> >  #include <asm/stack_pointer.h>
+> >  #include <asm/stacktrace.h>
+> >
+> > @@ -64,26 +66,15 @@ NOKPROBE_SYMBOL(start_backtrace);
+> >   * records (e.g. a cycle), determined based on the location and fp value of A
+> >   * and the location (but not the fp value) of B.
+> >   */
+> > -static int notrace unwind_frame(struct task_struct *tsk,
+> > -                               struct stackframe *frame)
+> > +static int notrace __unwind_frame(struct stackframe *frame, struct stack_info *info,
+> > +               unsigned long (*translate_fp)(unsigned long, enum stack_type))
+> >  {
+> >         unsigned long fp = frame->fp;
+> > -       struct stack_info info;
+> > -
+> > -       if (!tsk)
+> > -               tsk = current;
+> > -
+> > -       /* Final frame; nothing to unwind */
+> > -       if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
+> > -               return -ENOENT;
+> >
+> >         if (fp & 0x7)
+> >                 return -EINVAL;
+> >
+> > -       if (!on_accessible_stack(tsk, fp, 16, &info))
+> > -               return -EINVAL;
+> > -
+> > -       if (test_bit(info.type, frame->stacks_done))
+> > +       if (test_bit(info->type, frame->stacks_done))
+> >                 return -EINVAL;
+> >
+> >         /*
+> > @@ -94,28 +85,62 @@ static int notrace unwind_frame(struct task_struct *tsk,
+> >          *
+> >          * TASK -> IRQ -> OVERFLOW -> SDEI_NORMAL
+> >          * TASK -> SDEI_NORMAL -> SDEI_CRITICAL -> OVERFLOW
+> > +        * KVM_NVHE_HYP -> KVM_NVHE_OVERFLOW
+> >          *
+> >          * ... but the nesting itself is strict. Once we transition from one
+> >          * stack to another, it's never valid to unwind back to that first
+> >          * stack.
+> >          */
+> > -       if (info.type == frame->prev_type) {
+> > +       if (info->type == frame->prev_type) {
+> >                 if (fp <= frame->prev_fp)
+> >                         return -EINVAL;
+> >         } else {
+> >                 set_bit(frame->prev_type, frame->stacks_done);
+> >         }
+> >
+> > +       /* Record fp as prev_fp before attempting to get the next fp */
+> > +       frame->prev_fp = fp;
+> > +
+> > +       /*
+> > +        * If fp is not from the current address space perform the
+> > +        * necessary translation before dereferencing it to get next fp.
+> > +        */
+> > +       if (translate_fp)
+> > +               fp = translate_fp(fp, info->type);
+> > +       if (!fp)
+> > +               return -EINVAL;
+> > +
+> >         /*
+> >          * Record this frame record's values and location. The prev_fp and
+> > -        * prev_type are only meaningful to the next unwind_frame() invocation.
+> > +        * prev_type are only meaningful to the next __unwind_frame() invocation.
+> >          */
+> >         frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
+> >         frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 8));
+> > -       frame->prev_fp = fp;
+> > -       frame->prev_type = info.type;
+> > -
+> >         frame->pc = ptrauth_strip_insn_pac(frame->pc);
+> > +       frame->prev_type = info->type;
+> > +
+> > +       return 0;
+> > +}
+> > +
+> > +static int notrace unwind_frame(struct task_struct *tsk, struct stackframe *frame)
+> > +{
+> > +       unsigned long fp = frame->fp;
+> > +       struct stack_info info;
+> > +       int err;
+> > +
+> > +       if (!tsk)
+> > +               tsk = current;
+> > +
+> > +       /* Final frame; nothing to unwind */
+> > +       if (fp == (unsigned long)task_pt_regs(tsk)->stackframe)
+> > +               return -ENOENT;
+> > +
+> > +       if (!on_accessible_stack(tsk, fp, 16, &info))
+> > +               return -EINVAL;
+> > +
+> > +       err = __unwind_frame(frame, &info, NULL);
+> > +       if (err)
+> > +               return err;
+> >
+> >  #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+> >         if (tsk->ret_stack &&
+> > @@ -143,20 +168,27 @@ static int notrace unwind_frame(struct task_struct *tsk,
+> >  }
+> >  NOKPROBE_SYMBOL(unwind_frame);
+> >
+> > -static void notrace walk_stackframe(struct task_struct *tsk,
+> > -                                   struct stackframe *frame,
+> > -                                   bool (*fn)(void *, unsigned long), void *data)
+> > +static void notrace __walk_stackframe(struct task_struct *tsk, struct stackframe *frame,
+> > +               bool (*fn)(void *, unsigned long), void *data,
+> > +               int (*unwind_frame_fn)(struct task_struct *tsk, struct stackframe *frame))
+> >  {
+> >         while (1) {
+> >                 int ret;
+> >
+> >                 if (!fn(data, frame->pc))
+> >                         break;
+> > -               ret = unwind_frame(tsk, frame);
+> > +               ret = unwind_frame_fn(tsk, frame);
+> >                 if (ret < 0)
+> >                         break;
+> >         }
+> >  }
+> > +
+> > +static void notrace walk_stackframe(struct task_struct *tsk,
+> > +                                   struct stackframe *frame,
+> > +                                   bool (*fn)(void *, unsigned long), void *data)
+> > +{
+> > +       __walk_stackframe(tsk, frame, fn, data, unwind_frame);
+> > +}
+> >  NOKPROBE_SYMBOL(walk_stackframe);
+> >
+> >  static bool dump_backtrace_entry(void *arg, unsigned long where)
+> > @@ -210,3 +242,135 @@ noinline notrace void arch_stack_walk(stack_trace_consume_fn consume_entry,
+> >
+> >         walk_stackframe(task, &frame, consume_entry, cookie);
+> >  }
+> > +
+> > +#ifdef CONFIG_NVHE_EL2_DEBUG
+> > +DECLARE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
+> > +DECLARE_KVM_NVHE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack);
+> > +DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
+> > +
+> > +static inline bool kvm_nvhe_on_overflow_stack(unsigned long sp, unsigned long size,
+> > +                                struct stack_info *info)
+> > +{
+> > +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
+> > +       unsigned long low = (unsigned long)panic_info->hyp_overflow_stack_base;
+> > +       unsigned long high = low + PAGE_SIZE;
+> > +
+> > +       return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_OVERFLOW, info);
+> > +}
+> > +
+> > +static inline bool kvm_nvhe_on_hyp_stack(unsigned long sp, unsigned long size,
+> > +                                struct stack_info *info)
+> > +{
+> > +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
+> > +       unsigned long low = (unsigned long)panic_info->hyp_stack_base;
+> > +       unsigned long high = low + PAGE_SIZE;
+> > +
+> > +       return on_stack(sp, size, low, high, STACK_TYPE_KVM_NVHE_HYP, info);
+> > +}
+> > +
+> > +static inline bool kvm_nvhe_on_accessible_stack(unsigned long sp, unsigned long size,
+> > +                                      struct stack_info *info)
+> > +{
+> > +       if (info)
+> > +               info->type = STACK_TYPE_UNKNOWN;
+> > +
+> > +       if (kvm_nvhe_on_hyp_stack(sp, size, info))
+> > +               return true;
+> > +       if (kvm_nvhe_on_overflow_stack(sp, size, info))
+> > +               return true;
+> > +
+> > +       return false;
+> > +}
+> > +
+> > +static unsigned long kvm_nvhe_hyp_stack_kern_va(unsigned long addr)
+> > +{
+> > +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
+> > +       unsigned long hyp_base, kern_base, hyp_offset;
+> > +
+> > +       hyp_base = (unsigned long)panic_info->hyp_stack_base;
+> > +       hyp_offset = addr - hyp_base;
+> > +
+> > +       kern_base = (unsigned long)*this_cpu_ptr(&kvm_arm_hyp_stack_page);
+> > +
+> > +       return kern_base + hyp_offset;
+> > +}
+> > +
+> > +static unsigned long kvm_nvhe_overflow_stack_kern_va(unsigned long addr)
+> > +{
+> > +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
+> > +       unsigned long hyp_base, kern_base, hyp_offset;
+> > +
+> > +       hyp_base = (unsigned long)panic_info->hyp_overflow_stack_base;
+> > +       hyp_offset = addr - hyp_base;
+> > +
+> > +       kern_base = (unsigned long)this_cpu_ptr_nvhe_sym(hyp_overflow_stack);
+> > +
+> > +       return kern_base + hyp_offset;
+> > +}
+> > +
+> > +/*
+> > + * Convert KVM nVHE hypervisor stack VA to a kernel VA.
+> > + *
+> > + * The nVHE hypervisor stack is mapped in the flexible 'private' VA range, to allow
+> > + * for guard pages below the stack. Consequently, the fixed offset address
+> > + * translation macros won't work here.
+> > + *
+> > + * The kernel VA is calculated as an offset from the kernel VA of the hypervisor
+> > + * stack base. See: kvm_nvhe_hyp_stack_kern_va(),  kvm_nvhe_overflow_stack_kern_va()
+> > + */
+> > +static unsigned long kvm_nvhe_stack_kern_va(unsigned long addr,
+> > +                                       enum stack_type type)
+> > +{
+> > +       switch (type) {
+> > +       case STACK_TYPE_KVM_NVHE_HYP:
+> > +               return kvm_nvhe_hyp_stack_kern_va(addr);
+> > +       case STACK_TYPE_KVM_NVHE_OVERFLOW:
+> > +               return kvm_nvhe_overflow_stack_kern_va(addr);
+> > +       default:
+> > +               return 0UL;
+> > +       }
+> > +}
+> > +
+> > +static int notrace kvm_nvhe_unwind_frame(struct task_struct *tsk,
+> > +                                       struct stackframe *frame)
+> > +{
+> > +       struct stack_info info;
+> > +
+> > +       if (!kvm_nvhe_on_accessible_stack(frame->fp, 16, &info))
+> > +               return -EINVAL;
+> > +
+> > +       return  __unwind_frame(frame, &info, kvm_nvhe_stack_kern_va);
+> > +}
+> > +
+> > +static bool kvm_nvhe_dump_backtrace_entry(void *arg, unsigned long where)
+> > +{
+> > +       unsigned long va_mask = GENMASK_ULL(vabits_actual - 1, 0);
+> > +       unsigned long hyp_offset = (unsigned long)arg;
+> > +
+> > +       where &= va_mask;       /* Mask tags */
+> > +       where += hyp_offset;    /* Convert to kern addr */
+> > +
+> > +       kvm_err("[<%016lx>] %pB\n", where, (void *)where);
+> > +
+> > +       return true;
+> > +}
+> > +
+> > +static void notrace kvm_nvhe_walk_stackframe(struct task_struct *tsk,
+> > +                                   struct stackframe *frame,
+> > +                                   bool (*fn)(void *, unsigned long), void *data)
+> > +{
+> > +       __walk_stackframe(tsk, frame, fn, data, kvm_nvhe_unwind_frame);
+> > +}
+> > +
+> > +void kvm_nvhe_dump_backtrace(unsigned long hyp_offset)
+> > +{
+> > +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr_nvhe_sym(kvm_panic_info);
+> > +       struct stackframe frame;
+> > +
+> > +       start_backtrace(&frame, panic_info->fp, panic_info->pc);
+> > +       pr_err("nVHE HYP call trace:\n");
+> > +       kvm_nvhe_walk_stackframe(NULL, &frame, kvm_nvhe_dump_backtrace_entry,
+> > +                                       (void *)hyp_offset);
+> > +       pr_err("---- end of nVHE HYP call trace ----\n");
+> > +}
+> > +#endif /* CONFIG_NVHE_EL2_DEBUG */
+> > diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
+> > index 8a5fbbf084df..75f2c8255ff0 100644
+> > --- a/arch/arm64/kvm/Kconfig
+> > +++ b/arch/arm64/kvm/Kconfig
+> > @@ -51,8 +51,9 @@ config NVHE_EL2_DEBUG
+> >         depends on KVM
+> >         help
+> >           Say Y here to enable the debug mode for the non-VHE KVM EL2 object.
+> > -         Failure reports will BUG() in the hypervisor. This is intended for
+> > -         local EL2 hypervisor development.
+> > +         Failure reports will BUG() in the hypervisor; and panics will print
+> > +         the hypervisor call stack. This is intended for local EL2 hypervisor
+> > +         development.
+>
+> Nit: maybe for clarity you could rephrase as "calls to hyp_panic()
+> will result in printing the hypervisor call stack".
+
+Ack. I'll update in the next version.
 
 Thanks,
-Ian
-
-> ---
-> Change log:
->   v3:
->     * update events in other.json to be better classified:
->       SERIALIZATION.NON_C01_MS_SCB Pipeline
->       MEMORY_ACTIVITY Memory
->       SW_PREFETCH_ACCESS Cache
->       OCR*L3_HIT* Cache
+Kalesh
 >
->   v2:
->     * update as Ian's suggestion, "LD_HEAD" related events move from "oth=
-er"
->       to "memory", "TOPDOWN" related events move from "other" to "pipelin=
-e".
+> Thanks,
+> /fuad
 >
->  .../pmu-events/arch/x86/alderlake/cache.json  | 1140 +++++++++++
->  .../arch/x86/alderlake/floating-point.json    |  158 ++
->  .../arch/x86/alderlake/frontend.json          |  491 +++++
->  .../pmu-events/arch/x86/alderlake/memory.json |  318 +++
->  .../pmu-events/arch/x86/alderlake/other.json  |  146 ++
->  .../arch/x86/alderlake/pipeline.json          | 1721 +++++++++++++++++
->  .../arch/x86/alderlake/virtual-memory.json    |  258 +++
->  tools/perf/pmu-events/arch/x86/mapfile.csv    |    2 +
->  8 files changed, 4234 insertions(+)
->  create mode 100644 tools/perf/pmu-events/arch/x86/alderlake/cache.json
->  create mode 100644 tools/perf/pmu-events/arch/x86/alderlake/floating-poi=
-nt.json
->  create mode 100644 tools/perf/pmu-events/arch/x86/alderlake/frontend.jso=
-n
->  create mode 100644 tools/perf/pmu-events/arch/x86/alderlake/memory.json
->  create mode 100644 tools/perf/pmu-events/arch/x86/alderlake/other.json
->  create mode 100644 tools/perf/pmu-events/arch/x86/alderlake/pipeline.jso=
-n
->  create mode 100644 tools/perf/pmu-events/arch/x86/alderlake/virtual-memo=
-ry.json
 >
-> diff --git a/tools/perf/pmu-events/arch/x86/alderlake/cache.json b/tools/=
-perf/pmu-events/arch/x86/alderlake/cache.json
-> new file mode 100644
-> index 000000000000..b83ed129c454
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/x86/alderlake/cache.json
-> @@ -0,0 +1,1140 @@
-> +[
-> +    {
-> +        "BriefDescription": "Counts the number of cycles the core is sta=
-lled due to an instruction cache or tlb miss which hit in the L2, LLC, DRAM=
- or MMIO (Non-DRAM).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x34",
-> +        "EventName": "MEM_BOUND_STALLS.IFETCH",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x38",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles the core is sta=
-lled due to an instruction cache or tlb miss which hit in DRAM or MMIO (Non=
--DRAM).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x34",
-> +        "EventName": "MEM_BOUND_STALLS.IFETCH_DRAM_HIT",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles the core is sta=
-lled due to an instruction cache or tlb miss which hit in the L2 cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x34",
-> +        "EventName": "MEM_BOUND_STALLS.IFETCH_L2_HIT",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles the core is sta=
-lled due to an instruction cache or tlb miss which hit in the last level ca=
-che or other core with HITE/F/M.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x34",
-> +        "EventName": "MEM_BOUND_STALLS.IFETCH_LLC_HIT",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles the core is sta=
-lled due to a demand load miss which hit in the L2, LLC, DRAM or MMIO (Non-=
-DRAM).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x34",
-> +        "EventName": "MEM_BOUND_STALLS.LOAD",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x7",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles the core is sta=
-lled due to a demand load miss which hit in DRAM or MMIO (Non-DRAM).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x34",
-> +        "EventName": "MEM_BOUND_STALLS.LOAD_DRAM_HIT",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles the core is sta=
-lled due to a demand load which hit in the L2 cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x34",
-> +        "EventName": "MEM_BOUND_STALLS.LOAD_L2_HIT",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles the core is sta=
-lled due to a demand load which hit in the LLC or other core with HITE/F/M.=
-",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x34",
-> +        "EventName": "MEM_BOUND_STALLS.LOAD_LLC_HIT",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of load ops retired that =
-hit in DRAM.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_UOPS_RETIRED.DRAM_HIT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x80",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of load ops retired that =
-hit in the L2 cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_UOPS_RETIRED.L2_HIT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of load ops retired that =
-hit in the L3 cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_UOPS_RETIRED.L3_HIT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that uops are b=
-locked for any of the following reasons:  load buffer, store buffer or RSV =
-full.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x04",
-> +        "EventName": "MEM_SCHEDULER_BLOCK.ALL",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x7",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that uops are b=
-locked due to a load buffer full condition.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x04",
-> +        "EventName": "MEM_SCHEDULER_BLOCK.LD_BUF",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that uops are b=
-locked due to an RSV full condition.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x04",
-> +        "EventName": "MEM_SCHEDULER_BLOCK.RSV",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that uops are b=
-locked due to a store buffer full condition.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x04",
-> +        "EventName": "MEM_SCHEDULER_BLOCK.ST_BUF",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of load uops retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.ALL_LOADS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x81",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of store uops retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.ALL_STORES",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x82",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of tagged loads with an i=
-nstruction latency that exceeds or equals the threshold of 128 cycles as de=
-fined in MEC_CR_PEBS_LD_LAT_THRESHOLD (3F6H). Only counts with PEBS enabled=
-.",
-> +        "CollectPEBSRecord": "3",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.LOAD_LATENCY_GT_128",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x80",
-> +        "PEBS": "2",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of tagged loads with an i=
-nstruction latency that exceeds or equals the threshold of 16 cycles as def=
-ined in MEC_CR_PEBS_LD_LAT_THRESHOLD (3F6H). Only counts with PEBS enabled.=
-",
-> +        "CollectPEBSRecord": "3",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.LOAD_LATENCY_GT_16",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x10",
-> +        "PEBS": "2",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of tagged loads with an i=
-nstruction latency that exceeds or equals the threshold of 256 cycles as de=
-fined in MEC_CR_PEBS_LD_LAT_THRESHOLD (3F6H). Only counts with PEBS enabled=
-.",
-> +        "CollectPEBSRecord": "3",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.LOAD_LATENCY_GT_256",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x100",
-> +        "PEBS": "2",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of tagged loads with an i=
-nstruction latency that exceeds or equals the threshold of 32 cycles as def=
-ined in MEC_CR_PEBS_LD_LAT_THRESHOLD (3F6H). Only counts with PEBS enabled.=
-",
-> +        "CollectPEBSRecord": "3",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.LOAD_LATENCY_GT_32",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x20",
-> +        "PEBS": "2",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of tagged loads with an i=
-nstruction latency that exceeds or equals the threshold of 4 cycles as defi=
-ned in MEC_CR_PEBS_LD_LAT_THRESHOLD (3F6H). Only counts with PEBS enabled."=
-,
-> +        "CollectPEBSRecord": "3",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.LOAD_LATENCY_GT_4",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x4",
-> +        "PEBS": "2",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of tagged loads with an i=
-nstruction latency that exceeds or equals the threshold of 512 cycles as de=
-fined in MEC_CR_PEBS_LD_LAT_THRESHOLD (3F6H). Only counts with PEBS enabled=
-.",
-> +        "CollectPEBSRecord": "3",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.LOAD_LATENCY_GT_512",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x200",
-> +        "PEBS": "2",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of tagged loads with an i=
-nstruction latency that exceeds or equals the threshold of 64 cycles as def=
-ined in MEC_CR_PEBS_LD_LAT_THRESHOLD (3F6H). Only counts with PEBS enabled.=
-",
-> +        "CollectPEBSRecord": "3",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.LOAD_LATENCY_GT_64",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x40",
-> +        "PEBS": "2",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of tagged loads with an i=
-nstruction latency that exceeds or equals the threshold of 8 cycles as defi=
-ned in MEC_CR_PEBS_LD_LAT_THRESHOLD (3F6H). Only counts with PEBS enabled."=
-,
-> +        "CollectPEBSRecord": "3",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.LOAD_LATENCY_GT_8",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x8",
-> +        "PEBS": "2",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts all the retired split loads.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.SPLIT_LOADS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x41",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of stores uops retired. C=
-ounts with or without PEBS enabled.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_UOPS_RETIRED.STORE_LATENCY",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x6",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand reads for ownership (RFO) and=
- software prefetches for exclusive ownership (PREFETCHW) that were supplied=
- by the L3 cache where a snoop was sent, the snoop hit, and modified data w=
-as forwarded.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0xB7",
-> +        "EventName": "OCR.DEMAND_RFO.L3_HIT.SNOOP_HITM",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x10003C0002",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to instruction cache misses."=
-,
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.ICACHE",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cache lines replaced i=
-n L1 data cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x51",
-> +        "EventName": "L1D.REPLACEMENT",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of cycles a demand request has waite=
-d due to L1D Fill Buffer (FB) unavailability.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x48",
-> +        "EventName": "L1D_PEND_MISS.FB_FULL",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of phases a demand request has waite=
-d due to L1D Fill Buffer (FB) unavailablability.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EdgeDetect": "1",
-> +        "EventCode": "0x48",
-> +        "EventName": "L1D_PEND_MISS.FB_FULL_PERIODS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "This event is deprecated. Refer to new even=
-t L1D_PEND_MISS.L2_STALLS",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x48",
-> +        "EventName": "L1D_PEND_MISS.L2_STALL",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of cycles a demand request has waite=
-d due to L1D due to lack of L2 resources.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x48",
-> +        "EventName": "L1D_PEND_MISS.L2_STALLS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of L1D misses that are outstanding",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x48",
-> +        "EventName": "L1D_PEND_MISS.PENDING",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles with L1D load Misses outstanding.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x48",
-> +        "EventName": "L1D_PEND_MISS.PENDING_CYCLES",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "L2 cache lines filling L2",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x25",
-> +        "EventName": "L2_LINES_IN.ALL",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1f",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "All L2 requests.[This event is alias to L2_=
-RQSTS.REFERENCES]",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_REQUEST.ALL",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xff",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Read requests with true-miss in L2 cache.[T=
-his event is alias to L2_RQSTS.MISS]",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_REQUEST.MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x3f",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "L2 code requests",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.ALL_CODE_RD",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xe4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Demand Data Read requests",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.ALL_DEMAND_DATA_RD",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xe1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Demand requests that miss L2 cache",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.ALL_DEMAND_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x27",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "RFO requests to L2 cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.ALL_RFO",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xe2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "L2 cache hits when fetching instructions, c=
-ode reads.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.CODE_RD_HIT",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xc4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "L2 cache misses when fetching instructions"=
-,
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.CODE_RD_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x24",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Demand Data Read requests that hit L2 cache=
-",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.DEMAND_DATA_RD_HIT",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xc1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Demand Data Read miss L2, no rejects",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.DEMAND_DATA_RD_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x21",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Read requests with true-miss in L2 cache.[T=
-his event is alias to L2_REQUEST.MISS]",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x3f",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "All L2 requests.[This event is alias to L2_=
-REQUEST.ALL]",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.REFERENCES",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xff",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "RFO requests that hit L2 cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.RFO_HIT",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xc2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "RFO requests that miss L2 cache",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.RFO_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x22",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "SW prefetch requests that hit L2 cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.SWPF_HIT",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xc8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "SW prefetch requests that miss L2 cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x24",
-> +        "EventName": "L2_RQSTS.SWPF_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x28",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0x2e",
-> +        "EventName": "LONGEST_LAT_CACHE.MISS",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x41",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "All retired load instructions.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_INST_RETIRED.ALL_LOADS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x81",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "All retired store instructions.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_INST_RETIRED.ALL_STORES",
-> +        "L1_Hit_Indication": "1",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x82",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "All retired memory instructions.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_INST_RETIRED.ANY",
-> +        "L1_Hit_Indication": "1",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x83",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions with locked acces=
-s.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_INST_RETIRED.LOCK_LOADS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100007",
-> +        "UMask": "0x21",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions that split across=
- a cacheline boundary.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_INST_RETIRED.SPLIT_LOADS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x41",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired store instructions that split acros=
-s a cacheline boundary.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_INST_RETIRED.SPLIT_STORES",
-> +        "L1_Hit_Indication": "1",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x42",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions that miss the STL=
-B.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_INST_RETIRED.STLB_MISS_LOADS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x11",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired store instructions that miss the ST=
-LB.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd0",
-> +        "EventName": "MEM_INST_RETIRED.STLB_MISS_STORES",
-> +        "L1_Hit_Indication": "1",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x12",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Completed demand load uops that miss the L1=
- d-cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x43",
-> +        "EventName": "MEM_LOAD_COMPLETED.L1_MISS_ANY",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0xfd",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions whose data source=
-s were HitM responses from shared L3",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd2",
-> +        "EventName": "MEM_LOAD_L3_HIT_RETIRED.XSNP_FWD",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "20011",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions whose data source=
-s were L3 and cross-core snoop hits in on-pkg core cache",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd2",
-> +        "EventName": "MEM_LOAD_L3_HIT_RETIRED.XSNP_HIT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "20011",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions whose data source=
-s were HitM responses from shared L3",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd2",
-> +        "EventName": "MEM_LOAD_L3_HIT_RETIRED.XSNP_HITM",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "20011",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions whose data source=
-s were L3 hit and cross-core snoop missed in on-pkg core cache.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd2",
-> +        "EventName": "MEM_LOAD_L3_HIT_RETIRED.XSNP_MISS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "20011",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions whose data source=
-s were hits in L3 without snoops required",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd2",
-> +        "EventName": "MEM_LOAD_L3_HIT_RETIRED.XSNP_NONE",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions whose data source=
-s were L3 and cross-core snoop hits in on-pkg core cache",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd2",
-> +        "EventName": "MEM_LOAD_L3_HIT_RETIRED.XSNP_NO_FWD",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "20011",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions which data source=
-s missed L3 but serviced from local dram",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd3",
-> +        "EventName": "MEM_LOAD_L3_MISS_RETIRED.LOCAL_DRAM",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100007",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions with at least 1 uncach=
-eable load or lock.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd4",
-> +        "EventName": "MEM_LOAD_MISC_RETIRED.UC",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100007",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of completed demand load requests th=
-at missed the L1, but hit the FB(fill buffer), because a preceding miss to =
-the same cacheline initiated the line to be brought into L1, but data is no=
-t yet ready in L1.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_RETIRED.FB_HIT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100007",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions with L1 cache hit=
-s as data sources",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_RETIRED.L1_HIT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions missed L1 cache a=
-s data sources",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_RETIRED.L1_MISS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions with L2 cache hit=
-s as data sources",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_RETIRED.L2_HIT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions missed L2 cache a=
-s data sources",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_RETIRED.L2_MISS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100021",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions with L3 cache hit=
-s as data sources",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_RETIRED.L3_HIT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100021",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired load instructions missed L3 cache a=
-s data sources",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xd1",
-> +        "EventName": "MEM_LOAD_RETIRED.L3_MISS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "50021",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x44",
-> +        "EventName": "MEM_STORE_RETIRED.L2_HIT",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired memory uops for any access",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe5",
-> +        "EventName": "MEM_UOP_RETIRED.ANY",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x3",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand data reads that resulted in a=
- snoop hit in another cores caches, data forwarding is required as the data=
- is modified.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x2A,0x2B",
-> +        "EventName": "OCR.DEMAND_DATA_RD.L3_HIT.SNOOP_HITM",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x10003C0001",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "DEMAND_DATA_RD & L3_HIT & SNOOP_HIT_WITH_FW=
-D",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x2A,0x2B",
-> +        "EventName": "OCR.DEMAND_DATA_RD.L3_HIT.SNOOP_HIT_WITH_FWD",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x8003C0001",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand read for ownership (RFO) requ=
-ests and software prefetches for exclusive ownership (PREFETCHW) that resul=
-ted in a snoop hit in another cores caches, data forwarding is required as =
-the data is modified.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x2A,0x2B",
-> +        "EventName": "OCR.DEMAND_RFO.L3_HIT.SNOOP_HITM",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x10003C0002",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x21",
-> +        "EventName": "OFFCORE_REQUESTS.ALL_REQUESTS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x80",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Demand and prefetch data reads",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x21",
-> +        "EventName": "OFFCORE_REQUESTS.DATA_RD",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Demand Data Read requests sent to uncore",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x21",
-> +        "EventName": "OFFCORE_REQUESTS.DEMAND_DATA_RD",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "This event is deprecated. Refer to new even=
-t OFFCORE_REQUESTS_OUTSTANDING.DATA_RD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x20",
-> +        "EventName": "OFFCORE_REQUESTS_OUTSTANDING.ALL_DATA_RD",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x20",
-> +        "EventName": "OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DATA_RD",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "For every cycle where the core is waiting o=
-n at least 1 outstanding Demand RFO request, increments by 1.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x20",
-> +        "EventName": "OFFCORE_REQUESTS_OUTSTANDING.CYCLES_WITH_DEMAND_RF=
-O",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x20",
-> +        "EventName": "OFFCORE_REQUESTS_OUTSTANDING.DATA_RD",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of PREFETCHNTA instructions executed=
-.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x40",
-> +        "EventName": "SW_PREFETCH_ACCESS.NTA",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of PREFETCHW instructions executed."=
-,
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x40",
-> +        "EventName": "SW_PREFETCH_ACCESS.PREFETCHW",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of PREFETCHT0 instructions executed.=
-",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x40",
-> +        "EventName": "SW_PREFETCH_ACCESS.T0",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of PREFETCHT1 or PREFETCHT2 instruct=
-ions executed.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x40",
-> +        "EventName": "SW_PREFETCH_ACCESS.T1_T2",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    }
-> +]
-> \ No newline at end of file
-> diff --git a/tools/perf/pmu-events/arch/x86/alderlake/floating-point.json=
- b/tools/perf/pmu-events/arch/x86/alderlake/floating-point.json
-> new file mode 100644
-> index 000000000000..310c2a8f3e6b
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/x86/alderlake/floating-point.json
-> @@ -0,0 +1,158 @@
-> +[
-> +    {
-> +        "BriefDescription": "Counts the number of floating point operati=
-ons retired that required microcode assist.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.FP_ASSIST",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of floating point divide =
-uops retired (x87 and SSE, including x87 sqrt).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.FPDIV",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xb0",
-> +        "EventName": "ARITH.FPDIV_ACTIVE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts all microcode FP assists.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc1",
-> +        "EventName": "ASSISTS.FP",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc1",
-> +        "EventName": "ASSISTS.SSE_AVX_MIX",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb3",
-> +        "EventName": "FP_ARITH_DISPATCHED.PORT_0",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb3",
-> +        "EventName": "FP_ARITH_DISPATCHED.PORT_1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb3",
-> +        "EventName": "FP_ARITH_DISPATCHED.PORT_5",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts number of SSE/AVX computational 128-=
-bit packed double precision floating-point instructions retired; some instr=
-uctions will count twice as noted below.  Each count represents 2 computati=
-on operations, one for each element.  Applies to SSE* and AVX* packed doubl=
-e precision floating-point instructions: ADD SUB HADD HSUB SUBADD MUL DIV M=
-IN MAX SQRT DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twic=
-e as they perform 2 calculations per element.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc7",
-> +        "EventName": "FP_ARITH_INST_RETIRED.128B_PACKED_DOUBLE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of SSE/AVX computational 128-bit pac=
-ked single precision floating-point instructions retired; some instructions=
- will count twice as noted below.  Each count represents 4 computation oper=
-ations, one for each element.  Applies to SSE* and AVX* packed single preci=
-sion floating-point instructions: ADD SUB MUL DIV MIN MAX RCP14 RSQRT14 SQR=
-T DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions count twice as they =
-perform 2 calculations per element.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc7",
-> +        "EventName": "FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts number of SSE/AVX computational 256-=
-bit packed double precision floating-point instructions retired; some instr=
-uctions will count twice as noted below.  Each count represents 4 computati=
-on operations, one for each element.  Applies to SSE* and AVX* packed doubl=
-e precision floating-point instructions: ADD SUB HADD HSUB SUBADD MUL DIV M=
-IN MAX SQRT FM(N)ADD/SUB.  FM(N)ADD/SUB instructions count twice as they pe=
-rform 2 calculations per element.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc7",
-> +        "EventName": "FP_ARITH_INST_RETIRED.256B_PACKED_DOUBLE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts number of SSE/AVX computational 256-=
-bit packed single precision floating-point instructions retired; some instr=
-uctions will count twice as noted below.  Each count represents 8 computati=
-on operations, one for each element.  Applies to SSE* and AVX* packed singl=
-e precision floating-point instructions: ADD SUB HADD HSUB SUBADD MUL DIV M=
-IN MAX SQRT RSQRT RCP DPP FM(N)ADD/SUB.  DPP and FM(N)ADD/SUB instructions =
-count twice as they perform 2 calculations per element.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc7",
-> +        "EventName": "FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts number of SSE/AVX computational scal=
-ar double precision floating-point instructions retired; some instructions =
-will count twice as noted below.  Each count represents 1 computational ope=
-ration. Applies to SSE* and AVX* scalar double precision floating-point ins=
-tructions: ADD SUB MUL DIV MIN MAX SQRT FM(N)ADD/SUB.  FM(N)ADD/SUB instruc=
-tions count twice as they perform 2 calculations per element.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc7",
-> +        "EventName": "FP_ARITH_INST_RETIRED.SCALAR_DOUBLE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts number of SSE/AVX computational scal=
-ar single precision floating-point instructions retired; some instructions =
-will count twice as noted below.  Each count represents 1 computational ope=
-ration. Applies to SSE* and AVX* scalar single precision floating-point ins=
-tructions: ADD SUB MUL DIV MIN MAX SQRT RSQRT RCP FM(N)ADD/SUB.  FM(N)ADD/S=
-UB instructions count twice as they perform 2 calculations per element.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc7",
-> +        "EventName": "FP_ARITH_INST_RETIRED.SCALAR_SINGLE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    }
-> +]
-> \ No newline at end of file
-> diff --git a/tools/perf/pmu-events/arch/x86/alderlake/frontend.json b/too=
-ls/perf/pmu-events/arch/x86/alderlake/frontend.json
-> new file mode 100644
-> index 000000000000..908588f63314
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/x86/alderlake/frontend.json
-> @@ -0,0 +1,491 @@
-> +[
-> +    {
-> +        "BriefDescription": "Counts the total number of BACLEARS due to =
-all branch types including conditional and unconditional jumps, returns, an=
-d indirect branches.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xe6",
-> +        "EventName": "BACLEARS.ANY",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of requests to the instru=
-ction cache for one or more bytes of a cache line.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x80",
-> +        "EventName": "ICACHE.ACCESSES",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x3",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of instruction cache miss=
-es.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x80",
-> +        "EventName": "ICACHE.MISSES",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Stalls caused by changing prefix length of =
-the instruction.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x87",
-> +        "EventName": "DECODE.LCP",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "500009",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "DSB-to-MITE switch true penalty cycles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x61",
-> +        "EventName": "DSB2MITE_SWITCHES.PENALTY_CYCLES",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired Instructions who experienced DSB mi=
-ss.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.ANY_DSB_MISS",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x1",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired Instructions who experienced a crit=
-ical DSB miss.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.DSB_MISS",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x11",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired Instructions who experienced iTLB t=
-rue miss.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.ITLB_MISS",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x14",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired Instructions who experienced Instru=
-ction L1 Cache true miss.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.L1I_MISS",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x12",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired Instructions who experienced Instru=
-ction L2 Cache true miss.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.L2_MISS",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x13",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions after front-end starva=
-tion of at least 1 cycle",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_1",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x600106",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions that are fetched after=
- an interval where the front-end delivered no uops for a period of 128 cycl=
-es which was not interrupted by a back-end stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_128",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x608006",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions that are fetched after=
- an interval where the front-end delivered no uops for a period of 16 cycle=
-s which was not interrupted by a back-end stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_16",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x601006",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions after front-end starva=
-tion of at least 2 cycles",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_2",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x600206",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions that are fetched after=
- an interval where the front-end delivered no uops for a period of 256 cycl=
-es which was not interrupted by a back-end stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_256",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x610006",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions that are fetched after=
- an interval where the front-end had at least 1 bubble-slot for a period of=
- 2 cycles which was not interrupted by a back-end stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_2_BUBBLES_GE_1",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x100206",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions that are fetched after=
- an interval where the front-end delivered no uops for a period of 32 cycle=
-s which was not interrupted by a back-end stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_32",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x602006",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions that are fetched after=
- an interval where the front-end delivered no uops for a period of 4 cycles=
- which was not interrupted by a back-end stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_4",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x600406",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions that are fetched after=
- an interval where the front-end delivered no uops for a period of 512 cycl=
-es which was not interrupted by a back-end stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_512",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x620006",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions that are fetched after=
- an interval where the front-end delivered no uops for a period of 64 cycle=
-s which was not interrupted by a back-end stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_64",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x604006",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions that are fetched after=
- an interval where the front-end delivered no uops for a period of 8 cycles=
- which was not interrupted by a back-end stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.LATENCY_GE_8",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x600806",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired Instructions who experienced STLB (=
-2nd level TLB) true miss.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.STLB_MISS",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x15",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc6",
-> +        "EventName": "FRONTEND_RETIRED.UNKNOWN_BRANCH",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x17",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles where a code fetch is stalled due to=
- L1 instruction cache miss.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x80",
-> +        "EventName": "ICACHE_DATA.STALLS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "500009",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles where a code fetch is stalled due to=
- L1 instruction cache tag miss.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x83",
-> +        "EventName": "ICACHE_TAG.STALLS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles Decode Stream Buffer (DSB) is delive=
-ring any Uop",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x79",
-> +        "EventName": "IDQ.DSB_CYCLES_ANY",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles DSB is delivering optimal number of =
-Uops",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "6",
-> +        "EventCode": "0x79",
-> +        "EventName": "IDQ.DSB_CYCLES_OK",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops delivered to Instruction Decode Queue =
-(IDQ) from the Decode Stream Buffer (DSB) path",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x79",
-> +        "EventName": "IDQ.DSB_UOPS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles MITE is delivering any Uop",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x79",
-> +        "EventName": "IDQ.MITE_CYCLES_ANY",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles MITE is delivering optimal number of=
- Uops",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "6",
-> +        "EventCode": "0x79",
-> +        "EventName": "IDQ.MITE_CYCLES_OK",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops delivered to Instruction Decode Queue =
-(IDQ) from MITE path",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x79",
-> +        "EventName": "IDQ.MITE_UOPS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles when uops are being delivered to IDQ=
- while MS is busy",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x79",
-> +        "EventName": "IDQ.MS_CYCLES_ANY",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of switches from DSB or MITE to the =
-MS",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EdgeDetect": "1",
-> +        "EventCode": "0x79",
-> +        "EventName": "IDQ.MS_SWITCHES",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops delivered to IDQ while MS is busy",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x79",
-> +        "EventName": "IDQ.MS_UOPS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops not delivered by IDQ when backend of t=
-he machine is not stalled",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0x9c",
-> +        "EventName": "IDQ_UOPS_NOT_DELIVERED.CORE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles when no uops are not delivered by th=
-e IDQ when backend of the machine is not stalled",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "6",
-> +        "EventCode": "0x9c",
-> +        "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_0_UOPS_DELIV.CORE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles when optimal number of uops was deli=
-vered to the back-end when the back-end is not stalled",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x9c",
-> +        "EventName": "IDQ_UOPS_NOT_DELIVERED.CYCLES_FE_WAS_OK",
-> +        "Invert": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    }
-> +]
-> \ No newline at end of file
-> diff --git a/tools/perf/pmu-events/arch/x86/alderlake/memory.json b/tools=
-/perf/pmu-events/arch/x86/alderlake/memory.json
-> new file mode 100644
-> index 000000000000..1d4d1ebe2a74
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/x86/alderlake/memory.json
-> @@ -0,0 +1,318 @@
-> +[
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that the head (=
-oldest load) of the load buffer is stalled due to any number of reasons, in=
-cluding an L1 miss, WCB full, pagewalk, store address block or store data b=
-lock, on a load that retires.",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x05",
-> +        "EventName": "LD_HEAD.ANY_AT_RET",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0xff",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that the head (=
-oldest load) of the load buffer is stalled due to a core bound stall includ=
-ing a store address match, a DTLB miss or a page walk that detains the load=
- from retiring.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x05",
-> +        "EventName": "LD_HEAD.L1_BOUND_AT_RET",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0xf4",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that the head (=
-oldest load) of the load buffer is stalled due to other block cases when lo=
-ad subsequently retires when load subsequently retires.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x05",
-> +        "EventName": "LD_HEAD.OTHER_AT_RET",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0xc0",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that the head (=
-oldest load) of the load buffer is stalled due to a pagewalk when load subs=
-equently retires.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x05",
-> +        "EventName": "LD_HEAD.PGWALK_AT_RET",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0xa0",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that the head (=
-oldest load) of the load buffer is stalled due to a store address match whe=
-n load subsequently retires.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x05",
-> +        "EventName": "LD_HEAD.ST_ADDR_AT_RET",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x84",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of machine clears due to =
-memory ordering caused by a snoop from an external agent. Does not count in=
-ternally generated machine clears such as those due to memory disambiguatio=
-n.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.MEMORY_ORDERING",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand data reads that were not supp=
-lied by the L3 cache.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0xB7",
-> +        "EventName": "OCR.DEMAND_DATA_RD.L3_MISS",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x3F84400001",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand reads for ownership (RFO) and=
- software prefetches for exclusive ownership (PREFETCHW) that were not supp=
-lied by the L3 cache.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0xB7",
-> +        "EventName": "OCR.DEMAND_RFO.L3_MISS",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x3F84400002",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Execution stalls while L3 cache miss demand=
- load is outstanding.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "6",
-> +        "EventCode": "0xa3",
-> +        "EventName": "CYCLE_ACTIVITY.STALLS_L3_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x6",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of machine clears due to memory orde=
-ring conflicts.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.MEMORY_ORDERING",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles while L1 cache miss demand load is o=
-utstanding.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "2",
-> +        "EventCode": "0x47",
-> +        "EventName": "MEMORY_ACTIVITY.CYCLES_L1D_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Execution stalls while L1 cache miss demand=
- load is outstanding.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "3",
-> +        "EventCode": "0x47",
-> +        "EventName": "MEMORY_ACTIVITY.STALLS_L1D_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x3",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "5",
-> +        "EventCode": "0x47",
-> +        "EventName": "MEMORY_ACTIVITY.STALLS_L2_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "9",
-> +        "EventCode": "0x47",
-> +        "EventName": "MEMORY_ACTIVITY.STALLS_L3_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x9",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts randomly selected loads when the lat=
-ency from first dispatch to completion is greater than 128 cycles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "1,2,3,4,5,6,7",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xcd",
-> +        "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_128",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x80",
-> +        "PEBS": "2",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1009",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts randomly selected loads when the lat=
-ency from first dispatch to completion is greater than 16 cycles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "1,2,3,4,5,6,7",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xcd",
-> +        "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_16",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x10",
-> +        "PEBS": "2",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "20011",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts randomly selected loads when the lat=
-ency from first dispatch to completion is greater than 256 cycles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "1,2,3,4,5,6,7",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xcd",
-> +        "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_256",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x100",
-> +        "PEBS": "2",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "503",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts randomly selected loads when the lat=
-ency from first dispatch to completion is greater than 32 cycles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "1,2,3,4,5,6,7",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xcd",
-> +        "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_32",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x20",
-> +        "PEBS": "2",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts randomly selected loads when the lat=
-ency from first dispatch to completion is greater than 4 cycles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "1,2,3,4,5,6,7",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xcd",
-> +        "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_4",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x4",
-> +        "PEBS": "2",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts randomly selected loads when the lat=
-ency from first dispatch to completion is greater than 512 cycles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "1,2,3,4,5,6,7",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xcd",
-> +        "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_512",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x200",
-> +        "PEBS": "2",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "101",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts randomly selected loads when the lat=
-ency from first dispatch to completion is greater than 64 cycles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "1,2,3,4,5,6,7",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xcd",
-> +        "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_64",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x40",
-> +        "PEBS": "2",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts randomly selected loads when the lat=
-ency from first dispatch to completion is greater than 8 cycles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "1,2,3,4,5,6,7",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xcd",
-> +        "EventName": "MEM_TRANS_RETIRED.LOAD_LATENCY_GT_8",
-> +        "MSRIndex": "0x3F6",
-> +        "MSRValue": "0x8",
-> +        "PEBS": "2",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "50021",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retired instructions with at least 1 store =
-uop. This PEBS event is the trigger for stores sampled by the PEBS Store Fa=
-cility.",
-> +        "CollectPEBSRecord": "2",
-> +        "Data_LA": "1",
-> +        "EventCode": "0xcd",
-> +        "EventName": "MEM_TRANS_RETIRED.STORE_SAMPLE",
-> +        "PEBS": "2",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand data reads that were not supp=
-lied by the L3 cache.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x2A,0x2B",
-> +        "EventName": "OCR.DEMAND_DATA_RD.L3_MISS",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x3FBFC00001",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand read for ownership (RFO) requ=
-ests and software prefetches for exclusive ownership (PREFETCHW) that were =
-not supplied by the L3 cache.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x2A,0x2B",
-> +        "EventName": "OCR.DEMAND_RFO.L3_MISS",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x3FBFC00002",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    }
-> +]
-> \ No newline at end of file
-> diff --git a/tools/perf/pmu-events/arch/x86/alderlake/other.json b/tools/=
-perf/pmu-events/arch/x86/alderlake/other.json
-> new file mode 100644
-> index 000000000000..dc810f093fb0
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/x86/alderlake/other.json
-> @@ -0,0 +1,146 @@
-> +[
-> +    {
-> +        "BriefDescription": "Counts demand data reads that have any type=
- of response.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0xB7",
-> +        "EventName": "OCR.DEMAND_DATA_RD.ANY_RESPONSE",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x10001",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand reads for ownership (RFO) and=
- software prefetches for exclusive ownership (PREFETCHW) that have any type=
- of response.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0xB7",
-> +        "EventName": "OCR.DEMAND_RFO.ANY_RESPONSE",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x10002",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts streaming stores that have any type =
-of response.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0xB7",
-> +        "EventName": "OCR.STREAMING_WR.ANY_RESPONSE",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x10800",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of occurrences where a microcode ass=
-ist is invoked by hardware.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc1",
-> +        "EventName": "ASSISTS.ANY",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1f",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Count all other microcode assist beyond FP,=
- AVX_TILE_MIX and A/D assists (counted by their own sub-events). This inclu=
-des assists at uop writeback like AVX* load/store (non-FP) assists, Null As=
-sist in SNC (due to lack of FP precision format convert with FMA3x3 uarch) =
-or assists generated by ROB (like assists to due to Missprediction for FSW =
-register - fixed in SNC)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc1",
-> +        "EventName": "ASSISTS.HARDWARE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc1",
-> +        "EventName": "ASSISTS.PAGE_FAULT",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x28",
-> +        "EventName": "CORE_POWER.LICENSE_1",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x28",
-> +        "EventName": "CORE_POWER.LICENSE_2",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x28",
-> +        "EventName": "CORE_POWER.LICENSE_3",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand data reads that have any type=
- of response.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x2A,0x2B",
-> +        "EventName": "OCR.DEMAND_DATA_RD.ANY_RESPONSE",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x10001",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts demand read for ownership (RFO) requ=
-ests and software prefetches for exclusive ownership (PREFETCHW) that have =
-any type of response.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x2A,0x2B",
-> +        "EventName": "OCR.DEMAND_RFO.ANY_RESPONSE",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x10002",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts streaming stores that have any type =
-of response.",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x2A,0x2B",
-> +        "EventName": "OCR.STREAMING_WR.ANY_RESPONSE",
-> +        "MSRIndex": "0x1a6,0x1a7",
-> +        "MSRValue": "0x10800",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x2d",
-> +        "EventName": "XQ.FULL_CYCLES",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    }
-> +]
-> \ No newline at end of file
-> diff --git a/tools/perf/pmu-events/arch/x86/alderlake/pipeline.json b/too=
-ls/perf/pmu-events/arch/x86/alderlake/pipeline.json
-> new file mode 100644
-> index 000000000000..de2c6e0ef654
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/x86/alderlake/pipeline.json
-> @@ -0,0 +1,1721 @@
-> +[
-> +    {
-> +        "BriefDescription": "Counts the total number of branch instructi=
-ons retired for all branch types.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.ALL_BRANCHES",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "This event is deprecated. Refer to new even=
-t BR_INST_RETIRED.NEAR_CALL",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.CALL",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xf9",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of far branch instruction=
-s retired, includes far jump, far call and return, and Interrupt call and r=
-eturn.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.FAR_BRANCH",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xbf",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of near CALL branch instr=
-uctions retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.NEAR_CALL",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xf9",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the total number of mispredicted bra=
-nch instructions retired for all branch types.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc5",
-> +        "EventName": "BR_MISP_RETIRED.ALL_BRANCHES",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of unhalted core clock cy=
-cles. (Fixed event)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "33",
-> +        "EventName": "CPU_CLK_UNHALTED.CORE",
-> +        "PEBScounters": "33",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of unhalted core clock cy=
-cles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x3c",
-> +        "EventName": "CPU_CLK_UNHALTED.CORE_P",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "2000003",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of unhalted reference clo=
-ck cycles at TSC frequency. (Fixed event)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "34",
-> +        "EventName": "CPU_CLK_UNHALTED.REF_TSC",
-> +        "PEBScounters": "34",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x3",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of unhalted core clock cy=
-cles. (Fixed event)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "33",
-> +        "EventName": "CPU_CLK_UNHALTED.THREAD",
-> +        "PEBScounters": "33",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of unhalted core clock cy=
-cles.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x3c",
-> +        "EventName": "CPU_CLK_UNHALTED.THREAD_P",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "2000003",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of instructions retired. =
-(Fixed event)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "32",
-> +        "EventName": "INST_RETIRED.ANY",
-> +        "PEBS": "1",
-> +        "PEBScounters": "32",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "This event is deprecated. Refer to new even=
-t LD_BLOCKS.ADDRESS_ALIAS",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x03",
-> +        "EventName": "LD_BLOCKS.4K_ALIAS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of retired loads that are=
- blocked because it initially appears to be store forward blocked, but subs=
-equently is shown not to be blocked based on 4K alias check.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x03",
-> +        "EventName": "LD_BLOCKS.ADDRESS_ALIAS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of retired loads that are=
- blocked because its address exactly matches an older store whose data is n=
-ot ready.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x03",
-> +        "EventName": "LD_BLOCKS.DATA_UNKNOWN",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of machine clears due to =
-memory ordering in which an internal load passes an older store within the =
-same CPU.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.DISAMBIGUATION",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of machines clears due to=
- memory renaming.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.MRN_NUKE",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x80",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of machine clears due to =
-a page fault.  Counts both I-Side and D-Side (Loads/Stores) page faults.  A=
- page fault occurs when either the page is not present, or an access violat=
-ion occurs.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.PAGE_FAULT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of machine clears that fl=
-ush the pipeline and restart the machine with the use of microcode due to S=
-MC, MEMORY_ORDERING, FP_ASSISTS, PAGE_FAULT, DISAMBIGUATION, and FPC_VIRTUA=
-L_TRAP.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.SLOW",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x6f",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of machine clears due to =
-program modifying data (self modifying code) within 1K of a recently fetche=
-d code page.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.SMC",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "20003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots not consum=
-ed due to a micro-sequencer (MS) scoreboard, which stalls the front-end fro=
-m issuing uops from the UROM until a specified older uop retires.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x75",
-> +        "EventName": "SERIALIZATION.NON_C01_MS_SCB",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the total number of issue slots that=
- were not consumed by the backend because allocation is stalled due to a mi=
-spredicted jump or a machine clear.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x73",
-> +        "EventName": "TOPDOWN_BAD_SPECULATION.ALL",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not consumed by the backend due to fast nukes such as memory or=
-dering and memory disambiguation machine clears.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x73",
-> +        "EventName": "TOPDOWN_BAD_SPECULATION.FASTNUKE",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the total number of issue slots that=
- were not consumed by the backend because allocation is stalled due to a ma=
-chine clear (nuke) of any kind including memory ordering and memory disambi=
-guation.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x73",
-> +        "EventName": "TOPDOWN_BAD_SPECULATION.MACHINE_CLEARS",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x3",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not consumed by the backend due to branch mispredicts.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x73",
-> +        "EventName": "TOPDOWN_BAD_SPECULATION.MISPREDICT",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not consumed by the backend due to a machine clear (nuke).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x73",
-> +        "EventName": "TOPDOWN_BAD_SPECULATION.NUKE",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the total number of issue slots ever=
-y cycle that were not consumed by the backend due to backend stalls.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x74",
-> +        "EventName": "TOPDOWN_BE_BOUND.ALL",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not consumed by the backend due to certain allocation restricti=
-ons.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x74",
-> +        "EventName": "TOPDOWN_BE_BOUND.ALLOC_RESTRICTIONS",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not consumed by the backend due to memory reservation stalls in=
- which a scheduler is not able to accept uops.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x74",
-> +        "EventName": "TOPDOWN_BE_BOUND.MEM_SCHEDULER",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not consumed by the backend due to IEC or FPC RAT stalls, which=
- can be due to FIQ or IEC reservation stalls in which the integer, floating=
- point or SIMD scheduler is not able to accept uops.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x74",
-> +        "EventName": "TOPDOWN_BE_BOUND.NON_MEM_SCHEDULER",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not consumed by the backend due to the physical register file u=
-nable to accept an entry (marble stalls).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x74",
-> +        "EventName": "TOPDOWN_BE_BOUND.REGISTER",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not consumed by the backend due to the reorder buffer being ful=
-l (ROB stalls).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x74",
-> +        "EventName": "TOPDOWN_BE_BOUND.REORDER_BUFFER",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not consumed by the backend due to scoreboards from the instruc=
-tion queue (IQ), jump execution unit (JEU), or microcode sequencer (MS).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x74",
-> +        "EventName": "TOPDOWN_BE_BOUND.SERIALIZATION",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the total number of issue slots ever=
-y cycle that were not consumed by the backend due to frontend stalls.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.ALL",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to BACLEARS.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.BRANCH_DETECT",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to BTCLEARS.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.BRANCH_RESTEER",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to the microcode sequencer (M=
-S).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.CISC",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to decode stalls.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.DECODE",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to frontend bandwidth restric=
-tions due to decode, predecode, cisc, and other limitations.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.FRONTEND_BANDWIDTH",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x8d",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to latency related stalls inc=
-luding BACLEARs, BTCLEARs, ITLB misses, and ICache misses.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.FRONTEND_LATENCY",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x72",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to ITLB misses.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.ITLB",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to other common frontend stal=
-ls not categorized.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.OTHER",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x80",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of issue slots every cycl=
-e that were not delivered by the frontend due to wrong predecodes.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x71",
-> +        "EventName": "TOPDOWN_FE_BOUND.PREDECODE",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the total number of consumed retirem=
-ent slots.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc2",
-> +        "EventName": "TOPDOWN_RETIRING.ALL",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the total number of uops retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.ALL",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "2000003",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of integer divide uops re=
-tired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.IDIV",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of uops that are from com=
-plex flows issued by the micro-sequencer (MS).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.MS",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of x87 uops retired, incl=
-udes those in MS flows.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.X87",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "This event is deprecated. Refer to new even=
-t ARITH.DIV_ACTIVE",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xb0",
-> +        "EventName": "ARITH.DIVIDER_ACTIVE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x9",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles when divide unit is busy executing d=
-ivide or square root operations.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xb0",
-> +        "EventName": "ARITH.DIV_ACTIVE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x9",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "This event is deprecated. Refer to new even=
-t ARITH.FPDIV_ACTIVE",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xb0",
-> +        "EventName": "ARITH.FP_DIVIDER_ACTIVE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xb0",
-> +        "EventName": "ARITH.INT_DIVIDER_ACTIVE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "All branch instructions retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.ALL_BRANCHES",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Conditional branch instructions retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.COND",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x11",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Not taken branch instructions retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.COND_NTAKEN",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Taken conditional branch instructions retir=
-ed.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.COND_TAKEN",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Far branch instructions retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.FAR_BRANCH",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Indirect near branch instructions retired (=
-excluding returns)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.INDIRECT",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x80",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Direct and indirect near call instructions =
-retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.NEAR_CALL",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Return instructions retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.NEAR_RETURN",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Taken branch instructions retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc4",
-> +        "EventName": "BR_INST_RETIRED.NEAR_TAKEN",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "All mispredicted branch instructions retire=
-d.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc5",
-> +        "EventName": "BR_MISP_RETIRED.ALL_BRANCHES",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Mispredicted conditional branch instruction=
-s retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc5",
-> +        "EventName": "BR_MISP_RETIRED.COND",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x11",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Mispredicted non-taken conditional branch i=
-nstructions retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc5",
-> +        "EventName": "BR_MISP_RETIRED.COND_NTAKEN",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "number of branch instructions retired that =
-were mispredicted and taken. Non PEBS",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc5",
-> +        "EventName": "BR_MISP_RETIRED.COND_TAKEN",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Mispredicted indirect CALL retired.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc5",
-> +        "EventName": "BR_MISP_RETIRED.INDIRECT_CALL",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of near branch instructions retired =
-that were mispredicted and taken.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc5",
-> +        "EventName": "BR_MISP_RETIRED.NEAR_TAKEN",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "This event counts the number of mispredicte=
-d ret instructions retired. Non PEBS",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc5",
-> +        "EventName": "BR_MISP_RETIRED.RET",
-> +        "PEBS": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100007",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycle counts are evenly distributed between=
- active threads in the Core.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xec",
-> +        "EventName": "CPU_CLK_UNHALTED.DISTRIBUTED",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Core crystal clock cycles when this thread =
-is unhalted and the other thread is halted.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0x3c",
-> +        "EventName": "CPU_CLK_UNHALTED.ONE_THREAD_ACTIVE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "25003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xec",
-> +        "EventName": "CPU_CLK_UNHALTED.PAUSE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EdgeDetect": "1",
-> +        "EventCode": "0xec",
-> +        "EventName": "CPU_CLK_UNHALTED.PAUSE_INST",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Core crystal clock cycles. Cycle counts are=
- evenly distributed between active threads in the Core.",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0x3c",
-> +        "EventName": "CPU_CLK_UNHALTED.REF_DISTRIBUTED",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Reference cycles when the core is not in ha=
-lt state.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "34",
-> +        "EventName": "CPU_CLK_UNHALTED.REF_TSC",
-> +        "PEBScounters": "34",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x3",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Core cycles when the thread is not in halt =
-state",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "33",
-> +        "EventName": "CPU_CLK_UNHALTED.THREAD",
-> +        "PEBScounters": "33",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Thread cycles when thread is not in halt st=
-ate",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0x3c",
-> +        "EventName": "CPU_CLK_UNHALTED.THREAD_P",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles while L1 cache miss demand load is o=
-utstanding.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "8",
-> +        "EventCode": "0xa3",
-> +        "EventName": "CYCLE_ACTIVITY.CYCLES_L1D_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles while L2 cache miss demand load is o=
-utstanding.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xa3",
-> +        "EventName": "CYCLE_ACTIVITY.CYCLES_L2_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles while memory subsystem has an outsta=
-nding load.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "16",
-> +        "EventCode": "0xa3",
-> +        "EventName": "CYCLE_ACTIVITY.CYCLES_MEM_ANY",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Execution stalls while L1 cache miss demand=
- load is outstanding.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "12",
-> +        "EventCode": "0xa3",
-> +        "EventName": "CYCLE_ACTIVITY.STALLS_L1D_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0xc",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Execution stalls while L2 cache miss demand=
- load is outstanding.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "5",
-> +        "EventCode": "0xa3",
-> +        "EventName": "CYCLE_ACTIVITY.STALLS_L2_MISS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x5",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Total execution stalls.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "4",
-> +        "EventCode": "0xa3",
-> +        "EventName": "CYCLE_ACTIVITY.STALLS_TOTAL",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles total of 1 uop is executed on all po=
-rts and Reservation Station was not empty.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa6",
-> +        "EventName": "EXE_ACTIVITY.1_PORTS_UTIL",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles total of 2 uops are executed on all =
-ports and Reservation Station was not empty.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa6",
-> +        "EventName": "EXE_ACTIVITY.2_PORTS_UTIL",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles total of 3 uops are executed on all =
-ports and Reservation Station was not empty.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa6",
-> +        "EventName": "EXE_ACTIVITY.3_PORTS_UTIL",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles total of 4 uops are executed on all =
-ports and Reservation Station was not empty.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa6",
-> +        "EventName": "EXE_ACTIVITY.4_PORTS_UTIL",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Execution stalls while memory subsystem has=
- an outstanding load.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "5",
-> +        "EventCode": "0xa6",
-> +        "EventName": "EXE_ACTIVITY.BOUND_ON_LOADS",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x21",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles where the Store Buffer was full and =
-no loads caused an execution stall.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "2",
-> +        "EventCode": "0xa6",
-> +        "EventName": "EXE_ACTIVITY.BOUND_ON_STORES",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Instruction decoders utilized in a cycle",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x75",
-> +        "EventName": "INST_DECODED.DECODERS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of instructions retired. Fixed Count=
-er - architectural event",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "32",
-> +        "EventName": "INST_RETIRED.ANY",
-> +        "PEBS": "1",
-> +        "PEBScounters": "32",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of instructions retired. General Cou=
-nter - architectural event",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc0",
-> +        "EventName": "INST_RETIRED.ANY_P",
-> +        "PEBS": "1",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc0",
-> +        "EventName": "INST_RETIRED.MACRO_FUSED",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of all retired NOP instructions.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc0",
-> +        "EventName": "INST_RETIRED.NOP",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Precise instruction retired with PEBS preci=
-se-distribution",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "32",
-> +        "EventName": "INST_RETIRED.PREC_DIST",
-> +        "PEBS": "1",
-> +        "PEBScounters": "32",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc0",
-> +        "EventName": "INST_RETIRED.REP_ITERATION",
-> +        "PEBScounters": "1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts cycles after recovery from a branch =
-misprediction or machine clear till the first uop is issued from the restee=
-red path.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xad",
-> +        "EventName": "INT_MISC.CLEAR_RESTEER_CYCLES",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "500009",
-> +        "UMask": "0x80",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Core cycles the allocator was stalled due t=
-o recovery from earlier clear event for this thread",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xad",
-> +        "EventName": "INT_MISC.RECOVERY_CYCLES",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "500009",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xad",
-> +        "EventName": "INT_MISC.UNKNOWN_BRANCH_CYCLES",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x7",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TMA slots where uops got dropped",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xad",
-> +        "EventName": "INT_MISC.UOP_DROPPING",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe7",
-> +        "EventName": "INT_VEC_RETIRED.128BIT",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x13",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe7",
-> +        "EventName": "INT_VEC_RETIRED.256BIT",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0xac",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "integer ADD, SUB, SAD 128-bit vector instru=
-ctions.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe7",
-> +        "EventName": "INT_VEC_RETIRED.ADD_128",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x3",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "integer ADD, SUB, SAD 256-bit vector instru=
-ctions.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe7",
-> +        "EventName": "INT_VEC_RETIRED.ADD_256",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0xc",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe7",
-> +        "EventName": "INT_VEC_RETIRED.MUL_256",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x80",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe7",
-> +        "EventName": "INT_VEC_RETIRED.SHUFFLES",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe7",
-> +        "EventName": "INT_VEC_RETIRED.VNNI_128",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe7",
-> +        "EventName": "INT_VEC_RETIRED.VNNI_256",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "False dependencies in MOB due to partial co=
-mpare on address.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x03",
-> +        "EventName": "LD_BLOCKS.ADDRESS_ALIAS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "The number of times that split load operati=
-ons are temporarily blocked because all resources for handling the split ac=
-cesses are in use.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x03",
-> +        "EventName": "LD_BLOCKS.NO_SR",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x88",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Loads blocked due to overlapping with a pre=
-ceding store that cannot be forwarded.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x03",
-> +        "EventName": "LD_BLOCKS.STORE_FORWARD",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x82",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of demand load dispatches=
- that hit L1D fill buffer (FB) allocated for software prefetch.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x4c",
-> +        "EventName": "LOAD_HIT_PREFETCH.SWPF",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles Uops delivered by the LSD, but didn'=
-t come from the decoder.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xa8",
-> +        "EventName": "LSD.CYCLES_ACTIVE",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles optimal number of Uops delivered by =
-the LSD, but did not come from the decoder.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "6",
-> +        "EventCode": "0xa8",
-> +        "EventName": "LSD.CYCLES_OK",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of Uops delivered by the LSD.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa8",
-> +        "EventName": "LSD.UOPS",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of machine clears (nukes) of any typ=
-e.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EdgeDetect": "1",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.COUNT",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Self-modifying code (SMC) detected.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc3",
-> +        "EventName": "MACHINE_CLEARS.SMC",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xe0",
-> +        "EventName": "MISC2_RETIRED.LFENCE",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "400009",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Increments whenever there is an update to t=
-he LBR array.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xcc",
-> +        "EventName": "MISC_RETIRED.LBR_INSERTS",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles stalled due to no store buffers avai=
-lable. (not including draining form sync).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa2",
-> +        "EventName": "RESOURCE_STALLS.SB",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts cycles where the pipeline is stalled=
- due to serializing operations.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa2",
-> +        "EventName": "RESOURCE_STALLS.SCOREBOARD",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TMA slots where no uops were being issued d=
-ue to lack of back-end resources.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa4",
-> +        "EventName": "TOPDOWN.BACKEND_BOUND_SLOTS",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "10000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TMA slots wasted due to incorrect speculati=
-ons.",
-> +        "CollectPEBSRecord": "2",
-> +        "EventCode": "0xa4",
-> +        "EventName": "TOPDOWN.BAD_SPEC_SLOTS",
-> +        "SampleAfterValue": "10000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TMA slots wasted due to incorrect speculati=
-on by branch mispredictions",
-> +        "CollectPEBSRecord": "2",
-> +        "EventCode": "0xa4",
-> +        "EventName": "TOPDOWN.BR_MISPREDICT_SLOTS",
-> +        "SampleAfterValue": "10000003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa4",
-> +        "EventName": "TOPDOWN.MEMORY_BOUND_SLOTS",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "10000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TMA slots available for an unhalted logical=
- processor. Fixed counter - architectural event",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "35",
-> +        "EventName": "TOPDOWN.SLOTS",
-> +        "PEBScounters": "35",
-> +        "SampleAfterValue": "10000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TMA slots available for an unhalted logical=
- processor. General counter - architectural event",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xa4",
-> +        "EventName": "TOPDOWN.SLOTS_P",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "10000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x76",
-> +        "EventName": "UOPS_DECODED.DEC0_UOPS",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops executed on port 0",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb2",
-> +        "EventName": "UOPS_DISPATCHED.PORT_0",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops executed on port 1",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb2",
-> +        "EventName": "UOPS_DISPATCHED.PORT_1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops executed on ports 2, 3 and 10",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb2",
-> +        "EventName": "UOPS_DISPATCHED.PORT_2_3_10",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops executed on ports 4 and 9",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb2",
-> +        "EventName": "UOPS_DISPATCHED.PORT_4_9",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops executed on ports 5 and 11",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb2",
-> +        "EventName": "UOPS_DISPATCHED.PORT_5_11",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops executed on port 6",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb2",
-> +        "EventName": "UOPS_DISPATCHED.PORT_6",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x40",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops executed on ports 7 and 8",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb2",
-> +        "EventName": "UOPS_DISPATCHED.PORT_7_8",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x80",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles at least 1 micro-op is executed from=
- any thread on physical core.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.CORE_CYCLES_GE_1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles at least 2 micro-op is executed from=
- any thread on physical core.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "2",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.CORE_CYCLES_GE_2",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles at least 3 micro-op is executed from=
- any thread on physical core.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "3",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.CORE_CYCLES_GE_3",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles at least 4 micro-op is executed from=
- any thread on physical core.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "4",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.CORE_CYCLES_GE_4",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles where at least 1 uop was executed pe=
-r-thread",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.CYCLES_GE_1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles where at least 2 uops were executed =
-per-thread",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "2",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.CYCLES_GE_2",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles where at least 3 uops were executed =
-per-thread",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "3",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.CYCLES_GE_3",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles where at least 4 uops were executed =
-per-thread",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "4",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.CYCLES_GE_4",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts number of cycles no uops were dispat=
-ched to be executed on this thread.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.STALLS",
-> +        "Invert": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "This event is deprecated. Refer to new even=
-t UOPS_EXECUTED.STALLS",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.STALL_CYCLES",
-> +        "Invert": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of uops to be executed pe=
-r-thread each cycle.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.THREAD",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of x87 uops dispatched.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xb1",
-> +        "EventName": "UOPS_EXECUTED.X87",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Uops that RAT issues to RS",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xae",
-> +        "EventName": "UOPS_ISSUED.ANY",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles with retired uop(s).",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.CYCLES",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.HEAVY",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x1",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "TBD",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.MS",
-> +        "MSRIndex": "0x3F7",
-> +        "MSRValue": "0x8",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "TakenAlone": "1",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Retirement slots used.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.SLOTS",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles without actually retired uops.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.STALLS",
-> +        "Invert": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "This event is deprecated. Refer to new even=
-t UOPS_RETIRED.STALLS",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5,6,7",
-> +        "CounterMask": "1",
-> +        "EventCode": "0xc2",
-> +        "EventName": "UOPS_RETIRED.STALL_CYCLES",
-> +        "Invert": "1",
-> +        "PEBScounters": "0,1,2,3,4,5,6,7",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    }
-> +]
-> \ No newline at end of file
-> diff --git a/tools/perf/pmu-events/arch/x86/alderlake/virtual-memory.json=
- b/tools/perf/pmu-events/arch/x86/alderlake/virtual-memory.json
-> new file mode 100644
-> index 000000000000..1cc39aa032e1
-> --- /dev/null
-> +++ b/tools/perf/pmu-events/arch/x86/alderlake/virtual-memory.json
-> @@ -0,0 +1,258 @@
-> +[
-> +    {
-> +        "BriefDescription": "Counts the number of page walks completed d=
-ue to load DTLB misses to any page size.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x08",
-> +        "EventName": "DTLB_LOAD_MISSES.WALK_COMPLETED",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "200003",
-> +        "UMask": "0xe",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of page walks completed d=
-ue to store DTLB misses to any page size.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x49",
-> +        "EventName": "DTLB_STORE_MISSES.WALK_COMPLETED",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "2000003",
-> +        "UMask": "0xe",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Counts the number of cycles that the head (=
-oldest load) of the load buffer is stalled due to a DTLB miss when load sub=
-sequently retires.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3,4,5",
-> +        "EventCode": "0x05",
-> +        "EventName": "LD_HEAD.DTLB_MISS_AT_RET",
-> +        "PEBScounters": "0,1,2,3,4,5",
-> +        "SampleAfterValue": "1000003",
-> +        "UMask": "0x90",
-> +        "Unit": "cpu_atom"
-> +    },
-> +    {
-> +        "BriefDescription": "Loads that miss the DTLB and hit the STLB."=
-,
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x12",
-> +        "EventName": "DTLB_LOAD_MISSES.STLB_HIT",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles when at least one PMH is busy with a=
- page walk for a demand load.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x12",
-> +        "EventName": "DTLB_LOAD_MISSES.WALK_ACTIVE",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Load miss in all TLB levels causes a page w=
-alk that completes. (All page sizes)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x12",
-> +        "EventName": "DTLB_LOAD_MISSES.WALK_COMPLETED",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0xe",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Page walks completed due to a demand data l=
-oad to a 1G page.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x12",
-> +        "EventName": "DTLB_LOAD_MISSES.WALK_COMPLETED_1G",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Page walks completed due to a demand data l=
-oad to a 2M/4M page.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x12",
-> +        "EventName": "DTLB_LOAD_MISSES.WALK_COMPLETED_2M_4M",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Page walks completed due to a demand data l=
-oad to a 4K page.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x12",
-> +        "EventName": "DTLB_LOAD_MISSES.WALK_COMPLETED_4K",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of page walks outstanding for a dema=
-nd load in the PMH each cycle.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x12",
-> +        "EventName": "DTLB_LOAD_MISSES.WALK_PENDING",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Stores that miss the DTLB and hit the STLB.=
-",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x13",
-> +        "EventName": "DTLB_STORE_MISSES.STLB_HIT",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles when at least one PMH is busy with a=
- page walk for a store.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x13",
-> +        "EventName": "DTLB_STORE_MISSES.WALK_ACTIVE",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Store misses in all TLB levels causes a pag=
-e walk that completes. (All page sizes)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x13",
-> +        "EventName": "DTLB_STORE_MISSES.WALK_COMPLETED",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0xe",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Page walks completed due to a demand data s=
-tore to a 1G page.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x13",
-> +        "EventName": "DTLB_STORE_MISSES.WALK_COMPLETED_1G",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x8",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Page walks completed due to a demand data s=
-tore to a 2M/4M page.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x13",
-> +        "EventName": "DTLB_STORE_MISSES.WALK_COMPLETED_2M_4M",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Page walks completed due to a demand data s=
-tore to a 4K page.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x13",
-> +        "EventName": "DTLB_STORE_MISSES.WALK_COMPLETED_4K",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of page walks outstanding for a stor=
-e in the PMH each cycle.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x13",
-> +        "EventName": "DTLB_STORE_MISSES.WALK_PENDING",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Instruction fetch requests that miss the IT=
-LB and hit the STLB.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x11",
-> +        "EventName": "ITLB_MISSES.STLB_HIT",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x20",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Cycles when at least one PMH is busy with a=
- page walk for code (instruction fetch) request.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "CounterMask": "1",
-> +        "EventCode": "0x11",
-> +        "EventName": "ITLB_MISSES.WALK_ACTIVE",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Code miss in all TLB levels causes a page w=
-alk that completes. (All page sizes)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x11",
-> +        "EventName": "ITLB_MISSES.WALK_COMPLETED",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0xe",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Code miss in all TLB levels causes a page w=
-alk that completes. (2M/4M)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x11",
-> +        "EventName": "ITLB_MISSES.WALK_COMPLETED_2M_4M",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x4",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Code miss in all TLB levels causes a page w=
-alk that completes. (4K)",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x11",
-> +        "EventName": "ITLB_MISSES.WALK_COMPLETED_4K",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x2",
-> +        "Unit": "cpu_core"
-> +    },
-> +    {
-> +        "BriefDescription": "Number of page walks outstanding for an out=
-standing code request in the PMH each cycle.",
-> +        "CollectPEBSRecord": "2",
-> +        "Counter": "0,1,2,3",
-> +        "EventCode": "0x11",
-> +        "EventName": "ITLB_MISSES.WALK_PENDING",
-> +        "PEBScounters": "0,1,2,3",
-> +        "SampleAfterValue": "100003",
-> +        "UMask": "0x10",
-> +        "Unit": "cpu_core"
-> +    }
-> +]
-> \ No newline at end of file
-> diff --git a/tools/perf/pmu-events/arch/x86/mapfile.csv b/tools/perf/pmu-=
-events/arch/x86/mapfile.csv
-> index 0cf2d1fa6b76..963a76fec277 100644
-> --- a/tools/perf/pmu-events/arch/x86/mapfile.csv
-> +++ b/tools/perf/pmu-events/arch/x86/mapfile.csv
-> @@ -42,6 +42,8 @@ GenuineIntel-6-6A,v1,icelakex,core
->  GenuineIntel-6-6C,v1,icelakex,core
->  GenuineIntel-6-86,v1,tremontx,core
->  GenuineIntel-6-96,v1,elkhartlake,core
-> +GenuineIntel-6-97,v1,alderlake,core
-> +GenuineIntel-6-9A,v1,alderlake,core
->  AuthenticAMD-23-([12][0-9A-F]|[0-9A-F]),v2,amdzen1,core
->  AuthenticAMD-23-[[:xdigit:]]+,v1,amdzen2,core
->  AuthenticAMD-25-[[:xdigit:]]+,v1,amdzen3,core
-> --
-> 2.25.1
->
+> >
+> >           If unsure, say N.
+> >
+> > diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+> > index 7a23630c4a7f..66c07c04eb52 100644
+> > --- a/arch/arm64/kvm/arm.c
+> > +++ b/arch/arm64/kvm/arm.c
+> > @@ -49,7 +49,7 @@ DEFINE_STATIC_KEY_FALSE(kvm_protected_mode_initialized);
+> >
+> >  DECLARE_KVM_HYP_PER_CPU(unsigned long, kvm_hyp_vector);
+> >
+> > -static DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
+> > +DEFINE_PER_CPU(unsigned long, kvm_arm_hyp_stack_page);
+> >  unsigned long kvm_arm_hyp_percpu_base[NR_CPUS];
+> >  DECLARE_KVM_NVHE_PER_CPU(struct kvm_nvhe_init_params, kvm_init_params);
+> >
+> > diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
+> > index e3140abd2e2e..ff69dff33700 100644
+> > --- a/arch/arm64/kvm/handle_exit.c
+> > +++ b/arch/arm64/kvm/handle_exit.c
+> > @@ -17,6 +17,7 @@
+> >  #include <asm/kvm_emulate.h>
+> >  #include <asm/kvm_mmu.h>
+> >  #include <asm/debug-monitors.h>
+> > +#include <asm/stacktrace.h>
+> >  #include <asm/traps.h>
+> >
+> >  #include <kvm/arm_hypercalls.h>
+> > @@ -326,6 +327,8 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
+> >                 kvm_err("nVHE hyp panic at: %016llx!\n", elr_virt + hyp_offset);
+> >         }
+> >
+> > +       kvm_nvhe_dump_backtrace(hyp_offset);
+> > +
+> >         /*
+> >          * Hyp has panicked and we're going to handle that by panicking the
+> >          * kernel. The kernel offset will be revealed in the panic so we're
+> > diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
+> > index efc20273a352..b8ecffc47424 100644
+> > --- a/arch/arm64/kvm/hyp/nvhe/switch.c
+> > +++ b/arch/arm64/kvm/hyp/nvhe/switch.c
+> > @@ -37,6 +37,22 @@ DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
+> >  #ifdef CONFIG_NVHE_EL2_DEBUG
+> >  DEFINE_PER_CPU(unsigned long [PAGE_SIZE/sizeof(long)], hyp_overflow_stack)
+> >         __aligned(16);
+> > +DEFINE_PER_CPU(struct kvm_nvhe_panic_info, kvm_panic_info);
+> > +
+> > +static inline void cpu_prepare_nvhe_panic_info(void)
+> > +{
+> > +       struct kvm_nvhe_panic_info *panic_info = this_cpu_ptr(&kvm_panic_info);
+> > +       struct kvm_nvhe_init_params *params = this_cpu_ptr(&kvm_init_params);
+> > +
+> > +       panic_info->hyp_stack_base = (unsigned long)(params->stack_hyp_va - PAGE_SIZE);
+> > +       panic_info->hyp_overflow_stack_base = (unsigned long)this_cpu_ptr(hyp_overflow_stack);
+> > +       panic_info->fp = (unsigned long)__builtin_frame_address(0);
+> > +       panic_info->pc = _THIS_IP_;
+> > +}
+> > + #else
+> > +static inline void cpu_prepare_nvhe_panic_info(void)
+> > +{
+> > +}
+> >  #endif
+> >
+> >  static void __activate_traps(struct kvm_vcpu *vcpu)
+> > @@ -360,6 +376,8 @@ asmlinkage void __noreturn hyp_panic(void)
+> >         struct kvm_cpu_context *host_ctxt;
+> >         struct kvm_vcpu *vcpu;
+> >
+> > +       cpu_prepare_nvhe_panic_info();
+> > +
+> >         host_ctxt = &this_cpu_ptr(&kvm_host_data)->host_ctxt;
+> >         vcpu = host_ctxt->__hyp_running_vcpu;
+> >
+> > --
+> > 2.35.1.473.g83b2b277ed-goog
+> >
