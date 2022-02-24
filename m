@@ -2,185 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67DBDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDFA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229830AbiBXQSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:18:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
+        id S229969AbiBXQSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:18:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229876AbiBXQSJ (ORCPT
+        with ESMTP id S229597AbiBXQS3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:18:09 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07181B3A75;
-        Thu, 24 Feb 2022 08:17:35 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Thu, 24 Feb 2022 11:18:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 643BF1BA910;
+        Thu, 24 Feb 2022 08:17:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 3811B223F6;
-        Thu, 24 Feb 2022 17:10:39 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645719039;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H2eMkw48G2IEnPpAZYbRz1ozQ55FXZI5S0Cuz1HtPj4=;
-        b=GCZJy+ixU/kQqEaic+jy/Y9fxRXjENytHV1qZM6uYGHjx5itI9KLWTyEPccFDlM99paT6j
-        bCO2xHKvPz1Qk3mrUit4WXtxgmqOmba5ZW0ezShWKfuIvH3I0ZhG/Tuf2crXzHRsqcF4Qi
-        hMNLtcxHAHNH5PMqv+NiTxdQVW9mdHc=
-From:   Michael Walle <michael@walle.cc>
-To:     Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v1 5/5] pinctrl: microchip-sgpio: wait until output is actually set
-Date:   Thu, 24 Feb 2022 17:10:21 +0100
-Message-Id: <20220224161021.2197263-6-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220224161021.2197263-1-michael@walle.cc>
-References: <20220224161021.2197263-1-michael@walle.cc>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0597161729;
+        Thu, 24 Feb 2022 16:13:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14565C340E9;
+        Thu, 24 Feb 2022 16:13:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645719181;
+        bh=C9NaldNevEVwFrJUsg+tpN65Jix9N8OzdfrdpdIEhG4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nRne8iblWckia5T24Xj+KWasP3fcU9EO95OV9/Ojun5Lm9wNZG8rKXr6FMBCu9K2U
+         8hGoxuTyo7Bpjvd+Kv2tSQLWFUXxZ/v4mKpw9KjFVcfpgIiRu3XWVJaaHO55qSfTdm
+         IWWRh4qkM7ZKhFTSs5gIgBCrkPzq08/PPjX2EtrGum16vZRDcPDGr7FnydWe9Ywskm
+         2EDECycVczqMJOGo5pYnbcfODfzOl+L08CdbLYtGT7LfcIQQj7AsWYi3SSWu2KKGWe
+         t2gOpwvb6m9NCxzqwAHfTFl+pcXepU+52qW13sQyTpC4ytQontVRzgG9Qii0lXB8uB
+         mm2u6iVu6VbKg==
+Date:   Thu, 24 Feb 2022 08:12:59 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     =?UTF-8?B?5ZC05L+K5paH?= <wudaemon@163.com>
+Cc:     davem@davemloft.net, chenhao288@hisilicon.com, arnd@arndb.de,
+        shenyang39@huawei.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ksz884x: use time_before in netdev_open for
+ compatibility
+Message-ID: <20220224081259.729050a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1294b33.81f7.17f2c172621.Coremail.wudaemon@163.com>
+References: <20220220122101.5017-1-wudaemon@163.com>
+        <20220222113942.1747f2dc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <1294b33.81f7.17f2c172621.Coremail.wudaemon@163.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Right now, when a gpio value is set, the actual hardware pin gets set
-asynchronously. When linux write the output register, it takes some time
-until it is actually propagated to the output shift registers. If that
-output port is connected to an I2C mux for example, the linux driver
-assumes the I2C bus is already switched although it is not.
+On Thu, 24 Feb 2022 22:16:28 +0800 (CST) =E5=90=B4=E4=BF=8A=E6=96=87 wrote:
+> Hi ,Jakub .I have changed my patch as your advise as follows:
+> diff --git a/drivers/net/ethernet/micrel/ksz884x.c b/drivers/net/ethernet=
+/micrel/ksz884x.c index 7dc451f..443d7bc 100644 --- a/drivers/net/ethernet/=
+micrel/ksz884x.c +++ b/drivers/net/ethernet/micrel/ksz884x.c @@ -5301,7 +53=
+01,6 @@ static irqreturn_t netdev_intr(int irq, void *dev_id) * Linux netwo=
+rk device functions */ -static unsigned long next_jiffies; #ifdef CONFIG_NE=
+T_POLL_CONTROLLER static void netdev_netpoll(struct net_device *dev) @@ -54=
+92,7 +5491,7 @@ static int netdev_open(struct net_device *dev) int i; int p=
+; int rc =3D 0; - + unsigned long next_jiffies=3D0 priv->multicast =3D 0; p=
+riv->promiscuous =3D 0; @@ -5506,7 +5505,7 @@ static int netdev_open(struct=
+ net_device *dev) if (rc) return rc; for (i =3D 0; i < hw->mib_port_cnt; i+=
++) { - if (next_jiffies < jiffies) + if (time_before(next_jiffies, jiffies)=
+) next_jiffies =3D jiffies + HZ * 2; else next_jiffies +=3D HZ * 1; @@ -664=
+2,7 +6641,7 @@ static void mib_read_work(struct work_struct *work) struct k=
+sz_port_mib *mib; int i; - next_jiffies =3D jiffies; + unsigned long next_j=
+iffies =3D jiffies; for (i =3D 0; i < hw->mib_port_cnt; i++) { mib =3D &hw-=
+>port_mib[i];
+>=20
+> Do you have any other advise ?Thanks
 
-Fortunately, there is a single shot mode with a feedback: you can
-trigger the single shot and the hardware will clear that bit once it has
-finished the clocking and strobed the load signal of the shift
-registers. This can take a considerable amount of time though.
-Measuremens have shown that it takes up to a whole burst cycle gap which
-is about 50ms on the largest setting. Therefore, we have to mark the
-output bank as sleepable. To avoid unnecessary waiting, just trigger the
-single shot if the value was actually changed.
-
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/pinctrl/pinctrl-microchip-sgpio.c | 58 ++++++++++++++++++++++-
- 1 file changed, 57 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/pinctrl/pinctrl-microchip-sgpio.c b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-index 3f3b8c482f3a..768b69929c99 100644
---- a/drivers/pinctrl/pinctrl-microchip-sgpio.c
-+++ b/drivers/pinctrl/pinctrl-microchip-sgpio.c
-@@ -69,6 +69,7 @@ struct sgpio_properties {
- #define SGPIO_OCELOT_BIT_SOURCE  GENMASK(23, 12)
- 
- #define SGPIO_SPARX5_AUTO_REPEAT BIT(6)
-+#define SGPIO_SPARX5_SINGLE_SHOT BIT(7)
- #define SGPIO_SPARX5_PORT_WIDTH  GENMASK(4, 3)
- #define SGPIO_SPARX5_CLK_FREQ    GENMASK(19, 8)
- #define SGPIO_SPARX5_BIT_SOURCE  GENMASK(23, 12)
-@@ -118,6 +119,8 @@ struct sgpio_priv {
- 	struct regmap *regs;
- 	const struct sgpio_properties *properties;
- 	spinlock_t lock;
-+	/* protects the config register and single shot mode */
-+	struct mutex poll_lock;
- };
- 
- struct sgpio_port_addr {
-@@ -225,12 +228,54 @@ static inline void sgpio_configure_clock(struct sgpio_priv *priv, u32 clkfrq)
- 	sgpio_clrsetbits(priv, REG_SIO_CLOCK, 0, clr, set);
- }
- 
-+static int sgpio_single_shot(struct sgpio_priv *priv)
-+{
-+	u32 addr = sgpio_get_addr(priv, REG_SIO_CONFIG, 0);
-+	int ret, ret2;
-+	u32 ctrl;
-+
-+	/* Only supported on SparX-5 for now. */
-+	if (priv->properties->arch != SGPIO_ARCH_SPARX5)
-+		return 0;
-+
-+	/*
-+	 * Trigger immediate burst. This only works when auto repeat is turned
-+	 * off. Otherwise, the single shot bit will never be cleared by the
-+	 * hardware. Measurements showed that an update might take as long as
-+	 * the burst gap. On a LAN9668 this is about 50ms for the largest
-+	 * setting.
-+	 * After the manual burst, reenable the auto repeat mode again.
-+	 */
-+	mutex_lock(&priv->poll_lock);
-+	ret = regmap_update_bits(priv->regs, addr,
-+				 SGPIO_SPARX5_SINGLE_SHOT | SGPIO_SPARX5_AUTO_REPEAT,
-+				 SGPIO_SPARX5_SINGLE_SHOT);
-+	if (ret)
-+		goto out;
-+
-+	ret = regmap_read_poll_timeout(priv->regs, addr, ctrl,
-+				       !(ctrl & SGPIO_SPARX5_SINGLE_SHOT),
-+				       100, 60000);
-+
-+	/* reenable auto repeat mode even if there was an error */
-+	ret2 = regmap_update_bits(priv->regs, addr,
-+				  SGPIO_SPARX5_AUTO_REPEAT,
-+				  SGPIO_SPARX5_AUTO_REPEAT);
-+out:
-+	mutex_unlock(&priv->poll_lock);
-+
-+	return ret ?: ret2;
-+}
-+
- static int sgpio_output_set(struct sgpio_priv *priv,
- 			    struct sgpio_port_addr *addr,
- 			    int value)
- {
- 	unsigned int bit = SGPIO_SRC_BITS * addr->bit;
-+	u32 reg = sgpio_get_addr(priv, REG_PORT_CONFIG, addr->port);
-+	bool changed;
- 	u32 clr, set;
-+	int ret;
- 
- 	switch (priv->properties->arch) {
- 	case SGPIO_ARCH_LUTON:
-@@ -249,7 +294,16 @@ static int sgpio_output_set(struct sgpio_priv *priv,
- 		return -EINVAL;
- 	}
- 
--	sgpio_clrsetbits(priv, REG_PORT_CONFIG, addr->port, clr, set);
-+	ret = regmap_update_bits_check(priv->regs, reg, clr | set, set,
-+				       &changed);
-+	if (ret)
-+		return ret;
-+
-+	if (changed) {
-+		ret = sgpio_single_shot(priv);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	return 0;
- }
-@@ -788,6 +842,7 @@ static int microchip_sgpio_register_bank(struct device *dev,
- 	gc->of_gpio_n_cells     = 3;
- 	gc->base		= -1;
- 	gc->ngpio		= ngpios;
-+	gc->can_sleep		= !bank->is_input;
- 
- 	if (bank->is_input && priv->properties->flags & SGPIO_FLAGS_HAS_IRQ) {
- 		int irq = fwnode_irq_get(fwnode, 0);
-@@ -848,6 +903,7 @@ static int microchip_sgpio_probe(struct platform_device *pdev)
- 
- 	priv->dev = dev;
- 	spin_lock_init(&priv->lock);
-+	mutex_init(&priv->poll_lock);
- 
- 	reset = devm_reset_control_get_optional_shared(&pdev->dev, "switch");
- 	if (IS_ERR(reset))
--- 
-2.30.2
-
+Sorry your patch got scrambled into a single line and encoded with HTML.
+Feel free to post it with git as [PATCH v2] and we'll take it from
+there.
