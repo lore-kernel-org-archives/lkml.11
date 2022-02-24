@@ -2,129 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56031C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229909AbiBXQcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:32:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56398 "EHLO
+        id S229736AbiBXQcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:32:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229889AbiBXQcQ (ORCPT
+        with ESMTP id S229927AbiBXQc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:32:16 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD38E0A9
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:31:33 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id e13so2197340plh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:31:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dilger-ca.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:from:mime-version:subject:date:message-id
-         :references:cc:in-reply-to:to;
-        bh=9pdKVdGgOkMZj/rMe0H1g8Nx4C5EJ0FhYBuM26imb1w=;
-        b=RokpOp5tbzamDEc+IKS6EfAUSHKYkP5CI6pboSoD08qSmxmma+dcwV1tswSkN+4n2w
-         uOSZ/9U2QLvB8//W85pnEoGufJRlNlckAFEVFzEXD0MUhoGvM144zrB0qfcQ6lhOtn8u
-         OgttKsVEopodeiI+MVS4q6SHBHhaILRnO4DRzKDQyEHU9gxSqRDYMx+PR8xLduJPdr2c
-         juiIZjRSUk5GXMajZQ+nTASvGG8GB/VFkJwMpRuNVloqBfOULKs9NB51jSHzFnCp1JHU
-         tZLyF72L5f8td6h+6Vv6cdUNGHLGHh14H0KrORCtXNSvVaeyXo0PRahbivmXEYwp2KWA
-         sEew==
+        Thu, 24 Feb 2022 11:32:28 -0500
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E631680A6;
+        Thu, 24 Feb 2022 08:31:49 -0800 (PST)
+Received: by mail-ot1-f53.google.com with SMTP id l20-20020a0568302b1400b005af8c95bbe4so1654521otv.1;
+        Thu, 24 Feb 2022 08:31:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:content-transfer-encoding:from:mime-version
-         :subject:date:message-id:references:cc:in-reply-to:to;
-        bh=9pdKVdGgOkMZj/rMe0H1g8Nx4C5EJ0FhYBuM26imb1w=;
-        b=PaSZLuSyjSFKNmnDYTQpMSLVDaDn7MzenFueJvFMNdKuH6CB54fNCGACRm7bVYOhrJ
-         8z2Va5wKeJd77i/Z/xQhDDdRgG9bjVwnU+4aMj2mZggpDPNDMwkUA6nhtISgXb28Pyf1
-         u/SzpKghD59aH1IwqZvFn11qzBEJWOjRN8MCJNhL0OCZxwCLpeIN1pTw8/dTneQ/l2qS
-         qgSwTdc/3af8cAILTd9KtPLGznNuewJj+bp+1vQlRUohTB1gLRDH2zpu2M24MM5udTfz
-         93SWdXgCu0ZRLCpLQqAWz13NzXu5HzpAWwa17HNsh2eQlLVnNLCmsW0lCpg944KtqS+L
-         a/LA==
-X-Gm-Message-State: AOAM533fL2MB5Qq2AR/6QKRZpuWGWN38aapmMXL5gI3yWSYiFS+7BNid
-        slwkm4irfPmySf9ehnLZvYGX2Q==
-X-Google-Smtp-Source: ABdhPJwILxIiNBIe4uwvcJI4yA/KJvZUHTS4irgP1DwajEiSVZK6yJaUb60LC3vEkaTiOVWpKW+eog==
-X-Received: by 2002:a17:902:bb93:b0:14f:3c15:566f with SMTP id m19-20020a170902bb9300b0014f3c15566fmr3393981pls.6.1645720291048;
-        Thu, 24 Feb 2022 08:31:31 -0800 (PST)
-Received: from smtpclient.apple (S01061cabc081bf83.cg.shawcable.net. [70.77.221.9])
-        by smtp.gmail.com with ESMTPSA id lp1sm118634pjb.17.2022.02.24.08.31.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 08:31:30 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8WIXGASDgN1b64Ak50PdwgKePA+y4pl9eMfrSaeSs4A=;
+        b=wO5lH854DSFhCuEqjE9NRANFIa70g1/Kj/mppfDoG0C/rSwsbgEIFWwl1MoKob2mI6
+         A/dD1w1C7SoBTdmMDp66VddJpy78l2Y9uuhTDkw92DJLwfRW+921QBliClIT3gvE/R7k
+         lgtzimQC1ft66PEpnpY+BEXYFDdARnMyrc9o9hib4YAgA6AR2HmKAv+W+reWdQ5pyArU
+         HFLTuiwPHSkASIxP29P1S1UGgn4txSIon3R8zFrNDDTanxth5s2HxZ7X6rFYiDjVtupH
+         4NnuDrpog7YI65TeRrU3B5G2OomsT/nCAlZLxLPSmcLRJjWQXbWAoB8ga0aFjvbmUwXa
+         KaJQ==
+X-Gm-Message-State: AOAM532JYC7oddKZRau5Sf6I+WJnOlW2b1/LUETGsFiHQxbQZ6XhNKmT
+        sFhZxiazrgHuTEY0iK4yzeBBzyiF8g==
+X-Google-Smtp-Source: ABdhPJxjcU1+RvX1vLs/qTjze2Ii24dDNmDifnbDD/2Tj8uOIQIcg97gGLGU+CU5pC8S7/+eaCkM8g==
+X-Received: by 2002:a05:6830:192:b0:5af:898b:3f88 with SMTP id q18-20020a056830019200b005af898b3f88mr1244369ota.100.1645720278901;
+        Thu, 24 Feb 2022 08:31:18 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id z2sm1270536oot.3.2022.02.24.08.31.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 08:31:17 -0800 (PST)
+Received: (nullmailer pid 3199816 invoked by uid 1000);
+        Thu, 24 Feb 2022 16:31:17 -0000
+Date:   Thu, 24 Feb 2022 10:31:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, robh+dt@kernel.org, jic23@kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: Re: [PATCH v6 1/3] dt-bindings: iio: amplifiers: add ada4250 doc
+Message-ID: <Yhey1QmZa4RU0p50@robh.at.kernel.org>
+References: <20220223120112.8067-1-antoniu.miclaus@analog.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-From:   Andreas Dilger <adilger@dilger.ca>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH/RFC] VFS: support parallel updates in the one directory.
-Date:   Thu, 24 Feb 2022 09:31:28 -0700
-Message-Id: <893053D7-E5DD-43DB-941A-05C10FF5F396@dilger.ca>
-References: <164568221518.25116.18139840533197037520@noble.neil.brown.name>
-Cc:     "Darrick J. Wong" <djwong@kernel.org>,
-        Dave Chinner <david@fromorbit.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Daire Byrne <daire@dneg.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>
-In-Reply-To: <164568221518.25116.18139840533197037520@noble.neil.brown.name>
-To:     NeilBrown <neilb@suse.de>
-X-Mailer: iPhone Mail (19D52)
+Content-Disposition: inline
+In-Reply-To: <20220223120112.8067-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Feb 23, 2022, at 22:57, NeilBrown <neilb@suse.de> wrote:
->=20
->=20
-> I added this:
-> --- a/fs/xfs/xfs_icache.c
-> +++ b/fs/xfs/xfs_icache.c
-> @@ -87,6 +87,7 @@ xfs_inode_alloc(
->    /* VFS doesn't initialise i_mode or i_state! */
->    VFS_I(ip)->i_mode =3D 0;
->    VFS_I(ip)->i_state =3D 0;
-> +    VFS_I(ip)->i_flags |=3D S_PAR_UPDATE;
->    mapping_set_large_folios(VFS_I(ip)->i_mapping);
->=20
->    XFS_STATS_INC(mp, vn_active);
->=20
-> and ran my highly sophisticated test in an XFS directory:
->=20
-> for i in {1..70}; do ( for j in {1000..8000}; do touch $j; rm -f $j ; done=
- ) & done
->=20
-> This doesn't crash - which is a good sign.
-> While that was going I tried
-> while : ; do ls -l ; done
->=20
-> it sometimes reports garbage for the stat info:
->=20
-> total 0
-> -????????? ? ?    ?    ?            ? 1749
-> -????????? ? ?    ?    ?            ? 1764
-> -????????? ? ?    ?    ?            ? 1765
-> -rw-r--r-- 1 root root 0 Feb 24 16:47 1768
-> -rw-r--r-- 1 root root 0 Feb 24 16:47 1770
-> -rw-r--r-- 1 root root 0 Feb 24 16:47 1772
-> ....
->=20
-> I *think* that is bad - probably the "garbage" that you referred to?
->=20
-> Obviously I gets lots of=20
-> ls: cannot access '1764': No such file or directory
-> ls: cannot access '1749': No such file or directory
-> ls: cannot access '1780': No such file or directory
-> ls: cannot access '1765': No such file or directory
->=20
-> but that is normal and expected when you are creating and deleting
-> files during the ls.
+On Wed, 23 Feb 2022 14:01:10 +0200, Antoniu Miclaus wrote:
+> Add device tree bindings for the ADA4250 driver.
+> 
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+> changes in v6:
+>  - add space before `{` in the amplifier node example
+>  .../bindings/iio/amplifiers/adi,ada4250.yaml  | 50 +++++++++++++++++++
+>  1 file changed, 50 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
+> 
 
-The "ls -l" output with "???" is exactly the case where the filename is
-in readdir() but stat() on a file fails due to an unavoidable userspace=20
-race between the two syscalls and the concurrent unlink(). This is
-probably visible even without the concurrent dirops patch.=20
-
-The list of affected filenames even correlates with the reported errors:
-1764, 1765, 1769
-
-It looks like everything is working as expected.=20
-
-Cheers, Andreas
-
+Reviewed-by: Rob Herring <robh@kernel.org>
