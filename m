@@ -2,202 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D6FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232404AbiBXRzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:55:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
+        id S232414AbiBXR4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232397AbiBXRy7 (ORCPT
+        with ESMTP id S230512AbiBXR4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 12:54:59 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 853E5252937
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:54:28 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id d17so842525wrc.9
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:54:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GE+XGHonrH22zXrgiLwafrMHAo1pCMt8qc++bm61hZc=;
-        b=mZLz9SlFVQ84zMxIhFdLQMmVgKUhNsTq7TIRpy5lode3I8PkSY+1/w19uOMblnnZ6Z
-         4kZ9pOjtV/nAnm26mvr8v5z5LG7pNREFfElRV2jepUw1NHLVfHih/1BEty1AsHrgEyUI
-         wH0Gr9d/pOXtAIFXjebgufroKudUgLNif6D2BMDjj33guNjjYh+C58j11mRcVkC6KrhA
-         S+Pl3Qz8q4aw5v5ZGyfjRLH3zDgAjgDwhu944MLmr6gq5q0LTClONsHTHeXWb5AEq8HV
-         aWnhF74XNPIe1e6msCIsV+Ndp7HqCZV7nnGErVd2wx+gVEjzGkBd1MHS5ucJrC3jDVbO
-         AeYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GE+XGHonrH22zXrgiLwafrMHAo1pCMt8qc++bm61hZc=;
-        b=BKjF1NeDsGCVU5MX7AceUTF+OqADtPJDskytCGJo+cSzShVA5IK3/nvIcS65xUBuQc
-         90IM85cluTRRIRnVwFOq/6H5qqTqEmLsnSKc6L2cnLSp1OaZYVo7kerYR++Gq8KaJDxY
-         7KJRXMh3c+IhFcAZoMhcwtkeWTSulIe2+e8kbLC5to/V7AjOZtEvu9bMivzBVdlqoi/q
-         VjmBVRnqsqWKtQmaUJ8A3jrY6/E0ciPjHliL5Fs+82aHazE3jLyqm98A03FUKXwzPwCY
-         Zk5lhKKsgnOQOqw71Fyd8xWvU2sJAEyeerfb3CUonfBJQpjV7iYxh6G3SrtyFptn35Zh
-         IEFA==
-X-Gm-Message-State: AOAM531l9k7XDNBC86cr9ve425DpcXxRpUemD7aeOX+IhjsNihjLX41+
-        ewqXyqeopTjqxRdM55fFNSumq0e1iIljEk400CIy+w==
-X-Google-Smtp-Source: ABdhPJxHmUKpTMRNJ+ob8+yuIRIbACjTU5wiSB63z2iiN9d/8JNSMH+uWCSXvhJHtYIl9R7h2hcbj50TcC7mMZhOG/U=
-X-Received: by 2002:adf:ca08:0:b0:1ed:c0bc:c212 with SMTP id
- o8-20020adfca08000000b001edc0bcc212mr3148175wrh.577.1645725266912; Thu, 24
- Feb 2022 09:54:26 -0800 (PST)
+        Thu, 24 Feb 2022 12:56:01 -0500
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A07122EDD4;
+        Thu, 24 Feb 2022 09:55:31 -0800 (PST)
+Received: from [192.168.88.87] (unknown [36.78.50.60])
+        by gnuweeb.org (Postfix) with ESMTPSA id 33CE17E2A3;
+        Thu, 24 Feb 2022 17:55:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1645725330;
+        bh=+2Q6n+V6W/QUVCHbDod/DeNRGOAzOYkhGRDuNMN61q8=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=E2QaRcCoLpYGEIpIgbTK5si7acu0t2GqY9on2BVh4VkWEgEjsTTCGRbVhwkbgksU1
+         LMseucHYNleBmMC5GzJxgN0r6kfe3jg2uPG3a7U5XvTF/uZ7ti9mYPvv/NvcGuwE7I
+         a2zymkNXLWb/Hdv/SwP0fRSHZS+MQM9uC4Rv5bERUh+f7tHacBcPoc+kOHaOcUUZfH
+         F6MK9xxFPqghdUwgeJG8KNeuUySS7Sz73r3WOoVidWcjJoj/h8sB4MhtxRgRuy5y+F
+         59zoFSaW+cTPkvzSIBmr7KDD6hSEtU5KWX9kObm/6uEGZD6ePBnTM7XTzJvJq4az8k
+         EQ0b4g/PuejxQ==
+Message-ID: <0fe07c68-9a8b-a7fd-31e1-6026589b7101@gnuweeb.org>
+Date:   Fri, 25 Feb 2022 00:55:20 +0700
 MIME-Version: 1.0
-References: <20220224051439.640768-1-kaleshsingh@google.com>
- <20220224051439.640768-4-kaleshsingh@google.com> <CA+EHjTy6DJt8Pcfj4JnVhSG0sQ7O09zvOaMP--aRuAsM=8zKUw@mail.gmail.com>
-In-Reply-To: <CA+EHjTy6DJt8Pcfj4JnVhSG0sQ7O09zvOaMP--aRuAsM=8zKUw@mail.gmail.com>
-From:   Kalesh Singh <kaleshsingh@google.com>
-Date:   Thu, 24 Feb 2022 09:54:16 -0800
-Message-ID: <CAC_TJvcypLTxa=HaPvfNBgQpB1qG=d_sLnOLAn=gAznpD4_hqw@mail.gmail.com>
-Subject: Re: [PATCH v3 3/8] KVM: arm64: Add guard pages for KVM nVHE
- hypervisor stack
-To:     Fuad Tabba <tabba@google.com>
-Cc:     Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        "Cc: Android Kernel" <kernel-team@android.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "moderated list:ARM64 PORT (AARCH64 ARCHITECTURE)" 
-        <linux-arm-kernel@lists.infradead.org>,
-        kvmarm@lists.cs.columbia.edu, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Daniel Baluta <daniel.baluta@nxp.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Keyon Jie <yang.jie@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.com>, stable@vger.kernel.org,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+References: <20220224145124.15985-1-ammarfaizi2@gnuweeb.org>
+ <cfe9e583-e20a-f1d6-2a81-2538ca3ca054@linux.intel.com>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: Re: [PATCH] ASoC: SOF: Intel: Fix NULL ptr dereference when ENOMEM
+Autocrypt: addr=ammarfaizi2@gnuweeb.org; keydata=
+ xsBNBGECqsMBCADy9cU6jMSaJECZXmbOE1Sox1zeJXEy51BRQNOEKbsR0dnRNUCl2tUR1rxd
+ M+8V9TQUInBxERJcOdbUKibS8PQRy1g8LKJO/yrrMN8SFqnxYyX8M3WDz1PWuJ7DZE4gECtj
+ RPuYN978y9w7Hi6micjraQeXbNp1S7MxEk5AxtlokO6u6Mrdm1WRNDytagkY61PP+5lJwiQS
+ XOqiSLyT/ydEbG/hdBiOTOEN4J8MxE+p2xwhHjSTvU4ehq1b6b6N62pIA0r6NMRtdqp0c+Qv
+ 3SVkTV8TVHcck60ZKaNtKQTsCObqUHKRurU1qmF6i2Zs+nfL/e+EtT0NVOVEipRZrkGXABEB
+ AAHNJUFtbWFyIEZhaXppIDxhbW1hcmZhaXppMkBnbnV3ZWViLm9yZz7CwJQEEwEKAD4WIQTo
+ k3JtyOTA3juiAQc2T7o0/xcKSwUCYQKqwwIbAwUJBaOagAULCQgHAgYVCgkICwIEFgIDAQIe
+ AQIXgAAKCRA2T7o0/xcKS0CHCAC2x/Vq6OodDFs0rCon2VBZFvnIyXIaOsJWNnIrlkNKVHWL
+ QC+ALmiSwFN1822v8JP+8Fyf+HHIKVTsAPkovCnrIbliM8ZA+YTUmcLMPL+Aa05+XyZjR14l
+ 6Oyu9BhN7MW/XKXQnw96OE8AHpbX+Pgd4A7RtA2FGlaoBzrGlEe1B8nDBcS9ldJ0J95VKX6j
+ LCJeU51msq1Q+ZyZstJ7SFsY9XKcMW7cS/aHzsayBRKtansSTkyJWCTinHn17rzkSRVcmdNY
+ uga3YOBOfRIEq9LzrewE9gV40VNctY+sciMc/Z8uK5TfGIlYDTtuLmlvmw+EWjEKzwS6O0uQ
+ K9YtIvl7zsBNBGECqsMBCADrprHwlhdUQBY1kzzeCozyx1AWGpyFNiFGjsRC3+UK4dhO9h6u
+ Gz3OY5o0G7AV6nOniZCQofgm78NL5wdvIjL/ko5l7LNFQkU4SBjcGjn+Wc4UAWd2EpFPo/Dc
+ 3kTFzSlowp2+/kETA+FK7UDdwJTH/n05XwvGTZ9/pmVwP0e6iDnyJ5yIwbv28wTdIm4L3/uB
+ xMp1UeHwztLk4Dcw+FX5ye/JfK3dbx0Gx8cfhAeFlVEz9z6LvtAn94BNYVd4CxE9Vh2BFFzq
+ 07bDQGhAN0Rim1K8uEahuKyyg2MuoDI8lvzONLbaiEw9/OgT1z+h4qyzjulXAHzxqkcjz4Of
+ SqzfABEBAAHCwHwEGAEKACYWIQTok3JtyOTA3juiAQc2T7o0/xcKSwUCYQKqwwIbDAUJBaOa
+ gAAKCRA2T7o0/xcKS2+RB/43pagncTq0/ywbQhjHrXtOuYDPcrbKusD1jiURWXEMgM48nV/H
+ dQYTHd8mabMT0xa4NOUlDA2If2t9HvzLoNDPefP4+z41DJL6ZZNCQhLUJBh5/zhSedRF6JHW
+ PiO/nWkfdUUhBTabadgUYI80djY63rG3LKmjuh3/AZ4Vb9qBVpJX0tjZSbXa47yzL7tiQ539
+ u7eqoTXOy4oc5XC2koICy4DMNAEVaL2uEfY9MPHJKcsmrcwtu4w1gg8JehM/bwtphPG5J+H7
+ mFZqTLyTMNfOmAKErQlwCfFzyh0uFggluVBlOLImyrKOh6+0bUZGZ0CaTE10OMTS6HgE1W10 EZJc
+In-Reply-To: <cfe9e583-e20a-f1d6-2a81-2538ca3ca054@linux.intel.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------CuQm3gWr4NdjenubnF94I8n1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 4:26 AM Fuad Tabba <tabba@google.com> wrote:
->
-> Hi Kalesh,
->
->
->
-> On Thu, Feb 24, 2022 at 5:18 AM Kalesh Singh <kaleshsingh@google.com> wrote:
-> >
-> > Maps the stack pages in the flexible private VA range and allocates
-> > guard pages below the stack as unbacked VA space. The stack is aligned
-> > to twice its size to aid overflow detection (implemented in a subsequent
-> > patch in the series).
-> >
-> > Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
-> > ---
-> >
-> > Changes in v3:
-> >   - Handle null ptr in IS_ERR_OR_NULL checks, per Mark
-> >
-> >  arch/arm64/include/asm/kvm_asm.h |  1 +
-> >  arch/arm64/kvm/arm.c             | 32 +++++++++++++++++++++++++++++---
-> >  2 files changed, 30 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_asm.h
-> > index d5b0386ef765..2e277f2ed671 100644
-> > --- a/arch/arm64/include/asm/kvm_asm.h
-> > +++ b/arch/arm64/include/asm/kvm_asm.h
-> > @@ -169,6 +169,7 @@ struct kvm_nvhe_init_params {
-> >         unsigned long tcr_el2;
-> >         unsigned long tpidr_el2;
-> >         unsigned long stack_hyp_va;
-> > +       unsigned long stack_pa;
-> >         phys_addr_t pgd_pa;
-> >         unsigned long hcr_el2;
-> >         unsigned long vttbr;
-> > diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-> > index ecc5958e27fe..7a23630c4a7f 100644
-> > --- a/arch/arm64/kvm/arm.c
-> > +++ b/arch/arm64/kvm/arm.c
-> > @@ -1541,7 +1541,6 @@ static void cpu_prepare_hyp_mode(int cpu)
-> >         tcr |= (idmap_t0sz & GENMASK(TCR_TxSZ_WIDTH - 1, 0)) << TCR_T0SZ_OFFSET;
-> >         params->tcr_el2 = tcr;
-> >
-> > -       params->stack_hyp_va = kern_hyp_va(per_cpu(kvm_arm_hyp_stack_page, cpu) + PAGE_SIZE);
-> >         params->pgd_pa = kvm_mmu_get_httbr();
-> >         if (is_protected_kvm_enabled())
-> >                 params->hcr_el2 = HCR_HOST_NVHE_PROTECTED_FLAGS;
-> > @@ -1990,14 +1989,41 @@ static int init_hyp_mode(void)
-> >          * Map the Hyp stack pages
-> >          */
-> >         for_each_possible_cpu(cpu) {
-> > +               struct kvm_nvhe_init_params *params = per_cpu_ptr_nvhe_sym(kvm_init_params, cpu);
-> >                 char *stack_page = (char *)per_cpu(kvm_arm_hyp_stack_page, cpu);
-> > -               err = create_hyp_mappings(stack_page, stack_page + PAGE_SIZE,
-> > -                                         PAGE_HYP);
-> > +               unsigned long stack_hyp_va, guard_hyp_va;
-> >
-> > +               /*
-> > +                * Private mappings are allocated downwards from io_map_base
-> > +                * so allocate the stack first then the guard page.
-> > +                *
-> > +                * The stack is aligned to twice its size to facilitate overflow
-> > +                * detection.
-> > +                */
-> > +               err = __create_hyp_private_mapping(__pa(stack_page), PAGE_SIZE,
-> > +                                               PAGE_SIZE * 2, &stack_hyp_va, PAGE_HYP);
-> >                 if (err) {
-> >                         kvm_err("Cannot map hyp stack\n");
-> >                         goto out_err;
-> >                 }
-> > +
-> > +               /* Allocate unbacked private VA range for stack guard page */
-> > +               guard_hyp_va = hyp_alloc_private_va_range(PAGE_SIZE, PAGE_SIZE);
-> > +               if (IS_ERR_OR_NULL((void *)guard_hyp_va)) {
-> > +                       err = guard_hyp_va ? PTR_ERR((void *)guard_hyp_va) : -ENOMEM;
->
-> I am a bit confused by this check. hyp_alloc_private_va_range() always
-> returns ERR_PTR(-ENOMEM) if there's an error. Mark's comment (if I
-> understood it correctly) was about how you were handling it *in*
-> hyp_alloc_private_va_range(), rather than calls *to*
-> hyp_alloc_private_va_range().
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------CuQm3gWr4NdjenubnF94I8n1
+Content-Type: multipart/mixed; boundary="------------2pyGFgLJ0aG21VdybWcUAplV";
+ protected-headers="v1"
+From: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To: =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+ Mark Brown <broonie@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@nxp.com>, Jaroslav Kysela <perex@perex.cz>,
+ Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+ Keyon Jie <yang.jie@linux.intel.com>, Liam Girdwood <lgirdwood@gmail.com>,
+ Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+ Rander Wang <rander.wang@intel.com>,
+ Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+ Takashi Iwai <tiwai@suse.com>, stable@vger.kernel.org,
+ sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+ linux-kernel@vger.kernel.org
+Message-ID: <0fe07c68-9a8b-a7fd-31e1-6026589b7101@gnuweeb.org>
+Subject: Re: [PATCH] ASoC: SOF: Intel: Fix NULL ptr dereference when ENOMEM
+References: <20220224145124.15985-1-ammarfaizi2@gnuweeb.org>
+ <cfe9e583-e20a-f1d6-2a81-2538ca3ca054@linux.intel.com>
+In-Reply-To: <cfe9e583-e20a-f1d6-2a81-2538ca3ca054@linux.intel.com>
 
-Mark's comments were for the callers. I think the address can still be
-null without returning -ENOMEM (judging from what the check was before
-hyp_alloc_private_va_range). You make a good point - I think we can
-handle any potential null in *_alloc_private_va_range() and drop the
-use of PTR_ERR with IS_ERR_OR_NULL (which seems not a good idea in
-general).
+--------------2pyGFgLJ0aG21VdybWcUAplV
+Content-Type: multipart/mixed; boundary="------------RdGviOtezZjzD9VmFBpYPWIl"
 
->
-> > +                       kvm_err("Cannot allocate hyp stack guard page\n");
-> > +                       goto out_err;
-> > +               }
-> > +
-> > +               /*
-> > +                * Save the stack PA in nvhe_init_params. This will be needed to recreate
-> > +                * the stack mapping in protected nVHE mode. __hyp_pa() won't do the right
-> > +                * thing there, since the stack has been mapped in the flexible private
-> > +                * VA space.
-> > +                */
->
-> Nit: These comments go over 80 columns, unlike other comments that
-> you've added in this file.
+--------------RdGviOtezZjzD9VmFBpYPWIl
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Ack. I'll update in the next version.
+T24gMi8yNC8yMiAxMTo1MyBQTSwgUMOpdGVyIFVqZmFsdXNpIHdyb3RlOg0KPiBPbiAyNC8w
+Mi8yMDIyIDE2OjUxLCBBbW1hciBGYWl6aSB3cm90ZToNCj4+IEZyb206IEFtbWFyIEZhaXpp
+IDxhbW1hcmZhaXppMkBnbnV3ZWViLm9yZz4NCj4+DQo+PiBEbyBub3QgY2FsbCBzbmRfZG1h
+X2ZyZWVfcGFnZXMoKSB3aGVuIHNuZF9kbWFfYWxsb2NfcGFnZXMoKSByZXR1cm5zDQo+PiAt
+RU5PTUVNIGJlY2F1c2UgaXQgbGVhZHMgdG8gYSBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2Ug
+YnVnLg0KPiANCj4gUmV2aWV3ZWQtYnk6IFBldGVyIFVqZmFsdXNpIDxwZXRlci51amZhbHVz
+aUBsaW51eC5pbnRlbC5jb20+DQoNClRoYW5rcyBmb3IgdGhlIHJldmlldywgSSB3aWxsIGFw
+cGVuZCB0aGlzIHRhZyBpbiB0aGUgdjIuDQoNCj4+IFRoZSBkbWVzZyBzYXlzOg0KPj4NCj4+
+ICAgIDw2PlsxMDk0ODIuNDk3ODM1XVtUMTM4NTM3XSB1c2IgMS0yOiBNYW51ZmFjdHVyZXI6
+IFNJR01BQ0hJUA0KPj4gICAgPDY+WzEwOTQ4Mi41MDI1MDZdW1QxMzg1MzddIGlucHV0OiBT
+SUdNQUNISVAgVVNCIEtleWJvYXJkIGFzIC9kZXZpY2VzL3BjaTAwMDA6MDAvMDAwMDowMDox
+NC4wL3VzYjEvMS0yLzEtMjoxLjAvMDAwMzoxQzRGOjAwMDIuMDAwRC9pbnB1dC9pbnB1dDM0
+DQo+PiAgICA8Nj5bMTA5NDgyLjU1ODk3Nl1bVDEzODUzN10gaGlkLWdlbmVyaWMgMDAwMzox
+QzRGOjAwMDIuMDAwRDogaW5wdXQsaGlkcmF3MTogVVNCIEhJRCB2MS4xMCBLZXlib2FyZCBb
+U0lHTUFDSElQIFVTQiBLZXlib2FyZF0gb24gdXNiLTAwMDA6MDA6MTQuMC0yL2lucHV0MA0K
+Pj4gICAgPDY+WzEwOTQ4Mi41NjE2NTNdW1QxMzg1MzddIGlucHV0OiBTSUdNQUNISVAgVVNC
+IEtleWJvYXJkIENvbnN1bWVyIENvbnRyb2wgYXMgL2RldmljZXMvcGNpMDAwMDowMC8wMDAw
+OjAwOjE0LjAvdXNiMS8xLTIvMS0yOjEuMS8wMDAzOjFDNEY6MDAwMi4wMDBFL2lucHV0L2lu
+cHV0MzUNCj4+ICAgIDw2PlsxMDk0ODIuNjE1NDkwXVtUMTM4NTM3XSBpbnB1dDogU0lHTUFD
+SElQIFVTQiBLZXlib2FyZCBTeXN0ZW0gQ29udHJvbCBhcyAvZGV2aWNlcy9wY2kwMDAwOjAw
+LzAwMDA6MDA6MTQuMC91c2IxLzEtMi8xLTI6MS4xLzAwMDM6MUM0RjowMDAyLjAwMEUvaW5w
+dXQvaW5wdXQzNg0KPj4gICAgPDY+WzEwOTQ4Mi42MTU2NDNdW1QxMzg1MzddIGhpZC1nZW5l
+cmljIDAwMDM6MUM0RjowMDAyLjAwMEU6IGlucHV0LGhpZHJhdzI6IFVTQiBISUQgdjEuMTAg
+RGV2aWNlIFtTSUdNQUNISVAgVVNCIEtleWJvYXJkXSBvbiB1c2ItMDAwMDowMDoxNC4wLTIv
+aW5wdXQxDQo+PiAgICA8ND5bMTEwMTAyLjMzNTQ2MF1bVDE0MDk4NV0gcnR3Xzg4MjJjZSAw
+MDAwOjAxOjAwLjA6IHRpbWVkIG91dCB0byBmbHVzaCBxdWV1ZSAxDQo+PiAgICA8Mz5bMTE4
+NTc1LjczMDkyOF1bIFQxMzg3XSBzb2YtYXVkaW8tcGNpLWludGVsLXRnbCAwMDAwOjAwOjFm
+LjM6IGVycm9yOiBtZW1vcnkgYWxsb2MgZmFpbGVkOiAtMTINCj4gDQo+IFdvdywgSSB3b25k
+ZXIgd2hhdCBpcyBnb2luZyBvbiB0aGF0IGFsbG9jYXRpb24gZmFpbHMuLi4NCg0KQ2FuJ3Qg
+cmVhbGx5IHRlbGwgdGhlIHJlYXNvbiBiZWhpbmQgdGhlIC1FTk9NRU0uDQoNCkl0J3MgaGFy
+ZCB0byByZXByb2R1Y2UsIHJhbmRvbWx5IGhhcHBlbnMuIEkgaGF2ZSBoaXQgdGhpcyBidWcN
+CmF0IGxlYXN0IDQgdGltZXMgb24gbXkgbGFwdG9wIHdpdGggMTYgR0Igb2YgUkFNLiBBbGwg
+aGFwcGVuZWQNCnJhbmRvbWx5Lg0KDQpJIHRyaWVkIHRvIHRvcnR1cmUgdGhlIG1lbW9yeSB3
+aXRoIG1tYXAoKSArIG1sb2NrKCkgKyBtZW1zZXQoKQ0KKyBzbGVlcCgpLCB0aGVuIHBsYXlp
+bmcgc29tZSBhdWRpbyB3aGlsZSBhbG1vc3QgcnVubmluZyBvdXQgb2YNCm1lbW9yeSwgYnV0
+IHN0aWxsIGNhbid0IHJlcHJvZHVjZSB0aGUgc2FtZSAtRU5PTUVNLg0KDQotLSANCkFtbWFy
+IEZhaXppDQo=
+--------------RdGviOtezZjzD9VmFBpYPWIl
+Content-Type: application/pgp-keys; name="OpenPGP_0x364FBA34FF170A4B.asc"
+Content-Disposition: attachment; filename="OpenPGP_0x364FBA34FF170A4B.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
-Kalesh
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
->
-> Thanks,
-> /fuad
->
-> > +               params->stack_pa = __pa(stack_page) + PAGE_SIZE;
-> > +
-> > +               params->stack_hyp_va = stack_hyp_va + PAGE_SIZE;
-> >         }
-> >
-> >         for_each_possible_cpu(cpu) {
-> > --
-> > 2.35.1.473.g83b2b277ed-goog
-> >
+xsBNBGECqsMBCADy9cU6jMSaJECZXmbOE1Sox1zeJXEy51BRQNOEKbsR0dnRNUCl
+2tUR1rxdM+8V9TQUInBxERJcOdbUKibS8PQRy1g8LKJO/yrrMN8SFqnxYyX8M3WD
+z1PWuJ7DZE4gECtjRPuYN978y9w7Hi6micjraQeXbNp1S7MxEk5AxtlokO6u6Mrd
+m1WRNDytagkY61PP+5lJwiQSXOqiSLyT/ydEbG/hdBiOTOEN4J8MxE+p2xwhHjST
+vU4ehq1b6b6N62pIA0r6NMRtdqp0c+Qv3SVkTV8TVHcck60ZKaNtKQTsCObqUHKR
+urU1qmF6i2Zs+nfL/e+EtT0NVOVEipRZrkGXABEBAAHNJUFtbWFyIEZhaXppIDxh
+bW1hcmZhaXppMkBnbnV3ZWViLm9yZz7CwJQEEwEKAD4WIQTok3JtyOTA3juiAQc2
+T7o0/xcKSwUCYQKqwwIbAwUJBaOagAULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAK
+CRA2T7o0/xcKS0CHCAC2x/Vq6OodDFs0rCon2VBZFvnIyXIaOsJWNnIrlkNKVHWL
+QC+ALmiSwFN1822v8JP+8Fyf+HHIKVTsAPkovCnrIbliM8ZA+YTUmcLMPL+Aa05+
+XyZjR14l6Oyu9BhN7MW/XKXQnw96OE8AHpbX+Pgd4A7RtA2FGlaoBzrGlEe1B8nD
+BcS9ldJ0J95VKX6jLCJeU51msq1Q+ZyZstJ7SFsY9XKcMW7cS/aHzsayBRKtansS
+TkyJWCTinHn17rzkSRVcmdNYuga3YOBOfRIEq9LzrewE9gV40VNctY+sciMc/Z8u
+K5TfGIlYDTtuLmlvmw+EWjEKzwS6O0uQK9YtIvl7zsBNBGECqsMBCADrprHwlhdU
+QBY1kzzeCozyx1AWGpyFNiFGjsRC3+UK4dhO9h6uGz3OY5o0G7AV6nOniZCQofgm
+78NL5wdvIjL/ko5l7LNFQkU4SBjcGjn+Wc4UAWd2EpFPo/Dc3kTFzSlowp2+/kET
+A+FK7UDdwJTH/n05XwvGTZ9/pmVwP0e6iDnyJ5yIwbv28wTdIm4L3/uBxMp1UeHw
+ztLk4Dcw+FX5ye/JfK3dbx0Gx8cfhAeFlVEz9z6LvtAn94BNYVd4CxE9Vh2BFFzq
+07bDQGhAN0Rim1K8uEahuKyyg2MuoDI8lvzONLbaiEw9/OgT1z+h4qyzjulXAHzx
+qkcjz4OfSqzfABEBAAHCwHwEGAEKACYWIQTok3JtyOTA3juiAQc2T7o0/xcKSwUC
+YQKqwwIbDAUJBaOagAAKCRA2T7o0/xcKS2+RB/43pagncTq0/ywbQhjHrXtOuYDP
+crbKusD1jiURWXEMgM48nV/HdQYTHd8mabMT0xa4NOUlDA2If2t9HvzLoNDPefP4
++z41DJL6ZZNCQhLUJBh5/zhSedRF6JHWPiO/nWkfdUUhBTabadgUYI80djY63rG3
+LKmjuh3/AZ4Vb9qBVpJX0tjZSbXa47yzL7tiQ539u7eqoTXOy4oc5XC2koICy4DM
+NAEVaL2uEfY9MPHJKcsmrcwtu4w1gg8JehM/bwtphPG5J+H7mFZqTLyTMNfOmAKE
+rQlwCfFzyh0uFggluVBlOLImyrKOh6+0bUZGZ0CaTE10OMTS6HgE1W10EZJc
+=3D33gS
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------RdGviOtezZjzD9VmFBpYPWIl--
+
+--------------2pyGFgLJ0aG21VdybWcUAplV--
+
+--------------CuQm3gWr4NdjenubnF94I8n1
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsB5BAABCAAjFiEE6JNybcjkwN47ogEHNk+6NP8XCksFAmIXxogFAwAAAAAACgkQNk+6NP8XCktD
+yAf/T4uljUSGIWMgE+oacZNuKGJquNE//ZbRd0cH3gIzQP8mOMKDtWhssMv/+zXH6dXaQM2lznLc
+yP7Fx9OhyTOxgYGMgdduGNM3qvpOhM+mNmiZpjfrmN/0hesAiFx5BIkeUz/HLPuTDvwJBK8IJjR+
+cT8RNgzjx1zYNy9sLOTZVzng171QvxqsuyGp151Zj6sBamfXqvpbBLp6HzMLb8m3b8i23hXZUMK0
+FQoU5cE3spGhxuMQIOVhwq5HkDNcsZOiN21D0hOjd4TJJ03vjSQIlzRhaGw8Ux4J0r7EU2Nh3bOi
+FVxYblnYmZmYznZfb6q7l7eGm9R7nMGwUdkCpkQIHw==
+=JfAe
+-----END PGP SIGNATURE-----
+
+--------------CuQm3gWr4NdjenubnF94I8n1--
