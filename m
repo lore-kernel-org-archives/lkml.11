@@ -2,130 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 588DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:16:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A43C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:16:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230034AbiBXCQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:16:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40228 "EHLO
+        id S230046AbiBXCRF convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:17:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230022AbiBXCQp (ORCPT
+        with ESMTP id S229985AbiBXCRC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:16:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA6C71F76A5
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:16:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645668974;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ouhKFZWq4guS9Nb84H+5Q9CfdYqhj416J6D5cP6zMB8=;
-        b=X8myRfDSKSVYi1v8pm+xxEfpMh80XnHvKpZvafz+83eJ76rR2M1LKdRnlCunZifSj+KR1y
-        W/luilrCAk1uWirow2qiCAM/RjGZgLgDrjw0XPpn0A51KmHa56f/7xF9NqqYgxwshPGJrf
-        Ol1Q48E3twW123Jo0rsYDsPCkoyFZNg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-414-CPKAjdE4Pn2PnWSTSlnIsg-1; Wed, 23 Feb 2022 21:16:11 -0500
-X-MC-Unique: CPKAjdE4Pn2PnWSTSlnIsg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 89AD91091DA0;
-        Thu, 24 Feb 2022 02:16:09 +0000 (UTC)
-Received: from T590 (ovpn-8-16.pek2.redhat.com [10.72.8.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0F18E5DB80;
-        Thu, 24 Feb 2022 02:15:59 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 10:15:54 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     "yukuai (C)" <yukuai3@huawei.com>
-Cc:     axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
-Subject: Re: [PATCH RFC] blk-mq: fix potential uaf for 'queue_hw_ctx'
-Message-ID: <YhbqWqtwNueSffuR@T590>
-References: <20220223112601.2902761-1-yukuai3@huawei.com>
- <YhZFITXtiL8Xaord@T590>
- <df32802a-7dfb-3e80-359a-206c2be6ebe5@huawei.com>
+        Wed, 23 Feb 2022 21:17:02 -0500
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6B02BB0A;
+        Wed, 23 Feb 2022 18:16:33 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:33614)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nN2rs-00GJkb-1D; Wed, 23 Feb 2022 18:24:28 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:53352 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nN2rq-0044iM-PT; Wed, 23 Feb 2022 18:24:27 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Linus Torvalds <linus@torvalds.org>
+Cc:     Linux API <linux-api@vger.kernel.org>,
+        Etienne Dechamps <etienne@edechamps.fr>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Containers <containers@lists.linux-foundation.org>,
+        Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
+        Security Officers <security@kernel.org>,
+        Neil Brown <neilb@cse.unsw.edu.au>, NeilBrown <neilb@suse.de>,
+        "Serge E. Hallyn" <serge@hallyn.com>, Jann Horn <jannh@google.com>,
+        Andy Lutomirski <luto@kernel.org>, Willy Tarreau <w@1wt.eu>
+References: <20220207121800.5079-1-mkoutny@suse.com>
+        <e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr>
+        <20220215101150.GD21589@blackbody.suse.cz>
+        <87zgmi5rhm.fsf@email.froward.int.ebiederm.org>
+        <87fso91n0v.fsf_-_@email.froward.int.ebiederm.org>
+        <CAHk-=wjX3VK8QRMDUWwigCTKdHJt0ESXh0Hy5HNaXf7YkEdCAA@mail.gmail.com>
+Date:   Wed, 23 Feb 2022 19:24:19 -0600
+In-Reply-To: <CAHk-=wjX3VK8QRMDUWwigCTKdHJt0ESXh0Hy5HNaXf7YkEdCAA@mail.gmail.com>
+        (Linus Torvalds's message of "Wed, 23 Feb 2022 11:50:38 -0800")
+Message-ID: <878ru1qcos.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <df32802a-7dfb-3e80-359a-206c2be6ebe5@huawei.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8BIT
+X-XM-SPF: eid=1nN2rq-0044iM-PT;;;mid=<878ru1qcos.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/U781PhiDNIl7q7MwB3lIxUeSfdkrvwaY=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: How should rlimits, suid exec, and capabilities interact?
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 09:29:09AM +0800, yukuai (C) wrote:
-> 在 2022/02/23 22:30, Ming Lei 写道:
-> > On Wed, Feb 23, 2022 at 07:26:01PM +0800, Yu Kuai wrote:
-> > > blk_mq_realloc_hw_ctxs() will free the 'queue_hw_ctx'(e.g. undate
-> > > submit_queues through configfs for null_blk), while it might still be
-> > > used from other context(e.g. switch elevator to none):
-> > > 
-> > > t1					t2
-> > > elevator_switch
-> > >   blk_mq_unquiesce_queue
-> > >    blk_mq_run_hw_queues
-> > >     queue_for_each_hw_ctx
-> > >      // assembly code for hctx = (q)->queue_hw_ctx[i]
-> > >      mov    0x48(%rbp),%rdx -> read old queue_hw_ctx
-> > > 
-> > > 					__blk_mq_update_nr_hw_queues
-> > > 					 blk_mq_realloc_hw_ctxs
-> > > 					  hctxs = q->queue_hw_ctx
-> > > 					  q->queue_hw_ctx = new_hctxs
-> > > 					  kfree(hctxs)
-> > >      movslq %ebx,%rax
-> > >      mov    (%rdx,%rax,8),%rdi ->uaf
-> > > 
-> > 
-> > Not only uaf on queue_hw_ctx, but also other similar issue on other
-> > structures, and I think the correct and easy fix is to quiesce request
-> > queue during updating nr_hw_queues, something like the following patch:
-> > 
-> > diff --git a/block/blk-mq.c b/block/blk-mq.c
-> > index a05ce7725031..d8e7c3cce0dd 100644
-> > --- a/block/blk-mq.c
-> > +++ b/block/blk-mq.c
-> > @@ -4467,8 +4467,10 @@ static void __blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set,
-> >   	if (set->nr_maps == 1 && nr_hw_queues == set->nr_hw_queues)
-> >   		return;
-> > -	list_for_each_entry(q, &set->tag_list, tag_set_list)
-> > +	list_for_each_entry(q, &set->tag_list, tag_set_list) {
-> >   		blk_mq_freeze_queue(q);
-> > +		blk_mq_quiesce_queue(q);
-> > +	}
-> >   	/*
-> >   	 * Switch IO scheduler to 'none', cleaning up the data associated
-> >   	 * with the previous scheduler. We will switch back once we are done
-> > @@ -4518,8 +4520,10 @@ static void __blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set,
-> >   	list_for_each_entry(q, &set->tag_list, tag_set_list)
-> >   		blk_mq_elv_switch_back(&head, q);
-> > -	list_for_each_entry(q, &set->tag_list, tag_set_list)
-> > +	list_for_each_entry(q, &set->tag_list, tag_set_list) {
-> > +		blk_mq_unquiesce_queue(q);
-> >   		blk_mq_unfreeze_queue(q);
-> > +	}
-> >   }
-> >   void blk_mq_update_nr_hw_queues(struct blk_mq_tag_set *set, int nr_hw_queues)
-> Hi, Ming
+
+Linus Torvalds <linus@torvalds.org> writes:
+
+> Basic rule: it's better to be too lenient than to be too strict.
+
+Thank you.  With that guideline I can explore the space of what is
+possible.
+
+Question: Running a suid program today charges the activity of that
+program to the user who ran that program, not to the user the program
+runs as.  Does anyone see a problem with charging the user the program
+runs as?
+
+The reason I want to change who is charged with a process (besides it
+making more sense in my head) is so that capable(CAP_SYS_RESOURCE) can
+be used instead of the magic incantation (cred->user == INIT_USER).
+
+An accidental experiment happened in v5.14-rc1 in July when the ucount
+rlimit code was merged.  It was only this last week when after Michal
+Koutný discovered the discrepency through code inspect a bug fix was
+merged.
+
+This changes the behavior that has existed in some form since Linux v1.0
+when per user process limits were added.
+
+The original code in v1.0 looked like:
+> static int find_empty_process(void)
+> {
+>        int free_task;
+>        int i, tasks_free;
+>        int this_user_tasks;
 > 
-> If blk_mq_quiesce_queue() is called from __blk_mq_update_nr_hw_queues()
-> first, and then swithing elevator to none won't trigger the problem.
-> However, what if blk_mq_unquiesce_queue() from switching elevator
-> decrease quiesce_depth to 0 first, and then blk_mq_quiesce_queue() is
-> called from __blk_mq_update_nr_hw_queues(), it seems to me such
-> concurrent scenarios still exist.
+> repeat:
+>        if ((++last_pid) & 0xffff8000)
+>                last_pid=1;
+>        this_user_tasks = 0;
+>        tasks_free = 0;
+>        free_task = -EAGAIN;
+>        i = NR_TASKS;
+>        while (--i > 0) {
+>                if (!task[i]) {
+>                        free_task = i;
+>                        tasks_free++;
+>                        continue;
+>                }
+>                if (task[i]->uid == current->uid)
+>                        this_user_tasks++;
+>                if (task[i]->pid == last_pid || task[i]->pgrp == last_pid ||
+>                    task[i]->session == last_pid)
+>                        goto repeat;
+>        }
+>        if (tasks_free <= MIN_TASKS_LEFT_FOR_ROOT ||
+>            this_user_tasks > MAX_TASKS_PER_USER)
+>                if (current->uid)
+>                        return -EAGAIN;
+>        return free_task;
+> }
 
-No, the scenario won't exist, once blk_mq_quiesce_queue() returns, it is
-guaranteed that:
+Having tracked the use of real uid in limits back this far my guess
+is that it was an accident of the implementation and real uid vs
+effective uid had not be considered.
 
-- in-progress run queue is drained
-- no new run queue can be started
+Does anyone know if choosing the real uid was a deliberate decision
+anywhere in the history of Linux?
 
-Thanks,
-Ming
 
+
+Linus you were talking about making it possible to login as I think a
+non-root user to be able to use sudo and kill a fork bomb.
+
+The counter case is apache having a dedicated user for running
+cgi-scripts and using RLIMIT_NPROC to limit how many of those processes
+can exist.  Unless I am misunderstanding something that looks exactly
+like your login as non-root so you can run sudo to kill a fork-bomb.
+
+A comment from an in-process cleanup patch explains this as best I can:
+         /*
+         * In general rlimits are only enforced when a new resource
+         * is acquired.  That would be during fork for RLIMIT_NPROC.
+         * That is insufficient for RLIMIT_NPROC as many attributes of
+         * a new process must be set between fork and exec.
+         *
+         * A case where this matter is when apache runs forks a process
+         * and calls setuid to run cgi-scripts as a different user.
+         * Generating those processes through a code sequence like:
+         *
+         *      fork()
+ 	 *	setrlimit(RLIMIT_NPROC, ...)         
+         *      execve()  -- suid wrapper
+         *      setuid()
+         *      execve()  -- cgi script
+         *
+         * The cgi-scripts are unlikely to fork on their own so unless
+         * RLIMIT_NPROC is checked after the user change and before
+         * the cgi-script starts, RLIMIT_NPROC simply will not be enforced
+         * for the cgi-scripts.
+         *
+         * So the code tracks if between fork and exec if an operation
+         * occurs that could cause the RLIMIT_NPROC check to fail.  If
+         * such an operation has happened re-check RLIMIT_NPROC.
+         */
+
+
+Answered-Question: I was trying to ask if anyone knows of a reason why
+we can't just sanitize the rlimits of the process during suid exec?
+Linus your guideline would appear to allow that behavior.  Unfortunately
+that looks like it would break current usage of apache suexec.
+
+Eric
