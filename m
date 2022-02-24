@@ -2,139 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 044F3C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236557AbiBXPnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:43:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47448 "EHLO
+        id S236599AbiBXPoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:44:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236565AbiBXPnI (ORCPT
+        with ESMTP id S236578AbiBXPoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:43:08 -0500
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF151BE4EC;
-        Thu, 24 Feb 2022 07:42:37 -0800 (PST)
-Received: from in02.mta.xmission.com ([166.70.13.52]:55030)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nNGGG-003tg5-Kh; Thu, 24 Feb 2022 08:42:32 -0700
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34182 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nNGGE-00649l-7g; Thu, 24 Feb 2022 08:42:32 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     <linux-kernel@vger.kernel.org>
-Cc:     Linux API <linux-api@vger.kernel.org>,
-        Etienne Dechamps <etienne@edechamps.fr>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Solar Designer <solar@openwall.com>,
-        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Containers <containers@lists.linux-foundation.org>,
-        Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
-        Security Officers <security@kernel.org>,
-        Neil Brown <neilb@cse.unsw.edu.au>, NeilBrown <neilb@suse.de>,
-        "Serge E. Hallyn" <serge@hallyn.com>, Jann Horn <jannh@google.com>,
-        Andy Lutomirski <luto@kernel.org>, Willy Tarreau <w@1wt.eu>,
-        Linus Torvalds <linus@torvalds.org>
-References: <20220207121800.5079-1-mkoutny@suse.com>
-        <e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr>
-        <20220215101150.GD21589@blackbody.suse.cz>
-        <87zgmi5rhm.fsf@email.froward.int.ebiederm.org>
-        <87fso91n0v.fsf_-_@email.froward.int.ebiederm.org>
-        <CAHk-=wjX3VK8QRMDUWwigCTKdHJt0ESXh0Hy5HNaXf7YkEdCAA@mail.gmail.com>
-        <878ru1qcos.fsf@email.froward.int.ebiederm.org>
-        <CAHk-=wgW8+vmqhx4t+uFiZL==8Ac5VWTqCm_oshA0e47B73qPw@mail.gmail.com>
-        <87tucpko7d.fsf@email.froward.int.ebiederm.org>
-Date:   Thu, 24 Feb 2022 09:41:44 -0600
-In-Reply-To: <87tucpko7d.fsf@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Wed, 23 Feb 2022 20:12:06 -0600")
-Message-ID: <87sfs8jmpz.fsf_-_@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-MIME-Version: 1.0
+        Thu, 24 Feb 2022 10:44:20 -0500
+Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on20713.outbound.protection.outlook.com [IPv6:2a01:111:f400:feab::713])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69F322EDD3;
+        Thu, 24 Feb 2022 07:43:48 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tf63DyX1M9RFUS93w2oEm7A4EZOeJklKwRyjEbD/yD6tT1IPJpj5qGo44JBuDkff3kprNomJ9Jy7vXFfXmIEwkN6/6owzscJByjkrCSmupK47HPix8YqvSYH46eZeAKeWMlUXoO16wsXVHlqZYSlOE+nzEnozBw7f0AbmSyX89KNwr/2T6uoNAfoEWEYx0MjpZg+6pUcPN+L5mZsrorv2zaMlyTWZLVLwKl6Wex0of8nCs17xrhiD/Ya9jzlhkldcjT9JCCJWYi959bDMRz+G7Wi7yobymOL/nDoNoscUXndmNtEeB438zT6Xim5vHYDbOqLJ0O410QLZqIrjfdpSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9dlqYWpvBUxdAvAl6mNfaGDNe9RFLHI8v0KyIcr03sE=;
+ b=P2SoPQ+dFwJ9Dd3zM7qpGCWYyLZ+hLbRDbMiXS6IZNl0yhEvMX17gSSnvNmAgAiHf+5Z4BThSJne6/iG1D8R+tpmuBMCKQn7g2oNlopQOfTUN7EYIo3tEI0uswBgcONT0W5GTPwdSkrbCUibFxlPPKTsjB1FjJcDdAmSQexUBZ5twYctr0Tjl/T/9qYSNyHBj1zqc5V0IgCcHyE2bxQu/ffvX7M0gU0bHxOUBG71avTD4oqe8iCyeey9xaaaLTo+acuJNHCSqWQ0YLXdHo5w15hmbAXrHGT0QTAwL0s3hLiVzKolbdTU60EmxmEH2GZfJTt7lHlK2CakrELSVFBPgg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=quantatw.com; dmarc=pass action=none header.from=quantatw.com;
+ dkim=pass header.d=quantatw.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=quantacorp.onmicrosoft.com; s=selector2-quantacorp-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9dlqYWpvBUxdAvAl6mNfaGDNe9RFLHI8v0KyIcr03sE=;
+ b=suaI+aRrSz0pis+r3wzBSILNI72FCdg9KES3sdEoUrp1zrSxd3EkzQL2HdSno9oAEsQwbuOZUXA4kU8Z9mVnmOmK+AdZZSjX/IS386xNbjqJYp4i7P/J+XhivTWjPtfTTS7vdqCEzS125goOqGT5X5A6o1Vemnk2ZVDorGV6iwE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=quantatw.com;
+Received: from HK0PR04MB3282.apcprd04.prod.outlook.com (2603:1096:203:89::17)
+ by SEYPR04MB5858.apcprd04.prod.outlook.com (2603:1096:101:6b::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Thu, 24 Feb
+ 2022 15:43:44 +0000
+Received: from HK0PR04MB3282.apcprd04.prod.outlook.com
+ ([fe80::ec21:c033:761d:3e03]) by HK0PR04MB3282.apcprd04.prod.outlook.com
+ ([fe80::ec21:c033:761d:3e03%4]) with mapi id 15.20.4995.027; Thu, 24 Feb 2022
+ 15:43:44 +0000
+From:   Potin Lai <potin.lai@quantatw.com>
+To:     Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Patrick Williams <patrick@stwcx.xyz>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Potin Lai <potin.lai@quantatw.com>
+Subject: [PATCH v2 1/2] hwmon: (adm1275) Allow setting sample averaging
+Date:   Thu, 24 Feb 2022 23:43:28 +0800
+Message-Id: <20220224154329.9755-2-potin.lai@quantatw.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220224154329.9755-1-potin.lai@quantatw.com>
+References: <20220224154329.9755-1-potin.lai@quantatw.com>
 Content-Type: text/plain
-X-XM-SPF: eid=1nNGGE-00649l-7g;;;mid=<87sfs8jmpz.fsf_-_@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1/3Jux14MA1HuBGnaWTv8tG7ssEHPwrI1k=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: [PATCH] ucounts: Fix systemd LimigtNPROC with private users regression
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+X-ClientProxiedBy: HK2PR02CA0148.apcprd02.prod.outlook.com
+ (2603:1096:202:16::32) To HK0PR04MB3282.apcprd04.prod.outlook.com
+ (2603:1096:203:89::17)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b5a39488-6312-482b-d2cf-08d9f7ac7035
+X-MS-TrafficTypeDiagnostic: SEYPR04MB5858:EE_
+X-Microsoft-Antispam-PRVS: <SEYPR04MB5858AF9CA1631505767E44D08E3D9@SEYPR04MB5858.apcprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: eo8Iv/csmBr1hjDFtcObi7VrgEaxJTgoYIOlG/3rTqFESiSnSlIYI3RxaWtlStTKYhdJ3c1jhDc43SC5z0Ao4SogSk/I+FSI/5Q6a/IyPgqJirksUpAteCfN1XwUxlun8bBrhCjZUJv+QH6VbHTsSx7SCm9zX12zKD1k3jyHkQOUQ9A495QmYi6WcP1vWOphkTMuaz1pc90ZpQz5rzEllDI6R7X5QNYzHO5FJvsoKoHMcLQy1vwz5ro2ErjwmpfJreBeVZU3XUTnSapXR0v3e5Dcxg994Hbf9IHhmR9cOOqlYxDPyW+b/FNmTvlZAzDclhth1VpmXS8AEE5j5C4m6k4/jn+O3YanzARn3Ra5F2v0aextsNv91jC6z+q1NG2NnQchFNv8gt8ZJ+gh4Bu0J+txDbZKJuuMHKO3hDhD/HeEmvGW4R8gl7tliKm6qkcw7VS5x6r0EkiDHC7a3u/DDCIb2hhqkQWlTRegkmQl/m0lT/aPKk5swAIGkr2El0BcSmt/JqLBPopD9Y5n1FcvRuqQr7MWEv7GN7DzfXxBequMyzeRgsZPep10e1STlsSFLprIFBXqz3uPv6zE1INXz1Yg4uQokuQqojUvd7WcJTwZpvyWByQfZoUv9Dwewyh1d8IpereuR5Ueb+YVkLzuopTHsIUH4WVymqOdQTyVF3R9iLygptRmfSInt9GpkUdOOPFToCz3pQi+LEO+eeg1xA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR04MB3282.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(54906003)(316002)(110136005)(6506007)(66556008)(66476007)(6666004)(6512007)(66946007)(52116002)(38100700002)(38350700002)(86362001)(4326008)(2616005)(107886003)(508600001)(8676002)(8936002)(1076003)(5660300002)(6486002)(26005)(186003)(44832011)(36756003)(2906002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?F6t6GXljeM7lJJ+owvCVXQNVHJu2z6YCE8iNZoB3oAoRvXOyDC87YzqVf4XB?=
+ =?us-ascii?Q?uTyKRxZ5hEODCLY6RH0QdfhBvTLapYDD4B7Wk/GwtFmWpsPPFxTEz7oQUOQN?=
+ =?us-ascii?Q?eT8GQO572ckRBoduQyzpZjpyDPIKFghe6Wk8VW7RMrzz3nK28oT9ZjGAFAGb?=
+ =?us-ascii?Q?VSY47ul94wojaml0CkczOPdsM4QhTH0JmTGuDwrCcpf466aAhvrrTCc4U8C9?=
+ =?us-ascii?Q?K9cFgISPF5/B2LVfDmPr2iXvDXmSXCtSOXQwEb16v7FpCPZkIqkuZVhhcZZq?=
+ =?us-ascii?Q?6wk8EihfSrR5H+Ebu3sQQmtGnklwwaumOANVVc3DhTMaOPZAAwcpHnTODZzK?=
+ =?us-ascii?Q?4iF6OlulKp37pn2zlh9SwnYw3FKc+vhXE/lTSfKiP21gkxoyX4B3sFGxVBfo?=
+ =?us-ascii?Q?U/MoyKjiApqFqfrDjnZXhFNwq2WlPRyFZMub/69IAEoyEZUMPTm+mGLEvO/s?=
+ =?us-ascii?Q?VYxtdeSohfTqnprOPlvE0bPUk4BzKmu3D6Jrm3HFnYpgR6q5ZtmVzOHIfTjA?=
+ =?us-ascii?Q?bdlqGjCQbtSD1c3+pl3oo9sDrGStwE/717dQ5nreXoMfIA844kB6KW8Qs648?=
+ =?us-ascii?Q?x17drKKXM8rpyqLawQZCl9+Fbc2B+u+v7Bl/ZE2yOLeojoFXjzNKwo1GXD/Z?=
+ =?us-ascii?Q?jZNSRXmTzGB6h2RuYoaaL31EPU5jtO5c8ma5BVbZA+q1mU9BNL/G8BjS4Cb8?=
+ =?us-ascii?Q?oArGVRHjoc1yt0bKwhxxSX2xC1UcbcEBJxKteGjNVY7Q2cJL1QMPKYY0aCro?=
+ =?us-ascii?Q?V1hIeAHLBoIq8ouobs0ESA+fpe9VF2ZSrEXvHy1KRk+OBrGyTv+BoKKa/T6K?=
+ =?us-ascii?Q?9pt+psrgN29lXz9GhDE83gkAk2Ul+Gv6HxblbF+JDpM6bL+u/D11sL1+WG/C?=
+ =?us-ascii?Q?GJ26cSzEjKDuYGYobZqDPtf4MDpmnDNPIm1aw3pI7p85qthuhCXIrmxeGMkz?=
+ =?us-ascii?Q?4w8RxHr5YLKjAga1Oq++uVT0t9dm5+yes9GdV2v5J/VUKTL3NnRhgUmg5nHn?=
+ =?us-ascii?Q?1lw+WuCvB7ttzz73ZdYl53Pc9YuqM0/jG0nQ/CSlb09P4es55OZHGScYk/KD?=
+ =?us-ascii?Q?zO9uw6UgrVOmaq6l2NO+hWU+HtqYLCto5meC95zC/f5pME6wSQ4fHoPtPVgZ?=
+ =?us-ascii?Q?kLDDluKlJvoLQM8cJ9kfjxRNuDVK/3R0jPcNm4ct0OKtRzrARJdwUOYxRZ+I?=
+ =?us-ascii?Q?SSARGsV96Vwu1ETgc+7Li5xlSlYldTfnEjDwW8TWeY9st6y9B4xy4R3lA3Yf?=
+ =?us-ascii?Q?Ac5VYz/CcPWQLxf09hxPQg+vRSC4FMgqvEGJ1nfZqRU16oRPrXc3jQAHNc/E?=
+ =?us-ascii?Q?ch3/li6AWufNQZCc+BkPZjFHL3RDRk+NyR4Qq3C3wgH1/Z0Ou62w0CDqBsuY?=
+ =?us-ascii?Q?bYZhJzJJ7d3kSBpbSNSK4fDTSqbCMC16U+N57meAYU+k+O34C5s8OwiFWJkT?=
+ =?us-ascii?Q?i3Tz6h7hF1P3fJwGgivOiIAulICnmA00xRcZ5LVfNR8GyfrvpYrSQHEnLiOD?=
+ =?us-ascii?Q?52zqbl2ecazKWOBIkreNn1UhqRZdf7ppd96mnfK3dTcV/XHizKUs5bWvDrDZ?=
+ =?us-ascii?Q?OjjIoLTcaENeIMDfCfgmaxykENcy5QJ4pAGfLIegTlL1LVR5vuHYgaP+oYhM?=
+ =?us-ascii?Q?LVEsp4YM6yn7RS7K8dEkDa0=3D?=
+X-OriginatorOrg: quantatw.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5a39488-6312-482b-d2cf-08d9f7ac7035
+X-MS-Exchange-CrossTenant-AuthSource: HK0PR04MB3282.apcprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 15:43:43.9584
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 179b0327-07fc-4973-ac73-8de7313561b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oLy+1Brqftm9qvM9/ffBzWbAe920zBaXukAGtiWL4GWeEh3300iFlE+4309fvsMA2bFnibyYp/iVFYy1hrNOIA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR04MB5858
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Current driver assume PWR_AVG and VI_AVG as 1 by default, and user needs to
+set sample averaging via sysfs manually.
 
-Long story short recursively enforcing RLIMIT_NPROC when it is not
-enforced on the process that creates a new user namespace, causes
-currently working code to fail.  There is no reason to enforce
-RLIMIT_NPROC recursively when we don't enforce it normally so update
-the code to detect this case.
+This patch parses the properties below from device tree, and setting
+sample averaging during probe.
 
-I would like to simply use capable(CAP_SYS_RESOURCE) to detect when
-RLIMIT_NPROC is not enforced upon the caller.  Unfortunately because
-RLIMIT_NPROC is charged and checked for enforcement based upon the
-real uid, using capable() wich is euid based is inconsistent with reality.
-Come as close as possible to testing for capable(CAP_SYS_RESOURCE) by
-testing for when the real uid would match the conditions when
-CAP_SYS_RESOURCE would be present if the real uid was the effective
-uid.
+- adi,power-sample-average
+- adi,volt-curr-sample-average
 
-Reported-by: Etienne Dechamps <etienne@edechamps.fr>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215596
-Link: https://lkml.kernel.org/r/e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr
-Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Potin Lai <potin.lai@quantatw.com>
 ---
+ drivers/hwmon/pmbus/adm1275.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-The previous conversation has given me enough clarity that I can see
-which tests I am comfortable with use for this pending regression fix.
-
-I have tested this and it works for me.  Does anyone have any concerns
-with this change?
-
- kernel/user_namespace.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
-index 6b2e3ca7ee99..5481ba44a8d6 100644
---- a/kernel/user_namespace.c
-+++ b/kernel/user_namespace.c
-@@ -58,6 +58,18 @@ static void set_cred_user_ns(struct cred *cred, struct user_namespace *user_ns)
- 	cred->user_ns = user_ns;
- }
+diff --git a/drivers/hwmon/pmbus/adm1275.c b/drivers/hwmon/pmbus/adm1275.c
+index d311e0557401..4fc1421b7540 100644
+--- a/drivers/hwmon/pmbus/adm1275.c
++++ b/drivers/hwmon/pmbus/adm1275.c
+@@ -83,6 +83,8 @@ enum chips { adm1075, adm1272, adm1275, adm1276, adm1278, adm1293, adm1294 };
+ #define ADM1278_VI_AVG_MASK		GENMASK(ADM1278_VI_AVG_SHIFT + 2, \
+ 						ADM1278_VI_AVG_SHIFT)
  
-+static unsigned long enforced_nproc_rlimit(void)
-+{
-+	unsigned long limit = RLIM_INFINITY;
++#define ADM1275_SAMPLES_AVG_MAX_INDEX	7
 +
-+	/* Is RLIMIT_NPROC currently enforced? */
-+	if (!uid_eq(current_uid(), GLOBAL_ROOT_UID) ||
-+	    (current_user_ns() != &init_user_ns))
-+		limit = rlimit(RLIMIT_NPROC);
-+
-+	return limit;
-+}
-+
- /*
-  * Create a new user namespace, deriving the creator from the user in the
-  * passed credentials, and replacing that user with the new root user for the
-@@ -122,7 +134,7 @@ int create_user_ns(struct cred *new)
- 	for (i = 0; i < MAX_PER_NAMESPACE_UCOUNTS; i++) {
- 		ns->ucount_max[i] = INT_MAX;
+ struct adm1275_data {
+ 	int id;
+ 	bool have_oc_fault;
+@@ -475,6 +477,7 @@ static int adm1275_probe(struct i2c_client *client)
+ 	int vindex = -1, voindex = -1, cindex = -1, pindex = -1;
+ 	int tindex = -1;
+ 	u32 shunt;
++	u8 avgindex;
+ 
+ 	if (!i2c_check_functionality(client->adapter,
+ 				     I2C_FUNC_SMBUS_READ_BYTE_DATA
+@@ -756,6 +759,34 @@ static int adm1275_probe(struct i2c_client *client)
+ 		return -ENODEV;
  	}
--	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC));
-+	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, enforced_nproc_rlimit());
- 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MSGQUEUE, rlimit(RLIMIT_MSGQUEUE));
- 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_SIGPENDING, rlimit(RLIMIT_SIGPENDING));
- 	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK));
+ 
++	if (data->have_power_sampling &&
++	    of_property_read_u8(client->dev.of_node,
++				"adi,power-sample-average", &avgindex) == 0) {
++		if (avgindex > ADM1275_SAMPLES_AVG_MAX_INDEX)
++			return -EINVAL;
++		ret = adm1275_write_pmon_config(data, client, true, avgindex);
++		if (ret < 0) {
++			dev_err(&client->dev,
++				"Setting power sample averaging failed with error %d",
++				ret);
++			return ret;
++		}
++	}
++
++	if (of_property_read_u8(client->dev.of_node,
++				"adi,volt-curr-sample-average",
++				&avgindex) == 0) {
++		if (avgindex > ADM1275_SAMPLES_AVG_MAX_INDEX)
++			return -EINVAL;
++		ret = adm1275_write_pmon_config(data, client, false, avgindex);
++		if (ret < 0) {
++			dev_err(&client->dev,
++				"Setting voltage and current sample averaging failed with error %d",
++				ret);
++			return ret;
++		}
++	}
++
+ 	if (voindex < 0)
+ 		voindex = vindex;
+ 	if (vindex >= 0) {
 -- 
-2.29.2
+2.17.1
 
