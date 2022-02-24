@@ -2,74 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8095C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70891C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbiBXQNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:13:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
+        id S229610AbiBXQRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:17:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiBXQNr (ORCPT
+        with ESMTP id S229436AbiBXQRn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:13:47 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421C01B2AF4;
-        Thu, 24 Feb 2022 08:13:10 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 4DA5022236;
-        Thu, 24 Feb 2022 17:10:37 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645719037;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=3AVbMEK1Kj2Wq9B+4ntgjAAH5iOrMVQj74iBl24oPtw=;
-        b=ITei4q9+8nn/DYKLqakBypCqB2YpmgMFhVkxmsND14t8x2SN3jXGfW0/oVaGBvbnwN+dX3
-        vwOanXjcD2um8NA8npBeore3XYI+pRrYa/vfRZ1hqYI/NKnX18vbOoWJOP/xTsCQF+Rdf7
-        ZsNKPmPLk2WuLgaho/Vlt601Xapzg8k=
-From:   Michael Walle <michael@walle.cc>
-To:     Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Cc:     UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v1 0/5] pinctrl: microchip-sgpio: locking and synchronous output
-Date:   Thu, 24 Feb 2022 17:10:16 +0100
-Message-Id: <20220224161021.2197263-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        Thu, 24 Feb 2022 11:17:43 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5339434B5
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:17:05 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id d21so427281yba.11
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:17:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=M6/DsYcMdCQ5Jv7h2HtppDAD63hulQRUnEll08wdM0w=;
+        b=MMxNIcwAG1rEPw9GYtGcc1MbySE+4/aZhxOK9Arfa8JLcnH0cfZ64TEtJey0SODZ7C
+         QBiByPS+i5aydu3vs8H0awLJPCpykYptJU2HmxOfIPQy8vs+fSr3SUJJNxd/KVNH/kNZ
+         gjoFbkx/CDEUSFXXCM5T51pKHiPWXVwYVlaXGo94O4Cmtc1DR+BED9zBq+ATBB0gXAsU
+         9w8HCZaC1ZZAwHI9UCrFptnAwn1x1krO6meiyDfKd7+rSVqIb0MYvV2xW4o0BAq/KmF8
+         q69HHptkg51lHY1WR5Ir2y0+/4WIeubhQ74U4NMz+V9vB19oH7Z86WtRP9Ikzr/QZWt6
+         IMHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M6/DsYcMdCQ5Jv7h2HtppDAD63hulQRUnEll08wdM0w=;
+        b=l5YP1j2a4Wc3mrK9T9z2P7rC7TJS6+mba3bwaJpb0ymD8sGu9fg4Yq5f+hMKwzNhnC
+         AfCIFTdouQkmtyGC1m9L2jNB8fGvM9ZYZaPYnDJwxwb8exCQt43WwkWA2ZV1ZP7eiOtD
+         CRCyEFwNLXeC0STEn3/OU8KnA9S+R8hjnC5gQOD3zyLb5XbpwNz5OqtteR906eBHpoKs
+         Y2Y7om1BGDLZEcUZ2ePRobtXcTZ9DByMEHbMC96izqhlxs+L+P+y6vIg8/9sUpUjTwXX
+         3Os0QXz4visYFWVpZTVyuDD+VozCzCFVijmz8JFH/+PRW5MruD63XcYEP2XGl80oTYUH
+         j9Zg==
+X-Gm-Message-State: AOAM533M8o8Q4miZs2J8g+3il4chiA4noOPJjW2d8Ktkk4wGKOpGErD7
+        6L3OVdbxy3x2OuUso7KyqRGdxEzwmjPzHvn+teZNDg==
+X-Google-Smtp-Source: ABdhPJx1PBFTzicPX+FhslEYT6ZwXv/E5aXyEeLEMZmHKuUh6nEpZizMLlaeQ3T+XDiafTBRLEZRxAV7na7hyyARMPw=
+X-Received: by 2002:a25:ad9b:0:b0:624:5db2:2084 with SMTP id
+ z27-20020a25ad9b000000b006245db22084mr3073965ybi.132.1645719140249; Thu, 24
+ Feb 2022 08:12:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220223135820.2252470-1-anders.roxell@linaro.org>
+ <20220223135820.2252470-2-anders.roxell@linaro.org> <871qzsphfv.fsf@mpe.ellerman.id.au>
+In-Reply-To: <871qzsphfv.fsf@mpe.ellerman.id.au>
+From:   Anders Roxell <anders.roxell@linaro.org>
+Date:   Thu, 24 Feb 2022 17:12:09 +0100
+Message-ID: <CADYN=9L7L7+DOA6qYj4aOgg9rBhOrUCk5b4K5tr6wZ709WpsyA@mail.gmail.com>
+Subject: Re: [PATCH 2/3] powerpc: fix build errors
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are boards which use the output of the SGPIO to drive I2C muxers.
-SGPIO right now is broken in a way that when the software sets this bit
-there is a rather large delay until that value ends up on the hardware
-pin.
+On Thu, 24 Feb 2022 at 13:39, Michael Ellerman <mpe@ellerman.id.au> wrote:
+>
+> Hi Anders,
 
-While digging into this, I've noticed that there is no locking at all
-in this driver. Add locking for all RWM accesses.
+Hi Michael,
 
-Please note, that parts of the modification of the first patch are
-removed again in a later patch. This is because the first patch is
-intended to be backported to the stable trees.
+>
+> Thanks for these, just a few comments below ...
 
-Michael Walle (5):
-  pinctrl: microchip-sgpio: lock RMW access
-  pinctrl: microchip-sgpio: don't do RMW for interrupt ack register
-  pinctrl: microchip-sgpio: use regmap_update_bits()
-  pinctrl: microchip-sgpio: return error in spgio_output_set()
-  pinctrl: microchip-sgpio: wait until output is actually set
+I will resolve the comments below and resend a v2 shortly.
 
- drivers/pinctrl/pinctrl-microchip-sgpio.c | 101 ++++++++++++++++++----
- 1 file changed, 86 insertions(+), 15 deletions(-)
+Cheers,
+Anders
 
--- 
-2.30.2
-
+>
+> Anders Roxell <anders.roxell@linaro.org> writes:
+> > Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
+> > 2.37.90.20220207) the following build error shows up:
+> >
+> >  {standard input}: Assembler messages:
+> >  {standard input}:1190: Error: unrecognized opcode: `stbcix'
+> >  {standard input}:1433: Error: unrecognized opcode: `lwzcix'
+> >  {standard input}:1453: Error: unrecognized opcode: `stbcix'
+> >  {standard input}:1460: Error: unrecognized opcode: `stwcix'
+> >  {standard input}:1596: Error: unrecognized opcode: `stbcix'
+> >  ...
+> >
+> > Rework to add assembler directives [1] around the instruction. Going
+> > through the them one by one shows that the changes should be safe.  Like
+> > __get_user_atomic_128_aligned() is only called in p9_hmi_special_emu(),
+> > which according to the name is specific to power9.  And __raw_rm_read*()
+> > are only called in things that are powernv or book3s_hv specific.
+> >
+> > [1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
+> >
+> > Cc: <stable@vger.kernel.org>
+> > Co-developed-by: Arnd Bergmann <arnd@arndb.de>
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> > Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+> > ---
+> >  arch/powerpc/include/asm/io.h        | 46 +++++++++++++++++++++++-----
+> >  arch/powerpc/include/asm/uaccess.h   |  3 ++
+> >  arch/powerpc/platforms/powernv/rng.c |  6 +++-
+> >  3 files changed, 46 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
+> > index beba4979bff9..5ff6dec489f8 100644
+> > --- a/arch/powerpc/include/asm/io.h
+> > +++ b/arch/powerpc/include/asm/io.h
+> > @@ -359,25 +359,37 @@ static inline void __raw_writeq_be(unsigned long v, volatile void __iomem *addr)
+> >   */
+> >  static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
+> >  {
+> > -     __asm__ __volatile__("stbcix %0,0,%1"
+> > +     __asm__ __volatile__(".machine \"push\"\n"
+> > +                          ".machine \"power6\"\n"
+> > +                          "stbcix %0,0,%1\n"
+> > +                          ".machine \"pop\"\n"
+> >               : : "r" (val), "r" (paddr) : "memory");
+>
+> As Segher said it'd be cleaner without the embedded quotes.
+>
+> > @@ -441,7 +465,10 @@ static inline unsigned int name(unsigned int port)       \
+> >       unsigned int x;                                 \
+> >       __asm__ __volatile__(                           \
+> >               "sync\n"                                \
+> > +             ".machine \"push\"\n"                   \
+> > +             ".machine \"power6\"\n"                 \
+> >               "0:"    op "    %0,0,%1\n"              \
+> > +             ".machine \"pop\"\n"                    \
+> >               "1:     twi     0,%0,0\n"               \
+> >               "2:     isync\n"                        \
+> >               "3:     nop\n"                          \
+> > @@ -465,7 +492,10 @@ static inline void name(unsigned int val, unsigned int port) \
+> >  {                                                    \
+> >       __asm__ __volatile__(                           \
+> >               "sync\n"                                \
+> > +             ".machine \"push\"\n"                   \
+> > +             ".machine \"power6\"\n"                 \
+> >               "0:" op " %0,0,%1\n"                    \
+> > +             ".machine \"pop\"\n"                    \
+> >               "1:     sync\n"                         \
+> >               "2:\n"                                  \
+> >               EX_TABLE(0b, 2b)                        \
+>
+> It's not visible from the diff, but the above two are __do_in_asm and
+> __do_out_asm and are inside an ifdef CONFIG_PPC32.
+>
+> AFAICS they're only used for:
+>
+> __do_in_asm(_rec_inb, "lbzx")
+> __do_in_asm(_rec_inw, "lhbrx")
+> __do_in_asm(_rec_inl, "lwbrx")
+> __do_out_asm(_rec_outb, "stbx")
+> __do_out_asm(_rec_outw, "sthbrx")
+> __do_out_asm(_rec_outl, "stwbrx")
+>
+> Which are all old instructions, so I don't think we need the machine
+> power6 for those two macros?
+>
+> > diff --git a/arch/powerpc/platforms/powernv/rng.c b/arch/powerpc/platforms/powernv/rng.c
+> > index b4386714494a..5bf30ef6d928 100644
+> > --- a/arch/powerpc/platforms/powernv/rng.c
+> > +++ b/arch/powerpc/platforms/powernv/rng.c
+> > @@ -43,7 +43,11 @@ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
+> >       unsigned long parity;
+> >
+> >       /* Calculate the parity of the value */
+> > -     asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
+> > +     asm (".machine \"push\"\n"
+> > +          ".machine \"power7\"\n"
+> > +          "popcntd %0,%1\n"
+> > +          ".machine \"pop\"\n"
+> > +          : "=r" (parity) : "r" (val));
+>
+> This was actually present in an older CPU, but it doesn't really matter,
+> this is fine.
+>
+> cheers
