@@ -2,112 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B28D4C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 325A8C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234394AbiBXMdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:33:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51490 "EHLO
+        id S234409AbiBXMdq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:33:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231379AbiBXMdh (ORCPT
+        with ESMTP id S234375AbiBXMdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 07:33:37 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC026192E27;
-        Thu, 24 Feb 2022 04:33:04 -0800 (PST)
-Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K4C304K1Pz67dyM;
-        Thu, 24 Feb 2022 20:32:12 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Thu, 24 Feb 2022 13:33:02 +0100
-Received: from [10.47.86.126] (10.47.86.126) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 24 Feb
- 2022 12:33:00 +0000
-Message-ID: <aabd5f0a-1a54-e4da-734c-f940c45d66b4@huawei.com>
-Date:   Thu, 24 Feb 2022 12:32:59 +0000
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77547192E33
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:33:06 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id y11so1735575pfa.6
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:33:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Uhqs7VB4RRUY7J0XXRbx7LXxMKz2KfECenS4KOr6xXI=;
+        b=S2Vf0RYPXrLy1meYNbj0MlVf+rxsZCVo9rIwPYSB9gJ6S5SYMAh2+CxyH7aT8MxeCO
+         dG8YQYAMoOCI/bT8oW3od3qZtQ9PzGMqzBfDkCrtglJFkC/+7ub+TbPnhFtW8mYrb23/
+         zBeEVeuMsoq7MNg7p74+vABGuT790eFGGmOu780oEtfRK4x5u546ovA1JU8Xm68k7fHe
+         ZMslKDPkEsB6k/FKtgdi7g0w36Ys9ssAVaebqZ8Jc+Fli3GAaNhIGl/ynY8WlqXmqKXi
+         zATDRMYfxSNP5j3WbCiWA7cqbThaduhq2O7mFEag0NgYKPiaX4ZYaq9Z4U4ekcww1l+H
+         F9uA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Uhqs7VB4RRUY7J0XXRbx7LXxMKz2KfECenS4KOr6xXI=;
+        b=zSUOPKAySLDogIjvqeO5CUshW8o+hm7VZkVyXPCR+LMaSZiii3b8Olig+S1QtUGX4/
+         fFB7AHRjRnygvzmMSMG6VqsZzqJ4h6ZNIZi6R5TV+s0ofH/4aQjit2KdAsfS2X/cAs6H
+         5c+cNlvi+vf0Ok2fFyA/Mkmpz5yM/R1jV3Cfw4GNbpfAh2EO+OL3lnPzdMs3GBhAXnCq
+         1fJdAY6qOxFsI5HJ9ACFFvW8guf2afxO2vIjWlpU8QKi8Ok/9/GQlMBu/868mYPgHOB8
+         h1RrW6YKudM60K8U68ZyOxAWD9v4GwzCGxicZ3cjSw1TeWgn91dszDBV5ja+AOkpgU2K
+         avxQ==
+X-Gm-Message-State: AOAM533MflujKZMnVHN/DyPNl3w6o7i8QSHNeQ1grJHgnEZLvjzMST4N
+        d1kWS5Aq/okGbvjovjihg+0+4Jnd/l1vhg==
+X-Google-Smtp-Source: ABdhPJxE9MbifRXJoWthHwSxtlJ7G04wYvzC85z9VEDcnm5iRZLyuDKyBimvDL1t5y8moHqRV9v0bQ==
+X-Received: by 2002:a63:114c:0:b0:373:a701:3736 with SMTP id 12-20020a63114c000000b00373a7013736mr2134339pgr.117.1645705985897;
+        Thu, 24 Feb 2022 04:33:05 -0800 (PST)
+Received: from localhost.localdomain ([223.179.129.209])
+        by smtp.gmail.com with ESMTPSA id ep5-20020a17090ae64500b001bc56af507dsm6237567pjb.47.2022.02.24.04.32.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 04:33:05 -0800 (PST)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        agross@kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-phy@lists.infradead.org,
+        robh+dt@kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 1/2] dt-bindings: phy: qcom,qmp: Mark '#clock-cells' as a 'optional' property
+Date:   Thu, 24 Feb 2022 18:02:47 +0530
+Message-Id: <20220224123248.67073-1-bhupesh.sharma@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH v4 2/8] hwtracing: Add trace function support for
- HiSilicon PCIe Tune and Trace device
-To:     Yicong Yang <yangyicong@huawei.com>,
-        Yicong Yang <yangyicong@hisilicon.com>,
-        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
-        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
-        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>
-CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
-        <song.bao.hua@hisilicon.com>
-References: <20220221084307.33712-1-yangyicong@hisilicon.com>
- <20220221084307.33712-3-yangyicong@hisilicon.com>
- <c7d8cff4-b84e-1b73-1d54-2e221b90dac1@huawei.com>
- <e78f6e5e-a0c3-4976-4f46-e3369635ee3d@huawei.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <e78f6e5e-a0c3-4976-4f46-e3369635ee3d@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.86.126]
-X-ClientProxiedBy: lhreml752-chm.china.huawei.com (10.201.108.202) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/02/2022 03:53, Yicong Yang wrote:
-> On 2022/2/22 19:06, John Garry wrote:
->> On 21/02/2022 08:43, Yicong Yang wrote:
->>> HiSilicon PCIe tune and trace device(PTT) is a PCIe Root Complex
->>> integrated Endpoint(RCiEP) device, providing the capability
->>> to dynamically monitor and tune the PCIe traffic, and trace
->>> the TLP headers.
->>>
->>> Add the driver for the device to enable the trace function.
->>> This patch adds basic function of trace, including the device's
->>> probe and initialization, functions for trace buffer allocation
->>> and trace enable/disable, register an interrupt handler to
->>> simply response to the DMA events. The user interface of trace
->>> will be added in the following patch.
->>>
->>
->> Fill commit message lines upto 75 characters
-> 
-> Hi John,
-> 
-> Thanks for the comments.
-> 
-> The commit message is within 75 characters. I checked again and checkpatch
-> didn't warning for this.
+Since '#clock-cells' is not a required property for several
+QCoM boards supporting qmp-phy(s) (for e.g. sm8150, sm8250 or sm8350 SoC
+based boards), mark it as an optional property instead.
 
-I mean to fill the lines up as much as possible, upto 75 char max, if 
-not already done so. I am not sure if you are doing this already, but it 
-looks like you were not.
+This fixes the following '$ make dtbs_check' warning(s):
 
-Checkpatch
-will
-no
-warn
-about
-a
-commit
-message
-like
-this
-:)
+sm8350-microsoft-surface-duo2.dt.yaml: phy@1d87000:
+  '#clock-cells' is a required property
 
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Rob Herring <robh+dt@kernel.org>
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+---
+ Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-Thanks,
-john
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+index 9e0f60e682c4..746a929c63bb 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+@@ -115,7 +115,6 @@ patternProperties:
+ required:
+   - compatible
+   - reg
+-  - "#clock-cells"
+   - "#address-cells"
+   - "#size-cells"
+   - ranges
+-- 
+2.35.1
+
