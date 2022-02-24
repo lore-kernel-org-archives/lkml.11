@@ -2,145 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5804DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6DEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:32:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243412AbiBXA02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 19:26:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
+        id S230028AbiBXAdE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 19:33:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235755AbiBXA0Z (ORCPT
+        with ESMTP id S229617AbiBXAcx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 19:26:25 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000F760CE5
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:25:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645662355; x=1677198355;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=ItM0Ed5jGXsDogudqlqJ3bPLvolWhLw5yq5+/f2NQuA=;
-  b=e9D6c1c7amiQKB4f+/a8gkrCfIgEhSNmqoGk+YKGFKJtGpOq4uDCxf0X
-   Lzj4hW7ilIznw7u9NTzxax73O0WPVgwdGpevVmKxQ6Ae+RrP0ems8mMXA
-   l1S4vgSJqMfQIUJYa4m4x68hEHISS0FgWSSlYnfeWsPI7171dyFcgdgHU
-   piXrl9Vb+S9k6cB5fhZoKMZ0NtQquY9nwN8GrAHI2NrXsrE/8f1PWUlQ3
-   m2VqrlQNppLdLMajG112GwM54nqg+1QxHbLOVYgmsRxYL/ns/4naNLEPe
-   5SQlw9yAOsRI9u1MBt5H+FOe/st2X/2VDep94RNEsvHhS7qX9QBWKobDf
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="338553053"
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="338553053"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 16:25:55 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="684094941"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Feb 2022 16:25:53 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nN1xB-00021P-BT; Thu, 24 Feb 2022 00:25:53 +0000
-Date:   Thu, 24 Feb 2022 08:24:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hannes Reinecke <hare@suse.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [hare-scsi-devel:tls-upcall.v2 34/67] crypto/hkdf.c:26:5: warning:
- no previous prototype for function 'hkdf_extract'
-Message-ID: <202202240845.4HsZOLts-lkp@intel.com>
+        Wed, 23 Feb 2022 19:32:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD6C83002;
+        Wed, 23 Feb 2022 16:32:24 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1732B82285;
+        Thu, 24 Feb 2022 00:32:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510E8C340E7;
+        Thu, 24 Feb 2022 00:32:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645662741;
+        bh=3xhiKUuBO/ryIwyB50Q0hQEcWFfrZ0Emh0O02qSTEMU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=i5wkIRMOyyVvPD3+fM5IBNwt4clMFh0hZf35VQl6Iiz8a4IwBBUhXOPJK7fHuff4a
+         k7ueAeRuV9vyD4M0rwnp2MIIjslqqcMBg1cTUXUo3CT4+iC0by2I/3RvZGxcwN0p4Z
+         H6tQPRNssU9kBpy23l0zk0tboR/EkNEIUtGdwZLCY2BiozFiIFXerYnIv6kxa9XMzI
+         NkICB4tQpRACKKbG/evS8MAR+uet6jbqGAUaEBxhoQG8b/8SmZ0zT5FMTeN+qiiUgY
+         7siTbLF4/dGfG+3Y5koaYXDEknZXYy1Kcsa1/aloim3dcbRUehEB6VUX6yA3r37Evl
+         jLKHbB4Luz7lA==
+Date:   Wed, 23 Feb 2022 16:32:19 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 4/8] ima: define a new template field 'd-type' and a
+ new template 'ima-ngv2'
+Message-ID: <YhbSE/k4mElcehDN@sol.localdomain>
+References: <20220211214310.119257-1-zohar@linux.ibm.com>
+ <20220211214310.119257-5-zohar@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220211214310.119257-5-zohar@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git tls-upcall.v2
-head:   ac729ea3c52bda460616c71d5f5fc47b2e64da6d
-commit: 04ae9ad78a4ea9280f04e5e001fd8a179665d1c1 [34/67] crypto,fs: Separate out hkdf_extract() and hkdf_expand()
-config: riscv-buildonly-randconfig-r002-20220223 (https://download.01.org/0day-ci/archive/20220224/202202240845.4HsZOLts-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git/commit/?id=04ae9ad78a4ea9280f04e5e001fd8a179665d1c1
-        git remote add hare-scsi-devel https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git
-        git fetch --no-tags hare-scsi-devel tls-upcall.v2
-        git checkout 04ae9ad78a4ea9280f04e5e001fd8a179665d1c1
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+On Fri, Feb 11, 2022 at 04:43:06PM -0500, Mimi Zohar wrote:
+> In preparation to differentiate between regular IMA file hashes and
+> fs-verity's file digests, define a new template field named 'd-type'.
+> Define a new template named 'ima-ngv2', which includes the new 'd-type'
+> field.
+> 
+> Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+> ---
+>  security/integrity/ima/ima_template.c     |  3 +++
+>  security/integrity/ima/ima_template_lib.c | 13 +++++++++++++
+>  security/integrity/ima/ima_template_lib.h |  2 ++
+>  3 files changed, 18 insertions(+)
+> 
+> diff --git a/security/integrity/ima/ima_template.c b/security/integrity/ima/ima_template.c
+> index db1ad6d7a57f..b321342e5bee 100644
+> --- a/security/integrity/ima/ima_template.c
+> +++ b/security/integrity/ima/ima_template.c
+> @@ -19,6 +19,7 @@ enum header_fields { HDR_PCR, HDR_DIGEST, HDR_TEMPLATE_NAME,
+>  static struct ima_template_desc builtin_templates[] = {
+>  	{.name = IMA_TEMPLATE_IMA_NAME, .fmt = IMA_TEMPLATE_IMA_FMT},
+>  	{.name = "ima-ng", .fmt = "d-ng|n-ng"},
+> +	{.name = "ima-ngv2", .fmt = "d-ng|n-ng|d-type"},
+>  	{.name = "ima-sig", .fmt = "d-ng|n-ng|sig"},
+>  	{.name = "ima-buf", .fmt = "d-ng|n-ng|buf"},
+>  	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
+> @@ -40,6 +41,8 @@ static const struct ima_template_field supported_fields[] = {
+>  	 .field_show = ima_show_template_digest_ng},
+>  	{.field_id = "n-ng", .field_init = ima_eventname_ng_init,
+>  	 .field_show = ima_show_template_string},
+> +	{.field_id = "d-type", .field_init = ima_eventdigest_type_init,
+> +	 .field_show = ima_show_template_string},
+>  	{.field_id = "sig", .field_init = ima_eventsig_init,
+>  	 .field_show = ima_show_template_sig},
+>  	{.field_id = "buf", .field_init = ima_eventbuf_init,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I notice that the "d-ng" field already contains both the hash algorithm and the
+hash itself, in the form <algorithm>:<hash>.  Wouldn't it make more sense to
+define a "d-ngv2" field that contains <type>:<algorithm>:<hash>?  After all,
+both the type and algorithm are required to interpret the hash.
 
-All warnings (new ones prefixed by >>):
+Or in other words, what about the hash type is different from the hash algorithm
+that would result in them needing different handling here?
 
->> crypto/hkdf.c:26:5: warning: no previous prototype for function 'hkdf_extract' [-Wmissing-prototypes]
-   int hkdf_extract(struct crypto_shash *hmac_tfm, const u8 *ikm,
-       ^
-   crypto/hkdf.c:26:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int hkdf_extract(struct crypto_shash *hmac_tfm, const u8 *ikm,
-   ^
-   static 
-   crypto/hkdf.c:57:5: warning: unused variable 'prefix' [-Wunused-variable]
-           u8 prefix[9];
-              ^
->> crypto/hkdf.c:52:5: warning: no previous prototype for function 'hkdf_expand' [-Wmissing-prototypes]
-   int hkdf_expand(struct crypto_shash *hmac_tfm,
-       ^
-   crypto/hkdf.c:52:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int hkdf_expand(struct crypto_shash *hmac_tfm,
-   ^
-   static 
-   3 warnings generated.
-
-
-vim +/hkdf_extract +26 crypto/hkdf.c
-
-    14	
-    15	/*
-    16	 * HKDF consists of two steps:
-    17	 *
-    18	 * 1. HKDF-Extract: extract a pseudorandom key of length HKDF_HASHLEN bytes from
-    19	 *    the input keying material and optional salt.
-    20	 * 2. HKDF-Expand: expand the pseudorandom key into output keying material of
-    21	 *    any length, parameterized by an application-specific info string.
-    22	 *
-    23	 */
-    24	
-    25	/* HKDF-Extract (RFC 5869 section 2.2), unsalted */
-  > 26	int hkdf_extract(struct crypto_shash *hmac_tfm, const u8 *ikm,
-    27			 unsigned int ikmlen, u8 *prk)
-    28	{
-    29		unsigned int prklen = crypto_shash_digestsize(hmac_tfm);
-    30		u8 *default_salt;
-    31		int err;
-    32	
-    33		default_salt = kzalloc(prklen, GFP_KERNEL);
-    34		if (!default_salt)
-    35			return -ENOMEM;
-    36		err = crypto_shash_setkey(hmac_tfm, default_salt, prklen);
-    37		if (!err)
-    38			err = crypto_shash_tfm_digest(hmac_tfm, ikm, ikmlen, prk);
-    39	
-    40		kfree(default_salt);
-    41		return err;
-    42	}
-    43	EXPORT_SYMBOL_GPL(hkdf_extract);
-    44	
-    45	/*
-    46	 * HKDF-Expand (RFC 5869 section 2.3).
-    47	 * This expands the pseudorandom key, which was already keyed into @hmac_tfm,
-    48	 * into @okmlen bytes of output keying material parameterized by the
-    49	 * application-specific @info of length @infolen bytes.
-    50	 * This is thread-safe and may be called by multiple threads in parallel.
-    51	 */
-  > 52	int hkdf_expand(struct crypto_shash *hmac_tfm,
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+- Eric
