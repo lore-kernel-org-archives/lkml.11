@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B3CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F816C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:56:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236450AbiBXP5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:57:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
+        id S236727AbiBXP5J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:57:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236721AbiBXP4z (ORCPT
+        with ESMTP id S236676AbiBXP4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 10:56:55 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE31E254545
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:56:24 -0800 (PST)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83FB1C60DB
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:56:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645718184; x=1677254184;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=e+EaalFBKesanPpHPz49PfBdxnZtE1tHhoVw3wRarAY=;
-  b=DAc5qCRoakGfsAAHMmLDCsHFPWzp30RT00CYbFr4IOlmJDWQYX301oqt
-   PMk222hdgyEe4arWbdzddRKEFDzNocPRrT61uSSjT6sHa5Q5LKhcePZ0I
-   glEX4fq58a1H8KGjty74n6CT1csN5S+I7hQRshCiWe666mHS6/Hvqln+D
-   ph1gl27CX0YufbXfWR59cL3Wobw1olaRDEB/q2rOiDK7WadcFHOyApwTJ
-   AFiEdkJtE9CwmhtqmU/M3zkZYgbw0NdO0gWsOKUztn7QORDTecI0pPT3b
-   vOqxox77PlJWJgTN23t1hvrwBPP8p3L7fVybN6xRCeqDApVovG6pqtiy7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="312982973"
+  t=1645718185; x=1677254185;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=/uqLLj0qwkSzZvvErzjrKmgux0ODubWp8jREWvqrV14=;
+  b=WzkEfkkRZCglFfiQgBM1WXT+iumPvpL9f08XVvDDul/aSZln/5j+C/Ui
+   1MF+7NJHrTsoh4uZHNFl2BcbH7V0ilI8UHt8DqJtL1NPYexEqvEkBiA7o
+   w5Lp/5OCguZmW0BgQtgBrMdQSXDvLftwXH9p4WI8lznvULH8F1AvczCBD
+   OVywL0pwIx30JjUYziFA9KWez/ERGb8JZOy2bLf9bKHja3eXabo0eni6Y
+   QBEKVVlstTfpKCnBmmCHBYkUHgMnZ2j/qp8Fr1HAT0sAFG0KhBJRbjal8
+   mkvDsOOvyuYwbrnI1M++aQOaIzk0f/4CjdH3H8fFo+C6h5I45PRMX936t
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="338702815"
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="312982973"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:24 -0800
+   d="scan'208";a="338702815"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 07:56:23 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="508914383"
+   d="scan'208";a="777092765"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 24 Feb 2022 07:56:17 -0800
+  by fmsmga006.fm.intel.com with ESMTP; 24 Feb 2022 07:56:17 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 4F5B650E; Thu, 24 Feb 2022 17:56:34 +0200 (EET)
+        id 3089F94; Thu, 24 Feb 2022 17:56:34 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -52,215 +52,202 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
         linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv4 03/30] x86/tdx: Provide common base for SEAMCALL and TDCALL C wrappers
-Date:   Thu, 24 Feb 2022 18:56:03 +0300
-Message-Id: <20220224155630.52734-4-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv4 00/30] TDX Guest: TDX core support
+Date:   Thu, 24 Feb 2022 18:56:00 +0300
+Message-Id: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
-References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Secure Arbitration Mode (SEAM) is an extension of VMX architecture.  It
-defines a new VMX root operation (SEAM VMX root) and a new VMX non-root
-operation (SEAM VMX non-root) which are both isolated from the legacy
-VMX operation where the host kernel runs.
+Hi All,
 
-A CPU-attested software module (called 'TDX module') runs in SEAM VMX
-root to manage and protect VMs running in SEAM VMX non-root.  SEAM VMX
-root is also used to host another CPU-attested software module (called
-'P-SEAMLDR') to load and update the TDX module.
+Intel's Trust Domain Extensions (TDX) protects confidential guest VMs
+from the host and physical attacks by isolating the guest register
+state and by encrypting the guest memory. In TDX, a special TDX module
+sits between the host and the guest, and runs in a special mode and
+manages the guest/host separation.
 
-Host kernel transits to either P-SEAMLDR or TDX module via the new
-SEAMCALL instruction, which is essentially a VMExit from VMX root mode
-to SEAM VMX root mode.  SEAMCALLs are leaf functions defined by
-P-SEAMLDR and TDX module around the new SEAMCALL instruction.
+	Please review and consider applying.
 
-A guest kernel can also communicate with TDX module via TDCALL
-instruction.
+More details of TDX guests can be found in Documentation/x86/tdx.rst.
 
-TDCALLs and SEAMCALLs use an ABI different from the x86-64 system-v ABI.
-RAX is used to carry both the SEAMCALL leaf function number (input) and
-the completion status (output).  Additional GPRs (RCX, RDX, R8-R11) may
-be further used as both input and output operands in individual leaf.
+All dependencies of the patchset are in Linus' tree now.
 
-TDCALL and SEAMCALL share the same ABI and require the largely same
-code to pass down arguments and retrieve results.
+SEV/TDX comparison:
+-------------------
 
-Define an assembly macro that can be used to implement C wrapper for
-both TDCALL and SEAMCALL.
+TDX has a lot of similarities to SEV. It enhances confidentiality
+of guest memory and state (like registers) and includes a new exception
+(#VE) for the same basic reasons as SEV-ES. Like SEV-SNP (not merged
+yet), TDX limits the host's ability to make changes in the guest
+physical address space.
 
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
----
- arch/x86/include/asm/tdx.h    | 20 ++++++++
- arch/x86/kernel/asm-offsets.c |  9 ++++
- arch/x86/virt/tdxcall.S       | 91 +++++++++++++++++++++++++++++++++++
- 3 files changed, 120 insertions(+)
+TDX/VM comparison:
+------------------
+
+Some of the key differences between TD and regular VM is,
+
+1. Multi CPU bring-up is done using the ACPI MADT wake-up table.
+2. A new #VE exception handler is added. The TDX module injects #VE exception
+   to the guest TD in cases of instructions that need to be emulated, disallowed
+   MSR accesses, etc.
+3. By default memory is marked as private, and TD will selectively share it with
+   VMM based on need.
+
+You can find TDX related documents in the following link.
+
+https://software.intel.com/content/www/br/pt/develop/articles/intel-trust-domain-extensions.html
+
+Git tree:
+
+https://github.com/intel/tdx.git guest-upstream
+
+Previous version:
+
+https://lore.kernel.org/r/20211214150304.62613-1-kirill.shutemov@linux.intel.com
+
+Changes from v3:
+  - Rebased on top of merged x86/coco patches
+  - Sanity build-time check for TDX detection (Cyrill Gorcunov)
+  - Correction in the documentation regarding #VE for CPUID
+Changes from v2:
+  - Move TDX-Guest-specific code under arch/x86/coco/
+  - Code shared between host and guest is under arch/x86/virt/
+  - Fix handling CR4.MCE for !CONFIG_X86_MCE
+  - A separate patch to clarify CR0.NE situation
+  - Use u8/u16/u32 for port I/O handler
+  - Rework TDCALL helpers:
+    + consolidation between guest and host
+    + clearer interface
+    + A new tdx_module_call() panic() if TDCALL fails
+  - Rework MMIO handling to imporove readability
+  - New generic API to deal encryption masks
+  - Move tdx_early_init() before copy_bootdata() (again)
+  - Rework #VE handing to share more code with #GP handler
+  - Rework __set_memory_enc_pgtable() to provide proper abstruction for both
+    SME/SEV and TDX cases.
+  - Fix warning on build with X86_MEM_ENCRYPT=y
+  - ... and more
+Changes from v1:
+  - Rebased to tip/master (94985da003a4).
+  - Address feedback from Borislav and Josh.
+  - Wire up KVM hypercalls. Needed to send IPI.
+
+Andi Kleen (1):
+  x86/tdx: Handle early boot port I/O
+
+Isaku Yamahata (1):
+  x86/tdx: ioapic: Add shared bit for IOAPIC base address
+
+Kirill A. Shutemov (18):
+  x86/mm: Fix warning on build with X86_MEM_ENCRYPT=y
+  x86/tdx: Provide common base for SEAMCALL and TDCALL C wrappers
+  x86/tdx: Extend the confidential computing API to support TDX guests
+  x86/tdx: Exclude shared bit from __PHYSICAL_MASK
+  x86/traps: Add #VE support for TDX guest
+  x86/tdx: Add HLT support for TDX guests
+  x86/tdx: Add MSR support for TDX guests
+  x86/tdx: Handle CPUID via #VE
+  x86/tdx: Handle in-kernel MMIO
+  x86: Adjust types used in port I/O helpers
+  x86: Consolidate port I/O helpers
+  x86/boot: Allow to hook up alternative port I/O helpers
+  x86/boot/compressed: Support TDX guest port I/O at decompression time
+  x86/boot: Set CR0.NE early and keep it set during the boot
+  x86/tdx: Make pages shared in ioremap()
+  x86/mm/cpa: Add support for TDX shared memory
+  x86/kvm: Use bounce buffers for TD guest
+  ACPICA: Avoid cache flush on TDX guest
+
+Kuppuswamy Sathyanarayanan (8):
+  x86/tdx: Detect running as a TDX guest in early boot
+  x86/tdx: Add __tdx_module_call() and __tdx_hypercall() helper
+    functions
+  x86/tdx: Detect TDX at early kernel decompression time
+  x86/tdx: Add port I/O emulation
+  x86/tdx: Wire up KVM hypercalls
+  x86/acpi, x86/boot: Add multiprocessor wake-up support
+  x86/topology: Disable CPU online/offline control for TDX guests
+  Documentation/x86: Document TDX kernel architecture
+
+Sean Christopherson (2):
+  x86/boot: Add a trampoline for booting APs via firmware handoff
+  x86/boot: Avoid #VE during boot for TDX platforms
+
+ Documentation/x86/index.rst              |   1 +
+ Documentation/x86/tdx.rst                | 196 ++++++++
+ arch/x86/Kconfig                         |  15 +
+ arch/x86/boot/a20.c                      |  14 +-
+ arch/x86/boot/boot.h                     |  35 +-
+ arch/x86/boot/compressed/Makefile        |   1 +
+ arch/x86/boot/compressed/head_64.S       |  27 +-
+ arch/x86/boot/compressed/misc.c          |  26 +-
+ arch/x86/boot/compressed/misc.h          |   4 +-
+ arch/x86/boot/compressed/pgtable.h       |   2 +-
+ arch/x86/boot/compressed/tdcall.S        |   3 +
+ arch/x86/boot/compressed/tdx.c           |  98 ++++
+ arch/x86/boot/compressed/tdx.h           |  15 +
+ arch/x86/boot/cpuflags.c                 |   3 +-
+ arch/x86/boot/cpuflags.h                 |   1 +
+ arch/x86/boot/early_serial_console.c     |  28 +-
+ arch/x86/boot/io.h                       |  28 ++
+ arch/x86/boot/main.c                     |   4 +
+ arch/x86/boot/pm.c                       |  10 +-
+ arch/x86/boot/tty.c                      |   4 +-
+ arch/x86/boot/video-vga.c                |   6 +-
+ arch/x86/boot/video.h                    |   8 +-
+ arch/x86/coco/Makefile                   |   2 +
+ arch/x86/coco/core.c                     |  14 +-
+ arch/x86/coco/tdcall.S                   | 197 ++++++++
+ arch/x86/coco/tdx.c                      | 594 +++++++++++++++++++++++
+ arch/x86/include/asm/acenv.h             |  16 +-
+ arch/x86/include/asm/apic.h              |   7 +
+ arch/x86/include/asm/cpufeatures.h       |   1 +
+ arch/x86/include/asm/disabled-features.h |   8 +-
+ arch/x86/include/asm/idtentry.h          |   4 +
+ arch/x86/include/asm/io.h                |  42 +-
+ arch/x86/include/asm/kvm_para.h          |  22 +
+ arch/x86/include/asm/mem_encrypt.h       |   6 +-
+ arch/x86/include/asm/realmode.h          |   1 +
+ arch/x86/include/asm/shared/io.h         |  34 ++
+ arch/x86/include/asm/shared/tdx.h        |  37 ++
+ arch/x86/include/asm/tdx.h               |  82 ++++
+ arch/x86/kernel/acpi/boot.c              | 118 +++++
+ arch/x86/kernel/apic/apic.c              |  10 +
+ arch/x86/kernel/apic/io_apic.c           |  15 +-
+ arch/x86/kernel/asm-offsets.c            |  19 +
+ arch/x86/kernel/head64.c                 |   7 +
+ arch/x86/kernel/head_64.S                |  28 +-
+ arch/x86/kernel/idt.c                    |   3 +
+ arch/x86/kernel/process.c                |   4 +
+ arch/x86/kernel/smpboot.c                |  12 +-
+ arch/x86/kernel/traps.c                  | 138 +++++-
+ arch/x86/mm/ioremap.c                    |   5 +
+ arch/x86/mm/mem_encrypt.c                |   9 +-
+ arch/x86/realmode/rm/header.S            |   1 +
+ arch/x86/realmode/rm/trampoline_64.S     |  57 ++-
+ arch/x86/realmode/rm/trampoline_common.S |  12 +-
+ arch/x86/realmode/rm/wakemain.c          |  14 +-
+ arch/x86/virt/tdxcall.S                  |  91 ++++
+ include/linux/cc_platform.h              |  10 +
+ kernel/cpu.c                             |   7 +
+ 57 files changed, 1997 insertions(+), 159 deletions(-)
+ create mode 100644 Documentation/x86/tdx.rst
+ create mode 100644 arch/x86/boot/compressed/tdcall.S
+ create mode 100644 arch/x86/boot/compressed/tdx.c
+ create mode 100644 arch/x86/boot/compressed/tdx.h
+ create mode 100644 arch/x86/boot/io.h
+ create mode 100644 arch/x86/coco/tdcall.S
+ create mode 100644 arch/x86/coco/tdx.c
+ create mode 100644 arch/x86/include/asm/shared/io.h
+ create mode 100644 arch/x86/include/asm/shared/tdx.h
+ create mode 100644 arch/x86/include/asm/tdx.h
  create mode 100644 arch/x86/virt/tdxcall.S
 
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index ba8042ce61c2..2f8cb1e53e77 100644
---- a/arch/x86/include/asm/tdx.h
-+++ b/arch/x86/include/asm/tdx.h
-@@ -8,6 +8,25 @@
- #define TDX_CPUID_LEAF_ID	0x21
- #define TDX_IDENT		"IntelTDX    "
- 
-+#define TDX_SEAMCALL_VMFAILINVALID     0x8000FF00FFFF0000ULL
-+
-+#ifndef __ASSEMBLY__
-+
-+/*
-+ * Used to gather the output registers values of the TDCALL and SEAMCALL
-+ * instructions when requesting services from the TDX module.
-+ *
-+ * This is a software only structure and not part of the TDX module/VMM ABI.
-+ */
-+struct tdx_module_output {
-+	u64 rcx;
-+	u64 rdx;
-+	u64 r8;
-+	u64 r9;
-+	u64 r10;
-+	u64 r11;
-+};
-+
- #ifdef CONFIG_INTEL_TDX_GUEST
- 
- void __init tdx_early_init(void);
-@@ -18,4 +37,5 @@ static inline void tdx_early_init(void) { };
- 
- #endif /* CONFIG_INTEL_TDX_GUEST */
- 
-+#endif /* !__ASSEMBLY__ */
- #endif /* _ASM_X86_TDX_H */
-diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
-index 9fb0a2f8b62a..7dca52f5cfc6 100644
---- a/arch/x86/kernel/asm-offsets.c
-+++ b/arch/x86/kernel/asm-offsets.c
-@@ -18,6 +18,7 @@
- #include <asm/bootparam.h>
- #include <asm/suspend.h>
- #include <asm/tlbflush.h>
-+#include <asm/tdx.h>
- 
- #ifdef CONFIG_XEN
- #include <xen/interface/xen.h>
-@@ -65,6 +66,14 @@ static void __used common(void)
- 	OFFSET(XEN_vcpu_info_arch_cr2, vcpu_info, arch.cr2);
- #endif
- 
-+	BLANK();
-+	OFFSET(TDX_MODULE_rcx, tdx_module_output, rcx);
-+	OFFSET(TDX_MODULE_rdx, tdx_module_output, rdx);
-+	OFFSET(TDX_MODULE_r8,  tdx_module_output, r8);
-+	OFFSET(TDX_MODULE_r9,  tdx_module_output, r9);
-+	OFFSET(TDX_MODULE_r10, tdx_module_output, r10);
-+	OFFSET(TDX_MODULE_r11, tdx_module_output, r11);
-+
- 	BLANK();
- 	OFFSET(BP_scratch, boot_params, scratch);
- 	OFFSET(BP_secure_boot, boot_params, secure_boot);
-diff --git a/arch/x86/virt/tdxcall.S b/arch/x86/virt/tdxcall.S
-new file mode 100644
-index 000000000000..90569faedacc
---- /dev/null
-+++ b/arch/x86/virt/tdxcall.S
-@@ -0,0 +1,91 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#include <asm/asm-offsets.h>
-+#include <asm/tdx.h>
-+
-+/*
-+ * TDX guests use the TDCALL instruction to make requests to the
-+ * TDX module and hypercalls to the VMM.
-+ *
-+ * TDX host user SEAMCALL instruction to make requests to TDX module.
-+ *
-+ * They are supported in Binutils >= 2.36.
-+ */
-+#define tdcall		.byte 0x66,0x0f,0x01,0xcc
-+#define seamcall	.byte 0x66,0x0f,0x01,0xcf
-+
-+.macro TDX_MODULE_CALL host:req
-+	/*
-+	 * R12 will be used as temporary storage for struct tdx_module_output
-+	 * pointer. Since R12-R15 registers are not used by TDCALL/SEAMCALL
-+	 * services supported by this function, it can be reused.
-+	 */
-+
-+	/* Callee saved, so preserve it */
-+	push %r12
-+
-+	/*
-+	 * Push output pointer to stack.
-+	 * After the operation, it will be fetched into R12 register.
-+	 */
-+	push %r9
-+
-+	/* Mangle function call ABI into TDCALL/SEAMCALL ABI: */
-+	/* Move Leaf ID to RAX */
-+	mov %rdi, %rax
-+	/* Move input 4 to R9 */
-+	mov %r8,  %r9
-+	/* Move input 3 to R8 */
-+	mov %rcx, %r8
-+	/* Move input 1 to RCX */
-+	mov %rsi, %rcx
-+	/* Leave input param 2 in RDX */
-+
-+	.if \host
-+	seamcall
-+	/*
-+	 * SEAMCALL instruction is essentially a VMExit from VMX root
-+	 * mode to SEAM VMX root mode.  VMfailInvalid (CF=1) indicates
-+	 * that the targeted SEAM firmware is not loaded or disabled,
-+	 * or P-SEAMLDR is busy with another SEAMCALL.  %rax is not
-+	 * changed in this case.
-+	 *
-+	 * Set %rax to TDX_SEAMCALL_VMFAILINVALID for VMfailInvalid.
-+	 * This value will never be used as actual SEAMCALL error code.
-+	 */
-+	jnc .Lno_vmfailinvalid
-+	mov $TDX_SEAMCALL_VMFAILINVALID, %rax
-+.Lno_vmfailinvalid:
-+	.else
-+	tdcall
-+	.endif
-+
-+	/*
-+	 * Fetch output pointer from stack to R12 (It is used
-+	 * as temporary storage)
-+	 */
-+	pop %r12
-+
-+	/* Check for success: 0 - Successful, otherwise failed */
-+	test %rax, %rax
-+	jnz .Lno_output_struct
-+
-+	/*
-+	 * Since this function can be initiated without an output pointer,
-+	 * check if caller provided an output struct before storing
-+	 * output registers.
-+	 */
-+	test %r12, %r12
-+	jz .Lno_output_struct
-+
-+	/* Copy result registers to output struct: */
-+	movq %rcx, TDX_MODULE_rcx(%r12)
-+	movq %rdx, TDX_MODULE_rdx(%r12)
-+	movq %r8,  TDX_MODULE_r8(%r12)
-+	movq %r9,  TDX_MODULE_r9(%r12)
-+	movq %r10, TDX_MODULE_r10(%r12)
-+	movq %r11, TDX_MODULE_r11(%r12)
-+
-+.Lno_output_struct:
-+	/* Restore the state of R12 register */
-+	pop %r12
-+.endm
 -- 
 2.34.1
 
