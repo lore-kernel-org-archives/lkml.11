@@ -2,102 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73730C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 07:10:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1119AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 07:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231491AbiBXHKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 02:10:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43514 "EHLO
+        id S231502AbiBXHKp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 02:10:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231160AbiBXHKg (ORCPT
+        with ESMTP id S231160AbiBXHKm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 02:10:36 -0500
-Received: from mail-oi1-x249.google.com (mail-oi1-x249.google.com [IPv6:2607:f8b0:4864:20::249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF025230E42
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:10:06 -0800 (PST)
-Received: by mail-oi1-x249.google.com with SMTP id w21-20020a056808091500b002d724f37efeso718278oih.13
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:10:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=0HxuerY811sRCg0Jfk4JZiV8GyWj5zsy+8XByk2p3uE=;
-        b=h044Pz91gVuphvakkKNhmZHHx6f6K0RMTVPCT1RY4ZuAIIRan7B3CdSOs0SFunl1gd
-         I3V35Gy1MLUYGHta+YPdVS7oD/v2rnkX5ACpfzrdFQaEAbP61qP1dpwR+pKVWCz+KQj4
-         kQevPpY1kjJ9v2JyI6mmU5fJmgpxY138W7S8zD6w0fTekRTcbVKexQpUfrh3klr5HeG1
-         bhjeN6fIlAJ8T0KFgpq1AxOiVZC2PM2r5o+WuYNIX+qeRqQl4nAthw8n4NTG9SeQiVF3
-         /Z8jUuCCvxoi6aDec1q6eL5HFiFKGSYGWwJFIlpo4QCACWab5smKNaimXFA1IKCFL2kM
-         fxcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=0HxuerY811sRCg0Jfk4JZiV8GyWj5zsy+8XByk2p3uE=;
-        b=WvQhh9MSovf0LphIK6P8ca3yXua4OEkbx37k3K2Af183Npa0mwieJkKAgyjOhYQ3nt
-         Rz2838Htelf2fIHxl90Dlb7tAh8ZW+9p32KiUDU7jnn11MekqWtGkWmgjl1fL+eKsMig
-         sJJBEsGzGQAvxEQ+l1VG4aWY7QvZm/5sihXZV7DlqGxcKcumC/kX7wf4aPT4QJ4mExiQ
-         QL7lk6UrJZR4v6d71H8v2dy4jG6aBfjUdC31I/YjxsAhEEM4HLOqLx6OikPtUZvEoKxk
-         C0AkIIc5uLwYjffukGTAq2W0QkurnFHsLWu0wYJOiATposPVyPu8yJr1R/JpMR7PuqA7
-         AFqQ==
-X-Gm-Message-State: AOAM530etAlYeznXo/R2YuKS+j0D2rTrcUG3SOCboRvagCRfnOXquKP6
-        1L4LmVZAl+5BCItuHfB5edotz1yxOX2GEg==
-X-Google-Smtp-Source: ABdhPJwF/l64e7Ik7fg0Dqg/2ETqDfmi125huEghgMaJKwhrrLZwspr/Y4tMqgu4emOFahgp0JWO+cpz9Ee44Q==
-X-Received: from shakeelb.svl.corp.google.com ([2620:15c:2cd:202:8c61:13e8:87c2:e5f0])
- (user=shakeelb job=sendgmr) by 2002:aca:f0d:0:b0:2d4:e810:4249 with SMTP id
- 13-20020aca0f0d000000b002d4e8104249mr6476444oip.37.1645686606011; Wed, 23 Feb
- 2022 23:10:06 -0800 (PST)
-Date:   Wed, 23 Feb 2022 23:10:02 -0800
-In-Reply-To: <20220223194812.1299646-1-surenb@google.com>
-Message-Id: <20220224071002.w3r3at3zhccwu6p6@google.com>
-Mime-Version: 1.0
-References: <20220223194812.1299646-1-surenb@google.com>
-Subject: Re: [PATCH v3 1/1] mm: count time in drain_all_pages during direct
- reclaim as memory pressure
-From:   Shakeel Butt <shakeelb@google.com>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     akpm@linux-foundation.org, hannes@cmpxchg.org, mhocko@suse.com,
-        pmladek@suse.com, peterz@infradead.org, guro@fb.com,
-        minchan@kernel.org, timmurray@google.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        Thu, 24 Feb 2022 02:10:42 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED0C5230E50;
+        Wed, 23 Feb 2022 23:10:12 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 99A7D106F;
+        Wed, 23 Feb 2022 23:10:12 -0800 (PST)
+Received: from [10.163.48.178] (unknown [10.163.48.178])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 38D7F3F70D;
+        Wed, 23 Feb 2022 23:10:08 -0800 (PST)
+Subject: Re: [PATCH 1/2] perf: Add more generic branch types
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, robh@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Will Deacon <will@kernel.org>
+References: <1643348653-24367-1-git-send-email-anshuman.khandual@arm.com>
+ <1643348653-24367-2-git-send-email-anshuman.khandual@arm.com>
+ <YfpxzKa7JSlimA1i@FVFF77S0Q05N>
+ <e9c4eab7-51b4-6794-0d02-2d325c300e33@arm.com>
+Message-ID: <25a36640-3061-4c98-4da0-ceb039439f42@arm.com>
+Date:   Thu, 24 Feb 2022 12:40:11 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <e9c4eab7-51b4-6794-0d02-2d325c300e33@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 11:48:12AM -0800, Suren Baghdasaryan wrote:
-> When page allocation in direct reclaim path fails, the system will
-> make one attempt to shrink per-cpu page lists and free pages from
-> high alloc reserves. Draining per-cpu pages into buddy allocator can
-> be a very slow operation because it's done using workqueues and the
-> task in direct reclaim waits for all of them to finish before
-> proceeding. Currently this time is not accounted as psi memory stall.
 
-> While testing mobile devices under extreme memory pressure, when
-> allocations are failing during direct reclaim, we notices that psi
-> events which would be expected in such conditions were not triggered.
-> After profiling these cases it was determined that the reason for
-> missing psi events was that a big chunk of time spent in direct
-> reclaim is not accounted as memory stall, therefore psi would not
-> reach the levels at which an event is generated. Further investigation
-> revealed that the bulk of that unaccounted time was spent inside
-> drain_all_pages call.
 
-> A typical captured case when drain_all_pages path gets activated:
+On 2/24/22 11:21 AM, Anshuman Khandual wrote:
+> 
+> 
+> On 2/2/22 5:28 PM, Mark Rutland wrote:
+>> Hi Anshuman,
+>>
+>> On Fri, Jan 28, 2022 at 11:14:12AM +0530, Anshuman Khandual wrote:
+>>> This expands generic branch type classification by adding some more entries
+>>> , that can still be represented with the existing 4 bit 'type' field. While
+>>> here this also updates the x86 implementation with these new branch types.
+>> It looks like there's some whitespace damage here.
+>>
+>> >From a quick scan of the below, I think the "exception return" and "IRQ
+>> exception" types are somewhat generic, and could be added now (aside from any
+>> bikeshedding over names), but:
+> 
+> Hi Mark,
+> 
+> I have sent a patch adding just PERF_BR_ERET and PERF_BR_IRQ which are generic
+> enough to be included now. The 'type' field still got 3 more places for future
+> use. Hence we should try and include two more branch types, before adding the
 
-> __alloc_pages_slowpath  took 44.644.613ns
->      __perform_reclaim   took    751.668ns (1.7%)
->      drain_all_pages     took 43.887.167ns (98.3%)
+The two additional generic branch types could be
 
-> PSI in this case records the time spent in __perform_reclaim but
-> ignores drain_all_pages, IOW it misses 98.3% of the time spent in
-> __alloc_pages_slowpath.
+- PERF_BR_SERROR (possible arm64 equivalent for x86 MCE)
+- PERF_BR_NO_TX  (only missing TX related branch type in perf_branch_entry)
 
-> Annotate __alloc_pages_direct_reclaim in its entirety so that delays
-> from handling page allocation failure in the direct reclaim path are
-> accounted as memory stall.
+perf_branch_entry.[in_tx | abort] are already available. Also PERF_BR_NO_TX
+could be used right away on x86 platform, via X86_BR_NO_TX.
 
-> Reported-by: Tim Murray <timmurray@google.com>
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+> last entry for ABI expansion (e.g PERF_BR_EXTENDED).
 
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
+PERF_BR_EXTENDED could help expand into another 4 bits 'new_type' field
+following the existing 4 bits 'type' field. Does this sound feasible ?
+
+enum {
+        PERF_BR_UNKNOWN         = 0,    /* unknown */
+        PERF_BR_COND            = 1,    /* conditional */
+        PERF_BR_UNCOND          = 2,    /* unconditional  */
+        PERF_BR_IND             = 3,    /* indirect */
+        PERF_BR_CALL            = 4,    /* function call */
+        PERF_BR_IND_CALL        = 5,    /* indirect function call */
+        PERF_BR_RET             = 6,    /* function return */
+        PERF_BR_SYSCALL         = 7,    /* syscall */
+        PERF_BR_SYSRET          = 8,    /* syscall return */
+        PERF_BR_COND_CALL       = 9,    /* conditional function call */
+        PERF_BR_COND_RET        = 10,   /* conditional function return */
+        PERF_BR_ERET            = 11,   /* exception return */
+        PERF_BR_IRQ             = 12,   /* irq */
+        PERF_BR_SERROR          = 13,   /* System error */
+        PERF_BR_NO_TX           = 14,   /* No transaction */
+	PERF_BR_EXTEND_ABI	= 15 	/* Extended ABI */
+        PERF_BR_MAX,
+};
+
+enum {
+       PERF_BR_NEW_FAULT_ALGN          = 0,    /* Alignment fault */
+       PERF_BR_NEW_FAULT_DATA          = 1,    /* Data fault */
+       PERF_BR_NEW_FAULT_INST          = 2,    /* Inst fault */
+       PERF_BR_NEW_ARCH_1              = 3,    /* Architecture specific */
+       PERF_BR_NEW_ARCH_2              = 4,    /* Architecture specific */
+       PERF_BR_NEW_ARCH_3              = 5,    /* Architecture specific */
+       PERF_BR_NEW_ARCH_4              = 6,    /* Architecture specific */
+       PERF_BR_NEW_ARCH_5              = 7,    /* Architecture specific */
+       PERF_BR_NEW_MAX,
+};
+
+#ifdef CONFIG_ARM64
+#define PERF_BR_FIQ            PERF_BR_NEW_ARCH_1
+#define PERF_BR_DEBUG_HALT     PERF_BR_NEW_ARCH_2
+#define PERF_BR_DEBUG_EXIT     PERF_BR_NEW_ARCH_3
+#define PERF_BR_DEBUG_INST     PERF_BR_NEW_ARCH_4
+#define PERF_BR_DEBUG_DATA     PERF_BR_NEW_ARCH_5
+#endif
+
+User space perf tool will look into perf_branch_entry.new_type, only
+when (perf_branch_entry.type == PERF_BR_EXTEND_ABI). Older perf tool
+on a newer kernel will be safe via old PERF_BR_MAX, and will ignore
+[PERF_BR_ERET - PERF_BR_EXTEND_ABI] values possibly with an warning.
+
+- Anshuman
