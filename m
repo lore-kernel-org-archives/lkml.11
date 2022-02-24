@@ -2,182 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0533BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E30B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233106AbiBXSz1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 13:55:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
+        id S233131AbiBXS7c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 13:59:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233083AbiBXSz0 (ORCPT
+        with ESMTP id S232292AbiBXS7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 13:55:26 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5EFE24CCE3
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 10:54:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645728895; x=1677264895;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=maTwcdC87fX3lmLSsjgS76Kko/CC89cO+10/za1K53s=;
-  b=fGN0wx8cWz+iIJq0NnQkFoDI22gxAgBtbNO9z8I1G+0to4vHsymcsv6N
-   8lFvdCIuxBPk2qmSKhPCm01sFW3fsl+ErB39SUMAmlcfXLFFFyQxzHSa3
-   eYN9pJuLp2xBCGBOmQf372NHKNFlDTAII5GY7q2Zp9pIuLSxMkas1jXvg
-   vyq8VFRvd6gBWjmmTsM44KpDJbVUwjnYOaq9IxiBJQvKmsl6SfizF3o63
-   aSucOae8CYSawx7rL9xUz7a1votHO9zDQppba2Jm17gODq7208rD41lPp
-   MQdOhJaHVLU12rM7qx7YodebJOHKNuFKJu6S3Jo9bBUssjh5elQMS1702
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="251150246"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="251150246"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 10:52:29 -0800
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="548888374"
-Received: from vpirogov-mobl.amr.corp.intel.com (HELO [10.252.137.68]) ([10.252.137.68])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 10:52:28 -0800
-Message-ID: <67dfdb0c-c483-ec3c-4fb8-57086ffde9bf@intel.com>
-Date:   Thu, 24 Feb 2022 10:52:23 -0800
+        Thu, 24 Feb 2022 13:59:31 -0500
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0495818E42D;
+        Thu, 24 Feb 2022 10:59:00 -0800 (PST)
+Received: from integral2.. (unknown [36.78.50.60])
+        by gnuweeb.org (Postfix) with ESMTPSA id 81CFB7E2A3;
+        Thu, 24 Feb 2022 18:58:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1645729140;
+        bh=FCgV7HQ6Sz7X4EcW0AHGQFLFZjP2p7gApc5nIKixJdk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ll07GBV4MJ5dFyQU6rmVP1mJAwWEhaWkrlN618dRWC4jaGKEnpf1i9SlQIDNK1r6q
+         2i2Aap4XKfirQn+9MbzRuYSNvBoAKAzAhif1KYa0J/YVm/c7PcANr2NSnVcqi9Cu+r
+         0DScWrfxF0rDJtS8CzB5oaGYzcgXvswWfyfu8GFnG5pjQpGYcryc1SlB5V+E+uGZLg
+         EeiPBek0alz7Vfkc2KUKxQxMjwraQ0IE1tDI7gFrlmxlRS7bNAlfK50qVmEaYWJ5C/
+         zEAdkGKX9GzYMJCKzBX06u12/ynxwbSP09K0IgWUOZttB/fXK2h9ZCYmZS5ipZ4mXE
+         CfPdfKeyP8h+g==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Keyon Jie <yang.jie@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Subject: [PATCH v4] ASoC: SOF: Intel: Fix NULL ptr dereference when ENOMEM
+Date:   Fri, 25 Feb 2022 01:58:36 +0700
+Message-Id: <20220224185836.44907-1-ammarfaizi2@gnuweeb.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220224182818.40301-1-ammarfaizi2@gnuweeb.org>
+References: <20220224145124.15985-1-ammarfaizi2@gnuweeb.org> <cfe9e583-e20a-f1d6-2a81-2538ca3ca054@linux.intel.com> <Yhe/3rELNfFOdU4L@sirena.org.uk> <04e79b9c-ccb1-119a-c2e2-34c8ca336215@linux.intel.com> <20220224180850.34592-1-ammarfaizi2@gnuweeb.org> <YhfLCWm0Ms3E+j4z@sirena.org.uk> <20220224182818.40301-1-ammarfaizi2@gnuweeb.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
- <20220224155630.52734-10-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv4 09/30] x86/tdx: Add MSR support for TDX guests
-In-Reply-To: <20220224155630.52734-10-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/24/22 07:56, Kirill A. Shutemov wrote:
-> Use hypercall to emulate MSR read/write for the TDX platform.
-> 
-> There are two viable approaches for doing MSRs in a TD guest:
-> 
-> 1. Execute the RDMSR/WRMSR instructions like most VMs and bare metal
->    do. Some will succeed, others will cause a #VE. All of those that
->    cause a #VE will be handled with a TDCALL.
-> 2. Use paravirt infrastructure.  The paravirt hook has to keep a list
->    of which MSRs would cause a #VE and use a TDCALL.  All other MSRs
->    execute RDMSR/WRMSR instructions directly.
-> 
-> The second option can be ruled out because the list of MSRs was
-> challenging to maintain. That leaves option #1 as the only viable
-> solution for the minimal TDX support.
-> 
-> For performance-critical MSR writes (like TSC_DEADLINE), future patches
-> will replace the WRMSR/#VE sequence with the direct TDCALL.
+Do not call snd_dma_free_pages() when snd_dma_alloc_pages() returns
+-ENOMEM because it leads to a NULL pointer dereference bug.
 
-This will still leave us with a list of non-#VE-inducing MSRs.  That's
-not great.  But, if we miss an MSR in the performance-critical list, the
-result is a slow WRMSR->#VE.  If we miss an MSR in the paravirt
-approach, we induce a fatal #VE.
+The dmesg says:
 
-Please add something to that effect if you revise this patch.
+  [ T1387] sof-audio-pci-intel-tgl 0000:00:1f.3: error: memory alloc failed: -12
+  [ T1387] BUG: kernel NULL pointer dereference, address: 0000000000000000
+  [ T1387] #PF: supervisor read access in kernel mode
+  [ T1387] #PF: error_code(0x0000) - not-present page
+  [ T1387] PGD 0 P4D 0
+  [ T1387] Oops: 0000 [#1] PREEMPT SMP NOPTI
+  [ T1387] CPU: 6 PID: 1387 Comm: alsa-sink-HDA A Tainted: G        W         5.17.0-rc4-superb-owl-00055-g80d47f5de5e3
+  [ T1387] Hardware name: HP HP Laptop 14s-dq2xxx/87FD, BIOS F.15 09/15/2021
+  [ T1387] RIP: 0010:dma_free_noncontiguous+0x37/0x80
+  [ T1387] Code: [... snip ...]
+  [ T1387] RSP: 0000:ffffc90002b87770 EFLAGS: 00010246
+  [ T1387] RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+  [ T1387] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff888101db30d0
+  [ T1387] RBP: 00000000fffffff4 R08: 0000000000000000 R09: 0000000000000000
+  [ T1387] R10: 0000000000000000 R11: ffffc90002b874d0 R12: 0000000000000001
+  [ T1387] R13: 0000000000058000 R14: ffff888105260c68 R15: ffff888105260828
+  [ T1387] FS:  00007f42e2ffd640(0000) GS:ffff888466b80000(0000) knlGS:0000000000000000
+  [ T1387] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  [ T1387] CR2: 0000000000000000 CR3: 000000014acf0003 CR4: 0000000000770ee0
+  [ T1387] PKRU: 55555554
+  [ T1387] Call Trace:
+  [ T1387]  <TASK>
+  [ T1387]  cl_stream_prepare+0x10a/0x120 [snd_sof_intel_hda_common 146addf995b9279ae7f509621078cccbe4f875e1]
+  [... snip ...]
+  [ T1387]  </TASK>
 
-> RDMSR and WRMSR specification details can be found in
-> Guest-Host-Communication Interface (GHCI) for Intel Trust Domain
-> Extensions (Intel TDX) specification, sec titled "TDG.VP.
-> VMCALL<Instruction.RDMSR>" and "TDG.VP.VMCALL<Instruction.WRMSR>".
-> 
-> Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> Reviewed-by: Andi Kleen <ak@linux.intel.com>
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> ---
->  arch/x86/coco/tdx.c | 42 ++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 42 insertions(+)
-> 
-> diff --git a/arch/x86/coco/tdx.c b/arch/x86/coco/tdx.c
-> index 0a2e6be0cdae..89992593a209 100644
-> --- a/arch/x86/coco/tdx.c
-> +++ b/arch/x86/coco/tdx.c
-> @@ -116,6 +116,44 @@ void __cpuidle tdx_safe_halt(void)
->  		WARN_ONCE(1, "HLT instruction emulation failed\n");
->  }
->  
-> +static bool read_msr(struct pt_regs *regs)
-> +{
-> +	struct tdx_hypercall_args args = {
-> +		.r10 = TDX_HYPERCALL_STANDARD,
-> +		.r11 = EXIT_REASON_MSR_READ,
+Cc: Daniel Baluta <daniel.baluta@nxp.com>
+Cc: Jaroslav Kysela <perex@perex.cz>
+Cc: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Cc: Keyon Jie <yang.jie@linux.intel.com>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: Rander Wang <rander.wang@intel.com>
+Cc: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Cc: Takashi Iwai <tiwai@suse.com>
+Cc: sound-open-firmware@alsa-project.org
+Cc: alsa-devel@alsa-project.org
+Cc: linux-kernel@vger.kernel.org
+Cc: stable@vger.kernel.org # v5.2+
+Fixes: d16046ffa6de040bf580a64d5f4d0aa18258a854 ("ASoC: SOF: Intel: Add Intel specific HDA firmware loader")
+Link: https://lore.kernel.org/lkml/20220224145124.15985-1-ammarfaizi2@gnuweeb.org/ # v1
+Link: https://lore.kernel.org/lkml/20220224180850.34592-1-ammarfaizi2@gnuweeb.org/ # v2
+Link: https://lore.kernel.org/lkml/20220224182818.40301-1-ammarfaizi2@gnuweeb.org/ # v3
+Reviewed-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
 
-Just a minor note: these "EXIT_REASON_FOO"'s in r11 are effectively
-*the* hypercall being made, right?
+ v4:
+   - Remove 2 `Cc` tags after got the Reviewed-by tag from the CC'ed people
+     as they will be CC'ed anyway.
+   - Extra commit message cleanup.
 
-The hypercall is being made in response to what would have otherwise
-been a MSR read VMEXIT.  But, it's a *bit* goofy to see them here when
-the TDX guest isn't doing any kind of VMEXIT.
+ v3:
+   - Address comment from Mark Brown (strip not useful kernel log
+     from the commit message, again).
 
-I wish there were some clarity around it, but it's not a deal breaker.
+ v2:
+   - Append Reviewed-by tag from Peter Ujfalusi.
+   - Append Reviewed-by tag from Pierre-Louis Bossart.
+   - Address comment from Mark Brown (strip irrelevant kernel log
+     from the commit message).
 
-> +		.r12 = regs->cx,
-> +	};
-> +
-> +	/*
-> +	 * Emulate the MSR read via hypercall. More info about ABI
-> +	 * can be found in TDX Guest-Host-Communication Interface
-> +	 * (GHCI), section titled "TDG.VP.VMCALL<Instruction.RDMSR>".
-> +	 */
-> +	if (__tdx_hypercall(&args, TDX_HCALL_HAS_OUTPUT))
-> +		return false;
-> +
-> +	regs->ax = lower_32_bits(args.r11);
-> +	regs->dx = upper_32_bits(args.r11);
-> +	return true;
-> +}
-> +
-> +static bool write_msr(struct pt_regs *regs)
-> +{
-> +	struct tdx_hypercall_args args = {
-> +		.r10 = TDX_HYPERCALL_STANDARD,
-> +		.r11 = EXIT_REASON_MSR_WRITE,
-> +		.r12 = regs->cx,
-> +		.r13 = (u64)regs->dx << 32 | regs->ax,
-> +	};
-> +
-> +	/*
-> +	 * Emulate the MSR write via hypercall. More info about ABI
-> +	 * can be found in TDX Guest-Host-Communication Interface
-> +	 * (GHCI) section titled "TDG.VP.VMCALL<Instruction.WRMSR>".
-> +	 */
-> +	return !__tdx_hypercall(&args, 0);
-> +}
-> +
->  void tdx_get_ve_info(struct ve_info *ve)
->  {
->  	struct tdx_module_output out;
-> @@ -158,6 +196,10 @@ static bool virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
->  	switch (ve->exit_reason) {
->  	case EXIT_REASON_HLT:
->  		return handle_halt();
-> +	case EXIT_REASON_MSR_READ:
-> +		return read_msr(regs);
-> +	case EXIT_REASON_MSR_WRITE:
-> +		return write_msr(regs);
->  	default:
->  		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
->  		return false;
+ sound/soc/sof/intel/hda-loader.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-I still think it's annoying that all these WRMSR's are turned into #VE,
-but this does seem like the best approach given the architecture that we
-have.  Having the optimized ones seems like a good compromise.
+diff --git a/sound/soc/sof/intel/hda-loader.c b/sound/soc/sof/intel/hda-loader.c
+index 33306d2023a7..9bbfdab8009d 100644
+--- a/sound/soc/sof/intel/hda-loader.c
++++ b/sound/soc/sof/intel/hda-loader.c
+@@ -47,7 +47,7 @@ static struct hdac_ext_stream *cl_stream_prepare(struct snd_sof_dev *sdev, unsig
+ 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV_SG, &pci->dev, size, dmab);
+ 	if (ret < 0) {
+ 		dev_err(sdev->dev, "error: memory alloc failed: %d\n", ret);
+-		goto error;
++		goto out_put;
+ 	}
+ 
+ 	hstream->period_bytes = 0;/* initialize period_bytes */
+@@ -58,22 +58,23 @@ static struct hdac_ext_stream *cl_stream_prepare(struct snd_sof_dev *sdev, unsig
+ 		ret = hda_dsp_iccmax_stream_hw_params(sdev, dsp_stream, dmab, NULL);
+ 		if (ret < 0) {
+ 			dev_err(sdev->dev, "error: iccmax stream prepare failed: %d\n", ret);
+-			goto error;
++			goto out_free;
+ 		}
+ 	} else {
+ 		ret = hda_dsp_stream_hw_params(sdev, dsp_stream, dmab, NULL);
+ 		if (ret < 0) {
+ 			dev_err(sdev->dev, "error: hdac prepare failed: %d\n", ret);
+-			goto error;
++			goto out_free;
+ 		}
+ 		hda_dsp_stream_spib_config(sdev, dsp_stream, HDA_DSP_SPIB_ENABLE, size);
+ 	}
+ 
+ 	return dsp_stream;
+ 
+-error:
+-	hda_dsp_stream_put(sdev, direction, hstream->stream_tag);
++out_free:
+ 	snd_dma_free_pages(dmab);
++out_put:
++	hda_dsp_stream_put(sdev, direction, hstream->stream_tag);
+ 	return ERR_PTR(ret);
+ }
+ 
 
-Acked-by: Dave Hansen <dave.hansen@linux.intel.com>
+base-commit: 23d04328444a8fa0ca060c5e532220dac8e8bc26
+-- 
+2.32.0
+
