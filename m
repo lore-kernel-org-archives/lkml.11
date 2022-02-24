@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 205F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A68BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233044AbiBXKNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:13:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S233353AbiBXKNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:13:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233014AbiBXKNC (ORCPT
+        with ESMTP id S233305AbiBXKNE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:13:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502DE139CF8;
-        Thu, 24 Feb 2022 02:12:32 -0800 (PST)
+        Thu, 24 Feb 2022 05:13:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A682BB16EC;
+        Thu, 24 Feb 2022 02:12:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EE106130A;
-        Thu, 24 Feb 2022 10:12:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 011ACC340F6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0827BB824F1;
+        Thu, 24 Feb 2022 10:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9625EC340F1;
         Thu, 24 Feb 2022 10:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645697552;
-        bh=GvBeGbRM9lOucS8iJkQ3NSS2HPWOy7uTkLQW2AEW4BI=;
+        s=k20201202; t=1645697551;
+        bh=SOALSyIfSfzTlnbuP+RGhp+c3awflGDjDp8CanYUKFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GzGhMGFyUvoyE+Yip5PuayyHm6OWDkFf1GI1lWlyz+jmb+c6CtOq8RNOEuC5Wfh1l
-         atvVxbZOHMN6Xdart0Zt8x4cRfani+6UlxsVgeUVgtDjQvTKVLjtShoI2gdTmIvrOP
-         jAJIY6idec6Cdps+gE4VV16Sgb25qrElXnNQhE98Wif6Db2wSsg4HJtEBJXSgE/VCJ
-         Lo5TH8Pl+SOQSJcbP0BrLHHN0htZt3yYnNLKdVbKFzyYnPbq21MU2ePEuiSTkbtXd3
-         9wWkwVMrVo6DQK9KVrlsBnGKdg4YM1OUIpiXQQy0qZEZVUrM/QJ0Y3PrxJHbXLi7oZ
-         GA8pavuitg+MA==
+        b=tLWS8JSXLRoHlwK1klGXqhDwvI9lD0bZGLfWACCgOgFIXWw1rnTG+8217PWkihFew
+         FmcTNzbcYShkLuYbBmsyPlzUqxqGdWAdzoFD83Uy5B3Kb96iUgVRj37BbZW9bTkRXW
+         foyhc+56kZaG4fNHWIleyEXbh8kBPpKvl6oCzPh74b260Ilt0sZX6q1cvidGLSH59I
+         k3Zoz4YkdwX74B9jlfAF4P+b/9rYHngMShzXXD2gg14wuNxk5+2+Y9oje1RINTwW8L
+         xX3MuwWaIf7HGdogqSYwg+bKMS5IsZxBq3fb8WfwSu9uyElJLcTaNmoU0rabS9fltK
+         hrubePVHiCFTA==
 Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
         by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <maz@kernel.org>)
-        id 1nNB6r-00A979-TI; Thu, 24 Feb 2022 10:12:29 +0000
+        id 1nNB6r-00A979-Gs; Thu, 24 Feb 2022 10:12:29 +0000
 From:   Marc Zyngier <maz@kernel.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         linux-arm-msm@vger.kernel.org
-Subject: [PATCH 4/5] irqchip/qcom-pdc: Fix broken locking
-Date:   Thu, 24 Feb 2022 10:12:25 +0000
-Message-Id: <20220224101226.88373-5-maz@kernel.org>
+Subject: [PATCH 2/5] irqchip/qcom-pdc: Kill non-wakeup irqdomain
+Date:   Thu, 24 Feb 2022 10:12:23 +0000
+Message-Id: <20220224101226.88373-3-maz@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220224101226.88373-1-maz@kernel.org>
 References: <20220224101226.88373-1-maz@kernel.org>
@@ -59,47 +59,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
-and has a raw spinlock for mutual exclusion, which is uses with
-interruptible primitives.
+A careful look at the way the PDC driver works shows that:
 
-This means that this critical section can itself be interrupted.
-Should the interrupt also be a PDC interrupt, and the endpoint driver
-perform an irq_disable() on that interrupt, we end-up in a deadlock.
+- all interrupts are in the same space
+- all interrupts are treated the same
 
-Fix this by using the irqsave/irqrestore variants of the locking
-primitives.
+And yet the driver creates two domains based on whether
+the interrupt gets mapped directly or from the pinctrl code,
+which is obviously a waste of resources.
+
+Kill the non-wakeup domain and unify all the interrupt handling.
 
 Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- drivers/irqchip/qcom-pdc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/irqchip/qcom-pdc.c | 84 +++++---------------------------------
+ 1 file changed, 10 insertions(+), 74 deletions(-)
 
 diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 837ca6998f6a..0cd20ddfae2a 100644
+index 3b214c4e6755..5be531403f50 100644
 --- a/drivers/irqchip/qcom-pdc.c
 +++ b/drivers/irqchip/qcom-pdc.c
-@@ -55,17 +55,18 @@ static u32 pdc_reg_read(int reg, u32 i)
- static void pdc_enable_intr(struct irq_data *d, bool on)
- {
- 	int pin_out = d->hwirq;
-+	unsigned long flags;
- 	u32 index, mask;
- 	u32 enable;
+@@ -21,7 +21,6 @@
+ #include <linux/slab.h>
+ #include <linux/types.h>
  
- 	index = pin_out / 32;
- 	mask = pin_out % 32;
+-#define PDC_MAX_IRQS		168
+ #define PDC_MAX_GPIO_IRQS	256
  
--	raw_spin_lock(&pdc_lock);
-+	raw_spin_lock_irqsave(&pdc_lock, flags);
- 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
- 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
- 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
--	raw_spin_unlock(&pdc_lock);
-+	raw_spin_unlock_irqrestore(&pdc_lock, flags);
+ #define CLEAR_INTR(reg, intr)	(reg & ~(1 << intr))
+@@ -224,51 +223,6 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
+ 	unsigned int type;
+ 	int ret;
+ 
+-	ret = qcom_pdc_translate(domain, fwspec, &hwirq, &type);
+-	if (ret)
+-		return ret;
+-
+-	ret  = irq_domain_set_hwirq_and_chip(domain, virq, hwirq,
+-					     &qcom_pdc_gic_chip, NULL);
+-	if (ret)
+-		return ret;
+-
+-	region = get_pin_region(hwirq);
+-	if (!region)
+-		return irq_domain_disconnect_hierarchy(domain->parent, virq);
+-
+-	if (type & IRQ_TYPE_EDGE_BOTH)
+-		type = IRQ_TYPE_EDGE_RISING;
+-
+-	if (type & IRQ_TYPE_LEVEL_MASK)
+-		type = IRQ_TYPE_LEVEL_HIGH;
+-
+-	parent_fwspec.fwnode      = domain->parent->fwnode;
+-	parent_fwspec.param_count = 3;
+-	parent_fwspec.param[0]    = 0;
+-	parent_fwspec.param[1]    = pin_to_hwirq(region, hwirq);
+-	parent_fwspec.param[2]    = type;
+-
+-	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
+-					    &parent_fwspec);
+-}
+-
+-static const struct irq_domain_ops qcom_pdc_ops = {
+-	.translate	= qcom_pdc_translate,
+-	.alloc		= qcom_pdc_alloc,
+-	.free		= irq_domain_free_irqs_common,
+-};
+-
+-static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
+-			       unsigned int nr_irqs, void *data)
+-{
+-	struct irq_fwspec *fwspec = data;
+-	struct irq_fwspec parent_fwspec;
+-	struct pdc_pin_region *region;
+-	irq_hw_number_t hwirq;
+-	unsigned int type;
+-	int ret;
+-
+ 	ret = qcom_pdc_translate(domain, fwspec, &hwirq, &type);
+ 	if (ret)
+ 		return ret;
+@@ -301,16 +255,9 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
+ 					    &parent_fwspec);
  }
  
- static void qcom_pdc_gic_disable(struct irq_data *d)
+-static int qcom_pdc_gpio_domain_select(struct irq_domain *d,
+-				       struct irq_fwspec *fwspec,
+-				       enum irq_domain_bus_token bus_token)
+-{
+-	return bus_token == DOMAIN_BUS_WAKEUP;
+-}
+-
+-static const struct irq_domain_ops qcom_pdc_gpio_ops = {
+-	.select		= qcom_pdc_gpio_domain_select,
+-	.alloc		= qcom_pdc_gpio_alloc,
++static const struct irq_domain_ops qcom_pdc_ops = {
++	.translate	= qcom_pdc_translate,
++	.alloc		= qcom_pdc_alloc,
+ 	.free		= irq_domain_free_irqs_common,
+ };
+ 
+@@ -361,7 +308,7 @@ static int pdc_setup_pin_mapping(struct device_node *np)
+ 
+ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
+ {
+-	struct irq_domain *parent_domain, *pdc_domain, *pdc_gpio_domain;
++	struct irq_domain *parent_domain, *pdc_domain;
+ 	int ret;
+ 
+ 	pdc_base = of_iomap(node, 0);
+@@ -383,32 +330,21 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
+ 		goto fail;
+ 	}
+ 
+-	pdc_domain = irq_domain_create_hierarchy(parent_domain, 0, PDC_MAX_IRQS,
+-						 of_fwnode_handle(node),
+-						 &qcom_pdc_ops, NULL);
+-	if (!pdc_domain) {
+-		pr_err("%pOF: GIC domain add failed\n", node);
+-		ret = -ENOMEM;
+-		goto fail;
+-	}
+-
+-	pdc_gpio_domain = irq_domain_create_hierarchy(parent_domain,
++	pdc_domain = irq_domain_create_hierarchy(parent_domain,
+ 					IRQ_DOMAIN_FLAG_QCOM_PDC_WAKEUP,
+ 					PDC_MAX_GPIO_IRQS,
+ 					of_fwnode_handle(node),
+-					&qcom_pdc_gpio_ops, NULL);
+-	if (!pdc_gpio_domain) {
+-		pr_err("%pOF: PDC domain add failed for GPIO domain\n", node);
++					&qcom_pdc_ops, NULL);
++	if (!pdc_domain) {
++		pr_err("%pOF: PDC domain add failed\n", node);
+ 		ret = -ENOMEM;
+-		goto remove;
++		goto fail;
+ 	}
+ 
+-	irq_domain_update_bus_token(pdc_gpio_domain, DOMAIN_BUS_WAKEUP);
++	irq_domain_update_bus_token(pdc_domain, DOMAIN_BUS_WAKEUP);
+ 
+ 	return 0;
+ 
+-remove:
+-	irq_domain_remove(pdc_domain);
+ fail:
+ 	kfree(pdc_region);
+ 	iounmap(pdc_base);
 -- 
 2.30.2
 
