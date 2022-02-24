@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E156C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C544C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230453AbiBXQtt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:49:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41236 "EHLO
+        id S230322AbiBXQtv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:49:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230375AbiBXQte (ORCPT
+        with ESMTP id S230236AbiBXQtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:49:34 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25291B8BFD;
-        Thu, 24 Feb 2022 08:48:49 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id p4so221904wmg.1;
-        Thu, 24 Feb 2022 08:48:49 -0800 (PST)
+        Thu, 24 Feb 2022 11:49:36 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCCB1C60C0;
+        Thu, 24 Feb 2022 08:48:55 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id d3so623967wrf.1;
+        Thu, 24 Feb 2022 08:48:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=9rr9T3jHq1p5MnOaUfvIk/32mF11xXbOKrKi9IRlR1g=;
-        b=EPLDIBW9KcmMDX7CSXoBjRYYwqMnfX7uapjOiad6nF2+18tAxYzlDoiRYdDuF9Asex
-         waJT4kxVEGrfiQCI4JqZ5nYInnfhGZKIPmKBjKi5UivOJ0xdtD4HpoCZPP8LcmTcLCWV
-         4RHUMVriOObBmh0x69vHAhn2fss8z65tTZG2rYlqX5vzlJOfYbckmXDdZcGHELJPCYrL
-         l7o5nxJ1SgNOa3dvMQMZlkQBN25I6ZiflhTEKbcOKEn3T6/BfFeyop3INfvyxD8Q0ppp
-         pexqY8cOIts08ARnpGilo4o+m+VftSQHuStYFL7wBHndzyCSNN2XfI5+xo85eeYfaL76
-         65cw==
+        bh=G2ztJDmnzUJFjzMszXXqncdEv1+kAKg/pMcz0nH32YU=;
+        b=egaFw+1A9tM6VbTNViCeKwAiUXIMmNeVrv7Kro25W2UWNDf2Ah1Z15QfhkhnH3Nhw+
+         +EPveA1dmejRNXRkNq1CDCD6ZZBaSGxqOaCl6Vw2zQ/O8SsMjMQxNEYbIH3D6hV+7r5Z
+         UCt0NgO5sbG09kqNN11Yg3esi+UUQsiwjMq43QZx6Hf9unJLJ6UG6iEXz4hdeuULFxZD
+         pag/6GX3OIbU3tSaf97hG4ND+fnmm2VduoiBXDs/iZ+3obEsoiNQuHeN8jLNHzeFa/cX
+         RYyEKwkldNDUZeNWI0HWQn5QMx3tHriyXnGslWigLjIexfdyOyjcjO9j4wLNs5fJADK0
+         G9Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9rr9T3jHq1p5MnOaUfvIk/32mF11xXbOKrKi9IRlR1g=;
-        b=tnAxq0cv0Li6FztyaSlRpJ0pl5FOCV9s7/0bI8FoVlqLTN0OyRruknRs4xnj8kDQ+s
-         81OHCXaBeOb7ikXJUeQ8B7yARsbIbTQFPjGXoiZ7yh4vre6/7EUzy36Wx9xW4iYSzrLO
-         nfubGj77GFNT/sMKkOoAgqo3428zaxhya/ju4Pki9JGg9mGKRva6bW7HVA5Vhi145QLg
-         nPzmuqcKbGQVgiWxa1ZO6l34IdcpGon6epCbHOz6UuzHXb1auMJMjKh9G436Dn3u5qXM
-         MnoCcEE2u1wiC7mR2UjA4TpVWHwi2xuX2jtczeZubgqutxcYGfAdfD91GJ6tQGowpfhC
-         liMA==
-X-Gm-Message-State: AOAM532SKLj1adnn216vOOEwISUmS0AiqTe/8/t42dEdFs1EN2L/Q/nX
-        hOGXsMngplyEXvxfV1lzMdsimeZ76tM=
-X-Google-Smtp-Source: ABdhPJyc20+GiaTPqClCbSN5TDttqrt95zRkNja6ERxt2m+X/LLDAsy2RB454j7W8+i0VROmp4sfKw==
-X-Received: by 2002:a05:600c:4f55:b0:381:2322:6b2 with SMTP id m21-20020a05600c4f5500b00381232206b2mr149521wmq.169.1645721328153;
-        Thu, 24 Feb 2022 08:48:48 -0800 (PST)
+        bh=G2ztJDmnzUJFjzMszXXqncdEv1+kAKg/pMcz0nH32YU=;
+        b=RcLSEFGy8sZiDSDqQGu6tTJED2tHliwclnPgcOM3lnxnW5kvfgT4YGA/+seE58BuZL
+         wuyXN3GDvpG4E6llXN+0OLUszI9iVDBrodt+swbq0WPtLUT3V5SxE6Wg5fomQEHVrUlY
+         D2il+u7UMSRm4uzUVKWq7Yev0uTkLW4N85eCr1MLhyQS2+8XSJa9CVXZjvXJp0H9gw3P
+         U5kSXu2Kbr6QxoUbjt/bE/ecYstUSiaMS8kkLxxsO+hvVP2lu1+1i4UrDRWbvmS0KgtM
+         0jFCByDppSXpq5U+te+BNjkN1m67eJiGsvMzNcFl84145+PoIg/6AJIW9vRU39YM95bL
+         jsdQ==
+X-Gm-Message-State: AOAM5315Vqc1qA7V4llrjhnWz5W2UekhiaXgcv8F5DA6hIGTl1hWNlaA
+        Yg3n9EZZruJWbaihzvaoEDA=
+X-Google-Smtp-Source: ABdhPJxOJXEiEb1YkF+BXrupRnLVvYFf1g0UWb5cdmqaBQgzSHNs0kdqD8TlqKTwvwdkoa5Sf8PJ9w==
+X-Received: by 2002:a5d:4acc:0:b0:1ed:b776:a501 with SMTP id y12-20020a5d4acc000000b001edb776a501mr2938856wrs.76.1645721334064;
+        Thu, 24 Feb 2022 08:48:54 -0800 (PST)
 Received: from Ansuel-xps.localdomain ([5.170.140.187])
-        by smtp.googlemail.com with ESMTPSA id k18sm2694095wrp.104.2022.02.24.08.48.46
+        by smtp.googlemail.com with ESMTPSA id k18sm2694095wrp.104.2022.02.24.08.48.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 08:48:47 -0800 (PST)
+        Thu, 24 Feb 2022 08:48:53 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,9 +59,9 @@ To:     Andy Gross <agross@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 07/15] clk: qcom: gcc-ipq806x: add additional freq nss cores
-Date:   Thu, 24 Feb 2022 17:48:23 +0100
-Message-Id: <20220224164831.21475-8-ansuelsmth@gmail.com>
+Subject: [PATCH v5 10/15] clk: qcom: gcc-ipq806x: add additional freq for sdc table
+Date:   Thu, 24 Feb 2022 17:48:26 +0100
+Message-Id: <20220224164831.21475-11-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220224164831.21475-1-ansuelsmth@gmail.com>
 References: <20220224164831.21475-1-ansuelsmth@gmail.com>
@@ -71,87 +71,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ipq8065 SoC (an evolution of ipq8064 SoC) contains nss cores that can be
-clocked to 800MHz. Add these missing freq to the gcc driver.
-Set the freq_tbl for the ubi32_cores to the correct values based on the
-machine compatible.
+Add additional freq supported for the sdc table. The ops are changed to
+the floor_ops to handle a freq request of 52kHz where we need to provide
+a freq of 51.2kHz instead for stability reason.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/gcc-ipq806x.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+ drivers/clk/qcom/gcc-ipq806x.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
-index 3a9001830f0c..0a3ba3480de8 100644
+index 49a4eae4161f..6eb03b72eed4 100644
 --- a/drivers/clk/qcom/gcc-ipq806x.c
 +++ b/drivers/clk/qcom/gcc-ipq806x.c
-@@ -233,7 +233,9 @@ static struct clk_regmap pll14_vote = {
- 
- static struct pll_freq_tbl pll18_freq_tbl[] = {
- 	NSS_PLL_RATE(550000000, 44, 0, 1, 0x01495625),
-+	NSS_PLL_RATE(600000000, 48, 0, 1, 0x01495625),
- 	NSS_PLL_RATE(733000000, 58, 16, 25, 0x014b5625),
-+	NSS_PLL_RATE(800000000, 64, 0, 1, 0x01495625),
+@@ -1299,6 +1299,7 @@ static const struct freq_tbl clk_tbl_sdc[] = {
+ 	{  20210000, P_PLL8,  1, 1,  19 },
+ 	{  24000000, P_PLL8,  4, 1,   4 },
+ 	{  48000000, P_PLL8,  4, 1,   2 },
++	{  51200000, P_PLL8,  1, 2,  15 },
+ 	{  64000000, P_PLL8,  3, 1,   2 },
+ 	{  96000000, P_PLL8,  4, 0,   0 },
+ 	{ 192000000, P_PLL8,  2, 0,   0 },
+@@ -1332,7 +1333,7 @@ static struct clk_rcg sdc1_src = {
+ 			.name = "sdc1_src",
+ 			.parent_data = gcc_pxo_pll8,
+ 			.num_parents = ARRAY_SIZE(gcc_pxo_pll8),
+-			.ops = &clk_rcg_ops,
++			.ops = &clk_rcg_floor_ops,
+ 		},
+ 	}
  };
- 
- static struct clk_pll pll18 = {
-@@ -2705,7 +2707,7 @@ static struct clk_branch nss_tcm_clk = {
- 	},
- };
- 
--static const struct freq_tbl clk_tbl_nss[] = {
-+static const struct freq_tbl clk_tbl_nss_ipq8064[] = {
- 	{ 110000000, P_PLL18, 1, 1, 5 },
- 	{ 275000000, P_PLL18, 2, 0, 0 },
- 	{ 550000000, P_PLL18, 1, 0, 0 },
-@@ -2713,6 +2715,14 @@ static const struct freq_tbl clk_tbl_nss[] = {
- 	{ }
- };
- 
-+static const struct freq_tbl clk_tbl_nss_ipq8065[] = {
-+	{ 110000000, P_PLL18, 1, 1, 5 },
-+	{ 275000000, P_PLL18, 2, 0, 0 },
-+	{ 600000000, P_PLL18, 1, 0, 0 },
-+	{ 800000000, P_PLL18, 1, 0, 0 },
-+	{ }
-+};
-+
- static struct clk_dyn_rcg ubi32_core1_src_clk = {
- 	.ns_reg[0] = 0x3d2c,
- 	.ns_reg[1] = 0x3d30,
-@@ -2752,7 +2762,7 @@ static struct clk_dyn_rcg ubi32_core1_src_clk = {
- 		.pre_div_width = 2,
- 	},
- 	.mux_sel_bit = 0,
--	.freq_tbl = clk_tbl_nss,
-+	/* nss freq table is selected based on the SoC compatible */
- 	.clkr = {
- 		.enable_reg = 0x3d20,
- 		.enable_mask = BIT(1),
-@@ -2805,7 +2815,7 @@ static struct clk_dyn_rcg ubi32_core2_src_clk = {
- 		.pre_div_width = 2,
- 	},
- 	.mux_sel_bit = 0,
--	.freq_tbl = clk_tbl_nss,
-+	/* nss freq table is selected based on the SoC compatible */
- 	.clkr = {
- 		.enable_reg = 0x3d40,
- 		.enable_mask = BIT(1),
-@@ -3138,6 +3148,14 @@ static int gcc_ipq806x_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	if (of_machine_is_compatible("qcom,ipq8065")) {
-+		ubi32_core1_src_clk.freq_tbl = clk_tbl_nss_ipq8065;
-+		ubi32_core2_src_clk.freq_tbl = clk_tbl_nss_ipq8065;
-+	} else {
-+		ubi32_core1_src_clk.freq_tbl = clk_tbl_nss_ipq8064;
-+		ubi32_core2_src_clk.freq_tbl = clk_tbl_nss_ipq8064;
-+	}
-+
- 	ret = qcom_cc_probe(pdev, &gcc_ipq806x_desc);
- 	if (ret)
- 		return ret;
 -- 
 2.34.1
 
