@@ -2,107 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B56CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60AA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:41:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235184AbiBXNlf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:41:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36048 "EHLO
+        id S235192AbiBXNll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:41:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235181AbiBXNlc (ORCPT
+        with ESMTP id S235185AbiBXNlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:41:32 -0500
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274994FC54;
-        Thu, 24 Feb 2022 05:40:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1645710061;
-  x=1677246061;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=yj/Kubo401FMKbYI1pppYqnrVxPghG1puNDBjNlL3v4=;
-  b=Tfxk0qcV30k6vLmf+RFBL3okXk9GjrgRQpD7MIbfle2dzKeKsSzOKRLj
-   2gUrsJbWCoJVsMJSrEhQRL9HHT+TLkHk4Z+UWlX1omYqBdF7I8ee/Z4A7
-   hy6wo12yBaaoxU6cAOYNRzD7+WfdAm9WcMd+6eGZHTS3VVKYtn+IKaTZS
-   FpMI4BXk/ksTnyyaUYzkqY7ScXKI+HuhnfkTJdyorSreXM93erfxz4yiX
-   LQP50LOziXCxAX4NKVh4rtTk6k+KU3fTMY/VG/BIBceHLhr0tsnXM5aic
-   CfehDl7aAMsxm0jscbiw2Zbjw/BfSzlZaoc2qtT7mZSwgrSSUsn94fixv
-   A==;
-Date:   Thu, 24 Feb 2022 14:40:57 +0100
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Denis Kirjanov <dkirjanov@suse.de>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        kernel <kernel@axis.com>, Lars Persson <Lars.Persson@axis.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@st.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] net: stmmac: only enable DMA interrupts when ready
-Message-ID: <20220224134057.GA4994@axis.com>
-References: <20220224113829.1092859-1-vincent.whitchurch@axis.com>
- <f62148d7-6f7a-3557-e3ca-3a261b61ac9d@suse.de>
+        Thu, 24 Feb 2022 08:41:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5590B4FC54
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:41:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645710068;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=weS+3HwpyorqpoTWq1H3W/L9srA7SlOeqlVBLs2cZd8=;
+        b=EXHD0YLDqq9zTkBTWWwTgM4q3vzVgtElmlWLykMWT5ZKNFuLV7lc2rTmdAj3iR29BGCFwK
+        Bp+OC404/hWQCggPra1p7XjI7twxsS79EvLwg5JHzHlhMLAYt1XdfcEho+WczQM56Aj620
+        TwPHkJ5HwPpdlyh17ctS7wCtgb3o18o=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-212-07YtHVyCNy2eWj5E8S71tQ-1; Thu, 24 Feb 2022 08:41:04 -0500
+X-MC-Unique: 07YtHVyCNy2eWj5E8S71tQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 674251091DA2;
+        Thu, 24 Feb 2022 13:41:03 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1347426DF6;
+        Thu, 24 Feb 2022 13:41:03 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 1723A416D862; Thu, 24 Feb 2022 10:40:42 -0300 (-03)
+Date:   Thu, 24 Feb 2022 10:40:42 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Aaron Tomlin <atomlin@redhat.com>
+Cc:     Aaron Tomlin <atomlin@atomlin.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Christoph Lameter <cl@linux.com>, tglx@linutronix.de,
+        mingo@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Phil Auld <pauld@redhat.com>
+Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
+ idle tick was stopped too
+Message-ID: <YheK2oesh/cxvi6j@fuller.cnet>
+References: <20220203214339.1889971-1-atomlin@redhat.com>
+ <20220217124729.GA743618@lothringen>
+ <20220217142615.xqtiydixvnumyvei@ava.usersys.com>
+ <20220217163205.GA748087@lothringen>
+ <20220218125454.utlgmuhijklzr3if@ava.usersys.com>
+ <20220219154616.pwsvh445x3vn7ltf@ava.usersys.com>
+ <Yhd5olg9CjXSAf2s@fuller.cnet>
+ <20220224130014.rmhtx3xlepybuxn2@ava.usersys.com>
+ <YheE0joXm53Hxn4J@fuller.cnet>
+ <20220224132816.qsfa66ao3xdjdxxx@ava.usersys.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f62148d7-6f7a-3557-e3ca-3a261b61ac9d@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220224132816.qsfa66ao3xdjdxxx@ava.usersys.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 01:53:33PM +0100, Denis Kirjanov wrote:
-> 2/24/22 14:38, Vincent Whitchurch пишет:
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > index 6708ca2aa4f7..43978558d6c0 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > @@ -2260,6 +2260,23 @@ static void stmmac_stop_tx_dma(struct stmmac_priv *priv, u32 chan)
-> >   	stmmac_stop_tx(priv, priv->ioaddr, chan);
-> >   }
-> >   
-> > +static void stmmac_enable_all_dma_irq(struct stmmac_priv *priv)
-> > +{
-> > +	u32 rx_channels_count = priv->plat->rx_queues_to_use;
-> > +	u32 tx_channels_count = priv->plat->tx_queues_to_use;
-> > +	u32 dma_csr_ch = max(rx_channels_count, tx_channels_count);
-> > +	u32 chan;
-> > +
-> > +	for (chan = 0; chan < dma_csr_ch; chan++) {
-> > +		struct stmmac_channel *ch = &priv->channel[chan];
-> > +		unsigned long flags;
-> > +
-> > +		spin_lock_irqsave(&ch->lock, flags);
-> > +		stmmac_enable_dma_irq(priv, priv->ioaddr, chan, 1, 1);
-> > +		spin_unlock_irqrestore(&ch->lock, flags);
-> > +	}
-> > +}
-> > +
-> >   /**
-> >    * stmmac_start_all_dma - start all RX and TX DMA channels
-> >    * @priv: driver private structure
-> > @@ -2902,8 +2919,10 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
-> >   		stmmac_axi(priv, priv->ioaddr, priv->plat->axi);
-> >   
-> >   	/* DMA CSR Channel configuration */
-> > -	for (chan = 0; chan < dma_csr_ch; chan++)
-> > +	for (chan = 0; chan < dma_csr_ch; chan++) {
-> >   		stmmac_init_chan(priv, priv->ioaddr, priv->plat->dma_cfg, chan);
-> Did you miss to take a channel lock?
+On Thu, Feb 24, 2022 at 01:28:16PM +0000, Aaron Tomlin wrote:
+> On Thu 2022-02-24 10:14 -0300, Marcelo Tosatti wrote:
+> > If the per-CPU vmstat_update is limited to happen once per second, that
+> > shouldnt be a significant performance impact?
+> 
+> Perhaps not. Albeit, is the interrupt worth it? 
 
-I didn't add it on purpose.  At this point during initialization there
-is no-one who can race with the register write in
-stmmac_disable_dma_irq().  The call to stmmac_init_chan() (in the
-existing code) writes the same register without the lock. 
+Its a requirement for correctness right?
 
-> > +		stmmac_disable_dma_irq(priv, priv->ioaddr, chan, 1, 1);
-> > +	}
-> >   
+> Then again it could indeed
+> be a long time before the idle task is selected and a return to idle code
+> were we'd check for any remaining differentials with the aforementioned
+> patch.
+
+Or a long time before userspace returns to kernel.
+
