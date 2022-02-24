@@ -2,104 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6740BC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 878BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235687AbiBXX5b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 18:57:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56236 "EHLO
+        id S235989AbiBXX5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 18:57:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235591AbiBXX5O (ORCPT
+        with ESMTP id S235986AbiBXX5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 18:57:14 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CE25F4E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 15:56:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645747001; x=1677283001;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zN8gIqP7DXdhVvzNWMECCUTyj4Z3gZZ0ZKc7mIvoOcg=;
-  b=ZsgiKGKKNxmWok7aMDemHpUIicfZqfBuLko6PBmxE8gy4t4CsKpUSt3y
-   2XsBJBhbkP1GV8TmAZ1Y5nkaCASlULGDJDCikANgN0eiTOChTMO9dOy39
-   I0kyBOYw3NgmpLr+q0nAEvx+Qd97KxW8pJKhV6BYkmqObRSw4mRoNdPGo
-   3W/9gJgMvxmdwDnu4yRYrqF4rC1UlAH+Dxwt0dIgxyH1E2NPPAFpN3OOb
-   Z9Y/1Wwk+k0+Ra2twgVM96WAqVx70BemPKtmEWuMKiQ8YuZduzQIQSaSp
-   0MZf4fL19W0vsSb66G35PmMdJNVVpBtecRepo3MJLgkJb+UTQ53W3SwN6
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="338814910"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="338814910"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 15:56:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="707663616"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 24 Feb 2022 15:56:37 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nNNyO-0003aQ-IQ; Thu, 24 Feb 2022 23:56:36 +0000
-Date:   Fri, 25 Feb 2022 07:55:33 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [trondmy-nfs-2.6:testing 43/47] xxhash_generic.c:undefined reference
- to `xxh64'
-Message-ID: <202202250739.uOaDW2T2-lkp@intel.com>
+        Thu, 24 Feb 2022 18:57:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58DABC91;
+        Thu, 24 Feb 2022 15:56:54 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6588961CC4;
+        Thu, 24 Feb 2022 23:56:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC79DC340E9;
+        Thu, 24 Feb 2022 23:56:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645747013;
+        bh=pIurI+giQoreEeuxLlI/A9Pe8Sl0d1w/lXwipiwdJcc=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=NilsZ95kv75uBSSaQDrZGdZjj7GS0MSD7suHZYp67/R8agRY+xX2EpH8NUfkhtXzY
+         hMRZP0PFuIvzFz3iyAZDx3EyiFGotZQGZkV6DWzbxW4d1IGxjz8pIhfqkdX7DG5b9u
+         fNa1Y9S/Kyp7nuGsS8oFyH0H6iK0x4u915+62eCNzL8/gc4j+R84pPmigyjlcrm0Fw
+         p9qnnFeI9PkaVYMBxhtvhpNuX8AA/4BF2cN5NNrryFM7gKfnUP24YNoJlN9AXq3iaR
+         +CEKKd6/kjS8U26WBHn/r/be1neQNJNG6LLtxXNaalXMSTEXiw/vsK5SgVE+9AiUBn
+         3I1noFCDI87SQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1645505785-2271-4-git-send-email-quic_rohiagar@quicinc.com>
+References: <1645505785-2271-1-git-send-email-quic_rohiagar@quicinc.com> <1645505785-2271-4-git-send-email-quic_rohiagar@quicinc.com>
+Subject: Re: [PATCH v4 3/5] ARM: dts: qcom: sdx65: Add support for A7 PLL clock
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>
+To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
+        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
+        mturquette@baylibre.com, robh+dt@kernel.org
+Date:   Thu, 24 Feb 2022 15:56:51 -0800
+User-Agent: alot/0.10
+Message-Id: <20220224235653.BC79DC340E9@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.linux-nfs.org/projects/trondmy/nfs-2.6.git testing
-head:   18819db1468b966c49a5b95dade10d5e25216b83
-commit: aa6b34ca6840595e2d817de4c75534966cb49ba3 [43/47] NFS: Convert readdir page cache to use a cookie based index
-config: nios2-defconfig (https://download.01.org/0day-ci/archive/20220225/202202250739.uOaDW2T2-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add trondmy-nfs-2.6 git://git.linux-nfs.org/projects/trondmy/nfs-2.6.git
-        git fetch --no-tags trondmy-nfs-2.6 testing
-        git checkout aa6b34ca6840595e2d817de4c75534966cb49ba3
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
+Quoting Rohit Agarwal (2022-02-21 20:56:23)
+> On SDX65 there is a separate A7 PLL which is used to provide high
+> frequency clock to the Cortex A7 CPU via a MUX.
+>=20
+> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+> ---
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   nios2-linux-ld: fs/nfs/dir.o: in function `nfs_readdir_page_get_locked':
-   dir.c:(.text+0x2998): undefined reference to `xxh32'
-   dir.c:(.text+0x2998): relocation truncated to fit: R_NIOS2_CALL26 against `xxh32'
-   nios2-linux-ld: crypto/xxhash_generic.o: in function `xxhash64_digest':
->> xxhash_generic.c:(.text+0x98): undefined reference to `xxh64'
-   xxhash_generic.c:(.text+0x98): relocation truncated to fit: R_NIOS2_CALL26 against `xxh64'
-   nios2-linux-ld: crypto/xxhash_generic.o: in function `xxhash64_final':
->> xxhash_generic.c:(.text+0xfc): undefined reference to `xxh64_digest'
-   xxhash_generic.c:(.text+0xfc): relocation truncated to fit: R_NIOS2_CALL26 against `xxh64_digest'
-   nios2-linux-ld: crypto/xxhash_generic.o: in function `xxhash64_update':
->> xxhash_generic.c:(.text+0x158): undefined reference to `xxh64_update'
-   xxhash_generic.c:(.text+0x158): relocation truncated to fit: R_NIOS2_CALL26 against `xxh64_update'
-   nios2-linux-ld: crypto/xxhash_generic.o: in function `xxhash64_init':
->> xxhash_generic.c:(.text+0x184): undefined reference to `xxh64_reset'
-   xxhash_generic.c:(.text+0x184): relocation truncated to fit: R_NIOS2_CALL26 against `xxh64_reset'
-   nios2-linux-ld: crypto/xxhash_generic.o: in function `xxhash_mod_init':
->> xxhash_generic.c:(.init.text+0x10): undefined reference to `crypto_register_shash'
-   xxhash_generic.c:(.init.text+0x10): relocation truncated to fit: R_NIOS2_CALL26 against `crypto_register_shash'
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for CRYPTO_XXHASH
-   Depends on CRYPTO
-   Selected by
-   - NFS_FS && NETWORK_FILESYSTEMS && INET && FILE_LOCKING && MULTIUSER
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Reviewed-by: Stephen Boyd <sboyd@kernel.org>
