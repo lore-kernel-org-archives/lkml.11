@@ -2,120 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35939C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 12:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234581AbiBXM5J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 07:57:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60924 "EHLO
+        id S234663AbiBXM6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 07:58:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiBXM5G (ORCPT
+        with ESMTP id S234583AbiBXM6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 07:57:06 -0500
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 112F163F1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 04:56:32 -0800 (PST)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21OCnCdn002437;
-        Thu, 24 Feb 2022 06:49:12 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21OCnBsZ002436;
-        Thu, 24 Feb 2022 06:49:11 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Thu, 24 Feb 2022 06:49:11 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Gabriel Paubert <paubert@iram.es>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Kees Cook <keescook@chromium.org>,
-        linux-kernel@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] powerpc/32: Clear volatile regs on syscall exit
-Message-ID: <20220224124911.GL614@gate.crashing.org>
-References: <28b040bd2357a1879df0ca1b74094323f778a472.1645636285.git.christophe.leroy@csgroup.eu> <YhadiVbwao/p2N7o@lt-gp.iram.es> <20220223232739.GJ614@gate.crashing.org> <YhdCAwQ+VfLTslnV@lt-gp.iram.es>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhdCAwQ+VfLTslnV@lt-gp.iram.es>
-User-Agent: Mutt/1.4.2.3i
+        Thu, 24 Feb 2022 07:58:14 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53711323F7;
+        Thu, 24 Feb 2022 04:57:43 -0800 (PST)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K4CZN0sHcz9t3N;
+        Thu, 24 Feb 2022 20:55:56 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 24 Feb 2022 20:57:40 +0800
+CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
+        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
+        <song.bao.hua@hisilicon.com>
+Subject: Re: [PATCH v4 2/8] hwtracing: Add trace function support for
+ HiSilicon PCIe Tune and Trace device
+To:     John Garry <john.garry@huawei.com>,
+        Yicong Yang <yangyicong@hisilicon.com>,
+        <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+        <will@kernel.org>, <mark.rutland@arm.com>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
+        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+        <joro@8bytes.org>, <shameerali.kolothum.thodi@huawei.com>,
+        <robin.murphy@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
+        <linux-perf-users@vger.kernel.org>,
+        <iommu@lists.linux-foundation.org>
+References: <20220221084307.33712-1-yangyicong@hisilicon.com>
+ <20220221084307.33712-3-yangyicong@hisilicon.com>
+ <c7d8cff4-b84e-1b73-1d54-2e221b90dac1@huawei.com>
+ <e78f6e5e-a0c3-4976-4f46-e3369635ee3d@huawei.com>
+ <aabd5f0a-1a54-e4da-734c-f940c45d66b4@huawei.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <a6fb3c8b-1b44-22e8-a178-ba7254a80662@huawei.com>
+Date:   Thu, 24 Feb 2022 20:57:40 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
+MIME-Version: 1.0
+In-Reply-To: <aabd5f0a-1a54-e4da-734c-f940c45d66b4@huawei.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
-
-On Thu, Feb 24, 2022 at 09:29:55AM +0100, Gabriel Paubert wrote:
-> On Wed, Feb 23, 2022 at 05:27:39PM -0600, Segher Boessenkool wrote:
-> > On Wed, Feb 23, 2022 at 09:48:09PM +0100, Gabriel Paubert wrote:
-> > > On Wed, Feb 23, 2022 at 06:11:36PM +0100, Christophe Leroy wrote:
-> > > > +	/* Zero volatile regs that may contain sensitive kernel data */
-> > > > +	li	r0,0
-> > > > +	li	r4,0
-> > > > +	li	r5,0
-> > > > +	li	r6,0
-> > > > +	li	r7,0
-> > > > +	li	r8,0
-> > > > +	li	r9,0
-> > > > +	li	r10,0
-> > > > +	li	r11,0
-> > > > +	li	r12,0
-> > > > +	mtctr	r0
-> > > > +	mtxer	r0
-> > > 
-> > > Here, I'm almost sure that on some processors, it would be better to
-> > > separate mtctr form mtxer. mtxer is typically very expensive (pipeline
-> > > flush) but I don't know what's the best ordering for the average core.
-> > 
-> > mtxer is cheaper than mtctr on many cores :-)
+On 2022/2/24 20:32, John Garry wrote:
+> On 24/02/2022 03:53, Yicong Yang wrote:
+>> On 2022/2/22 19:06, John Garry wrote:
+>>> On 21/02/2022 08:43, Yicong Yang wrote:
+>>>> HiSilicon PCIe tune and trace device(PTT) is a PCIe Root Complex
+>>>> integrated Endpoint(RCiEP) device, providing the capability
+>>>> to dynamically monitor and tune the PCIe traffic, and trace
+>>>> the TLP headers.
+>>>>
+>>>> Add the driver for the device to enable the trace function.
+>>>> This patch adds basic function of trace, including the device's
+>>>> probe and initialization, functions for trace buffer allocation
+>>>> and trace enable/disable, register an interrupt handler to
+>>>> simply response to the DMA events. The user interface of trace
+>>>> will be added in the following patch.
+>>>>
+>>>
+>>> Fill commit message lines upto 75 characters
+>>
+>> Hi John,
+>>
+>> Thanks for the comments.
+>>
+>> The commit message is within 75 characters. I checked again and checkpatch
+>> didn't warning for this.
 > 
-> We're speaking of 32 bit here I believe;
-
-32-bit userland, yes.  Which runs fine on non-ancient cores, too.
-
-> on my (admittedly old) paper
-> copy of PowerPC 604 user's manual, I read in a footnote:
+> I mean to fill the lines up as much as possible, upto 75 char max, if not already done so. I am not sure if you are doing this already, but it looks like you were not.
 > 
-> "The mtspr (XER) instruction causes instructions to be flushed when it
-> executes." 
-
-And the 604 has a trivial depth pipeline anyway.
-
-> I know there are probably very few 604 left in the field, but in this
-> case mtspr(xer) looks very much like a superset of isync.
-
-It hasn't been like that for decades.  On the 750 mtxer was execution
-synchronised only already, for example.
-
-> I also just had a look at the documentation of a more widespread core:
+> Checkpatch
+> will
+> no
+> warn
+> about
+> a
+> commit
+> message
+> like
+> this
+> :)
 > 
-> https://www.nxp.com/docs/en/reference-manual/MPC7450UM.pdf
-> 
-> and mtspr(xer) is marked as execution and refetch serialized, actually
-> it is the only instruction to have both.
 
-This looks like a late addition (it messes up the table, for example,
-being put after "mtspr (other)").  It also is different from 7400 and
-750 and everything else.  A late bugfix?  Curious :-)
-
-> Maybe there is a subtle difference between "refetch serialization" and
-> "pipeline flush", but in this case please educate me.
-
-There is a subtle difference, but it goes the other way: refetch
-serialisation doesn't stop fetch / flush everything after it, only when
-the instruction completes it rejects everything after it.  So it can
-waste a bit more :-)
-
-> Besides that the back to back mtctr/mtspr(xer) may limit instruction
-> decoding and issuing bandwidth.
-
-It doesn't limit decode or dispatch (not issue fwiw) bandwidth on any
-core I have ever heard of.
-
-> I'd rather move one of them up by a few
-> lines since they can only go to one of the execution units on some
-> (or even most?) cores. This was my main point initially.
-
-I think it is much more beneficial to *not* do these insns than to
-shift them back and forth a cycle.
-
-
-Segher
+Uh I got it. Thanks for the vivid clarification!
