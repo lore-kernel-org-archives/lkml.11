@@ -2,146 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 07:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5161AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 07:47:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230146AbiBXHsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 02:48:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32836 "EHLO
+        id S230184AbiBXHsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 02:48:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiBXHsK (ORCPT
+        with ESMTP id S229908AbiBXHsU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 02:48:10 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DA216FDFD
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:47:40 -0800 (PST)
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 28BB53FCAE
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:47:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645688857;
-        bh=Zs4sP9i99NlTTPrJcg2NREY6h9bovqrYIvzZODv1Ymc=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=FOLRfkbwBevtyKyaIaEOFJrEcXGlUuMrV7T+AFvZJ+VNvzhDZahpm6TAMUtLHgXMb
-         9zPZ8obR2juBQi/IS9B1/An8KYNX5Nm3qoKst7P6S1ZNxY1U+zPx+4c2b+rk43hp2s
-         UZVm9IYh+z46DyG0OXuKj4Os2Q34VHZAqympqqiwWSLV5/wV4QzDct+SX8+njHM9nB
-         samjmzwIElDUdgR/OQX7P3w9ng3RUWfWpm31bkzs1BrX+OmW5M0xFLTXyTCl1CRs40
-         KRp69GEEPSZ8XlDMf1wNPOymrXmKp/QwHJbbQHOTSZFjYTylD9ODo6jmvSIRDOKuZd
-         vlJJz2+eocjAA==
-Received: by mail-ej1-f69.google.com with SMTP id nb1-20020a1709071c8100b006d03c250b6fso812614ejc.11
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:47:37 -0800 (PST)
+        Thu, 24 Feb 2022 02:48:20 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B5931704C4;
+        Wed, 23 Feb 2022 23:47:51 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id l9so557956pls.6;
+        Wed, 23 Feb 2022 23:47:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=lhYNg8GMF1N+MEP55KAG4b8yDkrDo7A6Roxvv5yYMtU=;
+        b=qPW+/TKNMdfryYrGLo7YrU0iyxsHA3bhaCEyUYtXnkIpG7Y6hfcFJpGnNZsqTqE+GR
+         99+a9JsBmYjkxxOswSvZ0MQinBYdvJ0ZFAKTpStLCBnubRsSVWJ8dhs/gWc1qL08x591
+         8ATbcaqZ7J3ECMMH3oFDMI18IvTLpVCkpCKIqSWCki0D5QvxZ+cR6DX2aF876bJQ6XoV
+         0o9G7YAz7cXhuqiE/PsL0WKy1KMZBdIGB+P59Z0+yDtmipD/6pIhTSe72nJ6wCIB/BgK
+         RU5vhuKFp5yuFxW55L9RL7r3p+F7GumpBpi8RoqQEjEgNTJJPHlru8Qm9UewpukOv+nh
+         yz+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Zs4sP9i99NlTTPrJcg2NREY6h9bovqrYIvzZODv1Ymc=;
-        b=MnrFiKi66UYDg31sgOx5rIF4iMglOs10yh81v0dE+3QeB2RjKUj3Wz2aEHkuWFi9xF
-         NDsVummnBcYbO9NVGihfoEy8B0GO1b5kAKaTEjlmATs3TilUqNNrh+80ZzuL0Z99PkEC
-         JR3FdJ72ooI2WqEgjhHMejePyTbr7JsDbPOO7nXKcqM3wyepJYlvbBEKZirPkqNUrROL
-         duxwPp0vADrC1ssh4RYsZzVCj2O9o2LJ1JCXZ7ZXcvJreSsDhxIzj6wnz071sdQVn/Rc
-         pwu+pz43MZNFxV6mPqMvSoPmPmZmiMFp+Xn3bQmWmJssgc4kbswvS2tcCNZTYrNkbkMB
-         VWZQ==
-X-Gm-Message-State: AOAM530392+FnzzEUAyCfWuySaQErBVe+2ckKm2EBm3f9JZ0NNMYfTGt
-        EXtoIVo7BNFqDVA6naze6NMc7MNgrFbfjoln14HX4oqya6ePC6wddVK2JIOaNqILNMl7Z6AKZWp
-        hH+nRvO0nf2Yz2OuQfUZAXaaQE35rXuI1bF3xBoSYqg==
-X-Received: by 2002:a17:906:aed4:b0:6ba:6d27:ac7 with SMTP id me20-20020a170906aed400b006ba6d270ac7mr1258067ejb.33.1645688844793;
-        Wed, 23 Feb 2022 23:47:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxUYNmN/4hZMQwnBoVYe/1HJVh2ik7cDwSx+7g3/XCwKJDGgQtwwmTKf8PpD7KGJnApbTtGHA==
-X-Received: by 2002:a17:906:aed4:b0:6ba:6d27:ac7 with SMTP id me20-20020a170906aed400b006ba6d270ac7mr1258017ejb.33.1645688844569;
-        Wed, 23 Feb 2022 23:47:24 -0800 (PST)
-Received: from [192.168.0.127] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id v30sm942368ejv.76.2022.02.23.23.47.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Feb 2022 23:47:24 -0800 (PST)
-Message-ID: <bc4f3314-46f2-72a8-f25c-c9774d987ca1@canonical.com>
-Date:   Thu, 24 Feb 2022 08:47:22 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 01/11] driver: platform: add and use helper for safer
- setting of driver_override
-Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andy Gross <agross@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-References: <20220223215342.GA155282@bhelgaas>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220223215342.GA155282@bhelgaas>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=lhYNg8GMF1N+MEP55KAG4b8yDkrDo7A6Roxvv5yYMtU=;
+        b=1CAQ7Mvyfgu5dcWBFWsScKFObYEnpFLdsbHoBhPYLW9ZuafdfOVqZZUBvTdNPhplXI
+         0VnKdvkzcd/yBDqO4Ob4GL1eY8iw67WRb4e+y8OgyHogMbY7aO6Y4DFZfTFtY/gaU7as
+         9RapEwfr+qGzuBKSl46YJOurvfPm6Ceto88J787EXafJaFWplE3HuD8c5g4ABaivI6B6
+         Zdt5J4zt/3KCIuY5RLda6RFePKodanyztPLcvY3GIyr/nyCAs2JC7pPEnRposJHpLaZ0
+         FiW91cd0rZ/70RfSqPm0taKfZSHPdRjKQMzQw0kV5r3mp9Pqg2iLmRKhbqhDCDJm8fda
+         rmyg==
+X-Gm-Message-State: AOAM5302TOBsti2Fo7YX5BOtoxv375COn9u8yk0XINodMTZZwIE3d2Rx
+        bRtka3hShapqjAYtgpxZwgE=
+X-Google-Smtp-Source: ABdhPJxevCQqyyqcbABclH2PnGFNzAoleD3glcYbnfTgWkmGXR/VuOt5kI9H4WEZ/pfQ/fIFpdFqHw==
+X-Received: by 2002:a17:90b:fc7:b0:1bc:4fc0:6fbd with SMTP id gd7-20020a17090b0fc700b001bc4fc06fbdmr1546709pjb.198.1645688870713;
+        Wed, 23 Feb 2022 23:47:50 -0800 (PST)
+Received: from localhost.localdomain ([112.78.94.140])
+        by smtp.gmail.com with ESMTPSA id z21sm1616839pgv.21.2022.02.23.23.47.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Feb 2022 23:47:50 -0800 (PST)
+From:   Medad CChien <medadyoung@gmail.com>
+X-Google-Original-From: Medad CChien <ctcchien@nuvoton.com>
+To:     rric@kernel.org, james.morse@arm.com, tony.luck@intel.com,
+        mchehab@kernel.org, bp@alien8.de, robh+dt@kernel.org,
+        benjaminfair@google.com, yuenn@google.com, venture@google.com,
+        KWLIU@nuvoton.com, YSCHU@nuvoton.com, JJLIU0@nuvoton.com,
+        KFTING@nuvoton.com, avifishman70@gmail.com, tmaimon77@gmail.com,
+        tali.perry1@gmail.com
+Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, openbmc@lists.ozlabs.org,
+        Medad CChien <ctcchien@nuvoton.com>
+Subject: [PATCH v1 1/3]  ARM: dts: nuvoton: Add new device node
+Date:   Thu, 24 Feb 2022 15:47:27 +0800
+Message-Id: <20220224074729.5206-2-ctcchien@nuvoton.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220224074729.5206-1-ctcchien@nuvoton.com>
+References: <20220224074729.5206-1-ctcchien@nuvoton.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/02/2022 22:53, Bjorn Helgaas wrote:
-> On Wed, Feb 23, 2022 at 08:13:00PM +0100, Krzysztof Kozlowski wrote:
->> Several core drivers and buses expect that driver_override is a
->> dynamically allocated memory thus later they can kfree() it.
->> ...
-> 
->> + * set_driver_override() - Helper to set or clear driver override.
-> 
-> Doesn't match actual function name.
+ Add NPCM7xx EDAC device node
 
-Good point. I wonder why build W=1 did not complain... I need to check.
+Signed-off-by: Medad CChien <ctcchien@nuvoton.com>
+---
+ arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-> 
->> + * @dev: Device to change
->> + * @override: Address of string to change (e.g. &device->driver_override);
->> + *            The contents will be freed and hold newly allocated override.
->> + * @s: NULL terminated string, new driver name to force a match, pass empty
->> + *     string to clear it
->> + *
->> + * Helper to setr or clear driver override in a device, intended for the cases
->> + * when the driver_override field is allocated by driver/bus code.
-> 
-> s/setr/set/
+diff --git a/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi b/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi
+index 3696980a3da1..0fb2465c218e 100644
+--- a/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi
++++ b/arch/arm/boot/dts/nuvoton-common-npcm7xx.dtsi
+@@ -106,6 +106,13 @@
+ 		interrupt-parent = <&gic>;
+ 		ranges;
+ 
++		mc: memory-controller@f0824000 {
++			compatible = "nuvoton,npcm7xx-edac";
++			reg = <0x0 0xf0824000 0x0 0x1000>;
++			interrupts = <GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled";
++		};
++
+ 		rstc: rstc@f0801000 {
+ 			compatible = "nuvoton,npcm750-reset";
+ 			reg = <0xf0801000 0x70>;
+-- 
+2.17.1
 
-Right. Thanks for checking.
-
-> 
->> + * Returns: 0 on success or a negative error code on failure.
->> + */
->> +int driver_set_override(struct device *dev, char **override, const char *s)
->> +{
-
-
-Best regards,
-Krzysztof
