@@ -2,80 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54246C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6898EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:30:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229507AbiBXBa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:30:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52138 "EHLO
+        id S229531AbiBXBa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:30:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiBXBat (ORCPT
+        with ESMTP id S229500AbiBXBaz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:30:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF0315471F
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:30:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30D4E60FC0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:30:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ACFAC340E7;
-        Thu, 24 Feb 2022 01:30:03 +0000 (UTC)
-Date:   Wed, 23 Feb 2022 20:30:01 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, catalin.marinas@arm.com, will@kernel.org,
-        mark.rutland@arm.com, broonie@kernel.org, songmuchun@bytedance.com,
-        qirui.001@bytedance.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [External] Re: [PATCH] arm64/ftrace: Make function graph use
- ftrace directly
-Message-ID: <20220223203001.1158d9d4@rorschach.local.home>
-In-Reply-To: <5d64733b-8d2a-4928-c4dc-ce4f3b5fc561@bytedance.com>
-References: <20220222130049.81284-1-zhouchengming@bytedance.com>
-        <20220222105218.28e3d5aa@gandalf.local.home>
-        <5d64733b-8d2a-4928-c4dc-ce4f3b5fc561@bytedance.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 23 Feb 2022 20:30:55 -0500
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2971313CDE
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:30:21 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V5LiiSH_1645665799;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V5LiiSH_1645665799)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 24 Feb 2022 09:23:20 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     matthias.bgg@gmail.com
+Cc:     airlied@linux.ie, daniel@ffwll.ch, p.zabel@pengutronix.de,
+        chunkuang.hu@kernel.org, dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] drm: mediatek: mtk_dsi: Remove unnecessary print function dev_err()
+Date:   Thu, 24 Feb 2022 09:23:18 +0800
+Message-Id: <20220224012318.84935-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 16:00:27 +0800
-Chengming Zhou <zhouchengming@bytedance.com> wrote:
+The print function dev_err() is redundant because platform_get_irq()
+already prints an error.
 
-> Yes, it would be better to implement DYNAMIC_FTRACE_WITH_ARGS on arm64 too,
-> and this patch just use DYNAMIC_FTRACE_WITH_REGS to install return_hooker
-> for graph tracer, so it's a code cleanup, no performance optimization.
+Eliminate the follow coccicheck warning:
+./drivers/gpu/drm/mediatek/mtk_dsi.c:1092:2-9: line 1092 is redundant
+because platform_get_irq() already prints an error
 
-I'm worried that a clean up is either breaking the design or hurting
-performance.
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dsi.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-You have:
+diff --git a/drivers/gpu/drm/mediatek/mtk_dsi.c b/drivers/gpu/drm/mediatek/mtk_dsi.c
+index bced4c7d668e..704252ee1198 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dsi.c
++++ b/drivers/gpu/drm/mediatek/mtk_dsi.c
+@@ -1089,7 +1089,6 @@ static int mtk_dsi_probe(struct platform_device *pdev)
+ 
+ 	irq_num = platform_get_irq(pdev, 0);
+ 	if (irq_num < 0) {
+-		dev_err(&pdev->dev, "failed to get dsi irq_num: %d\n", irq_num);
+ 		ret = irq_num;
+ 		goto err_unregister_host;
+ 	}
+-- 
+2.20.1.7.g153144c
 
-> +void ftrace_graph_func(unsigned long ip, unsigned long parent_ip,
-> +		       struct ftrace_ops *op, struct ftrace_regs *fregs)
-> +{
-> +	struct pt_regs *regs = arch_ftrace_get_regs(fregs);
-
-Now, technically, arch_ftrace_get_regs() is to return NULL if the
-ftrace_ops was not registered with ops->flags |= FTRACE_OPS_FL_SAVE_REGS.
-
-Which function graph does not do.
-
-But this is in arch specific code so you have more control of this
-"undefined behavior". But you really should have a comment saying that
-this needs to be fixed when DYNAMIC_FTRACE_WITH_ARGS is implemented.
-
--- Steve
-
-
-> +	unsigned long *parent = (unsigned long *)&procedure_link_pointer(regs);
-> +
-> +	prepare_ftrace_return(ip, parent, frame_pointer(regs));
-> +}
-
--- Steve
