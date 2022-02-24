@@ -2,86 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60AA6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:43:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235192AbiBXNll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:41:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36126 "EHLO
+        id S235170AbiBXNna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:43:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235185AbiBXNlk (ORCPT
+        with ESMTP id S234542AbiBXNn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:41:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5590B4FC54
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:41:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645710068;
+        Thu, 24 Feb 2022 08:43:29 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E50B189AAE
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:42:58 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id CE4D21EC0528;
+        Thu, 24 Feb 2022 14:42:52 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1645710173;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=weS+3HwpyorqpoTWq1H3W/L9srA7SlOeqlVBLs2cZd8=;
-        b=EXHD0YLDqq9zTkBTWWwTgM4q3vzVgtElmlWLykMWT5ZKNFuLV7lc2rTmdAj3iR29BGCFwK
-        Bp+OC404/hWQCggPra1p7XjI7twxsS79EvLwg5JHzHlhMLAYt1XdfcEho+WczQM56Aj620
-        TwPHkJ5HwPpdlyh17ctS7wCtgb3o18o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-212-07YtHVyCNy2eWj5E8S71tQ-1; Thu, 24 Feb 2022 08:41:04 -0500
-X-MC-Unique: 07YtHVyCNy2eWj5E8S71tQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 674251091DA2;
-        Thu, 24 Feb 2022 13:41:03 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1347426DF6;
-        Thu, 24 Feb 2022 13:41:03 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 1723A416D862; Thu, 24 Feb 2022 10:40:42 -0300 (-03)
-Date:   Thu, 24 Feb 2022 10:40:42 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Aaron Tomlin <atomlin@redhat.com>
-Cc:     Aaron Tomlin <atomlin@atomlin.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Christoph Lameter <cl@linux.com>, tglx@linutronix.de,
-        mingo@kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Phil Auld <pauld@redhat.com>
-Subject: Re: [RFC PATCH] tick/sched: Ensure quiet_vmstat() is called when the
- idle tick was stopped too
-Message-ID: <YheK2oesh/cxvi6j@fuller.cnet>
-References: <20220203214339.1889971-1-atomlin@redhat.com>
- <20220217124729.GA743618@lothringen>
- <20220217142615.xqtiydixvnumyvei@ava.usersys.com>
- <20220217163205.GA748087@lothringen>
- <20220218125454.utlgmuhijklzr3if@ava.usersys.com>
- <20220219154616.pwsvh445x3vn7ltf@ava.usersys.com>
- <Yhd5olg9CjXSAf2s@fuller.cnet>
- <20220224130014.rmhtx3xlepybuxn2@ava.usersys.com>
- <YheE0joXm53Hxn4J@fuller.cnet>
- <20220224132816.qsfa66ao3xdjdxxx@ava.usersys.com>
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=ClKSToBqueVFilIpbe2DHEQU7dVy9VDlaqNSq5MfQd4=;
+        b=XyEQjTb0sUr0uaUsGPdD6PdqNBHd4r59PJfkKWWyZ6Xd8FfbT1zZKXu99dWRc1IY6UTNgg
+        zcft490dIeHjvPdEOFsdctq0tpodcuK0QDAH7tYtHn8sjxKt3gM+k2Ck2KOcOBn1L9kb17
+        SgaAOcbHTeNB5DRGu9DCCWsw90OO3d4=
+Date:   Thu, 24 Feb 2022 14:42:56 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Ross Philipson <ross.philipson@oracle.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        daniel.kiper@oracle.com, dpsmith@apertussolutions.com,
+        tglx@linutronix.de, mingo@redhat.com, hpa@zytor.com,
+        luto@amacapital.net, kanth.ghatraju@oracle.com,
+        trenchboot-devel@googlegroups.com
+Subject: Re: [PATCH 1/2] x86/boot: Fix memremap of setup_indirect structures
+Message-ID: <YheLYDdG3w6WGhSM@zn.tnic>
+References: <1643303056-22272-1-git-send-email-ross.philipson@oracle.com>
+ <1643303056-22272-2-git-send-email-ross.philipson@oracle.com>
+ <YgabtFd4Nkpgi+oW@zn.tnic>
+ <2e584fc4-163a-0af4-abe0-9c14996918f2@oracle.com>
+ <Ygvy8j9E7WPo6dx0@zn.tnic>
+ <6e5763be-3e9c-0199-24ea-e4f5b226d990@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220224132816.qsfa66ao3xdjdxxx@ava.usersys.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <6e5763be-3e9c-0199-24ea-e4f5b226d990@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 01:28:16PM +0000, Aaron Tomlin wrote:
-> On Thu 2022-02-24 10:14 -0300, Marcelo Tosatti wrote:
-> > If the per-CPU vmstat_update is limited to happen once per second, that
-> > shouldnt be a significant performance impact?
+On Tue, Feb 22, 2022 at 04:01:32PM -0500, Ross Philipson wrote:
+> In the ioremap.c module, the check for NULL is only missing in the
+> functions we updated but the lack of a check was already there before
+> these changes went in.
 > 
-> Perhaps not. Albeit, is the interrupt worth it? 
+> In the setup.c and e820.c modules, the check for NULL is missing in the
+> functions we updated but the lack of a check was already there before
+> these changes went in in those functions. The lack of early_memremap()
+> NULL checks can also be found in other functions in those modules.
 
-Its a requirement for correctness right?
+I don't know how to understand this statement: are you saying that,
+because there are other cases where - for whatever reason - the retval
+check is not taking place - you should not do it either?
 
-> Then again it could indeed
-> be a long time before the idle task is selected and a return to idle code
-> were we'd check for any remaining differentials with the aforementioned
-> patch.
+Because I can see other places where the return value is checked. I
+mean, if the return value check doesn't matter, why not make this
+function simply void and not bother at all?
 
-Or a long time before userspace returns to kernel.
+> Fixing it in other functions and possibly elsewhere in the arch/x86 code
+> seems to be out of scope for this patch set. We could send separate
+> patches and hunt down other places this check is missing.
 
+That would be appreciated.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
