@@ -2,83 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 14:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 562D2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 14:55:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235663AbiBXOyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 09:54:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
+        id S235674AbiBXOzj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 09:55:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235636AbiBXOyi (ORCPT
+        with ESMTP id S235666AbiBXOzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 09:54:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41309254553
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 06:54:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645714447;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=nEhdWtMkHDnA/KPqof56Qj8ElfqWI75Bl68T1Q+UmUY=;
-        b=T13ZzS7kFu1sj5Y+JR8pJoZVq3qp4bxXb/FFvaivRL6wZTCodE2SmwtYbwtK458RYa6TQX
-        jOWnNyC+dWpl5z1UjIUvegQMCIagKQffv2izVm0BLoCg47ZISXoIU1lWbTLnAG34ipFKFR
-        moRT9bB6AsTDSgLD4cI4pzZvx40pgk0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-127-EOlyh7jnMRGHILKnPRr2-w-1; Thu, 24 Feb 2022 09:54:05 -0500
-X-MC-Unique: EOlyh7jnMRGHILKnPRr2-w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 24 Feb 2022 09:55:37 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D25E254557;
+        Thu, 24 Feb 2022 06:55:07 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A84DB801AAD;
-        Thu, 24 Feb 2022 14:54:04 +0000 (UTC)
-Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 585937F0DD;
-        Thu, 24 Feb 2022 14:54:04 +0000 (UTC)
-From:   Paolo Bonzini <pbonzini@redhat.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Chao Gao <chao.gao@intel.com>
-Subject: [PATCH] KVM: x86: Do not change ICR on write to APIC_SELF_IPI
-Date:   Thu, 24 Feb 2022 09:54:03 -0500
-Message-Id: <20220224145403.2254840-1-pbonzini@redhat.com>
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 7222122236;
+        Thu, 24 Feb 2022 15:55:05 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1645714505;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=T+nj1LXBgfdrS//vBjhL1t/BXLWyCGMXuhBk/lp7Sdg=;
+        b=ZYnGOLI3clP5LcOWs885rEZZGnWxdvib1aqxw55IsYSY9PxQ7EQ3Bc22QVXlmPvWSnY6bU
+        llsZXULjwETbIUxvEhbQFNcjm3epozqWTzSQ/jzJsnrAuELy3ctqnHRWN/eTvVGvkQwcNg
+        vAykG5noDJl9oVC+mWgON4IU3bDxT5U=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 24 Feb 2022 15:55:05 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        arnd@arndb.de, alexandre.belloni@bootlin.com, olof@lixom.net,
+        soc@kernel.org, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        Manohar.Puri@microchip.com
+Subject: Re: [PATCH v7] ARM: dts: add DT for lan966 SoC and 2-port board
+ pcb8291
+In-Reply-To: <85566f97-dcfc-f477-1ebb-5cac955b791a@microchip.com>
+References: <20220221080858.14233-1-kavyasree.kotagiri@microchip.com>
+ <3b4c56201a478876783e69243c901cd8@walle.cc>
+ <85566f97-dcfc-f477-1ebb-5cac955b791a@microchip.com>
+User-Agent: Roundcube Webmail/1.4.12
+Message-ID: <413b29b8a2e7a73561f942d4b7c78b9b@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Emulating writes to SELF_IPI with a write to ICR has an unwanted side effect:
-the value of ICR in vAPIC page gets changed.  The lists SELF_IPI as write-only,
-with no associated MMIO offset, so any write should have no visible side
-effect in the vAPIC page.
+Hi,
 
-Reported-by: Chao Gao <chao.gao@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
----
- arch/x86/kvm/lapic.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+Am 2022-02-24 15:51, schrieb Nicolas Ferre:
+>>> +/ {
+>>> +     model = "Microchip LAN966 family SoC";
+>>> +     compatible = "microchip,lan966";
+>> 
+>> As mentioned earlier, this isn't a documented compatible string. So,
+>> I guess without overwriting this in the board dts it will throw an
+>> error with the dt schema validator. OTOH, there are many dtsi files
+>> in arch/arm/boot/dts/ doing this. I don't know what is correct here.
+> 
+> I see it documented here:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/arm/atmel-at91.yaml#n165
+> 
+> Isn't it what is expected?
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index ad8857359ad6..d5a33b6be7d5 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -2120,10 +2120,9 @@ int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
- 		break;
- 
- 	case APIC_SELF_IPI:
--		if (apic_x2apic_mode(apic)) {
--			kvm_lapic_reg_write(apic, APIC_ICR,
--					    APIC_DEST_SELF | (val & APIC_VECTOR_MASK));
--		} else
-+		if (apic_x2apic_mode(apic))
-+			kvm_apic_send_ipi(apic, APIC_DEST_SELF | (val & APIC_VECTOR_MASK), 0);
-+		else
- 			ret = 1;
- 		break;
- 	default:
--- 
-2.31.1
+That only documents
+   compatible = "microchip,lan9662-pcb8291", "microchip,lan9662", 
+"microchip,lan966";
 
+But not the one above.
+
+> 
+>> Everthing else looks good.
+> 
+> Thanks a lot for your reviews.
+> 
+>> Reviewed-by: Michael Walle <michael@walle.cc>
+> 
+> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+> I'm queuing it to at91-dt branch for reaching arm-soc in 5.18 merge 
+> window.
+
+Nice, then I'm good to go for my patches on top of this :)
+
+-michael
