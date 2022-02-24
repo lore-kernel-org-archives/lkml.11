@@ -2,82 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:29:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90FE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236123AbiBXP3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:29:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54678 "EHLO
+        id S236275AbiBXP34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:29:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232343AbiBXP3t (ORCPT
+        with ESMTP id S236353AbiBXP1v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:29:49 -0500
-Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724091BA14C
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:29:19 -0800 (PST)
-Received: by mail-lj1-x22a.google.com with SMTP id bn33so3408864ljb.6
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:29:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EMjz3GUKEught2ePjPyclv4KwRdqwfnECAei6dKW3vI=;
-        b=gFftsX0zxW/J0elk0M3ECgZKjVXIIbavU/YePdhRXkpMslH4BYQQSm30MsSEwKkW+e
-         5AM+QDI2cWeD6mu8dLlaGyL/YBEHISsTs16zDwC2BeOsfXMmL2JvRzaY8+vbjTvQ8HDV
-         g+Yrl5r0cxVFAbHOZ4ReZzoUOeEb54kGl81MzFf7F+yykMW1xmJ49UvdySchA++r9WUt
-         96bluTYY7CZGYQ24S+YJ3CxFuDpopexF88tihcK/fa8VIH8qSoYCAQ0kNvbZjWFOvlWi
-         L2Rx2mXxDcF7a2gyCPz5fr8xPq6yRfMZGortCGXJUfVlWtY17nNRu+lRpHLH/NjvkxDh
-         zVHw==
+        Thu, 24 Feb 2022 10:27:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC62B331
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:27:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645716440;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MAFlX29r2KocHOYLyVsUNd705D3xbKBcnZPFz8ETr5w=;
+        b=DcP7wAJ/xWa5FQzVwbXUjzEUpm40N5SS7/SHQI2caXjXGkWsdGdQuxFMPSMIqZdYLGlg0X
+        +iicDnENU/biRFkJ/nkqSe5phcmb2qLf9J0D3BVnJMXyUZWRl+9HMArABc/IIqwdz+knkG
+        ZxzcE/hB2xRNJFOKrtjtMlpISJqSDsI=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-116-eAxkZpMeO5OB6AQscmBY1w-1; Thu, 24 Feb 2022 10:27:19 -0500
+X-MC-Unique: eAxkZpMeO5OB6AQscmBY1w-1
+Received: by mail-ej1-f71.google.com with SMTP id h22-20020a1709060f5600b006b11a2d3dcfso1381297ejj.4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:27:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EMjz3GUKEught2ePjPyclv4KwRdqwfnECAei6dKW3vI=;
-        b=6iZTRTgWV2YHM0pRxDD7/vmGNI+DM+d8OI7QqBLkY+Tk9Hw0v0fRuLHSaUR4RfbiX1
-         J3idj/BiPnWOq+Tvn0tMz2H+HSGoyYCLE0dt/tsVt6eHLaZ01bwKM7mL82avgjbGKSD8
-         CXBX6fkfUONVQddj/w7n/69tyAVxJ28BNW1SvA7Bcqf1E1QWGiMqMxGQAMToNmCCAZhr
-         BoXaeOUnJ9yaMi6iRe4zSJMk5ugWSdOhKAd4RNlm7gfBKT58tENagUg5hkyoV5XuYFJl
-         vzvSZa9/rhHZiKVsueDaZvqBFKElIcly/SkxtnJGmocQZCavrDB/EFCv/eufz6whWMQz
-         AF3A==
-X-Gm-Message-State: AOAM531iLNScUGhkQJCcKLnvy4qh751wvVcnJLagTn7H8wnNOTgifqIM
-        X8uVqJqTMs6+UdMu0ur/s9XZvBr6lDMEZ23i9Eix8Q==
-X-Google-Smtp-Source: ABdhPJyWNQWbKWSU29Xq+LUBZEvcQ2vCZFTH7TFlscZZvLsZwNfmFaJFGMKhd8U6YLb+3JT8tZqkBY/Zm0ZC2XFig0E=
-X-Received: by 2002:a2e:a905:0:b0:246:609b:881e with SMTP id
- j5-20020a2ea905000000b00246609b881emr2202891ljq.383.1645716557754; Thu, 24
- Feb 2022 07:29:17 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=MAFlX29r2KocHOYLyVsUNd705D3xbKBcnZPFz8ETr5w=;
+        b=POh9ST87pU7g1yYjS8QzRw88/qAysJNsjUxo/o3jCyrlwlpb4P8qP0Kqdkf3kfZW9H
+         y0DlQnrKELVoGJfn/0tSq4UpOxUaI3hNiZKhl8+vpRXIVvzulb8C/S+AjUIMBUQRCs2F
+         6fjdYjXVit0Sky/6CSZGrf4yBI6cfWtog+rzN3boUaRjMw1ivXgPUdKI/+yn9JoV2Q6t
+         7bhVL+UA4c0IHhTYJfFihtCUVmvULYnLl+pKGTDHRbEZHswIlfYYJY2ZEW64MPwahvHH
+         QKVG1CFi1lGGoymOYiQ6F/uPOffiGEzDRHTeE/CGedFmuBTZZVqfr/nUfOE85h+h2iXc
+         rPcQ==
+X-Gm-Message-State: AOAM530z4cCVcljQSormw4GskAknSUnjL7pMaZxno7YxLJEYnnbz66zC
+        5VCnd+QAtSE7ZXm9d2lDp02EhGMVZU0HzEsgvxJHGgMEarm5r1PjADHfzPtGHGXAk0OetJja6o9
+        PO18RXvN56aX9I84Bm2hRrdBW
+X-Received: by 2002:a17:906:82cf:b0:6d0:3d6:8f27 with SMTP id a15-20020a17090682cf00b006d003d68f27mr2673100ejy.236.1645716438208;
+        Thu, 24 Feb 2022 07:27:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzwmZPM11UQ+T6MJpkRf/wgOctq2SgXxXTorPBAnahVhFkr1lHSs4O3wwVIy145b56udQuU4Q==
+X-Received: by 2002:a17:906:82cf:b0:6d0:3d6:8f27 with SMTP id a15-20020a17090682cf00b006d003d68f27mr2673087ejy.236.1645716438047;
+        Thu, 24 Feb 2022 07:27:18 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id g3sm1499354ejz.180.2022.02.24.07.27.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 07:27:17 -0800 (PST)
+Message-ID: <abc99baf-dfd0-96a8-78e7-703c927eb484@redhat.com>
+Date:   Thu, 24 Feb 2022 16:27:16 +0100
 MIME-Version: 1.0
-References: <20220217154403.6497-1-wuyun.abel@bytedance.com> <YheiT2pGNDggdFSu@hirez.programming.kicks-ass.net>
-In-Reply-To: <YheiT2pGNDggdFSu@hirez.programming.kicks-ass.net>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Thu, 24 Feb 2022 16:29:06 +0100
-Message-ID: <CAKfTPtB_GGb2eZqWfmKrY3-Z9spN9wzU4pXMGz38bAZu8ExCMQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/5] introduce sched-idle balancing
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Abel Wu <wuyun.abel@bytedance.com>,
-        Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] tools/power/x86/intel-speed-select: Remove unneeded
+ semicolon
+Content-Language: en-US
+To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>,
+        srinivas.pandruvada@linux.intel.com, cgel.zte@gmail.com
+References: <20220223093633.1934362-1-deng.changcheng@zte.com.cn>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220223093633.1934362-1-deng.changcheng@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Feb 2022 at 16:20, Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Thu, Feb 17, 2022 at 11:43:56PM +0800, Abel Wu wrote:
-> > Current load balancing is mainly based on cpu capacity
-> > and task util, which makes sense in the POV of overall
-> > throughput. While there still might be some improvement
-> > can be done by reducing number of overloaded cfs rqs if
-> > sched-idle or idle rq exists.
->
-> I'm much confused, there is an explicit new-idle balancer and a periodic
-> idle balancer already there.
+Rafael,
 
-I agree, You failed to explain why newly_idle and periodic idle load
-balance are not enough and we need this new one
+On 2/23/22 10:36, cgel.zte@gmail.com wrote:
+> From: Changcheng Deng <deng.changcheng@zte.com.cn>
+> 
+> Fix the following coccicheck review:
+> tools/power/x86/intel-speed-select/hfi-events.c: 147: Unneeded semicolon
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
+
+Can you add this to your thermal-hfi branch please?
+
+Regards,
+
+Hans
+
+
+> ---
+>  tools/power/x86/intel-speed-select/hfi-events.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/power/x86/intel-speed-select/hfi-events.c b/tools/power/x86/intel-speed-select/hfi-events.c
+> index e85676711372..2f871c108236 100644
+> --- a/tools/power/x86/intel-speed-select/hfi-events.c
+> +++ b/tools/power/x86/intel-speed-select/hfi-events.c
+> @@ -144,7 +144,7 @@ static int family_handler(struct nl_msg *msg, void *arg)
+>  			continue;
+>  		res->id = nla_get_u32(tb2[CTRL_ATTR_MCAST_GRP_ID]);
+>  		break;
+> -	};
+> +	}
+>  
+>  	return 0;
+>  }
+
