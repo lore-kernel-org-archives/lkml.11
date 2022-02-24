@@ -2,278 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3401C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F3BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230493AbiBXV1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 16:27:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42354 "EHLO
+        id S234930AbiBXV1q convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 16:27:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234268AbiBXV1A (ORCPT
+        with ESMTP id S234842AbiBXV1h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 16:27:00 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2045.outbound.protection.outlook.com [40.107.96.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1029A29DD3F;
-        Thu, 24 Feb 2022 13:26:19 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BLj+7DV4ip7Zcy4wXahW05r2mA3Tdg0rfiUUQ1F4IcCQwADIKsCXmddptG/TkCM6AMaA+hXulX9xdDMAHH2ZxPSlgEV/hLG7F9HQMXIq7Va+XqVCfQAIMRqt9DFJg2gbwnyjURBV9JsQclVtUSmCWZhqLU2+RbL777S7JuQgKeeywDNZZRQllI6IyDjXJnwbE9Dg50cFWQE7rX2jehILegiKGULNn7Jn7unf5Et61/jtWqxCkhIVuzcCOuRLO55mI6BrSD9v1Nch1hlueAoj8YuE8UWP/pEdh2wdb/K+MvNjFgwmCqX44ock6QYlu5UsY4+bk/J13nDMRcNLqu6w2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Aq9v9QnSl4zFVw86sJrG7QcpWAhGerJfTo+ZwuC/mWQ=;
- b=ID3P3uh8bwQAMblqOXO/jocw6FiwuiwKcWRLclBDBFXB4OkGoMcYH/jviPizTOFYHyGn96RkmFiU+UJFnjrhptbUx/3NP/xPWx8mQ6EtEwEfxiB0vQjOGJl+SRlTcEf6eqYERsVjS4oBxMksnmgo5dA7Roagm2UZvQZRr9eKR4Zm/VyrY5nbfZbmLRUB8n2SYCdJfbXHO6IIcgjbL7QCk8Duc6JzwxISV5NaikQMyxCrcxZ22efv2ahIg0qjNxDnrsBw7gIeQulSpBu58v6v7ViVLXahVO4/AQhVmk/wSFm/DiDqyS92WQIbcyyWj2FqVJ6f58VnT2sghlgyGqsaHg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Aq9v9QnSl4zFVw86sJrG7QcpWAhGerJfTo+ZwuC/mWQ=;
- b=bFG0rzvdB0LJ9Q1TVkMPzgaUZGbjj2EMM5e0EziCUSGRarjgclYCylmkl0Ivl/78w/xL0DeB6tLxGpPgFAtlcHEr2PnbcyeVqCk9UuSCH50j4aAuJfwc3VH+uhGjUxXrf2IrdXkTS/FJ8AB54cYdCVCf623iu6AUyvvSueOldn4=
-Received: from DS7PR05CA0047.namprd05.prod.outlook.com (2603:10b6:8:2f::26) by
- DM6PR02MB4058.namprd02.prod.outlook.com (2603:10b6:5:9f::19) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4995.24; Thu, 24 Feb 2022 21:26:15 +0000
-Received: from DM3NAM02FT050.eop-nam02.prod.protection.outlook.com
- (2603:10b6:8:2f:cafe::f) by DS7PR05CA0047.outlook.office365.com
- (2603:10b6:8:2f::26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.9 via Frontend
- Transport; Thu, 24 Feb 2022 21:26:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch01.xlnx.xilinx.com;
-Received: from xsj-pvapexch01.xlnx.xilinx.com (149.199.62.198) by
- DM3NAM02FT050.mail.protection.outlook.com (10.13.5.53) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:26:15 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 24 Feb 2022 13:26:12 -0800
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:26:12 -0800
-Envelope-to: eperezma@redhat.com,
- jasowang@redhat.com,
- mst@redhat.com,
- lingshan.zhu@intel.com,
- sgarzare@redhat.com,
- xieyongji@bytedance.com,
- elic@nvidia.com,
- si-wei.liu@oracle.com,
- parav@nvidia.com,
- longpeng2@huawei.com,
- virtualization@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org,
- kvm@vger.kernel.org,
- netdev@vger.kernel.org
-Received: from [10.170.66.102] (port=59620 helo=xndengvm004102.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <gautam.dawar@xilinx.com>)
-        id 1nNLcq-00095B-4Z; Thu, 24 Feb 2022 13:26:12 -0800
-From:   Gautam Dawar <gautam.dawar@xilinx.com>
-CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
-        <tanujk@xilinx.com>, <eperezma@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Longpeng <longpeng2@huawei.com>,
-        <virtualization@lists.linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: [RFC PATCH v2 09/19] vhost: support ASID in IOTLB API
-Date:   Fri, 25 Feb 2022 02:52:49 +0530
-Message-ID: <20220224212314.1326-10-gdawar@xilinx.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20220224212314.1326-1-gdawar@xilinx.com>
-References: <20201216064818.48239-1-jasowang@redhat.com>
- <20220224212314.1326-1-gdawar@xilinx.com>
+        Thu, 24 Feb 2022 16:27:37 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC7412622;
+        Thu, 24 Feb 2022 13:26:54 -0800 (PST)
+Received: from [192.168.1.107] ([37.4.249.169]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1M5Q6l-1nLyiq2iI9-001Ngp; Thu, 24 Feb 2022 22:26:41 +0100
+Subject: Re: [PATCH v5.1 2/2] ARM: dts: bcm2711: Add unicam CSI nodes
+To:     Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>,
+        linux-kernel@vger.kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, sbranden@broadcom.com,
+        rjui@broadcom.com, f.fainelli@gmail.com, nsaenz@kernel.org,
+        robh+dt@kernel.org, laurent.pinchart@ideasonboard.com,
+        dave.stevenson@raspberrypi.com, naush@raspberrypi.com
+References: <20220208155027.891055-7-jeanmichel.hautbois@ideasonboard.com>
+ <20220223143434.71853-1-jeanmichel.hautbois@ideasonboard.com>
+ <20220223143434.71853-2-jeanmichel.hautbois@ideasonboard.com>
+ <3fceae58-b43e-0034-19c2-078f18010001@i2se.com>
+ <944bdedc-afbb-e427-bd1d-676f8ed21a48@ideasonboard.com>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+Autocrypt: addr=stefan.wahren@i2se.com; keydata=
+ LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tClZlcnNpb246IEdudVBHIHYy
+ CgptUUlOQkZ0NmdCTUJFQUN1Yi9wQmV2SHhidkplZnlaRzMySklObW4yYnNFUFgyNVY2ZmVq
+ bXlZd21DR0tqRnRMCi9Eb1VNRVZIRHhDSjQ3Qk1YbzM0NGZIVjFDM0FudWRnTjFCZWhMb0J0
+ TEh4bW5lQ3pnSDNLY1B0V1c3cHRqNEcKdEp2OUNRRFp5MjdTS29FUHh5YUk4Q0YweWdSeEpj
+ NzJNOUk5d21zUFo1YlVIc0x1WVdNcVE3SmNSbVBzNkQ4ZwpCa2srOC95bmdFeU5FeHd4SnBS
+ MXlsajVianhXREh5WVF2dUo1THpaS3VPOUxCM2xYVnNjNGJxWEVqYzZWRnVaCkZDQ2svc3lp
+ by9ZaHNlOE4rUXN4N01RYWd6NHdLVWtRUWJmWGcxVnFrVG5BaXZYczQyVm5Ja211NWd6SXcv
+ MHQKUkp2NTBGUmhIaHhweUtBSThCOG5oTjhRdng3TVZrUGM1dkRmZDN1R1lXNDdKUGhWUUJj
+ VXdKd05rLzQ5RjllQQp2ZzJtdE1QRm5GT1JrV1VSdlArRzZGSmZtNitDdk92N1lmUDF1ZXdB
+ aTRsbitKTzFnK2dqVklXbC9XSnB5MG5UCmlwZGZlSDlkSGtnU2lmUXVuWWN1Y2lzTXlvUmJG
+ OTU1dENna0VZOUVNRWRZMXQ4aUdEaUNnWDZzNTBMSGJpM2sKNDUzdWFjcHhmUVhTYUF3UGtz
+ bDhNa0NPc3YyZUVyNElOQ0hZUUR5WmljbEJ1dUNnOEVOYlI2QUdWdFpTUGNRYgplbnpTektS
+ Wm9POUNhcUlEK2ZhdkxpQi9kaHptSEErOWJnSWhtWGZ2WFJMRFp6ZThwbzFkeXQzRTFzaFhp
+ ZGRaClBBOE51SlZ6RUl0MmxtSTZWOHBaRHBuMjIxcmZLaml2UlFpYW9zNTRUZ1pqak1ZSTdu
+ bko3ZTZ4endBUkFRQUIKdENCVGRHVm1ZVzRnVjJGb2NtVnVJRHgzWVdoeVpXNXpkRUJuYlhn
+ dWJtVjBQb2tDTndRVEFRZ0FJUVVDWElkYwo0Z0liQXdVTENRZ0hBZ1lWQ0FrS0N3SUVGZ0lE
+ QVFJZUFRSVhnQUFLQ1JDVWdld1BFWkR5MjFPVEQvOUdpWkxkCnRSWWNteVJKZ2x0aVFRekFp
+ UWRjSUQ3OGxHb1dwL3grci92Y1U2YjZqdVl1ZVR3Z1Iwclc3djdsMklSQnlEN24KSEp4YSt0
+ SVNvUVpCZ2hvbE1JZmI5TXRoR09KTENZNzdrL1FoQWhuMzJOR1prZWp3OXR6a3MvNDBtclpT
+ VVQ4NApaeWJzUVhyTE0vSFI2VElJL0RlUEIwbktEM0ppcHBzMlVIUUQ5cUQySWpFd1NRUGxI
+ akNPckVaaDQ1UFo3bTkrClo5M0x6aVRlc1dabFlRdUxpSndzNHJLcHRIVzFkL3dSZWxzaG1t
+ NlFxY0wybDRDL2U0MGVEQjlncTRkU1poOVgKUEVZbGxpeU5RaDdhMkxTZHVtRTFyK2NTd0lq
+ RS91ZHRSdmRPOWFLb0psT2JVSzVkTmpTUEg3d0tUYndkWGRZRApHUHdEaFhkNThOQXdyK1BY
+ QmxQajB0STFMQ3ErTEJ4ZUt6aFdYK0dWcTlEb2pWanlVREV4Rk5Ga1h1b0M3ZzhtClY5VDB0
+ ZUJpdVpSbm91WEt3VjJGcHRaT0hIN0JVRVd0a0t0aGgxZXRmT1dwaWdCemtVN2JQc2ZJWVQr
+ cnk5dGIKMW9KK3Y0MVBOYXFaRW1QVXBKeHZmek5UN3Ayd01lRDdaajlmMHJ1YlJQdExBSjJR
+ R2pyRkhzdVh3QU9xcHl6ZQoxOEVidHNZazBOMHp1SEVoY2orUEJJQmZoMFlJWWQ1MW9mNkdJ
+ aU95UjlxMFhYdHBsVUo3VDIvSDF1UXFrWGxwCitnVzRWa2lmc2NJckl1eWZueFpXMTJlSXZq
+ NnlicVdMN2FZS0dZbVQ2aUxDUGJIWXlZY2F5bDRFa0ZjckNGN0UKZTBXVC9zY1ZNaE8vNVgv
+ SGFOQTVIQngvcjUycGdMY3Y0aTlNeExRbVUzUmxabUZ1SUZkaGFISmxiaUE4YzNSbApabUZ1
+ TG5kaGFISmxia0JwTW5ObExtTnZiVDZKQWpnRUV3RUNBQ0lGQWx0NmdCTUNHd01HQ3drSUJ3
+ TUNCaFVJCkFna0tDd1FXQWdNQkFoNEJBaGVBQUFvSkVKU0I3QThSa1BMYmpic1AvamdqYVNz
+ NUh0bGtBSXZXUytGcm15N2MKaG5jT0F4TFRWL0Q2UkV3SU95R0poRkt3d29pck55UTJnOXZV
+ YTNZQ1lDZjFmSjh3RWhhS09COWQwTHBNUm5MNApkRVQ4ZDgyMzhFL3BLK0hxTktpSXNKaHM2
+ SnNLOFpnalZRR3JtbWZua0dyWisxdjBIQnV4ZGljZ0duUC9XdHVBClVsOGw2Mi9BTGJheXlq
+ KzYxQ2xyc0V0UklhcU82N0xJWXdQaVBEUkkrWGlNek5pR3pIRi8xUTZHUjAyUkg2YTMKRjg5
+ ejhhUHhjSGkxWnZDdDJ5a3o2VUVjaHpQMHI1Z3FGSisvTC9VcHU4ME1YaVk0djVlSWFCNTJn
+ VlBnaXlNQQpsTDJkRHMxbUladm5yUkxSWTJ0YjNtQVlOa1Y1QjVJRFQzcGtXeTZrS281T0Nn
+ SytZZFlPUjhGTloyb04ydDhPCnJLK1ZudGFLN01NU0tIbG1ZL3NPd3RSbEVoMU9CbXJjQ3dH
+ d21wLzA1R2tSNDZmL0lzaFJWZUZPUmF3K0dBcXQKUDIrQ0ZhMkNOQS9JSG5aTm95aWtsRHpQ
+ UUhVVUdzck5wcERyaFg5Sm1oQm1nMXYyeXdIMU5YdTFpRGZQMUJBdwpLZ29rdDVmNVVhUkY5
+ c0FBNTN2V0V2YlVVTjllZXNGR0x6UFdkSkdRNWhwZC9WSDVJUXk5U0JyaC93SWNla3E1Cm4w
+ a042cGJUSHhHRTUyU2kvTVZJa05UdURaM2FwbjJqbERaNHBPdHBCWEkydlAzYlBPK05pcUJa
+ anNVM3R4TGkKV2R2MkZqeXp6NlhMUndlV1JZVkw1SGE2TER0eG9yMnZ1NlVQMDdwOXh6MXhS
+ WmFPRFczb1lsSEZ6WXBhNFc1ZwpMSGIybEVrSXVVZlNjaWNHYmpqQXRDbFRkR1ZtWVc0Z1Yy
+ Rm9jbVZ1SUR4emRHVm1ZVzR1ZDJGb2NtVnVRR2x1CkxYUmxZMmd1WTI5dFBva0NOd1FUQVFn
+ QUlRVUNYSWRlaHdJYkF3VUxDUWdIQWdZVkNBa0tDd0lFRmdJREFRSWUKQVFJWGdBQUtDUkNV
+ Z2V3UEVaRHkyeUhURC85VUY3UWxEa0d4elE3QWFDSTZOOTVpUWY4LzFvU1VhRE51Mlk2SQpL
+ K0R6UXBiMVRiVE9yM1ZKd3dZOGEzT1d6NU5MU09MTVdlVnh0K29zTW1sUUlHdWJEM09EWko4
+ aXpQbEcvSnJOCnQ1elNkbU41SUE1ZjNlc1dXUVZLdmdoWkFnVERxZHB2K1pIVzJFbXhuQUox
+ dUxGWFhlUWQzVVpjQzVyMy9nL3YKU2FNbzl4ZWszSjVtTnVEbTcxbEVXc0FzL0JBY0ZjK3lu
+ TGh4d0JXQld3c3Z3UjhiSHRKNURPTVd2YUt1RHNrcApJR0ZVZS9LYjJCK2pyYXZRM1RuNnMv
+ SHFKTTBjZXhTSHo1cGUrMHNHdlArdDlKNzIzNEJGUXdlRkV4cmlleThVCkl4T3I0WEFiYWFi
+ U3J5WW5VL3pWSDlVMWkyQUlRWk1XSkFldkN2VmdRL1UrTmVSaFh1ZGU5WVVtRE1EbzJzQjIK
+ VkFGRUFxaUYyUVVIUEEybThhN0VPM3lmTDRyTWswaUh6TElLdmg2L3JIOFFDWThpM1h4VE5M
+ OWlDTHpCV3UvTgpPbkNBYlMremx2TFphaVNNaDVFZnV4VHR2NFBsVmRFamY2MlArWkhJRDE2
+ Z1VEd0VtYXpMQU1yeDY2NmpINWt1ClVDVFZ5bWJMMFR2Qis2TDZBUmw4QU55TTRBRG1rV2tw
+ eU0yMmtDdUlTWUFFZlFSM3VXWFo5WWd4YVBNcWJWK3cKQnJoSmc0SGFONkM2eFRxR3YzcjRC
+ MmFxYjc3L0NWb1JKMVo5Y3BIQ3dpT3pJYUFtdnl6UFU2TXhDRFhaOEZnWQpsVDR2MjNHNWlt
+ SlAyemdYNXMrRjZBQ1VKOVVRUEQwdVRmK0o5RGEycitza2gvc1dPbloreWNvSE5CUXZvY1pF
+ Ck5BSFFmN2tDRFFSYmVvQVRBUkFBMkhkMGZzRFZLNzJSTFNESGJ5ME9oZ0RjRGxWQk0yTSto
+ WVlwTzNmWDFyKysKc2hpcVBLQ0hWQXNRNWJ4ZTdIbUppbUhhNEtLWXMya3YvbWx0L0NhdUNK
+ Ly9wbWN5Y0JNN0d2d25Lem11WHp1QQpHbVZUWkM2V1I1TGtha0ZydEhPelZtc0VHcE52NVJj
+ OWw2SFlGcExrYlNrVmk1U1BRWkp5K0VNZ01DRmdqclpmClZGNnlvdHdFMWFmN0hOdE1oTlBh
+ TEROMW9VS0Y1aitSeVJnNWl3SnVDRGtuSGp3QlFWNHBndzIvNXZTOEE3WlEKdjJNYlcvVExF
+ eXBLWGlmNzhJaGdBelh0RTJYck0xbi9vNlpINzFvUkZGS096NDJsRmR6ZHJTWDBZc3FYZ0hD
+ WAo1Z0l0TGZxemoxcHNNYTlvMWVpTlRFbTFkVlFyVHFueXMwbDE4b2FsUk5zd1lsUW1uWUJ3
+ cHdDa2FUSExNSHdLCmZHQmJvNWRMUEVzaHRWb3dJNm5zZ3FMVHlRSG1xSFlxVVpZSXBpZ21t
+ QzNTd0JXWTFWNmZmVUVta3FwQUFDRW4KTDQvZ1Vnbjd5US81ZDBzZXFuQXEycFNCSE1VVW9D
+ Y1R6RVFVV1ZraUR2M1JrN2hURm1oVHNNcTc4eHYyWFJzWApNUjZ5UWhTVFBGWkNZRFVFeEVs
+ RXNTbzlGV0hXcjZ6SHlZY2M4cURMRnZHOUZQaG1RdVQyczlCbHg2Z0kzMjNHCm5FcTFsd1dQ
+ SlZ6UDRqUWtKS0lBWHdGcHYrVzhDV0xxekRXT3ZkbHJEYVRhVk1zY0ZUZUg1VzZVcHJsNjVq
+ cUYKUUdNcGNSR0NzOEdDVVcxM0gwSXlPdFF0d1dYQTRueStTTDgxcHZpQW1hU1hVOGxhS2FS
+ dTkxVk9WYUY5ZjRzQQpFUUVBQVlrQ0h3UVlBUUlBQ1FVQ1czcUFFd0liREFBS0NSQ1VnZXdQ
+ RVpEeTIrb1hELzljSEhSa0JaT2ZrbVNxCjE0U3Z4MDYyUHRVMEtWNDcwVFNucC9qV29ZSm5L
+ SXczRzBtWElSZ3J0SDJkUHdwSWdWanNZeVJTVk1LbVNwdDUKWnJEZjlOdFRiTldnazhWb0xl
+ WnpZRW8rSjNvUHFGclRNczNhWVl2N2U0K0pLNjk1WW5tUSttT0Q5bmlhOTE1dApyNUFaajk1
+ VWZTVGx5VW15aWMxZDhvdnNmMWZQN1hDVVZSRmNSamZOZkRGMW9ML3BEZ01QNUdaMk93YVRl
+ am15CkN1SGpNOElSMUNpYXZCcFlEbUJuVFlrN1B0aHk2YXRXdllsMGZ5L0NxYWpUS3N4Nytw
+ OXh6aXU4WmZWWCtpS0IKQ2MrSGUrRURFZEdJRGh2TlovSVFIZk9CMlBVWFdHUytzOUZOVHhy
+ L0E2bkxHWG5BOVk2dzkzaVBkWUl3eFM3SwpYTG9LSmVlMTBEamx6c1lzUmZsRk9XMFpPaVNp
+ aElDWGlRVjF1cU02dHpGRzlndFJjaXVzNVVBdGhXYU8xT3dVClNDUW1mQ09tNGZ2TUlKSUE5
+ cnh0b1M2T3FSUWNpRjNjcm1vMHJKQ3ROMmF3WmZnaThYRWlmN2Q2aGp2MEVLTTkKWFpvaUFa
+ WVpEKy9pTG01VGFLV042b0dJdGkwVmpKdjhaWk9aT2ZDYjZ2cUZJa0pXK2FPdTRvclRMRk16
+ MjhhbwpVM1F5V3BOQzhGRm1kWXNWdWE4czZnTjFOSWE2eTNxYS9aQjhiQS9pa3k1OUFFejRp
+ RElScmdVek1FZzhBazdUCmZtMUtpWWVpVHRCRENvMjVCdlhqYnFzeXhrUUQxbmtSbTZGQVZ6
+ RXVPUEllOEp1cVcyeEQ5aXhHWXZqVTVoa1IKZ0pwM2dQNWIrY25HM0xQcXF1UTJFNmdvS1VN
+ TEFia0NEUVJiZmw5REFSQUFzRExjYStMbFAydm5mdEVHaHBjQQpCR1ZOUUVGbkdQckNhdVU2
+ SGhOODA1V3RQVHRtc1JPdUp6cWdVVDBtcHFXSWZacTZzTXd5dkhLOVRzL0tIM0paClVWYlJD
+ M3oyaDNLZmhIL0RhZjk1cGQ2bVBjL2g5dkYvT3kzK2VUV2hnR25QNmNBNWtsUitmTzFXaEc4
+ VnJpWHYKck5lUkcyMHN6emplSG9jblNJY1Q1WHVaUjB1REhPaUd4T2l6MXNNUkZUR3h6R095
+ MTlSOXJ2dTYzdGlJM2Q3dgpnYzc1T0NBZGtlQi9TZUNFbGFSdzBUZjdMWmJQampzRjI2M0JZ
+ bk1mNGtrTkVLdnFXY1UyaWNNcCtxZXpqeW5CCnB2ZXVlMHJDVFFCWUFRbG9GQ1ZUR0hyV1dB
+ NkQ0VzVPMkFmSWRJYzF1MUpDWnAyZjVMV1ZvVUZUVklyUW5RUVUKU0hDaWZyOU1aeExUdFBK
+ ZFU1Mm9TUHczZGs0aExQOGlKSUx1dnYvYXZhakNzUVlIRXR3WXNiZUZaeGl1TGdscApBN1lj
+ Sk5ObXBnQ3BNRDR3VWh2bEN0QUtOQlFXeXIyOTc2OThFUVRuNDZlQmVVNkttMkNpaFhrZ3dD
+ eWY4ZXlLCkxFM3NYZXdhcTVrZ1pXdk5xNml1NXFZSVJCOXl3K2NYYzYwZE9aRE9scTkzWDVT
+ QVJZemFvZXBrSHo0cmtMa1AKUG8rdENIeUhRUHNHblBYYzlXVDgwREM5Tm5KR2R2VWx5NXJk
+ TUk0eHBaeWdlb2tqd293VlFsUFV1Y1M2TXluNwpmOHc4Y2dmQjdDMklBSWNEeDJwUC9IendY
+ dmtDT1FOQTdtVjFsTTA4bitnVmtUcnpweGlwNURicTRDSW9ZeDJNCkpaVDhiR1JINlhqY1VE
+ S2EwOVFoeVpzQUVRRUFBWWtFUkFRWUFRZ0FEd1VDVzM1ZlF3SWJBZ1VKQThKbkFBSXAKQ1JD
+ VWdld1BFWkR5MjhGZElBUVpBUWdBQmdVQ1czNWZRd0FLQ1JCVnhETFBjVk1NamNkc0QvMFJo
+ QXN1UVlPeQpyMTNCbDNOaFhrWUFaR3AyWkZER3VrZTdPU2tWOG9qT09UZFR5ei9jT1JHQ2J5
+ ZEQrRGd2cUZ5VmRuT1hLZ08wCmxKbUd3ckdlTGRnZ0F2aDBpaHJwNU8wWVVKOWJCU1htR01t
+ UVRZSC9BbUxUR2FkYnVqQ1dqNWZGVWtDeXd4aW0KSHV5MFBiMjRwelR2UzUwR1k1WStxSDBG
+ SE5haWdka2tpV04zcnVnN0haRXUvQ3lsUFpqT1h6K0QxUVBNckV4dwo3ZC9NS2FiVis5YU5i
+ UVlabGRJajk4UXd2VUYxS1N6YThqbFVJdnBoUnEyN0FUOGZER1lHUGZERU1nMmNCT2FlCkty
+ N29uUXM0YjdhV082aWZEbHhRVHB6c3pvK0FuODA3Tk1TdFZFRmYrczNBaFZEM2U3bmY4SkJh
+ dmJWckFlMGsKb20yNm96elBubnh6K2xxVlZ0dzZVazRYTUl6dGl4L0h3SFl3dUNuY1VYWndL
+ MEkzeUFKd2pZd29vck9DaEozUwpFVWJKUVB0R3NneFJERXhWQkZlNk5MUC82MnhQOU82dGFj
+ d09kYjBNbVAxYjM5cFJBVEM3YmdkMWxkVUxpNzVaCmxKckowL1NpVkVyb3FOWXk3OXRmbWdB
+ WjJVeFptczlTckV5Nm85UVNmc24xYVh2K01QTDlKYUNHbWtQNnpiTFEKTm5kajBKY2FRbmtD
+ MHZneWRPMUJtNk11OTZQOXVmbEtaY0FTNndtTE01SWRIT3lqTDg4d0h3anVjakFPQnRjdwpw
+ MG9HVG5WT25Sc05ZU084VzhZWi9LZGJ1Nzg1ZGF6TXFKMmlOakFEdUJiZG02TjRqNUVkTW5r
+ TG4wQklmUEpwCmRnbTR2bDJVcExqd1JHci9NM3dtbTVwdnMrNnVCN2hrL0ZKaUQvNGxsRU5Q
+ NGVNMWg3U200aitWcTZOMSt6VEIKSVhKQWViSXFhc0RwNXlaUzdYcnk0STM2bjg1WEVZZkcw
+ MWx0QXlob05WMkRPOFNJUlFwdWkydHErOVJQM1JLMQpKREJ4eEVKWTJFTzVKWjhNeGFQSFEw
+ RFQwNWxSRmpLMkFsaGRFSXRqTGpwSjNmVW05c3FMeE1XeHpQNlV6M2lpCjJ1YTR1bnJ0Nk9D
+ VHFRd2lqRi8zYlRXaXd2VkFBSG5NRlVpb1hzaEhhb2hWRGNWZm5lSU1mVjBiUUNYWWkzTnAK
+ WTB2MFp3Y2lGSCtnU0M3cUQ2WE51aHBWR1NMNElpbGlGeS9TemNhSkV6QUhlTERTaFpQMkNX
+ ZG5DNHZnbDM3dApocHg4aDU1WWhKbjZIU3VVelBnaGFLdFZCMmsrajdaZXlaK1NGeHA3SXVi
+ SEN3TEhsUWhUNzVSd1EzaUF4S242CjBxajUxY1lUbnF4ZFpYVzZmSDNQa3VNellVNUdwcVIv
+ MU9sNWMvd2ZJNmc2QW04eUtXLzBFVUx0K0tuNExGc1MKbTdZM201SDV2MTJVNkpCWXZWK3Ix
+ M2paaW9zNEVFREU5M0Q1c05IMk1JeVJ6Q0RxMXpkZHQ0WHV5S0ZqUEtXMQo5aWJaRGZGVjdL
+ dUNzdnVMMjNzQmMxc0NNb3ArRTFtVC9ReE9JQTZvRFQxTVFzdHdPVnVReURDdi9PdktTZ2Z6
+ CjhGWEdMNkFQY2xqQ3FqOEFKaHhReXN4ZG9pUVA4bS92dStialdHR3Z4dzVzMWxncGlSRFRS
+ VVBnY0pKTmFHWTIKVklEclpRaTROU2lOUTBOSWkrZGp1NGZOTW1DcFFxZzh0YkMzY0FhNnl3
+ bTZvUUIxU0JobURYMmUxMWdSbGx1SQpPblRHUEUwSFRvM2w3MmxoYmc9PQo9cVpNVgotLS0t
+ LUVORCBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCg==
+Message-ID: <d425a724-a3b6-b6b5-0197-1b82d01bbaf6@i2se.com>
+Date:   Thu, 24 Feb 2022 22:26:40 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4cb3dae9-b3b5-430f-a68f-08d9f7dc49c0
-X-MS-TrafficTypeDiagnostic: DM6PR02MB4058:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR02MB40583DDF0F6B804F0ADC408BB13D9@DM6PR02MB4058.namprd02.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xxyw77jop7pQHpB29kW9MhAWu4L+jjQ2Qt7CZyRm4ZJwVKy9UtVJ+IKh7a2x9B9nq22+ZGoVpeQtsY74qu8D1GES0obaJst1KVouPDtjsx0becPIh3TXTm92JJR+9YEXtIfFUzly/K5G95/vdcQ3CGM6UcfwE5mpvuLeDd9rVcEz2sK0MWU9mxOlWnKjcUFQqd0rj5wUpqlaLFyOaa+4cwpeSXkPaAFUKhomzn6STOe9pTF5Y0HtKVkJAIy0bURb/sOfiSGtDEun2Q/UI7tPlziM8Rc2hfvqePwRSh/fpKuidzGbQDpq3tRWAZSh/3qAb6FHTqg8d9iAg4HFg7d4FZH6XhDyCyk7RpQ2Y4QcGeYX41q+JMbY3Bvwa0MnDmU4ubEtOmCGeMMjpmvuhng5GqmHZkvk2hvFO3cevNBKchRIQyaozustTwEq7o5P6FJX8atRVtDlx1dmbyOvMoNBdDGJIPAkQkHg8KTJI3zWEjIYV835R1UCEenk2YtejTS4oDYZw7XKnodup7Hj8qhplbPVk7FvtNLUxDNizHoU6YIvjDKphE/6G9Q5F7zkj072zc0egLrmv0n7chnAXH3c8IQKspDjGmDzB+eKZx8Qw3DAq5NbNZCI9oBj2F9nLvJo3iyplEMxQMJGducVSNurRWuh83DqeqRXEG93gt3QuiejZspdE2BLzPncmKHFPqqQPzyc+ZGPFeLyAEM99E+ND+DbT2w9uGbAWoUYdmOL2W4=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch01.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(36860700001)(44832011)(47076005)(40460700003)(426003)(5660300002)(336012)(2906002)(2616005)(7636003)(109986005)(26005)(186003)(1076003)(36756003)(7416002)(356005)(70586007)(316002)(8676002)(8936002)(9786002)(4326008)(83380400001)(508600001)(7696005)(82310400004)(54906003)(6666004)(70206006)(102446001)(266003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:26:15.0926
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cb3dae9-b3b5-430f-a68f-08d9f7dc49c0
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT050.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB4058
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <944bdedc-afbb-e427-bd1d-676f8ed21a48@ideasonboard.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Content-Language: en-US
+X-Provags-ID: V03:K1:ZrE06clxbKeO7OAp0zMzOW7vYXRSnp+fmTfJD8WH10o1DIxjhgP
+ U6LHA4LUQQD0BfOQC1eJGSvGvfGPyBmO/tI6nDjiXZTCPkjanSbTmKxAqnMLvy2n+OMZZUM
+ p2qW77OvNgpGoYjw0T871UpygxR4LRaEO4Vtjt0IBvaO5ByXFEXJ8NS9E/JjJtJkEL0vkW7
+ OLIVYEt9fukllFHg7Gy3w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Bv/V19FHxwg=:RO0w+PKJTND2xVn87wdRcY
+ TJoB0t8Xy2ICN8Oxc3oF2YqQRAbpgCFIjsHRP26VzQWrM4NBfo8TL9A98LqalHc31X0Op7E6a
+ labigNcG2b/9r80XT9L30j0NNCO1FnNygujDZ+abinvIwstlysRlSm7GhowIf1TP7wSaePjI2
+ a/7CXkretT83AJOcq2J+gU0CZSL64HA2CG00n2b1p/gknE9pF6cMv1R+jOO5iz1CQZJ3waJPT
+ fkXcJgt3zhPTlj6Lr9IM2FI9270D/XBDhphO1YRxJYRGktBvyzJBYEkc4NCvKI8i6KxJhUz77
+ FLl6iD8bPwBYMAOQZ6/nFHcKx+GriIdDod3Q0B7P8wJwfcLEnXFQzBVA7SVh5mTguh/Nl5o+m
+ 70Ec42OZzqHlJqSHUBYwLEszHQldc0lu7mxTe+359enHiDXrqfGSBf/Dl6BgTMogkU92rQ30N
+ +bzeuZGGCb6kPSPMpcDlKImjWXJp77coQ7/VpC+J8qwGBCF1FaNYzsClbHmceIEjmeR/ZNWwA
+ l/qWSyx2J+uzSN9rifoxWnYk4e0WKV/jp2ubSufURUCKTH9/C3jKDGT9TKkDZ/6Kq7vEDItAO
+ N0LzHgpxk8BB+jxpO3IMXceYIgOIsf6YdCUmTs5hyE/oV/cWXKzNGpAU7LOAlOVwag9i3nDFd
+ 8wApXbSuUAciZ4gxuOa2nC7+qaqKHIXTE/K0Qx7SP7j3W/Iizo96aujzp5x5PtXSITolKPBTp
+ FTkIZcqoPpwbfgLM
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patches allows userspace to send ASID based IOTLB message to
-vhost. This idea is to use the reserved u32 field in the existing V2
-IOTLB message. Vhost device should advertise this capability via
-VHOST_BACKEND_F_IOTLB_ASID backend feature.
+Hi Jean-Michel,
 
-Signed-off-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
----
- drivers/vhost/vdpa.c             |  5 ++++-
- drivers/vhost/vhost.c            | 23 ++++++++++++++++++-----
- drivers/vhost/vhost.h            |  4 ++--
- include/uapi/linux/vhost_types.h |  6 +++++-
- 4 files changed, 29 insertions(+), 9 deletions(-)
+Am 24.02.22 um 18:07 schrieb Jean-Michel Hautbois:
+> Hi Stefan,
+>
+> On 24/02/2022 18:03, Stefan Wahren wrote:
+>> Hi Jean-Michel,
+>>
+>> the version v5.1 is a little bit confusing, because it looks like to be
+>> applied to stable linux-5.1, which is not intended.
+>
+> Sorry for the confusion, I don't want to send a full v6 now, as it
+> will need to be rebased on top of the multiplexed streams series in
+> its v11 which is not yet posted on the ML :-).
+>
+>>
+>> Am 23.02.22 um 15:34 schrieb Jean-Michel Hautbois:
+>>> Add both MIPI CSI-2 nodes in the core bcm2711 tree. Use the 3-cells
+>>> interrupt declaration, corresponding clocks and default as disabled.
+>>>
+>>> Thanks to Stefan Wahren for his guidance on how to deal with different
+>>> RPi variants.
+>>
+>> Can you please explain why you split these patches from the original
+>> series?
+>
+> Because the firmware clocks are independent from the csi nodes and so,
+> it sounded logical to split it in half ?
+I don't think this should be split, because these belong together
+(dt-binding, driver, device tree changes).
+>
+>>
+>> I didn't had the time to test, but applying these patches would
+>> "disable" bcm2835-camera driver?
+>
+> Wasn't it already the case ? It is intended, we don't want those to be
+> "okay" by default ? Or do I miss your point maybe (probably :-)) ?
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 6bf755f84d26..d0aacc0cc79a 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -836,7 +836,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
- 				 msg->perm);
- }
- 
--static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev,
-+static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev, u32 asid,
- 					struct vhost_iotlb_msg *msg)
- {
- 	struct vhost_vdpa *v = container_of(dev, struct vhost_vdpa, vdev);
-@@ -847,6 +847,9 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev,
- 
- 	mutex_lock(&dev->mutex);
- 
-+	if (asid != 0)
-+		return -EINVAL;
-+
- 	r = vhost_dev_check_owner(dev);
- 	if (r)
- 		goto unlock;
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 59edb5a1ffe2..1f514d98f0de 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -468,7 +468,7 @@ void vhost_dev_init(struct vhost_dev *dev,
- 		    struct vhost_virtqueue **vqs, int nvqs,
- 		    int iov_limit, int weight, int byte_weight,
- 		    bool use_worker,
--		    int (*msg_handler)(struct vhost_dev *dev,
-+		    int (*msg_handler)(struct vhost_dev *dev, u32 asid,
- 				       struct vhost_iotlb_msg *msg))
- {
- 	struct vhost_virtqueue *vq;
-@@ -1090,11 +1090,14 @@ static bool umem_access_ok(u64 uaddr, u64 size, int access)
- 	return true;
- }
- 
--static int vhost_process_iotlb_msg(struct vhost_dev *dev,
-+static int vhost_process_iotlb_msg(struct vhost_dev *dev, u32 asid,
- 				   struct vhost_iotlb_msg *msg)
- {
- 	int ret = 0;
- 
-+	if (asid != 0)
-+		return -EINVAL;
-+
- 	mutex_lock(&dev->mutex);
- 	vhost_dev_lock_vqs(dev);
- 	switch (msg->type) {
-@@ -1141,6 +1144,7 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
- 	struct vhost_iotlb_msg msg;
- 	size_t offset;
- 	int type, ret;
-+	u32 asid = 0;
- 
- 	ret = copy_from_iter(&type, sizeof(type), from);
- 	if (ret != sizeof(type)) {
-@@ -1156,7 +1160,16 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
- 		offset = offsetof(struct vhost_msg, iotlb) - sizeof(int);
- 		break;
- 	case VHOST_IOTLB_MSG_V2:
--		offset = sizeof(__u32);
-+		if (vhost_backend_has_feature(dev->vqs[0],
-+					      VHOST_BACKEND_F_IOTLB_ASID)) {
-+			ret = copy_from_iter(&asid, sizeof(asid), from);
-+			if (ret != sizeof(asid)) {
-+				ret = -EINVAL;
-+				goto done;
-+			}
-+			offset = sizeof(__u16);
-+		} else
-+			offset = sizeof(__u32);
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -1171,9 +1184,9 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev,
- 	}
- 
- 	if (dev->msg_handler)
--		ret = dev->msg_handler(dev, &msg);
-+		ret = dev->msg_handler(dev, asid, &msg);
- 	else
--		ret = vhost_process_iotlb_msg(dev, &msg);
-+		ret = vhost_process_iotlb_msg(dev, asid, &msg);
- 	if (ret) {
- 		ret = -EFAULT;
- 		goto done;
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 638bb640d6b4..9f238d6c7b58 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -161,7 +161,7 @@ struct vhost_dev {
- 	int byte_weight;
- 	u64 kcov_handle;
- 	bool use_worker;
--	int (*msg_handler)(struct vhost_dev *dev,
-+	int (*msg_handler)(struct vhost_dev *dev, u32 asid,
- 			   struct vhost_iotlb_msg *msg);
- };
- 
-@@ -169,7 +169,7 @@ bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int total_len);
- void vhost_dev_init(struct vhost_dev *, struct vhost_virtqueue **vqs,
- 		    int nvqs, int iov_limit, int weight, int byte_weight,
- 		    bool use_worker,
--		    int (*msg_handler)(struct vhost_dev *dev,
-+		    int (*msg_handler)(struct vhost_dev *dev, u32 asid,
- 				       struct vhost_iotlb_msg *msg));
- long vhost_dev_set_owner(struct vhost_dev *dev);
- bool vhost_dev_has_owner(struct vhost_dev *dev);
-diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_types.h
-index 76ee7016c501..634cee485abb 100644
---- a/include/uapi/linux/vhost_types.h
-+++ b/include/uapi/linux/vhost_types.h
-@@ -87,7 +87,7 @@ struct vhost_msg {
- 
- struct vhost_msg_v2 {
- 	__u32 type;
--	__u32 reserved;
-+	__u32 asid;
- 	union {
- 		struct vhost_iotlb_msg iotlb;
- 		__u8 padding[64];
-@@ -157,5 +157,9 @@ struct vhost_vdpa_iova_range {
- #define VHOST_BACKEND_F_IOTLB_MSG_V2 0x1
- /* IOTLB can accept batching hints */
- #define VHOST_BACKEND_F_IOTLB_BATCH  0x2
-+/* IOTLB can accept address space identifier through V2 type of IOTLB
-+ * message
-+ */
-+#define VHOST_BACKEND_F_IOTLB_ASID  0x3
- 
- #endif
--- 
-2.25.0
+With these 2 patches applied, both drivers won't work which is a
+regression. Yes, it would be the best to have unicam disabled per
+default and some kind of imx219 overlay should enable it. But at least
+the unexpected (not for you or me but all the other reviewer)
+consequence should have been in the commit log.
+
+From my understand the unicam driver is not a fully replacement for the
+bcm2835-camera or am i wrong?
+
+Best regards
+
+>
+> Thanks,
+> JM
+>
+>>
+>> Best regards
+>> Stefan
+>>
+>>
+>
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 
