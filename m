@@ -2,189 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B874C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:35:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234932AbiBXVbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 16:31:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60566 "EHLO
+        id S234800AbiBXVfs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 16:35:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233103AbiBXVbM (ORCPT
+        with ESMTP id S234641AbiBXVfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 16:31:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400E31CB02
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 13:30:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEC1DB82987
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 21:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F545C340E9;
-        Thu, 24 Feb 2022 21:30:38 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="jwiIR4DP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645738237;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=m8ShCrRN09bCwvZgwqSvS4YRLtf5+D1RwmqrPBor2dw=;
-        b=jwiIR4DPK7vQmfa36TyTuRfCCU2cWvOV2lAqkp6O4zl15kpws2qKtOYjXRx4iDamYqHx/x
-        rZXYPtSGpFUDSkj2X9cECXrAHkxwDqU95TrHJimTQyogxKXpbIlguCTaKlB1wJOelCov2F
-        WzjrmisUbkXMlBeCLX81mbP+L0Cxylc=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 69b224fe (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 24 Feb 2022 21:30:36 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: [PATCH v2] random: unify cycles_t and jiffies usage and types
-Date:   Thu, 24 Feb 2022 22:30:30 +0100
-Message-Id: <20220224213030.75400-1-Jason@zx2c4.com>
-In-Reply-To: <20220224173948.34045-1-Jason@zx2c4.com>
-References: <20220224173948.34045-1-Jason@zx2c4.com>
+        Thu, 24 Feb 2022 16:35:45 -0500
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2067.outbound.protection.outlook.com [40.107.237.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426DC1E694B;
+        Thu, 24 Feb 2022 13:35:14 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e0GMNZ5KzYHuorsSfglvkySGLEu9XNzezK3pmG+qYLA9+I+VI4KMwdbG0Fe9jwjyFIuvqLpyRBR0Na8sEWu7Nx80Yj8CJiSGTTYVpVWX8ShvXv4f6Mlm+EAMk0rDf1ynRapOEeZ5UevRw9uGFtdNvOg8VQcSeH+sTw1I+oH5MkC9V08HLHHYzU7Lm8DlrP5sVCB8j8VqPuDg8IBI+cspNoE1AF3CeHHux8TuvXlu5YHnNwGCvkPQj5uRpTZHYDxBD2uj/C/e1y69X8OX/ENwFjoimX7BEhMwsSuwlF3e2YzNqyi5ITXmfex8dXLeOUrDygyxT7EeAmHHbEKyqLHzTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MrP/sb71w7FsTtptDQPu5syiA7OiYWzzUM1QutLuIdk=;
+ b=EpzryNZMsOV1NpiqkRJ95pD5u3FWlaqbCxOknVOEJo/ac1GtWrq+TtxU2da10uW+qk+DKjfcczj5ORQpkGClPLT74w9/i+bUGFlGKjnpjv8RI6MDbxs691ztGIvDQFHhxF4ilYYuBSvubMKmU/LUQ/jp3mFfLktYnJhY6Gvvwk52IWqLywqzSoSjIQ97no6jbvJgcVKo8KsSm2Ql38aNh6/dvikgh/c7j8I+wrb5Kv3xuNAROQjWVFJAW1AAQ+8aFPuM3gFDbeAgznEy43Xq4JViDJYyoSHwYmkHM3hwBBBXS7U/wPHmHBFAlRvYM643UK4ieCNe9hMWCuUG5Tc/Rg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MrP/sb71w7FsTtptDQPu5syiA7OiYWzzUM1QutLuIdk=;
+ b=MSBc782cSj6x4w4ju5QsmO0Lqb9l6YEgCXDoBqv95RYJpHA/mcoYXHKYGoY+mQ9xm5jEE9C6PPOaDt3KQMUalCRnXy899wc7VeCFQx1rmKcR/a1LTlJr8eQKGP8u7c0JsLuketv1MidJ+1W/pdm18yKy/hzh/UF2KIYMouUHy5g=
+Received: from SN6PR16CA0067.namprd16.prod.outlook.com (2603:10b6:805:ca::44)
+ by BN7PR02MB5140.namprd02.prod.outlook.com (2603:10b6:408:2a::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Thu, 24 Feb
+ 2022 21:35:11 +0000
+Received: from SN1NAM02FT0003.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:805:ca:cafe::c0) by SN6PR16CA0067.outlook.office365.com
+ (2603:10b6:805:ca::44) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24 via Frontend
+ Transport; Thu, 24 Feb 2022 21:35:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ SN1NAM02FT0003.mail.protection.outlook.com (10.97.4.80) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:35:11 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 24 Feb 2022 13:35:07 -0800
+Received: from smtp.xilinx.com (172.19.127.96) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:35:07 -0800
+Envelope-to: eperezma@redhat.com,
+ jasowang@redhat.com,
+ mst@redhat.com,
+ kvm@vger.kernel.org,
+ virtualization@lists.linux-foundation.org,
+ netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Received: from [10.170.66.102] (port=59626 helo=xndengvm004102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <gautam.dawar@xilinx.com>)
+        id 1nNLl7-000Ct8-J4; Thu, 24 Feb 2022 13:34:46 -0800
+From:   Gautam Dawar <gautam.dawar@xilinx.com>
+CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
+        <tanujk@xilinx.com>, <eperezma@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [RFC PATCH v2 01/19] vhost: move the backend feature bits to vhost_types.h
+Date:   Fri, 25 Feb 2022 03:04:35 +0530
+Message-ID: <20220224213438.2705-1-gdawar@xilinx.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 802aee4f-3191-4f02-4afc-08d9f7dd893a
+X-MS-TrafficTypeDiagnostic: BN7PR02MB5140:EE_
+X-Microsoft-Antispam-PRVS: <BN7PR02MB51400CA019E012254A453C64B13D9@BN7PR02MB5140.namprd02.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bgYqnoqK0wnNt+GRGOid9FSlY/lSuktGZ99Ig6Au30AZam4Evrx4IIDjoECjz1rHJzeD72mwNH1zDeaSLD4wcM8Tvnt+0JuBIvMX1T+n1eqd9V3ldQRIHlnbsZS2R13JfmT7ozVIdC0zMFNKxcjAqlDjjhTih9l3j8YpTgpCGGQl02aAs1N3KNVpWjTE+fx1aHNlZnlw6lt2XK6izqYreW1jHyCHks1qfQUEagZIuSYGZQcabf87YS214OKPTgaIl6hXbgnprs96wS97yY1p55uciYYwKIfFyEZwMhBblqoSY6TM3slwuLvx+FIk53tEv278kQglyTGvEW74Mxxg4QsAn9rgEcfhJDj7ODPkBpfJDmlqgF4Pwt/gsJkb82bKltQYoeXaaikW3b5AWp0iwiRtEgkT47Dl+amirX/82NKD6aaPXxwbD+76zqDOqxD9OFaIIQv/oqzgiX/bRDvzZcfSEIl18ucQb2cYXgapxF6T6sSdclWeWqW/tJyZuTJZm3G7xOjiFN+hfnLB8eBWx9sfSErYhs8Nv/NdCFeJhC27+ecSb2zHP+pA3Pc8dsCpbiGWjoxf8SHV7hnOzKK6722ItkpixsEa8U1Qy8RRCXLt1Oel1zx3ALOVYuXDrybWpAsglI7Xtk7+Ok2/H59V3HdNos/OYz+AGFsXw/Z84Jme00TnooNIh67URdqTD6WEPnW6wV6/3AKICmeTe3sHLA==
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(2616005)(83380400001)(426003)(36860700001)(508600001)(44832011)(336012)(1076003)(47076005)(186003)(6666004)(109986005)(26005)(7696005)(316002)(8676002)(70206006)(70586007)(4326008)(54906003)(82310400004)(8936002)(36756003)(9786002)(5660300002)(356005)(7636003)(2906002)(102446001)(266003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:35:11.0986
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 802aee4f-3191-4f02-4afc-08d9f7dd893a
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0003.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR02MB5140
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-random_get_entropy() returns a cycles_t, not an unsigned long, which is
-sometimes 64 bits on various 32-bit platforms, including x86.
-Conversely, jiffies is always unsigned long. This commit fixes things to
-use cycles_t for fields that use random_get_entropy() and unsigned long
-for fields that use jiffies. It's also good to mix in a cycles_t and a
-jiffies in the same way for both add_device_randomness and
-add_timer_randomness, rather than using xor in one case. Finally, we
-unify the order of these volatile reads, always reading the more precise
-cycles counter, and then jiffies, so that the cycle counter is as close
-to the event as possible.
+We should store feature bits in vhost_types.h as what has been done
+for e.g VHOST_F_LOG_ALL.
 
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
 ---
-Changes v1->v2:
-- [Dominik] Use unsigned long, not long, for jiffies, except when it
-  represents a delta.
-- Also unify how jiffies and cycles combine, where they're used, and the
-  order in which they're read.
-- Stylistic fixes.
+ include/uapi/linux/vhost.h       | 5 -----
+ include/uapi/linux/vhost_types.h | 5 +++++
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
- drivers/char/random.c | 46 +++++++++++++++++++++----------------------
- 1 file changed, 22 insertions(+), 24 deletions(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 19bf44b9ba0f..12a1b2cfd702 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1000,12 +1000,6 @@ int __init rand_initialize(void)
- 	return 0;
- }
+diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+index c998860d7bbc..59c6c0fbaba1 100644
+--- a/include/uapi/linux/vhost.h
++++ b/include/uapi/linux/vhost.h
+@@ -89,11 +89,6 @@
  
--/* There is one of these per entropy source */
--struct timer_rand_state {
--	cycles_t last_time;
--	long last_delta, last_delta2;
--};
+ /* Set or get vhost backend capability */
+ 
+-/* Use message type V2 */
+-#define VHOST_BACKEND_F_IOTLB_MSG_V2 0x1
+-/* IOTLB can accept batching hints */
+-#define VHOST_BACKEND_F_IOTLB_BATCH  0x2
 -
- /*
-  * Add device- or boot-specific data to the input pool to help
-  * initialize it.
-@@ -1016,19 +1010,26 @@ struct timer_rand_state {
-  */
- void add_device_randomness(const void *buf, size_t size)
- {
--	unsigned long time = random_get_entropy() ^ jiffies;
--	unsigned long flags;
-+	cycles_t cycles = random_get_entropy();
-+	unsigned long now = jiffies, flags;
+ #define VHOST_SET_BACKEND_FEATURES _IOW(VHOST_VIRTIO, 0x25, __u64)
+ #define VHOST_GET_BACKEND_FEATURES _IOR(VHOST_VIRTIO, 0x26, __u64)
  
- 	if (crng_init == 0 && size)
- 		crng_pre_init_inject(buf, size, false);
+diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_types.h
+index f7f6a3a28977..76ee7016c501 100644
+--- a/include/uapi/linux/vhost_types.h
++++ b/include/uapi/linux/vhost_types.h
+@@ -153,4 +153,9 @@ struct vhost_vdpa_iova_range {
+ /* vhost-net should add virtio_net_hdr for RX, and strip for TX packets. */
+ #define VHOST_NET_F_VIRTIO_NET_HDR 27
  
- 	spin_lock_irqsave(&input_pool.lock, flags);
-+	_mix_pool_bytes(&cycles, sizeof(cycles));
-+	_mix_pool_bytes(&now, sizeof(now));
- 	_mix_pool_bytes(buf, size);
--	_mix_pool_bytes(&time, sizeof(time));
- 	spin_unlock_irqrestore(&input_pool.lock, flags);
- }
- EXPORT_SYMBOL(add_device_randomness);
- 
-+/* There is one of these per entropy source */
-+struct timer_rand_state {
-+	unsigned long last_time;
-+	long last_delta, last_delta2;
-+};
++/* Use message type V2 */
++#define VHOST_BACKEND_F_IOTLB_MSG_V2 0x1
++/* IOTLB can accept batching hints */
++#define VHOST_BACKEND_F_IOTLB_BATCH  0x2
 +
- /*
-  * This function adds entropy to the entropy "pool" by using timing
-  * delays.  It uses the timer_rand_state structure to make an estimate
-@@ -1037,29 +1038,26 @@ EXPORT_SYMBOL(add_device_randomness);
-  * The number "num" is also added to the pool - it should somehow describe
-  * the type of event which just happened.  This is currently 0-255 for
-  * keyboard scan codes, and 256 upwards for interrupts.
-- *
-  */
- static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
- {
--	struct {
--		long jiffies;
--		unsigned int cycles;
--		unsigned int num;
--	} sample;
-+	cycles_t cycles = random_get_entropy();
-+	unsigned long now = jiffies, flags;
- 	long delta, delta2, delta3;
- 
--	sample.jiffies = jiffies;
--	sample.cycles = random_get_entropy();
--	sample.num = num;
--	mix_pool_bytes(&sample, sizeof(sample));
-+	spin_lock_irqsave(&input_pool.lock, flags);
-+	_mix_pool_bytes(&cycles, sizeof(cycles));
-+	_mix_pool_bytes(&now, sizeof(now));
-+	_mix_pool_bytes(&num, sizeof(num));
-+	spin_unlock_irqrestore(&input_pool.lock, flags);
- 
- 	/*
- 	 * Calculate number of bits of randomness we probably added.
- 	 * We take into account the first, second and third-order deltas
- 	 * in order to make our estimate.
- 	 */
--	delta = sample.jiffies - READ_ONCE(state->last_time);
--	WRITE_ONCE(state->last_time, sample.jiffies);
-+	delta = now - READ_ONCE(state->last_time);
-+	WRITE_ONCE(state->last_time, now);
- 
- 	delta2 = delta - READ_ONCE(state->last_delta);
- 	WRITE_ONCE(state->last_delta, delta);
-@@ -1291,10 +1289,10 @@ static void mix_interrupt_randomness(struct work_struct *work)
- void add_interrupt_randomness(int irq)
- {
- 	enum { MIX_INFLIGHT = 1U << 31 };
-+	cycles_t cycles = random_get_entropy();
-+	unsigned long now = jiffies;
- 	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
- 	struct pt_regs *regs = get_irq_regs();
--	unsigned long now = jiffies;
--	cycles_t cycles = random_get_entropy();
- 	unsigned int new_count;
- 
- 	if (cycles == 0)
-@@ -1356,7 +1354,7 @@ static void entropy_timer(struct timer_list *t)
- static void try_to_generate_entropy(void)
- {
- 	struct {
--		unsigned long now;
-+		cycles_t now;
- 		struct timer_list timer;
- 	} stack;
- 
+ #endif
 -- 
-2.35.1
+2.25.0
 
