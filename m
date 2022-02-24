@@ -2,134 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC307C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:54:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC3AAC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236390AbiBXPzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:55:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39782 "EHLO
+        id S236552AbiBXPz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:55:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233573AbiBXPzN (ORCPT
+        with ESMTP id S233573AbiBXPz1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:55:13 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6841616DAEE
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:54:43 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id i19so110330wmq.5
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:54:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:content-language:from:to:cc
-         :subject:content-transfer-encoding;
-        bh=eE6e4wQAtHF1L7R2NE0Y+8YGz+RyJLvQFkmjUWHVwFQ=;
-        b=Hy1HTs7asakAnawD7EmFvZYi00Da0gzkMZbZgXt6YiBra8U+Po9OfoMRf0H5ZrKfxV
-         ybhCk9aLDLA4DcVYsJlsYplukABSrmOmL0klPw2gdn8ZuJizqDJcNeKKTN1KRJRulKcu
-         1paK2BhTEDeAsV5ppN8SGDaU5n0KpqAxOLT7TK3m6E+gjGBfRPXYoJyk2hb0pFT5qGnG
-         WybQm3Nm9U52EYZTpLFMFvXvZj8pc9rr4e+Dt8IMZ+RJ/Dhz9SjCeKa7GOQapDWAGnox
-         WQzim0cglp5hmB1qct9i+6uDjRgblIcht4HmKaXeci09sh6CWagndk0dORDX6iFMsr6k
-         16bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:from:to:cc:subject:content-transfer-encoding;
-        bh=eE6e4wQAtHF1L7R2NE0Y+8YGz+RyJLvQFkmjUWHVwFQ=;
-        b=t5VG1qPiut8din71dy+pZ5IKZRmQfQzv/fm1bIp5eSnZgpSb+lRKjpkfJLo+rhPl6Z
-         awG82hELmKX8tqfyMY9R+hvLJsdCS8ElxWwmfD/1H6beNjzLcr8IXYcznui71mwzP/yt
-         nplvZQLpiVKWiA9tYgKt1RZv4u/Jt69V/bx8wX1qAWkMdDXqEm6t51rRJBAkTGYtC5oS
-         BmqfYCHLSTykogeIBl2WKsjrku0m7i4NRgDsLKvMVx6cllCJO8rNlTv6eaocKx2/3XUy
-         jf86DYeEK5+dOuQckgpSswVJTcEJLckwGTofOUaWyWGsUSxYgpdjs3+6qbo5R5cXo4/y
-         iI3Q==
-X-Gm-Message-State: AOAM533NMOzgQJ1o0in8v1sIvZegXWbPZGKRias/87XJj/wQUT3y3RXu
-        E035NGpJc6J9p6N9N2o0IBJutA==
-X-Google-Smtp-Source: ABdhPJw/NmZGYgJNf0fg+LWKjCrEwvd+/PSxT2lPdlF1MdV7ONiVR6RNNPcXH0K/ABDbHxs0P1XUKQ==
-X-Received: by 2002:a05:600c:154f:b0:37b:c5cf:40e8 with SMTP id f15-20020a05600c154f00b0037bc5cf40e8mr12300049wmg.27.1645718081837;
-        Thu, 24 Feb 2022 07:54:41 -0800 (PST)
-Received: from ?IPV6:2a01:e34:ed2f:f020:25a:d4d2:9383:c638? ([2a01:e34:ed2f:f020:25a:d4d2:9383:c638])
-        by smtp.googlemail.com with ESMTPSA id e26sm1707988wmh.12.2022.02.24.07.54.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 07:54:40 -0800 (PST)
-Message-ID: <9e3ba314-2030-8385-33ad-6b9a0291e5cd@linaro.org>
-Date:   Thu, 24 Feb 2022 16:54:39 +0100
+        Thu, 24 Feb 2022 10:55:27 -0500
+X-Greylist: delayed 597 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 07:54:56 PST
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C452116DADC;
+        Thu, 24 Feb 2022 07:54:56 -0800 (PST)
+Received: from localhost.localdomain (unknown [80.240.223.29])
+        by mail.ispras.ru (Postfix) with ESMTPSA id A1B6240D403E;
+        Thu, 24 Feb 2022 15:44:52 +0000 (UTC)
+From:   Baskov Evgeniy <baskov@ispras.ru>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Baskov Evgeniy <baskov@ispras.ru>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH RFC v2 0/2] Handle UEFI NX-restricted page tables
+Date:   Thu, 24 Feb 2022 18:43:28 +0300
+Message-Id: <20220224154330.26564-1-baskov@ispras.ru>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Linux PM mailing list <linux-pm@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] dtpm for v5.18-rc1
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This is another implementation of this patch. It uses DXE services
+to change memory protection flags as you suggested earlier.
 
-The following changes since commit 26291c54e111ff6ba87a164d85d4a4e134b7315c:
+As I mentioned, you can reproduce this issue with any firmware,
+including OVMF by setting the PcdDxeNxMemoryProtectionPolicy policy:
+gEfiMdeModulePkgTokenSpaceGuid.PcdDxeNxMemoryProtectionPolicy|0x7FD4
+Restricting the user from creating executable pages is not an goal,
+but restricting one from creating both executable and writable pages
+is a goal, which is enforced in the firmware we use. We cannot allow
+allocating pages of any type that have RWX permissions.
+gDS->SetMemorySpaceAttributes() is technically part of the UEFI PI
+specification, so it is not too bad to rely on it. However:
+- DXE services is not something designed to be used by an UEFI application.
+- From what we know, no other operating system uses this interface,
+which means that it can easily break in production firmware on the
+boards we do not control before anyone could even notice.
+We do not strictly mind experimenting with this route, but it would be
+preferable for this interface to become more standard in this case:
+move it to UEFI Boot Services or a separate protocol and include it in
+UEFI conformance suite. It will also help if we enable this feature in
+Linux by default.
 
-   Linux 5.17-rc2 (2022-01-30 15:37:07 +0200)
+Baskov Evgeniy (2):
+       efi: declare DXE services table
+       libstub: ensure allocated memory to be executable
 
-are available in the Git repository at:
-
-   https://git.linaro.org/people/daniel.lezcano/linux.git tags/dtpm-v5.18
-
-for you to fetch changes up to f1ebef9e55f3c49063b575e97d2019832b8f8ef9:
-
-   dtpm/soc/rk3399: Add the ability to unload the module (2022-02-23 
-19:46:29 +0100)
-
-----------------------------------------------------------------
-- Added dtpm hierarchy description (Daniel Lezcano)
-
-- Changed the locking scheme (Daniel Lezcano)
-
-- Fixed dtpm_cpu cleanup at exit time and missing virtual dtpm pointer
-   release (Daniel Lezcano)
-
-----------------------------------------------------------------
-Daniel Lezcano (12):
-       powercap/drivers/dtpm: Convert the init table section to a simple 
-array
-       powercap/drivers/dtpm: Add hierarchy creation
-       powercap/drivers/dtpm: Add CPU DT initialization support
-       powercap/drivers/dtpm: Add dtpm devfreq with energy model support
-       rockchip/soc/drivers: Add DTPM description for rk3399
-       powercap/dtpm: Change locking scheme
-       powercap/dtpm_cpu: Reset per_cpu variable in the release function
-       powercap/dtpm: Fixup kfree for virtual node
-       powercap/dtpm: Destroy hierarchy function
-       powercap/dtpm: Move the 'root' reset place
-       powercap/dtpm_cpu: Add exit function
-       dtpm/soc/rk3399: Add the ability to unload the module
-
-  drivers/powercap/Kconfig          |   8 ++++++
-  drivers/powercap/Makefile         |   1 +
-  drivers/powercap/dtpm.c           | 333 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---------------------------------------------------
-  drivers/powercap/dtpm_cpu.c       |  55 
-+++++++++++++++++++++++++++++++++-----
-  drivers/powercap/dtpm_devfreq.c   | 203 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  drivers/powercap/dtpm_subsys.h    |  22 ++++++++++++++++
-  drivers/soc/rockchip/Kconfig      |   8 ++++++
-  drivers/soc/rockchip/Makefile     |   1 +
-  drivers/soc/rockchip/dtpm.c       |  65 
-+++++++++++++++++++++++++++++++++++++++++++++
-  include/asm-generic/vmlinux.lds.h |  11 --------
-  include/linux/dtpm.h              |  36 ++++++++++++-------------
-  11 files changed, 634 insertions(+), 109 deletions(-)
-  create mode 100644 drivers/powercap/dtpm_devfreq.c
-  create mode 100644 drivers/powercap/dtpm_subsys.h
-  create mode 100644 drivers/soc/rockchip/dtpm.c
-
-
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+ arch/x86/include/asm/efi.h              |  5 ++
+ drivers/firmware/efi/libstub/efistub.h  | 53 ++++++++++++++++++++
+ drivers/firmware/efi/libstub/x86-stub.c | 73 ++++++++++++++++++++++++++--
+ include/linux/efi.h                     |  2 +
+ 4 files changed, 128 insertions(+), 5 deletions(-)
