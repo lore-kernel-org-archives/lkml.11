@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0602C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07FDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 17:27:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231998AbiBXR1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 12:27:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
+        id S232064AbiBXR1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 12:27:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230339AbiBXR1M (ORCPT
+        with ESMTP id S231817AbiBXR1M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 12:27:12 -0500
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30116279447
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:26:29 -0800 (PST)
-Received: by mail-pf1-x449.google.com with SMTP id b6-20020a621b06000000b004e1453487efso1605523pfb.22
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:26:29 -0800 (PST)
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13C265B9
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:26:35 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id j1-20020a170903028100b0014b1f9e0068so1421648plr.8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 09:26:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=/yI+1iHLFKapqIM71Fi477KtJQIbrAd1wE7m0DoVTrg=;
-        b=BX44DBoUoT7DxSh0J1USD87fHZhHxbcIv+UIN+p9yTigBQ9rkC70b9lUdxzXby4YQD
-         KMd52RGWYjaaW1mHhmPX5yT+JeYaFygpZY0qhfH1XvQg4NW+V/3WQmadTFO0LuyUmjqI
-         Lf4X1oVugf+w+6UILacWvqCQD699Y1sZ4jHxPCht5kQp0Z7gmZzjkNCEjNdcP+9Z/PgR
-         xKtXomjP+kvoY2+igh5Qgl1oXuX44weeSxLg17woXyG242n2H2rrMhMI9uPz0uyVFxom
-         j9u76QtEXmUQj2ImKEWLR1zsNdb+nKTskysG+XXZFqOdlVy/AMw05nrczKv2DjXofDpL
-         i+ww==
+        bh=jmsF+28/o9uCf/VQ6k2qhkTuRm6SZhX9vjCTItav4Nc=;
+        b=MlN/UYTncICeUsEkBDYqjV04VlUXrjRCma8eYvTC2n4PabVyNlEk1LltoOc1rlbsP5
+         BHwzTVQ0bQZgdqeFundXtet8O11tqSXdKmPvZbIYLXBL4MIStxKmsZImBmhLDRHyd9iP
+         1zX0cIBwW73iTjZNiwjKfzYpr54Js+FLQ1vYuNh2gwffgJAyV1xpp2KAPiuOFZlMQ057
+         X4dRf+jgoWGJTRdUWs7JthKJ9/YyXBuTdzWk6M/WKJw5dbEPLL2aShI6mjqHgWmaraNq
+         RIB/mb6ecYxcpgdPaPcaT0j+eAXnz05OF+R9x5kVVeWEQ7R4G70Yoz6ESki6j1zEtlfP
+         GMOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=/yI+1iHLFKapqIM71Fi477KtJQIbrAd1wE7m0DoVTrg=;
-        b=1+6w7TVLAmnrcFgQQthcHZ2qY0p5wOUC9hllb5DD8PrIgbnPM+Hx0rJLSPFsFxImFG
-         1FzHttJg+tsEtZT8ljNbbwY11d2ZuG92PLhHHrz7HpnKViZsTJEuki2qvCjgFEbyjlto
-         Ism4DsZFMJlPk7JerqEXadyk+W5SySSk/8dF1WJNFqLV2CQ9YMTgTJBJoNwzd0TXMOqJ
-         ezUNoFbIVLfCF/oPcBM7wPloo6F3DOOmaABLJF9XaM0scH7ltGNCfU4A3OpVWMaI2VfL
-         oGjLy55xCQoG5h5SRptNZqFXDN1ElYye6+LnVjseie1x46G/qY4JKhl/doK7l/JyU6YB
-         6Btw==
-X-Gm-Message-State: AOAM5310GhFCTSib+TiHuRL/9zNZGayJj59IVVpnQwfPKXsx8whB/TKE
-        P6+UMogT3ZxD0OXleIlMffPENzGZMW9I
-X-Google-Smtp-Source: ABdhPJyekDaVQfujrpGwc51nGDLUID+Ox5wvRHROwF3BH9GvfkusWzxxeNEpolKSk+8ZEG7ImKIZOKSGzN1P
+        bh=jmsF+28/o9uCf/VQ6k2qhkTuRm6SZhX9vjCTItav4Nc=;
+        b=MzQiEaSrs+blyIQaFdQwvQN9mi0HuEOLoiMbQ3/GfPzH9bV0mKRRml0XIkGogu83kS
+         w4iaGE2CBRzue8XfmVx+FNF0Hgrn8KCflkfsYvodcSvYGrJfGLo4KxTr/TiGE9sCrYAf
+         BncXWfYUbtdlUMCJhkZ8J+m8l4FUzDz1smEHJJCkY2jJXuQVOGQ1R//f31Y0GuqdFN3A
+         lr/Mj9+5pxzteMfU2FI+BgCbyB3HVjEScOLtZjJ7Dt10h8czCzVakjC98GYarbqZ4ktQ
+         fYEIMi+5Qwtha1e7ATFYeGZbwqjaQNavjhVwFNY5csixompqax3BkEQ0otVVr3SqbYs2
+         Svtw==
+X-Gm-Message-State: AOAM532JeXe7dFvV2li+yJAHA10u9LV/17/pmZgEGjl6hhJCWv3uxvp1
+        eKW9ENhQjIfrAjOBWx6ZnWnbhN32sgdB
+X-Google-Smtp-Source: ABdhPJydh3IBl9/WqQAefokxf+CHH33yyX7uFA4vfoZVHfdfqGbdHQgTzulUJSpoukHYPflZqQVnV5VDQyf+
 X-Received: from rananta-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:1bcc])
- (user=rananta job=sendgmr) by 2002:a17:902:700b:b0:148:ee33:70fe with SMTP id
- y11-20020a170902700b00b00148ee3370femr3741547plk.38.1645723588637; Thu, 24
- Feb 2022 09:26:28 -0800 (PST)
-Date:   Thu, 24 Feb 2022 17:25:55 +0000
+ (user=rananta job=sendgmr) by 2002:a17:90b:3ec2:b0:1b9:fbeb:942b with SMTP id
+ rm2-20020a17090b3ec200b001b9fbeb942bmr15311322pjb.55.1645723595262; Thu, 24
+ Feb 2022 09:26:35 -0800 (PST)
+Date:   Thu, 24 Feb 2022 17:25:58 +0000
 In-Reply-To: <20220224172559.4170192-1-rananta@google.com>
-Message-Id: <20220224172559.4170192-10-rananta@google.com>
+Message-Id: <20220224172559.4170192-13-rananta@google.com>
 Mime-Version: 1.0
 References: <20220224172559.4170192-1-rananta@google.com>
 X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH v4 09/13] Docs: KVM: Rename psci.rst to hypercalls.rst
+Subject: [PATCH v4 12/13] selftests: KVM: aarch64: hypercalls: Test with KVM_CAP_ARM_REG_SCOPE
 From:   Raghavendra Rao Ananta <rananta@google.com>
 To:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
         James Morse <james.morse@arm.com>,
@@ -73,20 +73,160 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the doc now covers more of general hypercalls'
-details, rather than just PSCI, rename the file to a
-more appropriate name- hypercalls.rst.
+Upgrade the aarch64/hypercalls test to also consider the
+firmware register's scope information. Thus, run the test
+with the capability KVM_CAP_ARM_REG_SCOPE disabled and enabled.
 
 Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
 ---
- Documentation/virt/kvm/arm/{psci.rst => hypercalls.rst} | 0
- 1 file changed, 0 insertions(+), 0 deletions(-)
- rename Documentation/virt/kvm/arm/{psci.rst => hypercalls.rst} (100%)
+ .../selftests/kvm/aarch64/hypercalls.c        | 83 +++++++++++++++++--
+ 1 file changed, 75 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/virt/kvm/arm/psci.rst b/Documentation/virt/kvm/arm/hypercalls.rst
-similarity index 100%
-rename from Documentation/virt/kvm/arm/psci.rst
-rename to Documentation/virt/kvm/arm/hypercalls.rst
+diff --git a/tools/testing/selftests/kvm/aarch64/hypercalls.c b/tools/testing/selftests/kvm/aarch64/hypercalls.c
+index e4e3a286ff3e..85818b91b4fb 100644
+--- a/tools/testing/selftests/kvm/aarch64/hypercalls.c
++++ b/tools/testing/selftests/kvm/aarch64/hypercalls.c
+@@ -29,7 +29,7 @@ struct kvm_fw_reg_info {
+ 		.max_feat_bit = bit_max,	\
+ 	}
+ 
+-static const struct kvm_fw_reg_info fw_reg_info[] = {
++static struct kvm_fw_reg_info fw_reg_info[] = {
+ 	FW_REG_INFO(KVM_REG_ARM_STD_BMAP, KVM_REG_ARM_STD_BMAP_BIT_MAX),
+ 	FW_REG_INFO(KVM_REG_ARM_STD_HYP_BMAP, KVM_REG_ARM_STD_HYP_BMAP_BIT_MAX),
+ 	FW_REG_INFO(KVM_REG_ARM_VENDOR_HYP_BMAP, KVM_REG_ARM_VENDOR_HYP_BMAP_BIT_MAX),
+@@ -294,19 +294,78 @@ static void test_fw_regs_after_vm_start(struct kvm_vm *vm)
+ 	}
+ }
+ 
+-static struct kvm_vm *test_vm_create(void)
++static bool test_reg_is_bmap_fw_reg(uint64_t reg)
++{
++	if ((reg & KVM_REG_ARM_COPROC_MASK) == KVM_REG_ARM_FW &&
++		(reg & 0xffff) >= 0xff00) /* Bitmap firmware register space */
++		return true;
++
++	return false;
++}
++
++static void test_fw_regs_encode_vm_scope(void)
++{
++	int i;
++
++	/*
++	 * Encode the scope as KVM_REG_ARM_SCOPE_VM for further use
++	 * in KVM_SET_ONE_REG and KVM_GET_ONE_REG operations.
++	 */
++	for (i = 0; i < ARRAY_SIZE(fw_reg_info); i++)
++		fw_reg_info[i].reg |= (KVM_REG_ARM_SCOPE_VM << KVM_REG_ARM_SCOPE_SHIFT);
++}
++
++static void test_validate_fw_regs(struct kvm_vm *vm, int scope)
++{
++	uint64_t i, reg;
++	int obtained_scope;
++	struct kvm_reg_list *reg_list;
++
++	reg_list = vcpu_get_reg_list(vm, 0);
++
++	for (i = 0; i < reg_list->n; i++) {
++		reg = reg_list->reg[i];
++		if (!test_reg_is_bmap_fw_reg(reg))
++			continue;
++
++		/*
++		 * Depending on KVM_CAP_ARM_REG_SCOPE, currently all the firmware
++		 * bitmap registers are either completely VM-scoped or vCPU scoped.
++		 */
++		obtained_scope = (reg & KVM_REG_ARM_SCOPE_MASK) >> KVM_REG_ARM_SCOPE_SHIFT;
++		TEST_ASSERT(obtained_scope == scope,
++				"Incorrect scope detected for reg: %lx. Expected: %d; Obtained: %d\n",
++				reg, scope, obtained_scope);
++	}
++}
++
++static struct kvm_vm *test_vm_create(int scope)
+ {
+ 	struct kvm_vm *vm;
++	struct kvm_enable_cap reg_scope_cap = {
++		.cap = KVM_CAP_ARM_REG_SCOPE,
++	};
++
++	if (scope == KVM_REG_ARM_SCOPE_VM && !kvm_check_cap(KVM_CAP_ARM_REG_SCOPE)) {
++		print_skip("Capability KVM_CAP_ARM_REG_SCOPE unavailable\n");
++		return NULL;
++	}
+ 
+ 	vm = vm_create_default(0, 0, guest_code);
+ 
+ 	ucall_init(vm, NULL);
+ 	steal_time_init(vm);
+ 
++	if (scope == KVM_REG_ARM_SCOPE_VM) {
++		vm_enable_cap(vm, &reg_scope_cap);
++		test_fw_regs_encode_vm_scope();
++	}
++
+ 	return vm;
+ }
+ 
+-static struct kvm_vm *test_guest_stage(struct kvm_vm *vm)
++static struct kvm_vm *
++test_guest_stage(struct kvm_vm *vm, int scope)
+ {
+ 	struct kvm_vm *ret_vm = vm;
+ 
+@@ -319,7 +378,7 @@ static struct kvm_vm *test_guest_stage(struct kvm_vm *vm)
+ 	case TEST_STAGE_HVC_IFACE_FEAT_DISABLED:
+ 		/* Start a new VM so that all the features are now enabled by default */
+ 		kvm_vm_free(vm);
+-		ret_vm = test_vm_create();
++		ret_vm = test_vm_create(scope);
+ 		break;
+ 	case TEST_STAGE_HVC_IFACE_FEAT_ENABLED:
+ 	case TEST_STAGE_HVC_IFACE_FALSE_INFO:
+@@ -334,14 +393,20 @@ static struct kvm_vm *test_guest_stage(struct kvm_vm *vm)
+ 	return ret_vm;
+ }
+ 
+-static void test_run(void)
++static void test_run(int scope)
+ {
+ 	struct kvm_vm *vm;
+ 	struct ucall uc;
+ 	bool guest_done = false;
+ 
+-	vm = test_vm_create();
++	vm = test_vm_create(scope);
++	if (!vm)
++		return;
+ 
++	stage = TEST_STAGE_REG_IFACE;
++	sync_global_to_guest(vm, stage);
++
++	test_validate_fw_regs(vm, scope);
+ 	test_fw_regs_before_vm_start(vm);
+ 
+ 	while (!guest_done) {
+@@ -349,7 +414,7 @@ static void test_run(void)
+ 
+ 		switch (get_ucall(vm, 0, &uc)) {
+ 		case UCALL_SYNC:
+-			vm = test_guest_stage(vm);
++			vm = test_guest_stage(vm, scope);
+ 			break;
+ 		case UCALL_DONE:
+ 			guest_done = true;
+@@ -371,6 +436,8 @@ int main(void)
+ {
+ 	setbuf(stdout, NULL);
+ 
+-	test_run();
++	test_run(KVM_REG_ARM_SCOPE_VCPU);
++	test_run(KVM_REG_ARM_SCOPE_VM);
++
+ 	return 0;
+ }
 -- 
 2.35.1.473.g83b2b277ed-goog
 
