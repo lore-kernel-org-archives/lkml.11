@@ -2,165 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F130C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B874EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 18:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbiBXSqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 13:46:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45732 "EHLO
+        id S233028AbiBXSqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 13:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229850AbiBXSqd (ORCPT
+        with ESMTP id S229850AbiBXSqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 13:46:33 -0500
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE3926F4E6;
-        Thu, 24 Feb 2022 10:46:03 -0800 (PST)
-Received: by mail-oi1-f172.google.com with SMTP id q5so4160429oij.6;
-        Thu, 24 Feb 2022 10:46:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P2RyEA1uirLwwFpK+SxG1zyLPyqtVmQD3S3aYo1DozE=;
-        b=i0KxqpJClFAiL/+9243DSoccNYeXr4Lma+8kVq/VbehjedJbcLwUc0ukO5XiOoyA7a
-         cwYPMqm1zo7+IxIXYa1+nI5PPhAnw0h6G2v9BAQHLVXdArE0aXnV1Oy1Yx1idgDHzA2B
-         WH/8O1hiPyFXrBEkKflvjqy2l6rhoT7R3CHaf4J7dp+B+F9NZ4QqUe0uuN5KTIVROQeP
-         qXDoNZ7Du2HKrxZ63zbiy+t7wL3KupZ8HOhz84FuiMfTOOujwmr/jJqVfJimkx4t/Gqm
-         z//fj0uWqAE2zdMHtYkuD2+07LFTN3uBV1zoYQGcF24LNK2Ld0NXGfhnUX6I0Jp7tHUe
-         otaw==
-X-Gm-Message-State: AOAM531hNi4ipg8VY8BqXUY3H9bcNTsQP6KaW+hshPIEGpKeqm7jCKtq
-        oIA7eGgu/3VX7NkYGLUlqQ==
-X-Google-Smtp-Source: ABdhPJzWyNBr5BidOLbjvmBUI5XqtQwWj6zUADhXUeWH6YEiusg/LluRW/NyAsJ0Ygq31N6F4Jpy0A==
-X-Received: by 2002:a05:6808:1907:b0:2d5:bca0:ea6c with SMTP id bf7-20020a056808190700b002d5bca0ea6cmr7045098oib.212.1645728362785;
-        Thu, 24 Feb 2022 10:46:02 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id m2-20020a9d4002000000b005a2678bbc5csm76155ote.24.2022.02.24.10.46.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 10:46:02 -0800 (PST)
-Received: (nullmailer pid 3385736 invoked by uid 1000);
-        Thu, 24 Feb 2022 18:46:01 -0000
-Date:   Thu, 24 Feb 2022 12:46:01 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Taniya Das <tdas@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 02/15] dt-bindings: clock: simplify qcom,gcc-apq8064
- Documentation
-Message-ID: <YhfSaQEM4ZalLGyD@robh.at.kernel.org>
-References: <20220224164831.21475-1-ansuelsmth@gmail.com>
- <20220224164831.21475-3-ansuelsmth@gmail.com>
+        Thu, 24 Feb 2022 13:46:52 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2029F26F4E6;
+        Thu, 24 Feb 2022 10:46:22 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id B76511F44D;
+        Thu, 24 Feb 2022 18:46:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645728380;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Jo3de60gyBESI2ouGzZS5RL2JSlQhCdM8gXY4xMzBOs=;
+        b=kNOLvc70HXVRxRopsApEBXGIU902arqlZjYvOjdCRowTTOYPHnZPVZFEfAOGfOJB4xDSDW
+        lyx9/a+TKlvABFHjqUor07olhBZjA1EKJV/nwmt/x0QDhLoel7yDwMHCFJ3BuhK8PvTSyq
+        dSwSf2SYSJ1nYVboUE/Hv2QPwX8Wy/E=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645728380;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Jo3de60gyBESI2ouGzZS5RL2JSlQhCdM8gXY4xMzBOs=;
+        b=kTwanqTqSpurWusl15sqL7bJylD40Opo/bxXyzstRIUCuYXxghEqsOXyp0STv9HUOyPknC
+        bxVpWkGusyJPgVAw==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id AD994A3B83;
+        Thu, 24 Feb 2022 18:46:20 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id BBEA2DA818; Thu, 24 Feb 2022 19:42:31 +0100 (CET)
+Date:   Thu, 24 Feb 2022 19:42:31 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Cc:     dsterba@suse.cz, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v4] btrfs: add fs state details to error messages.
+Message-ID: <20220224184231.GZ12643@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+References: <a059920460fe13f773fd9a2e870ceb9a8e3a105a.1645644489.git.sweettea-kernel@dorminy.me>
+ <20220224132210.GS12643@twin.jikos.cz>
+ <284ccc08-8de7-9188-19d8-20f4eda56cb4@dorminy.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220224164831.21475-3-ansuelsmth@gmail.com>
+In-Reply-To: <284ccc08-8de7-9188-19d8-20f4eda56cb4@dorminy.me>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 05:48:18PM +0100, Ansuel Smith wrote:
-> Simplify qcon,gcc-apq8064 Documentation by using qcom,gcc.yaml as a
-> template and remove the compatible from qcom,gcc.yaml
+On Thu, Feb 24, 2022 at 11:10:59AM -0500, Sweet Tea Dorminy wrote:
+> Awesome, thank you. I realized this morning that it might be technically 
+> slightly racy actually and would propose something like the following
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../bindings/clock/qcom,gcc-apq8064.yaml      | 29 +++++--------------
->  .../bindings/clock/qcom,gcc-other.yaml        |  3 --
->  2 files changed, 7 insertions(+), 25 deletions(-)
+> static void btrfs_state_to_string(const struct btrfs_fs_info *info, char *buf)
+> {
+> 	unsigned int bit;
+> +	unsigned long fs_state = READ_ONCE(info->fs_state);
+> 	unsigned int states_printed = 0;
+> 	char *curr = buf;
 > 
-> diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.yaml
-> index 8e2eac6cbfb9..97936411b6b4 100644
-> --- a/Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.yaml
-> +++ b/Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.yaml
-> @@ -6,6 +6,9 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
->  
->  title: Qualcomm Global Clock & Reset Controller Binding for APQ8064
->  
-> +allOf:
-> +  - $ref: qcom,gcc.yaml#
-> +
->  maintainers:
->    - Stephen Boyd <sboyd@kernel.org>
->    - Taniya Das <tdas@codeaurora.org>
-> @@ -17,22 +20,12 @@ description: |
->    See also:
->    - dt-bindings/clock/qcom,gcc-msm8960.h
->    - dt-bindings/reset/qcom,gcc-msm8960.h
-> +  - dt-bindings/clock/qcom,gcc-apq8084.h
-> +  - dt-bindings/reset/qcom,gcc-apq8084.h
->  
->  properties:
->    compatible:
-> -    const: qcom,gcc-apq8064
+> 	memcpy(curr, STATE_STRING_PREFACE, sizeof(STATE_STRING_PREFACE));
+> 	curr += sizeof(STATE_STRING_PREFACE) - 1;
+> 
+> -	for_each_set_bit(bit, &info->fs_state, sizeof(info->fs_state)) {
+> +	for_each_set_bit(bit, fs_state, sizeof(fs_state)) {
+> 
+> 
+> All the other interactions with info->fs_state are test/set/clear_bit,
+> which treat the argument as volatile and are therefore safe to do from
+> multiple threads. Without the READ_ONCE (reading it as a volatile),
+> the compiler or cpu could turn the reads of info->fs_state in
+> for_each_set_bit() into writes of random stuff into info->fs_state,
+> potentially clearing the state bits or filling them with garbage.
 
-I assume you didn't mean to remove this?
+I'm not sure I'm missing something, but I find the above hard to
+believe. Concurrent access to a variable from multiple threads may not
+produce consistent results, but random writes should not happen when
+we're just reading. The worst thing that could happen is a missing
+status bit reported, which is not a problem.
 
-> -
-> -  '#clock-cells':
-> -    const: 1
-> -
-> -  '#reset-cells':
-> -    const: 1
-> -
-> -  '#power-domain-cells':
-> -    const: 1
-> -
-> -  reg:
-> -    maxItems: 1
-> +    const: qcom,gcc-apq8084
->  
->    nvmem-cells:
->      minItems: 1
-> @@ -53,21 +46,13 @@ properties:
->    '#thermal-sensor-cells':
->      const: 1
->  
-> -  protected-clocks:
-> -    description:
-> -      Protected clock specifier list as per common clock binding.
-> -
->  required:
->    - compatible
-> -  - reg
-> -  - '#clock-cells'
-> -  - '#reset-cells'
-> -  - '#power-domain-cells'
->    - nvmem-cells
->    - nvmem-cell-names
->    - '#thermal-sensor-cells'
->  
-> -additionalProperties: false
-> +unevaluatedProperties: false
->  
->  examples:
->    - |
-> diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-> index 4e5903bcd70d..47e1c5332d76 100644
-> --- a/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-> +++ b/Documentation/devicetree/bindings/clock/qcom,gcc-other.yaml
-> @@ -15,8 +15,6 @@ description:
->    power domains.
->  
->    See also:
-> -  - dt-bindings/clock/qcom,gcc-apq8084.h
-> -  - dt-bindings/reset/qcom,gcc-apq8084.h
->    - dt-bindings/clock/qcom,gcc-ipq4019.h
->    - dt-bindings/clock/qcom,gcc-ipq6018.h
->    - dt-bindings/reset/qcom,gcc-ipq6018.h
-> @@ -40,7 +38,6 @@ allOf:
->  properties:
->    compatible:
->      enum:
-> -      - qcom,gcc-apq8084
->        - qcom,gcc-ipq4019
->        - qcom,gcc-ipq6018
->        - qcom,gcc-ipq8064
-> -- 
-> 2.34.1
-> 
-> 
+> Even if this is right, it'd be rare, but it would be exceeding weird
+> for a message to be logged listing an error and then future messages
+> be logged without any such state, or with a random collection of
+> garbage states.
+
+How would that happen? The volatile keyword is only a compiler hint not
+to do optimizations on the variable, what actually happens on the CPU
+level depends if the instruction is locked or not, so different threads
+may read different bits.
+You seem to imply that once a variable is not used with volatile
+semantics, even just for read, the result could lead to random writes
+because it's otherwise undefined.
