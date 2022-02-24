@@ -2,69 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67A75C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD36C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbiBXQa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:30:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
+        id S229796AbiBXQbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:31:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229642AbiBXQa4 (ORCPT
+        with ESMTP id S229632AbiBXQa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 11:30:56 -0500
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7870C22A28C;
-        Thu, 24 Feb 2022 08:30:14 -0800 (PST)
-Received: by mail-oi1-f169.google.com with SMTP id 12so3214079oix.12;
-        Thu, 24 Feb 2022 08:30:14 -0800 (PST)
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FBD22A28E
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:30:14 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id p19so565217ybc.6
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:30:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Tws7ZXpM+PZc0CK0cVaZrCHFV7BPRjaCWbwFJSB4uHI=;
+        b=gGGXB3s1XU/Jl+tQ3PSSFy+TQcXe3tcSTVTuFCvZW1w9l3Jb43G/q7V/N1xagmSonu
+         6WxMEqoManJU5rF/K8t2gZUMW1Dh407q0MyPbikVpaZ+TXv5tvMyhYLci8r4gzuzDSD4
+         G3W2wOinGLKK495jA29V5Zrty4bqxytsc1WKb4UmuJ1pwLsO7ulkLme8jS+HHiOxF/ei
+         lHS2NjjQfOG111fidmaRpuhHdCUvx2M7ZIRz/D1ssXxMsSiWhvKd3FnnUwH8NjodLnbV
+         +Xa8x0ov1O7u6s9R9yQfQHOZrWlseViXoHMTQhXkd3uEEoR6NJGVGnHzhDxkvfKuMmO6
+         QKAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=yr+sfuOfNHdQyG+q35zEWWVCyPCxhyS4l72NvjqQAQE=;
-        b=bwAKUYVov8LbtetHXZSv0kH+VGqDKZdpqDTq/AgpmL08Ruc76j5T+vli0Ih3LkhVwn
-         eYt6uajueNlKnok1TZm5ACptYL+aN9IDp7J1LT0uszXrhb9tQXzwkp0jKETUYslPKUmh
-         PIYEbpmVV793vhtGx3Hb7/eqoVBywDsgRGUiIqvloa53jeBYe9NSemdLqLUgRjBECUf3
-         1FWB5SRB6XPVS6QEzftwrWCz3QNu+WVvRw+jWgqHc77VhjRS+uZ2VFvE0Qvy/2r7PZqc
-         4njw6m2Q5ElMBPus0bQzJA1qhaVz6eOW3Fexa5j0KOjgCCmSQM/Y+AeA1AS4Upjz40Xs
-         mO5w==
-X-Gm-Message-State: AOAM532MsaakvSgyZNWPWFKZKBEsCJ4W6lX79/+pEGpRg/aymlzmN2JY
-        Dz5Ry6KmmOMK5Q3+OiMcoA==
-X-Google-Smtp-Source: ABdhPJw7DLgArsDvgzMYFWqb/H9wjopgHImxe6PfYCer1KVAkvm2HcsLHQOxN85iEdZE1mf6IU2LGQ==
-X-Received: by 2002:a05:6808:f93:b0:2d4:f855:aadd with SMTP id o19-20020a0568080f9300b002d4f855aaddmr1735874oiw.21.1645720213827;
-        Thu, 24 Feb 2022 08:30:13 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id w7sm1252982oou.13.2022.02.24.08.30.12
+        bh=Tws7ZXpM+PZc0CK0cVaZrCHFV7BPRjaCWbwFJSB4uHI=;
+        b=I99dPzjHvmS3zzcdcnwp6U5mQffssyh41PgB+Bjyf7B1grSW5Gi0EMJPDvo/wFlq/f
+         pLtNDFKSnfaHI2+frOG/KH+mKoldjsPUZLFUSPigboW81nnlkUUODGsfLdGgpEc1lkdz
+         ZdlkVv3bwX9GAm/y70QGVXGxH2k2BX2UhX6tktFeWA+3Bu6FXDBzyGD8gaKlTLQb2bjH
+         Jx37YU0T+7XXvyee/d2/0/8SYxwGLT4YpZCgZoLe2E9AQRps20gyUzLRCzSRDVyxOSPa
+         DSV6qY7uT7YzAv8ITD60EU7kevyPw1vfH6TaEo6ndD+Vah/UKb4/BKVkKaFxr3d8w/DA
+         uasQ==
+X-Gm-Message-State: AOAM530afuEd0nhA6tBZe22WieTJGf1xtFgNncwWULkfFO5b0+OTTNUz
+        3Z4wgw/xhEoXtk6NefdXKEGA7FMp1W0DsQ==
+X-Google-Smtp-Source: ABdhPJw2WlUPhxTSbdyd1LW3KRyGcWe5GoUwG2vd4ysIqVSblKp59SBKER8m2mJkBR4Dnhwd0N1jFg==
+X-Received: by 2002:a9d:467:0:b0:5ac:c840:eb0c with SMTP id 94-20020a9d0467000000b005acc840eb0cmr1202877otc.228.1645719390679;
+        Thu, 24 Feb 2022 08:16:30 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id ay42sm1662102oib.5.2022.02.24.08.16.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 08:30:12 -0800 (PST)
-Received: (nullmailer pid 3197991 invoked by uid 1000);
-        Thu, 24 Feb 2022 16:30:11 -0000
-Date:   Thu, 24 Feb 2022 10:30:11 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Cristian Pop <cristian.pop@analog.com>
-Cc:     linux-kernel@vger.kernel.org, jic23@kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v7 1/2] dt-bindings: iio: frequency: Add ADMV4420 doc
-Message-ID: <Yheyk93a8fl5kFsp@robh.at.kernel.org>
-References: <20220223130808.13352-1-cristian.pop@analog.com>
+        Thu, 24 Feb 2022 08:16:30 -0800 (PST)
+Date:   Thu, 24 Feb 2022 08:18:28 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 12/16] dt-bindings: clock: add ipq8064 ce5 clk define
+Message-ID: <Yhev1BMkuqI5/Cu6@ripper>
+References: <20220217235703.26641-1-ansuelsmth@gmail.com>
+ <20220217235703.26641-13-ansuelsmth@gmail.com>
+ <YhcDCnMFRppk3Mo+@builder.lan>
+ <Yher1ybYkFCVLLVt@Ansuel-xps.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220223130808.13352-1-cristian.pop@analog.com>
+In-Reply-To: <Yher1ybYkFCVLLVt@Ansuel-xps.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 15:08:07 +0200, Cristian Pop wrote:
-> Add device tree bindings for the ADMV4420 K band downconverter.
+On Thu 24 Feb 08:01 PST 2022, Ansuel Smith wrote:
+
+> On Wed, Feb 23, 2022 at 10:01:14PM -0600, Bjorn Andersson wrote:
+> > On Thu 17 Feb 17:56 CST 2022, Ansuel Smith wrote:
+> > 
+> > > Add ipq8064 ce5 clk define needed for CryptoEngine in gcc driver.
+> > > 
+> > 
+> > Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > 
+> > > Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> > > ---
+> > >  include/dt-bindings/clock/qcom,gcc-ipq806x.h | 5 ++++-
+> > >  1 file changed, 4 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/include/dt-bindings/clock/qcom,gcc-ipq806x.h b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
+> > > index 7deec14a6dee..02262d2ac899 100644
+> > > --- a/include/dt-bindings/clock/qcom,gcc-ipq806x.h
+> > > +++ b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
+> > > @@ -240,7 +240,7 @@
+> > >  #define PLL14					232
+> > >  #define PLL14_VOTE				233
+> > >  #define PLL18					234
+> > > -#define CE5_SRC					235
+> > > +#define CE5_A_CLK				235
+> > >  #define CE5_H_CLK				236
+> > >  #define CE5_CORE_CLK				237
+> > >  #define CE3_SLEEP_CLK				238
+> > > @@ -283,5 +283,8 @@
+> > >  #define EBI2_AON_CLK				281
+> > >  #define NSSTCM_CLK_SRC				282
+> > >  #define NSSTCM_CLK				283
+> > 
+> > You don't like 284?
+> > 
+> > Regards,
+> > Bjorn
+> >
 > 
-> Signed-off-by: Cristian Pop <cristian.pop@analog.com>
-> ---
-> Changes in v7:
->  - Fix commit message
->  .../bindings/iio/frequency/adi,admv4420.yaml  | 55 +++++++++++++++++++
->  1 file changed, 55 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
+> In the QSDK 284 is used for a virtual clk used to scale the NSS core.
+> I skipped that in case we will implement it and to keep these header
+> similar across QSDK and linux.
 > 
 
-Acked-by: Rob Herring <robh@kernel.org>
+Okay, let's take a look at how that virtual clock is implemented once
+you get there. But I'm fine with the reasoning for leaving a gap.
+
+Regards,
+Bjorn
+
+> > > +#define CE5_A_CLK_SRC				285
+> > > +#define CE5_H_CLK_SRC				286
+> > > +#define CE5_CORE_CLK_SRC			287
+> > >  
+> > >  #endif
+> > > -- 
+> > > 2.34.1
+> > > 
+> 
+> -- 
+> 	Ansuel
