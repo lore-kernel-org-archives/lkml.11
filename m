@@ -2,108 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4897EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CEF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:52:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbiBXBwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:52:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51066 "EHLO
+        id S229811AbiBXBxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:53:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbiBXBwG (ORCPT
+        with ESMTP id S229782AbiBXBxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:52:06 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C86E19859D
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:51:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645667497; x=1677203497;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hZWLPCYNGiVPzsLZkTZ96T3RnmwJ70/10VJhY6/sgh4=;
-  b=NdeIj6GgCw+sha2BK6tUtfEJJRrR5cDjoSak6BbAj27cloPQpxaAn2R3
-   vmBcTtc0IvoSEEHq4vJs3P7xloLlY2fCsWTdkLe/rDDHgTKInC895u8tq
-   uI06w0zkUv9hhzAIzdkSsCn5hnFw4cMPsPoSwRMwy5+ApQxMMKNgCZ2yP
-   SYLX+j28zOzMe4yxSz28UVBwvV4Py0hgvEnqHDH08hpf/pksDUnaHdnWn
-   BADU7le5/0jx+dqrKw8D0dLXAFZ3rFRdpdxnwNVcaA2UP+yGtWsfEbnlS
-   dDG3iGpdJ5EpU0tdPvqgA5Fsdc12mYIvH4cLcDmJ31agRJjreAATV3XfV
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="312838965"
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="312838965"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 17:17:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="707264279"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 23 Feb 2022 17:17:55 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nN2lW-00023h-BR; Thu, 24 Feb 2022 01:17:54 +0000
-Date:   Thu, 24 Feb 2022 09:17:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:axboe/linux-block/m1/2022-02-19 399/552]
- arch/arm/kernel/entry-armv.S:252: undefined reference to
- `generic_handle_arch_irq'
-Message-ID: <202202240931.CLo0U5H1-lkp@intel.com>
+        Wed, 23 Feb 2022 20:53:17 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCCB521E04;
+        Wed, 23 Feb 2022 17:52:48 -0800 (PST)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K3wnC0yvlz9sHB;
+        Thu, 24 Feb 2022 09:49:19 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 24 Feb 2022 09:52:46 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Thu, 24 Feb
+ 2022 09:52:46 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+CC:     <jic23@kernel.org>, <cosmin.tanislav@analog.com>
+Subject: [PATCH -next] iio:accel:adxl367: fix missing unlock on error in adxl367_buffer_predisable()
+Date:   Thu, 24 Feb 2022 10:03:02 +0800
+Message-ID: <20220224020302.2177607-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+Add the missing unlock before return from function adxl367_buffer_predisable()
+in the error handling case.
 
-First bad commit (maybe != root cause):
-
-tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/m1/2022-02-19
-head:   b781e0ccdc0c9a931571d15db09d45b7258b9905
-commit: 479e353d1823d7efddab1262e4333417d88a3b32 [399/552] Merge branch 'akpm-current/current'
-config: arm-randconfig-r021-20220223 (https://download.01.org/0day-ci/archive/20220224/202202240931.CLo0U5H1-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/479e353d1823d7efddab1262e4333417d88a3b32
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block axboe/linux-block/m1/2022-02-19
-        git checkout 479e353d1823d7efddab1262e4333417d88a3b32
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   arm-linux-gnueabi-ld: arch/arm/kernel/entry-armv.o: in function `__irq_svc':
->> arch/arm/kernel/entry-armv.S:252: undefined reference to `generic_handle_arch_irq'
-   arm-linux-gnueabi-ld: arch/arm/kernel/entry-armv.o: in function `__irq_usr':
-   arch/arm/kernel/entry-armv.S:479: undefined reference to `generic_handle_arch_irq'
-
-
-vim +252 arch/arm/kernel/entry-armv.S
-
-^1da177e4c3f41 Linus Torvalds 2005-04-16  248  
-^1da177e4c3f41 Linus Torvalds 2005-04-16  249  	.align	5
-^1da177e4c3f41 Linus Torvalds 2005-04-16  250  __irq_svc:
-ccea7a19e54349 Russell King   2005-05-31  251  	svc_entry
-d4664b6c987f80 Ard Biesheuvel 2021-10-05 @252  	irq_handler from_user=0
-1613cc1119ecdb Russell King   2011-06-25  253  
-
-:::::: The code at line 252 was first introduced by commit
-:::::: d4664b6c987f80338407889c1e3f3abe7e16be94 ARM: implement IRQ stacks
-
-:::::: TO: Ard Biesheuvel <ardb@kernel.org>
-:::::: CC: Ard Biesheuvel <ardb@kernel.org>
-
+Fixes: cbab791c5e2a ("iio: accel: add ADXL367 driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/iio/accel/adxl367.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/accel/adxl367.c b/drivers/iio/accel/adxl367.c
+index b452d74b1d4d..bdc95409abed 100644
+--- a/drivers/iio/accel/adxl367.c
++++ b/drivers/iio/accel/adxl367.c
+@@ -1359,7 +1359,7 @@ static int adxl367_buffer_predisable(struct iio_dev *indio_dev)
+ 
+ 	ret = adxl367_set_measure_en(st, true);
+ 	if (ret)
+-		return ret;
++		goto out;
+ 
+ 	ret = adxl367_set_temp_adc_mask_en(st, indio_dev->active_scan_mask,
+ 					   false);
+-- 
+2.25.1
+
