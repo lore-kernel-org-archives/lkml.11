@@ -2,172 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB830C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233481AbiBXKbM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:31:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50602 "EHLO
+        id S233499AbiBXKbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:31:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230323AbiBXKbH (ORCPT
+        with ESMTP id S233478AbiBXKbM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:31:07 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E279204299;
-        Thu, 24 Feb 2022 02:30:38 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Thu, 24 Feb 2022 05:31:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A553420A3B8;
+        Thu, 24 Feb 2022 02:30:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 6B35F223EA;
-        Thu, 24 Feb 2022 11:30:36 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645698636;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ixeMclLLzqQV/GX1oaqQ21tg7IiVFwINZ6keVlGAnDM=;
-        b=v3S7I9eyf1JDiZEQUCX+1vYSNGWISx88WGQf/yQN/UMnHq/C0Rdf31MqfXiMugdJ084Nqk
-        ukBKMspg3R+XxbS7ZPi8xM/stqWDgThoJmancm2xCqQLKAKIbZNARGqq/N3a6VYEDvveJs
-        l7y4beUJMMNLZrv8QCxkjZ5D+3l9QMk=
-From:   Michael Walle <michael@walle.cc>
-To:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Cc:     heiko.thiery@gmail.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v2 2/2] arm64: dts: imx8mn-evk: fix the min/max voltages of the PMIC
-Date:   Thu, 24 Feb 2022 11:30:30 +0100
-Message-Id: <20220224103030.2040048-2-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220224103030.2040048-1-michael@walle.cc>
-References: <20220224103030.2040048-1-michael@walle.cc>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 438F76162C;
+        Thu, 24 Feb 2022 10:30:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CAB6C340F5;
+        Thu, 24 Feb 2022 10:30:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645698641;
+        bh=UVBFu/2kd+72msKvbsEhY06n98IaQ0VgsAo0y3uTQ2c=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=uKMo67CXZRSwdhBzi8/EEN9oztBr9soHLP8RvL0hIDZzDAQWECQ7f8/Z8eugIY42z
+         hdfwcBluy+paiOgWEjWvgQKMnK4adKDRPYUcdzCO1eHFfPr8N0p6F+ynpzpVaLf9iv
+         CZRG6rIeJEwNiFrzJtmKDTMeHAoxInP0LBcoot5lwoVNesSWsfBfyAK/NsNtQnkts0
+         AMlDmrllC81ZcK3cvVTbMA9khRkXj8pu1dHnRsqHjwpW8ZIpgngP/5/BCpTl75RUUI
+         vy/3K30H2fYs4D+RRMADFd4EhSy9aqCosQIJHK8SpqR9iXdhesbYPT0MaBTAKEOI9x
+         ItmMoXkR49BCQ==
+Received: by mail-vk1-f176.google.com with SMTP id k9so922391vki.4;
+        Thu, 24 Feb 2022 02:30:41 -0800 (PST)
+X-Gm-Message-State: AOAM53356GDXiNzYC3BdaVZfnWdnLdzuU6RTWh+kwNDoTN7fiPNJdVzG
+        q40iGuFT0bflOc33OENuEZJUDBMJ9+7vj4FN45I=
+X-Google-Smtp-Source: ABdhPJzrvZFAbp4Whh2uDrOBDpqD226YSRYRm6BxUCxiOKTwC758aaNZI0rGrTfTm/5o1TQu5AW4BErik6sfPZlMfiQ=
+X-Received: by 2002:a1f:2355:0:b0:32a:e5bb:29a1 with SMTP id
+ j82-20020a1f2355000000b0032ae5bb29a1mr790584vkj.2.1645698640594; Thu, 24 Feb
+ 2022 02:30:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220224085410.399351-1-guoren@kernel.org> <20220224085410.399351-12-guoren@kernel.org>
+ <CAK8P3a3wg9S_zPad74FiJzYBn0M9bQyunuKzmH3z_QQrags5ng@mail.gmail.com>
+In-Reply-To: <CAK8P3a3wg9S_zPad74FiJzYBn0M9bQyunuKzmH3z_QQrags5ng@mail.gmail.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Thu, 24 Feb 2022 18:30:29 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTQratosmRtoiKx9xTm3-gBSrnEaWgVrYj1U2WZafR1RVg@mail.gmail.com>
+Message-ID: <CAJF2gTQratosmRtoiKx9xTm3-gBSrnEaWgVrYj1U2WZafR1RVg@mail.gmail.com>
+Subject: Re: [PATCH V6 11/20] riscv: compat: syscall: Add compat_sys_call_table
+ implementation
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Anup Patel <anup@brainfault.org>,
+        gregkh <gregkh@linuxfoundation.org>,
+        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the proper voltages as supported by the board instead of the ones
-supported by the PMIC. The voltages were taken from both the schematic
-of the 8MNANOLPD4-EVK eval board and the datasheet of the IMX8MN SoC.
+On Thu, Feb 24, 2022 at 5:38 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> On Thu, Feb 24, 2022 at 9:54 AM <guoren@kernel.org> wrote:
+> >
+> > From: Guo Ren <guoren@linux.alibaba.com>
+> >
+> > Implement compat sys_call_table and some system call functions:
+> > truncate64, ftruncate64, fallocate, pread64, pwrite64,
+> > sync_file_range, readahead, fadvise64_64 which need argument
+> > translation.
+> >
+> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> > Signed-off-by: Guo Ren <guoren@kernel.org>
+> > Cc: Arnd Bergmann <arnd@arndb.de>
+> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
+>
+> Here, I was hoping you'd convert some of the other architectures to use
+> the same code, but the changes you did do look correct.
+>
+> Please at least add the missing bit for big-endian architectures here:
+>
+> +#if !defined(compat_arg_u64) && !defined(CONFIG_CPU_BIG_ENDIAN)
+> +#define compat_arg_u64(name)           u32  name##_lo, u32  name##_hi
+> +#define compat_arg_u64_dual(name)      u32, name##_lo, u32, name##_hi
+> +#define compat_arg_u64_glue(name)      (((u64)name##_hi << 32) | \
+> +                                        ((u64)name##_lo & 0xffffffffUL))
+> +#endif
+>
+> with the lo/hi words swapped. With that change:
+Got it, I would change it in next version of patch.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-Please help review and test this. This was never tested on the actual
-8MNANOLPD4-EVK because I don't have that board! Instead it is a
-"byproduct" of the development of an devicetree for the 8MNANOD3L-EVK
-which is quite similar except for the DDR voltage and the buck2
-converter.
+>
+> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 
-Changes since v1:
- - swap buck1 and buck2
 
- arch/arm64/boot/dts/freescale/imx8mn-evk.dts | 34 ++++++++++----------
- 1 file changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mn-evk.dts b/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
-index 2b685c0c7eeb..4eb467df5ba7 100644
---- a/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
-@@ -42,8 +42,8 @@ pmic: pmic@25 {
- 		regulators {
- 			buck1: BUCK1{
- 				regulator-name = "VDD_SOC";
--				regulator-min-microvolt = <600000>;
--				regulator-max-microvolt = <2187500>;
-+				regulator-min-microvolt = <850000>;
-+				regulator-max-microvolt = <950000>;
- 				regulator-boot-on;
- 				regulator-always-on;
- 				regulator-ramp-delay = <3125>;
-@@ -51,8 +51,8 @@ buck1: BUCK1{
- 
- 			buck2: BUCK2 {
- 				regulator-name = "VDD_ARM_0V9";
--				regulator-min-microvolt = <600000>;
--				regulator-max-microvolt = <2187500>;
-+				regulator-min-microvolt = <850000>;
-+				regulator-max-microvolt = <1000000>;
- 				regulator-boot-on;
- 				regulator-always-on;
- 				regulator-ramp-delay = <3125>;
-@@ -62,32 +62,32 @@ buck2: BUCK2 {
- 
- 			buck4: BUCK4{
- 				regulator-name = "VDD_3V3";
--				regulator-min-microvolt = <600000>;
--				regulator-max-microvolt = <3400000>;
-+				regulator-min-microvolt = <3300000>;
-+				regulator-max-microvolt = <3300000>;
- 				regulator-boot-on;
- 				regulator-always-on;
- 			};
- 
- 			buck5: BUCK5{
- 				regulator-name = "VDD_1V8";
--				regulator-min-microvolt = <600000>;
--				regulator-max-microvolt = <3400000>;
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
- 				regulator-boot-on;
- 				regulator-always-on;
- 			};
- 
- 			buck6: BUCK6 {
- 				regulator-name = "NVCC_DRAM_1V1";
--				regulator-min-microvolt = <600000>;
--				regulator-max-microvolt = <3400000>;
-+				regulator-min-microvolt = <1100000>;
-+				regulator-max-microvolt = <1100000>;
- 				regulator-boot-on;
- 				regulator-always-on;
- 			};
- 
- 			ldo1: LDO1 {
- 				regulator-name = "NVCC_SNVS_1V8";
--				regulator-min-microvolt = <1600000>;
--				regulator-max-microvolt = <3300000>;
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
- 				regulator-boot-on;
- 				regulator-always-on;
- 			};
-@@ -95,23 +95,23 @@ ldo1: LDO1 {
- 			ldo2: LDO2 {
- 				regulator-name = "VDD_SNVS_0V8";
- 				regulator-min-microvolt = <800000>;
--				regulator-max-microvolt = <1150000>;
-+				regulator-max-microvolt = <800000>;
- 				regulator-boot-on;
- 				regulator-always-on;
- 			};
- 
- 			ldo3: LDO3 {
- 				regulator-name = "VDDA_1V8";
--				regulator-min-microvolt = <800000>;
--				regulator-max-microvolt = <3300000>;
-+				regulator-min-microvolt = <1800000>;
-+				regulator-max-microvolt = <1800000>;
- 				regulator-boot-on;
- 				regulator-always-on;
- 			};
- 
- 			ldo4: LDO4 {
- 				regulator-name = "VDD_PHY_1V2";
--				regulator-min-microvolt = <800000>;
--				regulator-max-microvolt = <3300000>;
-+				regulator-min-microvolt = <1200000>;
-+				regulator-max-microvolt = <1200000>;
- 				regulator-boot-on;
- 				regulator-always-on;
- 			};
 -- 
-2.30.2
+Best Regards
+ Guo Ren
 
+ML: https://lore.kernel.org/linux-csky/
