@@ -2,122 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5935C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229642AbiBXAlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 19:41:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38930 "EHLO
+        id S229688AbiBXAlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 19:41:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229569AbiBXAlN (ORCPT
+        with ESMTP id S229441AbiBXAlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 19:41:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057EFCB90A;
-        Wed, 23 Feb 2022 16:40:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ADE360ED9;
-        Thu, 24 Feb 2022 00:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C336FC340E7;
-        Thu, 24 Feb 2022 00:40:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645663237;
-        bh=ziQOSAhDXJgwY7NYsTem4a1wH3ZzbHa8A+6fyznxquM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kAo7N29V5pBSN6BCtjwBlK2qvGJyvHu6e3bicy24IRCFChqTDY+Lj/X+iDrnaLZEh
-         qc/xAO4FbdWU/H6YHvXC+UxyGzXlO0sZq5p+A5+VrKbxsKg+KK2MuKegyTlsmsdZnZ
-         y2Fh3P7ldogrybdjrZ9Wuv40kk3wgK4rb2DdtUXK7ZK3BQkyF9D5W18K2I9QMtH1Eb
-         my+3L/S5StoTdWu2AgX3VQDQOGcDyXyAaJ8AmguyJSGVKj5bRNBMytKXBV2gm2xRwg
-         KIA9j9NKZEPUzdbiN5wOU03rUXKQ7AG0ExxPg25NEb7xu1aVcfNbbm2AQgkZBUJUhr
-         eE/16o3aU6cGQ==
-Date:   Wed, 23 Feb 2022 16:40:36 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     linux-integrity@vger.kernel.org,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 5/8] ima: permit fsverity's file digests in the IMA
- measurement list
-Message-ID: <YhbUBJbQ+nCN515p@sol.localdomain>
-References: <20220211214310.119257-1-zohar@linux.ibm.com>
- <20220211214310.119257-6-zohar@linux.ibm.com>
+        Wed, 23 Feb 2022 19:41:20 -0500
+X-Greylist: delayed 494 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 16:40:45 PST
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21C72D1FE
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:40:45 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 94B3E5C00B3;
+        Wed, 23 Feb 2022 19:32:29 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Wed, 23 Feb 2022 19:32:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=russell.cc; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; bh=nf5v9flhJ1/35f
+        JJsCo6upNHW6tvn2iWHZH/A+ZwQBg=; b=evv/LeK16QlL3GjRaqAJEve75MJGTm
+        0s1X7DWU0oCwRCmdoWFtYVsnJ4AR1j4x9II/WxMSQSQTYfAxgeo+zjV7xZelFIy5
+        JS1NmECDqJz6NRx3I9t6spm2KQoxBRfRJF+Cut7TlNMCPYTQ3KWriSjB8pZsLpis
+        pbjtCZ118uKNZuR2+2KXx9yoxicIqoSPq1a7R8R5hqGsAUbzSshyPmCdRIy//Xfo
+        1oDHzCLDswQPqampldY3rTDAKgMMAQtTyhRhq29HzjviPVV4bJSCZHwN+4lbxiy7
+        HbvtKpZalmmW5Oj+9UTO7ihnNdO410lzel7UBD4HkB5iuHzGAIlro/gA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm2; bh=nf5v9flhJ1/35fJJsCo6upNHW6tvn2iWHZH/A+ZwQ
+        Bg=; b=KPV2Akj6JeP9AMwf5j+RJmb5AdCsVUlDymKb+fjS4Esv11r4HoNEdicsL
+        6PJFB9rEgWT+gRnpOOnkj2wGcYkvXBnBsFH8gffx475IpA+tFkc4yEVCp1afZFG3
+        e0HpaVOvLV1iaRHPmS54bKpxY5nds5AzMmOjxqWANYpHpYzFNy7cXZJa7czoYR28
+        MY7MDbwiSBf92aq0aPJoHqO3ipE7Qn1En9TFAQntkTawfMhyphzZPO/Jj4Pm3EDr
+        AloUMQriE2uRDu56kWK23R9jbzsu17t8ULIRxYZM5ZBiOWzNMF5B0NDxtCm4ob50
+        e8RgX+ijwxUzt9Ppmvv1jSFXIpJUg==
+X-ME-Sender: <xms:HNIWYnKmV0kvcuRBjKLJ7MxCBZOEuR5XAYjCSS2fKAWiKeLE7HcAjA>
+    <xme:HNIWYrJm6o5lmGIrXeynVNdqzLQ_UDr0eJ_vGbasKx_MzBhpzhXYHgY3AAUQG9Uw4
+    osyg-wjTigm58KXqA>
+X-ME-Received: <xmr:HNIWYvv9iXEkfcvgkMjPEJiO0Y4zurKUa9M4DoT8Dak-fhFuuDTessB1vlXAcCmwWGmh9KScolXJTLz3nY7RBJn5mYQ5oTsQzxWOMJp-kUaqpfoo6kIE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrledugddvfecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfg
+    hrlhcuvffnffculdduhedmnecujfgurhepkffuhffvjghftgffgggfgfesthejredttder
+    jeenucfhrhhomheptfhushhsvghllhcuvehurhhrvgihuceorhhushgtuhhrsehruhhssh
+    gvlhhlrdgttgeqnecuggftrfgrthhtvghrnhepfeffgefhlefgtedtleehfeekjeejteej
+    jedtvddvgfejveelieevfffgfedufeetnecuvehluhhsthgvrhfuihiivgeptdenucfrrg
+    hrrghmpehmrghilhhfrhhomheprhhushgtuhhrsehruhhsshgvlhhlrdgttg
+X-ME-Proxy: <xmx:HNIWYgYSOGQaa1nred7y96aqSvYWVkyUncVQDSGDeLlmFXmxXbT0ug>
+    <xmx:HNIWYubU3BnY-TGAeax4xLYdBy5KEyfp00d9DReRbqkMiWfG0-XCGg>
+    <xmx:HNIWYkDmO6OHUqDIBoN8-V-nR9wHw-uvUa20FikZr3Aqckilysri0A>
+    <xmx:HdIWYm4BY1kgY3F_Qz6y-at2XRgkoiLPh37djwu0Og5NwgrEguUuOg>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 23 Feb 2022 19:32:26 -0500 (EST)
+Message-ID: <b7adc31a454cf89cd04eabe36399bf2b3ce4fb23.camel@russell.cc>
+Subject: Re: [PATCH] powerpc/module_64: fix array_size.cocci warning
+From:   Russell Currey <ruscur@russell.cc>
+To:     Guo Zhengkui <guozhengkui@vivo.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        open list <linux-kernel@vger.kernel.org>
+Cc:     kernel@vivo.com
+In-Reply-To: <20220223075426.20939-1-guozhengkui@vivo.com>
+References: <20220223075426.20939-1-guozhengkui@vivo.com>
+Content-Type: text/plain; charset="UTF-8"
+Date:   Thu, 24 Feb 2022 10:32:23 +1000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220211214310.119257-6-zohar@linux.ibm.com>
+User-Agent: Evolution 3.42.4 
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 11, 2022 at 04:43:07PM -0500, Mimi Zohar wrote:
-> diff --git a/Documentation/ABI/testing/ima_policy b/Documentation/ABI/testing/ima_policy
-> index 839fab811b18..ff3c906738cb 100644
-> --- a/Documentation/ABI/testing/ima_policy
-> +++ b/Documentation/ABI/testing/ima_policy
-> @@ -51,6 +51,9 @@ Description:
->  			appraise_flag:= [check_blacklist]
->  			Currently, blacklist check is only for files signed with appended
->  			signature.
-> +			digest_type:= verity
-> +			    Require fs-verity's file digest instead of the
-> +			    regular IMA file hash.
->  			keyrings:= list of keyrings
->  			(eg, .builtin_trusted_keys|.ima). Only valid
->  			when action is "measure" and func is KEY_CHECK.
-> @@ -149,3 +152,10 @@ Description:
->  		security.ima xattr of a file:
->  
->  			appraise func=SETXATTR_CHECK appraise_algos=sha256,sha384,sha512
-> +
-> +		Example of 'measure' rule requiring fs-verity's digests on a
-> +		particular filesystem with indication of type of digest in
-> +		the measurement list.
-> +
-> +			measure func=FILE_CHECK digest_type=verity \
-> +				fsuuid=... template=ima-ngv2
-> diff --git a/Documentation/security/IMA-templates.rst b/Documentation/security/IMA-templates.rst
-> index 1a91d92950a7..1e3fe986764e 100644
-> --- a/Documentation/security/IMA-templates.rst
-> +++ b/Documentation/security/IMA-templates.rst
-> @@ -69,6 +69,8 @@ descriptors by adding their identifier to the format string
->     algorithm (field format: [<hash algo>:]digest, where the digest
->     prefix is shown only if the hash algorithm is not SHA1 or MD5);
->   - 'd-modsig': the digest of the event without the appended modsig;
-> + - 'd-type': differentiate between fs-verity's Merkle tree based file hash
-> +   from a regular IMA file hash measurement.
->   - 'n-ng': the name of the event, without size limitations;
->   - 'sig': the file signature, or the EVM portable signature if the file
->     signature is not found;
-> @@ -106,3 +108,8 @@ currently the following methods are supported:
->     the ``ima_template=`` parameter;
->   - register a new template descriptor with custom format through the kernel
->     command line parameter ``ima_template_fmt=``.
+On Wed, 2022-02-23 at 15:54 +0800, Guo Zhengkui wrote:
+> Fix following coccicheck warning:
+> ./arch/powerpc/kernel/module_64.c:432:40-41: WARNING: Use ARRAY_SIZE.
+> 
+> ARRAY_SIZE(arr) is a macro provided by the kernel. It makes sure that
+> arr
+> is an array, so it's safer than sizeof(arr) / sizeof(arr[0]) and more
+> standard.
+> 
+> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
 
-Is there more IMA documentation elsewhere, or is this everything?  These files
-are hard to follow.
-
-> diff --git a/security/integrity/integrity.h b/security/integrity/integrity.h
-> index daf49894fd7d..39a999877013 100644
-> --- a/security/integrity/integrity.h
-> +++ b/security/integrity/integrity.h
-> @@ -32,7 +32,7 @@
->  #define IMA_HASHED		0x00000200
->  
->  /* iint policy rule cache flags */
-> -#define IMA_NONACTION_FLAGS	0xff000000
-> +#define IMA_NONACTION_FLAGS	0xff800000
->  #define IMA_DIGSIG_REQUIRED	0x01000000
->  #define IMA_PERMIT_DIRECTIO	0x02000000
->  #define IMA_NEW_FILE		0x04000000
-> @@ -40,6 +40,8 @@
->  #define IMA_FAIL_UNVERIFIABLE_SIGS	0x10000000
->  #define IMA_MODSIG_ALLOWED	0x20000000
->  #define IMA_CHECK_BLACKLIST	0x40000000
-> +#define IMA_VERITY_REQUIRED	0x80000000
-> +#define IMA_VERITY_DIGEST	0x00800000
-
-How about defining these flags in numerical order?
-
-- Eric
+Reviewed-by: Russell Currey <ruscur@russell.cc>
