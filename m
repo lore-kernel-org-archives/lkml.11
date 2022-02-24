@@ -2,95 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3627C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C538BC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229797AbiBXQ3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:29:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
+        id S229815AbiBXQ3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:29:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbiBXQ3G (ORCPT
+        with ESMTP id S229799AbiBXQ3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:29:06 -0500
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 682D11965C4;
-        Thu, 24 Feb 2022 08:28:35 -0800 (PST)
-Received: by mail-oi1-f170.google.com with SMTP id j24so3205356oii.11;
-        Thu, 24 Feb 2022 08:28:35 -0800 (PST)
+        Thu, 24 Feb 2022 11:29:13 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9F9198EC0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:28:43 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id em10-20020a17090b014a00b001bc3071f921so6136484pjb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:28:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3Hf6hDQrQo0yd5FSyKmljwnxvf8/XZ/eZW/Rsy8Pb3E=;
+        b=SJh8VmSGNPM8i914U4IL5W11hEVk7xkedBBZONGXzjOC6560xZvMOJkpfeolMJ92Zl
+         ZP9/K/VdsKyM8xZPPbrf0bj6qepIRXNWVFeGJLF7RsAtfqo58iollilxF4vzM1B4XxtJ
+         Or7TSY1FvQufMpUss+lezrloJdGxS8Sduhgso=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=9Hw+IXRYrnzmeFFNG8Nc9XPQ/h/ngGDlwqtlbBJf7gQ=;
-        b=Sh2QGzb683l2ieej21t4GkmLUpBtgnqaVjfpogjOvadOwHiZ8n8vsYYMBrF6OPZHXm
-         B2uxEUVAYMV/PDjX+g/6f5eSl96IDJwaUCAQZOL2KTtT/rf0GelfH2sOZMHnCg8gKa8t
-         gqzu9XJwKMqVjxfsSJlagv9oTzJ0kC/2EbI6mMAhJoaErENbgpVM8ZMZzc9RIUq5jI5K
-         Ps6rCYYLAO1WRpipIjIcaydl4SxgiNJRAuJPTtLn1qs1gzRnDfiJhCpYUajqYyXVvWJO
-         ltj3wKLM35bXEwKVcaPb2eMWRUKl5JtE7jUxn0BRG+D6/x2p075GZIJVxiv9mLvCLP16
-         3OYw==
-X-Gm-Message-State: AOAM530LRqDAybgoR6pzCfJCwDKerD97x0PybH8TCxEOks7SZddX5ZU/
-        Q3eITvaDixVF6jAaZZWWpBpsI39ltg==
-X-Google-Smtp-Source: ABdhPJyBSuL4dpeG7BPV2Y0QipvRylf1FyFsNnew64rw4tYkMJ1gXBOSoDp7AJ29P+p4sn9gv7D7Wg==
-X-Received: by 2002:aca:b9d5:0:b0:2ce:6ee7:2cde with SMTP id j204-20020acab9d5000000b002ce6ee72cdemr7756180oif.268.1645719063709;
-        Thu, 24 Feb 2022 08:11:03 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id d60sm1352253otb.29.2022.02.24.08.11.02
+        bh=3Hf6hDQrQo0yd5FSyKmljwnxvf8/XZ/eZW/Rsy8Pb3E=;
+        b=49hn6m7d1IC/rKd3QuGJNLDj01xagxWczBqUs+TG827DMRo53xSezg9K5Ec3sV2L5Y
+         Y3lNhly97FJBPbHXcU4mLxwah437hQatsMUbCIdtbqHB8CPaliDbLNlGvfzJegKph76/
+         OG/7oLwkwcQc85WuK10F6az+FPGXL3vacd6YqYfx96uoiEfFoasNjnfZ1NrTlALb84lk
+         NTa0Gz3OjIjUk/S1FQcACxOT2NSB54kIE++OOyuH7k+M5g9VYlswvtfK6hXQd+cS2tVi
+         WbcCQyqAcNe4STKNZZO58vbtPVn+o6WK1Hxh+h3Bcvmoo1kCX1yP5k2hiekROTCuxfvc
+         UHoQ==
+X-Gm-Message-State: AOAM531hfaVNXRPtxuT6lv6Sf4WGJqZQUlChr/09EupFzsyRXi+j7BHg
+        opUXNr113s/Yv527H0NrCU2Bcg==
+X-Google-Smtp-Source: ABdhPJzFvsbmftUHydPBy9R5fPRTPY62oQgsGm5jW/ELzdyMzVTadiHu6ZBikJMyMP1IKW1w+1tp1g==
+X-Received: by 2002:a17:902:c405:b0:14f:dff5:92a0 with SMTP id k5-20020a170902c40500b0014fdff592a0mr3633520plk.61.1645720122728;
+        Thu, 24 Feb 2022 08:28:42 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id h34-20020a635322000000b003651e1ecb34sm44603pgb.25.2022.02.24.08.28.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 08:11:03 -0800 (PST)
-Received: (nullmailer pid 3169955 invoked by uid 1000);
-        Thu, 24 Feb 2022 16:11:02 -0000
-Date:   Thu, 24 Feb 2022 10:11:02 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Guenter Roeck <linux@roeck-us.net>
+        Thu, 24 Feb 2022 08:28:42 -0800 (PST)
+Date:   Thu, 24 Feb 2022 08:28:41 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
 Cc:     linux-kernel@vger.kernel.org,
-        Agathe Porte <agathe.porte@nokia.com>,
-        linux-hwmon@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Adamski <krzysztof.adamski@nokia.com>,
-        devicetree@vger.kernel.org, Jean Delvare <jdelvare@suse.com>
-Subject: Re: [PATCH v7 1/2] dt-bindings: hwmon: add tmp464.yaml
-Message-ID: <YheuFuVz38Rcy5Q1@robh.at.kernel.org>
-References: <20220222223610.23098-1-linux@roeck-us.net>
+        Linux API <linux-api@vger.kernel.org>,
+        Etienne Dechamps <etienne@edechamps.fr>,
+        Alexey Gladkov <legion@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Containers <containers@lists.linux-foundation.org>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        Security Officers <security@kernel.org>,
+        Neil Brown <neilb@cse.unsw.edu.au>, NeilBrown <neilb@suse.de>,
+        "Serge E. Hallyn" <serge@hallyn.com>, Jann Horn <jannh@google.com>,
+        Andy Lutomirski <luto@kernel.org>, Willy Tarreau <w@1wt.eu>,
+        Linus Torvalds <linus@torvalds.org>
+Subject: Re: [PATCH] ucounts: Fix systemd LimigtNPROC with private users
+ regression
+Message-ID: <202202240826.E31BADF@keescook>
+References: <20220207121800.5079-1-mkoutny@suse.com>
+ <e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr>
+ <20220215101150.GD21589@blackbody.suse.cz>
+ <87zgmi5rhm.fsf@email.froward.int.ebiederm.org>
+ <87fso91n0v.fsf_-_@email.froward.int.ebiederm.org>
+ <CAHk-=wjX3VK8QRMDUWwigCTKdHJt0ESXh0Hy5HNaXf7YkEdCAA@mail.gmail.com>
+ <878ru1qcos.fsf@email.froward.int.ebiederm.org>
+ <CAHk-=wgW8+vmqhx4t+uFiZL==8Ac5VWTqCm_oshA0e47B73qPw@mail.gmail.com>
+ <87tucpko7d.fsf@email.froward.int.ebiederm.org>
+ <87sfs8jmpz.fsf_-_@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220222223610.23098-1-linux@roeck-us.net>
+In-Reply-To: <87sfs8jmpz.fsf_-_@email.froward.int.ebiederm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Feb 2022 14:36:09 -0800, Guenter Roeck wrote:
-> From: Agathe Porte <agathe.porte@nokia.com>
+typo: Subject's LimigtNPROC -> LimitNPROC
+
+On Thu, Feb 24, 2022 at 09:41:44AM -0600, Eric W. Biederman wrote:
 > 
-> Add basic description of the tmp464 driver DT bindings.
+> Long story short recursively enforcing RLIMIT_NPROC when it is not
+> enforced on the process that creates a new user namespace, causes
+> currently working code to fail.  There is no reason to enforce
+> RLIMIT_NPROC recursively when we don't enforce it normally so update
+> the code to detect this case.
 > 
-> Signed-off-by: Agathe Porte <agathe.porte@nokia.com>
-> Cc: Krzysztof Adamski <krzysztof.adamski@nokia.com>
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> I would like to simply use capable(CAP_SYS_RESOURCE) to detect when
+> RLIMIT_NPROC is not enforced upon the caller.  Unfortunately because
+> RLIMIT_NPROC is charged and checked for enforcement based upon the
+> real uid, using capable() wich is euid based is inconsistent with reality.
+
+typo: wich -> which
+
+> Come as close as possible to testing for capable(CAP_SYS_RESOURCE) by
+> testing for when the real uid would match the conditions when
+> CAP_SYS_RESOURCE would be present if the real uid was the effective
+> uid.
+> 
+> Reported-by: Etienne Dechamps <etienne@edechamps.fr>
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=215596
+> Link: https://lkml.kernel.org/r/e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr
+> Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
+> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 > ---
-> v7:
-> - No change
 > 
-> v6:
-> - Model ti,n-factor as int32 instead of int8.
+> The previous conversation has given me enough clarity that I can see
+> which tests I am comfortable with use for this pending regression fix.
 > 
-> v5:
-> - Dropped ti,n-factor from channel@0 example. Added additional
->   channel to examples to show positive ti,n-factor property.
+> I have tested this and it works for me.  Does anyone have any concerns
+> with this change?
+
+I'd really love some kind of selftest that exercises the edge cases; do
+you have your tests in some form that could be converted?
+
+But otherwise, yes, this looks like the best option here.
+
+Reviewed-by: Kees Cook <keescook@chromium.org>
+
 > 
-> v4:
-> - No changes
+>  kernel/user_namespace.c | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
 > 
-> v3:
-> - Addedd support for TMP468.
-> - Changed number of channels from 0..3 (which was wrong anyway) to 0..8.
-> - Changed value range for ti,n-factor to int8, with an example for
->   a negative value.
-> - Added myself as driver maintainer.
-> 
->  .../devicetree/bindings/hwmon/ti,tmp464.yaml  | 114 ++++++++++++++++++
->  MAINTAINERS                                   |   7 ++
->  2 files changed, 121 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/hwmon/ti,tmp464.yaml
+> diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
+> index 6b2e3ca7ee99..5481ba44a8d6 100644
+> --- a/kernel/user_namespace.c
+> +++ b/kernel/user_namespace.c
+> @@ -58,6 +58,18 @@ static void set_cred_user_ns(struct cred *cred, struct user_namespace *user_ns)
+>  	cred->user_ns = user_ns;
+>  }
+>  
+> +static unsigned long enforced_nproc_rlimit(void)
+> +{
+> +	unsigned long limit = RLIM_INFINITY;
+> +
+> +	/* Is RLIMIT_NPROC currently enforced? */
+> +	if (!uid_eq(current_uid(), GLOBAL_ROOT_UID) ||
+> +	    (current_user_ns() != &init_user_ns))
+> +		limit = rlimit(RLIMIT_NPROC);
+> +
+> +	return limit;
+> +}
+> +
+>  /*
+>   * Create a new user namespace, deriving the creator from the user in the
+>   * passed credentials, and replacing that user with the new root user for the
+> @@ -122,7 +134,7 @@ int create_user_ns(struct cred *new)
+>  	for (i = 0; i < MAX_PER_NAMESPACE_UCOUNTS; i++) {
+>  		ns->ucount_max[i] = INT_MAX;
+>  	}
+> -	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC));
+> +	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, enforced_nproc_rlimit());
+>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MSGQUEUE, rlimit(RLIMIT_MSGQUEUE));
+>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_SIGPENDING, rlimit(RLIMIT_SIGPENDING));
+>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK));
+> -- 
+> 2.29.2
 > 
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+-- 
+Kees Cook
