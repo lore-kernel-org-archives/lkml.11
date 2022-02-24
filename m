@@ -2,91 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4262BC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233244AbiBXKH5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:07:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40840 "EHLO
+        id S233175AbiBXKJH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:09:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233215AbiBXKHu (ORCPT
+        with ESMTP id S231319AbiBXKJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:07:50 -0500
-X-Greylist: delayed 609 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 02:07:20 PST
-Received: from mail.thorsis.com (mail.thorsis.com [92.198.35.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76345151C71;
-        Thu, 24 Feb 2022 02:07:19 -0800 (PST)
-Date:   Thu, 24 Feb 2022 10:56:59 +0100
-From:   Alexander Dahl <ada@thorsis.com>
-To:     Thorsten Leemhuis <linux@leemhuis.info>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefano Zacchiroli <zack@upsilon.cc>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Laura Abbott <labbott@kernel.org>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Wenwen Wang <wenwen@cs.uga.edu>, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] Documentation/process: Add Researcher Guidelines
-Message-ID: <YhdWa41bXssNVrE3@ada-deb-carambola.ifak-system.com>
-Mail-Followup-To: Thorsten Leemhuis <linux@leemhuis.info>,
-        Kees Cook <keescook@chromium.org>, Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefano Zacchiroli <zack@upsilon.cc>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Laura Abbott <labbott@kernel.org>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Wenwen Wang <wenwen@cs.uga.edu>, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-hardening@vger.kernel.org
-References: <20220224001403.1307377-1-keescook@chromium.org>
- <974cf8f2-06f3-99a5-9a77-6d7b7cc8271a@leemhuis.info>
-Content-Type: text/plain; charset=us-ascii
+        Thu, 24 Feb 2022 05:09:06 -0500
+Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15DF3277909
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 02:08:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1645697316;
+  x=1677233316;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sYEoKm7dQb0+rGbVfxkxm4VUPTLb9rvL7TEm6KoFzK4=;
+  b=f2qBt1ys7bm6WsxHAvPIV3fDzjmlPHpUqyf7F6H655oDMrEChyqVob7Y
+   vWnY+OH7GIrV3Axsb867K2gSBK8Adt7PBLFr7Iwf+GT6LYMmK7tiNuyy3
+   MNqiPoVpznDxg6glKvMm9g5IA+ZhHRcv1FnFCI+MQ7tnNduyzM+ByWgA4
+   pkPX1CZzUGhZydAtpk/08T5+TVCwFPc+llTrPBd6kty0w2ELLC9baNnb5
+   yl60+Hiipg9pV8pcISr4CiNVh3EO4Fug4PmgdAW0X40Jakoo0Gogbh/VB
+   wxVygkWdmpoyqhpphOuTnh29N0JqMmN5X4F2JE38lfZYoQu84uaZUAZby
+   A==;
+Date:   Thu, 24 Feb 2022 11:08:33 +0100
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Arnd Bergmann <arnd@arndb.de>, kernel <kernel@axis.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] char: ttyprintk: register console
+Message-ID: <20220224100833.GA3807@axis.com>
+References: <20220215141750.92808-1-vincent.whitchurch@axis.com>
+ <YhPZeDBlrHjLcgPh@kroah.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <974cf8f2-06f3-99a5-9a77-6d7b7cc8271a@leemhuis.info>
+In-Reply-To: <YhPZeDBlrHjLcgPh@kroah.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Thorsten,
-
-Am Thu, Feb 24, 2022 at 09:19:24AM +0100 schrieb Thorsten Leemhuis:
-> On 24.02.22 01:14, Kees Cook wrote:
-> > +If you are a first time contributor it is recommended that the patch
-> > +itself be vetted by others privately before being posted to public lists.
-> > +(This is required if you have been explicitly told your patches need
-> > +more careful internal review.) These people are expected to have their
-> > +"Reviewed-by" tag included in the resulting patch. Finding another
-> > +developer familiar with Linux contribution, especially within your own
-> > +organization, and having them help with reviews before sending them to
-> > +the public mailing lists tends to significantly improve the quality of the
-> > +resulting patches, and there by reduces the burden on other developers.
+On Mon, Feb 21, 2022 at 07:27:04PM +0100, Greg Kroah-Hartman wrote:
+> On Tue, Feb 15, 2022 at 03:17:49PM +0100, Vincent Whitchurch wrote:
+> > Register a console in the ttyprintk driver so that it can be selected
+> > for /dev/console with console=ttyprintk on the kernel command line,
+> > similar to other console drivers.
+> > 
+> > Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+> > ---
+> >  drivers/char/Kconfig     |  3 ++-
+> >  drivers/char/ttyprintk.c | 16 ++++++++++++++++
+> >  2 files changed, 18 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+> > index 740811893c57..c553a8a50d03 100644
+> > --- a/drivers/char/Kconfig
+> > +++ b/drivers/char/Kconfig
+> > @@ -18,7 +18,8 @@ config TTY_PRINTK
+> >  	  The feature is useful to inline user messages with kernel
+> >  	  messages.
+> >  	  In order to use this feature, you should output user messages
+> > -	  to /dev/ttyprintk or redirect console to this TTY.
+> > +	  to /dev/ttyprintk or redirect console to this TTY, or boot
+> > +	  the kernel with console=ttyprintk.
 > 
-> I like the section, but I wonder why it's needed here. Is there anything
-> specific to patches produced from research in it there I missed when
-> reading it? If not: Wouldn't it be better to include that section as a
-> TLDR in Documentation/process/submitting-patches.rst and point there
-> instead? We already have at least two places describing how to submit
-> patches, creating yet another one (even if it's just in such a brief
-> version) somehow feels slightly wrong to me.
-> 
-> OTOH I fully understand that having things in one place has it's
-> benefits. If that's wanted, why not put that text as TLDR in
-> submitting-patches.rst and maintain a copy here? Sure, keeping things in
-> sync has downsides, but I'd say it's the lesser evil. A copy could also
-> be avoided by briefly mentioning some of the important bits found in
-> another document; that's the approach I took in my patches regarding
-> regressions. To quote:
+> Why do you want to use this tty device as a console?  What benifit
+> does that provide?
 
-Without further opinion on the topic or content itself: 
-If there's need to have "copied" parts of the documentation available
-in different places, why not put that to a separate file and include
-it in all places which need it?  
-This would solve the manual synchronization issue.  
-Did that in other projects using sphinx/rst already.  
-Only thing you have to keep an eye on is whether the surrounding
-context at places of the include still matches the included piece.
+I run Linux on a secondary processor on my SoC.  This secondary
+processor doesn't have any output peripherals of its own, so it uses
+pstore to put its kernel messages at a fixed location in memory from
+which the primary processor can read them out.
 
-Greets
-Alex
+In order to access logs from the secondary processor's userspace, a
+simple way is to use ttyprintk.  Userspace logs to the console as normal
+and the primary processor can read the unified kernel+userspace logs
+from the pstore area.
 
+There are similar uses in other cases not involving multiple processors.
+I had mentioned on the lists a couple of years ago that I had this patch
+(without posting it), and last week I received a request (off-list) for
+it from someone who was looking to use it to debug userspace
+initialization in postmarketOS on an Android phone (they only had the
+ability to retreive the kernel's logs after a reboot using pstore).
