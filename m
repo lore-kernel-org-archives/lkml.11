@@ -2,169 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC79C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92799C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233119AbiBXPW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:22:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54456 "EHLO
+        id S235661AbiBXPYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:24:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236267AbiBXPWC (ORCPT
+        with ESMTP id S236223AbiBXPYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:22:02 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15FD1B1DED;
-        Thu, 24 Feb 2022 07:21:11 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id hw13so5059622ejc.9;
-        Thu, 24 Feb 2022 07:21:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=ZuVEAxmh+A8QIoKXF28VboWqjl4yi9SC0NLu7C8jv84=;
-        b=n3Q06AMtyRcuxRSJyhB/yrIWuWgxAFi1LbplrUxmyQN/ZgfzcCKvSQHWSmQDJo55nP
-         8Epr2RLKr0und+LLk1hXJ6zP96VRQsHUKNvtk/cDri3dxKGfBmB8boSYFDQf9nqQY2cm
-         nyEyP6MzXEA1BKod3YjulPtpl+AFqx79fg6JDlUmJTUWetbjJneVGrbxbnCrA96tvvq/
-         Px8XPs2Pm1iwicZxkoAdO0slJAmhzwIj6zFkOTeNM1Mg5EgUxwQNQps3ACEnpxAdRD6x
-         jcrTeHWKzTtnj8e+QNuBbZ3OwowpwWvQmKPUrnsO2RYIjwqHXgsEpKtbiJM8MuHxjxYh
-         S1Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZuVEAxmh+A8QIoKXF28VboWqjl4yi9SC0NLu7C8jv84=;
-        b=rSO92k7IlvasJ2ltE7WC9iO+RgH3mQah0B3Eowbys+kcVR8+BaMVilcyW2l8JXZB9n
-         tGClhCQHPfpfAJQz5QUQclrTK7xX9NJ/P+hHFu1doW9n66HjmOanQqUcvSfj9kU6rjD0
-         iBA3ngyNrtqnX3wiuo515fYOzNJUc85FGV9pcovVxA9GmNpihgMgUSCCFo4RbGNDdPxY
-         qHvBXCd55bEpFARquUWL5Av8nv8rz1LqTWvKmEyZxCjicIH7EekkjfieG00CXtY7lEiE
-         AAO8XH1OisDVEkYJ7dLuraHgxTrUAnGveUYtVIo/ZsRbsGMxF3+e8PaBg27hbSZOA7/B
-         2JiQ==
-X-Gm-Message-State: AOAM531FH5TMB9+/9rkoHjUO6Epm1p/sDkZ74OEqMN3uiuA7cPHnAImX
-        g/A5odZoxIWShdtuLdhYupU=
-X-Google-Smtp-Source: ABdhPJzpI29HmPXQ5CbpYZFiGvhNQ9X+Dmm0glvUDWLbhPo43pUwG74L/Lqm4wzWja6thoIHtLgFKQ==
-X-Received: by 2002:a17:906:360a:b0:6b9:1f8:9cdd with SMTP id q10-20020a170906360a00b006b901f89cddmr2733357ejb.461.1645716067180;
-        Thu, 24 Feb 2022 07:21:07 -0800 (PST)
-Received: from Ansuel-xps.localdomain ([5.170.108.128])
-        by smtp.googlemail.com with ESMTPSA id x12sm1501980edv.57.2022.02.24.07.21.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 07:21:06 -0800 (PST)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC RFT PATCH v3 2/2] mtd: core: introduce of support for dynamic partitions
-Date:   Thu, 24 Feb 2022 16:20:43 +0100
-Message-Id: <20220224152043.27777-3-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220224152043.27777-1-ansuelsmth@gmail.com>
-References: <20220224152043.27777-1-ansuelsmth@gmail.com>
+        Thu, 24 Feb 2022 10:24:08 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00AFA20D506;
+        Thu, 24 Feb 2022 07:23:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645716211; x=1677252211;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=WCV58FPRG8ZG+FToTvAB9ck4EHebw0gM7f37N5XbCpE=;
+  b=SCMPO+1+F5lMoNDZN0ZZakih7iOfJfk1ksExwZyXCxqZRHl7n2tKi4nX
+   bvW/XzocZ/cTqBYpJksl7oM8W57lfZYnscd7W60AmufehXvnJhYRR+cyC
+   N4wAbLBTIH9AKh9gUbqoFIZSJqCIkbd1S1/1IEpQLGHbdz09aUZcnsw3g
+   YEwJxfBWHZbjH5jDfilMXWMKHJm9Pl4G9fyOCnlG0wpFK+nZSwx25MVa/
+   kKpZ/t5crM5xL0cdjz0yIuQLDMdE1CbYab9uRZycVS0CcMTEs0MEiO0Ov
+   XophNg6J+42Zl0wGop3QL1SpdQn7m94P610MGG2jMdE0TNhzgT5C17hfu
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,134,1643698800"; 
+   d="scan'208";a="163508846"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Feb 2022 08:23:26 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 24 Feb 2022 08:23:25 -0700
+Received: from [10.12.73.51] (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Thu, 24 Feb 2022 08:23:24 -0700
+Message-ID: <27600750-a211-64c5-ad57-5ea60be6c2b4@microchip.com>
+Date:   Thu, 24 Feb 2022 16:23:23 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] ARM: dts: at91: Use the generic "crypto" node name for
+ the crypto IPs
+Content-Language: en-US
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        <claudiu.beznea@microchip.com>, <alexandre.belloni@bootlin.com>
+CC:     <robh+dt@kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kavyasree.kotagiri@microchip.com>,
+        <krzysztof.kozlowski@canonical.com>
+References: <20220208111225.234685-1-tudor.ambarus@microchip.com>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <20220208111225.234685-1-tudor.ambarus@microchip.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We have many parser that register mtd partitions at runtime. One example
-is the cmdlinepart or the smem-part parser where the compatible is defined
-in the dts and the partitions gets detected and registered by the
-parser. This is problematic for the NVMEM subsystem that requires an OF node
-to detect NVMEM cells.
+On 08/02/2022 at 12:12, Tudor Ambarus wrote:
+> The DT specification recommeds that:
+> "The name of a node should be somewhat generic, reflecting the function of
+> the device and not its precise programming model. If appropriate, the name
+> should be one of the following choices:"
+> "crypto" being the recommendation for the crypto nodes. Follow the DT
+> recommendation and use the generic "crypto" node name for the at91 crypto
+> IPs. While at this, add labels to the crypto nodes where they missed, for
+> easier reference purposes.
+> 
+> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-To fix this problem, introduce an additional logic that will try to
-assign an OF node to the MTD if declared.
+Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Adapted to new changes integrated in at91-dt branch and queued for 5.18.
 
-On MTD addition, it will be checked if the MTD has an OF node and if
-not declared will check if a partition with the same name / label is
-declared in DTS. If an exact match is found, the partition dynamically
-allocated by the parser will have a connected OF node.
+Best regards,
+   Nicolas
 
-The NVMEM subsystem will detect the OF node and register any NVMEM cells
-declared statically in the DTS.
+> ---
+>   arch/arm/boot/dts/sam9x60.dtsi | 6 +++---
+>   arch/arm/boot/dts/sama5d2.dtsi | 6 +++---
+>   arch/arm/boot/dts/sama5d3.dtsi | 6 +++---
+>   arch/arm/boot/dts/sama5d4.dtsi | 6 +++---
+>   4 files changed, 12 insertions(+), 12 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/sam9x60.dtsi b/arch/arm/boot/dts/sam9x60.dtsi
+> index ec45ced3cde6..ec686f617ec7 100644
+> --- a/arch/arm/boot/dts/sam9x60.dtsi
+> +++ b/arch/arm/boot/dts/sam9x60.dtsi
+> @@ -270,7 +270,7 @@ pit64b: timer@f0028000 {
+>   				clock-names = "pclk", "gclk";
+>   			};
+>   
+> -			sha: sha@f002c000 {
+> +			sha: crypto@f002c000 {
+>   				compatible = "atmel,at91sam9g46-sha";
+>   				reg = <0xf002c000 0x100>;
+>   				interrupts = <41 IRQ_TYPE_LEVEL_HIGH 0>;
+> @@ -291,7 +291,7 @@ trng: trng@f0030000 {
+>   				status = "okay";
+>   			};
+>   
+> -			aes: aes@f0034000 {
+> +			aes: crypto@f0034000 {
+>   				compatible = "atmel,at91sam9g46-aes";
+>   				reg = <0xf0034000 0x100>;
+>   				interrupts = <39 IRQ_TYPE_LEVEL_HIGH 0>;
+> @@ -307,7 +307,7 @@ AT91_XDMAC_DT_PERID(32))>,
+>   				status = "okay";
+>   			};
+>   
+> -			tdes: tdes@f0038000 {
+> +			tdes: crypto@f0038000 {
+>   				compatible = "atmel,at91sam9g46-tdes";
+>   				reg = <0xf0038000 0x100>;
+>   				interrupts = <40 IRQ_TYPE_LEVEL_HIGH 0>;
+> diff --git a/arch/arm/boot/dts/sama5d2.dtsi b/arch/arm/boot/dts/sama5d2.dtsi
+> index c700c3b19e4c..51e80611aa02 100644
+> --- a/arch/arm/boot/dts/sama5d2.dtsi
+> +++ b/arch/arm/boot/dts/sama5d2.dtsi
+> @@ -306,7 +306,7 @@ qspi1: spi@f0024000 {
+>   				status = "disabled";
+>   			};
+>   
+> -			sha@f0028000 {
+> +			sha: crypto@f0028000 {
+>   				compatible = "atmel,at91sam9g46-sha";
+>   				reg = <0xf0028000 0x100>;
+>   				interrupts = <12 IRQ_TYPE_LEVEL_HIGH 0>;
+> @@ -319,7 +319,7 @@ sha@f0028000 {
+>   				status = "okay";
+>   			};
+>   
+> -			aes@f002c000 {
+> +			aes: crypto@f002c000 {
+>   				compatible = "atmel,at91sam9g46-aes";
+>   				reg = <0xf002c000 0x100>;
+>   				interrupts = <9 IRQ_TYPE_LEVEL_HIGH 0>;
+> @@ -1084,7 +1084,7 @@ pioBU: secumod@fc040000 {
+>   				#gpio-cells = <2>;
+>   			};
+>   
+> -			tdes@fc044000 {
+> +			tdes: crypto@fc044000 {
+>   				compatible = "atmel,at91sam9g46-tdes";
+>   				reg = <0xfc044000 0x100>;
+>   				interrupts = <11 IRQ_TYPE_LEVEL_HIGH 0>;
+> diff --git a/arch/arm/boot/dts/sama5d3.dtsi b/arch/arm/boot/dts/sama5d3.dtsi
+> index d1841bffe3c5..8fa423c52592 100644
+> --- a/arch/arm/boot/dts/sama5d3.dtsi
+> +++ b/arch/arm/boot/dts/sama5d3.dtsi
+> @@ -381,7 +381,7 @@ usart3: serial@f8024000 {
+>   				status = "disabled";
+>   			};
+>   
+> -			sha@f8034000 {
+> +			sha: crypto@f8034000 {
+>   				compatible = "atmel,at91sam9g46-sha";
+>   				reg = <0xf8034000 0x100>;
+>   				interrupts = <42 IRQ_TYPE_LEVEL_HIGH 0>;
+> @@ -391,7 +391,7 @@ sha@f8034000 {
+>   				clock-names = "sha_clk";
+>   			};
+>   
+> -			aes@f8038000 {
+> +			aes: crypto@f8038000 {
+>   				compatible = "atmel,at91sam9g46-aes";
+>   				reg = <0xf8038000 0x100>;
+>   				interrupts = <43 IRQ_TYPE_LEVEL_HIGH 0>;
+> @@ -402,7 +402,7 @@ aes@f8038000 {
+>   				clock-names = "aes_clk";
+>   			};
+>   
+> -			tdes@f803c000 {
+> +			tdes: crypto@f803c000 {
+>   				compatible = "atmel,at91sam9g46-tdes";
+>   				reg = <0xf803c000 0x100>;
+>   				interrupts = <44 IRQ_TYPE_LEVEL_HIGH 0>;
+> diff --git a/arch/arm/boot/dts/sama5d4.dtsi b/arch/arm/boot/dts/sama5d4.dtsi
+> index f6e3e6f57252..1dff79a29012 100644
+> --- a/arch/arm/boot/dts/sama5d4.dtsi
+> +++ b/arch/arm/boot/dts/sama5d4.dtsi
+> @@ -673,7 +673,7 @@ adc0: adc@fc034000 {
+>   				status = "disabled";
+>   			};
+>   
+> -			aes@fc044000 {
+> +			aes: crypto@fc044000 {
+>   				compatible = "atmel,at91sam9g46-aes";
+>   				reg = <0xfc044000 0x100>;
+>   				interrupts = <12 IRQ_TYPE_LEVEL_HIGH 0>;
+> @@ -687,7 +687,7 @@ aes@fc044000 {
+>   				status = "okay";
+>   			};
+>   
+> -			tdes@fc04c000 {
+> +			tdes: crypto@fc04c000 {
+>   				compatible = "atmel,at91sam9g46-tdes";
+>   				reg = <0xfc04c000 0x100>;
+>   				interrupts = <14 IRQ_TYPE_LEVEL_HIGH 0>;
+> @@ -701,7 +701,7 @@ tdes@fc04c000 {
+>   				status = "okay";
+>   			};
+>   
+> -			sha@fc050000 {
+> +			sha: crypto@fc050000 {
+>   				compatible = "atmel,at91sam9g46-sha";
+>   				reg = <0xfc050000 0x100>;
+>   				interrupts = <15 IRQ_TYPE_LEVEL_HIGH 0>;
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
----
- drivers/mtd/mtdcore.c | 56 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
 
-diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
-index 9186268d361b..80e28a288f65 100644
---- a/drivers/mtd/mtdcore.c
-+++ b/drivers/mtd/mtdcore.c
-@@ -563,6 +563,61 @@ static int mtd_nvmem_add(struct mtd_info *mtd)
- 	return 0;
- }
- 
-+static void mtd_check_of_node(struct mtd_info *mtd)
-+{
-+	struct device_node *partitions, *parent_dn, *mtd_dn = NULL;
-+	const char *mtd_name, *suffix = "-dynamic";
-+	int plen, suffix_len = 8;
-+	struct mtd_info *parent;
-+	bool found = false;
-+
-+	/* Check if MTD already has a device node */
-+	if (dev_of_node(&mtd->dev))
-+		return;
-+
-+	/* Check if a partitions node exist */
-+	parent = mtd->parent;
-+	parent_dn = dev_of_node(&parent->dev);
-+	if (!parent_dn)
-+		return;
-+
-+	partitions = of_get_child_by_name(parent_dn, "partitions");
-+	if (!partitions)
-+		goto exit_parent;
-+
-+	/* Search if a partition is defined with the same name */
-+	for_each_child_of_node(partitions, mtd_dn) {
-+		mtd_name = of_get_property(mtd_dn, "label", &plen);
-+		if (!mtd_name) {
-+			mtd_name = of_get_property(mtd_dn, "name", &plen);
-+
-+			/* Check correct suffix */
-+			if (plen <= suffix_len ||
-+			    strncmp(mtd_name + plen - suffix_len, suffix, suffix_len))
-+				continue;
-+
-+			plen = plen - suffix_len;
-+		}
-+
-+		if (!strncmp(mtd->name, mtd_name, plen)) {
-+			found = true;
-+			break;
-+		}
-+	}
-+
-+	if (!found)
-+		goto exit_partitions;
-+
-+	/* Set of_node only for nvmem */
-+	if (of_device_is_compatible(mtd_dn, "nvmem-cells"))
-+		mtd_set_of_node(mtd, mtd_dn);
-+
-+exit_partitions:
-+	of_node_put(partitions);
-+exit_parent:
-+	of_node_put(parent_dn);
-+}
-+
- /**
-  *	add_mtd_device - register an MTD device
-  *	@mtd: pointer to new MTD device info structure
-@@ -668,6 +723,7 @@ int add_mtd_device(struct mtd_info *mtd)
- 	mtd->dev.devt = MTD_DEVT(i);
- 	dev_set_name(&mtd->dev, "mtd%d", i);
- 	dev_set_drvdata(&mtd->dev, mtd);
-+	mtd_check_of_node(mtd);
- 	of_node_get(mtd_get_of_node(mtd));
- 	error = device_register(&mtd->dev);
- 	if (error)
 -- 
-2.34.1
-
+Nicolas Ferre
