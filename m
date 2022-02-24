@@ -2,120 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF68C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 924CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:32:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229983AbiBXQcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:32:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
+        id S229944AbiBXQco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:32:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiBXQc3 (ORCPT
+        with ESMTP id S229968AbiBXQch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:32:29 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 446D21A39D5;
-        Thu, 24 Feb 2022 08:31:51 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id j7so4839791lfu.6;
-        Thu, 24 Feb 2022 08:31:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5aE/iHLOxxEvHamBNnvq9wqYb701oZWMJ2F0lcAzezA=;
-        b=D2ESp2dlylmeLfUpN8f+mocgrL+BWO0a3HESFV4q9P8Wi2mS2Tpp9y66kobD4eoU7p
-         mhCw9GPXo48gIW9KmVHuWyx5QIXBOaff/8i8P/R5lUUAf4dkn51/g5QJDWt4UjTsQ2kb
-         u/j9xwP+JYOnsZeCseXIvw2QvmL9xGNK+1fg9hNAg1wqtuQjfHRFOQNHybg3eo2heGtg
-         Vzcc6jiZnLBHLvgZ68Ln5vwgtQvvOORmysdgD/seTUr4w0RUVVYCo9sWgweFQTQBBbDi
-         NGaXjOnQgAFCVP6GV8m3ajCge/LtffJOaYI1Mtj9+rTrC4jdjpAfavowG9NLDK+JdYm/
-         MP0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5aE/iHLOxxEvHamBNnvq9wqYb701oZWMJ2F0lcAzezA=;
-        b=Kb9m3axMCrV8Aq6hTDgDJcmQWpNAwnulcqejao4meqWb+4yUc+PcAgEpjjYS353j5x
-         R6u2cIwiAuPUPBrXqh/h5kt0kbKY0jyj56mEdnJqrNYlMcdNEoJ0l/MKkapreGUWd3MC
-         bICEhKkvQxFRyBz7gZcBK1V8+9863Bb2alrj+cBiUQgipJOggs/oWPncryRAxOI81Tjo
-         0SAXPyrWf5+rIUq0UlK0PLrxCehNxN854jak30/195pZgCdwJoXvYWBYHVwrzdDf6qHl
-         mUiS9h2MDgMn1c3qZemFD7ojpc8WoOqvvD0NqxMFnafXPISRBcIwSFqADNFCTB+6szzW
-         y2Tw==
-X-Gm-Message-State: AOAM5309yXz2gJRWTc3b1XXQfLVxkPJinIqsYTFV/daB+P+g971JXoxW
-        FK+lXrXWUD/VmNKQFfBQU7s=
-X-Google-Smtp-Source: ABdhPJzyfUGIeLzk9sZAZgr9pKY/N3VuKh73uLnB4XFxDC0MGPBTMXEPvemcDesRwXABt3iH9c2gYg==
-X-Received: by 2002:ac2:518e:0:b0:442:bb6f:b54b with SMTP id u14-20020ac2518e000000b00442bb6fb54bmr2383877lfi.72.1645720309430;
-        Thu, 24 Feb 2022 08:31:49 -0800 (PST)
-Received: from orome ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id bf31-20020a2eaa1f000000b0024637000209sm9065ljb.10.2022.02.24.08.31.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 08:31:48 -0800 (PST)
-Date:   Thu, 24 Feb 2022 17:31:45 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
-        jonathanh@nvidia.com, kyarlagadda@nvidia.com, ldewangan@nvidia.com,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        p.zabel@pengutronix.de, rgumasta@nvidia.com, robh+dt@kernel.org,
-        nathan@kernel.org, vkoul@kernel.org,
-        Pavan Kunapuli <pkunapuli@nvidia.com>
-Subject: Re: [PATCH v21 2/2] dmaengine: tegra: Add tegra gpcdma driver
-Message-ID: <Yhey8ZVhMq398lVh@orome>
-References: <20220224123903.5020-1-akhilrajeev@nvidia.com>
- <20220224123903.5020-3-akhilrajeev@nvidia.com>
+        Thu, 24 Feb 2022 11:32:37 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D491113ACB
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:31:59 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nNH1V-0007S9-Nb; Thu, 24 Feb 2022 17:31:21 +0100
+Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nNH1V-00136X-AD; Thu, 24 Feb 2022 17:31:20 +0100
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1nNH1T-000Bf8-RW; Thu, 24 Feb 2022 17:31:19 +0100
+Message-ID: <234b9fd5d3125e071717b06635ff28afe87b3686.camel@pengutronix.de>
+Subject: Re: [PATCH v4 14/16] dt-bindings: reset: add ipq8064 ce5 resets
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Taniya Das <tdas@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 24 Feb 2022 17:31:19 +0100
+In-Reply-To: <20220217235703.26641-15-ansuelsmth@gmail.com>
+References: <20220217235703.26641-1-ansuelsmth@gmail.com>
+         <20220217235703.26641-15-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="L+K3fn9+MFCiXEpi"
-Content-Disposition: inline
-In-Reply-To: <20220224123903.5020-3-akhilrajeev@nvidia.com>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+T24gRnIsIDIwMjItMDItMTggYXQgMDA6NTcgKzAxMDAsIEFuc3VlbCBTbWl0aCB3cm90ZToKPiBB
+ZGQgaXBxODA2NCBjZTUgcmVzZXRzIG5lZWRlZCBmb3IgQ3J5cHRvRW5naW5lIGdjYyBkcml2ZXIu
+Cj4gCj4gU2lnbmVkLW9mZi1ieTogQW5zdWVsIFNtaXRoIDxhbnN1ZWxzbXRoQGdtYWlsLmNvbT4K
+PiAtLS0KPiDCoGluY2x1ZGUvZHQtYmluZGluZ3MvcmVzZXQvcWNvbSxnY2MtaXBxODA2eC5oIHwg
+NSArKysrKwo+IMKgMSBmaWxlIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1n
+aXQgYS9pbmNsdWRlL2R0LWJpbmRpbmdzL3Jlc2V0L3Fjb20sZ2NjLWlwcTgwNnguaAo+IGIvaW5j
+bHVkZS9kdC1iaW5kaW5ncy9yZXNldC9xY29tLGdjYy1pcHE4MDZ4LmgKPiBpbmRleCAyNmI2Zjky
+MDA2MjAuLjAyMGM5Y2YxODc1MSAxMDA2NDQKPiAtLS0gYS9pbmNsdWRlL2R0LWJpbmRpbmdzL3Jl
+c2V0L3Fjb20sZ2NjLWlwcTgwNnguaAo+ICsrKyBiL2luY2x1ZGUvZHQtYmluZGluZ3MvcmVzZXQv
+cWNvbSxnY2MtaXBxODA2eC5oCj4gQEAgLTE2Myw1ICsxNjMsMTAgQEAKPiDCoCNkZWZpbmUgTlNT
+X0NBTF9QUkJTX1JTVF9OX1JFU0VUwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoDE1NAo+IMKgI2RlZmluZSBOU1NfTENLRFRfUlNUX05fUkVTRVTCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgMTU1Cj4gwqAjZGVmaW5l
+IE5TU19TUkRTX05fUkVTRVTCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoDE1Ngo+ICsjZGVmaW5lIENSWVBUT19FTkcxX1JFU0VUwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+MTU3Cj4gKyNkZWZpbmUgQ1JZUFRPX0VORzJfUkVTRVTCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAxNTgKPiArI2RlZmluZSBDUllQVE9f
+RU5HM19SRVNFVMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoDE1OQo+ICsjZGVmaW5lIENSWVBUT19FTkc0X1JFU0VUwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgMTYwCj4gKyNk
+ZWZpbmUgQ1JZUFRPX0FIQl9SRVNFVMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgMTYxCj4gwqAKPiDCoCNlbmRpZgoKQWNrZWQtYnk6
+IFBoaWxpcHAgWmFiZWwgPHAuemFiZWxAcGVuZ3V0cm9uaXguZGU+CgpyZWdhcmRzClBoaWxpcHAK
 
---L+K3fn9+MFCiXEpi
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 24, 2022 at 06:09:03PM +0530, Akhil R wrote:
-> Adding GPC DMA controller driver for Tegra. The driver supports dma
-> transfers between memory to memory, IO peripheral to memory and
-> memory to IO peripheral.
->=20
-> Co-developed-by: Pavan Kunapuli <pkunapuli@nvidia.com>
-> Signed-off-by: Pavan Kunapuli <pkunapuli@nvidia.com>
-> Co-developed-by: Rajesh Gumasta <rgumasta@nvidia.com>
-> Signed-off-by: Rajesh Gumasta <rgumasta@nvidia.com>
-> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-> Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-> Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
-> ---
->  drivers/dma/Kconfig            |   11 +
->  drivers/dma/Makefile           |    1 +
->  drivers/dma/tegra186-gpc-dma.c | 1507 ++++++++++++++++++++++++++++++++
->  3 files changed, 1519 insertions(+)
->  create mode 100644 drivers/dma/tegra186-gpc-dma.c
-
-Acked-by: Thierry Reding <treding@nvidia.com>
-
---L+K3fn9+MFCiXEpi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIXsu8ACgkQ3SOs138+
-s6E/UxAAqMZS6fydwRuQ8aFCl3ss11O+kmXVQ9V3IGYvPhJyUwOAjJxGHFxD/1VW
-vOFNeiP5rjRvrbHdR+U2qvXaFTCtBEOkb0Ql5QNdM6tUMEoJFbPeU/5xnSd6n8gf
-JI6L7Wz1IJQgoUgw2DQDjhv7C08jdNeEY8KgzAMPiI5hsZfvS5VO55tA6O+uMA89
-e2Z2Zq0khy8/beUO3bJsT6jlnxoXMR7/Ce9pGnbgDbZwe8cWFGhAV5ecWI5rO50v
-gLxroMXd4gMlYfvj+DDk+bZi5Hel3pYU8agyqoDWggC975BTIZalLHeOOVy0fGuh
-eGhs7HlUQfEx/Y+b4qHHMOcosGS0+o42cFfrtg+lOWZvTcfWMTyVf3itpgPLirqT
-izETzgp4h0j2/+hYjlIi8UdoYT7yx2xroQECffzcmfRsdUUxazSjpJ8x98dMOOwY
-jh9Tuht+XRm9an/GgjEEcZkzbhD22yV5mo65mLRchmtpfwTXvWREcsf8c2R1beTe
-j7UNNxbuOnV3tEyiVsk7bw/md67r241u5o7cYov/ceq8d5cGdRRJjl1qX4ds4bJU
-E2ddA4NRQ6n1jRFrU3h7joCqldLit+K/B4X1XrUOzrzDpO/PCXMMZe14cyQFh6rL
-y9pKH1tV7TYZzlqyWz0zg8qRIpiajGvNDIOD9Twvkpt4PsPnuVw=
-=kGd9
------END PGP SIGNATURE-----
-
---L+K3fn9+MFCiXEpi--
