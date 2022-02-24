@@ -2,160 +2,399 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E15A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0281AC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 05:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbiBXFYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 00:24:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56570 "EHLO
+        id S230205AbiBXFY4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 00:24:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230165AbiBXFYK (ORCPT
+        with ESMTP id S230150AbiBXFYs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 00:24:10 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E4B238918
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:23:40 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id a12-20020a056902056c00b0061dc0f2a94aso934993ybt.6
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 21:23:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
-        bh=fcCfTEScaMgjegsqAtCFQCUUlnf7S421rxV5/DLFNa4=;
-        b=K2UkLk6KH0WGprg1Tt3b/YISPTEbGJ5NwL75GWwwQRifJr+Ia78r3xJ74AmzAn6des
-         +RpW5F9uvgZ9sJ1fT5i6np+KQN4qKRmZSJJLm2W9x5SYPYx8og6F3yLGsatCWV6FzEDf
-         673NAhqpRqg9eTDgS3UnApqhvX/5GRHjopLIWxweU9YOKdQpVxRnTDNuOFv5bZKbiXBW
-         6zpPdP2dAFKxHQAsD8SNy1C39D6al0+AgBC+DSjUXheYoiIBU/1Kmxx/wpNbXRnyHlFP
-         d6Mi3V5tWu+SiyXcU2q1ve1zdVP5SR3nN7kl8jsFPLZhM2l3A8Uk9bYysuSZ57PN/rxz
-         s+uA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:cc;
-        bh=fcCfTEScaMgjegsqAtCFQCUUlnf7S421rxV5/DLFNa4=;
-        b=b/tkrb6QKOEez39/nIf6DaE72rCvTX/0ImXGkazl0Yb7SVziE+mEAvhTJRKhRvbYul
-         JMuVtWzf4yQXdBwnSX6tDanK8LSuO1gdR25J3lBbmtbZ/UcOgPFEfbfs7IngozU92c5m
-         2OKIr4J1pv8ac3Wmo+DNjTbZwu0KIG7Dz1w18xcII2yUftqj+1u8QCB7Zrbhttoerr50
-         zbPp4jeYgsrUlYjJGtnzUrRfCozhAZb4YrWkcz3n2vcq2dJ13qXhYvFlG99vihSY9p7m
-         CqYcOd0mY265FE+VOsTxiQhC4EEP8qmLs4SCYqkH0F9RmQ00QDzBYgeajga4hYv16QfA
-         Cxrg==
-X-Gm-Message-State: AOAM530BRpRc4CQp1R0iqpAW7yN6ZheekXJ8LLpfqpfkCFPTNzogICAp
-        g6TNprupJIpbTG29DrKPJulIeiKRR7ncKSUMog==
-X-Google-Smtp-Source: ABdhPJwr5WYU+mcvUrEVYhYcHNbWEi05aKeybW8uxmEUPY7QeTHeRrUuULjEo5RNfVU+of1dj3HUHZ68vUNHlphVAQ==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:415c:9be0:c461:440a])
- (user=kaleshsingh job=sendgmr) by 2002:a25:30d6:0:b0:624:cd97:b907 with SMTP
- id w205-20020a2530d6000000b00624cd97b907mr981062ybw.542.1645680219922; Wed,
- 23 Feb 2022 21:23:39 -0800 (PST)
-Date:   Wed, 23 Feb 2022 21:13:43 -0800
-In-Reply-To: <20220224051439.640768-1-kaleshsingh@google.com>
-Message-Id: <20220224051439.640768-9-kaleshsingh@google.com>
+        Thu, 24 Feb 2022 00:24:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB0623892A;
+        Wed, 23 Feb 2022 21:24:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 072D1617F3;
+        Thu, 24 Feb 2022 05:24:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28655C340E9;
+        Thu, 24 Feb 2022 05:24:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1645680257;
+        bh=wvsUQqSEdT7ugLDQZJi7oAdrSRDM+oJt8fGs7SKesBs=;
+        h=Date:From:To:Subject:In-Reply-To:References:From;
+        b=tGqYa09X4UjE7wnsY1ihbGa6oPxp3CJC3lWtoTxm9cSRcSY9o0JtjSG28nVSzV1Yr
+         w++3sZrO79ySQd3uVL4dx7Kn0wA+bOLKJbtGLLgtEhjg2eUac5SsyvpwV4R1Lz35KS
+         iFDbRVQ+PHKcIk5eOBAabIoC0H9G2m882a94zoCg=
+Date:   Wed, 23 Feb 2022 21:24:16 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     broonie@kernel.org, mhocko@suse.cz, sfr@canb.auug.org.au,
+        linux-next@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        mm-commits@vger.kernel.org, Matthew Wilcox <willy@infradead.org>
+Subject: Re: mmotm 2022-02-23-21-20 uploaded
+Message-Id: <20220223212416.c957b713f5f8823f9b8e0a8d@linux-foundation.org>
+In-Reply-To: <20220224052137.BFB10C340E9@smtp.kernel.org>
+References: <20220224052137.BFB10C340E9@smtp.kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 Mime-Version: 1.0
-References: <20220224051439.640768-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [PATCH v3 8/8] KVM: arm64: Symbolize the nVHE HYP backtrace
-From:   Kalesh Singh <kaleshsingh@google.com>
-Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
-        tabba@google.com, surenb@google.com, kernel-team@android.com,
-        Kalesh Singh <kaleshsingh@google.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Mark Brown <broonie@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
-        Andrew Walbran <qwandor@google.com>,
-        Andrew Scull <ascull@google.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reintroduce the __kvm_nvhe_ symbols in kallsyms, ignoring the local
-symbols in this namespace. The local symbols are not informative and
-can cause aliasing issues when symbolizing the addresses.
+On Wed, 23 Feb 2022 21:21:36 -0800 Andrew Morton <akpm@linux-foundation.org> wrote:
 
-With the necessary symbols now in kallsyms we can symbolize nVHE
-stacktrace addresses using the %pB print format specifier.
+> The mm-of-the-moment snapshot 2022-02-23-21-20 has been uploaded to
+> 
+>    https://www.ozlabs.org/~akpm/mmotm/
+> 
 
-Example call trace:
+Below is how I resolved the fallout from jamming today's linux-next
+back on top of the MM queue.
 
-[   98.916444][  T426] kvm [426]: nVHE hyp panic at: [<ffffffc0096156fc>] __kvm_nvhe_overflow_stack+0x8/0x34!
-[   98.918360][  T426] nVHE HYP call trace:
-[   98.918692][  T426] kvm [426]: [<ffffffc009615aac>] __kvm_nvhe_cpu_prepare_nvhe_panic_info+0x4c/0x68
-[   98.919545][  T426] kvm [426]: [<ffffffc0096159a4>] __kvm_nvhe_hyp_panic+0x2c/0xe8
-[   98.920107][  T426] kvm [426]: [<ffffffc009615ad8>] __kvm_nvhe_hyp_panic_bad_stack+0x10/0x10
-[   98.920665][  T426] kvm [426]: [<ffffffc009610a4c>] __kvm_nvhe___kvm_hyp_host_vector+0x24c/0x794
-[   98.921292][  T426] kvm [426]: [<ffffffc009615718>] __kvm_nvhe_overflow_stack+0x24/0x34
-. . .
 
-[   98.973382][  T426] kvm [426]: [<ffffffc009615718>] __kvm_nvhe_overflow_stack+0x24/0x34
-[   98.973816][  T426] kvm [426]: [<ffffffc0096152f4>] __kvm_nvhe___kvm_vcpu_run+0x38/0x438
-[   98.974255][  T426] kvm [426]: [<ffffffc009616f80>] __kvm_nvhe_handle___kvm_vcpu_run+0x1c4/0x364
-[   98.974719][  T426] kvm [426]: [<ffffffc009616928>] __kvm_nvhe_handle_trap+0xa8/0x130
-[   98.975152][  T426] kvm [426]: [<ffffffc009610064>] __kvm_nvhe___host_exit+0x64/0x64
-[   98.975588][  T426] ---- end of nVHE HYP call trace ----
+ Documentation/admin-guide/sysctl/kernel.rst |   50 ------------------
+ lib/Kconfig.debug                           |    1 
+ mm/huge_memory.c                            |    4 -
+ mm/memcontrol.c                             |    2 
+ mm/memory-failure.c                         |    4 -
+ mm/memory.c                                 |    2 
+ mm/memremap.c                               |   11 ---
+ mm/rmap.c                                   |   30 +++++-----
+ mm/vmscan.c                                 |    8 +-
+ tools/include/linux/gfp.h                   |    3 -
+ tools/testing/radix-tree/linux/gfp.h        |   32 -----------
+ 11 files changed, 27 insertions(+), 120 deletions(-)
 
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
-
-Changes in v2:
-  - Fix printk warnings - %p expects (void *)
-
- arch/arm64/kvm/handle_exit.c | 13 +++++--------
- scripts/kallsyms.c           |  2 +-
- 2 files changed, 6 insertions(+), 9 deletions(-)
-
-diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
-index ff69dff33700..3a5c32017c6b 100644
---- a/arch/arm64/kvm/handle_exit.c
-+++ b/arch/arm64/kvm/handle_exit.c
-@@ -296,13 +296,8 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
- 	u64 elr_in_kimg = __phys_to_kimg(elr_phys);
- 	u64 hyp_offset = elr_in_kimg - kaslr_offset() - elr_virt;
- 	u64 mode = spsr & PSR_MODE_MASK;
-+	u64 panic_addr = elr_virt + hyp_offset;
+--- a/Documentation/admin-guide/sysctl/kernel.rst~linux-next-rejects
++++ a/Documentation/admin-guide/sysctl/kernel.rst
+@@ -616,55 +616,7 @@ being accessed should be migrated to a l
+ The unmapping of pages and trapping faults incur additional overhead that
+ ideally is offset by improved memory locality but there is no universal
+ guarantee. If the target workload is already bound to NUMA nodes then this
+-feature should be disabled. Otherwise, if the system overhead from the
+-feature is too high then the rate the kernel samples for NUMA hinting
+-faults may be controlled by the `numa_balancing_scan_period_min_ms,
+-numa_balancing_scan_delay_ms, numa_balancing_scan_period_max_ms,
+-numa_balancing_scan_size_mb`_, and numa_balancing_settle_count sysctls.
+-
+-Or NUMA_BALANCING_MEMORY_TIERING to optimize page placement among
+-different types of memory (represented as different NUMA nodes) to
+-place the hot pages in the fast memory.  This is implemented based on
+-unmapping and page fault too.
+-
+-numa_balancing_scan_period_min_ms, numa_balancing_scan_delay_ms, numa_balancing_scan_period_max_ms, numa_balancing_scan_size_mb
+-===============================================================================================================================
+-
+-
+-Automatic NUMA balancing scans tasks address space and unmaps pages to
+-detect if pages are properly placed or if the data should be migrated to a
+-memory node local to where the task is running.  Every "scan delay" the task
+-scans the next "scan size" number of pages in its address space. When the
+-end of the address space is reached the scanner restarts from the beginning.
+-
+-In combination, the "scan delay" and "scan size" determine the scan rate.
+-When "scan delay" decreases, the scan rate increases.  The scan delay and
+-hence the scan rate of every task is adaptive and depends on historical
+-behaviour. If pages are properly placed then the scan delay increases,
+-otherwise the scan delay decreases.  The "scan size" is not adaptive but
+-the higher the "scan size", the higher the scan rate.
+-
+-Higher scan rates incur higher system overhead as page faults must be
+-trapped and potentially data must be migrated. However, the higher the scan
+-rate, the more quickly a tasks memory is migrated to a local node if the
+-workload pattern changes and minimises performance impact due to remote
+-memory accesses. These sysctls control the thresholds for scan delays and
+-the number of pages scanned.
+-
+-``numa_balancing_scan_period_min_ms`` is the minimum time in milliseconds to
+-scan a tasks virtual memory. It effectively controls the maximum scanning
+-rate for each task.
+-
+-``numa_balancing_scan_delay_ms`` is the starting "scan delay" used for a task
+-when it initially forks.
+-
+-``numa_balancing_scan_period_max_ms`` is the maximum time in milliseconds to
+-scan a tasks virtual memory. It effectively controls the minimum scanning
+-rate for each task.
+-
+-``numa_balancing_scan_size_mb`` is how many megabytes worth of pages are
+-scanned for a given scan.
+-
++feature should be disabled.
  
--	/*
--	 * The nVHE hyp symbols are not included by kallsyms to avoid issues
--	 * with aliasing. That means that the symbols cannot be printed with the
--	 * "%pS" format specifier, so fall back to the vmlinux address if
--	 * there's no better option.
--	 */
- 	if (mode != PSR_MODE_EL2t && mode != PSR_MODE_EL2h) {
- 		kvm_err("Invalid host exception to nVHE hyp!\n");
- 	} else if (ESR_ELx_EC(esr) == ESR_ELx_EC_BRK64 &&
-@@ -322,9 +317,11 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
- 		if (file)
- 			kvm_err("nVHE hyp BUG at: %s:%u!\n", file, line);
- 		else
--			kvm_err("nVHE hyp BUG at: %016llx!\n", elr_virt + hyp_offset);
-+			kvm_err("nVHE hyp BUG at: [<%016llx>] %pB!\n", panic_addr,
-+					(void *)panic_addr);
+ oops_all_cpu_backtrace
+ ======================
+--- a/lib/Kconfig.debug~linux-next-rejects
++++ a/lib/Kconfig.debug
+@@ -275,6 +275,7 @@ config DEBUG_INFO_DWARF5
+ 	bool "Generate DWARF Version 5 debuginfo"
+ 	select DEBUG_INFO
+ 	depends on !CC_IS_CLANG || (CC_IS_CLANG && (AS_IS_LLVM || (AS_IS_GNU && AS_VERSION >= 23502)))
++	depends on PAHOLE_VERSION >= 121
+ 	help
+ 	  Generate DWARF v5 debug info. Requires binutils 2.35.2, gcc 5.0+ (gcc
+ 	  5.0+ accepts the -gdwarf-5 flag but only had partial support for some
+--- a/mm/huge_memory.c~linux-next-rejects
++++ a/mm/huge_memory.c
+@@ -3164,10 +3164,8 @@ void remove_migration_pmd(struct page_vm
+ 	if (PageAnon(new))
+ 		page_add_anon_rmap(new, vma, mmun_start, true);
+ 	else
+-		page_add_file_rmap(new, true);
++		page_add_file_rmap(new, vma, true);
+ 	set_pmd_at(mm, mmun_start, pvmw->pmd, pmde);
+-	if ((vma->vm_flags & VM_LOCKED) && !PageDoubleMap(new))
+-		mlock_vma_page(new);
+ 
+ 	/* No need to invalidate - it was non-present before */
+ 	update_mmu_cache_pmd(vma, address, pvmw->pmd);
+--- a/mm/memcontrol.c~linux-next-rejects
++++ a/mm/memcontrol.c
+@@ -7215,7 +7215,7 @@ void mem_cgroup_swapout(struct folio *fo
+ 	memcg_stats_lock();
+ 	mem_cgroup_charge_statistics(memcg, -nr_entries);
+ 	memcg_stats_unlock();
+-	memcg_check_events(memcg, page_to_nid(page));
++	memcg_check_events(memcg, folio_nid(folio));
+ 
+ 	css_put(&memcg->css);
+ }
+--- a/mm/memory.c~linux-next-rejects
++++ a/mm/memory.c
+@@ -1405,7 +1405,7 @@ again:
+ 				continue;
+ 			rss[mm_counter(page)]--;
+ 			if (is_device_private_entry(entry))
+-				page_remove_rmap(page, false);
++				page_remove_rmap(page, vma, false);
+ 			put_page(page);
+ 		} else if (!non_swap_entry(entry)) {
+ 			/* Genuine swap entry, hence a private anon page */
+--- a/mm/memory-failure.c~linux-next-rejects
++++ a/mm/memory-failure.c
+@@ -1416,12 +1416,12 @@ static bool hwpoison_user_mappings(struc
+ 		 */
+ 		mapping = hugetlb_page_mapping_lock_write(hpage);
+ 		if (mapping) {
+-				try_to_unmap(folio, ttu|TTU_RMAP_LOCKED);
++			try_to_unmap(folio, ttu|TTU_RMAP_LOCKED);
+ 			i_mmap_unlock_write(mapping);
+ 		} else
+ 			pr_info("Memory failure: %#lx: could not lock mapping for mapped huge page\n", pfn);
  	} else {
--		kvm_err("nVHE hyp panic at: %016llx!\n", elr_virt + hyp_offset);
-+		kvm_err("nVHE hyp panic at: [<%016llx>] %pB!\n", panic_addr,
-+				(void *)panic_addr);
+-			try_to_unmap(folio, ttu);
++		try_to_unmap(folio, ttu);
  	}
  
- 	kvm_nvhe_dump_backtrace(hyp_offset);
-diff --git a/scripts/kallsyms.c b/scripts/kallsyms.c
-index 54ad86d13784..19aba43d9da4 100644
---- a/scripts/kallsyms.c
-+++ b/scripts/kallsyms.c
-@@ -111,7 +111,7 @@ static bool is_ignored_symbol(const char *name, char type)
- 		".LASANPC",		/* s390 kasan local symbols */
- 		"__crc_",		/* modversions */
- 		"__efistub_",		/* arm64 EFI stub namespace */
--		"__kvm_nvhe_",		/* arm64 non-VHE KVM namespace */
-+		"__kvm_nvhe_$",		/* arm64 local symbols in non-VHE KVM namespace */
- 		"__AArch64ADRPThunk_",	/* arm64 lld */
- 		"__ARMV5PILongThunk_",	/* arm lld */
- 		"__ARMV7PILongThunk_",
--- 
-2.35.1.473.g83b2b277ed-goog
+ 	unmap_success = !page_mapped(hpage);
+--- a/mm/memremap.c~linux-next-rejects
++++ a/mm/memremap.c
+@@ -101,13 +101,6 @@ static unsigned long pfn_end(struct dev_
+ 	return (range->start + range_len(range)) >> PAGE_SHIFT;
+ }
+ 
+-static unsigned long pfn_next(struct dev_pagemap *pgmap, unsigned long pfn)
+-{
+-	if (pfn % (1024 << pgmap->vmemmap_shift))
+-		cond_resched();
+-	return pfn + pgmap_vmemmap_nr(pgmap);
+-}
+-
+ static unsigned long pfn_len(struct dev_pagemap *pgmap, unsigned long range_id)
+ {
+ 	return (pfn_end(pgmap, range_id) -
+@@ -134,10 +127,6 @@ bool pfn_zone_device_reserved(unsigned l
+ 	return ret;
+ }
+ 
+-#define for_each_device_pfn(pfn, map, i) \
+-	for (pfn = pfn_first(map, i); pfn < pfn_end(map, i); \
+-	     pfn = pfn_next(map, pfn))
+-
+ static void pageunmap_range(struct dev_pagemap *pgmap, int range_id)
+ {
+ 	struct range *range = &pgmap->ranges[range_id];
+--- a/mm/rmap.c~linux-next-rejects
++++ a/mm/rmap.c
+@@ -1526,22 +1526,22 @@ static bool try_to_unmap_one(struct foli
+ 			pteval = ptep_clear_flush(vma, address, pvmw.pte);
+ 		}
+ 
+-		/* Move the dirty bit to the page. Now the pte is gone. */
++		/* Set the dirty flag on the folio now the pte is gone. */
+ 		if (pte_dirty(pteval))
+-			set_page_dirty(page);
++			folio_mark_dirty(folio);
+ 
+ 		/* Update high watermark before we lower rss */
+ 		update_hiwater_rss(mm);
+ 
+ 		if (PageHWPoison(subpage) && !(flags & TTU_IGNORE_HWPOISON)) {
+ 			pteval = swp_entry_to_pte(make_hwpoison_entry(subpage));
+-			if (PageHuge(page)) {
+-				hugetlb_count_sub(compound_nr(page), mm);
++			if (folio_test_hugetlb(folio)) {
++				hugetlb_count_sub(folio_nr_pages(folio), mm);
+ 				set_huge_swap_pte_at(mm, address,
+ 						     pvmw.pte, pteval,
+ 						     vma_mmu_pagesize(vma));
+ 			} else {
+-				dec_mm_counter(mm, mm_counter(page));
++				dec_mm_counter(mm, mm_counter(&folio->page));
+ 				set_pte_at(mm, address, pvmw.pte, pteval);
+ 			}
+ 
+@@ -1579,7 +1579,7 @@ static bool try_to_unmap_one(struct foli
+ 			}
+ 
+ 			/* MADV_FREE page check */
+-			if (!PageSwapBacked(page)) {
++			if (!folio_test_swapbacked(folio)) {
+ 				int ref_count, map_count;
+ 
+ 				/*
+@@ -1589,8 +1589,8 @@ static bool try_to_unmap_one(struct foli
+ 				 */
+ 				smp_mb();
+ 
+-				ref_count = page_count(page);
+-				map_count = page_mapcount(page);
++				ref_count = folio_ref_count(folio);
++				map_count = folio_mapcount(folio);
+ 
+ 				/*
+ 				 * Order reads for page refcount and dirty flag;
+@@ -1603,7 +1603,7 @@ static bool try_to_unmap_one(struct foli
+ 				 * plus one or more rmap's (dropped by discard:).
+ 				 */
+ 				if ((ref_count == 1 + map_count) &&
+-				    !PageDirty(page)) {
++				    !folio_test_dirty(folio)) {
+ 					/* Invalidate as we cleared the pte */
+ 					mmu_notifier_invalidate_range(mm,
+ 						address, address + PAGE_SIZE);
+@@ -1867,7 +1867,7 @@ static bool try_to_migrate_one(struct fo
+ 				swp_pte = pte_swp_mkuffd_wp(swp_pte);
+ 			set_pte_at(mm, pvmw.address, pvmw.pte, swp_pte);
+ 			trace_set_migration_pte(pvmw.address, pte_val(swp_pte),
+-						compound_order(page));
++						folio_order(folio));
+ 			/*
+ 			 * No need to invalidate here it will synchronize on
+ 			 * against the special swap migration pte.
+@@ -1879,16 +1879,16 @@ static bool try_to_migrate_one(struct fo
+ 			 * changed when hugepage migrations to device private
+ 			 * memory are supported.
+ 			 */
+-			subpage = page;
++			subpage = &folio->page;
+ 		} else if (PageHWPoison(subpage)) {
+ 			pteval = swp_entry_to_pte(make_hwpoison_entry(subpage));
+-			if (PageHuge(page)) {
+-				hugetlb_count_sub(compound_nr(page), mm);
++			if (folio_test_hugetlb(folio)) {
++				hugetlb_count_sub(folio_nr_pages(folio), mm);
+ 				set_huge_swap_pte_at(mm, address,
+ 						     pvmw.pte, pteval,
+ 						     vma_mmu_pagesize(vma));
+ 			} else {
+-				dec_mm_counter(mm, mm_counter(page));
++				dec_mm_counter(mm, mm_counter(&folio->page));
+ 				set_pte_at(mm, address, pvmw.pte, pteval);
+ 			}
+ 
+@@ -1937,7 +1937,7 @@ static bool try_to_migrate_one(struct fo
+ 				swp_pte = pte_swp_mkuffd_wp(swp_pte);
+ 			set_pte_at(mm, address, pvmw.pte, swp_pte);
+ 			trace_set_migration_pte(address, pte_val(swp_pte),
+-						compound_order(page));
++						folio_order(folio));
+ 			/*
+ 			 * No need to invalidate here it will synchronize on
+ 			 * against the special swap migration pte.
+--- a/mm/vmscan.c~linux-next-rejects
++++ a/mm/vmscan.c
+@@ -1575,7 +1575,7 @@ retry:
+ 		 */
+ 		mapping = page_mapping(page);
+ 		if (writeback && PageReclaim(page))
+-			stat->nr_congested++;
++			stat->nr_congested += nr_pages;
+ 
+ 		/*
+ 		 * If a page at the tail of the LRU is under writeback, there
+@@ -1724,9 +1724,9 @@ retry:
+ 				/* Adding to swap updated mapping */
+ 				mapping = page_mapping(page);
+ 			}
+-		} else if (unlikely(PageTransHuge(page))) {
+-			/* Split file/lazyfree THP */
+-			if (split_huge_page_to_list(page, page_list))
++		} else if (PageSwapBacked(page) && PageTransHuge(page)) {
++			/* Split shmem THP */
++			if (split_folio_to_list(folio, page_list))
+ 				goto keep_locked;
+ 		}
+ 
+--- a/tools/include/linux/gfp.h~linux-next-rejects
++++ a/tools/include/linux/gfp.h
+@@ -12,7 +12,6 @@
+ #define __GFP_FS		0x80u
+ #define __GFP_NOWARN		0x200u
+ #define __GFP_ZERO		0x8000u
+-#define __GFP_ATOMIC		0x80000u
+ #define __GFP_ACCOUNT		0x100000u
+ #define __GFP_DIRECT_RECLAIM	0x400000u
+ #define __GFP_KSWAPD_RECLAIM	0x2000000u
+@@ -20,7 +19,7 @@
+ #define __GFP_RECLAIM	(__GFP_DIRECT_RECLAIM | __GFP_KSWAPD_RECLAIM)
+ 
+ #define GFP_ZONEMASK	0x0fu
+-#define GFP_ATOMIC	(__GFP_HIGH | __GFP_ATOMIC | __GFP_KSWAPD_RECLAIM)
++#define GFP_ATOMIC	(__GFP_HIGH | __GFP_KSWAPD_RECLAIM)
+ #define GFP_KERNEL	(__GFP_RECLAIM | __GFP_IO | __GFP_FS)
+ #define GFP_NOWAIT	(__GFP_KSWAPD_RECLAIM)
+ 
+--- a/tools/testing/radix-tree/linux/gfp.h
++++ /dev/null
+@@ -1,32 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef _GFP_H
+-#define _GFP_H
+-
+-#include <linux/types.h>
+-
+-#define __GFP_BITS_SHIFT 26
+-#define __GFP_BITS_MASK ((gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
+-
+-#define __GFP_HIGH		0x20u
+-#define __GFP_IO		0x40u
+-#define __GFP_FS		0x80u
+-#define __GFP_NOWARN		0x200u
+-#define __GFP_ZERO		0x8000u
+-#define __GFP_ACCOUNT		0x100000u
+-#define __GFP_DIRECT_RECLAIM	0x400000u
+-#define __GFP_KSWAPD_RECLAIM	0x2000000u
+-
+-#define __GFP_RECLAIM	(__GFP_DIRECT_RECLAIM|__GFP_KSWAPD_RECLAIM)
+-
+-#define GFP_ZONEMASK	0x0fu
+-#define GFP_ATOMIC	(__GFP_HIGH|__GFP_KSWAPD_RECLAIM)
+-#define GFP_KERNEL	(__GFP_RECLAIM | __GFP_IO | __GFP_FS)
+-#define GFP_NOWAIT	(__GFP_KSWAPD_RECLAIM)
+-
+-
+-static inline bool gfpflags_allow_blocking(const gfp_t gfp_flags)
+-{
+-	return !!(gfp_flags & __GFP_DIRECT_RECLAIM);
+-}
+-
+-#endif
+_
 
