@@ -2,103 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C0FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D22CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232173AbiBXIyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 03:54:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
+        id S232185AbiBXIyz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 03:54:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232062AbiBXIyr (ORCPT
+        with ESMTP id S232151AbiBXIys (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 03:54:47 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 497E4163062;
-        Thu, 24 Feb 2022 00:54:18 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C1FB122239;
-        Thu, 24 Feb 2022 09:54:15 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645692856;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZvkcoUKllQj2T4+MNV6kXQ3nLOUi8Q7r2MLGcdGUqmY=;
-        b=RBInsJPHuWavYhtDil26uHxuu1hhkXEIy8BK9iZ7Gqbb0NEctvhoVGEPGErHLnVGbznh6m
-        CCB2eo37CSiFwVfhtG/l4bHYj8aczvSJLIAgxX1PlM+kXD4C/xywD/5II4iBMgUbotl7Sq
-        eKne8tpz6DqzFLwtJ43OtBoLdquy9E4=
+        Thu, 24 Feb 2022 03:54:48 -0500
+Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBB7162020;
+        Thu, 24 Feb 2022 00:54:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1645692858; x=1677228858;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=12QSyjliW/2N5g2pN9oNa13hL2d3UZLmxKY0dS2g+TU=;
+  b=YJAmvEtDQPl32GD3t/WiXmXJa+powVBNiHIwcdegAd2CrBFgH2RxVpDM
+   mgdcf0UM9ISctIaaU5+lvNMLU7u76DlmKK5nyrnJ8NcLzOybnRPpcqX0j
+   ACs5iLKxOZGIuXUE09kebvSEvSKr7xXThQUbcB6pXRSRQjav1CVjjnKLB
+   E=;
+X-IronPort-AV: E=Sophos;i="5.88,393,1635206400"; 
+   d="scan'208";a="176212703"
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-2101.iad2.amazon.com with ESMTP; 24 Feb 2022 08:54:06 +0000
+Received: from EX13MTAUWC002.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com (Postfix) with ESMTPS id AF91E41634;
+        Thu, 24 Feb 2022 08:54:05 +0000 (UTC)
+Received: from EX13D20UWC001.ant.amazon.com (10.43.162.244) by
+ EX13MTAUWC002.ant.amazon.com (10.43.162.240) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Thu, 24 Feb 2022 08:54:05 +0000
+Received: from [0.0.0.0] (10.43.161.89) by EX13D20UWC001.ant.amazon.com
+ (10.43.162.244) with Microsoft SMTP Server (TLS) id 15.0.1497.28; Thu, 24 Feb
+ 2022 08:54:01 +0000
+Message-ID: <234d7952-0379-e3d9-5e02-5eba171024a0@amazon.com>
+Date:   Thu, 24 Feb 2022 09:53:59 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 24 Feb 2022 09:54:15 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Heiko Thiery <heiko.thiery@gmail.com>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Shawn Guo <shawnguo@kernel.org>
-Subject: Re: [PATCH v1 1/2] arm64: dts: imx8mn-evk: use proper names for PMIC
- outputs
-In-Reply-To: <CAEyMn7aVWK7NBH5+FpcK-gr9LPqb8MwsiOOTVJqo+PZJ+_naSw@mail.gmail.com>
-References: <20220223210559.1999209-1-michael@walle.cc>
- <CAEyMn7aVWK7NBH5+FpcK-gr9LPqb8MwsiOOTVJqo+PZJ+_naSw@mail.gmail.com>
-User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <b3f0b5ee57b144c2e0487fb104ae92da@walle.cc>
-X-Sender: michael@walle.cc
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH RFC v1 0/2] VM fork detection for RNG
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <qemu-devel@nongnu.org>, <kvm@vger.kernel.org>,
+        <linux-s390@vger.kernel.org>, <adrian@parity.io>
+CC:     <dwmw@amazon.co.uk>, <acatan@amazon.com>, <colmmacc@amazon.com>,
+        <sblbir@amazon.com>, <raduweis@amazon.com>, <jannh@google.com>,
+        <gregkh@linuxfoundation.org>, <tytso@mit.edu>
+References: <20220223131231.403386-1-Jason@zx2c4.com>
+From:   Alexander Graf <graf@amazon.com>
+In-Reply-To: <20220223131231.403386-1-Jason@zx2c4.com>
+X-Originating-IP: [10.43.161.89]
+X-ClientProxiedBy: EX13D47UWA001.ant.amazon.com (10.43.163.6) To
+ EX13D20UWC001.ant.amazon.com (10.43.162.244)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-02-24 08:29, schrieb Heiko Thiery:
-> Hi,
-> 
-> Am Mi., 23. Feb. 2022 um 22:06 Uhr schrieb Michael Walle 
-> <michael@walle.cc>:
->> 
->> Use the power signal names as given in the schematics of the reference
->> board.
->> 
->> Signed-off-by: Michael Walle <michael@walle.cc>
->> ---
->>  arch/arm64/boot/dts/freescale/imx8mn-evk.dts | 20 
->> ++++++++++----------
->>  1 file changed, 10 insertions(+), 10 deletions(-)
->> 
->> diff --git a/arch/arm64/boot/dts/freescale/imx8mn-evk.dts 
->> b/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
->> index b4225cfcb6d9..eaa06f49aef5 100644
->> --- a/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
->> +++ b/arch/arm64/boot/dts/freescale/imx8mn-evk.dts
->> @@ -41,7 +41,7 @@ pmic: pmic@25 {
->> 
->>                 regulators {
->>                         buck1: BUCK1{
->> -                               regulator-name = "BUCK1";
->> +                               regulator-name = "VDD_ARM_0V9";
-> 
-> I think BUCK1 and BUCK2 are twisted here. This should be "VDD_SOC".
-> 
->>                                 regulator-min-microvolt = <600000>;
->>                                 regulator-max-microvolt = <2187500>;
->>                                 regulator-boot-on;
->> @@ -50,7 +50,7 @@ buck1: BUCK1{
->>                         };
->> 
->>                         buck2: BUCK2 {
->> -                               regulator-name = "BUCK2";
->> +                               regulator-name = "VDD_SOC";
-> 
-> And this should be "VDD_ARM_0V9".
+SGV5IEphc29uLAoKT24gMjMuMDIuMjIgMTQ6MTIsIEphc29uIEEuIERvbmVuZmVsZCB3cm90ZToK
+PiBUaGlzIHNtYWxsIHNlcmllcyBwaWNrcyB1cCB3b3JrIGZyb20gQW1hem9uIHRoYXQgc2VlbXMg
+dG8gaGF2ZSBzdGFsbGVkCj4gb3V0IGxhdGVyIHllYXIgYXJvdW5kIHRoaXMgdGltZTogbGlzdGVu
+aW5nIGZvciB0aGUgdm1nZW5pZCBBQ1BJCj4gbm90aWZpY2F0aW9uLCBhbmQgdXNpbmcgaXQgdG8g
+ImRvIHNvbWV0aGluZy4iIExhc3QgeWVhciwgdGhhdCBzb21ldGhpbmcKPiBpbnZvbHZlZCBhIGNv
+bXBsaWNhdGVkIHVzZXJzcGFjZSBtbWFwIGNoYXJkZXYsIHdoaWNoIHNlZW1zIGZyb3VnaHQgd2l0
+aAo+IGRpZmZpY3VsdHkuIFRoaXMgeWVhciwgSSBoYXZlIHNvbWV0aGluZyBtdWNoIHNpbXBsZXIg
+aW4gbWluZDogc2ltcGx5Cj4gdXNpbmcgdGhvc2UgQUNQSSBub3RpZmljYXRpb25zIHRvIHRlbGwg
+dGhlIFJORyB0byByZWluaXRpYWxpemUgc2FmZWx5LAo+IHNvIHdlIGRvbid0IHJlcGVhdCByYW5k
+b20gbnVtYmVycyBpbiBjbG9uZWQsIGZvcmtlZCwgb3Igcm9sbGVkLWJhY2sgVk0KPiBpbnN0YW5j
+ZXMuCj4KPiBUaGlzIHNlcmllcyBjb25zaXN0cyBvZiB0d28gcGF0Y2hlcy4gVGhlIGZpcnN0IGlz
+IGEgcmF0aGVyCj4gc3RyYWlnaHRmb3J3YXJkIGFkZGl0aW9uIHRvIHJhbmRvbS5jLCB3aGljaCBJ
+IGZlZWwgZmluZSBhYm91dC4gVGhlCj4gc2Vjb25kIHBhdGNoIGlzIHRoZSByZWFzb24gdGhpcyBp
+cyBqdXN0IGFuIFJGQzogaXQncyBhIGNsZWFudXAgb2YgdGhlCj4gQUNQSSBkcml2ZXIgZnJvbSBs
+YXN0IHllYXIsIGFuZCBJIGRvbid0IHJlYWxseSBoYXZlIG11Y2ggZXhwZXJpZW5jZQo+IHdyaXRp
+bmcsIHRlc3RpbmcsIGRlYnVnZ2luZywgb3IgbWFpbnRhaW5pbmcgdGhlc2UgdHlwZXMgb2YgZHJp
+dmVycy4KPiBJZGVhbGx5IHRoaXMgdGhyZWFkIHdvdWxkIHlpZWxkIHNvbWVib2R5IHNheWluZywg
+Ikkgc2VlIHRoZSBpbnRlbnQgb2YKPiB0aGlzOyBJJ20gaGFwcHkgdG8gdGFrZSBvdmVyIG93bmVy
+c2hpcCBvZiB0aGlzIHBhcnQuIiBUaGF0IHdheSwgSSBjYW4KPiBmb2N1cyBvbiB0aGUgUk5HIHBh
+cnQsIGFuZCB3aG9ldmVyIHN0ZXBzIHVwIGZvciB0aGUgcGFyYXZpcnQgQUNQSSBwYXJ0Cj4gY2Fu
+IGZvY3VzIG9uIHRoYXQuCj4KPiBBcyBhIGZpbmFsIG5vdGUsIHRoaXMgc2VyaWVzIGludGVudGlv
+bmFsbHkgZG9lcyBfbm90XyBmb2N1cyBvbgo+IG5vdGlmaWNhdGlvbiBvZiB0aGVzZSBldmVudHMg
+dG8gdXNlcnNwYWNlIG9yIHRvIG90aGVyIGtlcm5lbCBjb25zdW1lcnMuCj4gU2luY2UgdGhlc2Ug
+Vk0gZm9yayBkZXRlY3Rpb24gZXZlbnRzIGZpcnN0IG5lZWQgdG8gaGl0IHRoZSBSTkcsIHdlIGNh
+bgo+IGxhdGVyIHRhbGsgYWJvdXQgd2hhdCBzb3J0cyBvZiBub3RpZmljYXRpb25zIG9yIG1tYXAn
+ZCBjb3VudGVycyB0aGUgUk5HCj4gc2hvdWxkIGJlIG1ha2luZyBhY2Nlc3NpYmxlIHRvIGVsc2V3
+aGVyZS4gQnV0IHRoYXQncyBhIGRpZmZlcmVudCBzb3J0IG9mCj4gcHJvamVjdCBhbmQgdGllcyBp
+bnRvIGEgbG90IG9mIG1vcmUgY29tcGxpY2F0ZWQgY29uY2VybnMgYmV5b25kIHRoaXMKPiBtb3Jl
+IGJhc2ljIHBhdGNoc2V0LiBTbyBob3BlZnVsbHkgd2UgY2FuIGtlZXAgdGhlIGRpc2N1c3Npb24g
+cmF0aGVyCj4gZm9jdXNlZCBoZXJlIHRvIHRoaXMgQUNQSSBidXNpbmVzcy4KCgpUaGUgbWFpbiBw
+cm9ibGVtIHdpdGggVk1HZW5JRCBpcyB0aGF0IGl0IGlzIGluaGVyZW50bHkgcmFjeS4gVGhlcmUg
+d2lsbCAKYWx3YXlzIGJlIGEgKHNob3J0KSBhbW91bnQgb2YgdGltZSB3aGVyZSB0aGUgQUNQSSBu
+b3RpZmljYXRpb24gaXMgbm90IApwcm9jZXNzZWQsIGJ1dCB0aGUgVk0gY291bGQgdXNlIGl0cyBS
+TkcgdG8gZm9yIGV4YW1wbGUgZXN0YWJsaXNoIFRMUyAKY29ubmVjdGlvbnMuCgpIZW5jZSB3ZSBh
+cyB0aGUgbmV4dCBzdGVwIHByb3Bvc2VkIGEgbXVsdGktc3RhZ2UgcXVpZXNjZS9yZXN1bWUgCm1l
+Y2hhbmlzbSB3aGVyZSB0aGUgc3lzdGVtIGlzIGF3YXJlIHRoYXQgaXQgaXMgZ29pbmcgaW50byBz
+dXNwZW5kIC0gY2FuIApibG9jayBuZXR3b3JrIGNvbm5lY3Rpb25zIGZvciBleGFtcGxlIC0gYW5k
+IG9ubHkgcmV0dXJucyB0byBhIGZ1bGx5IApmdW5jdGlvbmFsIHN0YXRlIGFmdGVyIGFuIHVucXVp
+ZXNjZSBwaGFzZToKCiDCoCBodHRwczovL2dpdGh1Yi5jb20vc3lzdGVtZC9zeXN0ZW1kL2lzc3Vl
+cy8yMDIyMgoKTG9va2luZyBhdCB0aGUgaXNzdWUgYWdhaW4sIGl0IHNlZW1zIGxpa2Ugd2UgY29t
+cGxldGVseSBtaXNzZWQgdG8gZm9sbG93IAp1cCB3aXRoIGEgUFIgdG8gaW1wbGVtZW50IHRoYXQg
+ZnVuY3Rpb25hbGl0eSA6KC4KCldoYXQgZXhhY3QgdXNlIGNhc2UgZG8geW91IGhhdmUgaW4gbWlu
+ZCBmb3IgdGhlIFJORy9WTUdlbklEIHVwZGF0ZT8gQ2FuIAp5b3UgdGhpbmsgb2Ygc2l0dWF0aW9u
+cyB3aGVyZSB0aGUgcmFjZSBpcyBub3QgYW4gYWN0dWFsIGNvbmNlcm4/CgoKQWxleAoKCj4KPiBD
+YzogZHdtd0BhbWF6b24uY28udWsKPiBDYzogYWNhdGFuQGFtYXpvbi5jb20KPiBDYzogZ3JhZkBh
+bWF6b24uY29tCj4gQ2M6IGNvbG1tYWNjQGFtYXpvbi5jb20KPiBDYzogc2JsYmlyQGFtYXpvbi5j
+b20KPiBDYzogcmFkdXdlaXNAYW1hem9uLmNvbQo+IENjOiBqYW5uaEBnb29nbGUuY29tCj4gQ2M6
+IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnCj4gQ2M6IHR5dHNvQG1pdC5lZHUKPgo+IEphc29u
+IEEuIERvbmVuZmVsZCAoMik6Cj4gICAgcmFuZG9tOiBhZGQgbWVjaGFuaXNtIGZvciBWTSBmb3Jr
+cyB0byByZWluaXRpYWxpemUgY3JuZwo+ICAgIGRyaXZlcnMvdmlydDogYWRkIHZtZ2VuaWQgZHJp
+dmVyIGZvciByZWluaXRpYWxpemluZyBSTkcKPgo+ICAgZHJpdmVycy9jaGFyL3JhbmRvbS5jICB8
+ICA1OCArKysrKysrKysrKysrKysrKysKPiAgIGRyaXZlcnMvdmlydC9LY29uZmlnICAgfCAgIDgg
+KysrCj4gICBkcml2ZXJzL3ZpcnQvTWFrZWZpbGUgIHwgICAxICsKPiAgIGRyaXZlcnMvdmlydC92
+bWdlbmlkLmMgfCAxMzMgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysK
+PiAgIGluY2x1ZGUvbGludXgvcmFuZG9tLmggfCAgIDEgKwo+ICAgNSBmaWxlcyBjaGFuZ2VkLCAy
+MDEgaW5zZXJ0aW9ucygrKQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvdmlydC92bWdl
+bmlkLmMKPgo+IC0tCj4gMi4zNS4xCj4KCgoKQW1hem9uIERldmVsb3BtZW50IENlbnRlciBHZXJt
+YW55IEdtYkgKS3JhdXNlbnN0ci4gMzgKMTAxMTcgQmVybGluCkdlc2NoYWVmdHNmdWVocnVuZzog
+Q2hyaXN0aWFuIFNjaGxhZWdlciwgSm9uYXRoYW4gV2Vpc3MKRWluZ2V0cmFnZW4gYW0gQW10c2dl
+cmljaHQgQ2hhcmxvdHRlbmJ1cmcgdW50ZXIgSFJCIDE0OTE3MyBCClNpdHo6IEJlcmxpbgpVc3Qt
+SUQ6IERFIDI4OSAyMzcgODc5CgoK
 
-You are absolutely right. I noticed it on the 8MNANOD3L-EVK but
-forgot to update these.
-
--michael
