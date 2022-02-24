@@ -2,104 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 399D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 04:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EB4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 04:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229873AbiBXECe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 23:02:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44310 "EHLO
+        id S229886AbiBXEDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 23:03:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiBXECa (ORCPT
+        with ESMTP id S229481AbiBXEDB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 23:02:30 -0500
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9997F16307A
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 20:02:01 -0800 (PST)
-Received: by mail-pf1-x44a.google.com with SMTP id e18-20020aa78252000000b004df7a13daeaso583626pfn.2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 20:02:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=/9e1BpdB18N/h+O03rFt/auxApxhf9ck1ZQG4GiU3UM=;
-        b=piKec3kie+4DnNUYnTAYNFqpevp6bwLv9gBwl5X2YzCuHC2QFmonycThgTFzxHayPX
-         cDkrMKmg1cP3qaQeh7sSD4XlzzenLJkZhLxCNZfl/SyU4Ho1O12AUvRg7hbWqC6XiuYD
-         jw0y8Vug/jqutE/znce2SmhYis8BVIBOpnniiCxkZEuY3m46aPt2ePKkFdlA/6APnRFv
-         Izz0EZA5xp2/lzBMYlKKoR+RqM6wpfTms8wcZA7iSP37GGolY1wzC0kgT1p/cvmiZrKM
-         qb7xiKC3bw6I/zH8kW9oW0HDmeeF6yiSOggDZolqRwNJAdhswLWRkcI6i2CD9ovy/Dzm
-         8p2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=/9e1BpdB18N/h+O03rFt/auxApxhf9ck1ZQG4GiU3UM=;
-        b=w3wcZEponQLs9Vh3EOTasXMUfBxaxnYk+ltlx4vceFveQ9lgcJDRkwFEdYnubYF38F
-         lTao0wImcYAdzyG2MwRRGdPw7i9t0Pzl8V8m4fyEjQn/cmf+j+J5mi7PJGn7hLNZJjca
-         f51an52gBIkK1S4NIuM+/8Oxp3drVEKw/mh/rxc8cl3J71wZM91fvMix2fDXRRtxDnen
-         JoZeFjrcljAYBamE8qzca0Pz94D1adkTp+IXDQgrIntmvuEivQkYPizTrW6fLKW97b/b
-         O1iodn2C8CtykQflHwk5NhBMsdNXRmqd+cDlixPIGkVszOciQVMQ2LShoGdDaczxg2tD
-         wMQw==
-X-Gm-Message-State: AOAM532o10Y9NrINv/wAFOiBE9eaiUJeLaTDkFEoUvO5Kighb2n4gb0i
-        eegxJlqLU3KNYxQYoORAC9By4SOVrgVs7Q==
-X-Google-Smtp-Source: ABdhPJx5XQBhtipfvGHOKjMWiAqgM+qv4WY1PGgppKx1Sv6Oro+4x0AMafffT1Gdzfns0sPsldgKqZwC98ekTA==
-X-Received: from slicestar.c.googlers.com ([fda3:e722:ac3:cc00:4f:4b78:c0a8:20a1])
- (user=davidgow job=sendgmr) by 2002:a17:902:a701:b0:14d:5a15:ebaf with SMTP
- id w1-20020a170902a70100b0014d5a15ebafmr903268plq.33.1645675321064; Wed, 23
- Feb 2022 20:02:01 -0800 (PST)
-Date:   Thu, 24 Feb 2022 12:01:37 +0800
-Message-Id: <20220224040136.1595119-1-davidgow@google.com>
+        Wed, 23 Feb 2022 23:03:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 631DD165C0C;
+        Wed, 23 Feb 2022 20:02:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E341EB8239B;
+        Thu, 24 Feb 2022 04:02:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 386CFC340E9;
+        Thu, 24 Feb 2022 04:02:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645675347;
+        bh=3vCCFqBbB+V46g9xXrlXgv9ohgrCK1afy9Vw/vL8ThU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WNE2BzTEn51E0IHTFwRFu6XfIU0A6GdoVVgU8T0LMsV/nSlKjY+GXeAcRyStTSS1C
+         I1givN5OHQx1Cw3Pu4WUGbCSkCC28ofPypyJF/A7ctbmy708cLnY/7BV/2NfDkgEaX
+         4eXYpX7vCbWz61gSlSp7jf3qwJN+VPmwXs0EZW0HQ3yX2c/0V++47CCDums1Gnxs6K
+         FOUMwvBfh95dY9SP++5TEFhdIFBuQpXP2+QNzO8Jkz6EdW3nLrQW1tecUm/2Db6sBJ
+         eNz9N2B90jtMbVk45XUU4ZzacxB+BD7ZodxRurUrhY+TUjTcZSG4cnGWs4TXJnq7aB
+         biMnu1IMnFGKQ==
+Date:   Thu, 24 Feb 2022 13:02:23 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH 02/10] bpf: Add multi kprobe link
+Message-Id: <20220224130223.70cd09a9f0fe1209bf36bad0@kernel.org>
+In-Reply-To: <YhZygR9AMtJmo1mJ@krava>
+References: <20220222170600.611515-1-jolsa@kernel.org>
+        <20220222170600.611515-3-jolsa@kernel.org>
+        <20220223145840.64f708ed2357c89039f55f07@kernel.org>
+        <YhZygR9AMtJmo1mJ@krava>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.35.1.473.g83b2b277ed-goog
-Subject: [PATCH] firmware: google: Properly state IOMEM dependency
-From:   David Gow <davidgow@google.com>
-To:     Julius Werner <jwerner@chromium.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-Cc:     David Gow <davidgow@google.com>, linux-kernel@vger.kernel.org,
-        linux-um@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Google Coreboot implementation requires IOMEM functions
-(memmremap, memunmap, devm_memremap), but does not specify this is its
-Kconfig. This results in build errors when IOMEM is not enabled, such as
-on some UML configurations:
+On Wed, 23 Feb 2022 18:44:33 +0100
+Jiri Olsa <olsajiri@gmail.com> wrote:
 
-/usr/bin/ld: drivers/firmware/google/coreboot_table.o: in function `coreboot_table_probe':
-coreboot_table.c:(.text+0x311): undefined reference to `memremap'
-/usr/bin/ld: coreboot_table.c:(.text+0x34e): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/memconsole-coreboot.o: in function `memconsole_probe':
-memconsole-coreboot.c:(.text+0x12d): undefined reference to `memremap'
-/usr/bin/ld: memconsole-coreboot.c:(.text+0x17e): undefined reference to `devm_memremap'
-/usr/bin/ld: memconsole-coreboot.c:(.text+0x191): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_destroy.isra.0':
-vpd.c:(.text+0x300): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_section_init':
-vpd.c:(.text+0x382): undefined reference to `memremap'
-/usr/bin/ld: vpd.c:(.text+0x459): undefined reference to `memunmap'
-/usr/bin/ld: drivers/firmware/google/vpd.o: in function `vpd_probe':
-vpd.c:(.text+0x59d): undefined reference to `memremap'
-/usr/bin/ld: vpd.c:(.text+0x5d3): undefined reference to `memunmap'
-collect2: error: ld returned 1 exit status
+> On Wed, Feb 23, 2022 at 02:58:40PM +0900, Masami Hiramatsu wrote:
+> > Hi Jiri,
+> > 
+> > On Tue, 22 Feb 2022 18:05:52 +0100
+> > Jiri Olsa <jolsa@kernel.org> wrote:
+> > 
+> > [snip]
+> > > +
+> > > +static void
+> > > +kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
+> > > +			  struct pt_regs *regs)
+> > > +{
+> > > +	unsigned long saved_ip = instruction_pointer(regs);
+> > > +	struct bpf_kprobe_multi_link *link;
+> > > +
+> > > +	/*
+> > > +	 * Because fprobe's regs->ip is set to the next instruction of
+> > > +	 * dynamic-ftrace instruction, correct entry ip must be set, so
+> > > +	 * that the bpf program can access entry address via regs as same
+> > > +	 * as kprobes.
+> > > +	 */
+> > > +	instruction_pointer_set(regs, entry_ip);
+> > 
+> > This is true for the entry_handler, but false for the exit_handler,
+> > because entry_ip points the probed function address, not the
+> > return address. Thus, when this is done in the exit_handler,
+> > the bpf prog seems to be called from the entry of the function,
+> > not return.
+> > 
+> > If it is what you expected, please explictly comment it to
+> > avoid confusion. Or, make another handler function for exit
+> > probing.
+> 
+> yes we want the ip of the function we are tracing, so it's correct,
+> I'll adjust the comment
+> 
+> > 
+> > > +
+> > > +	link = container_of(fp, struct bpf_kprobe_multi_link, fp);
+> > > +	kprobe_multi_link_prog_run(link, regs);
+> > > +
+> > > +	instruction_pointer_set(regs, saved_ip);
+> > > +}
+> > > +
+> > > +static int
+> > > +kprobe_multi_resolve_syms(const void *usyms, u32 cnt,
+> > > +			  unsigned long *addrs)
+> > > +{
+> > > +	unsigned long addr, size;
+> > > +	const char **syms;
+> > > +	int err = -ENOMEM;
+> > > +	unsigned int i;
+> > > +	char *func;
+> > > +
+> > > +	size = cnt * sizeof(*syms);
+> > > +	syms = kvzalloc(size, GFP_KERNEL);
+> > > +	if (!syms)
+> > > +		return -ENOMEM;
+> > > +
+> > > +	func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
+> > > +	if (!func)
+> > > +		goto error;
+> > > +
+> > > +	if (copy_from_user(syms, usyms, size)) {
+> > > +		err = -EFAULT;
+> > > +		goto error;
+> > > +	}
+> > > +
+> > > +	for (i = 0; i < cnt; i++) {
+> > > +		err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
+> > > +		if (err == KSYM_NAME_LEN)
+> > > +			err = -E2BIG;
+> > > +		if (err < 0)
+> > > +			goto error;
+> > > +
+> > > +		err = -EINVAL;
+> > > +		if (func[0] == '\0')
+> > > +			goto error;
+> > > +		addr = kallsyms_lookup_name(func);
+> > > +		if (!addr)
+> > > +			goto error;
+> > > +		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
+> > > +			size = MCOUNT_INSN_SIZE;
+> > 
+> > Note that this is good for x86, but may not be good for other arch
+> > which use some preparation instructions before mcount call.  Maybe you
+> > can just reject it if kallsyms_lookup_size_offset() fails.
+> 
+> I 'borrowed' this from fprobe's get_ftrace_locations function,
+> and it still seems to match.. do you plan to change that?
 
-Signed-off-by: David Gow <davidgow@google.com>
----
- drivers/firmware/google/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Oops, indeed, I need to fix my code too!
+Thank you! 
 
-diff --git a/drivers/firmware/google/Kconfig b/drivers/firmware/google/Kconfig
-index 931544c9f63d..7ac866a985c6 100644
---- a/drivers/firmware/google/Kconfig
-+++ b/drivers/firmware/google/Kconfig
-@@ -21,7 +21,7 @@ config GOOGLE_SMI
- 
- config GOOGLE_COREBOOT_TABLE
- 	tristate "Coreboot Table Access"
--	depends on ACPI || OF
-+	depends on IOMEM && (ACPI || OF)
- 	help
- 	  This option enables the coreboot_table module, which provides other
- 	  firmware modules access to the coreboot table. The coreboot table
+> 
+> thanks,
+> jirka
+
+
 -- 
-2.35.1.473.g83b2b277ed-goog
-
+Masami Hiramatsu <mhiramat@kernel.org>
