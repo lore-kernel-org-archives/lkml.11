@@ -2,361 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2EBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:24:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 21:25:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234108AbiBXVZY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 16:25:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        id S234758AbiBXVZc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 16:25:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234704AbiBXVZN (ORCPT
+        with ESMTP id S231127AbiBXVZV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 16:25:13 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C04828D381;
-        Thu, 24 Feb 2022 13:24:39 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 608EA1F45848
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645737878;
-        bh=pGCQYzOepqBCgJy34qPEw4wPUhux0o8o8yQVZdkzs9A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AmXkgtIE1JFlTkb3JWSwnfj+xcTAOxa2K9NPag3D6QJiiUhLTqcjWM+kv6rayqG0z
-         GdttM+9yXyu+pJovNY8L+TiJaMYYlSeHOgRLGKj/hQQ0NEJw15fQ40VOFXYTaxRinu
-         sTHxEFYCH16XCzBF+tMLte1HhOh66h6wVWzKjij5QE1WnxU+kF0+wHa/1HGa4nNQbj
-         hjOdQaCScigpAOair6d0duQPQwJ7pgVggndLg3FyDdA4fDZSn1gnwAZDjAQLuyru8L
-         Hcu85Kftgqh+wfF7I51RUTP+rLBCUWG3uBuKoaGZzlFM1yf6hqT8gJN+hxsLus1oPT
-         cM/UYVOfBq+1Q==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        kernel@collabora.com, kernelci@groups.io,
-        Will Deacon <will@kernel.org>,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH V3] selftests: vm: Add test for Soft-Dirty PTE bit
-Date:   Fri, 25 Feb 2022 02:23:35 +0500
-Message-Id: <20220224212335.3045905-1-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 24 Feb 2022 16:25:21 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2053.outbound.protection.outlook.com [40.107.236.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CE5294FC1;
+        Thu, 24 Feb 2022 13:24:48 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jngMXUD11HsH5AGliGrOs9eyT4XJ+vi30thELSVVW3pLheIjikHf16uvoVq9dSuyxlQ3l09avY5XpFGOFrVkY6VEYusmK3Yd+yA7lNrfgRiJVNGbmoFDLLqgtDFixIcNIWI5FAyTy+lyRlnoJf8bK7W/L7SZVyW1u/Sd5C7ZDzgMOKQ5ja1MiQ1eRtYFfKqJpS+fnyVe09o/ZSYWnxtAdwWo0kUzFNy2K//K+ZdqQlQf4OhnovfaTRwjEnsIajXu49hjwpH8Xu+lA9ihGMEpxdJbPt8yfc/34sHB9lbGgTH/Ha2Qe9DvQfr+lXHuBidNHkbbtk4QtPMJYkFKmT5Fqg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=buj/AiOUmN4Vxv0SoCdhA/v/c7DKN365NkZJYAjNDGE=;
+ b=Pokhum5PdX12btM1Hopccady8GS5pxahHLv8L8faDNCQfQ+kFcQi8vZrdhvXdjGNjJNYGkao0I3Ty9hAWauqEriKUKoJNGYDToGWUALTpSAJ/YiiRUUxhfRpYteCfpQ9kguXutZY3tU2quLaqAZvmDvwNit8R/ayrruAoyG3Jgoe0sIu/LlF8t/GrPorqaCxyX4P6bTLOnB0+d8VRsiblf9YJ5yTJeKon10hdxPWAc4CfpP6obbmMpUL+bxc6IMvdPmnVBwQ01gE0cTNgYwYRzoky3WiwaaD57N9ERELwkQrMOJyNGyqrZR9dF/7lCIJCCPhQvnerXqXcqUz/CS4kA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.62.198) smtp.rcpttodomain=redhat.com smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=buj/AiOUmN4Vxv0SoCdhA/v/c7DKN365NkZJYAjNDGE=;
+ b=IgfD3w8bX5pwrK+2N9Kt++CrO3aT8QNPn2m+ab77tqPtzQCCY9JdAdq7uJZfZDh4DVtIo9pTqKtC0A4YNkuzf2wyTbWDRzXViGrOEHiKDcTza8pAriiJkaEfLT0ppN3Jw+en4Stmzm7LbsxcGdfO7Lj1pZsT5QAR3747PMHAGKg=
+Received: from DM6PR08CA0066.namprd08.prod.outlook.com (2603:10b6:5:1e0::40)
+ by SN4PR0201MB3519.namprd02.prod.outlook.com (2603:10b6:803:49::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Thu, 24 Feb
+ 2022 21:24:38 +0000
+Received: from DM3NAM02FT035.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:5:1e0:cafe::1d) by DM6PR08CA0066.outlook.office365.com
+ (2603:10b6:5:1e0::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22 via Frontend
+ Transport; Thu, 24 Feb 2022 21:24:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
+Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
+ DM3NAM02FT035.mail.protection.outlook.com (10.13.4.78) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5017.22 via Frontend Transport; Thu, 24 Feb 2022 21:24:38 +0000
+Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Thu, 24 Feb 2022 13:24:37 -0800
+Received: from smtp.xilinx.com (172.19.127.95) by
+ xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Thu, 24 Feb 2022 13:24:37 -0800
+Envelope-to: eperezma@redhat.com,
+ jasowang@redhat.com,
+ mst@redhat.com,
+ lingshan.zhu@intel.com,
+ sgarzare@redhat.com,
+ xieyongji@bytedance.com,
+ elic@nvidia.com,
+ si-wei.liu@oracle.com,
+ parav@nvidia.com,
+ longpeng2@huawei.com,
+ virtualization@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org,
+ kvm@vger.kernel.org,
+ netdev@vger.kernel.org
+Received: from [10.170.66.102] (port=59620 helo=xndengvm004102.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <gautam.dawar@xilinx.com>)
+        id 1nNLbI-00095B-Nh; Thu, 24 Feb 2022 13:24:37 -0800
+From:   Gautam Dawar <gautam.dawar@xilinx.com>
+CC:     <gdawar@xilinx.com>, <martinh@xilinx.com>, <hanand@xilinx.com>,
+        <tanujk@xilinx.com>, <eperezma@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Longpeng <longpeng2@huawei.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: [RFC PATCH v2 04/19] vhost-vdpa: switch to use vhost-vdpa specific IOTLB
+Date:   Fri, 25 Feb 2022 02:52:44 +0530
+Message-ID: <20220224212314.1326-5-gdawar@xilinx.com>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20220224212314.1326-1-gdawar@xilinx.com>
+References: <20201216064818.48239-1-jasowang@redhat.com>
+ <20220224212314.1326-1-gdawar@xilinx.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f8baf735-6864-41ec-a933-08d9f7dc1024
+X-MS-TrafficTypeDiagnostic: SN4PR0201MB3519:EE_
+X-Microsoft-Antispam-PRVS: <SN4PR0201MB3519B5D6993FE6EDD3883988B13D9@SN4PR0201MB3519.namprd02.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fEGfecEY5M57St+uMzVdqulLi+KUWU2k6dz3vhmHIdCL81zULw9A/Kc5S3fNhOvN17jJ2uLk0gY5dQUYYUISr+9qDhs8irlo9RuNPII7UrYA0sxUh2SO+mWabArtrvXXVhWM9Lyuppx+spWICGnOc3RP6sRaN0hBEhk0WynN3AfRc8rB1b1czQRWfdVYY5mONoRArQMm9rW7naBvdhWoOduBmNA1LB1jb6F/fAawRGI8Q9sLZ4yKQEohuwiY+dfQXPu+N/Kiy10+GvUyjp40pgz9BMj27OaayhD/rRNdbJa97LpCfkTJpQtS2JKQmWKpmf/c8b5IMORoGR1NreLYP15LCGofSMX/biFg6NDNd/fdcRgR8Gwh3rE/DTaoBZZLeI6Xkt9wBMGxS9CJgVKUI+1P2FvBcO4PQBVKPAdkoOyOCxPPbDPH5RE/KnCXiy+KvJNXrVLf7zdW5zu9TdWltcKhsWOQzYINWQNcNTN3nTO72TDJ9bActC4DjRuWB3JU7Zlg8JKwqgEY8kZuqcbAp21pFYwnG5M99KQhYW0soJx3HPETlvRrqLobSlEso97gbmg+JWJIK1ikjMZV+Y5Svz6+RftO1NiI3lOOk2OHp2KCGAIBAzqoKGJrROMVBpPKevJKApuLAkrFTqxLCLsHiSXYGllWD6s8wHaHupsAl8NkkN0l3BBjIV2QZ3x9dnhtTkv/C/mWtq3X139i/25zFeoDVLDtesOAV+TTJUskPis=
+X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(36860700001)(2906002)(47076005)(9786002)(82310400004)(70206006)(8936002)(7636003)(356005)(8676002)(4326008)(40460700003)(70586007)(508600001)(316002)(109986005)(44832011)(54906003)(6666004)(83380400001)(5660300002)(426003)(26005)(2616005)(7696005)(186003)(1076003)(7416002)(336012)(36756003)(102446001)(266003);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 21:24:38.4402
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8baf735-6864-41ec-a933-08d9f7dc1024
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT035.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR0201MB3519
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This introduces three tests:
-1) Sanity check soft dirty basic semantics: allocate area, clean, dirty,
-check if the SD bit flipped.
-2) Check VMA reuse: validate the VM_SOFTDIRTY usage
-3) Check soft-dirty on huge pages
+To ease the implementation of per group ASID support for vDPA
+device. This patch switches to use a vhost-vdpa specific IOTLB to
+avoid the unnecessary refactoring of the vhost core.
 
-This was motivated by Will Deacon's fix commit 912efa17e512 ("mm: proc:
-Invalidate TLB after clearing soft-dirty page state"). I was tracking the
-same issue that he fixed, and this test would have caught it.
-
-Cc: Will Deacon <will@kernel.org>
-Signed-off-by: Gabriel Krisman Bertazi <krisman@collabora.com>
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Gautam Dawar <gdawar@xilinx.com>
 ---
-Changes in V3:
-Move test to selftests/vm
-Use kselftest macros
-Minor updates to make code more maintainable
-Add configurations in config file
+ drivers/vhost/vdpa.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-Tests of soft dirty bit in this patch and in
-selftest/vm/madv_populate.c are non-overlapping.
-
-V2 of this patch:
-https://lore.kernel.org/lkml/20210603151518.2437813-1-krisman@collabora.com/
----
- tools/testing/selftests/vm/.gitignore   |   1 +
- tools/testing/selftests/vm/Makefile     |   1 +
- tools/testing/selftests/vm/config       |   2 +
- tools/testing/selftests/vm/soft-dirty.c | 238 ++++++++++++++++++++++++
- 4 files changed, 242 insertions(+)
- create mode 100644 tools/testing/selftests/vm/soft-dirty.c
-
-diff --git a/tools/testing/selftests/vm/.gitignore b/tools/testing/selftests/vm/.gitignore
-index d7507f3c7c76..3cb4fa771ec2 100644
---- a/tools/testing/selftests/vm/.gitignore
-+++ b/tools/testing/selftests/vm/.gitignore
-@@ -29,5 +29,6 @@ write_to_hugetlbfs
- hmm-tests
- memfd_secret
- local_config.*
-+soft-dirty
- split_huge_page_test
- ksm_tests
-diff --git a/tools/testing/selftests/vm/Makefile b/tools/testing/selftests/vm/Makefile
-index 5e43f072f5b7..de9b13d018c3 100644
---- a/tools/testing/selftests/vm/Makefile
-+++ b/tools/testing/selftests/vm/Makefile
-@@ -47,6 +47,7 @@ TEST_GEN_FILES += on-fault-limit
- TEST_GEN_FILES += thuge-gen
- TEST_GEN_FILES += transhuge-stress
- TEST_GEN_FILES += userfaultfd
-+TEST_GEN_FILES += soft-dirty
- TEST_GEN_FILES += split_huge_page_test
- TEST_GEN_FILES += ksm_tests
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 146911082514..655ff7029401 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -39,6 +39,7 @@ struct vhost_vdpa {
+ 	struct vhost_virtqueue *vqs;
+ 	struct completion completion;
+ 	struct vdpa_device *vdpa;
++	struct vhost_iotlb *iotlb;
+ 	struct device dev;
+ 	struct cdev cdev;
+ 	atomic_t opened;
+@@ -555,12 +556,11 @@ static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v,
  
-diff --git a/tools/testing/selftests/vm/config b/tools/testing/selftests/vm/config
-index 60e82da0de85..be087c4bc396 100644
---- a/tools/testing/selftests/vm/config
-+++ b/tools/testing/selftests/vm/config
-@@ -4,3 +4,5 @@ CONFIG_TEST_VMALLOC=m
- CONFIG_DEVICE_PRIVATE=y
- CONFIG_TEST_HMM=m
- CONFIG_GUP_TEST=y
-+CONFIG_TRANSPARENT_HUGEPAGE=y
-+CONFIG_MEM_SOFT_DIRTY=y
-diff --git a/tools/testing/selftests/vm/soft-dirty.c b/tools/testing/selftests/vm/soft-dirty.c
-new file mode 100644
-index 000000000000..f56c215e0ece
---- /dev/null
-+++ b/tools/testing/selftests/vm/soft-dirty.c
-@@ -0,0 +1,238 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <stdio.h>
-+#include <string.h>
-+#include <stdbool.h>
-+#include <fcntl.h>
-+#include <stdint.h>
-+#include <malloc.h>
-+#include <sys/mman.h>
-+#include "../kselftest.h"
-+
-+#define PAGEMAP_PATH		"/proc/self/pagemap"
-+#define CLEAR_REFS_PATH		"/proc/self/clear_refs"
-+#define SMAP_PATH		"/proc/self/smaps"
-+#define PMD_SIZE_PATH		"/sys/kernel/mm/transparent_hugepage/hpage_pmd_size"
-+#define MAX_LINE_LENGTH		512
-+#define TEST_ITERATIONS		10000
-+#define PAGE_NUM_TO_TEST	2
-+
-+int clear_refs;
-+int pagemap;
-+
-+int pagesize;
-+int mmap_size;	/* Size of test region */
-+
-+static void clear_all_refs(void)
-+{
-+	const char *ctrl = "4";
-+
-+	if (write(clear_refs, ctrl, strlen(ctrl)) != strlen(ctrl))
-+		ksft_exit_fail_msg("%s: failed to clear references\n", __func__);
-+}
-+
-+static void touch_page(char *map, int n)
-+{
-+	map[(pagesize * n) + 1]++;
-+}
-+
-+static int check_page(char *start, int page_num, int clear)
-+{
-+	unsigned long pfn = (unsigned long)start / pagesize;
-+	uint64_t entry;
-+	int ret;
-+
-+	ret = pread(pagemap, &entry, sizeof(entry), (pfn + page_num) * sizeof(entry));
-+	if (ret != sizeof(entry))
-+		ksft_exit_fail_msg("reading pagemap failed\n");
-+	if (clear)
-+		clear_all_refs();
-+
-+	return ((entry >> 55) & 1);
-+}
-+
-+static void test_simple(void)
-+{
-+	int i;
-+	char *map;
-+
-+	map = aligned_alloc(pagesize, mmap_size);
-+	if (!map)
-+		ksft_exit_fail_msg("mmap failed\n");
-+
-+	clear_all_refs();
-+
-+	for (i = 0 ; i < TEST_ITERATIONS; i++) {
-+		if (check_page(map, PAGE_NUM_TO_TEST, 1) == 1) {
-+			ksft_print_msg("dirty bit was 1, but should be 0 (i=%d)\n", i);
-+			break;
-+		}
-+
-+		touch_page(map, 2);
-+
-+		if (check_page(map, PAGE_NUM_TO_TEST, 1) == 0) {
-+			ksft_print_msg("dirty bit was 0, but should be 1 (i=%d)\n", i);
-+			break;
-+		}
-+
-+	}
-+	free(map);
-+
-+	ksft_test_result(i == TEST_ITERATIONS, "Test %s\n", __func__);
-+}
-+
-+static void test_vma_reuse(void)
-+{
-+	char *map, *map2;
-+
-+	map = (char *) 0x900000000000;
-+	map = mmap(map, mmap_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, -1, 0);
-+	if (map == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed");
-+
-+	clear_all_refs();
-+	touch_page(map, PAGE_NUM_TO_TEST);
-+
-+	munmap(map, mmap_size);
-+	map2 = mmap(map, mmap_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANON, -1, 0);
-+	if (map2 == MAP_FAILED)
-+		ksft_exit_fail_msg("mmap failed");
-+
-+	ksft_test_result(map == map2, "Test %s reused memory location\n", __func__);
-+
-+	ksft_test_result(check_page(map, PAGE_NUM_TO_TEST, 1) != 0,
-+			 "Test %s dirty bit of previous page\n", __func__);
-+
-+	munmap(map2, mmap_size);
-+}
-+
-+/*
-+ * read_pmd_pagesize(), check_for_pattern() and check_huge() adapted
-+ * from 'tools/testing/selftest/vm/split_huge_page_test.c'
-+ */
-+static uint64_t read_pmd_pagesize(void)
-+{
-+	int fd;
-+	char buf[20];
-+	ssize_t num_read;
-+
-+	fd = open(PMD_SIZE_PATH, O_RDONLY);
-+	if (fd == -1)
-+		ksft_exit_fail_msg("Open hpage_pmd_size failed\n");
-+
-+	num_read = read(fd, buf, 19);
-+	if (num_read < 1) {
-+		close(fd);
-+		ksft_exit_fail_msg("Read hpage_pmd_size failed\n");
-+	}
-+	buf[num_read] = '\0';
-+	close(fd);
-+
-+	return strtoul(buf, NULL, 10);
-+}
-+
-+static bool check_for_pattern(FILE *fp, const char *pattern, char *buf)
-+{
-+	while (fgets(buf, MAX_LINE_LENGTH, fp) != NULL) {
-+		if (!strncmp(buf, pattern, strlen(pattern)))
-+			return true;
-+	}
-+	return false;
-+}
-+
-+static uint64_t check_huge(void *addr)
-+{
-+	uint64_t thp = 0;
-+	int ret;
-+	FILE *fp;
-+	char buffer[MAX_LINE_LENGTH];
-+	char addr_pattern[MAX_LINE_LENGTH];
-+
-+	ret = snprintf(addr_pattern, MAX_LINE_LENGTH, "%08lx-",
-+		       (unsigned long) addr);
-+	if (ret >= MAX_LINE_LENGTH)
-+		ksft_print_msg("%s: Pattern is too long\n", __func__);
-+
-+	fp = fopen(SMAP_PATH, "r");
-+	if (!fp)
-+		ksft_print_msg("%s: Failed to open file %s\n", __func__, SMAP_PATH);
-+
-+	if (!check_for_pattern(fp, addr_pattern, buffer))
-+		goto err_out;
-+
-+	/*
-+	 * Fetch the AnonHugePages: in the same block and check the number of
-+	 * hugepages.
-+	 */
-+	if (!check_for_pattern(fp, "AnonHugePages:", buffer))
-+		goto err_out;
-+
-+	if (sscanf(buffer, "AnonHugePages:%10ld kB", &thp) != 1)
-+		ksft_print_msg("Reading smap error\n");
-+
-+err_out:
-+	fclose(fp);
-+
-+	return thp;
-+}
-+
-+static void test_hugepage(void)
-+{
-+	char *map;
-+	int i, ret;
-+	size_t hpage_len = read_pmd_pagesize();
-+
-+	map = memalign(hpage_len, hpage_len);
-+	if (!map)
-+		ksft_exit_fail_msg("memalign failed\n");
-+
-+	ret = madvise(map, hpage_len, MADV_HUGEPAGE);
-+	if (ret)
-+		ksft_exit_fail_msg("madvise failed %d\n", ret);
-+
-+	for (i = 0; i < hpage_len; i++)
-+		map[i] = (char)i;
-+
-+	ksft_test_result(check_huge(map), "Test %s huge page allocation\n", __func__);
-+
-+	clear_all_refs();
-+	for (i = 0 ; i < TEST_ITERATIONS ; i++) {
-+		if (check_page(map, PAGE_NUM_TO_TEST, 1) == 1) {
-+			ksft_print_msg("dirty bit was 1, but should be 0 (i=%d)\n", i);
-+			break;
-+		}
-+
-+		touch_page(map, PAGE_NUM_TO_TEST);
-+
-+		if (check_page(map, PAGE_NUM_TO_TEST, 1) == 0) {
-+			ksft_print_msg("dirty bit was 0, but should be 1 (i=%d)\n", i);
-+			break;
-+		}
-+	}
-+
-+	ksft_test_result(i == TEST_ITERATIONS, "Test %s dirty bit\n", __func__);
-+
-+	munmap(map, mmap_size);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	ksft_print_header();
-+	ksft_set_plan(5);
-+
-+	pagemap = open(PAGEMAP_PATH, O_RDONLY);
-+	if (pagemap < 0)
-+		ksft_exit_fail_msg("Failed to open %s\n", PAGEMAP_PATH);
-+
-+	clear_refs = open(CLEAR_REFS_PATH, O_WRONLY);
-+	if (clear_refs < 0)
-+		ksft_exit_fail_msg("Failed to open %s\n", CLEAR_REFS_PATH);
-+
-+	pagesize = getpagesize();
-+	mmap_size = 10 * pagesize;
-+
-+	test_simple();
-+	test_vma_reuse();
-+	test_hugepage();
-+
-+	return ksft_exit_pass();
-+}
+ static void vhost_vdpa_iotlb_free(struct vhost_vdpa *v)
+ {
+-	struct vhost_dev *dev = &v->vdev;
+-	struct vhost_iotlb *iotlb = dev->iotlb;
++	struct vhost_iotlb *iotlb = v->iotlb;
+ 
+ 	vhost_vdpa_iotlb_unmap(v, iotlb, 0ULL, 0ULL - 1);
+-	kfree(dev->iotlb);
+-	dev->iotlb = NULL;
++	kfree(v->iotlb);
++	v->iotlb = NULL;
+ }
+ 
+ static int perm_to_iommu_flags(u32 perm)
+@@ -842,7 +842,7 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev,
+ 	struct vhost_vdpa *v = container_of(dev, struct vhost_vdpa, vdev);
+ 	struct vdpa_device *vdpa = v->vdpa;
+ 	const struct vdpa_config_ops *ops = vdpa->config;
+-	struct vhost_iotlb *iotlb = dev->iotlb;
++	struct vhost_iotlb *iotlb = v->iotlb;
+ 	int r = 0;
+ 
+ 	mutex_lock(&dev->mutex);
+@@ -982,15 +982,15 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+ 	vhost_dev_init(dev, vqs, nvqs, 0, 0, 0, false,
+ 		       vhost_vdpa_process_iotlb_msg);
+ 
+-	dev->iotlb = vhost_iotlb_alloc(0, 0);
+-	if (!dev->iotlb) {
++	v->iotlb = vhost_iotlb_alloc(0, 0);
++	if (!v->iotlb) {
+ 		r = -ENOMEM;
+ 		goto err_init_iotlb;
+ 	}
+ 
+ 	r = vhost_vdpa_alloc_domain(v);
+ 	if (r)
+-		goto err_init_iotlb;
++		goto err_alloc_domain;
+ 
+ 	vhost_vdpa_set_iova_range(v);
+ 
+@@ -998,6 +998,8 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+ 
+ 	return 0;
+ 
++err_alloc_domain:
++	vhost_vdpa_iotlb_free(v);
+ err_init_iotlb:
+ 	vhost_dev_cleanup(&v->vdev);
+ 	kfree(vqs);
 -- 
-2.30.2
+2.25.0
 
