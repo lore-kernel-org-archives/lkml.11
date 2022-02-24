@@ -2,80 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02690C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:31:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230100AbiBXCbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:31:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52038 "EHLO
+        id S230110AbiBXCcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:32:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbiBXCbp (ORCPT
+        with ESMTP id S230077AbiBXCb6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:31:45 -0500
-X-Greylist: delayed 460 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 18:31:15 PST
-Received: from cstnet.cn (smtp23.cstnet.cn [159.226.251.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58A602325EF
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 18:31:15 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowADX35sk7BZi16QYAQ--.48527S2;
-        Thu, 24 Feb 2022 10:23:33 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] mfd: mc13xxx: Add check for mc13xxx_irq_request
-Date:   Thu, 24 Feb 2022 10:23:31 +0800
-Message-Id: <20220224022331.3208275-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Wed, 23 Feb 2022 21:31:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0572325F3;
+        Wed, 23 Feb 2022 18:31:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 129A86159E;
+        Thu, 24 Feb 2022 02:31:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BEBCC340F1;
+        Thu, 24 Feb 2022 02:31:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645669887;
+        bh=35h6CX91aZ4xLwAScKOmp4ZeUdk2iLJq6vdPAvKxmQU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=CS5MrlX3vvqBeU1jrlmDo+KtjGv6TsJEeSuC3LeP7tq+l1Pc4pZb9EhlHzdfj5LqT
+         WeprXJkAlSe/Z9lBpoijYWpVWEj/nQ+FKl/8CaU4MpqZl7bzYjHwoBZ74Gu0wgx9yZ
+         xTVd181hQTK01u3e9pYKQOsZ7LPVm+miTsij595/Ot/ULHHRDRC2uXvN4lOsyYGSaB
+         /RiDfO1t5qsnDjyi0r4wBiLBOdeq3NVMusGw1tFm+VhEPCkZiI0wOvhLuMxMB4cqgb
+         4dZyxJJahoZzcHl+hGSJGammk1clFDzaXfxahc4yOzmlel8OL3SeA7l5LFCyFsSyOn
+         MWjvcsfNP9c0Q==
+Received: by mail-yb1-f173.google.com with SMTP id b35so1030387ybi.13;
+        Wed, 23 Feb 2022 18:31:27 -0800 (PST)
+X-Gm-Message-State: AOAM532F/Y7tV+UkUd++sXF8x/98F8fNLEBVthxe7Wyc8V9ggDN5lubg
+        Wim/z86Nibwqn1faxUoyV/Uv2ENDpHNwAswAIYk=
+X-Google-Smtp-Source: ABdhPJwFL7h3B+Zvv1jvG93XoCCvjbqIrwW6XjyAFDlqlgFFcJ7A1MijTz/S/kHyGJdWE9E8o/v52xIS/rizIqLK1h4=
+X-Received: by 2002:a05:6902:1ca:b0:624:e2a1:2856 with SMTP id
+ u10-20020a05690201ca00b00624e2a12856mr571208ybh.389.1645669886532; Wed, 23
+ Feb 2022 18:31:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowADX35sk7BZi16QYAQ--.48527S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrtF17urWrWFy3Cr17KrWkCrg_yoWkJrc_WF
-        y5Xrn7WryUtr17Aw4vvFy3CrWFvr4Dur4Sg3WktFs3t3yUtF97XrnIq3s8Jr4rZrWDJFW3
-        JrnrAr4xZFnrtjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
-        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r4U
-        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUXVWUAwCIc40Y0x0E
-        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
-        W8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI
-        42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUgVyxUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+References: <20220224000531.1265030-1-haoluo@google.com>
+In-Reply-To: <20220224000531.1265030-1-haoluo@google.com>
+From:   Song Liu <song@kernel.org>
+Date:   Wed, 23 Feb 2022 18:31:15 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW6BqEn8azap_zcWq0Zkvv8mRFg6g0UX2fPQXwzT+F6V=A@mail.gmail.com>
+Message-ID: <CAPhsuW6BqEn8azap_zcWq0Zkvv8mRFg6g0UX2fPQXwzT+F6V=A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] bpf: Cache the last valid build_id.
+To:     Hao Luo <haoluo@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Blake Jones <blakejones@google.com>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of the devm_request_threaded_irq(),
-it should be better to check the return value of the
-mc13xxx_irq_request() and return error if fails.
+On Wed, Feb 23, 2022 at 4:05 PM Hao Luo <haoluo@google.com> wrote:
+>
+> For binaries that are statically linked, consecutive stack frames are
+> likely to be in the same VMA and therefore have the same build id.
+> As an optimization for this case, we can cache the previous frame's
+> VMA, if the new frame has the same VMA as the previous one, reuse the
+> previous one's build id. We are holding the MM locks as reader across
+> the entire loop, so we don't need to worry about VMA going away.
+>
+> Tested through "stacktrace_build_id" and "stacktrace_build_id_nmi" in
+> test_progs.
+>
+> Suggested-by: Greg Thelen <gthelen@google.com>
+> Signed-off-by: Hao Luo <haoluo@google.com>
 
-Fixes: 8e00593557c3 ("mfd: Add mc13892 support to mc13xxx")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/mfd/mc13xxx-core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Nice optimization!
 
-diff --git a/drivers/mfd/mc13xxx-core.c b/drivers/mfd/mc13xxx-core.c
-index 8a4f1d90dcfd..1000572761a8 100644
---- a/drivers/mfd/mc13xxx-core.c
-+++ b/drivers/mfd/mc13xxx-core.c
-@@ -323,8 +323,10 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
- 		adc1 |= MC13783_ADC1_ATOX;
- 
- 	dev_dbg(mc13xxx->dev, "%s: request irq\n", __func__);
--	mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
-+	ret = mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
- 			mc13xxx_handler_adcdone, __func__, &adcdone_data);
-+	if (ret)
-+		goto out;
- 
- 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC0, adc0);
- 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC1, adc1);
--- 
-2.25.1
-
+Acked-by: Song Liu <songliubraving@fb.com>
