@@ -2,166 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57130C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10CBFC3527C
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 08:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231565AbiBXIIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 03:08:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56730 "EHLO
+        id S231630AbiBXILw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 03:11:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbiBXIIf (ORCPT
+        with ESMTP id S231592AbiBXILs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 03:08:35 -0500
+        Thu, 24 Feb 2022 03:11:48 -0500
 Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 166111B988A;
-        Thu, 24 Feb 2022 00:08:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D9520BCD5
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 00:11:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645690086; x=1677226086;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=zEoJWzKmpcYe9rSTl+BlseiX6qsVqXPhxybFv18kU3Y=;
-  b=YmXVklXWeL5w30rG/hRcjNLdX8WWQVkkme0P4DW7eUh3yPHii0CrJU0E
-   BXClZehcmm9xlnMr6xxiw6djBiS8pHNdhJX+4HAsjaXjz8hNrDs5c2uiJ
-   TnNyJvVpOx/7GqUAW3go9UiTOCyw6jbMNLul4GOTuYQRfLlDC0EQy11Dq
-   EMkjBydr4sn+mybv/Rb97UgHaeCT8ZnKVrcQD0e6c3uv4ViR5W93wMptF
-   LNnb9IuGb34vbTHJtZTaupOHnLI1PBB0PBYMkK4boP/X937bSTydQ/eLP
-   AZTYtfVRygMRXPDobTS/9QfFQY3bamfZ16ZO+RCaPmc89ofqQA4llys2e
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="251004744"
+  t=1645690278; x=1677226278;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=B33AJ7iUj2kTidnDH/M+Fm7R0cxyn03PrezJi+a4Wlk=;
+  b=cLtmIuHmcJIottE6/uiQ0vpYVFzwVjN4RlG2PPZ2/+HvbMzrVug+3c9O
+   aSd5WMqQIQL9DNbkms4UBA20hPqG06L7rPR1hKTUyBmjp7kj5Z8FMQHgx
+   U2M9X6rKlXcboyZuw+pS14TgHKz4qPWYAI7cCSlC3ncjVeDcbLeubcjo7
+   SqWwZgFsurDOwDfbv81gveJjPmdzyt8oF+lw+Z7wL0TeoDQ5h3G4AJ/XH
+   ijZOYNjaUPi4xokKMsoTqHthqFr6RmIhPvOp0UlfPU4pzB/Ggo9fBMoy9
+   QX4C5e3r4TPgd08wOE8ul7S+/dVn2DqJ4oWXMMhOhJxoEuT2/SPTEhv9O
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="251005355"
 X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="251004744"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 00:08:05 -0800
+   d="scan'208";a="251005355"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 00:11:17 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,393,1635231600"; 
-   d="scan'208";a="637745308"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Feb 2022 00:07:58 -0800
-Date:   Thu, 24 Feb 2022 16:07:39 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, kvm@vger.kernel.org,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
-        "H . Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, qemu-devel@nongnu.org
-Subject: Re: [PATCH v4 12/12] KVM: Expose KVM_MEM_PRIVATE
-Message-ID: <20220224080739.GA6672@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
- <20220118132121.31388-13-chao.p.peng@linux.intel.com>
- <a121e766-900d-2135-1516-e1d3ba716834@maciej.szmigiero.name>
- <20220217134548.GA33836@chaop.bj.intel.com>
- <45148f5f-fe79-b452-f3b2-482c5c3291c4@maciej.szmigiero.name>
- <20220223120047.GB53733@chaop.bj.intel.com>
- <7822c00f-5a2d-b6a2-2f81-cf3330801ad3@maciej.szmigiero.name>
+   d="scan'208";a="506233015"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 24 Feb 2022 00:11:16 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nN9DX-0002th-HJ; Thu, 24 Feb 2022 08:11:15 +0000
+Date:   Thu, 24 Feb 2022 16:10:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 2200/2340]
+ arch/mips/include/asm/mach-lantiq/lantiq.h:15:33: error: implicit
+ declaration of function '__raw_writel'
+Message-ID: <202202241608.GjG8zfIj-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7822c00f-5a2d-b6a2-2f81-cf3330801ad3@maciej.szmigiero.name>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 07:32:37PM +0100, Maciej S. Szmigiero wrote:
-> On 23.02.2022 13:00, Chao Peng wrote:
-> > On Tue, Feb 22, 2022 at 02:16:46AM +0100, Maciej S. Szmigiero wrote:
-> > > On 17.02.2022 14:45, Chao Peng wrote:
-> > > > On Tue, Jan 25, 2022 at 09:20:39PM +0100, Maciej S. Szmigiero wrote:
-> > > > > On 18.01.2022 14:21, Chao Peng wrote:
-> > > > > > KVM_MEM_PRIVATE is not exposed by default but architecture code can turn
-> > > > > > on it by implementing kvm_arch_private_memory_supported().
-> > > > > > 
-> > > > > > Also private memslot cannot be movable and the same file+offset can not
-> > > > > > be mapped into different GFNs.
-> > > > > > 
-> > > > > > Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
-> > > > > > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> > > > > > ---
-> > > > > (..)
-> > > > > >     static bool kvm_check_memslot_overlap(struct kvm_memslots *slots, int id,
-> > > > > > -				      gfn_t start, gfn_t end)
-> > > > > > +				      struct file *file,
-> > > > > > +				      gfn_t start, gfn_t end,
-> > > > > > +				      loff_t start_off, loff_t end_off)
-> > > > > >     {
-> > > > > >     	struct kvm_memslot_iter iter;
-> > > > > > +	struct kvm_memory_slot *slot;
-> > > > > > +	struct inode *inode;
-> > > > > > +	int bkt;
-> > > > > >     	kvm_for_each_memslot_in_gfn_range(&iter, slots, start, end) {
-> > > > > >     		if (iter.slot->id != id)
-> > > > > >     			return true;
-> > > > > >     	}
-> > > > > > +	/* Disallow mapping the same file+offset into multiple gfns. */
-> > > > > > +	if (file) {
-> > > > > > +		inode = file_inode(file);
-> > > > > > +		kvm_for_each_memslot(slot, bkt, slots) {
-> > > > > > +			if (slot->private_file &&
-> > > > > > +			     file_inode(slot->private_file) == inode &&
-> > > > > > +			     !(end_off <= slot->private_offset ||
-> > > > > > +			       start_off >= slot->private_offset
-> > > > > > +					     + (slot->npages >> PAGE_SHIFT)))
-> > > > > > +				return true;
-> > > > > > +		}
-> > > > > > +	}
-> > > > > 
-> > > > > That's a linear scan of all memslots on each CREATE (and MOVE) operation
-> > > > > with a fd - we just spent more than a year rewriting similar linear scans
-> > > > > into more efficient operations in KVM.
-> > > > 
-> (..)
-> > > > So linear scan is used before I can find a better way.
-> > > 
-> > > Another option would be to simply not check for overlap at add or move
-> > > time, declare such configuration undefined behavior under KVM API and
-> > > make sure in MMU notifiers that nothing bad happens to the host kernel
-> > > if it turns out somebody actually set up a VM this way (it could be
-> > > inefficient in this case, since it's not supposed to ever happen
-> > > unless there is a bug somewhere in the userspace part).
-> > 
-> > Specific to TDX case, SEAMMODULE will fail the overlapping case and then
-> > KVM prints a message to the kernel log. It will not cause any other side
-> > effect, it does look weird however. Yes warn that in the API document
-> > can help to some extent.
-> 
-> So for the functionality you are adding this code for (TDX) this scan
-> isn't necessary and the overlapping case (not supported anyway) is safely
-> handled by the hardware (or firmware)?
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   97c5eeb4de3ad324ed2a4656b46465299cfd010a
+commit: 3828a1a70a61b6a815d092a41ce8bc2af2eb3d92 [2200/2340] headers/deps: irq: Optimize <linux/interrupt.h> dependencies
+config: mips-xway_defconfig (https://download.01.org/0day-ci/archive/20220224/202202241608.GjG8zfIj-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=3828a1a70a61b6a815d092a41ce8bc2af2eb3d92
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 3828a1a70a61b6a815d092a41ce8bc2af2eb3d92
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
 
-Yes, it will be handled by the firmware.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Then I would simply remove the scan and, maybe, add a comment instead
-> that the overlap check is done by the hardware.
+All errors (new ones prefixed by >>):
 
-Sure.
+   In file included from arch/mips/include/asm/mach-lantiq/xway/lantiq_soc.h:12,
+                    from arch/mips/lantiq/xway/gptu.c:16:
+   arch/mips/lantiq/xway/gptu.c: In function 'timer_irq_handler':
+>> arch/mips/include/asm/mach-lantiq/lantiq.h:15:33: error: implicit declaration of function '__raw_writel' [-Werror=implicit-function-declaration]
+      15 | #define ltq_w32(val, reg)       __raw_writel(val, reg)
+         |                                 ^~~~~~~~~~~~
+   arch/mips/lantiq/xway/gptu.c:60:25: note: in expansion of macro 'ltq_w32'
+      60 | #define gptu_w32(x, y)  ltq_w32((x), gptu_membase + (y))
+         |                         ^~~~~~~
+   arch/mips/lantiq/xway/gptu.c:78:9: note: in expansion of macro 'gptu_w32'
+      78 |         gptu_w32(1 << timer, GPTU_IRNCR);
+         |         ^~~~~~~~
+   arch/mips/lantiq/xway/gptu.c: In function 'gptu_enable':
+   arch/mips/include/asm/mach-lantiq/lantiq.h:14:33: error: implicit declaration of function '__raw_readl'; did you mean '__raw_emt'? [-Werror=implicit-function-declaration]
+      14 | #define ltq_r32(reg)            __raw_readl(reg)
+         |                                 ^~~~~~~~~~~
+   arch/mips/include/asm/mach-lantiq/lantiq.h:15:46: note: in definition of macro 'ltq_w32'
+      15 | #define ltq_w32(val, reg)       __raw_writel(val, reg)
+         |                                              ^~~
+   arch/mips/lantiq/xway/gptu.c:108:9: note: in expansion of macro 'gptu_w32'
+     108 |         gptu_w32(gptu_r32(GPTU_IRNEN) | BIT(clk->bits), GPTU_IRNEN);
+         |         ^~~~~~~~
+   arch/mips/lantiq/xway/gptu.c:61:25: note: in expansion of macro 'ltq_r32'
+      61 | #define gptu_r32(x)     ltq_r32(gptu_membase + (x))
+         |                         ^~~~~~~
+   arch/mips/lantiq/xway/gptu.c:108:18: note: in expansion of macro 'gptu_r32'
+     108 |         gptu_w32(gptu_r32(GPTU_IRNEN) | BIT(clk->bits), GPTU_IRNEN);
+         |                  ^~~~~~~~
+   arch/mips/lantiq/xway/gptu.c: At top level:
+   arch/mips/lantiq/xway/gptu.c:199:12: warning: no previous prototype for 'gptu_init' [-Wmissing-prototypes]
+     199 | int __init gptu_init(void)
+         |            ^~~~~~~~~
+   cc1: some warnings being treated as errors
 
-> 
-> By the way, if a kernel log message could be triggered by (misbehaving)
-> userspace then it should be rate limited (if it isn't already).
 
-Thanks for mention.
+vim +/__raw_writel +15 arch/mips/include/asm/mach-lantiq/lantiq.h
 
-Chao
-> 
-> > Thanks,
-> > Chao
-> 
-> Thanks,
-> Maciej
+171bb2f19ed6f3 John Crispin 2011-03-30  12  
+171bb2f19ed6f3 John Crispin 2011-03-30  13  /* generic reg access functions */
+171bb2f19ed6f3 John Crispin 2011-03-30  14  #define ltq_r32(reg)		__raw_readl(reg)
+171bb2f19ed6f3 John Crispin 2011-03-30 @15  #define ltq_w32(val, reg)	__raw_writel(val, reg)
+171bb2f19ed6f3 John Crispin 2011-03-30  16  #define ltq_w32_mask(clear, set, reg)	\
+171bb2f19ed6f3 John Crispin 2011-03-30  17  	ltq_w32((ltq_r32(reg) & ~(clear)) | (set), reg)
+171bb2f19ed6f3 John Crispin 2011-03-30  18  #define ltq_r8(reg)		__raw_readb(reg)
+171bb2f19ed6f3 John Crispin 2011-03-30  19  #define ltq_w8(val, reg)	__raw_writeb(val, reg)
+171bb2f19ed6f3 John Crispin 2011-03-30  20  
+
+:::::: The code at line 15 was first introduced by commit
+:::::: 171bb2f19ed6f3627f4f783f658f2f475b2fbd50 MIPS: Lantiq: Add initial support for Lantiq SoCs
+
+:::::: TO: John Crispin <blogic@openwrt.org>
+:::::: CC: Ralf Baechle <ralf@linux-mips.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
