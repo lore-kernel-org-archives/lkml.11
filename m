@@ -2,96 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED89C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF7B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:42:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbiBXBmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:42:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
+        id S229690AbiBXBm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:42:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229687AbiBXBmC (ORCPT
+        with ESMTP id S229650AbiBXBmZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:42:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2408F1086
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:41:33 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48D0360FE0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 01:17:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9373CC340EF;
-        Thu, 24 Feb 2022 01:17:27 +0000 (UTC)
-Date:   Wed, 23 Feb 2022 20:17:25 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, catalin.marinas@arm.com, will@kernel.org,
-        broonie@kernel.org, mark.rutland@arm.com, tglx@linutronix.de,
-        bp@alien8.de, dave.hansen@linux.intel.com,
-        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        qirui.001@bytedance.com
-Subject: Re: [PATCH v2 1/2] ftrace: cleanup ftrace_graph_caller enable and
- disable
-Message-ID: <20220223201725.4cbb6d8a@rorschach.local.home>
-In-Reply-To: <20220223090132.10114-1-zhouchengming@bytedance.com>
-References: <20220223090132.10114-1-zhouchengming@bytedance.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 23 Feb 2022 20:42:25 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13EFF36165;
+        Wed, 23 Feb 2022 17:41:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645666916; x=1677202916;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Kt6QjyLYTRwOzZP9VnYhf/8ijLxJLwLct45EpDi/FbI=;
+  b=e44unWK+leFg2HKumixyVSRMsUotVMEW9UpzLnpFdW4Lan0wofscLHN8
+   +VThvWwhRaSj5bYN6C1r+1GpH6kN9k7JypVgqo2wacra/iP0yPMlZuCDJ
+   L73ODYqSXtJuCSf7n4u9/vzNCA3EOkAbEcaiOskloA5WB2wmaxYA7vyJQ
+   I=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Feb 2022 17:01:49 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 17:01:49 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Wed, 23 Feb 2022 17:01:49 -0800
+Received: from [10.48.243.226] (10.49.16.6) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Wed, 23 Feb
+ 2022 17:01:48 -0800
+Message-ID: <3f408c80-cabf-5ba2-2014-2eb0550b73f9@quicinc.com>
+Date:   Wed, 23 Feb 2022 17:01:48 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Subject: Re: [PATCH 6/6][next] ath6kl: wmi: Replace one-element array with
+ flexible-array member in struct wmi_aplist_event
+Content-Language: en-US
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        <linux-wireless@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-hardening@vger.kernel.org>
+References: <cover.1645583264.git.gustavoars@kernel.org>
+ <c2116e10dd61869e17fa40a96f1e07a415820575.1645583264.git.gustavoars@kernel.org>
+From:   Jeff Johnson <quic_jjohnson@quicinc.com>
+In-Reply-To: <c2116e10dd61869e17fa40a96f1e07a415820575.1645583264.git.gustavoars@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.49.16.6]
+X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 23 Feb 2022 17:01:31 +0800
-Chengming Zhou <zhouchengming@bytedance.com> wrote:
+On 2/22/2022 6:39 PM, Gustavo A. R. Silva wrote:
+> Replace one-element array with flexible-array member in struct
+> wmi_aplist_event.
+> 
+> It's also worth noting that due to the flexible array transformation,
+> the size of struct wmi_aplist_event changed (now the size is 8-byte
+> smaller), and in order to preserve the logic of before the transformation,
+> the following change is needed:
+> 
+>          -       if (len < sizeof(struct wmi_aplist_event))
+>          +       if (len <= sizeof(struct wmi_aplist_event))
+> 
+> sizeof(struct wmi_aplist_event) before the flex-array transformation:
+> 
+> struct wmi_aplist_event {
+> 	u8                         ap_list_ver;          /*     0     1 */
+> 	u8                         num_ap;               /*     1     1 */
+> 	union wmi_ap_info          ap_list[1];           /*     2     8 */
+> 
+> 	/* size: 10, cachelines: 1, members: 3 */
+> 	/* last cacheline: 10 bytes */
+> };
+> 
+> sizeof(struct wmi_aplist_event) after the flex-array transformation:
+> 
+> struct wmi_aplist_event {
+> 	u8                         ap_list_ver;          /*     0     1 */
+> 	u8                         num_ap;               /*     1     1 */
+> 	union wmi_ap_info          ap_list[];            /*     2     0 */
+> 
+> 	/* size: 2, cachelines: 1, members: 3 */
+> 	/* last cacheline: 2 bytes */
+> };
+> 
+> Also, make use of the struct_size() helper and remove unneeded variable
+> ap_info_entry_size.
+> 
+> This issue was found with the help of Coccinelle and audited and fixed,
+> manually.
+> 
+> Link: https://www.kernel.org/doc/html/v5.16/process/deprecated.html#zero-length-and-one-element-arrays
+> Link: https://github.com/KSPP/linux/issues/79
+> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> ---
+> Hi!
+> 
+> It'd be great if someone can confirm or comment on the following
+> changes described in the changelog text:
+> 
+>          -       if (len < sizeof(struct wmi_aplist_event))
+>          +       if (len <= sizeof(struct wmi_aplist_event))
+> 
+> Thanks
+> 
+>   drivers/net/wireless/ath/ath6kl/wmi.c | 7 ++-----
+>   drivers/net/wireless/ath/ath6kl/wmi.h | 2 +-
+>   2 files changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/ath/ath6kl/wmi.c b/drivers/net/wireless/ath/ath6kl/wmi.c
+> index 645fb6cae3be..484d37e66ce6 100644
+> --- a/drivers/net/wireless/ath/ath6kl/wmi.c
+> +++ b/drivers/net/wireless/ath/ath6kl/wmi.c
+> @@ -1750,23 +1750,20 @@ static int ath6kl_wmi_snr_threshold_event_rx(struct wmi *wmi, u8 *datap,
+>   
+>   static int ath6kl_wmi_aplist_event_rx(struct wmi *wmi, u8 *datap, int len)
+>   {
+> -	u16 ap_info_entry_size;
+>   	struct wmi_aplist_event *ev = (struct wmi_aplist_event *) datap;
+>   	struct wmi_ap_info_v1 *ap_info_v1;
+>   	u8 index;
+>   
+> -	if (len < sizeof(struct wmi_aplist_event) ||
+> +	if (len <= sizeof(struct wmi_aplist_event) ||
 
-> diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
-> index 7cc540e6de0c..c119ef7a9295 100644
-> --- a/arch/x86/kernel/ftrace.c
-> +++ b/arch/x86/kernel/ftrace.c
-> @@ -615,18 +615,8 @@ int ftrace_disable_ftrace_graph_caller(void)
->  
->  	return ftrace_mod_jmp(ip, &ftrace_stub);
->  }
-> -#else /* !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
-> -int ftrace_enable_ftrace_graph_caller(void)
-> -{
-> -	return 0;
-> -}
-> -
-> -int ftrace_disable_ftrace_graph_caller(void)
-> -{
-> -	return 0;
-> -}
-> -#endif /* CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
-> -#endif /* !CONFIG_DYNAMIC_FTRACE */
-> +#endif /* !CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS */
-> +#endif /* CONFIG_DYNAMIC_FTRACE */
+again IMO the original code is preferred since then we can handle a 
+0-length list
 
-Since you are cleaning this up, and the above starts with:
+>   	    ev->ap_list_ver != APLIST_VER1)
+>   		return -EINVAL;
+>   
+> -	ap_info_entry_size = sizeof(struct wmi_ap_info_v1);
+>   	ap_info_v1 = (struct wmi_ap_info_v1 *) ev->ap_list;
+>   
+>   	ath6kl_dbg(ATH6KL_DBG_WMI,
+>   		   "number of APs in aplist event: %d\n", ev->num_ap);
+>   
+> -	if (len < (int) (sizeof(struct wmi_aplist_event) +
+> -			 (ev->num_ap - 1) * ap_info_entry_size))
+> +	if (len < struct_size(ev, ap_list, ev->num_ap))
 
-#ifdef CONFIG_DYNAMIC_FTRACE
+and unlike the prior patches in this set, at least the original code 
+here had logic to validate len against the metadata that describes the 
+number of entries in the list. so this change is good, and also supports 
+a 0-length list
 
-#ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
+>   		return -EINVAL;
+>   
+>   	/* AP list version 1 contents */
+> diff --git a/drivers/net/wireless/ath/ath6kl/wmi.h b/drivers/net/wireless/ath/ath6kl/wmi.h
+> index 6a7fc07cd9aa..a9732660192a 100644
+> --- a/drivers/net/wireless/ath/ath6kl/wmi.h
+> +++ b/drivers/net/wireless/ath/ath6kl/wmi.h
+> @@ -1957,7 +1957,7 @@ union wmi_ap_info {
+>   struct wmi_aplist_event {
+>   	u8 ap_list_ver;
+>   	u8 num_ap;
+> -	union wmi_ap_info ap_list[1];
+> +	union wmi_ap_info ap_list[];
+>   } __packed;
+>   
+>   /* Developer Commands */
 
-
-They were separate because of the #else that you just removed. I would
-recommend consolidate them into a single #ifdef:
-
-#if defined(CONFIG_DYNAMIC_FTRACE) && !defined(CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS)
-
-[..]
-
-#endif /* CONFIG_DYNAMIC_FTRACE && !CONFIG_HAVE_DYNAMI_FTRACE_WITH_ARGS */
-
-
--- Steve
-
-
->  
->  /*
->   * Hook the return address and push it in the stack of return addrs
-> diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-> index f9feb197b2da..60ae009e6684 100644
+whether or not you modify the length check consider this:
+Reviewed-by: Jeff Johnson <quic_jjohnson@quicinc.com>
