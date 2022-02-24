@@ -2,85 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E84D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbiBXQdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:33:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35450 "EHLO
+        id S230115AbiBXQdr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:33:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230100AbiBXQdh (ORCPT
+        with ESMTP id S230104AbiBXQdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:33:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E04440A13
+        Thu, 24 Feb 2022 11:33:40 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C0C17BC70
         for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:32:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645720344;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vcPtK5juKrQCjxOJebxU3eX3Pl6fam/VQTjX11RWkBk=;
-        b=fmNa2M0ExsQuSH3CvfyLgyMRNYRMdRwh4H2auyJgxF6YjnR1g4s5Rf2QYA3/kFiPtHLwI+
-        my6EKaMshK3RWMiI3uGjcZDCeUGDVAWpdMCP2vVgKZWZPODEbgtRsXhR9ZrEKTagUlE2O/
-        wsIwU3ml2VkQFV1WvphR8BvruCjPnQI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-114-N6oZOjT2PlSyRcV5D7Aw0Q-1; Thu, 24 Feb 2022 11:32:21 -0500
-X-MC-Unique: N6oZOjT2PlSyRcV5D7Aw0Q-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4C6A0180CBFB;
-        Thu, 24 Feb 2022 16:32:20 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 52FF17DE2E;
-        Thu, 24 Feb 2022 16:32:07 +0000 (UTC)
-Message-ID: <b7c2e257c8080f9724ee2ca96642d45d968a8b00.camel@redhat.com>
-Subject: Re: [RFC PATCH 02/13] x86/cpufeatures: Introduce x2AVIC CPUID bit
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     pbonzini@redhat.com, seanjc@google.com, joro@8bytes.org,
-        jon.grimm@amd.com, wei.huang2@amd.com, terry.bowman@amd.com
-Date:   Thu, 24 Feb 2022 18:32:06 +0200
-In-Reply-To: <20220221021922.733373-3-suravee.suthikulpanit@amd.com>
-References: <20220221021922.733373-1-suravee.suthikulpanit@amd.com>
-         <20220221021922.733373-3-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+Received: by mail-ej1-x632.google.com with SMTP id p14so5510339ejf.11
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:32:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8iFz8OejFA6DX9qXi4bQtBNaigBN1GDlBFEToUXGY3Q=;
+        b=m/r5a9WyEVahimcDrZ+I4kJ+LN5cBWUrcwkSOYJNGjLFuEihkwHAmdn4TmcJQatFmI
+         iJxxXr3qTsESDM74BAln0qM6OAD6wcNOTgIt+Pi5Uf46pLxlbvkff+J5tfM09G7NRc/K
+         pMyLOVPaPukn9OTEQrvxsNvp+jhK1d4R2CKv0MZCys2z0XWqYOZYUI1vJ3DGr8sN4a/w
+         TzxvadnG+pes4kBwh0Slizq3PEfC1CBU4zNlGoNDM4DDrDfjbAnyUwLV9ZqgJrHtOkTw
+         7sPw6x6j+46l2j40lcmS6ciEvtj1buqo5Vh66VgSW53OOnYIpDMhP3ZG7bhuWj2OWnQT
+         XRkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8iFz8OejFA6DX9qXi4bQtBNaigBN1GDlBFEToUXGY3Q=;
+        b=h2l0XUFFO/AKfFWrtdRZcTPEttA4CiuLIvLuegq2lEYAT5RSTFsc7Q0rCV4e0slcTR
+         yO0H9px/ufLbog7rQGImNasPhR46leYJ8da6yj4twkKWduIXTvRzTOb+uqC1voBtPrOx
+         pD+hXuXic3iLb21YcD3VVTz4ab4DoCToDPXm162JpsXxOTR8mEsKLOb4NGLGfOjMP5wT
+         kE1pN8cFvj39q2k0sGUftQ1lWz/y2hU1YLDwkItDy3RbL9ived+WQ+bgohUts35ugM2D
+         bNfeah1vDDxfwo6J7OupTCS0bn9Ixb/PfyQg38Hl0Qyf6JD2T8nuWZecGm5t9Pcw8jIe
+         Mqrw==
+X-Gm-Message-State: AOAM530vvXaplAatYmuaSzd+0t522APm+SNI+lgD3/7w2Bp7TK/7ewLC
+        eYnTd7953BNuyJOuDwMfV7Xkb7nl/1QDNA==
+X-Google-Smtp-Source: ABdhPJxM9Mr69FsUxMrjzwl+vN04ZCx0HQBkHsmr2jnNDhpL/c69hBp6L0yBwPwPAABLQy5SGzYEoA==
+X-Received: by 2002:a05:6512:2306:b0:443:3db8:d6c8 with SMTP id o6-20020a056512230600b004433db8d6c8mr2302641lfu.161.1645719757815;
+        Thu, 24 Feb 2022 08:22:37 -0800 (PST)
+Received: from localhost (c-9b28e555.07-21-73746f28.bbcust.telenor.se. [85.229.40.155])
+        by smtp.gmail.com with ESMTPSA id i17sm241327lfu.207.2022.02.24.08.22.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 08:22:37 -0800 (PST)
+From:   Anders Roxell <anders.roxell@linaro.org>
+To:     mpe@ellerman.id.au
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Anders Roxell <anders.roxell@linaro.org>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Segher Boessenkool <segher@kernel.crashing.org>
+Subject: [PATCHv2 2/3] powerpc: fix build errors
+Date:   Thu, 24 Feb 2022 17:22:14 +0100
+Message-Id: <20220224162215.3406642-2-anders.roxell@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220224162215.3406642-1-anders.roxell@linaro.org>
+References: <20220224162215.3406642-1-anders.roxell@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2022-02-20 at 20:19 -0600, Suravee Suthikulpanit wrote:
-> Introduce a new feature bit for virtualized x2APIC (x2AVIC) in
-> CPUID_Fn8000000A_EDX [SVM Revision and Feature Identification].
-> 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  arch/x86/include/asm/cpufeatures.h | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-> index 6db4e2932b3d..8c91a313668e 100644
-> --- a/arch/x86/include/asm/cpufeatures.h
-> +++ b/arch/x86/include/asm/cpufeatures.h
-> @@ -345,6 +345,7 @@
->  #define X86_FEATURE_AVIC		(15*32+13) /* Virtual Interrupt Controller */
->  #define X86_FEATURE_V_VMSAVE_VMLOAD	(15*32+15) /* Virtual VMSAVE VMLOAD */
->  #define X86_FEATURE_VGIF		(15*32+16) /* Virtual GIF */
-> +#define X86_FEATURE_X2AVIC		(15*32+18) /* Virtual x2apic */
->  #define X86_FEATURE_V_SPEC_CTRL		(15*32+20) /* Virtual SPEC_CTRL */
->  #define X86_FEATURE_SVME_ADDR_CHK	(15*32+28) /* "" SVME addr check */
->  
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Building tinyconfig with gcc (Debian 11.2.0-16) and assembler (Debian
+2.37.90.20220207) the following build error shows up:
 
-Best regards,
-	Maxim Levitsky
+ {standard input}: Assembler messages:
+ {standard input}:1190: Error: unrecognized opcode: `stbcix'
+ {standard input}:1433: Error: unrecognized opcode: `lwzcix'
+ {standard input}:1453: Error: unrecognized opcode: `stbcix'
+ {standard input}:1460: Error: unrecognized opcode: `stwcix'
+ {standard input}:1596: Error: unrecognized opcode: `stbcix'
+ ...
+
+Rework to add assembler directives [1] around the instruction. Going
+through the them one by one shows that the changes should be safe.  Like
+__get_user_atomic_128_aligned() is only called in p9_hmi_special_emu(),
+which according to the name is specific to power9.  And __raw_rm_read*()
+are only called in things that are powernv or book3s_hv specific.
+
+[1] https://sourceware.org/binutils/docs/as/PowerPC_002dPseudo.html#PowerPC_002dPseudo
+
+Cc: <stable@vger.kernel.org>
+Co-developed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+---
+ arch/powerpc/include/asm/io.h        | 40 ++++++++++++++++++++++------
+ arch/powerpc/include/asm/uaccess.h   |  3 +++
+ arch/powerpc/platforms/powernv/rng.c |  6 ++++-
+ 3 files changed, 40 insertions(+), 9 deletions(-)
+
+diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
+index beba4979bff9..fee979d3a1aa 100644
+--- a/arch/powerpc/include/asm/io.h
++++ b/arch/powerpc/include/asm/io.h
+@@ -359,25 +359,37 @@ static inline void __raw_writeq_be(unsigned long v, volatile void __iomem *addr)
+  */
+ static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
+ {
+-	__asm__ __volatile__("stbcix %0,0,%1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      stbcix %0,0,%1;  \
++			      .machine pop;"
+ 		: : "r" (val), "r" (paddr) : "memory");
+ }
+ 
+ static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
+ {
+-	__asm__ __volatile__("sthcix %0,0,%1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      sthcix %0,0,%1;  \
++			      .machine pop;"
+ 		: : "r" (val), "r" (paddr) : "memory");
+ }
+ 
+ static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
+ {
+-	__asm__ __volatile__("stwcix %0,0,%1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      stwcix %0,0,%1;  \
++			      .machine pop;"
+ 		: : "r" (val), "r" (paddr) : "memory");
+ }
+ 
+ static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
+ {
+-	__asm__ __volatile__("stdcix %0,0,%1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      stdcix %0,0,%1;  \
++			      .machine pop;"
+ 		: : "r" (val), "r" (paddr) : "memory");
+ }
+ 
+@@ -389,7 +401,10 @@ static inline void __raw_rm_writeq_be(u64 val, volatile void __iomem *paddr)
+ static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
+ {
+ 	u8 ret;
+-	__asm__ __volatile__("lbzcix %0,0, %1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      lbzcix %0,0, %1; \
++			      .machine pop;"
+ 			     : "=r" (ret) : "r" (paddr) : "memory");
+ 	return ret;
+ }
+@@ -397,7 +412,10 @@ static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
+ static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
+ {
+ 	u16 ret;
+-	__asm__ __volatile__("lhzcix %0,0, %1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      lhzcix %0,0, %1; \
++			      .machine pop;"
+ 			     : "=r" (ret) : "r" (paddr) : "memory");
+ 	return ret;
+ }
+@@ -405,7 +423,10 @@ static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
+ static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
+ {
+ 	u32 ret;
+-	__asm__ __volatile__("lwzcix %0,0, %1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      lwzcix %0,0, %1; \
++			      .machine pop;"
+ 			     : "=r" (ret) : "r" (paddr) : "memory");
+ 	return ret;
+ }
+@@ -413,7 +434,10 @@ static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
+ static inline u64 __raw_rm_readq(volatile void __iomem *paddr)
+ {
+ 	u64 ret;
+-	__asm__ __volatile__("ldcix %0,0, %1"
++	__asm__ __volatile__(".machine push;   \
++			      .machine power6; \
++			      ldcix %0,0, %1;  \
++			      .machine pop;"
+ 			     : "=r" (ret) : "r" (paddr) : "memory");
+ 	return ret;
+ }
+diff --git a/arch/powerpc/include/asm/uaccess.h b/arch/powerpc/include/asm/uaccess.h
+index 63316100080c..4a35423f766d 100644
+--- a/arch/powerpc/include/asm/uaccess.h
++++ b/arch/powerpc/include/asm/uaccess.h
+@@ -125,8 +125,11 @@ do {								\
+  */
+ #define __get_user_atomic_128_aligned(kaddr, uaddr, err)		\
+ 	__asm__ __volatile__(				\
++		".machine push\n"			\
++		".machine altivec\n"			\
+ 		"1:	lvx  0,0,%1	# get user\n"	\
+ 		" 	stvx 0,0,%2	# put kernel\n"	\
++		".machine pop\n"			\
+ 		"2:\n"					\
+ 		".section .fixup,\"ax\"\n"		\
+ 		"3:	li %0,%3\n"			\
+diff --git a/arch/powerpc/platforms/powernv/rng.c b/arch/powerpc/platforms/powernv/rng.c
+index b4386714494a..e3d44b36ae98 100644
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -43,7 +43,11 @@ static unsigned long rng_whiten(struct powernv_rng *rng, unsigned long val)
+ 	unsigned long parity;
+ 
+ 	/* Calculate the parity of the value */
+-	asm ("popcntd %0,%1" : "=r" (parity) : "r" (val));
++	asm (".machine push;   \
++	      .machine power7; \
++	      popcntd %0,%1;   \
++	      .machine pop;"
++	     : "=r" (parity) : "r" (val));
+ 
+ 	/* xor our value with the previous mask */
+ 	val ^= rng->mask;
+-- 
+2.34.1
 
