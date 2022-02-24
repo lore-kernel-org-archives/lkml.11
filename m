@@ -2,107 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E85C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D09B4C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232912AbiBXJii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:38:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
+        id S232926AbiBXJir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:38:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232911AbiBXJic (ORCPT
+        with ESMTP id S232678AbiBXJij (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:38:32 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C84F27AFEB;
-        Thu, 24 Feb 2022 01:38:01 -0800 (PST)
-Received: from mail-wr1-f41.google.com ([209.85.221.41]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1M5wgF-1nK8Z23HC7-007VzJ; Thu, 24 Feb 2022 10:37:59 +0100
-Received: by mail-wr1-f41.google.com with SMTP id d3so2036952wrf.1;
-        Thu, 24 Feb 2022 01:37:59 -0800 (PST)
-X-Gm-Message-State: AOAM531mren4RcSI9hV+ys6vEYPD16bM3U00jfR/pAxKIYZAZm98re8m
-        sYWDOeFLPebeWg1AsQSNW6vrEAmxCpcYwTo4kUg=
-X-Google-Smtp-Source: ABdhPJxKnbR5fQtLrHkUQmPSDD+xkHkCuZRWZe5PlaQucJaWZYHMl1I+Wr1dE0VfS6g2+fYVY4BPWlfD5Z76idC1Sco=
-X-Received: by 2002:adf:a446:0:b0:1ed:c41b:cf13 with SMTP id
- e6-20020adfa446000000b001edc41bcf13mr1559929wra.407.1645695092672; Thu, 24
- Feb 2022 01:31:32 -0800 (PST)
+        Thu, 24 Feb 2022 04:38:39 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EBC276D61;
+        Thu, 24 Feb 2022 01:38:10 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id bx9-20020a17090af48900b001bc64ee7d3cso1524715pjb.4;
+        Thu, 24 Feb 2022 01:38:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4tPg4OnWHW1AFqVTKn4PbYlPw2jcbJ+Uaul6Y89V8MY=;
+        b=IXqOkV4rJZ0idastlUagEa5ULc6Yr9JrsclHg1mZJ+qZcUcGjM8n6xc9bWd9q37G8u
+         kTWmTLFy/4Wq6V/2fz7xD2dp1gbpYt2HXxMkc1HJdJcCR2jq+28i+RaVaMZWbGD2Rc/a
+         c/4bQtumv8DIsndf8ZgNqhAhdlekhCw/oAskXnbGksR/DATn19uyemnExqFQBHy4dhqM
+         hKkZsWPbIkCEgt2aM+cCPJ/xlbJOh0KvfQy0ZeOG2YhsJDbM732WN1gGJtQq8A3MNoyA
+         qhdTH00TlkIv//3VQAdjebHyzsLnZGBo4+dU3lBs7Wwh+D1XilcLaIls2mzIz14qGTeC
+         CZIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4tPg4OnWHW1AFqVTKn4PbYlPw2jcbJ+Uaul6Y89V8MY=;
+        b=iCmThAkp8t4wq5Ct9MCrG00ATm7izti2/GOxaboveaad8REQkhDIuVn2i6ppGmWFaz
+         GfIHSeKyS4RPhWHOigoyHZeTJB3mhKZzUi3aMSz8cRqbtyWjpGQzhSHFPxy1PjWM3ayx
+         85wIfAZ7AK8WKt3EArid4bmvXLI5lwexA25E8//O1RvDrRZCBC5K+4gjrRcCAv+aCZ/h
+         ZxkYIkKhe1rZHTR8Dj1cbVzSUp2gDGcSKKI7Pjt0bEXJUUtUGHcQSmS6pKzcR2N6xtC7
+         PnGmbZcZ7h0amOwrTIhevU0JiXFkvuagoBhGMPknfChcETNRKAd1ZUqIIjj0Y8ebcRXY
+         Y+fg==
+X-Gm-Message-State: AOAM531jlH31DiaRmkAa04aiTfdLd1fiDpIsrhrT3B7ZmH7hFjS8EcRi
+        mStMZFsf3O4fwyVXbGjTsVBFDSvALts=
+X-Google-Smtp-Source: ABdhPJxTiKcU6Pumm09KOZBfOETpGzAiVaWoBhOrlHXsOpRWhqj54/dcUo8/ApzvQ3sp1iKY6PyjdA==
+X-Received: by 2002:a17:90a:d206:b0:1bb:e73f:9592 with SMTP id o6-20020a17090ad20600b001bbe73f9592mr13500303pju.17.1645695489827;
+        Thu, 24 Feb 2022 01:38:09 -0800 (PST)
+Received: from fedora-qemu.flets-east.jp (p912131-ipoe.ipoe.ocn.ne.jp. [153.243.13.130])
+        by smtp.gmail.com with ESMTPSA id i17sm2033359pgv.8.2022.02.24.01.38.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 01:38:09 -0800 (PST)
+From:   Akihiko Odaki <akihiko.odaki@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Jens Axboe <axboe@kernel.dk>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Akihiko Odaki <akihiko.odaki@gmail.com>
+Subject: [PATCH] virtio-blk: Assign discard_granularity
+Date:   Thu, 24 Feb 2022 18:38:02 +0900
+Message-Id: <20220224093802.11348-1-akihiko.odaki@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220224085410.399351-1-guoren@kernel.org> <20220224085410.399351-12-guoren@kernel.org>
-In-Reply-To: <20220224085410.399351-12-guoren@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 24 Feb 2022 10:31:16 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3wg9S_zPad74FiJzYBn0M9bQyunuKzmH3z_QQrags5ng@mail.gmail.com>
-Message-ID: <CAK8P3a3wg9S_zPad74FiJzYBn0M9bQyunuKzmH3z_QQrags5ng@mail.gmail.com>
-Subject: Re: [PATCH V6 11/20] riscv: compat: syscall: Add compat_sys_call_table
- implementation
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
-        Anup Patel <anup@brainfault.org>,
-        gregkh <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:bJ949jbvxqRzT8RGzj2QYrApGMZ4GN1YTokJ4Yg5/VzjO8Su2uE
- ipDUtwaeK0DeWGhdUHDvGS6Sxk+PjnIWHXHqM03B+4KiJMsbfQObb3/g4Rb9ehoxvIs7pAb
- 3xXOC8l0NvUVW3TdDOlDdrw1fIEzH5Ue8s6u34x3GpIf/5gKusINz0fsj5g7jSQKQJXAUDd
- y9XhStiamjcfDraOeAP7A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:dwAfY9Ku57I=:6NKueo92cdx8lj+82OAOD5
- ulk+zylPDzaUxvVUzhJpGKLU7YiwrMbf7G25DHOirZgFEmfxwc51w1cNxnsmQoii7jX4pKE9a
- dOWn1HvOs9fUNtoNQWaUf6U5ViEPhWvXToLKi75vietmj9uC2QxIhS9ILo41p/hUYLeohsWLi
- QW3aBB9AkASEmnIngeLwpWY+LBUdXglk0GELcd0a9C64Z3xmOPX5z49YIhjhE/+ipUePv9/Mq
- L/wWPiJVTMI+eTWTZnFDha0SQ36pExEHntKrTD8b3P7GrhFFSWpMd8i3aaNiERV4x/dmZc7KA
- Xajt3CIeWflvcnXlqYtKI6eLK+u2Yg7/sONFg09gKfBZXPPFSyIHk4bk3KJ2aRp3jQ0rF8ZlV
- de19TTPXXdwa9hU0N+l3/3witYzOHCSzIPDU4lXVHpZZDzJG/jSIbFD2MQlV++ca1+a17mzqc
- /6UCJicm2Xi17UtwaSrGAeOT59ng+WIj0a49UoTHKszzP1ncpwQ13Nn8mepUQWmL8G9BfJ4X0
- DWlaIYLO+Pyr27exsf0sJXXIi0X65UtJNwfibrp0k9Ndu9c7gkYfV/8FDPNuGwgJwcK1/2esS
- YoEFouJd8FgXwxvGs8Wr5xQW2GP7glUv0vaYWhu7E8/Mfn7sZv4npXBf5/RZ0Ra/KvvUkTmuG
- sm+FpxMPUaxs6Mm/tLff2FLkzRLOsYnhal2ZVxJS3hUWmchiqOL0uooT7u/1Md8xTaUmHnRyh
- bxASaOLsX+ezzHOQykOOAFFi/5kM2dl9mVM+CEUm4q/Ufr17oj0n8OR9SEB7cw1ZPlIYj2BQT
- qQFtiThCNHUgBuJwQw+98J/orUmUlwXXAyK6PN24WjEYj81+4s=
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 9:54 AM <guoren@kernel.org> wrote:
->
-> From: Guo Ren <guoren@linux.alibaba.com>
->
-> Implement compat sys_call_table and some system call functions:
-> truncate64, ftruncate64, fallocate, pread64, pwrite64,
-> sync_file_range, readahead, fadvise64_64 which need argument
-> translation.
->
-> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> Signed-off-by: Guo Ren <guoren@kernel.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> Cc: Palmer Dabbelt <palmer@dabbelt.com>
+Virtual I/O Device (VIRTIO) Version 1.1
+https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.html
+> discard_sector_alignment can be used by OS when splitting a request
+> based on alignment.
 
-Here, I was hoping you'd convert some of the other architectures to use
-the same code, but the changes you did do look correct.
+According to Documentation/ABI/stable/sysfs-block, the corresponding
+field in the kernel is, confusingly, discard_granularity, not
+discard_alignment.
 
-Please at least add the missing bit for big-endian architectures here:
+Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
+---
+ drivers/block/virtio_blk.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-+#if !defined(compat_arg_u64) && !defined(CONFIG_CPU_BIG_ENDIAN)
-+#define compat_arg_u64(name)           u32  name##_lo, u32  name##_hi
-+#define compat_arg_u64_dual(name)      u32, name##_lo, u32, name##_hi
-+#define compat_arg_u64_glue(name)      (((u64)name##_hi << 32) | \
-+                                        ((u64)name##_lo & 0xffffffffUL))
-+#endif
+diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+index c443cd64fc9b..1fb3c89900e3 100644
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -913,11 +913,9 @@ static int virtblk_probe(struct virtio_device *vdev)
+ 		blk_queue_io_opt(q, blk_size * opt_io_size);
+ 
+ 	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
+-		q->limits.discard_granularity = blk_size;
+-
+ 		virtio_cread(vdev, struct virtio_blk_config,
+ 			     discard_sector_alignment, &v);
+-		q->limits.discard_alignment = v ? v << SECTOR_SHIFT : 0;
++		q->limits.discard_granularity = v ? v << SECTOR_SHIFT : 0;
+ 
+ 		virtio_cread(vdev, struct virtio_blk_config,
+ 			     max_discard_sectors, &v);
+-- 
+2.35.1
 
-with the lo/hi words swapped. With that change:
-
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
