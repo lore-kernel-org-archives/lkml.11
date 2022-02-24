@@ -2,176 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 591A4C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE96C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 02:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230181AbiBXCwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 21:52:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
+        id S230186AbiBXCwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 21:52:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230113AbiBXCwC (ORCPT
+        with ESMTP id S230113AbiBXCwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 21:52:02 -0500
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3214023740B;
-        Wed, 23 Feb 2022 18:51:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645671093; x=1677207093;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=q8NuIg6u4n/AovpFHzIDVu3x9nClaeDa6GNC+Dzc7zA=;
-  b=NZMQ/dNWhZDjekiADp6BryIRHvpwXrsT8rvIQn4WgWxWQ+KxPG8G7Dda
-   s9nsgKbnMFxrfFAYUtftP/nMsvwCn27k7J1j4JrLKx4jafPwLI4fu7V+5
-   O/rQ0EbXUVSRWwUNnhAe9OjeYyQx54J5xCYv6Qt4KdU7OKa0ksmp0tDcP
-   iMePIy+zNUfrAoWO4ZNazVx9ff0/67Qq/OuU8GHOEUVl8vqJkBmzZmzCY
-   adW+4ICgOVZpSUOx0DIxcblFYiK5XaOaHFj1PYeS7cSgHB6/eqsrih1K1
-   i9FO8YJmNB/aI5AxlG5FGp/1e77DFLESh8yTbF6y9/pZ2NgRa3eycAfQ3
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="239531323"
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="239531323"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 18:51:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
-   d="scan'208";a="684127489"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by fmsmga001.fm.intel.com with ESMTP; 23 Feb 2022 18:51:26 -0800
-Message-ID: <ca45b5db-69f2-b93d-745b-348463f1cb3c@linux.intel.com>
-Date:   Thu, 24 Feb 2022 10:49:58 +0800
+        Wed, 23 Feb 2022 21:52:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23EBA5D660;
+        Wed, 23 Feb 2022 18:52:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2426BB8235B;
+        Thu, 24 Feb 2022 02:52:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 630ABC340E7;
+        Thu, 24 Feb 2022 02:52:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645671120;
+        bh=Tpvuc+aJ6zdLOz71U495XtcwBfHi0Y1vaThGZ0si/lU=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=I0zONkTT0WroA/A2c1xEiTkUKJoMY2D7EXHPxkH4BUCjoFIqsaD4VjLBe39sBTize
+         /GcfM36Mu3ZigNjHAThKY9L0w3dC53pWRYkCrtuwTOS6mi3zkmIsAdIN7Qqwdnay7b
+         NxBKyOMj73eQPOBEPK4q1HkTzhOFB/gVPm8eVxU1Bm+LVWG4tUW7NMlcQ+Y2YbVZei
+         ByeqlBgkd7X6/t6GpUxUbSL/zvQJc7N2fOn2S3/9I5xvMbUUKWQbKJbPp+a6Q/6xYL
+         zaF9Ae29mf02NvV5eYC+kodbPb7te+7/qSgqt94ImBWqtuvcYwtsKnStFqV5yLM7tg
+         PUOHLaSjYBGiQ==
+Date:   Wed, 23 Feb 2022 18:51:59 -0800 (PST)
+From:   Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
+To:     Oleksii Moisieiev <Oleksii_Moisieiev@epam.com>
+cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH 0/1] dt-bindings: arm: Add scmi_devid paramter for
+In-Reply-To: <20220222173458.GA2310133@EPUAKYIW015D>
+Message-ID: <alpine.DEB.2.22.394.2202231841190.239973@ubuntu-linux-20-04-desktop>
+References: <cover.1645460043.git.oleksii_moisieiev@epam.com> <2546477f-4190-e838-3095-f47b31802445@kernel.org> <20220221213932.GA164964@EPUAKYIW015D> <7f17ab8f-429f-d2e0-8f5f-bfa2dd19cc49@kernel.org> <20220222161440.xadrgjftdyxenxgo@bogus>
+ <20220222173458.GA2310133@EPUAKYIW015D>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
-        rafael@kernel.org, David Airlie <airlied@linux.ie>,
-        linux-pci@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
-        iommu@lists.linux-foundation.org,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v6 10/11] vfio: Remove iommu group notifier
-Content-Language: en-US
-To:     Alex Williamson <alex.williamson@redhat.com>
-References: <20220218005521.172832-1-baolu.lu@linux.intel.com>
- <20220218005521.172832-11-baolu.lu@linux.intel.com>
- <20220223145339.57ed632e.alex.williamson@redhat.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220223145339.57ed632e.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alex,
-
-On 2/24/22 5:53 AM, Alex Williamson wrote:
-> On Fri, 18 Feb 2022 08:55:20 +0800
-> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On Tue, 22 Feb 2022, Oleksii Moisieiev wrote:
+> On Tue, Feb 22, 2022 at 04:14:40PM +0000, Sudeep Holla wrote:
+> > On Tue, Feb 22, 2022 at 09:06:25AM +0100, Krzysztof Kozlowski wrote:
+> > > On 21/02/2022 22:39, Oleksii Moisieiev wrote:
+> > > > Hi Krzysztof,
+> > > > 
+> > > > On Mon, Feb 21, 2022 at 10:01:43PM +0100, Krzysztof Kozlowski wrote:
+> > > >> On 21/02/2022 18:26, Oleksii Moisieiev wrote:
+> > > >>> Introducing new parameter called scmi_devid to the device-tree bindings.
+> > > >>> This parameter should be set for the device nodes, which has
+> > > >>> clocks/power-domains/resets working through SCMI.
+> > > >>> Given parameter should set the device_id, needed to set device
+> > > >>> permissions in the Firmware. This feature will be extremely useful for
+> > > >>> the virtualized systems, which has more that one Guests running on the
+> > > >>> system at the same time or for the syestems, which require several
+> > > >>> agents with different permissions. Trusted agent will use scmi_devid to
+> > > >>> set the Device permissions for the Firmware (See Section 4.2.2.10 [0]
+> > > >>> for details).
+> > > >>> Agents concept is described in Section 4.2.1 [0].
+> > > >>>
+> > > >>> scmi_devid in Device-tree node example:
+> > > >>> usb@e6590000
+> > > >>> {
+> > > >>>     scmi_devid = <19>;
+> > > >>>     clocks = <&scmi_clock 3>, <&scmi_clock 2>;
+> > > >>>     resets = <&scmi_reset 10>, <&scmi_reset 9>;
+> > > >>>     power-domains = <&scmi_power 0>;
+> > > >>> };
+> > > >>
+> > > >> And how do you prevent DT overlay adding such devid to any other node
+> > > >> thus allowing any other device to send requests with given devid?
+> > > >>
+> > > > Thank you for the quick response.
+> > > > scmi_devid value will be used only by Trusted Agent when the device
+> > > > permissions are set. Non-trusted agents, which in our case are
+> > > > represented as Guest OS are using scmi drivers, already present in linux
+> > > > kernel, ignores scmi_devid and uses scmi_clocks, scmi_power, scmi_reset
+> > > > nodes to access to SCMI protocol.
+> > > 
+> > > Ah, ok.
+> > > 
+> > > > 
+> > > >> Plus few technicalities:
+> > > >> 1. Hyphen, not underscore in property name, so scmi-devid.
+> > > > 
+> > > > Thanks for the tip, I will change that in v2.
+> > > 
+> > > Few more thoughts:
+> > > 1. This looks specific to ARM SCMI, so you also need vendor prefix, so
+> > > something like:
+> > > arm,scmi-devid
+> > > arm,scmi-device-id
+> > > 
+> > 
+> > Keeping the other discussion separate, I wanted to comment on this.
+> > I agree with Krzysztof on having vendor specific prefix if we decide to add
+> > this device id thing. However, I prefer not to use "arm,scmi-" here.
+> > It can be "xen,scmi-" as we had plans to introduce some concepts in SCMI
+> > spec that may use looks like this device-id. I would just like to avoid
+> > conflicting with that in the future. It may happen to be same in the future
+> > (i.e. this xen device-id matches 100% with definition of device-id we might
+> > introduce in the spec, but I want to make assumption otherwise and leave
+> > scope for divergence however small/little it can be). No issues even if
+> > they converge and match 100% later in the far future.
+> > 
 > 
->> The iommu core and driver core have been enhanced to avoid unsafe driver
->> binding to a live group after iommu_group_set_dma_owner(PRIVATE_USER)
->> has been called. There's no need to register iommu group notifier. This
->> removes the iommu group notifer which contains BUG_ON() and WARN().
->>
->> The commit 5f096b14d421b ("vfio: Whitelist PCI bridges") allowed all
->> pcieport drivers to be bound with devices while the group is assigned to
->> user space. This is not always safe. For example, The shpchp_core driver
->> relies on the PCI MMIO access for the controller functionality. With its
->> downstream devices assigned to the userspace, the MMIO might be changed
->> through user initiated P2P accesses without any notification. This might
->> break the kernel driver integrity and lead to some unpredictable
->> consequences. As the result, currently we only allow the portdrv driver.
->>
->> For any bridge driver, in order to avoiding default kernel DMA ownership
->> claiming, we should consider:
->>
->>   1) Does the bridge driver use DMA? Calling pci_set_master() or
->>      a dma_map_* API is a sure indicate the driver is doing DMA
->>
->>   2) If the bridge driver uses MMIO, is it tolerant to hostile
->>      userspace also touching the same MMIO registers via P2P DMA
->>      attacks?
->>
->> Conservatively if the driver maps an MMIO region at all, we can say that
->> it fails the test.
-> 
-> IIUC, there's a chance we're going to break user configurations if
-> they're assigning devices from a group containing a bridge that uses a
-> driver other than pcieport.  The recommendation to such an affected user
-> would be that the previously allowed host bridge driver was unsafe for
-> this use case and to continue to enable assignment of devices within
-> that group, the driver should be unbound from the bridge device or
-> replaced with the pci-stub driver.  Is that right?
+> xem,scmi- works for me. What do other thinks?
+  ^ xen,scmi-
 
-Yes. You are right.
+If this problem was Xen specific, then it would be fine to use xen,scmi-
+As Xen developer, it solves my problem and I am fine with it.
 
-Another possible solution (for long term) is to re-audit the bridge
-driver code and set the .device_managed_dma field on the premise that
-the driver doesn't violate above potential hazards.
+However, from a device tree and SCMI point of view, it looks like this
+problem is generic and it just happens that Xen is the first
+implementation to encounter it.
 
-> 
-> Unfortunately I also think a bisect of such a breakage wouldn't land
-> here, I think it was actually broken in "vfio: Set DMA ownership for
-> VFIO" since that's where vfio starts to make use of
-> iommu_group_claim_dma_owner() which should fail due to
-> pci_dma_configure() calling iommu_device_use_default_domain() for
-> any driver not identifying itself as driver_managed_dma.
-
-Yes. Great point. Thank you!
-
-> 
-> If that's correct, can we leave a breadcrumb in the correct commit log
-> indicating why this potential breakage is intentional and how the
-> bridge driver might be reconfigured to continue to allow assignment from
-> within the group more safely?  Thanks,
-
-Sure. I will add below in the commit message of "vfio: Set DMA ownership 
-for VFIO":
-
-"
-This change disallows some unsafe bridge drivers to bind to non-ACS
-bridges while devices under them are assigned to user space. This is an
-intentional enhancement and possibly breaks some existing
-configurations. The recommendation to such an affected user would be
-that the previously allowed host bridge driver was unsafe for this use
-case and to continue to enable assignment of devices within that group,
-the driver should be unbound from the bridge device or replaced with the
-pci-stub driver.
-
-For any bridge driver, we consider it unsafe if it satisfies any of the
-following conditions:
-
-   1) The bridge driver uses DMA. Calling pci_set_master() or calling any
-      kernel DMA API (dma_map_*() and etc.) is an indicate that the
-      driver is doing DMA.
-
-   2) If the bridge driver uses MMIO, it should be tolerant to hostile
-      userspace also touching the same MMIO registers via P2P DMA
-      attacks.
-
-If the bridge driver turns out to be a safe one, it could be used as
-before by setting the driver's .driver_managed_dma field, just like what
-we have done in the pcieport driver.
-"
-
-Best regards,
-baolu
+Cristian wrote: "The SCMI spec does not indeed cover the discovery of
+such devices and the related associated resources: it indeed delegates
+such description to FDT/ACPI as of now." How is that supposed to happen
+today with the current DT definitions, regardless of Xen? Is it a gap in
+the current device tree binding?
