@@ -2,130 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE21C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A41C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234903AbiBXNJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:09:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44082 "EHLO
+        id S234874AbiBXNJQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:09:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234868AbiBXNJG (ORCPT
+        with ESMTP id S234864AbiBXNJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 24 Feb 2022 08:09:06 -0500
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam07on2083.outbound.protection.outlook.com [40.107.95.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A83237B5BD
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:08:26 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l7ovStxpFB8VWiioqu/6CqDPhAAta7P8vR35QPIIS9Rr6y6rYAviz5LgP4xq7mrB0CfdnKNWNZ5Yh3j3BO0pGBky5ujuHP+HocFAnaURM7N9eu4+ncKdOOcO7D0YQg86urfp/PvEGUBYWPmOjgXmxUszqePR8BTMUIeXmGnrt2G3Go0Cu/QpLp2dyqmgnE5/0mdIHxuJdkZz/9CygYwJamhRgmpLHbj1RETY5gRBqgeVdA8JhvXz7n3i6or0/R5j2K5Bun1alVKCK/po6Ef8z/Da/EFbaFDjt+VFrJQLnfjXMhKT4ReXetYci/kxlpPFBiZ/UXTBNPOJroZqWv1tUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pGQqwZ+DiPKB7lf2HLI0FezsuLE+6H4PFN0W/gWiYyg=;
- b=C8k0SYgYeJN4R8aMm+X0YF2erhmU4kacS6qjyQw6nB4Pp+2iYekt2bWoNQx+DUoriz99oL1oqOiylB5kiWCSas/dy5OrXx/TDjXHfWA9aqWltP1GdPz/cfgv11XNq4/bwev7VSqWTDxpOBa4PGXAbaqyfBsqzOJVTXjZSUcd/Jk/SCfCDKMoLOsYhoua+BRkBtQ/6MEbcshD06ehWYqe26QPDJbEhw39x8v9VQw8CzY7M1fA37YZIbItVWD4R6SRk2gADVVWv7a3DLfo51XQrhpAYSKzm+GQIMI2edtgEyu/5voKE6nur3skMBV8KoYQoReVkD7XAOnA8VTIOYqaNA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pGQqwZ+DiPKB7lf2HLI0FezsuLE+6H4PFN0W/gWiYyg=;
- b=PNboHBIh7OfTdE3CxyNKJrcdC0KCjBhWlX6n+IClBcwfCHHQEPqJgeylKwdoBO3sdQU2r0J+jhGXtbYSdWFINliAOy7xxOtO89cAgCqRzYdGwgoKM6dbTM1aAaGcnIOtzWOuirfOnuwA0T6h4vQJYSXX39IT4W/UJd1+pJ9vxM/SsjYc90gahlDnt1puhS29x53lGCmhxZPiKCFwN/PFKk9lb5I4xCEv9R7zqjhlt5oEUGNKsBD7DiywyOIlYQer2jz344oDzSksiPrJe51WOC4HX4/ak4Z8JqoaFviPoxmeckNJK/xiED90Wo6eH5TylNAI9JwKhPSU2kd40pAGqA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH2PR12MB4181.namprd12.prod.outlook.com (2603:10b6:610:a8::16)
- by PH7PR12MB5880.namprd12.prod.outlook.com (2603:10b6:510:1d8::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Thu, 24 Feb
- 2022 13:08:24 +0000
-Received: from CH2PR12MB4181.namprd12.prod.outlook.com
- ([fe80::287d:b5f6:ed76:64ba]) by CH2PR12MB4181.namprd12.prod.outlook.com
- ([fe80::287d:b5f6:ed76:64ba%3]) with mapi id 15.20.5017.024; Thu, 24 Feb 2022
- 13:08:24 +0000
-Date:   Thu, 24 Feb 2022 09:08:22 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 08/11] iommu/vt-d: Fix indentation of goto labels
-Message-ID: <20220224130822.GK6413@nvidia.com>
-References: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
- <20220214025704.3184654-9-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214025704.3184654-9-baolu.lu@linux.intel.com>
-X-ClientProxiedBy: BL1PR13CA0275.namprd13.prod.outlook.com
- (2603:10b6:208:2bc::10) To CH2PR12MB4181.namprd12.prod.outlook.com
- (2603:10b6:610:a8::16)
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA8937B5BE;
+        Thu, 24 Feb 2022 05:08:26 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: hector@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 800FB47A16;
+        Thu, 24 Feb 2022 13:08:19 +0000 (UTC)
+From:   Hector Martin <marcan@marcan.st>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>, Rob Herring <robh+dt@kernel.org>
+Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v2 4/7] irqchip/apple-aic: Switch to irq_domain_create_tree and sparse hwirqs
+Date:   Thu, 24 Feb 2022 22:07:38 +0900
+Message-Id: <20220224130741.63924-5-marcan@marcan.st>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220224130741.63924-1-marcan@marcan.st>
+References: <20220224130741.63924-1-marcan@marcan.st>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a7789e55-49fa-4152-5fc6-08d9f796bd22
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5880:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB5880F0165FC24E735614F209C23D9@PH7PR12MB5880.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: g3sHndOxAfNjXXtoGYNaf76J2ZFI6Xid1EfMUKeTe+NAUaXqKjofYeeIZfhINv3xIWE0y4Qr1vPgNOQcVLkfQHp8VQjt45/9lFsTd2USMtsVFd9b1Qsyu7Qlq1sCf970Is1tv6ULNgcufl3qa/OmtvnxNsIjl01XEfucSgq/Y2Qal1YsG6yGnVEzuhsjPJOF1MhpsFGkT/nQ5xZc4Rb3eCFWLYE7641R7eMXyZ306sVNEnVYzo9vMldqoEXtAxluDPfFN8xKnheFsv+Kqc5hGaD0EuMTO5hPW5toiHdkYWGTHMSiImqRpLDrwPDXCm3vuuR3ss7EIUBqp3udJmAVr5Xatzoc8wqibNwjj7Z/sXn8/fE/YYXBPorVhsm+47TYc62ggPUMEtftXRDShqEltj+q325SGMLXiLQb6/fhgm3Vou2Q/kWnOEiF5/ChztvZyu+gcCHKBtIbAA8q1GfgjHfexCXS5MfFuiAcuXVL5hNH3fz25jD5wma2t38QmUyQVFNmYv/xbNVm0p3fbzZbHE4C0GPC+Z/P/ZVv0olnqxQwKApuhuvy+I2NOuKM576jLbzYKs/HivjBYra+C3N22UeuZ9wn6FUf/O6pOf6FsmQPxOUCKUMYim8NZ2VFBjHansAIAY83nBTBGtBS7Y+Bkg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB4181.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(54906003)(316002)(6506007)(26005)(38100700002)(6916009)(4744005)(36756003)(186003)(66556008)(6486002)(83380400001)(33656002)(4326008)(86362001)(66476007)(66946007)(508600001)(8936002)(8676002)(6512007)(2616005)(2906002)(5660300002)(7416002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?F/Q/swX5N70+Gb9wHy804aDXA3mtogbyzywOHZdT/XbumHpd2X+EWAaWEg/p?=
- =?us-ascii?Q?374givYe9aChMw6bovxI6N88E+ksSaI/qKJ590PyyN14w/FFZOurI/NJ5ekZ?=
- =?us-ascii?Q?fMVUSxgKLemh2T/LC5Kv78RO3eLw9LHuj/k/uWzkF9dIYIvmuiZhthEc1AA8?=
- =?us-ascii?Q?QpUF19cAZNsCdpdn0DQ1nzKwtGiIxREDfe8J7CnXFnORvKOHEKRMKuJEWlho?=
- =?us-ascii?Q?4rm6E+BWLh9wq6KVAIwcY/Fn3fN8JBQnT1XCTl5EEJOTzjEDvedycwjx1wMu?=
- =?us-ascii?Q?KVVJf3wrLb0wJR2G2PEfN4YQfhvmPQ52/yBd/VFNWxu1E3/FAbuvFZUEaSiH?=
- =?us-ascii?Q?ys59B8PmjBvNkBHDAoFfTvFwCT1XJTHrdiK9fJHv5EjarwVrAODhqzDRrQmE?=
- =?us-ascii?Q?VtICG4GPtSHhl74juQQmfs43VTsxhei5wMyWX8emYA5h5L064sE4PfqIKpSf?=
- =?us-ascii?Q?L6mqCn+TCwIbLcC/9Rc+AEeGeplhAKtdHt62e9bGykEBZ2vv6Hsv5/ltp260?=
- =?us-ascii?Q?PqW1ziSHxpja8GBqmxHpg6aOslP6un6HOtBG70YO7L9jxhO9wxjwfjsDcpqj?=
- =?us-ascii?Q?ruH91PO0NFPximv597EMB4c/HzjSGTJegkVR+QgoJJCFm04VDc+DEG8uGphI?=
- =?us-ascii?Q?TjBveCTi7JL28GNdGKJHaNaqTznBQ+xGvu7RplAhBt20WuFWFiLnMIMYa6iA?=
- =?us-ascii?Q?ZC/Jtc+A9b69+Ii9HA8Fb/ubQiwHf6Ak/ZKBVtRo2e/TMq+yEJlSmfkljBKn?=
- =?us-ascii?Q?FDSpfuCKohnconrs4nH4QoG2RrWjdCPdYmws4+ctw+uPrHyzzRoFcDBTgpUg?=
- =?us-ascii?Q?JjSHYjox1xqP1ALYDdjubFXF/3VpXddsHHYnmZN2/kNHVaxkrKTXppA9Xavi?=
- =?us-ascii?Q?JMUJreI/39nh/vPmWN7KHd+eQuaaFV9vl+ViJHQvP4EWULtmkEJo4GQQp1/P?=
- =?us-ascii?Q?wG3IrmfAf9k7oa2DLaoenyiqoR8g0CyPXdhBvRJu3+c54xpJvqZ0WLRtNFQO?=
- =?us-ascii?Q?XVmhmeoPDLcio1Sxg2Wd1CgSSJ+HLUZOt+F8uhUcs1PuyLun3bac6T8Knscq?=
- =?us-ascii?Q?fpI1u2vEMDnnNvJdBU1lLKLfpdnL1bfDsLWBtDVJnDNGFaevLTMb7Kh4Df0B?=
- =?us-ascii?Q?kUZ8S7p2ucmalLau0/KxJnpcKbsDg9obCl48Ex8USSSKWARUZm33lN1TLq2P?=
- =?us-ascii?Q?iXrOE5S6ZEQJSomtp97gMynJm/i+cuyqOH39Gk0KljwRjZFriE7GYBlYCM6l?=
- =?us-ascii?Q?EKAQhfDqBJo97HFkYImZkhsHxKNGaKrk0icLsTR5g0ymCp/NcbgBuJMKLlx5?=
- =?us-ascii?Q?qRH+LTvxq+D5FhbFX40uKR00fruGtV3Q5QBDicSzBcLsbGuBPfDU56PXkoUX?=
- =?us-ascii?Q?i+88XGka/jnhNMasuAoRX8Qsg2q8vcg56az6/Mu9TB+7++j9mGwUQVaSHspn?=
- =?us-ascii?Q?qEl9yixezwqFz6RY9WV3dmfveA+Hmk/6bNTwd93SCFWjMnpv2POq2tP1jBHr?=
- =?us-ascii?Q?SD9rDA8Lfbt09tA2+/BL7uEzC4k66WFBIg96wzma6ERwSTqOeBoE4U/gzx4U?=
- =?us-ascii?Q?3O/i7iV64BeutFVp5M8=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7789e55-49fa-4152-5fc6-08d9f796bd22
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB4181.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2022 13:08:24.1031
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WSxLKfHjtJa0qwuI9dLBAmAYRFBoReePyCSee8E/91h0mk6o9ZiePLx+3rdB/TUm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5880
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 14, 2022 at 10:57:01AM +0800, Lu Baolu wrote:
-> Remove blanks before goto labels.
-> 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->  drivers/iommu/intel/iommu.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+This allows us to directly use the hardware event number as the hwirq
+number. Since IRQ events have bit 16 set (type=1), FIQs now move to
+starting at hwirq number 0.
 
-It would be better to rework this function to not have the goto
-spaghetti in the first place.. Looks like putting the
-'for_each_active_dev_scope' into another function would do the trick.
+This will become more important once multi-die support is introduced in
+a later commit.
 
-Anyhow, this is more consistent with kernel style:
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ drivers/irqchip/irq-apple-aic.c | 71 ++++++++++++++++++---------------
+ 1 file changed, 39 insertions(+), 32 deletions(-)
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
+index 613e0ebdabdc..96480389195d 100644
+--- a/drivers/irqchip/irq-apple-aic.c
++++ b/drivers/irqchip/irq-apple-aic.c
+@@ -68,7 +68,7 @@
+  */
+ 
+ #define AIC_INFO		0x0004
+-#define AIC_INFO_NR_HW		GENMASK(15, 0)
++#define AIC_INFO_NR_IRQ		GENMASK(15, 0)
+ 
+ #define AIC_CONFIG		0x0010
+ 
+@@ -77,7 +77,8 @@
+ #define AIC_EVENT_TYPE		GENMASK(31, 16)
+ #define AIC_EVENT_NUM		GENMASK(15, 0)
+ 
+-#define AIC_EVENT_TYPE_HW	1
++#define AIC_EVENT_TYPE_FIQ	0 /* Software use */
++#define AIC_EVENT_TYPE_IRQ	1
+ #define AIC_EVENT_TYPE_IPI	4
+ #define AIC_EVENT_IPI_OTHER	1
+ #define AIC_EVENT_IPI_SELF	2
+@@ -160,6 +161,11 @@
+ #define MPIDR_CPU(x)			MPIDR_AFFINITY_LEVEL(x, 0)
+ #define MPIDR_CLUSTER(x)		MPIDR_AFFINITY_LEVEL(x, 1)
+ 
++#define AIC_IRQ_HWIRQ(x)	(FIELD_PREP(AIC_EVENT_TYPE, AIC_EVENT_TYPE_IRQ) | \
++				 FIELD_PREP(AIC_EVENT_NUM, x))
++#define AIC_FIQ_HWIRQ(x)	(FIELD_PREP(AIC_EVENT_TYPE, AIC_EVENT_TYPE_FIQ) | \
++				 FIELD_PREP(AIC_EVENT_NUM, x))
++#define AIC_HWIRQ_IRQ(x)	FIELD_GET(AIC_EVENT_NUM, x)
+ #define AIC_NR_FIQ		4
+ #define AIC_NR_SWIPI		32
+ 
+@@ -213,7 +219,7 @@ struct aic_irq_chip {
+ 	void __iomem *base;
+ 	struct irq_domain *hw_domain;
+ 	struct irq_domain *ipi_domain;
+-	int nr_hw;
++	int nr_irq;
+ 
+ 	struct aic_info info;
+ };
+@@ -243,18 +249,22 @@ static void aic_ic_write(struct aic_irq_chip *ic, u32 reg, u32 val)
+ 
+ static void aic_irq_mask(struct irq_data *d)
+ {
++	irq_hw_number_t hwirq = irqd_to_hwirq(d);
+ 	struct aic_irq_chip *ic = irq_data_get_irq_chip_data(d);
+ 
+-	aic_ic_write(ic, AIC_MASK_SET + MASK_REG(irqd_to_hwirq(d)),
+-		     MASK_BIT(irqd_to_hwirq(d)));
++	u32 irq = AIC_HWIRQ_IRQ(hwirq);
++
++	aic_ic_write(ic, AIC_MASK_SET + MASK_REG(irq), MASK_BIT(irq));
+ }
+ 
+ static void aic_irq_unmask(struct irq_data *d)
+ {
++	irq_hw_number_t hwirq = irqd_to_hwirq(d);
+ 	struct aic_irq_chip *ic = irq_data_get_irq_chip_data(d);
+ 
+-	aic_ic_write(ic, AIC_MASK_CLR + MASK_REG(d->hwirq),
+-		     MASK_BIT(irqd_to_hwirq(d)));
++	u32 irq = AIC_HWIRQ_IRQ(hwirq);
++
++	aic_ic_write(ic, AIC_MASK_CLR + MASK_REG(irq), MASK_BIT(irq));
+ }
+ 
+ static void aic_irq_eoi(struct irq_data *d)
+@@ -281,8 +291,8 @@ static void __exception_irq_entry aic_handle_irq(struct pt_regs *regs)
+ 		type = FIELD_GET(AIC_EVENT_TYPE, event);
+ 		irq = FIELD_GET(AIC_EVENT_NUM, event);
+ 
+-		if (type == AIC_EVENT_TYPE_HW)
+-			generic_handle_domain_irq(aic_irqc->hw_domain, irq);
++		if (type == AIC_EVENT_TYPE_IRQ)
++			generic_handle_domain_irq(aic_irqc->hw_domain, event);
+ 		else if (type == AIC_EVENT_TYPE_IPI && irq == 1)
+ 			aic_handle_ipi(regs);
+ 		else if (event != 0)
+@@ -314,7 +324,7 @@ static int aic_irq_set_affinity(struct irq_data *d,
+ 	else
+ 		cpu = cpumask_any_and(mask_val, cpu_online_mask);
+ 
+-	aic_ic_write(ic, AIC_TARGET_CPU + hwirq * 4, BIT(cpu));
++	aic_ic_write(ic, AIC_TARGET_CPU + AIC_HWIRQ_IRQ(hwirq) * 4, BIT(cpu));
+ 	irq_data_update_effective_affinity(d, cpumask_of(cpu));
+ 
+ 	return IRQ_SET_MASK_OK;
+@@ -344,9 +354,7 @@ static struct irq_chip aic_chip = {
+ 
+ static unsigned long aic_fiq_get_idx(struct irq_data *d)
+ {
+-	struct aic_irq_chip *ic = irq_data_get_irq_chip_data(d);
+-
+-	return irqd_to_hwirq(d) - ic->nr_hw;
++	return AIC_HWIRQ_IRQ(irqd_to_hwirq(d));
+ }
+ 
+ static void aic_fiq_set_mask(struct irq_data *d)
+@@ -434,11 +442,11 @@ static void __exception_irq_entry aic_handle_fiq(struct pt_regs *regs)
+ 
+ 	if (TIMER_FIRING(read_sysreg(cntp_ctl_el0)))
+ 		generic_handle_domain_irq(aic_irqc->hw_domain,
+-					  aic_irqc->nr_hw + AIC_TMR_EL0_PHYS);
++					  AIC_FIQ_HWIRQ(AIC_TMR_EL0_PHYS));
+ 
+ 	if (TIMER_FIRING(read_sysreg(cntv_ctl_el0)))
+ 		generic_handle_domain_irq(aic_irqc->hw_domain,
+-					  aic_irqc->nr_hw + AIC_TMR_EL0_VIRT);
++					  AIC_FIQ_HWIRQ(AIC_TMR_EL0_VIRT));
+ 
+ 	if (is_kernel_in_hyp_mode()) {
+ 		uint64_t enabled = read_sysreg_s(SYS_IMP_APL_VM_TMR_FIQ_ENA_EL2);
+@@ -446,12 +454,12 @@ static void __exception_irq_entry aic_handle_fiq(struct pt_regs *regs)
+ 		if ((enabled & VM_TMR_FIQ_ENABLE_P) &&
+ 		    TIMER_FIRING(read_sysreg_s(SYS_CNTP_CTL_EL02)))
+ 			generic_handle_domain_irq(aic_irqc->hw_domain,
+-						  aic_irqc->nr_hw + AIC_TMR_EL02_PHYS);
++						  AIC_FIQ_HWIRQ(AIC_TMR_EL02_PHYS));
+ 
+ 		if ((enabled & VM_TMR_FIQ_ENABLE_V) &&
+ 		    TIMER_FIRING(read_sysreg_s(SYS_CNTV_CTL_EL02)))
+ 			generic_handle_domain_irq(aic_irqc->hw_domain,
+-						  aic_irqc->nr_hw + AIC_TMR_EL02_VIRT);
++						  AIC_FIQ_HWIRQ(AIC_TMR_EL02_VIRT));
+ 	}
+ 
+ 	if ((read_sysreg_s(SYS_IMP_APL_PMCR0_EL1) & (PMCR0_IMODE | PMCR0_IACT)) ==
+@@ -496,9 +504,9 @@ static struct irq_chip fiq_chip = {
+ static int aic_irq_domain_map(struct irq_domain *id, unsigned int irq,
+ 			      irq_hw_number_t hw)
+ {
+-	struct aic_irq_chip *ic = id->host_data;
++	u32 type = FIELD_GET(AIC_EVENT_TYPE, hw);
+ 
+-	if (hw < ic->nr_hw) {
++	if (type == AIC_EVENT_TYPE_IRQ) {
+ 		irq_domain_set_info(id, irq, hw, &aic_chip, id->host_data,
+ 				    handle_fasteoi_irq, NULL, NULL);
+ 		irqd_set_single_target(irq_desc_get_irq_data(irq_to_desc(irq)));
+@@ -523,14 +531,14 @@ static int aic_irq_domain_translate(struct irq_domain *id,
+ 
+ 	switch (fwspec->param[0]) {
+ 	case AIC_IRQ:
+-		if (fwspec->param[1] >= ic->nr_hw)
++		if (fwspec->param[1] >= ic->nr_irq)
+ 			return -EINVAL;
+-		*hwirq = fwspec->param[1];
++		*hwirq = AIC_IRQ_HWIRQ(fwspec->param[1]);
+ 		break;
+ 	case AIC_FIQ:
+ 		if (fwspec->param[1] >= AIC_NR_FIQ)
+ 			return -EINVAL;
+-		*hwirq = ic->nr_hw + fwspec->param[1];
++		*hwirq = AIC_FIQ_HWIRQ(fwspec->param[1]);
+ 
+ 		/*
+ 		 * In EL1 the non-redirected registers are the guest's,
+@@ -539,10 +547,10 @@ static int aic_irq_domain_translate(struct irq_domain *id,
+ 		if (!is_kernel_in_hyp_mode()) {
+ 			switch (fwspec->param[1]) {
+ 			case AIC_TMR_GUEST_PHYS:
+-				*hwirq = ic->nr_hw + AIC_TMR_EL0_PHYS;
++				*hwirq = AIC_FIQ_HWIRQ(AIC_TMR_EL0_PHYS);
+ 				break;
+ 			case AIC_TMR_GUEST_VIRT:
+-				*hwirq = ic->nr_hw + AIC_TMR_EL0_VIRT;
++				*hwirq = AIC_FIQ_HWIRQ(AIC_TMR_EL0_VIRT);
+ 				break;
+ 			case AIC_TMR_HV_PHYS:
+ 			case AIC_TMR_HV_VIRT:
+@@ -900,16 +908,15 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
+ 	aic_irqc = irqc;
+ 
+ 	info = aic_ic_read(irqc, AIC_INFO);
+-	irqc->nr_hw = FIELD_GET(AIC_INFO_NR_HW, info);
++	irqc->nr_irq = FIELD_GET(AIC_INFO_NR_IRQ, info);
+ 
+ 	if (irqc->info.fast_ipi)
+ 		static_branch_enable(&use_fast_ipi);
+ 	else
+ 		static_branch_disable(&use_fast_ipi);
+ 
+-	irqc->hw_domain = irq_domain_create_linear(of_node_to_fwnode(node),
+-						   irqc->nr_hw + AIC_NR_FIQ,
+-						   &aic_irq_domain_ops, irqc);
++	irqc->hw_domain = irq_domain_create_tree(of_node_to_fwnode(node),
++						 &aic_irq_domain_ops, irqc);
+ 	if (WARN_ON(!irqc->hw_domain)) {
+ 		iounmap(irqc->base);
+ 		kfree(irqc);
+@@ -928,11 +935,11 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
+ 	set_handle_irq(aic_handle_irq);
+ 	set_handle_fiq(aic_handle_fiq);
+ 
+-	for (i = 0; i < BITS_TO_U32(irqc->nr_hw); i++)
++	for (i = 0; i < BITS_TO_U32(irqc->nr_irq); i++)
+ 		aic_ic_write(irqc, AIC_MASK_SET + i * 4, U32_MAX);
+-	for (i = 0; i < BITS_TO_U32(irqc->nr_hw); i++)
++	for (i = 0; i < BITS_TO_U32(irqc->nr_irq); i++)
+ 		aic_ic_write(irqc, AIC_SW_CLR + i * 4, U32_MAX);
+-	for (i = 0; i < irqc->nr_hw; i++)
++	for (i = 0; i < irqc->nr_irq; i++)
+ 		aic_ic_write(irqc, AIC_TARGET_CPU + i * 4, 1);
+ 
+ 	if (!is_kernel_in_hyp_mode())
+@@ -948,7 +955,7 @@ static int __init aic_of_ic_init(struct device_node *node, struct device_node *p
+ 	vgic_set_kvm_info(&vgic_info);
+ 
+ 	pr_info("Initialized with %d IRQs, %d FIQs, %d vIPIs\n",
+-		irqc->nr_hw, AIC_NR_FIQ, AIC_NR_SWIPI);
++		irqc->nr_irq, AIC_NR_FIQ, AIC_NR_SWIPI);
+ 
+ 	return 0;
+ }
+-- 
+2.33.0
 
-Jason
