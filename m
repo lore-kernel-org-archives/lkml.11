@@ -2,68 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D074C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:41:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235652AbiBXWl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 17:41:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
+        id S233865AbiBXWmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 17:42:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235622AbiBXWlw (ORCPT
+        with ESMTP id S235653AbiBXWl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 17:41:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38EEE20C1B6;
-        Thu, 24 Feb 2022 14:41:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C68AA61B48;
-        Thu, 24 Feb 2022 22:41:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 98D1BC340F4;
-        Thu, 24 Feb 2022 22:41:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645742480;
-        bh=EoJD4A54UC1BEv33pTg+hb7XnzOqDewO3QajY/x6iPM=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ZL3uixyJTZ7O0Je5PqnsXl0o0BMgOyO2vHboVA4y4jkgy2xMnANqLRXdexkAQdi2l
-         ZNtR0YFlEufAAmjoObaFC2/cD/VgYUxD64YXliq5TZiM9vz0Fe5WAjoQrfUimlNLCB
-         sbam9VM08plFS0IYB5w1OBqLzBTKuxPnlqLvkzotcR40nb+h9EbPn9nSpqtCKObnU0
-         7cLxUG27a2/BbqLoxtHhsA+quQoIgvM+i4MgJn78x+eJHTdQNfDZGI3ednF913SCF7
-         c1KsTwpaePTROCX1hD9Yjz748y0SXUxMPX4DVtv9kVQgbuWJ+DLdQ14N+OzutfAQo5
-         v44enBWS9sSAg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 83109E6D453;
-        Thu, 24 Feb 2022 22:41:20 +0000 (UTC)
-Subject: Re: [GIT PULL] KVM changes for 5.17-rc6
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220224200833.2287352-1-pbonzini@redhat.com>
-References: <20220224200833.2287352-1-pbonzini@redhat.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220224200833.2287352-1-pbonzini@redhat.com>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
-X-PR-Tracked-Commit-Id: e910a53fb4f20aa012e46371ffb4c32c8da259b4
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1f840c0ef44b7304d6a58499e0e5668084c0864d
-Message-Id: <164574248053.13100.8169995214464494614.pr-tracker-bot@kernel.org>
-Date:   Thu, 24 Feb 2022 22:41:20 +0000
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
+        Thu, 24 Feb 2022 17:41:58 -0500
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041CE20C1B6;
+        Thu, 24 Feb 2022 14:41:28 -0800 (PST)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id C228A1C0B82; Thu, 24 Feb 2022 23:41:26 +0100 (CET)
+Date:   Thu, 24 Feb 2022 23:41:26 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Wolfram Sang <wsa@kernel.org>,
+        krzysztof.kozlowski@canonical.com, semen.protsenko@linaro.org,
+        robh@kernel.org, yangyicong@hisilicon.com, geert+renesas@glider.be,
+        sven@svenpeter.dev, jie.deng@intel.com, bence98@sch.bme.hu,
+        lukas.bulwahn@gmail.com, linux-i2c@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 4.19 12/13] i2c: qup: allow COMPILE_TEST
+Message-ID: <20220224224126.GC6522@duo.ucw.cz>
+References: <20220223023152.242065-1-sashal@kernel.org>
+ <20220223023152.242065-12-sashal@kernel.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="5QAgd0e35j3NYeGe"
+Content-Disposition: inline
+In-Reply-To: <20220223023152.242065-12-sashal@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Thu, 24 Feb 2022 15:08:33 -0500:
 
-> https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
+--5QAgd0e35j3NYeGe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1f840c0ef44b7304d6a58499e0e5668084c0864d
+Hi!
 
-Thank you!
+> [ Upstream commit 5de717974005fcad2502281e9f82e139ca91f4bb ]
+>=20
+> Driver builds fine with COMPILE_TEST. Enable it for wider test coverage
+> and easier maintenance.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+I believe this does not fix a bug and so is not suitable for stable.
+
+Best regards,
+								Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--5QAgd0e35j3NYeGe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYhgJlgAKCRAw5/Bqldv6
+8kzrAJwIZg94IIqQJJX8/1MldsEW5DWfFgCfadX3BksxlWl5kx5bh7Bwwz85eC0=
+=jpxD
+-----END PGP SIGNATURE-----
+
+--5QAgd0e35j3NYeGe--
