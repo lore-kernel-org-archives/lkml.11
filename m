@@ -2,173 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6ACC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 13:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234912AbiBXN3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 08:29:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40830 "EHLO
+        id S234941AbiBXN3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 08:29:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231328AbiBXN2x (ORCPT
+        with ESMTP id S234875AbiBXN25 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 08:28:53 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC7DB0E89
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:28:22 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id j2so3898153ybu.0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:28:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=PWoHM5P/pAPHOuW7BhTY/a4Hu1y7CT5eN63sjuNRDM0=;
-        b=T6kRQLU5OYXCLAAhR3IDKqlM5/MBIPB0MlSNrYg1ST0xzKd67NFMMi1h1rfacr2EEK
-         JmvSBDZQeHGT0VuDaEecgoXv1jcHtywHilkZdgncE5r8pY3dnIzpzeP2clkuaf75SBac
-         AC4pPjWSD//SJh4bI8800iyNd/Lbq5HMFH9W5Fl42JvBa12dHgMhsIz47fIX/unGZhTb
-         1nZtiuEpXCTa8SvJcvayYbSUjZl6zV7V2lYxe4lpRzHEFVMQM9hCAygqY4yuNtuf/i10
-         9RwgEgYTkVh4srczR+kAQlRLepmfi17b6Fh0croahgB+qkdqFZZjhcGEc5EYuzj315VH
-         f7+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=PWoHM5P/pAPHOuW7BhTY/a4Hu1y7CT5eN63sjuNRDM0=;
-        b=otsUJQybnsdjAAw4rZcVKmvTD4d43e+kfmfNDHOqCcGLEYyP/v0v8acnOzv4PyAEOg
-         ojIFAlNs/9A2TMUmalXnrxXJMimzwr9gqQcEhxZG24b9k4WQCCiamPgiOFsMCl0Kv0SS
-         KXHMk/x3Crdobt5+V3iQNblQPe+9cGMDpplRT9SGiBeKRXprdB9B3tIKkNEDo5MaZBEz
-         0DxaCYYqs7LHSWzHgTYkTO8l+Ktn5qHsYn74a25/f8gy7jqmM45zthBlfyUw1dgUKNf2
-         okazVpkg6l9OnOkqyGwJ8JFHFj4iiolKEi+XCcHLuy7HwVNkA1crPBERFEvj/Ps3pHWu
-         SD/A==
-X-Gm-Message-State: AOAM533MOkUeTuG8N1nSIbBZNuLaCRAUsxjpttDTtDn3fLHN5cLF9xPw
-        QDQ1jOTB6jKkqTnRfTfnzRgPuzUZ5KWzh6V9KQyoWg==
-X-Google-Smtp-Source: ABdhPJxnnQg82+iGZ9tQJY/owmawEKGz4l4bYRutG1NcymM1wcsYLniNeRuWFOrxo49epnA8AM9EVI4jsl0UEGopAjU=
-X-Received: by 2002:a25:6993:0:b0:624:55af:336c with SMTP id
- e141-20020a256993000000b0062455af336cmr2381922ybc.412.1645709301901; Thu, 24
- Feb 2022 05:28:21 -0800 (PST)
+        Thu, 24 Feb 2022 08:28:57 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBE7B0E89
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 05:28:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645709307; x=1677245307;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LoqcSXr8ZR938wLLsg1RNHp6T8lxDPpNtf7BGbJ/kUM=;
+  b=eyQDuXfIAxFkC3iq8gdKJiKzzCQE9Djew5ih+TNRSNb5wfKW5ni0bpwF
+   +QdhGsMTPRMOpsi811i9llxuGt0N37uatNEMfpmGf+TLoz7Sa9ApaCVhL
+   sUns4D7995qGG+8df3VgeKAC+znWFgV52OKYcVOcbHsTsXrLj74H26UWy
+   EKrxSf1ocaMYKZG1Y3sgEsS0t0rxZGsod4EDvN3A5jwHCpMNPUkDdIgcR
+   zkMxBvCyUqXm0wHTM9NbVZvhCR/trPiGknk1PVtkQXJ9LBfCfdm2XIv7f
+   UM6Cpmdg+HNTkiPHyfOsXHoRgpOxAkAnlKzW+lWq8uSzPd5hh1i9IM7Xq
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="315455426"
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="315455426"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 05:28:25 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="777053010"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 24 Feb 2022 05:28:23 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nNEAQ-00038M-JZ; Thu, 24 Feb 2022 13:28:22 +0000
+Date:   Thu, 24 Feb 2022 21:27:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [kees:for-next/overflow 5/7] lib/stackinit_kunit.c:440:1: sparse:
+ sparse: Using plain integer as NULL pointer
+Message-ID: <202202242127.wh8nEbxG-lkp@intel.com>
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 24 Feb 2022 18:58:10 +0530
-Message-ID: <CA+G9fYtzLr+9T9Z1N8QLznW6DqTOU8iSHvgMftdhe2XkEf8F8g@mail.gmail.com>
-Subject: [next] next-20220223 kernel crash
-To:     Tejun Heo <tj@kernel.org>, Lai Jiangshan <jiangshanlai@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Lai Jiangshan <laijs@linux.alibaba.com>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, regressions@lists.linux.dev,
-        lkft-triage@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linux next-20220223 boot failed due to the kernel crash on all devices.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git for-next/overflow
+head:   2ee9b438ef95e4d1a41fba18fd837d1cea67d4a8
+commit: 29b768fc54fe40d97b8aef390ab9dc4ec74cf773 [5/7] lib: stackinit: Convert to KUnit
+config: arm-randconfig-s031-20220223 (https://download.01.org/0day-ci/archive/20220224/202202242127.wh8nEbxG-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/commit/?id=29b768fc54fe40d97b8aef390ab9dc4ec74cf773
+        git remote add kees https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git
+        git fetch --no-tags kees for-next/overflow
+        git checkout 29b768fc54fe40d97b8aef390ab9dc4ec74cf773
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash
 
-metadata:
-  git_ref: master
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-  git_sha: d4a0ae62a277377de396850ed4b709b6bd9b7326
-  git_describe: next-20220223
-  kernel-config: https://builds.tuxbuild.com/25XO3ffPO3RLpbE3aNxffMu4nEf/config
-
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-crash log on x86_64 machine [1]:
-[    5.326681] Please do not flush events WQ.
-[    5.327480] CPU: 0 PID: 1 Comm: swapper/0 Not tainted
-5.17.0-rc5-next-20220223 #1
-[    5.327480] Hardware name: Supermicro SYS-5019S-ML/X11SSH-F, BIOS
-2.0b 07/27/2017
-[    5.327480] Call Trace:
-[    5.327480]  <TASK>
-[    5.327480]  dump_stack_lvl+0x49/0x5e
-[    5.327480]  dump_stack+0x10/0x12
-[    5.327480]  check_flush_dependency.cold+0x19/0x2e
-[    5.327480]  __flush_work.isra.0+0x186/0x400
-[    5.327480]  ? alloc_unbound_pwq+0x600/0x600
-[    5.327480]  ? preempt_count_sub+0xd2/0x120
-[    5.327480]  ? __rcu_read_unlock+0x53/0x70
-[    5.327480]  ? __queue_work+0x33e/0x680
-[    5.327480]  ? queue_work_on+0x4e/0x80
-[    5.327480]  ? work_on_cpu+0xb5/0xf0
-[    5.327480]  ? trace_hardirqs_on+0x38/0x120
-[    5.327480]  work_on_cpu+0xc1/0xf0
-[    5.327480]  ? queue_work_on+0x80/0x80
-[    5.327480]  ? __traceiter_workqueue_execute_end+0x70/0x70
-[    5.327480]  ? acpi_processor_power_init_bm_check+0x1a0/0x1a0
-[    5.327480]  ? acpi_os_allocate_zeroed+0x2a/0x2a
-[    5.327480]  acpi_processor_ffh_cstate_probe+0x105/0x1f0
-[    5.327480]  acpi_processor_evaluate_cst+0x553/0x670
-[    5.327480]  ? acpi_processor_claim_cst_control+0x80/0x80
-[    5.327480]  ? __kasan_check_write+0x14/0x20
-[    5.327480]  ? up_write+0x3f/0x70
-[    5.327480]  acpi_processor_get_power_info+0x87/0x850
-[    5.327480]  acpi_processor_power_init+0x113/0x260
-[    5.327480]  __acpi_processor_start+0x205/0x270
-[    5.327480]  acpi_processor_start+0x41/0x60
-[    5.327480]  really_probe+0x138/0x5d0
-[    5.327480]  ? __kasan_check_write+0x14/0x20
-[    5.327480]  __driver_probe_device+0x19e/0x230
-[    5.327480]  driver_probe_device+0x4e/0xf0
-[    5.327480]  __driver_attach+0xfc/0x260
-[    5.327480]  ? __device_attach_driver+0x130/0x130
-[    5.327480]  bus_for_each_dev+0xfb/0x150
-[    5.327480]  ? subsys_dev_iter_exit+0x10/0x10
-[    5.327480]  ? preempt_count_sub+0xd2/0x120
-[    5.327480]  ? _raw_spin_unlock+0x1f/0x40
-[    5.327480]  driver_attach+0x2d/0x40
-[    5.327480]  bus_add_driver+0x23f/0x300
-[    5.327480]  driver_register+0x119/0x1a0
-[    5.327480]  ? acpi_video_init+0x142/0x142
-[    5.327480]  acpi_processor_driver_init+0x33/0xc8
-[    5.327480]  do_one_initcall+0x99/0x2c0
-[    5.327480]  ? trace_event_raw_event_initcall_finish+0x160/0x160
-[    5.327480]  ? parameqn+0x40/0xa0
-[    5.327480]  ? __kmalloc+0x1cf/0x390
-[    5.327480]  kernel_init_freeable+0x2d2/0x330
-[    5.327480]  ? rest_init+0xf0/0xf0
-[    5.327480]  kernel_init+0x1e/0x140
-[    5.327480]  ret_from_fork+0x22/0x30
-[    5.327480]  </TASK>
-
-crash log on qemu [2]:
-
-[    9.766144] Please do not flush events_unbound WQ.
-[    9.766938] CPU: 1 PID: 1 Comm: swapper/0 Not tainted
-5.17.0-rc5-next-20220223 #1
-[    9.766938] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS 1.12.0-1 04/01/2014
-[    9.766938] Call Trace:
-[    9.766938]  <TASK>
-[    9.766938]  dump_stack_lvl+0x49/0x5e
-[    9.766938]  dump_stack+0x10/0x12
-[    9.766938]  check_flush_dependency.cold+0x19/0x2e
-[    9.766938]  __flush_work.isra.0+0x186/0x400
-[    9.766938]  ? __queue_work+0x339/0x680
-[    9.766938]  ? alloc_unbound_pwq+0x600/0x600
-[    9.766938]  ? __queue_work+0x33e/0x680
-[    9.766938]  ? queue_work_on+0x4e/0x80
-[    9.766938]  ? driver_deferred_probe_trigger.part.0+0xcb/0xe0
-[    9.766938]  ? trace_hardirqs_on+0x38/0x120
-[    9.766938]  ? queue_work_on+0x4e/0x80
-[    9.766938]  ? driver_deferred_probe_add.part.0+0xe0/0xe0
-[    9.766938]  flush_work+0xe/0x10
-[    9.766938]  deferred_probe_initcall+0x3e/0xa0
-[    9.766938]  do_one_initcall+0x99/0x2c0
-[    9.766938]  ? trace_event_raw_event_initcall_finish+0x160/0x160
-[    9.766938]  ? parameqn+0x40/0xa0
-[    9.766938]  ? __kmalloc+0x1cf/0x390
-[    9.766938]  kernel_init_freeable+0x2d2/0x330
-[    9.766938]  ? rest_init+0xf0/0xf0
-[    9.766938]  kernel_init+0x1e/0x140
-[    9.766938]  ret_from_fork+0x22/0x30
-[    9.766938]  </TASK>
-[    9.786217] PM:   Magic number: 10:124:564
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
 
---
-Linaro LKFT
-https://lkft.linaro.org
+sparse warnings: (new ones prefixed by >>)
+>> lib/stackinit_kunit.c:440:1: sparse: sparse: Using plain integer as NULL pointer
+>> lib/stackinit_kunit.c:440:1: sparse: sparse: Using plain integer as NULL pointer
+>> lib/stackinit_kunit.c:440:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:442:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:443:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:443:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:443:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:443:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:443:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:443:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:444:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:445:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:446:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:446:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:446:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:446:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:446:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:446:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:447:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:447:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:447:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:450:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:450:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:450:1: sparse: sparse: Using plain integer as NULL pointer
+   lib/stackinit_kunit.c:452:1: sparse: sparse: Using plain integer as NULL pointer
 
+vim +440 lib/stackinit_kunit.c
 
-[1] https://lkft.validation.linaro.org/scheduler/job/4617047#L840
-[2] https://lkft.validation.linaro.org/scheduler/job/4617053#L661
+50ceaa95ea0970 lib/test_stackinit.c Kees Cook 2019-01-23  408  
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  409  #define DEFINE_SCALAR_TEST(name, init, xfail)			\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  410  		DEFINE_TEST(name ## _ ## init, name, SCALAR,	\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  411  			    init, xfail)
+50ceaa95ea0970 lib/test_stackinit.c Kees Cook 2019-01-23  412  
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  413  #define DEFINE_SCALAR_TESTS(init, xfail)			\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  414  		DEFINE_SCALAR_TEST(u8, init, xfail);		\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  415  		DEFINE_SCALAR_TEST(u16, init, xfail);		\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  416  		DEFINE_SCALAR_TEST(u32, init, xfail);		\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  417  		DEFINE_SCALAR_TEST(u64, init, xfail);		\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  418  		DEFINE_TEST(char_array_ ## init, unsigned char,	\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  419  			    STRING, init, xfail)
+50ceaa95ea0970 lib/test_stackinit.c Kees Cook 2019-01-23  420  
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  421  #define DEFINE_STRUCT_TEST(name, init, xfail)			\
+50ceaa95ea0970 lib/test_stackinit.c Kees Cook 2019-01-23  422  		DEFINE_TEST(name ## _ ## init,			\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  423  			    struct test_ ## name, STRUCT, init, \
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  424  			    xfail)
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  425  
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  426  #define DEFINE_STRUCT_TESTS(init, xfail)			\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  427  		DEFINE_STRUCT_TEST(small_hole, init, xfail);	\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  428  		DEFINE_STRUCT_TEST(big_hole, init, xfail);	\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  429  		DEFINE_STRUCT_TEST(trailing_hole, init, xfail);	\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  430  		DEFINE_STRUCT_TEST(packed, init, xfail)
+50ceaa95ea0970 lib/test_stackinit.c Kees Cook 2019-01-23  431  
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  432  #define DEFINE_STRUCT_INITIALIZER_TESTS(base)			\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  433  		DEFINE_STRUCT_TESTS(base ## _ ## partial,	\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  434  				    WANT_SUCCESS);		\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  435  		DEFINE_STRUCT_TESTS(base ## _ ## all,		\
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  436  				    WANT_SUCCESS)
+50ceaa95ea0970 lib/test_stackinit.c Kees Cook 2019-01-23  437  
+50ceaa95ea0970 lib/test_stackinit.c Kees Cook 2019-01-23  438  /* These should be fully initialized all the time! */
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  439  DEFINE_SCALAR_TESTS(zero, WANT_SUCCESS);
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23 @440  DEFINE_STRUCT_TESTS(zero, WANT_SUCCESS);
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  441  /* Struct initializers: padding may be left uninitialized. */
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  442  DEFINE_STRUCT_INITIALIZER_TESTS(static);
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  443  DEFINE_STRUCT_INITIALIZER_TESTS(dynamic);
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  444  DEFINE_STRUCT_INITIALIZER_TESTS(runtime);
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  445  DEFINE_STRUCT_INITIALIZER_TESTS(assigned_static);
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  446  DEFINE_STRUCT_INITIALIZER_TESTS(assigned_dynamic);
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  447  DEFINE_STRUCT_TESTS(assigned_copy, XFAIL);
+50ceaa95ea0970 lib/test_stackinit.c Kees Cook 2019-01-23  448  /* No initialization without compiler instrumentation. */
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  449  DEFINE_SCALAR_TESTS(none, WANT_SUCCESS);
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  450  DEFINE_STRUCT_TESTS(none, WANT_SUCCESS);
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  451  /* Initialization of members with __user attribute. */
+a8fc576d4af2f2 lib/test_stackinit.c Kees Cook 2021-07-23  452  DEFINE_TEST(user, struct test_user, STRUCT, none, WANT_SUCCESS);
+50ceaa95ea0970 lib/test_stackinit.c Kees Cook 2019-01-23  453  
+
+:::::: The code at line 440 was first introduced by commit
+:::::: a8fc576d4af2f23a87a586424252df97f0ad0b06 lib/test_stackinit: Add assigned initializers
+
+:::::: TO: Kees Cook <keescook@chromium.org>
+:::::: CC: Kees Cook <keescook@chromium.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
