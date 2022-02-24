@@ -2,214 +2,268 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 147C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D0EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 16:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229803AbiBXQf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 11:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
+        id S230267AbiBXQgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 11:36:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiBXQfX (ORCPT
+        with ESMTP id S229903AbiBXQg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 11:35:23 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EAE41E5006;
-        Thu, 24 Feb 2022 08:34:49 -0800 (PST)
+        Thu, 24 Feb 2022 11:36:27 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21641D6826
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 08:35:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645720490; x=1677256490;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=hJcHBIv5GtzJ7UFp/EHGVlmJY6Fq7yzDCkR6uBrWNjY=;
-  b=NSac/zQVqMm6Qx65h5mF+s16apJmrHm5VvRCNoLqUS/vjIOQREpCLDB6
-   s/B5GrnVkdQ5BSjULu8YZLs/NhuD4ge4GAE11Lttavy7j9e4GUILxUyEi
-   Z0+f5UyztoEmL87BcY38kJschTmwQ0cSr+kdoSsvNCyFU2knSQi8Lk4kG
-   sYLlNXFYV4hKOPOHnJN2Oz3J9biQydsbPeRscnbJRnxGpegCRIegK8pdN
-   7AUtFq8AVlpq+AI/4HHitdWjjhVQeKrFMpEVZglN2Jh6ucihb75NUNaek
-   qTjP2BOdUbEBrWWTLw2roH0tkOLf9/wTIa6InF1ShMRbWCGtUYzpCmR/R
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="338710256"
+  t=1645720544; x=1677256544;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=tf65skpb16JOfeIGRXlVvnRE9pqOJ3Gp6hwOwMP4/wo=;
+  b=LJSI4JU6By/YCEWpKZLtfCuDE1VE1tOW1lx5meq9UrmQliu7yiiZMEEm
+   ZitbNltGgvcm3ZR4fhbPGAOmwhLNCliB/zGarPQHOsxQMlA6/rRQs5lv8
+   wOGEOeGU1AIK5A+K2qefaV2iLQW0rGc/lENg193YsPuU5uwyeatR8GfA1
+   /+DKyDMLz376Yp+f+mv0JALD+5VjUFTEQWfBHUCXafpZ2TQooMmd5YDHr
+   ZinJVbh9VQLYN31PkoltYAqdQf+EWpigr2TdFTPXNDRynOx97xI7+KaHL
+   SXDwgIlcoT1t5jpy9mGqgEYN6yWVtGpeJV4ZNa3UvSjCSondcjqc/5nNT
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="235785003"
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="338710256"
+   d="scan'208";a="235785003"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 08:19:57 -0800
-X-ExtLoop1: 1
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 08:35:42 -0800
 X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="548812952"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga008.jf.intel.com with ESMTP; 24 Feb 2022 08:19:56 -0800
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 24 Feb 2022 08:19:56 -0800
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 24 Feb 2022 08:19:55 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Thu, 24 Feb 2022 08:19:55 -0800
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.43) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Thu, 24 Feb 2022 08:19:54 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S0mWl4btNho5uGuy6/2sfVs9XK3DYDOpYTH+6/YJbn/HnY7dgLsYPWU41E1p9Tsg5a+CPbo9KajU1qcKVk/dUHCfvT8FB1fo1noi8+oAHqaCXipfiS5kM7sNAt0Kt76fzXNRObRtycv1OP3zbN5DvbX9ZvL3IMqpRMkWZP9Pjq1F505S+oXa/9y5J2fsGbEZHMFHzqc9bGt1WNZ6NM7S3SRDMRa7dmle9mOXRJfpCM2yjbEdPOViMAHgQPi6DYSl5r9fOiApSlRuC/3yP/aDjah2xDTs5jT6xU34xrnKVk2htdXPrRXmNAg7Vh9RUNAW4ZhWYu0Ni2yuEEKQQ2fI8g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zi3dVeCjvXtFudZ3K3P3b37oxoxa7GIsLUhceXXBz2Q=;
- b=Nxch7tZbnUGb3V2RiRxbYW7e8iCxsVxYIqj9H0mFCQ3cxbM9R9V3R1Ds58Mob3oHL70sDAUA4HFKrW6GlormM9ASdP8C0E6kMWlTJah+SUmxtCaQSYdqLxUdC8XQn29z2aITHZut8/uPegkEPXrPtB7WrGSGo3Z4q+kOL7CndEyD6Kmri24y+rDpTjiDM5J0306QpuvMvCxJZS2sCun4ZVWvTaaPlxK5O5xGtZ8C7r71CGScT5Zh0gtJKV0MdaFPZq9nmjnFzvFcxKNetBsJvXf2H9aTJZ8+jRKUcJxrc9ClPJ27+qZ9KHA13+AI4asruWmTtOqmLVcLP5qMfKXqnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BYAPR11MB3256.namprd11.prod.outlook.com (2603:10b6:a03:76::19)
- by MN2PR11MB3549.namprd11.prod.outlook.com (2603:10b6:208:e9::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Thu, 24 Feb
- 2022 16:19:53 +0000
-Received: from BYAPR11MB3256.namprd11.prod.outlook.com
- ([fe80::910a:a800:65c2:c366]) by BYAPR11MB3256.namprd11.prod.outlook.com
- ([fe80::910a:a800:65c2:c366%5]) with mapi id 15.20.4995.027; Thu, 24 Feb 2022
- 16:19:52 +0000
-From:   "Moore, Robert" <robert.moore@intel.com>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>,
-        "Wysocki, Rafael J" <rafael.j.wysocki@intel.com>,
-        Len Brown <lenb@kernel.org>
-CC:     "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "devel@acpica.org" <devel@acpica.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 3/4] acpi: exsystem: Warn about sleeps greater than 50 ms
-Thread-Topic: [PATCH 3/4] acpi: exsystem: Warn about sleeps greater than 50 ms
-Thread-Index: AQHYKXMVEnTJK3a8GECkhoN2wlnjd6yi4XkA
-Date:   Thu, 24 Feb 2022 16:19:52 +0000
-Message-ID: <BYAPR11MB32563DC0413B8595D1339B37873D9@BYAPR11MB3256.namprd11.prod.outlook.com>
-References: <20220224113807.91771-1-pmenzel@molgen.mpg.de>
- <20220224113807.91771-3-pmenzel@molgen.mpg.de>
-In-Reply-To: <20220224113807.91771-3-pmenzel@molgen.mpg.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.200.16
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2edbc282-99e1-44b1-26b2-08d9f7b17d1b
-x-ms-traffictypediagnostic: MN2PR11MB3549:EE_
-x-microsoft-antispam-prvs: <MN2PR11MB35497314C5E59439DC317303873D9@MN2PR11MB3549.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NMB8WFTNiYJINuWLMg1fy06sc7VAT1ObZiu25LkbLOGatgZdmYcqRyJ7bltMKEKhhlzTt+MViRD4Pl60T18d0wP++0GCKhOuiDVeLoGpt3gCn/WvL9haEUxSnIGSPa2uB7zWs/mkpHDBCQ3lpz2gUuJ05BSrmKeMQWZ6j3Gv2WzA/hWGmcoB7tfD0HkvBiPvB8L4IL/6qYvZvzXCnuhh9bxIgIhNXLiqmJQxCLPL5LRU8UgTTRGAGU7YORmN+YtKN73gk+9/WB417LUbF2/JUeD79Tf6S0nwNHJlgCT+zpTWpg3mW55UITpzxUqR0cGrbnAndQ3LC/SsFM7/bPYJt+g7vu0ZjDzmEOf2T1C4JTlja/gyN29IdmF9+ldPIccX+4wKYIF6ytSDgmZ6CjUa+rEmPRjV58CzAUoVgXfUrRMtNT4rJ612YF46oLa5uWIqleHPO9C//ohOmwCVc0JEREuLLMPZ9ipyG+LEIWpTaYiXbdiWdK40VS+xTQrhRCHBH2pT0qJ/QNxVGcOm6OOd7zUzLGraW6b9QVxjD09q3XvtmkNJXL2FGhs3EPvZABrrBAI1DJOIPdsKP/J4OJp/4SJxVZO2nHLEd5P/Hv5/4t3C5+r514JZIGUHBGY1I7i4nHfUwF1j3UBsK1+vsy5cboyqTBvcF1g5H2O6qw7jfNzP71XhsqzBobf2QamO91uqu2teqHHVtGkMysKu+U8p8Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3256.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8936002)(26005)(186003)(71200400001)(52536014)(316002)(54906003)(38100700002)(76116006)(8676002)(66556008)(66946007)(110136005)(66476007)(122000001)(86362001)(33656002)(82960400001)(83380400001)(4326008)(66446008)(64756008)(38070700005)(2906002)(7696005)(5660300002)(6506007)(55016003)(9686003)(508600001)(53546011);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?CB95+ETv7+diOXFWLSnj/enLGAdoBHQAKd5p3Mt8f0rCvvPbcpGykERtohNh?=
- =?us-ascii?Q?5zFVflGojk9vcfllNhwTmj+8ocQA1ll5KhvNUD96nnA6sIkeK9QWeJqki+B/?=
- =?us-ascii?Q?bzym1wYlxAViZn7N9IzslH0pKf2ekPhkuqoZ/ocJpRv5FVtdEeRnpG7RG0Qw?=
- =?us-ascii?Q?L3K8cqT9x+q71HkrNca2hRDPZUElX9s9d3jmswtKhB8gUqdX1sApPb8W2wji?=
- =?us-ascii?Q?hfFaST1VCyaM+7Cjq4UVgzHEMwepnGzc/7dXut7TuKdY7wfOu6fxCJeaGLzs?=
- =?us-ascii?Q?0Vu6gXmFg9YA4BICyqshjh6x7DY3vbTZGYv8gfLxiIq+slsqUPoG8ws6rZE8?=
- =?us-ascii?Q?OBGnO5S8lkXuJjayb8sw2/4mQvEaeCCn7PXK9tzCuR9I9OM45HYIH+2JLtYi?=
- =?us-ascii?Q?oqOIjUPKf1R/Hf9LH/MrE/Y517F7GCvwZA5LZ5MlLx/+byi45FlC7u6uSsOi?=
- =?us-ascii?Q?hltqbmh8/oL2zh4PcjyNa2U4TQuO5/Z09LNfpCRypE2Su3E/Oy7YW2zfGgKE?=
- =?us-ascii?Q?8HOTJ7yz5mbYb2MJu1fo8RdA4FZ+X2EQEkpwvkJWLlPdgUx9S29wO1I/5/au?=
- =?us-ascii?Q?UO/Zbt2yMj27lJ5LByae+Am1cPLIp1MGZmxQXtrmox/UznMNC64Hdyu1kxQR?=
- =?us-ascii?Q?ecnUcLIj4lcqwpD4wn1xtUEXaxYXsQrYQB8ZE0xPq4sx014PGhOoCXTJaDom?=
- =?us-ascii?Q?UhgHUJArcStidIpxsLAdGVnBIHdNaN3Lk+3wvCYMItxzx0TmR82YDkjG9n2S?=
- =?us-ascii?Q?Ff2wsdHK7IQ10mTwKCqLNXQxLtUUgYSdmmzX9uCatIN9c9COhutms49bFDoM?=
- =?us-ascii?Q?1ECrPybngqRC+ygI7HTLX1p8lDtyBsEWitEAwewtujWZpJzrB3M2De7NXWcM?=
- =?us-ascii?Q?uYvWwcguFY7PTSQwlVsZ53e6/lBXIQZCptDSaAkJckGZRP0J/WpwmXctRMu2?=
- =?us-ascii?Q?TdBRv/FFPuB207lyIxgMf00ZubFNpxNTeUVM6dAZxpMyR7lbiAEDOVqe1DfI?=
- =?us-ascii?Q?Jo89eq5n0VMm731OzyYK/Ao9FBA5+B7s+/sYOuemRrbCBRHPKlOAw5gVVF9y?=
- =?us-ascii?Q?bAqsrzjWfdP92AhI8FkzRwIP8PJTvvMmiTh2q111Q4TA6gyS/0dhLNclMCIX?=
- =?us-ascii?Q?HIum3PJpoWmULoBaszU1+BH2fJM/IaUfSnhhsbPjpcf/IJpyA5qfUar4K8Ok?=
- =?us-ascii?Q?CjsPr73/vB2EgJxNN96bT+w4RW3+ixbIs3voFCpFVv8LIGqEA+V3B1J2Z1pc?=
- =?us-ascii?Q?8C/0LEAfLD4QEcDmRwhrkxP/GzHqdZRKWO8t8t76RCsbaFehpLXRcH6hlxJF?=
- =?us-ascii?Q?Q6AfykCvuCWq1pXiX2PnXHLo+dGunaEXG3S1sc5Xr0WqUrWRZioEUwrBlbHt?=
- =?us-ascii?Q?g1zvjIydN4EugqO66lvzX6iU3aJ/5bB11xhBMAIBhi4+H1gK99wDnDllGpV5?=
- =?us-ascii?Q?8LO8Jg4FeJJ5Vb52sdgkBqVZRySmULp/aXNwQsKuu2qL9VVcQeaUrmyykHoT?=
- =?us-ascii?Q?/8NDxJcOaclMvV6KeZtOvDk1BM8sE7fNwdqSfNDrnwAdMSu94RSUPtTSWQJM?=
- =?us-ascii?Q?aF+ToRH1H8DpKfBkjaw7XgG2XvK5lwlpZrubFHNkqE8XCwFNdIrHbX9ArdXc?=
- =?us-ascii?Q?/K1dS+vW10pFc7NekpV8voI=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="548820495"
+Received: from vpirogov-mobl.amr.corp.intel.com (HELO [10.252.137.68]) ([10.252.137.68])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 08:35:39 -0800
+Message-ID: <faeb3c16-55a9-912d-1222-9dab364f56c7@intel.com>
+Date:   Thu, 24 Feb 2022 08:35:32 -0800
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3256.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2edbc282-99e1-44b1-26b2-08d9f7b17d1b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Feb 2022 16:19:52.9214
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: z+uvRVFlIveMFmXbSDOzhclt+BXdpLcMfeIFiJLr3SG/8sIuJXCCW4aFTSzgPlxwWmsa0YUSMP62Gu/f3T/Phw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3549
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org
+Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
+ <20220224155630.52734-4-kirill.shutemov@linux.intel.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCHv4 03/30] x86/tdx: Provide common base for SEAMCALL and
+ TDCALL C wrappers
+In-Reply-To: <20220224155630.52734-4-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So, this is the current implementation:
+...
+>  arch/x86/include/asm/tdx.h    | 20 ++++++++
+>  arch/x86/kernel/asm-offsets.c |  9 ++++
+>  arch/x86/virt/tdxcall.S       | 91 +++++++++++++++++++++++++++++++++++
+>  3 files changed, 120 insertions(+)
+>  create mode 100644 arch/x86/virt/tdxcall.S
+> 
+> diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+> index ba8042ce61c2..2f8cb1e53e77 100644
+> --- a/arch/x86/include/asm/tdx.h
+> +++ b/arch/x86/include/asm/tdx.h
+> @@ -8,6 +8,25 @@
+>  #define TDX_CPUID_LEAF_ID	0x21
+>  #define TDX_IDENT		"IntelTDX    "
+>  
+> +#define TDX_SEAMCALL_VMFAILINVALID     0x8000FF00FFFF0000ULL
 
-    /*
-     * For compatibility with other ACPI implementations and to prevent
-     * accidental deep sleeps, limit the sleep time to something reasonable=
-.
-     */
-    if (HowLong > ACPI_MAX_SLEEP)
-    {
-        HowLong =3D ACPI_MAX_SLEEP;
-    }
+This needs a comment.  It's a completely software-defined value, right?
 
-    AcpiOsSleep (HowLong);
+> +#ifndef __ASSEMBLY__
+> +
+> +/*
+> + * Used to gather the output registers values of the TDCALL and SEAMCALL
+> + * instructions when requesting services from the TDX module.
+> + *
+> + * This is a software only structure and not part of the TDX module/VMM ABI.
+> + */
+> +struct tdx_module_output {
+> +	u64 rcx;
+> +	u64 rdx;
+> +	u64 r8;
+> +	u64 r9;
+> +	u64 r10;
+> +	u64 r11;
+> +};
+> +
+>  #ifdef CONFIG_INTEL_TDX_GUEST
+>  
+>  void __init tdx_early_init(void);
+> @@ -18,4 +37,5 @@ static inline void tdx_early_init(void) { };
+>  
+>  #endif /* CONFIG_INTEL_TDX_GUEST */
+>  
+> +#endif /* !__ASSEMBLY__ */
+>  #endif /* _ASM_X86_TDX_H */
+> diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
+> index 9fb0a2f8b62a..7dca52f5cfc6 100644
+> --- a/arch/x86/kernel/asm-offsets.c
+> +++ b/arch/x86/kernel/asm-offsets.c
+> @@ -18,6 +18,7 @@
+>  #include <asm/bootparam.h>
+>  #include <asm/suspend.h>
+>  #include <asm/tlbflush.h>
+> +#include <asm/tdx.h>
+>  
+>  #ifdef CONFIG_XEN
+>  #include <xen/interface/xen.h>
+> @@ -65,6 +66,14 @@ static void __used common(void)
+>  	OFFSET(XEN_vcpu_info_arch_cr2, vcpu_info, arch.cr2);
+>  #endif
+>  
+> +	BLANK();
+> +	OFFSET(TDX_MODULE_rcx, tdx_module_output, rcx);
+> +	OFFSET(TDX_MODULE_rdx, tdx_module_output, rdx);
+> +	OFFSET(TDX_MODULE_r8,  tdx_module_output, r8);
+> +	OFFSET(TDX_MODULE_r9,  tdx_module_output, r9);
+> +	OFFSET(TDX_MODULE_r10, tdx_module_output, r10);
+> +	OFFSET(TDX_MODULE_r11, tdx_module_output, r11);
+> +
+>  	BLANK();
+>  	OFFSET(BP_scratch, boot_params, scratch);
+>  	OFFSET(BP_secure_boot, boot_params, secure_boot);
+> diff --git a/arch/x86/virt/tdxcall.S b/arch/x86/virt/tdxcall.S
+> new file mode 100644
+> index 000000000000..90569faedacc
+> --- /dev/null
+> +++ b/arch/x86/virt/tdxcall.S
+> @@ -0,0 +1,91 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#include <asm/asm-offsets.h>
+> +#include <asm/tdx.h>
+> +
+> +/*
+> + * TDX guests use the TDCALL instruction to make requests to the
+> + * TDX module and hypercalls to the VMM.
+> + *
+> + * TDX host user SEAMCALL instruction to make requests to TDX module.
 
-Where ACPI_MAX_SLEEP is:=20
+		^ uses??
 
-#define ACPI_MAX_SLEEP                  2000    /* 2000 millisec =3D=3D two=
- seconds */
 
------Original Message-----
-From: Paul Menzel <pmenzel@molgen.mpg.de>=20
-Sent: Thursday, February 24, 2022 3:38 AM
-To: Moore, Robert <robert.moore@intel.com>; Wysocki, Rafael J <rafael.j.wys=
-ocki@intel.com>; Len Brown <lenb@kernel.org>
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>; linux-acpi@vger.kernel.org; devel@=
-acpica.org; linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] acpi: exsystem: Warn about sleeps greater than 50 ms
+> + * They are supported in Binutils >= 2.36.
+> + */
 
-Quick boottime is important, so warn about sleeps greater than 50 ms in ACP=
-I.
+While you're in there, could we make this a little more structured, please?
 
-50 ms is still long compared to distribution Linux kernels reaching initrd =
-in 350 ms, so should probably changed to 10 ms, so people are aware about t=
-his.
+/*
+ * TDX_MODULE_CALL - common helper macro for both
+ *		     TDCALL and SEAMCALL instructions.
+ * 		
+ * TDCALL   - used by TDX guests to make requests to the
+ * 	      TDX module and hypercalls to the VMM.
+ * SEAMCALL - used by TDX hosts to make requests to the
+ *	      TDX module.
+ *
+ * Both instruction are supported in Binutils >= 2.36.
+ */
 
-Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
----
- drivers/acpi/acpica/exsystem.c | 5 +++++
- 1 file changed, 5 insertions(+)
+> +#define tdcall		.byte 0x66,0x0f,0x01,0xcc
+> +#define seamcall	.byte 0x66,0x0f,0x01,0xcf
+> +
+> +.macro TDX_MODULE_CALL host:req
+> +	/*
+> +	 * R12 will be used as temporary storage for struct tdx_module_output
+> +	 * pointer. Since R12-R15 registers are not used by TDCALL/SEAMCALL
+> +	 * services supported by this function, it can be reused.
+> +	 */
+> +
+> +	/* Callee saved, so preserve it */
+> +	push %r12
+> +
+> +	/*
+> +	 * Push output pointer to stack.
+> +	 * After the operation, it will be fetched into R12 register.
+> +	 */
+> +	push %r9
+> +
+> +	/* Mangle function call ABI into TDCALL/SEAMCALL ABI: */
+> +	/* Move Leaf ID to RAX */
+> +	mov %rdi, %rax
+> +	/* Move input 4 to R9 */
+> +	mov %r8,  %r9
+> +	/* Move input 3 to R8 */
+> +	mov %rcx, %r8
+> +	/* Move input 1 to RCX */
+> +	mov %rsi, %rcx
+> +	/* Leave input param 2 in RDX */
+> +
+> +	.if \host
+> +	seamcall
+> +	/*
+> +	 * SEAMCALL instruction is essentially a VMExit from VMX root
+> +	 * mode to SEAM VMX root mode.  VMfailInvalid (CF=1) indicates
+> +	 * that the targeted SEAM firmware is not loaded or disabled,
+> +	 * or P-SEAMLDR is busy with another SEAMCALL.  %rax is not
+> +	 * changed in this case.
+> +	 *
+> +	 * Set %rax to TDX_SEAMCALL_VMFAILINVALID for VMfailInvalid.
+> +	 * This value will never be used as actual SEAMCALL error code.
+> +	 */
 
-diff --git a/drivers/acpi/acpica/exsystem.c b/drivers/acpi/acpica/exsystem.=
-c index 00f66af31ffa..bdffb8aac05c 100644
---- a/drivers/acpi/acpica/exsystem.c
-+++ b/drivers/acpi/acpica/exsystem.c
-@@ -167,6 +167,11 @@ acpi_status acpi_ex_system_do_sleep(u64 how_long_ms)
-=20
- 	acpi_ex_exit_interpreter();
-=20
-+	if (how_long_ms > 50) {
-+		ACPI_WARNING((AE_INFO,
-+		    "Time parameter %llu > 50 ms. Please contact firmware vendor for mor=
-e responsive system.", how_long_ms));
-+	}
-+
- 	/*
- 	 * For compatibility with other ACPI implementations and to prevent
- 	 * accidental deep sleeps, limit the sleep time to something reasonable.
---
-2.35.1
+Why can TDX_SEAMCALL_VMFAILINVALID never be used as an actual SEAMCALL
+error code?  Would it be more accurate to say that today's P-SEAMLDR and
+TDX module never use TDX_SEAMCALL_VMFAILINVALID as an actual SEAMCALL
+error code?
 
+There's an important distinction there.  It's possible that the SEAMCALL
+instruction architecture says or implies that it can never have
+TDX_SEAMCALL_VMFAILINVALID as a return value.  It's also possible that
+this "never" comes from a guess about what P-SEAMLDRs or TDX modules can do.
+
+> +	jnc .Lno_vmfailinvalid
+> +	mov $TDX_SEAMCALL_VMFAILINVALID, %rax
+> +.Lno_vmfailinvalid:
+> +	.else
+> +	tdcall
+> +	.endif
+> +
+> +	/*
+> +	 * Fetch output pointer from stack to R12 (It is used
+> +	 * as temporary storage)
+> +	 */
+> +	pop %r12
+> +
+> +	/* Check for success: 0 - Successful, otherwise failed */
+> +	test %rax, %rax
+> +	jnz .Lno_output_struct
+> +
+> +	/*
+> +	 * Since this function can be initiated without an output pointer,
+> +	 * check if caller provided an output struct before storing
+> +	 * output registers.
+> +	 */
+> +	test %r12, %r12
+> +	jz .Lno_output_struct
+> +
+> +	/* Copy result registers to output struct: */
+> +	movq %rcx, TDX_MODULE_rcx(%r12)
+> +	movq %rdx, TDX_MODULE_rdx(%r12)
+> +	movq %r8,  TDX_MODULE_r8(%r12)
+> +	movq %r9,  TDX_MODULE_r9(%r12)
+> +	movq %r10, TDX_MODULE_r10(%r12)
+> +	movq %r11, TDX_MODULE_r11(%r12)
+> +
+> +.Lno_output_struct:
+> +	/* Restore the state of R12 register */
+> +	pop %r12
+> +.endm
+
+That doesn't look too bad.  Please just send an updated version with the
+revised comments.
