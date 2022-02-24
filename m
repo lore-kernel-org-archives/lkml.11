@@ -2,89 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A65C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDC9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbiBXBxm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:53:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56168 "EHLO
+        id S229854AbiBXByI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:54:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbiBXBxk (ORCPT
+        with ESMTP id S229803AbiBXByB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:53:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5A712AA2;
-        Wed, 23 Feb 2022 17:53:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C4EBB82355;
-        Thu, 24 Feb 2022 01:53:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A69C340E7;
-        Thu, 24 Feb 2022 01:53:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645667589;
-        bh=tH1Ehp45yMhjnidPxO18cnLpeXBVJiCxuD6d1ITrvac=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YRFvwf3j72bXGqxXHEAy6m81H+GhjpOP+s1vcWdIQew5U/ceiExBEm4Zs4H3qHndr
-         BWUUCc3uqi/t5bKtZu7Tsviz+5IzEekZBkjnG+hCv+51HtbQ72YZi1pp6XGaz2iOfy
-         NDKizmDZEC8mVe2S9YjgbCtGz91V5NQA6nJQfQUw0b9Sxp8p9/38wOfxIGgy0csNoH
-         xMqAYWFs8qr1BWdYPBrU6mf2HX8sPUpdw6NYk64j9ezVPNv3niKKpBDSnMcVHd5heq
-         mUBVCTvcFN4RY+9zLzyl1cJ8oXQc9/Tn0IlsA+RoEtMN1SUhYSYYRqpEWy3sl3P9ZN
-         qUmyOYitmVSPA==
-Date:   Wed, 23 Feb 2022 17:53:07 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Gilad Ben-Yossef <gilad@benyossef.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ofir Drang <ofir.drang@arm.com>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        stable@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] crypto: drbg: fix crypto api abuse
-Message-ID: <YhblA1qQ9XLb2nmO@sol.localdomain>
-References: <20220223080400.139367-1-gilad@benyossef.com>
- <Yhbjq3cVsMVUQLio@sol.localdomain>
+        Wed, 23 Feb 2022 20:54:01 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B02EC1ADA0
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:53:31 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id l25so961160oic.13
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:53:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=uguiin8hqj3JoNBkgb0eMr70jISc6FMAupA0t7mvm1o=;
+        b=IlOu7IMOqx73TO7dDuzfNPmAqJSZqLKO4OlP+mtkpMIbjaEDsvu3XcsE87Anyov+DP
+         8uDUqpmoKnczLwJR2bfWpvpsV3o/SCjDh1R63xwkYiuxT5kMdw3RExyzVtN7vGtjqhsB
+         qtA01Xm1njDxUn5Tk1J4lQpPUzFN5SV3g2tpM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=uguiin8hqj3JoNBkgb0eMr70jISc6FMAupA0t7mvm1o=;
+        b=bQr/V3OHbMQJ09phCNg7Ro4WhLLfPhuWsru9cKYXhObjUHCLsO17LjPp27IluKAHXb
+         hkzwdQefcw7xfYgYh95FrtIqKYOu8wcjx+U2vfdVy7s1QS7LuG0rd2tnq49Wlx7BFN1Z
+         VOPu1R26ovEMfVZzHADjLb9tWFLI602XxLZPJNeXubbDW3snGzXV/bWTuSAod2D5vdTF
+         UhoIkGA1vkQClKKZ6zb3bLcSALmYa4qhdoroGygTuFTOMeEc0n4O7y8RKFR+3w7k58/3
+         M3sRYjsQdesb7y/nqaMMEX6EJBUHWETll4AH6RS1ygp79MzACdJwYzs+7QyAqFRshbNE
+         d/7Q==
+X-Gm-Message-State: AOAM531Qk8a3doh40q/2scOSI9Wp7MrMJNWyrMlFBfoKqORVdr0E3J1V
+        7piv6g2eES3BEHvCQEfHfWGhWMKcTvYeVw==
+X-Google-Smtp-Source: ABdhPJyvnyS3vf4avP768zNV+lGSkU5aQSVUwCfNTPsgPVcLSbs1p2u52XorksQxgu/bzRJqFwqUHA==
+X-Received: by 2002:aca:643:0:b0:2d3:fce2:d82e with SMTP id 64-20020aca0643000000b002d3fce2d82emr5869068oig.209.1645664124020;
+        Wed, 23 Feb 2022 16:55:24 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id em32sm716001oab.28.2022.02.23.16.55.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 16:55:23 -0800 (PST)
+Subject: Re: [PATCH v7 10/10] cpupower: Add "perf" option to print AMD P-State
+ information
+To:     Huang Rui <ray.huang@amd.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>
+Cc:     "Sharma, Deepak" <Deepak.Sharma@amd.com>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>,
+        Steven Noonan <steven@valvesoftware.com>,
+        "Fontenot, Nathan" <Nathan.Fontenot@amd.com>,
+        "Su, Jinzhou (Joe)" <Jinzhou.Su@amd.com>,
+        "Du, Xiaojian" <Xiaojian.Du@amd.com>,
+        "Yuan, Perry" <Perry.Yuan@amd.com>,
+        "Meng, Li (Jassmine)" <Li.Meng@amd.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Giovanni Gherdovich <ggherdovich@suse.cz>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220222153426.2216974-1-ray.huang@amd.com>
+ <20220222153426.2216974-11-ray.huang@amd.com> <YhWsBivPabbGoWr0@amd.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <9308042e-d820-551e-0f6f-b3f26a8a9bc8@linuxfoundation.org>
+Date:   Wed, 23 Feb 2022 17:55:21 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yhbjq3cVsMVUQLio@sol.localdomain>
+In-Reply-To: <YhWsBivPabbGoWr0@amd.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 05:47:25PM -0800, Eric Biggers wrote:
-> On Wed, Feb 23, 2022 at 10:04:00AM +0200, Gilad Ben-Yossef wrote:
-> > the drbg code was binding the same buffer to two different
-> > scatter gather lists and submitting those as source and
-> > destination to a crypto api operation, thus potentially
-> > causing HW crypto drivers to perform overlapping DMA
-> > mappings which are not aware it is the same buffer.
-> > 
-> > This can have serious consequences of data corruption of
-> > internal DRBG buffers and wrong RNG output.
-> > 
-> > Fix this by reusing the same scatter gatther list for both
-> > src and dst.
-> > 
-> > Signed-off-by: Gilad Ben-Yossef <gilad@benyossef.com>
-> > Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-> > Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-> > Tested-on: r8a7795-salvator-x
-> > Tested-on: xilinx-zc706
-> > Fixes: 43490e8046b5d ("crypto: drbg - in-place cipher operation for CTR")
-> > Cc: stable@vger.kernel.org
+On 2/22/22 8:37 PM, Huang Rui wrote:
+> On Tue, Feb 22, 2022 at 11:34:26PM +0800, Huang, Ray wrote:
+>> Add "-r --perf" option in cpupower-frequency-info to get the performance
 > 
-> Where is it documented and tested that the API doesn't allow this?
-> I wasn't aware of this case; it sounds perfectly allowed to me.
-> There might be a lot of other users who do this, not just drbg.c.
+> Thanks Shuah! There is one typo ("-r --perf" --> "-c --perf") here. Because
+> "r" is occupied by option character. Would you mind to correct it in the
+> commit log?
 > 
 
-Just quickly looking through the code I maintain, there is another place that
-uses scatterlists like this: in fscrypt_crypt_block() in fs/crypto/crypto.c, the
-source and destination can be the same.  That's just the code I maintain; I'm
-sure if you looked through the whole kernel you'd find a lot more.
+Done. Commit amended in
+https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux.git
+cpupower branch for Linux 5.18-rc1
 
-This sounds more like a driver bug, and a case we need to add self-tests for.
-
-- Eric
+thanks,
+-- Shuah
