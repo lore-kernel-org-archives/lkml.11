@@ -2,77 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 885C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 20:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67CCFC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 20:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234420AbiBXUug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 15:50:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
+        id S234429AbiBXUyp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 15:54:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiBXUud (ORCPT
+        with ESMTP id S230383AbiBXUym (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 15:50:33 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 230FA1CF0BC
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 12:50:02 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id y24so5985938lfg.1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 12:50:02 -0800 (PST)
+        Thu, 24 Feb 2022 15:54:42 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088CD1C6ED8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 12:54:12 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id j24so4888532oii.11
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 12:54:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K7Q/Yaamh7u6ae3y6zkq/joMW6amPe2G20eLGXBMeLA=;
-        b=LMlhah8SdQ2JxJ3A8LX9FtEG/kjw8TtC5fVbS/xgmC3I8CaYr7YE7fHIhHIsMq1g/g
-         cjqxW8PLx4H7meNqtjpmtNS5G/RcHX3ub7b3DO1/cdh37glVOLbzVCbDvBeCqu/3NLzu
-         SxnprZj4hBezMb3ITkFaMHuNdEazF5zxnNEhE=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1gjMFPbNgKd1Fc+yJ2WMlD8bStAd2QRyxEWecc3LYdo=;
+        b=Y/Wvt/7a4Am55JzXa9HoEyDMYICHiIr9PkWows4PdIGunA+iguZ1KgUzNB0B5E9Wj6
+         XXnQQoa5gB1Fgc84RwOs4WWy0l8SfCu5fU0lHxh6pU00e8nxwTAH/IuXN4XwmNMcB3Zw
+         lPPWFXEd7KgBw8vPaE5j925HxxDCPVh24B/18Hq05zCfIYN70sNTnfn65vghO63krnNP
+         DOaPNTi2nwOhfCIxeIoUx+/uI2w8nTimLgvnpp2xX8gX/mAYV3bC053g5pDayn5F22wO
+         bvKbIxKoUkv8FBD0tsNrpMi3Y86J7HA9GbixQ1QqXU/jb90g2GCaPebzFzq6OGOwZPtt
+         l8cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K7Q/Yaamh7u6ae3y6zkq/joMW6amPe2G20eLGXBMeLA=;
-        b=iM67vli7AugwovoZaacp8/PgGHM8/xpOBUhOvABEYTQdarrMbD5fEisldZVTMPlUe5
-         /2LJrzNPub8vaOZeXERpq+DchgBRRGcP2uS5X/Z2a5vR9Q4lVPmCZ/ruH9jZ3MZxh5Ev
-         vOFPbpYVCNnDYbX60es1I7SB3wl9pCuu7aN8EJG8w0AGtk7Wr2hPCynuqWMBKJBNtjnh
-         ctWEe6r5nHUoZ6E6HL0ynoxpR6NqP8uETTgX29YgDS08uAk0oxmc4Rnbd4oRNSELvDZk
-         IADc8GLf2DPKEeSboFnmMA+QaHJxnw98lqu/nddIWlxx7VaqDdo3htFHvkVRyHbySC1u
-         CHWA==
-X-Gm-Message-State: AOAM533/j26e0Z4O0iahqCMODXgIDtsTHUPWphMZ5pwmq9cUxn6mC0eQ
-        kj1QE95MRL1NMpu6jk+SIReIWgEfGnn6Howbrv0=
-X-Google-Smtp-Source: ABdhPJxmK0V71o4b91cdGJz638BleqbSAin2SvaSXQCoA+kQcS8pWmszXU9JUpJbscRKqy/ELQcsMQ==
-X-Received: by 2002:ac2:442f:0:b0:443:7bee:85d5 with SMTP id w15-20020ac2442f000000b004437bee85d5mr2779836lfl.294.1645735800110;
-        Thu, 24 Feb 2022 12:50:00 -0800 (PST)
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com. [209.85.167.48])
-        by smtp.gmail.com with ESMTPSA id y15-20020a2ebb8f000000b0023134a7b265sm70977lje.36.2022.02.24.12.49.58
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 12:49:59 -0800 (PST)
-Received: by mail-lf1-f48.google.com with SMTP id y24so5985845lfg.1
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 12:49:58 -0800 (PST)
-X-Received: by 2002:ac2:5313:0:b0:443:99c1:7e89 with SMTP id
- c19-20020ac25313000000b0044399c17e89mr2706158lfh.531.1645735798149; Thu, 24
- Feb 2022 12:49:58 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1gjMFPbNgKd1Fc+yJ2WMlD8bStAd2QRyxEWecc3LYdo=;
+        b=KOD5jXN5pl/HI115YlAwOtG/Fjr2iThM9G7DWsTezPZOS0RNMqknJcmotEon5vwIsa
+         Haz32A1H2dCPOPWvgt9Aeehzmjldwl6h90pFlTs/o1ZPAj6G9lERrCQ1OL2Z/O880mfP
+         GKCmbAicnbSciJI9r35u8WRUrhlkZh3OGiQPE/HUIQjg6tr1qG6XPj4K0R0gKM128LUp
+         gb4sju8jDsNDsJKS3psSuVnY6EmGKxclzN5JZD+PT/ky+lhR2C35XXo1ytfAHb4bWNNC
+         TPNsw+Jc/rBFK+4RrUC//I48tYBNhazyQeE1SFS7wOjrA6b3Yxkn3GiPkmGt7fBvkm1z
+         FwwQ==
+X-Gm-Message-State: AOAM532Ds5uQWPcst1h7HIc/KYe7tmCYDI0ZQ92bIeqSOSABw3C/weS+
+        z5L52NECsFZAuTHCMZS3lhHtDg==
+X-Google-Smtp-Source: ABdhPJwyZw5i5quvytzLgQRMkFwcPhdAZHq7eSXE0uyLKb2AFLds0r6jS7vN7MYNsoo1mggWoWd9qw==
+X-Received: by 2002:a05:6870:7994:b0:d2:cc3f:5e7 with SMTP id he20-20020a056870799400b000d2cc3f05e7mr7221024oab.77.1645736051447;
+        Thu, 24 Feb 2022 12:54:11 -0800 (PST)
+Received: from builder.lan ([2600:1700:a0:3dc8:3697:f6ff:fe85:aac9])
+        by smtp.gmail.com with ESMTPSA id c8-20020a4ad788000000b0031ce69b1640sm191259oou.10.2022.02.24.12.54.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 12:54:10 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: (subset) [PATCH] soc: qcom: mdt_loader: Fix split-firmware condition
+Date:   Thu, 24 Feb 2022 14:53:58 -0600
+Message-Id: <164573604161.1471031.13709791424620348092.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220215034819.1209367-1-bjorn.andersson@linaro.org>
+References: <20220215034819.1209367-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-References: <20220224195305.1584666-1-kuba@kernel.org>
-In-Reply-To: <20220224195305.1584666-1-kuba@kernel.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 24 Feb 2022 12:49:42 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjWmb9fw1wnuZmaPca92X6+Ot1revY3+t2TKVc--xEVyQ@mail.gmail.com>
-Message-ID: <CAHk-=wjWmb9fw1wnuZmaPca92X6+Ot1revY3+t2TKVc--xEVyQ@mail.gmail.com>
-Subject: Re: [GIT PULL] Networking for 5.17-rc6
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 11:53 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Current release - regressions:
+On Mon, 14 Feb 2022 19:48:19 -0800, Bjorn Andersson wrote:
+> The updated condition checking if a segment can be found in the loaded
+> firmware blob, or need to be loaded from a separate file, incorrectly
+> classifies segments that ends at the end of the loaded blob. The result
+> is that the mdt loader attempts to load the segment from a separate
+> file.
+> 
+> Correct the conditional to use the loaded segment instead.
+> 
+> [...]
 
-.. and not listed here is the build fix for IPV6 being disabled that
-has been reported multiple times.  Thanks.
+Applied, thanks!
 
-                  Linus
+[1/1] soc: qcom: mdt_loader: Fix split-firmware condition
+      commit: a1b019872693c74d919db4e267f451fc7af9a21c
+
+Best regards,
+-- 
+Bjorn Andersson <bjorn.andersson@linaro.org>
