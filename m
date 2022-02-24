@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:17:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 871F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233977AbiBXLSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 06:18:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58290 "EHLO
+        id S233989AbiBXLSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 06:18:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233969AbiBXLRz (ORCPT
+        with ESMTP id S233983AbiBXLR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 06:17:55 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9AFBFFF88
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:24 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id b5so1474930wrr.2
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:24 -0800 (PST)
+        Thu, 24 Feb 2022 06:17:56 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34CF12D210
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:26 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id j17so2509062wrc.0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ceUQI8pUhjwWr7cwe8PfSIpA4DyG+G2Rz7beXile+P0=;
-        b=himXMgwqxUWpRMrFbC97dlxMwb1qkLSvrgWmiX0R+wVTPDdmvC0ZMKzn5lLCPKOeXL
-         fjcncNVLW9vUQpZy24Zu8rY2s0sc+Qt8JhEF9bMaMJV9rdVk9ha0qZOaL4v84ItkAg1m
-         PBUjNz51VnrHBZpvsf0ZsT60sZeEyP/XG9woWpL9zXF+tARotwNUZKL+LcKUbTO0E6Hr
-         vv/D0XM4U7yvkJ7+GkIvoYepaSPKvR5jFVZxDd8Fp4NhPn9mgOB/dLf6S6w2fpkMv0WZ
-         2efScThgcgILM861QEvBNEFjGXUo37ZknHn/CbTHNs1KT1fyKGuFVrgoR5LHN58tFZbQ
-         fq+A==
+        bh=4BM5CJMOAHhPAmpP71sdzK8wbdwXXqGTSZfCgqYugXg=;
+        b=n1L4xpTzRA0q8gh+4j2RqBvCcWy1klX3V/ib8KM0vfbFhkOWyjB9pXS/5oJpm51rQq
+         INweqZjGSUBpP2Q1odh3RRNLafB1nUBSoMAgIjXGZkk55Pq4UTgXrfWA2YzovmoOCOTi
+         FG/Egy5crEl/WFOcsapHiZrZhmlqhLH14+lhYXF/DNJ7pVCLkhab+1+RjT7Y00RxHG2V
+         cDj7qQxtE1bFZFM1uWCe9IRvQmZNUZtSUh8NyXTd7gJ0q+KsUL/3EScbhc1OJMJ0o9oU
+         jCa4GrX4MpQ00hsslCcfVfbDwbnLHE79BPt3gu0JJpIMe8Le1/oroCffXzQemP+vGQ6c
+         iX5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ceUQI8pUhjwWr7cwe8PfSIpA4DyG+G2Rz7beXile+P0=;
-        b=8CMvlgMOeV8kYk1iOSnxQKbf4+BabdHB22ZsAYmlZv2nMrJU9Yk8WFXBbhdBda6E2X
-         l9H+GkI/rypway8mQo3wtxH2IRliuolTbNL3QkSJ3WdsZeT/7qn9UMiAQo3CFY616XaE
-         abVGjUPKJomrzkzc4e26y0uvSiZFPB9EUc9CQsJJQnSVjksQ9gJrinC5TghPaNr8BDTc
-         WFVRNp00DZXx6W2s4d+MncS+/LWAWxPRqfrQcgC8cytKi90rc9MeSD8iXi6v6JM8hOjX
-         F5jr26g18QPW0ut+KE44pq4VNcHCmnGtlxhAUFM2at9PMDwaTFQdv27KrOAhno8BkDDb
-         VzHA==
-X-Gm-Message-State: AOAM5335icE6tZZwfEIjDT8qpw9T6U8YSL+e3iSSXOdyXDuop5wA0IDH
-        +EEwMGpKJ5d5Puv0qOBzxM2VaA==
-X-Google-Smtp-Source: ABdhPJyF9hlhdYn3QgLA1hMGpxlSnPQtvk5TT0UYfuCo7gdjJ6fCLnBsBQreeycYv1PvBEnz4lzOTg==
-X-Received: by 2002:a5d:6108:0:b0:1e3:3a73:d34a with SMTP id v8-20020a5d6108000000b001e33a73d34amr1819381wrt.290.1645701443219;
-        Thu, 24 Feb 2022 03:17:23 -0800 (PST)
+        bh=4BM5CJMOAHhPAmpP71sdzK8wbdwXXqGTSZfCgqYugXg=;
+        b=ZkxPHUMmaDhOhhObIvkDIorfLlDT4GT0AJ9Dl5v5WiGOn5zvv8wmUQB+uFM8REbA82
+         FGQTJF6YQ+lZToa7GVXvYDkjOYX/cq8vmq2yjXNKU9RBwQh9YG8je1MVfyZFh6GhSX8T
+         8tIQyHyYGxSxuCrhnGjcGjrEgcA6FqEQleP6hOSt+tyRf3LL3IFLMwOghvMNYVccC0Ad
+         G6YCTatfGjNARGuip+dYKrn9VmkSFpwZsyHxyG4kGA13mzBfy4N7aN8DYDkRyxKzv7e9
+         7Ri+RSeSQ+fMEW7d+0T2mawlcnQVKJC1JAF4RzaIdSoh7xLbMTAdhsM2Wxk8nkf9zdsg
+         qCsg==
+X-Gm-Message-State: AOAM532MorR810yRQ8x0yUUhkGl+WJ2CEK34PW9crEeUB6YIgI8/6KL0
+        VUXXwYqZYdHrqjras4S69Epyew==
+X-Google-Smtp-Source: ABdhPJz1C94utP8QKj8W69ks5id0NikmOu8cCjYgpbdqcoMNOqv9qC5629Z+024K827DsNT10sjlyA==
+X-Received: by 2002:a05:6000:178a:b0:1ea:7db1:3159 with SMTP id e10-20020a056000178a00b001ea7db13159mr1819550wrg.9.1645701445430;
+        Thu, 24 Feb 2022 03:17:25 -0800 (PST)
 Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id t4sm2245737wmj.10.2022.02.24.03.17.22
+        by smtp.gmail.com with ESMTPSA id t4sm2245737wmj.10.2022.02.24.03.17.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 03:17:22 -0800 (PST)
+        Thu, 24 Feb 2022 03:17:24 -0800 (PST)
 From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 To:     broonie@kernel.org
 Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
         pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v2 01/16] ASoC: codecs: va-macro: move to individual clks from bulk
-Date:   Thu, 24 Feb 2022 11:17:03 +0000
-Message-Id: <20220224111718.6264-2-srinivas.kandagatla@linaro.org>
+Subject: [PATCH v2 03/16] ASoC: codecs: tx-macro: move clk provider to managed variants
+Date:   Thu, 24 Feb 2022 11:17:05 +0000
+Message-Id: <20220224111718.6264-4-srinivas.kandagatla@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220224111718.6264-1-srinivas.kandagatla@linaro.org>
 References: <20220224111718.6264-1-srinivas.kandagatla@linaro.org>
@@ -66,138 +66,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using bulk clocks and referencing them individually using array index is
-not great for readers.
-So move them to individual clocks handling and also remove some unnecessary
-error handling in the code.
+move clk provider registration to managed api variants, this should help
+with some code tidyup.
 
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- sound/soc/codecs/lpass-va-macro.c | 65 ++++++++++++++++++++-----------
- 1 file changed, 43 insertions(+), 22 deletions(-)
+ sound/soc/codecs/lpass-tx-macro.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
-diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
-index e14c277e6a8b..ff8120886eca 100644
---- a/sound/soc/codecs/lpass-va-macro.c
-+++ b/sound/soc/codecs/lpass-va-macro.c
-@@ -193,7 +193,9 @@ struct va_macro {
+diff --git a/sound/soc/codecs/lpass-tx-macro.c b/sound/soc/codecs/lpass-tx-macro.c
+index bd549b387862..75a5513bff16 100644
+--- a/sound/soc/codecs/lpass-tx-macro.c
++++ b/sound/soc/codecs/lpass-tx-macro.c
+@@ -1745,10 +1745,9 @@ static const struct clk_ops swclk_gate_ops = {
  
- 	int dec_mode[VA_MACRO_NUM_DECIMATORS];
- 	struct regmap *regmap;
--	struct clk_bulk_data clks[VA_NUM_CLKS_MAX];
-+	struct clk *mclk;
-+	struct clk *macro;
-+	struct clk *dcodec;
- 	struct clk_hw hw;
+ };
  
- 	s32 dmic_0_1_clk_cnt;
-@@ -1321,7 +1323,7 @@ static const struct clk_ops fsgen_gate_ops = {
- 
- static int va_macro_register_fsgen_output(struct va_macro *va)
+-static struct clk *tx_macro_register_mclk_output(struct tx_macro *tx)
++static int tx_macro_register_mclk_output(struct tx_macro *tx)
  {
--	struct clk *parent = va->clks[2].clk;
-+	struct clk *parent = va->mclk;
- 	struct device *dev = va->dev;
- 	struct device_node *np = dev->of_node;
- 	const char *parent_clk_name;
-@@ -1404,15 +1406,18 @@ static int va_macro_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	va->dev = dev;
--	va->clks[0].id = "macro";
--	va->clks[1].id = "dcodec";
--	va->clks[2].id = "mclk";
- 
--	ret = devm_clk_bulk_get_optional(dev, VA_NUM_CLKS_MAX, va->clks);
--	if (ret) {
--		dev_err(dev, "Error getting VA Clocks (%d)\n", ret);
--		return ret;
--	}
-+	va->macro = devm_clk_get_optional(dev, "macro");
-+	if (IS_ERR(va->macro))
-+		return PTR_ERR(va->macro);
-+
-+	va->dcodec = devm_clk_get_optional(dev, "dcodec");
-+	if (IS_ERR(va->dcodec))
-+		return PTR_ERR(va->dcodec);
-+
-+	va->mclk = devm_clk_get(dev, "mclk");
-+	if (IS_ERR(va->mclk))
-+		return PTR_ERR(va->mclk);
- 
- 	ret = of_property_read_u32(dev->of_node, "qcom,dmic-sample-rate",
- 				   &sample_rate);
-@@ -1425,12 +1430,6 @@ static int va_macro_probe(struct platform_device *pdev)
- 			return -EINVAL;
- 	}
- 
--	/* mclk rate */
--	clk_set_rate(va->clks[1].clk, VA_MACRO_MCLK_FREQ);
--	ret = clk_bulk_prepare_enable(VA_NUM_CLKS_MAX, va->clks);
--	if (ret)
--		return ret;
--
- 	base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(base)) {
- 		ret = PTR_ERR(base);
-@@ -1444,21 +1443,41 @@ static int va_macro_probe(struct platform_device *pdev)
- 	}
- 
- 	dev_set_drvdata(dev, va);
--	ret = va_macro_register_fsgen_output(va);
-+
-+	/* mclk rate */
-+	clk_set_rate(va->mclk, 2 * VA_MACRO_MCLK_FREQ);
-+
-+	ret = clk_prepare_enable(va->macro);
+ 	struct device *dev = tx->dev;
+-	struct device_node *np = dev->of_node;
+ 	const char *parent_clk_name = NULL;
+ 	const char *clk_name = "lpass-tx-mclk";
+ 	struct clk_hw *hw;
+@@ -1764,13 +1763,11 @@ static struct clk *tx_macro_register_mclk_output(struct tx_macro *tx)
+ 	init.num_parents = 1;
+ 	tx->hw.init = &init;
+ 	hw = &tx->hw;
+-	ret = clk_hw_register(tx->dev, hw);
++	ret = devm_clk_hw_register(dev, hw);
  	if (ret)
- 		goto err;
- 
-+	ret = clk_prepare_enable(va->dcodec);
-+	if (ret)
-+		goto err_dcodec;
-+
-+	ret = clk_prepare_enable(va->mclk);
-+	if (ret)
-+		goto err_mclk;
-+
-+	ret = va_macro_register_fsgen_output(va);
-+	if (ret)
-+		goto err_clkout;
-+
- 	ret = devm_snd_soc_register_component(dev, &va_macro_component_drv,
- 					      va_macro_dais,
- 					      ARRAY_SIZE(va_macro_dais));
- 	if (ret)
--		goto err;
-+		goto err_clkout;
- 
--	return ret;
-+	return 0;
- 
-+err_clkout:
-+	clk_disable_unprepare(va->mclk);
-+err_mclk:
-+	clk_disable_unprepare(va->dcodec);
-+err_dcodec:
-+	clk_disable_unprepare(va->macro);
- err:
--	clk_bulk_disable_unprepare(VA_NUM_CLKS_MAX, va->clks);
+-		return ERR_PTR(ret);
 -
- 	return ret;
+-	of_clk_add_provider(np, of_clk_src_simple_get, hw->clk);
++		return ret;
+ 
+-	return NULL;
++	return devm_of_clk_add_hw_provider(dev, of_clk_hw_simple_get, hw);
  }
  
-@@ -1466,7 +1485,9 @@ static int va_macro_remove(struct platform_device *pdev)
- {
- 	struct va_macro *va = dev_get_drvdata(&pdev->dev);
+ static const struct snd_soc_component_driver tx_macro_component_drv = {
+@@ -1843,7 +1840,9 @@ static int tx_macro_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
--	clk_bulk_disable_unprepare(VA_NUM_CLKS_MAX, va->clks);
-+	clk_disable_unprepare(va->mclk);
-+	clk_disable_unprepare(va->dcodec);
-+	clk_disable_unprepare(va->macro);
+-	tx_macro_register_mclk_output(tx);
++	ret = tx_macro_register_mclk_output(tx);
++	if (ret)
++		goto err;
+ 
+ 	ret = devm_snd_soc_register_component(dev, &tx_macro_component_drv,
+ 					      tx_macro_dai,
+@@ -1861,8 +1860,6 @@ static int tx_macro_remove(struct platform_device *pdev)
+ {
+ 	struct tx_macro *tx = dev_get_drvdata(&pdev->dev);
+ 
+-	of_clk_del_provider(pdev->dev.of_node);
+-
+ 	clk_bulk_disable_unprepare(TX_NUM_CLKS_MAX, tx->clks);
  
  	return 0;
- }
 -- 
 2.21.0
 
