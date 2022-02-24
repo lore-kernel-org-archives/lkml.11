@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF73C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 941F4C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 11:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234022AbiBXLSY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 06:18:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
+        id S233973AbiBXLS3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 06:18:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234006AbiBXLR7 (ORCPT
+        with ESMTP id S234019AbiBXLSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 06:17:59 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46879144F5C
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:29 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id d17so2425466wrc.9
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:29 -0800 (PST)
+        Thu, 24 Feb 2022 06:18:01 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6BFE15A23A
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:31 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id o62-20020a1ca541000000b00380e3cc26b7so1062772wme.0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 03:17:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=MGwet8zq/q+oBO0cHbSkm6maZjXBTGE7Z1lKpvdPae8=;
-        b=mWWsTocp+FaeXz7m6q2G2l6HK5IYTE8CBN/r+4zYwmSlwTs8jvDyI5kpnqO/55AZIj
-         Mr3mWD0Mud3PA7EUu88qZ/uSSn0yLLYRJxgV5XqLEVjhTUTyMXM0kA5kq4B94T8M2JUf
-         SQ24J0/n7Y+TjfEpntKWKgJeCAT3rfF0p1QXBfMEDY7nvr/NbFuaOQ6xf7aUTHaFWHs/
-         ocRU7fNhUxLAgMeC7bySbxvSXtED6drR7kNSMrXQLR7ghStTK5y2QGA2xt9ZS1NUKjk+
-         O9Gv5jQFdLp9Mx/378+VicOE0YufzQsokqZjAxm9/Yy1s37N+JITqE+WAXVeoMhQYf2p
-         ZqHQ==
+        bh=9GMeWI1tNkbi4OC/4dfJqIUQ1pnya35dc/9sZ3BiKI4=;
+        b=s2cKWb6EDkhhedxiJav26MCdH3kvZL4oXoyUzVMDonmIlmWO8HCeGGC/4VuT+12jqv
+         Xx+8Gkx3sK87+vHG1TQp6IZ1deqaUQIJCfaqJSjOXZqK1TG8CH11fJnor5dYAgAE8YyV
+         H5sP0w3jdVZNugAAyib2SRUfEQOrcGRRXkIIBphxMDA3SLNEd8Jn8h7B+IX/kMMe46xr
+         qt4551B+yXJMx+Kg6Jy+WFujN8b3Qv5z3Lx6bpcaNoSLPPSnbSdIjxjMCtof6ehq6F1D
+         AVIP7oRMiFnh9E1I4/V6zlZy1HvfW4dhn2EzQ3A+wY801E4gUs6gHyCCPG5vhMUVEG6e
+         YydA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=MGwet8zq/q+oBO0cHbSkm6maZjXBTGE7Z1lKpvdPae8=;
-        b=G9BMpIQE9TInUURrOu3v82TqID/+HEIlYIpr76Up7IuYoGdH81ICEIomwGbJN7NCbU
-         ay76OIK5vEvDHjyRhOT4h5nZNjH65oHj7w6koAdvMSLGlpkMK8s9ZJgGVYpEKmsvUB5+
-         0NllL2V8yugaYD8CDaEh2g6luTpVkyRKuviytS0c2B5OxFi/wJ9PuHsap+K2PGO9yu86
-         1qV83j1oFPfXsiV3vpxk+GzGjz+1KdNl0f1if8c11iEwHA9hJMH6BYcVYCI5MC/W0od5
-         pHzAz+KE5IDDioUVs2T8DfBQJlB8/x32cJpBd+E6A++PwohFofDotZXuo9fRx/kx0p/5
-         IGnA==
-X-Gm-Message-State: AOAM531G81t5e3FlI5DDWwwprYa0AOQu+ORydJLXqMNvL7iHJ614PTrq
-        dRI8iMqvVFZU1liD0Xhm/vVmuQ==
-X-Google-Smtp-Source: ABdhPJybg1t1xKJqLsGn0nQIlVpKXFYckwd6gkVxdYrY1KAog6yCEynqxw1UNdzl30rR089a6pB39Q==
-X-Received: by 2002:a5d:64ce:0:b0:1e4:9b8d:4ccd with SMTP id f14-20020a5d64ce000000b001e49b8d4ccdmr1891746wri.37.1645701447824;
-        Thu, 24 Feb 2022 03:17:27 -0800 (PST)
+        bh=9GMeWI1tNkbi4OC/4dfJqIUQ1pnya35dc/9sZ3BiKI4=;
+        b=hhDFTMnQBFwPbOxR+4Wz96tMFNhMUx//FY1F52uSOLo7B3VkYKSeuc73TDTTkSTVuy
+         iKv5LQdhfZ50sXg4dsBTnmck/7Ux3uwRjiZf9LPyVBDatxtwuKsJgfJlvTANVB6b6NDu
+         ibnlgSDMQ7Y2cB0HX/d3KAjnsQx0LbT6u4BGpBes0tKDPBqfV16Wx+oLtyLDRFawx3Jy
+         zSGpBoVK1QE4VdM5Ve+41ha0fk7D+PP0dNDK601K+RAnpZEWjB5RGuhBChZfeZNMe+EO
+         Bew884XGJNZ9+CEdT4+p2iMRXjvbxwoHB5tv4sC865+r0laS9QXpIU6ntXLaT6fJ052N
+         nyXA==
+X-Gm-Message-State: AOAM533yWlbA16j3kcH0bCAZgBOpfoz8v+SnVKT26FX0jvrrGwx/ThKB
+        0kk3wUvU432SrEeVXN+CpW+fbg==
+X-Google-Smtp-Source: ABdhPJwOYHMnZNvU9zDMlws3RLTrnptEO39DLfuc1HloQdZsLISrYC/aqj4jFlONbQulW1YEZbcU0Q==
+X-Received: by 2002:a05:600c:4f54:b0:37b:fe6a:ea9c with SMTP id m20-20020a05600c4f5400b0037bfe6aea9cmr1900585wmq.169.1645701450266;
+        Thu, 24 Feb 2022 03:17:30 -0800 (PST)
 Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id t4sm2245737wmj.10.2022.02.24.03.17.26
+        by smtp.gmail.com with ESMTPSA id t4sm2245737wmj.10.2022.02.24.03.17.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 03:17:27 -0800 (PST)
+        Thu, 24 Feb 2022 03:17:29 -0800 (PST)
 From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 To:     broonie@kernel.org
 Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
         pierre-louis.bossart@linux.intel.com, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v2 05/16] ASoC: codecs: tx-macro: move to individual clks from bulk
-Date:   Thu, 24 Feb 2022 11:17:07 +0000
-Message-Id: <20220224111718.6264-6-srinivas.kandagatla@linaro.org>
+Subject: [PATCH v2 07/16] ASoC: codecs: wsa-macro: setup soundwire clks correctly
+Date:   Thu, 24 Feb 2022 11:17:09 +0000
+Message-Id: <20220224111718.6264-8-srinivas.kandagatla@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220224111718.6264-1-srinivas.kandagatla@linaro.org>
 References: <20220224111718.6264-1-srinivas.kandagatla@linaro.org>
@@ -66,161 +66,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using bulk clocks and referencing them individually using array index is
-not great for readers.
-So move them to individual clocks handling and also remove some unnecessary
-error handling in the code.
+For SoundWire Frame sync to be generated correctly we need both MCLK
+and MCLKx2 (npl). Without pm runtime enabled these two clocks will remain on,
+however after adding pm runtime support its possible that NPl clock could be
+turned off even when SoundWire controller is active.
+
+Fix this by enabling mclk and npl clk when SoundWire clks are enabled.
 
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- sound/soc/codecs/lpass-tx-macro.c | 87 +++++++++++++++++++++++--------
- 1 file changed, 65 insertions(+), 22 deletions(-)
+ sound/soc/codecs/lpass-wsa-macro.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/lpass-tx-macro.c b/sound/soc/codecs/lpass-tx-macro.c
-index 75a5513bff16..920b6e93fbaa 100644
---- a/sound/soc/codecs/lpass-tx-macro.c
-+++ b/sound/soc/codecs/lpass-tx-macro.c
-@@ -6,6 +6,7 @@
- #include <linux/clk.h>
- #include <linux/io.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/regmap.h>
- #include <sound/soc.h>
- #include <sound/soc-dapm.h>
-@@ -258,7 +259,11 @@ struct tx_macro {
- 	unsigned long active_ch_cnt[TX_MACRO_MAX_DAIS];
- 	unsigned long active_decimator[TX_MACRO_MAX_DAIS];
- 	struct regmap *regmap;
--	struct clk_bulk_data clks[TX_NUM_CLKS_MAX];
-+	struct clk *mclk;
-+	struct clk *npl;
-+	struct clk *macro;
-+	struct clk *dcodec;
-+	struct clk *fsgen;
- 	struct clk_hw hw;
- 	bool dec_active[NUM_DECIMATORS];
- 	bool reset_swr;
-@@ -1754,7 +1759,7 @@ static int tx_macro_register_mclk_output(struct tx_macro *tx)
+diff --git a/sound/soc/codecs/lpass-wsa-macro.c b/sound/soc/codecs/lpass-wsa-macro.c
+index ac5f94fff0a9..2586d6350f20 100644
+--- a/sound/soc/codecs/lpass-wsa-macro.c
++++ b/sound/soc/codecs/lpass-wsa-macro.c
+@@ -2260,6 +2260,13 @@ static int wsa_swrm_clock(struct wsa_macro *wsa, bool enable)
+ 	struct regmap *regmap = wsa->regmap;
+ 
+ 	if (enable) {
++		int ret;
++
++		ret = clk_prepare_enable(wsa->mclk);
++		if (ret) {
++			dev_err(wsa->dev, "failed to enable mclk\n");
++			return ret;
++		}
+ 		wsa_macro_mclk_enable(wsa, true);
+ 
+ 		/* reset swr ip */
+@@ -2284,6 +2291,7 @@ static int wsa_swrm_clock(struct wsa_macro *wsa, bool enable)
+ 		regmap_update_bits(regmap, CDC_WSA_CLK_RST_CTRL_SWR_CONTROL,
+ 				   CDC_WSA_SWR_CLK_EN_MASK, 0);
+ 		wsa_macro_mclk_enable(wsa, false);
++		clk_disable_unprepare(wsa->mclk);
+ 	}
+ 
+ 	return 0;
+@@ -2354,7 +2362,7 @@ static int wsa_macro_register_mclk_output(struct wsa_macro *wsa)
  	struct clk_init_data init;
  	int ret;
  
--	parent_clk_name = __clk_get_name(tx->clks[2].clk);
-+	parent_clk_name = __clk_get_name(tx->mclk);
+-	parent_clk_name = __clk_get_name(wsa->mclk);
++	parent_clk_name = __clk_get_name(wsa->npl);
  
  	init.name = clk_name;
  	init.ops = &swclk_gate_ops;
-@@ -1793,17 +1798,25 @@ static int tx_macro_probe(struct platform_device *pdev)
- 	if (!tx)
- 		return -ENOMEM;
- 
--	tx->clks[0].id = "macro";
--	tx->clks[1].id = "dcodec";
--	tx->clks[2].id = "mclk";
--	tx->clks[3].id = "npl";
--	tx->clks[4].id = "fsgen";
-+	tx->macro = devm_clk_get_optional(dev, "macro");
-+	if (IS_ERR(tx->macro))
-+		return PTR_ERR(tx->macro);
- 
--	ret = devm_clk_bulk_get_optional(dev, TX_NUM_CLKS_MAX, tx->clks);
--	if (ret) {
--		dev_err(dev, "Error getting RX Clocks (%d)\n", ret);
--		return ret;
--	}
-+	tx->dcodec = devm_clk_get_optional(dev, "dcodec");
-+	if (IS_ERR(tx->dcodec))
-+		return PTR_ERR(tx->dcodec);
-+
-+	tx->mclk = devm_clk_get(dev, "mclk");
-+	if (IS_ERR(tx->mclk))
-+		return PTR_ERR(tx->mclk);
-+
-+	tx->npl = devm_clk_get(dev, "npl");
-+	if (IS_ERR(tx->npl))
-+		return PTR_ERR(tx->npl);
-+
-+	tx->fsgen = devm_clk_get(dev, "fsgen");
-+	if (IS_ERR(tx->fsgen))
-+		return PTR_ERR(tx->fsgen);
- 
- 	base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(base))
-@@ -1833,26 +1846,52 @@ static int tx_macro_probe(struct platform_device *pdev)
- 	tx->dev = dev;
- 
- 	/* set MCLK and NPL rates */
--	clk_set_rate(tx->clks[2].clk, MCLK_FREQ);
--	clk_set_rate(tx->clks[3].clk, 2 * MCLK_FREQ);
-+	clk_set_rate(tx->mclk, MCLK_FREQ);
-+	clk_set_rate(tx->npl, 2 * MCLK_FREQ);
- 
--	ret = clk_bulk_prepare_enable(TX_NUM_CLKS_MAX, tx->clks);
-+	ret = clk_prepare_enable(tx->macro);
- 	if (ret)
--		return ret;
-+		goto err;
-+
-+	ret = clk_prepare_enable(tx->dcodec);
-+	if (ret)
-+		goto err_dcodec;
-+
-+	ret = clk_prepare_enable(tx->mclk);
-+	if (ret)
-+		goto err_mclk;
-+
-+	ret = clk_prepare_enable(tx->npl);
-+	if (ret)
-+		goto err_npl;
-+
-+	ret = clk_prepare_enable(tx->fsgen);
-+	if (ret)
-+		goto err_fsgen;
- 
- 	ret = tx_macro_register_mclk_output(tx);
- 	if (ret)
--		goto err;
-+		goto err_clkout;
- 
- 	ret = devm_snd_soc_register_component(dev, &tx_macro_component_drv,
- 					      tx_macro_dai,
- 					      ARRAY_SIZE(tx_macro_dai));
- 	if (ret)
--		goto err;
--	return ret;
--err:
--	clk_bulk_disable_unprepare(TX_NUM_CLKS_MAX, tx->clks);
-+		goto err_clkout;
- 
-+	return 0;
-+
-+err_clkout:
-+	clk_disable_unprepare(tx->fsgen);
-+err_fsgen:
-+	clk_disable_unprepare(tx->npl);
-+err_npl:
-+	clk_disable_unprepare(tx->mclk);
-+err_mclk:
-+	clk_disable_unprepare(tx->dcodec);
-+err_dcodec:
-+	clk_disable_unprepare(tx->macro);
-+err:
- 	return ret;
- }
- 
-@@ -1860,7 +1899,11 @@ static int tx_macro_remove(struct platform_device *pdev)
- {
- 	struct tx_macro *tx = dev_get_drvdata(&pdev->dev);
- 
--	clk_bulk_disable_unprepare(TX_NUM_CLKS_MAX, tx->clks);
-+	clk_disable_unprepare(tx->macro);
-+	clk_disable_unprepare(tx->dcodec);
-+	clk_disable_unprepare(tx->mclk);
-+	clk_disable_unprepare(tx->npl);
-+	clk_disable_unprepare(tx->fsgen);
- 
- 	return 0;
- }
 -- 
 2.21.0
 
