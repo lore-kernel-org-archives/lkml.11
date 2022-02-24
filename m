@@ -2,106 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B54E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B07A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 01:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229673AbiBXBjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 20:39:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59172 "EHLO
+        id S229658AbiBXBko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 20:40:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbiBXBjM (ORCPT
+        with ESMTP id S229633AbiBXBkn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 20:39:12 -0500
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D6069287;
-        Wed, 23 Feb 2022 17:38:43 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id 8so1330958qvf.2;
-        Wed, 23 Feb 2022 17:38:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qQ9tgl+30McuPheRkP6XMt3TbjKT/oePeBXnUFyrMv8=;
-        b=X1sWVunSGk/wOb21MF08UOQHsGL44JsXndBN1yNlDkxuKaYMnfPmwd37XxH81H8zMT
-         V6ZfcwE7enjB66q6Axil2+yHYqNYbDaBI3mFd9i22vPMvICZv9d2al1c3Jmvv82UgC5b
-         mDiKqjq6M8vUtvTSV9v4LRq3yIHjZGwas8lM3izN0LMb00kvJuYrWyPxO2mnzNcTwGNb
-         2HEt348EEc5HYRQjU9hnqhjmjwreFdG9yCH/CWv+n3JfFRDHAiEhhPuvaTNQ9dUo+F0p
-         +N7pO+oaStp8rx5b6FHUFdWPC4CRQfagSBV9jnwJDCBVCKgKqOtWiBxCKNp94bT870Gm
-         ydOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qQ9tgl+30McuPheRkP6XMt3TbjKT/oePeBXnUFyrMv8=;
-        b=k9wXOEoFqcZL3/FQypx96M8GmiFk19mT7/RncLLfgQxXc6EvReGIIAcQBf4eoDhmBH
-         8orjqvKzxxoXpYJ1EtA6pBqkBlkl61Zr7XDK9JUny7zl5SOUFsrE7oioywZt+qvbCRpg
-         zYV1FQuvHu9Qr+gAl3wgyGKlYQYpMoPL3P0YCnhsUYEk+HQEcj2iUULCJky++q/DMBXj
-         5jKFn4TqUAJlKG/bvGNr95TlCFhUVGN0q6bMUbCQIX1bKAcNg0xh9EVxMQXh2n8s0AYG
-         USUGZ9LmQPqNHsj9FPAWqohEuLosr05OJKrhqBPw5WZWwsNIVwhwuZkk75Ze/p16SJRG
-         3DGg==
-X-Gm-Message-State: AOAM530RWepSdWfQeygRmEo766dULKN62+JQTJ2vdx1jNiZuLDhxwRCS
-        cRbwynFIFNGvusZPxQ5gXCRdL01YhAmF5JbjEcQQ8Od3rvA=
-X-Google-Smtp-Source: ABdhPJynqWhYAon/vU2BN5LkPiBakQ/4vVP5kufXxQmW8xVHytevGb8DOGMreWS+86DNG6nmqYMDYaUzrg7W5GlkrVs=
-X-Received: by 2002:a05:6638:382:b0:30e:3e2e:3227 with SMTP id
- y2-20020a056638038200b0030e3e2e3227mr209459jap.234.1645665018788; Wed, 23 Feb
- 2022 17:10:18 -0800 (PST)
+        Wed, 23 Feb 2022 20:40:43 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482171662F5
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 17:40:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645666814; x=1677202814;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=TOq3r4d36+yHjI0glcZliDep/S4dBcUEe7i8DsSVlf4=;
+  b=B3vV7SPjZQN/oToHgGG+rHBYC75kJgXFYmt5wUQNjdnchlOnNDT//rsL
+   BhYvrCPgaTkap9GvVEcaxNUTxcY1yYekOUGD0VZBqQcXTL+/SHzT/9sq6
+   Kvgih0AetBPPsoqALyuv3IlphVaZvnlP0OxXYvgCLmvaDD1lx7idpfJfB
+   A5ZR17Ku9cSxyOIYu1eeiGIGTeZ/ymycxTv8lP3S7NxWmJSGSbFuFKYNw
+   Ohjt1LjohjiCbSFwSRtHwNGgMrNqcWg1GaGL3lhQ30WjbwbM8YqLRLLqt
+   QK/wMC68jCav7WNgJO4CgTA8JGgbD/BBwtsuwA7J+g5A9tHhixhV7o6y6
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10267"; a="338560438"
+X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
+   d="scan'208";a="338560438"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2022 17:17:56 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,392,1635231600"; 
+   d="scan'208";a="532922454"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 23 Feb 2022 17:17:54 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nN2lW-00023f-Aj; Thu, 24 Feb 2022 01:17:54 +0000
+Date:   Thu, 24 Feb 2022 09:16:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 2170/2340] arch/x86/pci/bus_numa.c:24:5:
+ warning: no previous prototype for 'x86_pci_root_bus_node'
+Message-ID: <202202240933.QRPHsCZw-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220224000531.1265030-1-haoluo@google.com> <CAEf4Bzb44WR2LiYchxB5JZ=Jdie6FEEi90mh=SCv07v4h4W11w@mail.gmail.com>
- <CA+khW7h4bL3qUst4nDy6LDmx73xVA_ch=PLc=o=v2iJNbGn21A@mail.gmail.com>
-In-Reply-To: <CA+khW7h4bL3qUst4nDy6LDmx73xVA_ch=PLc=o=v2iJNbGn21A@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 23 Feb 2022 17:10:07 -0800
-Message-ID: <CAEf4BzaYxgnotk+J+czhAjXbfzEoOrnyiVMmmkjDDVHzYUs48A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] bpf: Cache the last valid build_id.
-To:     Hao Luo <haoluo@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Blake Jones <blakejones@google.com>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Greg Thelen <gthelen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 4:33 PM Hao Luo <haoluo@google.com> wrote:
->
-> On Wed, Feb 23, 2022 at 4:11 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Wed, Feb 23, 2022 at 4:05 PM Hao Luo <haoluo@google.com> wrote:
-> > >
-> > > For binaries that are statically linked, consecutive stack frames are
-> > > likely to be in the same VMA and therefore have the same build id.
-> > > As an optimization for this case, we can cache the previous frame's
-> > > VMA, if the new frame has the same VMA as the previous one, reuse the
-> > > previous one's build id. We are holding the MM locks as reader across
-> > > the entire loop, so we don't need to worry about VMA going away.
-> > >
-> > > Tested through "stacktrace_build_id" and "stacktrace_build_id_nmi" in
-> > > test_progs.
-> > >
-> > > Suggested-by: Greg Thelen <gthelen@google.com>
-> > > Signed-off-by: Hao Luo <haoluo@google.com>
-> > > ---
-> >
-> > LGTM. Can you share performance numbers before and after?
-> >
-> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> >
->
-> Thanks Andrii.
->
-> On a real-world workload, we observed that 66% of cpu cycles in
-> __bpf_get_stackid() were spent on build_id_parse() and find_vma().
-> This was before.
->
-> We haven't evaluated the performance with this patch yet. This
-> optimization seems straightforward, so we plan to upstream it first
-> and then retest.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   97c5eeb4de3ad324ed2a4656b46465299cfd010a
+commit: d1464f1f51594b5388839a7fd0f4701ff84c3092 [2170/2340] headers/deps: pci: Optimize <linux/pci.h> dependencies, remove <linux/topology.h> inclusion
+config: i386-randconfig-a003 (https://download.01.org/0day-ci/archive/20220224/202202240933.QRPHsCZw-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=d1464f1f51594b5388839a7fd0f4701ff84c3092
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout d1464f1f51594b5388839a7fd0f4701ff84c3092
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-Ok, once it lands upstream, I'd really appreciate if you can retest
-and update us with numbers. Thanks!
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/x86/pci/bus_numa.c:24:5: warning: no previous prototype for 'x86_pci_root_bus_node' [-Wmissing-prototypes]
+      24 | int x86_pci_root_bus_node(int bus)
+         |     ^~~~~~~~~~~~~~~~~~~~~
+>> arch/x86/pci/bus_numa.c:34:6: warning: no previous prototype for 'x86_pci_root_bus_resources' [-Wmissing-prototypes]
+      34 | void x86_pci_root_bus_resources(int bus, struct list_head *resources)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/x86_pci_root_bus_node +24 arch/x86/pci/bus_numa.c
+
+67f241f4579651 Yinghai Lu    2009-11-11  23  
+afcf21c2beca66 Bjorn Helgaas 2014-01-24 @24  int x86_pci_root_bus_node(int bus)
+afcf21c2beca66 Bjorn Helgaas 2014-01-24  25  {
+afcf21c2beca66 Bjorn Helgaas 2014-01-24  26  	struct pci_root_info *info = x86_find_pci_root_info(bus);
+afcf21c2beca66 Bjorn Helgaas 2014-01-24  27  
+afcf21c2beca66 Bjorn Helgaas 2014-01-24  28  	if (!info)
+afcf21c2beca66 Bjorn Helgaas 2014-01-24  29  		return NUMA_NO_NODE;
+afcf21c2beca66 Bjorn Helgaas 2014-01-24  30  
+afcf21c2beca66 Bjorn Helgaas 2014-01-24  31  	return info->node;
+afcf21c2beca66 Bjorn Helgaas 2014-01-24  32  }
+afcf21c2beca66 Bjorn Helgaas 2014-01-24  33  
+d28e5ac2a07e27 Yinghai Lu    2012-04-02 @34  void x86_pci_root_bus_resources(int bus, struct list_head *resources)
+d28e5ac2a07e27 Yinghai Lu    2012-04-02  35  {
+d28e5ac2a07e27 Yinghai Lu    2012-04-02  36  	struct pci_root_info *info = x86_find_pci_root_info(bus);
+d28e5ac2a07e27 Yinghai Lu    2012-04-02  37  	struct pci_root_res *root_res;
+14d76b68f2819a Jiang Liu     2015-02-05  38  	struct resource_entry *window;
+a10bb128b64fe0 Yinghai Lu    2012-05-17  39  	bool found = false;
+d28e5ac2a07e27 Yinghai Lu    2012-04-02  40  
+d28e5ac2a07e27 Yinghai Lu    2012-04-02  41  	if (!info)
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  42  		goto default_resources;
+67f241f4579651 Yinghai Lu    2009-11-11  43  
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  44  	printk(KERN_DEBUG "PCI: root bus %02x: hardware-probed resources\n",
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  45  	       bus);
+67f241f4579651 Yinghai Lu    2009-11-11  46  
+a10bb128b64fe0 Yinghai Lu    2012-05-17  47  	/* already added by acpi ? */
+14d76b68f2819a Jiang Liu     2015-02-05  48  	resource_list_for_each_entry(window, resources)
+a10bb128b64fe0 Yinghai Lu    2012-05-17  49  		if (window->res->flags & IORESOURCE_BUS) {
+a10bb128b64fe0 Yinghai Lu    2012-05-17  50  			found = true;
+a10bb128b64fe0 Yinghai Lu    2012-05-17  51  			break;
+a10bb128b64fe0 Yinghai Lu    2012-05-17  52  		}
+a10bb128b64fe0 Yinghai Lu    2012-05-17  53  
+a10bb128b64fe0 Yinghai Lu    2012-05-17  54  	if (!found)
+a10bb128b64fe0 Yinghai Lu    2012-05-17  55  		pci_add_resource(resources, &info->busn);
+a10bb128b64fe0 Yinghai Lu    2012-05-17  56  
+727ae8be30b428 Liu Jiang     2015-11-27  57  	list_for_each_entry(root_res, &info->resources, list)
+727ae8be30b428 Liu Jiang     2015-11-27  58  		pci_add_resource(resources, &root_res->res);
+727ae8be30b428 Liu Jiang     2015-11-27  59  
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  60  	return;
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  61  
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  62  default_resources:
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  63  	/*
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  64  	 * We don't have any host bridge aperture information from the
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  65  	 * "native host bridge drivers," e.g., amd_bus or broadcom_bus,
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  66  	 * so fall back to the defaults historically used by pci_create_bus().
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  67  	 */
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  68  	printk(KERN_DEBUG "PCI: root bus %02x: using default resources\n", bus);
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  69  	pci_add_resource(resources, &ioport_resource);
+2cd6975a4ff92a Bjorn Helgaas 2011-10-28  70  	pci_add_resource(resources, &iomem_resource);
+67f241f4579651 Yinghai Lu    2009-11-11  71  }
+67f241f4579651 Yinghai Lu    2009-11-11  72  
+
+:::::: The code at line 24 was first introduced by commit
+:::::: afcf21c2beca6604dbdc24fed1624c2499a85e7d x86/PCI: Add x86_pci_root_bus_node() to look up NUMA node from PCI bus
+
+:::::: TO: Bjorn Helgaas <bhelgaas@google.com>
+:::::: CC: Bjorn Helgaas <bhelgaas@google.com>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
