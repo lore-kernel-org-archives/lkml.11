@@ -2,147 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3229C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F32C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 15:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236484AbiBXPmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 10:42:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
+        id S236492AbiBXPnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 10:43:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236471AbiBXPmK (ORCPT
+        with ESMTP id S236544AbiBXPnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 10:42:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9F1F11A3D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:41:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645717298;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xuMjKVGR/jVvgBVEBU3vzYtHjnPOr6KHeu2jai7Auf4=;
-        b=HwkX2Jm6eZDmrNoyhHKa0WYoffC3Xb4t9AzyjERUZqNs3ncLdVqD2eIpgFv6GjYp6upmhE
-        +d2arOB098kAsztFMO5lYTUFzG58xuXq799blmrofi+2bSoC87CFBbSuOvyxaGFNJNb/GD
-        eE89YhBhQc6UV3c1LR1/Xsx0OhN9yic=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-513-kSoJEMyBOvWz4amlMsksdw-1; Thu, 24 Feb 2022 10:41:34 -0500
-X-MC-Unique: kSoJEMyBOvWz4amlMsksdw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 24 Feb 2022 10:43:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB3C1A39F8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:42:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8A207824FA6;
-        Thu, 24 Feb 2022 15:41:33 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 323EB12E00;
-        Thu, 24 Feb 2022 15:41:31 +0000 (UTC)
-Message-ID: <667adbb56835c359fbdbacefe4ecdf1153b0c126.camel@redhat.com>
-Subject: Re: [PATCH v2 15/18] KVM: x86/mmu: rename kvm_mmu_new_pgd,
- introduce variant that calls get_guest_pgd
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Date:   Thu, 24 Feb 2022 17:41:30 +0200
-In-Reply-To: <YhAI2rq9ms+rhFy5@google.com>
-References: <20220217210340.312449-1-pbonzini@redhat.com>
-         <20220217210340.312449-16-pbonzini@redhat.com>
-         <ae3002da-e931-1e08-7a23-8cd296bf8313@redhat.com>
-         <YhAI2rq9ms+rhFy5@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E9D360F3D
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 15:42:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBA40C340E9;
+        Thu, 24 Feb 2022 15:42:32 +0000 (UTC)
+Date:   Thu, 24 Feb 2022 10:42:30 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
+        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
+        keescook@chromium.org, samitolvanen@google.com,
+        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v2 14/39] x86/ibt,ftrace: Make function-graph play nice
+Message-ID: <20220224104230.4a9a3125@gandalf.local.home>
+In-Reply-To: <YhemGUoGmrzxuc+C@hirez.programming.kicks-ass.net>
+References: <20220224145138.952963315@infradead.org>
+        <20220224151322.834445396@infradead.org>
+        <YhemGUoGmrzxuc+C@hirez.programming.kicks-ass.net>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-02-18 at 21:00 +0000, Sean Christopherson wrote:
-> On Fri, Feb 18, 2022, Paolo Bonzini wrote:
-> > On 2/17/22 22:03, Paolo Bonzini wrote:
-> > > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > > index adcee7c305ca..9800c8883a48 100644
-> > > --- a/arch/x86/kvm/x86.c
-> > > +++ b/arch/x86/kvm/x86.c
-> > > @@ -1189,7 +1189,7 @@ int kvm_set_cr3(struct kvm_vcpu *vcpu, unsigned long cr3)
-> > >   		return 1;
-> > >   	if (cr3 != kvm_read_cr3(vcpu))
-> > > -		kvm_mmu_new_pgd(vcpu, cr3);
-> > > +		kvm_mmu_update_root(vcpu);
-> > >   	vcpu->arch.cr3 = cr3;
-> > >   	kvm_register_mark_dirty(vcpu, VCPU_EXREG_CR3);
-> > 
-> > Uh-oh, this has to become:
-> > 
-> >  	vcpu->arch.cr3 = cr3;
-> >  	kvm_register_mark_dirty(vcpu, VCPU_EXREG_CR3);
-> > 	if (!is_pae_paging(vcpu))
-> > 		kvm_mmu_update_root(vcpu);
-> > 
-> > The regression would go away after patch 16, but this is more tidy apart
-> > from having to check is_pae_paging *again*.
-> > 
-> > Incremental patch:
-> > 
-> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > index adcee7c305ca..0085e9fba372 100644
-> > --- a/arch/x86/kvm/x86.c
-> > +++ b/arch/x86/kvm/x86.c
-> > @@ -1188,11 +1189,11 @@ int kvm_set_cr3(struct kvm_vcpu *vcpu, unsigned long cr3)
-> >  	if (is_pae_paging(vcpu) && !load_pdptrs(vcpu, cr3))
-> >  		return 1;
-> > -	if (cr3 != kvm_read_cr3(vcpu))
-> > -		kvm_mmu_update_root(vcpu);
-> > -
-> >  	vcpu->arch.cr3 = cr3;
-> >  	kvm_register_mark_dirty(vcpu, VCPU_EXREG_CR3);
-> > +	if (!is_pae_paging(vcpu))
-> > +		kvm_mmu_update_root(vcpu);
+On Thu, 24 Feb 2022 16:36:57 +0100
+Peter Zijlstra <peterz@infradead.org> wrote:
+
+> On Thu, Feb 24, 2022 at 03:51:52PM +0100, Peter Zijlstra wrote:
+> > @@ -316,10 +317,12 @@ SYM_FUNC_START(return_to_handler)
+> >  
+> >  	call ftrace_return_to_handler
+> >  
+> > -	movq %rax, %rdi
+> > +	movq %rax, 16(%rsp)
+> >  	movq 8(%rsp), %rdx
+> >  	movq (%rsp), %rax
+> > -	addq $24, %rsp
+> > -	JMP_NOSPEC rdi
 > > +
-> >  	/* Do not call post_set_cr3, we do not get here for confidential guests.  */
-> > 
-> > An alternative is to move the vcpu->arch.cr3 update in load_pdptrs.
-> > Reviewers, let me know if you prefer that, then I'll send v3.
+> > +	addq $16, %rsp
+> > +	UNWIND_HINT_FUNC
+> > +	RET
+> >  SYM_FUNC_END(return_to_handler)
+> >  #endif  
 > 
->   c) None of the above.
+> While talking about this with Mark, an alternative solution is something
+> like this, that would keep the RSB balanced and only mess up the current
+> return.
 > 
-> MOV CR3 never requires a new root if TDP is enabled, and the guest_mmu is used if
-> and only if TDP is enabled.  Even when KVM intercepts CR3 when EPT=1 && URG=0, it
-> does so only to snapshot vcpu->arch.cr3, there's no need to get a new PGD.
+> No idea it if makes an appreciatable difference on current hardware,
+> therefore I went with the simpler option above.
 > 
-> Unless I'm missing something, your original suggestion of checking tdp_enabled is
-> the way to go.
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 6e0f7f22c6a7..2b02029c63d0 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -1187,7 +1187,7 @@ int kvm_set_cr3(struct kvm_vcpu *vcpu, unsigned long cr3)
->         if (is_pae_paging(vcpu) && !load_pdptrs(vcpu, cr3))
->                 return 1;
-> 
-> -       if (cr3 != kvm_read_cr3(vcpu))
-> +       if (!tdp_enabled && cr3 != kvm_read_cr3(vcpu))
->                 kvm_mmu_new_pgd(vcpu, cr3);
-> 
->         vcpu->arch.cr3 = cr3;
-> 
-> 
+> @@ -307,7 +315,7 @@ EXPORT_SYMBOL(__fentry__)
+>  
+>  #ifdef CONFIG_FUNCTION_GRAPH_TRACER
+>  SYM_FUNC_START(return_to_handler)
+> -	subq  $24, %rsp
+> +	subq  $16, %rsp
+>  
+>  	/* Save the return values */
+>  	movq %rax, (%rsp)
+> @@ -319,7 +327,13 @@ SYM_FUNC_START(return_to_handler)
+>  	movq %rax, %rdi
+>  	movq 8(%rsp), %rdx
+>  	movq (%rsp), %rax
+> -	addq $24, %rsp
+> -	JMP_NOSPEC rdi
+> +
+> +	addq $16, %rsp
+> +	ANNOTATE_INTRA_FUNCTION_CALL
+> +	call .Ldo_rop
+> +.Ldo_rop:
 
-Is this actually related to the discussion? The original issue that Paolo found in his patch
-was that kvm_mmu_update_root now reads _current_ cr3, thus it has to be set before calling it.
+What's the overhead of an added call (for every function call that is being
+traced)?
 
-I do agree that kvm_set_cr3 doesn't need to do anything when TDP is enabled, this is a different
-issue which doesn't cause much harm (the fast_pgd_switch with direct roots will reuse current root),
-but still would raise KVM_REQ_LOAD_MMU_PGD without need for it and such.
+-- Steve
 
-About the patch itself, other than this mentioned issue, it looks fine to me.
-
-
-Best regards,
-	Maxim Levitsky
-
+> +	mov %rdi, (%rsp)
+> +	UNWIND_HINT_FUNC
+> +	RET
+>  SYM_FUNC_END(return_to_handler)
+>  #endif
+> 
 
