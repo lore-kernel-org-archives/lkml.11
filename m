@@ -2,211 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A63C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:37:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E85C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 09:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232907AbiBXJiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 04:38:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56730 "EHLO
+        id S232912AbiBXJii (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 04:38:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232876AbiBXJh7 (ORCPT
+        with ESMTP id S232911AbiBXJic (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 04:37:59 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5A226A382;
-        Thu, 24 Feb 2022 01:37:29 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id D9C5622239;
-        Thu, 24 Feb 2022 10:37:25 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1645695447;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nXLlNsLRzNGxsy08OmoT04gp8AwpJdU4sjX4+Ljf0pA=;
-        b=mUi3qSPiSvksH03MJGFF1VNaKjuMblyY3YzSSDsqocuG2DKyuUI2FJIsA3gtt0LAkhWwMw
-        cmZRqBaKrYcFjLYe3Xl49rLMpjBKocMiwv3hK8/KVkL80XkNLIf7I6z8uDUsxoTScT+j2P
-        0VUpULOgoKCXo/g1AUl36yD+xZjO+Ro=
+        Thu, 24 Feb 2022 04:38:32 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C84F27AFEB;
+        Thu, 24 Feb 2022 01:38:01 -0800 (PST)
+Received: from mail-wr1-f41.google.com ([209.85.221.41]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1M5wgF-1nK8Z23HC7-007VzJ; Thu, 24 Feb 2022 10:37:59 +0100
+Received: by mail-wr1-f41.google.com with SMTP id d3so2036952wrf.1;
+        Thu, 24 Feb 2022 01:37:59 -0800 (PST)
+X-Gm-Message-State: AOAM531mren4RcSI9hV+ys6vEYPD16bM3U00jfR/pAxKIYZAZm98re8m
+        sYWDOeFLPebeWg1AsQSNW6vrEAmxCpcYwTo4kUg=
+X-Google-Smtp-Source: ABdhPJxKnbR5fQtLrHkUQmPSDD+xkHkCuZRWZe5PlaQucJaWZYHMl1I+Wr1dE0VfS6g2+fYVY4BPWlfD5Z76idC1Sco=
+X-Received: by 2002:adf:a446:0:b0:1ed:c41b:cf13 with SMTP id
+ e6-20020adfa446000000b001edc41bcf13mr1559929wra.407.1645695092672; Thu, 24
+ Feb 2022 01:31:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 24 Feb 2022 10:37:25 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Tudor.Ambarus@microchip.com
-Cc:     p.yadav@ti.com, broonie@kernel.org, miquel.raynal@bootlin.com,
-        richard@nod.at, vigneshr@ti.com, linux-mtd@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        Nicolas.Ferre@microchip.com, zhengxunli@mxic.com.tw,
-        jaimeliao@mxic.com.tw
-Subject: Re: [PATCH 0/4] spi-mem: Allow specifying the byte order in DTR mode
-In-Reply-To: <779069a1-7389-ab70-9f03-81090d0600ba@microchip.com>
-References: <20220218145900.1440045-1-tudor.ambarus@microchip.com>
- <44f655d027b49b87065915f6ba2744d2@walle.cc>
- <81d7c569-d6c2-9167-e007-eda72f34842b@microchip.com>
- <23fbbf2dde387e3832b4ca23d46816c0@walle.cc>
- <7cd74ef3-5a7d-4e65-3436-ee3399ca56a3@microchip.com>
- <e39d06684b8f3a63103f40f0e99e030e@walle.cc>
- <3cd510ad-a6ab-d4a0-92e3-9156a0c7ddbf@microchip.com>
- <20220223183849.xcwciv2ybnkdnauk@ti.com>
- <6eb179ec-0b12-de30-829e-83ec6b964f21@microchip.com>
- <779069a1-7389-ab70-9f03-81090d0600ba@microchip.com>
-User-Agent: Roundcube Webmail/1.4.12
-Message-ID: <a85e2d1862cfff477e97c39509b2b74d@walle.cc>
-X-Sender: michael@walle.cc
+References: <20220224085410.399351-1-guoren@kernel.org> <20220224085410.399351-12-guoren@kernel.org>
+In-Reply-To: <20220224085410.399351-12-guoren@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 24 Feb 2022 10:31:16 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3wg9S_zPad74FiJzYBn0M9bQyunuKzmH3z_QQrags5ng@mail.gmail.com>
+Message-ID: <CAK8P3a3wg9S_zPad74FiJzYBn0M9bQyunuKzmH3z_QQrags5ng@mail.gmail.com>
+Subject: Re: [PATCH V6 11/20] riscv: compat: syscall: Add compat_sys_call_table
+ implementation
+To:     Guo Ren <guoren@kernel.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
+        Anup Patel <anup@brainfault.org>,
+        gregkh <gregkh@linuxfoundation.org>,
+        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
+        Christoph Hellwig <hch@lst.de>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:bJ949jbvxqRzT8RGzj2QYrApGMZ4GN1YTokJ4Yg5/VzjO8Su2uE
+ ipDUtwaeK0DeWGhdUHDvGS6Sxk+PjnIWHXHqM03B+4KiJMsbfQObb3/g4Rb9ehoxvIs7pAb
+ 3xXOC8l0NvUVW3TdDOlDdrw1fIEzH5Ue8s6u34x3GpIf/5gKusINz0fsj5g7jSQKQJXAUDd
+ y9XhStiamjcfDraOeAP7A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:dwAfY9Ku57I=:6NKueo92cdx8lj+82OAOD5
+ ulk+zylPDzaUxvVUzhJpGKLU7YiwrMbf7G25DHOirZgFEmfxwc51w1cNxnsmQoii7jX4pKE9a
+ dOWn1HvOs9fUNtoNQWaUf6U5ViEPhWvXToLKi75vietmj9uC2QxIhS9ILo41p/hUYLeohsWLi
+ QW3aBB9AkASEmnIngeLwpWY+LBUdXglk0GELcd0a9C64Z3xmOPX5z49YIhjhE/+ipUePv9/Mq
+ L/wWPiJVTMI+eTWTZnFDha0SQ36pExEHntKrTD8b3P7GrhFFSWpMd8i3aaNiERV4x/dmZc7KA
+ Xajt3CIeWflvcnXlqYtKI6eLK+u2Yg7/sONFg09gKfBZXPPFSyIHk4bk3KJ2aRp3jQ0rF8ZlV
+ de19TTPXXdwa9hU0N+l3/3witYzOHCSzIPDU4lXVHpZZDzJG/jSIbFD2MQlV++ca1+a17mzqc
+ /6UCJicm2Xi17UtwaSrGAeOT59ng+WIj0a49UoTHKszzP1ncpwQ13Nn8mepUQWmL8G9BfJ4X0
+ DWlaIYLO+Pyr27exsf0sJXXIi0X65UtJNwfibrp0k9Ndu9c7gkYfV/8FDPNuGwgJwcK1/2esS
+ YoEFouJd8FgXwxvGs8Wr5xQW2GP7glUv0vaYWhu7E8/Mfn7sZv4npXBf5/RZ0Ra/KvvUkTmuG
+ sm+FpxMPUaxs6Mm/tLff2FLkzRLOsYnhal2ZVxJS3hUWmchiqOL0uooT7u/1Md8xTaUmHnRyh
+ bxASaOLsX+ezzHOQykOOAFFi/5kM2dl9mVM+CEUm4q/Ufr17oj0n8OR9SEB7cw1ZPlIYj2BQT
+ qQFtiThCNHUgBuJwQw+98J/orUmUlwXXAyK6PN24WjEYj81+4s=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 2022-02-24 07:37, schrieb Tudor.Ambarus@microchip.com:
-> On 2/24/22 08:08, Tudor.Ambarus@microchip.com wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
->> the content is safe
->> 
->> On 2/23/22 20:38, Pratyush Yadav wrote:
->>> EXTERNAL EMAIL: Do not click links or open attachments unless you 
->>> know the content is safe
->>> 
->>> Hi Tudor,
->>> 
->>> On 22/02/22 02:43PM, Tudor.Ambarus@microchip.com wrote:
->>>> On 2/22/22 16:27, Michael Walle wrote:
->>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you 
->>>>> know the content is safe
->>>>> 
->>>>> Am 2022-02-22 15:23, schrieb Tudor.Ambarus@microchip.com:
->>>>>> On 2/22/22 16:13, Michael Walle wrote:
->>>>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you 
->>>>>>> know
->>>>>>> the content is safe
->>>>>>> 
->>>>>>> Am 2022-02-22 14:54, schrieb Tudor.Ambarus@microchip.com:
->>>>>>>> On 2/21/22 09:44, Michael Walle wrote:
->>>>>>>>> EXTERNAL EMAIL: Do not click links or open attachments unless 
->>>>>>>>> you
->>>>>>>>> know
->>>>>>>>> the content is safe
->>>>>>>>> 
->>>>>>>>> Am 2022-02-18 15:58, schrieb Tudor Ambarus:
->>>>>>>>>> Fortunately there are controllers
->>>>>>>>>> that can swap back the bytes at runtime, fixing the 
->>>>>>>>>> endiannesses.
->>>>>>>>>> Provide
->>>>>>>>>> a way for the upper layers to specify the byte order in DTR 
->>>>>>>>>> mode.
->>>>>>>>> 
->>>>>>>>> Are there any patches for the atmel-quadspi yet? What happens 
->>>>>>>>> if
->>>>>>>> 
->>>>>>>> not public, but will publish them these days.
->>>>>>>> 
->>>>>>>>> the controller doesn't support it? Will there be a software
->>>>>>>>> fallback?
->>>>>>>> 
->>>>>>>> no need for a fallback, the controller can ignore
->>>>>>>> op->data.dtr_bswap16
->>>>>>>> if
->>>>>>>> it can't swap bytes.
->>>>>>> 
->>>>>>> I don't understand. If the controller doesn't swap the 16bit 
->>>>>>> values,
->>>>>>> you will read the wrong content, no?
->>>>>>> 
->>>>>> 
->>>>>> In linux no, because macronix swaps bytes on a 2 byte boundary 
->>>>>> both on
->>>>>> reads and on page program. The problem is when you mix 8D-8D-8D 
->>>>>> mode
->>>>>> and
->>>>>> 1-1-1 mode along the boot stages. Let's assume you write all boot
->>>>>> binaries
->>>>>> in 1-1-1 mode. When reaching u-boot if you enable 8D-8D-8D mode, 
->>>>>> when
->>>>>> u-boot
->>>>>> will try to get the kernel it will fail, as the flash swaps the 
->>>>>> bytes
->>>>>> compared
->>>>>> to what was written with 1-1-1 mode. You write D0 D1 D2 D3 in 
->>>>>> 1-1-1
->>>>>> mode and
->>>>>> when reaching u-boot you will read D1 D0 D3 D2 and it will mess 
->>>>>> the
->>>>>> kernel image.
->>>>> 
->>>>> But you have to consider also 3rd parties, like an external 
->>>>> programmer
->>>>> or
->>>> 
->>>> Why? If you use the same mode when reading and writing, everything 
->>>> is fine.
->>>> I'm not sure what's your suggestion here.
->>> 
->>> So our stance here is that we don't care about external programs?>
->>> If that is the case then why bother with all this anyway? Since the 
->>> swap
->>> happens at both page program and read, what you write is what you 
->>> read
->>> back. Who cares the order stored in the actual flash memory as long 
->>> as
->>> the data read is correct?
->>> 
->>> If we do care about external programs, then what would happen if the
->>> external program writes data in 8D-8D-8D mode _without_ swapping the
->>> bytes? This would also cause data corruption. You can't control what
->>> they mode they use, and you can't detect it later either.
->>> 
->>> I think there is no winning here. You just have to say that external
->>> programs should write in 8D-8D-8D mode or it won't boot.
+On Thu, Feb 24, 2022 at 9:54 AM <guoren@kernel.org> wrote:
+>
+> From: Guo Ren <guoren@linux.alibaba.com>
+>
+> Implement compat sys_call_table and some system call functions:
+> truncate64, ftruncate64, fallocate, pread64, pwrite64,
+> sync_file_range, readahead, fadvise64_64 which need argument
+> translation.
+>
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> Cc: Palmer Dabbelt <palmer@dabbelt.com>
 
-IMHO it should just work that you can use 1S-1S-1S mode and 8D-8D-8D on 
-the
-same flash. After all, that is Tudor's use case. The ROM access the 
-flash
-in single bit mode and linux in 8D-8D-8D mode. Maybe u-boot will use 
-quad
-mode in between. All of these accesses should return the same flash
-content.
+Here, I was hoping you'd convert some of the other architectures to use
+the same code, but the changes you did do look correct.
 
->> How about swapping the bytes just at user request? Maybe with a 
->> Kconfig
->> option.
-> 
-> Michael has suggested on #irc to always swap the bytes: if the SPI 
-> controller
-> can't do it, to do it in software at SPI NOR level. I don't know what 
-> to say
-> about this, because JEDEC216 just informs the reader I guess:
-> "Byte order of 16-bit words is swapped when read in 8D-8D-8D mode 
-> compared to
-> 1-1-1 mode.", this doesn't look like a hard request. The downside to 
-> doing
-> the swapping in software is performance penalty which will make 
-> macronix
-> users have second thoughts. I don't have a strong opinion, but I lean 
-> towards
-> doing the swap just at user request, regardless if I do it via the SPI
-> controller
-> or in software.
+Please at least add the missing bit for big-endian architectures here:
 
-Just having and opt-in will be a mess in the future with flashes 
-containing
-byte swapped content and we can't even fix it and we will have to live 
-with
-that forever. IMHO right now is the best time to circumvent that 
-scenario.
-I don't have anything against make it user configurable, but it should 
-be
-an opt-out.
++#if !defined(compat_arg_u64) && !defined(CONFIG_CPU_BIG_ENDIAN)
++#define compat_arg_u64(name)           u32  name##_lo, u32  name##_hi
++#define compat_arg_u64_dual(name)      u32, name##_lo, u32, name##_hi
++#define compat_arg_u64_glue(name)      (((u64)name##_hi << 32) | \
++                                        ((u64)name##_lo & 0xffffffffUL))
++#endif
 
-I haven't looked at any controllers who can do 8D-8D-8D accesses, maybe 
-most
-of them can do the swapping on their own? So if you don't want to 
-support a
-software fallback, then we should just say this mode isn't supported if
-the controller can't do the byte swapping and we fall back to a slower 
-mode.
+with the lo/hi words swapped. With that change:
 
--michael
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
