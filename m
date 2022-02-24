@@ -2,117 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB830C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:30:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 069CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 10:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233499AbiBXKbT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 05:31:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
+        id S233501AbiBXKcP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 05:32:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233478AbiBXKbM (ORCPT
+        with ESMTP id S230323AbiBXKcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 05:31:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A553420A3B8;
-        Thu, 24 Feb 2022 02:30:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 438F76162C;
-        Thu, 24 Feb 2022 10:30:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CAB6C340F5;
-        Thu, 24 Feb 2022 10:30:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645698641;
-        bh=UVBFu/2kd+72msKvbsEhY06n98IaQ0VgsAo0y3uTQ2c=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=uKMo67CXZRSwdhBzi8/EEN9oztBr9soHLP8RvL0hIDZzDAQWECQ7f8/Z8eugIY42z
-         hdfwcBluy+paiOgWEjWvgQKMnK4adKDRPYUcdzCO1eHFfPr8N0p6F+ynpzpVaLf9iv
-         CZRG6rIeJEwNiFrzJtmKDTMeHAoxInP0LBcoot5lwoVNesSWsfBfyAK/NsNtQnkts0
-         AMlDmrllC81ZcK3cvVTbMA9khRkXj8pu1dHnRsqHjwpW8ZIpgngP/5/BCpTl75RUUI
-         vy/3K30H2fYs4D+RRMADFd4EhSy9aqCosQIJHK8SpqR9iXdhesbYPT0MaBTAKEOI9x
-         ItmMoXkR49BCQ==
-Received: by mail-vk1-f176.google.com with SMTP id k9so922391vki.4;
-        Thu, 24 Feb 2022 02:30:41 -0800 (PST)
-X-Gm-Message-State: AOAM53356GDXiNzYC3BdaVZfnWdnLdzuU6RTWh+kwNDoTN7fiPNJdVzG
-        q40iGuFT0bflOc33OENuEZJUDBMJ9+7vj4FN45I=
-X-Google-Smtp-Source: ABdhPJzrvZFAbp4Whh2uDrOBDpqD226YSRYRm6BxUCxiOKTwC758aaNZI0rGrTfTm/5o1TQu5AW4BErik6sfPZlMfiQ=
-X-Received: by 2002:a1f:2355:0:b0:32a:e5bb:29a1 with SMTP id
- j82-20020a1f2355000000b0032ae5bb29a1mr790584vkj.2.1645698640594; Thu, 24 Feb
- 2022 02:30:40 -0800 (PST)
-MIME-Version: 1.0
-References: <20220224085410.399351-1-guoren@kernel.org> <20220224085410.399351-12-guoren@kernel.org>
- <CAK8P3a3wg9S_zPad74FiJzYBn0M9bQyunuKzmH3z_QQrags5ng@mail.gmail.com>
-In-Reply-To: <CAK8P3a3wg9S_zPad74FiJzYBn0M9bQyunuKzmH3z_QQrags5ng@mail.gmail.com>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Thu, 24 Feb 2022 18:30:29 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTQratosmRtoiKx9xTm3-gBSrnEaWgVrYj1U2WZafR1RVg@mail.gmail.com>
-Message-ID: <CAJF2gTQratosmRtoiKx9xTm3-gBSrnEaWgVrYj1U2WZafR1RVg@mail.gmail.com>
-Subject: Re: [PATCH V6 11/20] riscv: compat: syscall: Add compat_sys_call_table
- implementation
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Anup Patel <anup@brainfault.org>,
-        gregkh <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
+        Thu, 24 Feb 2022 05:32:00 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 663F028DDCC;
+        Thu, 24 Feb 2022 02:31:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=QJ61GVuJyclCnz18nFi5Rw74fGs3hl5irEBRqG/1OMo=;
+        t=1645698689; x=1646908289; b=md/HCKvYP8ZIxW3TNZBOQdjTNvjQAgjgiAkWpDaZz06/f7H
+        2yl16ZEme/I0Pvs6SbkXnu0dhA1JKT9ur8CqVFXZj4CB/pzDO7mqwDA4lMxTQWFzUcbRZnKCn16Bk
+        srFqehyjWkpycWV+Avw+HgsgZQSec7bdP/UXqe5PztPnUFTN2U9JdAeGLB+d0X6TD6Zw3rBamFzuG
+        OEmbs0JyiMVsuCMRvaunnJNnzK/oWODICSHiEtAZGgY7F6knqV31Chnn9H68NW1Jhpe4l5K/mhawX
+        Ij1gt7xuRLTVukOFxC3iJ0lLvRDx15975vXbe5jFdREirCU2J+EdUEu/3XdeV6/w==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nNBOz-0057ZC-Uj;
+        Thu, 24 Feb 2022 11:31:14 +0100
+Message-ID: <2fd265ec46a8b582b7c5dea9524185b6fe1b0322.camel@sipsolutions.net>
+Subject: Re: Use of void pointer arithmetic?
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Kalle Valo <kvalo@kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Francesco Magliocca <franciman12@gmail.com>,
+        Jeff Johnson <quic_jjohnson@quicinc.com>,
+        ath10k@lists.infradead.org, rmanohar@qti.qualcomm.com,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linuxfoundation.org>
+Date:   Thu, 24 Feb 2022 11:31:12 +0100
+In-Reply-To: <87fso8vb3w.fsf_-_@kernel.org>
+References: <20220221122638.7971-1-franciman12@gmail.com>
+         <e32de43c-e00a-5766-e988-fe192d36d719@quicinc.com>
+         <CAH4F6utmtAM3CzX2_Fbn94Sb-X8m0patPh8yWwbuBB0t1VYH=g@mail.gmail.com>
+         <87o82wvhtk.fsf@kernel.org> <20220224075346.GL3943@kadam>
+         <87fso8vb3w.fsf_-_@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 5:38 PM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Thu, Feb 24, 2022 at 9:54 AM <guoren@kernel.org> wrote:
-> >
-> > From: Guo Ren <guoren@linux.alibaba.com>
-> >
-> > Implement compat sys_call_table and some system call functions:
-> > truncate64, ftruncate64, fallocate, pread64, pwrite64,
-> > sync_file_range, readahead, fadvise64_64 which need argument
-> > translation.
-> >
-> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> > Signed-off-by: Guo Ren <guoren@kernel.org>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > Cc: Palmer Dabbelt <palmer@dabbelt.com>
->
-> Here, I was hoping you'd convert some of the other architectures to use
-> the same code, but the changes you did do look correct.
->
-> Please at least add the missing bit for big-endian architectures here:
->
-> +#if !defined(compat_arg_u64) && !defined(CONFIG_CPU_BIG_ENDIAN)
-> +#define compat_arg_u64(name)           u32  name##_lo, u32  name##_hi
-> +#define compat_arg_u64_dual(name)      u32, name##_lo, u32, name##_hi
-> +#define compat_arg_u64_glue(name)      (((u64)name##_hi << 32) | \
-> +                                        ((u64)name##_lo & 0xffffffffUL))
-> +#endif
->
-> with the lo/hi words swapped. With that change:
-Got it, I would change it in next version of patch.
+On Thu, 2022-02-24 at 11:59 +0200, Kalle Valo wrote:
+> 
+> A good question. I have always just thought we should avoid void pointer
+> arithmetic due to the C standard, but now that you mention it void
+> pointers can indeed simplify the code. So I'm not so sure anymore.
+> 
+> Any opinions? Is there a kernel wide recommendation for this?
 
->
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+The kernel only enables it with W=3, which I guess nobody uses anyway
+... Originally it came from commit 4a5838ad9d2d ("kbuild: Add extra gcc
+checks") with a pointer to
+
+http://marc.info/?l=kernel-janitors&m=129802065918147&w=2
+
+(which is offline right now due to an expired certificate ...)
+
+but setting back my clock it seems to point to
+
+https://lore.kernel.org/all/20110218091716.GA4384@bicker/
+
+but the thread kind of revolves around -Wconversion.
 
 
+FreeBSD does enable -Wpointer-arith which is why we've been trying to
+keep iwlwifi clean as a courtesy to them, but for really Linux-only code
+I dunno if there's much point. Although of course that applies also to
+FreeBSD ...
 
--- 
-Best Regards
- Guo Ren
+johannes
 
-ML: https://lore.kernel.org/linux-csky/
