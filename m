@@ -2,98 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CFBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E94C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 00:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229688AbiBXAlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 23 Feb 2022 19:41:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39722 "EHLO
+        id S229921AbiBXAnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 23 Feb 2022 19:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiBXAlU (ORCPT
+        with ESMTP id S229535AbiBXAnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 23 Feb 2022 19:41:20 -0500
-X-Greylist: delayed 494 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 23 Feb 2022 16:40:45 PST
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21C72D1FE
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 16:40:45 -0800 (PST)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 94B3E5C00B3;
-        Wed, 23 Feb 2022 19:32:29 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 23 Feb 2022 19:32:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=russell.cc; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; bh=nf5v9flhJ1/35f
-        JJsCo6upNHW6tvn2iWHZH/A+ZwQBg=; b=evv/LeK16QlL3GjRaqAJEve75MJGTm
-        0s1X7DWU0oCwRCmdoWFtYVsnJ4AR1j4x9II/WxMSQSQTYfAxgeo+zjV7xZelFIy5
-        JS1NmECDqJz6NRx3I9t6spm2KQoxBRfRJF+Cut7TlNMCPYTQ3KWriSjB8pZsLpis
-        pbjtCZ118uKNZuR2+2KXx9yoxicIqoSPq1a7R8R5hqGsAUbzSshyPmCdRIy//Xfo
-        1oDHzCLDswQPqampldY3rTDAKgMMAQtTyhRhq29HzjviPVV4bJSCZHwN+4lbxiy7
-        HbvtKpZalmmW5Oj+9UTO7ihnNdO410lzel7UBD4HkB5iuHzGAIlro/gA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=nf5v9flhJ1/35fJJsCo6upNHW6tvn2iWHZH/A+ZwQ
-        Bg=; b=KPV2Akj6JeP9AMwf5j+RJmb5AdCsVUlDymKb+fjS4Esv11r4HoNEdicsL
-        6PJFB9rEgWT+gRnpOOnkj2wGcYkvXBnBsFH8gffx475IpA+tFkc4yEVCp1afZFG3
-        e0HpaVOvLV1iaRHPmS54bKpxY5nds5AzMmOjxqWANYpHpYzFNy7cXZJa7czoYR28
-        MY7MDbwiSBf92aq0aPJoHqO3ipE7Qn1En9TFAQntkTawfMhyphzZPO/Jj4Pm3EDr
-        AloUMQriE2uRDu56kWK23R9jbzsu17t8ULIRxYZM5ZBiOWzNMF5B0NDxtCm4ob50
-        e8RgX+ijwxUzt9Ppmvv1jSFXIpJUg==
-X-ME-Sender: <xms:HNIWYnKmV0kvcuRBjKLJ7MxCBZOEuR5XAYjCSS2fKAWiKeLE7HcAjA>
-    <xme:HNIWYrJm6o5lmGIrXeynVNdqzLQ_UDr0eJ_vGbasKx_MzBhpzhXYHgY3AAUQG9Uw4
-    osyg-wjTigm58KXqA>
-X-ME-Received: <xmr:HNIWYvv9iXEkfcvgkMjPEJiO0Y4zurKUa9M4DoT8Dak-fhFuuDTessB1vlXAcCmwWGmh9KScolXJTLz3nY7RBJn5mYQ5oTsQzxWOMJp-kUaqpfoo6kIE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrledugddvfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenfg
-    hrlhcuvffnffculdduhedmnecujfgurhepkffuhffvjghftgffgggfgfesthejredttder
-    jeenucfhrhhomheptfhushhsvghllhcuvehurhhrvgihuceorhhushgtuhhrsehruhhssh
-    gvlhhlrdgttgeqnecuggftrfgrthhtvghrnhepfeffgefhlefgtedtleehfeekjeejteej
-    jedtvddvgfejveelieevfffgfedufeetnecuvehluhhsthgvrhfuihiivgeptdenucfrrg
-    hrrghmpehmrghilhhfrhhomheprhhushgtuhhrsehruhhsshgvlhhlrdgttg
-X-ME-Proxy: <xmx:HNIWYgYSOGQaa1nred7y96aqSvYWVkyUncVQDSGDeLlmFXmxXbT0ug>
-    <xmx:HNIWYubU3BnY-TGAeax4xLYdBy5KEyfp00d9DReRbqkMiWfG0-XCGg>
-    <xmx:HNIWYkDmO6OHUqDIBoN8-V-nR9wHw-uvUa20FikZr3Aqckilysri0A>
-    <xmx:HdIWYm4BY1kgY3F_Qz6y-at2XRgkoiLPh37djwu0Og5NwgrEguUuOg>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 23 Feb 2022 19:32:26 -0500 (EST)
-Message-ID: <b7adc31a454cf89cd04eabe36399bf2b3ce4fb23.camel@russell.cc>
-Subject: Re: [PATCH] powerpc/module_64: fix array_size.cocci warning
-From:   Russell Currey <ruscur@russell.cc>
-To:     Guo Zhengkui <guozhengkui@vivo.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        "open list:LINUX FOR POWERPC (32-BIT AND 64-BIT)" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        open list <linux-kernel@vger.kernel.org>
-Cc:     kernel@vivo.com
-In-Reply-To: <20220223075426.20939-1-guozhengkui@vivo.com>
-References: <20220223075426.20939-1-guozhengkui@vivo.com>
-Content-Type: text/plain; charset="UTF-8"
-Date:   Thu, 24 Feb 2022 10:32:23 +1000
+        Wed, 23 Feb 2022 19:43:05 -0500
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA67D24F1D;
+        Wed, 23 Feb 2022 16:42:31 -0800 (PST)
+Received: from in02.mta.xmission.com ([166.70.13.52]:45334)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nN2D6-00GEzI-QL; Wed, 23 Feb 2022 17:42:23 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:51728 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nN2D4-003rP5-OE; Wed, 23 Feb 2022 17:42:20 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Yun Levi <ppbuk5246@gmail.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Kees Cook <keescook@chromium.org>,
+        linux-fsdevel@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220223231752.52241-1-ppbuk5246@gmail.com>
+        <YhbCGDzlTWp2OJzI@zeniv-ca.linux.org.uk>
+        <CAM7-yPTM6FNuT4vs2EuKAKitTWMTHw_XzKVggxQJzn5hqbBHpw@mail.gmail.com>
+        <CAM7-yPSk35UoGmRY_rCo2=RryBvwbQEjeWfL2tz1ADUosCXNjw@mail.gmail.com>
+Date:   Wed, 23 Feb 2022 18:41:53 -0600
+In-Reply-To: <CAM7-yPSk35UoGmRY_rCo2=RryBvwbQEjeWfL2tz1ADUosCXNjw@mail.gmail.com>
+        (Yun Levi's message of "Thu, 24 Feb 2022 09:10:43 +0900")
+Message-ID: <878ru1umcu.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Evolution 3.42.4 
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-XM-SPF: eid=1nN2D4-003rP5-OE;;;mid=<878ru1umcu.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX19E7m5cfdNbK2Kadeox25wwXYPVTo6knKU=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH] fs/exec.c: Avoid a race in formats
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-02-23 at 15:54 +0800, Guo Zhengkui wrote:
-> Fix following coccicheck warning:
-> ./arch/powerpc/kernel/module_64.c:432:40-41: WARNING: Use ARRAY_SIZE.
-> 
-> ARRAY_SIZE(arr) is a macro provided by the kernel. It makes sure that
-> arr
-> is an array, so it's safer than sizeof(arr) / sizeof(arr[0]) and more
-> standard.
-> 
-> Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
+Yun Levi <ppbuk5246@gmail.com> writes:
 
-Reviewed-by: Russell Currey <ruscur@russell.cc>
+> On Thu, Feb 24, 2022 at 8:59 AM Yun Levi <ppbuk5246@gmail.com> wrote:
+>>
+>> On Thu, Feb 24, 2022 at 8:24 AM Al Viro <viro@zeniv.linux.org.uk> wrote:
+>> >
+>> > On Thu, Feb 24, 2022 at 08:17:52AM +0900, Levi Yun wrote:
+>> > > Suppose a module registers its own binfmt (custom) and formats is like:
+>> > >
+>> > > +---------+    +----------+    +---------+
+>> > > | custom  | -> |  format1 | -> | format2 |
+>> > > +---------+    +----------+    +---------+
+>> > >
+>> > > and try to call unregister_binfmt with custom NOT in __exit stage.
+>> >
+>> > Explain, please.  Why would anyone do that?  And how would such
+>> > module decide when it's safe to e.g. dismantle data structures
+>> > used by methods of that binfmt, etc.?
+>> > Could you give more detailed example?
+>>
+>> I think if someone wants to control their own binfmt via "ioctl" not
+>> on time on LOAD.
+>> For example, someone wants to control exec (notification,
+>> allow/disallow and etc..)
+>> and want to enable and disable own's control exec via binfmt reg / unreg
+>> In that situation, While the module is loaded, binfmt is still live
+>> and can be reused by
+>> reg/unreg to enable/disable his exec' control.
+>>
+>> module can decide it's safe to unload by tracing the stack and
+>> confirming whether some tasks in the custom binfmt's function after it
+>> unregisters its own binfmt.
+>>
+>> > Because it looks like papering over an inherently unsafe use of binfmt interfaces..
+>>
+>> I think the above example it's quite a trick and stupid.  it's quite
+>> unsafe to use as you mention.
+>> But, misuse allows that situation to happen without any warning.
+>> As a robustness, I just try to avoid above situation But,
+>> I think it's better to restrict unregister binfmt unregister only when
+>> there is no module usage.
+>
+> And not only stupid exmaple,
+> if someone loadable custom binfmt register in __init and __exit via
+> register and unregister_binfmt,
+> I think that situation could happen.
+
+Mostly of what has been happening with binary formats lately is code
+removal.
+
+So I humbly suggest the best defense against misuse by modules is to
+simply remove "EXPORT_SYMBOL(__register_binfmt)".
+
+Eric
