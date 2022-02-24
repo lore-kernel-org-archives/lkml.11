@@ -2,65 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF1EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:51:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BF30C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 22:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235839AbiBXWw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 17:52:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42696 "EHLO
+        id S230077AbiBXW41 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 17:56:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235694AbiBXWwS (ORCPT
+        with ESMTP id S229501AbiBXW40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 17:52:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7828228998
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 14:51:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14FEA61B75
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 22:51:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E418FC340F1;
-        Thu, 24 Feb 2022 22:51:43 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 17:51:41 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz,
-        alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
-Message-ID: <20220224175141.6a318d61@gandalf.local.home>
-In-Reply-To: <20220224224631.tr3odcwacpoejftn@treble>
-References: <20220224145138.952963315@infradead.org>
-        <20220224151322.714815604@infradead.org>
-        <20220225005520.c69be2fbdbd28028361792d9@kernel.org>
-        <20220224105847.5c899324@gandalf.local.home>
-        <20220224110130.4f4ae4ac@gandalf.local.home>
-        <20220224224631.tr3odcwacpoejftn@treble>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 24 Feb 2022 17:56:26 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B5A20A94A;
+        Thu, 24 Feb 2022 14:55:54 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id g39so6385381lfv.10;
+        Thu, 24 Feb 2022 14:55:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vIp1Ls9npdQP0dgHRyy6ZSI7XeqWxJiAI55yJU64ieQ=;
+        b=AfqemhLSOAtw2XdWZ9vDKqvl+KonvMzuAzd4D5Ip5L/KptC1ppki4GJwIEqcLqUw4s
+         NzL7AY9Z45oQlV9q1byBgSo0ULWZyZJGzB/dZmci0sipPoO0u8nkzpJeQSXUVb+5hzYE
+         lDoippfcVs0+R7qdQHmAAXXSJJtN8+HzQ0KARNxko7v8ZqP/iO0WWkMGL/WSfJPpLUB4
+         LrrKEo4woY7jZklwnsR9b3vfkzQLrcrTSwf28/InZe4nqmb6fCVsxW0JKdeFlebWLkiD
+         rjFwzVSxu4oteiUobValcrli8v2SXAorRlHR+bP55zyTm8zSqhH5SX/mRz+zNnb1jL8C
+         GHoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vIp1Ls9npdQP0dgHRyy6ZSI7XeqWxJiAI55yJU64ieQ=;
+        b=E3PE3rioG1Mb/89P+BmlRMNoHwp9gWGiMrRvR8oWEDsEpXwRZKHl401PiQwtlvMMHc
+         L5N2Yq11FPutMNANdSYG4HRCB4Zr2lNf1lci6nUsjSorPJxe+p52kRFQ1z0G0DwmUwTX
+         UBFxCUgRRreljiKRT3iUgQjTpxbMZWPtGXGbth6tHNYvnTOwL1AA8W0VHaR0ehuJsC/q
+         kzBW1MGlb7T9HyWnJMS07VvtGKmUVlUYyKPBL8d64xw+LuEbUao1gvMQnhJ1n8pnV5ep
+         XuqmotItRJuaqCVj/JKpwvp31/s31Ru/XyvxB4SeNkRMjMDX0SajIR/u/EZ7CqC+27li
+         lw0w==
+X-Gm-Message-State: AOAM533F3cju2lIVoWDl/m4dn97k39xhJg+lG71ntQ0RQxmrqiJv0mni
+        413IYY/0bX9o+PbVydPUYnUVZvvrbIMARPeXltk=
+X-Google-Smtp-Source: ABdhPJwPZOllNLGCFXZIs/UQ69leeeHS5g+8R50RoYyG/mTBxqTQeWXCTSbicLNsXzCpmVDdwubSVU75jEp3PX65fFM=
+X-Received: by 2002:a05:6512:2001:b0:443:5e17:14a0 with SMTP id
+ a1-20020a056512200100b004435e1714a0mr3179234lfb.320.1645743353155; Thu, 24
+ Feb 2022 14:55:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <CAH2r5mt9OfU+8PoKsmv_7aszhbw-dOuDCL6BOxb_2yRwc4HHCw@mail.gmail.com>
+ <Yhf+FemcQQToB5x+@redhat.com>
+In-Reply-To: <Yhf+FemcQQToB5x+@redhat.com>
+From:   Steve French <smfrench@gmail.com>
+Date:   Thu, 24 Feb 2022 16:55:42 -0600
+Message-ID: <CAH2r5mt6Sh7qorfCHWnZzc6LUDd-s_NzGB=sa-UDM2-ivzpmAQ@mail.gmail.com>
+Subject: Re: [LSF/MM/BPF TOPIC] Enabling change notification for network and
+ cluster fs
+To:     Vivek Goyal <vgoyal@redhat.com>
+Cc:     lsf-pc@lists.linux-foundation.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ioannis Angelakopoulos <jaggel@bu.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Feb 2022 14:46:31 -0800
-Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+>  With this proposal, you are trying to move away from cifs specific ioctl?
 
-> > > > > +			rec = lookup_rec(ip - offset, (ip - offset) + size);  
-> 
-> If 'offset' is zero then why the math here?      ^^^^^^^^^^^   ^^^^^^^^^^^
+Yes - since there are some applications that already use inotify
+(although presumably less common than the similar API on Macs and
+Windows), just fixing inotify to call into the fs to register events
+is a good first step.  See inotify(7) - Linux manual page e.g.
 
-Because it didn't check for offset being zero when we wrote that line. ;-)
+For the case of SMB3.1.1 the wire protocol should be fine for this
+(although perhaps could be a few flags added to inotify to better
+match what servers support) See
+https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/598f395a-e7a2-4cc8-afb3-ccb30dd2df7c
 
-Yes, checking for !offset makes that logic irrelevant.
+But there may be other APIs other than inotify that could be mapped to
+what is already supported on the wire (with minor changes to the vfs)
 
-Good catch.
+On Thu, Feb 24, 2022 at 3:52 PM Vivek Goyal <vgoyal@redhat.com> wrote:
+>
+> On Wed, Feb 23, 2022 at 11:16:33PM -0600, Steve French wrote:
+> > Currently only local events can be waited on with the current notify
+> > kernel API since the requests to wait on these events is not passed to
+> > the filesystem.   Especially for network and cluster filesystems it is
+> > important that they be told that applications want to be notified of
+> > these file or directory change events.
+> >
+> > A few years ago, discussions began on the changes needed to enable
+> > support for this.   Would be timely to finish those discussions, as
+> > waiting on file and directory change events to network mounts is very
+> > common for other OS, and would be valuable for Linux to fix.
+> >
+>
+> This sounds like which might have some overlap with what we are trying
+> to do.
+>
+> Currently inotify/fanotify only work for local filesystems. We were
+> thinking is it possible to extend it for remote filesystems as well. My
+> interest primarily was to make notifications work on virtiofs. So I
+> asked Ioannis (an intern with us) to try to prototype it and see what are
+> the challenges and roadblocks.
+>
+> He posted one version of patches just as proof of concept and only tried
+> to make remote inotify work. One primary feedback from Amir was that
+> this is too specific to inotify and if you are extending fsnotify, then
+> it should have some support for fanotify as well. There is bunch of
+> other feedback too. So Ioannis is trying to rework his patches now.
+>
+> https://lore.kernel.org/linux-fsdevel/20211025204634.2517-1-iangelak@redhat.com/
+>
+> Anyway, you had pointed to following commit.
+>
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/fs/cifs/ioctl.c?id=d26c2ddd33569667e3eeb577c4c1d966ca9192e2
+>
+> So looks like application calls this cifs specific ioctl and blocks and
+> unblocks when notifications comes, IIUC.
+>
+> I don't know about SMB and what kind of other notifications does it
+> support. With this proposal, you are trying to move away from cifs
+> specific ioctl? What will user use to either block or poll for the
+> said notification.
+>
+> Sorry, I might be just completely off the mark. Just trying to find out
+> if there is any overlap in what you are looking for and what we are
+> trying to do.
+>
+> Thanks
+> Vivek
+>
+> > --
+> > Thanks,
+> >
+> > Steve
+> >
+>
 
--- Steve
+
+-- 
+Thanks,
+
+Steve
