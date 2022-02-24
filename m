@@ -2,391 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A00E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 07:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11799C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 07:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229741AbiBXHmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 02:42:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
+        id S229883AbiBXHr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 02:47:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229663AbiBXHmS (ORCPT
+        with ESMTP id S229798AbiBXHrY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 02:42:18 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5572C65A
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:41:47 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id b5so609584wrr.2
-        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:41:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GEY/DWBTU13q9ys7XzsRqFgcmBU4kLDd6mFeEGwZdWc=;
-        b=NEOcSOeY21lot2ISk340A2nPDVmY5yjn+qd/xS80HY5eKlAVIQfeS9uMOxLiZ/BILp
-         FRTHOno867N5dc+Dn8ACT2GOv3z118+QT56fvOu2Fvk9IYbI67MHeHgZcAIgkglhK//l
-         aLlcnc6Hf/YRO4NKBHl8pJ9M7EwPvybpc4maNU3gb2CNOHmP1FTjO/sptuzWJIyXqhBX
-         Vi8RwDnXqiceK4/u708BBepQuhx+yZkcAejTtQspnurT9U16bWtFI09vYshJ/qd+yKkP
-         4dMwscLLPRR1ADn6GFqMSYdtD96ByZ7IMxBg+pQK4+9sWZoG/Ow0kL2hdqOitoW+j6Co
-         OVzQ==
+        Thu, 24 Feb 2022 02:47:24 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 358BC403F8
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:46:54 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id DCD9D3FCA4
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 07:46:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645688812;
+        bh=FxOVZjnNiVO0i9jH0i6UiovfwrDBwVKl5GL2sYOaVX4=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=kYfQ7AdKpVuWQ47pE+InvtpSOH38WYo2gVGkTi6Sp8RcteBq2x3kUPXSTxtT79Il3
+         o2cBPIR4+6OcMtVo3rJiS7N6pxzqZoGylPeNKUmpYqqKUCCuZ/jQoBGJskkE7hESMV
+         I66PoAmaHRp2qZGjAQcESmSCH4JiFzr9QJxdY1tBzPzuzlSAqPewtk8kuSI5i4pvwN
+         v/uyvW6So2vDEfQ50jl+Yq4qqTDGxBarodYEpLFS3cX5/Qj5Tbo3gS8IMV/H3ghIwl
+         Qp8v3qHrKD96HoXiNxr55OcRd7Mc8LrnUcU7T7BKiil14JX01M1yA7uf4qXOksWaaJ
+         dupFyWsl8NRAQ==
+Received: by mail-ej1-f70.google.com with SMTP id sa7-20020a170906eda700b006d1b130d65bso802102ejb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 23 Feb 2022 23:46:52 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GEY/DWBTU13q9ys7XzsRqFgcmBU4kLDd6mFeEGwZdWc=;
-        b=zR7JErLa7aET2GA1EzB+bSEtQARJYQcc3pRncDYOdQUfE6S1c2Yo1InEYeFxXFffAU
-         68IayCgl+agOr8FzfuPxGrxgAmGVGiwge6maRbUvV+efpC1nyYx1SvaaPYhbrcxhKJ3x
-         VUKxalyyr7iFtImOMypo24ZI24eVfs0d1tjr9/MipyG3oRk3QBMk3lbd855abkL80uKC
-         1aE9DcVoXleuxT5VVcs9h3fKSpt7gow/r71+DTVvrk51Ux/bhwKdS64Jzla8skxbTQrQ
-         NhC1z1Q/jlK8NR1AtRZH/4MyOanBU9CXJ9wL3NakH7m+ZA1BABvi34aZyz1Sr7SYIBta
-         +7/g==
-X-Gm-Message-State: AOAM5320xjcgdVqfcohzX7fx9bS4U7Ws9Gc4MwmPSEWsWp3yIxBnT4td
-        KEjLK11nrx6lNF+0G6JHcdSSVaLc/jTCckqW5KkIOA==
-X-Google-Smtp-Source: ABdhPJx0d6/ZjRGa7OYf534ii37zSpsDQoOflqiHsGvF7Gyg+PWAGgAdn4fmMa0TcYrDoACkdD1olf/rtI3kDYKWwUI=
-X-Received: by 2002:adf:a486:0:b0:1ed:9cfe:179d with SMTP id
- g6-20020adfa486000000b001ed9cfe179dmr1177609wrb.113.1645688505599; Wed, 23
- Feb 2022 23:41:45 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=FxOVZjnNiVO0i9jH0i6UiovfwrDBwVKl5GL2sYOaVX4=;
+        b=Guj0Sxfc4Nzr8bXUWZlhJ+nyjjqStOVh9ZU0s66y56mtvYWc6oko4Y+DfdrsQeYNeB
+         FZLzAihVqaze47riZiRQCkR6uVd28EmSjNUwXaRjdRyF/TvD3cTh1q3y1RWLAQ8NegMy
+         NjKKkuv6kB01y7RTsHoItAuoaWjBTLuExc8rVb973ZZ+IznRrVUmd1/e63qu7p87yaqJ
+         WlRJD5BEBqfjb1ZtE5+fUNrFjeSeAldOwdW8Vrpv1uqMu5LCOTB5NaCHTIR27dqwIRO5
+         RFF8oDlDHYO5+lC/+Ny4fbudJ7LYBVgOzXHRuBjKSGxMEcZJvflYA5cq/e54im/hLklu
+         oKVg==
+X-Gm-Message-State: AOAM532pSyPqL9CMGOVaJWoGV5EGmYlD0DB7YP0IzqLi9hvjDXznLpL4
+        nn9BW1BO5YT0e6Su9RCu5jo2ovSQPKvE6frERjbKWv3yOwVtkDkGoPCkn0mKwFWu69wjYrLjYLL
+        NvxUI1jBdN9gjEk8HOEbnoiG3azuNewlkx2A2TQTbKg==
+X-Received: by 2002:a17:907:365:b0:6d1:bf9:9164 with SMTP id rs5-20020a170907036500b006d10bf99164mr1290181ejb.598.1645688811408;
+        Wed, 23 Feb 2022 23:46:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyF2QxOV5sZ3l9SN1ANQlm/aYyNKUMNdm1sWIKjHtTsjqFzwsoCzjjUbc5J7jIvGVZuZRXOYQ==
+X-Received: by 2002:a17:907:365:b0:6d1:bf9:9164 with SMTP id rs5-20020a170907036500b006d10bf99164mr1290164ejb.598.1645688811188;
+        Wed, 23 Feb 2022 23:46:51 -0800 (PST)
+Received: from [192.168.0.127] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id t24sm914666ejx.187.2022.02.23.23.46.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Feb 2022 23:46:50 -0800 (PST)
+Message-ID: <3e4f387b-53fb-b031-223c-88adac7d4dae@canonical.com>
+Date:   Thu, 24 Feb 2022 08:46:49 +0100
 MIME-Version: 1.0
-References: <20220224054332.1852813-1-keescook@chromium.org>
-In-Reply-To: <20220224054332.1852813-1-keescook@chromium.org>
-From:   David Gow <davidgow@google.com>
-Date:   Thu, 24 Feb 2022 15:41:34 +0800
-Message-ID: <CABVgOSn97OaW9j_NOqc4KS5BzvF0D7_yvpOT+XVK0vHW2F+FNw@mail.gmail.com>
-Subject: Re: [PATCH] binfmt_elf: Introduce KUnit test
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Eric Biederman <ebiederm@xmission.com>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        =?UTF-8?B?TWFnbnVzIEdyb8Of?= <magnus.gross@rwth-aachen.de>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        linux-fsdevel@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-hardening@vger.kernel.org
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000cefbda05d8beb6f7"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 01/11] driver: platform: add and use helper for safer
+ setting of driver_override
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+References: <20220223191310.347669-1-krzysztof.kozlowski@canonical.com>
+ <20220223191310.347669-2-krzysztof.kozlowski@canonical.com>
+ <20220223162538-mutt-send-email-mst@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220223162538-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000cefbda05d8beb6f7
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 23/02/2022 22:33, Michael S. Tsirkin wrote:
+> On Wed, Feb 23, 2022 at 08:13:00PM +0100, Krzysztof Kozlowski wrote:
+>> Several core drivers and buses expect that driver_override is a
+>> dynamically allocated memory thus later they can kfree() it.
+>>
+>> However such assumption is not documented, there were in the past and
+>> there are already users setting it to a string literal. This leads to
+>> kfree() of static memory during device release (e.g. in error paths or
+>> during unbind):
+>>
+>>     kernel BUG at ../mm/slub.c:3960!
+>>     Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
+>>     ...
+>>     (kfree) from [<c058da50>] (platform_device_release+0x88/0xb4)
+>>     (platform_device_release) from [<c0585be0>] (device_release+0x2c/0x90)
+>>     (device_release) from [<c0a69050>] (kobject_put+0xec/0x20c)
+>>     (kobject_put) from [<c0f2f120>] (exynos5_clk_probe+0x154/0x18c)
+>>     (exynos5_clk_probe) from [<c058de70>] (platform_drv_probe+0x6c/0xa4)
+>>     (platform_drv_probe) from [<c058b7ac>] (really_probe+0x280/0x414)
+>>     (really_probe) from [<c058baf4>] (driver_probe_device+0x78/0x1c4)
+>>     (driver_probe_device) from [<c0589854>] (bus_for_each_drv+0x74/0xb8)
+>>     (bus_for_each_drv) from [<c058b48c>] (__device_attach+0xd4/0x16c)
+>>     (__device_attach) from [<c058a638>] (bus_probe_device+0x88/0x90)
+>>     (bus_probe_device) from [<c05871fc>] (device_add+0x3dc/0x62c)
+>>     (device_add) from [<c075ff10>] (of_platform_device_create_pdata+0x94/0xbc)
+>>     (of_platform_device_create_pdata) from [<c07600ec>] (of_platform_bus_create+0x1a8/0x4fc)
+>>     (of_platform_bus_create) from [<c0760150>] (of_platform_bus_create+0x20c/0x4fc)
+>>     (of_platform_bus_create) from [<c07605f0>] (of_platform_populate+0x84/0x118)
+>>     (of_platform_populate) from [<c0f3c964>] (of_platform_default_populate_init+0xa0/0xb8)
+>>     (of_platform_default_populate_init) from [<c01031f8>] (do_one_initcall+0x8c/0x404)
+>>     (do_one_initcall) from [<c0f012c0>] (kernel_init_freeable+0x3d0/0x4d8)
+>>     (kernel_init_freeable) from [<c0a7def0>] (kernel_init+0x8/0x114)
+>>     (kernel_init) from [<c01010b4>] (ret_from_fork+0x14/0x20)
+>>
+>> Provide a helper which clearly documents the usage of driver_override.
+>> This will allow later to reuse the helper and reduce amount of
+>> duplicated code.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>> ---
+>>  drivers/base/driver.c           | 44 +++++++++++++++++++++++++++++++++
+>>  drivers/base/platform.c         | 24 +++---------------
+>>  include/linux/device/driver.h   |  1 +
+>>  include/linux/platform_device.h |  6 ++++-
+>>  4 files changed, 54 insertions(+), 21 deletions(-)
+>>
+>> diff --git a/drivers/base/driver.c b/drivers/base/driver.c
+>> index 8c0d33e182fd..79efe51bb4c0 100644
+>> --- a/drivers/base/driver.c
+>> +++ b/drivers/base/driver.c
+>> @@ -30,6 +30,50 @@ static struct device *next_device(struct klist_iter *i)
+>>  	return dev;
+>>  }
+>>  
+>> +/*
+>> + * set_driver_override() - Helper to set or clear driver override.
+>> + * @dev: Device to change
+>> + * @override: Address of string to change (e.g. &device->driver_override);
+>> + *            The contents will be freed and hold newly allocated override.
+>> + * @s: NULL terminated string, new driver name to force a match, pass empty
+> 
+> Don't you mean NUL terminated?
 
-On Thu, Feb 24, 2022 at 1:43 PM Kees Cook <keescook@chromium.org> wrote:
->
-> Adds simple KUnit test for some binfmt_elf internals: specifically a
-> regression test for the problem fixed by commit 8904d9cd90ee ("ELF:
-> fix overflow in total mapping size calculation").
->
+Yeah, NUL.
 
-(Just as a note to anyone else testing this, this hasn't hit
-linux-next yet, so the test does fail out of the box.)
+> Do all callers really validate that it's NUL terminated?
 
-> Cc: Eric Biederman <ebiederm@xmission.com>
-> Cc: David Gow <davidgow@google.com>
-> Cc: Alexey Dobriyan <adobriyan@gmail.com>
-> Cc: "Magnus Gro=C3=9F" <magnus.gross@rwth-aachen.de>
-> Cc: kunit-dev@googlegroups.com
-> Cc: linux-fsdevel@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
+Good point, the callers use it in device attributes (sysfs) only, so it
+might come non-NUL. Previously this was solved by kstrndup() which is
+always terminating the string.
 
-This looks like a pretty sensible test to me. It's definitely doing a
-few weird things with the whole COMPAT support bit, and I do think
-that inverting the flow and having the binfmt_elf_test.c file include
-binfmt_elf.c is probably the more flexible solution.
 
-In any case, the test works well for me (including the compat_
-variant), modulo a build error and needing to apply the aforementioned
-fix first.
+> 
+>> + *     string to clear it
+>> + *
+>> + * Helper to setr or clear driver override in a device, intended for the cases
+> 
+> set?
+D'oh!
 
-Cheers,
--- David
+> 
+>> + * when the driver_override field is allocated by driver/bus code.
+>> + *
+>> + * Returns: 0 on success or a negative error code on failure.
+>> + */
+>> +int driver_set_override(struct device *dev, char **override, const char *s)
+>> +{
+>> +	char *new, *old, *cp;
+>> +
+>> +	if (!dev || !override || !s)
+>> +		return -EINVAL;
+>> +
+>> +	new = kstrndup(s, strlen(s), GFP_KERNEL);
+> 
+> 
+> what's the point of this kstrndup then? why not just kstrdup?
 
-> I'm exploring ways to mock copy_to_user() for more tests in here.
-> kprobes doesn't seem to let me easily hijack a function...
+Thanks, it's a copy-paste. Useless now, but I'll pass the count directly
+from the callers and then this will be NULL-terminating it.
 
-Not much to add to what Daniel said here, other than to re-tread some
-old discussions around using ftrace, weak-linked symbols, and all
-sorts of other horrors to intercept function calls.
+> 
+>> +	if (!new)
+>> +		return -ENOMEM;
+>> +
+>> +	cp = strchr(new, '\n');
+>> +	if (cp)
+>> +		*cp = '\0';
+>> +
+>> +	device_lock(dev);
+>> +	old = *override;
+>> +	if (strlen(new)) {
+> 
+> We are re-reading the string like 3 times here.
 
-The least horrifying solution we've thought of thus far is to
-literally change the function to add a test to see if it's running
-under a KUnit test which wants to mock it out (using the pointer in
-task_struct and KUnit named resources to check). Even then, that's
-definitely the sort of thing that you want behind an #ifdef
-CONFIG_KUNIT check, and even then is likely to be met with some
-disapproval for something as performance-sensitive as copy_to_user().
-Of course, if just including the binfmt_elf.c file from within the
-test file and using #defines works -- i.e., we don't need to care
-about very indirect calls from within different files -- then that's
-the simplest solution.
+Yep, the same in old code. I guess we could compare just pointers -
+whether 'cp' is not NULL and different than 's'.
 
-More binfmt_elf tests would be great, though, particularly if we can
-get some of those nasty parsing functions tested.
+> 
+>> +		*override = new;
+>> +	} else {
+>> +		kfree(new);
+>> +		*override = NULL;
+>> +	}
+>> +	device_unlock(dev);
+>> +
+>> +	kfree(old);
+>> +
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(driver_set_override);
+>> +
+>>  /**
+>>   * driver_for_each_device - Iterator for devices bound to a driver.
+>>   * @drv: Driver we're iterating.
+>> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+>> index 6cb04ac48bf0..d8853b32ea10 100644
+>> --- a/drivers/base/platform.c
+>> +++ b/drivers/base/platform.c
+>> @@ -1275,31 +1275,15 @@ static ssize_t driver_override_store(struct device *dev,
+>>  				     const char *buf, size_t count)
+>>  {
+>>  	struct platform_device *pdev = to_platform_device(dev);
+>> -	char *driver_override, *old, *cp;
+>> +	int ret;
+>>  
+>>  	/* We need to keep extra room for a newline */
+>>  	if (count >= (PAGE_SIZE - 1))
+>>  		return -EINVAL;
+> 
+> Given everyone seems to repeat this check, how about passing
+> in count and doing the validation in the helper?
 
-> ---
->  fs/Kconfig.binfmt      | 17 +++++++++++
->  fs/binfmt_elf.c        |  4 +++
->  fs/binfmt_elf_test.c   | 64 ++++++++++++++++++++++++++++++++++++++++++
->  fs/compat_binfmt_elf.c |  2 ++
->  4 files changed, 87 insertions(+)
->  create mode 100644 fs/binfmt_elf_test.c
->
-> diff --git a/fs/Kconfig.binfmt b/fs/Kconfig.binfmt
-> index 4d5ae61580aa..8e14589ee9cc 100644
-> --- a/fs/Kconfig.binfmt
-> +++ b/fs/Kconfig.binfmt
-> @@ -28,6 +28,23 @@ config BINFMT_ELF
->           ld.so (check the file <file:Documentation/Changes> for location=
- and
->           latest version).
->
-> +config BINFMT_ELF_KUNIT_TEST
-> +       bool "Build KUnit tests for ELF binary support" if !KUNIT_ALL_TES=
-TS
-> +       depends on KUNIT=3Dy && BINFMT_ELF=3Dy
-> +       default KUNIT_ALL_TESTS
-> +       help
-> +         This builds the ELF loader KUnit tests.
-> +
-> +         KUnit tests run during boot and output the results to the debug=
- log
-> +         in TAP format (https://testanything.org/). Only useful for kern=
-el devs
-> +         running KUnit test harness and are not for inclusion into a
-> +         production build.
+Good idea.
 
-It might be worth documenting here that this particular config option
-actually builds two test suites if COMPAT is enabled.
+> We will then also avoid the need to do strlen and strchr.
 
-> +
-> +         For more information on KUnit and unit tests in general please =
-refer
-> +         to the KUnit documentation in Documentation/dev-tools/kunit/.
-> +
-> +         If unsure, say N.
-> +
->  config COMPAT_BINFMT_ELF
->         def_bool y
->         depends on COMPAT && BINFMT_ELF
-> diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-> index 76ff2af15ba5..9bea703ed1c2 100644
-> --- a/fs/binfmt_elf.c
-> +++ b/fs/binfmt_elf.c
-> @@ -2335,3 +2335,7 @@ static void __exit exit_elf_binfmt(void)
->  core_initcall(init_elf_binfmt);
->  module_exit(exit_elf_binfmt);
->  MODULE_LICENSE("GPL");
-> +
-> +#ifdef CONFIG_BINFMT_ELF_KUNIT_TEST
-> +#include "binfmt_elf_test.c"
-> +#endif
-> diff --git a/fs/binfmt_elf_test.c b/fs/binfmt_elf_test.c
-> new file mode 100644
-> index 000000000000..486ad419f763
-> --- /dev/null
-> +++ b/fs/binfmt_elf_test.c
-> @@ -0,0 +1,64 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +#include <kunit/test.h>
-> +
-> +static void total_mapping_size_test(struct kunit *test)
-> +{
-> +       struct elf_phdr empty[] =3D {
-> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0, .p_memsz =3D 0, },
-> +               { .p_type =3D PT_INTERP, .p_vaddr =3D 10, .p_memsz =3D 99=
-9999, },
-> +       };
-> +       /*
-> +        * readelf -lW /bin/mount | grep '^  .*0x0' | awk '{print "\t\t{ =
-.p_type =3D PT_" \
-> +        *                              $1 ", .p_vaddr =3D " $3 ", .p_mem=
-sz =3D " $6 ", },"}'
-> +        */
-> +       struct elf_phdr mount[] =3D {
-> +               { .p_type =3D PT_PHDR, .p_vaddr =3D 0x00000040, .p_memsz =
-=3D 0x0002d8, },
-> +               { .p_type =3D PT_INTERP, .p_vaddr =3D 0x00000318, .p_mems=
-z =3D 0x00001c, },
-> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x00000000, .p_memsz =
-=3D 0x0033a8, },
-> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x00004000, .p_memsz =
-=3D 0x005c91, },
-> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x0000a000, .p_memsz =
-=3D 0x0022f8, },
-> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x0000d330, .p_memsz =
-=3D 0x000d40, },
-> +               { .p_type =3D PT_DYNAMIC, .p_vaddr =3D 0x0000d928, .p_mem=
-sz =3D 0x000200, },
-> +               { .p_type =3D PT_NOTE, .p_vaddr =3D 0x00000338, .p_memsz =
-=3D 0x000030, },
-> +               { .p_type =3D PT_NOTE, .p_vaddr =3D 0x00000368, .p_memsz =
-=3D 0x000044, },
-> +               { .p_type =3D PT_GNU_PROPERTY, .p_vaddr =3D 0x00000338, .=
-p_memsz =3D 0x000030, },
-> +               { .p_type =3D PT_GNU_EH_FRAME, .p_vaddr =3D 0x0000b490, .=
-p_memsz =3D 0x0001ec, },
-> +               { .p_type =3D PT_GNU_STACK, .p_vaddr =3D 0x00000000, .p_m=
-emsz =3D 0x000000, },
-> +               { .p_type =3D PT_GNU_RELRO, .p_vaddr =3D 0x0000d330, .p_m=
-emsz =3D 0x000cd0, },
+The strlen() could be removed, but the strchr() should stay. What
+solution do you have in mind to remove strchr()?
 
-This doesn't build for me, as PT_GNU_RELRO isn't defined. Adding it
-makes the test build:
+Thanks for review.
 
----
-Signed-off-by: David Gow <davidgow@google.com>
----
-diff --git a/include/uapi/linux/elf.h b/include/uapi/linux/elf.h
-index 61bf4774b8f2..c33cdb4d9464 100644
---- a/include/uapi/linux/elf.h
-+++ b/include/uapi/linux/elf.h
-@@ -36,6 +36,7 @@ typedef __s64 Elf64_Sxword;
-#define PT_LOPROC  0x70000000
-#define PT_HIPROC  0x7fffffff
-#define PT_GNU_EH_FRAME                0x6474e550
-+#define PT_GNU_RELRO           0x6474e552
-#define PT_GNU_PROPERTY                0x6474e553
 
-#define PT_GNU_STACK   (PT_LOOS + 0x474e551)
----
-
-> +       };
-> +       size_t mount_size =3D 0xE070;
-> +       /* https://lore.kernel.org/lkml/YfF18Dy85mCntXrx@fractal.localdom=
-ain */
-> +       struct elf_phdr unordered[] =3D {
-> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x00000000, .p_memsz =
-=3D 0x0033a8, },
-> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x0000d330, .p_memsz =
-=3D 0x000d40, },
-> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x00004000, .p_memsz =
-=3D 0x005c91, },
-> +               { .p_type =3D PT_LOAD, .p_vaddr =3D 0x0000a000, .p_memsz =
-=3D 0x0022f8, },
-> +       };
-> +
-> +       /* No headers, no size. */
-> +       KUNIT_EXPECT_EQ(test, total_mapping_size(NULL, 0), 0);
-> +       KUNIT_EXPECT_EQ(test, total_mapping_size(empty, 0), 0);
-> +       /* Empty headers, no size. */
-> +       KUNIT_EXPECT_EQ(test, total_mapping_size(empty, 1), 0);
-> +       /* No PT_LOAD headers, no size. */
-> +       KUNIT_EXPECT_EQ(test, total_mapping_size(&empty[1], 1), 0);
-> +       /* Empty PT_LOAD and non-PT_LOAD headers, no size. */
-> +       KUNIT_EXPECT_EQ(test, total_mapping_size(empty, 2), 0);
-> +
-> +       /* Normal set of PT_LOADS, and expected size. */
-> +       KUNIT_EXPECT_EQ(test, total_mapping_size(mount, ARRAY_SIZE(mount)=
-), mount_size);
-> +       /* Unordered PT_LOADs result in same size. */
-> +       KUNIT_EXPECT_EQ(test, total_mapping_size(unordered, ARRAY_SIZE(un=
-ordered)), mount_size);
-> +}
-> +
-> +static struct kunit_case binfmt_elf_test_cases[] =3D {
-> +       KUNIT_CASE(total_mapping_size_test),
-> +       {},
-> +};
-> +
-> +static struct kunit_suite binfmt_elf_test_suite =3D {
-> +       .name =3D KBUILD_MODNAME,
-> +       .test_cases =3D binfmt_elf_test_cases,
-> +};
-> +
-> +kunit_test_suite(binfmt_elf_test_suite);
-> diff --git a/fs/compat_binfmt_elf.c b/fs/compat_binfmt_elf.c
-> index 95e72d271b95..8f0af4f62631 100644
-> --- a/fs/compat_binfmt_elf.c
-> +++ b/fs/compat_binfmt_elf.c
-> @@ -135,6 +135,8 @@
->  #define elf_format             compat_elf_format
->  #define init_elf_binfmt                init_compat_elf_binfmt
->  #define exit_elf_binfmt                exit_compat_elf_binfmt
-> +#define binfmt_elf_test_cases  compat_binfmt_elf_test_cases
-> +#define binfmt_elf_test_suite  compat_binfmt_elf_test_suite
->
->  /*
->   * We share all the actual code with the native (64-bit) version.
-> --
-> 2.30.2
->
-
---000000000000cefbda05d8beb6f7
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
-IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
-dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
-6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
-c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
-I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
-AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
-CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
-AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
-MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
-My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
-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
-G7p3AiuB2sgfq6cOpbO5MEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
-dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
-AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
-c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
-LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
-LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
-Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQBsL34EJkCtu9Nu
-2+R6l1Qzno5Gl+N2Cm6/YLujukDGYa1JW27txXiilR9dGP7yl60HYyG2Exd5i6fiLDlaNEw0SqzE
-dw9ZSIak3Qvm2UybR8zcnB0deCUiwahqh7ZncEPlhnPpB08ETEUtwBEqCEnndNEkIN67yz4kniCZ
-jZstNF/BUnI3864fATiXSbnNqBwlJS3YkoaCTpbI9qNTrf5VIvnbryT69xJ6f25yfmxrXNJJe5OG
-ncB34Cwnb7xQyk+uRLZ465yUBkbjk9pC/yamL0O7SOGYUclrQl2c5zzGuVBD84YcQGDOK6gSPj6w
-QuBfOooZPOyZZZ8AMih7J980MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
-R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
-MDIwAhABQeVybOOpR4bOOXZYL5T3MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCB8
-Mr6BJb4BYxVfeVVDisbL0OQ42VgZ+E7+jRSx9E3i+jAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0yMjAyMjQwNzQxNDVaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
-BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
-CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAabDLwRIGBdSIRSKpjO5m
-JCFkXr6fyIXJGEib0DoxTa5YLyTQ/kcEYc+STg7TTW1O77rOMH2d1Qo/5LdoKAtrpzIDv9nEvSdI
-dWNUIunk3/BzQl9+BE6SknDEVqG6hdc8fO7Xg5KMHjKS9dKPhp+FhLYUZPMnAqXeDWqselUHukDs
-JoMWjbDaLBhAK/MlaNAX5cjp92KZ6eQLV56365Iw/tsv0mfijb9i47uYCBT7LN1rx1cF03d394gf
-foIL64rqB8VepTHp+ZF/LsYGQ6Fynxn8VEODo2b6/9kzAaMY4jdecbmYW9fDKCy9MmgvRUfzYhbs
-7NEytb3RKebICMlLwQ==
---000000000000cefbda05d8beb6f7--
+Best regards,
+Krzysztof
