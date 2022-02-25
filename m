@@ -2,193 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD02C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235098AbiBYTes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 14:34:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
+        id S235157AbiBYTfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 14:35:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235077AbiBYTen (ORCPT
+        with ESMTP id S235101AbiBYTfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 14:34:43 -0500
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2083.outbound.protection.outlook.com [40.107.92.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 898741B0C56;
-        Fri, 25 Feb 2022 11:34:08 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iXGJMjjIYRtstxvSHbpyGhFTz3ALUqG9uNK3ItfkJVIOYUzzbQunYzLsXWKMFiDSPa5s1WnmtNauxTuGkxusxLfQ1963hQ7laN3VZ6z/+ONZcFiMozvRHzoQupvvJCus6Ky9YRprMjLFrEUTneXthu0W5nt2WjLBLb1+fhvpObgl2Lq/h6Ehy9lVlBvGXXV+zRnYK5qWW1X+8zIUxNG8Nd2iLx/zYpyDzsnyTb/Xlr/CpaCKArWbLr1w98X107z+dIl88FtKps1Iet4zUYib0IofsG8/JkSTCL8GsbE8wMzmw0iOwrMInmTtVz2rQaI4uap8PED78C24n/orMgSb/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BE78gr+gZg9gWFTRdx3D2H6+H9CshtRblYtcuY3AIcA=;
- b=KXM9981SH6MCQYieJkv3BXMHn5pMLieL7H8rJRPFdQAQoxRMuVQ2ciW0VnML0gHC2pAPvBPlwkvMyfUGtaS0aun+Ca4GvU5xbVsNatIJSvLDbUgH+M+kVaX/iSAE43FRePMdhwhHzfg5M+oJmiKhJ/XUALXGcHtQm62y7bagEyMLpmN9M4FZGxnNGxyn+013S+ZkfKzQo/ZcpXS2wi6J93zXxvvqQWQon2NN7Bs2pCop7zVTWfvNZ5mJSYr8S6AeD9yAtodwAxae3vFyLMzxh0zjs93mOBM2B1FVFydlH6v/iETTCgsj+AcPbx0WDYi0kMf/4lZSTvzE+1vx7jJI1w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BE78gr+gZg9gWFTRdx3D2H6+H9CshtRblYtcuY3AIcA=;
- b=IYLyPeE/wNkuoQ88TfzLdXm4xJzSBjmHyQ96mhJ327Z/d0c7zZdVWv9zQxgbx3/P3xygjXCpP5gqpEh1tr3kXWC6Vv0d/gZwUYEUOAJ1/efvPaF6IIqb68Ldmk6DuytrUOoG+VOZ6v8MrqgyUxtca2jZv1sPeX1LNRTWCXty3MI=
-Received: from MWHPR13CA0025.namprd13.prod.outlook.com (2603:10b6:300:95::11)
- by BN7PR12MB2627.namprd12.prod.outlook.com (2603:10b6:408:25::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Fri, 25 Feb
- 2022 19:34:04 +0000
-Received: from CO1NAM11FT043.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:95:cafe::ec) by MWHPR13CA0025.outlook.office365.com
- (2603:10b6:300:95::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.9 via Frontend
- Transport; Fri, 25 Feb 2022 19:34:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT043.mail.protection.outlook.com (10.13.174.193) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5017.22 via Frontend Transport; Fri, 25 Feb 2022 19:34:03 +0000
-Received: from ethanolx50f7host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 25 Feb
- 2022 13:33:58 -0600
-From:   Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-To:     <x86@kernel.org>, <linux-edac@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Tony Luck <tony.luck@intel.com>, "H . Peter Anvin" <hpa@zytor.com>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Yazen Ghannam <yazen.ghannam@amd.com>,
-        Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-Subject: [PATCH v4 2/3] x86/mce: Define function to extract ErrorAddr from MCA_ADDR
-Date:   Fri, 25 Feb 2022 13:33:41 -0600
-Message-ID: <20220225193342.215780-3-Smita.KoralahalliChannabasappa@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220225193342.215780-1-Smita.KoralahalliChannabasappa@amd.com>
-References: <20220225193342.215780-1-Smita.KoralahalliChannabasappa@amd.com>
+        Fri, 25 Feb 2022 14:35:00 -0500
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A851AAFEE;
+        Fri, 25 Feb 2022 11:34:27 -0800 (PST)
+Received: by mail-oo1-f47.google.com with SMTP id i6-20020a4ac506000000b0031c5ac6c078so7679597ooq.6;
+        Fri, 25 Feb 2022 11:34:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UICPO9Om+OjZbYZvV1eE9LFKzgVcG+7qGH6VjnvkKI8=;
+        b=TwECzR39CpWOcLOArvNermww7VdjSz/BYxL0VpRUmSUOCCWAKd3Zer7ez6qil+65vF
+         3XWzWzM4iiaMEvMWJ1s6tLcxrxUXxYCHSsDwtZiotr9L0QOE53qBPwyNnU9xOgel+yaD
+         zEpv7wgRLTmBj6qS02had8PYe7v5UVLRCt0QSWfRy12z8r5NC/hw+cWxPtaYxJgRE+td
+         wJUk5E3Jpi8o9PzIOlQY+dZ8qyg+WMRIzJ3mVcu9Q12OGtlsjPPcjYVOOW2DlTecs5oU
+         V/sELnzlg1GWcqZS4krzU4qht+unOoNyxmYq6HQNX8K+rKh2c2a6cXdVxPIZYjR+jPeO
+         3qzg==
+X-Gm-Message-State: AOAM5335u/np/7m7f/YVu2cIwKGxiXYtK9ugo3R4mP2voV72E8yvJeMZ
+        9E5XwpCn1K1FvCnVNvN0ug==
+X-Google-Smtp-Source: ABdhPJyOmdG3rl+cOnFKAoGP1Z8WrEkO0FitJjYvk9EWfzGhRJ2baL6iZ1iEjArJAHpRjo6HZhDxAg==
+X-Received: by 2002:a05:6870:9a03:b0:d6:f261:4d04 with SMTP id fo3-20020a0568709a0300b000d6f2614d04mr1194467oab.161.1645817666852;
+        Fri, 25 Feb 2022 11:34:26 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id l12-20020a056830154c00b005af943e7a4asm1515000otp.71.2022.02.25.11.34.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 11:34:26 -0800 (PST)
+Received: (nullmailer pid 1300164 invoked by uid 1000);
+        Fri, 25 Feb 2022 19:34:25 -0000
+Date:   Fri, 25 Feb 2022 13:34:25 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-samsung-soc@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Wei Xu <xuwei5@hisilicon.com>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        devicetree@vger.kernel.org,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Yaniv Gardi <ygardi@codeaurora.org>,
+        Jan Kotas <jank@cadence.com>, Nishanth Menon <nm@ti.com>,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Tero Kristo <kristo@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Li Wei <liwei213@huawei.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        linux-scsi@vger.kernel.org
+Subject: Re: [PATCH v2 06/15] dt-bindings: ufs: hisilicon,ufs: convert to
+ dtschema
+Message-ID: <YhkvQXomgBnyYF0g@robh.at.kernel.org>
+References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
+ <20220222145854.358646-7-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c38f2121-893c-4c86-461d-08d9f895c7cd
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2627:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR12MB26270E1D4DC7936512DE432C903E9@BN7PR12MB2627.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: InoF1STtfAsH9vqCgNFXb3dGhhIeOqF8uXF0I8glellVTla8SoPbW+Ea18RgH3TwR0Ijig9X10+tNkdsbaMJYIaVY9XYviTEAxkf9PEu/sY4LD2H1h53sdZyrxtpxgUaSOahH7nQGjK5UmMKIL6FWOMHmc24QvbEaJwGW7FpQGRzMFJxfn2ZWjWR7odcoSZIJoUxlICqF+AEwguygie52ESCMDCNvrXB9ylj3Lx8vC9GJDZsslq6SzaKrg+mmJtsQp21BDQ3y1SnD3rmtF2z34sjwdUV90A0OT+thFVElmpdQJ13YaLDqEIHvpbKfwC9cWWiTl3Uf3L1k9xQDZWj4fR2U7HU8BOgGcJHEFbzvko+VtstanOIleVIBfVDCrOVpaMsOATwmtdUsJzWEiOaF7v6KjHEJna8GVdNfKp1PY3PRQnAKgxmKkEqFpxktl3987DLgOcF2cbuGAilCZFtGX4WKht/lLxWfTnV1s9wMGk7Kvfy980eW66iNSJyNkgTCbYqJC7N1wNbmQ/5Mib0nOIsJJIJtXhjLxgmTdxAjoXTjl3MrOx4GbbMOXDnpVhTZNYvNB2n00ZhG3oLhA9DZ+Zi3WwDpbWJZNd8zAI/CWQLi8xANbqb6ITMMrezsdw6mIwOom08+/T6hDaBgeE5A6dmACX2T/QEHm2BR+UWBHRqJH9tsJklfFEtdaGYhw3PPx2hkvpY5nboPV3JFIcYYtKsMdObdukJxufqJA38e0C89wrbJ2joD1zFZtwOMFIDmjkpqo+O22sIRLjh/vvQ1CPFAEP05g0seY0ZtF7bu04=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(81166007)(2906002)(83380400001)(36756003)(40460700003)(356005)(86362001)(36860700001)(47076005)(966005)(82310400004)(8936002)(4326008)(26005)(7696005)(70586007)(110136005)(16526019)(316002)(1076003)(186003)(2616005)(8676002)(5660300002)(336012)(6666004)(54906003)(70206006)(426003)(508600001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 19:34:03.3695
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c38f2121-893c-4c86-461d-08d9f895c7cd
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT043.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2627
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220222145854.358646-7-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move MCA_ADDR[ErrorAddr] extraction into a separate helper function. This
-will be further refactored to support extended ErrorAddr bits in MCA_ADDR
-in newer AMD processors such as AMD 'Milan'.
+On Tue, 22 Feb 2022 15:58:45 +0100, Krzysztof Kozlowski wrote:
+> Convert the HiSilicon Universal Flash Storage (UFS) Controller to DT
+> schema format.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  .../bindings/ufs/hisilicon,ufs.yaml           | 90 +++++++++++++++++++
+>  .../devicetree/bindings/ufs/ufs-hisi.txt      | 42 ---------
+>  2 files changed, 90 insertions(+), 42 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/ufs/hisilicon,ufs.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/ufs/ufs-hisi.txt
+> 
 
-Signed-off-by: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-Reviewed-by: Yazen Ghannam <yazen.ghannam@amd.com>
----
-Link:
-https://lkml.kernel.org/r/20220211223442.254489-2-Smita.KoralahalliChannabasappa@amd.com
-
-v2:
-	No change.
-v3:
-	Rebased on the latest tip tree. No functional changes.
-v4:
-	Commit description change to be void of the patch linearity.
----
- arch/x86/include/asm/mce.h     |  2 ++
- arch/x86/kernel/cpu/mce/amd.c  | 14 +++++++++-----
- arch/x86/kernel/cpu/mce/core.c |  7 ++-----
- 3 files changed, 13 insertions(+), 10 deletions(-)
-
-diff --git a/arch/x86/include/asm/mce.h b/arch/x86/include/asm/mce.h
-index cc73061e7255..99a4c32cbdfa 100644
---- a/arch/x86/include/asm/mce.h
-+++ b/arch/x86/include/asm/mce.h
-@@ -337,12 +337,14 @@ extern int mce_threshold_remove_device(unsigned int cpu);
- 
- void mce_amd_feature_init(struct cpuinfo_x86 *c);
- enum smca_bank_types smca_get_bank_type(unsigned int cpu, unsigned int bank);
-+void smca_extract_err_addr(struct mce *m);
- #else
- 
- static inline int mce_threshold_create_device(unsigned int cpu)		{ return 0; };
- static inline int mce_threshold_remove_device(unsigned int cpu)		{ return 0; };
- static inline bool amd_mce_is_memory_error(struct mce *m)		{ return false; };
- static inline void mce_amd_feature_init(struct cpuinfo_x86 *c)		{ }
-+static inline void smca_extract_err_addr(struct mce *m) { }
- #endif
- 
- static inline void mce_hygon_feature_init(struct cpuinfo_x86 *c)	{ return mce_amd_feature_init(c); }
-diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
-index 1940d305db1c..981d718851a2 100644
---- a/arch/x86/kernel/cpu/mce/amd.c
-+++ b/arch/x86/kernel/cpu/mce/amd.c
-@@ -722,6 +722,13 @@ bool amd_mce_is_memory_error(struct mce *m)
- 	return m->bank == 4 && xec == 0x8;
- }
- 
-+void smca_extract_err_addr(struct mce *m)
-+{
-+	u8 lsb = (m->addr >> 56) & 0x3f;
-+
-+	m->addr &= GENMASK_ULL(55, lsb);
-+}
-+
- static void __log_error(unsigned int bank, u64 status, u64 addr, u64 misc)
- {
- 	struct mce m;
-@@ -740,11 +747,8 @@ static void __log_error(unsigned int bank, u64 status, u64 addr, u64 misc)
- 		 * Extract [55:<lsb>] where lsb is the least significant
- 		 * *valid* bit of the address bits.
- 		 */
--		if (mce_flags.smca) {
--			u8 lsb = (m.addr >> 56) & 0x3f;
--
--			m.addr &= GENMASK_ULL(55, lsb);
--		}
-+		if (mce_flags.smca)
-+			smca_extract_err_addr(&m);
- 	}
- 
- 	if (mce_flags.smca) {
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index c0e9aa9c8749..313058dc129f 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -645,11 +645,8 @@ static noinstr void mce_read_aux(struct mce *m, int i)
- 		 * Extract [55:<lsb>] where lsb is the least significant
- 		 * *valid* bit of the address bits.
- 		 */
--		if (mce_flags.smca) {
--			u8 lsb = (m->addr >> 56) & 0x3f;
--
--			m->addr &= GENMASK_ULL(55, lsb);
--		}
-+		if (mce_flags.smca)
-+			smca_extract_err_addr(m);
- 	}
- 
- 	if (mce_flags.smca) {
--- 
-2.17.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
