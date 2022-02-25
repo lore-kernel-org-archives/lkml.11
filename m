@@ -2,167 +2,365 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A286C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE99C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232389AbiBYSEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 13:04:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
+        id S232603AbiBYSEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 13:04:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232088AbiBYSE0 (ORCPT
+        with ESMTP id S232215AbiBYSE2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 13:04:26 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D76278C87;
-        Fri, 25 Feb 2022 10:03:53 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 5EAE41F44A;
-        Fri, 25 Feb 2022 18:03:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645812232; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+Yfx6BYjupT6FJvPBiP/J6fWBiTk107w6SeEj7q5Klk=;
-        b=r3D13KGnpbppsRc9ii4T3MVnbZvbDjeh6yA6fQk7REw/+y+ZXzlktrZItPebE7krOc99xc
-        TzS3d3sDIVyPqWxY8Xlgo2aAcTfVNvyWHgYJUcvRHhak60KuhKWhRcuR/vvyW21NeeJIZk
-        t1fQ+KavQ7Bm4nwRAZvFAFB5KqsuVQ8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645812232;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+Yfx6BYjupT6FJvPBiP/J6fWBiTk107w6SeEj7q5Klk=;
-        b=nVmGh+q4eZWpix4pbXiN1758PxD8VAfz1Am5Gz53Wz110bSoIsAkKRRrdINxdhsApPsSWB
-        CpPYX3D6UBHMulBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2EDE513EA7;
-        Fri, 25 Feb 2022 18:03:52 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id yKLVCggaGWKSRQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 25 Feb 2022 18:03:52 +0000
-From:   Vlastimil Babka <vbabka@suse.cz>
-To:     David Rientjes <rientjes@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Oliver Glitta <glittao@gmail.com>,
-        Faiyaz Mohammed <faiyazm@codeaurora.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org
-Subject: [PATCH 5/5] slab, documentation: add description of debugfs files for SLUB caches
-Date:   Fri, 25 Feb 2022 19:03:18 +0100
-Message-Id: <20220225180318.20594-6-vbabka@suse.cz>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220225180318.20594-1-vbabka@suse.cz>
-References: <20220225180318.20594-1-vbabka@suse.cz>
+        Fri, 25 Feb 2022 13:04:28 -0500
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AF51C6ECD
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:03:55 -0800 (PST)
+Received: by mail-il1-x12a.google.com with SMTP id w4so4906510ilj.5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:03:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nxVYU0Y/GX1SztxwLmOsWDvnyHY9aIhX+L7yaSSKSyA=;
+        b=iT2Ku5SRK/+MrntnqGD8a7Hrq8vnN/uWl0vlnMPbnwOkqua7BA+0Q3PtNH+UNpuTBU
+         XPI9heL5fA7lCT+6vt7ocs2GdRAuZIPBZ5mHoioV2PC1+F49hCDfL2pFWLGhvYoViJqm
+         xtJXHhoInvmOpf+W8u8n0v2UhobZpXZXV9jNB8u+KU4IIcM5YKsA8VWBq/P0kS2dT0nS
+         1LToYoUo20javOTYbvaEaxRef8Ju8YI1MwaBrLMEFuQzr7s7uHyTzTAhyQwUunkEECPy
+         oLenMYy8BRmMGxL9VMzKCLGHFIMl0n240NtSkomLvDsHBCdrDYG5Cpgm6nQfsTkcc7oZ
+         EXoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nxVYU0Y/GX1SztxwLmOsWDvnyHY9aIhX+L7yaSSKSyA=;
+        b=ZzWZqc2dObX/td8wj8WA21e98uLwORFOe0+KX+EDV8uWNKU4iNOC0v1CmJ+T2Ozd+C
+         gEuGcsp1rkcx5WkIO7s+FUvjEIur2x7IrAFKQ3mJOJckh9IjgweyafUlDGNwdE19HdYO
+         Lsj+AnodUfzQMCeZm87CGEu3bt5GVqOiWTjBfeVJLU+1/GzoCNEeLJWK8+1w8eX0fkru
+         neJvyjwIjsjzA6AviBOmk9NA7yfDK9XW/Zfam32ES4dpNtfQxcIt9OW10aSQbXIYqvLI
+         vMMgV0npx4cEFrQMWUdpOl/FB6s4JB82UuRUZ1D9NCdBiri0QzvQmSxz+WGw0khQfrE/
+         XfIw==
+X-Gm-Message-State: AOAM532YiKfnmfqVomUfvXSNWS+3oZ78lnlJFUSdhwmpjxeXe7uIUDEt
+        YvWBwKjlVnoJpOEjdOEOXpSDr+dCZXPyinbd56SBvQ==
+X-Google-Smtp-Source: ABdhPJwrKVAUmn1Ancbw20/NQBK86nBHASxQkJw/VYqDyFsL1Tiy5QWwoyWW5QGl4lF1cRGJJ2F4lsbV+aodx11kXDo=
+X-Received: by 2002:a05:6e02:1529:b0:2c1:e960:9d4 with SMTP id
+ i9-20020a056e02152900b002c1e96009d4mr7458780ilu.115.1645812234218; Fri, 25
+ Feb 2022 10:03:54 -0800 (PST)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3076; i=vbabka@suse.cz; h=from:subject; bh=Z5xj7PzTOFSpE0pbr9lBjpkfetxkbHzTO1UejCdWQ8s=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiGRnl7O4Oyi/9lFUUrqVMZhZ+sJjFUodWofVv+pRg xGljxtiJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYhkZ5QAKCRDgIcpz8YmpEATlB/ 9C6Oy0ADNsAs+rGleFVl1L9e7F1la8CZjE3ErKtX85TVjMuqT1HKpQ6muldsYcC/SUyUfeArKVLgnM 6Tl6j546wWnlAVosCWzv8VUKAMd38RPN3iqGTDrkAwOi7BipFHg7tFX1qY5ILSKs2otLDQ7I8WjZaf GgvBhm41OPN6BLpLF181bxz19jgTlSJjlXtK7RGlsqfiSO6eCzfgbXo5l1wDbQQqobtl2uUCxeDF0m sw0U3kCDx/dU4NvK/CrsVbqXma1grWuKaXAIMZoDAXaGMRd5YlZjIXn7Ng9BR+lVMj8z1i5GjumQTb gBdgcKqYgjHh9BG8Jz+OCIoZq2xSnJ
-X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
-Content-Transfer-Encoding: 8bit
+References: <20210820155918.7518-1-brijesh.singh@amd.com> <20210820155918.7518-15-brijesh.singh@amd.com>
+In-Reply-To: <20210820155918.7518-15-brijesh.singh@amd.com>
+From:   Alper Gun <alpergun@google.com>
+Date:   Fri, 25 Feb 2022 10:03:42 -0800
+Message-ID: <CABpDEu=jm43jHhv2mA+C1Sz00xuzH_C-Cn9fRYrFkOCM_em1Fw@mail.gmail.com>
+Subject: Re: [PATCH Part2 v5 14/45] crypto: ccp: Handle the legacy TMR
+ allocation when SNP is enabled
+To:     Brijesh Singh <brijesh.singh@amd.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        linux-crypto@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>, tony.luck@intel.com,
+        marcorr@google.com, sathyanarayanan.kuppuswamy@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Glitta <glittao@gmail.com>
+On Fri, Aug 20, 2021 at 9:00 AM Brijesh Singh <brijesh.singh@amd.com> wrote:
+>
+> The behavior and requirement for the SEV-legacy command is altered when
+> the SNP firmware is in the INIT state. See SEV-SNP firmware specification
+> for more details.
+>
+> Allocate the Trusted Memory Region (TMR) as a 2mb sized/aligned region
+> when SNP is enabled to satify new requirements for the SNP. Continue
+> allocating a 1mb region for !SNP configuration.
+>
+> While at it, provide API that can be used by others to allocate a page
+> that can be used by the firmware. The immediate user for this API will
+> be the KVM driver. The KVM driver to need to allocate a firmware context
+> page during the guest creation. The context page need to be updated
+> by the firmware. See the SEV-SNP specification for further details.
+>
+> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
+> ---
+>  drivers/crypto/ccp/sev-dev.c | 169 ++++++++++++++++++++++++++++++++++-
+>  include/linux/psp-sev.h      |  11 +++
+>  2 files changed, 176 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+> index 01edad9116f2..34dc358b13b9 100644
+> --- a/drivers/crypto/ccp/sev-dev.c
+> +++ b/drivers/crypto/ccp/sev-dev.c
+> @@ -62,6 +62,14 @@ static int psp_timeout;
+>  #define SEV_ES_TMR_SIZE                (1024 * 1024)
+>  static void *sev_es_tmr;
+>
+> +/* When SEV-SNP is enabled the TMR needs to be 2MB aligned and 2MB size. */
+> +#define SEV_SNP_ES_TMR_SIZE    (2 * 1024 * 1024)
+> +
+> +static size_t sev_es_tmr_size = SEV_ES_TMR_SIZE;
+> +
+> +static int __sev_do_cmd_locked(int cmd, void *data, int *psp_ret);
+> +static int sev_do_cmd(int cmd, void *data, int *psp_ret);
+> +
+>  static inline bool sev_version_greater_or_equal(u8 maj, u8 min)
+>  {
+>         struct sev_device *sev = psp_master->sev_data;
+> @@ -159,6 +167,156 @@ static int sev_cmd_buffer_len(int cmd)
+>         return 0;
+>  }
+>
+> +static void snp_leak_pages(unsigned long pfn, unsigned int npages)
+> +{
+> +       WARN(1, "psc failed, pfn 0x%lx pages %d (leaking)\n", pfn, npages);
+> +       while (npages--) {
+> +               memory_failure(pfn, 0);
+> +               dump_rmpentry(pfn);
+> +               pfn++;
+> +       }
+> +}
+> +
+> +static int snp_reclaim_pages(unsigned long pfn, unsigned int npages, bool locked)
+> +{
+> +       struct sev_data_snp_page_reclaim data;
+> +       int ret, err, i, n = 0;
+> +
+> +       for (i = 0; i < npages; i++) {
+> +               memset(&data, 0, sizeof(data));
+> +               data.paddr = pfn << PAGE_SHIFT;
+> +
+> +               if (locked)
+> +                       ret = __sev_do_cmd_locked(SEV_CMD_SNP_PAGE_RECLAIM, &data, &err);
+> +               else
+> +                       ret = sev_do_cmd(SEV_CMD_SNP_PAGE_RECLAIM, &data, &err);
+> +               if (ret)
+> +                       goto cleanup;
+> +
+> +               ret = rmp_make_shared(pfn, PG_LEVEL_4K);
+> +               if (ret)
+> +                       goto cleanup;
+> +
+> +               pfn++;
+> +               n++;
+> +       }
+> +
+> +       return 0;
+> +
+> +cleanup:
+> +       /*
+> +        * If failed to reclaim the page then page is no longer safe to
+> +        * be released, leak it.
+> +        */
+> +       snp_leak_pages(pfn, npages - n);
+> +       return ret;
+> +}
+> +
+> +static inline int rmp_make_firmware(unsigned long pfn, int level)
+> +{
+> +       return rmp_make_private(pfn, 0, level, 0, true);
+> +}
+> +
+> +static int snp_set_rmp_state(unsigned long paddr, unsigned int npages, bool to_fw, bool locked,
+> +                            bool need_reclaim)
+> +{
+> +       unsigned long pfn = __sme_clr(paddr) >> PAGE_SHIFT; /* Cbit maybe set in the paddr */
+> +       int rc, n = 0, i;
+> +
+> +       for (i = 0; i < npages; i++) {
+> +               if (to_fw)
+> +                       rc = rmp_make_firmware(pfn, PG_LEVEL_4K);
+> +               else
+> +                       rc = need_reclaim ? snp_reclaim_pages(pfn, 1, locked) :
+> +                                           rmp_make_shared(pfn, PG_LEVEL_4K);
+> +               if (rc)
+> +                       goto cleanup;
+> +
+> +               pfn++;
+> +               n++;
+> +       }
+> +
+> +       return 0;
+> +
+> +cleanup:
+> +       /* Try unrolling the firmware state changes */
+> +       if (to_fw) {
+> +               /*
+> +                * Reclaim the pages which were already changed to the
+> +                * firmware state.
+> +                */
+> +               snp_reclaim_pages(paddr >> PAGE_SHIFT, n, locked);
+> +
+> +               return rc;
+> +       }
+> +
+> +       /*
+> +        * If failed to change the page state to shared, then its not safe
+> +        * to release the page back to the system, leak it.
+> +        */
+> +       snp_leak_pages(pfn, npages - n);
+> +
+> +       return rc;
+> +}
+> +
+> +static struct page *__snp_alloc_firmware_pages(gfp_t gfp_mask, int order, bool locked)
+> +{
+> +       unsigned long npages = 1ul << order, paddr;
+> +       struct sev_device *sev;
+> +       struct page *page;
+> +
+> +       if (!psp_master || !psp_master->sev_data)
+> +               return ERR_PTR(-EINVAL);
+> +
+> +       page = alloc_pages(gfp_mask, order);
+> +       if (!page)
+> +               return NULL;
+> +
+> +       /* If SEV-SNP is initialized then add the page in RMP table. */
+> +       sev = psp_master->sev_data;
+> +       if (!sev->snp_inited)
+> +               return page;
+> +
+> +       paddr = __pa((unsigned long)page_address(page));
+> +       if (snp_set_rmp_state(paddr, npages, true, locked, false))
+> +               return NULL;
+> +
+> +       return page;
+> +}
+> +
+> +void *snp_alloc_firmware_page(gfp_t gfp_mask)
+> +{
+> +       struct page *page;
+> +
+> +       page = __snp_alloc_firmware_pages(gfp_mask, 0, false);
+> +
+> +       return page ? page_address(page) : NULL;
+> +}
+> +EXPORT_SYMBOL_GPL(snp_alloc_firmware_page);
+> +
+> +static void __snp_free_firmware_pages(struct page *page, int order, bool locked)
+> +{
+> +       unsigned long paddr, npages = 1ul << order;
+> +
+> +       if (!page)
+> +               return;
+> +
+> +       paddr = __pa((unsigned long)page_address(page));
+> +       if (snp_set_rmp_state(paddr, npages, false, locked, true))
+> +               return;
+> +
+> +       __free_pages(page, order);
+> +}
+> +
+> +void snp_free_firmware_page(void *addr)
+> +{
+> +       if (!addr)
+> +               return;
+> +
+> +       __snp_free_firmware_pages(virt_to_page(addr), 0, false);
+> +}
+> +EXPORT_SYMBOL(snp_free_firmware_page);
+> +
+>  static int __sev_do_cmd_locked(int cmd, void *data, int *psp_ret)
+>  {
+>         struct psp_device *psp = psp_master;
+> @@ -281,7 +439,7 @@ static int __sev_platform_init_locked(int *error)
+>
+>                 data.flags |= SEV_INIT_FLAGS_SEV_ES;
+>                 data.tmr_address = tmr_pa;
+> -               data.tmr_len = SEV_ES_TMR_SIZE;
+> +               data.tmr_len = sev_es_tmr_size;
+>         }
+>
+>         rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, error);
+> @@ -638,6 +796,8 @@ static int __sev_snp_init_locked(int *error)
+>         sev->snp_inited = true;
+>         dev_dbg(sev->dev, "SEV-SNP firmware initialized\n");
+>
+> +       sev_es_tmr_size = SEV_SNP_ES_TMR_SIZE;
+> +
+>         return rc;
+>  }
+>
+> @@ -1161,8 +1321,9 @@ static void sev_firmware_shutdown(struct sev_device *sev)
+>                 /* The TMR area was encrypted, flush it from the cache */
+>                 wbinvd_on_all_cpus();
+>
+> -               free_pages((unsigned long)sev_es_tmr,
+> -                          get_order(SEV_ES_TMR_SIZE));
+> +               __snp_free_firmware_pages(virt_to_page(sev_es_tmr),
+> +                                         get_order(sev_es_tmr_size),
+> +                                         false);
+Shouldn't there be a check here for snp_inited before calling rmpupdate.
+TMR page can exist even if the SNP is not supported.
 
-Add description of debugfs files alloc_traces and free_traces
-to SLUB cache documentation.
-
-[ vbabka@suse.cz: some rewording ]
-
-Signed-off-by: Oliver Glitta <glittao@gmail.com>
-Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-doc@vger.kernel.org
----
- Documentation/vm/slub.rst | 61 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 61 insertions(+)
-
-diff --git a/Documentation/vm/slub.rst b/Documentation/vm/slub.rst
-index d3028554b1e9..2b2b931e59fc 100644
---- a/Documentation/vm/slub.rst
-+++ b/Documentation/vm/slub.rst
-@@ -384,5 +384,66 @@ c) Execute ``slabinfo-gnuplot.sh`` in '-t' mode, passing all of the
-       40,60`` range will plot only samples collected between 40th and
-       60th seconds).
- 
-+
-+DebugFS files for SLUB
-+======================
-+
-+For more information about current state of SLUB caches with the user tracking
-+debug option enabled, debugfs files are available, typically under
-+/sys/kernel/debug/slab/<cache>/ (created only for caches with enabled user
-+tracking). There are 2 types of these files with the following debug
-+information:
-+
-+1. alloc_traces::
-+
-+    Prints information about unique allocation traces of the currently
-+    allocated objects. The output is sorted by frequency of each trace.
-+
-+    Information in the output:
-+    Number of objects, allocating function, minimal/average/maximal jiffies since alloc,
-+    pid range of the allocating processes, cpu mask of allocating cpus, and stack trace.
-+
-+    Example:::
-+
-+    1085 populate_error_injection_list+0x97/0x110 age=166678/166680/166682 pid=1 cpus=1::
-+	__slab_alloc+0x6d/0x90
-+	kmem_cache_alloc_trace+0x2eb/0x300
-+	populate_error_injection_list+0x97/0x110
-+	init_error_injection+0x1b/0x71
-+	do_one_initcall+0x5f/0x2d0
-+	kernel_init_freeable+0x26f/0x2d7
-+	kernel_init+0xe/0x118
-+	ret_from_fork+0x22/0x30
-+
-+
-+2. free_traces::
-+
-+    Prints information about unique free traces of the currently free objects,
-+    sorted by their frequency.
-+
-+    Information in the output:
-+    Number of objects, freeing function, minimal/average/maximal jiffies since free,
-+    pid range of the freeing processes, cpu mask of freeing cpus, and stack trace.
-+
-+    Example:::
-+
-+    51 acpi_ut_update_ref_count+0x6a6/0x782 age=236886/237027/237772 pid=1 cpus=1
-+	kfree+0x2db/0x420
-+	acpi_ut_update_ref_count+0x6a6/0x782
-+	acpi_ut_update_object_reference+0x1ad/0x234
-+	acpi_ut_remove_reference+0x7d/0x84
-+	acpi_rs_get_prt_method_data+0x97/0xd6
-+	acpi_get_irq_routing_table+0x82/0xc4
-+	acpi_pci_irq_find_prt_entry+0x8e/0x2e0
-+	acpi_pci_irq_lookup+0x3a/0x1e0
-+	acpi_pci_irq_enable+0x77/0x240
-+	pcibios_enable_device+0x39/0x40
-+	do_pci_enable_device.part.0+0x5d/0xe0
-+	pci_enable_device_flags+0xfc/0x120
-+	pci_enable_device+0x13/0x20
-+	virtio_pci_probe+0x9e/0x170
-+	local_pci_probe+0x48/0x80
-+	pci_device_probe+0x105/0x1c0
-+
- Christoph Lameter, May 30, 2007
- Sergey Senozhatsky, October 23, 2015
--- 
-2.35.1
-
+>                 sev_es_tmr = NULL;
+>         }
+>
+> @@ -1233,7 +1394,7 @@ void sev_pci_init(void)
+>         }
+>
+>         /* Obtain the TMR memory area for SEV-ES use */
+> -       tmr_page = alloc_pages(GFP_KERNEL, get_order(SEV_ES_TMR_SIZE));
+> +       tmr_page = __snp_alloc_firmware_pages(GFP_KERNEL, get_order(sev_es_tmr_size), false);
+>         if (tmr_page) {
+>                 sev_es_tmr = page_address(tmr_page);
+>         } else {
+> diff --git a/include/linux/psp-sev.h b/include/linux/psp-sev.h
+> index f2105a8755f9..00bd684dc094 100644
+> --- a/include/linux/psp-sev.h
+> +++ b/include/linux/psp-sev.h
+> @@ -12,6 +12,8 @@
+>  #ifndef __PSP_SEV_H__
+>  #define __PSP_SEV_H__
+>
+> +#include <linux/sev.h>
+> +
+>  #include <uapi/linux/psp-sev.h>
+>
+>  #ifdef CONFIG_X86
+> @@ -919,6 +921,8 @@ int snp_guest_page_reclaim(struct sev_data_snp_page_reclaim *data, int *error);
+>  int snp_guest_dbg_decrypt(struct sev_data_snp_dbg *data, int *error);
+>
+>  void *psp_copy_user_blob(u64 uaddr, u32 len);
+> +void *snp_alloc_firmware_page(gfp_t mask);
+> +void snp_free_firmware_page(void *addr);
+>
+>  #else  /* !CONFIG_CRYPTO_DEV_SP_PSP */
+>
+> @@ -960,6 +964,13 @@ static inline int snp_guest_dbg_decrypt(struct sev_data_snp_dbg *data, int *erro
+>         return -ENODEV;
+>  }
+>
+> +static inline void *snp_alloc_firmware_page(gfp_t mask)
+> +{
+> +       return NULL;
+> +}
+> +
+> +static inline void snp_free_firmware_page(void *addr) { }
+> +
+>  #endif /* CONFIG_CRYPTO_DEV_SP_PSP */
+>
+>  #endif /* __PSP_SEV_H__ */
+> --
+> 2.17.1
+>
+>
