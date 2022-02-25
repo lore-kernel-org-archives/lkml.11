@@ -2,100 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A78C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D07CFC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:24:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233362AbiBYTYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 14:24:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
+        id S234581AbiBYTYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 14:24:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231931AbiBYTYQ (ORCPT
+        with ESMTP id S232268AbiBYTYv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 14:24:16 -0500
-Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id C10D11D8331
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 11:23:43 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1645817023; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=tZD1ax3jsnPy6TzQA2DQRsI4QX4jijvlAnNWj4gYHnE=; b=opRIkgAetdNcbjOrsM94URq1nGa/i84ep50i9HDdIhNs872wWun1wlWMUYnF1ZwY1w0crrf4
- ks53K6KnlNfsUg/H+aYTRIlATAR0RloHXFK8DLMA9p5WBTJBvFv9WU+FNj8EvcirCODCp0E6
- fq+IgcqBX9MQPp3xRaRZGTba2Tg=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 62192c4ce1c212bb9c4ab206 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 25 Feb 2022 19:21:48
- GMT
-Sender: quic_akhilpo=quicinc.com@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DF1D3C43637; Fri, 25 Feb 2022 19:21:47 +0000 (UTC)
-Received: from hyd-lnxbld559.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        Fri, 25 Feb 2022 14:24:51 -0500
+X-Greylist: delayed 6529 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Feb 2022 11:24:19 PST
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738971EF36E;
+        Fri, 25 Feb 2022 11:24:19 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: akhilpo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 152C0C4338F;
-        Fri, 25 Feb 2022 19:21:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 152C0C4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
-From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
-To:     freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        Rob Clark <robdclark@gmail.com>,
-        OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
-        <devicetree@vger.kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Douglas Anderson <dianders@chromium.org>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Rob Herring <robh+dt@kernel.org>, Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/5] Support 7c3 gpu SKUs
-Date:   Sat, 26 Feb 2022 00:51:27 +0530
-Message-Id: <1645816893-22815-1-git-send-email-quic_akhilpo@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        by ms.lwn.net (Postfix) with ESMTPSA id D954B2A0;
+        Fri, 25 Feb 2022 19:24:18 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net D954B2A0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1645817059; bh=eAsK8KjhF6vOJ6D38k1AV93Il3fx8B4v0KWORpTEC94=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=AvVqaeT7mj4SSOF70xhBJAanen+NlOWgeSHzJabI2XvZfiWwVjU0VOnWnVVsGnHXo
+         /MNE/a0KY2XPeRhvluLZY/d4FZxxy9qSgC4y7APLT05tlzRRuGYoRfWrqDwxDDmHMl
+         PwZzAFI5LcKfCyTVqE0acKTs65TpR9W+2jqjvAjZYVPhtE7D8nOdPLvmcUuy65ivZh
+         FZjKVu73obuBpsiVWyWxq+ag/U0YrIXMHckWy1TEdXGzRHoVlj1Y+agfhgPVfhb2BT
+         Ga71gJUIvNQqNPAraoMtDFx2Oiso2sJl54/hAve3k62bo2/Z7rivux5rKp8MUwV/DM
+         ljZ0daDBsG/Kg==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        linux-man <linux-man@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        paulmck <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api <linux-api@vger.kernel.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Florian Weimer <fw@deneb.enyo.de>,
+        David Laight <David.Laight@ACULAB.COM>,
+        carlos <carlos@redhat.com>, Peter Oskolkov <posk@posk.io>
+Subject: Re: [RFC PATCH v2 09/11] sched: Introduce per memory space current
+ virtual cpu id
+In-Reply-To: <1317699329.108531.1645814360159.JavaMail.zimbra@efficios.com>
+References: <20220218210633.23345-1-mathieu.desnoyers@efficios.com>
+ <20220218210633.23345-10-mathieu.desnoyers@efficios.com>
+ <87k0dikfxa.fsf@meer.lwn.net>
+ <1323451367.108396.1645811762372.JavaMail.zimbra@efficios.com>
+ <8735k6ke34.fsf@meer.lwn.net>
+ <1317699329.108531.1645814360159.JavaMail.zimbra@efficios.com>
+Date:   Fri, 25 Feb 2022 12:24:18 -0700
+Message-ID: <87h78miwbh.fsf@meer.lwn.net>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series supercedes [1]. Major change in this series is that it is now
-optional to include a gpu name in the gpu-list. This helps to avoid the
-confusion when we have different SKUs with different gpu names. And also
-I am pretty happy that the overall changes are smaller now.
+Mathieu Desnoyers <mathieu.desnoyers@efficios.com> writes:
 
-[1] https://patchwork.freedesktop.org/series/99048/
+> ----- On Feb 25, 2022, at 1:15 PM, Jonathan Corbet corbet@lwn.net wrote:
+>> That helps, thanks.  I do think that something like this belongs in the
+>> changelog - or, even better, in the upcoming restartable-sequences
+>> section in the userspace-api documentation :)
+>
+> Just to confirm, when you say "userspace-api documentation" do you refer to
+> man pages ?
 
-Changes in v2:
-- use devm_kasprintf() to generate gpu name (Rob)
+No, I meant Documentation/userspace-api/.  But yes, even having the man
+page in place would be a good step in the right direction.
 
-Akhil P Oommen (5):
-  drm/msm: Use generic name for gpu resources
-  drm/msm/adreno: Generate name from chipid for 7c3
-  drm/msm/a6xx: Add support for 7c3 SKUs
-  drm/msm/adreno: Expose speedbin to userspace
-  arm64: dts: qcom: sc7280: Support gpu speedbin
+Thanks,
 
- arch/arm64/boot/dts/qcom/sc7280.dtsi       | 46 ++++++++++++++++++++++++++++++
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c      | 18 ++++++++++--
- drivers/gpu/drm/msm/adreno/adreno_device.c |  1 -
- drivers/gpu/drm/msm/adreno/adreno_gpu.c    | 36 +++++++++++++++++++----
- drivers/gpu/drm/msm/adreno/adreno_gpu.h    |  3 ++
- drivers/gpu/drm/msm/msm_gpu.c              |  4 +--
- 6 files changed, 97 insertions(+), 11 deletions(-)
-
--- 
-2.7.4
-
+jon
