@@ -2,97 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:49:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237213AbiBYDtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:49:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32882 "EHLO
+        id S237239AbiBYDxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:53:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237181AbiBYDtl (ORCPT
+        with ESMTP id S231544AbiBYDwt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:49:41 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D0019BE4E
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:49:08 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id y7so6097203oih.5
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:49:08 -0800 (PST)
+        Thu, 24 Feb 2022 22:52:49 -0500
+Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C87F186214
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:52:18 -0800 (PST)
+Received: by mail-oo1-xc30.google.com with SMTP id r41-20020a4a966c000000b0031bf85a4124so4850699ooi.0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:52:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UDK1kz5Fr0UKhxFUazSV4lfvWljmN762R0UmyDLBbzw=;
-        b=DiAwxygHlg2cunADRHhaLRH/oj/hg887zxesH6wxMvEbnn2WM1kTGcjd3b76js74Ex
-         NFv2iIrjxYfyS6GoFxahnN6CvoXjD8vdR+QAkzRsIWFdREtCZdykdi9UwLaZ6t+UFtxu
-         DVQ+C6oZtLJwgY3/gToIATa2kHQ2I3OrhIF+6PBaj8Cr01A6UFq0oBhFvGkTivzrGgpR
-         fYuoo7Zico/l+lnF7zjeWhV7Xu7rHTbhAPCFEaIQdIhKE0VbGflbF76+lBQPsfeeQD+4
-         e+fYH7ETmElVqP7IlRdOkGQN2b7ymK5JQJ5XfikwHU0jwdW9/a0Z1UHD0n+5zF2hEZiZ
-         PiOQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o2ttFE4UXWwKSdqHtV1QEdoVt4O2JyRTcbi9yz+bnns=;
+        b=DqAFm/wJ8xtMDnKPPcP6b/3p5YUaxh7aYMcRRoG45NM43yM6VJKp97BOg3NK2gcnWV
+         OSYkZTExDRQTGMn5KqAXrQ4qe5ChUm7XBZ4Yc/yxx15yG6hSfxvf1/7VemUBwzSzjAHQ
+         B2q4UE3BU4fTUcD1/AjHMdSpTQ/Kr5E36ZVf0tezGLPL3vmmze+4bFQUFDSMEnNrXDV+
+         PNzlN1mcOV8HEAEVbGeM0Ei2Y0BXC3Pf1u/6lZK5K6mX7Fe8r1MXHysMKU4hpBQhCjN2
+         /B8A6/8x6rOlKXqKC5sRFEJsBwI617Kf/a99pdQ3yJN0L1JeE6Yrqxu0CXdoXHG8BqiE
+         6nyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UDK1kz5Fr0UKhxFUazSV4lfvWljmN762R0UmyDLBbzw=;
-        b=DXrmK+KbTruY0Bt8YC1YTit3oXgfL74MV1+LbL2ZoPcgN2ZE7PMEGxpE3k6t0bJmqi
-         O4q+7ygjYx0eJoaUmmD1n2Z/T+aKnPN8vMcy+MN1qFKXb5luu5qqFqi5nolP83FflPD8
-         HN2rZaj+Yzkb6Y5Kft5S1Hh55boLJsCIW5lPEcLNPhEe3rnsbx3q73JTBzeOeXveOXs8
-         AHCHrZk5hSkcr61DT25Pf62qXm1aUQo9mZlCu8PeYXWkSvld3JtkA6+ONDPADZLOFKXN
-         cxACpVfvGhfHHjsq8z+ClMApf79MWvRDHv68LevmNbDvQ4ox+Jqh4PtthKziqvb/ZYGW
-         EYkw==
-X-Gm-Message-State: AOAM5320RtIh6yUlF0lI5U86gATTzCm5IoEBnHHlAj3Fo+1vG1Bb9DiS
-        9ZYeZlF+ojHh60kpxrVk3dZknXFJLM9A9Q==
-X-Google-Smtp-Source: ABdhPJxL6kvHspWE/hrl9ic6VRR2xRWso6pVw0L7xjQUzQBX5YVNv21tx0NumUdaPwA1VlEks9B5Hw==
-X-Received: by 2002:a05:6808:1281:b0:2d4:6e64:1c6 with SMTP id a1-20020a056808128100b002d46e6401c6mr639967oiw.293.1645760948192;
-        Thu, 24 Feb 2022 19:49:08 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o2ttFE4UXWwKSdqHtV1QEdoVt4O2JyRTcbi9yz+bnns=;
+        b=h9DxlDiYAQfsZ3DFg06N0msmWUwNNfe2hOeYEHp+fGdARJcOgnGN1cMDsHhFjfIxzl
+         Dyhgl/vaJPyIa6NDCjBqYD2h3JWl9QPFxLomK6GJMyjR3DjZ+hWld5GEdUJbbv2nIimo
+         2OS3Vgdz4uEK0/6fg7V71B8bMjYsyLyLtkoE0YZtf0X+u7SvgwIdTyuOzJtCjzJbUBkn
+         tnaz0MZuBTZIFsThi1qfHUetDQgvv91QPvZmPyYhN6ht/U8ZMKK87pc/9kY7hyejH0JX
+         SjJrfzR+psHk/sLQPSY6qBCFzcYhPLLxiSlRmSGjGQNAyiro1mwQGUrEliS2ohN0Ivs7
+         TP4w==
+X-Gm-Message-State: AOAM532woP/XYvjy0YeqlSlgt5jurvcRqJmuV50VVlZSCWi9VEQgMB3y
+        qg6F0NSpSbPl7Fae1aDbSO6pUQ==
+X-Google-Smtp-Source: ABdhPJzUvJjzaEsaanLyTn8buXuntkLSkvCcOLn0F0JsaSa5u6wnCVFX3BpuvaM3uYtH7IVW5zuoYg==
+X-Received: by 2002:a05:6870:d90d:b0:d2:a1f4:1112 with SMTP id gq13-20020a056870d90d00b000d2a1f41112mr606354oab.27.1645761137625;
+        Thu, 24 Feb 2022 19:52:17 -0800 (PST)
 Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id a10-20020a056808120a00b002d404a71444sm664088oil.35.2022.02.24.19.49.07
+        by smtp.gmail.com with ESMTPSA id v7-20020a4aa507000000b0031c01a4ef37sm512850ook.32.2022.02.24.19.52.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 19:49:07 -0800 (PST)
+        Thu, 24 Feb 2022 19:52:16 -0800 (PST)
 From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] phy: qcom-qmp: add sc8280xp UFS PHY
-Date:   Thu, 24 Feb 2022 19:51:05 -0800
-Message-Id: <20220225035105.2294599-2-bjorn.andersson@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] dt-bindings: arm: qcom: Document sa8540p, sc8180x and sc8280xp
+Date:   Thu, 24 Feb 2022 19:54:15 -0800
+Message-Id: <20220225035415.2294821-1-bjorn.andersson@linaro.org>
 X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220225035105.2294599-1-bjorn.andersson@linaro.org>
-References: <20220225035105.2294599-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reuse the SM8350 UFS PHY initialization sequence to add support for the
-same found in the Qualcomm SC8280XP platform.
+Add compatibles for the sa8540p automotive, as well as sc8180x and
+sc8280xp compute platforms. Also add compatibles for the ADP devboard,
+the Lenovo Flex 5G, Microsoft Surface Pro X and the sc8280xp QRD.
 
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
 
 Changes since v1:
-- None
+- 'q' comes after 'm' in the alphabet
 
- drivers/phy/qualcomm/phy-qcom-qmp.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../devicetree/bindings/arm/qcom.yaml         | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
-index 8ea87c69f463..b144ae1f729a 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
-@@ -5977,6 +5977,9 @@ static const struct of_device_id qcom_qmp_phy_of_match_table[] = {
- 	}, {
- 		.compatible = "qcom,sc8180x-qmp-ufs-phy",
- 		.data = &sm8150_ufsphy_cfg,
-+	}, {
-+		.compatible = "qcom,sc8280xp-qmp-ufs-phy",
-+		.data = &sm8350_ufsphy_cfg,
- 	}, {
- 		.compatible = "qcom,sc8180x-qmp-usb3-phy",
- 		.data = &sm8150_usb3phy_cfg,
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index e8b1606bc849..d7bd6affbff7 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -39,8 +39,11 @@ description: |
+         msm8994
+         msm8996
+         sa8155p
++        sa8540p
+         sc7180
+         sc7280
++        sc8180x
++        sc8280xp
+         sdm630
+         sdm660
+         sdm845
+@@ -224,6 +227,18 @@ properties:
+               - google,senor
+           - const: qcom,sc7280
+ 
++      - items:
++          - enum:
++              - lenovo,flex-5g
++              - microsoft,surface-prox
++              - qcom,sc8180x-primus
++          - const: qcom,sc8180x
++
++      - items:
++          - enum:
++              - qcom,sc8280xp-qrd
++          - const: qcom,sc8280xp
++
+       - items:
+           - enum:
+               - xiaomi,lavender
+@@ -252,6 +267,11 @@ properties:
+               - qcom,sa8155p-adp
+           - const: qcom,sa8155p
+ 
++      - items:
++          - enum:
++              - qcom,sa8540p-adp
++          - const: qcom,sa8540p
++
+       - items:
+           - enum:
+               - fairphone,fp4
 -- 
 2.33.1
 
