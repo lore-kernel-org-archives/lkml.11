@@ -2,79 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E252C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 01:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 01:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236280AbiBYBL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 20:11:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38766 "EHLO
+        id S236292AbiBYBQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 20:16:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232721AbiBYBLz (ORCPT
+        with ESMTP id S236274AbiBYBQj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 20:11:55 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4254B1ED4EB
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 17:11:25 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id q11so3404590pln.11
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 17:11:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=88hkv3OSXeqX0vz3SW+Res2AknL0SrraTbrIeEDLRx0=;
-        b=I6iiifEovV+wuCY9SDP0FO7wFWxQqlJyQMG/0i/IFDzK/X0CZwUWvbj69bLqNiTd9W
-         fXAf7+UW6J9D56m+YUOKOsGYHv/aot1JZIsqzen1sQt9xu0fpim3CqGUDp1ZbTaLNNUA
-         QaGsBXVEPKZv1KMgXh0Cg13b3J/PPG+KtreCU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=88hkv3OSXeqX0vz3SW+Res2AknL0SrraTbrIeEDLRx0=;
-        b=ubfaPjGfK1jZKXbPfl9dGNq5MR6zJ5C0uCqOxaVXjoh5XrVHxrKiwZQiTUhKFKO7F3
-         TGM2PN3RR6DwjR/sE5wVpO3cgGRWbhIRu5G7vZR/jRF4RWK2aEp4xcQnWdsPodm/iqF3
-         AGGL/1m7HFt4NO8MvGnrIuuDsHuBnEZkMXHuUrR27c0SW2VLE1bQUfCkHVx8qWQYF4zw
-         JGSu1ZnOdLfwhTZGtNi+4Et36Fj0/9CJu1Ft4vjgxJ9AS3fsY7ErtpleKwF4dN4SpFcB
-         j63q5+/3Hq0H1ezqsQ2vk5olvVBQenESSsULoxYXNeVmm1hPL5e19c3q82GWxqJ0dQRn
-         kLZQ==
-X-Gm-Message-State: AOAM531Y99oNfbVUqftc/D31DydVwQFODdSczb/MoseaTiFgXhoSEwAd
-        vk70uwdn5XyiQsm+KLLfjRyzHA==
-X-Google-Smtp-Source: ABdhPJygTkHlkE/7Oii+EvOYy0K6/Ls92pEbgaUCEUdLGx3H0HrW37Wz0BmFrEukMgNhNTFdY18MjA==
-X-Received: by 2002:a17:90a:4682:b0:1bc:236:7e46 with SMTP id z2-20020a17090a468200b001bc02367e46mr744486pjf.212.1645751484785;
-        Thu, 24 Feb 2022 17:11:24 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id y17-20020a63ce11000000b0036c96df445fsm652492pgf.53.2022.02.24.17.11.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 17:11:24 -0800 (PST)
-Date:   Thu, 24 Feb 2022 17:11:23 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 20/39] x86/bugs: Disable Retpoline when IBT
-Message-ID: <202202241710.B35CBB06@keescook>
-References: <20220224145138.952963315@infradead.org>
- <20220224151323.189353523@infradead.org>
+        Thu, 24 Feb 2022 20:16:39 -0500
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF4E2036D9;
+        Thu, 24 Feb 2022 17:16:08 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0V5QszRK_1645751765;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V5QszRK_1645751765)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 25 Feb 2022 09:16:06 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     kashyap.desai@broadcom.com
+Cc:     sumit.saxena@broadcom.com, shivasharan.srikanteshwara@broadcom.com,
+        jejb@linux.ibm.com, martin.petersen@oracle.com,
+        megaraidlinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next v2] scsi: megasas: clean up some inconsistent indenting
+Date:   Fri, 25 Feb 2022 09:16:05 +0800
+Message-Id: <20220225011605.130927-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224151323.189353523@infradead.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 03:51:58PM +0100, Peter Zijlstra wrote:
-> Retpoline and IBT are mutually exclusive. IBT relies on indirect
-> branches (JMP/CALL *%reg) while retpoline avoids them by design.
-> 
-> Demote to LFENCE on IBT enabled hardware.
+Eliminate the follow smatch warning:
+drivers/scsi/megaraid/megaraid_sas_fusion.c:5104 megasas_reset_fusion()
+warn: inconsistent indenting
 
-What's the expected perf impact of this?
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/scsi/megaraid/megaraid_sas_fusion.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
--Kees
-
+diff --git a/drivers/scsi/megaraid/megaraid_sas_fusion.c b/drivers/scsi/megaraid/megaraid_sas_fusion.c
+index c72364864bf4..ae3ad7ebf346 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_fusion.c
++++ b/drivers/scsi/megaraid/megaraid_sas_fusion.c
+@@ -5100,8 +5100,8 @@ int megasas_reset_fusion(struct Scsi_Host *shost, int reason)
+ 			if (instance->adapter_type >= VENTURA_SERIES) {
+ 				for (j = 0; j < MAX_LOGICAL_DRIVES_EXT; ++j) {
+ 					memset(fusion->stream_detect_by_ld[j],
+-					0, sizeof(struct LD_STREAM_DETECT));
+-				 fusion->stream_detect_by_ld[j]->mru_bit_map
++						0, sizeof(struct LD_STREAM_DETECT));
++					fusion->stream_detect_by_ld[j]->mru_bit_map
+ 						= MR_STREAM_BITMAP;
+ 				}
+ 			}
 -- 
-Kees Cook
+2.20.1.7.g153144c
+
