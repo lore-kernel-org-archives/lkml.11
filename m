@@ -2,364 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5FA0C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F73C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237006AbiBYDQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:16:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48456 "EHLO
+        id S237014AbiBYDYz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:24:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbiBYDQf (ORCPT
+        with ESMTP id S229812AbiBYDYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:16:35 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 773201B71BD;
-        Thu, 24 Feb 2022 19:16:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EC11DB82ABF;
-        Fri, 25 Feb 2022 03:16:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC98C340F0;
-        Fri, 25 Feb 2022 03:16:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645758960;
-        bh=AIcvMH/b1xBQqSeE0MyckBV0OmzEpW8r45g4oc7iwmI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=dwopK99Lu7OSZTrfI9qHYHW+iwxL8sFjz8+hmMq+JJY1Ew823SVAI+ePhClbspSpL
-         ofDJkA7o60sHyHCcMlI4N6c+29gQnLEDVgGwK56acQAqJH0AcAIXeozsF1JETrNGZE
-         +24DnL6iG0rTfatlO+hea53azy/Me6E1topPWVuTg7Lpbd4vgCpOdFiqz18FCTn/TR
-         6+mERamXZmyBVaaojQNPsC1aMoOjdqY8VX62oJabYC/5UNubMMVUaWNtDOxxxYF7lA
-         hGIL512rlox8ENNBjmYqANXh6VIcgXHYbbe2VHm/V27deNZ6AGbAHhhvA+LeTYVB23
-         xtUbiG248GcDg==
-Received: by mail-vk1-f170.google.com with SMTP id j201so907582vke.11;
-        Thu, 24 Feb 2022 19:16:00 -0800 (PST)
-X-Gm-Message-State: AOAM533BFMbD9nTf7JgnDvhUkMgpZy9xnhGIhIMNa+xcTMYyTt+4brYB
-        kulu6iBZFntxdqs4xz4V8w8kOmeAfc6u2Ix0Kq0=
-X-Google-Smtp-Source: ABdhPJxzAC59bOz2ZFSsO80s604NYNTU9qYlMQb2UZsUeuHttBiY0MBRU+vSZuljvGWpesJDN3icmLDxpD19ZSFh7cQ=
-X-Received: by 2002:a05:6122:887:b0:332:699e:7e67 with SMTP id
- 7-20020a056122088700b00332699e7e67mr2684541vkf.35.1645758959422; Thu, 24 Feb
- 2022 19:15:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20220224085410.399351-18-guoren@kernel.org> <mhng-985c5e53-71d5-4d94-b9ff-deff7f834fc5@palmer-ri-x1c9>
-In-Reply-To: <mhng-985c5e53-71d5-4d94-b9ff-deff7f834fc5@palmer-ri-x1c9>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Fri, 25 Feb 2022 11:15:48 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTQ8dHnPqiT-XPRwwHHRkv+NVrG1rh5-YiPmyO4bt6VwHw@mail.gmail.com>
-Message-ID: <CAJF2gTQ8dHnPqiT-XPRwwHHRkv+NVrG1rh5-YiPmyO4bt6VwHw@mail.gmail.com>
-Subject: Re: [PATCH V6 17/20] riscv: compat: vdso: Add setup additional pages implementation
-To:     Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Anup Patel <anup@brainfault.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        Christoph Hellwig <hch@lst.de>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 24 Feb 2022 22:24:54 -0500
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13D71F6BDC;
+        Thu, 24 Feb 2022 19:24:21 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R921e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=ashimida@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0V5QtHnc_1645759451;
+Received: from localhost(mailfrom:ashimida@linux.alibaba.com fp:SMTPD_---0V5QtHnc_1645759451)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 25 Feb 2022 11:24:17 +0800
+From:   Dan Li <ashimida@linux.alibaba.com>
+To:     catalin.marinas@arm.com, will@kernel.org, nathan@kernel.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        masahiroy@kernel.org, tglx@linutronix.de,
+        akpm@linux-foundation.org, mark.rutland@arm.com,
+        samitolvanen@google.com, npiggin@gmail.com, linux@roeck-us.net,
+        mhiramat@kernel.org, ojeda@kernel.org, luc.vanoostenryck@gmail.com,
+        elver@google.com
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        llvm@lists.linux.dev, linux-hardening@vger.kernel.org,
+        Dan Li <ashimida@linux.alibaba.com>
+Subject: [PATCH] [PATCH v2] AARCH64: Add gcc Shadow Call Stack support
+Date:   Thu, 24 Feb 2022 19:24:10 -0800
+Message-Id: <20220225032410.25622-1-ashimida@linux.alibaba.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 1:57 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
->
-> On Thu, 24 Feb 2022 00:54:07 PST (-0800), guoren@kernel.org wrote:
-> > From: Guo Ren <guoren@linux.alibaba.com>
-> >
-> > Reconstruct __setup_additional_pages() by appending vdso info
-> > pointer argument to meet compat_vdso_info requirement. And change
-> > vm_special_mapping *dm, *cm initialization into static.
-> >
-> > Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> > Signed-off-by: Guo Ren <guoren@kernel.org>
-> > Reviewed-by: Palmer Dabbelt <palmer@rivosinc.com>
-> > Cc: Arnd Bergmann <arnd@arndb.de>
-> > ---
-> >  arch/riscv/include/asm/elf.h |   5 ++
-> >  arch/riscv/include/asm/mmu.h |   1 +
-> >  arch/riscv/kernel/vdso.c     | 103 +++++++++++++++++++++++------------
-> >  3 files changed, 74 insertions(+), 35 deletions(-)
-> >
-> > diff --git a/arch/riscv/include/asm/elf.h b/arch/riscv/include/asm/elf.h
-> > index 3a4293dc7229..d87d3bcc758d 100644
-> > --- a/arch/riscv/include/asm/elf.h
-> > +++ b/arch/riscv/include/asm/elf.h
-> > @@ -134,5 +134,10 @@ do {    if ((ex).e_ident[EI_CLASS] == ELFCLASS32)                \
-> >  typedef compat_ulong_t                       compat_elf_greg_t;
-> >  typedef compat_elf_greg_t            compat_elf_gregset_t[ELF_NGREG];
-> >
-> > +extern int compat_arch_setup_additional_pages(struct linux_binprm *bprm,
-> > +                                           int uses_interp);
-> > +#define compat_arch_setup_additional_pages \
-> > +                             compat_arch_setup_additional_pages
-> > +
-> >  #endif /* CONFIG_COMPAT */
-> >  #endif /* _ASM_RISCV_ELF_H */
-> > diff --git a/arch/riscv/include/asm/mmu.h b/arch/riscv/include/asm/mmu.h
-> > index 0099dc116168..cedcf8ea3c76 100644
-> > --- a/arch/riscv/include/asm/mmu.h
-> > +++ b/arch/riscv/include/asm/mmu.h
-> > @@ -16,6 +16,7 @@ typedef struct {
-> >       atomic_long_t id;
-> >  #endif
-> >       void *vdso;
-> > +     void *vdso_info;
-> >  #ifdef CONFIG_SMP
-> >       /* A local icache flush is needed before user execution can resume. */
-> >       cpumask_t icache_stale_mask;
-> > diff --git a/arch/riscv/kernel/vdso.c b/arch/riscv/kernel/vdso.c
-> > index a9436a65161a..f864811aa011 100644
-> > --- a/arch/riscv/kernel/vdso.c
-> > +++ b/arch/riscv/kernel/vdso.c
-> > @@ -23,6 +23,9 @@ struct vdso_data {
-> >  #endif
-> >
-> >  extern char vdso_start[], vdso_end[];
-> > +#ifdef CONFIG_COMPAT
-> > +extern char compat_vdso_start[], compat_vdso_end[];
-> > +#endif
-> >
-> >  enum vvar_pages {
-> >       VVAR_DATA_PAGE_OFFSET,
-> > @@ -30,6 +33,11 @@ enum vvar_pages {
-> >       VVAR_NR_PAGES,
-> >  };
-> >
-> > +enum rv_vdso_map {
-> > +     RV_VDSO_MAP_VVAR,
-> > +     RV_VDSO_MAP_VDSO,
-> > +};
-> > +
-> >  #define VVAR_SIZE  (VVAR_NR_PAGES << PAGE_SHIFT)
-> >
-> >  /*
-> > @@ -52,12 +60,6 @@ struct __vdso_info {
-> >       struct vm_special_mapping *cm;
-> >  };
-> >
-> > -static struct __vdso_info vdso_info __ro_after_init = {
-> > -     .name = "vdso",
-> > -     .vdso_code_start = vdso_start,
-> > -     .vdso_code_end = vdso_end,
-> > -};
-> > -
-> >  static int vdso_mremap(const struct vm_special_mapping *sm,
-> >                      struct vm_area_struct *new_vma)
-> >  {
-> > @@ -66,37 +68,33 @@ static int vdso_mremap(const struct vm_special_mapping *sm,
-> >       return 0;
-> >  }
-> >
-> > -static int __init __vdso_init(void)
-> > +static void __init __vdso_init(struct __vdso_info *vdso_info)
-> >  {
-> >       unsigned int i;
-> >       struct page **vdso_pagelist;
-> >       unsigned long pfn;
-> >
-> > -     if (memcmp(vdso_info.vdso_code_start, "\177ELF", 4)) {
-> > -             pr_err("vDSO is not a valid ELF object!\n");
-> > -             return -EINVAL;
-> > -     }
-> > +     if (memcmp(vdso_info->vdso_code_start, "\177ELF", 4))
-> > +             panic("vDSO is not a valid ELF object!\n");
-> >
-> > -     vdso_info.vdso_pages = (
-> > -             vdso_info.vdso_code_end -
-> > -             vdso_info.vdso_code_start) >>
-> > +     vdso_info->vdso_pages = (
-> > +             vdso_info->vdso_code_end -
-> > +             vdso_info->vdso_code_start) >>
-> >               PAGE_SHIFT;
-> >
-> > -     vdso_pagelist = kcalloc(vdso_info.vdso_pages,
-> > +     vdso_pagelist = kcalloc(vdso_info->vdso_pages,
-> >                               sizeof(struct page *),
-> >                               GFP_KERNEL);
-> >       if (vdso_pagelist == NULL)
-> > -             return -ENOMEM;
-> > +             panic("vDSO kcalloc failed!\n");
-> >
-> >       /* Grab the vDSO code pages. */
-> > -     pfn = sym_to_pfn(vdso_info.vdso_code_start);
-> > +     pfn = sym_to_pfn(vdso_info->vdso_code_start);
-> >
-> > -     for (i = 0; i < vdso_info.vdso_pages; i++)
-> > +     for (i = 0; i < vdso_info->vdso_pages; i++)
-> >               vdso_pagelist[i] = pfn_to_page(pfn + i);
-> >
-> > -     vdso_info.cm->pages = vdso_pagelist;
-> > -
-> > -     return 0;
-> > +     vdso_info->cm->pages = vdso_pagelist;
-> >  }
-> >
-> >  #ifdef CONFIG_TIME_NS
-> > @@ -116,13 +114,14 @@ int vdso_join_timens(struct task_struct *task, struct time_namespace *ns)
-> >  {
-> >       struct mm_struct *mm = task->mm;
-> >       struct vm_area_struct *vma;
-> > +     struct __vdso_info *vdso_info = mm->context.vdso_info;
-> >
-> >       mmap_read_lock(mm);
-> >
-> >       for (vma = mm->mmap; vma; vma = vma->vm_next) {
-> >               unsigned long size = vma->vm_end - vma->vm_start;
-> >
-> > -             if (vma_is_special_mapping(vma, vdso_info.dm))
-> > +             if (vma_is_special_mapping(vma, vdso_info->dm))
-> >                       zap_page_range(vma, vma->vm_start, size);
-> >       }
-> >
-> > @@ -187,11 +186,6 @@ static vm_fault_t vvar_fault(const struct vm_special_mapping *sm,
-> >       return vmf_insert_pfn(vma, vmf->address, pfn);
-> >  }
-> >
-> > -enum rv_vdso_map {
-> > -     RV_VDSO_MAP_VVAR,
-> > -     RV_VDSO_MAP_VDSO,
-> > -};
-> > -
-> >  static struct vm_special_mapping rv_vdso_maps[] __ro_after_init = {
-> >       [RV_VDSO_MAP_VVAR] = {
-> >               .name   = "[vvar]",
-> > @@ -203,25 +197,44 @@ static struct vm_special_mapping rv_vdso_maps[] __ro_after_init = {
-> >       },
-> >  };
-> >
-> > +static struct __vdso_info vdso_info __ro_after_init = {
-> > +     .name = "vdso",
-> > +     .vdso_code_start = vdso_start,
-> > +     .vdso_code_end = vdso_end,
-> > +     .dm = &rv_vdso_maps[RV_VDSO_MAP_VVAR],
-> > +     .cm = &rv_vdso_maps[RV_VDSO_MAP_VDSO],
-> > +};
-> > +
-> > +#ifdef CONFIG_COMPAT
-> > +static struct __vdso_info compat_vdso_info __ro_after_init = {
-> > +     .name = "compat_vdso",
-> > +     .vdso_code_start = compat_vdso_start,
-> > +     .vdso_code_end = compat_vdso_end,
-> > +     .dm = &rv_vdso_maps[RV_VDSO_MAP_VVAR],
-> > +     .cm = &rv_vdso_maps[RV_VDSO_MAP_VDSO],
-> > +};
-> > +#endif
-> > +
-> >  static int __init vdso_init(void)
-> >  {
-> > -     vdso_info.dm = &rv_vdso_maps[RV_VDSO_MAP_VVAR];
-> > -     vdso_info.cm = &rv_vdso_maps[RV_VDSO_MAP_VDSO];
-> > +     __vdso_init(&vdso_info);
-> > +     __vdso_init(&compat_vdso_info);
->
-> An autobuilder is pointing out an issue here.  I'm assuming just an `#if
-> defined(CONFIG_COMPAT)` will fix it, I'm OK squashing that in if it's
-> the only issue -- a fixed one never hurts, though ;)
-Thx for pointing out, my fault, it should be:
- static int __init vdso_init(void)
- {
-        __vdso_init(&vdso_info);
-+#ifdef CONFIG_COMPAT
-        __vdso_init(&compat_vdso_info);
+Shadow call stacks will be available in GCC >= 12, this patch makes
+the corresponding kernel configuration available when compiling
+the kernel with the gcc.
+
+Note that the implementation in GCC is slightly different from Clang.
+With SCS enabled, functions will only pop x30 once in the epilogue,
+like:
+
+   str     x30, [x18], #8
+   stp     x29, x30, [sp, #-16]!
+   ......
+-  ldp     x29, x30, [sp], #16	  //clang
++  ldr     x29, [sp], #16	  //GCC
+   ldr     x30, [x18, #-8]!
+
+Link: https://gcc.gnu.org/git/?p=gcc.git;a=commit;h=ce09ab17ddd21f73ff2caf6eec3b0ee9b0e1a11e
+
+Signed-off-by: Dan Li <ashimida@linux.alibaba.com>
+---
+FYI:
+This function can be used to test if the shadow call stack works:
+//noinline void __noscs scs_test(void)
+noinline void scs_test(void)
+{
+    unsigned long * lr = (unsigned long *)__builtin_frame_address(0) + 1;
+
+    asm volatile("str xzr, [%0]\n\t": : "r"(lr) : "x30");
+}                                                         
+
+ffff800008012770 <scs_test>:
+ffff800008012770:       d503245f        bti     c
+ffff800008012774:       d503233f        paciasp
+ffff800008012778:       f800865e        str     x30, [x18], #8
+ffff80000801277c:       a9bf7bfd        stp     x29, x30, [sp, #-16]!
+ffff800008012780:       910003fd        mov     x29, sp
+ffff800008012784:       910023a0        add     x0, x29, #0x8
+ffff800008012788:       f900001f        str     xzr, [x0]
+ffff80000801278c:       f85f8e5e        ldr     x30, [x18, #-8]!
+ffff800008012790:       f84107fd        ldr     x29, [sp], #16
+ffff800008012794:       d50323bf        autiasp
+ffff800008012798:       d65f03c0        ret
+
+If SCS protection is enabled, this function will return normally.
+If the function has __noscs attribute (scs disabled), it will crash due to 0
+address access.
+
+ arch/Kconfig                 | 19 ++++++++++---------
+ arch/arm64/Kconfig           |  2 +-
+ include/linux/compiler-gcc.h |  4 ++++
+ 3 files changed, 15 insertions(+), 10 deletions(-)
+
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 678a80713b21..c92683362ac2 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -599,21 +599,22 @@ config STACKPROTECTOR_STRONG
+ config ARCH_SUPPORTS_SHADOW_CALL_STACK
+ 	bool
+ 	help
+-	  An architecture should select this if it supports Clang's Shadow
+-	  Call Stack and implements runtime support for shadow stack
++	  An architecture should select this if it supports the compiler's
++	  Shadow Call Stack and implements runtime support for shadow stack
+ 	  switching.
+ 
+ config SHADOW_CALL_STACK
+-	bool "Clang Shadow Call Stack"
+-	depends on CC_IS_CLANG && ARCH_SUPPORTS_SHADOW_CALL_STACK
++	bool "Shadow Call Stack"
++	depends on ARCH_SUPPORTS_SHADOW_CALL_STACK
+ 	depends on DYNAMIC_FTRACE_WITH_REGS || !FUNCTION_GRAPH_TRACER
+ 	help
+-	  This option enables Clang's Shadow Call Stack, which uses a
+-	  shadow stack to protect function return addresses from being
+-	  overwritten by an attacker. More information can be found in
+-	  Clang's documentation:
++	  This option enables the compiler's Shadow Call Stack, which
++	  uses a shadow stack to protect function return addresses from
++	  being overwritten by an attacker. More information can be found
++	  in the compiler's documentation:
+ 
+-	    https://clang.llvm.org/docs/ShadowCallStack.html
++	  - Clang (https://clang.llvm.org/docs/ShadowCallStack.html)
++	  - GCC (https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html#Instrumentation-Options)
+ 
+ 	  Note that security guarantees in the kernel differ from the
+ 	  ones documented for user space. The kernel must store addresses
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 09b885cc4db5..b7145337efae 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -1255,7 +1255,7 @@ config HW_PERF_EVENTS
+ config ARCH_HAS_FILTER_PGPROT
+ 	def_bool y
+ 
+-# Supported by clang >= 7.0
++# Supported by clang >= 7.0 or GCC >= 12.0.0
+ config CC_HAVE_SHADOW_CALL_STACK
+ 	def_bool $(cc-option, -fsanitize=shadow-call-stack -ffixed-x18)
+ 
+diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+index ccbbd31b3aae..deff5b308470 100644
+--- a/include/linux/compiler-gcc.h
++++ b/include/linux/compiler-gcc.h
+@@ -97,6 +97,10 @@
+ #define KASAN_ABI_VERSION 4
+ #endif
+ 
++#ifdef CONFIG_SHADOW_CALL_STACK
++#define __noscs __attribute__((__no_sanitize__("shadow-call-stack")))
 +#endif
-
->
-> I'll try to take another look soon.
-Okay.
-
->
-> > -     return __vdso_init();
-> > +     return 0;
-> >  }
-> >  arch_initcall(vdso_init);
-> >
-> >  static int __setup_additional_pages(struct mm_struct *mm,
-> >                                   struct linux_binprm *bprm,
-> > -                                 int uses_interp)
-> > +                                 int uses_interp,
-> > +                                 struct __vdso_info *vdso_info)
-> >  {
-> >       unsigned long vdso_base, vdso_text_len, vdso_mapping_len;
-> >       void *ret;
-> >
-> >       BUILD_BUG_ON(VVAR_NR_PAGES != __VVAR_PAGES);
-> >
-> > -     vdso_text_len = vdso_info.vdso_pages << PAGE_SHIFT;
-> > +     vdso_text_len = vdso_info->vdso_pages << PAGE_SHIFT;
-> >       /* Be sure to map the data page */
-> >       vdso_mapping_len = vdso_text_len + VVAR_SIZE;
-> >
-> > @@ -232,16 +245,18 @@ static int __setup_additional_pages(struct mm_struct *mm,
-> >       }
-> >
-> >       ret = _install_special_mapping(mm, vdso_base, VVAR_SIZE,
-> > -             (VM_READ | VM_MAYREAD | VM_PFNMAP), vdso_info.dm);
-> > +             (VM_READ | VM_MAYREAD | VM_PFNMAP), vdso_info->dm);
-> >       if (IS_ERR(ret))
-> >               goto up_fail;
-> >
-> >       vdso_base += VVAR_SIZE;
-> >       mm->context.vdso = (void *)vdso_base;
-> > +     mm->context.vdso_info = (void *)vdso_info;
-> > +
-> >       ret =
-> >          _install_special_mapping(mm, vdso_base, vdso_text_len,
-> >               (VM_READ | VM_EXEC | VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC),
-> > -             vdso_info.cm);
-> > +             vdso_info->cm);
-> >
-> >       if (IS_ERR(ret))
-> >               goto up_fail;
-> > @@ -253,6 +268,24 @@ static int __setup_additional_pages(struct mm_struct *mm,
-> >       return PTR_ERR(ret);
-> >  }
-> >
-> > +#ifdef CONFIG_COMPAT
-> > +int compat_arch_setup_additional_pages(struct linux_binprm *bprm,
-> > +                                    int uses_interp)
-> > +{
-> > +     struct mm_struct *mm = current->mm;
-> > +     int ret;
-> > +
-> > +     if (mmap_write_lock_killable(mm))
-> > +             return -EINTR;
-> > +
-> > +     ret = __setup_additional_pages(mm, bprm, uses_interp,
-> > +                                                     &compat_vdso_info);
-> > +     mmap_write_unlock(mm);
-> > +
-> > +     return ret;
-> > +}
-> > +#endif
-> > +
-> >  int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
-> >  {
-> >       struct mm_struct *mm = current->mm;
-> > @@ -261,7 +294,7 @@ int arch_setup_additional_pages(struct linux_binprm *bprm, int uses_interp)
-> >       if (mmap_write_lock_killable(mm))
-> >               return -EINTR;
-> >
-> > -     ret = __setup_additional_pages(mm, bprm, uses_interp);
-> > +     ret = __setup_additional_pages(mm, bprm, uses_interp, &vdso_info);
-> >       mmap_write_unlock(mm);
-> >
-> >       return ret;
-
-
-
++
+ #if __has_attribute(__no_sanitize_address__)
+ #define __no_sanitize_address __attribute__((no_sanitize_address))
+ #else
 -- 
-Best Regards
- Guo Ren
+2.17.1
 
-ML: https://lore.kernel.org/linux-csky/
