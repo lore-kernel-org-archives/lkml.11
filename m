@@ -2,133 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE98C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:20:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C809C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:20:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241134AbiBYNU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:20:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57010 "EHLO
+        id S241149AbiBYNVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:21:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241133AbiBYNUy (ORCPT
+        with ESMTP id S241130AbiBYNU6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:20:54 -0500
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6651FED99
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:20:21 -0800 (PST)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21PD7oji031571;
-        Fri, 25 Feb 2022 14:19:52 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=LkW62k1kez4onNz5WnO7tO0QIWuCB9ldqXvRsV6nPqw=;
- b=SVostm1nI+zn46O/FSyoSL038Zksrwu7/d4jbLLajBAFOENbSLEy0Zw6sdZKfZw176h/
- Nnhkow09gC+lg3WAIU8G9P6HQcm2JB/ODPSSlDAT6s3Tub1d7gZWUNZfLdQ7hRzlLY9w
- RSjv0jeFGgodwvwK9v3NxLcjmdSmSCOFSeQv63yqq+97kk9++aGrRb12Ygar49rNvbfq
- 38WsZRvfD3pajWcRtcVtCzoAS0UGTqbimhDyOGCOkhAQWxax4zGWhWVlC6xTwtKwc2wv
- CflTeGvXaGthztqES4z/YjJnrqgvcqKO8shiPN6OQx4IYUge35CHdiC1UH6UBYuQ3zi4 Kw== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3eetrf25hn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 14:19:52 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4CDC010002A;
-        Fri, 25 Feb 2022 14:19:51 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3F423226FB7;
-        Fri, 25 Feb 2022 14:19:51 +0100 (CET)
-Received: from [10.201.22.81] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 25 Feb
- 2022 14:19:50 +0100
-Message-ID: <c61d8a3f-6f19-48aa-ae69-e4f3670d4b16@foss.st.com>
-Date:   Fri, 25 Feb 2022 14:19:50 +0100
+        Fri, 25 Feb 2022 08:20:58 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 983A51FED89;
+        Fri, 25 Feb 2022 05:20:25 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id s13so4490360wrb.6;
+        Fri, 25 Feb 2022 05:20:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=s1IYJZfN0mhNOaQ7xs2EzjYsvsrp1awM4MJ+j+7u52c=;
+        b=D1PT3X4A3/4qAB2dteG2aRhfQPR+e22vU0e4PzgdD4Pecm79lz7X9hXBX8dGtd2KRj
+         686i4FTxtgNtswJoVjLRaGYneZFulFIxP/FQlxh89iUHTdZsxdsMfqRoRbX6DDwCbBcP
+         RisE1M4OfrDZXooYhJlQnhOezWRfeSi94qzIaRhKhhgzP1h0YAq352ofs/nODkN+AF1/
+         QWumRmW9DJScWEfEjXx/uBuiVyjRIco+pdqOeJlWNaU5nfeBxPXauooL0cZWunuclspL
+         zmiHpfeo7yUB35ig9E3o9onbLdGqUNWwVVJA3oqyAXLt6HPXhk1oLksIQ4ZDzX8oP8kb
+         z3dA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=s1IYJZfN0mhNOaQ7xs2EzjYsvsrp1awM4MJ+j+7u52c=;
+        b=LoF66T61wsZhG44trVehja3ABSxdEmlw/bBrhni8kfbrumzXooFX8+y8rWveL8ZvMy
+         z9TuPl0K4JVJZGGz+qJjXU34tEonm5mgX0Po++X3Ur6gH4gvRQs+6IjIafCfXQhv6Kp7
+         j2PLmWZ//ZnG1fimTcR9clu9avRhtwhNeT5esOHv/3KRJ92Y58K4kfrwhMJxI3xxGPzp
+         3DX5Pe8c8+e/T/645lEkkhdf8gNzVT85kHbtAHMypi3tuSATzVEgwBWfH7BCsQrRaAm6
+         XborkbBiGKpRypGA26Rq7rUEkqqTLmLy0geJKHW9Hv2ndDPbeRIKFD7oM0HLECfHRMMZ
+         RkHw==
+X-Gm-Message-State: AOAM53055D0+H9CVoD+YFuprwU6R+TyO8jsXaNpZJt4PRIM18dAuSlm0
+        myUFOdPpf6Ta4IBlaoRjwjE=
+X-Google-Smtp-Source: ABdhPJxYMDQjuuuIGYLTbkg31qQ1dYrHeN8eVGWGz1u9aIrgkh/o3msDoM0EpvZtTVzhreSGAIZ/zQ==
+X-Received: by 2002:a5d:648b:0:b0:1e2:181:96cb with SMTP id o11-20020a5d648b000000b001e2018196cbmr6117994wri.508.1645795224064;
+        Fri, 25 Feb 2022 05:20:24 -0800 (PST)
+Received: from orome ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id j7-20020a05600c1c0700b0037c2c6d2a91sm2348993wms.2.2022.02.25.05.20.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 05:20:23 -0800 (PST)
+Date:   Fri, 25 Feb 2022 14:20:21 +0100
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Wayne Chang <waynec@nvidia.com>
+Cc:     balbi@kernel.org, gregkh@linuxfoundation.org, jonathanh@nvidia.com,
+        zhangqilong3@huawei.com, yangyingliang@huawei.com,
+        rikard.falkeborn@gmail.com, chunfeng.yun@mediatek.com,
+        linux-usb@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] usb: gadget: tegra-xudc: Fix control endpoint's
+ definitions
+Message-ID: <YhjXlQJoKzI/9q89@orome>
+References: <20220107091349.149798-1-waynec@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] drm/stm: Avoid using val uninitialized in
- ltdc_set_ycbcr_config()
-Content-Language: en-US
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Yannick Fertre <yannick.fertre@foss.st.com>
-CC:     Nick Desaulniers <ndesaulniers@google.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <llvm@lists.linux.dev>,
-        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
-References: <20220222152045.484610-1-nathan@kernel.org>
-From:   Philippe CORNU <philippe.cornu@foss.st.com>
-In-Reply-To: <20220222152045.484610-1-nathan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-25_07,2022-02-25_01,2022-02-23_01
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="nNcLsEMhhKxQEfJG"
+Content-Disposition: inline
+In-Reply-To: <20220107091349.149798-1-waynec@nvidia.com>
+User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+--nNcLsEMhhKxQEfJG
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 2/22/22 16:20, Nathan Chancellor wrote:
-> Clang warns:
-> 
->    drivers/gpu/drm/stm/ltdc.c:625:2: warning: variable 'val' is used uninitialized whenever switch default is taken [-Wsometimes-uninitialized]
->            default:
->            ^~~~~~~
->    drivers/gpu/drm/stm/ltdc.c:635:2: note: uninitialized use occurs here
->            val |= LxPCR_YCEN;
->            ^~~
->    drivers/gpu/drm/stm/ltdc.c:600:9: note: initialize the variable 'val' to silence this warning
->            u32 val;
->                   ^
->                    = 0
->    1 warning generated.
-> 
-> Use a return instead of break in the default case to fix the warning.
-> Add an error message so that this return is not silent, which could hide
-> issues in the future.
-> 
-> Fixes: 484e72d3146b ("drm/stm: ltdc: add support of ycbcr pixel formats")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1575
-> Acked-by: Yannick Fertre <yannick.fertre@foss.st.com>
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-> Reviewed-by: Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+On Fri, Jan 07, 2022 at 05:13:49PM +0800, Wayne Chang wrote:
+> According to the Tegra Technical Reference Manual, the seq_num
+> field of control endpoint is not [31:24] but [31:27]. Bit 24
+> is reserved and bit 26 is splitxstate.
+>=20
+> The change fixes the wrong control endpoint's definitions.
+>=20
+> Signed-off-by: Wayne Chang <waynec@nvidia.com>
 > ---
-> 
-> v1 -> v2: https://lore.kernel.org/r/20220207165304.1046867-1-nathan@kernel.org/
-> 
-> * Use DRM_ERROR() instead of drm_err() (Philippe).
+>  drivers/usb/gadget/udc/tegra-xudc.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
 
-Hi Nathan,
+Again, what's the impact of this? Is this a critical bug fix that needs
+to go into stable? Or is it cleanup? Perhaps add something along those
+lines to the commit message to make it clearer to maintainers how they
+need to deal with them.
 
-Applied on drm-misc-next.
-Many thanks for your patch,
-Philippe :-)
+Also, if this is a bugfix, make sure to Cc: stable@vger.kernel.org and
+add a corresponding Fixes: line. Same for that earlier patch.
 
-> 
-> * Collect tags from v1, as nothing substantial has changed.
-> 
->   drivers/gpu/drm/stm/ltdc.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/stm/ltdc.c b/drivers/gpu/drm/stm/ltdc.c
-> index 5eeb32c9c9ce..c9bc4ccb6d43 100644
-> --- a/drivers/gpu/drm/stm/ltdc.c
-> +++ b/drivers/gpu/drm/stm/ltdc.c
-> @@ -624,7 +624,8 @@ static inline void ltdc_set_ycbcr_config(struct drm_plane *plane, u32 drm_pix_fm
->   		break;
->   	default:
->   		/* RGB or not a YCbCr supported format */
-> -		break;
-> +		DRM_ERROR("Unsupported pixel format: %u\n", drm_pix_fmt);
-> +		return;
->   	}
->   
->   	/* Enable limited range */
-> 
-> base-commit: 542898c5aa5c6a3179dffb1d1606884a63f75fed
+Thierry
+
+--nNcLsEMhhKxQEfJG
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIY15UACgkQ3SOs138+
+s6ELuA//frfkH8KumnsE3c8cVrLkPeCVSZOWkuK/7ye9Eg1ddJcQw/G1e3XdxijZ
+IdluDEI4Vvt0F2Fg/saOVlQ2H5pVozQUL4zWWqNs9ZORCW9HZuFVAuWfzAEqT3pT
+WY6i2SYq9+AAcZNFGL3HaLGfA5EjMvCjnpDMFEruzaKcOqaab8yFy77E4xxUa9WE
+WiBiU3HykF0S7sAOkXIv5g7WmllFZbFetipPwm9WDsv3lyZjg42i0qXKzqzeD/wv
+MRPEU/IRxSVXBtUfwWPrQBU71zct8xmTb9WAuhbgddTigWWNEt2Ovu2Yk5Sl5I9n
+dXWfmWUkujyKuWs+a+ULy85T/GuJ8XOgLHf1Ew6dL7k6yrPIHyTU3qFwbcdjqEsM
+VHuIT8j1OMWI18sVb+0QY6NjsDjwaAgErxUNE3c/oCTf+3JtrfOVBy40zlwr6BN+
+PkDhKLESUTjlu3YYRukVmaU47jcMjCLr1SSr+XMfa/byGtXyfe+EGAQ7tIZTwXSa
++u7dhWmKBuW12cZbrGAw1raMdDrUhEkkgSv6c0KqAOeFjOY3XY+ndSQl8+x3I2vV
+m/VAQZ4u7RBSYhKQK3vPu6i18o/0yQq920B6gkdg2eQDfbPlLa/Tk6gGLujrV8mQ
+xkzo9jSVey6+WQcZ/CZdNy7qYASKI5RfQCDDjtDJwGIzGdUA5js=
+=Jn0V
+-----END PGP SIGNATURE-----
+
+--nNcLsEMhhKxQEfJG--
