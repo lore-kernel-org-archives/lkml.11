@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C322FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A630CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241086AbiBYNS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:18:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47952 "EHLO
+        id S241092AbiBYNSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:18:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241201AbiBYNSI (ORCPT
+        with ESMTP id S241261AbiBYNSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:18:08 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AD371BE0CC
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:17:35 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id w3so7362550edu.8
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:17:35 -0800 (PST)
+        Fri, 25 Feb 2022 08:18:16 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3345B1BD9B2
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:17:44 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id s24so7373837edr.5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:17:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=monstr-eu.20210112.gappssmtp.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eNKQXBj9qgqKygRIGrvHkQo4UpK/y1wrxU/iY6fQwa4=;
-        b=TLWMNMXg4tI9HyRuBSlw/m+fQK50Om5wgQxH/qpNFsXth/BXV2zIl28u4w/vPzEkj5
-         dwgCc9Mm+6bikCp9wuvmGO4JuxC+S3nsbqpzBYVSrLhIGB3PxGTSbZZS8dOIxWBS/uKN
-         h9BeV2YOvqqyTEEJ6/c9q9WRfWQ2FnCAFcri1W2cwbEHKPFrAI1znS4X92nwsZKcDH92
-         UK9lNi9CPfSyxpwcLDQaF3CtNB9EgR+UGRRfmrstPVPO6+5gj9Ci6r8Vz7c5BWurFA9B
-         OwOtkX9IbGK8yqMkk8YTPcG6n8wQDEpoOY9EhgpSLRIALH9Q226KJEZeAhJMC8hglnmq
-         KKnA==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=dO8HMA/5Eh/PQhBGunCbdVuLS3TIlJbSFBfnd4KP1ZA=;
+        b=t1h7EEni6r2llc8EEkysxjmDiPxl6J4C5lhfxag6JC9O9e7PAOVfpkv6BJgZconjrr
+         Xru0HXOojShRdG81rPj8eO138b4c+CfrCb7nGFZ5PEDiEtxmMwgmJ4zai1HmbSdER89W
+         asOsByb1VrR24v6pG5x1UUSnl/NxbvII5cy+RGwJoiK38FK2OtlBrzVi+GugWxwlqCuC
+         WAVNctrEa7Dt0EobWgoPUL1qwuqIIXEsZsRQD4476ZjLOy8l1AjjbkZlhReGf8V5n/Tq
+         3VdTJKrwiZ0F0gUrrbi0DSQ47xz0Z4aq/Vb4xDYSJUPDhc6oI7sGtRLHPI2xC/droCn7
+         3MFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=eNKQXBj9qgqKygRIGrvHkQo4UpK/y1wrxU/iY6fQwa4=;
-        b=kqAb6j5gdNwknOfZcXEvqxwtDuI6XO8FwZORNq+6/AebQz7U0AOarQaAcge/MILTwj
-         YvOMNSt+rIEL3KgcpvwVkQEJwHw8FV9K/1zZ9HxnPRSRvJ73lgL0vkse6cmFHjAMZaQ3
-         yx+njvcXVkLIi3Hw9SI+74EBdJMdu3HjTIRlR/luSMahwna3tAuTwbmvkt+BsK+fFuS5
-         UZEGVFkRS0iMDqYYFDQTE9f1g6a7RdqJwvrMADGQDUTgssnuL3V2kU/DRuKiQMDYzZYX
-         N4NWMCmf96Y8N08ZovZkDbnUt6p4t1pYQ5lthkJvXYTrWN4YlShfBcy+hDVik1CNRE2h
-         kdrA==
-X-Gm-Message-State: AOAM5306G8MjB1gyb+q8EQx4HJmMWUi/w6Vz2Y76QyoMJwYpez5iNUs1
-        +yTOnk8BiiMl6U+mCw/bp0bVrY7vVxeXxg==
-X-Google-Smtp-Source: ABdhPJy8YUoBRzBYaUXWPgallFSz7v+ZMk5JhndQkknmdHjnmD9NQoxygXmjhi5f+RJmVzZ/pmxdEA==
-X-Received: by 2002:a05:6402:84f:b0:412:d1ef:c7df with SMTP id b15-20020a056402084f00b00412d1efc7dfmr7210532edz.210.1645795053952;
-        Fri, 25 Feb 2022 05:17:33 -0800 (PST)
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=dO8HMA/5Eh/PQhBGunCbdVuLS3TIlJbSFBfnd4KP1ZA=;
+        b=OVkNbrvGX7nuwqQzm622tA3la2WNX5trDHdbny/7t7JzDKGcWZKDazuPUuATQB3d1h
+         jDmUQPEZ17tyw5Q/iXscUL1xCFyWriFkUmMf+maDqy+Y7Tp3NwYm7l29sEJ8ekw4AW/G
+         JXgQp2igj70g5knRYc3nq1cmRuiNBUbMJTVLnU2nyqn+VzqxJOMYM/Jk4uvu5BCwuJ0N
+         YIz814hRJMfeXgUD5EfHCKruMa+GaFM1MvMtllFyy2n1qO2zQD2YvRzX/um9y5rkFSD1
+         Yinon076enkWomrA6hlLwnwK+rNycyZ97P5qXlbsq4aZg8T96KPo568D+/5LPRHZk2tV
+         wuuA==
+X-Gm-Message-State: AOAM530yaPYZcXyES8V6bY4GMAgnqkJWtmF/V8ayYj/hXKjphZ+TmLS7
+        9duOT6V2POmlLpatThQSFJSflbWMW5IkSw==
+X-Google-Smtp-Source: ABdhPJxlF6V2OfbhO1lMwKSPZnxGj4kQY7uZeCZnsoHBQacIW0G3+ZuzweuRwehYY93PosvzfmtyuA==
+X-Received: by 2002:a50:934b:0:b0:410:befb:cfd0 with SMTP id n11-20020a50934b000000b00410befbcfd0mr6957827eda.27.1645795057612;
+        Fri, 25 Feb 2022 05:17:37 -0800 (PST)
 Received: from localhost ([2a02:768:2307:40d6::f9e])
-        by smtp.gmail.com with ESMTPSA id fd7-20020a1709072a0700b006d022741112sm969544ejc.204.2022.02.25.05.17.32
+        by smtp.gmail.com with ESMTPSA id lf4-20020a170906ae4400b006d5b6de1803sm587621ejb.104.2022.02.25.05.17.36
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 25 Feb 2022 05:17:33 -0800 (PST)
+        Fri, 25 Feb 2022 05:17:36 -0800 (PST)
 Sender: Michal Simek <monstr@monstr.eu>
 From:   Michal Simek <michal.simek@xilinx.com>
 To:     linux-kernel@vger.kernel.org, monstr@monstr.eu,
@@ -56,37 +56,55 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>,
         David Hildenbrand <david@redhat.com>,
         Kefeng Wang <wangkefeng.wang@huawei.com>,
         Mike Rapoport <rppt@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH 0/2] microblaze: Add support for reserved memory
-Date:   Fri, 25 Feb 2022 14:17:29 +0100
-Message-Id: <cover.1645795048.git.michal.simek@xilinx.com>
+        Oscar Salvador <osalvador@suse.de>
+Subject: [PATCH 2/2] microblaze: Add support for reserved memory defined by DT
+Date:   Fri, 25 Feb 2022 14:17:31 +0100
+Message-Id: <da4395776bf0de7207767abcc8a5df05bf411816.1645795048.git.michal.simek@xilinx.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1645795048.git.michal.simek@xilinx.com>
+References: <cover.1645795048.git.michal.simek@xilinx.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+In DT reserved memory nodes can be added as is described by
+Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
+but Microblaze didn't have a support for it. The similar change was done
+for ARC by commit 1b10cb21d888 ("ARC: add support for reserved memory
+defined by device tree"). It is pretty much enough to call
+early_init_fdt_scan_reserved_mem().
+Microblaze is not using initial_boot_params that's why there is no need to
+call early_init_fdt_reserve_self().
 
-sending two patches for adding support for reserved memory nodes.
-Till now architecture ignores these nodes and normally use memory for own
-purpose.
-The first patch is memblock dump wiring to be able to confirm that
-reservation is working properly.
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-Thanks,
-Michal
+ arch/microblaze/mm/init.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-
-Michal Simek (2):
-  microblaze: Wire memblock_dump_all()
-  microblaze: Add support for reserved memory defined by DT
-
- arch/microblaze/mm/init.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
+diff --git a/arch/microblaze/mm/init.c b/arch/microblaze/mm/init.c
+index de0d8b03af21..f4e503461d24 100644
+--- a/arch/microblaze/mm/init.c
++++ b/arch/microblaze/mm/init.c
+@@ -13,6 +13,7 @@
+ #include <linux/kernel.h>
+ #include <linux/mm.h> /* mem_init */
+ #include <linux/initrd.h>
++#include <linux/of_fdt.h>
+ #include <linux/pagemap.h>
+ #include <linux/pfn.h>
+ #include <linux/slab.h>
+@@ -261,6 +262,8 @@ asmlinkage void __init mmu_init(void)
+ 
+ 	parse_early_param();
+ 
++	early_init_fdt_scan_reserved_mem();
++
+ 	/* CMA initialization */
+ 	dma_contiguous_reserve(memory_start + lowmem_size - 1);
+ 
 -- 
 2.35.1
 
