@@ -2,73 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6FB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 719B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242310AbiBYPoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 10:44:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44332 "EHLO
+        id S242311AbiBYPoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 10:44:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242307AbiBYPoL (ORCPT
+        with ESMTP id S242304AbiBYPoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 10:44:11 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796B522EDF3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 07:43:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=Z8O9C1ayM0iVxKknw+Jr7/ytuJpBQ60SVz3LG+uOJHY=; b=MbfOa76gDoSq2d7ZTpr0/KFmdS
-        8LLvf6cz7GIKQAnQcUvFpfa+25Q8mKe+qsYhSHffIfWfbcbMayW9LZ/si3c6rHX0A8T55Rbxlt3df
-        SOIhfOFRqPFP/Hyy2XktJoWaTM/g9YxKIMF21yn2n7yhpaIljhCd26iMMJrHDMn2P5IwZsM4/kUTl
-        EMzIh46E1Tu0zJ2O53OOkM9AX0wUc9t1DT0HyeSmOhzrTzcP+xzIy69cm9pUH2ecQKfj+qlPin94k
-        xwd8QLfgPO7AG6d0nViI54TFA6e0OHXNfHG3R2//7ArxkDJj97E4nuB9GlmLl5OSsulq4Pyn4k/1O
-        D3mL/35A==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNcka-00CznF-Vk; Fri, 25 Feb 2022 15:43:21 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 971F5300472;
-        Fri, 25 Feb 2022 16:43:20 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 811D03060F95C; Fri, 25 Feb 2022 16:43:20 +0100 (CET)
-Date:   Fri, 25 Feb 2022 16:43:20 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 00/39] x86: Kernel IBT
-Message-ID: <Yhj5GKLfyxbNCGua@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224202602.3gvz5tnxvwb4maod@treble>
- <Yhj1oFcTl2RnghBz@hirez.programming.kicks-ass.net>
+        Fri, 25 Feb 2022 10:44:22 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 581191FCC9;
+        Fri, 25 Feb 2022 07:43:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645803829; x=1677339829;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=f47cn1Kplw8bEVPU/7scXhOv3urE9BWf0pa3OAk5r0s=;
+  b=D9mZwrfeNpaNF5jqxJeF9sLMoIC+MkR45WWzbaH1WSNDxLZyDCB+Gqfj
+   xs8QvXrGC4im+VfgbO/IIkvg07WwuwoaAgjjVGBSDVu3qcwZE+zYrJ9PO
+   OSjyKbSS+iB+vGUutDh0uLle/zjSNG9jCmn3vUNDPdPLXXAveKnv3C9OV
+   Vk9LpihGwaG3yRAhI20PeT0onPnYEilfhP8gC+8UQSLc3i4iVkYgvNdwA
+   aSPFinvnZvdwxW97t7DfejnTU41t9N51z4RBeyzfs/6WOPGirQHz1qbK+
+   0CxY53X8DPpvAUA5er0T1f3LDWNT/hV7FmZQUtVeN2PhIe05lSDfwoy3r
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="338954833"
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="338954833"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 07:43:49 -0800
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="777438751"
+Received: from nnwogbe-mobl1.amr.corp.intel.com (HELO [10.212.101.231]) ([10.212.101.231])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 07:43:47 -0800
+Message-ID: <06650d56-eed3-73ad-d6b4-6b56a5a70669@linux.intel.com>
+Date:   Fri, 25 Feb 2022 09:43:47 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yhj1oFcTl2RnghBz@hirez.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.5.0
+Subject: Re: [PATCH v2] soundwire: qcom: remove redundant wait for completion
+Content-Language: en-US
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
+        bgoswami@codeaurora.org, perex@perex.cz, tiwai@suse.com,
+        rohitkr@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        judyhsiao@chromium.org, yung-chuan.liao@linux.intel.com,
+        sanyog.r.kale@intel.com
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <1645800257-27025-1-git-send-email-quic_srivasam@quicinc.com>
+ <a99a59eb-cd59-f566-b98d-486c94f32eec@linaro.org>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <a99a59eb-cd59-f566-b98d-486c94f32eec@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 04:28:32PM +0100, Peter Zijlstra wrote:
-> +void *skip_endbr(void *addr)
-> +{
-> +	unsigned long size, offset;
-> +
-> +	if (is_endbr(*(unsigned int *)addr) &&
-> +	    kallsyms_lookup_size_offset((unsigned long)addr, &size, &offset) &&
-> +	    !offset)
-> +		addr += 4;
-> +
-> +	return addr;
-> +}
 
-Damn, I just realized this makes KERNEL_IBT hard depend on KALLSYMS :-(
+
+On 2/25/22 08:45, Srinivas Kandagatla wrote:
+> 
+> 
+> On 25/02/2022 14:44, Srinivasa Rao Mandadapu wrote:
+>> Remove wait_for_completion_timeout from soundwire probe as it seems
+>> unnecessary and device enumeration is anyway not happening here,
+>> hence this api is blocking till it completes max wait time.
+>> Also, as device enumeration event is dependent on wcd938x probe to be
+>> completed, its of no use waiting here.
+>> Waiting here increasing the boot time almost 4 seconds and impacting
+>> other modules like touch screen.
+>>
+>> Fixes: 06dd96738d618 ("soundwire: qcom: wait for enumeration to be
+>> complete in probe")
+>>
+>> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+>> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> 
+> LGTM,
+> 
+> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+
+I don't get the idea, sorry.
+
+If you look at the code, these are the cases where this 'struct
+completion' is used
+
+	struct completion enumeration;
+	complete(&ctrl->enumeration);
+	/* Enable Auto enumeration */
+	init_completion(&ctrl->enumeration);
+	wait_for_completion_timeout(&ctrl->enumeration,
+
+
+so if you remove the wait_for_completeion, then you might just as well
+remove the whole thing and revert 06dd96738d618
+
+what am I missing?
+
+
+>> ---
+>>   drivers/soundwire/qcom.c | 2 --
+>>   1 file changed, 2 deletions(-)
+>>
+>> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+>> index 5481341..9a32a24 100644
+>> --- a/drivers/soundwire/qcom.c
+>> +++ b/drivers/soundwire/qcom.c
+>> @@ -1309,8 +1309,6 @@ static int qcom_swrm_probe(struct
+>> platform_device *pdev)
+>>       }
+>>         qcom_swrm_init(ctrl);
+>> -    wait_for_completion_timeout(&ctrl->enumeration,
+>> -                    msecs_to_jiffies(TIMEOUT_MS));
+>>       ret = qcom_swrm_register_dais(ctrl);
+>>       if (ret)
+>>           goto err_master_add;
