@@ -2,92 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B63C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 21:35:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 793F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 21:38:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234087AbiBYVgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 16:36:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        id S234755AbiBYVin (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 16:38:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiBYVgX (ORCPT
+        with ESMTP id S232288AbiBYVil (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 16:36:23 -0500
-Received: from mx1.smtp.larsendata.com (mx1.smtp.larsendata.com [91.221.196.215])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9C81BE0C5
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 13:35:49 -0800 (PST)
-Received: from mail01.mxhotel.dk (mail01.mxhotel.dk [91.221.196.236])
-        by mx1.smtp.larsendata.com (Halon) with ESMTPS
-        id e5c00027-9682-11ec-9faa-0050568c148b;
-        Fri, 25 Feb 2022 21:35:48 +0000 (UTC)
-Received: from ravnborg.org (80-162-45-141-cable.dk.customer.tdc.net [80.162.45.141])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sam@ravnborg.org)
-        by mail01.mxhotel.dk (Postfix) with ESMTPSA id 90DCF194B1C;
-        Fri, 25 Feb 2022 22:35:50 +0100 (CET)
-Date:   Fri, 25 Feb 2022 22:35:42 +0100
-X-Report-Abuse-To: abuse@mxhotel.dk
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Rob Clark <robdclark@gmail.com>
-Cc:     Ville =?iso-8859-1?Q?Syrj=E4l=E4?= 
-        <ville.syrjala@linux.intel.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        freedreno <freedreno@lists.freedesktop.org>
-Subject: Re: [Freedreno] [PATCH 1/3] drm: Extend DEFINE_DRM_GEM_FOPS() for
- optional fops
-Message-ID: <YhlLrujgN2Ovv5JW@ravnborg.org>
-References: <20220225202614.225197-1-robdclark@gmail.com>
- <Yhk92RwhBqAAHcuT@intel.com>
- <CAF6AEGtiGA3TOtAvud66TOz_=ODHACS5jfsYPVQFvex-+1xBBA@mail.gmail.com>
+        Fri, 25 Feb 2022 16:38:41 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C8E32793B7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 13:38:06 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-282-rsTMIwefMfiHyc_im_tfFA-1; Fri, 25 Feb 2022 21:38:03 +0000
+X-MC-Unique: rsTMIwefMfiHyc_im_tfFA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Fri, 25 Feb 2022 21:38:01 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Fri, 25 Feb 2022 21:38:01 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Guillaume Tucker' <guillaume.tucker@collabora.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+CC:     Borislav Petkov <bp@suse.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "kernel@collabora.com" <kernel@collabora.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] selftests, x86: fix how check_cc.sh is being invoked
+Thread-Topic: [PATCH] selftests, x86: fix how check_cc.sh is being invoked
+Thread-Index: AQHYKniHz+vlDNOxwkeP2MprKgi3dqykyk5A
+Date:   Fri, 25 Feb 2022 21:38:01 +0000
+Message-ID: <006c160c1e0240df8a86cc679b2a6678@AcuMS.aculab.com>
+References: <9320d88a3a65350d9bfdc5e258742cd0b162f017.1645794882.git.guillaume.tucker@collabora.com>
+ <8e88488b-1666-ce1b-6d79-7c6758672ac0@collabora.com>
+In-Reply-To: <8e88488b-1666-ce1b-6d79-7c6758672ac0@collabora.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAF6AEGtiGA3TOtAvud66TOz_=ODHACS5jfsYPVQFvex-+1xBBA@mail.gmail.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rob,
+RnJvbTogR3VpbGxhdW1lIFR1Y2tlcg0KPiBTZW50OiAyNSBGZWJydWFyeSAyMDIyIDE4OjUwDQou
+Li4NCj4gPiAtaWYgIiRDQyIgLW8gL2Rldi9udWxsICIkVEVTVFBST0ciIC1PMCAiJEAiIDI+L2Rl
+di9udWxsOyB0aGVuDQo+ID4gK2lmICRDQyAtbyAvZGV2L251bGwgIiRURVNUUFJPRyIgLU8wICIk
+QCIgMj4vZGV2L251bGw7IHRoZW4NCj4gPiAgICAgIGVjaG8gMQ0KPiA+ICBlbHNlDQo+ID4gICAg
+ICBlY2hvIDANCj4gDQo+IEkgc2VlIHRoZSBjaGFuZ2UgaW4gY2hlY2tfY2Muc2ggaXMgYWxyZWFk
+eSBjb3ZlcmVkIGJ5IFVzYW1hJ3MgcGF0Y2g6DQo+IA0KPiAgIHNlbGZ0ZXN0cy94ODY6IEFkZCB2
+YWxpZGl0eSBjaGVjayBhbmQgYWxsb3cgZmllbGQgc3BsaXR0aW5nDQo+IA0KPiAtaWYgIiRDQyIg
+LW8gL2Rldi9udWxsICIkVEVTVFBST0ciIC1PMCAiJEAiIDI+L2Rldi9udWxsOyB0aGVuDQo+ICtp
+ZiBbIC1uICIkQ0MiIF0gJiYgJENDIC1vIC9kZXYvbnVsbCAiJFRFU1RQUk9HIiAtTzAgIiRAIiAy
+Pi9kZXYvbnVsbDsgdGhlbg0KDQpPcjoNCglpZiAke0NDOi1mYWxzZX0gLW8gL2Rldi9udWxsIC4u
+Li4NClRoZXJlJ3MgYWx3YXlzIG9uZSBtb3JlIHdheS4uLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0
+ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBL
+ZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-> > > diff --git a/include/drm/drm_gem.h b/include/drm/drm_gem.h
-> > > index 35e7f44c2a75..987e78b18244 100644
-> > > --- a/include/drm/drm_gem.h
-> > > +++ b/include/drm/drm_gem.h
-> > > @@ -327,7 +327,7 @@ struct drm_gem_object {
-> > >   * non-static version of this you're probably doing it wrong and will break the
-> > >   * THIS_MODULE reference by accident.
-> > >   */
-> > > -#define DEFINE_DRM_GEM_FOPS(name) \
-> > > +#define DEFINE_DRM_GEM_FOPS(name, ...) \
-> > >       static const struct file_operations name = {\
-> > >               .owner          = THIS_MODULE,\
-> > >               .open           = drm_open,\
-> > > @@ -338,6 +338,7 @@ struct drm_gem_object {
-> > >               .read           = drm_read,\
-> > >               .llseek         = noop_llseek,\
-> > >               .mmap           = drm_gem_mmap,\
-> > > +             ##__VA_ARGS__\
-> > >       }
-> >
-> > Would it not be less convoluted to make the macro only provide
-> > the initializers? So you'd get something like:
-> >
-> > static const struct file_operations foo = {
-> >         DRM_GEM_FOPS,
-> >         .my_stuff = whatever,
-> > };
-> >
-> 
-> Hmm, I like my color of the bikeshed, but I guess it is a matter of opinion ;-)
-Or less surprise. Most similar macros provides initializers only.
-
-Try "git grep DRM_.*OPS  | grep define" in include/drm
-and take a look at the hits.
-
-	Sam
