@@ -2,94 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 09:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C0A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 09:36:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235257AbiBYJgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 04:36:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
+        id S239170AbiBYJhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 04:37:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234262AbiBYJgM (ORCPT
+        with ESMTP id S239157AbiBYJhO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 04:36:12 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20DE71F7679;
-        Fri, 25 Feb 2022 01:35:41 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DF2EF106F;
-        Fri, 25 Feb 2022 01:35:40 -0800 (PST)
-Received: from [10.163.51.16] (unknown [10.163.51.16])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A5E803F70D;
-        Fri, 25 Feb 2022 01:35:38 -0800 (PST)
-Subject: Re: [PATCH V2 08/30] m68k/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Linux MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>
-References: <1645425519-9034-1-git-send-email-anshuman.khandual@arm.com>
- <1645425519-9034-9-git-send-email-anshuman.khandual@arm.com>
- <CAMuHMdUrA4u5BTRuqTSn++vXFNn0w=HRmp9ZD_8SNZ1wMUKwwQ@mail.gmail.com>
- <CAMuHMdXRO5dph1m21=V3bVyniVvKfhDLbMoEHQzwPgvSesXj6A@mail.gmail.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <d417c0e7-8a47-4f40-6eb1-161797d16cef@arm.com>
-Date:   Fri, 25 Feb 2022 15:05:36 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Fri, 25 Feb 2022 04:37:14 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B1CE642A
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 01:36:35 -0800 (PST)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id EC1963FCA6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 09:36:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645781793;
+        bh=mwBGuSv1vzWcEgYl2MgCXz9QnnQmXLrpGmSTa9ywwuI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=qk45lsTpLT74Z731Io80odzcwBaoFTxG+Ex9+UdRPhdmJoGO9vW6y4Mb2oCr/hm3P
+         a3qd6+kEXaJtSUP9Zl/ZtXqLzBxM3SABsJxlR5a8Il+l1tZX8I88h/yKKSUUV6I01g
+         DRFJxqp7rC4/ai+ha0dw0AHBcOvES48XJhLinWjnK6HIYzDvQdZv8YY+X82rBA815f
+         dmRZwh/gCIT80u78M+aOlLhHR7VlFPIT54eSAKS0o1ICxbK2oej410Ty4oKK942k66
+         7iCUwLl8iMrf0pv37dqGhyIPijzTANBJE7OHXSNGASwWf0nUHLabKJoDTXWAK/SRre
+         c8UfUrM4p9Awg==
+Received: by mail-ej1-f71.google.com with SMTP id nb1-20020a1709071c8100b006d03c250b6fso2398623ejc.11
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 01:36:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mwBGuSv1vzWcEgYl2MgCXz9QnnQmXLrpGmSTa9ywwuI=;
+        b=jkrbOrcodc+kSIM10T0L+8+8qWZq4Roa5Ln45sFfx497WVg5hMIDUWaPHoSieu85hc
+         7/AEEkjkzbQEvL9valgImBhyfX9UwqfDo/IpQn6RtM/NP3gXuA8LnsDtIxnerqutfO60
+         oKspgziF1n/j8PmVDCYg3zhbnaUTPsGdHDDjSiP+ws3pfUtCE4g4WDK3IaXKMl06Egrk
+         T/+UnQ5rO/ZVL5iNskA0v6LKNDLgWMSLTVCwacGBFtB9xyg7O2GnTvt4gNMuSKK16L7i
+         kBrf5IaBlfXqNbOhhxfP/7Z5fXnEoLH20uJTKOFQAC9YOHpNjpl3uWt4ffTv6ow7FEJY
+         AAIg==
+X-Gm-Message-State: AOAM533L+bRzHEsoTpxpFQbSsgcvTtM6P9ldSL+pacJH4k8kXleJrPF2
+        8iPatnV3Stc17O0HhGTq94Jlvs3K5huXlXk7UwIHRdPtOg2EeFYXmjmnsNla6EMU7mjbs3s41w8
+        Pqtu1sTFEL7sWeSXKhfzAF+OE3rqU1quEXYqIzCs0Rg==
+X-Received: by 2002:a17:906:4cca:b0:6ce:6a06:bf7 with SMTP id q10-20020a1709064cca00b006ce6a060bf7mr5644771ejt.109.1645781782638;
+        Fri, 25 Feb 2022 01:36:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxvGXs5zpBbIxYfXArg3HJWTHPHMBjqJChT5RpHzF7M3/UrStNiNcxogS5o2fNS3FLp8Ip6Ag==
+X-Received: by 2002:a17:906:4cca:b0:6ce:6a06:bf7 with SMTP id q10-20020a1709064cca00b006ce6a060bf7mr5644737ejt.109.1645781782424;
+        Fri, 25 Feb 2022 01:36:22 -0800 (PST)
+Received: from [192.168.0.130] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id bo9-20020a170906d04900b006ce6b8e05c1sm773655ejb.150.2022.02.25.01.36.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Feb 2022 01:36:21 -0800 (PST)
+Message-ID: <0aff95ff-5b79-8ae9-48fd-720a9f27cbce@canonical.com>
+Date:   Fri, 25 Feb 2022 10:36:20 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdXRO5dph1m21=V3bVyniVvKfhDLbMoEHQzwPgvSesXj6A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 05/11] pci: use helper for safer setting of
+ driver_override
 Content-Language: en-US
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Andy Gross <agross@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+References: <20220224235206.GA302751@bhelgaas>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220224235206.GA302751@bhelgaas>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2/25/22 2:32 PM, Geert Uytterhoeven wrote:
-> Hi Anshuman, Andrew,
-> 
-> On Mon, Feb 21, 2022 at 12:54 PM Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
->> On Mon, Feb 21, 2022 at 9:45 AM Anshuman Khandual
->> <anshuman.khandual@arm.com> wrote:
->>> This defines and exports a platform specific custom vm_get_page_prot() via
->>> subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
->>> macros can be dropped which are no longer needed.
+On 25/02/2022 00:52, Bjorn Helgaas wrote:
+> On Thu, Feb 24, 2022 at 08:49:15AM +0100, Krzysztof Kozlowski wrote:
+>> On 23/02/2022 22:51, Bjorn Helgaas wrote:
+>>> In subject, to match drivers/pci/ convention, do something like:
 >>>
->>> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
->>> Cc: linux-m68k@lists.linux-m68k.org
->>> Cc: linux-kernel@vger.kernel.org
->>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>>>   PCI: Use driver_set_override() instead of open-coding
+>>>
+>>> On Wed, Feb 23, 2022 at 08:13:04PM +0100, Krzysztof Kozlowski wrote:
+>>>> Use a helper for seting driver_override to reduce amount of duplicated
+>>>> code.
+>>>> @@ -567,31 +567,15 @@ static ssize_t driver_override_store(struct device *dev,
+>>>>  				     const char *buf, size_t count)
+>>>>  {
+>>>>  	struct pci_dev *pdev = to_pci_dev(dev);
+>>>> -	char *driver_override, *old, *cp;
+>>>> +	int ret;
+>>>>  
+>>>>  	/* We need to keep extra room for a newline */
+>>>>  	if (count >= (PAGE_SIZE - 1))
+>>>>  		return -EINVAL;
+>>>
+>>> This check makes no sense in the new function.  Michael alluded to
+>>> this as well.
 >>
->> Thanks for your patch!
->>
->>> --- a/arch/m68k/mm/init.c
->>> +++ b/arch/m68k/mm/init.c
->>> @@ -128,3 +128,107 @@ void __init mem_init(void)
->>>         memblock_free_all();
->>>         init_pointer_tables();
->>>  }
->>> +
->>> +#ifdef CONFIG_COLDFIRE
->>> +/*
->>> + * Page protections for initialising protection_map. See mm/mmap.c
->>> + * for use. In general, the bit positions are xwr, and P-items are
->>> + * private, the S-items are shared.
->>> + */
->>> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
->>
->> Wouldn't it make more sense to add this to arch/m68k/mm/mcfmmu.c?
+>> I am not sure if I got your comment properly. You mean here:
+>> 1. Move this check to driver_set_override()?
+>> 2. Remove the check entirely?
 > 
-> It's not just about sense, but also about correctness.
-> The CF_PAGE_* definitions below exist only if CONFIG_MMU=y,
-> thus causing breakage for cfnommu in today's linux-next.
-> http://kisskb.ellerman.id.au/kisskb/buildresult/14701640/
+> I was mistaken about the purpose of the comment and the check.  I
+> thought it had to do with *this* function, and this function doesn't
+> add a newline, and there's no obvious connection with PAGE_SIZE.
+> 
+> But looking closer, I think the "extra room for a newline" is really
+> to make sure that *driver_override_show()* can add a newline and have
+> it still fit within the PAGE_SIZE sysfs limit.
+> 
+> Most driver_override_*() functions have the same comment, so maybe
+> this was obvious to everybody except me :)  I do see that spi.c adds
+> "when displaying value" at the end, which helps a lot.
+> 
+> Sorry for the wild goose chase.
 
-As mentioned before, will do all these necessary changes in the next
-version probably sometime earlier next week. I was waiting for other
-reviews (if any) till now.
+I think I will move this check anyway to driver_set_override() helper,
+because there is no particular benefit to have duplicated all over. The
+helper will receive "count" argument so can perform all checks.
+
+
+Best regards,
+Krzysztof
