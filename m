@@ -2,198 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B322C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38667C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:55:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232617AbiBYOzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 09:55:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43882 "EHLO
+        id S241963AbiBYOzr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 09:55:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241929AbiBYOzQ (ORCPT
+        with ESMTP id S241931AbiBYOzQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Feb 2022 09:55:16 -0500
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5F59225592;
-        Fri, 25 Feb 2022 06:54:43 -0800 (PST)
-Received: by mail-qk1-x72e.google.com with SMTP id n185so4660223qke.5;
-        Fri, 25 Feb 2022 06:54:43 -0800 (PST)
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3E10227590
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 06:54:43 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id s13so4910353wrb.6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 06:54:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FDPZIGzI4cmIbStBPaiMVgNNivHkF1oB77ycCAz44T0=;
-        b=lHos+wKMhO2GGZXv06casobH1M6tdgEvgpIa/W+kMaLXIKX1Lj9+QztiSN5AE99d6l
-         kvHgRongm05kW61U1RUls1pHopKDP5+fPbUhQynkxyiAyrmkLz9MBTvM+fCUNp5DRxiO
-         0yxPn3dZGhI8Px+Cn0DUTPvakP0gvVrXg1KKPb1MYKuBrQ/iMX8zuo/MjCzErJGVLnWM
-         k6T4dX4F1LmYL51991172KG8nJgiBE0mCBgNeVyzk4Lkf79fPWWAh34J4MpAmVTn2WG1
-         WZY4WmY6bd8MJEmIsYzqRb3E6UUgfSqQjzhW2U6L2exM/pNFhOhW99pWr4aKtmrUtVwI
-         kO1A==
+        d=arista.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=44cheDsrMga6CJGQS6m14qlfeLe3FI23Gc2e1X2Hnzw=;
+        b=ULc+qJe6of+28mEs4uQ5Si1ijlbI4KSNbJM4SF9Dnz+LNraH0mkAi8js2d9DoyCNnj
+         ADJiFtrnCLzqHLgN2AzGGx92vZDJhPC5M8r9g3a961kF6xix5jW9/pdU6R49pfGSrErO
+         S9ND4AQ6gPb6mCFvGY6sh1Vq6NRVurdqUDKWlSZNbYm/ktE7Ej5JcjYUqr41e358dfPX
+         o3x+PQB1h8z8cE98zVeH8SrHgeW39y4nNZM8wqxIOlUZVFqtchXNS5rZw8xMFjhaYu9+
+         boukvzU3qVmI0Wws6V9sAFgyj3Vg0CXP6fbIw2B/Z+dXRADTo1D24EO9qyfnw1crlfro
+         TIJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FDPZIGzI4cmIbStBPaiMVgNNivHkF1oB77ycCAz44T0=;
-        b=jmGtdLRtTccKgyjsxT048Qflex3p9KOByHwpFvzEdfnsTRyT3oZp3mLGRagsH1I+/P
-         eYpc7VUw1f7SbODs7/0PuccLZKAcq9gvIOeWTj29bXmbL/46Hwl1tPDfq7DGqV3IcZoQ
-         GAAKmy62DZ9W/LNX50/ojil2c8MmpXrQBI3hWK222TM/vU5yfRByTjJRJug47se8LY5v
-         PbGSnec8jx6PHdauo6FynBTbdYJfJ7zcbk9UmCIaPGxRU2owozMeKFm7zrZdS6p9Ez+H
-         nl1/SY7aprCJobK/QoWiob+ce2VTivOi6AFnE/YdsMLqOTm+Uxj8MlklToVS+0mGGvyJ
-         w3dg==
-X-Gm-Message-State: AOAM532NCrzt7VHyr0ftjiomjkuE+JI0gNcHLNCk5i3mW8bdge1YJ2ZT
-        1ZUOM3WW3LUUGGEqVgEKWdg=
-X-Google-Smtp-Source: ABdhPJzujfBHDw9T2hERwmvAmrgqi200Z/2YpnW3e39OAIW8u87BGP/Y0zpsyzoYH5ex1+hgeZD7oQ==
-X-Received: by 2002:a05:620a:35c:b0:648:e0da:8a64 with SMTP id t28-20020a05620a035c00b00648e0da8a64mr4893427qkm.73.1645800882815;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=44cheDsrMga6CJGQS6m14qlfeLe3FI23Gc2e1X2Hnzw=;
+        b=vb7HBc+YpMjkk1OCsjBtTOP4FROnKJbdlXYCsF7blPuBh9Ikev2YA2qsVwhoyUobUn
+         aeS89pUQmomTefI7pV4Kq2TNKu/YxTvUXHwuxaPCTT1pF+NMtcE3hPtqvSa32kiN/Eo0
+         8pLOLMKNSaWdUUE7nE5fM0ZFFaIZpuxXhJFEbFflw8LiC3RNtNxWiOTPoy0zzRaAeka2
+         2kR12NyC5Uoub09t9HXM8M92qmsUMvefwU4baoUj+5hrVp4tn/x49zzOXdITmmiXV0PG
+         IL/AlFW1yCBizkfOm33q6sIXSgPuUoc1UVi3AfPEy74MPKP5R7yh3ampPg4cNreSFe9y
+         HNzQ==
+X-Gm-Message-State: AOAM533ARKAK3/2R9nnvaV9L5kUyijBH5dpBezEHMvMhynxykPbfmRg7
+        YTLKWsBCcVd9SBxYCC1xu35sRw==
+X-Google-Smtp-Source: ABdhPJw6a856m+LbIbS/RKp6gkNtWXemojFqR++1UDO79dvu/R8BZozv2xax2MyEvHDMynnyx3XkxA==
+X-Received: by 2002:a5d:64e7:0:b0:1e4:bb8b:d3eb with SMTP id g7-20020a5d64e7000000b001e4bb8bd3ebmr6343325wri.403.1645800882473;
         Fri, 25 Feb 2022 06:54:42 -0800 (PST)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id d202-20020a3768d3000000b005f18706845dsm1318292qkc.73.2022.02.25.06.54.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+Received: from ?IPV6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id 11-20020a05600c26cb00b0037ff53511f2sm5681464wmv.31.2022.02.25.06.54.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
         Fri, 25 Feb 2022 06:54:42 -0800 (PST)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 7/8] arm64: dts: rockchip: add rk356x dwc3 usb3 nodes
-Date:   Fri, 25 Feb 2022 09:54:30 -0500
-Message-Id: <20220225145432.422130-8-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220225145432.422130-1-pgwipeout@gmail.com>
-References: <20220225145432.422130-1-pgwipeout@gmail.com>
+Message-ID: <7c7c0736-710d-192f-9688-d20dfa48d134@arista.com>
+Date:   Fri, 25 Feb 2022 14:54:40 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH net-next] net/ip6mr: Fix build with !CONFIG_IPV6_PIMSM_V2
+Content-Language: en-US
+To:     David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Mobashshera Rasool <mobash.rasool.linux@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+References: <20220223121721.421247-1-dima@arista.com>
+ <ed3e1f08-045c-1a9e-9319-5789faddc473@kernel.org>
+From:   Dmitry Safonov <dima@arista.com>
+In-Reply-To: <ed3e1f08-045c-1a9e-9319-5789faddc473@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the dwc3 device nodes to the rk356x device trees.
-The rk3566 has one usb2 capable dwc3 otg controller and one usb3 capable
-dwc3 host controller.
-The rk3568 has one usb3 capable dwc3 otg controller and one usb3 capable
-dwc3 host controller.
+On 2/25/22 03:00, David Ahern wrote:
+> On 2/23/22 5:17 AM, Dmitry Safonov wrote:
+>> diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+>> index a9775c830194..4e74bc61a3db 100644
+>> --- a/net/ipv6/ip6mr.c
+>> +++ b/net/ipv6/ip6mr.c
+>> @@ -1653,7 +1653,6 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
+>>  	mifi_t mifi;
+>>  	struct net *net = sock_net(sk);
+>>  	struct mr_table *mrt;
+>> -	bool do_wrmifwhole;
+>>  
+>>  	if (sk->sk_type != SOCK_RAW ||
+>>  	    inet_sk(sk)->inet_num != IPPROTO_ICMPV6)
+>> @@ -1761,6 +1760,7 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
+>>  #ifdef CONFIG_IPV6_PIMSM_V2
+>>  	case MRT6_PIM:
+>>  	{
+>> +		bool do_wrmifwhole;
+>>  		int v;
+>>  
+>>  		if (optlen != sizeof(v))
+>>
+>> base-commit: 922ea87ff6f2b63f413c6afa2c25b287dce76639
+> 
+> you could do one better and move it under the
+> 'if (v != mrt->mroute_do_pim) {'
+> 
+> so that the do_wrmifwhole check is only done when needed
 
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
----
- arch/arm64/boot/dts/rockchip/rk3566.dtsi | 12 +++++++
- arch/arm64/boot/dts/rockchip/rk3568.dtsi |  9 +++++
- arch/arm64/boot/dts/rockchip/rk356x.dtsi | 45 +++++++++++++++++++++++-
- 3 files changed, 65 insertions(+), 1 deletion(-)
+I've tried to keep it simple and just to fix the build as I don't know
+which tests to run.
+Anyway, I sent v2:
+https://lore.kernel.org/all/20220225145206.561409-1-dima@arista.com/T/#u
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3566.dtsi b/arch/arm64/boot/dts/rockchip/rk3566.dtsi
-index 3839eef5e4f7..8e8b52f58f44 100644
---- a/arch/arm64/boot/dts/rockchip/rk3566.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3566.dtsi
-@@ -6,6 +6,10 @@ / {
- 	compatible = "rockchip,rk3566";
- };
- 
-+&pipegrf {
-+	compatible = "rockchip,rk3566-pipe-grf", "syscon";
-+};
-+
- &power {
- 	power-domain@RK3568_PD_PIPE {
- 		reg = <RK3568_PD_PIPE>;
-@@ -18,3 +22,11 @@ power-domain@RK3568_PD_PIPE {
- 		#power-domain-cells = <0>;
- 	};
- };
-+
-+&usbdrd30 {
-+	phys = <&usb2phy0_otg>;
-+	phy-names = "usb2-phy";
-+	extcon = <&usb2phy0>;
-+	maximum-speed = "high-speed";
-+	snps,dis_u2_susphy_quirk;
-+};
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-index 5b0f528d6818..77c044cbaaad 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-@@ -99,6 +99,10 @@ opp-1992000000 {
- 	};
- };
- 
-+&pipegrf {
-+	compatible = "rockchip,rk3568-pipe-grf", "syscon";
-+};
-+
- &power {
- 	power-domain@RK3568_PD_PIPE {
- 		reg = <RK3568_PD_PIPE>;
-@@ -114,3 +118,8 @@ power-domain@RK3568_PD_PIPE {
- 		#power-domain-cells = <0>;
- 	};
- };
-+
-+&usbdrd30 {
-+	phys = <&usb2phy0_otg>, <&combphy0 PHY_TYPE_USB3>;
-+	phy-names = "usb2-phy", "usb3-phy";
-+};
-diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-index 84d5d607e693..4fae5b3b326e 100644
---- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-@@ -230,6 +230,50 @@ scmi_shmem: sram@0 {
- 		};
- 	};
- 
-+	usbdrd30: usbdrd@fcc00000 {
-+		compatible = "rockchip,rk3568-dwc3", "snps,dwc3";
-+		reg = <0x0 0xfcc00000 0x0 0x400000>;
-+		interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&cru CLK_USB3OTG0_REF>, <&cru CLK_USB3OTG0_SUSPEND>,
-+			 <&cru ACLK_USB3OTG0>, <&cru PCLK_PIPE>;
-+		clock-names = "ref_clk", "suspend_clk",
-+			      "bus_clk", "grf_clk";
-+		dr_mode = "host";
-+		phy_type = "utmi_wide";
-+		power-domains = <&power RK3568_PD_PIPE>;
-+		resets = <&cru SRST_USB3OTG0>;
-+		reset-names = "usb3-otg";
-+		snps,dis_enblslpm_quirk;
-+		snps,dis-u2-freeclk-exists-quirk;
-+		snps,dis-del-phy-power-chg-quirk;
-+		snps,dis-tx-ipgap-linecheck-quirk;
-+		snps,xhci-trb-ent-quirk;
-+		status = "disabled";
-+	};
-+
-+	usbhost30: usbhost@fd000000 {
-+		compatible = "rockchip,rk3568-dwc3", "snps,dwc3";
-+		reg = <0x0 0xfd000000 0x0 0x400000>;
-+		interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
-+		clocks = <&cru CLK_USB3OTG1_REF>, <&cru CLK_USB3OTG1_SUSPEND>,
-+			 <&cru ACLK_USB3OTG1>, <&cru PCLK_PIPE>;
-+		clock-names = "ref_clk", "suspend_clk",
-+			      "bus_clk", "grf_clk";
-+		dr_mode = "host";
-+		phys = <&usb2phy0_host>, <&combphy1 PHY_TYPE_USB3>;
-+		phy-names = "usb2-phy", "usb3-phy";
-+		phy_type = "utmi_wide";
-+		power-domains = <&power RK3568_PD_PIPE>;
-+		resets = <&cru SRST_USB3OTG1>;
-+		reset-names = "usb3-host";
-+		snps,dis_enblslpm_quirk;
-+		snps,dis-u2-freeclk-exists-quirk;
-+		snps,dis_u2_susphy_quirk;
-+		snps,dis-del-phy-power-chg-quirk;
-+		snps,dis-tx-ipgap-linecheck-quirk;
-+		status = "disabled";
-+	};
-+
- 	gic: interrupt-controller@fd400000 {
- 		compatible = "arm,gic-v3";
- 		reg = <0x0 0xfd400000 0 0x10000>, /* GICD */
-@@ -297,7 +341,6 @@ pmu_io_domains: io-domains {
- 	};
- 
- 	pipegrf: syscon@fdc50000 {
--		compatible = "rockchip,rk3568-pipe-grf", "syscon";
- 		reg = <0x0 0xfdc50000 0x0 0x1000>;
- 	};
- 
--- 
-2.25.1
+Is it what you meant?
 
+Thanks,
+          Dmitry
