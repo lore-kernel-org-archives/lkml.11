@@ -2,88 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FE7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 01:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 02:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236648AbiBYB7Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 20:59:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39260 "EHLO
+        id S236660AbiBYCDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 21:03:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236630AbiBYB7Y (ORCPT
+        with ESMTP id S236479AbiBYCDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 20:59:24 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 768247DA86
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 17:58:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645754333; x=1677290333;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AiMLReOXdbxwCJYEkuxwFgwJdr/KRPlox84ap13k0a8=;
-  b=aQbkLOajP2N7fOgLET6uTd9JC4oqVuZKNdkEI33MtXLDgTJfvScH5WY/
-   QieC1V6wrTLMVyHoEiEMc89NggDF4z02okvpb6pDs5T4JFfH0bZio6Z0L
-   jEtp2sw4nVj5nGz53msQ+ccDwBynjnlb0jUTuGZW9d2xXlnQUamy1h6N1
-   dMsmlR4d+ugKDZ3GyaIIU+vkGH6pYdzYIIDnUuzBRFMBKG3CC8Ru1L1QE
-   YYo8q6T9StpKloHW2wJ2gEEyXd+ULrlJo4grWzcBk+mFBjHKLGAsAMuAJ
-   jTH00opBNzXwTiLLsBYpYxkfYqdToYjlIq7+vROQAxW9sIHXpgTH1N5zM
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="315617120"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="315617120"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 17:58:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="533386135"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga007.jf.intel.com with ESMTP; 24 Feb 2022 17:58:50 -0800
-Message-ID: <1e320de0-3dd7-936f-a9d4-8686687b0675@linux.intel.com>
-Date:   Fri, 25 Feb 2022 09:57:20 +0800
+        Thu, 24 Feb 2022 21:03:15 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B75A85974;
+        Thu, 24 Feb 2022 18:02:44 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id m22so3595420pja.0;
+        Thu, 24 Feb 2022 18:02:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=wZjioodKc5i2UrY3alN+TPIIALpLSLRR0tr9ny9WIyo=;
+        b=Nx7NMD8qU/NXptOn+9dkF9Ix+eBmtRTZuRzKcblBxcw8keIKBEAvgcGmbo3f9Z/02/
+         mNBM2w/uJjC55vSY6b5c4lM7swcdOZ+YnMU9EZBDNk/sH9nWELAl23eoR3UCiWcEn5q/
+         FTl2iboXT1YQUWtU259SWugCJZZFZBLHNVkWPWrWbNqG312ulxwDh2jdbynvL8098PNd
+         P5ykxJOohSup/GMBw1YoE9GUupu5Lfz8VsYebmGdet/jIFpZap8Ax01gofNvW6568K5Z
+         Kd7MDaSnAl3ROb6n9ailuF53EviYpBNT/4HFgTsInY71wF8NGmJMNXJA5r5fKrEYtNU5
+         W/Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=wZjioodKc5i2UrY3alN+TPIIALpLSLRR0tr9ny9WIyo=;
+        b=AG6XMhNtwzGStyBme3a+w7OMWZOZowCSEST8GuXC8GAt+Y5jZQheio529ixK+b+KZ/
+         h6UIIrCo6fpsD8+DXDsYc7QlD6fY/BjKAqP7J52W+uEXJPzYQHTtf5c+iHLFwNe5z/Lc
+         fkFOVJfyWbNeJTLmsjklRhT0vqe9e63eGqqNulfcMUJaqYnwBxpp9RfjIAeEWsf416ph
+         s2WunsodAcC3kcPtYeGJakAhBcpTSy4Q6EwXgFTnynguChfiFCDH/JBejQ0bCFqSB0PY
+         FSfJgD4I/gVdj6QReA9fNdNiasR5NzLdo1j2X4dC1BrLGgHR4my8aty4DbGYp9SaWEow
+         W5bQ==
+X-Gm-Message-State: AOAM530zsJ68k5mDGfUIcKC6YrObujsLHlbnncN4wgkV+ihTD+x676DR
+        0vgXu0JdZrfghoxkvwsLEN4=
+X-Google-Smtp-Source: ABdhPJz05a2c5otlXDdIezkGb/k5WVIEc7aPtxwPaqdwdxj4146BHHVrCUDpiFd5fDCwNViZIwPfbw==
+X-Received: by 2002:a17:90a:aa83:b0:1b9:7c62:61e5 with SMTP id l3-20020a17090aaa8300b001b97c6261e5mr946319pjq.118.1645754563771;
+        Thu, 24 Feb 2022 18:02:43 -0800 (PST)
+Received: from [172.20.119.15] ([61.16.102.72])
+        by smtp.gmail.com with ESMTPSA id d25-20020a639919000000b00364f999aed5sm730865pge.20.2022.02.24.18.02.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Feb 2022 18:02:43 -0800 (PST)
+Message-ID: <54557a1a-94b5-9f75-61f9-90991d5ff409@gmail.com>
+Date:   Fri, 25 Feb 2022 10:02:39 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@lst.de>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 08/11] iommu/vt-d: Fix indentation of goto labels
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [RFC V4 1/6] blk: prepare to make blk-rq-qos pluggable and
+ modular
 Content-Language: en-US
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
- <20220214025704.3184654-9-baolu.lu@linux.intel.com>
- <20220224130822.GK6413@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-In-Reply-To: <20220224130822.GK6413@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Jens Axboe <axboe@kernel.dk>, Josef Bacik <jbacik@fb.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220217031349.98561-1-jianchao.wan9@gmail.com>
+ <20220217031349.98561-2-jianchao.wan9@gmail.com>
+ <YhUbCH+dhKkgMirE@slm.duckdns.org>
+ <2e17c058-8917-4a37-896e-1093446339f6@gmail.com>
+ <39db454d-ca30-fb42-3d72-899efa34fb78@gmail.com>
+ <YhapCurbiI21WYmm@slm.duckdns.org>
+ <efd94670-9d6d-5651-358c-2f88646298cd@gmail.com>
+ <Yhbod7pJ1X4CGhEZ@slm.duckdns.org>
+ <7489a7f8-2589-29de-1c95-b99d1d9b1850@gmail.com>
+ <Yhe38VnBq7VzUBAV@slm.duckdns.org>
+From:   Wang Jianchao <jianchao.wan9@gmail.com>
+In-Reply-To: <Yhe38VnBq7VzUBAV@slm.duckdns.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/24/22 9:08 PM, Jason Gunthorpe wrote:
-> On Mon, Feb 14, 2022 at 10:57:01AM +0800, Lu Baolu wrote:
->> Remove blanks before goto labels.
+
+
+On 2022/2/25 12:53 上午, Tejun Heo wrote:
+> On Thu, Feb 24, 2022 at 10:50:22AM +0800, Wang Jianchao wrote:
+>> Yes, right now, every policy has their own way to turn off, but we always need to
+>> iterate the rqos list and enter into the policy's callback to check it. And every
+>> blkio cgroup needs to allocate memory for it even we don't use it.
 >>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>   drivers/iommu/intel/iommu.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
+>> I don't this patchset is adding a new layer, but blk-rq-qos layer has been already
+>> there , we just add a unified interface to open/close the policies.
 > 
-> It would be better to rework this function to not have the goto
-> spaghetti in the first place.. Looks like putting the
-> 'for_each_active_dev_scope' into another function would do the trick.
+> We're talking in circles. We already know when a policy is inactive. If it
+> sits in hot path in that state, take it off whatever gets iterated in hot
+> path and put it back on when it actually gets enabled. The same goes for
+> memory allocation. If there's substantial amount of memory allocted while
+> not used, make that dynamic and trigger it when the policy starts getting
+> used. It makes no sense to add another enable/disable interface on top.
+>
+It can make things more complicated if we does as above...
 
-Good idea. Let me revisit this later.
+> FWIW, please consider the series nacked on this side.
 
-> 
-> Anyhow, this is more consistent with kernel style:
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> Jason
+Anyway, thanks so much for all of your comment ;)
 
-Best regards,
-baolu
+Regards
+Jianchao
+
