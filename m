@@ -2,116 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FFAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E6AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241755AbiBYObL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 09:31:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
+        id S241760AbiBYObb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 09:31:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241742AbiBYObD (ORCPT
+        with ESMTP id S241742AbiBYOb1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 09:31:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0584A2325EA
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 06:30:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645799431;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=31ddj2FGbLXm1jpn+KxL0nZeHBs+QByAvpjKBS8rBxM=;
-        b=bAbFITOEn0K7yvglkV1TV1z6/LUkMGj8BU/bl6Y3zkNCT2BcYMW9uXHbRXaIJb30PRaXwo
-        wGHjxBpOGjWgpwvD/kiPQrX+NVsc2yu6Tm4Pgs/nKy64qRpSaL3RYoq/PmaG2FqiXsUmtt
-        FluwhGpv9ezXTnWhWQQpEm1k4yVDCNM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-475-sviDcEc-OXO9S9jHIznklg-1; Fri, 25 Feb 2022 09:30:25 -0500
-X-MC-Unique: sviDcEc-OXO9S9jHIznklg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 25E061006AA6;
-        Fri, 25 Feb 2022 14:30:24 +0000 (UTC)
-Received: from horse.redhat.com (unknown [10.22.17.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 010EF7C5B8;
-        Fri, 25 Feb 2022 14:30:23 +0000 (UTC)
-Received: by horse.redhat.com (Postfix, from userid 10451)
-        id 73F492237E9; Fri, 25 Feb 2022 09:30:23 -0500 (EST)
-Date:   Fri, 25 Feb 2022 09:30:23 -0500
-From:   Vivek Goyal <vgoyal@redhat.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Steve French <smfrench@gmail.com>,
-        lsf-pc@lists.linux-foundation.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ioannis Angelakopoulos <jaggel@bu.edu>
-Subject: Re: [LSF/MM/BPF TOPIC] Enabling change notification for network and
- cluster fs
-Message-ID: <Yhjn/zmdlAFtvRR0@redhat.com>
-References: <CAH2r5mt9OfU+8PoKsmv_7aszhbw-dOuDCL6BOxb_2yRwc4HHCw@mail.gmail.com>
- <Yhf+FemcQQToB5x+@redhat.com>
- <CAH2r5mt6Sh7qorfCHWnZzc6LUDd-s_NzGB=sa-UDM2-ivzpmAQ@mail.gmail.com>
- <YhjYSMIE2NBZ/dGr@redhat.com>
- <YhjeX0HvXbED65IM@casper.infradead.org>
+        Fri, 25 Feb 2022 09:31:27 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EB81234039
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 06:30:55 -0800 (PST)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21PCgh34021531;
+        Fri, 25 Feb 2022 14:30:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=swFlfkGYEhwI8iLdsimz9iGatD80mf6kulpQ/wbv1tc=;
+ b=QRr0Y5fxUk9iuMjf3Ozi7cRvXlX3jbiemTcZzdfa7XouRzGuoHRq1tXzqAOTSzmCN6/r
+ lE/jfGuCeW1DFhBSGmpmWiiyIMYUvDcLAN3VIUraHV7xVmRnDP0BjCBBToCG7O/iC3gh
+ JFzAKM561iz5YbxRHX8APMLG+T9mShDblBaw5L15E4IaUrFJgWSzbbctq6XrvF2n9YsU
+ gbllk9EUcp1kI2uRnCbuBsSR8O4r3QEE6jWpCKvfjUbk42DkLTxtbmvFwQZHZ1RNxyFv
+ YfIWoJvguxKBJVfLcEBgsUvdfJhVnStxUz41F3H17ZV8EqTS5+QxGUk9dMph4Xl0DtvW Sg== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eeyc02u7c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 14:30:50 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21PER7h2020738;
+        Fri, 25 Feb 2022 14:30:48 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06fra.de.ibm.com with ESMTP id 3eaqtk71vm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 14:30:48 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21PEUj3k47186354
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Feb 2022 14:30:45 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E49554C04A;
+        Fri, 25 Feb 2022 14:30:44 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9119D4C04E;
+        Fri, 25 Feb 2022 14:30:40 +0000 (GMT)
+Received: from li-e8dccbcc-2adc-11b2-a85c-bc1f33b9b810.ibm.com.com (unknown [9.43.81.177])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 25 Feb 2022 14:30:40 +0000 (GMT)
+From:   Kajol Jain <kjain@linux.ibm.com>
+To:     mpe@ellerman.id.au, linuxppc-dev@lists.ozlabs.org,
+        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
+        peterz@infradead.org, dan.j.williams@intel.com,
+        ira.weiny@intel.com, vishal.l.verma@intel.com
+Cc:     santosh@fossix.org, maddy@linux.ibm.com, rnsastry@linux.ibm.com,
+        aneesh.kumar@linux.ibm.com, atrajeev@linux.vnet.ibm.com,
+        vaibhav@linux.ibm.com, tglx@linutronix.de, kjain@linux.ibm.com
+Subject: [PATCH v7 1/4] drivers/nvdimm: Add nvdimm pmu structure
+Date:   Fri, 25 Feb 2022 20:00:21 +0530
+Message-Id: <20220225143024.47947-2-kjain@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220225143024.47947-1-kjain@linux.ibm.com>
+References: <20220225143024.47947-1-kjain@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhjeX0HvXbED65IM@casper.infradead.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: OFNU3knd6033km5CZl3fTTfa9rMDGFYX
+X-Proofpoint-GUID: OFNU3knd6033km5CZl3fTTfa9rMDGFYX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-25_08,2022-02-25_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ adultscore=0 bulkscore=0 phishscore=0 suspectscore=0 priorityscore=1501
+ impostorscore=0 clxscore=1015 mlxlogscore=904 spamscore=0 malwarescore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202250084
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 01:49:19PM +0000, Matthew Wilcox wrote:
-> On Fri, Feb 25, 2022 at 08:23:20AM -0500, Vivek Goyal wrote:
-> > What about local events. I am assuming you want to supress local events
-> > and only deliver remote events. Because having both local and remote
-> > events delivered at the same time will be just confusing at best.
-> 
-> This paragraph confuses me.  If I'm writing, for example, a file manager
-> and I want it to update its display automatically when another task alters
-> the contents of a directory, I don't care whether the modification was
-> done locally or remotely.
-> 
-> If I understand the SMB protocol correctly, it allows the client to take
-> out a lease on a directory and not send its modifications back to the
-> server until the client chooses to (or the server breaks the lease).
-> So you wouldn't get any remote notifications because the client hasn't
-> told the server.
+A structure is added called nvdimm_pmu, for performance
+stats reporting support of nvdimm devices. It can be used to add
+device pmu data such as pmu data structure for performance
+stats, nvdimm device pointer along with cpumask attributes.
 
-So we will get remote notifications when client flushes changes to server,
-IIUC. But in this case, given changes are happening on same client, local
-events will make sense because we will come to know about changes much
-sooner.
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Nageswara R Sastry <rnsastry@linux.ibm.com>
+Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
+---
+Changelog:
+v6 -> v7
+- Add Acked-by and Tested-by tag from Peter Zijlstra
+  and Nageswara R Sastry.
 
-But if another client was watching for changes too, it will not come to
-know about these events till first client flushes these changes to
-server.
+ include/linux/nd.h | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-Anyway, it is a good point. This is a good example of where we might want
-local events too. 
-
-This raises question how applications will handle the situation, if we allow
-both local and remote events, then there will be too many duplicate events.
-One event for local change and another will be sent by server when server
-notices the change.
-
-May be there needs to be a way to supress remote event if we already
-generated local event. But not sure how would one figure that out. If
-server can somehow not send remote events to the client which triggered
-the event (and send remote events to all other clients), may be that will
-help.
-
-Havid said that, it might not be easy for server to figure out which
-client triggered the event and not send remote event back to that client.
-
-May be we should allow both local and remote events. And probably event
-should carry additional property which says whether event was local or
-remote. And then let application deal with it?  I am not sure, just
-thinking loud. 
-
-Thanks
-Vivek
+diff --git a/include/linux/nd.h b/include/linux/nd.h
+index 8a8c63edb1b2..ad186e828263 100644
+--- a/include/linux/nd.h
++++ b/include/linux/nd.h
+@@ -8,6 +8,7 @@
+ #include <linux/ndctl.h>
+ #include <linux/device.h>
+ #include <linux/badblocks.h>
++#include <linux/perf_event.h>
+ 
+ enum nvdimm_event {
+ 	NVDIMM_REVALIDATE_POISON,
+@@ -23,6 +24,25 @@ enum nvdimm_claim_class {
+ 	NVDIMM_CCLASS_UNKNOWN,
+ };
+ 
++/**
++ * struct nvdimm_pmu - data structure for nvdimm perf driver
++ * @pmu: pmu data structure for nvdimm performance stats.
++ * @dev: nvdimm device pointer.
++ * @cpu: designated cpu for counter access.
++ * @node: node for cpu hotplug notifier link.
++ * @cpuhp_state: state for cpu hotplug notification.
++ * @arch_cpumask: cpumask to get designated cpu for counter access.
++ */
++struct nvdimm_pmu {
++	struct pmu pmu;
++	struct device *dev;
++	int cpu;
++	struct hlist_node node;
++	enum cpuhp_state cpuhp_state;
++	/* cpumask provided by arch/platform specific code */
++	struct cpumask arch_cpumask;
++};
++
+ struct nd_device_driver {
+ 	struct device_driver drv;
+ 	unsigned long type;
+-- 
+2.31.1
 
