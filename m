@@ -2,114 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98496C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 724EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237082AbiBYDj2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:39:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57300 "EHLO
+        id S237056AbiBYDj7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:39:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237045AbiBYDjY (ORCPT
+        with ESMTP id S235936AbiBYDj5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:39:24 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAF617B0D0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:38:53 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id y7so6078509oih.5
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:38:53 -0800 (PST)
+        Thu, 24 Feb 2022 22:39:57 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 509251F76B2
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:39:26 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id b64-20020a256743000000b0061e169a5f19so2005545ybc.11
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:39:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oJp8hP+U6of0fVJudV+JnYfYQm2OqbcYZL17Ud0j5hM=;
-        b=K14qvOADAvKamyct36KBBctciQ880Q/jd9swL7Wwln6RN3gLFMm+v2gtAuf9BGVPB4
-         WhCU6t9gKeInxiNFTAEkp5Lk37mjZEQ20ZNl+e6/BRMk5NN2119tSvlkrfL47iSHOQp2
-         g7KtWVz6LGOzmxM6Y9CYQtR6ef1D/l/Ni/YpDWLFZtPMMCd+TjIGy9Z51f+JWDURBXh3
-         lI8mokaP3KDuA+Dbv/2forWLn/1If7RLE7tl8EAuVP8qk+aNUgdwIC+MhN54BL0FisAg
-         a91LVNQC0DyaFqtIwZth1CHP0dHqX7DMnfzmIIDP7ZNXeQGKsDXtJOrl084h2gqaZ+U4
-         6cgQ==
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:cc;
+        bh=3z7umWzjiaBi0H0VxEKou4UGWFcI8zJgOh8cZtYt5r8=;
+        b=cSis1zFbDzg8HujAEb1ym/V6ME+YJ6BjUBqNYot/d81BO3h6D3Zk4WnTOTGc+6rl/a
+         A1zpsu/lBasqxVBWEud7ld822jEooEBgrJsZMHuRMEVpfetkVIKN1s3ZYYpUx9+5/prc
+         mBkto3DjqaO5JCwqXh801epJZthVVkZyzdjfKtgf6mptDewViPTKTLabmUOSYyPXrDQv
+         cRZxkoyy97EAVUdmXTOT7ZsGdSwEwW2Kj8uqeQJUPxPMBB2z1yhVoKxwAqNUN6Inq610
+         wbd175TAvAMgG+YXzuUlp1+rLhkDzzcYQgJ93AXxefT4SUK0W9EQew3+ipLub9HkmUPL
+         XFxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oJp8hP+U6of0fVJudV+JnYfYQm2OqbcYZL17Ud0j5hM=;
-        b=pB/3wxHmFHmSQ7SamARKNzFbl7DJZktpgp0MKHnSer3Yf9N1ke9DEqAC9lp+F+eD+X
-         NKLe10FA9qQpB6c3nvdo2N6T9SHsANpjLx+gF5Syr5+7ZmgLu/7ZXpIQ6feRk+Jls45Q
-         BAY89+6J2CniYouHdnvUqAsV3gOw7H3MonJ2Cnp3THiDTgGCF/hEBiOrBBNI2dDao+Cy
-         DvRNP8h0Ginw/lwcZF4K6Qmw9WRyMRMDdpG4Joc/B0FA6c8RtUWlu5Vq86/PcKbxixFQ
-         dUpeUEAHaLJaK11TPlMGBdxSmrxYIcPagAuMn8Sy+SnAnlCcWmkb4tdrwxnwDoXgTBc4
-         mj6A==
-X-Gm-Message-State: AOAM532IggiSxe5cwnxHiTIA+POrOooTk5bAOYDcQBVh67+cpHXvsfi9
-        Pc8r1k4jQVtx7FbTf+JPTOtgq6HvpopRsQ==
-X-Google-Smtp-Source: ABdhPJwBbQIj1/fURhNGdW7Jo1P6bxaKV4zdISwcXu6DRZDIkci/8FSsBPgQM6lvVcb0kVeEa+T/mw==
-X-Received: by 2002:aca:3e56:0:b0:2d4:c902:b851 with SMTP id l83-20020aca3e56000000b002d4c902b851mr627205oia.114.1645760332736;
-        Thu, 24 Feb 2022 19:38:52 -0800 (PST)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id fq14-20020a0568710b0e00b000d4492531a2sm809359oab.17.2022.02.24.19.38.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 19:38:52 -0800 (PST)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Wesley Cheng <wcheng@codeaurora.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] phy: qcom-snps: Add sc8280xp support
-Date:   Thu, 24 Feb 2022 19:40:49 -0800
-Message-Id: <20220225034049.2294207-2-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220225034049.2294207-1-bjorn.andersson@linaro.org>
-References: <20220225034049.2294207-1-bjorn.andersson@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:cc;
+        bh=3z7umWzjiaBi0H0VxEKou4UGWFcI8zJgOh8cZtYt5r8=;
+        b=xvjb0/f8oNaRYlmZ8aZYZfUt8QFD4DLLvfpwUgJe9wr9TbaUQIa27bbFuBypNAYlNh
+         SVZeq9iTSlC6jN7+m/LOpPx0xLQZNYmGL26uv54Cui2QYIKmv62mbzpMrFKh85K7h3m1
+         Uy/2ht13OjIt7/BYtCWQIvy5Cm2UgTzu5b1zHjy4Dg/Aii83XTT5QDDELrQPhChg2vmb
+         bDBBN3+t6cEEn3MCBLKJywtl2GnvIc3o5HlF8q5a2q7Tn/jjRbZLlvYHgPhurp4jlYQM
+         9X+Ee5nx77QFGqvHAJA/Aot7uaYfo/bRooyrodYAzWoim59fzrt6lIZCeJs5loUvWivn
+         A3/g==
+X-Gm-Message-State: AOAM531aMxY6PNOfrLsXGU5i4u6gyLvYlblD1r3T+cFwCHHmIA6e+YIv
+        97ZQKLVSUAjoVJPF/DMdmj5Tl9FiaRpuq3FLHw==
+X-Google-Smtp-Source: ABdhPJzpCeaHUbNSr0tCnAVkQAGHMc2xtowI3g9fyEbYLjuQ5ZyqNkyEST6Fzl5lL9PO8MaOgXM5S0SNbU3r/dG5Dg==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:3a50:90b2:e6a2:9060])
+ (user=kaleshsingh job=sendgmr) by 2002:a25:13c6:0:b0:61e:105e:d291 with SMTP
+ id 189-20020a2513c6000000b0061e105ed291mr5499552ybt.104.1645760365539; Thu,
+ 24 Feb 2022 19:39:25 -0800 (PST)
+Date:   Thu, 24 Feb 2022 19:34:46 -0800
+In-Reply-To: <20220225033548.1912117-1-kaleshsingh@google.com>
+Message-Id: <20220225033548.1912117-2-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220225033548.1912117-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
+Subject: [PATCH v4 1/8] KVM: arm64: Introduce hyp_alloc_private_va_range()
+From:   Kalesh Singh <kaleshsingh@google.com>
+Cc:     will@kernel.org, maz@kernel.org, qperret@google.com,
+        tabba@google.com, surenb@google.com, kernel-team@android.com,
+        Kalesh Singh <kaleshsingh@google.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>,
+        Andrew Walbran <qwandor@google.com>,
+        Andrew Scull <ascull@google.com>,
+        Zenghui Yu <yuzenghui@huawei.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Qualcomm sc8280xp platform comes with a 5nm femto USB PHY which, in
-contrast to previously seen platforms, has the SIDDQ bit in the COMMON0
-register default to high.
+hyp_alloc_private_va_range() can be used to reserve private VA ranges
+in the nVHE hypervisor. Also update  __create_hyp_private_mapping()
+to allow specifying an alignment for the private VA mapping.
 
-So make the driver match on the 5nm compatible and make sure to clear
-the SIDDQ bit on phy_init.
+These will be used to implement stack guard pages for KVM nVHE hypervisor
+(nVHE Hyp mode / not pKVM), in a subsequent patch in the series.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
 ---
- drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c | 5 +++++
- 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c b/drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c
-index 7e61202aa234..5d203784f75d 100644
---- a/drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c
-+++ b/drivers/phy/qualcomm/phy-qcom-snps-femto-v2.c
-@@ -32,6 +32,7 @@
- #define POR					BIT(1)
+Changes in v4:
+  - Handle null ptr in hyp_alloc_private_va_range() and replace
+    IS_ERR_OR_NULL checks in callers with IS_ERR checks, per Fuad
+  - Fix kernel-doc comments format, per Fuad
+
+Changes in v3:
+  - Handle null ptr in IS_ERR_OR_NULL checks, per Mark
+
+ arch/arm64/include/asm/kvm_mmu.h |  4 ++
+ arch/arm64/kvm/mmu.c             | 65 ++++++++++++++++++++------------
+ 2 files changed, 45 insertions(+), 24 deletions(-)
+
+diff --git a/arch/arm64/include/asm/kvm_mmu.h b/arch/arm64/include/asm/kvm_mmu.h
+index 81839e9a8a24..0b0c71302b92 100644
+--- a/arch/arm64/include/asm/kvm_mmu.h
++++ b/arch/arm64/include/asm/kvm_mmu.h
+@@ -153,6 +153,10 @@ static __always_inline unsigned long __kern_hyp_va(unsigned long v)
+ int kvm_share_hyp(void *from, void *to);
+ void kvm_unshare_hyp(void *from, void *to);
+ int create_hyp_mappings(void *from, void *to, enum kvm_pgtable_prot prot);
++unsigned long hyp_alloc_private_va_range(size_t size, size_t align);
++int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
++				size_t align, unsigned long *haddr,
++				enum kvm_pgtable_prot prot);
+ int create_hyp_io_mappings(phys_addr_t phys_addr, size_t size,
+ 			   void __iomem **kaddr,
+ 			   void __iomem **haddr);
+diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
+index bc2aba953299..a4868a6fa1c3 100644
+--- a/arch/arm64/kvm/mmu.c
++++ b/arch/arm64/kvm/mmu.c
+@@ -457,22 +457,17 @@ int create_hyp_mappings(void *from, void *to, enum kvm_pgtable_prot prot)
+ 	return 0;
+ }
  
- #define USB2_PHY_USB_PHY_HS_PHY_CTRL_COMMON0	(0x54)
-+#define SIDDQ					BIT(2)
- #define RETENABLEN				BIT(3)
- #define FSEL_MASK				GENMASK(6, 4)
- #define FSEL_DEFAULT				(0x3 << 4)
-@@ -233,6 +234,9 @@ static int qcom_snps_hsphy_init(struct phy *phy)
- 	qcom_snps_hsphy_write_mask(hsphy->base, USB2_PHY_USB_PHY_UTMI_CTRL0,
- 					SLEEPM, SLEEPM);
- 
-+	qcom_snps_hsphy_write_mask(hsphy->base, USB2_PHY_USB_PHY_HS_PHY_CTRL_COMMON0,
-+				   SIDDQ, 0);
+-static int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
+-					unsigned long *haddr,
+-					enum kvm_pgtable_prot prot)
 +
- 	qcom_snps_hsphy_write_mask(hsphy->base, USB2_PHY_USB_PHY_UTMI_CTRL5,
- 					POR, 0);
++/**
++ * hyp_alloc_private_va_range - Allocates a private VA range.
++ * @size:	The size of the VA range to reserve.
++ * @align:	The required alignment for the allocation.
++ *
++ * The private VA range is allocated below io_map_base.
++ */
++unsigned long hyp_alloc_private_va_range(size_t size, size_t align)
+ {
+ 	unsigned long base;
+-	int ret = 0;
+-
+-	if (!kvm_host_owns_hyp_mappings()) {
+-		base = kvm_call_hyp_nvhe(__pkvm_create_private_mapping,
+-					 phys_addr, size, prot);
+-		if (IS_ERR_OR_NULL((void *)base))
+-			return PTR_ERR((void *)base);
+-		*haddr = base;
+-
+-		return 0;
+-	}
  
-@@ -275,6 +279,7 @@ static const struct phy_ops qcom_snps_hsphy_gen_ops = {
+ 	mutex_lock(&kvm_hyp_pgd_mutex);
  
- static const struct of_device_id qcom_snps_hsphy_of_match_table[] = {
- 	{ .compatible	= "qcom,sm8150-usb-hs-phy", },
-+	{ .compatible	= "qcom,usb-snps-hs-5nm-phy", },
- 	{ .compatible	= "qcom,usb-snps-hs-7nm-phy", },
- 	{ .compatible	= "qcom,usb-snps-femto-v2-phy",	},
- 	{ }
+@@ -484,29 +479,51 @@ static int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
+ 	 *
+ 	 * The allocated size is always a multiple of PAGE_SIZE.
+ 	 */
+-	size = PAGE_ALIGN(size + offset_in_page(phys_addr));
+-	base = io_map_base - size;
++	base = io_map_base - PAGE_ALIGN(size);
++	base = ALIGN_DOWN(base, align);
+ 
+ 	/*
+ 	 * Verify that BIT(VA_BITS - 1) hasn't been flipped by
+ 	 * allocating the new area, as it would indicate we've
+ 	 * overflowed the idmap/IO address range.
+ 	 */
+-	if ((base ^ io_map_base) & BIT(VA_BITS - 1))
+-		ret = -ENOMEM;
++	if (!base || (base ^ io_map_base) & BIT(VA_BITS - 1))
++		base = (unsigned long)ERR_PTR(-ENOMEM);
+ 	else
+ 		io_map_base = base;
+ 
+ 	mutex_unlock(&kvm_hyp_pgd_mutex);
+ 
+-	if (ret)
+-		goto out;
++	return base;
++}
++
++int __create_hyp_private_mapping(phys_addr_t phys_addr, size_t size,
++				size_t align, unsigned long *haddr,
++				enum kvm_pgtable_prot prot)
++{
++	unsigned long addr;
++	int ret = 0;
++
++	if (!kvm_host_owns_hyp_mappings()) {
++		addr = kvm_call_hyp_nvhe(__pkvm_create_private_mapping,
++					 phys_addr, size, prot);
++		if (IS_ERR((void *)addr))
++			return PTR_ERR((void *)addr);
++		*haddr = addr;
++
++		return 0;
++	}
++
++	size += offset_in_page(phys_addr);
++	addr = hyp_alloc_private_va_range(size, align);
++	if (IS_ERR((void *)addr))
++		return PTR_ERR((void *)addr);
+ 
+-	ret = __create_hyp_mappings(base, size, phys_addr, prot);
++	ret = __create_hyp_mappings(addr, size, phys_addr, prot);
+ 	if (ret)
+ 		goto out;
+ 
+-	*haddr = base + offset_in_page(phys_addr);
++	*haddr = addr + offset_in_page(phys_addr);
+ out:
+ 	return ret;
+ }
+@@ -537,7 +554,7 @@ int create_hyp_io_mappings(phys_addr_t phys_addr, size_t size,
+ 		return 0;
+ 	}
+ 
+-	ret = __create_hyp_private_mapping(phys_addr, size,
++	ret = __create_hyp_private_mapping(phys_addr, size, PAGE_SIZE,
+ 					   &addr, PAGE_HYP_DEVICE);
+ 	if (ret) {
+ 		iounmap(*kaddr);
+@@ -564,7 +581,7 @@ int create_hyp_exec_mappings(phys_addr_t phys_addr, size_t size,
+ 
+ 	BUG_ON(is_kernel_in_hyp_mode());
+ 
+-	ret = __create_hyp_private_mapping(phys_addr, size,
++	ret = __create_hyp_private_mapping(phys_addr, size, PAGE_SIZE,
+ 					   &addr, PAGE_HYP_EXEC);
+ 	if (ret) {
+ 		*haddr = NULL;
 -- 
-2.33.1
+2.35.1.574.g5d30c73bfb-goog
 
