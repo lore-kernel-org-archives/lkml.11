@@ -2,125 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49320C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80224C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:17:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238042AbiBYHRV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 02:17:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42006 "EHLO
+        id S238049AbiBYHRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 02:17:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238034AbiBYHRS (ORCPT
+        with ESMTP id S232840AbiBYHRp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 02:17:18 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42AE1657F;
-        Thu, 24 Feb 2022 23:16:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645773400; x=1677309400;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Eha8UfFU5sTXgWjY6/4IUTMY/kkCOwxcj1l/44F5h+U=;
-  b=as9waMjut2vhMOAY3TXveAsWvwMzZkNvXC+CyIiUhA9mP8bYgYYtK8V1
-   AW9hAc3vLx2a8mSmVMK2VNPrF6/TfGdjO1Dj+S2fq6lKeHoY4vrAH85X0
-   IJiMqQxQ3bJyyWRY6qrzNoGZ7TB7KgHDaoanLZs7UEoejXmn2gzteitVw
-   U=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Feb 2022 23:16:39 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 23:16:39 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Thu, 24 Feb 2022 23:16:39 -0800
-Received: from [10.216.57.207] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Thu, 24 Feb
- 2022 23:16:35 -0800
-Message-ID: <b9205016-1f33-74fd-c314-c307412bfca3@quicinc.com>
-Date:   Fri, 25 Feb 2022 12:46:26 +0530
+        Fri, 25 Feb 2022 02:17:45 -0500
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE5F113D89;
+        Thu, 24 Feb 2022 23:17:12 -0800 (PST)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K4gzd0rRkzdZS2;
+        Fri, 25 Feb 2022 15:15:57 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Feb 2022 15:17:10 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 25 Feb
+ 2022 15:17:10 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>
+CC:     <herbert@gondor.apana.org.au>, <hkalra@marvell.com>
+Subject: [PATCH -next] crypto: octeontx2 - fix missing unlock
+Date:   Fri, 25 Feb 2022 15:27:24 +0800
+Message-ID: <20220225072724.82507-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH] ARM: dts: qcom: Add chosen node information for SDX65.
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     <agross@kernel.org>, <robh+dt@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1644574845-23248-1-git-send-email-quic_rohiagar@quicinc.com>
- <YhfgAL8z6rO+zU3w@builder.lan>
-From:   Rohit Agarwal <quic_rohiagar@quicinc.com>
-In-Reply-To: <YhfgAL8z6rO+zU3w@builder.lan>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add the missing unlock before return from error path.
 
-On 2/25/2022 1:14 AM, Bjorn Andersson wrote:
-> On Fri 11 Feb 04:20 CST 2022, Rohit Agarwal wrote:
->
->> Add chosen node in the base dtsi file of SDX65.
->>
-> While this happens to be the same on most boards, it is still a
-> board-specific decision which UART is the debug uart, or if there is one
-> at all...
->
-> So this property should remain in the dts.
->
-> Thanks,
-> Bjorn
+Fixes: 4363f3d3ce8f ("crypto: octeontx2 - add synchronization between mailbox accesses")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c | 4 +++-
+ drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-Without the chosen node in base dtsi, the device is not booting up.
-Can we have an empty chosen node in the base dtsi and the board-specific 
-details
-updated in the respective dts file. The device boots up with this.
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
+index 17a9dd20c8c3..a402ccfac557 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
+@@ -143,8 +143,10 @@ static void cptpf_flr_wq_handler(struct work_struct *work)
+ 	mutex_lock(&pf->lock);
+ 	req = otx2_mbox_alloc_msg_rsp(mbox, 0, sizeof(*req),
+ 				      sizeof(struct msg_rsp));
+-	if (!req)
++	if (!req) {
++		mutex_unlock(&pf->lock);
+ 		return;
++	}
+ 
+ 	req->sig = OTX2_MBOX_REQ_SIG;
+ 	req->id = MBOX_MSG_VF_FLR;
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c
+index fee758b86d29..dee0aa60b698 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_mbox.c
+@@ -20,8 +20,10 @@ static int forward_to_af(struct otx2_cptpf_dev *cptpf,
+ 
+ 	mutex_lock(&cptpf->lock);
+ 	msg = otx2_mbox_alloc_msg(&cptpf->afpf_mbox, 0, size);
+-	if (msg == NULL)
++	if (msg == NULL) {
++		mutex_unlock(&cptpf->lock);
+ 		return -ENOMEM;
++	}
+ 
+ 	memcpy((uint8_t *)msg + sizeof(struct mbox_msghdr),
+ 	       (uint8_t *)req + sizeof(struct mbox_msghdr), size);
+-- 
+2.25.1
 
-Thanks,
-Rohit
-
->> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
->> ---
->>   arch/arm/boot/dts/qcom-sdx65-mtp.dts | 4 ----
->>   arch/arm/boot/dts/qcom-sdx65.dtsi    | 4 ++++
->>   2 files changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/arch/arm/boot/dts/qcom-sdx65-mtp.dts b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
->> index 59457da..3a75c21 100644
->> --- a/arch/arm/boot/dts/qcom-sdx65-mtp.dts
->> +++ b/arch/arm/boot/dts/qcom-sdx65-mtp.dts
->> @@ -14,10 +14,6 @@
->>   	aliases {
->>   		serial0 = &blsp1_uart3;
->>   	};
->> -
->> -	chosen {
->> -		stdout-path = "serial0:115200n8";
->> -	};
->>   };
->>   
->>   &blsp1_uart3 {
->> diff --git a/arch/arm/boot/dts/qcom-sdx65.dtsi b/arch/arm/boot/dts/qcom-sdx65.dtsi
->> index 796641d..653df15 100644
->> --- a/arch/arm/boot/dts/qcom-sdx65.dtsi
->> +++ b/arch/arm/boot/dts/qcom-sdx65.dtsi
->> @@ -17,6 +17,10 @@
->>   	qcom,msm-id = <458 0x10000>, <483 0x10000>, <509 0x10000>;
->>   	interrupt-parent = <&intc>;
->>   
->> +	chosen {
->> +		stdout-path = "serial0:115200n8";
->> +	};
->> +
->>   	memory {
->>   		device_type = "memory";
->>   		reg = <0 0>;
->> -- 
->> 2.7.4
->>
