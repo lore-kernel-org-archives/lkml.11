@@ -2,65 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:37:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241518AbiBYNhf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:37:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
+        id S241522AbiBYNhm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:37:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241499AbiBYNhZ (ORCPT
+        with ESMTP id S241532AbiBYNhj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:37:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43730A0BC3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:36:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E983AB830B9
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 13:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE7DEC340E7;
-        Fri, 25 Feb 2022 13:36:48 +0000 (UTC)
-Date:   Fri, 25 Feb 2022 08:36:47 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        joao@overdrivepizza.com, hjl.tools@gmail.com, jpoimboe@redhat.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz,
-        alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
-Message-ID: <20220225083647.12ceb54b@gandalf.local.home>
-In-Reply-To: <20220225192008.d7a4f2b5558fe43c95909777@kernel.org>
-References: <20220224145138.952963315@infradead.org>
-        <20220224151322.714815604@infradead.org>
-        <20220225005520.c69be2fbdbd28028361792d9@kernel.org>
-        <20220224105847.5c899324@gandalf.local.home>
-        <20220225103449.6084e5314273556f35107cd9@kernel.org>
-        <20220224211919.0612a3f6@rorschach.local.home>
-        <20220225192008.d7a4f2b5558fe43c95909777@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 25 Feb 2022 08:37:39 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59CD11B5CC
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:37:04 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id m13-20020a7bca4d000000b00380e379bae2so1692038wml.3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:37:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LLpFgz78t1oyzWMh4Y4sBh571G9i6nh/jXJ+jWwza7k=;
+        b=qnSHncmvDNQSyhYwHGMPduQc2VHvZllkFXUi8WCqlPYsqHsGyxR7diTmu96tNyuXTX
+         9x+bEH6fjmLd7nsN9gI993CY2H8nLTNdPb6gMW7NirEFAE7nBZBJprOTc39xjriFm4mu
+         XAPm0YAplY9IcafACSXZHkVYKY+pUxToW8/h5YP2QbePSEZq3kUOXiy1rAIDTXxEzBMp
+         WVabxd+aXfZqvKx1VEX6pl3lsbfhk/TpDsJEJJBqfsdViqm/75f5hWJVLMJQeblI7pN8
+         3oMkXBdzlipXLk6CcWSaY4eDW0EGo9il0p7ext2xodaVi7ogy4RUR9CqDTV6Cbbow4zs
+         BkTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LLpFgz78t1oyzWMh4Y4sBh571G9i6nh/jXJ+jWwza7k=;
+        b=36MnRPueDnBwjNTYfmMorvSK7h++p9Ew/skWxDv7gftWxwQuOOlL+XUCdQbVUNjcNy
+         yom5yTRiUXZnM1AebWQnTvUMDZI6TOKhsENra5Z4Mex+16phgWAhXztw994dMaoo8VCk
+         HVhOTWXQO8DMM0b/1HZAFGN5wRRuAvgIAx1+8ge6miL+K/i3fWDQj1f2nneAAW9wNsOR
+         +pJayQcoQsWqBrW0WjmELra04VarmEbJizjTJf9U+0C22Y7XQDhUu0IuK2jFcWhpoq2K
+         uWg9BmP1v242xM/3HjMzkQvgcq5T696zmdoZi+G8ikA+0tIT4XVJ6o0OQ78TW/L5XTgw
+         UkzQ==
+X-Gm-Message-State: AOAM531cfi3RhL98FMHkG2NtBFC59Qx8RWW9GkOFcG4iFP2r/ZEqrZBJ
+        G1IEQObFw0/WEkpxyu1ZpysCzQ==
+X-Google-Smtp-Source: ABdhPJzlbmW009bfZhIOcWbIfq2JDYEC5ZLuIC33VFPLGDBy/EY9ndE8Zc9MvpIUd5BXrDsqFTyknA==
+X-Received: by 2002:a05:600c:3d06:b0:37b:f831:2a98 with SMTP id bh6-20020a05600c3d0600b0037bf8312a98mr2759914wmb.36.1645796223402;
+        Fri, 25 Feb 2022 05:37:03 -0800 (PST)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id u14-20020adfed4e000000b001e3323611e5sm2406589wro.26.2022.02.25.05.37.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Feb 2022 05:37:02 -0800 (PST)
+Message-ID: <861cd4c1-43a9-8175-7ad1-e7e51f5781b4@linaro.org>
+Date:   Fri, 25 Feb 2022 13:37:01 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] soundwire: qcom: remove redundant wait for completion
+Content-Language: en-US
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
+        bgoswami@codeaurora.org, perex@perex.cz, tiwai@suse.com,
+        rohitkr@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        judyhsiao@chromium.org, koul@kernel.org,
+        yung-chuan.liao@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, sanyog.r.kale@intel.com
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <1645795667-20176-1-git-send-email-quic_srivasam@quicinc.com>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <1645795667-20176-1-git-send-email-quic_srivasam@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Feb 2022 19:20:08 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-> > No. It only acts like ftrace_location_range(sym, sym_end) if the passed
-> > in argument is the ip of the function (kallsyms returns offset = 0)  
+
+On 25/02/2022 13:27, Srinivasa Rao Mandadapu wrote:
+> Remove wait_for_completion_timeout from soundwire probe
+> as it seems unnecessary and device enumeration is anyway not
+> happening here.
+
+May be some details on the side effects of this wait would be good to 
+add in the log.
+
+> Also, as device enumeration event is dependent on wcd938x probe to be
+> completed, its of no use waiting here.
+
+fix tag is missing
+
+Fixes: 06dd96738d618 ("soundwire: qcom: wait for enumeration to be 
+complete in probe")
+
 > 
-> Got it. So now ftrace_location() will return the ftrace address
-> when the ip == func or ip == mcount-call.
-
-Exactly! :-)
-
-Are you OK with that?
-
--- Steve
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>   drivers/soundwire/qcom.c | 2 --
+>   1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+> index 5481341..9a32a24 100644
+> --- a/drivers/soundwire/qcom.c
+> +++ b/drivers/soundwire/qcom.c
+> @@ -1309,8 +1309,6 @@ static int qcom_swrm_probe(struct platform_device *pdev)
+>   	}
+>   
+>   	qcom_swrm_init(ctrl);
+> -	wait_for_completion_timeout(&ctrl->enumeration,
+> -				    msecs_to_jiffies(TIMEOUT_MS));
+>   	ret = qcom_swrm_register_dais(ctrl);
+>   	if (ret)
+>   		goto err_master_add;
