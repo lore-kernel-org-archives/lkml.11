@@ -2,486 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1633BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5940C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:19:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239451AbiBYKTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 05:19:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
+        id S237751AbiBYKUZ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 05:20:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239406AbiBYKTC (ORCPT
+        with ESMTP id S229531AbiBYKUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 05:19:02 -0500
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA171AF8C7;
-        Fri, 25 Feb 2022 02:18:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=rvNej+1MR8UXS8QxtWJKqhpFwj9eEA3cqGVGT4IdCYg=; b=fa3MoMscbNwTooHEOBMXWvbdFp
-        ewZ7l1Uc9oF/G2jZHQ/1GnO8A7ONFLtK/+DoW69WQs6QHfJakvigGpr5GkPTy4mcpEAIAK6mxo/yB
-        Ug9Wl7Eok9aePPxgOs0XyqdR3Q2mLke3Sx7CTTKQQZTjRHC2kM+vPg9+OPndot4ynUjY=;
-Received: from p200300daa7204f00f847964d075b2b3d.dip0.t-ipconnect.de ([2003:da:a720:4f00:f847:964d:75b:2b3d] helo=localhost.localdomain)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nNXg4-0007J1-B6; Fri, 25 Feb 2022 11:18:20 +0100
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 09/11] net: ethernet: mtk_eth_soc: rework hardware flow table management
-Date:   Fri, 25 Feb 2022 11:18:08 +0100
-Message-Id: <20220225101811.72103-10-nbd@nbd.name>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220225101811.72103-1-nbd@nbd.name>
-References: <20220225101811.72103-1-nbd@nbd.name>
+        Fri, 25 Feb 2022 05:20:22 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2E01C232D;
+        Fri, 25 Feb 2022 02:19:49 -0800 (PST)
+Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K4ly61VnRz67nLn;
+        Fri, 25 Feb 2022 18:14:54 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Feb 2022 11:19:46 +0100
+Received: from localhost (10.47.69.56) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 25 Feb
+ 2022 10:19:45 +0000
+Date:   Fri, 25 Feb 2022 10:19:42 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Cixi Geng <gengcixi@gmail.com>
+CC:     Baolin Wang <baolin.wang7@gmail.com>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>, <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        "=?UTF-8?Q?=E6=9C=B1=E7=8E=89=E6=98=8E?= (Yuming Zhu/11457) " 
+        <yuming.zhu1@unisoc.com>, <linux-iio@vger.kernel.org>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/7] iio: adc: sc27xx: structure adjuststment and
+ optimization
+Message-ID: <20220225101942.00002f43@Huawei.com>
+In-Reply-To: <CAF12kFtV_dpHukd2v0UwSoAFsDbNXZLPSnSSK9dqq7hnoJh9UQ@mail.gmail.com>
+References: <20220106125947.139523-1-gengcixi@gmail.com>
+        <20220106125947.139523-4-gengcixi@gmail.com>
+        <CADBw62pBCdrbRspTV9Yck4DP8DE=ECGmEtD74NOtm1YRT3DM8w@mail.gmail.com>
+        <CAF12kFu6O-gfiqp4j24zxC_GqCwJ2Q5KGYYaCtnagmUFB_bsVg@mail.gmail.com>
+        <CADBw62rSdWN-L8HbnyMrUNp=x0pDdKR6MyKO4yfu00MnrN4L-g@mail.gmail.com>
+        <CAF12kFvUfykKfeRAJACFRk31pmEBQEPw402x0JN4i1uv0EK1zg@mail.gmail.com>
+        <CADBw62pmtbzr78c9J20cFbNRuTrntGg_E8TH_g=LciCVGYrYqQ@mail.gmail.com>
+        <CAF12kFtV_dpHukd2v0UwSoAFsDbNXZLPSnSSK9dqq7hnoJh9UQ@mail.gmail.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.47.69.56]
+X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The hardware was designed to handle flow detection and creation of flow entries
-by itself, relying on the software primarily for filling in egress routing
-information.
-When there is a hash collision between multiple flows, this allows the hardware
-to maintain the entry for the most active flow.
-Additionally, the hardware only keeps offloading active for entries with at
-least 30 packets per second.
+On Wed, 23 Feb 2022 20:46:08 +0800
+Cixi Geng <gengcixi@gmail.com> wrote:
 
-With this rework, the code no longer creates a hardware entries directly.
-Instead, the hardware entry is only created when the PPE reports a matching
-unbound flow with the minimum target rate.
-In order to reduce CPU overhead, looking for flows belonging to a hash entry
-is rate limited to once every 100ms.
+> Baolin Wang <baolin.wang7@gmail.com> 于2022年2月10日周四 16:07写道：
+> >
+> > On Mon, Jan 24, 2022 at 4:07 PM Cixi Geng <gengcixi@gmail.com> wrote:  
+> > >
+> > > Baolin Wang <baolin.wang7@gmail.com> 于2022年1月17日周一 14:15写道：  
+> > > >
+> > > > On Thu, Jan 13, 2022 at 9:54 AM Cixi Geng <gengcixi@gmail.com> wrote:  
+> > > > >
+> > > > > Baolin Wang <baolin.wang7@gmail.com> 于2022年1月7日周五 15:03写道：  
+> > > > > >
+> > > > > > On Thu, Jan 6, 2022 at 9:00 PM Cixi Geng <gengcixi@gmail.com> wrote:  
+> > > > > > >
+> > > > > > > From: Cixi Geng <cixi.geng1@unisoc.com>
+> > > > > > >
+> > > > > > > Introduce one variant device data structure to be compatible
+> > > > > > > with SC2731 PMIC since it has different scale and ratio calculation
+> > > > > > > and so on.
+> > > > > > >
+> > > > > > > Signed-off-by: Yuming Zhu <yuming.zhu1@unisoc.com>
+> > > > > > > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> > > > > > > ---
+> > > > > > >  drivers/iio/adc/sc27xx_adc.c | 94 ++++++++++++++++++++++++++++++------
+> > > > > > >  1 file changed, 79 insertions(+), 15 deletions(-)
+> > > > > > >
+> > > > > > > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+> > > > > > > index aee076c8e2b1..d2712e54ee79 100644
+> > > > > > > --- a/drivers/iio/adc/sc27xx_adc.c
+> > > > > > > +++ b/drivers/iio/adc/sc27xx_adc.c
+> > > > > > > @@ -12,9 +12,9 @@
+> > > > > > >  #include <linux/slab.h>
+> > > > > > >
+> > > > > > >  /* PMIC global registers definition */
+> > > > > > > -#define SC27XX_MODULE_EN               0xc08
+> > > > > > > +#define SC2731_MODULE_EN               0xc08
+> > > > > > >  #define SC27XX_MODULE_ADC_EN           BIT(5)
+> > > > > > > -#define SC27XX_ARM_CLK_EN              0xc10
+> > > > > > > +#define SC2731_ARM_CLK_EN              0xc10
+> > > > > > >  #define SC27XX_CLK_ADC_EN              BIT(5)
+> > > > > > >  #define SC27XX_CLK_ADC_CLK_EN          BIT(6)
+> > > > > > >
+> > > > > > > @@ -78,6 +78,23 @@ struct sc27xx_adc_data {
+> > > > > > >         int channel_scale[SC27XX_ADC_CHANNEL_MAX];
+> > > > > > >         u32 base;
+> > > > > > >         int irq;
+> > > > > > > +       const struct sc27xx_adc_variant_data *var_data;
+> > > > > > > +};
+> > > > > > > +
+> > > > > > > +/*
+> > > > > > > + * Since different PMICs of SC27xx series can have different
+> > > > > > > + * address and ratio, we should save ratio config and base
+> > > > > > > + * in the device data structure.
+> > > > > > > + */
+> > > > > > > +struct sc27xx_adc_variant_data {
+> > > > > > > +       u32 module_en;
+> > > > > > > +       u32 clk_en;
+> > > > > > > +       u32 scale_shift;
+> > > > > > > +       u32 scale_mask;
+> > > > > > > +       const struct sc27xx_adc_linear_graph *bscale_cal;
+> > > > > > > +       const struct sc27xx_adc_linear_graph *sscale_cal;
+> > > > > > > +       void (*init_scale)(struct sc27xx_adc_data *data);
+> > > > > > > +       int (*get_ratio)(int channel, int scale);
+> > > > > > >  };
+> > > > > > >
+> > > > > > >  struct sc27xx_adc_linear_graph {
+> > > > > > > @@ -103,6 +120,16 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
+> > > > > > >         100, 341,
+> > > > > > >  };
+> > > > > > >
+> > > > > > > +static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
+> > > > > > > +       4200, 850,
+> > > > > > > +       3600, 728,
+> > > > > > > +};
+> > > > > > > +
+> > > > > > > +static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
+> > > > > > > +       1000, 838,
+> > > > > > > +       100, 84,
+> > > > > > > +};  
+> > > > > >
+> > > > > > The original big_scale_graph_calib and small_scale_graph_calib are for
+> > > > > > SC2731 PMIC, why add new structure definition for SC2731?
+> > > > > >  
+> > > > > > > +
+> > > > > > >  static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
+> > > > > > >         4200, 856,
+> > > > > > >         3600, 733,
+> > > > > > > @@ -130,11 +157,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
+> > > > > > >         size_t len;
+> > > > > > >
+> > > > > > >         if (big_scale) {
+> > > > > > > -               calib_graph = &big_scale_graph_calib;
+> > > > > > > +               calib_graph = data->var_data->bscale_cal;
+> > > > > > >                 graph = &big_scale_graph;
+> > > > > > >                 cell_name = "big_scale_calib";
+> > > > > > >         } else {
+> > > > > > > -               calib_graph = &small_scale_graph_calib;
+> > > > > > > +               calib_graph = data->var_data->sscale_cal;
+> > > > > > >                 graph = &small_scale_graph;
+> > > > > > >                 cell_name = "small_scale_calib";
+> > > > > > >         }
+> > > > > > > @@ -160,7 +187,7 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
+> > > > > > >         return 0;
+> > > > > > >  }
+> > > > > > >
+> > > > > > > -static int sc27xx_adc_get_ratio(int channel, int scale)
+> > > > > > > +static int sc2731_adc_get_ratio(int channel, int scale)
+> > > > > > >  {
+> > > > > > >         switch (channel) {
+> > > > > > >         case 1:
+> > > > > > > @@ -185,6 +212,21 @@ static int sc27xx_adc_get_ratio(int channel, int scale)
+> > > > > > >         return SC27XX_VOLT_RATIO(1, 1);
+> > > > > > >  }
+> > > > > > >
+> > > > > > > +/*
+> > > > > > > + * According to the datasheet set specific value on some channel.
+> > > > > > > + */
+> > > > > > > +static void sc2731_adc_scale_init(struct sc27xx_adc_data *data)
+> > > > > > > +{
+> > > > > > > +       int i;
+> > > > > > > +
+> > > > > > > +       for (i = 0; i < SC27XX_ADC_CHANNEL_MAX; i++) {
+> > > > > > > +               if (i == 5)
+> > > > > > > +                       data->channel_scale[i] = 1;
+> > > > > > > +               else
+> > > > > > > +                       data->channel_scale[i] = 0;
+> > > > > > > +       }
+> > > > > > > +}  
+> > > > > >
+> > > > > > This is unnecessary I think, please see sc27xx_adc_write_raw() that
+> > > > > > can set the channel scale.  
+> > > > > Did you mean that all the PMIC's scale_init function should put into
+> > > > > the sc27xx_adc_write_raw?  
+> > > >
+> > > > No.
+> > > >  
+> > > > > but the scale_init is all different by each PMIC, if implemented in
+> > > > > the write_raw, will add a lot of
+> > > > > if or switch_case branch  
+> > > >
+> > > > What I mean is we should follow the original method to set the channel
+> > > > scale by iio_info. Please also refer to other drivers how ot handle
+> > > > the channel scale.  
+> > > Hi Baolin,  I understand the adc_write_raw() function is the method to set
+> > > channal scale for the userspace, we can change the channel scale by write
+> > > a value on a user code. did i understand right?
+> > > out  scale_init is to set scale value when the driver probe stage, and I also
+> > > did not found other adc driver use the adc_write_raw() during the driver
+> > >  initialization phase.  
+> >
+> > Hi Jonathan,
+> >
+> > How do you think about the method in this patch to set the channel
+> > scale? Thanks.
+> >  
+> Hi Jonathan,
+> Could you have a loot at this patch ,and give some advice about the
+> method to set the channel scale? Thanks very much.
 
-This rework is also used as preparation for emulating bridge offload by
-managing L4 offload entries on demand.
+Hi, thanks for poking me on this - I'd missed the question buried deep in the thread!
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c   |  10 +-
- drivers/net/ethernet/mediatek/mtk_ppe.c       | 134 ++++++++++++++++--
- drivers/net/ethernet/mediatek/mtk_ppe.h       |  38 ++++-
- .../net/ethernet/mediatek/mtk_ppe_offload.c   |  42 ++----
- 4 files changed, 170 insertions(+), 54 deletions(-)
+Anyhow, I don't quite follow the discussion but think it could be focused
+on one of 2 questions...
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 5a2f3cb26e66..209d00f56f62 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -21,6 +21,7 @@
- #include <linux/pinctrl/devinfo.h>
- #include <linux/phylink.h>
- #include <linux/jhash.h>
-+#include <linux/bitfield.h>
- #include <net/dsa.h>
- 
- #include "mtk_eth_soc.h"
-@@ -1239,7 +1240,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 		struct net_device *netdev;
- 		unsigned int pktlen;
- 		dma_addr_t dma_addr;
--		u32 hash;
-+		u32 hash, reason;
- 		int mac;
- 
- 		ring = mtk_get_rx_ring(eth);
-@@ -1315,6 +1316,11 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			skb_set_hash(skb, hash, PKT_HASH_TYPE_L4);
- 		}
- 
-+		reason = FIELD_GET(MTK_RXD4_PPE_CPU_REASON, trxd.rxd4);
-+		if (reason == MTK_PPE_CPU_REASON_HIT_UNBIND_RATE_REACHED)
-+			mtk_ppe_check_skb(eth->ppe, skb,
-+					  trxd.rxd4 & MTK_RXD4_FOE_ENTRY);
-+
- 		if (netdev->features & NETIF_F_HW_VLAN_CTAG_RX &&
- 		    (trxd.rxd2 & RX_DMA_VTAG))
- 			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
-@@ -3262,7 +3268,7 @@ static int mtk_probe(struct platform_device *pdev)
- 	}
- 
- 	if (eth->soc->offload_version) {
--		eth->ppe = mtk_ppe_init(eth->dev, eth->base + MTK_ETH_PPE_BASE, 2);
-+		eth->ppe = mtk_ppe_init(eth, eth->base + MTK_ETH_PPE_BASE, 2);
- 		if (!eth->ppe) {
- 			err = -ENOMEM;
- 			goto err_free_dev;
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
-index c56518272729..a7fe33bbde63 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
-@@ -6,9 +6,12 @@
- #include <linux/iopoll.h>
- #include <linux/etherdevice.h>
- #include <linux/platform_device.h>
-+#include "mtk_eth_soc.h"
- #include "mtk_ppe.h"
- #include "mtk_ppe_regs.h"
- 
-+static DEFINE_SPINLOCK(ppe_lock);
-+
- static void ppe_w32(struct mtk_ppe *ppe, u32 reg, u32 val)
- {
- 	writel(val, ppe->base + reg);
-@@ -41,6 +44,11 @@ static u32 ppe_clear(struct mtk_ppe *ppe, u32 reg, u32 val)
- 	return ppe_m32(ppe, reg, val, 0);
- }
- 
-+static u32 mtk_eth_timestamp(struct mtk_eth *eth)
-+{
-+	return mtk_r32(eth, 0x0010) & MTK_FOE_IB1_BIND_TIMESTAMP;
-+}
-+
- static int mtk_ppe_wait_busy(struct mtk_ppe *ppe)
- {
- 	int ret;
-@@ -353,26 +361,59 @@ static inline bool mtk_foe_entry_usable(struct mtk_foe_entry *entry)
- 	       FIELD_GET(MTK_FOE_IB1_STATE, entry->ib1) != MTK_FOE_STATE_BIND;
- }
- 
--int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
--			 u16 timestamp)
-+static bool
-+mtk_flow_entry_match(struct mtk_flow_entry *entry, struct mtk_foe_entry *data)
-+{
-+	int type, len;
-+
-+	if ((data->ib1 ^ entry->data.ib1) & MTK_FOE_IB1_UDP)
-+		return false;
-+
-+	type = FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, entry->data.ib1);
-+	if (type > MTK_PPE_PKT_TYPE_IPV4_DSLITE)
-+		len = offsetof(struct mtk_foe_entry, ipv6._rsv);
-+	else
-+		len = offsetof(struct mtk_foe_entry, ipv4.ib2);
-+
-+	return !memcmp(&entry->data.data, &data->data, len - 4);
-+}
-+
-+static void
-+mtk_flow_entry_update(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
- {
- 	struct mtk_foe_entry *hwe;
--	u32 hash;
-+	struct mtk_foe_entry foe;
-+
-+	spin_lock_bh(&ppe_lock);
-+	if (entry->hash == 0xffff)
-+		goto out;
- 
-+	hwe = &ppe->foe_table[entry->hash];
-+	memcpy(&foe, hwe, sizeof(foe));
-+	if (!mtk_flow_entry_match(entry, &foe)) {
-+		entry->hash = 0xffff;
-+		goto out;
-+	}
-+
-+	entry->data.ib1 = foe.ib1;
-+
-+out:
-+	spin_unlock_bh(&ppe_lock);
-+}
-+
-+static void
-+__mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
-+		       u16 hash)
-+{
-+	struct mtk_foe_entry *hwe;
-+	u16 timestamp;
-+
-+	timestamp = mtk_eth_timestamp(ppe->eth);
- 	timestamp &= MTK_FOE_IB1_BIND_TIMESTAMP;
- 	entry->ib1 &= ~MTK_FOE_IB1_BIND_TIMESTAMP;
- 	entry->ib1 |= FIELD_PREP(MTK_FOE_IB1_BIND_TIMESTAMP, timestamp);
- 
--	hash = mtk_ppe_hash_entry(entry);
- 	hwe = &ppe->foe_table[hash];
--	if (!mtk_foe_entry_usable(hwe)) {
--		hwe++;
--		hash++;
--
--		if (!mtk_foe_entry_usable(hwe))
--			return -ENOSPC;
--	}
--
- 	memcpy(&hwe->data, &entry->data, sizeof(hwe->data));
- 	wmb();
- 	hwe->ib1 = entry->ib1;
-@@ -380,13 +421,77 @@ int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
- 	dma_wmb();
- 
- 	mtk_ppe_cache_clear(ppe);
-+}
- 
--	return hash;
-+void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
-+{
-+	spin_lock_bh(&ppe_lock);
-+	hlist_del_init(&entry->list);
-+	if (entry->hash != 0xffff) {
-+		ppe->foe_table[entry->hash].ib1 &= ~MTK_FOE_IB1_STATE;
-+		ppe->foe_table[entry->hash].ib1 |= FIELD_PREP(MTK_FOE_IB1_STATE,
-+							      MTK_FOE_STATE_BIND);
-+		dma_wmb();
-+	}
-+	entry->hash = 0xffff;
-+	spin_unlock_bh(&ppe_lock);
-+}
-+
-+int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
-+{
-+	u32 hash = mtk_ppe_hash_entry(&entry->data);
-+
-+	entry->hash = 0xffff;
-+	spin_lock_bh(&ppe_lock);
-+	hlist_add_head(&entry->list, &ppe->foe_flow[hash / 2]);
-+	spin_unlock_bh(&ppe_lock);
-+
-+	return 0;
-+}
-+
-+void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash)
-+{
-+	struct hlist_head *head = &ppe->foe_flow[hash / 2];
-+	struct mtk_flow_entry *entry;
-+	struct mtk_foe_entry *hwe = &ppe->foe_table[hash];
-+	bool found = false;
-+
-+	if (hlist_empty(head))
-+		return;
-+
-+	spin_lock_bh(&ppe_lock);
-+	hlist_for_each_entry(entry, head, list) {
-+		if (found || !mtk_flow_entry_match(entry, hwe)) {
-+			if (entry->hash != 0xffff)
-+				entry->hash = 0xffff;
-+			continue;
-+		}
-+
-+		entry->hash = hash;
-+		__mtk_foe_entry_commit(ppe, &entry->data, hash);
-+		found = true;
-+	}
-+	spin_unlock_bh(&ppe_lock);
-+}
-+
-+int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry)
-+{
-+	u16 now = mtk_eth_timestamp(ppe->eth) & MTK_FOE_IB1_BIND_TIMESTAMP;
-+	u16 timestamp;
-+
-+	mtk_flow_entry_update(ppe, entry);
-+	timestamp = entry->data.ib1 & MTK_FOE_IB1_BIND_TIMESTAMP;
-+
-+	if (timestamp > now)
-+		return MTK_FOE_IB1_BIND_TIMESTAMP + 1 - timestamp + now;
-+	else
-+		return now - timestamp;
- }
- 
--struct mtk_ppe *mtk_ppe_init(struct device *dev, void __iomem *base,
-+struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base,
- 		 int version)
- {
-+	struct device *dev = eth->dev;
- 	struct mtk_foe_entry *foe;
- 	struct mtk_ppe *ppe;
- 
-@@ -398,6 +503,7 @@ struct mtk_ppe *mtk_ppe_init(struct device *dev, void __iomem *base,
- 	 * not coherent.
- 	 */
- 	ppe->base = base;
-+	ppe->eth = eth;
- 	ppe->dev = dev;
- 	ppe->version = version;
- 
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.h b/drivers/net/ethernet/mediatek/mtk_ppe.h
-index 190d2560ac86..217b44bed8b6 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe.h
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe.h
-@@ -235,7 +235,17 @@ enum {
- 	MTK_PPE_CPU_REASON_INVALID			= 0x1f,
- };
- 
-+struct mtk_flow_entry {
-+	struct rhash_head node;
-+	struct hlist_node list;
-+	unsigned long cookie;
-+	struct mtk_foe_entry data;
-+	u16 hash;
-+	s8 wed_index;
-+};
-+
- struct mtk_ppe {
-+	struct mtk_eth *eth;
- 	struct device *dev;
- 	void __iomem *base;
- 	int version;
-@@ -243,18 +253,33 @@ struct mtk_ppe {
- 	struct mtk_foe_entry *foe_table;
- 	dma_addr_t foe_phys;
- 
-+	u16 foe_check_time[MTK_PPE_ENTRIES];
-+	struct hlist_head foe_flow[MTK_PPE_ENTRIES / 2];
-+
- 	void *acct_table;
- };
- 
--struct mtk_ppe *mtk_ppe_init(struct device *dev, void __iomem *base, int version);
-+struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int version);
- int mtk_ppe_start(struct mtk_ppe *ppe);
- int mtk_ppe_stop(struct mtk_ppe *ppe);
- 
-+void __mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash);
-+
- static inline void
--mtk_foe_entry_clear(struct mtk_ppe *ppe, u16 hash)
-+mtk_ppe_check_skb(struct mtk_ppe *ppe, struct sk_buff *skb, u16 hash)
- {
--	ppe->foe_table[hash].ib1 = 0;
--	dma_wmb();
-+	u16 now, diff;
-+
-+	if (!ppe)
-+		return;
-+
-+	now = (u16)jiffies;
-+	diff = now - ppe->foe_check_time[hash];
-+	if (diff < HZ / 10)
-+		return;
-+
-+	ppe->foe_check_time[hash] = now;
-+	__mtk_ppe_check_skb(ppe, skb, hash);
- }
- 
- static inline int
-@@ -282,8 +307,9 @@ int mtk_foe_entry_set_vlan(struct mtk_foe_entry *entry, int vid);
- int mtk_foe_entry_set_pppoe(struct mtk_foe_entry *entry, int sid);
- int mtk_foe_entry_set_wdma(struct mtk_foe_entry *entry, int wdma_idx, int txq,
- 			   int bss, int wcid);
--int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_foe_entry *entry,
--			 u16 timestamp);
-+int mtk_foe_entry_commit(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
-+void mtk_foe_entry_clear(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
-+int mtk_foe_entry_idle_time(struct mtk_ppe *ppe, struct mtk_flow_entry *entry);
- int mtk_ppe_debugfs_init(struct mtk_ppe *ppe);
- 
- #endif
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-index 76a94ec85232..378685fe92b6 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-@@ -42,13 +42,6 @@ struct mtk_flow_data {
- 	} pppoe;
- };
- 
--struct mtk_flow_entry {
--	struct rhash_head node;
--	unsigned long cookie;
--	u16 hash;
--	s8 wed_index;
--};
--
- static const struct rhashtable_params mtk_flow_ht_params = {
- 	.head_offset = offsetof(struct mtk_flow_entry, node),
- 	.key_offset = offsetof(struct mtk_flow_entry, cookie),
-@@ -56,12 +49,6 @@ static const struct rhashtable_params mtk_flow_ht_params = {
- 	.automatic_shrinking = true,
- };
- 
--static u32
--mtk_eth_timestamp(struct mtk_eth *eth)
--{
--	return mtk_r32(eth, 0x0010) & MTK_FOE_IB1_BIND_TIMESTAMP;
--}
--
- static int
- mtk_flow_set_ipv4_addr(struct mtk_foe_entry *foe, struct mtk_flow_data *data,
- 		       bool egress)
-@@ -237,10 +224,8 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
- 	int offload_type = 0;
- 	int wed_index = -1;
- 	u16 addr_type = 0;
--	u32 timestamp;
- 	u8 l4proto = 0;
- 	int err = 0;
--	int hash;
- 	int i;
- 
- 	if (rhashtable_lookup(&eth->flow_table, &f->cookie, mtk_flow_ht_params))
-@@ -410,23 +395,21 @@ mtk_flow_offload_replace(struct mtk_eth *eth, struct flow_cls_offload *f)
- 		return -ENOMEM;
- 
- 	entry->cookie = f->cookie;
--	timestamp = mtk_eth_timestamp(eth);
--	hash = mtk_foe_entry_commit(eth->ppe, &foe, timestamp);
--	if (hash < 0) {
--		err = hash;
-+	memcpy(&entry->data, &foe, sizeof(entry->data));
-+	entry->wed_index = wed_index;
-+
-+	if (mtk_foe_entry_commit(eth->ppe, entry) < 0)
- 		goto free;
--	}
- 
--	entry->hash = hash;
--	entry->wed_index = wed_index;
- 	err = rhashtable_insert_fast(&eth->flow_table, &entry->node,
- 				     mtk_flow_ht_params);
- 	if (err < 0)
--		goto clear_flow;
-+		goto clear;
- 
- 	return 0;
--clear_flow:
--	mtk_foe_entry_clear(eth->ppe, hash);
-+
-+clear:
-+	mtk_foe_entry_clear(eth->ppe, entry);
- free:
- 	kfree(entry);
- 	if (wed_index >= 0)
-@@ -444,7 +427,7 @@ mtk_flow_offload_destroy(struct mtk_eth *eth, struct flow_cls_offload *f)
- 	if (!entry)
- 		return -ENOENT;
- 
--	mtk_foe_entry_clear(eth->ppe, entry->hash);
-+	mtk_foe_entry_clear(eth->ppe, entry);
- 	rhashtable_remove_fast(&eth->flow_table, &entry->node,
- 			       mtk_flow_ht_params);
- 	if (entry->wed_index >= 0)
-@@ -458,7 +441,6 @@ static int
- mtk_flow_offload_stats(struct mtk_eth *eth, struct flow_cls_offload *f)
- {
- 	struct mtk_flow_entry *entry;
--	int timestamp;
- 	u32 idle;
- 
- 	entry = rhashtable_lookup(&eth->flow_table, &f->cookie,
-@@ -466,11 +448,7 @@ mtk_flow_offload_stats(struct mtk_eth *eth, struct flow_cls_offload *f)
- 	if (!entry)
- 		return -ENOENT;
- 
--	timestamp = mtk_foe_entry_timestamp(eth->ppe, entry->hash);
--	if (timestamp < 0)
--		return -ETIMEDOUT;
--
--	idle = mtk_eth_timestamp(eth) - timestamp;
-+	idle = mtk_foe_entry_idle_time(eth->ppe, entry);
- 	f->stats.lastused = jiffies - idle * HZ;
- 
- 	return 0;
--- 
-2.32.0 (Apple Git-132)
+1) Does setting an initial default make sense?  
+   Yes, this is an acceptable thing to do if there is a particular set of defaults
+   and there is no risk of regressions (i.e. the device wasn't previously supported
+   with different defaults).
+2) Should you use the write_raw callback to actually do the setting?
+   Probably not as it has a set of parameters that don't make as much sense from within
+   the driver.  It 'might' make sense to have a common _set() function for this
+   feature which is called both in this initialization case and from the write_raw()
+   function however as that could do bounds checking etc in one common place.
+   However, it is very simple here, so perhaps not necessary.
+
+Jonathan
+
+> > --
+> > Baolin Wang  
 
