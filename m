@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD0AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 400F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241058AbiBYNRA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:17:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43134 "EHLO
+        id S241066AbiBYNRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:17:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238729AbiBYNQv (ORCPT
+        with ESMTP id S241041AbiBYNQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:16:51 -0500
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2056.outbound.protection.outlook.com [40.107.20.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94661FE578;
-        Fri, 25 Feb 2022 05:16:19 -0800 (PST)
+        Fri, 25 Feb 2022 08:16:55 -0500
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2062.outbound.protection.outlook.com [40.107.20.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 344921FE574;
+        Fri, 25 Feb 2022 05:16:23 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bO4Q7EM2UmlIOWqhHsJvVUiV+NdvmJAwIUo77/oYJTZH8RHxvwqSOsAAVGb8wgkCqgsazvmZxC6gU2Chv4TO6YG4sY5HZtI2BfjB8O+NSHsZ8rZNfcY/c0x5RqULhFKS1PGuTQQp/GUep0BQF30h5PAWcm3Q6em4qOtvVfjXHI3ctlSjbIOW1GIPiyRt9ZML+8vjaYBtjAlS+Vjyp6fwC65qXg53hz5OuuWVrnR9JdQZnBfLrIdaLoQaKwZkS4jOArWpDJx/oEkKUUWLZy9TuAyUHdSTsLotuYh7tAMbBBbWTkCHIpo6NcbCKfVfgemX3yJcbNwrDTp+qNHbuCCKEg==
+ b=IBnRjVMQcdBKqOzu8IVQIs5iaEBpcbYBd6UkAjn21Fk86OU6+M6awW1mIETmBmHH7uJHfF3ele5hwuyMCAbnDCH3IY32gqQpNfWHfwF8Hz9muxpEjcIZc7AysKbcCQtFNQNKPZPjFVRKFz3FGu9yIROp4DDe0qJVctpNFtPBiWcGoxP9HK8tMNA3CDoMT6ONr/FkEuAeruYQ9VSpafpUnk9LtsZKYpDtQ88N3WAB5Uvu/xH6Tk7ofb3vttVjqqyH03asE+Rq+VR+4OF0wlyX1HVOrGpsYbEP0tYMfojPmclc2kFPF/hczBGykatyHk3ZZfXbQn6bdJeANFm7OUSnSw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ElW3Jkef6DJOOJy2f30tthlWOT5zBJi3OFyaYJ757m0=;
- b=Qnie+VMi+CwYM/phzKC3iOdpCXWkfvFxYGK4fXKz8z5Y14ugfv8+BZw2m7pOFqmolB/cvLnPNitTPdMhO/mHBrKj41U/q+00h9gVItD6FgY5yeei+7tBnebARuRE9XRko2NFKxupnEatHXisCRilUWwBnklZ3pHXTJ88GPVE4c8hy65IQeu/kcgC1q5jS+5D0srzq5nQUBRFzKhtmJyEAFnvUJX5UU28MGgw2lmsK95mapk1BxacdQqNCbpVW9UkX6sEa+LI8Dy48jMNQwOxJtDKjebwTsqNV3561Ds2OnU1N0O0BBe4arbRDH8W7elTsebU2lHQV+Ka/upUx8Q9DQ==
+ bh=5pGVEN0zFWGY7L9y9qpVcOmt9ocQFtU9+BzM7RCA4QE=;
+ b=HNF56ALKegjzvKu/ZsjlDDrItYCRlkq7VK7LShY29xVTkQ9FlZGos9HCIEquQ9jDISLQyiEKOqxPvIwf1NpOQaxHPsfAHZZ/AvTtqZY/GAzpLEn+gFQTk2y4KdB5hbsMQYzyNcXucmGNBzphTqltPGF9JcaFV+qtVqkDIg5/zniqqjRogjRmVdyj6ivo9hQrpaE+OaEhC2XDkNwHCT+3OxPdHn5Ex4yNAPwUJ7q8yX3IpjUWTjpJaym00RbAxC69NqVBOCS6hlOowfehsMfmw3H2pTZKzJpESWj5nLRgSJmyOZCYsN3AI4nT/et1UaQCoHc0rPIlWMIBfWb6aKKIPQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=wolfvision.net; dmarc=pass action=none
  header.from=wolfvision.net; dkim=pass header.d=wolfvision.net; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfvision.net;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ElW3Jkef6DJOOJy2f30tthlWOT5zBJi3OFyaYJ757m0=;
- b=w7TON6ojOR36CyNuMtBnB9NR6Lf24yVFN4gU76TC3o93j421gp4q5plfayX+iGU2i1j7mKpFfTZmt4Z4Bx30e6iuuSt5CdQicEbC9aJP0YPEr4t4IIMkS/QC1wOIE1WuzbUuyqV6D366uSiI+rtj8Bpf3s/w9fiej9GFl6W3830=
+ bh=5pGVEN0zFWGY7L9y9qpVcOmt9ocQFtU9+BzM7RCA4QE=;
+ b=0kordkK9r2Os5wcXi4IVRwqKM3ML9/ID6o2nCObJEbziBJkl0+oHrJWFt7dHamMJCWkJs+em1Ew1KrtA/xCwiOmOwuIhesQkIK5fiew3IwIVaQ/imwmaQ2+tY/8X7NsNcN0UoCqEHdP+nP8Lc7eX8h6NVC+wlQa6tDaV1QLIWJ0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=wolfvision.net;
 Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com (2603:10a6:3:e1::23)
  by PAXPR08MB6591.eurprd08.prod.outlook.com (2603:10a6:102:150::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.17; Fri, 25 Feb
- 2022 13:16:18 +0000
+ 2022 13:16:22 +0000
 Received: from HE1PR0802MB2426.eurprd08.prod.outlook.com
  ([fe80::f9ee:a333:b115:5049]) by HE1PR0802MB2426.eurprd08.prod.outlook.com
  ([fe80::f9ee:a333:b115:5049%4]) with mapi id 15.20.4995.028; Fri, 25 Feb 2022
- 13:16:18 +0000
+ 13:16:22 +0000
 From:   Michael Riesch <michael.riesch@wolfvision.net>
 To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
@@ -55,9 +55,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>,
         Simon Xue <xxm@rock-chips.com>,
         Yifeng Zhao <yifeng.zhao@rock-chips.com>,
         Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
-Subject: [PATCH v2 2/4] dt-bindings: usb: add rk3568 compatible to rockchip,dwc3
-Date:   Fri, 25 Feb 2022 14:16:00 +0100
-Message-Id: <20220225131602.2283499-3-michael.riesch@wolfvision.net>
+Subject: [PATCH v2 4/4] arm64: dts: rockchip: add usb3 support to rk3568-evb1-v10
+Date:   Fri, 25 Feb 2022 14:16:02 +0100
+Message-Id: <20220225131602.2283499-5-michael.riesch@wolfvision.net>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220225131602.2283499-1-michael.riesch@wolfvision.net>
 References: <20220225131602.2283499-1-michael.riesch@wolfvision.net>
@@ -68,87 +68,156 @@ X-ClientProxiedBy: ZR0P278CA0109.CHEP278.PROD.OUTLOOK.COM
  (2603:10a6:3:e1::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0e3db8fa-77b4-433d-0c9e-08d9f8610226
+X-MS-Office365-Filtering-Correlation-Id: b45d79c2-dfe8-41bb-aa5d-08d9f8610477
 X-MS-TrafficTypeDiagnostic: PAXPR08MB6591:EE_
-X-Microsoft-Antispam-PRVS: <PAXPR08MB659165A0BBEA51CCBBFB3356F23E9@PAXPR08MB6591.eurprd08.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <PAXPR08MB65916E0CF66D79424EE39C2AF23E9@PAXPR08MB6591.eurprd08.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: S9JfvnotK7gWGGC5JVxFGJlrj4gxfKCbr1uFnpIhBwi25R+8e6hkgn8ZOQyGiuj4LzFCal1jnLhSfWSzwF2/fEw5k6pqUnyJNXPLWWe9wdZstRpFGMxRnZEJM3mD+qsZsVJnzQYf02/lXubo6jN6v/wmyKzVM3iJSx6zU+ShPepmYjHp8CEyljafYI0/JKHkByQ47PChDETRugHNc+Qu1xE+9K4zei1eWATA8UjgzG5pt8VYjFHJu1UADYxIflbSieEdkMRdufqy5ilYldixY6eq0qC4ms8O9ad4NzAOtsrPXSJKjtlSm0LW/WmD09iPAKbIS9FLDmjb0m/58Hj39ksT6KQcW5RKA1jELT5ybl6Uo36YrzEapPuu3WcR8eG0u+ilNf+2FEktJ/l1K7pEGodRDj5z6rlKdIqpMjSqXouBvjX1l3WhBkkDCn0btUPCy2lBq0LZ8hz4bk/WkQGy4Yi1xX5D8Uey+jIRQCODXRP7qJlaO0+zIM+tNN9aZxNtuBgdZ8U0/WvAvCqDdCkPgvp8E1pFI+oH2Afx5n9lYJLYIDSGrbVH8LUX11lhtJ2zaCghst4qzlehQ/Kp/I5DAkRflCkTCMiDC1yKRM6uvY6KIRimL1PjYnnFDnuJ3UZN0BnURLzFmzi2ChSpJKzRVA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2426.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(39850400004)(346002)(396003)(376002)(136003)(186003)(44832011)(6506007)(4744005)(36756003)(1076003)(2906002)(8936002)(86362001)(8676002)(316002)(7416002)(4326008)(2616005)(52116002)(6666004)(508600001)(6512007)(38100700002)(66556008)(54906003)(5660300002)(66946007)(66476007)(6486002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: GEnslCrQJNsCfQ6ED0+v5Xn2XkQvtF0+fMuS8fGRL0BkSMaSGhFqJBJu/BN1kBscgNEpBt2JqehJ66PtjQ6ulLPA0Jgd1Q6YFkjlEg25kh3Qp5J+0dmGYZkOzH9WJYyG9P5FCVXL0DRKg2Rik5ATzXlTKkdrgTBYIJ2P7tXI3BCwGOVKliDIh2b86214xnQFrgyQzC2A27KtXv8e65aRow3bCTDWJ0M2h/IwwF/480l2mnlBiP1axKx+moh04Hr8CnMSI+0eZNV2NHkS2HC218z+Noe/KWUCmglcjcxKCOdTLZP+avHLnLX5xfhLLGhsNzg92x06PUxEQR5IPJoajF3+lLmLNSPiG1MXdJqQB8FMVmHBtxycTeIHir/UZsMw1H7xy4gn9Pxj89Xx5lSgIgoOo94V/k6J8WE+E+0/B/snrvRzacdjQPw5L64TDNqHPCHE+inLafFLW+QfgUKE2JDD/PC6+vaeJV/o/3NtCL7wvrP4mSn3TvxIS0O6FBl3odDgAfQLLthqi4VT/udmDzhKldzOpaZenGEX+WxsSwqGAFA9FYB8zu/DQBU58WkvKWLhOmZeq0gP0ykd8gyKtPPDx6OuW5w6q0dGGc9rN1TqhrEokMdoeGeez13W0Tzv4LrqObIodz8LKyP7R0+Xzw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR0802MB2426.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(39850400004)(346002)(396003)(376002)(136003)(186003)(44832011)(6506007)(36756003)(83380400001)(1076003)(2906002)(8936002)(86362001)(8676002)(316002)(7416002)(4326008)(2616005)(52116002)(6666004)(508600001)(6512007)(38100700002)(66556008)(54906003)(5660300002)(66946007)(66476007)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?iklaBYOmnBFyyLfSf+wcL2hiiqtMQpoQGYoMzTRX2g92vHPZ5h9dpVpYisRl?=
- =?us-ascii?Q?zNhh6m2by3uRofNgVq3iHMUzE+iSx7Zs9roUpc0Viv2fTFw52nv04UAs6zRL?=
- =?us-ascii?Q?jtRraqv9LZWlMO45EbAeUyeQsroRHwpOKi8wWIiyL9nr8/JyCsIsFI5Yn5zj?=
- =?us-ascii?Q?LAEGynVsMLp4jCvZ5ZP5ncP0i25pIqdcRRyIEj0q6Jzvhi/FvpTiNM3rB6ms?=
- =?us-ascii?Q?/I3YzBHylCKNdwopmWoohozGEokK+8XkmySO0mqUL2a8lm9wodIW062ZQlO5?=
- =?us-ascii?Q?b2bbeVnusm7Y7YWXA2nAyqJ+456poU2EdKywuJJfrnxx8/GsYVIL9wE1Pjcm?=
- =?us-ascii?Q?0Em+YLidp6YDoD8u0VaATdz4+L5ZFsdqdIdwsJIzmBjnwBGb2fuK2nLK/nNW?=
- =?us-ascii?Q?zbqfWshUZjlac5cMMvlfeoq2krUjvTGWuKc3iZVfNbVLo3jveuUseJABvD2L?=
- =?us-ascii?Q?i/zgbmRWeKB8wEWASrfAQ303QYMbUsEiZJWc3yBX44geC7bMkfI6/YdcDfMn?=
- =?us-ascii?Q?ZA6NCDz/Af6YzYbcw1u+OiJ/dbf6LdSmSs+sRBvl6ttpkzyGE7WO0GFP+ZVr?=
- =?us-ascii?Q?3sNvnyGjx+CQz9ZhEMmgE2Gp5I8JGL419928tiInR9GHeQbzsaI5QLexL+3W?=
- =?us-ascii?Q?w3m+g/BJkgcZmcbGtltvVRFRBRK6OCgSHAlp/wl5T0PmYbje4+/9TJQKWfYn?=
- =?us-ascii?Q?qkog7U7LWx5RJ+Ut4F2bh3AA4/soDY5MKZUab/lpKR7ehS9amIGU7xLMrMoP?=
- =?us-ascii?Q?Bjjj1jM3edPgx96O8YWlAjbnLowT51EUcTZMydX87ZP7mlWgOUdkE246n3mY?=
- =?us-ascii?Q?K5ZR2JXTl5uKgJ+DWa2dHbekpsfbvErwXxU5G25j3VI4lv7uraGuizDMT99z?=
- =?us-ascii?Q?NhNGU2tUc/hYQExaGq4rybjFJWx2+JRpsVdlWJ6BBgJBjSantsfECSJv4D/K?=
- =?us-ascii?Q?kzSD6g9G47WV62ESmWrGTLubNCn4D/z567cDj0sz1nuS/kkBMu5y/JXncBPa?=
- =?us-ascii?Q?1SY/EAmpL/YptbeUfUthjtiN0Y5OGp9jtIcgAZPvZ4yutV3qpb+QMjmS6bK5?=
- =?us-ascii?Q?77XaR4OfGwoXKZS5Pk0HsyotmeOMNTixVdZk/q6YYZgOJHDquHl+w60VIAc8?=
- =?us-ascii?Q?aWbbdxUp6dp8v8dh9EJKbiswEUcm1ZPnq0BoJUWQqpAQOn/bz/UHVKhCPr+P?=
- =?us-ascii?Q?b1irv1WeB30+M2U6UqoSMSREO5mSNWX16YrboeX0/jIpj/bo0Aty/cRfrU3l?=
- =?us-ascii?Q?kuMNOb/B5e2Ot8Ytnwzwm3FrqJE2hqw87+CzhGyAVmEhcU7TeIXiR5rWJSzK?=
- =?us-ascii?Q?eh2rmF6Nl7vnKsoHNiizZjScVysenpawqOdPxyAvXw/qnPfbtcRIXu2yNfIb?=
- =?us-ascii?Q?msMiQlgu5WQjD7id3QpbyI1S4dO9mILO8U3cHpbZPhSzH3qMoovjQSddkyF4?=
- =?us-ascii?Q?cJfSKai9ozf2bwpoR9Aq4PdnCK1CFBV1o6ika4Uv1tmcOE2DvamKL8TlJDk4?=
- =?us-ascii?Q?O9J8zWA0St7goKdL79rFoQdFvIGvtCFMKzLWQ9Sp0JA7Tg7PyiicYKDiIC8m?=
- =?us-ascii?Q?ueV8c1o34aJ7vXvexo3jq+B1yQCIz7iVFYvypULohXEc1z9lcHIPpk0TXtJy?=
- =?us-ascii?Q?mixxhbcfw9fm3CiWb1ZtmzRdDr8iZOFrmY1WlowyeiR+V26fkO2q/rCL3q9H?=
- =?us-ascii?Q?l2TwSvX9VOIMBYeENcDfPyttFWE+wQ96p3yQzyNm0oXRtLfrl6CtrYvx5dA7?=
- =?us-ascii?Q?x5fdL6Vz+YKhxI9EkwYPMl+vLYMaoNY=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CukEJ/6ueZTEM1+Sxl/t+rSleoHQubHVeefBJ85uz7VOjk8ZHBRSylJ0McKO?=
+ =?us-ascii?Q?0XN4mwsuyTtG9pF/IEaBunQ5JFez6H1FTsw8DPwvqS0UcAmltSATGusiVS5E?=
+ =?us-ascii?Q?n31/POnRu1npQDcM14ojMWOvApD3buwmeDN2OjQZcwC4vDZ06eKFyox2kzSI?=
+ =?us-ascii?Q?xr4beI1jvdWmvcFqSbPdUVm6jpJ+bbK1TPCdR8A43Hq6/KY4Ze5pZIFakft3?=
+ =?us-ascii?Q?GZAsbFDuuLTapAcIM3Q8vIrwHSgKss+CC3YSr24uAprs0L7ETn5ynV1njj8s?=
+ =?us-ascii?Q?PIxrPAQY66D9U3rDYF+GPl+o1cqj2PzwQsUC55jXaOJwUgHz76qSkozhoMl2?=
+ =?us-ascii?Q?YIEFQ92uI2THpNwuXJKPfy+tl+ZciKAYa3rAH2FJDZ9QoO2oAZgb8SyMaAgB?=
+ =?us-ascii?Q?HB0wA/cGaqU7b8roFTTovqZjK3BRLBSGQ0Jq6Ahs4GNK2S/xzn6h/GOkLZa9?=
+ =?us-ascii?Q?oaAoBC0x+dBJd8xmvdDG5tP6dsNzG9kavgnkGEmuVuM3ITeTQiO1DFlL0oDI?=
+ =?us-ascii?Q?8TAdl9TA7fSd59UX9iGqjT4FCdanANkuRunTOGkFlLlr8ZTFmoZISARnjkvx?=
+ =?us-ascii?Q?uFcwQ3PRbiABZIiz43LrBJdifdQ22/nqaFEGG/0o7N3ewW7H9HHsXnF9sz98?=
+ =?us-ascii?Q?SgQrFXMfIQFYUcypTHLvkjugBSsD/A85ATYaouue51laGaWXHDbhJUQiA4Lp?=
+ =?us-ascii?Q?6i5Un8ruU2hdXwNAsvlRcYjxtOsOuWtIl1a+TQslsLilpSskpbXfJGU4be57?=
+ =?us-ascii?Q?ajCNlEdmCDoVnvJm6J0zsv+LZFIW7d/iJgVmzXULDZOujDrdWCPvDBOb5CCO?=
+ =?us-ascii?Q?VtuDErTatMy+NVDSDqOCAQhWacxpUwNEe0w0ga/O15UVq1Q6j2dyLbHTjubh?=
+ =?us-ascii?Q?qwUeboZk5Nv/kW85ingbeLr65IXdSbERy5T5uI81+xuCwHS/m2+rKVQCBJKs?=
+ =?us-ascii?Q?vR0ZvBxPO3MPeRTG+1Ue56GE7+V/5HBL04pFzkYX8fAeKoT61tfyKGavNyXR?=
+ =?us-ascii?Q?m1ueq3ztU6hTlI7JZi9dhiULdP/4LEquiJ2oXVhBnRJGGXDRo+GLN/Zxlubh?=
+ =?us-ascii?Q?7XKYzdk1Rjkzbg5KOmBbCzbEivB5996m2pvETJ0dZG9HdwjPA9e+DcTCTZF9?=
+ =?us-ascii?Q?rw6W7aVxz+uKL4AlC7nPtXolAbnJ1Q4w0b67/LrWbcCHxCz59DiIAj8aaO2a?=
+ =?us-ascii?Q?9Czoqn3UvGY9J2mK3mu7O8CMO0nHPXasOivVDTONJnGkK6ldUhAtBeN8W8eR?=
+ =?us-ascii?Q?zYMWaNqSCuK2DaB+B3UAldWIySJoC2GhLuDI++dyjaHS50tPmhawL89NEQR9?=
+ =?us-ascii?Q?n5cuSL7HWwJ2ToCLDqq0RbZ3xYzbCI3H6sJCH/y44qB8x1fzaTFHVBdfMmBj?=
+ =?us-ascii?Q?pVTasuCuXlCgkDgDrp+ZkOgvvKux+uzHZuJ52wcVddpbqjSNcgKzus6v4kE2?=
+ =?us-ascii?Q?fQ5hXhd+tgiWYnyFJasCL2EyH/TNUhEKWZXiSscq0QcVccZhEL/Wy7QeH+DN?=
+ =?us-ascii?Q?fojG6mMUFwv8k4JhP4+ns+FP90maM15PDbb90ONpyZX+WxHloK59EyqWKMq7?=
+ =?us-ascii?Q?WWXLdz9jkzxano0PC4TMsY3bidf5SazipxBlqHl3NDeGnI5d/7nB/zbSg4FF?=
+ =?us-ascii?Q?7cnqR6+ie9Z3kDsj7EkGfgAbeJK6yTTfd9/Dz67NSyC1G0awQUxo0jeVIsgp?=
+ =?us-ascii?Q?WtBPdvZIMKP1tDk9FS9HzhEwfD+65BvMy8TzwS473Qvzxphfkiw1qb/gbTdr?=
+ =?us-ascii?Q?qG9aGQaGbd9/A8xoywRD7wYK0ys/vls=3D?=
 X-OriginatorOrg: wolfvision.net
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e3db8fa-77b4-433d-0c9e-08d9f8610226
+X-MS-Exchange-CrossTenant-Network-Message-Id: b45d79c2-dfe8-41bb-aa5d-08d9f8610477
 X-MS-Exchange-CrossTenant-AuthSource: HE1PR0802MB2426.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 13:16:18.2918
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 13:16:22.1196
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: e94ec9da-9183-471e-83b3-51baa8eb804f
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /ff+aTSECQnYBaUiZY+Y6CmDALmopjHmGZZgHzGGzS7v/TU9Ub4/amd85XuUbYcStJdk2Tn3bDbYHSCL2DaBCD8wRpQweOUTUgDbGtXir0k=
+X-MS-Exchange-CrossTenant-UserPrincipalName: Q9ZCfdjkuigHxbW/aT9M6VdP/vvCZm+Yco8MoaFm/tR/s/dzfsv/ZrVgF0vBm384OClidvnO/jOy+WUFmmkKKgdUOuCJ439ccWin84QM+b4=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR08MB6591
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the compatible for the Rockchip RK3568 variant.
+The Rockchip RK3568 EVB1 features one USB 3.0 device-only
+(USB 2.0 OTG) port and one USB 3.0 host-only port.
+Activate the USB 3.0 controller nodes and phy nodes in the
+device tree.
 
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
 ---
- Documentation/devicetree/bindings/usb/rockchip,dwc3.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ .../boot/dts/rockchip/rk3568-evb1-v10.dts     | 46 +++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/usb/rockchip,dwc3.yaml b/Documentation/devicetree/bindings/usb/rockchip,dwc3.yaml
-index 04077f2d7faf..b3798d94d2fd 100644
---- a/Documentation/devicetree/bindings/usb/rockchip,dwc3.yaml
-+++ b/Documentation/devicetree/bindings/usb/rockchip,dwc3.yaml
-@@ -30,6 +30,7 @@ select:
-         enum:
-           - rockchip,rk3328-dwc3
-           - rockchip,rk3399-dwc3
-+          - rockchip,rk3568-dwc3
-   required:
-     - compatible
+diff --git a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+index a794a0ea5c70..622be8be9813 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
+@@ -103,6 +103,18 @@ vcc5v0_usb_host: vcc5v0-usb-host {
+ 		vin-supply = <&vcc5v0_usb>;
+ 	};
  
-@@ -39,6 +40,7 @@ properties:
-       - enum:
-           - rockchip,rk3328-dwc3
-           - rockchip,rk3399-dwc3
-+          - rockchip,rk3568-dwc3
-       - const: snps,dwc3
++	vcc5v0_usb_otg: vcc5v0-usb-otg {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_usb_otg_en>;
++		regulator-name = "vcc5v0_usb_otg";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&vcc5v0_usb>;
++	};
++
+ 	vcc3v3_lcd0_n: vcc3v3-lcd0-n {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc3v3_lcd0_n";
+@@ -136,6 +148,14 @@ regulator-state-mem {
+ 	};
+ };
  
-   reg:
++&combphy0 {
++	status = "okay";
++};
++
++&combphy1 {
++	status = "okay";
++};
++
+ &cpu0 {
+ 	cpu-supply = <&vdd_cpu>;
+ };
+@@ -507,6 +527,9 @@ usb {
+ 		vcc5v0_usb_host_en: vcc5v0_usb_host_en {
+ 			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
++		vcc5v0_usb_otg_en: vcc5v0_usb_otg_en {
++			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
+ 	};
+ };
+ 
+@@ -568,6 +591,11 @@ &usb_host0_ohci {
+ 	status = "okay";
+ };
+ 
++&usb_host0_xhci {
++	extcon = <&usb2phy0>;
++	status = "okay";
++};
++
+ &usb_host1_ehci {
+ 	status = "okay";
+ };
+@@ -576,6 +604,24 @@ &usb_host1_ohci {
+ 	status = "okay";
+ };
+ 
++&usb_host1_xhci {
++	status = "okay";
++};
++
++&usb2phy0 {
++	status = "okay";
++};
++
++&usb2phy0_host {
++	phy-supply = <&vcc5v0_usb_host>;
++	status = "okay";
++};
++
++&usb2phy0_otg {
++	vbus-supply = <&vcc5v0_usb_otg>;
++	status = "okay";
++};
++
+ &usb2phy1 {
+ 	status = "okay";
+ };
 -- 
 2.30.2
 
