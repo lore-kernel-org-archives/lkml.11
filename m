@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96715C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91231C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238804AbiBYIyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 03:54:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
+        id S237978AbiBYIyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 03:54:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238814AbiBYIy1 (ORCPT
+        with ESMTP id S238812AbiBYIy1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Feb 2022 03:54:27 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1870B22320E;
-        Fri, 25 Feb 2022 00:53:54 -0800 (PST)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2191B22B97C;
+        Fri, 25 Feb 2022 00:53:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645779234; x=1677315234;
+  t=1645779230; x=1677315230;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=uS226ko481dKVKU+nkMhxwjiC1Kg1uHtGTxSWuBb7xs=;
-  b=TynXPmLmXwXxjbTcWECvLb4ztIu4U9AbsecKzIFHRROoEsUzU6OStHD1
-   pXJozf8Kklb5XTrSsTDOOzCrWv1xou4CSjvD44jFq61EJJmPlXnf6J/Sq
-   8LowEwCyjCBpFA+nphdIgK95XZSFzjtpoYqUEgI0VfOmHphi97BnwKe77
-   ZwHVE1jimdCpaGfy5FsoxwIiMF62x+IblByWhVY1/zobcmCU7Af/EhL/v
-   iY4XLlKyVMtOFnhYb4h+gwm+1Xh3sApKgB8CB3q0xSyV7Di1o799UqDbt
-   /nXOzZtWdZRigkjBLF0uaEoqG1WuQp/dHe8erHTwrz36D0JB5otQicnIe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252186122"
+  bh=QMLp8NmC2YlCPDw6nrDcudbrHfqDQnsY4QCUiVPXsdQ=;
+  b=jxLNK1mqIAusMlApkJx+D5IzvA/x1afkU2BgmN0oIyZYqNcFoVh1o5m9
+   vOpXErfhT9I2z027slixYRYTXLvRPJWLs7WFdNRVrmGILMJouD3VK7Qk9
+   GC1NJ9Ath6G+4U9E7OJrCr+Jrovd2hcBqiPM+1XeGwtMoK4U9Pz14Cgkb
+   t6dMNIlpK/hdh35Hsxi4YwaSV2WyuJdOEuANzfl6YPcvcpsrVwCb4cKPp
+   d4AK4wSI0/CW5LzhoWQbS/91Jwo09kt812qIApnj0npsqLaIjQEA4ybNH
+   r300gLUDhTLjAVGgtNpPfXPdXCRE26zlgvHmARLUZKmdRVQcTtQ2ZiudX
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="232429507"
 X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="252186122"
+   d="scan'208";a="232429507"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 00:53:54 -0800
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 00:53:42 -0800
 X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="549186594"
+   d="scan'208";a="549186556"
 Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 00:53:48 -0800
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 00:53:36 -0800
 From:   Zeng Guang <guang.zeng@intel.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Sean Christopherson <seanjc@google.com>,
@@ -56,10 +56,11 @@ To:     Paolo Bonzini <pbonzini@redhat.com>,
         Kai Huang <kai.huang@intel.com>
 Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
         Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>
-Subject: [PATCH v6 8/9] KVM: x86: Allow userspace set maximum VCPU id for VM
-Date:   Fri, 25 Feb 2022 16:22:22 +0800
-Message-Id: <20220225082223.18288-9-guang.zeng@intel.com>
+        Zeng Guang <guang.zeng@intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH v6 6/9] KVM: x86: lapic: don't allow to change APIC ID unconditionally
+Date:   Fri, 25 Feb 2022 16:22:20 +0800
+Message-Id: <20220225082223.18288-7-guang.zeng@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220225082223.18288-1-guang.zeng@intel.com>
 References: <20220225082223.18288-1-guang.zeng@intel.com>
@@ -67,81 +68,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce new max_vcpu_id in KVM for x86 architecture. Userspace
-can assign maximum possible vcpu id for current VM session using
-KVM_CAP_MAX_VCPU_ID of KVM_ENABLE_CAP ioctl().
+From: Maxim Levitsky <mlevitsk@redhat.com>
 
-This is done for x86 only because the sole use case is to guide
-memory allocation for PID-pointer table, a structure needed to
-enable VMX IPI.
+No normal guest has any reason to change physical APIC IDs, and
+allowing this introduces bugs into APIC acceleration code.
 
-By default, max_vcpu_id set as KVM_MAX_VCPU_IDS.
+And Intel recent hardware just ignores writes to APIC_ID in
+xAPIC mode. More background can be found at:
+https://lore.kernel.org/lkml/Yfw5ddGNOnDqxMLs@google.com/
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
+Looks there is no much value to support writable xAPIC ID in
+guest except supporting some old and crazy use cases which
+probably would fail on real hardware. So, make xAPIC ID
+read-only for KVM guests.
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Zeng Guang <guang.zeng@intel.com>
 ---
-No new KVM capability is added to advertise the support of
-configurable maximum vCPU ID to user space because max_vcpu_id is
-just a hint/commitment to allow KVM to reduce the size of PID-pointer
-table. But I am not 100% sure if it is proper to do so.
+ arch/x86/kvm/lapic.c | 25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
- arch/x86/include/asm/kvm_host.h |  6 ++++++
- arch/x86/kvm/x86.c              | 11 +++++++++++
- 2 files changed, 17 insertions(+)
-
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 6dcccb304775..db16aebd946c 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1233,6 +1233,12 @@ struct kvm_arch {
- 	hpa_t	hv_root_tdp;
- 	spinlock_t hv_root_tdp_lock;
- #endif
-+	/*
-+	 * VM-scope maximum vCPU ID. Used to determine the size of structures
-+	 * that increase along with the maximum vCPU ID, in which case, using
-+	 * the global KVM_MAX_VCPU_IDS may lead to significant memory waste.
-+	 */
-+	u32 max_vcpu_id;
- };
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index e4bcdab1fac0..b38288c8a94f 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -2044,10 +2044,17 @@ static int kvm_lapic_reg_write(struct kvm_lapic *apic, u32 reg, u32 val)
  
- struct kvm_vm_stat {
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 4f6fe9974cb5..ca17cc452bd3 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -5994,6 +5994,13 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
- 		kvm->arch.exit_on_emulation_error = cap->args[0];
- 		r = 0;
- 		break;
-+	case KVM_CAP_MAX_VCPU_ID:
-+		if (cap->args[0] <= KVM_MAX_VCPU_IDS) {
-+			kvm->arch.max_vcpu_id = cap->args[0];
-+			r = 0;
-+		} else
-+			r = -E2BIG;
-+		break;
- 	default:
- 		r = -EINVAL;
- 		break;
-@@ -11067,6 +11074,9 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
- 	struct page *page;
- 	int r;
- 
-+	if (vcpu->vcpu_id >= vcpu->kvm->arch.max_vcpu_id)
-+		return -E2BIG;
+ 	switch (reg) {
+ 	case APIC_ID:		/* Local APIC ID */
+-		if (!apic_x2apic_mode(apic))
+-			kvm_apic_set_xapic_id(apic, val >> 24);
+-		else
++		if (apic_x2apic_mode(apic)) {
+ 			ret = 1;
++			break;
++		}
++		/* Don't allow changing APIC ID to avoid unexpected issues */
++		if ((val >> 24) != apic->vcpu->vcpu_id) {
++			kvm_vm_bugged(apic->vcpu->kvm);
++			break;
++		}
 +
- 	vcpu->arch.last_vmentry_cpu = -1;
- 	vcpu->arch.regs_avail = ~0;
- 	vcpu->arch.regs_dirty = ~0;
-@@ -11589,6 +11599,7 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
- 	spin_lock_init(&kvm->arch.hv_root_tdp_lock);
- 	kvm->arch.hv_root_tdp = INVALID_PAGE;
- #endif
-+	kvm->arch.max_vcpu_id = KVM_MAX_VCPU_IDS;
++		kvm_apic_set_xapic_id(apic, val >> 24);
+ 		break;
  
- 	INIT_DELAYED_WORK(&kvm->arch.kvmclock_update_work, kvmclock_update_fn);
- 	INIT_DELAYED_WORK(&kvm->arch.kvmclock_sync_work, kvmclock_sync_fn);
+ 	case APIC_TASKPRI:
+@@ -2631,11 +2638,15 @@ int kvm_get_apic_interrupt(struct kvm_vcpu *vcpu)
+ static int kvm_apic_state_fixup(struct kvm_vcpu *vcpu,
+ 		struct kvm_lapic_state *s, bool set)
+ {
+-	if (apic_x2apic_mode(vcpu->arch.apic)) {
+-		u32 *id = (u32 *)(s->regs + APIC_ID);
+-		u32 *ldr = (u32 *)(s->regs + APIC_LDR);
+-		u64 icr;
++	u32 *id = (u32 *)(s->regs + APIC_ID);
++	u32 *ldr = (u32 *)(s->regs + APIC_LDR);
++	u64 icr;
+ 
++	if (!apic_x2apic_mode(vcpu->arch.apic)) {
++		/* Don't allow changing APIC ID to avoid unexpected issues */
++		if ((*id >> 24) != vcpu->vcpu_id)
++			return -EINVAL;
++	} else {
+ 		if (vcpu->kvm->arch.x2apic_format) {
+ 			if (*id != vcpu->vcpu_id)
+ 				return -EINVAL;
 -- 
 2.27.0
 
