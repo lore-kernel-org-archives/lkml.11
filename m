@@ -2,188 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E36C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:51:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42051C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:52:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238722AbiBYIvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 03:51:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46022 "EHLO
+        id S235117AbiBYIww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 03:52:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238663AbiBYIvT (ORCPT
+        with ESMTP id S234673AbiBYIwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 03:51:19 -0500
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2074.outbound.protection.outlook.com [40.107.212.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FEF17BC4D;
-        Fri, 25 Feb 2022 00:50:47 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=edu6bmnk/q3Pz7CSfnwZvK4X5kz9+qsV9hpYeyh3oaS879yoBxKmQPr+GfMU18JdK6yDWRPf9VB64KpEdm7RewrNheaqivHWU0/d2zCQmLzDcOpc3oUzQ6Pja8gBvykUrPW3pGhwpNOeZYLm477yWOD0kbOTpqfMTT6ip8mmGnkJp3UQRf/00y1qV+Ox/+Kpvsq7+7W/6dJe+Y1/pJ5VOWVsIZY6HaBJx+bhvJ6kEIh5wDuaMMFPW7C3Z6bQV9/g4qeD1Ts0Ll0KkgghR8C/ciQAS7MfjuKMYdLfvcFmtQzDakuejd3dlxYnbP4pDJMdbEEbaiKQHm8+XYCvMiuVCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tWclyEKq4CVkl7hdRiKCw5b/8BrSgghcSXNAqeSOe0M=;
- b=AwZ9tg/Hxrv5DsLNSqALjbpd0qtYfnjvkN31rDe70RCCLByUC1XWV20VZUUk1JufA+nHqwt9ErWI11brGMwwikSfqAnLpsjgrb2AzTl0WGpMJawkO+xYA7rl9QCU04AMQirVK4HLywEc4yozTdzZ83btEvYXWF9tB3zo9pDFyWmmovDjUqX4ryOElF5HCSGrQeUClvClnXuJubziaGBBMtQ3gKf3aIBu675gGCOcdZtYW6kvd63XakYKziLQd9Xrc1DzazwyjjeX0sC//nN1d4WroYqJVZ3tMhgNIL1Jphf9c1HVgfVram9Zkylkon9tSuIkbSqcottU0A9Yzy7QRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tWclyEKq4CVkl7hdRiKCw5b/8BrSgghcSXNAqeSOe0M=;
- b=j+X9aDhPNh5/uMJybg0OIztzh0JteNtmcMpwgRWtoxPx9ekv8c0UgOuUZpT3SYpBmSrLtchssDwceUFhwDBtnegaUDe1GDE8eKMPdCIZILSbvbH8WapNj15QbNO4PTa1dHomFJFzodhYVrjRJJCT6079jM89DBIp31KMNYa/NXbOBRDN6Io0xU6UrCd1JlTuM3BEqA2Pij3UMva3blpq5Yk00TSG/VxcSDEKzAMakUURFVcX1LmVA55UgKjyKytsSI08KgfzzU5k64AjCOUM4x0v83c2nEyKliBhID6HqCSGGhwxmMIe0ks1KrD5Fu7NMoj14WLvV18kkfyXugEU/g==
-Received: from BN0PR04CA0139.namprd04.prod.outlook.com (2603:10b6:408:ed::24)
- by CH0PR12MB5074.namprd12.prod.outlook.com (2603:10b6:610:e1::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Fri, 25 Feb
- 2022 08:50:45 +0000
-Received: from BN8NAM11FT007.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:ed:cafe::66) by BN0PR04CA0139.outlook.office365.com
- (2603:10b6:408:ed::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22 via Frontend
- Transport; Fri, 25 Feb 2022 08:50:45 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- BN8NAM11FT007.mail.protection.outlook.com (10.13.177.109) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5017.22 via Frontend Transport; Fri, 25 Feb 2022 08:50:45 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 25 Feb
- 2022 08:50:44 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Fri, 25 Feb 2022
- 00:50:43 -0800
-Received: from sandstorm.attlocal.net (10.127.8.10) by mail.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Fri, 25 Feb 2022 00:50:41 -0800
-From:   John Hubbard <jhubbard@nvidia.com>
-To:     Jens Axboe <axboe@kernel.dk>, Jan Kara <jack@suse.cz>,
+        Fri, 25 Feb 2022 03:52:45 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21FEC1B403B;
+        Fri, 25 Feb 2022 00:52:09 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B0320106F;
+        Fri, 25 Feb 2022 00:52:08 -0800 (PST)
+Received: from [10.163.51.16] (unknown [10.163.51.16])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 855243F70D;
+        Fri, 25 Feb 2022 00:52:06 -0800 (PST)
+Subject: Re: [PATCH 25/30] nios2/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+To:     Dinh Nguyen <dinguyen@kernel.org>, linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org,
         Christoph Hellwig <hch@infradead.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Miklos Szeredi <miklos@szeredi.hu>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>
-CC:     <linux-block@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <linux-xfs@vger.kernel.org>, <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: [RFC PATCH 6/7] fuse: convert direct IO paths to use FOLL_PIN
-Date:   Fri, 25 Feb 2022 00:50:24 -0800
-Message-ID: <20220225085025.3052894-7-jhubbard@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220225085025.3052894-1-jhubbard@nvidia.com>
-References: <20220225085025.3052894-1-jhubbard@nvidia.com>
+        linux-arch@vger.kernel.org
+References: <1644805853-21338-1-git-send-email-anshuman.khandual@arm.com>
+ <1644805853-21338-26-git-send-email-anshuman.khandual@arm.com>
+ <50ac6dc2-7c71-2a8b-aa00-78926351b252@kernel.org>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <637cfc45-60ad-3cd1-5127-76ecabb87def@arm.com>
+Date:   Fri, 25 Feb 2022 14:22:03 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-NVConfidentiality: public
+In-Reply-To: <50ac6dc2-7c71-2a8b-aa00-78926351b252@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e14dc0c9-f000-4920-5c71-08d9f83be98e
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5074:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR12MB50748B8C3F03D27DA940A91FA83E9@CH0PR12MB5074.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: utN9OnhBYfjLaaMUa/ek04txJYqDYRj0suaZTme+Nk7I0fQNDmfMFgZxyUeymK5aCy6c/ophxUtBZYeMkFbULHxkvLrHY/Vxd1wHjhBdVrLJ/sPSWNZw44asH9+UEC2qL6ZOEvJk5UHVGXSZYd2P+idVZNRlkADx3fHfbwtMn519F6FGoWWUsIq0mmSFOloMMoywXNLCQF8j44k+kD+OmU04+jV5oL41tWdySwBvGjaefGKHbr5f1rKQ6OzjtEyQyQK09PY6kyh+gW/15Q76w9loX+xRMoewEj8TA5skT/4oWuNw1FjfHk9zdGzQwMV34CvER6shuj6Sst34qDSnArudSJvY5VvT5wIu81t/1WW51a0/p92lDsaiF7sti7sptewJayv8HHq1jI/B/dlNaEUHLvqvS5daeF6ITGGCtyYMK5KUrSaVFjQu94w7QQS2bINVpudxnTiuMVI5+hac3JfKs+gRvoL/DPimXjRgoJUdHDxy6hgvWvCBMLVe8Ec+OaWQOt4/aWBLcc/yQ2uAxkT0ZrahV1qHivooso1o2LNq0zrQd6r84pGiMEjp7g4VLzclFwy5NIWlvA24zNZLNyybHHxdS5hnBi1tMS2r1XDXbF8kaKeF0BEObdFmO8+UM795qD8Q/VuCdT+lkFUbms5eVLMmADj+VqdEHy752tdoJdmU6kj7+xFRCXdtL+TWobaWAGW+WBsRK/4crIlFi9StDq9uEndIxuJGL1Q6UpdY6WXrX7cKEEULivHZqdH5dWxCz3KaSenB2V/kaVrun+9AyvGxmEujIFY+YPPI8xgBZthMUSYKBIS/orJ6Sndd
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(70206006)(2906002)(40460700003)(86362001)(82310400004)(70586007)(426003)(7416002)(8936002)(107886003)(6666004)(186003)(2616005)(1076003)(26005)(83380400001)(508600001)(336012)(54906003)(966005)(921005)(356005)(316002)(6636002)(81166007)(110136005)(36860700001)(47076005)(8676002)(36756003)(4326008)(5660300002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 08:50:45.3097
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e14dc0c9-f000-4920-5c71-08d9f83be98e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT007.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5074
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the fuse filesystem to support the new iov_iter_get_pages()
-behavior. That routine now invokes pin_user_pages_fast(), which means that
-such pages must be released via unpin_user_page(), rather than via
-put_page().
 
-This commit also removes any possibility of kernel pages being handled, in
-the fuse_get_user_pages() call. Although this may seem like a steep price
-to pay, Christoph Hellwig actually recommended it a few years ago for
-nearly the same situation [1].
 
-[1] https://lore.kernel.org/kvm/20190724061750.GA19397@infradead.org/
+On 2/25/22 7:01 AM, Dinh Nguyen wrote:
+> Hi Anshuman,
+> 
+> On 2/13/22 20:30, Anshuman Khandual wrote:
+>> This defines and exports a platform specific custom vm_get_page_prot() via
+>> subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+>> macros can be dropped which are no longer needed.
+>>
+>> Cc: Dinh Nguyen <dinguyen@kernel.org>
+>> Cc: linux-kernel@vger.kernel.org
+>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>> Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+>> ---
+>>   arch/nios2/Kconfig               |  1 +
+>>   arch/nios2/include/asm/pgtable.h | 16 ------------
+>>   arch/nios2/mm/init.c             | 45 ++++++++++++++++++++++++++++++++
+>>   3 files changed, 46 insertions(+), 16 deletions(-)
+>>
+>> diff --git a/arch/nios2/Kconfig b/arch/nios2/Kconfig
+>> index 33fd06f5fa41..85a58a357a3b 100644
+>> --- a/arch/nios2/Kconfig
+>> +++ b/arch/nios2/Kconfig
+>> @@ -6,6 +6,7 @@ config NIOS2
+>>       select ARCH_HAS_SYNC_DMA_FOR_CPU
+>>       select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+>>       select ARCH_HAS_DMA_SET_UNCACHED
+>> +    select ARCH_HAS_VM_GET_PAGE_PROT
+>>       select ARCH_NO_SWAP
+>>       select COMMON_CLK
+>>       select TIMER_OF
+>> diff --git a/arch/nios2/include/asm/pgtable.h b/arch/nios2/include/asm/pgtable.h
+>> index 4a995fa628ee..2678dad58a63 100644
+>> --- a/arch/nios2/include/asm/pgtable.h
+>> +++ b/arch/nios2/include/asm/pgtable.h
+>> @@ -40,24 +40,8 @@ struct mm_struct;
+>>    */
+>>     /* Remove W bit on private pages for COW support */
+>> -#define __P000    MKP(0, 0, 0)
+>> -#define __P001    MKP(0, 0, 1)
+>> -#define __P010    MKP(0, 0, 0)    /* COW */
+>> -#define __P011    MKP(0, 0, 1)    /* COW */
+>> -#define __P100    MKP(1, 0, 0)
+>> -#define __P101    MKP(1, 0, 1)
+>> -#define __P110    MKP(1, 0, 0)    /* COW */
+>> -#define __P111    MKP(1, 0, 1)    /* COW */
+>>     /* Shared pages can have exact HW mapping */
+>> -#define __S000    MKP(0, 0, 0)
+>> -#define __S001    MKP(0, 0, 1)
+>> -#define __S010    MKP(0, 1, 0)
+>> -#define __S011    MKP(0, 1, 1)
+>> -#define __S100    MKP(1, 0, 0)
+>> -#define __S101    MKP(1, 0, 1)
+>> -#define __S110    MKP(1, 1, 0)
+>> -#define __S111    MKP(1, 1, 1)
+>>     /* Used all over the kernel */
+>>   #define PAGE_KERNEL __pgprot(_PAGE_PRESENT | _PAGE_CACHED | _PAGE_READ | \
+>> diff --git a/arch/nios2/mm/init.c b/arch/nios2/mm/init.c
+>> index 613fcaa5988a..311b2146a248 100644
+>> --- a/arch/nios2/mm/init.c
+>> +++ b/arch/nios2/mm/init.c
+>> @@ -124,3 +124,48 @@ const char *arch_vma_name(struct vm_area_struct *vma)
+>>   {
+>>       return (vma->vm_start == KUSER_BASE) ? "[kuser]" : NULL;
+>>   }
+>> +
+>> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
+>> +{
+>> +    switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
+>> +    case VM_NONE:
+>> +        return MKP(0, 0, 0);
+>> +    case VM_READ:
+>> +        return MKP(0, 0, 1);
+>> +    /* COW */
+>> +    case VM_WRITE:
+>> +        return MKP(0, 0, 0);
+>> +    /* COW */
+>> +    case VM_WRITE | VM_READ:
+>> +        return MKP(0, 0, 1);
+>> +    case VM_EXEC:
+>> +        return MKP(1, 0, 0);
+>> +    case VM_EXEC | VM_READ:
+>> +        return MKP(1, 0, 1);
+>> +    /* COW */
+>> +    case VM_EXEC | VM_WRITE:
+>> +        return MKP(1, 0, 0);
+>> +    /* COW */
+>> +    case VM_EXEC | VM_WRITE | VM_READ:
+>> +        return MKP(1, 0, 1);
+>> +    case VM_SHARED:
+>> +        return MKP(0, 0, 0);
+>> +    case VM_SHARED | VM_READ:
+>> +        return MKP(0, 0, 1);
+>> +    case VM_SHARED | VM_WRITE:
+>> +        return MKP(0, 1, 0);
+>> +    case VM_SHARED | VM_WRITE | VM_READ:
+>> +        return MKP(0, 1, 1);
+>> +    case VM_SHARED | VM_EXEC:
+>> +        return MKP(1, 0, 0);
+>> +    case VM_SHARED | VM_EXEC | VM_READ:
+>> +        return MKP(1, 0, 1);
+>> +    case VM_SHARED | VM_EXEC | VM_WRITE:
+>> +        return MKP(1, 1, 0);
+>> +    case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
+>> +        return MKP(1, 1, 1);
+>> +    default:
+>> +        BUILD_BUG();
+>> +    }
+>> +}
+>> +EXPORT_SYMBOL(vm_get_page_prot);
+> 
+> I'm getting this compile error after applying this patch when build NIOS2:
 
-Signed-off-by: John Hubbard <jhubbard@nvidia.com>
----
- fs/fuse/dev.c  |  5 ++++-
- fs/fuse/file.c | 23 ++++++++---------------
- 2 files changed, 12 insertions(+), 16 deletions(-)
+Hmm, that is strange.
 
-diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
-index e1b4a846c90d..a93037c96b89 100644
---- a/fs/fuse/dev.c
-+++ b/fs/fuse/dev.c
-@@ -675,7 +675,10 @@ static void fuse_copy_finish(struct fuse_copy_state *cs)
- 			flush_dcache_page(cs->pg);
- 			set_page_dirty_lock(cs->pg);
- 		}
--		put_page(cs->pg);
-+		if (cs->pipebufs)
-+			put_page(cs->pg);
-+		else
-+			unpin_user_page(cs->pg);
- 	}
- 	cs->pg = NULL;
- }
-diff --git a/fs/fuse/file.c b/fs/fuse/file.c
-index 94747bac3489..395c2fb613fb 100644
---- a/fs/fuse/file.c
-+++ b/fs/fuse/file.c
-@@ -619,7 +619,7 @@ static void fuse_release_user_pages(struct fuse_args_pages *ap,
- 	for (i = 0; i < ap->num_pages; i++) {
- 		if (should_dirty)
- 			set_page_dirty_lock(ap->pages[i]);
--		put_page(ap->pages[i]);
-+		unpin_user_page(ap->pages[i]);
- 	}
- }
- 
-@@ -1382,20 +1382,13 @@ static int fuse_get_user_pages(struct fuse_args_pages *ap, struct iov_iter *ii,
- 	size_t nbytes = 0;  /* # bytes already packed in req */
- 	ssize_t ret = 0;
- 
--	/* Special case for kernel I/O: can copy directly into the buffer */
--	if (iov_iter_is_kvec(ii)) {
--		unsigned long user_addr = fuse_get_user_addr(ii);
--		size_t frag_size = fuse_get_frag_size(ii, *nbytesp);
--
--		if (write)
--			ap->args.in_args[1].value = (void *) user_addr;
--		else
--			ap->args.out_args[0].value = (void *) user_addr;
--
--		iov_iter_advance(ii, frag_size);
--		*nbytesp = frag_size;
--		return 0;
--	}
-+	/*
-+	 * TODO: this warning can eventually be removed. It is just to help
-+	 * developers, during a transitional period, while direct IO code is
-+	 * moving over to FOLL_PIN pages.
-+	 */
-+	if (WARN_ON_ONCE(!iter_is_iovec(ii)))
-+		return -EOPNOTSUPP;
- 
- 	while (nbytes < *nbytesp && ap->num_pages < max_pages) {
- 		unsigned npages;
--- 
-2.35.1
+Did you apply the entire series or atleast upto the nios2 patch ? Generic
+vm_get_page_prot() should not be called (which is build complaining here)
+when ARCH_HAS_VM_GET_PAGE_PROT is already enabled on nios2 platform.
 
+Ran a quick build test on nios2 for the entire series and also just upto
+this particular patch, build was successful.
+
+> 
+> 
+> mm/mmap.c:105:2: error: ‘__P000’ undeclared here (not in a function)
+> 
+>   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+> 
+>       |  ^~~~~~
+> 
+> mm/mmap.c:105:10: error: ‘__P001’ undeclared here (not in a function)
+> 
+>   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+> 
+>       |          ^~~~~~
+> 
+> mm/mmap.c:105:18: error: ‘__P010’ undeclared here (not in a function)
+> 
+>   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+> 
+>       |                  ^~~~~~
+> 
+>   AR      fs/devpts/built-in.a
+> 
+> mm/mmap.c:105:26: error: ‘__P011’ undeclared here (not in a function)
+> 
+>   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+> 
+>       |                          ^~~~~~
+> 
+> mm/mmap.c:105:34: error: ‘__P100’ undeclared here (not in a function)
+> 
+>   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+> 
+>       |                                  ^~~~~~
+> 
+> mm/mmap.c:105:42: error: ‘__P101’ undeclared here (not in a function)
+> 
+>   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+> 
+>       |                                          ^~~~~~
+> 
+> mm/mmap.c:105:50: error: ‘__P110’ undeclared here (not in a function)
+> 
+>   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+> 
+>       |                                                  ^~~~~~
+> 
+> mm/mmap.c:105:58: error: ‘__P111’ undeclared here (not in a function)
+> 
+>   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+> 
+>       |                                                          ^~~~~~
+> 
+> mm/mmap.c:106:2: error: ‘__S000’ undeclared here (not in a function)
+> 
+>   106 |  __S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
+> 
+>       |  ^~~~~~
+> 
+> mm/mmap.c:106:10: error: ‘__S001’ undeclared here (not in a function)
+> 
+>   106 |  __S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
+> 
+> 
+> 
+> Dinh
+> 
