@@ -2,365 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C33A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 11:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C09EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240353AbiBYL6o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 06:58:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33394 "EHLO
+        id S240411AbiBYMBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 07:01:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240300AbiBYL6h (ORCPT
+        with ESMTP id S240399AbiBYMBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 06:58:37 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF7920DB04
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 03:58:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645790285; x=1677326285;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=jb575qz92N0qttgR0m4lb4u9YIyF2WnFBvxZuO6zb3s=;
-  b=MqjQwFkby8RD0prnmO3IcnFfxjhrusqfO0hVPDUNZ1WybDpf3eL7lr6P
-   7TH39miEz0EOOgFIBSTmO330nD0dsB8XV8Dy9XT7QSG5g2vCIiK3eHNzg
-   +lnCAzyaGhpj5O2u6U2P9+FjJbpwp/Hfs+vg/Zoipjd/I5g+JUG4klGnq
-   MAp3t3qzZS6SrS4T8081YQyYRM0SGyJZ5wkase4LhdM3+LbpRgudKebcm
-   2bJe8KFC+2NV6TRg+Ze5F3wSZhmXwgPAKjo9lDTyc9f8r2c9MNasrLVxS
-   Avq6L7RiMPjH/amA1fyXQ/uZsFVACrvHdjgyZGzIXXJfWhr8DhEzCmuFZ
-   w==;
-X-IronPort-AV: E=Sophos;i="5.90,136,1643698800"; 
-   d="scan'208";a="150004062"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Feb 2022 04:57:56 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 25 Feb 2022 04:57:54 -0700
-Received: from [10.12.72.56] (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 25 Feb 2022 04:57:49 -0700
-Message-ID: <11bad796-94b8-6b3c-92df-40da19f9eadd@microchip.com>
-Date:   Fri, 25 Feb 2022 12:57:48 +0100
+        Fri, 25 Feb 2022 07:01:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207D02763E2;
+        Fri, 25 Feb 2022 04:01:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B16A961A2F;
+        Fri, 25 Feb 2022 12:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 993D2C340F4;
+        Fri, 25 Feb 2022 12:01:10 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="FrbMrkxA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1645790467;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PKJ8kj3JCrrxThlQ3iYnN2yFuKHQlideGF4Hi15eC4A=;
+        b=FrbMrkxAx3wv1Na9y13Q+6XKbhI5SmN/tzDz12XbqTWoVKUT9TDUyUmBwpTvIAglgRXlFR
+        kPIuK4L3T3qjLkv5OQqry4KN90LRKyaR41Cl7rUZSWs9nJJFc8nlmLxErIcsKth5a6Sy5z
+        uPDhCkUHMPS648NiFEDIO88SmSP3+AE=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 746735d1 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 25 Feb 2022 12:01:06 +0000 (UTC)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2d07ae0b1c4so30633937b3.11;
+        Fri, 25 Feb 2022 04:01:05 -0800 (PST)
+X-Gm-Message-State: AOAM532s7MMn4O7LNRqv/gFYKEHtFKrYj0L+vIVNJu7JZKWigLYgMjKK
+        Tf9L5z0IsEpYs5AXu32uQuuitmt2iGgC+zMZGPA=
+X-Google-Smtp-Source: ABdhPJzOZdurIMZ0P9SbV33Il9mssGaSP73pY/PcPM5ehDl2bVRn5dIeKDcCAaK2fAgt/Er6hip+9B77IAK11QE0Db8=
+X-Received: by 2002:a0d:d995:0:b0:2d6:f086:c0ec with SMTP id
+ b143-20020a0dd995000000b002d6f086c0ecmr7354502ywe.396.1645790463524; Fri, 25
+ Feb 2022 04:01:03 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 1/1] soc: add microchip polarfire soc system controller
-Content-Language: en-US
-To:     <conor.dooley@microchip.com>, <aou@eecs.berkeley.edu>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>, <arnd@arndb.de>,
-        <olof@lixom.net>, <linux-riscv@lists.infradead.org>
-CC:     <robh+dt@kernel.org>, <cyril.jean@microchip.com>,
-        <daire.mcnamara@microchip.com>, <lewis.hanly@microchip.com>,
-        <jassisinghbrar@gmail.com>, <j.neuschaefer@gmx.net>,
-        <sfr@canb.auug.org.au>, <damien.lemoal@wdc.com>,
-        <atishp@atishpatra.org>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220217101349.2374873-1-conor.dooley@microchip.com>
- <20220217101349.2374873-2-conor.dooley@microchip.com>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20220217101349.2374873-2-conor.dooley@microchip.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220224133906.751587-1-Jason@zx2c4.com> <20220224133906.751587-3-Jason@zx2c4.com>
+ <CAMj1kXE-2sknZD7o72G-ZARpfm4Q0m+im1pTLuPhPu6TkqKOPQ@mail.gmail.com>
+In-Reply-To: <CAMj1kXE-2sknZD7o72G-ZARpfm4Q0m+im1pTLuPhPu6TkqKOPQ@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Fri, 25 Feb 2022 13:00:52 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pJ3wb=EbUErJrCRC=VYGhFZqj2ar_AkVPsUvAnqGtwwg@mail.gmail.com>
+Message-ID: <CAHmME9pJ3wb=EbUErJrCRC=VYGhFZqj2ar_AkVPsUvAnqGtwwg@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] virt: vmgenid: introduce driver for reinitializing
+ RNG on VM fork
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     linux-hyperv@vger.kernel.org, KVM list <kvm@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        QEMU Developers <qemu-devel@nongnu.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        adrian@parity.io, "Woodhouse, David" <dwmw@amazon.co.uk>,
+        Alexander Graf <graf@amazon.com>,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        "Weiss, Radu" <raduweis@amazon.com>,
+        =?UTF-8?Q?Daniel_P=2E_Berrang=C3=A9?= <berrange@redhat.com>,
+        Laszlo Ersek <lersek@redhat.com>,
+        Igor Mammedov <imammedo@redhat.com>,
+        Eduardo Habkost <ehabkost@redhat.com>, ben@skyportsystems.com,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Jann Horn <jannh@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Theodore Y. Ts'o" <tytso@mit.edu>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/02/2022 at 11:13, conor.dooley@microchip.com wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
-> 
-> This driver provides an interface for other drivers to access the
-> functions of the system controller on the Microchip PolarFire SoC.
-> 
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+On Fri, Feb 25, 2022 at 12:24 PM Ard Biesheuvel <ardb@kernel.org> wrote:
+>
+> > @@ -13,6 +13,15 @@ menuconfig VIRT_DRIVERS
+> >
+> >  if VIRT_DRIVERS
+> >
+> > +config VMGENID
+> > +       tristate "Virtual Machine Generation ID driver"
+> > +       default y
+>
+> Please make this default m - this code can run as a module and the
+> feature it relies on is discoverable by udev
 
-It looks okay to me:
-Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Will do.
 
-As agreed with Conor, I queue it in my at91-soc branch for 5.18 which 
-will be reached via arm-soc.
+> > index 000000000000..5da4dc8f25e3
+> > --- /dev/null
+> > +++ b/drivers/virt/vmgenid.c
+> > @@ -0,0 +1,121 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/*
+> > + * Virtual Machine Generation ID driver
+> > + *
+> > + * Copyright (C) 2022 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
+> > + * Copyright (C) 2020 Amazon. All rights reserved.
+> > + * Copyright (C) 2018 Red Hat Inc. All rights reserved.
+> > + */
+> > +
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +#include <linux/acpi.h>
+> > +#include <linux/random.h>
+> > +
+> > +ACPI_MODULE_NAME("vmgenid");
+> > +
+> > +enum { VMGENID_SIZE = 16 };
+> > +
+> > +static struct {
+> > +       u8 this_id[VMGENID_SIZE];
+> > +       u8 *next_id;
+> > +} state;
+> > +
+>
+> This state is singular
+>
+>
+> > +static int vmgenid_acpi_add(struct acpi_device *device)
+> > +{
+>
+> ... whereas this may be called for multiple instances of the device.
+> This likely makes no sense, so it is better to reject it here.
 
-Best regards,
-   Nicolas
+Like, return early if it's called a second time? I can do that.
 
-> ---
->   drivers/soc/Kconfig                         |   1 +
->   drivers/soc/Makefile                        |   1 +
->   drivers/soc/microchip/Kconfig               |  10 +
->   drivers/soc/microchip/Makefile              |   1 +
->   drivers/soc/microchip/mpfs-sys-controller.c | 194 ++++++++++++++++++++
->   include/soc/microchip/mpfs.h                |   4 +-
->   6 files changed, 209 insertions(+), 2 deletions(-)
->   create mode 100644 drivers/soc/microchip/Kconfig
->   create mode 100644 drivers/soc/microchip/Makefile
->   create mode 100644 drivers/soc/microchip/mpfs-sys-controller.c
-> 
-> diff --git a/drivers/soc/Kconfig b/drivers/soc/Kconfig
-> index a8562678c437..c5aae42673d3 100644
-> --- a/drivers/soc/Kconfig
-> +++ b/drivers/soc/Kconfig
-> @@ -13,6 +13,7 @@ source "drivers/soc/imx/Kconfig"
->   source "drivers/soc/ixp4xx/Kconfig"
->   source "drivers/soc/litex/Kconfig"
->   source "drivers/soc/mediatek/Kconfig"
-> +source "drivers/soc/microchip/Kconfig"
->   source "drivers/soc/qcom/Kconfig"
->   source "drivers/soc/renesas/Kconfig"
->   source "drivers/soc/rockchip/Kconfig"
-> diff --git a/drivers/soc/Makefile b/drivers/soc/Makefile
-> index adb30c2d4fea..904eec2a7871 100644
-> --- a/drivers/soc/Makefile
-> +++ b/drivers/soc/Makefile
-> @@ -18,6 +18,7 @@ obj-y				+= ixp4xx/
->   obj-$(CONFIG_SOC_XWAY)		+= lantiq/
->   obj-$(CONFIG_LITEX_SOC_CONTROLLER) += litex/
->   obj-y				+= mediatek/
-> +obj-y				+= microchip/
->   obj-y				+= amlogic/
->   obj-y				+= qcom/
->   obj-y				+= renesas/
-> diff --git a/drivers/soc/microchip/Kconfig b/drivers/soc/microchip/Kconfig
-> new file mode 100644
-> index 000000000000..eb656b33156b
-> --- /dev/null
-> +++ b/drivers/soc/microchip/Kconfig
-> @@ -0,0 +1,10 @@
-> +config POLARFIRE_SOC_SYS_CTRL
-> +	tristate "POLARFIRE_SOC_SYS_CTRL"
-> +	depends on POLARFIRE_SOC_MAILBOX
-> +	help
-> +	  This driver adds support for the PolarFire SoC (MPFS) system controller.
-> +
-> +	  To compile this driver as a module, choose M here. the
-> +	  module will be called mpfs_system_controller.
-> +
-> +	  If unsure, say N.
-> diff --git a/drivers/soc/microchip/Makefile b/drivers/soc/microchip/Makefile
-> new file mode 100644
-> index 000000000000..14489919fe4b
-> --- /dev/null
-> +++ b/drivers/soc/microchip/Makefile
-> @@ -0,0 +1 @@
-> +obj-$(CONFIG_POLARFIRE_SOC_SYS_CTRL)	+= mpfs-sys-controller.o
-> diff --git a/drivers/soc/microchip/mpfs-sys-controller.c b/drivers/soc/microchip/mpfs-sys-controller.c
-> new file mode 100644
-> index 000000000000..2f4535929762
-> --- /dev/null
-> +++ b/drivers/soc/microchip/mpfs-sys-controller.c
-> @@ -0,0 +1,194 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Microchip PolarFire SoC (MPFS) system controller driver
-> + *
-> + * Copyright (c) 2020-2021 Microchip Corporation. All rights reserved.
-> + *
-> + * Author: Conor Dooley <conor.dooley@microchip.com>
-> + *
-> + */
-> +
-> +#include <linux/slab.h>
-> +#include <linux/kref.h>
-> +#include <linux/module.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/of_platform.h>
-> +#include <linux/mailbox_client.h>
-> +#include <linux/platform_device.h>
-> +#include <soc/microchip/mpfs.h>
-> +
-> +static DEFINE_MUTEX(transaction_lock);
-> +
-> +struct mpfs_sys_controller {
-> +	struct mbox_client client;
-> +	struct mbox_chan *chan;
-> +	struct completion c;
-> +	struct kref consumers;
-> +};
-> +
-> +int mpfs_blocking_transaction(struct mpfs_sys_controller *sys_controller, struct mpfs_mss_msg *msg)
-> +{
-> +	int ret, err;
-> +
-> +	err = mutex_lock_interruptible(&transaction_lock);
-> +	if (err)
-> +		return err;
-> +
-> +	reinit_completion(&sys_controller->c);
-> +
-> +	ret = mbox_send_message(sys_controller->chan, msg);
-> +	if (ret >= 0) {
-> +		if (wait_for_completion_timeout(&sys_controller->c, HZ)) {
-> +			ret = 0;
-> +		} else {
-> +			ret = -ETIMEDOUT;
-> +			dev_warn(sys_controller->client.dev,
-> +				 "MPFS sys controller transaction timeout\n");
-> +		}
-> +	} else {
-> +		dev_err(sys_controller->client.dev,
-> +			"mpfs sys controller transaction returned %d\n", ret);
-> +	}
-> +
-> +	mutex_unlock(&transaction_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(mpfs_blocking_transaction);
-> +
-> +static void rx_callback(struct mbox_client *client, void *msg)
-> +{
-> +	struct mpfs_sys_controller *sys_controller =
-> +		container_of(client, struct mpfs_sys_controller, client);
-> +
-> +	complete(&sys_controller->c);
-> +}
-> +
-> +static void mpfs_sys_controller_delete(struct kref *kref)
-> +{
-> +	struct mpfs_sys_controller *sys_controller = container_of(kref, struct mpfs_sys_controller,
-> +					       consumers);
-> +
-> +	mbox_free_channel(sys_controller->chan);
-> +	kfree(sys_controller);
-> +}
-> +
-> +void mpfs_sys_controller_put(void *data)
-> +{
-> +	struct mpfs_sys_controller *sys_controller = data;
-> +
-> +	kref_put(&sys_controller->consumers, mpfs_sys_controller_delete);
-> +}
-> +EXPORT_SYMBOL(mpfs_sys_controller_put);
-> +
-> +static struct platform_device subdevs[] = {
-> +	{
-> +		.name		= "mpfs-rng",
-> +		.id		= -1,
-> +	},
-> +	{
-> +		.name		= "mpfs-generic-service",
-> +		.id		= -1,
-> +	}
-> +};
-> +
-> +static int mpfs_sys_controller_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct mpfs_sys_controller *sys_controller;
-> +	int i;
-> +
-> +	sys_controller = devm_kzalloc(dev, sizeof(*sys_controller), GFP_KERNEL);
-> +	if (!sys_controller)
-> +		return -ENOMEM;
-> +
-> +	sys_controller->client.dev = dev;
-> +	sys_controller->client.rx_callback = rx_callback;
-> +	sys_controller->client.tx_block = 1U;
-> +
-> +	sys_controller->chan = mbox_request_channel(&sys_controller->client, 0);
-> +	if (IS_ERR(sys_controller->chan))
-> +		return dev_err_probe(dev, PTR_ERR(sys_controller->chan),
-> +				     "Failed to get mbox channel\n");
-> +
-> +	init_completion(&sys_controller->c);
-> +	kref_init(&sys_controller->consumers);
-> +
-> +	platform_set_drvdata(pdev, sys_controller);
-> +
-> +	dev_info(&pdev->dev, "Registered MPFS system controller\n");
-> +
-> +	for (i = 0; i < ARRAY_SIZE(subdevs); i++) {
-> +		subdevs[i].dev.parent = dev;
-> +		if (platform_device_register(&subdevs[i]))
-> +			dev_warn(dev, "Error registering sub device %s\n", subdevs[i].name);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int mpfs_sys_controller_remove(struct platform_device *pdev)
-> +{
-> +	struct mpfs_sys_controller *sys_controller = platform_get_drvdata(pdev);
-> +
-> +	mpfs_sys_controller_put(sys_controller);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id mpfs_sys_controller_of_match[] = {
-> +	{.compatible = "microchip,mpfs-sys-controller", },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, mpfs_sys_controller_of_match);
-> +
-> +struct mpfs_sys_controller *mpfs_sys_controller_get(struct device *dev)
-> +{
-> +	const struct of_device_id *match;
-> +	struct mpfs_sys_controller *sys_controller;
-> +	int ret;
-> +
-> +	if (!dev->parent)
-> +		goto err_no_device;
-> +
-> +	match = of_match_node(mpfs_sys_controller_of_match,  dev->parent->of_node);
-> +	of_node_put(dev->parent->of_node);
-> +	if (!match)
-> +		goto err_no_device;
-> +
-> +	sys_controller = dev_get_drvdata(dev->parent);
-> +	if (!sys_controller)
-> +		goto err_bad_device;
-> +
-> +	if (!kref_get_unless_zero(&sys_controller->consumers))
-> +		goto err_bad_device;
-> +
-> +	ret = devm_add_action_or_reset(dev, mpfs_sys_controller_put, sys_controller);
-> +	if (ret)
-> +		return ERR_PTR(ret);
-> +
-> +	return sys_controller;
-> +
-> +err_no_device:
-> +	dev_dbg(dev, "Parent device was not an MPFS system controller\n");
-> +	return ERR_PTR(-ENODEV);
-> +
-> +err_bad_device:
-> +	dev_dbg(dev, "MPFS system controller found but could not register as a sub device\n");
-> +	return ERR_PTR(-EPROBE_DEFER);
-> +}
-> +EXPORT_SYMBOL(mpfs_sys_controller_get);
-> +
-> +static struct platform_driver mpfs_sys_controller_driver = {
-> +	.driver = {
-> +		.name = "mpfs-sys-controller",
-> +		.of_match_table = mpfs_sys_controller_of_match,
-> +	},
-> +	.probe = mpfs_sys_controller_probe,
-> +	.remove = mpfs_sys_controller_remove,
-> +};
-> +module_platform_driver(mpfs_sys_controller_driver);
-> +
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_AUTHOR("Conor Dooley <conor.dooley@microchip.com>");
-> +MODULE_DESCRIPTION("MPFS system controller driver");
-> diff --git a/include/soc/microchip/mpfs.h b/include/soc/microchip/mpfs.h
-> index 2b64c95f3be5..6466515262bd 100644
-> --- a/include/soc/microchip/mpfs.h
-> +++ b/include/soc/microchip/mpfs.h
-> @@ -34,9 +34,9 @@ struct mpfs_mss_response {
->   
->   #if IS_ENABLED(CONFIG_POLARFIRE_SOC_SYS_CTRL)
->   
-> -int mpfs_blocking_transaction(struct mpfs_sys_controller *mpfs_client, void *msg);
-> +int mpfs_blocking_transaction(struct mpfs_sys_controller *mpfs_client, struct mpfs_mss_msg *msg);
->   
-> -struct mpfs_sys_controller *mpfs_sys_controller_get(struct device_node *mailbox_node);
-> +struct mpfs_sys_controller *mpfs_sys_controller_get(struct device *dev);
->   
->   #endif /* if IS_ENABLED(CONFIG_POLARFIRE_SOC_SYS_CTRL) */
->   
+>
+> > +       struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER };
+> > +       union acpi_object *pss;
+> > +       phys_addr_t phys_addr;
+> > +       acpi_status status;
+> > +       int ret = 0;
+> > +
+> > +       if (!device)
+> > +               return -EINVAL;
+> > +
+> > +       status = acpi_evaluate_object(device->handle, "ADDR", NULL, &buffer);
+> > +       if (ACPI_FAILURE(status)) {
+> > +               ACPI_EXCEPTION((AE_INFO, status, "Evaluating ADDR"));
+> > +               return -ENODEV;
+> > +       }
+> > +       pss = buffer.pointer;
+> > +       if (!pss || pss->type != ACPI_TYPE_PACKAGE || pss->package.count != 2 ||
+> > +           pss->package.elements[0].type != ACPI_TYPE_INTEGER ||
+> > +           pss->package.elements[1].type != ACPI_TYPE_INTEGER) {
+> > +               ret = -EINVAL;
+> > +               goto out;
+> > +       }
+> > +
+> > +       phys_addr = (pss->package.elements[0].integer.value << 0) |
+> > +                   (pss->package.elements[1].integer.value << 32);
+> > +       state.next_id = acpi_os_map_memory(phys_addr, VMGENID_SIZE);
+>
+> No need to use acpi_os_map_memory() here, plain memremap() should be fine.
 
+As we discussed online, I'll use dev_memremap(), and then get rid of
+the `.remove = ` function all together.
 
--- 
-Nicolas Ferre
+> > +               acpi_os_unmap_memory(state.next_id, VMGENID_SIZE);
+>
+> memunmap() here
+
+And then as discussed, this goes away too.
+
+>
+> > +       state.next_id = NULL;
+> > +       return 0;
+> > +}
+> > +
+> > +static void vmgenid_acpi_notify(struct acpi_device *device, u32 event)
+> > +{
+> > +       u8 old_id[VMGENID_SIZE];
+> > +
+> > +       if (!device || acpi_driver_data(device) != &state)
+> > +               return;
+> > +       memcpy(old_id, state.this_id, sizeof(old_id));
+> > +       memcpy(state.this_id, state.next_id, sizeof(state.this_id));
+> > +       if (!memcmp(old_id, state.this_id, sizeof(old_id)))
+> > +               return;
+>
+> Is this little dance really necessary? I.e., can we just do
+>
+> add_vmfork_randomness(state.next_id, VMGENID_SIZE)
+>
+> and be done with it?
+
+Yes it is. vmfork induces a "premature-next" which we really should
+not do unless it's really necessary. It torches the whole entropy
+pool. In the even that this notifier fires but the ID hasn't changed,
+we shouldn't touch anything.
+
+Thanks for the review. v+1 coming up shortly.
