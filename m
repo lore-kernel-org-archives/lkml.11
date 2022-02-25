@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D53AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0290C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235043AbiBYTeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 14:34:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
+        id S235056AbiBYTep (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 14:34:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235011AbiBYTee (ORCPT
+        with ESMTP id S235070AbiBYTem (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 14:34:34 -0500
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2085.outbound.protection.outlook.com [40.107.93.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E2861AAFEE;
-        Fri, 25 Feb 2022 11:34:02 -0800 (PST)
+        Fri, 25 Feb 2022 14:34:42 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2067.outbound.protection.outlook.com [40.107.244.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75211AE65C;
+        Fri, 25 Feb 2022 11:34:07 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j/w5SZCq8a2sDj6/yL+y4lH0tQr7E3BOvVKFKN+fn9oiRAr7MphHvMzxax2ixphzvfM09HT57WpXiihFoDYFx181Qp6WlR6b/o78j0+zJ6BmIdeD0ZSu91XTtpGnhkZVViYkE7W8dDJlt0ntIgN/4V2T+jio4aQoIwnnIdgTZHuzE9h+JO8mVanRa4rCgojy0KacPaw5SCwpcdCekyFfh57C67VUKFZsGrMA11X5UTX5H1P0hhPJyutYVvpl+HnBEkBSe5jMfQFR6Z0swK1AQeciB/bzmJNGhAZFWPuaIQCusYJ/4i8IaDLfrHRa3jUsCDno1clePLMTvgf50n29kA==
+ b=Eb2JqrsUX/4GZ2FBZBHTVsaYTy7tLe4Sp9OujEdomx7K3xp8I4voAhethwuWnxypm0ltHgPRaRiFEOMKjYAkpECc5U2QDJtc9yqTaKFZf6q1273+8nwo8vSxVBndOj8a62UQSDJ+mh/TviPMl10Bwn2iKE5GymzZfEEpIgBj/hKWJhMJLKj20ub7Lk+RkoK62tmRqSnJL0/yoxsPDYBggXbmxZXI4vGWSniAn4LWToOBplPnUJj+UQDBgMdDWpWzNl1b9XmzB4B8Pp/ntLh6mO0XvWENU55Y/YtUIumKtP9PCiRnLifPavl4ue+TryagM5r/jq1dEtIThODqfEmxyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZpplOZOinUZiVjzUtMlYZm4gl8NZcWb/7iBpF+NKq8w=;
- b=I3BGN/YtFQ49nkBBxXzsXDPu1xAUCa8ltI218P+APRjGE02ONEP6HvJ8MtvQgghpuFv0fwciBi9Kqx1snPAH4/jBX4imcdJe/MIpXAs40zIy74i509F9DshwBE9tjGKMQsav9MP/tUMXSf7DP/ukK7j2PEJ7IHXnaDSMRgd7i+3GQq2AVhgrULH1+Q2fwYmMbrmp0iXaXOde6UbwIRBz58nvjXILCadEBxI2kDb3dqAagroYyoRG6ITQ5FgEq365gALrHt7m41YfrxsLb8s5QQdkzCGOFXN7sVUM9aUkXOA+EZZ3D4OU9l3GYm/FijOuTcGEMYcNv+OVlYcriIdXrg==
+ bh=UvxSpxpGoJR1Uc5yf3at7Y/KQxMf0b3grYcKZwQkuII=;
+ b=agrFFbpzhcVvoBQSgnuDHGZViAjr5DjREYxDw1xneNkw+uWqTcWdS9PhQf54DKg28y4kZE/jJOvyQyqvm3k+CJlTCXp6SPfyPRw9dcFjj7KA2g0fX8h/YPjleVBKmiRih/25fcnq8YPBoooJJwbN3xFkg0t6EOOkCYikMY8hovZ4j7JnwUrivJV5sxXQppJMsREiSfnK2vBmGn5nMmh8BEJP3Qr6h57Bt4li+6bwtI+6V+v9DhDnKxSso1WsRB0GonHcZ6fywk6DMRmNhUTHvEay9AH8ob+Sne+edqsP80YTYdOaumiU8Yqn00Ev73uGblTxtMfSsp9P8j8gk1wQSA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZpplOZOinUZiVjzUtMlYZm4gl8NZcWb/7iBpF+NKq8w=;
- b=U+4ztKJgArCOaePYVaMUVZbBGe1Febgp6SqzjQ2wcmGCqpTUOXF4GgUurQDRsAbk+AVfL2fqd2TCIosDGxk+yDi7WjplRODseOusWWCUIPo0vHf9/T578PnvMgCsWvE8Imvf95wz9GsZYjK2zXaUM/59i4z3o86g8i4SdjyEF3E=
-Received: from MWHPR13CA0028.namprd13.prod.outlook.com (2603:10b6:300:95::14)
- by BYAPR12MB3112.namprd12.prod.outlook.com (2603:10b6:a03:ae::25) with
+ bh=UvxSpxpGoJR1Uc5yf3at7Y/KQxMf0b3grYcKZwQkuII=;
+ b=hb+ZGikGVnKrG0Tkopci5KC2H9RB3Dqkd+fZo0XSvM7gWKcfaDOFxLZGN9a3pvGNCvPew0umweUmyJhEm8M++6zBaapXF4/eNkKijXvB3uV8nhT1fE8iY8pJZhwNWPMoLKstoObIzZZsFeVRycMhwY2Kj9p0uaUdfmiMFn6C3ok=
+Received: from MWHPR13CA0046.namprd13.prod.outlook.com (2603:10b6:300:95::32)
+ by BN6PR1201MB2545.namprd12.prod.outlook.com (2603:10b6:404:b1::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.25; Fri, 25 Feb
- 2022 19:34:00 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Fri, 25 Feb
+ 2022 19:34:05 +0000
 Received: from CO1NAM11FT043.eop-nam11.prod.protection.outlook.com
- (2603:10b6:300:95:cafe::93) by MWHPR13CA0028.outlook.office365.com
- (2603:10b6:300:95::14) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10b6:300:95:cafe::59) by MWHPR13CA0046.outlook.office365.com
+ (2603:10b6:300:95::32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5038.9 via Frontend
- Transport; Fri, 25 Feb 2022 19:34:00 +0000
+ Transport; Fri, 25 Feb 2022 19:34:05 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -49,11 +49,11 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
  CO1NAM11FT043.mail.protection.outlook.com (10.13.174.193) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5017.22 via Frontend Transport; Fri, 25 Feb 2022 19:33:59 +0000
+ 15.20.5017.22 via Frontend Transport; Fri, 25 Feb 2022 19:34:05 +0000
 Received: from ethanolx50f7host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 25 Feb
- 2022 13:33:57 -0600
+ 2022 13:34:00 -0600
 From:   Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
 To:     <x86@kernel.org>, <linux-edac@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -63,9 +63,9 @@ CC:     Tony Luck <tony.luck@intel.com>, "H . Peter Anvin" <hpa@zytor.com>,
         Robert Richter <rric@kernel.org>,
         Yazen Ghannam <yazen.ghannam@amd.com>,
         Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
-Subject: [PATCH v4 1/3] x86/mce: Avoid unnecessary padding in struct mce_bank
-Date:   Fri, 25 Feb 2022 13:33:40 -0600
-Message-ID: <20220225193342.215780-2-Smita.KoralahalliChannabasappa@amd.com>
+Subject: [PATCH v4 3/3] x86/mce: Add support for Extended Physical Address MCA changes
+Date:   Fri, 25 Feb 2022 13:33:42 -0600
+Message-ID: <20220225193342.215780-4-Smita.KoralahalliChannabasappa@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220225193342.215780-1-Smita.KoralahalliChannabasappa@amd.com>
 References: <20220225193342.215780-1-Smita.KoralahalliChannabasappa@amd.com>
@@ -76,74 +76,197 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 39cd18af-4f65-4c3f-e307-08d9f895c595
-X-MS-TrafficTypeDiagnostic: BYAPR12MB3112:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB3112FFC0FF10562D7B347099903E9@BYAPR12MB3112.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 7ee05c38-941e-4533-e54a-08d9f895c8d5
+X-MS-TrafficTypeDiagnostic: BN6PR1201MB2545:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1201MB2545EFA2A886F976AF0F1755903E9@BN6PR1201MB2545.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qQTsDZmLowhe2ZaSMalU9kyNB1fB7Uav/I3K5D9PpGjks5Y39kGo7XIpHT0eahROWpc94xFOnRSryVjsFe3ss/X6UOs9RCLkYd7qDxTVptw1KMR2naJJMgu3EbYmYHjTNxrCKnndsUyVF3XXdf2CCEJs12RGk8nQrv68LR98aqAnAbC7U1VqvTOt13MqqnCHFzDoP568Eh+Z7l6WLluEVVbxLRhn6534H6T11pRKJUDeAkkbovf3K+7UaFye8acuR0xkbF3TLdfw78/2ywIQB6tdaaF/AAULWzCFxI/UdsiqEVHjRgoQB5VdV935k1U0r62GzhTmqRySvXlqSqJbv36IxbexPkhtUzr/AEXjbRp4zb3oBAD3GNUDnWOj4FEYutHm6dOB/q+YPA4HYMnQQS2MzFIiXoQDbuISxozsreOEzvif+39QA2SH3qSOXftBX6jSch6Iy+bU+IZRrNO0bN/OKJ6x5tgTAOQFS5gsDL341RYfzbnD4H6BASL+7zwgKq9zhe+G+dNbLyMpJmRqDVwXcEAPjEfrZuKbgVGjXP7Me1fo8qqytgSaHcsYIAxfqzakFhAPkQ7UlnRkr2Lpp6+ki+R5uIgxAP9pquI+OraJogS9UxS+kUfR/VX78TuWr/cxM1u0VtsWcW8q52uERgUW92yXzWhsN9rzeG0vssr2OkKDYRu1lKkswnLpY+lqwJF4+/gXj8euobAFHQAerexAk9RP7keP+wq45TVmS92vox54twK0DWbL7g4ZgYF3WRXEgO4G00qoVYJJ2KtvDvL/mpRBCRg3VeMrK9Rlto0=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(2616005)(4326008)(336012)(16526019)(8676002)(83380400001)(6666004)(86362001)(7696005)(426003)(508600001)(70586007)(110136005)(1076003)(356005)(186003)(54906003)(316002)(82310400004)(70206006)(81166007)(966005)(26005)(2906002)(36756003)(40460700003)(47076005)(5660300002)(8936002)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: K7Su/6B69JMA9BYbU3whz7fBkGJxMpP/2MUTN9SCY20fo43yOW81MdRUc1AFSxwHXKp2KsoooSLbNH/upP/h8MF+YK0PQIG3JF1SdrIkCwrkxqI+mcVavo7zyExLElyytaIx9CivXMhJPLP2WIc1M3UocQaUc0qeCkS6B1zag/QexbuOaYC1IauC+nBCQXJ+0uZoQr4kqdi3/wVVC3PBdKU45GY6i3cxK/RWydagP1CDGWRtDEXmG+btmN+aA9oaQ5JZfOe3LK3XWS5ttvkdGrxOPQWYxdO+99Ad85CfXuUeVsTjDdfLOwW6Ghq1zc6NTKR2Mz4fWshqO17u13FCVyEf1DgDgnFtPvOZoWRT8SDARNZKKqyOvz2T7oBqOHF7NjP0lz4q4ZTlIIRaLVOsmYIVD01yCT+UdtT0Osj3zxBRLltd4Rf4xRKeOmMIS0pTUQ6Zp9gQPtj9pVtB2eabXJc8m+BqeVI49bGiFGHI0JbijJDY/k38urpjm48qPcQ61jgYwBzG3xND0JfpWryMmA6R4T6FVWHf8t8FuyNYWQ3YkNPIlNL1NUCNKm74mqzeKD4qAU9Syqd9dOihA699SLENmUtaS5X7gWCG0zxJ9c915nGmUBh0sau4O+Wdtfw8AkNeC31emMo5lk1Wq0jjr+VS+Nz6mUmPWIZ2zLZWpcTjT0JXHZvKVhlgr47b7ipNSdTQkCjTle8yqBKFmXE0jBY3vP2mZYB1YMlnqq8DHktZ5SDsS5qaT61sR8ZlRXuKwzeAvhkbJHx6R4YPTf7+8jerksSC6hFgDDXZlPhznNVYtxsJIbM1gI8kRfwBDsbJ0D0+PP//F7BwRciVwtAtNw==
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(8936002)(6666004)(7696005)(966005)(5660300002)(40460700003)(508600001)(26005)(1076003)(8676002)(4326008)(2616005)(82310400004)(70206006)(70586007)(16526019)(2906002)(186003)(86362001)(36860700001)(47076005)(356005)(81166007)(83380400001)(36756003)(54906003)(426003)(336012)(316002)(110136005)(36900700001)(309714004);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 19:33:59.6511
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 19:34:05.1037
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 39cd18af-4f65-4c3f-e307-08d9f895c595
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ee05c38-941e-4533-e54a-08d9f895c8d5
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT043.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3112
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1201MB2545
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert struct mce_bank member "init" from bool to a bitfield to get rid
-of unnecessary padding.
+Newer AMD processors such as AMD 'Milan' support more physical address
+bits.
 
-Outputs collected before and after the change.
+That is the MCA_ADDR registers on Scalable MCA systems contain the
+ErrorAddr in bits [56:0] instead of [55:0]. Hence the existing LSB field
+from bits [61:56] in MCA_ADDR must be moved around to accommodate the
+larger ErrorAddr size.
 
-$ pahole -C mce_bank arch/x86/kernel/cpu/mce/core.o
+MCA_CONFIG[McaLsbInStatusSupported] indicates this change. If set, the
+LSB field will be found in MCA_STATUS rather than MCA_ADDR.
 
-before:
+Each logical CPU has unique MCA bank in hardware and is not shared with
+other logical CPUs. Additionally on SMCA systems, each feature bit may be
+different for each bank within same logical CPU.
 
-	/* size: 16, cachelines: 1, members: 2 */
-	/* padding: 7 */
-	/* last cacheline: 16 bytes */
-
-after:
-
-	/* size: 16, cachelines: 1, members: 3 */
-	/* last cacheline: 16 bytes */
-
-No functional changes.
+Check for MCA_CONFIG[McaLsbInStatusSupported] for each MCA bank and for
+each CPU.
 
 Signed-off-by: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
+Reviewed-by: Yazen Ghannam <yazen.ghannam@amd.com>
 ---
 Link:
-https://lkml.kernel.org/r/20220211223442.254489-5-Smita.KoralahalliChannabasappa@amd.com
+https://lkml.kernel.org/r/20220211223442.254489-3-Smita.KoralahalliChannabasappa@amd.com
 
+v2:
+	Declared lsb_in_status in existing mce_bank[] struct.
+	Moved struct mce_bank[] declaration from core.c -> internal.h
+v3:
+	Rebased on the latest tip tree. No functional changes.
 v4:
-	Moved this patch to the first in the series.
+	No change.
 ---
- arch/x86/kernel/cpu/mce/core.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/mce.h         |  2 ++
+ arch/x86/kernel/cpu/mce/amd.c      | 25 +++++++++++++++++++------
+ arch/x86/kernel/cpu/mce/core.c     | 15 ++++-----------
+ arch/x86/kernel/cpu/mce/internal.h | 16 ++++++++++++++++
+ 4 files changed, 41 insertions(+), 17 deletions(-)
 
+diff --git a/arch/x86/include/asm/mce.h b/arch/x86/include/asm/mce.h
+index 99a4c32cbdfa..cc67c74e8b46 100644
+--- a/arch/x86/include/asm/mce.h
++++ b/arch/x86/include/asm/mce.h
+@@ -338,6 +338,7 @@ extern int mce_threshold_remove_device(unsigned int cpu);
+ void mce_amd_feature_init(struct cpuinfo_x86 *c);
+ enum smca_bank_types smca_get_bank_type(unsigned int cpu, unsigned int bank);
+ void smca_extract_err_addr(struct mce *m);
++void smca_feature_init(void);
+ #else
+ 
+ static inline int mce_threshold_create_device(unsigned int cpu)		{ return 0; };
+@@ -345,6 +346,7 @@ static inline int mce_threshold_remove_device(unsigned int cpu)		{ return 0; };
+ static inline bool amd_mce_is_memory_error(struct mce *m)		{ return false; };
+ static inline void mce_amd_feature_init(struct cpuinfo_x86 *c)		{ }
+ static inline void smca_extract_err_addr(struct mce *m) { }
++static inline void smca_feature_init(void) { }
+ #endif
+ 
+ static inline void mce_hygon_feature_init(struct cpuinfo_x86 *c)	{ return mce_amd_feature_init(c); }
+diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
+index 981d718851a2..ed75d4bd2aff 100644
+--- a/arch/x86/kernel/cpu/mce/amd.c
++++ b/arch/x86/kernel/cpu/mce/amd.c
+@@ -724,9 +724,26 @@ bool amd_mce_is_memory_error(struct mce *m)
+ 
+ void smca_extract_err_addr(struct mce *m)
+ {
+-	u8 lsb = (m->addr >> 56) & 0x3f;
++	if (this_cpu_ptr(mce_banks_array)[m->bank].lsb_in_status) {
++		u8 lsb = (m->status >> 24) & 0x3f;
+ 
+-	m->addr &= GENMASK_ULL(55, lsb);
++		m->addr &= GENMASK_ULL(56, lsb);
++	} else {
++		u8 lsb = (m->addr >> 56) & 0x3f;
++
++		m->addr &= GENMASK_ULL(55, lsb);
++	}
++}
++
++void smca_feature_init(void)
++{
++	unsigned int bank;
++	u64 mca_cfg;
++
++	for (bank = 0; bank < this_cpu_read(mce_num_banks); ++bank) {
++		rdmsrl(MSR_AMD64_SMCA_MCx_CONFIG(bank), mca_cfg);
++		this_cpu_ptr(mce_banks_array)[bank].lsb_in_status = !!(mca_cfg & BIT(8));
++	}
+ }
+ 
+ static void __log_error(unsigned int bank, u64 status, u64 addr, u64 misc)
+@@ -743,10 +760,6 @@ static void __log_error(unsigned int bank, u64 status, u64 addr, u64 misc)
+ 	if (m.status & MCI_STATUS_ADDRV) {
+ 		m.addr = addr;
+ 
+-		/*
+-		 * Extract [55:<lsb>] where lsb is the least significant
+-		 * *valid* bit of the address bits.
+-		 */
+ 		if (mce_flags.smca)
+ 			smca_extract_err_addr(&m);
+ 	}
 diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 728f3b36ce2d..c0e9aa9c8749 100644
+index 313058dc129f..5cf753493d77 100644
 --- a/arch/x86/kernel/cpu/mce/core.c
 +++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -69,7 +69,9 @@ DEFINE_PER_CPU_READ_MOSTLY(unsigned int, mce_num_banks);
+@@ -67,13 +67,7 @@ DEFINE_PER_CPU(unsigned, mce_exception_count);
  
- struct mce_bank {
- 	u64			ctl;			/* subevents to enable */
--	bool			init;			/* initialise bank? */
+ DEFINE_PER_CPU_READ_MOSTLY(unsigned int, mce_num_banks);
+ 
+-struct mce_bank {
+-	u64			ctl;			/* subevents to enable */
+-
+-	__u64 init			: 1,		/* initialise bank? */
+-	      __reserved_1		: 63;
+-};
+-static DEFINE_PER_CPU_READ_MOSTLY(struct mce_bank[MAX_NR_BANKS], mce_banks_array);
++DEFINE_PER_CPU_READ_MOSTLY(struct mce_bank[MAX_NR_BANKS], mce_banks_array);
+ 
+ #define ATTR_LEN               16
+ /* One object for each MCE bank, shared by all CPUs */
+@@ -641,10 +635,6 @@ static noinstr void mce_read_aux(struct mce *m, int i)
+ 			m->addr <<= shift;
+ 		}
+ 
+-		/*
+-		 * Extract [55:<lsb>] where lsb is the least significant
+-		 * *valid* bit of the address bits.
+-		 */
+ 		if (mce_flags.smca)
+ 			smca_extract_err_addr(m);
+ 	}
+@@ -1948,6 +1938,9 @@ static void __mcheck_cpu_init_early(struct cpuinfo_x86 *c)
+ 		mce_flags.succor	 = !!cpu_has(c, X86_FEATURE_SUCCOR);
+ 		mce_flags.smca		 = !!cpu_has(c, X86_FEATURE_SMCA);
+ 		mce_flags.amd_threshold	 = 1;
++
++		if (mce_flags.smca)
++			smca_feature_init();
+ 	}
+ }
+ 
+diff --git a/arch/x86/kernel/cpu/mce/internal.h b/arch/x86/kernel/cpu/mce/internal.h
+index 3efb5037c364..0b12fe528e1b 100644
+--- a/arch/x86/kernel/cpu/mce/internal.h
++++ b/arch/x86/kernel/cpu/mce/internal.h
+@@ -178,6 +178,22 @@ struct mce_vendor_flags {
+ 
+ extern struct mce_vendor_flags mce_flags;
+ 
++struct mce_bank {
++	u64			ctl;			/* subevents to enable */
 +
 +	__u64 init			: 1,		/* initialise bank? */
-+	      __reserved_1		: 63;
- };
- static DEFINE_PER_CPU_READ_MOSTLY(struct mce_bank[MAX_NR_BANKS], mce_banks_array);
- 
++
++	/*
++	 * (AMD) MCA_CONFIG[McaLsbInStatusSupported]: This bit indicates
++	 * the LSB field is found in MCA_STATUS, when set.
++	 */
++	      lsb_in_status		: 1,
++
++	      __reserved_1		: 62;
++};
++
++DECLARE_PER_CPU_READ_MOSTLY(struct mce_bank[MAX_NR_BANKS], mce_banks_array);
++
+ enum mca_msr {
+ 	MCA_CTL,
+ 	MCA_STATUS,
 -- 
 2.17.1
 
