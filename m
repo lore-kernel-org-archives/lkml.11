@@ -2,89 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24490C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29ED3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239716AbiBYKko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 05:40:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53912 "EHLO
+        id S239729AbiBYKkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 05:40:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238106AbiBYKkm (ORCPT
+        with ESMTP id S239709AbiBYKkn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 05:40:42 -0500
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C180968F8F
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 02:40:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645785610; x=1677321610;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=Lh99pIe6P2Nw6W6x79cUpkUeEAEuCSeab91A4DY0/c0=;
-  b=LK3K1Xd3W/iWU5Zkp0w3GuHPd3o8wjpVgQyD9vuBNCxyXhTcXKt6oorP
-   tCdWF/j8Nakoic/30ywREy3IxwNFBButvxKaKlhDtkECCNIyrWnq4Ae0n
-   uYkIgpK67hvQnTb57ByR1++pyaAIHJJcXbw6XC7zkrfRUPLb1oZjEvBDL
-   M=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 25 Feb 2022 02:40:10 -0800
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 02:40:10 -0800
-Received: from hu-rbankapu-blr.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Fri, 25 Feb 2022 02:40:06 -0800
-From:   Raghu Bankapur <quic_rbankapu@quicinc.com>
-To:     Vinod Koul <vkoul@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
-        "Takashi Iwai" <tiwai@suse.com>,
-        ierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Kai Vehmanen" <kai.vehmanen@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Raghu Bankapur <quic_rbankapu@quicinc.com>,
-        <alsa-devel@alsa-project.org>, Zubin Mithra <zsm@chromium.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Krishna Jha <quic_kkishorj@quicinc.com>
-Subject: [PATCH V0 1/1] ALSA: pcm: fix blocking while loop in snd_pcm_update_hw_ptr0()
-Date:   Fri, 25 Feb 2022 16:09:32 +0530
-Message-ID: <4d8b1cb4b0db88c3e28207a81403fbf1e4a87bff.1645784757.git.quic_rbankapu@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1645784757.git.quic_rbankapu@quicinc.com>
-References: <cover.1645784757.git.quic_rbankapu@quicinc.com>
+        Fri, 25 Feb 2022 05:40:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCB568F8F;
+        Fri, 25 Feb 2022 02:40:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A6CE6171B;
+        Fri, 25 Feb 2022 10:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AEFA2C340F2;
+        Fri, 25 Feb 2022 10:40:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645785610;
+        bh=1Bj4E8jna9gv+7NmgSy2dvDNmaH/RWmUnYnExJ1EXXU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=naGEzD/RpkgtsDTe3JbpvxClxahzdvbXym5agxbwVk/p1LYOffGh3xFaC33lapix+
+         oUNVFd5208INQsRMIzfwZmVb3gw7bbFvQqQzeWTKQsvSkrXuNmNlYe7TWushWj5fPx
+         Afg6Iv4HP44YZcoF6kC5Je/Ulflv37WObaf7eDeB/l8LXdD8JJ4FjTCEj8Dwq9lJx8
+         APRLCfXLb76SCcK4WDQnRnxgnjd6aIgn+BhaxqAZaB5NkK8QO7nzfsblMaRYPVD+H6
+         ZWOkUzcizcAW2nYprgaEAc0qz/R+IWzSSHef4XdTTzAjF24WPbTxDC9bTSh+J8DpQn
+         7/tIvebdXOV+w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8E526EAC09B;
+        Fri, 25 Feb 2022 10:40:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] xen/netfront: destroy queues before real_num_tx_queues is
+ zeroed
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164578561057.13834.5994173770160348500.git-patchwork-notify@kernel.org>
+Date:   Fri, 25 Feb 2022 10:40:10 +0000
+References: <20220223211954.2506824-1-marmarek@invisiblethingslab.com>
+In-Reply-To: <20220223211954.2506824-1-marmarek@invisiblethingslab.com>
+To:     =?utf-8?q?Marek_Marczykowski-G=C3=B3recki_=3Cmarmarek=40invisiblethingslab?=@ci.codeaurora.org,
+        =?utf-8?q?=2Ecom=3E?=@ci.codeaurora.org
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        boris.ostrovsky@oracle.com, jgross@suse.com,
+        sstabellini@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        atenart@kernel.org, xen-devel@lists.xenproject.org,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When period interrupts are disabled, while loop in snd_pcm_update_hw_ptr0()
-results in the machine locking up if runtime->hw_ptr_buffer_jiffies is 0.
-Validate runtime->hw_ptr_buffer_jiffies value before while loop to avoid
-delta check.
+Hello:
 
-Signed-off-by: Raghu Bankapur <quic_rbankapu@quicinc.com>
----
- sound/core/pcm_lib.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/sound/core/pcm_lib.c b/sound/core/pcm_lib.c
-index f2090025236b..bb9097f658be 100644
---- a/sound/core/pcm_lib.c
-+++ b/sound/core/pcm_lib.c
-@@ -352,7 +352,8 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
- 		 * the elapsed time to detect xruns.
- 		 */
- 		jdelta = curr_jiffies - runtime->hw_ptr_jiffies;
--		if (jdelta < runtime->hw_ptr_buffer_jiffies / 2)
-+		if ((jdelta < runtime->hw_ptr_buffer_jiffies / 2) ||
-+			(runtime->hw_ptr_buffer_jiffies <= 0))
- 			goto no_delta_check;
- 		hdelta = jdelta - delta * HZ / runtime->rate;
- 		xrun_threshold = runtime->hw_ptr_buffer_jiffies / 2 + 1;
+On Wed, 23 Feb 2022 22:19:54 +0100 you wrote:
+> xennet_destroy_queues() relies on info->netdev->real_num_tx_queues to
+> delete queues. Since d7dac083414eb5bb99a6d2ed53dc2c1b405224e5
+> ("net-sysfs: update the queue counts in the unregistration path"),
+> unregister_netdev() indirectly sets real_num_tx_queues to 0. Those two
+> facts together means, that xennet_destroy_queues() called from
+> xennet_remove() cannot do its job, because it's called after
+> unregister_netdev(). This results in kfree-ing queues that are still
+> linked in napi, which ultimately crashes:
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] xen/netfront: destroy queues before real_num_tx_queues is zeroed
+    https://git.kernel.org/netdev/net/c/dcf4ff7a48e7
+
+You are awesome, thank you!
 -- 
-2.17.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
