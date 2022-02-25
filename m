@@ -2,146 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:55:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75B57C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:55:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241966AbiBYOzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 09:55:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43916 "EHLO
+        id S241997AbiBYOz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 09:55:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241932AbiBYOzQ (ORCPT
+        with ESMTP id S241944AbiBYOzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 09:55:16 -0500
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B12842325C2;
-        Fri, 25 Feb 2022 06:54:44 -0800 (PST)
-Received: by mail-qk1-x72b.google.com with SMTP id bm39so4698109qkb.0;
-        Fri, 25 Feb 2022 06:54:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oKfaXxTGc+2P/fRlR69FqeRWVrJ1FRef9N70RXYizpI=;
-        b=XqeM9c7FMetkvxUelD3CMWMxe4MLdYQj9t0n+RbCNWCrJ4NwISdljwIYT7ZGl2xoqI
-         BJQnqoWbqwXN5sydCKrv/Tqn3QqPXTCc8AN4V4x+SZL/K/ixQelbtV+gvIIJBuD/pdoj
-         5OjM6bGvKMXY+2xP2z2LJzp5eIRPn50J1xnsph72iUJj20OFzYnyOjSpqT7yFUlPAS1b
-         lapYJs/lKw9dDcjE3alasio6+ypU09IIWFmTtgEr1PCBAzbh0mC+xHHVrKFX5aYd3UDt
-         0EpaDFEKCorL/5tsSlnACCBi6R8Vnr+mEX35gEueEbziz1/LAuPgmIglJcSSfBnjAAu2
-         +j4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oKfaXxTGc+2P/fRlR69FqeRWVrJ1FRef9N70RXYizpI=;
-        b=klTNPN8EAhfntCNDw0qSS+Q5v3AmC73Qth0AQVlStx3k8j1MzB9O1H8KmIbbSYrUeD
-         ldj2suJml75DLb266+gEYtc2qRSki8mI8aY4YT+CZ2AXCt10LoluVGG7zxrYjiH3UuRt
-         QAE7su+5ZeYVmA4wkcFVI8YwDxzi9lu5kUJ4ffQJJXz0CBCUxTwikldGzRgC9ER+cPif
-         G2PtvgQpHWy+FaB2nrL6p++SFiz5ERc8TK+KDWaoZjTHg+ZIc1sJSQln9cFj2fVZ1NC8
-         SL1b2gAnjJ0pxSSi5Uv7XtawV41Bpb8leKfAra1zK9T3dYIgcY5Hly8h6kh1pZ4nFdJU
-         kF/A==
-X-Gm-Message-State: AOAM533HgB+FAAluubGBR0fT9cG3Jbg10ptBbERipVaU1HYIh/O4sxYg
-        sNa1uckjk+ghoXR4sQFGgXV+k+f8x0AhMQ==
-X-Google-Smtp-Source: ABdhPJwmBmlnumTJ/EgWC7d02acfCNzECApowxrebC5yZ8TCcfNS5vdlZ4L38h2kP7AlhNkxewqM6w==
-X-Received: by 2002:a05:620a:1992:b0:649:56f3:6451 with SMTP id bm18-20020a05620a199200b0064956f36451mr5073437qkb.84.1645800883804;
-        Fri, 25 Feb 2022 06:54:43 -0800 (PST)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id d202-20020a3768d3000000b005f18706845dsm1318292qkc.73.2022.02.25.06.54.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 06:54:43 -0800 (PST)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 8/8] arm64: dts: rockchip: enable dwc3 on quartz64-a
-Date:   Fri, 25 Feb 2022 09:54:31 -0500
-Message-Id: <20220225145432.422130-9-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220225145432.422130-1-pgwipeout@gmail.com>
-References: <20220225145432.422130-1-pgwipeout@gmail.com>
+        Fri, 25 Feb 2022 09:55:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E05C227597;
+        Fri, 25 Feb 2022 06:54:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D50A615DE;
+        Fri, 25 Feb 2022 14:54:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94C72C340E7;
+        Fri, 25 Feb 2022 14:54:49 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="KVOaVkaO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1645800888;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qE/ZWcS5laWbFfe6kS3CgvY+YPQ7FFHc3k15fj0mrEI=;
+        b=KVOaVkaOu3r+Qp1WdK0zyPpBT7r2AjT2IjT7Nm8mLR9n6CbR5EX/G0eCvR9zZrR/5zSaHt
+        /CZ+FaIO3789sgokItbqLEaLPJzLMHdPLARsfw8JqihocjrbnYc3X9aXUtF6jGn8nERzXw
+        g2JWnL04850ISzo0Unco/uXtXvPFQBY=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 3e8c7660 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 25 Feb 2022 14:54:47 +0000 (UTC)
+Date:   Fri, 25 Feb 2022 15:54:44 +0100
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Alexander Graf <graf@amazon.com>
+Cc:     kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        adrian@parity.io, ardb@kernel.org, ben@skyportsystems.com,
+        berrange@redhat.com, colmmacc@amazon.com, decui@microsoft.com,
+        dwmw@amazon.co.uk, ebiggers@kernel.org, ehabkost@redhat.com,
+        gregkh@linuxfoundation.org, haiyangz@microsoft.com,
+        imammedo@redhat.com, jannh@google.com, kys@microsoft.com,
+        lersek@redhat.com, linux@dominikbrodowski.net, mst@redhat.com,
+        qemu-devel@nongnu.org, raduweis@amazon.com, sthemmin@microsoft.com,
+        tytso@mit.edu, wei.liu@kernel.org
+Subject: Re: [PATCH v4] virt: vmgenid: introduce driver for reinitializing
+ RNG on VM fork
+Message-ID: <YhjttNadaaJzVa5X@zx2c4.com>
+References: <CAHmME9pJ3wb=EbUErJrCRC=VYGhFZqj2ar_AkVPsUvAnqGtwwg@mail.gmail.com>
+ <20220225124848.909093-1-Jason@zx2c4.com>
+ <05c9f2a9-accb-e0de-aac7-b212adac7eb2@amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <05c9f2a9-accb-e0de-aac7-b212adac7eb2@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The quartz64 model a has support for both the dwc3 otg port and the dwc3
-host port. Add the otg power supply and dwc3 nodes to the device tree to
-enable support for these.
+Hi Alex,
 
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
----
- .../boot/dts/rockchip/rk3566-quartz64-a.dts   | 37 +++++++++++++++++++
- 1 file changed, 37 insertions(+)
+Missed this remark before:
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
-index dd7f4b9b686b..a911fa1ef955 100644
---- a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
-@@ -151,6 +151,16 @@ vcc5v0_usb20_host: vcc5v0_usb20_host {
- 		vin-supply = <&vcc5v0_usb>;
- 	};
- 
-+	vcc5v0_usb20_otg: vcc5v0_usb20_otg {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		gpio = <&gpio4 RK_PB5 GPIO_ACTIVE_HIGH>;
-+		regulator-name = "vcc5v0_usb20_otg";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		vin-supply = <&dcdc_boost>;
-+	};
-+
- 	vcc3v3_sd: vcc3v3_sd {
- 		compatible = "regulator-fixed";
- 		enable-active-low;
-@@ -187,6 +197,10 @@ vcc_wl: vcc_wl {
- 	};
- };
- 
-+&combphy1 {
-+	status = "okay";
-+};
-+
- &cpu0 {
- 	cpu-supply = <&vdd_cpu>;
- };
-@@ -672,6 +686,20 @@ &usb_host1_ohci {
- 	status = "okay";
- };
- 
-+&usb2phy0 {
-+	status = "okay";
-+};
-+
-+&usb2phy0_host {
-+	phy-supply = <&vcc5v0_usb20_host>;
-+	status = "okay";
-+};
-+
-+&usb2phy0_otg {
-+	phy-supply = <&vcc5v0_usb20_otg>;
-+	status = "okay";
-+};
-+
- &usb2phy1 {
- 	status = "okay";
- };
-@@ -685,3 +713,12 @@ &usb2phy1_otg {
- 	phy-supply = <&vcc5v0_usb20_host>;
- 	status = "okay";
- };
-+
-+&usbdrd30 {
-+	status = "okay";
-+};
-+
-+/* usb3 controller is muxed with sata1 */
-+&usbhost30 {
-+	status = "okay";
-+};
--- 
-2.25.1
+On Fri, Feb 25, 2022 at 02:57:38PM +0100, Alexander Graf wrote:
+> Please expose the vmgenid via /sysfs so that user space even remotely 
+> has a chance to check if it's been cloned.
 
+No. Did you read the 0/2 cover letter? I'll quote it for you here:
+
+> As a side note, this series intentionally does _not_ focus on
+> notification of these events to userspace or to other kernel consumers.
+> Since these VM fork detection events first need to hit the RNG, we can
+> later talk about what sorts of notifications or mmap'd counters the RNG
+> should be making accessible to elsewhere. But that's a different sort of
+> project and ties into a lot of more complicated concerns beyond this
+> more basic patchset. So hopefully we can keep the discussion rather
+> focused here to this ACPI business.
+
+What about that was unclear to you?
+
+Anyway, it's a different thing that will have to be designed and
+considered carefully, and that design doesn't have a whole lot to do
+with this little driver here, except insofar as it could build on top of
+it in one way or another. Yes, it's an important thing to do. No, I'm
+not going to do it in this patch here. If you want to have a discussion
+about that, start a different thread.
+
+Thanks,
+Jason
