@@ -2,96 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 322EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F39F8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239536AbiBYKcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 05:32:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49266 "EHLO
+        id S239541AbiBYKc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 05:32:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230500AbiBYKcP (ORCPT
+        with ESMTP id S239457AbiBYKc1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 05:32:15 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4EF87658;
-        Fri, 25 Feb 2022 02:31:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645785101; x=1677321101;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=KQD7n9IlWz2cK2vL5gVsYXD/voNOuf0gAg5CPXpfExk=;
-  b=w5GrchaIn/OgyJZO0spkAwFNSkKOFz16hUA/ywcL8N5wCXQRAVl1YbQT
-   NXaNMOs0wWxmUbjpQ6ddSyzwBM08xn8WrhCAH/q9Z8JQNmiRgmNF32Ze5
-   eCW9tYTvBLtpKLyA+zHCJ+J90w6Hd+iqorf4rCCIXrztTyjr4AW8hfhnK
-   q2MvTPhjoiF7B/MvfQvOG9wj1O/IbalsDg+kc88mfYfhzml8qJ7Ie4b8O
-   7Z40XPi1G9ps4XwKNENfhmHJXvHt7w40UNYLGwMugt6U9y3N5GxL1Go9G
-   s5UZVGgy9GOzpJVsG7HPqliv9/1Ozo0n7m7UXX2fls99gbSEY/Vwyse+/
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,136,1643698800"; 
-   d="scan'208";a="163635846"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Feb 2022 03:31:40 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 25 Feb 2022 03:31:40 -0700
-Received: from [10.12.72.56] (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 25 Feb 2022 03:31:38 -0700
-Message-ID: <deb6ace6-adfc-bbaa-d31f-16d02a5f762b@microchip.com>
-Date:   Fri, 25 Feb 2022 11:31:37 +0100
+        Fri, 25 Feb 2022 05:32:27 -0500
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF083FBC5;
+        Fri, 25 Feb 2022 02:31:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=G7vsg/KcOeJhzWVxaCzLaJE46D0kipXYK45386ZlK7o=; b=U+5fzw8vCoFnC2xr7pDVAIT9fo
+        V4sikZJwQwEO8t2tJofbwPbv9MOY+FGdY/Ec9jjpAuJnk2DwnmtDuxHaRMR/76IJGa3VqM0bn2WxJ
+        axarjWcUNqlMtPUKoges/HzpRQfEhl1VCf/bTyz2b5FBoyhCbJn6C9NRZIxO24cRNyBo=;
+Received: from p200300daa7204f00f847964d075b2b3d.dip0.t-ipconnect.de ([2003:da:a720:4f00:f847:964d:75b:2b3d] helo=localhost.localdomain)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1nNXg5-0007J1-9J; Fri, 25 Feb 2022 11:18:21 +0100
+From:   Felix Fietkau <nbd@nbd.name>
+To:     netdev@vger.kernel.org, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 10/11] net: ethernet: mtk_eth_soc: remove bridge flow offload type entry support
+Date:   Fri, 25 Feb 2022 11:18:09 +0100
+Message-Id: <20220225101811.72103-11-nbd@nbd.name>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220225101811.72103-1-nbd@nbd.name>
+References: <20220225101811.72103-1-nbd@nbd.name>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] clk: at91: sama7g5: Allow MCK1 to be exported and
- referenced in DT
-Content-Language: en-US
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        <claudiu.beznea@microchip.com>, <mturquette@baylibre.com>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>
-CC:     <alexandre.belloni@bootlin.com>, <robh+dt@kernel.org>,
-        <rdunlap@infradead.org>, <unixbhaskar@gmail.com>,
-        <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-References: <20220111125310.902856-1-tudor.ambarus@microchip.com>
- <20220125010554.BB92BC340E4@smtp.kernel.org>
-From:   Nicolas Ferre <nicolas.ferre@microchip.com>
-Organization: microchip
-In-Reply-To: <20220125010554.BB92BC340E4@smtp.kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/01/2022 at 02:05, Stephen Boyd wrote:
-> Quoting Tudor Ambarus (2022-01-11 04:53:10)
->> MCK1 feeds the External Bus Interface (EBI). EBI's clock rate is used
->> to translate EBI's timmings to SMC timings, thus we need to handle MCK1
->> in the EBI driver. Allow MCK1 to be referenced as a PMC_TYPE_CORE clock
->> from phandle in DT.
->>
->> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
->> ---
-> 
-> Applied to clk-next
+According to MediaTek, this feature is not supported in current hardware
 
-Hi Stephen,
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
+---
+ drivers/net/ethernet/mediatek/mtk_ppe.c         | 8 --------
+ drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c | 1 -
+ 2 files changed, 9 deletions(-)
 
-I depend on the PMC_MCK1 definition for some of the DT patches that I 
-must queue for my pull request to arm-soc, for 5.18.
-
-Would you mind doing an immutable branch for me to pull from, so that 
-the build doesn't crash while the clock tree is not integrated yet with 
-my patches?
-
-Tell me if there's a better way, as well.
-
-Thanks, best regards,
-   Nicolas
-
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index a7fe33bbde63..aa0d190db65d 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -84,13 +84,6 @@ static u32 mtk_ppe_hash_entry(struct mtk_foe_entry *e)
+ 	u32 hash;
+ 
+ 	switch (FIELD_GET(MTK_FOE_IB1_PACKET_TYPE, e->ib1)) {
+-		case MTK_PPE_PKT_TYPE_BRIDGE:
+-			hv1 = e->bridge.src_mac_lo;
+-			hv1 ^= ((e->bridge.src_mac_hi & 0xffff) << 16);
+-			hv2 = e->bridge.src_mac_hi >> 16;
+-			hv2 ^= e->bridge.dest_mac_lo;
+-			hv3 = e->bridge.dest_mac_hi;
+-			break;
+ 		case MTK_PPE_PKT_TYPE_IPV4_ROUTE:
+ 		case MTK_PPE_PKT_TYPE_IPV4_HNAPT:
+ 			hv1 = e->ipv4.orig.ports;
+@@ -572,7 +565,6 @@ int mtk_ppe_start(struct mtk_ppe *ppe)
+ 	      MTK_PPE_FLOW_CFG_IP4_NAT |
+ 	      MTK_PPE_FLOW_CFG_IP4_NAPT |
+ 	      MTK_PPE_FLOW_CFG_IP4_DSLITE |
+-	      MTK_PPE_FLOW_CFG_L2_BRIDGE |
+ 	      MTK_PPE_FLOW_CFG_IP4_NAT_FRAG;
+ 	ppe_w32(ppe, MTK_PPE_FLOW_CFG, val);
+ 
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
+index d4b482340cb9..eb0b598f14e4 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe_debugfs.c
+@@ -32,7 +32,6 @@ static const char *mtk_foe_pkt_type_str(int type)
+ 	static const char * const type_str[] = {
+ 		[MTK_PPE_PKT_TYPE_IPV4_HNAPT] = "IPv4 5T",
+ 		[MTK_PPE_PKT_TYPE_IPV4_ROUTE] = "IPv4 3T",
+-		[MTK_PPE_PKT_TYPE_BRIDGE] = "L2",
+ 		[MTK_PPE_PKT_TYPE_IPV4_DSLITE] = "DS-LITE",
+ 		[MTK_PPE_PKT_TYPE_IPV6_ROUTE_3T] = "IPv6 3T",
+ 		[MTK_PPE_PKT_TYPE_IPV6_ROUTE_5T] = "IPv6 5T",
 -- 
-Nicolas Ferre
+2.32.0 (Apple Git-132)
+
