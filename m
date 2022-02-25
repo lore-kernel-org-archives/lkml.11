@@ -2,114 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E85EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF200C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237403AbiBYHb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 02:31:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
+        id S238131AbiBYHdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 02:33:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbiBYHby (ORCPT
+        with ESMTP id S231272AbiBYHdY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 02:31:54 -0500
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9043725D6F3;
-        Thu, 24 Feb 2022 23:31:22 -0800 (PST)
-Received: by mail-ej1-f44.google.com with SMTP id r13so9117124ejd.5;
-        Thu, 24 Feb 2022 23:31:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=8s/sEEcezqOxjPo1IRls593HXMXJluYQRZTRz8WXcj8=;
-        b=Jd+WEwcsLf9IpHmWlG9ySEMdGpPs+3onyuscGmGbKmdhMheleGyTL9Cm9ALua0Q9YH
-         /ju3VD/q63kgKX4Mbo8t5adzCIT3trHUFM/TvGsnx9qEHGk/Iys989IMOTvzechAw1Em
-         ufYmqqNZNo0wUl7PC+rSgzqe+A3VUNFSlRW9+AfPIZ77BhnI5uYKFmK1bRGly64DhRDP
-         svTsahuO7E7fp8yH3Ar4o6+OLdDifCR2hSPuuhzRcn0XurBaw4O/EFalRhSZL9MDwRH0
-         Zd3ayxDHA26g6dyZA7GZgaynwbN6gXfi7vCvWwV5wQMkNSTRLoXxmMqCM6f8SigXM4aG
-         ZIJQ==
-X-Gm-Message-State: AOAM530jabgEoy8eHIflTTVBT24WRsPqN2r8BXtAvUVGTVyDBb1xQSpK
-        zcDpABpzK7VKUeTx4pgKGYc=
-X-Google-Smtp-Source: ABdhPJxD3DA6d3nPM0aMoQKdrjnBr7p9a+RYfT0msZEO4qIv24OP6aPqyshDjRat48CbBH1nxv5LkQ==
-X-Received: by 2002:a17:906:7e52:b0:6b6:bc81:eae9 with SMTP id z18-20020a1709067e5200b006b6bc81eae9mr5119912ejr.273.1645774280890;
-        Thu, 24 Feb 2022 23:31:20 -0800 (PST)
-Received: from [192.168.0.128] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.googlemail.com with ESMTPSA id bx1-20020a0564020b4100b00410f01a91f0sm934477edb.73.2022.02.24.23.31.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Feb 2022 23:31:19 -0800 (PST)
-Message-ID: <b527a418-b807-7afa-9ed0-2ac4271ff79e@kernel.org>
-Date:   Fri, 25 Feb 2022 08:31:18 +0100
+        Fri, 25 Feb 2022 02:33:24 -0500
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2902556EB;
+        Thu, 24 Feb 2022 23:32:51 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R811e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xhao@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0V5S64K8_1645774367;
+Received: from B-X3VXMD6M-2058.local(mailfrom:xhao@linux.alibaba.com fp:SMTPD_---0V5S64K8_1645774367)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 25 Feb 2022 15:32:48 +0800
+From:   xhao@linux.alibaba.com
+Reply-To: xhao@linux.alibaba.com
+Subject: Re: [PATCH 00/12] Introduce DAMON sysfs interface
+To:     SeongJae Park <sj@kernel.org>, akpm@linux-foundation.org
+Cc:     corbet@lwn.net, skhan@linuxfoundation.org, rientjes@google.com,
+        linux-damon@amazon.com, linux-mm@kvack.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220223152051.22936-1-sj@kernel.org>
+Message-ID: <1dbf6a7e-0805-bc44-ec4b-379405d619d1@linux.alibaba.com>
+Date:   Fri, 25 Feb 2022 15:32:47 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 2/2] dt-bindings: hwmon: Add sample averaging property
- for ADM1275
-Content-Language: en-US
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Potin Lai <potin.lai@quantatw.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Patrick Williams <patrick@stwcx.xyz>, linux-hwmon@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220224154329.9755-1-potin.lai@quantatw.com>
- <20220224154329.9755-3-potin.lai@quantatw.com>
- <c6607953-927e-4d85-21cb-72e01a121453@kernel.org>
-In-Reply-To: <c6607953-927e-4d85-21cb-72e01a121453@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20220223152051.22936-1-sj@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/02/2022 08:06, Krzysztof Kozlowski wrote:
-> On 24/02/2022 16:43, Potin Lai wrote:
->> Add new properties for binding sample averaging in PMON_CONFIG register
->>
->> - adi,volt-curr-sample-average
->> - adi,power-sample-average
->>
->> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
->> ---
->>  .../bindings/hwmon/adi,adm1275.yaml           | 44 +++++++++++++++++++
->>  1 file changed, 44 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/hwmon/adi,adm1275.yaml b/Documentation/devicetree/bindings/hwmon/adi,adm1275.yaml
->> index 223393d7cafd..325f6827648f 100644
->> --- a/Documentation/devicetree/bindings/hwmon/adi,adm1275.yaml
->> +++ b/Documentation/devicetree/bindings/hwmon/adi,adm1275.yaml
->> @@ -37,6 +37,48 @@ properties:
->>      description:
->>        Shunt resistor value in micro-Ohm.
->>  
->> +  adi,volt-curr-sample-average:
->> +    description: |
->> +      A value to configure VI_AVG in PMON_CONFIG register to indicate a
->> +      number of samples to be used to report voltage and currentvalues.
-> 
-> missing space after current.
-> 
->> +      If set to 7, the 128 samples averaging would be used.
->> +
->> +    $ref: /schemas/types.yaml#/definitions/uint8
-> 
-> Make it a uint32.
-> 
-> The previous usage of this field was more appropriate. Instead of
-> keeping register values in DT, it's better to keep logical value. What
-> if in next cheap the register values have calculation method?
-> 
-> This should be like in v1 - enum for number of samples to take in averaging.
-> 
+Hi SeongJae:
 
-One more thought: this field could also stay in current approach if you
-change the meaning from "value to configure VI_AVG" to something like
-"the exponent used to determine the number of samples, where the base is 2".
+On 2/23/22 11:20 PM, SeongJae Park wrote:
+> Chages from Previous Version (RFC)
+> ==================================
+>
+> Compared to the RFC version of this patchset
+> (https://lore.kernel.org/linux-mm/20220217161938.8874-1-sj@kernel.org/), this
+> version contains below changes.
+>
+> - Implement all DAMON debugfs interface providing features
+> - Writeup documents
+> - Add more selftests
+>
+> Introduction
+> ============
+>
+> DAMON's debugfs-based user interface (DAMON_DBGFS) served very well, so far.
+> However, it unnecessarily depends on debugfs, while DAMON is not aimed to be
+> used for only debugging.  Also, the interface receives multiple values via one
+> file.  For example, schemes file receives 18 values.  As a result, it is
+> inefficient, hard to be used, and difficult to be extended.  Especially,
+> keeping backward compatibility of user space tools is getting only challenging.
+> It would be better to implement another reliable and flexible interface and
+> deprecate DAMON_DBGFS in long term.
+>
+> For the reason, this patchset introduces a sysfs-based new user interface of
+> DAMON.  The idea of the new interface is, using directory hierarchies and
+> having one dedicated file for each value.  For a short example, users can do
+> the virtual address monitoring via the interface as below:
+>
+>      # cd /sys/kernel/mm/damon/admin/
+>      # echo 1 > kdamonds/nr
+>      # echo 1 > kdamonds/0/contexts/nr
+>      # echo vaddr > kdamonds/0/contexts/0/operations
+>      # echo 1 > kdamonds/0/contexts/0/targets/nr
+>      # echo $(pidof <workload>) > kdamonds/0/contexts/0/targets/0/pid
+>      # echo on > kdamonds/0/state
+>
+> A brief representation of the files hierarchy of DAMON sysfs interface is as
+> below.  Childs are represented with indentation, directories are having '/'
+> suffix, and files in each directory are separated by comma.
+>
+>      /sys/kernel/mm/damon/admin
+>      │ kdamonds/nr
+>      │ │ 0/state,pid
+>      │ │ │ contexts/nr
+>      │ │ │ │ 0/operations
+>      │ │ │ │ │ monitoring_attrs/
+>      │ │ │ │ │ │ intervals/sample_us,aggr_us,update_us
+>      │ │ │ │ │ │ nr_regions/min,max
+>      │ │ │ │ │ targets/nr
+>      │ │ │ │ │ │ 0/pid
+>      │ │ │ │ │ │ │ regions/nr
+>      │ │ │ │ │ │ │ │ 0/start,end
+>      │ │ │ │ │ │ │ │ ...
+>      │ │ │ │ │ │ ...
+>      │ │ │ │ │ schemes/nr
+>      │ │ │ │ │ 0/action
+>      │ │ │ │ │ │ access_pattern/
+>      │ │ │ │ │ │ │ sz/min,max
+>      │ │ │ │ │ │ │ nr_accesses/min,max
+>      │ │ │ │ │ │ │ age/min,max
+>      │ │ │ │ │ │ quotas/ms,sz,reset_interval_ms
+>      │ │ │ │ │ │ │ weights/sz,nr_accesses,age
+>      │ │ │ │ │ │ watermarks/metric,interval_us,high,mid,low
+>      │ │ │ │ │ │ stats/nr_tried,sz_tried,nr_applied,sz_applied,qt_exceeds
+>      │ │ │ │ │ ...
+>      │ │ ...
+>
+> Detailed usage of the files will be described in the final Documentation patch
+> of this patchset.
 
-This approach would allow you to skip the "ilog" in the code. It sill
-won't be that easily scalable if another chip comes with different
-formula, but I think that's unlikely.
+The introduction of the sys DAMON interface makes DAMON seem more 
+hierarchical, but it brings a problem. From a user's perspective,
 
-Best regards,
-Krzysztof
+I find it difficult to operate. For example:
+
+step one:
+
+echo xxx > /sys/kernel/mm/damon/admin/kdamonds/0/contexts/0/targets/nr
+
+step two:
+
+echo /sys/kernel/mm/damon/admin/kdamonds/0/contexts/0/targets/nr/1/pid
+
+echo /sys/kernel/mm/damon/admin/kdamonds/0/contexts/0/targets/nr/0/pid
+
+.........
+
+Alas, it is really too troublesome to operate, can you make it as simple 
+as possible, perhaps by referring to the implementation of cgroup.
+
+> Main Difference Between DAMON_DBGFS and DAMON_SYSFS
+> ---------------------------------------------------
+>
+> At the moment, DAMON_DBGFS and DAMON_SYSFS provides same features.  One
+> important difference between them is their exclusiveness.  DAMON_DBGFS works in
+> an exclusive manner, so that no DAMON worker thread (kdamond) in the system can
+> run concurrently and interfere somehow.  For the reason, DAMON_DBGFS asks users
+> to construct all monitoring contexts and start them at once.  It's not a big
+> problem but makes the operation a little bit complex and unflexible.
+>
+> For more flexible usage, DAMON_SYSFS moves the responsibility of preventing any
+> possible interference to the admins and work in a non-exclusive manner.  That
+> is, users can configure and start contexts one by one.  Note that DAMON
+> respects both exclusive groups and non-exclusive groups of contexts, in a
+> manner similar to that of reader-writer locks.  That is, if any exclusive
+> monitoring contexts (e.g., contexts that started via DAMON_DBGFS) are running,
+> DAMON_SYSFS does not start new contexts, and vice versa.
+>
+> Future Plan of DAMON_DBGFS Deprecation
+> ======================================
+>
+> Once this patchset is merged, DAMON_DBGFS development will be frozen.  That is,
+> we will maintain it to work as is now so that no users will be break.  But, it
+> will not be extended to provide any new feature of DAMON.  The support will be
+> continued only until next LTS release.  After that, we will drop DAMON_DBGFS.
+>
+> User-space Tooling Compatibility
+> --------------------------------
+>
+> As DAMON_SYSFS provides all features of DAMON_DBGFS, all user space tooling can
+> move to DAMON_SYSFS.  As we will continue supporting DAMON_DBGFS until next LTS
+> kernel release, user space tools would have enough time to move to DAMON_SYSFS.
+>
+> The official user space tool, damo[1], is already supporting both DAMON_SYSFS
+> and DAMON_DBGFS.  Both correctness tests[2] and performance tests[3] of DAMON
+> using DAMON_SYSFS also passed.
+>
+> [1] https://github.com/awslabs/damo
+> [2] https://github.com/awslabs/damon-tests/tree/master/corr
+> [3] https://github.com/awslabs/damon-tests/tree/master/perf
+>
+> Complete Git Tree
+> =================
+>
+> You can get the complete git tree from
+> https://git.kernel.org/sj/h/damon/sysfs/patches/v1.
+>
+> Sequence of Patches
+> ===================
+>
+> First two patches (patches 1-2) make core changes for DAMON_SYSFS.  The first
+> one (patch 1) allows non-exclusive DAMON contexts so that DAMON_SYSFS can work
+> in non-exclusive mode, while the second one (patch 2) adds size of DAMON enum
+> types so that DAMON API users can safely iterate the enums.
+>
+> Third patch (patch 3) implements basic sysfs stub for virtual address spaces
+> monitoring.  Note that this implements only sysfs files and DAMON is not
+> linked.  Fourth patch (patch 4) links the DAMON_SYSFS to DAMON so that users
+> can control DAMON using the sysfs files.
+>
+> Following six patches (patches 5-10) implements other DAMON features that
+> DAMON_DBGFS supports one by one (physical address space monitoring, DAMON-based
+> operation schemes, schemes quotas, schemes prioritization weights, schemes
+> watermarks, and schemes stats).
+>
+> Following patch (patch 11) adds a simple selftest for DAMON_SYSFS, and the
+> final one (patch 12) documents DAMON_SYSFS.
+>
+> SeongJae Park (12):
+>    mm/damon/core: Allow non-exclusive DAMON start/stop
+>    mm/damon/core: Add number of each enum type values
+>    mm/damon: Implement a minimal stub for sysfs-based DAMON interface
+>    mm/damon/sysfs: Link DAMON for virtual address spaces monitoring
+>    mm/damon/sysfs: Support physical address space monitoring
+>    mm/damon/sysfs: Support DAMON-based Operation Schemes
+>    mm/damon/sysfs: Support DAMOS quotas
+>    mm/damon/sysfs: Support schemes prioritization weights
+>    mm/damon/sysfs: Support DAMOS watermarks
+>    mm/damon/sysfs: Support DAMOS stats
+>    selftests/damon: Add a test for DAMON sysfs interface
+>    Docs/admin-guide/mm/damon/usage: Document DAMON sysfs interface
+>
+>   Documentation/admin-guide/mm/damon/usage.rst |  349 ++-
+>   include/linux/damon.h                        |    6 +-
+>   mm/damon/Kconfig                             |    7 +
+>   mm/damon/Makefile                            |    1 +
+>   mm/damon/core.c                              |   23 +-
+>   mm/damon/dbgfs.c                             |    2 +-
+>   mm/damon/reclaim.c                           |    2 +-
+>   mm/damon/sysfs.c                             | 2684 ++++++++++++++++++
+>   tools/testing/selftests/damon/Makefile       |    1 +
+>   tools/testing/selftests/damon/sysfs.sh       |  306 ++
+>   10 files changed, 3364 insertions(+), 17 deletions(-)
+>   create mode 100644 mm/damon/sysfs.c
+>   create mode 100755 tools/testing/selftests/damon/sysfs.sh
+>
+-- 
+Best Regards!
+Xin Hao
+
