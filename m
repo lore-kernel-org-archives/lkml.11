@@ -2,181 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F100DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 906A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243457AbiBYQyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:54:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37612 "EHLO
+        id S241043AbiBYQzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:55:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243246AbiBYQw4 (ORCPT
+        with ESMTP id S232772AbiBYQzT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 11:52:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC9C223108
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:52:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B732F61C4A
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:52:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29D8BC340F0;
-        Fri, 25 Feb 2022 16:52:20 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1nNdpL-00B8Km-52;
-        Fri, 25 Feb 2022 11:52:19 -0500
-Message-ID: <20220225165218.983307690@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Fri, 25 Feb 2022 11:51:56 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [for-linus][PATCH 05/13] tracing: Uninline trace_trigger_soft_disabled() partly
-References: <20220225165151.824659113@goodmis.org>
+        Fri, 25 Feb 2022 11:55:19 -0500
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2106.outbound.protection.outlook.com [40.107.244.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A28041592BC;
+        Fri, 25 Feb 2022 08:54:46 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=c5RIRotwAh+8Rh4Ey4EmiV4dWy2tT0esEPub77UDakIR9gDxC2cKO0ukEPGPUqHN/IPSLVjFxWxRUob2qOBofSJGE6KBV4k6sdnxT9YzrZaECMvPWPC9XOiUoKGVZohnurTujOvebG3bJELJUg0jCYXwh4yOW+107kERlbMjwc0oPm35TtFwYAywRl9+x60DAW82703OwCsnp6WSZkAR+L0NCoDS8Q+F9rHq+8mtkuk840iQekKaCO//5bSZllN70lZE4jjNnD+oAqO0SJVPLJDck/AKnURk5pclkiCwamadWq7jRI51Q8mM3lmZWS5Vq23GY2EJ9SPeT0C5RwkW6g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=drZRWbTN2epBq0hBJkWkZ58NrTkYevQQ/wyoSkuvyOk=;
+ b=NjmHOTDUjMekJ21d4GET6cPbSbMW35LgPdUT+LcnKZKw/jeMhuKzl8cJz4voXdAgTsoUTFWjtFkHUogVAukYBzyfQXRF8vTz+Yf/1DsYNtO/Vg+2rXefXzNpHHejrXTWdyeQmZSD6uwCFPHTTbiG1pXod/fCagOuvl/REGUMbi4n0gOkC4zG5HMtduG/lmyDprRTs9ndGWkfxFqjvywD7udbA1DQuenOMxQSVZAHwkDH1nTjEC/AX3qavDihjX7E1/8BHkA3uEC4gCDUiE5slGrN+FxoWZAbjYW9vRiYdokUU/hdIm9+aj1QQL1gjX4R+MdOVgBRSRQsXOiG12GPew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=drZRWbTN2epBq0hBJkWkZ58NrTkYevQQ/wyoSkuvyOk=;
+ b=pKB+yq35aZeUJ/K8s3oTgT2Ay/CdO3IVX1zruDRQyNkqGMmRPuADbNKvYzYO2NxgGjXqgEMgdGrr65zaiEguqtubf9AFj++Yo9eFh/xwRa0dtZGtxRiiBYd9rHtQ09D2BXO+Q4ucGgOk7FFxhmK/7NkdXgRpbNvP/TCGJ0bKr0Q=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CY4PR1001MB2182.namprd10.prod.outlook.com
+ (2603:10b6:910:48::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4995.24; Fri, 25 Feb
+ 2022 16:54:44 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::7c:dc80:7f24:67c5]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::7c:dc80:7f24:67c5%6]) with mapi id 15.20.4995.027; Fri, 25 Feb 2022
+ 16:54:43 +0000
+Date:   Fri, 25 Feb 2022 08:54:46 -0800
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        UNGLinuxDriver@microchip.com, linux-arm-kernel@lists.infradead.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 5/5] pinctrl: microchip-sgpio: wait until output is
+ actually set
+Message-ID: <20220225165446.GA4704@COLIN-DESKTOP1.localdomain>
+References: <20220224161021.2197263-1-michael@walle.cc>
+ <20220224161021.2197263-6-michael@walle.cc>
+ <20220225092427.jjilv3qo52crsmuw@soft-dev3-1.localhost>
+ <2f8a215c67269d639290515931d10b78@walle.cc>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2f8a215c67269d639290515931d10b78@walle.cc>
+X-ClientProxiedBy: CO1PR15CA0072.namprd15.prod.outlook.com
+ (2603:10b6:101:20::16) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ba4054b1-c097-4d23-0f06-08d9f87f8561
+X-MS-TrafficTypeDiagnostic: CY4PR1001MB2182:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR1001MB218264087739E75917A3F8BFA43E9@CY4PR1001MB2182.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: qRppEVw8OyUm7TTJ3MffOdiHMlu3M88CgZT+NtoqyFnWpxsxv1LfDC5rlwR0PuI9SlbqDJC32bkEzunvZ2FE1EEb80Ow7a7/C9qQjaRFxRBy6P2yfrj185tEhEQJP90tABBs9izFEuMpRcwG+T7ZFH/QD8ufOfHBRVEBjPvSoSjCM1+/4MYjLEzSBNUMixW19ro8EXpBKLBpx/EscIiSzUYXRRRMGKXw2OAqMHa9Sz7d678Y++sScTkTtaZ27XV6wf7JzlMZ84Co38z2fP1bnXnTQ/m7nJYd40WMoHIFOB+HQ+TwNLoEkRAfs6Q1S9PQJJQfd/K2qcspTzTxOnordNFXK/AMQWRBT05PCaw2K3LKXIercwe7SED4ds8leu+TDxRWUrayXINU9AT0loWZtq3ScG4pfdjBcR8YJ7TK/VzzLZstw+EPmvXBwYRNtHw9DRpMT2iPMxkxPXKLeQhWeGzgkjoxUwMb60btszNSGG4NxUFhHk2c9a9fFu6ZQVZMn15PNxD59JYu+oKBDcv/KHAzgLEoLWAC/yWsP5Vz14mefkMCkYO6NhW5XevsRC6Uf3JNt9xA/G+EmVuyB/kCQQ+ZElvwZdopNK+0xVauYJGIuf+6Jc5OM0f49Vp8RsTYTU8MlqypwRAnsXNQGroz0YduZCmAmaaR30xN/8YwlxAgq60qIM+hheR0Ff2UACMMu1H4iyMWyeDJvWBrDPThxR9bMm+LivImbIeNfZIzPZPnjXdfJO97MWnQ/GDYB0IjC52BDisRWIjovXN6JrYX4SjoDYOSZ206M4KM92+YKdI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(136003)(346002)(396003)(39830400003)(376002)(42606007)(52116002)(6506007)(1076003)(83380400001)(26005)(186003)(6486002)(966005)(6512007)(9686003)(508600001)(6916009)(33656002)(54906003)(316002)(66476007)(66556008)(4326008)(38100700002)(8676002)(2906002)(38350700002)(86362001)(5660300002)(44832011)(4744005)(8936002)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jTcYbLfL1VbN46kSxnjbj3cpXZCgZBJsNOu8nmSvmretMw9nbQbPfN7HOFNu?=
+ =?us-ascii?Q?67BKFOeH66t/nilZb12vWSTHjotHsjuEVGVjDuHjJc9TfoYFBNNFQjT467Q/?=
+ =?us-ascii?Q?1K8x2vi9DiRvqHgsoCDV0+OL6AbfqT0KfMHdAyJGHBMsagW26mB1HbElzSne?=
+ =?us-ascii?Q?I3vSFfDFdjPj9Igkx73wmqBkGd429/XHihRQ+f9GeLb25UkWECdcjBvhiS9r?=
+ =?us-ascii?Q?9A0a3CdmjgloRA9zFl3O1pxB5dhMtkY/ooUROMi6JBSlIw1rNxVJHsoQTzfj?=
+ =?us-ascii?Q?R0urRdVqNn3YYpGscvjx0dm0jwVHGlifZKs2Qm5DKJEmzwkMXlJMA2rJfYzU?=
+ =?us-ascii?Q?tTHHTGvUrI4aaT1zKINIr6td4lmax985Yq4bzXyP4Yf2BGrnCV65XG/Cmgd8?=
+ =?us-ascii?Q?0I2FjKa0GZUe1CkyIM+2Vek0k681mpAHsVd8lvxh5ryvdtNEjp1xySwOBdiC?=
+ =?us-ascii?Q?6fvQBP8CDXlFPrZDq0nedgKocIh5ku3aYGYKKMdzCYjWPkj64fa9GN0+9UHl?=
+ =?us-ascii?Q?udAG8epCevnr8uaVLr072AoKKGNPN45kHG/AOjwW5a5R2PcJcIYnJFc85Y06?=
+ =?us-ascii?Q?aplXo5Z5jE5X9cO9Us1CxvSanRFEH/SmZ2I23U5r+eeg5MNRd7QKUg1S1JpP?=
+ =?us-ascii?Q?ae78rd2Gh0HqLyxRcBrqql1A1aMInnSkCb9mYQSuoQ7iqv1bjQ9NBtPid5+p?=
+ =?us-ascii?Q?tOBQdn8nwA8wzCsRC62nOmtRlo9V+NhCnhJoD3FEE4aQyhZCPJv+v7LoaoUl?=
+ =?us-ascii?Q?4iiUyCjvBfFhkg6ddFzRHI74OYfkH3v/WuIN/M5JArAf6VZ6jfTTWiDoJXBb?=
+ =?us-ascii?Q?o7QPT+hA4qtyUhqeH9TiKETFN7wIw3Ncrw5177cdRn2AyDG3538r6euhA6q8?=
+ =?us-ascii?Q?6Y2z6ZY7pohBUYvY0sHsqiwsKioiwfDAyzBkFFhHAwzg/CxFh5Jdm2qEbs3F?=
+ =?us-ascii?Q?iFPV3WaDC7+PxAPWoZZWd9yAO6Rh9T21vCHmMU9wWMPM2De7VVWOHHgj77n+?=
+ =?us-ascii?Q?K32I0zxmYV1Yd0uUydtyMkwmfcB32DvXn3B1VVPYsPInlUmtflQi4jj1EQsI?=
+ =?us-ascii?Q?gqJ2bZy8aEPgCwYtWqTbiUsYCO3CvdTdsATtfhm4BljKhHq7mR+j4nx4KEbr?=
+ =?us-ascii?Q?Uqej3BcGwa52SoDnSAhg7YEbi2K5IJ2FKCcSDlPlrZBu5KRo17lJTM8TbD1E?=
+ =?us-ascii?Q?An8hmCuwoyYW5MxcNm1eqoOJc49z1wzKeS7+79B6Z7DWEVX0gNr+1FGyIGes?=
+ =?us-ascii?Q?zXcU1V4MKm5/68FtQR4FMCf28lMcpI8TCMfS1/IlkNV5nLZe/6TBAn8Oyc+M?=
+ =?us-ascii?Q?VEWlGA06Ac9/Zb/BS0qZnRGZrr6OobfwOGm4X8UkoEkUU1p6+aHV1YCCof+4?=
+ =?us-ascii?Q?68X/8gv8ZjRvLJujFn4ruPMDSuRXi4N2ZDGyN0JzgMEJR4Po1TWGDaoWiZfx?=
+ =?us-ascii?Q?PdYMH+7233pwczCRD708xkMuzykoCak09KDj5YFrI6ayMp9G9IpJRzdt3nUg?=
+ =?us-ascii?Q?Gfb7PJdsLsB9VPUq7LeAiXZ9+EM4UwUzRckIVm5FLrWFoNjsXprZzDVn1tDd?=
+ =?us-ascii?Q?h3ERVCxI1M3WKwwzdb13+bsXshit9OPmWJ6If7eUCBSIkcAQ7U8eQeVWUKN3?=
+ =?us-ascii?Q?Aq7RL9IVRjval1Ug3Y/6kuIjykBjlKaQc1CkPfPkouxYNv7tO26xVFJcwVkq?=
+ =?us-ascii?Q?vsq7Rw=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba4054b1-c097-4d23-0f06-08d9f87f8561
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 16:54:43.5026
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7J3AMxOdbVwTXF/5r2iy32ms7ROMFTnE4GXSDeXOwGtfcmMuMBvLyxugwgrS/w27CwVTzACgU+zj/d1tO8fqQIKHNR7rlwWAGlMMeoN4O54=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1001MB2182
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+Hi Michael,
 
-On a powerpc32 build with CONFIG_CC_OPTIMISE_FOR_SIZE, the inline
-keyword is not honored and trace_trigger_soft_disabled() appears
-approx 50 times in vmlinux.
+On Fri, Feb 25, 2022 at 12:29:50PM +0100, Michael Walle wrote:
+> 
+> Could you also have a look at the other supported sgpio block,
+> the ocelot and the luton? I don't have any register description
+> of these.
 
-Adding -Winline to the build, the following message appears:
+The current supported Ocelot chips are the VSC7514 (link below) and the
+VSC7513. Chapter 6 of this PDF links a second PDF, and you should be
+able to find the Serial GPIO definitions in DEVCPU_GCB:SIO_CTRL on page
+79 of that PDF.
+https://ww1.microchip.com/downloads/en/DeviceDoc/VMDS-10491.pdf
 
-	./include/linux/trace_events.h:712:1: error: inlining failed in call to 'trace_trigger_soft_disabled': call is unlikely and code size would grow [-Werror=inline]
+I'm working on support for the VSC7511/7512, so I can run a "does it
+work" test, but I likely won't have a setup to test the corner
+conditions this patch set is addressing with any confidence.
 
-That function is rather big for an inlined function:
 
-	c003df60 <trace_trigger_soft_disabled>:
-	c003df60:	94 21 ff f0 	stwu    r1,-16(r1)
-	c003df64:	7c 08 02 a6 	mflr    r0
-	c003df68:	90 01 00 14 	stw     r0,20(r1)
-	c003df6c:	bf c1 00 08 	stmw    r30,8(r1)
-	c003df70:	83 e3 00 24 	lwz     r31,36(r3)
-	c003df74:	73 e9 01 00 	andi.   r9,r31,256
-	c003df78:	41 82 00 10 	beq     c003df88 <trace_trigger_soft_disabled+0x28>
-	c003df7c:	38 60 00 00 	li      r3,0
-	c003df80:	39 61 00 10 	addi    r11,r1,16
-	c003df84:	4b fd 60 ac 	b       c0014030 <_rest32gpr_30_x>
-	c003df88:	73 e9 00 80 	andi.   r9,r31,128
-	c003df8c:	7c 7e 1b 78 	mr      r30,r3
-	c003df90:	41 a2 00 14 	beq     c003dfa4 <trace_trigger_soft_disabled+0x44>
-	c003df94:	38 c0 00 00 	li      r6,0
-	c003df98:	38 a0 00 00 	li      r5,0
-	c003df9c:	38 80 00 00 	li      r4,0
-	c003dfa0:	48 05 c5 f1 	bl      c009a590 <event_triggers_call>
-	c003dfa4:	73 e9 00 40 	andi.   r9,r31,64
-	c003dfa8:	40 82 00 28 	bne     c003dfd0 <trace_trigger_soft_disabled+0x70>
-	c003dfac:	73 ff 02 00 	andi.   r31,r31,512
-	c003dfb0:	41 82 ff cc 	beq     c003df7c <trace_trigger_soft_disabled+0x1c>
-	c003dfb4:	80 01 00 14 	lwz     r0,20(r1)
-	c003dfb8:	83 e1 00 0c 	lwz     r31,12(r1)
-	c003dfbc:	7f c3 f3 78 	mr      r3,r30
-	c003dfc0:	83 c1 00 08 	lwz     r30,8(r1)
-	c003dfc4:	7c 08 03 a6 	mtlr    r0
-	c003dfc8:	38 21 00 10 	addi    r1,r1,16
-	c003dfcc:	48 05 6f 6c 	b       c0094f38 <trace_event_ignore_this_pid>
-	c003dfd0:	38 60 00 01 	li      r3,1
-	c003dfd4:	4b ff ff ac 	b       c003df80 <trace_trigger_soft_disabled+0x20>
+Colin Foster
 
-However it is located in a hot path so inlining it is important.
-But forcing inlining of the entire function by using __always_inline
-leads to increasing the text size by approx 20 kbytes.
-
-Instead, split the fonction in two parts, one part with the likely
-fast path, flagged __always_inline, and a second part out of line.
-
-With this change, on a powerpc32 with CONFIG_CC_OPTIMISE_FOR_SIZE
-vmlinux text increases by only 1,4 kbytes, which is partly
-compensated by a decrease of vmlinux data by 7 kbytes.
-
-On ppc64_defconfig which has CONFIG_CC_OPTIMISE_FOR_SPEED, this
-change reduces vmlinux text by more than 30 kbytes.
-
-Link: https://lkml.kernel.org/r/69ce0986a52d026d381d612801d978aa4f977460.1644563295.git.christophe.leroy@csgroup.eu
-
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- include/linux/trace_events.h        | 22 ++++++++++++----------
- kernel/trace/trace_events_trigger.c | 14 ++++++++++++++
- 2 files changed, 26 insertions(+), 10 deletions(-)
-
-diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
-index 70c069aef02c..dcea51fb60e2 100644
---- a/include/linux/trace_events.h
-+++ b/include/linux/trace_events.h
-@@ -699,6 +699,8 @@ event_triggers_post_call(struct trace_event_file *file,
- 
- bool trace_event_ignore_this_pid(struct trace_event_file *trace_file);
- 
-+bool __trace_trigger_soft_disabled(struct trace_event_file *file);
-+
- /**
-  * trace_trigger_soft_disabled - do triggers and test if soft disabled
-  * @file: The file pointer of the event to test
-@@ -708,20 +710,20 @@ bool trace_event_ignore_this_pid(struct trace_event_file *trace_file);
-  * triggers that require testing the fields, it will return true,
-  * otherwise false.
-  */
--static inline bool
-+static __always_inline bool
- trace_trigger_soft_disabled(struct trace_event_file *file)
- {
- 	unsigned long eflags = file->flags;
- 
--	if (!(eflags & EVENT_FILE_FL_TRIGGER_COND)) {
--		if (eflags & EVENT_FILE_FL_TRIGGER_MODE)
--			event_triggers_call(file, NULL, NULL, NULL);
--		if (eflags & EVENT_FILE_FL_SOFT_DISABLED)
--			return true;
--		if (eflags & EVENT_FILE_FL_PID_FILTER)
--			return trace_event_ignore_this_pid(file);
--	}
--	return false;
-+	if (likely(!(eflags & (EVENT_FILE_FL_TRIGGER_MODE |
-+			       EVENT_FILE_FL_SOFT_DISABLED |
-+			       EVENT_FILE_FL_PID_FILTER))))
-+		return false;
-+
-+	if (likely(eflags & EVENT_FILE_FL_TRIGGER_COND))
-+		return false;
-+
-+	return __trace_trigger_soft_disabled(file);
- }
- 
- #ifdef CONFIG_BPF_EVENTS
-diff --git a/kernel/trace/trace_events_trigger.c b/kernel/trace/trace_events_trigger.c
-index efe563140f27..7eb9d04f1c2e 100644
---- a/kernel/trace/trace_events_trigger.c
-+++ b/kernel/trace/trace_events_trigger.c
-@@ -84,6 +84,20 @@ event_triggers_call(struct trace_event_file *file,
- }
- EXPORT_SYMBOL_GPL(event_triggers_call);
- 
-+bool __trace_trigger_soft_disabled(struct trace_event_file *file)
-+{
-+	unsigned long eflags = file->flags;
-+
-+	if (eflags & EVENT_FILE_FL_TRIGGER_MODE)
-+		event_triggers_call(file, NULL, NULL, NULL);
-+	if (eflags & EVENT_FILE_FL_SOFT_DISABLED)
-+		return true;
-+	if (eflags & EVENT_FILE_FL_PID_FILTER)
-+		return trace_event_ignore_this_pid(file);
-+	return false;
-+}
-+EXPORT_SYMBOL_GPL(__trace_trigger_soft_disabled);
-+
- /**
-  * event_triggers_post_call - Call 'post_triggers' for a trace event
-  * @file: The trace_event_file associated with the event
--- 
-2.34.1
