@@ -2,148 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF86C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB347C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232033AbiBYSEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 13:04:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59362 "EHLO
+        id S232244AbiBYSE3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 13:04:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231883AbiBYSEC (ORCPT
+        with ESMTP id S232048AbiBYSEZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 13:04:02 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B092272E6
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:03:29 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id d3so5726408wrf.1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:03:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=myxelBqy30bTcJ8ZX5UhYCHIKBHFqSW0CcEE1Z58khk=;
-        b=jOi89ia8H2rFcP3T7+wURDQtxvvySEXht1DO13PIwFY9RJIC/QiSqLOm1dtVkdAyaf
-         AbYh/oSAOyApE9Q1Kn/SpPICp4CNncqYnBYGAUyAGspr1g1GvGGFqLdM7rgD91v4+oxu
-         PWhLDigQFqAdiLhHI/JPrvGC+Rv/YYNnLlA2yzJVwr5dfMs7NQkqFay3wPrgTRyqGr0y
-         RosJil9OVqTiq+9ABreNkg2ZbxVtQefuRQwZhgN+VwviRBOoLfunc9ocRyUzinV0JAqi
-         VyCJrUSUMQH+F3MGkSN1QVb2Czn2J3jI73XkYiBHEI5aCts8fyqgVSGdE5ov+B7vV6UQ
-         Q+RQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=myxelBqy30bTcJ8ZX5UhYCHIKBHFqSW0CcEE1Z58khk=;
-        b=qRyzbXzUVKBxP3dLVNB4qmzKOHMJW33g8oEmLKYazbwonES9Rb9FI+vsCOCostJM9x
-         KE2tLpxpEzjeEtNC3go+YuVnV/QlurPX70y0aYgyAVq2gjlRRSfWGKBrkQGaGFg2eTYH
-         mJQPku50VzPaUvAQI3tIYVhLeFYj+321p9Gtm5VKYfNbUtlYDph2WR8T8nKOqxzTOaf0
-         U4uqfzFAVglJNln4deQumz6PanDhyT95GEiy1J1qQY/n//Fv1ZmEwPW0bPs2zyIHuiG4
-         kbObrKyt6e5huBMCiv1dgjfuPMhlxEEUUK0FRd1FbLb1uBs/qrS3afL0rwbOvgLbn+Eo
-         +GVw==
-X-Gm-Message-State: AOAM533ZPTPSgN3HlMSmi3LvgXRmJdmuy7gnKhtYXkzJDk+RhHYFtwmA
-        kMx6NFODie+Qs5eumlhTbOXZWA==
-X-Google-Smtp-Source: ABdhPJxjMNMdYhsq1gDFcmAYq8MGRlkuy47ls/d6GXdHncZa9U6DNBLuj8UsSq1feDuCyGWhxSUoJg==
-X-Received: by 2002:a5d:5245:0:b0:1ed:9eca:cf3d with SMTP id k5-20020a5d5245000000b001ed9ecacf3dmr6811167wrc.666.1645812207584;
-        Fri, 25 Feb 2022 10:03:27 -0800 (PST)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id s3-20020adfbc03000000b001e4b0e4a7fdsm2918057wrg.93.2022.02.25.10.03.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Feb 2022 10:03:26 -0800 (PST)
-Message-ID: <4811be6f-7e86-2a62-94cf-98504d5e64e7@linaro.org>
-Date:   Fri, 25 Feb 2022 18:03:25 +0000
+        Fri, 25 Feb 2022 13:04:25 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEAC12510FD
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:03:52 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 633A3212C3;
+        Fri, 25 Feb 2022 18:03:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1645812231; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wbzb6rwe8BeYvrev9nqwEXLhWRFFA+vAEVQGD0RO8YQ=;
+        b=yZIpqxaoqBAAGu78WfynY6RE/QeIasdv8y41xCLA172w16Hrmg2D1Ok5L9f3PYpp6EsEqn
+        bh/Z5Co+xzyt9p30RxcgKkTUV/IjoPvsITEiEpZ6w98ufyVFwDxpPi9R3zs1+rmTosDRfo
+        RtxgHdevfR4JidJiOdixd3i1oivM5Y4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1645812231;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wbzb6rwe8BeYvrev9nqwEXLhWRFFA+vAEVQGD0RO8YQ=;
+        b=zOu/LTYva8llbVLt23byI4J6oSyX/461yzWGb3GEY3aaNptsxCtR43jeJ9ihZBVH3uXgpa
+        XkQiQrL9PvhMqqAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 3766113EA7;
+        Fri, 25 Feb 2022 18:03:51 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id CMbyDAcaGWKSRQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Fri, 25 Feb 2022 18:03:51 +0000
+From:   Vlastimil Babka <vbabka@suse.cz>
+To:     David Rientjes <rientjes@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        patches@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Oliver Glitta <glittao@gmail.com>,
+        Faiyaz Mohammed <faiyazm@codeaurora.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH 1/5] mm/slub: move struct track init out of set_track()
+Date:   Fri, 25 Feb 2022 19:03:14 +0100
+Message-Id: <20220225180318.20594-2-vbabka@suse.cz>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220225180318.20594-1-vbabka@suse.cz>
+References: <20220225180318.20594-1-vbabka@suse.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] soundwire: qcom: remove redundant wait for completion
-Content-Language: en-US
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
-        bgoswami@codeaurora.org, perex@perex.cz, tiwai@suse.com,
-        rohitkr@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, swboyd@chromium.org,
-        judyhsiao@chromium.org, yung-chuan.liao@linux.intel.com,
-        sanyog.r.kale@intel.com
-Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
-References: <1645800257-27025-1-git-send-email-quic_srivasam@quicinc.com>
- <a99a59eb-cd59-f566-b98d-486c94f32eec@linaro.org>
- <06650d56-eed3-73ad-d6b4-6b56a5a70669@linux.intel.com>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <06650d56-eed3-73ad-d6b4-6b56a5a70669@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1979; h=from:subject; bh=+MXYxk+IxU7wPrbf4fe94giU090LakTiC0p9f3LDPs0=; b=owGbwMvMwMH4QPFU8cfOlQKMp9WSGJIkJR/yBC2Ve3i3Y8P/WY8P1spXt4Vk5mm7MpUnZBuUaPQm b/DrZDRmYWDkYJAVU2Tp9Z7MuNL0scQ+j7gzMINYmUCmMHBxCsCN1uBgmPpMuFjBj4VN/5dLzY7aZp PwY8kdBS587DH6ttX/ZNJ2Vmt8b//sb+TBqbv8xAWf/pfZ79kPOm7+/tj6/tH1cX9V+Sfej2adIn5x U4LPN5XStOvBcttLmHpqPu19YKShum+LkNYTLoeVbw88XO79NvXH1VNBirp7hBJWr+PL8Q2yFZy6VO Z2qu6VvC+XVu+S67ox4+CjheHuH1p9/h85POPipoPTw3k2PL3u3xc5Z//M3vL0nUzBkSfiS+ZJvfzm 086gbbTiROeSg5yWG4xO37z9uUBzh0vkSV6pH10BjNmhUdH3Hr715bhZuNWjZ7IdM1u97nabk0s2al tvMd6ssYo3rdnEv8z5XYf7tYaJAA==
+X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+set_track() either zeroes out the struct track or fills it, depending on
+the addr parameter. This is unnecessary as there's only one place that
+calls it for the initialization - init_tracking(). We can simply do the
+zeroing there, with a single memset() that covers both TRACK_ALLOC and
+TRACK_FREE as they are adjacent.
 
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ mm/slub.c | 32 +++++++++++++++-----------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
 
-On 25/02/2022 15:43, Pierre-Louis Bossart wrote:
-> 
-> 
-> On 2/25/22 08:45, Srinivas Kandagatla wrote:
->>
->>
->> On 25/02/2022 14:44, Srinivasa Rao Mandadapu wrote:
->>> Remove wait_for_completion_timeout from soundwire probe as it seems
->>> unnecessary and device enumeration is anyway not happening here,
->>> hence this api is blocking till it completes max wait time.
->>> Also, as device enumeration event is dependent on wcd938x probe to be
->>> completed, its of no use waiting here.
->>> Waiting here increasing the boot time almost 4 seconds and impacting
->>> other modules like touch screen.
->>>
->>> Fixes: 06dd96738d618 ("soundwire: qcom: wait for enumeration to be
->>> complete in probe")
->>>
->>> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
->>> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->>> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
->>
->> LGTM,
->>
->> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> 
-> I don't get the idea, sorry.
-> 
-> If you look at the code, these are the cases where this 'struct
-> completion' is used
-> 
-> 	struct completion enumeration;
-> 	complete(&ctrl->enumeration);
-> 	/* Enable Auto enumeration */
-> 	init_completion(&ctrl->enumeration);
-> 	wait_for_completion_timeout(&ctrl->enumeration,
-> 
-> 
-> so if you remove the wait_for_completeion, then you might just as well
-> remove the whole thing and revert 06dd96738d618
-> 
-> what am I missing?
-Yes, that makes more sense to revert it, as it is the only user of this 
-completion.
-We could add it back when we really need this again in pm runtime setup 
-if required.
+diff --git a/mm/slub.c b/mm/slub.c
+index 261474092e43..1fc451f4fe62 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -729,34 +729,32 @@ static void set_track(struct kmem_cache *s, void *object,
+ {
+ 	struct track *p = get_track(s, object, alloc);
+ 
+-	if (addr) {
+ #ifdef CONFIG_STACKTRACE
+-		unsigned int nr_entries;
++	unsigned int nr_entries;
+ 
+-		metadata_access_enable();
+-		nr_entries = stack_trace_save(kasan_reset_tag(p->addrs),
+-					      TRACK_ADDRS_COUNT, 3);
+-		metadata_access_disable();
++	metadata_access_enable();
++	nr_entries = stack_trace_save(kasan_reset_tag(p->addrs),
++				      TRACK_ADDRS_COUNT, 3);
++	metadata_access_disable();
+ 
+-		if (nr_entries < TRACK_ADDRS_COUNT)
+-			p->addrs[nr_entries] = 0;
++	if (nr_entries < TRACK_ADDRS_COUNT)
++		p->addrs[nr_entries] = 0;
+ #endif
+-		p->addr = addr;
+-		p->cpu = smp_processor_id();
+-		p->pid = current->pid;
+-		p->when = jiffies;
+-	} else {
+-		memset(p, 0, sizeof(struct track));
+-	}
++	p->addr = addr;
++	p->cpu = smp_processor_id();
++	p->pid = current->pid;
++	p->when = jiffies;
+ }
+ 
+ static void init_tracking(struct kmem_cache *s, void *object)
+ {
++	struct track *p;
++
+ 	if (!(s->flags & SLAB_STORE_USER))
+ 		return;
+ 
+-	set_track(s, object, TRACK_FREE, 0UL);
+-	set_track(s, object, TRACK_ALLOC, 0UL);
++	p = get_track(s, object, TRACK_ALLOC);
++	memset(p, 0, 2*sizeof(struct track));
+ }
+ 
+ static void print_track(const char *s, struct track *t, unsigned long pr_time)
+-- 
+2.35.1
 
---srini
-> 
-> 
->>> ---
->>>    drivers/soundwire/qcom.c | 2 --
->>>    1 file changed, 2 deletions(-)
->>>
->>> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
->>> index 5481341..9a32a24 100644
->>> --- a/drivers/soundwire/qcom.c
->>> +++ b/drivers/soundwire/qcom.c
->>> @@ -1309,8 +1309,6 @@ static int qcom_swrm_probe(struct
->>> platform_device *pdev)
->>>        }
->>>          qcom_swrm_init(ctrl);
->>> -    wait_for_completion_timeout(&ctrl->enumeration,
->>> -                    msecs_to_jiffies(TIMEOUT_MS));
->>>        ret = qcom_swrm_register_dais(ctrl);
->>>        if (ret)
->>>            goto err_master_add;
