@@ -2,84 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BECFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 00:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B70C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 00:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236072AbiBYA1U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 19:27:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51866 "EHLO
+        id S236078AbiBYA1q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 19:27:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236057AbiBYA1R (ORCPT
+        with ESMTP id S235287AbiBYA1n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 19:27:17 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B1363BD4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 16:26:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645748806; x=1677284806;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=2+fDZyyIUmE9PVSmEaK6H8QZcOb4pTExTFlK0Pcv5hc=;
-  b=ITXkCj/nTGVWMYq4dolh2e00LHLr2pDMEg3hWg/zmtCGgeSwgGo+g+dQ
-   fuYe05ircwGeQkofzk2xy4Qe2+wV40EbMue9OR8UgeAZ+2SMgNPagsAV/
-   R4EehhjUynkGjqrZQVX5YoQwkb3sHzHxPAZ2pXI10YVZoOzZTMzMxLyEv
-   QImlh5wk/Q1vkkh250U7T268sUB2i1YTAZXLb3JnnMVmm9CNifKEz77Wz
-   JHtPrV2AXZoLz4ebjAn/O4R9VPPk8C7vhOGI5c8xr9fKYScoXy+e11LVu
-   vn6+eiYvkJ2uNDvKT43GNuA9CJvE8MJQZeNFdM7H0X9MXd71J/w9/uce5
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="315602577"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="315602577"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 16:26:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="707671548"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 24 Feb 2022 16:26:38 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nNORR-0003bw-Ci; Fri, 25 Feb 2022 00:26:37 +0000
-Date:   Fri, 25 Feb 2022 08:26:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [netfilter-nf:master 47/47] undefined reference to `sock_gen_put'
-Message-ID: <202202250819.DzmYOyKL-lkp@intel.com>
+        Thu, 24 Feb 2022 19:27:43 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549771A276C
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 16:27:12 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id d187so3279422pfa.10
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 16:27:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cw+klcamA272Cb5ODXPvx6exJVMPsgC02NTpWPnz0OM=;
+        b=Ikdqgy/jVnfO2L3OLbVdKLMW8dEfP1zO5vRc8PFJNoknO1XoRQlBZP+flkXI8Mahch
+         XAO2z3nSEkZPYpX2Pe85cvXYC6MvpyCM5mPK96jtw09q9cxht/i9B0aMnLQgS1kFKMjA
+         n8Kqv7HKW0KieoOm/oh85MBBXF1fY0NwPyl18=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cw+klcamA272Cb5ODXPvx6exJVMPsgC02NTpWPnz0OM=;
+        b=Zyk2EhWeHXseYxcy/afXMEI70wbC64SLsCRFJEX0sUyS2w56oOcsreUJ+13B5I4jM2
+         y9zubkUxhqa6DiYsw/nuUGehXtlpL1xcwfBFSplKocflskcsHX7aLlKi7ESdPgW9ogGa
+         sbNdKI5enx23LFbeKuKArEgRwq+cK/9FDtaZbaEWGF9/qAJX0cqulvqxZriGS0knajz9
+         UoZHeH7DuNnlyQsheCm0MqXNzJWg+0SQZOaR+Vekh0iHLRJ4PGTW7rD/nr2ym4AzNPHQ
+         Tkag6SH865KEV+/ngYSXB+CSEKeALiwI16vflJIcq660oa3w+8qcmkDoK2sY8D7Vfhf2
+         Ij5g==
+X-Gm-Message-State: AOAM531y/2lsnRd5EZ70nr34cCU8Es88UMp6UwVJm0N41XoIKIH5Kunp
+        sBVFVFXbF0fe9Vmler346UIyjw==
+X-Google-Smtp-Source: ABdhPJx9Tq0nOY+LjkUD318qRA9/WOyOM4kzpCtQpV3PobzAcUHpHHEa9fSy8CvBhwyzIHtOp55Rsw==
+X-Received: by 2002:a05:6a00:2311:b0:4e1:52bf:e466 with SMTP id h17-20020a056a00231100b004e152bfe466mr4986889pfh.77.1645748831778;
+        Thu, 24 Feb 2022 16:27:11 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id u12-20020a17090a890c00b001b8efcf8e48sm7316514pjn.14.2022.02.24.16.27.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 16:27:11 -0800 (PST)
+Date:   Thu, 24 Feb 2022 16:27:10 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
+        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v2 04/39] objtool: Add --dry-run
+Message-ID: <202202241627.82D924E72@keescook>
+References: <20220224145138.952963315@infradead.org>
+ <20220224151322.248747148@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220224151322.248747148@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git master
-head:   661c8ec0381915e9a2b0f9dcc03a5bd70ba5e3dd
-commit: 661c8ec0381915e9a2b0f9dcc03a5bd70ba5e3dd [47/47] netfilter: nf_queue: don't assume sk is full socket
-config: nios2-randconfig-r021-20220224 (https://download.01.org/0day-ci/archive/20220225/202202250819.DzmYOyKL-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git/commit/?id=661c8ec0381915e9a2b0f9dcc03a5bd70ba5e3dd
-        git remote add netfilter-nf git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf.git
-        git fetch --no-tags netfilter-nf master
-        git checkout 661c8ec0381915e9a2b0f9dcc03a5bd70ba5e3dd
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
+On Thu, Feb 24, 2022 at 03:51:42PM +0100, Peter Zijlstra wrote:
+> Add a --dry-run argument to skip writing the modifications. This is
+> convenient for debugging.
+> 
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yes please. :)
 
-All errors (new ones prefixed by >>):
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-   nios2-linux-ld: net/netfilter/nf_queue.o: in function `nf_queue_entry_free':
->> (.text+0x1d0): undefined reference to `sock_gen_put'
-   (.text+0x1d0): relocation truncated to fit: R_NIOS2_CALL26 against `sock_gen_put'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Kees Cook
