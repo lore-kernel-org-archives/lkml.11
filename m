@@ -2,62 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E74C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0361C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242025AbiBYOzi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 09:55:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43662 "EHLO
+        id S242030AbiBYOzk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 09:55:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239280AbiBYOzN (ORCPT
+        with ESMTP id S241899AbiBYOzO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 09:55:13 -0500
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E6922558A;
-        Fri, 25 Feb 2022 06:54:40 -0800 (PST)
-Received: by mail-qk1-x735.google.com with SMTP id bm39so4697897qkb.0;
-        Fri, 25 Feb 2022 06:54:40 -0800 (PST)
+        Fri, 25 Feb 2022 09:55:14 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6882272CB;
+        Fri, 25 Feb 2022 06:54:42 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id t21so4650586qkg.6;
+        Fri, 25 Feb 2022 06:54:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=SAvP0iQoBy21i3qD7tVUxZCHh5iSPEaSiol2a9udnKA=;
-        b=aNLFGsj4FJmueFuo2LVRjfiHSM0zLdvJGEAw2sKF1E0sl1LCQd+CYUZnpd6yR47jhk
-         Gwi3OgUlxLj3+Vr7WteCi5fJo+BRXUKp7qFfoakdnRNStlgxojsEyP4KJonfuXCAqNFA
-         vAVprF126cPhPwk4JHZjgPBZnxbRS1nnQxEt4f1DjkxuyFc2vAp2ChwkJeOTS5L7PlDE
-         awaAUe+FhpN3GfKlV93MNcP1TmDKrdqO0tgiLN6pG7BBUVORorVGLl5RnLR6lKdl1A7v
-         zUJSY1NYonl8l+0whl+SWfiP2ISdXYYJqpTpE8mufcOi6+4ZO9k/vLXTTqYLbaRsrP+t
-         JCRg==
+        bh=1aWUdNaxxdpw+lffSMBxQcG6QoqOdlZ2+Rp8zHx4iWQ=;
+        b=CDm78T/7/AOeFBNhZ/Hsw/eFKprN/6WQC1KibaLR1X/6Xa+qSiMF2CebribEDB0grp
+         68EPufCJj+DgWCEknXnwUwPQLa4q6JEVqXI70BaI/bf1dXhAWAK1z707JLmWprxe7nmo
+         Gakgea52/WJ2+8AvgQt/FBNF8Fm7J5N0bGA7oGKsxuMgHJHGegvzedoXHXz5Z379tacq
+         nM+9rHWpUNigxtY7K0/20QQTmWwvYaPSRQu2q1kY+ZAonZMKWIPFyuxL/zL1Lll4IJ35
+         qmr6WwMC97V9KOvnR7eQkjCre7m4e06RQxD1PwOymh6AKiL70U4ma6grvazPYUaRt3CP
+         kL3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=SAvP0iQoBy21i3qD7tVUxZCHh5iSPEaSiol2a9udnKA=;
-        b=cNFwSznCw2MkTdMwW5UVST5rCLpEYfBvD1VeTIR/mrEvOUFdHF4Jlys8m/FpE/fxco
-         +sdOnxHrrdhz3LaweIqjBa/2XIu9m0DdAfaaVxod0qUPpnAMH4uRlmzmullbFXEGHRNL
-         3ynfLfuJKo7iDmJhYaTFm0v9liVsszQbeRMJqnyDk1qOfJsbNT7kmOzLQZw55i7QG5Th
-         joWfQvEr6dP8oM3TIKCY4PyhERv1jtMqDR8IuvANWEtujMz241Q6kYVc273zEhC3Adci
-         9KY6zhiY07u7KG3/Tf0tZwmq0k3c1LRwJzim5nPuibZ90YrG/Ozfn/LwhIccrdj2YJmO
-         d+Og==
-X-Gm-Message-State: AOAM532V+G880+cS41++gx9xheWh1PQ9ynDz1Bi3JoCORjTyjwtFjX9K
-        nkdo303WL+rz79EnqBfpPhA=
-X-Google-Smtp-Source: ABdhPJyx3j8sQ1IUhKaQb6ADND8qxpw70u/EON/lG+Roz4kKFKjOLC80o18/WD04ZC5t7L6fH4HJRQ==
-X-Received: by 2002:a37:ac0a:0:b0:60d:d66d:e4cc with SMTP id e10-20020a37ac0a000000b0060dd66de4ccmr4938522qkm.10.1645800879750;
-        Fri, 25 Feb 2022 06:54:39 -0800 (PST)
+        bh=1aWUdNaxxdpw+lffSMBxQcG6QoqOdlZ2+Rp8zHx4iWQ=;
+        b=N3ucis/P3oYcLfZxZpmvIY01RCUFy+IbDfqbhq1tVu8ZFdko4YJs3D7/H0t26EvIkC
+         b/ZCHM8A4gDvei7+XjgW2saL/KMkqAKHAEF1ZgjFKXyCt0/01RsPgdPG4WQTl6qwNGrA
+         IhO8nNwvE66tI+tzhbZf9JWLoji4UPtospCwqR1zBlGQhgPHdDRFTZbImEoeORkQoXE7
+         P3X3CUhq7ae7HQRJy3iiJ2HqPb8q3dx5ZTbyAwcK4YCy/rXVArhslUDBaWLOqbbFpG8Y
+         InxER5/JiWALpCiOsQ7/9uu6vSonR3+HBdQxjfjytO/22JSC/nHvT0P7SHNQpvQQU30z
+         Xs7w==
+X-Gm-Message-State: AOAM531Sk4fX6VxzpcFWiC7VEG7aGlSWiVP5HFjih+ZVoavpKKgAvtww
+        iOmTxOMroAwZSHUiM6QhzbY55TiQAcNxbA==
+X-Google-Smtp-Source: ABdhPJziU1O59hbevx/Nku3KuwwaXRY947GTXPKwNBjuKzU7SSBO7D/jEigjVZPZz+pHreartIQY+Q==
+X-Received: by 2002:a37:9a94:0:b0:606:8349:e9e8 with SMTP id c142-20020a379a94000000b006068349e9e8mr4966818qke.66.1645800881655;
+        Fri, 25 Feb 2022 06:54:41 -0800 (PST)
 Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id d202-20020a3768d3000000b005f18706845dsm1318292qkc.73.2022.02.25.06.54.39
+        by smtp.gmail.com with ESMTPSA id d202-20020a3768d3000000b005f18706845dsm1318292qkc.73.2022.02.25.06.54.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 06:54:39 -0800 (PST)
+        Fri, 25 Feb 2022 06:54:41 -0800 (PST)
 From:   Peter Geis <pgwipeout@gmail.com>
 To:     Felipe Balbi <balbi@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Bin Yang <yangbin@rock-chips.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Peter Geis <pgwipeout@gmail.com>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 4/8] usb: dwc3: core: do not use 3.0 clock when operating in 2.0 mode
-Date:   Fri, 25 Feb 2022 09:54:27 -0500
-Message-Id: <20220225145432.422130-5-pgwipeout@gmail.com>
+Cc:     Peter Geis <pgwipeout@gmail.com>, Heiko Stuebner <heiko@sntech.de>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 6/8] usb: dwc3: add rk3568 dwc3 support
+Date:   Fri, 25 Feb 2022 09:54:29 -0500
+Message-Id: <20220225145432.422130-7-pgwipeout@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220225145432.422130-1-pgwipeout@gmail.com>
 References: <20220225145432.422130-1-pgwipeout@gmail.com>
@@ -67,48 +65,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bin Yang <yangbin@rock-chips.com>
+The rk3568 dwc3 controller is backwards compatible with the rk3399 dwc3
+controller.
+Add support for it to the dwc3-of-simple driver.
 
-In the 3.0 device core, if the core is programmed to operate in
-2.0 only, then setting the GUCTL1.DEV_FORCE_20_CLK_FOR_30_CLK makes
-the internal 2.0(utmi/ulpi) clock to be routed as the 3.0 (pipe)
-clock. Enabling this feature allows the pipe3 clock to be not-running
-when forcibly operating in 2.0 device mode.
-
-Signed-off-by: Bin Yang <yangbin@rock-chips.com>
 Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 ---
- drivers/usb/dwc3/core.c | 4 ++++
- drivers/usb/dwc3/core.h | 1 +
- 2 files changed, 5 insertions(+)
+ drivers/usb/dwc3/dwc3-of-simple.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index 18adddfba3da..032d40794fae 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -1167,6 +1167,10 @@ static int dwc3_core_init(struct dwc3 *dwc)
- 		if (dwc->parkmode_disable_ss_quirk)
- 			reg |= DWC3_GUCTL1_PARKMODE_DISABLE_SS;
+diff --git a/drivers/usb/dwc3/dwc3-of-simple.c b/drivers/usb/dwc3/dwc3-of-simple.c
+index 9dc6295df6b1..1d52a261af55 100644
+--- a/drivers/usb/dwc3/dwc3-of-simple.c
++++ b/drivers/usb/dwc3/dwc3-of-simple.c
+@@ -49,7 +49,8 @@ static int dwc3_of_simple_probe(struct platform_device *pdev)
+ 	 * Some controllers need to toggle the usb3-otg reset before trying to
+ 	 * initialize the PHY, otherwise the PHY times out.
+ 	 */
+-	if (of_device_is_compatible(np, "rockchip,rk3399-dwc3"))
++	if (of_device_is_compatible(np, "rockchip,rk3399-dwc3") |
++	    of_device_is_compatible(np, "rockchip,rk3568-dwc3"))
+ 		simple->need_reset = true;
  
-+		if (dwc->maximum_speed == USB_SPEED_HIGH ||
-+		    dwc->maximum_speed == USB_SPEED_FULL)
-+			reg |= DWC3_GUCTL1_DEV_FORCE_20_CLK_FOR_30_CLK;
-+
- 		dwc3_writel(dwc->regs, DWC3_GUCTL1, reg);
- 	}
- 
-diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
-index eb9c1efced05..ea3ca04406bb 100644
---- a/drivers/usb/dwc3/core.h
-+++ b/drivers/usb/dwc3/core.h
-@@ -259,6 +259,7 @@
- /* Global User Control 1 Register */
- #define DWC3_GUCTL1_DEV_DECOUPLE_L1L2_EVT	BIT(31)
- #define DWC3_GUCTL1_TX_IPGAP_LINECHECK_DIS	BIT(28)
-+#define DWC3_GUCTL1_DEV_FORCE_20_CLK_FOR_30_CLK	BIT(26)
- #define DWC3_GUCTL1_DEV_L1_EXIT_BY_HW		BIT(24)
- #define DWC3_GUCTL1_PARKMODE_DISABLE_SS		BIT(17)
- 
+ 	simple->resets = of_reset_control_array_get(np, false, true,
+@@ -176,6 +177,7 @@ static const struct of_device_id of_dwc3_simple_match[] = {
+ 	{ .compatible = "hisilicon,hi3670-dwc3" },
+ 	{ .compatible = "intel,keembay-dwc3" },
+ 	{ .compatible = "rockchip,rk3399-dwc3" },
++	{ .compatible = "rockchip,rk3568-dwc3" },
+ 	{ .compatible = "sprd,sc9860-dwc3" },
+ 	{ /* Sentinel */ }
+ };
 -- 
 2.25.1
 
