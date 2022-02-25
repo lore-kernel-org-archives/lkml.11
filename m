@@ -2,83 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61648C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 212F2C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:06:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237993AbiBYHGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 02:06:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
+        id S238004AbiBYHGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 02:06:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237978AbiBYHGh (ORCPT
+        with ESMTP id S237991AbiBYHGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 02:06:37 -0500
-Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D748E1DD0CC
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 23:06:02 -0800 (PST)
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 5B7802013FE;
-        Fri, 25 Feb 2022 07:06:01 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 5DCF8802B1; Fri, 25 Feb 2022 07:58:40 +0100 (CET)
-Date:   Fri, 25 Feb 2022 07:58:40 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH v2] random: unify cycles_t and jiffies usage and types
-Message-ID: <Yhh+IJftHEZcHdEn@owl.dominikbrodowski.net>
-References: <20220224173948.34045-1-Jason@zx2c4.com>
- <20220224213030.75400-1-Jason@zx2c4.com>
+        Fri, 25 Feb 2022 02:06:40 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199AF1E1107;
+        Thu, 24 Feb 2022 23:06:09 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id cp23-20020a17090afb9700b001bbfe0fbe94so4041037pjb.3;
+        Thu, 24 Feb 2022 23:06:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q/tCaefy/zF2YcxtAir2UFA6eKeXz41CXIJzupnqKxU=;
+        b=qhXpU1j94DTo8fXZmkVOFyVNMaSOfACjEYnt5+znFJFAyYrNkSBRrABkjNjwutIT5t
+         cvc7hWfP7QnMocVJbkNy+dT3uUWz9R+ezvoFG33w2H1C3Zn0a4JE52DziFsqN7oxEdFI
+         donDNU5ZWSlYLa4dffD8ap01WIqUEmLWwCdzNwmkWok4MPhFKy3rrmkmdeokXhGbmuBs
+         2XW9jPBDxFxEHIdNdq965xCVP9vJ2NESB+eBw8FOg6NWoWq3uzWNiugvaSfIQdRDumza
+         y6LQ50OU/tqhcNJhcTrDADtf0Uq3MdBbXG5pJOB/biUUQLl9GLXjzhWDMf7z3fIg2I46
+         4Bgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=q/tCaefy/zF2YcxtAir2UFA6eKeXz41CXIJzupnqKxU=;
+        b=IEM0xADZRIavfafTbWZi5pEiq0/JU8TNiYE7jTOGZY1eFTxb4sbMGyMCjlUvY2bsYy
+         qzlY0OL4Gm6noilR/6/KmcMJ6HPYJt46cgn95uFI9CpO/qnNHzaDizvZnVDvDb1FgvxN
+         E2P4x7KNgU19syenVGgqTZzPaV6H7mvBok00DULKB9p4j4J38UzgfDMuwM8BTJjQiGa+
+         ZY54SfF8vc5HAxbTeUC2wbT2cxrjLMmhN/mTrIBFMzpyWsDpG8X2Kqi6sI5i8scT5dDe
+         0cAIAl0IHirA/qnA/hQVXER85vTq8BoCnU58To/2Bda/uk/WqAvnOaWTyiX9rL3MTxOA
+         E2qw==
+X-Gm-Message-State: AOAM531IoUpAQESHnc0SKjxY+aGwk2m/zb4jXJMupmwL1trtawf4UwZh
+        nMhu/YeRkL2j+PbX+S5d7No=
+X-Google-Smtp-Source: ABdhPJwB1i8k8yYncgvKIb1ud+vTwoPw9jzHgU7aiB5WCdFv1LaNP+W1u+1tV7Vhz7S74Dsh4NvC1w==
+X-Received: by 2002:a17:90a:f505:b0:1bc:d47e:8b19 with SMTP id cs5-20020a17090af50500b001bcd47e8b19mr1862036pjb.102.1645772768569;
+        Thu, 24 Feb 2022 23:06:08 -0800 (PST)
+Received: from localhost.localdomain ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id u16-20020a056a00125000b004e1e36d4428sm1711084pfi.104.2022.02.24.23.06.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 23:06:08 -0800 (PST)
+From:   Like Xu <like.xu.linux@gmail.com>
+X-Google-Original-From: Like Xu <likexu@tencent.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] selftests: kvm: add hyperv_svm_test to .gitignore
+Date:   Fri, 25 Feb 2022 15:05:57 +0800
+Message-Id: <20220225070558.73195-1-likexu@tencent.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224213030.75400-1-Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Thu, Feb 24, 2022 at 10:30:30PM +0100 schrieb Jason A. Donenfeld:
-> @@ -1016,19 +1010,26 @@ struct timer_rand_state {
->   */
->  void add_device_randomness(const void *buf, size_t size)
->  {
-> -	unsigned long time = random_get_entropy() ^ jiffies;
-> -	unsigned long flags;
-> +	cycles_t cycles = random_get_entropy();
-> +	unsigned long now = jiffies, flags;
+From: Like Xu <likexu@tencent.com>
 
-maybe "flags, now = jiffies" is a bit more reader-friendly?
+hyperv_svm_test's binary should be present in the .gitignore file
+for the git to ignore it.
 
->  static void add_timer_randomness(struct timer_rand_state *state, unsigned int num)
->  {
-> -	struct {
-> -		long jiffies;
-> -		unsigned int cycles;
-> -		unsigned int num;
-> -	} sample;
-> +	cycles_t cycles = random_get_entropy();
-> +	unsigned long now = jiffies, flags;
+Fixes: e67bd7df28a0 ("KVM: selftests: nSVM: Add enlightened MSR-Bitmap selftest")
+Signed-off-by: Like Xu <likexu@tencent.com>
+---
+ tools/testing/selftests/kvm/.gitignore | 1 +
+ 1 file changed, 1 insertion(+)
 
-Same here.
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index dce7de7755e6..62f9b781545b 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -20,6 +20,7 @@
+ /x86_64/hyperv_clock
+ /x86_64/hyperv_cpuid
+ /x86_64/hyperv_features
++/x86_64/hyperv_svm_test
+ /x86_64/mmio_warning_test
+ /x86_64/mmu_role_test
+ /x86_64/platform_info_test
+-- 
+2.35.1
 
-> @@ -1291,10 +1289,10 @@ static void mix_interrupt_randomness(struct work_struct *work)
->  void add_interrupt_randomness(int irq)
->  {
->  	enum { MIX_INFLIGHT = 1U << 31 };
-> +	cycles_t cycles = random_get_entropy();
-> +	unsigned long now = jiffies;
->  	struct fast_pool *fast_pool = this_cpu_ptr(&irq_randomness);
->  	struct pt_regs *regs = get_irq_regs();
-> -	unsigned long now = jiffies;
-> -	cycles_t cycles = random_get_entropy();
->  	unsigned int new_count;
->  
->  	if (cycles == 0)
-
-
-Why do you change the ordering here?
-
-Thanks,
-	Dominik
