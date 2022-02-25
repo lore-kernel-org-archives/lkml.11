@@ -2,133 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EE4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C67C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:53:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241874AbiBYOwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 09:52:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
+        id S241889AbiBYOxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 09:53:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237931AbiBYOwn (ORCPT
+        with ESMTP id S241692AbiBYOxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 09:52:43 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5967DAAB
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 06:52:10 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id v21so4901600wrv.5
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 06:52:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kWNJFv+kMEnE9Dxh62unLUJ0LcsDnY4dVicW9EOH0i4=;
-        b=iZMhV5/QELmvIeOH2Qgx9n3aAlYGyRzw6kaLem4I7NHZibnbQNWq7ekm7teCLFhyEM
-         QWiyDMzasNIuIgPd7K54xumaEiLiXTQKy3aNY+WH6slTE2JtvOaPIaZ3rgig/mLPTz6K
-         oonmLPYnZkjUtjqzJbhBymwlMj/tYaGikGLwsGWPEAJgmoNxJ8WMiCtE2Wnth+uUx4A4
-         1xM2UN22xJljXMsS1gTkYfmx8U8pXo5PnF+4QaDMCCarCqGs02IZN1kK10pCyoRUEQpe
-         NcluEC/zbQV1cbGqxbMcKTVSzcuUjngBjnkNZBxucYUgKczwtOO5TqFnJWCdLWCRJqFm
-         QzZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kWNJFv+kMEnE9Dxh62unLUJ0LcsDnY4dVicW9EOH0i4=;
-        b=yAkw1EHRve6/zNGxjUgGYcVFu4zkvg/MqD2NdoYFptpywSAdnZo0nKN1gx6ZyEJq/N
-         63SG18uVu60YZwCRaA0Zngai2gDWw+CtyaRo8Gm1sw3tOhf0m7PUqsBQWO9rWq7ZNOnt
-         4OOI97yH266yAR1fCechOMN21rXDPQLcnkXcTFRFIa8DTFmIa86zA5f3ArOtUbmHF4Ef
-         GlJjfu30TkdXfai+OEcn3pS14v8TKA5zdcUgCgs+5zBuZjiw3AS+/4yCKzoAP+oXkBbI
-         hjvA6xnQldnTTJxSijP3MBFg90fkRUnIGZu3BWazkOGzCk4dFUhhyTnXF+feYIp9BbpU
-         TI+A==
-X-Gm-Message-State: AOAM530tb6bonZ8BMezKY137mIvua+rLsyjFwQUR2EPTrbFuGstTbkxv
-        wiSVlS8owGcSLomGEdqVuQ9Umv2tyy/JvQ==
-X-Google-Smtp-Source: ABdhPJzBkXlOmGJJ9f+XilDRbI4gd1rN8x8QBewSSUpIv1rpNiD1PWlxhirrYPz94vUXUi4e5N6MQw==
-X-Received: by 2002:a5d:5889:0:b0:1e3:3ef9:213 with SMTP id n9-20020a5d5889000000b001e33ef90213mr6392019wrf.324.1645800728589;
-        Fri, 25 Feb 2022 06:52:08 -0800 (PST)
-Received: from localhost.localdomain ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
-        by smtp.gmail.com with ESMTPSA id b15-20020adfc74f000000b001e888b871a0sm2527700wrh.87.2022.02.25.06.52.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 06:52:08 -0800 (PST)
-From:   Dmitry Safonov <dima@arista.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Dmitry Safonov <dima@arista.com>,
-        Mobashshera Rasool <mobash.rasool.linux@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2] net/ip6mr: Fix build with !CONFIG_IPV6_PIMSM_V2
-Date:   Fri, 25 Feb 2022 14:52:06 +0000
-Message-Id: <20220225145206.561409-1-dima@arista.com>
-X-Mailer: git-send-email 2.35.1
+        Fri, 25 Feb 2022 09:53:52 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0834216BCF9;
+        Fri, 25 Feb 2022 06:53:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Sender:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+        Reply-To:Content-Type:Content-ID:Content-Description;
+        bh=ppR3G1TJMdrYnEqs138ZAhJnbyaBVIHQNFEmxoMFDFs=; b=f6SnRY3u3JlszVtA6NQz35UnZY
+        NJsjUO/LUA2IEHspL5GOBmnJuujqNyQefbOS2h6sYDcw98GY1E+tGFOci3bYeD5yH7/cfEtTYwx4N
+        fhqaNRAj6q5Z6SA7mytw/Hp1OJgSjnGymCuxYj2aAxvg+jwKNKdnIHIu0nwV6eBk5QN9fBy8J4JRV
+        TweI1Futdw579lbS7w+S+z0VBPSuHkEX3zutkCZ62l8WxnFJSKTaQuyeZMTJvOnl9wdh7JOwMNd5P
+        J4zA4QYwPGKBOzTe5ffaWmbpebecV25Kbffx85VHffViPGErJDyAPK20RpJ7XJIW+XmKnuGU9/vjY
+        3IUTku8Q==;
+Received: from [2001:8b0:10b:1:85c4:81a:fb42:714d] (helo=i7.infradead.org)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNbxy-005rrx-IX; Fri, 25 Feb 2022 14:53:06 +0000
+Received: from dwoodhou by i7.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNbxx-0009Ph-Rp; Fri, 25 Feb 2022 14:53:05 +0000
+From:   David Woodhouse <dwmw2@infradead.org>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        Suleiman Souhlal <suleiman@google.com>,
+        Anton Romanov <romanton@google.com>
+Subject: [PATCH 2/3] KVM: x86: Don't snapshot "max" TSC if host TSC is constant
+Date:   Fri, 25 Feb 2022 14:53:03 +0000
+Message-Id: <20220225145304.36166-3-dwmw2@infradead.org>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220225145304.36166-1-dwmw2@infradead.org>
+References: <20220225145304.36166-1-dwmw2@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Sender: David Woodhouse <dwmw2@infradead.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following build-error on my config:
-net/ipv6/ip6mr.c: In function ‘ip6_mroute_setsockopt’:
-net/ipv6/ip6mr.c:1656:14: error: unused variable ‘do_wrmifwhole’ [-Werror=unused-variable]
- 1656 |         bool do_wrmifwhole;
-      |              ^
+From: Sean Christopherson <seanjc@google.com>
 
-Cc: Mobashshera Rasool <mobash.rasool.linux@gmail.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
-Fixes: 4b340a5a726d
-Signed-off-by: Dmitry Safonov <dima@arista.com>
+Don't snapshot tsc_khz into max_tsc_khz during KVM initialization if the
+host TSC is constant, in which case the actual TSC frequency will never
+change and thus capturing the "max" TSC during initialization is
+unnecessary, KVM can simply use tsc_khz during VM creation.
+
+On CPUs with constant TSC, but not a hardware-specified TSC frequency,
+snapshotting max_tsc_khz and using that to set a VM's default TSC
+frequency can lead to KVM thinking it needs to manually scale the guest's
+TSC if refining the TSC completes after KVM snapshots tsc_khz.  The
+actual frequency never changes, only the kernel's calculation of what
+that frequency is changes.  On systems without hardware TSC scaling, this
+either puts KVM into "always catchup" mode (extremely inefficient), or
+prevents creating VMs altogether.
+
+Ideally, KVM would not be able to race with TSC refinement, or would have
+a hook into tsc_refine_calibration_work() to get an alert when refinement
+is complete.  Avoiding the race altogether isn't practical as refinement
+takes a relative eternity; it's deliberately put on a work queue outside
+of the normal boot sequence to avoid unnecessarily delaying boot.
+
+Adding a hook is doable, but somewhat gross due to KVM's ability to be
+built as a module.  And if the TSC is constant, which is likely the case
+for every VMX/SVM-capable CPU produced in the last decade, the race can
+be hit if and only if userspace is able to create a VM before TSC
+refinement completes; refinement is slow, but not that slow.
+
+For now, punt on a proper fix, as not taking a snapshot can help some
+uses cases and not taking a snapshot is arguably correct irrespective of
+the race with refinement.
+
+[ dwmw2: Rebase on top of KVM-wide default_tsc_khz to ensure that all
+         vCPUs get the same frequency even if we hit the race. ]
+
+Cc: Suleiman Souhlal <suleiman@google.com>
+Cc: Anton Romanov <romanton@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
 ---
-v2: move the (v == MRT6MSG_WRMIFWHOLE) check under if (v != mrt->mroute_do_pim)
+ arch/x86/kvm/x86.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
- net/ipv6/ip6mr.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
-index a9775c830194..9292f067c829 100644
---- a/net/ipv6/ip6mr.c
-+++ b/net/ipv6/ip6mr.c
-@@ -1653,7 +1653,6 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
- 	mifi_t mifi;
- 	struct net *net = sock_net(sk);
- 	struct mr_table *mrt;
--	bool do_wrmifwhole;
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index bb3e9916229a..04f86cb94069 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8751,22 +8751,22 @@ static int kvmclock_cpu_online(unsigned int cpu)
  
- 	if (sk->sk_type != SOCK_RAW ||
- 	    inet_sk(sk)->inet_num != IPPROTO_ICMPV6)
-@@ -1761,6 +1760,7 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
- #ifdef CONFIG_IPV6_PIMSM_V2
- 	case MRT6_PIM:
- 	{
-+		bool do_pim;
- 		int v;
- 
- 		if (optlen != sizeof(v))
-@@ -1768,14 +1768,14 @@ int ip6_mroute_setsockopt(struct sock *sk, int optname, sockptr_t optval,
- 		if (copy_from_sockptr(&v, optval, sizeof(v)))
- 			return -EFAULT;
- 
--		do_wrmifwhole = (v == MRT6MSG_WRMIFWHOLE);
--		v = !!v;
-+		do_pim = !!v;
+ static void kvm_timer_init(void)
+ {
+-	max_tsc_khz = tsc_khz;
+-
+ 	if (!boot_cpu_has(X86_FEATURE_CONSTANT_TSC)) {
+-#ifdef CONFIG_CPU_FREQ
+-		struct cpufreq_policy *policy;
+-		int cpu;
+-
+-		cpu = get_cpu();
+-		policy = cpufreq_cpu_get(cpu);
+-		if (policy) {
+-			if (policy->cpuinfo.max_freq)
+-				max_tsc_khz = policy->cpuinfo.max_freq;
+-			cpufreq_cpu_put(policy);
++		max_tsc_khz = tsc_khz;
 +
- 		rtnl_lock();
- 		ret = 0;
--		if (v != mrt->mroute_do_pim) {
--			mrt->mroute_do_pim = v;
--			mrt->mroute_do_assert = v;
--			mrt->mroute_do_wrvifwhole = do_wrmifwhole;
-+		if (do_pim != mrt->mroute_do_pim) {
-+			mrt->mroute_do_pim = do_pim;
-+			mrt->mroute_do_assert = do_pim;
-+			mrt->mroute_do_wrvifwhole = (v == MRT6MSG_WRMIFWHOLE);
++		if (IS_ENABLED(CONFIG_CPU_FREQ)) {
++			struct cpufreq_policy *policy;
++			int cpu;
++
++			cpu = get_cpu();
++			policy = cpufreq_cpu_get(cpu);
++			if (policy) {
++				if (policy->cpuinfo.max_freq)
++					max_tsc_khz = policy->cpuinfo.max_freq;
++				cpufreq_cpu_put(policy);
++			}
++			put_cpu();
  		}
- 		rtnl_unlock();
- 		return ret;
+-		put_cpu();
+-#endif
+ 		cpufreq_register_notifier(&kvmclock_cpufreq_notifier_block,
+ 					  CPUFREQ_TRANSITION_NOTIFIER);
+ 	}
+@@ -11637,7 +11637,7 @@ int kvm_arch_init_vm(struct kvm *kvm, unsigned long type)
+ 	pvclock_update_vm_gtod_copy(kvm);
+ 	raw_spin_unlock_irqrestore(&kvm->arch.tsc_write_lock, flags);
+ 
+-	kvm->arch.default_tsc_khz = max_tsc_khz;
++	kvm->arch.default_tsc_khz = max_tsc_khz ? : tsc_khz;
+ 	kvm->arch.guest_can_read_msr_platform_info = true;
+ 
+ #if IS_ENABLED(CONFIG_HYPERV)
 -- 
-2.35.1
+2.33.1
 
