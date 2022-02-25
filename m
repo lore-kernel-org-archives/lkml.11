@@ -2,138 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AE6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 22:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 22:59:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238930AbiBYW4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 17:56:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36114 "EHLO
+        id S238944AbiBYXAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 18:00:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229885AbiBYW4j (ORCPT
+        with ESMTP id S229885AbiBYXAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 17:56:39 -0500
-Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A45881EF354;
-        Fri, 25 Feb 2022 14:56:04 -0800 (PST)
-Received: from dread.disaster.area (pa49-186-17-0.pa.vic.optusnet.com.au [49.186.17.0])
-        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 73FEF10E20E2;
-        Sat, 26 Feb 2022 09:56:01 +1100 (AEDT)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1nNjVI-00GQUL-9I; Sat, 26 Feb 2022 09:56:00 +1100
-Date:   Sat, 26 Feb 2022 09:56:00 +1100
-From:   Dave Chinner <david@fromorbit.com>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Byron Stanoszek <gandalf@winds.org>,
-        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        reiserfs-devel@vger.kernel.org
-Subject: Re: Is it time to remove reiserfs?
-Message-ID: <20220225225600.GO3061737@dread.disaster.area>
-References: <YhIwUEpymVzmytdp@casper.infradead.org>
- <20220222100408.cyrdjsv5eun5pzij@quack3.lan>
- <20220222221614.GC3061737@dread.disaster.area>
- <3ce45c23-2721-af6e-6cd7-648dc399597@winds.org>
- <YhfzUc8afuoQkx/U@casper.infradead.org>
- <257dc4a9-dfa0-327e-f05a-71c0d9742e98@winds.org>
- <20220225132300.GC18720@1wt.eu>
+        Fri, 25 Feb 2022 18:00:02 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153DC1AAFC1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 14:59:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645829969; x=1677365969;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=kZGBjE0P0yqbpvYUmiW8+NhaoXZTRgiidLYRgI+UBUc=;
+  b=oHXQ4ECVTzlNLhpjh55LANlKvbWLUgzjkzeaquVKXYepwKkRn5qpHPkI
+   +0pN/UXVP/TJnA32gy1253D38gVxXKN/KNzGnooKxfr10GIajo7s6pLrN
+   HIQK11MSOp/G/3nKHSS9P+rJGSEYxk011BrW824zb15pbzZ2jsj1nyxzZ
+   VLLRY9ujaVbpr3Jz70UepYABLOGlPFCO5adIm/qPPviGi4ZAaVMwKG4Rg
+   0JMHFG1c0reoF6FaF/n2AijqY6qaenQGQ/zcVdsyfI70I4zcQ/srwcMXw
+   34Pc38YYBJuHnVoA/u9ivTfde6jWXuDXeIBcoCpLYGsZLYJdtETD2W2tO
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10269"; a="252792688"
+X-IronPort-AV: E=Sophos;i="5.90,137,1643702400"; 
+   d="scan'208";a="252792688"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 14:59:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,137,1643702400"; 
+   d="scan'208";a="607901989"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 25 Feb 2022 14:59:26 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nNjYc-0004nN-7h; Fri, 25 Feb 2022 22:59:26 +0000
+Date:   Sat, 26 Feb 2022 06:59:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Mike Rapoport <rppt@kernel.org>, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: [rppt:kasper 6/6] drivers/gpu/drm/vmwgfx/vmwgfx_kms.c:2623:2:
+ warning: variable 'mode' is used uninitialized whenever 'for' loop exits
+ because its condition is false
+Message-ID: <202202260631.sb20qmrj-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220225132300.GC18720@1wt.eu>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=VuxAv86n c=1 sm=1 tr=0 ts=62195e83
-        a=+dVDrTVfsjPpH/ci3UuFng==:117 a=+dVDrTVfsjPpH/ci3UuFng==:17
-        a=_MjYSGqaCGpKE7YW:21 a=kj9zAlcOel0A:10 a=oGFeUVbbRNcA:10 a=7-415B0cAAAA:8
-        a=i9EhDj85i3cWi9GefWwA:9 a=CjuIK1q_8ugA:10 a=aebnku51ZD03SSuSuSm5:22
-        a=biEYGPWJfzWAr4FL6Ov7:22
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 02:23:00PM +0100, Willy Tarreau wrote:
-> On Fri, Feb 25, 2022 at 08:10:22AM -0500, Byron Stanoszek wrote:
-> > On Thu, 24 Feb 2022, Matthew Wilcox wrote:
-> > > On Wed, Feb 23, 2022 at 09:48:26AM -0500, Byron Stanoszek wrote:
-> > > > For what it's worth, I have a number of production servers still using
-> > > > Reiserfs, which I regularly maintain by upgrading to the latest Linux kernel
-> > > > annually (mostly to apply security patches). I figured this filesystem would
-> > > > still be available for several more years, since it's not quite y2038k yet.
-> > > 
-> > > Hey Byron, thanks for sharing your usage.
-> > > 
-> > > It's not entirely clear to me from your message whether you're aware
-> > > that our annual LTS release actually puts out new kernels every week (or
-> > > sometimes twice a week), and upgrades to the latest version are always
-> > > recommended.  Those LTS kernels typically get five years of support in
-> > > total; indeed we just retired the v4.4 series earlier this month which
-> > > was originally released in January 2016, so it got six years of support.
-> > > 
-> > > If we dropped reiserfs from the kernel today (and thanks to Edward, we
-> > > don't have to), you'd still be able to use a v5.15 based kernel with
-> > > regular updates until 2028.  If we drop it in two years, that should
-> > > take you through to 2030.  Is that enough for your usage?
-> > 
-> > I'm aware of the LTS releases, but I hadn't thought about them in relation to
-> > this issue. That's a good point, and so it sounds like I have nothing to worry
-> > about.
-> 
-> This just makes me think that instead of speaking about deprecation in
-> terms of version, speaking in terms of dates might be more suitable, as
-> it should help discouraging distros or products shipping LTS kernels
-> from enabling such deprecated features: when you're told the features
-> will disappear after, say, 5.20, some might think "OK 5.20 is the last
-> one and it happens to be LTS so I get the feature for 6 extra years
-> after it's EOL".
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git kasper
+head:   7b670b09e6e571dc47d64528131db6c9da12578d
+commit: 7b670b09e6e571dc47d64528131db6c9da12578d [6/6] treewide: remove check of list iterator against head past the loop body
+config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220226/202202260631.sb20qmrj-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git/commit/?id=7b670b09e6e571dc47d64528131db6c9da12578d
+        git remote add rppt https://git.kernel.org/pub/scm/linux/kernel/git/rppt/linux.git
+        git fetch --no-tags rppt kasper
+        git checkout 7b670b09e6e571dc47d64528131db6c9da12578d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kernel/ drivers/gpu/drm/vmwgfx/
 
-This is exactly why the XFS deprecation schedules are dated while
-the actual removals record kernel releases. If it gets released in
-a kernel, then it technically is supported for the life of that
-kernel, even if it is a LTS kernel and the functionality no long
-exists upstream.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-That is, we know that once we've removed something from upstream,
-it's still going to be actively used in LTS kernels based on kernels
-that still have that functionality. Same goes for enterprise
-kernels. Hence deprecation policies need to first acknowledge the
-typical "no regressions" policies for LTS kernels...
+All warnings (new ones prefixed by >>):
 
-With that in mind, this is why we've already deprecated non-y2038k
-compliant functionality in XFS so that enterprise kernels can mark
-it deprecated in their next major (N + 1) release which will be
-supported for 10 years. They can then remove that support it in the
-N+2 major release after that (which is probably at least 5 years
-down the track) so that the support window for non-compliant
-functionality does not run past y2038k.
+>> drivers/gpu/drm/vmwgfx/vmwgfx_kms.c:2623:2: warning: variable 'mode' is used uninitialized whenever 'for' loop exits because its condition is false [-Wsometimes-uninitialized]
+           list_for_each_entry(tmp2, &con->modes, head) {
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/list.h:639:7: note: expanded from macro 'list_for_each_entry'
+                !list_entry_is_head(pos, head, member);                    \
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/vmwgfx/vmwgfx_kms.c:2630:7: note: uninitialized use occurs here
+           if (!mode) {
+                ^~~~
+   drivers/gpu/drm/vmwgfx/vmwgfx_kms.c:2623:2: note: remove the condition if it is always true
+           list_for_each_entry(tmp2, &con->modes, head) {
+           ^
+   include/linux/list.h:639:7: note: expanded from macro 'list_for_each_entry'
+                !list_entry_is_head(pos, head, member);                    \
+                ^
+   drivers/gpu/drm/vmwgfx/vmwgfx_kms.c:2588:31: note: initialize the variable 'mode' to silence this warning
+           struct drm_display_mode *mode;
+                                        ^
+                                         = NULL
+   1 warning generated.
 
-We chose this specifically because most of the XFS developers are
-also responsible for maintaining enterprise distro kernels, and so
-we always thinking about how we are going to maintain the upstream
-code we release today because it will have a 10-15 year active
-support life.  This is also why the deprecation notice in
-Documentation/admin-guide/xfs.rst has this caveat:
 
-	Note: Distributors may choose to withdraw V4 format support earlier than
-	the dates listed above.
+vim +2623 drivers/gpu/drm/vmwgfx/vmwgfx_kms.c
 
-Distros might chose to remove deprecated functionality immediately
-rather than rely on, say, LTS kernel support for functionality that
-upstream developers are clearly not focussing their efforts on
-developing further.
+  2576	
+  2577	int vmw_kms_fbdev_init_data(struct vmw_private *dev_priv,
+  2578				    unsigned unit,
+  2579				    u32 max_width,
+  2580				    u32 max_height,
+  2581				    struct drm_connector **p_con,
+  2582				    struct drm_crtc **p_crtc,
+  2583				    struct drm_display_mode **p_mode)
+  2584	{
+  2585		struct drm_connector *con = NULL;
+  2586		struct drm_connector *tmp1;
+  2587		struct vmw_display_unit *du;
+  2588		struct drm_display_mode *mode;
+  2589		struct drm_display_mode *tmp2;
+  2590		int i = 0;
+  2591		int ret = 0;
+  2592	
+  2593		mutex_lock(&dev_priv->drm.mode_config.mutex);
+  2594		list_for_each_entry(tmp1, &dev_priv->drm.mode_config.connector_list,
+  2595				    head) {
+  2596			if (i == unit) {
+  2597				con = tmp1;
+  2598				break;
+  2599			}
+  2600	
+  2601			++i;
+  2602		}
+  2603	
+  2604		if (!con) {
+  2605			DRM_ERROR("Could not find initial display unit.\n");
+  2606			ret = -EINVAL;
+  2607			goto out_unlock;
+  2608		}
+  2609	
+  2610		if (list_empty(&con->modes))
+  2611			(void) vmw_du_connector_fill_modes(con, max_width, max_height);
+  2612	
+  2613		if (list_empty(&con->modes)) {
+  2614			DRM_ERROR("Could not find initial display mode.\n");
+  2615			ret = -EINVAL;
+  2616			goto out_unlock;
+  2617		}
+  2618	
+  2619		du = vmw_connector_to_du(con);
+  2620		*p_con = con;
+  2621		*p_crtc = &du->crtc;
+  2622	
+> 2623		list_for_each_entry(tmp2, &con->modes, head) {
+  2624			if (tmp2->type & DRM_MODE_TYPE_PREFERRED) {
+  2625				mode = tmp2;
+  2626				break;
+  2627			}
+  2628		}
+  2629	
+  2630		if (!mode) {
+  2631			WARN_ONCE(true, "Could not find initial preferred mode.\n");
+  2632			*p_mode = list_first_entry(&con->modes,
+  2633						   struct drm_display_mode,
+  2634						   head);
+  2635		} else {
+  2636			*p_mode = mode;
+  2637		}
+  2638	
+  2639	 out_unlock:
+  2640		mutex_unlock(&dev_priv->drm.mode_config.mutex);
+  2641	
+  2642		return ret;
+  2643	}
+  2644	
 
-Hence we have to acknowledge that fact that once upstream has
-deprecated a feature, it's up to distros to decide how they want to
-handle long term support for that feature. The upstream LTS kernel
-maintainers are going to have to decide on their own policy, too,
-because we cannot bind upstream maintenance decisions on random
-individual downstream support constraints. Downstream has to choose
-for itself how it handles upstream deprecation notices but, that
-said, upstream developers also need to listen to downstream distro
-support and deprecation requirements...
-
-Cheers,
-
-Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
