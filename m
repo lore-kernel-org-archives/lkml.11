@@ -2,88 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9495C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240820AbiBYM6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 07:58:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
+        id S240838AbiBYM6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 07:58:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232670AbiBYM6j (ORCPT
+        with ESMTP id S232670AbiBYM6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 07:58:39 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33B814FFFE
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 04:58:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=2aM4nYhMNuI90TLrntQnFZCWIB4nglnfTdwNn+wIi6Q=; b=Ttx3x0FMGw6Q3GIvt45s9pmWIM
-        t8yYtBRuqBzRFqOzBDmFA6gliwnyvCN6OcnnaItnkRlSatlIiLiNg6fzWw+C5tNl9MS6Kff6HBbUY
-        RWzeoPme5iWDwEVl67rwjtRhpajsGT4p7/gq7sJnOhU4+yZEHTqM13DqXBnXYyLANFnWk8uK7zNgJ
-        aFetuLcZNRPEXxuUqEuvbAqQK4+nETdFztbWWcFdHPawruagBUaIFJkoKb9EQYD6JpXrBx04XYFeb
-        Yp2wlzq+Ql2LiCf0KwGidRZMJ89uWnqnJZKyKs+cgKw3iZvfjejFnmLyFtu1kElU5pJ0sUpeEkG8/
-        TJcAqqjw==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNaAK-005myO-AJ; Fri, 25 Feb 2022 12:57:44 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A2F1D3001C0;
-        Fri, 25 Feb 2022 13:57:42 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 67C272D6F91B2; Fri, 25 Feb 2022 13:57:42 +0100 (CET)
-Date:   Fri, 25 Feb 2022 13:57:42 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 21/39] x86/ibt: Annotate text references
-Message-ID: <YhjSRufZMjXH74e3@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151323.248523488@infradead.org>
- <20220225004716.epyhpxi5lunphzi4@treble>
+        Fri, 25 Feb 2022 07:58:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DE714FFFE;
+        Fri, 25 Feb 2022 04:58:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D4CAB82F79;
+        Fri, 25 Feb 2022 12:58:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C68B6C340E7;
+        Fri, 25 Feb 2022 12:58:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645793893;
+        bh=yXNshXV8iIu7D0QVOExyxryhfq/he3SIhXZTLLv/Cos=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uLwe9KLo89Nib7HAZFqLVK/37FznuJAkVKorOG+qTB9XTpwuqAFkoQC6K79+86FoE
+         2HUAiZcBSIzsMXwfwFf5oye8uSVbL7kMYmpwS9fRuWEnwt0zKPOROcTXO+cBzkuRsO
+         IgOkGY0XeJaI8x6fy5tXh7jt5AiMNVJIpm/O8+/itqfk/emur0v7ExOIwBA+zFASst
+         VliY0+I2ReoymJUGSaxBS+SCvQuhBQ0XKRKUhCdSWnItMhqrPxIAFhRyzv7fQOW2B1
+         nOzdp0l4BNtNMxNx5T7veOmCAihQbiunDw8zJfqZIVkc24wTrEy4UY45QmwMTSx/YO
+         IfyqeaWdYlLcA==
+Received: by pali.im (Postfix)
+        id 62D427EF; Fri, 25 Feb 2022 13:58:10 +0100 (CET)
+Date:   Fri, 25 Feb 2022 13:58:10 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 04/12] dt-bindings: PCI: mvebu: Add num-lanes property
+Message-ID: <20220225125810.7mbo7firer5yodls@pali>
+References: <20220222155030.988-5-pali@kernel.org>
+ <20220225000226.GA304258@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220225004716.epyhpxi5lunphzi4@treble>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220225000226.GA304258@bhelgaas>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 04:47:16PM -0800, Josh Poimboeuf wrote:
-> On Thu, Feb 24, 2022 at 03:51:59PM +0100, Peter Zijlstra wrote:
-> > @@ -563,12 +564,14 @@ SYM_CODE_END(\asmsym)
-> >  	.align 16
-> >  	.globl __irqentry_text_start
-> >  __irqentry_text_start:
-> > +	ANNOTATE_NOENDBR // unwinders
+On Thursday 24 February 2022 18:02:26 Bjorn Helgaas wrote:
+> On Tue, Feb 22, 2022 at 04:50:22PM +0100, Pali Rohár wrote:
+> > Controller driver needs to correctly configure PCIe link if it contains 1
+> > or 4 SerDes PCIe lanes. Therefore add a new 'num-lanes' DT property for
+> > mvebu PCIe controller. Property 'num-lanes' seems to be de-facto standard
+> > way how number of lanes is specified in other PCIe controllers.
+> > 
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > Acked-by: Rob Herring <robh@kernel.org>
+> > ---
+> >  Documentation/devicetree/bindings/pci/mvebu-pci.txt | 11 +++++++++++
+> >  1 file changed, 11 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/pci/mvebu-pci.txt b/Documentation/devicetree/bindings/pci/mvebu-pci.txt
+> > index 6173af6885f8..24225852bce0 100644
+> > --- a/Documentation/devicetree/bindings/pci/mvebu-pci.txt
+> > +++ b/Documentation/devicetree/bindings/pci/mvebu-pci.txt
+> > @@ -77,6 +77,7 @@ and the following optional properties:
+> >  - marvell,pcie-lane: the physical PCIe lane number, for ports having
+> >    multiple lanes. If this property is not found, we assume that the
+> >    value is 0.
+> > +- num-lanes: number of SerDes PCIe lanes for this link (1 or 4)
+> >  - reset-gpios: optional GPIO to PERST#
+> >  - reset-delay-us: delay in us to wait after reset de-assertion, if not
+> >    specified will default to 100ms, as required by the PCIe specification.
+> > @@ -141,6 +142,7 @@ pcie-controller {
+> >  		interrupt-map = <0 0 0 0 &mpic 58>;
+> >  		marvell,pcie-port = <0>;
+> >  		marvell,pcie-lane = <0>;
+> > +		num-lanes = <1>;
 > 
-> But the instruction here (first idt entry) actually does have an
-> endbr64...
+> Is this patch really necessary?
+
+This is just documentation patch. And I think that documentation is
+always important.
+
+> AFAICS, the related driver change
+> only sets "port->is_x4 = true" when "num-lanes = <4>", and in all
+> other cases it defaults to a Max Link Width of 1:
 > 
+>   lnkcap |= (port->is_x4 ? 4 : 1) << 4;
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2023,6 +2023,9 @@ static int read_noendbr_hints(struct obj
- 			return -1;
- 		}
- 
-+		if (insn->type == INSN_ENDBR)
-+			WARN_FUNC("ANNOTATE_NOENDBR on ENDBR", insn->sec, insn->offset);
-+
- 		insn->noendbr = 1;
- 	}
- 
+Yes!
 
-vmlinux.o: warning: objtool: .entry.text+0x160: ANNOTATE_NOENDBR on ENDBR
-vmlinux.o: warning: objtool: xen_pvh_init()+0x0: ANNOTATE_NOENDBR on ENDBR
+And this registers configures number of lanes in HW.
 
-right you are... /me goes fix
+> I don't see the point of adding a value that we don't validate or do
+> anything with.  E.g., I don't see an error message that would catch
+> "num-lanes = <3>".
+> 
+> Bjorn
+
+In past I was told that kernel should not do validation of DT properties
+and it is job of some DT schema validation. That is why I did not added
+code into kernel which show error message when value different than 1
+and 4 is specified in DT.
+
+But issue here is that there is no DT schema for pci-mvebu as above
+.txt file was not converted to YAML schema yet. This is something which
+should be improved...
