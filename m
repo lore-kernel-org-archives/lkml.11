@@ -2,170 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F00FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ACF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238816AbiBYIyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 03:54:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55444 "EHLO
+        id S238829AbiBYIy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 03:54:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238758AbiBYIyb (ORCPT
+        with ESMTP id S238822AbiBYIyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 03:54:31 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F539222193;
-        Fri, 25 Feb 2022 00:54:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645779240; x=1677315240;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=oeVLXWVPJ86PvAjYfho9TLMR4DXscOSnF7oYXF2Q+Ic=;
-  b=cMv+RCYj/gEzQQMbUEhUbJpi4wE3OS0EJW/+2SphfT6te2PJrmB77DI0
-   fLvn4jK9nPX4D5JMmBmlIEnIlKE3xU4eJLvUROYGXS8nL5Tqcleq9xEYY
-   qzAJ8qLHxYUugVkXhMQ2dq7kf+BK0H0zx+JvYp2lyrvCQLxD7F8wEkt+V
-   zAfPMpjvsN//wz8IvcTm9p/LyJnyBvw8yC4SONekWJQmQkxgxJhObfzF+
-   cqOm5Z0UxbN/H5wyDjq6zUsQ2foK05PV29dxzn4xdYZHJtF1un7V9QxB1
-   hO+8ZZwcViBKXmTOF3Nv9C2tP2JzngiqOqw0qxpVt8BRuaHvpDmbAhAud
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="250037416"
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="250037416"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 00:53:59 -0800
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="549186616"
-Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 00:53:54 -0800
-From:   Zeng Guang <guang.zeng@intel.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
+        Fri, 25 Feb 2022 03:54:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12ECC225013;
+        Fri, 25 Feb 2022 00:54:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA523B82BAA;
+        Fri, 25 Feb 2022 08:54:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D09C340E7;
+        Fri, 25 Feb 2022 08:54:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645779253;
+        bh=qDoHRAR0vvt/ZOgxnKgt3lhWxvnrIion7K3HBk+YVgk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KYzzVltmm5KxJGNhO3xtIbnoMqZ00TL9l7j9vGQUcukoE65EhBB7jbSswWNYflDDa
+         UJ3Vezwm3/28LBomN8KcuIiNKBFdX3rquABxCk5Juur3dkVQdrf+U88Hiup2AZuBee
+         kDenJRgqW0Xf4TCldYRIBnzB13PJqihMKKIiIXS4lW9iB0zfYebP0XJQjjkA8+DbqJ
+         p3xFo5uFvo2c9K8CFsV4ZJZ9CMibOFDZCgdhhBwyWX6mSntijigViaz1yjjFEMdJS6
+         eHl2rxXnQ8fwFMsbFhuf0zNhEuzXArFw6ABZV3X5ulb96VzfuD7VzO4GCANuTeEtMF
+         6xhLQNBdy/2bg==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nNWMc-00ASxv-Or; Fri, 25 Feb 2022 08:54:10 +0000
+MIME-Version: 1.0
+Date:   Fri, 25 Feb 2022 08:54:10 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     Shawn Guo <shawn.guo@linaro.org>
+Cc:     kernel test robot <lkp@intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>, kbuild-all@lists.01.org,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
-        Zeng Guang <guang.zeng@intel.com>
-Subject: [PATCH v6 9/9] KVM: VMX: Optimize memory allocation for PID-pointer table
-Date:   Fri, 25 Feb 2022 16:22:23 +0800
-Message-Id: <20220225082223.18288-10-guang.zeng@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220225082223.18288-1-guang.zeng@intel.com>
-References: <20220225082223.18288-1-guang.zeng@intel.com>
+        Maulik Shah <quic_mkshah@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 3/3] irqchip: Add Qualcomm MPM controller driver
+In-Reply-To: <20220224021017.GA269879@dragon>
+References: <20220223125536.230224-4-shawn.guo@linaro.org>
+ <202202240730.8ES2LbM6-lkp@intel.com> <20220224021017.GA269879@dragon>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <8eff0caf8a8a10f0e8bf99bc9f949c5d@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: shawn.guo@linaro.org, lkp@intel.com, rafael@kernel.org, kbuild-all@lists.01.org, valentin.schneider@arm.com, bigeasy@linutronix.de, tglx@linutronix.de, quic_mkshah@quicinc.com, bjorn.andersson@linaro.org, sudeep.holla@arm.com, ulf.hansson@linaro.org, daniel.lezcano@linaro.org, robh+dt@kernel.org, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current kvm allocates 8 pages in advance for Posted Interrupt Descriptor
-pointer (PID-pointer) table to accommodate vCPUs with APIC ID up to
-KVM_MAX_VCPU_IDS - 1. This policy wastes some memory because most of
-VMs have less than 512 vCPUs and then just need one page.
+On 2022-02-24 02:10, Shawn Guo wrote:
+> On Thu, Feb 24, 2022 at 07:43:21AM +0800, kernel test robot wrote:
+>> Hi Shawn,
+>> 
+>> I love your patch! Perhaps something to improve:
+>> 
+>> [auto build test WARNING on tip/irq/core]
+>> [also build test WARNING on robh/for-next linus/master v5.17-rc5 
+>> next-20220222]
+>> [If your patch is applied to the wrong git tree, kindly drop us a 
+>> note.
+>> And when submitting patch, we suggest to use '--base' as documented in
+>> https://git-scm.com/docs/git-format-patch]
+>> 
+>> url:    
+>> https://github.com/0day-ci/linux/commits/Shawn-Guo/Add-Qualcomm-MPM-irqchip-driver-support/20220223-210123
+>> base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 
+>> d2206fcabdfaff3958ab67cc5b8f63257e57b889
+>> config: arm64-allyesconfig 
+>> (https://download.01.org/0day-ci/archive/20220224/202202240730.8ES2LbM6-lkp@intel.com/config)
+>> compiler: aarch64-linux-gcc (GCC) 11.2.0
+>> reproduce (this is a W=1 build):
+>>         wget 
+>> https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross 
+>> -O ~/bin/make.cross
+>>         chmod +x ~/bin/make.cross
+>>         # 
+>> https://github.com/0day-ci/linux/commit/17f8a23f57bf6d0177f6ef6f78237b37bd853e8d
+>>         git remote add linux-review https://github.com/0day-ci/linux
+>>         git fetch --no-tags linux-review 
+>> Shawn-Guo/Add-Qualcomm-MPM-irqchip-driver-support/20220223-210123
+>>         git checkout 17f8a23f57bf6d0177f6ef6f78237b37bd853e8d
+>>         # save the config file to linux build tree
+>>         mkdir build_dir
+>>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 
+>> make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/irqchip/
+>> 
+>> If you fix the issue, kindly add following tag as appropriate
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> 
+>> All warnings (new ones prefixed by >>):
+>> 
+>> >> drivers/irqchip/qcom-mpm.c:210:21: warning: no previous prototype for 'get_mpm_gic_map' [-Wmissing-prototypes]
+>>      210 | struct mpm_gic_map *get_mpm_gic_map(struct qcom_mpm_priv 
+>> *priv, int pin)
+>>          |                     ^~~~~~~~~~~~~~~
+> 
+> Oops!  The 'static' declaration got lost.  Will fix in the next 
+> version.
 
-If user hypervisor specify max practical vcpu id prior to vCPU creation,
-IPIv can allocate only essential memory for PID-pointer table and reduce
-the memory footprint of VMs.
+While you're at it, please rename this driver to irq-qcom-mpm.c
+in order to match the rest of the drivers. I have no idea
+why the QC stuff is named differently...
 
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Zeng Guang <guang.zeng@intel.com>
----
- arch/x86/kvm/vmx/vmx.c | 45 ++++++++++++++++++++++++++++--------------
- 1 file changed, 30 insertions(+), 15 deletions(-)
-
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 0cb141c277ef..22bfb4953289 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -230,9 +230,6 @@ static const struct {
- };
- 
- #define L1D_CACHE_ORDER 4
--
--/* PID(Posted-Interrupt Descriptor)-pointer table entry is 64-bit long */
--#define MAX_PID_TABLE_ORDER get_order(KVM_MAX_VCPU_IDS * sizeof(u64))
- #define PID_TABLE_ENTRY_VALID 1
- 
- static void *vmx_l1d_flush_pages;
-@@ -4434,6 +4431,24 @@ static u32 vmx_secondary_exec_control(struct vcpu_vmx *vmx)
- 	return exec_control;
- }
- 
-+static int vmx_alloc_pid_table(struct kvm_vmx *kvm_vmx)
-+{
-+	struct page *pages;
-+
-+	if(kvm_vmx->pid_table)
-+		return 0;
-+
-+	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO,
-+			get_order(kvm_vmx->kvm.arch.max_vcpu_id * sizeof(u64)));
-+
-+	if (!pages)
-+		return -ENOMEM;
-+
-+	kvm_vmx->pid_table = (void *)page_address(pages);
-+	kvm_vmx->pid_last_index = kvm_vmx->kvm.arch.max_vcpu_id - 1;
-+	return 0;
-+}
-+
- #define VMX_XSS_EXIT_BITMAP 0
- 
- static void init_vmcs(struct vcpu_vmx *vmx)
-@@ -7159,6 +7174,16 @@ static int vmx_create_vcpu(struct kvm_vcpu *vcpu)
- 			goto free_vmcs;
- 	}
- 
-+	if (enable_ipiv && kvm_vcpu_apicv_active(vcpu)) {
-+		struct kvm_vmx *kvm_vmx = to_kvm_vmx(vcpu->kvm);
-+
-+		mutex_lock(&vcpu->kvm->lock);
-+		err = vmx_alloc_pid_table(kvm_vmx);
-+		mutex_unlock(&vcpu->kvm->lock);
-+		if (err)
-+			goto free_vmcs;
-+	}
-+
- 	return 0;
- 
- free_vmcs:
-@@ -7202,17 +7227,6 @@ static int vmx_vm_init(struct kvm *kvm)
- 		}
- 	}
- 
--	if (enable_ipiv) {
--		struct page *pages;
--
--		pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, MAX_PID_TABLE_ORDER);
--		if (!pages)
--			return -ENOMEM;
--
--		to_kvm_vmx(kvm)->pid_table = (void *)page_address(pages);
--		to_kvm_vmx(kvm)->pid_last_index = KVM_MAX_VCPU_IDS - 1;
--	}
--
- 	return 0;
- }
- 
-@@ -7809,7 +7823,8 @@ static void vmx_vm_destroy(struct kvm *kvm)
- 	struct kvm_vmx *kvm_vmx = to_kvm_vmx(kvm);
- 
- 	if (kvm_vmx->pid_table)
--		free_pages((unsigned long)kvm_vmx->pid_table, MAX_PID_TABLE_ORDER);
-+		free_pages((unsigned long)kvm_vmx->pid_table,
-+			get_order((kvm_vmx->pid_last_index + 1) * sizeof(u64)));
- }
- 
- static struct kvm_x86_ops vmx_x86_ops __initdata = {
+         M.
 -- 
-2.27.0
-
+Jazz is not dead. It just smells funny...
