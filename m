@@ -2,234 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFDEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:21:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F443C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:22:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241154AbiBYNWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:22:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58798 "EHLO
+        id S241164AbiBYNWc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:22:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234987AbiBYNWQ (ORCPT
+        with ESMTP id S235630AbiBYNW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:22:16 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2076.outbound.protection.outlook.com [40.107.96.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7685FF15;
-        Fri, 25 Feb 2022 05:21:44 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XOGWBSent5NQhvFacdIQlmgkfIzuLRBmHalKRNYL9yNUZJA3NqAMGkLH4+YXfDI5R36B+CVjSCX03FePp7ZZ/vwc5wu50AzZ3niboWcNbPxf13enJVKIMWZO3sprnr8ROxaSW3aF76lvU30ApAy1f0jq1Wvhk+tSSU65nx+gW8FdJHBGdQuD+P2/nPWaWI+Ig3c8tXvLxz8xUoNxG61rEAxQjqDFU0wKcN9axrNl6KwJX90KkwL2QRIPW3Q4AENBkvNOkprhYK16KBi69ZdSw8TX3FPwsaLKqFZJbCaDuSt+vkf91vVD/PW0GhjN9fbM7uDbLljugZFmdCY4ewGUyQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jZxCPO00v7/Y/9/aDPY+Dgxy/fpyOXvjoxuP9Ogann0=;
- b=VSS5YbAFav+iwWIgfA3aySI7tKzN5SUSjXxX+dl97yeDVuIzj8lhpMa8P5/YcSGUOt38uPqcDdGLwlqarlx/uMxU3VflwxP5cz2Qz6cvDNCx5W0iAmYKaYV1uoFqIH2g//c2SlpPTQkluZ7EYwp10SmcooDJztbPUyflpZCTSyxD7vm41Km9T6/g/XdI+ZNDD8EQ1x5r9d9buzswbgBrhj3CzuSKDWpjpHKyrMvaKUYivYom8vbx0mTrajTL5T6BXw976WKZ8YwOyPPxcVQbpgyiRDJw/opbUtI69gWwmzhkaK9miyyCSSz8Lt01bmSGri+sapFHqqhXMWWzTM1XyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
- (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jZxCPO00v7/Y/9/aDPY+Dgxy/fpyOXvjoxuP9Ogann0=;
- b=ZMfhYByE/zPk+Hrq7aXtUuQatxb9SktxCsuYRZKW0lK0haMps5ezOTV3aV6wFHWnb9OlvEup647QaDoVyWkyGMNjREBND4LsgEYIu63JmmuMUqSq+C1uZOzWDSwyp5lGc7QotiGF3e5Qr8oDCGLkEhuh0yBo0Xt5UNry1ei4df59uxlCxInCzbtqQQeGmEWIKR6QyLmFa/paqPSDxslmfZC35yNoC829NLnC0LSxIhbGLCCQCka2hSHgkeSdAwyqLyVXJoskFPhdnkK6f1FBOy5YDB/bJucZGoyWnzgiC/sEroJ1p8XXy6vn6cpRa86cm0OpWOUv9irIX7afSfCeTQ==
-Received: from DM5PR15CA0033.namprd15.prod.outlook.com (2603:10b6:4:4b::19) by
- BY5PR12MB4886.namprd12.prod.outlook.com (2603:10b6:a03:1c5::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.25; Fri, 25 Feb
- 2022 13:21:41 +0000
-Received: from DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:4b:cafe::85) by DM5PR15CA0033.outlook.office365.com
- (2603:10b6:4:4b::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4975.16 via Frontend
- Transport; Fri, 25 Feb 2022 13:21:41 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- DM6NAM11FT012.mail.protection.outlook.com (10.13.173.109) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5017.22 via Frontend Transport; Fri, 25 Feb 2022 13:21:41 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 25 Feb
- 2022 13:21:40 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9; Fri, 25 Feb 2022
- 05:21:38 -0800
-Received: from BUILDSERVER-IO-L4T.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Fri, 25 Feb 2022 05:21:35 -0800
-From:   Akhil R <akhilrajeev@nvidia.com>
-To:     <devicetree@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <jonathanh@nvidia.com>, <kyarlagadda@nvidia.com>,
-        <ldewangan@nvidia.com>, <linux-kernel@vger.kernel.org>,
-        <linux-tegra@vger.kernel.org>, <p.zabel@pengutronix.de>,
-        <rgumasta@nvidia.com>, <robh+dt@kernel.org>,
-        <thierry.reding@gmail.com>, <nathan@kernel.org>, <vkoul@kernel.org>
-CC:     <akhilrajeev@nvidia.com>
-Subject: [PATCH v22 1/2] dt-bindings: dmaengine: Add doc for tegra gpcdma
-Date:   Fri, 25 Feb 2022 18:50:43 +0530
-Message-ID: <20220225132044.14478-2-akhilrajeev@nvidia.com>
+        Fri, 25 Feb 2022 08:22:29 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3083B2AF;
+        Fri, 25 Feb 2022 05:21:57 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id j22so4450257wrb.13;
+        Fri, 25 Feb 2022 05:21:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=xxLQvH7l9/0cKevN7857HHaPU2QEO0vmmvdQp+hIn0M=;
+        b=lxpFQr/yL6LhCuD1oWiTdQMRDrZCimHRh6Lz+Og91CzD8pbg8dvp5IZms56qzhY7rj
+         WqpScDjLfH0St0tAGZLaWroGxSJuyRz6ltraESaNG7LNPTKz/nPdhbjgL5nS0UyJSH8s
+         qNFcXZDL/FE8n6rYYqjJs8++mgTz13MmLLg97EeED/pmUZKLKpbN8BM306go2TWFp8kq
+         THUCTz8DEMctZ+WiXZ22rVb1t7yVBnF+rTBq2S6S5xAGegJWsCuXtUICNvBorcuLrVZv
+         DoBOj/F/8iQnmFVebMCFaFUIU4h/TNrJkCj0ZcE4rUePWqHaftbnlxx0Jy/MU7ftzs2c
+         tzUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=xxLQvH7l9/0cKevN7857HHaPU2QEO0vmmvdQp+hIn0M=;
+        b=llyIc4QMXKkT/dyW0B2ohs6GRmI7mv23tqKCR6nEoUwC8eDod68Ugz5MKllgonfTEx
+         g3V6yrfNOa9DGVjVt5IdAhDFlp9sGOgy5zz4Zypvu7+QYXY2rrzYJ88uZRIdYYijyJFq
+         paLe21Vd21Yq08KiMsZAKbeD6E6gnHyWY5IqJ+rMlLMFrHLTITQo4l50YPmEGSL+IkPj
+         qyXXLygS8cfe2S3+GBZ5TedxJGQjP5LtXbfZD8f4XhWiJCyepWspnVU6HFKthyxbJ0IE
+         9yHk2tvJozBCvbUNyByKp9GNoHGHu4DLqx7lqyxoE920Icdr8NU061a6r7F57Aa1k22T
+         ElAg==
+X-Gm-Message-State: AOAM530YTOTtqlmg2/BqkbBizGofSMrZfcIy0vyK2md2A2p8qmMN7/T5
+        DglCP73AkNYh+BKN1dwp71U=
+X-Google-Smtp-Source: ABdhPJxuFRFEkt9oa8I0BpqmlhLWobFn8UrM+o3nK0tidXODXRPT9ZJy8lVFXW/vqXykToLpoXfvNg==
+X-Received: by 2002:a05:6000:1547:b0:1ea:7d56:83e8 with SMTP id 7-20020a056000154700b001ea7d5683e8mr6343712wry.404.1645795316353;
+        Fri, 25 Feb 2022 05:21:56 -0800 (PST)
+Received: from localhost.localdomain ([64.64.123.58])
+        by smtp.gmail.com with ESMTPSA id o15-20020adf8b8f000000b001ea9c18b793sm2272715wra.114.2022.02.25.05.21.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 05:21:55 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, chi-hsien.lin@infineon.com,
+        wright.feng@infineon.com, chung-hsien.hsu@infineon.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        shawn.guo@linaro.org, gustavoars@kernel.org, len.baker@gmx.com
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] brcmfmac: check the return value of devm_kzalloc() in brcmf_of_probe()
+Date:   Fri, 25 Feb 2022 05:21:38 -0800
+Message-Id: <20220225132138.27722-1-baijiaju1990@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220225132044.14478-1-akhilrajeev@nvidia.com>
-References: <20220225132044.14478-1-akhilrajeev@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0d762d2b-3bfa-42ab-5725-08d9f861c2cc
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4886:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB48865578DF739DBBAADAC3C4C03E9@BY5PR12MB4886.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Qcf6R/2LUm20YHU44Iiz3rQYF0ajNwoaAp9dW1W8eFKszC99yC7i8HB1Cbdd8E+yizm8TZ8PO+I6SUb5wI4Lg5XY8YmAmJ4JUT/bzX2AZpIiCbSBmbTx+FDXgo7F0d0e+Xd9DsFkfumqROfqrhmNtw2UkCKrAUHBdt0BHI/Vi7RpaX5F9saqY8xhnsNEJ1xkNTZ7PgL8Ia8HqryRIxaXbj45xe33iVmzwajXbJyhukhKvQ5RcX6X1AyeYk9EG6ph3jl7PbWYZO47BzRyYBr5/8PTSvCLB4HBx5tmWZXs/RrCuKaTG6f2iWuL0PvZU9O9VqAoLeD1E9B4PEFZl/urNxJWsq8kjsv2T9z/qESeCUaEqe/boQGSe/frcnWTU52HLzJ11T4pFigFbZtWzFEx1CvEyqTFqqZObcSWjZNZfmQ1vJalkAHOAcwfd6qhP7+k9ObwmTFxbS9hABu6foYRX3pDgwCfLXplIPbeTx+MRz48rDto981PByoR+dA2XiTjE2GvfSF37UZDYPb3hZTGM9G916EXQP3un5TQ0Zpvk0sMJksPf+q/EqPo/bZY862FaPPOG2o+M7j01A7K1nOs/A5515M7NE8YWHXSfkrAAX5FNwcaUdcHNnWuljg3q2TQI68oJZFnHFf3dLNObJ3iVfJfG1NZkBYg5q4gzfu79dWJpmyfnAq/5yjCq9h5s7K7quXUnE9LtWvE5CHFZXnipqJncKIXrZd7mj5MxavvSGtayrtJbgwFNHhWteZ3OcpzVThHHiTAK8N6F3QBR5M4j1DYEMuT0EskKYMq/TWIJiZy8ga/Oa26/wtzFteLn6KaKcMwxj9HPGwiKcaTqNgyTHJGUd4kPlnZmTECiGIeCzfC8c5qao+oD8UX0MEhF/Q+ItWeM0PLcHekKi636pI11Q==
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(4326008)(70206006)(70586007)(82310400004)(107886003)(26005)(5660300002)(8676002)(8936002)(966005)(316002)(36860700001)(110136005)(426003)(83380400001)(47076005)(81166007)(356005)(921005)(40460700003)(7696005)(2906002)(6666004)(2616005)(508600001)(336012)(36756003)(86362001)(1076003)(186003)(2101003)(83996005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 13:21:41.1448
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0d762d2b-3bfa-42ab-5725-08d9f861c2cc
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4886
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add DT binding document for Nvidia Tegra GPCDMA controller.
+The function devm_kzalloc() in brcmf_of_probe() can fail, so its return
+value should be checked.
 
-Signed-off-by: Rajesh Gumasta <rgumasta@nvidia.com>
-Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-Reviewed-by: Jon Hunter <jonathanh@nvidia.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Thierry Reding <treding@nvidia.com>
-
+Fixes: 29e354ebeeec ("brcmfmac: Transform compatible string for FW loading")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 ---
- .../bindings/dma/nvidia,tegra186-gpc-dma.yaml | 110 ++++++++++++++++++
- 1 file changed, 110 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml b/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml
-new file mode 100644
-index 000000000000..9dd1476d1849
---- /dev/null
-+++ b/Documentation/devicetree/bindings/dma/nvidia,tegra186-gpc-dma.yaml
-@@ -0,0 +1,110 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/dma/nvidia,tegra186-gpc-dma.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NVIDIA Tegra GPC DMA Controller Device Tree Bindings
-+
-+description: |
-+  The Tegra General Purpose Central (GPC) DMA controller is used for faster
-+  data transfers between memory to memory, memory to device and device to
-+  memory.
-+
-+maintainers:
-+  - Jon Hunter <jonathanh@nvidia.com>
-+  - Rajesh Gumasta <rgumasta@nvidia.com>
-+
-+allOf:
-+  - $ref: "dma-controller.yaml#"
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - const: nvidia,tegra186-gpcdma
-+      - items:
-+          - const: nvidia,tegra194-gpcdma
-+          - const: nvidia,tegra186-gpcdma
-+
-+  "#dma-cells":
-+    const: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    description:
-+      Should contain all of the per-channel DMA interrupts in
-+      ascending order with respect to the DMA channel index.
-+    minItems: 1
-+    maxItems: 31
-+
-+  resets:
-+    maxItems: 1
-+
-+  reset-names:
-+    const: gpcdma
-+
-+  iommus:
-+    maxItems: 1
-+
-+  dma-coherent: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - resets
-+  - reset-names
-+  - "#dma-cells"
-+  - iommus
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/memory/tegra186-mc.h>
-+    #include <dt-bindings/reset/tegra186-reset.h>
-+
-+    dma-controller@2600000 {
-+        compatible = "nvidia,tegra186-gpcdma";
-+        reg = <0x2600000 0x210000>;
-+        resets = <&bpmp TEGRA186_RESET_GPCDMA>;
-+        reset-names = "gpcdma";
-+        interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 88 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 89 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 91 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 93 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 95 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 99 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 104 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 105 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 106 IRQ_TYPE_LEVEL_HIGH>;
-+        #dma-cells = <1>;
-+        iommus = <&smmu TEGRA186_SID_GPCDMA_0>;
-+        dma-coherent;
-+    };
-+...
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+index 513c7e6421b2..535e8ddeab8d 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+@@ -80,6 +80,8 @@ void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+ 		/* get rid of '/' in the compatible string to be able to find the FW */
+ 		len = strlen(tmp) + 1;
+ 		board_type = devm_kzalloc(dev, len, GFP_KERNEL);
++		if (!board_type)
++			return;
+ 		strscpy(board_type, tmp, len);
+ 		for (i = 0; i < board_type[i]; i++) {
+ 			if (board_type[i] == '/')
 -- 
 2.17.1
 
