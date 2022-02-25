@@ -2,74 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DAE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 22:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 22:06:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232682AbiBYWGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 17:06:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
+        id S234248AbiBYWGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 17:06:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiBYWGF (ORCPT
+        with ESMTP id S230052AbiBYWG3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 17:06:05 -0500
-Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC391F083F;
-        Fri, 25 Feb 2022 14:05:32 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: marcan@marcan.st)
-        by mail.marcansoft.com (Postfix) with ESMTPSA id 5FEBE42037;
-        Fri, 25 Feb 2022 22:05:28 +0000 (UTC)
-Subject: Re: [PATCH v2 7/7] irqchip/apple-aic: Add support for AICv2
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Fri, 25 Feb 2022 17:06:29 -0500
+X-Greylist: delayed 462 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Feb 2022 14:05:55 PST
+Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [IPv6:2001:4b7a:2000:18::169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D835C1F636C;
+        Fri, 25 Feb 2022 14:05:55 -0800 (PST)
+Received: from localhost.localdomain (89-166-24-184.bb.dnainternet.fi [89.166.24.184])
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 809A83F67D;
+        Fri, 25 Feb 2022 22:58:09 +0100 (CET)
+From:   Jami Kettunen <jami.kettunen@somainline.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <mark.kettenis@xs4all.nl>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20220224130741.63924-1-marcan@marcan.st>
- <20220224130741.63924-8-marcan@marcan.st> <87lexz2cgv.wl-maz@kernel.org>
-From:   Hector Martin <marcan@marcan.st>
-Message-ID: <4fbeeae8-0b56-e665-744f-6a1ca2b24f9e@marcan.st>
-Date:   Sat, 26 Feb 2022 07:05:26 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Pavel Dubrova <pashadubrova@gmail.com>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Caleb Connolly <caleb@connolly.tech>
+Subject: [PATCH] arm64: dts: qcom: msm8998-oneplus-common: Add NFC
+Date:   Fri, 25 Feb 2022 23:56:42 +0200
+Message-Id: <20220225215642.3916-1-jami.kettunen@somainline.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <87lexz2cgv.wl-maz@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: es-ES
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26/02/2022 00.27, Marc Zyngier wrote:
-> On Thu, 24 Feb 2022 13:07:41 +0000,
-> Hector Martin <marcan@marcan.st> wrote:
->> -	/*
->> -	 * Make sure the kernel's idea of logical CPU order is the same as AIC's
->> -	 * If we ever end up with a mismatch here, we will have to introduce
->> -	 * a mapping table similar to what other irqchip drivers do.
->> -	 */
->> -	WARN_ON(aic_ic_read(aic_irqc, AIC_WHOAMI) != smp_processor_id());
->> +	if (aic_irqc->info.version == 1) {
->> +		/*
->> +		 * Make sure the kernel's idea of logical CPU order is the same as AIC's
->> +		 * If we ever end up with a mismatch here, we will have to introduce
->> +		 * a mapping table similar to what other irqchip drivers do.
->> +		 */
->> +		WARN_ON(aic_ic_read(aic_irqc, AIC_WHOAMI) != smp_processor_id());
-> 
-> Don't you have a similar issue with AICv2?  Or is it that AICv2
-> doesn't have this register?
+The OnePlus 5/5T both have an NXP PN553 which is supported by the
+nxp-nci-i2c driver in mainline. It detects/reads NFC tags using
+"nfctool" and with the NearD test scripts data can also be written
+to be received by another device.
 
-No concept of individual CPUs in AICv2 at all, so no WHOAMI register
-either :)
+Signed-off-by: Jami Kettunen <jami.kettunen@somainline.org>
+Reviewed-by: Caleb Connolly <caleb@connolly.tech>
+---
+ .../boot/dts/qcom/msm8998-oneplus-common.dtsi | 31 +++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
+diff --git a/arch/arm64/boot/dts/qcom/msm8998-oneplus-common.dtsi b/arch/arm64/boot/dts/qcom/msm8998-oneplus-common.dtsi
+index 9823d48a91b1..dbaea360bffc 100644
+--- a/arch/arm64/boot/dts/qcom/msm8998-oneplus-common.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8998-oneplus-common.dtsi
+@@ -188,6 +188,23 @@ rmi4_f12: rmi4-f12@12 {
+ 	};
+ };
+ 
++&blsp1_i2c6 {
++	status = "okay";
++
++	nfc@28 {
++		compatible = "nxp,nxp-nci-i2c";
++		reg = <0x28>;
++
++		interrupt-parent = <&tlmm>;
++		interrupts = <92 IRQ_TYPE_LEVEL_HIGH>;
++
++		enable-gpios = <&tlmm 116 GPIO_ACTIVE_HIGH>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&nfc_int_active &nfc_enable_active>;
++	};
++};
++
+ &blsp1_uart3 {
+ 	status = "okay";
+ 
+@@ -462,6 +479,20 @@ ts_reset_active: ts-reset-active {
+ 		drive-strength = <8>;
+ 		bias-pull-up;
+ 	};
++
++	nfc_int_active: nfc-int-active {
++		pins = "gpio92";
++		function = "gpio";
++		drive-strength = <6>;
++		bias-pull-up;
++	};
++
++	nfc_enable_active: nfc-enable-active {
++		pins = "gpio12", "gpio116";
++		function = "gpio";
++		drive-strength = <6>;
++		bias-pull-up;
++	};
+ };
+ 
+ &ufshc {
 -- 
-Hector Martin (marcan@marcan.st)
-Public Key: https://mrcn.st/pub
+2.35.1
+
