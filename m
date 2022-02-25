@@ -2,70 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 02:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5853C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 02:22:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236743AbiBYCT4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 21:19:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35236 "EHLO
+        id S236747AbiBYCWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 21:22:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229794AbiBYCTz (ORCPT
+        with ESMTP id S236737AbiBYCWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 21:19:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4556713570D
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 18:19:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B39596157F
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 02:19:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A824C340E9;
-        Fri, 25 Feb 2022 02:19:21 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 21:19:19 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
+        Thu, 24 Feb 2022 21:22:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6FC49FCB57
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 18:22:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645755731;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iwRliaBz8XVBCbo8ZYm3d/1wV8xOYEP0VEbSvQZXIL0=;
+        b=gIebw7ALS+ivLGLueP/vUWmwOE1wB9F11Ho1+mfRfizsqyLDgVA+z/nCUMA1DKjaxK+PxY
+        02ekUH+64hiwFqm94pdKfgsHZlBGqqxcQ8nTNcx6QKW/Wko4iLroVlzmrtcJ50pg7gJko3
+        LpRaFaxq7FnLjOePq8Kjb6ow3heclAk=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-426-LCiulT48NKeiroXIGhRzOQ-1; Thu, 24 Feb 2022 21:22:10 -0500
+X-MC-Unique: LCiulT48NKeiroXIGhRzOQ-1
+Received: by mail-qv1-f69.google.com with SMTP id cg14-20020a05621413ce00b0042c2706a4beso4617665qvb.23
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 18:22:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iwRliaBz8XVBCbo8ZYm3d/1wV8xOYEP0VEbSvQZXIL0=;
+        b=NxuBXzLOOz9CYeGvAR0+awh9HgK0OkSYSsgv4fnY+O/qWy4tZZhz+p1z0ZjzcnmZqj
+         3mqU1e4gJgJerORmDpLl2KMn79oxSgoQGFtau0Cvw0TxD52zYXNVN8KpiJmtO+6DIzDP
+         /HrVWyjB0JtZkhlqNE73kj6Z3OVxTpc4BklzUiWes8fKjQloNYAbpRfAXhidp0csnErE
+         tj2lvZB57n6Bx+ySsCcEISbjIvEy1HR1zLuWlE23JpVvl1T58w62BA3zeUUziQi6bOGi
+         khh0eNasD3AzMR11pUmRnOI/91/XFyNcXlysjbE++/VbnOrKSZEbG9cGNR27V+Nxc/uw
+         30yA==
+X-Gm-Message-State: AOAM532w+Dd0brTyNeAdmcL3pvcled7Q2M6GaiDc1wlw+3yBjshBGN32
+        3OAqWc/Ti9XpFA5O2xrwyU2Qr6OeGyBNWnDi9g73D4Uj6dUWUVEc156zk0Bu93tE4S7S+ocPG8L
+        BeOu/4uPVF3QYZN6zTUClS1Ux
+X-Received: by 2002:ad4:5ca5:0:b0:421:6335:89 with SMTP id q5-20020ad45ca5000000b0042163350089mr4318931qvh.89.1645755729945;
+        Thu, 24 Feb 2022 18:22:09 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxV6sJA9MH11XO+AqJqJXLGPXYhUrWls90+6cuZfoIbS5FjdCJFhRi1NDRKvi5DNwAqt2NESA==
+X-Received: by 2002:ad4:5ca5:0:b0:421:6335:89 with SMTP id q5-20020ad45ca5000000b0042163350089mr4318915qvh.89.1645755729762;
+        Thu, 24 Feb 2022 18:22:09 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::45])
+        by smtp.gmail.com with ESMTPSA id s18-20020a05622a179200b002de9529450csm665452qtk.85.2022.02.24.18.22.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 18:22:09 -0800 (PST)
+Date:   Thu, 24 Feb 2022 18:22:05 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Kees Cook <keescook@chromium.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        joao@overdrivepizza.com, hjl.tools@gmail.com, jpoimboe@redhat.com,
+        joao@overdrivepizza.com, hjl.tools@gmail.com,
         andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz,
+        ndesaulniers@google.com, samitolvanen@google.com,
+        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
+        rostedt@goodmis.org, mhiramat@kernel.org,
         alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
-Message-ID: <20220224211919.0612a3f6@rorschach.local.home>
-In-Reply-To: <20220225103449.6084e5314273556f35107cd9@kernel.org>
+Subject: Re: [PATCH v2 20/39] x86/bugs: Disable Retpoline when IBT
+Message-ID: <20220225022205.yfvpfq5qwpcvrxux@treble>
 References: <20220224145138.952963315@infradead.org>
-        <20220224151322.714815604@infradead.org>
-        <20220225005520.c69be2fbdbd28028361792d9@kernel.org>
-        <20220224105847.5c899324@gandalf.local.home>
-        <20220225103449.6084e5314273556f35107cd9@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+ <20220224151323.189353523@infradead.org>
+ <202202241710.B35CBB06@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <202202241710.B35CBB06@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Feb 2022 10:34:49 +0900
-Masami Hiramatsu <mhiramat@kernel.org> wrote:
-
-> > > > +	if (!rec) {
-> > > > +		if (!kallsyms_lookup_size_offset(ip, &size, &offset))
-> > > > +			goto out;
-> > > > +
-> > > > +		if (!offset)    
-> > > 
-> > > Isn't this 'if (offset)' ?  
+On Thu, Feb 24, 2022 at 05:11:23PM -0800, Kees Cook wrote:
+> On Thu, Feb 24, 2022 at 03:51:58PM +0100, Peter Zijlstra wrote:
+> > Retpoline and IBT are mutually exclusive. IBT relies on indirect
+> > branches (JMP/CALL *%reg) while retpoline avoids them by design.
 > > 
-> > No, the point to only look for the fentry location if the ip passed in
-> > points to the start of the function. IOW, +0 offset.  
+> > Demote to LFENCE on IBT enabled hardware.
 > 
-> OK, so this means ftrace_location() will be same as
-> ftrace_location_range(sym, sym_end) ?
+> What's the expected perf impact of this?
 
-No. It only acts like ftrace_location_range(sym, sym_end) if the passed
-in argument is the ip of the function (kallsyms returns offset = 0)
+Should make it faster...
 
--- Steve
+-- 
+Josh
+
