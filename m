@@ -2,60 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C296EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239693AbiBYKjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 05:39:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48330 "EHLO
+        id S239682AbiBYKkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 05:40:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239694AbiBYKjd (ORCPT
+        with ESMTP id S237219AbiBYKkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 05:39:33 -0500
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7408A1CABC2;
-        Fri, 25 Feb 2022 02:38:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:
-        Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=+Xn6FzCuUazJGXD67KTYniSd2lGAAlj38VcC1aa/bc0=; b=Ro+pJpQZ9JcDZevJIMLxTuad/H
-        Sseks3nrleSAy9xs9huspJ4b/Va+W2jw5nIxBRBQJK5CniSMzg4xetI5pqiAmXHKZsDFbgZg8TraO
-        jsVL4wsp73Yvo10CQSSyCZuq9xU9EeQkzUDkf3LntOrH8yygtcWk4wDMBbwkklrgtbAM=;
-Received: from p200300daa7204f00f847964d075b2b3d.dip0.t-ipconnect.de ([2003:da:a720:4f00:f847:964d:75b:2b3d] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nNXzs-00088g-S6; Fri, 25 Feb 2022 11:38:48 +0100
-Message-ID: <18408826-3af1-a80a-181d-25f46b4920fb@nbd.name>
-Date:   Fri, 25 Feb 2022 11:38:48 +0100
+        Fri, 25 Feb 2022 05:40:15 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35C7168F86
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 02:39:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645785583; x=1677321583;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=DG3T4BbCTX7YBHk3EL4ymTUGC1G0GZFiorvp+JOiGqE=;
+  b=S+mjqqfxnvYuaGccSONN+AGMu97tuViUdB4NOO3Km57Jw7uH4Jvp73/c
+   18gdndAU7PofBLoBYuc7CiOlMlzOjj0LzgiojmVKk72z7r+p+cUqqRLeQ
+   c2x9ZAR+8d3gdX/cAHH3aZ5UWVqMjsiihN/neJyJKMeXq4Xpl5UL5DbaR
+   l29Q7gvW9oAI7EjwWO2me+S0MBZOAROY9laGlumMp8DlNN5/3U/gnT6mS
+   BhoTqyndGadMA7sjQxGR/kkslOjBezGKk5Ulpm9B7JT9SreDJc5qlxRpX
+   CzLVAH3kqHmjbe34/4m6yKIZAsslZYtsc3UxbCOqpgse7nm80AViv6lRl
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="233097562"
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="233097562"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 02:39:42 -0800
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="638198528"
+Received: from rcsacra-mobl2.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.49.144])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 02:39:37 -0800
+Message-ID: <55a93cbf3bcbf3ec224885ead96b2adbc0ac445c.camel@intel.com>
+Subject: Re: [PATCHv4 03/30] x86/tdx: Provide common base for SEAMCALL and
+ TDCALL C wrappers
+From:   Kai Huang <kai.huang@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 25 Feb 2022 23:39:35 +1300
+In-Reply-To: <bd62c848-0fb8-7876-8a92-3d316318a568@intel.com>
+References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
+         <20220224155630.52734-4-kirill.shutemov@linux.intel.com>
+         <faeb3c16-55a9-912d-1222-9dab364f56c7@intel.com>
+         <20220224231011.c6mbmsj2ahtw4wmt@black.fi.intel.com>
+         <bd62c848-0fb8-7876-8a92-3d316318a568@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [PATCH 02/11] arm64: dts: mediatek: mt7622: add support for
- coherent DMA
-Content-Language: en-US
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220225101811.72103-1-nbd@nbd.name>
- <20220225101811.72103-3-nbd@nbd.name>
-In-Reply-To: <20220225101811.72103-3-nbd@nbd.name>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.02.22 11:18, Felix Fietkau wrote:
-> It improves performance by eliminating the need for a cache flush on rx and tx
+On Thu, 2022-02-24 at 16:41 -0800, Dave Hansen wrote:
+> On 2/24/22 15:10, Kirill A. Shutemov wrote:
+> > +/*
+> > + * SW-defined error codes.
+> > + *
+> > + * Bits 47:40 == 0xFF indicate Reserved status code class that never used by
+> > + * TDX module.
+> > + */
+> > +#define TDX_SEAMCALL_VMFAILINVALID     0x8000FF00FFFF0000ULL
 > 
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Sorry, I accidentally left out the dt-bindings patches. They will be 
-included in v2.
+> That's OK-ish.  But, it would be nice to make this a bit less magic.
+> While I'm sure plenty of us can do the bits 47:40 => hex math in our
+> heads, it might be nice to do it with a macro.  Maybe:
+> 
+> /*
+>  * Bits 47:40 being set represent a reserved status class.
+>  * The TDX module will never set these so they are safe to
+>  * use for software error codes.
+>  */
+> #define TDX_SW_ERR(code) ((code) | GENMASK_ULL(40, 47))
+> 
+> #define TDX_SEAMCALL_VMFAILINVALID	TDX_SW_ERR(0xFFFF0000ULL)
+> 
+> By the way, is the entire "0xFFFF0000ULL" thing up for grabs?  Or do the
+> the "0xFFFF...." bits _need_ to be set to represent an error somehow?
+> 
+> Would this work if it were:
+> 
+> #define TDX_SEAMCALL_VMFAILINVALID	TDX_SW_ERR(0ULL)
+> 
+> or
+> 
+> #define TDX_SEAMCALL_VMFAILINVALID	TDX_SW_ERR(1ULL)
+> 
+> or
+> 
+> #define TDX_SEAMCALL_VMFAILINVALID	TDX_SW_ERR(0x12345678ULL)
+> 
+> ?
 
-- Felix
+Perhaps we can just use -1 (0xFFFFFFFFFFFFFFFFULL) instead of above value for
+TDX_SEAMCALL_VMFAILINVALID.
+
+Actually this value will mainly be used when calling P-SEAMLDR's SEAMLDR.INFO
+SEAMCALL to detect whether P-SEAMLDR is loaded.  A success of this SEAMCALL
+returns the P-SEAMLDR information which further tells whether the TDX module
+is loaded or not (please refer to SEAMLDR sepc[1], chapter 4.1 SEAMLDR.INFO).
+
+And P-SEAMLDR actually uses a different error code definition from TDX module
+(SEAMLDR spec, chapter 4.4 ERROR HANDLING"):
+
+"The Intel P-SEAMLDR module returns error codes in the format
+0x80000000_cccceeee, where the value cccc specifies the error class, and the
+value eeee specifies the error code within that class"
+
+It doesn't make a lot sense to use TDX module's error code definition to
+define a value that is also supposed to cover P-SEAMLDR, although the chosen
+value happens to work.
+
+Instead, -1 works for both, as both error code definitions of P-SEAMLDR and
+TDX module have couple of bits reserved and will never be set to 1.
+
+[1]
+https://www.intel.com/content/dam/develop/external/us/en/documents-tps/intel-tdx-seamldr-interface-specification.pdf
+
+
+
+
+
