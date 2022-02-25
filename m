@@ -2,101 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D49E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:52:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF75C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242383AbiBYPxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 10:53:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32826 "EHLO
+        id S242396AbiBYPx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 10:53:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232839AbiBYPxS (ORCPT
+        with ESMTP id S236265AbiBYPxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 10:53:18 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 985B81A39C4
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 07:52:45 -0800 (PST)
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 7DAB93F1DD
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 15:52:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645804364;
-        bh=QHFF1WfMTvTAtjpAnWWRlegRHHUzrTEtJpZxW8bOnTU=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=A8CZiu2K1SqXsdmgg4DAk6cmAuSwJV2W2KBRncL7s9qTUu2zOTaNDyL3Aeh49kevp
-         FH183OMsBNFl6umBBpTJz53p1+6RO+Xz9rl5qE1uD5KnBBi5nleWG6jOUi/943LeZp
-         WTckA05NhN+nJtVYpgTjAV0HqrJBkBYmLTJoGVnchX14u20kxhPofxhsuV7yHVZkNN
-         NvNekb2eFSxVLBbWoMxj1Y5/3kExCrgHNXXFYE9kUqjoEe4JymlAu9gg4qmGEmJeGZ
-         AKgsBJwwZkXPIlhmjTU8Km0okRxs4ho8Vh5QTf3c/oZqYBl7dB/Ml5qmGWzOK9qr0l
-         aibifgC8v8KLw==
-Received: by mail-wm1-f71.google.com with SMTP id az39-20020a05600c602700b00380e48f5994so1516680wmb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 07:52:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=QHFF1WfMTvTAtjpAnWWRlegRHHUzrTEtJpZxW8bOnTU=;
-        b=NMGPqclgdx5XMoMfnjvQtiZxh8zMF5Q8gpfAvzlJ4dwZk+p6e1sDSpu3KBrgYPZSsL
-         ezFvuM5j0+giA+H91JRaQV/gNfdNetq/iFr9CzQ5Ck0DyKBvQ9I5+5a9VjjsH7oGwVh1
-         /Lqsr8xSu6qFRlawNXVf10ngBDt5kU3ukMK0oy6kn6G7oLweBnV9wJ6fZw/5pt62/+Qh
-         Tv6KOobRYPWs9L9g9+3hHgNjApu9Jg6hFSSJlbFGL7AB5bTILNn9Zl9IRLCtrRkJ0XWf
-         Z0FI4CvfjXM5GDHyLgJ8cwgMqD08yue6+GPEihW7kVFB4csd9X0GM1ZDWGTdfh9X1eF2
-         Kf/g==
-X-Gm-Message-State: AOAM5308olo9pGT/jySryLcmPjIwZhq98Whm3jO7LlrDIR8VO8/sX+R3
-        wj6ah6/YI0CcmcOTMWHh36sy7W6+xalLoIJpKHwPV/xfH965Ykrm2wZ2hgbrIdyH9p6PSuzSptj
-        qBTaIZ24J73u5oVIBgeiCZShQjavb+5cAjkkOVZfyJw==
-X-Received: by 2002:a05:6000:257:b0:1ee:b98c:243c with SMTP id m23-20020a056000025700b001eeb98c243cmr5267563wrz.51.1645804363706;
-        Fri, 25 Feb 2022 07:52:43 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwZClTgVXWBy9RraiO8dWUTT6Evv084LD3/xmJExyAJgJi+5QIL+SZtvfW/xkcPwvhNWEwrtA==
-X-Received: by 2002:a05:6000:257:b0:1ee:b98c:243c with SMTP id m23-20020a056000025700b001eeb98c243cmr5267548wrz.51.1645804363529;
-        Fri, 25 Feb 2022 07:52:43 -0800 (PST)
-Received: from [192.168.0.133] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id g5-20020a5d5545000000b001ed9d3f521csm2567002wrw.113.2022.02.25.07.52.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Feb 2022 07:52:43 -0800 (PST)
-Message-ID: <6561cfc7-b602-20e3-8679-0ebb99a52f16@canonical.com>
-Date:   Fri, 25 Feb 2022 16:52:42 +0100
+        Fri, 25 Feb 2022 10:53:55 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF471C8870;
+        Fri, 25 Feb 2022 07:53:23 -0800 (PST)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21PDmDJU030142;
+        Fri, 25 Feb 2022 15:53:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : content-transfer-encoding
+ : mime-version; s=pp1; bh=PXePGcV/3Z67rdFpmkL41/Ekw+WDmpHX4QWqkTJP984=;
+ b=Hh14zROpN81L4lsjfuYAyHI4vHZT58jBn5sVXJutiY90aTEm3s9vvoNu8uFUhUWAwAEF
+ vwGEo0aSnD8KA66zqXHctUTGzNGsRi1zsPyo7hV1yl6fla/3JdmL7dCfmBIZDfueQitv
+ TEM62SJfJc1z6R7/yaVAixuuILx9gvZKRFiY+EzKLri5beV0mAhSmi57qnlSw6LERdpV
+ FyPvYSVmTtQsp0J7NJAS8HxSDtwl3miBaKTL2MaeBF65QEruD9opBIEN9XV35O7z2Fgb
+ 6KfETOTPTKtKuomiXY1ZsvSkGXUzuMUJl+YHMxPp4VVDFAQQXjLRQnu/0ftN1+I7rye5 2Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ef0am3dv0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 15:53:20 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21PFVRx6012642;
+        Fri, 25 Feb 2022 15:53:19 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ef0am3du7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 15:53:19 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21PFqD3R023978;
+        Fri, 25 Feb 2022 15:53:18 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04ams.nl.ibm.com with ESMTP id 3ear69sp5c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 15:53:18 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21PFrEL640370506
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Feb 2022 15:53:14 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AEFB3AE058;
+        Fri, 25 Feb 2022 15:53:14 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 52FD2AE057;
+        Fri, 25 Feb 2022 15:53:14 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 25 Feb 2022 15:53:14 +0000 (GMT)
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Thomas Huth <thuth@redhat.com>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/5] memop selftest for storage key checking
+Date:   Fri, 25 Feb 2022 16:53:06 +0100
+Message-Id: <20220225155311.3540514-1-scgl@linux.ibm.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220211182215.2730017-11-scgl@linux.ibm.com>
+References: <20220211182215.2730017-11-scgl@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: kL_BQ8_up1fYDh5CrsgcMCX3A2oPsFW2
+X-Proofpoint-ORIG-GUID: E3BwjWN9Jhz16157t3iN1j5sAl4mlHrm
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: phy: qcom,qmp: add sc8180x and
- sc8280xp ufs compatibles
-Content-Language: en-US
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220225035105.2294599-1-bjorn.andersson@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220225035105.2294599-1-bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-25_09,2022-02-25_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 impostorscore=0 clxscore=1011 suspectscore=0
+ priorityscore=1501 mlxscore=0 mlxlogscore=827 phishscore=0 adultscore=0
+ malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202250091
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/02/2022 04:51, Bjorn Andersson wrote:
-> Add compatible for the UFS PHY found in the Qualcomm SC8280XP platform
-> and document the required clocks for this and the SC8180X UFS PHY.
-> 
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> ---
-> 
-> Changes since v1:
-> - Fixed indentation
-> 
->  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 3 +++
->  1 file changed, 3 insertions(+)
-> 
+Refactor memop selftest and add tests.
+Add storage key tests, both for success as well as failure cases.
+Similarly test both vcpu and vm ioctls.
+
+v1 -> v2
+ * restructure commits
+ * get rid of test_* wrapper functions that hid vm.vm
+ * minor changes
+
+v0 -> v2
+ * complete rewrite
+
+v1: https://lore.kernel.org/kvm/20220217145336.1794778-1-scgl@linux.ibm.com/
+v0: https://lore.kernel.org/kvm/20220211182215.2730017-11-scgl@linux.ibm.com/
+
+Janis Schoetterl-Glausch (5):
+  KVM: s390: selftests: Split memop tests
+  KVM: s390: selftests: Add macro as abstraction for MEM_OP
+  KVM: s390: selftests: Add named stages for memop test
+  KVM: s390: selftests: Add more copy memop tests
+  KVM: s390: selftests: Add error memop tests
+
+ tools/testing/selftests/kvm/s390x/memop.c | 734 ++++++++++++++++++----
+ 1 file changed, 616 insertions(+), 118 deletions(-)
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+base-commit: ee6a569d3bf64c9676eee3eecb861fb01cc11311
+-- 
+2.32.0
 
-
-Best regards,
-Krzysztof
