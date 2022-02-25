@@ -2,28 +2,28 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AED2C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB366C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237222AbiBYDxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:53:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
+        id S237228AbiBYDxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:53:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237172AbiBYDx3 (ORCPT
+        with ESMTP id S235154AbiBYDxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:53:29 -0500
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F8119143C;
-        Thu, 24 Feb 2022 19:52:58 -0800 (PST)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6A0AC201346;
-        Fri, 25 Feb 2022 04:52:57 +0100 (CET)
+        Thu, 24 Feb 2022 22:53:35 -0500
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AFA1A275C;
+        Thu, 24 Feb 2022 19:53:02 -0800 (PST)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D4A971A13E0;
+        Fri, 25 Feb 2022 04:53:00 +0100 (CET)
 Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 33129201161;
-        Fri, 25 Feb 2022 04:52:57 +0100 (CET)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 9E8501A13D8;
+        Fri, 25 Feb 2022 04:53:00 +0100 (CET)
 Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 92706183AD07;
-        Fri, 25 Feb 2022 11:52:55 +0800 (+08)
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 0C88A183AD07;
+        Fri, 25 Feb 2022 11:52:58 +0800 (+08)
 From:   Richard Zhu <hongxing.zhu@nxp.com>
 To:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
         lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
@@ -31,9 +31,9 @@ To:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
 Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v8 3/8] PCI: imx6: Move imx6_pcie_clk_disable() earlier
-Date:   Fri, 25 Feb 2022 11:44:22 +0800
-Message-Id: <1645760667-10510-4-git-send-email-hongxing.zhu@nxp.com>
+Subject: [PATCH v8 6/8] PCI: dwc: Add dw_pcie_host_ops.host_exit() callback
+Date:   Fri, 25 Feb 2022 11:44:25 +0800
+Message-Id: <1645760667-10510-7-git-send-email-hongxing.zhu@nxp.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1645760667-10510-1-git-send-email-hongxing.zhu@nxp.com>
 References: <1645760667-10510-1-git-send-email-hongxing.zhu@nxp.com>
@@ -42,80 +42,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just move the imx6_pcie_clk_disable() to an earlier place without function
-changes, since it wouldn't be only used in imx6_pcie_suspend_noirq() later.
+When the link never comes up after ->host_init(), some drivers,
+especially those that don't support hotplug, want to turn off clocks
+and power supplies.
+
+Add a new ->host_exit() callback in dw_pcie_host_ops so these
+drivers can clean up if ->host_init() fails.
 
 Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
 ---
- drivers/pci/controller/dwc/pci-imx6.c | 48 +++++++++++++--------------
- 1 file changed, 24 insertions(+), 24 deletions(-)
+ drivers/pci/controller/dwc/pcie-designware-host.c | 5 ++++-
+ drivers/pci/controller/dwc/pcie-designware.h      | 1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 3ca2eef39617..99fc22d1d55e 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -533,6 +533,30 @@ static int imx6_pcie_clk_enable(struct imx6_pcie *imx6_pcie)
- 	return ret;
- }
+diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
+index f4755f3a03be..461863bde3c9 100644
+--- a/drivers/pci/controller/dwc/pcie-designware-host.c
++++ b/drivers/pci/controller/dwc/pcie-designware-host.c
+@@ -405,7 +405,7 @@ int dw_pcie_host_init(struct pcie_port *pp)
+ 	if (!dw_pcie_link_up(pci) && pci->ops && pci->ops->start_link) {
+ 		ret = pci->ops->start_link(pci);
+ 		if (ret)
+-			goto err_free_msi;
++			goto err_host_init;
+ 	}
  
-+static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
-+{
-+	clk_disable_unprepare(imx6_pcie->pcie);
-+	clk_disable_unprepare(imx6_pcie->pcie_phy);
-+	clk_disable_unprepare(imx6_pcie->pcie_bus);
-+
-+	switch (imx6_pcie->drvdata->variant) {
-+	case IMX6SX:
-+		clk_disable_unprepare(imx6_pcie->pcie_inbound_axi);
-+		break;
-+	case IMX7D:
-+		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
-+				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL,
-+				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL);
-+		break;
-+	case IMX8MQ:
-+	case IMX8MM:
-+		clk_disable_unprepare(imx6_pcie->pcie_aux);
-+		break;
-+	default:
-+		break;
-+	}
-+}
-+
- static void imx7d_pcie_wait_for_phy_pll_lock(struct imx6_pcie *imx6_pcie)
- {
- 	u32 val;
-@@ -965,30 +989,6 @@ static void imx6_pcie_pm_turnoff(struct imx6_pcie *imx6_pcie)
- 	usleep_range(1000, 10000);
- }
+ 	/* Ignore errors, the link may come up later */
+@@ -417,6 +417,9 @@ int dw_pcie_host_init(struct pcie_port *pp)
+ 	if (!ret)
+ 		return 0;
  
--static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
--{
--	clk_disable_unprepare(imx6_pcie->pcie);
--	clk_disable_unprepare(imx6_pcie->pcie_phy);
--	clk_disable_unprepare(imx6_pcie->pcie_bus);
--
--	switch (imx6_pcie->drvdata->variant) {
--	case IMX6SX:
--		clk_disable_unprepare(imx6_pcie->pcie_inbound_axi);
--		break;
--	case IMX7D:
--		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
--				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL,
--				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL);
--		break;
--	case IMX8MQ:
--	case IMX8MM:
--		clk_disable_unprepare(imx6_pcie->pcie_aux);
--		break;
--	default:
--		break;
--	}
--}
--
- static int imx6_pcie_suspend_noirq(struct device *dev)
- {
- 	struct imx6_pcie *imx6_pcie = dev_get_drvdata(dev);
++err_host_init:
++	if (pp->ops->host_exit)
++		pp->ops->host_exit(pp);
+ err_free_msi:
+ 	if (pp->has_msi_ctrl)
+ 		dw_pcie_free_msi(pp);
+diff --git a/drivers/pci/controller/dwc/pcie-designware.h b/drivers/pci/controller/dwc/pcie-designware.h
+index 7d6e9b7576be..1153687ea9a6 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.h
++++ b/drivers/pci/controller/dwc/pcie-designware.h
+@@ -174,6 +174,7 @@ enum dw_pcie_device_mode {
+ 
+ struct dw_pcie_host_ops {
+ 	int (*host_init)(struct pcie_port *pp);
++	void (*host_exit)(struct pcie_port *pp);
+ 	int (*msi_host_init)(struct pcie_port *pp);
+ };
+ 
 -- 
 2.25.1
 
