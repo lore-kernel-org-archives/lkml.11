@@ -2,115 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:52:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA28C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243311AbiBYQx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:53:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
+        id S243315AbiBYQxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:53:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243152AbiBYQwy (ORCPT
+        with ESMTP id S243183AbiBYQwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Feb 2022 11:52:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFD31AF16
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:52:20 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4002223102;
+        Fri, 25 Feb 2022 08:52:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F216961CE5
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:52:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AAC3C340F1;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6013B61CF5;
+        Fri, 25 Feb 2022 16:52:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C35CEC340F6;
         Fri, 25 Feb 2022 16:52:19 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nNdpK-00B8Hy-6o;
+        id 1nNdpK-00B8Jg-Oz;
         Fri, 25 Feb 2022 11:52:18 -0500
-Message-ID: <20220225165151.824659113@goodmis.org>
+Message-ID: <20220225165218.614031878@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 25 Feb 2022 11:51:51 -0500
+Date:   Fri, 25 Feb 2022 11:51:54 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [for-linus][PATCH 00/13] tracing: Updates for 5.17-rc
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tom Zanussi <zanussi@kernel.org>, stable@vger.kernel.org,
+        Daniel Bristot de Oliveira <bristot@kernel.org>
+Subject: [for-linus][PATCH 03/13] tracing: Have traceon and traceoff trigger honor the instance
+References: <20220225165151.824659113@goodmis.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-Tracing fixes for 5.17:
+If a trigger is set on an event to disable or enable tracing within an
+instance, then tracing should be disabled or enabled in the instance and
+not at the top level, which is confusing to users.
 
- - rtla (Real-Time Linux Analysis tool): fix typo in man page
+Link: https://lkml.kernel.org/r/20220223223837.14f94ec3@rorschach.local.home
 
- - rtla: Update API -e to -E before it is released
+Cc: Tom Zanussi <zanussi@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
+Tested-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ kernel/trace/trace_events_trigger.c | 52 +++++++++++++++++++++++++----
+ 1 file changed, 46 insertions(+), 6 deletions(-)
 
- - rlla: Error message fix and memory leak fix
-
- - Partially unline trace event soft disable to shrink text
-
- - Fix function graph start up test
-
- - Have triggers affect the trace instance they are in and not top level
-
- - Have osnoise sleep in the units it says it uses
-
- - Remove unused ftrace stub function
-
- - Remove event probe reduntant info from event in the buffer
-
- - Fix group ownership setting in tracefs
-
- - Ensure trace buffer is minimum size to prevent crashes
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
-ftrace/urgent
-
-Head SHA1: f4b8715634f04fa03e730f1493ee919b56468de8
-
-
-Arnaldo Carvalho de Melo (1):
-      rtla: Fix systme -> system typo on man page
-
-Christophe Leroy (2):
-      tracing: Uninline trace_trigger_soft_disabled() partly
-      tracing: Fix selftest config check for function graph start up test
-
-Daniel Bristot de Oliveira (5):
-      tracing: Dump stacktrace trigger to the corresponding instance
-      tracing/osnoise: Make osnoise_main to sleep for microseconds
-      rtla/hist: Make -E the short version of --entries
-      rtla/osnoise: Free params at the exit
-      rtla/osnoise: Fix error message when failing to enable trace instance
-
-Nathan Chancellor (1):
-      ftrace: Remove unused ftrace_startup_enable() stub
-
-Steven Rostedt (Google) (3):
-      tracing: Have traceon and traceoff trigger honor the instance
-      eprobes: Remove redundant event type information
-      tracefs: Set the group ownership in apply_options() not parse_options()
-
-Sven Schnelle (1):
-      tracing: Ensure trace buffer is at least 4096 bytes large
-
-----
- Documentation/tools/rtla/common_hist_options.rst   |  2 +-
- .../tools/rtla/common_osnoise_description.rst      |  2 +-
- Documentation/tools/rtla/rtla-osnoise-hist.rst     |  2 +-
- fs/tracefs/inode.c                                 |  4 +-
- include/linux/trace_events.h                       | 22 ++++---
- kernel/trace/ftrace.c                              |  1 -
- kernel/trace/trace.c                               | 10 +--
- kernel/trace/trace.h                               |  1 -
- kernel/trace/trace_eprobe.c                        | 16 +++--
- kernel/trace/trace_events_trigger.c                | 73 +++++++++++++++++++---
- kernel/trace/trace_osnoise.c                       | 53 +++++++++-------
- kernel/trace/trace_probe.c                         | 10 +--
- kernel/trace/trace_probe.h                         |  1 -
- kernel/trace/trace_selftest.c                      |  6 +-
- tools/tracing/rtla/src/osnoise.c                   |  2 +-
- tools/tracing/rtla/src/osnoise_hist.c              | 10 +--
- tools/tracing/rtla/src/osnoise_top.c               |  1 +
- tools/tracing/rtla/src/timerlat_hist.c             | 10 +--
- 18 files changed, 148 insertions(+), 78 deletions(-)
+diff --git a/kernel/trace/trace_events_trigger.c b/kernel/trace/trace_events_trigger.c
+index e0d50c9577f3..efe563140f27 100644
+--- a/kernel/trace/trace_events_trigger.c
++++ b/kernel/trace/trace_events_trigger.c
+@@ -1295,6 +1295,16 @@ traceon_trigger(struct event_trigger_data *data,
+ 		struct trace_buffer *buffer, void *rec,
+ 		struct ring_buffer_event *event)
+ {
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_on(file->tr);
++		return;
++	}
++
+ 	if (tracing_is_on())
+ 		return;
+ 
+@@ -1306,8 +1316,15 @@ traceon_count_trigger(struct event_trigger_data *data,
+ 		      struct trace_buffer *buffer, void *rec,
+ 		      struct ring_buffer_event *event)
+ {
+-	if (tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (tracing_is_on())
++			return;
++	}
+ 
+ 	if (!data->count)
+ 		return;
+@@ -1315,7 +1332,10 @@ traceon_count_trigger(struct event_trigger_data *data,
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_on();
++	if (file)
++		tracer_tracing_on(file->tr);
++	else
++		tracing_on();
+ }
+ 
+ static void
+@@ -1323,6 +1343,16 @@ traceoff_trigger(struct event_trigger_data *data,
+ 		 struct trace_buffer *buffer, void *rec,
+ 		 struct ring_buffer_event *event)
+ {
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_off(file->tr);
++		return;
++	}
++
+ 	if (!tracing_is_on())
+ 		return;
+ 
+@@ -1334,8 +1364,15 @@ traceoff_count_trigger(struct event_trigger_data *data,
+ 		       struct trace_buffer *buffer, void *rec,
+ 		       struct ring_buffer_event *event)
+ {
+-	if (!tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (!tracing_is_on())
++			return;
++	}
+ 
+ 	if (!data->count)
+ 		return;
+@@ -1343,7 +1380,10 @@ traceoff_count_trigger(struct event_trigger_data *data,
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_off();
++	if (file)
++		tracer_tracing_off(file->tr);
++	else
++		tracing_off();
+ }
+ 
+ static int
+-- 
+2.34.1
