@@ -2,129 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AAD1C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237239AbiBYDxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:53:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36778 "EHLO
+        id S237163AbiBYDx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:53:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231544AbiBYDwt (ORCPT
+        with ESMTP id S232996AbiBYDx2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:52:49 -0500
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C87F186214
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:52:18 -0800 (PST)
-Received: by mail-oo1-xc30.google.com with SMTP id r41-20020a4a966c000000b0031bf85a4124so4850699ooi.0
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:52:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o2ttFE4UXWwKSdqHtV1QEdoVt4O2JyRTcbi9yz+bnns=;
-        b=DqAFm/wJ8xtMDnKPPcP6b/3p5YUaxh7aYMcRRoG45NM43yM6VJKp97BOg3NK2gcnWV
-         OSYkZTExDRQTGMn5KqAXrQ4qe5ChUm7XBZ4Yc/yxx15yG6hSfxvf1/7VemUBwzSzjAHQ
-         B2q4UE3BU4fTUcD1/AjHMdSpTQ/Kr5E36ZVf0tezGLPL3vmmze+4bFQUFDSMEnNrXDV+
-         PNzlN1mcOV8HEAEVbGeM0Ei2Y0BXC3Pf1u/6lZK5K6mX7Fe8r1MXHysMKU4hpBQhCjN2
-         /B8A6/8x6rOlKXqKC5sRFEJsBwI617Kf/a99pdQ3yJN0L1JeE6Yrqxu0CXdoXHG8BqiE
-         6nyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o2ttFE4UXWwKSdqHtV1QEdoVt4O2JyRTcbi9yz+bnns=;
-        b=h9DxlDiYAQfsZ3DFg06N0msmWUwNNfe2hOeYEHp+fGdARJcOgnGN1cMDsHhFjfIxzl
-         Dyhgl/vaJPyIa6NDCjBqYD2h3JWl9QPFxLomK6GJMyjR3DjZ+hWld5GEdUJbbv2nIimo
-         2OS3Vgdz4uEK0/6fg7V71B8bMjYsyLyLtkoE0YZtf0X+u7SvgwIdTyuOzJtCjzJbUBkn
-         tnaz0MZuBTZIFsThi1qfHUetDQgvv91QPvZmPyYhN6ht/U8ZMKK87pc/9kY7hyejH0JX
-         SjJrfzR+psHk/sLQPSY6qBCFzcYhPLLxiSlRmSGjGQNAyiro1mwQGUrEliS2ohN0Ivs7
-         TP4w==
-X-Gm-Message-State: AOAM532woP/XYvjy0YeqlSlgt5jurvcRqJmuV50VVlZSCWi9VEQgMB3y
-        qg6F0NSpSbPl7Fae1aDbSO6pUQ==
-X-Google-Smtp-Source: ABdhPJzUvJjzaEsaanLyTn8buXuntkLSkvCcOLn0F0JsaSa5u6wnCVFX3BpuvaM3uYtH7IVW5zuoYg==
-X-Received: by 2002:a05:6870:d90d:b0:d2:a1f4:1112 with SMTP id gq13-20020a056870d90d00b000d2a1f41112mr606354oab.27.1645761137625;
-        Thu, 24 Feb 2022 19:52:17 -0800 (PST)
-Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id v7-20020a4aa507000000b0031c01a4ef37sm512850ook.32.2022.02.24.19.52.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 19:52:16 -0800 (PST)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] dt-bindings: arm: qcom: Document sa8540p, sc8180x and sc8280xp
-Date:   Thu, 24 Feb 2022 19:54:15 -0800
-Message-Id: <20220225035415.2294821-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.33.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 24 Feb 2022 22:53:28 -0500
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0BD187BA3;
+        Thu, 24 Feb 2022 19:52:55 -0800 (PST)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3889D2011FC;
+        Fri, 25 Feb 2022 04:52:54 +0100 (CET)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id C1759201161;
+        Fri, 25 Feb 2022 04:52:53 +0100 (CET)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 2B3B7183AC97;
+        Fri, 25 Feb 2022 11:52:52 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
+        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
+        festevam@gmail.com, francesco.dolcini@toradex.com
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v8 0/8] PCI: imx6: refine codes and add compliance tests mode support 
+Date:   Fri, 25 Feb 2022 11:44:19 +0800
+Message-Id: <1645760667-10510-1-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatibles for the sa8540p automotive, as well as sc8180x and
-sc8280xp compute platforms. Also add compatibles for the ADP devboard,
-the Lenovo Flex 5G, Microsoft Surface Pro X and the sc8280xp QRD.
+This series patches refine pci-imx6 driver and do the following changes.
+- Encapsulate the clock enable into one standalone function
+- Add the error propagation from host_init
+- Disable the regulators and clocks when link never comes up
+- Add the compliance tests mode support
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
+Main changes from v7 to v8:
+Regarding Bjorn's review comments.
+- Align the format of the dev_info message and refine commit log of
+  #6/7/8 patches.
+- Rename the err_reset_phy label, since there is no PHY reset in the out.
 
-Changes since v1:
-- 'q' comes after 'm' in the alphabet
+Main changes from v6 to v7:
+- Keep the regulator usage counter balance in the #5 patch of v6 series.
 
- .../devicetree/bindings/arm/qcom.yaml         | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+Main changes from v5 to v6:
+- Refer to the following discussion with Fabio, fix the dump by his patch.
+  https://patchwork.kernel.org/project/linux-pci/patch/1641368602-20401-6-git-send-email-hongxing.zhu@nxp.com/
+  Refine and rebase this patch-set after Fabio' dump fix patch is merged.
+- Add one new #4 patch to disable i.MX6QDL REF clock too when disable clocks
+- Split the regulator refine codes into one standalone patch #5 in this version.
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index e8b1606bc849..d7bd6affbff7 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -39,8 +39,11 @@ description: |
-         msm8994
-         msm8996
-         sa8155p
-+        sa8540p
-         sc7180
-         sc7280
-+        sc8180x
-+        sc8280xp
-         sdm630
-         sdm660
-         sdm845
-@@ -224,6 +227,18 @@ properties:
-               - google,senor
-           - const: qcom,sc7280
- 
-+      - items:
-+          - enum:
-+              - lenovo,flex-5g
-+              - microsoft,surface-prox
-+              - qcom,sc8180x-primus
-+          - const: qcom,sc8180x
-+
-+      - items:
-+          - enum:
-+              - qcom,sc8280xp-qrd
-+          - const: qcom,sc8280xp
-+
-       - items:
-           - enum:
-               - xiaomi,lavender
-@@ -252,6 +267,11 @@ properties:
-               - qcom,sa8155p-adp
-           - const: qcom,sa8155p
- 
-+      - items:
-+          - enum:
-+              - qcom,sa8540p-adp
-+          - const: qcom,sa8540p
-+
-       - items:
-           - enum:
-               - fairphone,fp4
--- 
-2.33.1
+Main changes from v4 to v5:
+- Since i.MX8MM PCIe support had been merged. Based on Lorenzo's git repos,
+  resend the patch-set after rebase.
 
+Main changes from v3 to v4:
+- Regarding Mark's comments, delete the regulator_is_enabled() check.
+- Squash #3 and #6 of v3 patch into #5 patch of v4 set.
+
+Main changes from v2 to v3:
+- Add "Reviewed-by: Lucas Stach <l.stach@pengutronix.de>" tag into
+  first two patches.
+- Add a Fixes tag into #3 patch.
+- Split the #4 of v2 to two patches, one is clock disable codes move,
+  the other one is the acutal clock unbalance fix.
+- Add a new host_exit() callback into dw_pcie_host_ops, then it could be
+  invoked to handle the unbalance issue in the error handling after
+  host_init() function when link is down.
+- Add a new host_exit() callback for i.MX PCIe driver to handle this case
+  in the error handling after host_init.
+
+Main changes from v1 to v2:
+Regarding Lucas' comments.
+  - Move the placement of the new imx6_pcie_clk_enable() to avoid the
+    forward declarition.
+  - Seperate the second patch of v1 patch-set to three patches.
+  - Use the module_param to replace the kernel command line.
+Regarding Bjorn's comments:
+  - Use the cover-letter for a multi-patch series.
+  - Correct the subject line, and refine the commit logs. For example,
+    remove the timestamp of the logs.
+
+drivers/pci/controller/dwc/pci-imx6.c             | 223 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++---------------------------------
+drivers/pci/controller/dwc/pcie-designware-host.c |   5 ++-
+drivers/pci/controller/dwc/pcie-designware.h      |   1 +
+3 files changed, 150 insertions(+), 79 deletions(-)
+
+[PATCH v8 1/8] PCI: imx6: Encapsulate the clock enable into one
+[PATCH v8 2/8] PCI: imx6: Add the error propagation from host_init
+[PATCH v8 3/8] PCI: imx6: Move imx6_pcie_clk_disable() earlier
+[PATCH v8 4/8] PCI: imx6: Disable iMX6QDL PCIe REF clock when disable
+[PATCH v8 5/8] PCI: imx6: Refine the regulator usage
+[PATCH v8 6/8] PCI: dwc: Add dw_pcie_host_ops.host_exit() callback
+[PATCH v8 7/8] PCI: imx6: Disable clocks and regulators after link is
+[PATCH v8 8/8] PCI: imx6: Add compliance tests mode support
