@@ -2,150 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63C86C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:53:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5982AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:55:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237254AbiBYDxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:53:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40356 "EHLO
+        id S237163AbiBYDzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:55:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237217AbiBYDxg (ORCPT
+        with ESMTP id S233253AbiBYDzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:53:36 -0500
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D66194151;
-        Thu, 24 Feb 2022 19:53:04 -0800 (PST)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 4F1421A13CD;
-        Fri, 25 Feb 2022 04:53:03 +0100 (CET)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E27371A0003;
-        Fri, 25 Feb 2022 04:53:02 +0100 (CET)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 515DD183ACDE;
-        Fri, 25 Feb 2022 11:53:01 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com, broonie@kernel.org,
-        lorenzo.pieralisi@arm.com, jingoohan1@gmail.com,
-        festevam@gmail.com, francesco.dolcini@toradex.com
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v8 8/8] PCI: imx6: Add compliance tests mode support
-Date:   Fri, 25 Feb 2022 11:44:27 +0800
-Message-Id: <1645760667-10510-9-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1645760667-10510-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1645760667-10510-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Thu, 24 Feb 2022 22:55:39 -0500
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E16EE338A
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:55:08 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id w3-20020a056830060300b005ad10e3becaso2805729oti.3
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 19:55:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T81mSR+1Zj6dq+bi59Tjjq785xia/vTXg7pvxWMZP5Q=;
+        b=o16kuWGDe1xIM6p5Qh4ZTO0litiSY/rbImF0+oFdMVX2+yt9qmuK9zz0xXULvLnsKu
+         uptVQyLcN7CsYjkhMJbTHp3tYAjsBAGgRlZZK5MgwDj0sL15yRTzpXzL7xwTuZ83rj2K
+         4WGob+PVQsLpPRsz4hIyu0qj8R3vsghgczYgxVJ0JVsQMnN5boCGKwvGOBiEip+pbKJK
+         Z9lFo+nzSrgq5cfV5NRUiK5dwiW4bzbY2YGpS+4jZJPs5PKaj11kQN15EdZP/GIsmR6X
+         74JnHDIzTmj4C+RHUWjPcr2mqLJKKzR4C2ZKol5FhjC7jpjnJSX2gbpIzSoXC1cGXOvm
+         VV5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=T81mSR+1Zj6dq+bi59Tjjq785xia/vTXg7pvxWMZP5Q=;
+        b=QdlLyRjssHlLeO1/PFaGeHfZk4tvLSaP19nBbwnMp8Af9gxG2XgzoGgt8Y31ffc+Z3
+         CmC5c/zbRjgW21e3U3YBSZC+ceMw/o7FP6ucc2a+ar62euadAaDS9H6c6RzLvQfxJChm
+         wL8e2twgeXNftT5g95LtBLS/eiAq79mSExc2sqCQWNepci6nFdk1u9ZGDiN7jw6v82Ny
+         mb2P5qmTqjMUHU0tHAUxQwVmO1xSHO0jiu6V+4e1ODx/HVgizR7P2vHBddH2dY2kkL9M
+         mn62TsLE5NM1ASPejdrnhQgMN6lqqvj90efJSJQgM9p4B4VdbK2fNNS2t2kT6pG26ieQ
+         p8cg==
+X-Gm-Message-State: AOAM531xpP/GucXYAEvShoBVaXKVjg6SAmDhqxIoPQOyF8+SSgnylFCp
+        WCmxXI0X+nj3FregU2fMEdJoqQ==
+X-Google-Smtp-Source: ABdhPJwjiRwYy0dfCxWbhMkzKq6Ypu051JtDF3urnqLidlyDli33zRyaG/hBtJccsM7+t70CD5R+XA==
+X-Received: by 2002:a05:6830:154b:b0:5ad:3e5b:4356 with SMTP id l11-20020a056830154b00b005ad3e5b4356mr2071041otp.176.1645761307715;
+        Thu, 24 Feb 2022 19:55:07 -0800 (PST)
+Received: from ripper.. ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id q6-20020a9d57c6000000b005ad5a1edd4csm595170oti.22.2022.02.24.19.55.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Feb 2022 19:55:07 -0800 (PST)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH] cpufreq: blocklist Qualcomm sc8280xp and sa8540p in cpufreq-dt-platdev
+Date:   Thu, 24 Feb 2022 19:57:06 -0800
+Message-Id: <20220225035706.2294842-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.33.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refer to the Chapter 3.2 System Board Signal Quality of PCI Express
-Architecture PHY Test Specification Revision 2.0.
+The Qualcomm sc8280xp and sa8540p platforms also uses the
+qcom-cpufreq-hw driver, so add them to the cpufreq-dt-platdev driver's
+blocklist.
 
-Signal quality tests (for example: jitter, differential eye opening and
-so on) can be executed with devices in the polling.compliance state.
-
-To let the device support polling.compliance state, the clocks and powers
-shouldn't be turned off when the probe of device driver fails.
-
-Based on CLB (Compliance Load Board) Test Fixture and so on test
-equipments, the PHY link would be down during the compliance tests.
-Refer to this scenario, add the i.MX PCIe compliance tests mode enable
-support, and keep the clocks and powers on, and finish the driver probe
-without error return.
-
-Use the "pci_imx6.compliance=1" in kernel command line to enable the
-compliance tests mode.
-
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
- drivers/pci/controller/dwc/pci-imx6.c | 47 ++++++++++++++++++---------
- 1 file changed, 31 insertions(+), 16 deletions(-)
+ drivers/cpufreq/cpufreq-dt-platdev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index f8b15f0bc9ce..b976a4802db0 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -146,6 +146,10 @@ struct imx6_pcie {
- #define PHY_RX_OVRD_IN_LO_RX_DATA_EN		BIT(5)
- #define PHY_RX_OVRD_IN_LO_RX_PLL_EN		BIT(3)
- 
-+static bool imx6_pcie_cmp_mode;
-+module_param_named(compliance, imx6_pcie_cmp_mode, bool, 0644);
-+MODULE_PARM_DESC(compliance, "i.MX PCIe compliance test mode (1=compliance test mode enabled)");
-+
- static int pcie_phy_poll_ack(struct imx6_pcie *imx6_pcie, bool exp_val)
- {
- 	struct dw_pcie *pci = imx6_pcie->pci;
-@@ -841,10 +845,12 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
- 	 * started in Gen2 mode, there is a possibility the devices on the
- 	 * bus will not be detected at all.  This happens with PCIe switches.
- 	 */
--	tmp = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
--	tmp &= ~PCI_EXP_LNKCAP_SLS;
--	tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
--	dw_pcie_writel_dbi(pci, offset + PCI_EXP_LNKCAP, tmp);
-+	if (!imx6_pcie_cmp_mode) {
-+		tmp = dw_pcie_readl_dbi(pci, offset + PCI_EXP_LNKCAP);
-+		tmp &= ~PCI_EXP_LNKCAP_SLS;
-+		tmp |= PCI_EXP_LNKCAP_SLS_2_5GB;
-+		dw_pcie_writel_dbi(pci, offset + PCI_EXP_LNKCAP, tmp);
-+	}
- 
- 	/* Start LTSSM. */
- 	imx6_pcie_ltssm_enable(dev);
-@@ -931,18 +937,20 @@ static void imx6_pcie_host_exit(struct pcie_port *pp)
- 	struct device *dev = pci->dev;
- 	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
- 
--	imx6_pcie_reset_phy(imx6_pcie);
--	imx6_pcie_clk_disable(imx6_pcie);
--	switch (imx6_pcie->drvdata->variant) {
--	case IMX8MM:
--		if (phy_power_off(imx6_pcie->phy))
--			dev_err(dev, "unable to power off phy\n");
--		break;
--	default:
--		break;
-+	if (!imx6_pcie_cmp_mode) {
-+		imx6_pcie_reset_phy(imx6_pcie);
-+		imx6_pcie_clk_disable(imx6_pcie);
-+		switch (imx6_pcie->drvdata->variant) {
-+		case IMX8MM:
-+			if (phy_power_off(imx6_pcie->phy))
-+				dev_err(dev, "unable to power off phy\n");
-+			break;
-+		default:
-+			break;
-+		}
-+		if (imx6_pcie->vpcie)
-+			regulator_disable(imx6_pcie->vpcie);
- 	}
--	if (imx6_pcie->vpcie)
--		regulator_disable(imx6_pcie->vpcie);
- }
- 
- static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
-@@ -1260,8 +1268,15 @@ static int imx6_pcie_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	ret = dw_pcie_host_init(&pci->pp);
--	if (ret < 0)
-+	if (ret < 0) {
-+		if (imx6_pcie_cmp_mode) {
-+			dev_info(dev, "driver loaded with compliance test mode enabled\n");
-+			ret = 0;
-+		} else {
-+			dev_err(dev, "unable to add PCIe port\n");
-+		}
- 		return ret;
-+	}
- 
- 	if (pci_msi_enabled()) {
- 		u8 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
+diff --git a/drivers/cpufreq/cpufreq-dt-platdev.c b/drivers/cpufreq/cpufreq-dt-platdev.c
+index 6b808f805eab..96de1536e1cb 100644
+--- a/drivers/cpufreq/cpufreq-dt-platdev.c
++++ b/drivers/cpufreq/cpufreq-dt-platdev.c
+@@ -139,9 +139,11 @@ static const struct of_device_id blocklist[] __initconst = {
+ 	{ .compatible = "qcom,msm8996", },
+ 	{ .compatible = "qcom,qcs404", },
+ 	{ .compatible = "qcom,sa8155p" },
++	{ .compatible = "qcom,sa8540p" },
+ 	{ .compatible = "qcom,sc7180", },
+ 	{ .compatible = "qcom,sc7280", },
+ 	{ .compatible = "qcom,sc8180x", },
++	{ .compatible = "qcom,sc8280xp", },
+ 	{ .compatible = "qcom,sdm845", },
+ 	{ .compatible = "qcom,sm6350", },
+ 	{ .compatible = "qcom,sm8150", },
 -- 
-2.25.1
+2.33.1
 
