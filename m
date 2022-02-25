@@ -2,131 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BACC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F86EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236945AbiBYDPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:15:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42626 "EHLO
+        id S236588AbiBYDPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:15:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236954AbiBYDN4 (ORCPT
+        with ESMTP id S229805AbiBYDPo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:13:56 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFB3E7DA91;
-        Thu, 24 Feb 2022 19:13:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645758804; x=1677294804;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+6kBKmZZxOFTdF4b8FToTP7Rqc52r8lXs4pLygIIL88=;
-  b=d82ae4h7WDvgclgehNofPHRWwAnzkHwGg0eYlzjiT/7gN0lmVsXxui/G
-   oxzArSMVesZlBYl40HDy5jSXZk+bCeXHvnISfDSq4BQkSIsckPQixP0me
-   rqHPrgyPytOhPemcDQbf09eTfT/N480R+rnvaEG4Ln+xmHv+elKnqmUVc
-   ERkHPS250OXQe6HKRfJiCw8OzA4r+h7M+50oYnTowuIDQDn8BIqcZeZSa
-   8uIB+sDAEF0zxPGNR+/rEbWULmCP89gCYC+5PMa0jzi3JVax2QJgHspGb
-   Hv+hbVbT7lm0G9/RiycYT5J5bUY+Aon1wXfftCmtC4BkSE8Y//kMeDN+l
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252603001"
-X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; 
-   d="scan'208";a="252603001"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 19:13:24 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; 
-   d="scan'208";a="684512494"
-Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 19:13:21 -0800
-From:   Tianfei zhang <tianfei.zhang@intel.com>
-To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
-        yilun.xu@intel.com, linux-fpga@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     corbet@lwn.net, Matthew Gerlach <matthew.gerlach@linux.intel.com>,
-        Tianfei Zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v2 4/5] fpga: dfl: Handle dfl's starting with AFU
-Date:   Thu, 24 Feb 2022 22:10:01 -0500
-Message-Id: <20220225031002.261264-5-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20220225031002.261264-1-tianfei.zhang@intel.com>
-References: <20220225031002.261264-1-tianfei.zhang@intel.com>
+        Thu, 24 Feb 2022 22:15:44 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EF01B65EB;
+        Thu, 24 Feb 2022 19:15:12 -0800 (PST)
+Received: from kwepemi100009.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K4ZYn6QKhz9sJ0;
+        Fri, 25 Feb 2022 11:11:41 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100009.china.huawei.com (7.221.188.242) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Feb 2022 11:15:10 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Feb 2022 11:15:09 +0800
+Subject: Re: [PATCH RFC] blk-mq: fix potential uaf for 'queue_hw_ctx'
+To:     Ming Lei <ming.lei@redhat.com>
+CC:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220223112601.2902761-1-yukuai3@huawei.com>
+ <YhhBh0ehPjdARU5h@T590>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <593de98e-6b94-43dc-c62f-12388b11533e@huawei.com>
+Date:   Fri, 25 Feb 2022 11:15:08 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <YhhBh0ehPjdARU5h@T590>
+Content-Type: text/plain; charset="gbk"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+ÔÚ 2022/02/25 10:40, Ming Lei Ð´µÀ:
 
-Allow for a Device Feature List (DFL) to start with
-a Device Feature Header (DFH) of type Accelerator Function Unit (AFU)
-by doing nothing. This allows for PCIe VFs to be created.
+>> +static inline struct blk_mq_hw_ctx *queue_hctx(struct request_queue *q, int id)
+>> +{
+>> +	struct blk_mq_hw_ctx *hctx;
+>> +
+>> +	rcu_read_lock();
+>> +	hctx = *(rcu_dereference(q->queue_hw_ctx) + id);
+>> +	rcu_read_unlock();
+>> +
+>> +	return hctx;
+>> +}
+> 
+> queue_hctx() should be moved into linux/blk-mq.h, otherwise feel free to
+> add:
+> 
+> Reviewed-by: Ming Lei <ming.lei@redhat.com>
 
-Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
----
- drivers/fpga/dfl-pci.c |  7 ++++++-
- drivers/fpga/dfl.c     | 22 +++++++++++++---------
- 2 files changed, 19 insertions(+), 10 deletions(-)
+Thanks for the review, I will send a new patch and move queue_hctx.
 
-diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
-index 33545c999c06..e7d58e7b1bbd 100644
---- a/drivers/fpga/dfl-pci.c
-+++ b/drivers/fpga/dfl-pci.c
-@@ -275,7 +275,12 @@ static int find_dfls_by_default(struct pci_dev *pcidev,
- 
- 		dfl_fpga_enum_info_add_dfl(info, start, len);
- 	} else {
--		ret = -ENODEV;
-+		v = readq(base + DFH);
-+		if (FIELD_GET(DFH_TYPE, v) != DFH_TYPE_AFU) {
-+			dev_info(&pcidev->dev, "Unknown feature type 0x%llx id 0x%llx\n",
-+				 FIELD_GET(DFH_TYPE, v), FIELD_GET(DFH_ID, v));
-+			ret = -ENODEV;
-+		}
- 	}
- 
- 	/* release I/O mappings for next step enumeration */
-diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-index afa9311c30d5..8a71ff6c3e2f 100644
---- a/drivers/fpga/dfl.c
-+++ b/drivers/fpga/dfl.c
-@@ -900,9 +900,11 @@ static void build_info_free(struct build_feature_devs_info *binfo)
- 		dfl_id_free(feature_dev_id_type(binfo->feature_dev),
- 			    binfo->feature_dev->id);
- 
--		list_for_each_entry_safe(finfo, p, &binfo->sub_features, node) {
--			list_del(&finfo->node);
--			kfree(finfo);
-+		if (!list_empty(&binfo->sub_features)) {
-+			list_for_each_entry_safe(finfo, p, &binfo->sub_features, node) {
-+				list_del(&finfo->node);
-+				kfree(finfo);
-+			}
- 		}
- 	}
- 
-@@ -1445,12 +1447,14 @@ dfl_fpga_feature_devs_enumerate(struct dfl_fpga_enum_info *info)
- 	 * start enumeration for all feature devices based on Device Feature
- 	 * Lists.
- 	 */
--	list_for_each_entry(dfl, &info->dfls, node) {
--		ret = parse_feature_list(binfo, dfl->start, dfl->len);
--		if (ret) {
--			remove_feature_devs(cdev);
--			build_info_free(binfo);
--			goto unregister_region_exit;
-+	if (!list_empty(&info->dfls)) {
-+		list_for_each_entry(dfl, &info->dfls, node) {
-+			ret = parse_feature_list(binfo, dfl->start, dfl->len);
-+			if (ret) {
-+				remove_feature_devs(cdev);
-+				build_info_free(binfo);
-+				goto unregister_region_exit;
-+			}
- 		}
- 	}
- 
--- 
-2.26.2
-
+Kuai
+> 
+> Also it should be fine to implement queue_for_each_hw_ctx() as list, then we
+> can avoid the allocation for q->queue_hw_ctx without extra cost. I will work
+> toward that direction for improving the code.
+> 
+> Thanks,
+> Ming
+> 
+> .
+> 
