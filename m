@@ -2,355 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9095BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:36:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84044C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:36:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241497AbiBYNgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:36:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36718 "EHLO
+        id S241508AbiBYNh1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:37:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236395AbiBYNgj (ORCPT
+        with ESMTP id S234548AbiBYNhX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:36:39 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422C81DB3D6
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:36:05 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id p9so4534392wra.12
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:36:05 -0800 (PST)
+        Fri, 25 Feb 2022 08:37:23 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 499F85EBF2
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:36:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645796211; x=1677332211;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=7V3ggF1yBSXwMiX4Q/wRXsifU8BBIRHjqwi4cg3s8cI=;
+  b=rOZlZ1nuevZ4BrxCvfVxHeIu86/p7I5R/01mD4k1VfQOma0Wab00sywB
+   h7h+XPLfJB1lLdcuRfTxHxAy/jYQBOUvQBGzxXM4Nt6hGQFobI27Mw2Ya
+   ykbtGruBPrTyJmzCjjIKHCAkikpcb77qoloGj1IsxE6EIWxShrWtAOt4a
+   tR6m8vk+KiIeQ6vmovYOGOf0wai07gm3Vnctr98Q8IzdIH72CLoOKpQux
+   1L6MeMqY9sGrEeJ9sklMpMGtocYQOb1lEhZAT/KMinu96qV1MECZ+qt5X
+   dZizqOrQny1cSwSHaqDTe5D6Lg5zwWAZPInPQSZEq2CGSRIh9RTIzyKKO
+   A==;
+X-IronPort-AV: E=Sophos;i="5.90,136,1643698800"; 
+   d="scan'208";a="154414921"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Feb 2022 06:36:51 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 25 Feb 2022 06:36:50 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Fri, 25 Feb 2022 06:36:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SEyT7/QtwsFh9TSjbcJa0PA4lcpfvEsVj5j9xuPqM9lmBUj1L23rq19ulRQXgmE+C+RamEb0Fc4Ycekbm2ksRf7pHVY20Yk31pCq4pORg2TosCGdi7EKPCmYWFaJrPnIWFvf9mlEaKMuyI2ALwzs4ZfdnGXiWcIEoi+5N6nX/vB9ByP+LaeysagnYIeRk+jyA2T9dHwXbz2ZmVZaLhQ6OoEAzFP2ZpfiRmnpiG9II8T78A8QOkh0mRCUbsaGycLPyp+yONgd3X1+lsdoOPNGXf8g8VeUTw0bJHu0zgYQ1lqDZUTC0hvhyNPnn5/qe+p8Pt+cqlMyY5XOQNwA2pHxhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7V3ggF1yBSXwMiX4Q/wRXsifU8BBIRHjqwi4cg3s8cI=;
+ b=RFeGrFWqo0Pex+NqrTmLta0LZIDlNPHEb0oqz5qLv8dvGXbjbTWoOi+Ym4zAE4kqO+TKMnAJNCuBc+6cLi17UI3igz4jRi52BMA1LyeqnHt0fj2aIbIGd+YOQ02vETznCTZXynf8sH78PHZAr3Q+YgGB8jlMIZ6tqQqfUNQJxIAoe5/GITdbOBnqNcmGRKf6foNS7vJwrCpqbNkqu6jG/dOqQu5O8kBB9JXnKR/HLM670O+9Rf2LwxerOMqqIBdQTCfzoNQqS6RlAEnx6k9tATPWAP9eTJbduyHK74KeXQsR2HWtG6HlriJHK4oy3r8Tm1F+RdnIz/d3B/83UIGa0A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZatkCkH0tiJuMD2zO/1+/ITUO0H0CuZ8bVACIi8yJfU=;
-        b=KU3qOow9ALEILnaJcAHCAV2hs8j29RJhbpsuqTe6/TM3JDkvknNRTZICSH1ZVKohi5
-         cq2V2dtIrA7uvHvbkEndpj257TnwW9hsX+CSGUzKg5iXFDpjd12S8v5Cn2fItflPFL0k
-         RKJV1xlOyilxleTSJYSK4QMsx0kC9DqaCFdpWKfwddoHuUpK4wMpMJenuMlPRat+wdvV
-         cSXTpcSfmB5Ynqfjto+RRs9vK0ziuPdK5/MczK1Px8uI7Dsxs2rjYrqNE7QtHS1p6d/k
-         XxsvTl4Ak7Yy+8CCB1FMBYm0e2jxSIK77hsMdLU9IGTJHx2uQZlFvxXi+APClId41PPW
-         z/mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZatkCkH0tiJuMD2zO/1+/ITUO0H0CuZ8bVACIi8yJfU=;
-        b=LGnxsg+7V1EU0oSt6n91szEYCaJh5o19p/AnIQ+RbRmnLn8e4hl/9rkEt/NOY5qugM
-         xJJCIRijoR42tGGUPBSi47urV43v15a4Wnd9DL1rIPEY4XAO3cTGBlILCID0xzV1XpSE
-         VgBZtHPGmiG/DGh+GG/9gO0RAL0Xe+cn6yEm8Q88RHsJ2HwOxZiSEvFJ3UkFt1X9Ty4x
-         3DmMKihX8ubZx9eGTJkZDZ0GUnmyF6ig4avvTmgyvL3+Jrw90g7WYAsjH+TVZVzcS4C7
-         Y2GhvGowwTiWUqjpng3zPC6nsiF9MAShOgqqlw+orgUCpoCVf8f10IrpK1PeRKY19KpZ
-         WmCA==
-X-Gm-Message-State: AOAM533f1ju2Twct3YvL1gyMevfRM5oL7WvglSqBPwZ5WtR6Xyc+hLpO
-        e6/9ycj1POSJRcqg3r4GvEiuPA==
-X-Google-Smtp-Source: ABdhPJzbz7fAy9NilvFpC5CCxvjjUiKAaI6E1HnpMUUEKICWrBb7YnVFFjgbrN4X1GhxtSvqW7DhSQ==
-X-Received: by 2002:a05:6000:184d:b0:1ea:78a5:f9c8 with SMTP id c13-20020a056000184d00b001ea78a5f9c8mr6261272wri.439.1645796163603;
-        Fri, 25 Feb 2022 05:36:03 -0800 (PST)
-Received: from ?IPV6:2a01:e34:ed2f:f020:25a:d4d2:9383:c638? ([2a01:e34:ed2f:f020:25a:d4d2:9383:c638])
-        by smtp.googlemail.com with ESMTPSA id b10-20020a5d550a000000b001e30e81afd1sm2379527wrv.2.2022.02.25.05.36.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Feb 2022 05:36:02 -0800 (PST)
-Message-ID: <48c9fecc-67eb-891c-fb07-30ae4691031c@linaro.org>
-Date:   Fri, 25 Feb 2022 14:36:00 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 1/2] thermal: Add thermal driver for Sunplus SP7021
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7V3ggF1yBSXwMiX4Q/wRXsifU8BBIRHjqwi4cg3s8cI=;
+ b=BezevGkEG6Vp7O2+KgFEP93dPVEWJh7rypujNGEaWDvRPm/htUJfPz0tYwvKDo9XymuhYzMCW3thoIA5VPJmlLNekF5bhUtO1/Q1ox9a69n/IXoKeErif4HiMAAC20Du1MCP0b+5OmGJllbuU4LMKH97GmHea1lEwUw7NvSahck=
+Received: from SA2PR11MB4874.namprd11.prod.outlook.com (2603:10b6:806:f9::23)
+ by PH0PR11MB4822.namprd11.prod.outlook.com (2603:10b6:510:39::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.23; Fri, 25 Feb
+ 2022 13:36:48 +0000
+Received: from SA2PR11MB4874.namprd11.prod.outlook.com
+ ([fe80::dc94:3c7c:8ef8:21b9]) by SA2PR11MB4874.namprd11.prod.outlook.com
+ ([fe80::dc94:3c7c:8ef8:21b9%5]) with mapi id 15.20.5017.026; Fri, 25 Feb 2022
+ 13:36:48 +0000
+From:   <Tudor.Ambarus@microchip.com>
+To:     <michael@walle.cc>, <linux-mtd@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <p.yadav@ti.com>, <miquel.raynal@bootlin.com>, <richard@nod.at>,
+        <vigneshr@ti.com>, <yaliang.wang@windriver.com>
+Subject: Re: [PATCH v5 11/32] mtd: spi-nor: micron-st: unify function names
+Thread-Topic: [PATCH v5 11/32] mtd: spi-nor: micron-st: unify function names
+Thread-Index: AQHYKkx/rOWxu2o8UkShyaiFUyzsraykROAA
+Date:   Fri, 25 Feb 2022 13:36:48 +0000
+Message-ID: <5becc6cf-5931-5206-70d3-a643245de4b3@microchip.com>
+References: <20220223134358.1914798-1-michael@walle.cc>
+ <20220223134358.1914798-12-michael@walle.cc>
+ <5c2ba6a0-a06b-d4dd-d503-1ddfa76f9be4@microchip.com>
+In-Reply-To: <5c2ba6a0-a06b-d4dd-d503-1ddfa76f9be4@microchip.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Li-hao Kuo <lhjeff911@gmail.com>, rafael@kernel.org,
-        amitk@kernel.org, rui.zhang@intel.com, robh+dt@kernel.org,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     wells.lu@sunplus.com, lh.kuo@sunplus.com
-References: <cover.1642127137.git.lhjeff911@gmail.com>
- <2847f96335da1c74dfbee7ba67939bdc474ba2a4.1642127137.git.lhjeff911@gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <2847f96335da1c74dfbee7ba67939bdc474ba2a4.1642127137.git.lhjeff911@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 12ddad2a-d71f-45c7-fe0f-08d9f863df99
+x-ms-traffictypediagnostic: PH0PR11MB4822:EE_
+x-microsoft-antispam-prvs: <PH0PR11MB482287A3125B97D4D27FBAD7F03E9@PH0PR11MB4822.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: MNAso4zPKm6rsrV1zpeG4WXvtqQTPyCRQ89ZGq/d9de01vjA9T6WRnWPNKuc2pIafe95asHosd35CeXDwAzUX0Vuy15M6SfFlE6RiWlY6Udqc2Ok/L6sQQN5hY8gszOwApTbrEldYZ00dZ/nUE8doqtGX0/FYK53aUJ3oBBUNWFVyyNltqZY+m2F8peIOBvRELC2gDsOlwcMhl3dOcnNqVSD5IlvPzfI+FYgp2H5P9cCZR9Lfx6Eskm3jM0E5RQZHI7TquL6hGfNzajRBYT75E42tKKEkmCAEuNqHCCHBhfA7vupFZYFvkubdszqz6RkFfOiR1GY9dxMbp6kSmfD1QcFqfPg2mPtzMVpwdPIr7i2+hENynG6+vTF1++snG/Z1wmHi07MutA7ZIxoOjmoSKNOAsf45V+MLyPS3CWWshO8LWAEB5SbqF1prww2N+0lLNV/RBWlQLbIAX3ohibrbDgSmiMujkarIr/Y4OnpG4E/46xwIdj8NAK4hrrs4sjLXX1Yl2rTZJ+nU1gFOYPSYz+hspdMWPG/II/5XUrSx5tklifcSxC5l3dzkSw/5qzmsT8PLI+iM+PYzfq6CsfQgee1qqfEiKWS9b6ofS7RemIQU3pEFNjeCSA9asjBFDmXPW9tz1XUCK0ttWmarLrEMuLjvnZNgdU4fnNo8dndBZHv7E0RkI14lehZD3HqcEjyKGUNMvjjD2jrZHPd+DumHf09rHsTlHaIad1WGE4j6zwtuHnXWN0KGFGrPOVEXG2aGj6aebzsHyTvxctKerRVNQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA2PR11MB4874.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(2616005)(186003)(54906003)(110136005)(31686004)(316002)(6486002)(38070700005)(26005)(31696002)(86362001)(36756003)(8676002)(6512007)(91956017)(66946007)(4326008)(71200400001)(53546011)(76116006)(64756008)(83380400001)(66556008)(122000001)(2906002)(66476007)(66446008)(6506007)(38100700002)(508600001)(5660300002)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?b3d1Qk03aU1FNWFnTkJmTi81RWhiRXUyYUZZRVd2OWJuU1NKeWo3OWk4ZXpw?=
+ =?utf-8?B?RWhKUjNMZEZZZlNYVktkVThHek1EOUFPeUFKTlc0Y2JMNHJnS243dzJ4WWhP?=
+ =?utf-8?B?WEduUTFNYXJNMk9yOG9lOWU5ODlqOEZOU00vTm5wbDNMZS9CVFZsQ3NacE45?=
+ =?utf-8?B?Uy9ydDdkb2NnclluMVhnMktUWjM0NXBibHkwT2tMMGxJMXVLRmVMSkswZHVz?=
+ =?utf-8?B?V1Rka3krU3EvMDd2VVJCZjBmVXgvc0UzcGFSeHdvVFlUT2owZHZiYjAzNTdo?=
+ =?utf-8?B?ZDFkVFFDWTkzV3FqT3VIa2svdHlHTmx6KzNkK2xGQXJkMkxVTXczdmJMcDQ4?=
+ =?utf-8?B?Mm1xOTNxUHZrMHFjL2xGR0kzZVhURjYxMnYxY0VTWHQ5VGdKYXhENVlCR0p6?=
+ =?utf-8?B?ZVpZYzllRnRpN2xFWFdWbzhaZzRtTElmWjVpeFE3UFhvOGo3enhLNFNlT1F3?=
+ =?utf-8?B?cDV5dEhFRzhxbithaFNQR2NzcFV4VjZwVWpqKzR4TWlJenZsd2l4eXpYbFlq?=
+ =?utf-8?B?QkFPaEcvZG5pYXV6cC90TVVwaGRsUDA5UXFHRzZnbjFLdVl1RnRuTU5DbnJa?=
+ =?utf-8?B?c3JLZlUxUklMNk1rN0hsa1llbjcrQmxDblAvemtZL3RCSU1makNTRGNkeDZR?=
+ =?utf-8?B?SlhIWDZzRDk4WnlhUlhwYS9IZ3g1T3ZkOUsxd3BHR2ViL01QYkZ6b0VLME92?=
+ =?utf-8?B?ZklraEhQbVdhMUVZdXpiN29DRVd2Y29aQWZ0RnJvUHJHZFFQMUxySXdyQitk?=
+ =?utf-8?B?aFNub0ZFeEY2MXlQRmVTZERFMmszWk14UEdFb3FKcnliVUpTaFdrRzUzdWZu?=
+ =?utf-8?B?djdnU1VpUm1CK1ZOTnh0cjFTQ1BwVWMwNnNKSEJpNnA0TENRZGN1TG1PZVNX?=
+ =?utf-8?B?dHV1QjUrV2VqcXJDRWRaZUxTa2tvMllIYW9BT2dZMitpSmw0c1NWcDZYMmZi?=
+ =?utf-8?B?ejd3cjY3bGtDdkhYODNsNCt4NUNzRENNaG01YVN2dTdrdmYzUDdtcm85NFVw?=
+ =?utf-8?B?cE9xVkY2ZEduTGcxam0wUTFFL3JBY1ZkRjZQdFR1NUVPMmptME00N1prU25i?=
+ =?utf-8?B?aTAxTFlPZk5MR2hSVmRrcndlM0ltTHg1STMxU01VMjZmeVBWSUp4L3RsWGNm?=
+ =?utf-8?B?ZVlmditQUmJHMFZTUWU3N2VSLy9tRWFZcEJPZWdTSXdBSWhVK21tYzhNTXMv?=
+ =?utf-8?B?VmxFSTl3N25UditFQVNwRG9vUGh5TzZKTGIxQWxwZmtPSERoWEpESVBUbk1p?=
+ =?utf-8?B?MEErYUdRWktKektCb0xBMlgrTmFoK21XeU56SklPbVYzMU03eEF0ZU5tWTBX?=
+ =?utf-8?B?UEJnbUxDdzZMcjAvSmhSOVJtK2RHWTF3UVdYRVpZNVY0anlVbzIrZmEzNDlE?=
+ =?utf-8?B?b212aUdQbkxVZkdXNjhwSS95MUxCSFVicWwwTkh3RUJtSGcwd0lQOFl6NHdm?=
+ =?utf-8?B?OVpIYldhTzRrZUUreXVpallwZ1BWUnBaVS8wN2hZOENWVFFISThNL3Yxem54?=
+ =?utf-8?B?ZmtURnZwK2lJeEE2ZFYyaTdPZjQwenAxRWtobmFsbXpyQVZtT3h6OE5GVWNt?=
+ =?utf-8?B?c3pDOXBSOHBoL3B0ME41VXFhM2FESmNTOXpJU0h5ckd5UVd2c1lTUDNyQkU5?=
+ =?utf-8?B?MWRBZ3JEMllmK2oxemUvQnFIOGZnTDdtQThocG9CeU53MEJUN0hBVVRtaGlm?=
+ =?utf-8?B?Y1FjcitxRWhTRlJhS0tZZEU1T21kY09hV2NTQ3hJSjFqbEk1aXJqYmR2aHhI?=
+ =?utf-8?B?MlhxN0xBTDI1Ukc2QytsdVNma0FneGpNcndvOVp1cFVZWmtEeEFudVVQenFK?=
+ =?utf-8?B?QW1lNllpQ2RqajBYQ2k3ZEtkQzhuaGJ0TUs5MHJXZitRMmtBNHY4cEcvM1M5?=
+ =?utf-8?B?SXJ6aXYvTnljYTZjVmpjdThOa3pLTDdlaThUUW96NDJka0Jua1lZSGVObSts?=
+ =?utf-8?B?QTVWempkaGxEN0FhYW5NWkpsV21uUkdoeW5zVFhYeDl2ZXh1VVphRVJOUHIv?=
+ =?utf-8?B?VmIwbzZ1MWs1UzBqbkpBM0xOT3AxSXk3VXpOZkZkVG1pVDROM3ZMVm1icXRH?=
+ =?utf-8?B?alNvMkFQOFRxT0J3N2M2L3ZtdEJUWmxSOVJVNDh0TzBmOWcyTllvYXkzbzhr?=
+ =?utf-8?B?dW4zRGxjclpvWUI2aHkrMDNxSzVLajJHT3g4U2NPYXVYQ1ptdTI3ZkhveVRW?=
+ =?utf-8?B?a0I0ZjY1UWVDVWdmbmVzUGZYT1RSaUQ0Q0VuWitQeW5QemdMN2RlNFlybkxN?=
+ =?utf-8?B?ZGtpTDF1VjRCeVNRNjhOYWYwVmVRPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <83C54C662CB94745BD3C6D6039AFAE18@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SA2PR11MB4874.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12ddad2a-d71f-45c7-fe0f-08d9f863df99
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Feb 2022 13:36:48.5717
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xE0szrfjo2rMgAonAHSCdYHff5XOjo8jbDFdVUoaZ0Eml0o3eCrnIX+yFpUQJklzbwelgTm/PFzjlGivyUnrv3qu8vUQPuxklJng+lxerpw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB4822
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/01/2022 03:46, Li-hao Kuo wrote:
-> Add thermal driver for Sunplus SP7021.
-
-Please give a detailed description of the sensor so we can refer to the 
-changelog to understand the code below.
-
-
-> Signed-off-by: Li-hao Kuo <lhjeff911@gmail.com>
-> ---
-> Changes in v4:
->   - Modify yaml file remove reg name and change nvmem name
-> 
->   MAINTAINERS                       |   6 ++
->   drivers/thermal/Kconfig           |  10 +++
->   drivers/thermal/Makefile          |   1 +
->   drivers/thermal/sunplus_thermal.c | 157 ++++++++++++++++++++++++++++++++++++++
->   4 files changed, 174 insertions(+)
->   create mode 100644 drivers/thermal/sunplus_thermal.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index dc4a137..e41b265 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -18423,6 +18423,12 @@ L:	netdev@vger.kernel.org
->   S:	Maintained
->   F:	drivers/net/ethernet/dlink/sundance.c
->   
-> +SUNPLUS THERMAL DRIVER
-> +M:	Li-hao Kuo <lhjeff911@gmail.com>
-> +L:	linux-pm@vger.kernel.org
-> +S:	Maintained
-> +F:	drivers/thermal/sunplus_thermal.c
-> +
->   SUPERH
->   M:	Yoshinori Sato <ysato@users.sourceforge.jp>
->   M:	Rich Felker <dalias@libc.org>
-> diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
-> index e37691e..98647c7 100644
-> --- a/drivers/thermal/Kconfig
-> +++ b/drivers/thermal/Kconfig
-> @@ -502,4 +502,14 @@ config KHADAS_MCU_FAN_THERMAL
->   	  If you say yes here you get support for the FAN controlled
->   	  by the Microcontroller found on the Khadas VIM boards.
->   
-> +config SUNPLUS_THERMAL
-> +	tristate "Sunplus thermal drivers"
-> +	depends on SOC_SP7021
-> +	help
-> +	  This the Sunplus SP7021 thermal driver, which supports the primitive
-> +	  temperature sensor embedded in Sunplus SP7021 SoC.
-> +
-> +	  If you have a Sunplus SP7021 platform say Y here and enable this option
-> +	  to have support for thermal management
-> +
->   endif
-> diff --git a/drivers/thermal/Makefile b/drivers/thermal/Makefile
-> index f0c36a1..2f7417a 100644
-> --- a/drivers/thermal/Makefile
-> +++ b/drivers/thermal/Makefile
-> @@ -61,3 +61,4 @@ obj-$(CONFIG_UNIPHIER_THERMAL)	+= uniphier_thermal.o
->   obj-$(CONFIG_AMLOGIC_THERMAL)     += amlogic_thermal.o
->   obj-$(CONFIG_SPRD_THERMAL)	+= sprd_thermal.o
->   obj-$(CONFIG_KHADAS_MCU_FAN_THERMAL)	+= khadas_mcu_fan.o
-> +obj-$(CONFIG_SUNPLUS_THERMAL)	+= sunplus_thermal.o
-> \ No newline at end of file
-> diff --git a/drivers/thermal/sunplus_thermal.c b/drivers/thermal/sunplus_thermal.c
-> new file mode 100644
-> index 0000000..460c41d
-> --- /dev/null
-> +++ b/drivers/thermal/sunplus_thermal.c
-> @@ -0,0 +1,157 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) Sunplus Inc.
-> + * Author: Li-hao Kuo <lhjeff911@gmail.com>
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/clk.h>
-> +#include <linux/cpufreq.h>
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
-> +#include <linux/module.h>
-> +#include <linux/nvmem-consumer.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/reset.h>
-> +#include <linux/rtc.h>
-> +#include <linux/thermal.h>
-
-
-Please check the headers above. Some are not necessary (eg cpufreq, 
-delay, rtc ...) AFAICT
-
-> +#define DISABLE_THREMAL		(BIT(31) | BIT(15))
-> +#define ENABLE_THREMAL		BIT(31)
-> +#define SP_THREMAL_MASK		GENMASK(10, 0)
-
-THREMAL ?
-
-s/THREMAL/THERMAL/ ?
-
-> +#define TEMP_RATE		608
-> +#define TEMP_BASE		3500
-> +#define TEMP_OTP_BASE		1518
-> +
-> +#define SP_THERMAL_CTL0_REG	0x0000
-> +#define SP_THERMAL_STS0_REG	0x0030
-> +
-> +/* common data structures */
-> +struct sp_thermal_data {
-> +	struct thermal_zone_device *pcb_tz;
-> +	struct platform_device *pdev;
-> +	enum thermal_device_mode mode;
-> +	long sensor_temp;
-> +	void __iomem *regs;
-> +	int otp_temp0;
-> +	int otp_temp1;
-> +	u32 id;
-> +};
-> +
-> +static char *sp7021_otp_coef_read(struct device *dev, ssize_t *len)
-> +{
-> +	char *ret = NULL;
-> +	struct nvmem_cell *c = nvmem_cell_get(dev, "calib");
-> +
-> +	if (IS_ERR_OR_NULL(c))
-> +		return NULL;
-> +
-> +	ret = nvmem_cell_read(c, len);
-> +	nvmem_cell_put(c);
-
-That is wrong. Please refer to the documentation driver-api/nvmem.rst
-
-nvmem_cell_put() must be called when the pointer returned by 
-nvmem_cell_read() is no longer used.
-
-
-> +	return ret;
-> +}
-> +
-> +static void sp7021_get_otp_temp_coef(struct sp_thermal_data *sp_data, struct device *_d)
-> +{
-> +	ssize_t otp_l = 0;
-> +	char *otp_v;
-> +
-> +	otp_v = sp7021_otp_coef_read(_d, &otp_l);
-> +	if (otp_l < 3)
-> +		return;
-> +	if (IS_ERR_OR_NULL(otp_v))
-> +		return;
-> +	sp_data->otp_temp0 = otp_v[0] | (otp_v[1] << 8);
-
-What do you expect by 8bits shifting a char here ?
-
-> +	sp_data->otp_temp0 = otp_v[0] | (otp_v[1] << 8);
-
-duplicate line
-
-> +	sp_data->otp_temp0 = FIELD_GET(SP_THREMAL_MASK, sp_data->otp_temp0);
-> +	sp_data->otp_temp1 = (otp_v[1] >> 3) | (otp_v[2] << 5);
-> +	sp_data->otp_temp1 = FIELD_GET(SP_THREMAL_MASK, sp_data->otp_temp1);
-> +	if (sp_data->otp_temp0 == 0)
-> +		sp_data->otp_temp0 = TEMP_OTP_BASE;
-
-Can you add a comment explaining how is stored the coef in the nvcell, 
-so we can understand the above actions ?
-
-
-> +}
-> +
-> +static int sp_thermal_get_sensor_temp(void *data, int *temp)
-> +{
-> +	struct sp_thermal_data *sp_data = data;
-> +	int t_code;
-> +
-> +	t_code = readl(sp_data->regs + SP_THERMAL_STS0_REG);
-> +	t_code = FIELD_GET(SP_THREMAL_MASK, t_code);
-> +	*temp = ((sp_data->otp_temp0 - t_code) * 10000 / TEMP_RATE) + TEMP_BASE;
-> +	*temp *= 10;
-
-A comment would be welcome here also
-
-> +	return 0;
-> +}
-> +
-> +static struct thermal_zone_of_device_ops sp_of_thermal_ops = {
-> +	.get_temp = sp_thermal_get_sensor_temp,
-> +};
-> +
-> +static int sp_thermal_register_sensor(struct platform_device *pdev, struct sp_thermal_data *data,
-> +				       int index)
-> +{
-> +	int ret;
-> +
-> +	data->id = index;
-> +	data->pcb_tz = devm_thermal_zone_of_sensor_register(&pdev->dev,
-> +					data->id, data, &sp_of_thermal_ops);
-> +	if (!IS_ERR_OR_NULL(data->pcb_tz))
-> +		return 0;
-> +	ret = PTR_ERR(data->pcb_tz);
-> +	data->pcb_tz = NULL;
-> +	return ret;
-
-Usually the logic is inverted
-
-	data->pcb_tz = devm_thermal_zone_of_sensor_register();
-	if (IS_ERR_OR_NULL(data->pcb_tz))
-		return PTR_ERR(data->pcb_tz);
-
-	return 0;
-
-No need to set pcb_tz to NULL
-
-> +}
-> +
-> +static int sp7021_thermal_probe(struct platform_device *pdev)
-> +{
-> +	struct sp_thermal_data *sp_data;
-> +	struct resource *res;
-> +	int ret;
-> +
-> +	sp_data = devm_kzalloc(&(pdev->dev), sizeof(*sp_data), GFP_KERNEL);
-> +	if (!sp_data)
-> +		return -ENOMEM;
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	if (IS_ERR(res))
-> +		return dev_err_probe(&(pdev->dev), PTR_ERR(res), "resource get fail\n");
-
-Use an intermediate 'dev' variable to shorten the line
-
-> +	sp_data->regs = devm_ioremap(&(pdev->dev), res->start, resource_size(res));
-> +	if (IS_ERR(sp_data->regs))
-> +		return dev_err_probe(&(pdev->dev), PTR_ERR(sp_data->regs), "mas_base get fail\n");
-
-typo: mas_base -> ioremap
-
-> +	writel(ENABLE_THREMAL, sp_data->regs + SP_THERMAL_CTL0_REG);
-> +
-> +	platform_set_drvdata(pdev, sp_data);
-> +	sp7021_get_otp_temp_coef(sp_data, &pdev->dev);
-> +	ret = sp_thermal_register_sensor(pdev, sp_data, 0);
-
-	return sp_thermal_register_sensor(...);
-> +
-
-> +	return ret;
-> +}
-> +
-> +static int sp7021_thermal_remove(struct platform_device *_pd)
-> +{
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id of_sp7021_thermal_ids[] = {
-> +	{ .compatible = "sunplus,sp7021-thermal" },
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(of, of_sp7021_thermal_ids);
-> +
-> +static struct platform_driver sp7021_thermal_driver = {
-> +	.probe	= sp7021_thermal_probe,
-> +	.remove	= sp7021_thermal_remove,
-> +	.driver	= {
-> +		.name	= "sp7021-thermal",
-> +		.of_match_table = of_match_ptr(of_sp7021_thermal_ids),
-> +		},
-> +};
-> +module_platform_driver(sp7021_thermal_driver);
-> +
-> +MODULE_AUTHOR("Li-hao Kuo <lhjeff911@gmail.com>");
-> +MODULE_DESCRIPTION("Thermal driver for SP7021 SoC");
-> +MODULE_LICENSE("GPL");
-
-
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+T24gMi8yNS8yMiAxNTozNSwgVHVkb3IgQW1iYXJ1cyB3cm90ZToNCj4gT24gMi8yMy8yMiAxNTo0
+MywgTWljaGFlbCBXYWxsZSB3cm90ZToNCj4+IEVYVEVSTkFMIEVNQUlMOiBEbyBub3QgY2xpY2sg
+bGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91IGtub3cgdGhlIGNvbnRlbnQgaXMg
+c2FmZQ0KPj4NCj4+IFRvIGF2b2lkIG5hbWUgY2xhc2hlcyB1bmlmeSBhbGwgdGhlIGZ1bmN0aW9u
+IGFuZCBzdGF0aWMgb2JqZWN0IG5hbWVzIGFuZA0KPj4gdXNlIG9uZSBvZiB0aGUgZm9sbG93aW5n
+IHByZWZpeGVzIHdoaWNoIHNob3VsZCBiZSBzdWZmaWNpZW50bHkgdW5pcXVlOg0KPj4gIC0gPHZl
+bmRvcj5fbm9yXw0KPj4gIC0gPGZsYXNoX2ZhbWlseT5fbm9yXw0KPj4gIC0gPGZsYXNoX3BhcnQ+
+Xw0KPj4NCj4+IFRoZXJlIGFyZSBubyBmdW5jdGlvbmFsIGNoYW5nZXMuDQo+Pg0KPj4gU2lnbmVk
+LW9mZi1ieTogTWljaGFlbCBXYWxsZSA8bWljaGFlbEB3YWxsZS5jYz4NCj4+IEFja2VkLWJ5OiBQ
+cmF0eXVzaCBZYWRhdiA8cC55YWRhdkB0aS5jb20+DQo+PiAtLS0NCj4+ICBkcml2ZXJzL210ZC9z
+cGktbm9yL21pY3Jvbi1zdC5jIHwgMzQgKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0t
+DQo+PiAgMSBmaWxlIGNoYW5nZWQsIDE3IGluc2VydGlvbnMoKyksIDE3IGRlbGV0aW9ucygtKQ0K
+Pj4NCj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL210ZC9zcGktbm9yL21pY3Jvbi1zdC5jIGIvZHJp
+dmVycy9tdGQvc3BpLW5vci9taWNyb24tc3QuYw0KPj4gaW5kZXggYmI5NWIxYWFiZjc0Li43YTY4
+ZjJhZDNlYTEgMTAwNjQ0DQo+PiAtLS0gYS9kcml2ZXJzL210ZC9zcGktbm9yL21pY3Jvbi1zdC5j
+DQo+PiArKysgYi9kcml2ZXJzL210ZC9zcGktbm9yL21pY3Jvbi1zdC5jDQo+PiBAQCAtMTcsNyAr
+MTcsNyBAQA0KPj4gICNkZWZpbmUgU1BJTk9SX01UX09DVF9EVFIgICAgICAweGU3ICAgIC8qIEVu
+YWJsZSBPY3RhbCBEVFIuICovDQo+PiAgI2RlZmluZSBTUElOT1JfTVRfRVhTUEkgICAgICAgICAg
+ICAgICAgMHhmZiAgICAvKiBFbmFibGUgRXh0ZW5kZWQgU1BJIChkZWZhdWx0KSAqLw0KPj4NCj4+
+IC1zdGF0aWMgaW50IHNwaV9ub3JfbWljcm9uX29jdGFsX2R0cl9lbmFibGUoc3RydWN0IHNwaV9u
+b3IgKm5vciwgYm9vbCBlbmFibGUpDQo+PiArc3RhdGljIGludCBtaWNyb25fc3Rfbm9yX29jdGFs
+X2R0cl9lbmFibGUoc3RydWN0IHNwaV9ub3IgKm5vciwgYm9vbCBlbmFibGUpDQo+PiAgew0KPj4g
+ICAgICAgICBzdHJ1Y3Qgc3BpX21lbV9vcCBvcDsNCj4+ICAgICAgICAgdTggKmJ1ZiA9IG5vci0+
+Ym91bmNlYnVmOw0KPj4gQEAgLTEwMiw3ICsxMDIsNyBAQCBzdGF0aWMgaW50IHNwaV9ub3JfbWlj
+cm9uX29jdGFsX2R0cl9lbmFibGUoc3RydWN0IHNwaV9ub3IgKm5vciwgYm9vbCBlbmFibGUpDQo+
+Pg0KPj4gIHN0YXRpYyB2b2lkIG10MzV4dTUxMmFiYV9kZWZhdWx0X2luaXQoc3RydWN0IHNwaV9u
+b3IgKm5vcikNCj4+ICB7DQo+PiAtICAgICAgIG5vci0+cGFyYW1zLT5vY3RhbF9kdHJfZW5hYmxl
+ID0gc3BpX25vcl9taWNyb25fb2N0YWxfZHRyX2VuYWJsZTsNCj4+ICsgICAgICAgbm9yLT5wYXJh
+bXMtPm9jdGFsX2R0cl9lbmFibGUgPSBtaWNyb25fc3Rfbm9yX29jdGFsX2R0cl9lbmFibGU7DQo+
+PiAgfQ0KPj4NCj4+ICBzdGF0aWMgdm9pZCBtdDM1eHU1MTJhYmFfcG9zdF9zZmRwX2ZpeHVwKHN0
+cnVjdCBzcGlfbm9yICpub3IpDQo+PiBAQCAtMTMwLDcgKzEzMCw3IEBAIHN0YXRpYyBjb25zdCBz
+dHJ1Y3Qgc3BpX25vcl9maXh1cHMgbXQzNXh1NTEyYWJhX2ZpeHVwcyA9IHsNCj4+ICAgICAgICAg
+LnBvc3Rfc2ZkcCA9IG10MzV4dTUxMmFiYV9wb3N0X3NmZHBfZml4dXAsDQo+PiAgfTsNCj4+DQo+
+PiAtc3RhdGljIGNvbnN0IHN0cnVjdCBmbGFzaF9pbmZvIG1pY3Jvbl9wYXJ0c1tdID0gew0KPj4g
+K3N0YXRpYyBjb25zdCBzdHJ1Y3QgZmxhc2hfaW5mbyBtaWNyb25fbm9yX3BhcnRzW10gPSB7DQo+
+PiAgICAgICAgIHsgIm10MzV4dTUxMmFiYSIsIElORk8oMHgyYzViMWEsIDAsIDEyOCAqIDEwMjQs
+IDUxMikNCj4+ICAgICAgICAgICAgICAgICBGTEFHUyhVU0VfRlNSKQ0KPj4gICAgICAgICAgICAg
+ICAgIE5PX1NGRFBfRkxBR1MoU0VDVF80SyB8IFNQSV9OT1JfT0NUQUxfUkVBRCB8DQo+PiBAQCAt
+MTQzLDcgKzE0Myw3IEBAIHN0YXRpYyBjb25zdCBzdHJ1Y3QgZmxhc2hfaW5mbyBtaWNyb25fcGFy
+dHNbXSA9IHsNCj4+ICAgICAgICAgICAgICAgICBGSVhVUF9GTEFHUyhTUElfTk9SXzRCX09QQ09E
+RVMpIH0sDQo+PiAgfTsNCj4+DQo+PiAtc3RhdGljIGNvbnN0IHN0cnVjdCBmbGFzaF9pbmZvIHN0
+X3BhcnRzW10gPSB7DQo+PiArc3RhdGljIGNvbnN0IHN0cnVjdCBmbGFzaF9pbmZvIHN0X25vcl9w
+YXJ0c1tdID0gew0KPj4gICAgICAgICB7ICJuMjVxMDE2YSIsICAgIElORk8oMHgyMGJiMTUsIDAs
+IDY0ICogMTAyNCwgICAzMikNCj4+ICAgICAgICAgICAgICAgICBOT19TRkRQX0ZMQUdTKFNFQ1Rf
+NEsgfCBTUElfTk9SX1FVQURfUkVBRCkgfSwNCj4+ICAgICAgICAgeyAibjI1cTAzMiIsICAgICBJ
+TkZPKDB4MjBiYTE2LCAwLCA2NCAqIDEwMjQsICAgNjQpDQo+PiBAQCAtMjUwLDE1ICsyNTAsMTUg
+QEAgc3RhdGljIGNvbnN0IHN0cnVjdCBmbGFzaF9pbmZvIHN0X3BhcnRzW10gPSB7DQo+PiAgfTsN
+Cj4+DQo+PiAgLyoqDQo+PiAtICogc3RfbWljcm9uX3NldF80Ynl0ZV9hZGRyX21vZGUoKSAtIFNl
+dCA0LWJ5dGUgYWRkcmVzcyBtb2RlIGZvciBTVCBhbmQgTWljcm9uDQo+PiAtICogZmxhc2hlcy4N
+Cj4+ICsgKiBtaWNyb25fc3Rfbm9yX3NldF80Ynl0ZV9hZGRyX21vZGUoKSAtIFNldCA0LWJ5dGUg
+YWRkcmVzcyBtb2RlIGZvciBTVCBhbmQNCj4+ICsgKiBNaWNyb24gZmxhc2hlcy4NCj4+ICAgKiBA
+bm9yOiAgICAgICBwb2ludGVyIHRvICdzdHJ1Y3Qgc3BpX25vcicuDQo+PiAgICogQGVuYWJsZTog
+ICAgdHJ1ZSB0byBlbnRlciB0aGUgNC1ieXRlIGFkZHJlc3MgbW9kZSwgZmFsc2UgdG8gZXhpdCB0
+aGUgNC1ieXRlDQo+PiAgICogICAgICAgICAgICAgYWRkcmVzcyBtb2RlLg0KPj4gICAqDQo+PiAg
+ICogUmV0dXJuOiAwIG9uIHN1Y2Nlc3MsIC1lcnJubyBvdGhlcndpc2UuDQo+PiAgICovDQo+PiAt
+c3RhdGljIGludCBzdF9taWNyb25fc2V0XzRieXRlX2FkZHJfbW9kZShzdHJ1Y3Qgc3BpX25vciAq
+bm9yLCBib29sIGVuYWJsZSkNCj4+ICtzdGF0aWMgaW50IG1pY3Jvbl9zdF9ub3Jfc2V0XzRieXRl
+X2FkZHJfbW9kZShzdHJ1Y3Qgc3BpX25vciAqbm9yLCBib29sIGVuYWJsZSkNCj4+ICB7DQo+PiAg
+ICAgICAgIGludCByZXQ7DQo+Pg0KPj4gQEAgLTI3MywyOCArMjczLDI4IEBAIHN0YXRpYyBpbnQg
+c3RfbWljcm9uX3NldF80Ynl0ZV9hZGRyX21vZGUoc3RydWN0IHNwaV9ub3IgKm5vciwgYm9vbCBl
+bmFibGUpDQo+PiAgICAgICAgIHJldHVybiBzcGlfbm9yX3dyaXRlX2Rpc2FibGUobm9yKTsNCj4+
+ICB9DQo+Pg0KPj4gLXN0YXRpYyB2b2lkIG1pY3Jvbl9zdF9kZWZhdWx0X2luaXQoc3RydWN0IHNw
+aV9ub3IgKm5vcikNCj4+ICtzdGF0aWMgdm9pZCBtaWNyb25fc3Rfbm9yX2RlZmF1bHRfaW5pdChz
+dHJ1Y3Qgc3BpX25vciAqbm9yKQ0KPj4gIHsNCj4+ICAgICAgICAgbm9yLT5mbGFncyB8PSBTTk9S
+X0ZfSEFTX0xPQ0s7DQo+PiAgICAgICAgIG5vci0+ZmxhZ3MgJj0gflNOT1JfRl9IQVNfMTZCSVRf
+U1I7DQo+PiAgICAgICAgIG5vci0+cGFyYW1zLT5xdWFkX2VuYWJsZSA9IE5VTEw7DQo+PiAtICAg
+ICAgIG5vci0+cGFyYW1zLT5zZXRfNGJ5dGVfYWRkcl9tb2RlID0gc3RfbWljcm9uX3NldF80Ynl0
+ZV9hZGRyX21vZGU7DQo+PiArICAgICAgIG5vci0+cGFyYW1zLT5zZXRfNGJ5dGVfYWRkcl9tb2Rl
+ID0gbWljcm9uX3N0X25vcl9zZXRfNGJ5dGVfYWRkcl9tb2RlOw0KPj4gIH0NCj4+DQo+PiAtc3Rh
+dGljIGNvbnN0IHN0cnVjdCBzcGlfbm9yX2ZpeHVwcyBtaWNyb25fc3RfZml4dXBzID0gew0KPj4g
+LSAgICAgICAuZGVmYXVsdF9pbml0ID0gbWljcm9uX3N0X2RlZmF1bHRfaW5pdCwNCj4+ICtzdGF0
+aWMgY29uc3Qgc3RydWN0IHNwaV9ub3JfZml4dXBzIG1pY3Jvbl9zdF9ub3JfZml4dXBzID0gew0K
+Pj4gKyAgICAgICAuZGVmYXVsdF9pbml0ID0gbWljcm9uX3N0X25vcl9kZWZhdWx0X2luaXQsDQo+
+PiAgfTsNCj4+DQo+PiAgY29uc3Qgc3RydWN0IHNwaV9ub3JfbWFudWZhY3R1cmVyIHNwaV9ub3Jf
+bWljcm9uID0gew0KPj4gICAgICAgICAubmFtZSA9ICJtaWNyb24iLA0KPj4gLSAgICAgICAucGFy
+dHMgPSBtaWNyb25fcGFydHMsDQo+PiAtICAgICAgIC5ucGFydHMgPSBBUlJBWV9TSVpFKG1pY3Jv
+bl9wYXJ0cyksDQo+PiAtICAgICAgIC5maXh1cHMgPSAmbWljcm9uX3N0X2ZpeHVwcywNCj4+ICsg
+ICAgICAgLnBhcnRzID0gbWljcm9uX25vcl9wYXJ0cywNCj4+ICsgICAgICAgLm5wYXJ0cyA9IEFS
+UkFZX1NJWkUobWljcm9uX25vcl9wYXJ0cyksDQo+PiArICAgICAgIC5maXh1cHMgPSAmbWljcm9u
+X3N0X25vcl9maXh1cHMsDQo+PiAgfTsNCj4+DQo+PiAgY29uc3Qgc3RydWN0IHNwaV9ub3JfbWFu
+dWZhY3R1cmVyIHNwaV9ub3Jfc3QgPSB7DQo+PiAgICAgICAgIC5uYW1lID0gInN0IiwNCj4+IC0g
+ICAgICAgLnBhcnRzID0gc3RfcGFydHMsDQo+PiAtICAgICAgIC5ucGFydHMgPSBBUlJBWV9TSVpF
+KHN0X3BhcnRzKSwNCj4+IC0gICAgICAgLmZpeHVwcyA9ICZtaWNyb25fc3RfZml4dXBzLA0KPj4g
+KyAgICAgICAucGFydHMgPSBzdF9ub3JfcGFydHMsDQo+IA0KPiB5b3UgaGF2ZSBzdF9ub3IgaGVy
+ZQ0KPiANCj4+ICsgICAgICAgLm5wYXJ0cyA9IEFSUkFZX1NJWkUoc3Rfbm9yX3BhcnRzKSwNCj4+
+ICsgICAgICAgLmZpeHVwcyA9ICZtaWNyb25fc3Rfbm9yX2ZpeHVwcywNCj4gDQo+IGFuZCBoZXJl
+IG1pY3Jvbl9zdCwgaXQgY29uZnVzZXMgbWUuDQoNCk9oLCBpdCdzIGJlY2F1c2UgbWljcm9uX3N0
+X25vcl9maXh1cHMgaXMgdXNlZCBieSBib3RoIG1pY3JvbiBhbmQgc3QNCnBhcnRzLiBMZXQgbWUg
+cmV2aXNpdC4NCg0KPiANCj4gQW55IGlkZWEgd2hlbiBzaG91bGQgd2UgdXNlIGp1c3Qgc3QsIG9y
+IGp1c3QgbWljcm9uIG9yIG1pY3Jvbl9zdD8NCj4gDQoNCg0KDQo=
