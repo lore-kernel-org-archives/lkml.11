@@ -2,111 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64AA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF86C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:03:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231866AbiBYSCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 13:02:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54510 "EHLO
+        id S232033AbiBYSEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 13:04:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231755AbiBYSCS (ORCPT
+        with ESMTP id S231883AbiBYSEC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 13:02:18 -0500
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F5825F35C
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:01:43 -0800 (PST)
-Received: by mail-il1-x133.google.com with SMTP id z7so4904948ilb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:01:43 -0800 (PST)
+        Fri, 25 Feb 2022 13:04:02 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B092272E6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:03:29 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id d3so5726408wrf.1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:03:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jmPNe5w2igTeTdG9i+t0C+LJ8u5o2P/TYchcIcjneOM=;
-        b=UAtesJgznmZkD5fCGtm7cVlSmUmJT0RNZpejtSXRc54OGmXFBgYOWb/Wup7KhHpZKC
-         6KWhHF8W1G1Ar4MY86dZ37zqxQGpS7toDNK1lTeVdbPXk6nEldKmki8uV/GjOhMvxQXK
-         Iv7jJ7uL0UjIyqHbsp9eAtA8Hy4HY5ToJCNJo=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=myxelBqy30bTcJ8ZX5UhYCHIKBHFqSW0CcEE1Z58khk=;
+        b=jOi89ia8H2rFcP3T7+wURDQtxvvySEXht1DO13PIwFY9RJIC/QiSqLOm1dtVkdAyaf
+         AbYh/oSAOyApE9Q1Kn/SpPICp4CNncqYnBYGAUyAGspr1g1GvGGFqLdM7rgD91v4+oxu
+         PWhLDigQFqAdiLhHI/JPrvGC+Rv/YYNnLlA2yzJVwr5dfMs7NQkqFay3wPrgTRyqGr0y
+         RosJil9OVqTiq+9ABreNkg2ZbxVtQefuRQwZhgN+VwviRBOoLfunc9ocRyUzinV0JAqi
+         VyCJrUSUMQH+F3MGkSN1QVb2Czn2J3jI73XkYiBHEI5aCts8fyqgVSGdE5ov+B7vV6UQ
+         Q+RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=jmPNe5w2igTeTdG9i+t0C+LJ8u5o2P/TYchcIcjneOM=;
-        b=zT6OB+Nplj3br8PQKtuuQefSCb6QrNJL6Xn9+jsnUCdvmqrjBiRK46PZDLgcOnoel3
-         BC89Okhie6hOT4pWn1VzzSGN83mCc0nkOoojgSe76qBYR262oTKqgLFuSOzWyRWo79ez
-         C61/KAlFDviFzGGlVobJfAROjbv83paaIBaUOlLeCi7KIgS9xXYwUxAWKn2TgVm2zS3N
-         idra5ecdlis3slfeY3RtS4ntn0jWdHajbVygj18OI04xrL1B7CIIOX2Al649qQiC8qCZ
-         UYsab3Zx5zeilWHAmjXpX3bij61gVb+UkzxVPOIYyeyWFAvcZ7ePy9iAgivALi9MBHW6
-         xd3g==
-X-Gm-Message-State: AOAM530HrKK4MsfpbMSqowZF4TaJpU1sm4pGEkNftwmcnfva1g394Ij2
-        uBR4ZV2kDbeLLlNoYK/mWQcS6g==
-X-Google-Smtp-Source: ABdhPJyeoCYCoIZbD+oRa0e576ynpqdPVl3oq4IN0xpZ37BARybE4JvNHHYpQXh+IBx1zozXaExyNA==
-X-Received: by 2002:a05:6e02:178b:b0:2c2:81f5:3cbb with SMTP id y11-20020a056e02178b00b002c281f53cbbmr7469031ilu.296.1645812102498;
-        Fri, 25 Feb 2022 10:01:42 -0800 (PST)
-Received: from [192.168.1.128] ([71.205.29.0])
-        by smtp.gmail.com with ESMTPSA id a2-20020a056e02120200b002c21a18437csm1932389ilq.40.2022.02.25.10.01.41
+        bh=myxelBqy30bTcJ8ZX5UhYCHIKBHFqSW0CcEE1Z58khk=;
+        b=qRyzbXzUVKBxP3dLVNB4qmzKOHMJW33g8oEmLKYazbwonES9Rb9FI+vsCOCostJM9x
+         KE2tLpxpEzjeEtNC3go+YuVnV/QlurPX70y0aYgyAVq2gjlRRSfWGKBrkQGaGFg2eTYH
+         mJQPku50VzPaUvAQI3tIYVhLeFYj+321p9Gtm5VKYfNbUtlYDph2WR8T8nKOqxzTOaf0
+         U4uqfzFAVglJNln4deQumz6PanDhyT95GEiy1J1qQY/n//Fv1ZmEwPW0bPs2zyIHuiG4
+         kbObrKyt6e5huBMCiv1dgjfuPMhlxEEUUK0FRd1FbLb1uBs/qrS3afL0rwbOvgLbn+Eo
+         +GVw==
+X-Gm-Message-State: AOAM533ZPTPSgN3HlMSmi3LvgXRmJdmuy7gnKhtYXkzJDk+RhHYFtwmA
+        kMx6NFODie+Qs5eumlhTbOXZWA==
+X-Google-Smtp-Source: ABdhPJxjMNMdYhsq1gDFcmAYq8MGRlkuy47ls/d6GXdHncZa9U6DNBLuj8UsSq1feDuCyGWhxSUoJg==
+X-Received: by 2002:a5d:5245:0:b0:1ed:9eca:cf3d with SMTP id k5-20020a5d5245000000b001ed9ecacf3dmr6811167wrc.666.1645812207584;
+        Fri, 25 Feb 2022 10:03:27 -0800 (PST)
+Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.googlemail.com with ESMTPSA id s3-20020adfbc03000000b001e4b0e4a7fdsm2918057wrg.93.2022.02.25.10.03.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Feb 2022 10:01:42 -0800 (PST)
-Subject: Re: [PATCH V2] selftests: Fix build when $(O) points to a relative
- path
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     kernel@collabora.com, kernelci@groups.io,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220216223817.1386745-1-usama.anjum@collabora.com>
- <46489cd9-fb7a-5a4b-7f36-1c9f6566bd93@collabora.com>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <63870982-62ba-97f2-5ee2-d4457a7a5cdb@linuxfoundation.org>
-Date:   Fri, 25 Feb 2022 11:01:41 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Fri, 25 Feb 2022 10:03:26 -0800 (PST)
+Message-ID: <4811be6f-7e86-2a62-94cf-98504d5e64e7@linaro.org>
+Date:   Fri, 25 Feb 2022 18:03:25 +0000
 MIME-Version: 1.0
-In-Reply-To: <46489cd9-fb7a-5a4b-7f36-1c9f6566bd93@collabora.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] soundwire: qcom: remove redundant wait for completion
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, robh+dt@kernel.org, quic_plai@quicinc.com,
+        bgoswami@codeaurora.org, perex@perex.cz, tiwai@suse.com,
+        rohitkr@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        judyhsiao@chromium.org, yung-chuan.liao@linux.intel.com,
+        sanyog.r.kale@intel.com
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <1645800257-27025-1-git-send-email-quic_srivasam@quicinc.com>
+ <a99a59eb-cd59-f566-b98d-486c94f32eec@linaro.org>
+ <06650d56-eed3-73ad-d6b4-6b56a5a70669@linux.intel.com>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+In-Reply-To: <06650d56-eed3-73ad-d6b4-6b56a5a70669@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/25/22 10:22 AM, Muhammad Usama Anjum wrote:
-> Any thoughts about it?
+
+
+On 25/02/2022 15:43, Pierre-Louis Bossart wrote:
 > 
-
-No to post please.
-
-> On 2/17/22 3:38 AM, Muhammad Usama Anjum wrote:
->> Build of bpf and tc-testing selftests fails when the relative path of
->> the build directory is specified.
+> 
+> On 2/25/22 08:45, Srinivas Kandagatla wrote:
 >>
->> make -C tools/testing/selftests O=build0
->> make[1]: Entering directory '/linux_mainline/tools/testing/selftests/bpf'
->> ../../../scripts/Makefile.include:4: *** O=build0 does not exist.  Stop.
->> make[1]: Entering directory '/linux_mainline/tools/testing/selftests/tc-testing'
->> ../../../scripts/Makefile.include:4: *** O=build0 does not exist.  Stop.
 >>
->> Makefiles of bpf and tc-testing include scripts/Makefile.include file.
->> This file has sanity checking inside it which checks the output path.
->> The output path is not relative to the bpf or tc-testing. The sanity
->> check fails. Expand the output path to get rid of this error. The fix is
->> the same as mentioned in commit 150a27328b68 ("bpf, preload: Fix build
->> when $(O) points to a relative path").
+>> On 25/02/2022 14:44, Srinivasa Rao Mandadapu wrote:
+>>> Remove wait_for_completion_timeout from soundwire probe as it seems
+>>> unnecessary and device enumeration is anyway not happening here,
+>>> hence this api is blocking till it completes max wait time.
+>>> Also, as device enumeration event is dependent on wcd938x probe to be
+>>> completed, its of no use waiting here.
+>>> Waiting here increasing the boot time almost 4 seconds and impacting
+>>> other modules like touch screen.
+>>>
+>>> Fixes: 06dd96738d618 ("soundwire: qcom: wait for enumeration to be
+>>> complete in probe")
+>>>
+>>> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+>>> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+>>> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
 >>
->> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->> ---
->> Changes in V2:
->> Add more explaination to the commit message.
->> Support make install as well.
+>> LGTM,
+>>
+>> Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> 
+> I don't get the idea, sorry.
+> 
+> If you look at the code, these are the cases where this 'struct
+> completion' is used
+> 
+> 	struct completion enumeration;
+> 	complete(&ctrl->enumeration);
+> 	/* Enable Auto enumeration */
+> 	init_completion(&ctrl->enumeration);
+> 	wait_for_completion_timeout(&ctrl->enumeration,
+> 
+> 
+> so if you remove the wait_for_completeion, then you might just as well
+> remove the whole thing and revert 06dd96738d618
+> 
+> what am I missing?
+Yes, that makes more sense to revert it, as it is the only user of this 
+completion.
+We could add it back when we really need this again in pm runtime setup 
+if required.
 
-Looks god to me. I can pull this in for Linux 5.18-rc1
-
-thanks,
--- Shuah
+--srini
+> 
+> 
+>>> ---
+>>>    drivers/soundwire/qcom.c | 2 --
+>>>    1 file changed, 2 deletions(-)
+>>>
+>>> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+>>> index 5481341..9a32a24 100644
+>>> --- a/drivers/soundwire/qcom.c
+>>> +++ b/drivers/soundwire/qcom.c
+>>> @@ -1309,8 +1309,6 @@ static int qcom_swrm_probe(struct
+>>> platform_device *pdev)
+>>>        }
+>>>          qcom_swrm_init(ctrl);
+>>> -    wait_for_completion_timeout(&ctrl->enumeration,
+>>> -                    msecs_to_jiffies(TIMEOUT_MS));
+>>>        ret = qcom_swrm_register_dais(ctrl);
+>>>        if (ret)
+>>>            goto err_master_add;
