@@ -2,98 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6618C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CEBBC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238528AbiBYIbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 03:31:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
+        id S238540AbiBYIbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 03:31:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238511AbiBYIbE (ORCPT
+        with ESMTP id S238511AbiBYIbU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 03:31:04 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CE924CCCA;
-        Fri, 25 Feb 2022 00:30:32 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id w37so4024132pga.7;
-        Fri, 25 Feb 2022 00:30:32 -0800 (PST)
+        Fri, 25 Feb 2022 03:31:20 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED6EB23A18E
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 00:30:48 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id cp23-20020a17090afb9700b001bbfe0fbe94so4190749pjb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 00:30:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=08dZnPcbcEjsLsixEKzvBr6t5PDEzmVzsuJpexpNdVM=;
-        b=T7B/Sav0v4MFvOOdwjzlV51pmJ00ntJj+hYf7wwrfzx+ybuR+/UaDuLgiVWSiOIBZd
-         uTC70KX6L4pbRS3/vyh09c2GHIrG/mtSvpDnBZD9xc69RHFQOrjmFwY7TGmpetqFgGOA
-         I8Yy20M78T0HOfkpGoJDFhUW118qDcpRmb7PZA/fNRsvqaNxX7noBteJYDob7eOFmTtQ
-         yW/yBDVBydi4vZsDFSaPyizKoJtEn40vLsN0q31D6dNmKYVuAu4zw0ZAPUyS9HBSJyA7
-         MltI/y9onP+7e2kLxb/5M/45H0J9K47nqfLqx3bbqHzNax5w26rG1xsmSnl1UoFGqUVM
-         b3qg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=umjNYNhgnIxE5VvC0JbQD7toURbbqbp0XwksnmHUrBk=;
+        b=u8zHs+9LnkJgCALSy6ds+Yd6X2VPqHpIFdGf8+KEnCsbZxxg2Pymyp5hP6OrRP4WnA
+         K4deMddtit22sYeHlSZsYTLsc6QhVn3KQFZYaI/lkgwvtqe4Xs3f1VvYcYSxwSVlY2yz
+         sNepcUDim4t4wyRz/RSc4jRwLnIYnRW1LtlU66tMq5LdVOJF/GagbDlpqTpYSMSSXADR
+         rmzMKGf+ZeT8iKCoAiHggyfwAtXtHVFdQsy7D0mq4YNyRCR2FWChuN1SR92GWnDDYEL5
+         WVG9lheJII5ZkK3uVN/W/9pvHVK+OyaBzEhp8Khn4v/jHWDbUFmYdCpn3AVclfrD9XKC
+         Q7Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=08dZnPcbcEjsLsixEKzvBr6t5PDEzmVzsuJpexpNdVM=;
-        b=itolMYfVk4+8++1L4bDMRrCEc2QvtXkqTqmk8wVgxXnSgY1C748i+z1SzJsXnPo2oW
-         IzdBxeb7Vazd5zcHNXeHzOsf5L6/qfqb/zPH42NT/nQTDVI4X04KPZH8Teps5EpLKAU+
-         AXDMvRmKC+ZMJoklaIIWz1rjgRUwD87cVxm1XXsNG/Rg441S+IhVmuhpcVz+hcTig/xx
-         vf+OfpJ5vDvsgDF1Q4QNT4s3acX4PH4TjcQrVwvchOPOljyKvITUvrxLlH8ufksEPWmT
-         8WaHCAXermpdePpek0++NehcRPZU97KoG4o3lO7hl27HOYRBfyrmJ1ksuFXw+1NiUmoP
-         GvuA==
-X-Gm-Message-State: AOAM530eZs7CGbEj5gUblkPrs9Lew3B0yKjR99u+SREjeR9ZJ8iq1Nqx
-        AsY255uxb2KsV03CDhO+sLIkwPCy6ew=
-X-Google-Smtp-Source: ABdhPJyz1uwmHJ/MQKkVuXJ9x5qn3LF0V/es/hM4FXOSm0nn1OsOW8SHF0cbvXLEXgHt2sog5I4qzw==
-X-Received: by 2002:a63:4405:0:b0:376:a781:c9da with SMTP id r5-20020a634405000000b00376a781c9damr1981235pga.40.1645777831340;
-        Fri, 25 Feb 2022 00:30:31 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.118])
-        by smtp.googlemail.com with ESMTPSA id j2-20020a655582000000b00372b2b5467asm1870851pgs.10.2022.02.25.00.30.28
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 25 Feb 2022 00:30:30 -0800 (PST)
-From:   Wanpeng Li <kernellwp@gmail.com>
-X-Google-Original-From: Wanpeng Li <wanpengli@tencent.com>
-To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] x86/kvm: Don't use PV TLB/yield when mwait is advertised
-Date:   Fri, 25 Feb 2022 00:29:40 -0800
-Message-Id: <1645777780-2581-1-git-send-email-wanpengli@tencent.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=umjNYNhgnIxE5VvC0JbQD7toURbbqbp0XwksnmHUrBk=;
+        b=ykS2kPMcpGxE+orgBH/Yb/qe3FSgEGN86jsPouPk3RBKz6fvVysfW4AgJYr0QCOnJs
+         eGw3gt9C2Q08U4pywXcsmGC3o3BPGMvc5MaJYVAFBBbEfIRCdpmVm82e5VLVbV4RH5kX
+         cAt205ySS51sSEm4QSUSQQqulJk+/+/XXkl9AR7x+DuCzPyDmcbv6cVLJ1VKv9D3PPeL
+         S0/LTasikfc/YyggF6MOcrePxeugM0STiQX1+2gIddFpL673Mb0uB1wzr2edCKi6zP9j
+         +Pxv1vIhVH0DREApEb5rbADuAPkqDV58P4C9YSt8QFA6Y1aeV50TYCdG8SZDeshma6Y3
+         nw8w==
+X-Gm-Message-State: AOAM531XneV4tRS9Pg84xJQT7lcDA8hLipPmLMD0dWgCzQWm1iaWP+qq
+        IADRu9bI5AO+dWp2EVKO7+pfKA==
+X-Google-Smtp-Source: ABdhPJw0uLU4lqngX7/k9zLZXpp650nEStictQd4H3d3J4CHpNkXYKfPxxAYJ70h3fuhgk3W3eB0IQ==
+X-Received: by 2002:a17:90a:c296:b0:1bc:7a6e:623b with SMTP id f22-20020a17090ac29600b001bc7a6e623bmr2135245pjt.68.1645777848494;
+        Fri, 25 Feb 2022 00:30:48 -0800 (PST)
+Received: from dragon (80.251.214.228.16clouds.com. [80.251.214.228])
+        by smtp.gmail.com with ESMTPSA id c18-20020a056a000ad200b004cdccd3da08sm2142663pfl.44.2022.02.25.00.30.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 00:30:47 -0800 (PST)
+Date:   Fri, 25 Feb 2022 16:30:42 +0800
+From:   Shawn Guo <shawn.guo@linaro.org>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] cpuidle: psci: Iterate backwards over list in
+ psci_pd_remove()
+Message-ID: <20220225083042.GC269879@dragon>
+References: <20220225082420.450620-1-shawn.guo@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220225082420.450620-1-shawn.guo@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+On Fri, Feb 25, 2022 at 04:24:20PM +0800, Shawn Guo wrote:
+> In case that psci_pd_init_topology() fails for some reason,
+> psci_pd_remove() will be responsible for deleting provider and removing
+> genpd from psci_pd_providers list.  There will be a failure when removing
+> the cluster PD, because the cpu (child) PDs haven't been removed.
+> 
+> [    0.050232] CPUidle PSCI: init PM domain cpu0
+> [    0.050278] CPUidle PSCI: init PM domain cpu1
+> [    0.050329] CPUidle PSCI: init PM domain cpu2
+> [    0.050370] CPUidle PSCI: init PM domain cpu3
+> [    0.050422] CPUidle PSCI: init PM domain cpu-cluster0
+> [    0.050475] PM: genpd_remove: unable to remove cpu-cluster0
+> [    0.051412] PM: genpd_remove: removed cpu3
+> [    0.051449] PM: genpd_remove: removed cpu2
+> [    0.051499] PM: genpd_remove: removed cpu1
+> [    0.051546] PM: genpd_remove: removed cpu0
+> 
+> Fix the problem by iterating the provider list in a reversely order, so
 
-MWAIT is advertised in host is not overcommitted scenario, however, PV
-TLB/sched yield should be enabled in host overcommitted scenario. Let's 
-add the MWAIT checking when enabling PV TLB/sched yield.
+s/reversely/reversed
 
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
----
- arch/x86/kernel/kvm.c | 2 ++
- 1 file changed, 2 insertions(+)
+> that parent PD gets removed before child's PDs.
 
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index f734e3b0cfec..491e1d9ca750 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -463,6 +463,7 @@ static bool pv_tlb_flush_supported(void)
- 	return (kvm_para_has_feature(KVM_FEATURE_PV_TLB_FLUSH) &&
- 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
- 		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-+		!boot_cpu_has(X86_FEATURE_MWAIT) &&
- 		(num_possible_cpus() != 1));
- }
- 
-@@ -477,6 +478,7 @@ static bool pv_sched_yield_supported(void)
- 	return (kvm_para_has_feature(KVM_FEATURE_PV_SCHED_YIELD) &&
- 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
- 	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-+	    !boot_cpu_has(X86_FEATURE_MWAIT) &&
- 	    (num_possible_cpus() != 1));
- }
- 
--- 
-2.25.1
+s/before/after
 
+Essentially, with this change, the PM domains will be removed in the same
+order how they were added.
+
+[    0.029052] CPUidle PSCI: init PM domain cpu0
+[    0.029076] CPUidle PSCI: init PM domain cpu1
+[    0.029103] CPUidle PSCI: init PM domain cpu2
+[    0.029124] CPUidle PSCI: init PM domain cpu3
+[    0.029151] CPUidle PSCI: init PM domain cpu-cluster0
+[    0.029647] PM: genpd_remove: removed cpu0
+[    0.029666] PM: genpd_remove: removed cpu1
+[    0.029690] PM: genpd_remove: removed cpu2
+[    0.029714] PM: genpd_remove: removed cpu3
+[    0.029738] PM: genpd_remove: removed cpu-cluster0
+
+Shawn
+
+> 
+> Signed-off-by: Shawn Guo <shawn.guo@linaro.org>
+> ---
+>  drivers/cpuidle/cpuidle-psci-domain.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/cpuidle/cpuidle-psci-domain.c b/drivers/cpuidle/cpuidle-psci-domain.c
+> index ff2c3f8e4668..ce5c415fb04d 100644
+> --- a/drivers/cpuidle/cpuidle-psci-domain.c
+> +++ b/drivers/cpuidle/cpuidle-psci-domain.c
+> @@ -182,7 +182,8 @@ static void psci_pd_remove(void)
+>  	struct psci_pd_provider *pd_provider, *it;
+>  	struct generic_pm_domain *genpd;
+>  
+> -	list_for_each_entry_safe(pd_provider, it, &psci_pd_providers, link) {
+> +	list_for_each_entry_safe_reverse(pd_provider, it,
+> +					 &psci_pd_providers, link) {
+>  		of_genpd_del_provider(pd_provider->node);
+>  
+>  		genpd = of_genpd_remove_last(pd_provider->node);
+> -- 
+> 2.25.1
+> 
