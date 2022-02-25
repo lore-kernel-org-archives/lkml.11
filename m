@@ -2,148 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C099C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D75C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238455AbiBYIQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 03:16:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43090 "EHLO
+        id S238130AbiBYIVg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 03:21:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237887AbiBYIQi (ORCPT
+        with ESMTP id S232624AbiBYIVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 03:16:38 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2C31E521D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 00:16:02 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id p9so3185567wra.12
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 00:16:02 -0800 (PST)
+        Fri, 25 Feb 2022 03:21:34 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C67198EC0;
+        Fri, 25 Feb 2022 00:21:02 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id d14-20020a05600c34ce00b0037bf4d14dc7so1192162wmq.3;
+        Fri, 25 Feb 2022 00:21:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=Oosgf26C3cGHE1QmDHmqfOUEe/LnMdne4rGI4/p7qq4=;
-        b=YoadWNid8jrZuAzwwdpw8uG9NG0tyExSz3wtZMAC9oPbW+TF/itAlD+mBY7HWhXpKq
-         DmeLW3lwfIse5GB2zEHUcCcCPU0Rg3Xu3PRnkigkzFI4BA5nWpyI25WibbFVZ4acbEls
-         CaYPblLYAAl7pfme5JpVS581S0xl8UvivnlRxcjnzEXWiRRktAtEw9CHxsnGeGnHLJLw
-         e+HyTwqv0uFkA9NXiD1HQzyYiwonSIqilYm7iYItx36ESZP+Ou2XQOkuzsDOWYsor7JG
-         AO76dheLPSufcWwVUS1D1MgUwRqqlioGp2bYL40gCXfMiFR/Cbisivx9G9/LdMpi41rh
-         HITw==
+        h=from:to:cc:subject:date:message-id;
+        bh=HO8XR/q/XXFglD4ptxAjKzojMwexSnxCmnFzN0IXmkQ=;
+        b=IAhc8gto9pONZF0zXNdlgCXEqxQ2YUD4KFCQyb//gTXY8jnAQ7xRHzVtq9ionJlat3
+         yYBvKCljC8e8o9S/J9ydWquo5E3fi0aGrZUppqNjTYyqwm+61By7luBP+F3biFAuoBWh
+         ul2IVdVIeYSzkSvPmP4varv2Rwho5asT0S9Fqk97eXk+76ZoULC+c96Longzy9xE9V3S
+         MJo4TK1kmB4vQ98Rkmt2ipBU0nDv9xsi2Qv7CxKRodmiTkP/fvWatuWbX7yz5QjWR4pK
+         muh9axBN0imgeDjvKBXo3HUGKSntMoSIkJtWA88PjltnKA83rzkfarxhg1QaeetuSbbf
+         iOww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Oosgf26C3cGHE1QmDHmqfOUEe/LnMdne4rGI4/p7qq4=;
-        b=678nvGDsIsAK2ExUBeJmHuy91pjDZaRNHYVTvjRp+JYoScus//K4F9uAWRRCm3RbcM
-         FDNaK9QPaNgVHM4bT20eqrwlfb71NDXPgV11sdltPFWHbPz2XNnQv3q3h1HN6cZeXd9r
-         V7EB6tEWmUR1zX7rZsvgEXfEJ7AnmlHm8oPz9BYkRqsuNytYab09YCMPvF/faraURyxt
-         SaAMLL3xeeNsuMo6178t3rKmVgNiHblU8k8PU8fTnE+nrFC200px7WI18CCnjByLs77V
-         ZzDigguRRKhNaf4zoz2hAothLSNB3U4VkopEpGMr2dz0XdASbIboF3ZwmbWTbK0KTPl1
-         swIA==
-X-Gm-Message-State: AOAM532GiB9xFyYLAZHW5ivPRy6TaYI+JH2McPD0mPKYihj+NpVGaJ5y
-        bizOZatzPBMvLzdgKrZauBw3FRAwmQ==
-X-Google-Smtp-Source: ABdhPJxILhQaVrwkKgAM+E0cwbIZVNhvFvYXuL4ID5rgMZr7Ce+MP55YgNlYiR0x5fyurn6Fmbyaww==
-X-Received: by 2002:a5d:64ea:0:b0:1ea:8148:6b97 with SMTP id g10-20020a5d64ea000000b001ea81486b97mr4966505wri.679.1645776961086;
-        Fri, 25 Feb 2022 00:16:01 -0800 (PST)
-Received: from localhost.localdomain ([46.53.249.135])
-        by smtp.gmail.com with ESMTPSA id m17-20020a05600c4f5100b003810030c23fsm1852488wmq.40.2022.02.25.00.16.00
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=HO8XR/q/XXFglD4ptxAjKzojMwexSnxCmnFzN0IXmkQ=;
+        b=m134cZRbmH5EVvjXL/oGsdH7sZETYxSFW12gjQ2dwzXfil7NiPhyFkNpE7CBW78QB9
+         bn6IgjMsZDwA2kV8Z94Hw1OYWJxJMYcL2L6RQQq7BpYPuYueawI2d/z+1gM4nclQogEF
+         Yam2kDZVJXksJc2lYZtvpmHy5Iy5RfpiDdJkIZBMIW0xsXh2Z45RnzqHqzSyseD+FEuE
+         UWEMsey7nGA0tB1O83v1O0YmHvvznc+OB5pLZFuqIO8w5jHUeUQ03t8RtV63ABWFXLpW
+         4hQmWEkV7kvhZK37HcQW9wp56M46pK8G8HSsQ3xB+aV0pd+HA4fB/QiXZ40/ogE4Q24T
+         diCQ==
+X-Gm-Message-State: AOAM532ZF0iOe5ZX+QvbjdGDWScHID3VGQ4XF02KzIvKYYVwkQFOQXKJ
+        3a4vCjVjBLC7drKZLukiYuI=
+X-Google-Smtp-Source: ABdhPJwSalLg54fzpBXysxdhvtJwugUlUqw+7bcoyoH5D8D/rIx5UaVNOOOv2q4M/aJ25QGBJZW/FA==
+X-Received: by 2002:a7b:c04e:0:b0:380:ead9:254a with SMTP id u14-20020a7bc04e000000b00380ead9254amr1639915wmc.58.1645777260674;
+        Fri, 25 Feb 2022 00:21:00 -0800 (PST)
+Received: from localhost.localdomain ([64.64.123.40])
+        by smtp.gmail.com with ESMTPSA id z5-20020adfdf85000000b001e713f774d3sm1552725wrl.61.2022.02.25.00.20.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 00:16:00 -0800 (PST)
-Date:   Fri, 25 Feb 2022 11:15:58 +0300
-From:   Alexey Dobriyan <adobriyan@gmail.com>
-To:     akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] Drop -Wdeclaration-after-statement
-Message-ID: <YhiQPhsoODiXRAPy@localhost.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        Fri, 25 Feb 2022 00:21:00 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     colyli@suse.de, kent.overstreet@gmail.com
+Cc:     linux-bcache@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] md: bcache: check the return value of kzalloc() in detached_dev_do_request()
+Date:   Fri, 25 Feb 2022 00:20:48 -0800
+Message-Id: <20220225082048.19524-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Putting declarations before statement is relict of single pass compiler
-era. It was necessary to allocate stack slots before generating code.
+The function kzalloc() in detached_dev_do_request() can fail, so its
+return value should be checked.
 
-Recently added static_assert() is a declaration. -Wdeclaration-after-statement
-prevents its placement anywhere in the code for no reason.
-
-Placing variable declarations in the beginning of the block increases
-variable "LOC lifetime" so to speak and chances that it will be misused.
-This is very low probability bug but still. Declaring variables right
-before first use will make "LOC lifetime" smaller.
-
-	{
-		int x;
-		[x is misused due to a typo]
-		f(x);	// first correct use
-	}
-
-vs
-
-	{
-		[can't misuse undeclared variable]
-		int x;
-		f(x);	// first correct use
-	}
-
-Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+Fixes: bc082a55d25c (bcache: fix inaccurate io state for detached bcache devices)
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 ---
+ drivers/md/bcache/request.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- Makefile                          |    3 ---
- arch/arm64/kernel/vdso32/Makefile |    1 -
- tools/power/acpi/Makefile.config  |    1 -
- tools/power/cpupower/Makefile     |    1 -
- tools/scripts/Makefile.include    |    1 -
- 5 files changed, 7 deletions(-)
+diff --git a/drivers/md/bcache/request.c b/drivers/md/bcache/request.c
+index d15aae6c51c1..1b5ccfa93b8c 100644
+--- a/drivers/md/bcache/request.c
++++ b/drivers/md/bcache/request.c
+@@ -1107,6 +1107,8 @@ static void detached_dev_do_request(struct bcache_device *d, struct bio *bio,
+ 	 * which would call closure_get(&dc->disk.cl)
+ 	 */
+ 	ddip = kzalloc(sizeof(struct detached_dev_io_private), GFP_NOIO);
++	if (!ddip)
++		return;
+ 	ddip->d = d;
+ 	/* Count on the bcache device */
+ 	ddip->orig_bdev = orig_bdev;
+-- 
+2.17.1
 
---- a/Makefile
-+++ b/Makefile
-@@ -933,9 +933,6 @@ endif
- # arch Makefile may override CC so keep this after arch Makefile is included
- NOSTDINC_FLAGS += -nostdinc
- 
--# warn about C99 declaration after statement
--KBUILD_CFLAGS += -Wdeclaration-after-statement
--
- # Variable Length Arrays (VLAs) should not be used anywhere in the kernel
- KBUILD_CFLAGS += -Wvla
- 
---- a/arch/arm64/kernel/vdso32/Makefile
-+++ b/arch/arm64/kernel/vdso32/Makefile
-@@ -71,7 +71,6 @@ VDSO_CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-                -std=gnu89
- VDSO_CFLAGS  += -O2
- # Some useful compiler-dependent flags from top-level Makefile
--VDSO_CFLAGS += $(call cc32-option,-Wdeclaration-after-statement,)
- VDSO_CFLAGS += $(call cc32-option,-Wno-pointer-sign)
- VDSO_CFLAGS += -fno-strict-overflow
- VDSO_CFLAGS += $(call cc32-option,-Werror=strict-prototypes)
---- a/tools/power/acpi/Makefile.config
-+++ b/tools/power/acpi/Makefile.config
-@@ -63,7 +63,6 @@ OPTIMIZATION := $(call cc-supports,-Os,-O2)
- 
- WARNINGS := -Wall
- WARNINGS += $(call cc-supports,-Wstrict-prototypes)
--WARNINGS += $(call cc-supports,-Wdeclaration-after-statement)
- 
- KERNEL_INCLUDE := $(OUTPUT)include
- ACPICA_INCLUDE := $(srctree)/../../../drivers/acpi/acpica
---- a/tools/power/cpupower/Makefile
-+++ b/tools/power/cpupower/Makefile
-@@ -118,7 +118,6 @@ OPTIMIZATION := $(call cc-supports,-Os,-O2)
- 
- WARNINGS := -Wall -Wchar-subscripts -Wpointer-arith -Wsign-compare
- WARNINGS += $(call cc-supports,-Wno-pointer-sign)
--WARNINGS += $(call cc-supports,-Wdeclaration-after-statement)
- WARNINGS += -Wshadow
- 
- override CFLAGS += -DVERSION=\"$(VERSION)\" -DPACKAGE=\"$(PACKAGE)\" \
---- a/tools/scripts/Makefile.include
-+++ b/tools/scripts/Makefile.include
-@@ -21,7 +21,6 @@ endif
- # Include saner warnings here, which can catch bugs:
- #
- EXTRA_WARNINGS := -Wbad-function-cast
--EXTRA_WARNINGS += -Wdeclaration-after-statement
- EXTRA_WARNINGS += -Wformat-security
- EXTRA_WARNINGS += -Wformat-y2k
- EXTRA_WARNINGS += -Winit-self
