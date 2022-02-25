@@ -2,85 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B41C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 20:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A058C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 20:51:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235490AbiBYUt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 15:49:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35070 "EHLO
+        id S237717AbiBYUwH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 15:52:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237924AbiBYUru (ORCPT
+        with ESMTP id S231599AbiBYUwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 15:47:50 -0500
-Received: from mail.z3ntu.xyz (mail.z3ntu.xyz [128.199.32.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C7D22502E;
-        Fri, 25 Feb 2022 12:47:17 -0800 (PST)
-Received: from g550jk.localnet (ip-213-127-118-180.ip.prioritytelecom.net [213.127.118.180])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 21F40C85A1;
-        Fri, 25 Feb 2022 20:47:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1645822036; bh=DPMNliML3ukNNsPck65ZNcLxh30N28NKU6yWkFqvS2Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Prss4QVVwnNIJUOR/RLiPzTLs5wIOGNLszoBL6kxYRbqzxUYMQdukkVbcpOEds7Yj
-         ZpwsAnV2LwHqwbn61bFDe1Ka5xQLotocuoSheyROECiUJqy2VoKZYqIIONrZV0Ym59
-         XuvbR6YdMgsatLAzZXJrLKHG1vuXIMmaGWdwd6/A=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        marcel@holtmann.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Fri, 25 Feb 2022 15:52:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2122028BA;
+        Fri, 25 Feb 2022 12:51:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B586B83389;
+        Fri, 25 Feb 2022 20:51:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF336C340E7;
+        Fri, 25 Feb 2022 20:51:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645822290;
+        bh=F0J/fHQ4PH2PHbI5q93Nm/WbNth9O2hP5bMINbwsdqw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Eyc+zwquCZ/3IDTmwCbztdnSaf+0OTEgxtAnK98OsuCbT3GDEct8oNRwS3MewY3Nk
+         YMcaEs1KaiUsbEoBbnSGEdZDz+mhuyYwmTNspFkAR+EbrSuq8FLpM2WSKHn5GnP97F
+         xDaBrcBu9WBQaJyO3Qf0dURhIvP+eDaUe4DlOw7v1k5i9C024DfzK1Tx9cRKcGrR7F
+         ETmS1LfStzM59QDQ3l99HkE7q58zaldyDcrFxCwDlj04hJpFbbGdsP3QbnKdgHvq40
+         fPajHYlcbV00WyA1RilKx81Q41KPU/JKXkZv1voJMfZPhaGEJ0wP8xG1EP/aTBZHoS
+         UsrSUoTlOAMLA==
+Date:   Fri, 25 Feb 2022 12:51:28 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Theodore Ts'o <tytso@mit.edu>
+Cc:     Lee Jones <lee.jones@linaro.org>, linux-ext4@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>,
+        Dave Chinner <dchinner@redhat.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        "Darrick J . Wong" <darrick.wong@oracle.com>,
+        Bob Peterson <rpeterso@redhat.com>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, cluster-devel@redhat.com,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: bluetooth: broadcom: add BCM43430A0 & BCM43430A1
-Date:   Fri, 25 Feb 2022 21:47:15 +0100
-Message-ID: <4690803.GXAFRqVoOG@g550jk>
-In-Reply-To: <20220225204138.935022-1-luca@z3ntu.xyz>
-References: <20220225204138.935022-1-luca@z3ntu.xyz>
+Subject: Re: [PATCH -v2] ext4: don't BUG if kernel subsystems dirty pages
+ without asking ext4 first
+Message-ID: <YhlBUCi9O30szf6l@sol.localdomain>
+References: <Yg0m6IjcNmfaSokM@google.com>
+ <Yhks88tO3Em/G370@mit.edu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yhks88tO3Em/G370@mit.edu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Freitag, 25. Februar 2022 21:41:37 CET Luca Weiss wrote:
-> Document the compatible string for BCM43430A0 bluetooth used in lg-lenok
-> and BCM43430A1 used in asus-sparrow.
+On Fri, Feb 25, 2022 at 02:24:35PM -0500, Theodore Ts'o wrote:
+> [un]pin_user_pages_remote is dirtying pages without properly warning
+> the file system in advance (or faulting in the file data if the page
+> is not yet in the page cache).  This was noted by Jan Kara in 2018[1]
+> and more recently has resulted in bug reports by Syzbot in various
+> Android kernels[2].
 > 
-> Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-
-The previous version with just BCM43430A0 the patch collected the following 
-tags:
-
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-by: Rob Herring <robh@kernel.org>
-
-Not sure if with the changes I can keep them.
-
-> ---
-> Changes in v2:
-> - add bcm43430a1 too, adjust commit message to reflect that
+> This is technically a bug in the mm/gup.c codepath, but arguably ext4
+> is fragile in that a buggy get_user_pages() implementation causes ext4
+> to crash, where as other file systems are not crashing (although in
+> some cases the user data will be lost since gup code is not properly
+> informing the file system to potentially allocate blocks or reserve
+> space when writing into a sparse portion of file).  I suspect in real
+> life it is rare that people are using RDMA into file-backed memory,
+> which is why no one has complained to ext4 developers except fuzzing
+> programs.
 > 
->  Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml | 2 ++
->  1 file changed, 2 insertions(+)
+> So instead of crashing with a BUG, issue a warning (since there may be
+> potential data loss) and just mark the page as clean to avoid
+> unprivileged denial of service attacks until the problem can be
+> properly fixed.  More discussion and background can be found in the
+> thread starting at [2].
 > 
-> diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-> b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml index
-> 5aac094fd217..dd035ca639d4 100644
-> --- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-> +++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.yaml
-> @@ -19,6 +19,8 @@ properties:
->        - brcm,bcm4329-bt
->        - brcm,bcm4330-bt
->        - brcm,bcm4334-bt
-> +      - brcm,bcm43430a0-bt
-> +      - brcm,bcm43430a1-bt
->        - brcm,bcm43438-bt
->        - brcm,bcm4345c5
->        - brcm,bcm43540-bt
+> [1] https://www.spinics.net/lists/linux-mm/msg142700.html
 
+Can you use a lore link
+(https://lore.kernel.org/linux-mm/20180103100430.GE4911@quack2.suse.cz/T/#u)?
 
+> +			/*
+> +			 * Should never happen but for buggy code in
+> +			 * other subsystemsa that call
 
+subsystemsa => subsystems
 
+> +			 * set_page_dirty() without properly warning
+> +			 * the file system first.  See [1] for more
+> +			 * information.
+> +			 *
+> +			 * [1] https://www.spinics.net/lists/linux-mm/msg142700.html
+
+Likewise, lore link here.
+
+- Eric
