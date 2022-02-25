@@ -2,66 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD02C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:44:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A72FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241630AbiBYNpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:45:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60924 "EHLO
+        id S241640AbiBYNqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:46:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234303AbiBYNpB (ORCPT
+        with ESMTP id S234303AbiBYNqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:45:01 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA8F210D5E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:44:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2D066CE25EF
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 13:44:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B90ACC340E7;
-        Fri, 25 Feb 2022 13:44:25 +0000 (UTC)
-Date:   Fri, 25 Feb 2022 08:44:24 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     David Laight <David.Laight@aculab.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        John Ogness <john.ogness@linutronix.de>
-Subject: Re: Strange output on the console
-Message-ID: <20220225084424.1950c547@gandalf.local.home>
-In-Reply-To: <20220225134056.GE18720@1wt.eu>
-References: <20220224230035.36547137@gandalf.local.home>
-        <61226fc12ff9459d8daed8e346d6ab94@AcuMS.aculab.com>
-        <20220225063637.GA18039@1wt.eu>
-        <1dcb185901f04a5ea2476a449e371167@AcuMS.aculab.com>
-        <20220225103239.GA18720@1wt.eu>
-        <32a7af26f4494f47a03a6d965ac7c99a@AcuMS.aculab.com>
-        <20220225122546.GB18720@1wt.eu>
-        <20220225082850.2277179f@gandalf.local.home>
-        <20220225134056.GE18720@1wt.eu>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 25 Feb 2022 08:46:14 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB18210D74
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:45:42 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: rcn)
+        with ESMTPSA id 7A6AF1F45F92
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1645796741;
+        bh=PEG3axVN//YyYVluyyyZUdTkTfte6RZExlKRrKGNNGg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V/oym2rKqKgD8WS1WPUP98b3I3JMruzcQzkNhu3PgRNVN3ZTTJw+3GtVTL7aQoSOC
+         ptLBuP3f9+pjoz9+9FnrgPRUlPo8VUleDaWCGLiwJzBpw/YoZOPgnqe50SuZ7CI3JM
+         cBm7FrVwATP5cHVP41V99XezDyNEe+JLDXvRQJT3FOB6nF4qJGptcikBkNbiOeKqrq
+         cYst4IN9RE4IHAGzU7XZe4bZk0uzpZw6GGOlQiX6xQ8R2LTgwiYm/vHddpjkOwekzs
+         5rJVyJdqyqIFY/UJ48Ojz3PCzr+Plzv/pWZts6M45eVOhHQ9qPvjsnEhpEV4N01hB+
+         hqRo5dsRtjmaQ==
+From:   =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>
+To:     dri-devel@lists.freedesktop.org
+Cc:     =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        kernel@collabora.com, andrzej.hajda@intel.com,
+        narmstrong@baylibre.com, maarten.lankhorst@linux.intel.com,
+        mripard@kernel.org
+Subject: [PATCH 1/2] drm/bridge: parade-ps8640: avoid race condition on driver unbinding
+Date:   Fri, 25 Feb 2022 14:45:03 +0100
+Message-Id: <20220225134504.457245-2-ricardo.canuelo@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220225134504.457245-1-ricardo.canuelo@collabora.com>
+References: <20220225134504.457245-1-ricardo.canuelo@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Feb 2022 14:40:56 +0100
-Willy Tarreau <w@1wt.eu> wrote:
+When unbinding a DRM master driver there's a race condition that
+sometimes results in an invalid vm access when userspace (gnome-shell)
+issues a DRM_IOCTL_MODE_GETCONNECTOR ioctl right after a bridge has been
+removed from an encoder's bridge chain.
 
-> Maybe you could try to change the config on the receiver to try to resync
-> with what it sent and see if you figure what setting is being used ? I
-> would personally try to set it to 7 bit with 1 stop and no parity, same
-> baud rate just to see.
+This means that once a bridge has been disabled and gone through
+ps8640_post_disable(), if ps8640_bridge_get_edid() runs afterwards as a
+result of that ioctl call it will call drm_bridge_chain_pre_enable()
+and drm_bridge_chain_post_disable() again in a bridge that has been
+already detached.
 
-It appears to be a bug in the kernel and the commit was reverted.
+Setting `ps_bridge->pre_enabled = false` at a later stage of the
+bringdown path and calling drm_bridge_chain_pre_enable() inside
+ps8640_bridge_get_edid() only if needed avoid this, although a proper
+subsystem-wide fix would be the proper solution, since the same type of
+race conditions might happen somewhere else.
 
-I Cc'd you on my reply.
+Tested on an Acer Chromebook R13 (Elm, MT8173) with Debian Sid.
 
-  https://lore.kernel.org/all/Yhhj9MLZTrhjSWUE@google.com/
+Signed-off-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
+---
+ drivers/gpu/drm/bridge/parade-ps8640.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
--- Steve
+diff --git a/drivers/gpu/drm/bridge/parade-ps8640.c b/drivers/gpu/drm/bridge/parade-ps8640.c
+index 3f17337ee389..a927787a89bf 100644
+--- a/drivers/gpu/drm/bridge/parade-ps8640.c
++++ b/drivers/gpu/drm/bridge/parade-ps8640.c
+@@ -434,8 +434,6 @@ static void ps8640_post_disable(struct drm_bridge *bridge)
+ {
+ 	struct ps8640 *ps_bridge = bridge_to_ps8640(bridge);
+ 
+-	ps_bridge->pre_enabled = false;
+-
+ 	ps8640_bridge_vdo_control(ps_bridge, DISABLE);
+ 	pm_runtime_put_sync_suspend(&ps_bridge->page[PAGE0_DP_CNTL]->dev);
+ }
+@@ -487,6 +485,7 @@ static void ps8640_bridge_detach(struct drm_bridge *bridge)
+ 	drm_dp_aux_unregister(&ps_bridge->aux);
+ 	if (ps_bridge->link)
+ 		device_link_del(ps_bridge->link);
++	ps_bridge->pre_enabled = false;
+ }
+ 
+ static struct edid *ps8640_bridge_get_edid(struct drm_bridge *bridge,
+@@ -508,7 +507,8 @@ static struct edid *ps8640_bridge_get_edid(struct drm_bridge *bridge,
+ 	 * EDID, for this chip, we need to do a full poweron, otherwise it will
+ 	 * fail.
+ 	 */
+-	drm_bridge_chain_pre_enable(bridge);
++	if (poweroff)
++		drm_bridge_chain_pre_enable(bridge);
+ 
+ 	edid = drm_get_edid(connector,
+ 			    ps_bridge->page[PAGE0_DP_CNTL]->adapter);
+-- 
+2.25.1
+
