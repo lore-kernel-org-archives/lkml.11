@@ -2,135 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C151AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:43:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 534A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbiBYQnm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:43:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
+        id S243183AbiBYQnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:43:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243222AbiBYQni (ORCPT
+        with ESMTP id S241243AbiBYQns (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 11:43:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0876475207;
-        Fri, 25 Feb 2022 08:43:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BEE261C1A;
-        Fri, 25 Feb 2022 16:43:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFBE0C340E7;
-        Fri, 25 Feb 2022 16:42:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645807381;
-        bh=APXY3EnRpsBOupquCiWiXnjHHke28N5/pcJDyEoZ/UQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=U/Ibm/gp6t9I+K0zJ8pjRvlOOUkTCoRp4vLm3L/rDBwerli1baLd0g/ZdU88LPdBy
-         RZ4d7Y2jBu/del2aMnr10HRGLH5u8IOuIW9/5AMzEudVp3LwC3U8mkSqyAjDgXMvON
-         HBPz0nA6WcKBDsnZO32sKJ2K7Xg6pULjiaRhDJETda0LhPM1KGZVg5aIQnKMW1JPSY
-         UHr+6AE2mSRh9IXr/b1zi1Rcbo13RxP7hGp0F3KFLBA3fycHF6yEFBsRZIkzP/y30g
-         KKzqGiqxA8eL3nSmc806TYft/Qv9BSCbsKVvrIxu94EfNCuaA3eHdzzkpzhOTA9ElV
-         Bq99ghUu2qnwA==
-From:   broonie@kernel.org
-To:     Dave Airlie <airlied@linux.ie>,
-        DRI <dri-devel@lists.freedesktop.org>
-Cc:     Allen Chen <allen.chen@ite.com.tw>,
-        Hsin-yi Wang <hsinyi@chromium.org>,
-        Hermes Wu <hermes.wu@ite.com.tw>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the drm tree
-Date:   Fri, 25 Feb 2022 16:42:31 +0000
-Message-Id: <20220225164231.904173-1-broonie@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        Fri, 25 Feb 2022 11:43:48 -0500
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97967DA92;
+        Fri, 25 Feb 2022 08:43:15 -0800 (PST)
+Received: by mail-oo1-f45.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so6905659oos.9;
+        Fri, 25 Feb 2022 08:43:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Si+iJ2zhKvF5YLvRPOXET3hV1fppMjzs+UaFXFDwI3Y=;
+        b=D0bAqZSwVXMuunDHkum0DleVjb9PUZDB7vC0CBE3dCwcTlg5kp0sCs2gaYJNdNw80Z
+         nkG8kv3toQLtL+oN6QKmxsrsXQpfVtIe2/Hxz3/OqI9ZhKZZ8sQ9qI1krGDZXjfCIg1P
+         vvQWYlbv5BG5PcgMFkMYdLzDS5eXVuVuqKDYRTYsPP72ddDPsaRZqBe9YjTwTlsUXq+l
+         U1yaje2zxPUhHXkgMPYxneC5fQ1rG3alTCd9Q5BQeYFf9D/lGCTMBtQX3WeT4pp2RXkq
+         pxSNkQ0o3gBi15x7JXx3V18Y/wGLPKBcxXadcMz+nxdJfKJfK7p7uzILoLEDQro25bca
+         w4/w==
+X-Gm-Message-State: AOAM530eROO+qLOG/4eD5Ap6fMaJecZhgoE//2HS16UGcBay2BGdRZs1
+        xUsFd3s0BH/ZeERfnLFfuw==
+X-Google-Smtp-Source: ABdhPJyVL64erAPpA8+nT5f7+kdz/RH/QaYjqSDhpt4WRNkeN4cGTxKxp8BLy29TQl4zF7yzzWSTlg==
+X-Received: by 2002:a05:6870:b402:b0:d3:3712:efa7 with SMTP id x2-20020a056870b40200b000d33712efa7mr1652745oap.88.1645807395186;
+        Fri, 25 Feb 2022 08:43:15 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id a7-20020a4aae47000000b0031d17643eaasm1198927oon.22.2022.02.25.08.43.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 08:43:14 -0800 (PST)
+Received: (nullmailer pid 1063989 invoked by uid 1000);
+        Fri, 25 Feb 2022 16:43:10 -0000
+Date:   Fri, 25 Feb 2022 10:43:10 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>
+Cc:     matthias.bgg@gmail.com, linux-arm-kernel@lists.infradead.org,
+        tiwai@suse.com, devicetree@vger.kernel.org, perex@perex.cz,
+        aaronyu@google.com, alsa-devel@alsa-project.org,
+        linux-mediatek@lists.infradead.org, p.zabel@pengutronix.de,
+        robh+dt@kernel.org, zhangqilong3@huawei.com, tzungbi@google.com,
+        trevor.wu@mediatek.com, lgirdwood@gmail.com, broonie@kernel.org,
+        linux-kernel@vger.kernel.org, geert+renesas@glider.be
+Subject: Re: [v2 13/17] dt-bindings: mediatek: mt8186: add audio afe document
+Message-ID: <YhkHHl8u02MY348o@robh.at.kernel.org>
+References: <20220217134205.15400-1-jiaxin.yu@mediatek.com>
+ <20220217134205.15400-14-jiaxin.yu@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220217134205.15400-14-jiaxin.yu@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+On Thu, 17 Feb 2022 21:42:01 +0800, Jiaxin Yu wrote:
+> This patch adds mt8186 audio afe document.
+> 
+> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
+> ---
+>  .../bindings/sound/mt8186-afe-pcm.yaml        | 175 ++++++++++++++++++
+>  1 file changed, 175 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/sound/mt8186-afe-pcm.yaml
+> 
 
-After merging the drm tree, today's linux-next build (x86 allmodconfig)
-failed like this:
-
-lib/strncpy_from_user.o: warning: objtool: strncpy_from_user()+0x10b: call to do_strncpy_from_user() with UACCESS enabled
-lib/strnlen_user.o: warning: objtool: strnlen_user()+0xbb: call to do_strnlen_user() with UACCESS enabled
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c: In function 'receive_timing_debugfs_show':
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[200]'} [-Werror=array-bounds]
- 3077 |  u8 *str = read_buf, *end = read_buf + PAGE_SIZE;
-      |                       ^~~
-/tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while referencing 'read_buf'
- 3076 |  u8 read_buf[READ_BUFFER_SIZE];
-      |     ^~~~~~~~
-cc1: all warnings being treated as errors
-
-Caused by commit
-
-  b5c84a9edcd418 ("drm/bridge: add it6505 driver")
-
-I have used the drm tree from yesterday instead.
+Reviewed-by: Rob Herring <robh@kernel.org>
