@@ -2,148 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9675C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 02:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B5E7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 02:36:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236791AbiBYCc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 21:32:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42044 "EHLO
+        id S236803AbiBYCgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 21:36:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbiBYCcz (ORCPT
+        with ESMTP id S230028AbiBYCgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 21:32:55 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8068D18887A
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 18:32:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645756344; x=1677292344;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=Te4PHcJ/B1DO1cDp06aZcLXva0MLz3mhGNrCcZ9Dsz0=;
-  b=PJBlVr7vINRFPddenXJ3mjTg0bm2YooVqP58uH5s8AOI9C6dR0I4ppBq
-   xFyZRftht6tpW56/+wCaUTPGkcJNErJiRZijxyC7+aFjeurpsNPBsx5c6
-   2niwDlElVtCyrDbeARXf5Y2qqygVeKH8yHC9GiHtXhsz01Au4ybyQE5LR
-   9T4/R6kt/vGKbUDXy2dDvz3eZ0xBXOkZTE04day/L4zTxr+DmkUvnXmsZ
-   nJc/tCuvii1Kn4U4wWckC4F4811YxDie5JsPqvbWATTg5xFdsFnQhQjyy
-   +HSdFYWRTRkHiiHgYotyGYwbHGCpMs5sLemWi3Pz9VZkqbJM/u0D2xc5s
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="277035410"
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="277035410"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 18:32:24 -0800
-X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
-   d="scan'208";a="628702227"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.11])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 18:32:21 -0800
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Abhishek Goel <huntbag@linux.vnet.ibm.com>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Zi Yan <ziy@nvidia.com>,
-        David Hildenbrand <david@redhat.com>,
-        Yang Shi <yang.shi@linux.alibaba.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH -V11 2/9] mm/migrate: update node demotion order on
- hotplug events
-References: <20210721063926.3024591-1-ying.huang@intel.com>
-        <20210721063926.3024591-2-ying.huang@intel.com>
-        <eb438ddd-2919-73d4-bd9f-b7eecdd9577a@linux.vnet.ibm.com>
-        <f5edb9dc-8b25-47c2-9905-09e88e41861b@intel.com>
-        <4e8067e1-0574-c9d2-9d6c-d676d32071bd@linux.vnet.ibm.com>
-Date:   Fri, 25 Feb 2022 10:32:20 +0800
-In-Reply-To: <4e8067e1-0574-c9d2-9d6c-d676d32071bd@linux.vnet.ibm.com>
-        (Abhishek Goel's message of "Fri, 25 Feb 2022 05:07:15 +0530")
-Message-ID: <87pmnb3ccr.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 24 Feb 2022 21:36:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D8402614A8
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 18:36:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645756567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yU8GS8BgzaMD7fDEtovQ458r1iAvIqdNLZPe70i9638=;
+        b=GMlamDOCQxKXK+co5+WTHWpJBPxqtN9yu50BBVRSRDKnZ2MQSm81QtNMfL+kYLLe/Iwe5M
+        IhqpSyI3cxOXud4T8Tv5HWRWK9YrbGQgNLHatnpees9ts7vnTuFDyzJCGzUdXXIcKsBHHm
+        PILx149w7i+vH61RNqArFf5N2NYSV5E=
+Received: from mail-lj1-f198.google.com (mail-lj1-f198.google.com
+ [209.85.208.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-55-qgtWoS3JMxSmY4TTuN5HkA-1; Thu, 24 Feb 2022 21:36:05 -0500
+X-MC-Unique: qgtWoS3JMxSmY4TTuN5HkA-1
+Received: by mail-lj1-f198.google.com with SMTP id r27-20020a2e575b000000b002463f43ca0aso2009842ljd.7
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 18:36:05 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yU8GS8BgzaMD7fDEtovQ458r1iAvIqdNLZPe70i9638=;
+        b=TKug39Wra+nz+3ar8i6iNmOsNMhgv19BNIVxTxHipXj5qoPFsK2KVfi8rDruuOz9pa
+         O6jIBpwJeMmt3bJU4bXlGgwIKtN5H6YZFjJ6Adz3+Gu39a89UXvYK41kAHPjJCz0pX7/
+         TmXtebAaYrNNP2J3zJKRWPWdypl6EqKXoJqPapYDJ2xPzEg3BI+wyz+ebKBDyja+pO0i
+         UL1Xfl4bobqMJuJf+Q5GwCgnRvapQOlar7/rKC2OC5JuWk98qW9z3mzYoSrbx2nIsw9Y
+         LxPQp40g3dyUk2IZHVcJ2nxG/p1ZNhn1SZEV3BwDtKck7/o+K3bJf9mYFAfOZXaiK4xd
+         62uA==
+X-Gm-Message-State: AOAM533HOPlgwJKz4cmrbZpVJNEF4XdK3yT8u2mBz3AmyiM5v+ytawmu
+        I/eN6Ax+YuV5S/sZ5emCqpXkTZNJPhUVICRgRzYqV5HCEY86+rJggXjwWWYxbZivdWlnU8FLHSH
+        xati+i6zGnccfz+G9dCdiQ0EbsOgZC9Y/US/fsZki
+X-Received: by 2002:a05:651c:c7:b0:244:f9d7:7c48 with SMTP id 7-20020a05651c00c700b00244f9d77c48mr4028966ljr.300.1645756564234;
+        Thu, 24 Feb 2022 18:36:04 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzjAhhNdJ81uWG2TggCgB0pGDHZN6gLYH0DcvEADiHYUKFvn60w4UU5WCGJu9wPo8OI5eChZ4BpTaH0LrHjkM4=
+X-Received: by 2002:a05:651c:c7:b0:244:f9d7:7c48 with SMTP id
+ 7-20020a05651c00c700b00244f9d77c48mr4028959ljr.300.1645756563999; Thu, 24 Feb
+ 2022 18:36:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+References: <20211108081324.14204-1-jasowang@redhat.com> <20220224122655-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220224122655-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 25 Feb 2022 10:35:52 +0800
+Message-ID: <CACGkMEuCWE-oHQXJYfQZh2k5s8BNWRgXW4wZrHyo7Z2=k89EeA@mail.gmail.com>
+Subject: Re: [PATCH] virtio_ring: aovid reading flag from the descriptor ring
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Abhishek,
-
-Abhishek Goel <huntbag@linux.vnet.ibm.com> writes:
-
-> On 24/02/22 05:35, Dave Hansen wrote:
->> On 2/23/22 15:02, Abhishek Goel wrote:
->>> If needed, I will provide experiment results and traces that were used
->>> to conclude this.
->> It would be great if you can provide some more info.  Even just a CPU
->> time profile would be helpful.
+On Fri, Feb 25, 2022 at 1:55 AM Michael S. Tsirkin <mst@redhat.com> wrote:
 >
-> Average total time taken for SMT=8 to SMT=1 in v5.14 : 20s
+> Typo in the subject btw.
 >
-> Average total time taken for SMT=8 to SMT=1 in v5.15 : 36s
+> minor tweaks to commit log below
 >
-> (Observed in system with 150+ CPUs )
+> On Mon, Nov 08, 2021 at 04:13:24PM +0800, Jason Wang wrote:
+> > Commit 72b5e8958738 ("virtio-ring: store DMA metadata in desc_extra
+> > for split virtqueue") tries to make it possible for the driver to not
+> > read from the descriptor ring to prevent the device from corrupting
+> > the descriptor ring. But it still read
+>
+> reads
+>
+> >the descriptor flag from the
+> > descriptor ring during buffer detach.
+> >
+> > This patch fixes
+>
+> fixes this
+>
+> >by always store
+>
+> storing
+>
 
-We have run into a memory hotplug regression before.  Let's check
-whether the problem is similar.  Can you try the below debug patch?
+Will fix.
 
-Best Regards,
-Huang, Ying
+> >the descriptor flag no matter whether
+> > DMA API is used and then we can avoid reading descriptor flag from the
+> > descriptor ring. This eliminates the possibly of unexpected next
+> > descriptor caused by the wrong flag (e.g the next flag).
+> >
+> > Signed-off-by: Jason Wang <jasowang@redhat.com>
+>
+>
+> I'd also like the commit log to document what the issue is in a bit more depth.
+> I think the main reason we are checking the dma API is this
+>
+>
+> static unsigned int vring_unmap_one_split(const struct vring_virtqueue *vq,
+>                                           unsigned int i)
+> {
+>         struct vring_desc_extra *extra = vq->split.desc_extra;
+>         u16 flags;
+>
+>         if (!vq->use_dma_api)
+>                 goto out;
+>
+>         ...
+> }
+>
+>
+> so I guess with a bad flag, what will happen is num_free will become too
+> big is that right?
 
-----------------------------8<------------------------------------------
-From 500c0b53436b7a697ed5d77241abbc0d5d3cfc07 Mon Sep 17 00:00:00 2001
-From: Huang Ying <ying.huang@intel.com>
-Date: Wed, 29 Sep 2021 10:57:19 +0800
-Subject: [PATCH] mm/migrate: Debug CPU hotplug regression
+Yes, and it may have other implications and this is not easy to answer
+since with the current code, next/flag is the only one that can be
+controlled by the device. From what I've seen so far, it can cause an
+early unmap for the descriptors in the free list. This may cause
+several issues when using DMA API (e.g IOTLB for bouncing). Indeed
+software IOMMU/IOTLB has done a lot of checks for this but we can't
+solely depend on IOMMU/IOTLB to handle malicious inputs.
 
-Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
----
- mm/migrate.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+So my understanding is that, instead of trying to figuring out what
+may happens if some flag or descriptor is modified by the malicious
+device/hypervisor, we can simply eliminate all those possibilities
+with minimal efforts and this is why we try not read anything from
+shared memory area (e.g the descriptor ring etc) if possible.
 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index c7da064b4781..c4805f15e616 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -3261,15 +3261,17 @@ static int __meminit migrate_on_reclaim_callback(struct notifier_block *self,
-  * The ordering is also currently dependent on which nodes have
-  * CPUs.  That means we need CPU on/offline notification too.
-  */
--static int migration_online_cpu(unsigned int cpu)
-+static int migration_cpu_hotplug(unsigned int cpu)
- {
--	set_migration_target_nodes();
--	return 0;
--}
-+	static int nr_cpu_node_saved;
-+	int nr_cpu_node;
-+
-+	nr_cpu_node = num_node_state(N_CPU);
-+	if (nr_cpu_node != nr_cpu_node_saved) {
-+		set_migration_target_nodes();
-+		nr_cpu_node_saved = nr_cpu_node;
-+	}
- 
--static int migration_offline_cpu(unsigned int cpu)
--{
--	set_migration_target_nodes();
- 	return 0;
- }
- 
-@@ -3283,7 +3285,7 @@ static int __init migrate_on_reclaim_init(void)
- 	WARN_ON(!node_demotion);
- 
- 	ret = cpuhp_setup_state_nocalls(CPUHP_MM_DEMOTION_DEAD, "mm/demotion:offline",
--					NULL, migration_offline_cpu);
-+					NULL, migration_cpu_hotplug);
- 	/*
- 	 * In the unlikely case that this fails, the automatic
- 	 * migration targets may become suboptimal for nodes
-@@ -3292,7 +3294,7 @@ static int __init migrate_on_reclaim_init(void)
- 	 */
- 	WARN_ON(ret < 0);
- 	ret = cpuhp_setup_state(CPUHP_AP_MM_DEMOTION_ONLINE, "mm/demotion:online",
--				migration_online_cpu, NULL);
-+				migration_cpu_hotplug, NULL);
- 	WARN_ON(ret < 0);
- 
- 	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
--- 
-2.30.2
+>
+>
+>
+>
+> > ---
+> >  drivers/virtio/virtio_ring.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index 00f64f2f8b72..28734f4e57d3 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -583,7 +583,7 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
+> >       }
+> >       /* Last one doesn't continue. */
+> >       desc[prev].flags &= cpu_to_virtio16(_vq->vdev, ~VRING_DESC_F_NEXT);
+> > -     if (!indirect && vq->use_dma_api)
+> > +     if (!indirect)
+> >               vq->split.desc_extra[prev & (vq->split.vring.num - 1)].flags &=
+> >                       ~VRING_DESC_F_NEXT;
+> >
+>
+> BTW I'm a bit confused why we need the & (vq->split.vring.num - 1) logic.
+> Maybe it's time we stopped writing out descriptor then overwriting it -
+
+Right since the next can be read from the descriptor ring directly (as
+you said below, this needs to be fixed as well).
+
+> e.g. return the desc_extra pointer from virtqueue_add_desc_split
+> instead of an index. Worth checking what this does to performance.
+
+Right, let me try to do that in the next version.
+
+Thanks
+
+>
+>
+> > @@ -713,7 +713,7 @@ static void detach_buf_split(struct vring_virtqueue *vq, unsigned int head,
+> >       /* Put back on free list: unmap first-level descriptors and find end */
+> >       i = head;
+> >
+> > -     while (vq->split.vring.desc[i].flags & nextflag) {
+> > +     while (vq->split.desc_extra[i].flags & nextflag) {
+> >               vring_unmap_one_split(vq, i);
+> >               i = vq->split.desc_extra[i].next;
+> >               vq->vq.num_free++;
+> > --
+> > 2.25.1
+>
 
