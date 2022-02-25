@@ -2,116 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 127D4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:49:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB3DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:49:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242319AbiBYPtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 10:49:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54628 "EHLO
+        id S242336AbiBYPu1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 10:50:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237967AbiBYPtg (ORCPT
+        with ESMTP id S242321AbiBYPuZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 10:49:36 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F396BDD7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 07:49:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=L8L89r0l8PrFsV/eyc4s6aWGL88ctKd06KB+sGThLfQ=; b=klb52YbyG7gTLcYbbwq6x/kM+C
-        l8AGsuEwRgk/tjTuDy8rSKrfURHU1o2DxjlcsU3CkoigdR8hPOMyfF7ep5NAjI6FeocqoVDcBH3Lw
-        axrQrQHwyREzqpTK8WxhQeqmE6Q973pUnN0vLrbr3wEJmVvMQhYdQvNUzM3j69qZSuP8XzwlmsxpK
-        T2dDVFWpeUDg0RUCtG17qeNNUuswgTdmUn5BX1OqABnQQQjamRosJ5xpECJA2smxAhYCPBVOrIWHd
-        QAY3RzQyup9dzgycyDgBbI58SB3CqH7Hr/X1pe2ZAHfBKXqAR7ioGjMwbVxfrhrV3jPph0siCIs2c
-        O01mOvtA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNcq2-005uK8-Eo; Fri, 25 Feb 2022 15:48:58 +0000
-Date:   Fri, 25 Feb 2022 15:48:58 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     David Woodhouse <dwmw2@infradead.org>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] tools/virtio: Test virtual address range detection
-Message-ID: <Yhj6ap3uEl2xFE8G@casper.infradead.org>
-References: <c1895bcc240d413ff067f982b6e653996ace9887.camel@infradead.org>
- <20220221170217.5bq7nhr3pvchku5x@sgarzare-redhat>
- <75d5002ad505b476c81c0b92c0d624824e93d6ac.camel@infradead.org>
- <20220222013121-mutt-send-email-mst@kernel.org>
- <8e60951973cab3a3d27a3c7f18d866cdb804e663.camel@infradead.org>
- <YhVvOsI0+xVAKHdr@casper.infradead.org>
+        Fri, 25 Feb 2022 10:50:25 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 596261BE0CC;
+        Fri, 25 Feb 2022 07:49:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645804193; x=1677340193;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=DNrB1zjz6lR2HM4GwMtv1uDsRQnAZcKdTXb9/LCxKm8=;
+  b=ACQ/i69Ezep0naXNSDW+ybueoCWTRTyZZyhbx5A9Y2aHV196FJKe5gqk
+   bdkStxSg/cRGj0A+IzFGJd66BfUQI8yjG4Hxj2VLR3iUBlKo3OGwVwAs2
+   ZPYsokGsoJPOanNGLHfMmOiSY/SAY058SaXErlI+BmqXFg2zwkIYKwibl
+   qMK9N1KNypoZSRPUqfLpnFG9v3slzrCpPxwh7TXLpZ4ayS9qIvDO0iDsm
+   mQgehwj3kQ6mmWJPkwY3oOSYDvVUhbS3M/07UNkbdzzPACwYSV1K88l3l
+   0eXfodRJfR9yH8FAywa7SxibblzrFkZOWn7Cn/KOI4Fs6BNc7CINHb1SR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="315735474"
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="315735474"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 07:49:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="592518949"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+  by fmsmga008.fm.intel.com with ESMTP; 25 Feb 2022 07:49:52 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Feb 2022 07:49:52 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 25 Feb 2022 07:49:51 -0800
+Received: from orsmsx611.amr.corp.intel.com ([10.22.229.24]) by
+ ORSMSX611.amr.corp.intel.com ([10.22.229.24]) with mapi id 15.01.2308.021;
+ Fri, 25 Feb 2022 07:49:51 -0800
+From:   "Ruhl, Michael J" <michael.j.ruhl@intel.com>
+To:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "logang@deltatee.com" <logang@deltatee.com>
+CC:     "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Ruhl, Michael J" <michael.j.ruhl@intel.com>
+Subject: RE: [PATCH] PCI/P2PDMA: Update device table with 3rd gen Xeon
+ platform information
+Thread-Topic: [PATCH] PCI/P2PDMA: Update device table with 3rd gen Xeon
+ platform information
+Thread-Index: AQHYHdIG4Q22z4JZ0Um0Xan5JCcwz6ykgLnw
+Date:   Fri, 25 Feb 2022 15:49:51 +0000
+Message-ID: <f3fa3b81b9e14025ae28c490ce53006c@intel.com>
+References: <20220209162801.7647-1-michael.j.ruhl@intel.com>
+In-Reply-To: <20220209162801.7647-1-michael.j.ruhl@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhVvOsI0+xVAKHdr@casper.infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 11:18:18PM +0000, Matthew Wilcox wrote:
-> On Tue, Feb 22, 2022 at 07:58:33AM +0000, David Woodhouse wrote:
-> > On Tue, 2022-02-22 at 01:31 -0500, Michael S. Tsirkin wrote:
-> > > On Mon, Feb 21, 2022 at 05:18:48PM +0000, David Woodhouse wrote:
-> > > > 
-> > > > [dwoodhou@i7 virtio]$ sudo ~/virtio_test
-> > > > Detected virtual address range 0x1000-0x7ffffffff000
-> > > > spurious wakeups: 0x0 started=0x100000 completed=0x100000
-> > > > 
-> > > > Although in some circumstances I also see a different build failure:
-> > > > 
-> > > > cc -g -O2 -Werror -Wno-maybe-uninitialized -Wall -I. -I../include/ -I ../../usr/include/ -Wno-pointer-sign -fno-strict-overflow -fno-strict-aliasing -fno-common -MMD -U_FORTIFY_SOURCE -include ../../include/linux/kconfig.h   -c -o vringh_test.o vringh_test.c
-> 
-> Trying to test this myself ...
-> 
-> $ cd tools/virtio/
-> $ make
-> ...
-> cc -lpthread  virtio_test.o virtio_ring.o   -o virtio_test
-> /usr/bin/ld: virtio_ring.o: in function `spin_lock':
-> /home/willy/kernel/folio/tools/virtio/./linux/spinlock.h:16: undefined reference to `pthread_spin_lock'
-> 
-> So this is not the only problem here?
-> 
-> > > > In file included from ./linux/uio.h:3,
-> > > >                  from ./linux/../../../include/linux/vringh.h:15,
-> > > >                  from ./linux/vringh.h:1,
-> > > >                  from vringh_test.c:9:
-> > > > ./linux/../../../include/linux/uio.h:10:10: fatal error: linux/mm_types.h: No such file or directory
-> > > >    10 | #include <linux/mm_types.h>
-> > > >       |          ^~~~~~~~~~~~~~~~~~
-> > > > compilation terminated.
-> > > > make: *** [<builtin>: vringh_test.o] Error 1
-> > > 
-> > > Which tree has this build failure? In mine linux/uio.h does not
-> > > include linux/mm_types.h.
-> > 
-> > Strictly it's
-> > https://git.infradead.org/users/dwmw2/linux.git/shortlog/refs/heads/xen-evtchn-kernel
-> > but I'm sure my part isn't relevant; it's just v5.17-rc5.
-> > 
-> >  $ git blame include/linux/uio.h | grep mm_types.h
-> > d9c19d32d86fa (Matthew Wilcox (Oracle) 2021-10-18 10:39:06 -0400  10) #include <linux/mm_types.h>
-> >  $ git describe --tags d9c19d32d86fa
-> > v5.16-rc4-37-gd9c19d32d86f
-> 
-> grr.  Originally, I had this doing a typebusting cast, but hch objected,
-> so I had to include mm_types.h.  This should fix it ...
+Hi,
 
-ping?  Just noticed this one crop up in a "list of problems".  Should
-I submit it myself?
+I see that this patch is in the Linux PCI development patchwork.
 
-> $ git diff
-> diff --git a/tools/virtio/linux/mm_types.h b/tools/virtio/linux/mm_types.h
-> new file mode 100644
-> index 000000000000..3b0fc9bc5b8f
-> --- /dev/null
-> +++ b/tools/virtio/linux/mm_types.h
-> @@ -0,0 +1,3 @@
-> +struct folio {
-> +       struct page page;
-> +};
-> 
-> At least, it makes it compile for me.
+I am not sure what the timeline for this process is.
+
+Will this be accepted or rejected "officially"?
+
+Do I need to do anything else to move this patch forward?
+
+Thanks,
+
+Mike
+
+>-----Original Message-----
+>From: Ruhl, Michael J <michael.j.ruhl@intel.com>
+>Sent: Wednesday, February 9, 2022 11:28 AM
+>To: linux-pci@vger.kernel.org; linux-kernel@vger.kernel.org;
+>bhelgaas@google.com; logang@deltatee.com; Ruhl, Michael J
+><michael.j.ruhl@intel.com>
+>Cc: Williams, Dan J <dan.j.williams@intel.com>
+>Subject: [PATCH] PCI/P2PDMA: Update device table with 3rd gen Xeon
+>platform information
+>
+>In order to do P2P communication the bridge ID of the platform
+>must be in the P2P device table.
+>
+>Update the P2P device table with a device id for the 3rd Gen
+>Intel Xeon Scalable Processors.
+>
+>Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+>Signed-off-by: Michael J. Ruhl <michael.j.ruhl@intel.com>
+>---
+> drivers/pci/p2pdma.c | 1 +
+> 1 file changed, 1 insertion(+)
+>
+>diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+>index 1015274bd2fe..30b1df3c9d2f 100644
+>--- a/drivers/pci/p2pdma.c
+>+++ b/drivers/pci/p2pdma.c
+>@@ -321,6 +321,7 @@ static const struct pci_p2pdma_whitelist_entry {
+> 	{PCI_VENDOR_ID_INTEL,	0x2032, 0},
+> 	{PCI_VENDOR_ID_INTEL,	0x2033, 0},
+> 	{PCI_VENDOR_ID_INTEL,	0x2020, 0},
+>+	{PCI_VENDOR_ID_INTEL,	0x09a2, 0},
+> 	{}
+> };
+>
+>--
+>2.31.1
+
