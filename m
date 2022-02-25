@@ -2,130 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC355C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08963C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232095AbiBYSWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 13:22:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35340 "EHLO
+        id S232106AbiBYSXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 13:23:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231942AbiBYSV5 (ORCPT
+        with ESMTP id S231836AbiBYSXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 13:21:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF4151FEF8E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:21:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645813281;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=g1SxaQgp/6WOc0KKmfEav99FpX07fm1Map4Q3PyyPfo=;
-        b=OBwiCqd4uKtHxtKEkpVlrInSWxuD6hAXyBJRYtGa+S6mxr+qkavMMn2yyFBOLzyH4KI7++
-        n0HpAGNVKkm79HJyAdQ7nFkUD75h6djM346RaDAtNMN0X59kszFvb634Y8MTbLEgr3vyOb
-        4N7VsjUL/BDq84u72/TnHjI7uM0fVLA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-266-NNPaVFfsPo-tmx-Z6-K_Tg-1; Fri, 25 Feb 2022 13:21:18 -0500
-X-MC-Unique: NNPaVFfsPo-tmx-Z6-K_Tg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 502311854E21;
-        Fri, 25 Feb 2022 18:21:17 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B6B892BCD0;
-        Fri, 25 Feb 2022 18:21:14 +0000 (UTC)
-Message-ID: <506c34bc80d1bb740ddf38e6476ad0e16c097282.camel@redhat.com>
-Subject: Re: [PATCH 1/4] KVM: x86: hyper-v: Drop redundant 'ex' parameter
- from kvm_hv_send_ipi()
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Siddharth Chandrasekaran <sidcha@amazon.de>,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 25 Feb 2022 20:21:13 +0200
-In-Reply-To: <20220222154642.684285-2-vkuznets@redhat.com>
-References: <20220222154642.684285-1-vkuznets@redhat.com>
-         <20220222154642.684285-2-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Fri, 25 Feb 2022 13:23:00 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 742BC1BE82
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:22:28 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id s1so7437534iob.9
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:22:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4i7Dn6xMqNIvDQ6SKHYlCE8bqBPJnnLQezZBe+tm+7E=;
+        b=P6fzb+OZwpOlvaG3+EnWy1v6RTMFv/HjCAiOKJanAe76hkVLxtNE5HdrdpTBhWnZxP
+         BpxRm/AAeooby+ng8DNSr6qE1UgblJnuS+pbruvGLX7cFH5ZHPSo0WfWiM56kRe20HZ5
+         pzvkhw4ZAIOsXC2D2YuzQqd2s0NERUatK41Hs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4i7Dn6xMqNIvDQ6SKHYlCE8bqBPJnnLQezZBe+tm+7E=;
+        b=IXrNfuni0Sf91XAlgbzRo/tmvNe/bOd+q1xZ4KWRD0bos3s7ZXvPbrdFKFS1Ikloz1
+         HWFlbfDprKmrbMXEBV/RW3S0kt6RzdTE+MPnw7nH6K4dwpz4keKaZSMwQ/qBPcyw57b3
+         RGmIKZQcR79fmZp0u/llPa338ypulsV+sZvEv0pEyGHrQy3fqI/fqYeUowAjeN24wjD8
+         oWvJLmcm1xCDNUQrLF0knCsXcNuMe2ZK/nGsZLtDEl8sb2qui6PQtqG//R2MGYa7yBh8
+         kEcWApGAO18OPcDx6Lep/W5sl6H2dYaRPKO84DhBr98Ca8hLHLvDQps9aUJnnbsEeqAs
+         zB0Q==
+X-Gm-Message-State: AOAM532g+6HgjFyd/V5hp7Q0EJG4lUPSTe3qXFSKMg9VBcgbweDp76oc
+        HkzvjNeOz4/Ak3RgTHl31pm6jg==
+X-Google-Smtp-Source: ABdhPJzo/Kt9WGTU8DxFi837ltOzHh2NPMAEUvMDP0w2rSR46kgdf8Wl5YnxAc9awM/UaRhOFNu2vA==
+X-Received: by 2002:a05:6638:bc1:b0:311:905f:790c with SMTP id g1-20020a0566380bc100b00311905f790cmr7025930jad.74.1645813347815;
+        Fri, 25 Feb 2022 10:22:27 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id u9-20020a5d8189000000b006415781ebe5sm1957643ion.5.2022.02.25.10.22.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Feb 2022 10:22:27 -0800 (PST)
+Subject: Re: [PATCH v3 0/5] selftests/resctrl: Add resctrl_tests into
+ kselftest set
+To:     "tan.shaopeng@fujitsu.com" <tan.shaopeng@fujitsu.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220216022641.2998318-1-tan.shaopeng@jp.fujitsu.com>
+ <d9f81a0f-5f25-9304-fdca-fc164224a786@linuxfoundation.org>
+ <TYAPR01MB63306F67590849B0354D8FB78B3E9@TYAPR01MB6330.jpnprd01.prod.outlook.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <34174016-e4fd-be4c-a5c0-81d63557de64@linuxfoundation.org>
+Date:   Fri, 25 Feb 2022 11:22:27 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
+In-Reply-To: <TYAPR01MB63306F67590849B0354D8FB78B3E9@TYAPR01MB6330.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=iso-2022-jp; format=flowed; delsp=yes
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-02-22 at 16:46 +0100, Vitaly Kuznetsov wrote:
-> 'struct kvm_hv_hcall' has all the required information already,
-> there's no need to pass 'ex' additionally.
+On 2/25/22 1:03 AM, tan.shaopeng@fujitsu.com wrote:
+> Hi Shuah,
 > 
-> No functional change intended.
+>> On 2/15/22 7:26 PM, Shaopeng Tan wrote:
+>>> Hello,
+>>>
+>>> The aim of this series is to make resctrl_tests run by using kselftest
+>>> framework.
+>>> - I modify resctrl_test Makefile and kselftest Makefile,
+>>>     to enable build/run resctrl_tests by using kselftest framework.
+>>>     Of course, users can also build/run resctrl_tests without
+>>>     using framework as before.
+>>> - I change the default limited time for resctrl_tests to 120 seconds, to
+>>>     ensure the resctrl_tests finish in limited time on different environments.
+>>> - When resctrl file system is not supported by environment or
+>>>     resctrl_tests is not run as root, return skip code of kselftest framework.
+>>> - If resctrl_tests does not finish in limited time, terminate it as
+>>>     same as executing ctrl+c that kills parent process and child process.
+>>>
+>>> Difference from v2:
+>>> - I reworte changelog of this patch series.
+>>> - I added how to use framework to run resctrl to README. [PATCH v3
+>>> 2/5]
+>>> - License has no dependencies on this patch series, I separated from it this
+>> patch series to another patch.
+>>> https://lore.kernel.org/lkml/20211213100154.180599-1-tan.shaopeng@jp.f
+>>> ujitsu.com/
+>>>
+>>> With regard to the limited time, I think 120s is not a problem since
+>>> some tests have a longer timeout (e.g. net test is 300s). Please let me know if
+>> this is wrong.
+>>>
+>>> Thanks,
+>>>
+>>> Shaopeng Tan (5):
+>>>     selftests/resctrl: Kill child process before parent process terminates
+>>>       if SIGTERM is received
+>>>     selftests/resctrl: Make resctrl_tests run using kselftest framework
+>>>     selftests/resctrl: Update README about using kselftest framework to
+>>>       build/run resctrl_tests
+>>>     selftests/resctrl: Change the default limited time to 120 seconds
+>>>     selftests/resctrl: Fix resctrl_tests' return code to work with
+>>>       selftest framework
+>>>
+>>>    tools/testing/selftests/Makefile              |  1 +
+>>>    tools/testing/selftests/resctrl/Makefile      | 20 ++++-------
+>>>    tools/testing/selftests/resctrl/README        | 34
+>> +++++++++++++++++++
+>>>    .../testing/selftests/resctrl/resctrl_tests.c |  4 +--
+>>>    tools/testing/selftests/resctrl/resctrl_val.c |  1 +
+>>>    tools/testing/selftests/resctrl/settings      |  1 +
+>>>    6 files changed, 45 insertions(+), 16 deletions(-)
+>>>    create mode 100644 tools/testing/selftests/resctrl/settings
+>>>
+>>
+>> Reviewed the patches - patches 1/5, 4/5 & 5/5 don't depend on kselftest
+>> framework improvements. 2/5 and 3/5 are.
+>>
+>> Please reorder the patches - move 4/5 and 5/5 up and make 2/5 and 3/5 the
+>> last in this series. Also see comments on individual patches.
 > 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/kvm/hyperv.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+> Ok, I will reorder all patches as follows, so that independent patches come first
+> and Makefile related patches come last:
+> [PATCH 1/5] selftests/resctrl: Kill child process before parent process terminates if SIGTERM is received
+> [PATCH 4/5] selftests/resctrl: Change the default limited time to 120 seconds
+> [PATCH 5/5] selftests/resctrl: Fix resctrl_tests' return code to work with selftest framework
+> [PATCH 2/5] selftests/resctrl: Make resctrl_tests run using kselftest framework
+> [PATCH 3/5] selftests/resctrl: Update README about using kselftest framework to build/run resctrl_tests
+> [PATCH] selftests/resctrl: Add missing SPDX license to Makefile
 > 
-> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-> index 6e38a7d22e97..15b6a7bd2346 100644
-> --- a/arch/x86/kvm/hyperv.c
-> +++ b/arch/x86/kvm/hyperv.c
-> @@ -1875,7 +1875,7 @@ static void kvm_send_ipi_to_many(struct kvm *kvm, u32 vector,
->  	}
->  }
->  
-> -static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc, bool ex)
-> +static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
->  {
->  	struct kvm *kvm = vcpu->kvm;
->  	struct hv_send_ipi_ex send_ipi_ex;
-> @@ -1889,7 +1889,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc, bool
->  	u32 vector;
->  	bool all_cpus;
->  
-> -	if (!ex) {
-> +	if (hc->code == HVCALL_SEND_IPI) {
+> Please let me know if I'm wrong.
+> 
 
-I am thinking, if we already touch this code,
-why not to use switch here instead on the hc->code,
-so that we can catch this function being called with something else than
-HVCALL_SEND_IPI_EX
+This split looks good to me.
 
->  		if (!hc->fast) {
->  			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi,
->  						    sizeof(send_ipi))))
-> @@ -2279,14 +2279,14 @@ int kvm_hv_hypercall(struct kvm_vcpu *vcpu)
->  			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
->  			break;
->  		}
-> -		ret = kvm_hv_send_ipi(vcpu, &hc, false);
-> +		ret = kvm_hv_send_ipi(vcpu, &hc);
->  		break;
->  	case HVCALL_SEND_IPI_EX:
->  		if (unlikely(hc.fast || hc.rep)) {
->  			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
->  			break;
->  		}
-> -		ret = kvm_hv_send_ipi(vcpu, &hc, true);
-> +		ret = kvm_hv_send_ipi(vcpu, &hc);
->  		break;
->  	case HVCALL_POST_DEBUG_DATA:
->  	case HVCALL_RETRIEVE_DEBUG_DATA:
-
-
-
-Other than this minor nitpick:
-
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-
-
-Best regards,
-	Maxim Levitsky
+thanks,
+-- Shuah
 
