@@ -2,85 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 21:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95AD4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 21:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235155AbiBYVjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 16:39:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59176 "EHLO
+        id S231690AbiBYVpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 16:45:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233777AbiBYVji (ORCPT
+        with ESMTP id S229922AbiBYVps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 16:39:38 -0500
-X-Greylist: delayed 148 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 25 Feb 2022 13:39:02 PST
-Received: from mail1.med.uni-goettingen.de (mail1.med.uni-goettingen.de [134.76.103.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857211AE674
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 13:39:01 -0800 (PST)
-Received: from umg-exc-04.ads.local.med.uni-goettingen.de ([10.76.100.73]:12926)
-        by mail1.med.uni-goettingen.de with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <Martin.Uecker@med.uni-goettingen.de>)
-        id 1nNiGK-0001LQ-2t; Fri, 25 Feb 2022 22:36:28 +0100
-Received: from umg-exc-01.ads.local.med.uni-goettingen.de (10.76.100.74) by
- umg-exc-04.ads.local.med.uni-goettingen.de (10.76.100.73) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Fri, 25 Feb 2022 22:36:28 +0100
-Received: from umg-exc-01.ads.local.med.uni-goettingen.de
- ([fe80::2886:b6b:10e3:deea]) by umg-exc-01.ads.local.med.uni-goettingen.de
- ([fe80::2886:b6b:10e3:deea%13]) with mapi id 15.01.2375.018; Fri, 25 Feb 2022
- 22:36:28 +0100
-From:   "Uecker, Martin" <Martin.Uecker@med.uni-goettingen.de>
-To:     "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-Thread-Topic: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-Thread-Index: AQHYKosGsHPhjhvi7kSF9n6RY4a/rKykuaOA
-Date:   Fri, 25 Feb 2022 21:36:28 +0000
-Message-ID: <bd43bd47c8eaa4c22c1a1549cee66f7ef960b1fc.camel@med.uni-goettingen.de>
-References: <CAHk-=wjtZG_0zjgVt0_0JDZgq=xO4LHYAbH764HTQJsjHTq-oQ@mail.gmail.com>
-In-Reply-To: <CAHk-=wjtZG_0zjgVt0_0JDZgq=xO4LHYAbH764HTQJsjHTq-oQ@mail.gmail.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.76.100.66]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BA8A6EF5A8291A4CB71C50A05F543E11@med.uni-goettingen.de>
-Content-Transfer-Encoding: base64
+        Fri, 25 Feb 2022 16:45:48 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE981EF35A
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 13:45:15 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id x14so231597ill.12
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 13:45:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GlfIBSqlGvtgBv75Rg1rA8MquMPJgcWiel0j8isuYbQ=;
+        b=HLrWX91wZAju9leNV7HFPStLOTDTKTykc0vJTupccN3o3/OiwP19YNo6Qzp1zeF9iD
+         ySamRLGUmUYo7kRYhJG/V0jfmkCyf0d/RpuJNgm+9j17cf7ewVM5FPh3eQ84me4uAq3l
+         S8XVO2DI41apmljHGwvmrhoJMRDM4MwtWny+c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GlfIBSqlGvtgBv75Rg1rA8MquMPJgcWiel0j8isuYbQ=;
+        b=fTqT89wLgVupfcBLje+f8QjLXsiGx9GanbWJ/H3uYmpP5IYjR0jndhtZU5fryLOqaz
+         48GKpw8yn8ORQZgxPOzXf8HAyCyWHehdW/KOp0Fy6C/EXL3GlcNN4cILTsbRdIXxFrSn
+         iO9vb5mKTkMEjvIZ0zxXvfgFfUi+oM1lHJGEV1ipz/NlTnDDjF+YU5SqPt6ZTtnfGNXs
+         Cd69BJEE+imiTEQ0Evgn74q7TqtkuPc5fw/FBaCYzg02HfmWMwfKBAvWkrxlkBvFl4sb
+         CwQxP0J2o3gJjZEPqP1anRP07sSprj56o15FQdoWylGTlWPQp1WC/VAx6eus2aQM1kVT
+         hX6w==
+X-Gm-Message-State: AOAM530rOrzOqawwsDzAdiXpH/A6yBOgZnChz31jc5tLwvK2r7uw0jYz
+        h/2F0AdygOFkkR/00pj+CIvZzx6GNxQ05w==
+X-Google-Smtp-Source: ABdhPJzjQSzxBomZ267t53/TYFeVaTmMzeMKuCTgGRpRcjfFDZWL3xDvV1iuoyl5WamEe6X7iVBpaA==
+X-Received: by 2002:a05:6e02:12c1:b0:2bf:2a61:9848 with SMTP id i1-20020a056e0212c100b002bf2a619848mr8166860ilm.109.1645825515032;
+        Fri, 25 Feb 2022 13:45:15 -0800 (PST)
+Received: from [192.168.1.128] ([71.205.29.0])
+        by smtp.gmail.com with ESMTPSA id o4-20020a92c044000000b002c1e884226asm2313784ilf.12.2022.02.25.13.45.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Feb 2022 13:45:14 -0800 (PST)
+Subject: Re: [PATCH] Documentation/vm/page_owner.rst: fix the description of
+ "-f"
+To:     Yixuan Cao <caoyixuan2019@email.szu.edu.cn>, corbet@lwn.net
+Cc:     akpm@linux-foundation.org, broonie@kernel.org,
+        weizhenliang@huawei.com, georgi.djakov@linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hanshenghong2019@email.szu.edu.cn,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220225090824.2343-1-caoyixuan2019@email.szu.edu.cn>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <73c74276-3c29-e662-cb96-c09fbba0d2b1@linuxfoundation.org>
+Date:   Fri, 25 Feb 2022 14:45:13 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
+In-Reply-To: <20220225090824.2343-1-caoyixuan2019@email.szu.edu.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-QW0gTWl0dHdvY2gsIGRlbiAyMy4wMi4yMDIyLCAyMDo1NCArMDAwMCBzY2hyaWViIExpbnVzIFRv
-cnZhbGRzOg0KPiBPbiBXZWQsIEZlYiAyMywgMjAyMiBhdCAxMjo0MyBQTSBMaW51cyBUb3J2YWxk
-cw0KPiA8dG9ydmFsZHNAbGludXgtZm91bmRhdGlvbi5vcmc+IHdyb3RlOg0KPiA+IE9mIGNvdXJz
-ZSwgdGhlIEMgc3RhbmRhcmQgYmVpbmcgdGhlIGJ1bmNoIG9mIGluY29tcGV0ZW50cyB0aGV5IGFy
-ZSwNCj4gPiB0aGV5IGluIHRoZSBwcm9jZXNzIGFwcGFyZW50bHkgbWFkZSBsZWZ0LXNoaWZ0cyB1
-bmRlZmluZWQgKHJhdGhlciB0aGFuDQo+ID4gaW1wbGVtZW50YXRpb24tZGVmaW5lZCkuIENocmlz
-dCwgdGhleSBrZWVwIG9uIG1ha2luZyB0aGUgc2FtZSBtaXN0YWtlcw0KPiA+IG92ZXIgYW5kIG92
-ZXIuIFdoYXQgd2FzIHRoZSBkZWZpbml0aW9uIG9mIGluc2FuaXR5IGFnYWluPw0KDQpJbXBsZW1l
-bnRhdGlvbi1kZWZpbmVkIG9ubHkgbWVhbnMgdGhhdCBpdCBuZWVkcyB0byBiZQ0KZG9jdW1lbnRl
-ZCAoYW5kIGNsYW5nIGRvZXMgbm90IGV2ZW4gZG8gdGhpcyksIHNvDQpJIGFtIG5vdCBzdXJlIHdo
-YXQgZGlmZmVyZW5jZSB0aGlzIHdvdWxkIG1ha2UuDQoNCj4gSGV5LCBzb21lIG1vcmUgZ29vZ2xp
-bmcgb24gbXkgcGFydCBzZWVtcyB0byBzYXkgdGhhdCBzb21lYm9keSBzYXcgdGhlDQo+IGxpZ2h0
-LCBhbmQgaXQncyBsaWtlbHkgZ2V0dGluZyBmaXhlZCBpbiBuZXdlciBDIHN0YW5kYXJkIHZlcnNp
-b24uDQoNCkkgZG9uJ3QgdGhpbmsgaXQgaXMgY2hhbmdlZC4gQnV0IEMyMyB3aWxsIHJlcXVpcmUN
-CmludGVnZXJzIHRvIGJlIHJlcHJlZXRlZCB1c2luZyB0d28ncyBjb21wbGVtZW50LA0Kc28gdGhl
-cmUgaXMgYSBiZXR0ZXIgY2hhbmNlIHRvIGZpeCB0aGluZ3MNCmxpa2UgdGhpcyBpbiB0aGUgZnV0
-dXJlLiANCg0KPiBTbyBpdCB3YXMganVzdCBhIG1pc3Rha2UsIG5vdCBhY3R1YWwgbWFsaWNlLiBN
-YXliZSB3ZSBjYW4gaG9wZSB0aGF0DQo+IHRoZSB0aWRlIGlzIHR1cm5pbmcgYWdhaW5zdCB0aGUg
-InVuZGVmaW5lZCIgY3Jvd2QgdGhhdCB1c2VkIHRvIHJ1bGUNCj4gdGhlIHJvb3N0IGluIHRoZSBD
-IHN0YW5kYXJkcyBib2RpZXMuIE1heWJlIHRoZSBmdW5kYW1lbnRhbCBzZWN1cml0eQ0KPiBpc3N1
-ZXMgd2l0aCB1bmRlZmluZWQgYmVoYXZpb3IgZmluYWxseSBjb252aW5jZWQgcGVvcGxlIGhvdyBi
-YWQgaXQNCj4gd2FzPw0KDQpUaGUgcmlnaHQgcGVvcGxlIHRvIGNvbXBsYWluIHRvIGFyZSB0aGUN
-CmNvbXBpbGVyIHZlbmRvcnMsIGJlY2F1c2UgdGhleSBkZWNpZGUgd2hhdA0KVUIgZG9lcyBpbiB0
-aGVpciBpbXBsZW1lbnRhdGlvbi4gIEluIHRoZQ0Kc3RhbmRhcmQgYm9keSB0aGUgc2FtZSBwZW9w
-bGUgYXJndWUgdGhhdA0KdGhlIHN0YW5kYXJkIGhhcyB0byBjb2RpZnkgZXhpc3RpbmcNCnByYWN0
-aWNlLiAgRXZlbiBpbiBjYXNlcyB3aGVyZSB0aGUgc3RhbmRhcmQNCmRlZmluZXMgYmVoYXZpb3Is
-IGNvbXBpbGVycyBzb21ldGltZXMgc2ltcGx5DQppZ25vcmUgdGhpcyAoZS5nLiBwb2ludGVyIGNv
-bXBhcmlzb24gb3INCnBvaW50ZXItdG8taW50ZWdlciByb3VuZCAgdHJpcHMpLiBTbyB0aGUNCnBv
-d2VyIGlzIHJlYWxseSB3aXRoIHRoZSBjb21waWxlciB3cml0ZXJzLg0KDQoNCk1hcnRpbiANCg0K
-DQo=
+On 2/25/22 2:08 AM, Yixuan Cao wrote:
+> Few days ago,
+> I noticed that in tools/vm/page_owner_sort.c,
+> there is a comment that need to be fixed.
+> 
+> In function usage():
+> "-f Filter out the information of blocks whose memory has
+> not been released."
+> 
+> This comment does not match the actual function, the "not"
+> should be removed. As a result, I submitted a patch to fix it.
+> 
+> Similarly, this document should also do the same
+> modification, that's why I submit this patch.
+> 
+
+Please refer to a few change logs to write them so maintainers
+don't have to fix them. This can be written as:
+
+"Fix function usage information for -f option"
+
+> Signed-off-by: Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
+> ---
+>   Documentation/vm/page_owner.rst | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/vm/page_owner.rst b/Documentation/vm/page_owner.rst
+> index aec1906976f4..32ca54757d3f 100644
+> --- a/Documentation/vm/page_owner.rst
+> +++ b/Documentation/vm/page_owner.rst
+> @@ -78,7 +78,7 @@ Usage
+>   
+>   2) Enable page owner: add "page_owner=on" to boot cmdline.
+>   
+> -3) Do the job what you want to debug
+> +3) Do the job what you want to debug.
+>   
+>   4) Analyze information from page owner::
+>   
+> @@ -126,4 +126,4 @@ Usage
+>   		-c		Cull by comparing stacktrace instead of total block.
+>   
+>   	Filter:
+> -		-f		Filter out the information of blocks whose memory has not been released.
+> +		-f		Filter out the information of blocks whose memory has been released.
+> 
+
+I can't find this in Linux 5.17-rc5 - is this patch based on linux-next?
+
+thanks,
+-- Shuah
