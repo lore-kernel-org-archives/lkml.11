@@ -2,101 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A70C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 17:21:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7154EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 17:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243612AbiBYRW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 12:22:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48644 "EHLO
+        id S243619AbiBYRXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 12:23:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243599AbiBYRW1 (ORCPT
+        with ESMTP id S243643AbiBYRW4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 12:22:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE0B22320A;
-        Fri, 25 Feb 2022 09:21:55 -0800 (PST)
+        Fri, 25 Feb 2022 12:22:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAFDBDF5A;
+        Fri, 25 Feb 2022 09:22:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0381B832AF;
-        Fri, 25 Feb 2022 17:21:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC609C340E7;
-        Fri, 25 Feb 2022 17:21:51 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="avzQXB0S"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645809710;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yyp0XBR2LBG6ybQpSRV5Mk5rlFmokNbyKi7/2GKEXSM=;
-        b=avzQXB0Sz6ebvM/yT8r4bVRCQnlmoohAGQbJf/M8sVjbHOrx/UXxFZNihPoWCeeZrYWaEN
-        qbk23OIlhazsFJLjUT8kd3DcEo8ZCQWTEqRFeQhZKNzBMRDCrGfLmmm5pWnfgoUXQ7LkfT
-        FQxD44/UGXgZmE609kLiFcYDHelRr4E=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d56f47f5 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 25 Feb 2022 17:21:49 +0000 (UTC)
-Date:   Fri, 25 Feb 2022 18:21:45 +0100
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Alexander Graf <graf@amazon.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>
-Subject: Re: [PATCH] ACPI: bus: Match first 9 bytes of device IDs
-Message-ID: <YhkQKfE8ErtFBmSB@zx2c4.com>
-References: <20220225155552.30636-1-graf@amazon.com>
- <CAMj1kXGtANm3SMoREymDSyx+wpn3L=Ex5q5mpgQigOwmEp33Lg@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66FF661935;
+        Fri, 25 Feb 2022 17:22:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E3FAC340F2;
+        Fri, 25 Feb 2022 17:22:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645809741;
+        bh=zcn7N2F1dnEdumd5LpYs9Ka1QOBnAbXy0YD0PxiiAd4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QneYLEGIUqbVUmMs5dZF9b2NxGoFQQuDCrTf8gx39yIIw74pYOVlmGAA+fGvfH8Sf
+         yOByX4/aTwqtROJKniZLlVdXAtDFB29cF3T43G7l4Agu3cZNsQe8JKiQMO5CgLTLAy
+         0ceGjMbAzU/5wVjfnHJMCSxZ/Hrd4BLeI9Yws+/aQkHqnIwRHgZEKKp7ohsqDDRUZh
+         9t+q2y1cPdj4XOosxgBS9+OFN3XpcedMeUKqIWGayp/dQwidHgl0NkhR7mKEcPvx6K
+         8h0dstzjYwhBFo14f1LWv/oSMpUPiWKimXTuCZ4oc+1GdNtW68qGO6ajm6u0zp6Eat
+         VGRTZD+TIxr6A==
+Date:   Fri, 25 Feb 2022 18:22:16 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?UTF-8?B?V2lsY3p5?= =?UTF-8?B?xYRza2k=?= 
+        <kw@linux.com>, Russell King <rmk+kernel@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/6] PCI: Add PCI_EXP_SLTCAP_*_SHIFT macros
+Message-ID: <20220225182216.2fcf5455@thinkpad>
+In-Reply-To: <20220225153756.GA358517@bhelgaas>
+References: <20220225122451.fa2fiyzohwme2d66@pali>
+        <20220225153756.GA358517@bhelgaas>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXGtANm3SMoREymDSyx+wpn3L=Ex5q5mpgQigOwmEp33Lg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 6:13 PM Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> The device subsystem side of things already deals with this properly:
-> the modalias of the QEMU vmgenid device comes up as
-> 'acpi:QEMUVGID:VM_GEN_COUNTER', which means it already captures the
-> entire string, and exposes it in the correct way (modulo the all caps)
+On Fri, 25 Feb 2022 09:37:56 -0600
+Bjorn Helgaas <helgaas@kernel.org> wrote:
 
-Ahh, so the userspace side of this won't work right. Shucks. That's what
-I was concerned about.
+> On Fri, Feb 25, 2022 at 01:24:51PM +0100, Pali Roh=C3=A1r wrote:
+> > On Thursday 24 February 2022 14:28:43 Bjorn Helgaas wrote: =20
+> > > On Tue, Feb 22, 2022 at 05:31:54PM +0100, Pali Roh=C3=A1r wrote: =20
+> > > > These macros allows to easily compose and extract Slot Power Limit =
+and
+> > > > Physical Slot Number values from Slot Capability Register.
+> > > >
+> > > > Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
+> > > > Signed-off-by: Marek Beh=C3=BAn <kabel@kernel.org>
+> > > > ---
+> > > >  include/uapi/linux/pci_regs.h | 3 +++
+> > > >  1 file changed, 3 insertions(+)
+> > > >=20
+> > > > diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci=
+_regs.h
+> > > > index 108f8523fa04..3fc9a4cac630 100644
+> > > > --- a/include/uapi/linux/pci_regs.h
+> > > > +++ b/include/uapi/linux/pci_regs.h
+> > > > @@ -591,10 +591,13 @@
+> > > >  #define  PCI_EXP_SLTCAP_HPS	0x00000020 /* Hot-Plug Surprise */
+> > > >  #define  PCI_EXP_SLTCAP_HPC	0x00000040 /* Hot-Plug Capable */
+> > > >  #define  PCI_EXP_SLTCAP_SPLV	0x00007f80 /* Slot Power Limit Value =
+*/
+> > > > +#define  PCI_EXP_SLTCAP_SPLV_SHIFT	7  /* Slot Power Limit Value sh=
+ift */ =20
+> > >=20
+> > > Is there a way to use FIELD_PREP() and FIELD_GET() instead?  It seems
+> > > like that's what the cool kids are doing now. =20
+> >=20
+> > This is possible too.
+> >=20
+> > I have proposed a patch with _SHIFT macros as this is the way how are
+> > other macros in this file defined and used. =20
+>=20
+> Yes, it's a mix.  For some recent additions, I've resisted adding the
+> _SHIFT macros on the theory that they clutter the file, they never
+> change, and the main point of the #defines is readability and so
+> grep/tags/etc can find things.
+>=20
+> There are a *few* users of FIELD_PREP() and FIELD_GET():
+>=20
+>   git grep -E "FIELD_(GET|PREP)\(PCI_EXP"
+>=20
+> and I'm inclined to go that direction in the future.  What do you
+> think?
 
-> I don't like this hack. If we are going to accept the fact that CIDs
-> could be arbitrary length strings, we should handle them properly.
->
-> So what we need is a way for a module to describe its compatibility
-> with such a _CID, which shouldn't be that complicated.
+I am also pro that direction.
 
-Can't we do something more boring and just...
+Would you also like to convert current usages in the .c driver files?
 
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index 4bb71979a8fd..5da5d990ff58 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -210,9 +210,9 @@ struct css_device_id {
- 	__u8 type; /* subchannel type */
- 	kernel_ulong_t driver_data;
- };
- 
--#define ACPI_ID_LEN	9
-+#define ACPI_ID_LEN	16
- 
- struct acpi_device_id {
- 	__u8 id[ACPI_ID_LEN];
- 	kernel_ulong_t driver_data;
+We can't remove the existing macros since they are in UAPI, but we can
+convert drivers so that they don't use _SHIFT macros.
 
-
-As you can see from the context, those additional 7 bytes were being
-wasted on padding anyway inside the acpi_device_id struct, so it's
-basically free, it would seem. This seems like the least convoluted way
-of solving this issue? If we ever encounter _more_ ACPI devices with
-weird names, we could revisit a fancy dynamic solution, but for now, why
-don't we keep it simple?
-
-Jason
+Marek
