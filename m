@@ -2,151 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A36A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC017C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242213AbiBYPiS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 10:38:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54050 "EHLO
+        id S242208AbiBYPid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 10:38:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242173AbiBYPiG (ORCPT
+        with ESMTP id S239396AbiBYPib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 10:38:06 -0500
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A446AA4E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 07:37:33 -0800 (PST)
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Fri, 25 Feb 2022 10:38:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6898714F2A6;
+        Fri, 25 Feb 2022 07:37:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id BCD353FCA8
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 15:37:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645803451;
-        bh=EaZIuP8aCiZ2Pg8BQs9OaJlXxn1NfGegDq7D5c3gugE=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=Z8PrTmq8Z0mLz47LCZZszH/DcszCnZuhqM/ljtHlMkwL1woMsDIKj4eaZoRdXaRXx
-         dqK4Zqp2PibPKCAewdThydmkgNmaYaDJXa6Zus2Hv9HEY4Z8iEcOX5hrpYy1SoFOiy
-         oXfooKW0DBt8Mj6UzZjt67f403QwndxIFUZUD7NhETFjEcB6zu+95NGyu2aJzaGysA
-         eYBPLibyw2mA2SSVnam/V6q+bpSI7ffy5AMU7fP1eFzlhGv0+7PLhch0Eajcvv7uiV
-         G2yoYtioNkijVTFrzN2sUDlGSGA4GYrN8oGHTjGIu/iMcH26eiu6PXgyfWaVQd4IwN
-         I+YVNpdAOUWZg==
-Received: by mail-wm1-f70.google.com with SMTP id az39-20020a05600c602700b00380e48f5994so1499455wmb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 07:37:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EaZIuP8aCiZ2Pg8BQs9OaJlXxn1NfGegDq7D5c3gugE=;
-        b=nv5BDBa7f1EpukjNv5ugwbIwo/u8zxiY+Gu7ki+Bdn07fUQ3/t0/qVajxs+ph4bSNV
-         g8DAWk+ZaumCZQc2RtVoAn+YrdEPVI2Xi4re8LZnsahaAEVDWgadQq+sGsCAanzRVRk0
-         OiyuntacKY+x4H/5GMWaXRQ42KSzOIGdIgoJlzCYyD3qA3Z7DVnBkE7KvxM83lk29qqZ
-         Qs0agrI97Amw5GIVOYLlH4QeUpKPZ/KCxVPbwtrPpxiY+5yU5pipTSjn5JI+SWO8C4Ty
-         J2XHS9kyxa4AjJrF8zpysQohcjxdISi1KYWfkStoFqiRbDewV7Uw4keY+l2SR2DIuYNS
-         nNGA==
-X-Gm-Message-State: AOAM530mye2oWbgUgYtXvSMYXSUmKVmnoKUuMuPfj7meKYL/r21a77fe
-        Jsk5vYxQ43vYwzaXbbkjY3YRYPC1OfBp5DTNZyXbsxLBLb7VSpZWLUzePbl44cpuUqDr5S41jcn
-        f2fGsoCeucqeefTQYT6B/HKNZ4p0sveh/L0ETiZBrkQ==
-X-Received: by 2002:a05:600c:54a:b0:381:3b1:cea8 with SMTP id k10-20020a05600c054a00b0038103b1cea8mr3296611wmc.76.1645803449827;
-        Fri, 25 Feb 2022 07:37:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzv1D4gTqAbPxLOPgjzglkuWUH3oiR1QobSGW/+QPMmmFGhvoFo79IwgTO/MqnzcQrUp1Nzww==
-X-Received: by 2002:a05:600c:54a:b0:381:3b1:cea8 with SMTP id k10-20020a05600c054a00b0038103b1cea8mr3296593wmc.76.1645803449594;
-        Fri, 25 Feb 2022 07:37:29 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id p15-20020adfce0f000000b001edc0bcf875sm2647168wrn.102.2022.02.25.07.37.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 07:37:28 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Subject: [PATCH 2/3] ARM: dts: exynos: add a specific compatible to MCT
-Date:   Fri, 25 Feb 2022 16:36:49 +0100
-Message-Id: <20220225153650.289923-2-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220225153650.289923-1-krzysztof.kozlowski@canonical.com>
-References: <20220225153650.289923-1-krzysztof.kozlowski@canonical.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6546618C5;
+        Fri, 25 Feb 2022 15:37:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15D1DC340F0;
+        Fri, 25 Feb 2022 15:37:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645803478;
+        bh=g98zliAtM2Tc6v3mwYJ14NN8JaWLKdHFUA4VftrTn6U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=CCnRtCJaxgV9HmJFSyPj+jajT4/2v2E2/2sbiK+wTwgAkK9VYqaVVXruNGv6odZfw
+         V+7GDK6lCMcPITFVfTKgSh/EC9a8wY25tVbdYm9L2THSX/lyca/vuOdwzwCDH2vl8z
+         zRxEkbooPjGmdxd8HCgqhg+/8rHocpnmebG7Ewy3VTl3JzOkzpSCmWK2R+zRg1Du3U
+         23w7MiJzog2ZfZlfjnzyyTLzfKKC3RVVO45SIVo6dnNiiuFXhbPdwVKX2vB1gbcZJE
+         KpRniDbA6WjyWfbq788WReK252QrTmlFNqVY17ug/5j1DHmfi0t3nlOwvJ9XLhheeC
+         klJHvkJTwC3+Q==
+Date:   Fri, 25 Feb 2022 09:37:56 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/6] PCI: Add PCI_EXP_SLTCAP_*_SHIFT macros
+Message-ID: <20220225153756.GA358517@bhelgaas>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220225122451.fa2fiyzohwme2d66@pali>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-One compatible is used for the Multi-Core Timer on most of the Samsung
-Exynos SoCs, which is correct but not specific enough.  These MCT blocks
-have different number of interrupts, so add a second specific
-compatible to Exynos3250 and all Exynos5 SoCs.
+On Fri, Feb 25, 2022 at 01:24:51PM +0100, Pali Rohár wrote:
+> On Thursday 24 February 2022 14:28:43 Bjorn Helgaas wrote:
+> > On Tue, Feb 22, 2022 at 05:31:54PM +0100, Pali Rohár wrote:
+> > > These macros allows to easily compose and extract Slot Power Limit and
+> > > Physical Slot Number values from Slot Capability Register.
+> > >
+> > > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > > Signed-off-by: Marek Behún <kabel@kernel.org>
+> > > ---
+> > >  include/uapi/linux/pci_regs.h | 3 +++
+> > >  1 file changed, 3 insertions(+)
+> > > 
+> > > diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
+> > > index 108f8523fa04..3fc9a4cac630 100644
+> > > --- a/include/uapi/linux/pci_regs.h
+> > > +++ b/include/uapi/linux/pci_regs.h
+> > > @@ -591,10 +591,13 @@
+> > >  #define  PCI_EXP_SLTCAP_HPS	0x00000020 /* Hot-Plug Surprise */
+> > >  #define  PCI_EXP_SLTCAP_HPC	0x00000040 /* Hot-Plug Capable */
+> > >  #define  PCI_EXP_SLTCAP_SPLV	0x00007f80 /* Slot Power Limit Value */
+> > > +#define  PCI_EXP_SLTCAP_SPLV_SHIFT	7  /* Slot Power Limit Value shift */
+> > 
+> > Is there a way to use FIELD_PREP() and FIELD_GET() instead?  It seems
+> > like that's what the cool kids are doing now.
+> 
+> This is possible too.
+> 
+> I have proposed a patch with _SHIFT macros as this is the way how are
+> other macros in this file defined and used.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- arch/arm/boot/dts/exynos3250.dtsi | 3 ++-
- arch/arm/boot/dts/exynos5250.dtsi | 3 ++-
- arch/arm/boot/dts/exynos5260.dtsi | 3 ++-
- arch/arm/boot/dts/exynos54xx.dtsi | 3 ++-
- 4 files changed, 8 insertions(+), 4 deletions(-)
+Yes, it's a mix.  For some recent additions, I've resisted adding the
+_SHIFT macros on the theory that they clutter the file, they never
+change, and the main point of the #defines is readability and so
+grep/tags/etc can find things.
 
-diff --git a/arch/arm/boot/dts/exynos3250.dtsi b/arch/arm/boot/dts/exynos3250.dtsi
-index ae644315855d..41bb421e67c2 100644
---- a/arch/arm/boot/dts/exynos3250.dtsi
-+++ b/arch/arm/boot/dts/exynos3250.dtsi
-@@ -269,7 +269,8 @@ gic: interrupt-controller@10481000 {
- 		};
- 
- 		timer@10050000 {
--			compatible = "samsung,exynos4210-mct";
-+			compatible = "samsung,exynos3250-mct",
-+				     "samsung,exynos4210-mct";
- 			reg = <0x10050000 0x800>;
- 			interrupts = <GIC_SPI 218 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 219 IRQ_TYPE_LEVEL_HIGH>,
-diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
-index 5baaa7eb71a4..63d1dcf2c55c 100644
---- a/arch/arm/boot/dts/exynos5250.dtsi
-+++ b/arch/arm/boot/dts/exynos5250.dtsi
-@@ -245,7 +245,8 @@ clock_audss: audss-clock-controller@3810000 {
- 		};
- 
- 		timer@101c0000 {
--			compatible = "samsung,exynos4210-mct";
-+			compatible = "samsung,exynos5250-mct",
-+				     "samsung,exynos4210-mct";
- 			reg = <0x101C0000 0x800>;
- 			clocks = <&clock CLK_FIN_PLL>, <&clock CLK_MCT>;
- 			clock-names = "fin_pll", "mct";
-diff --git a/arch/arm/boot/dts/exynos5260.dtsi b/arch/arm/boot/dts/exynos5260.dtsi
-index 56271e7c4587..ff1ee409eff3 100644
---- a/arch/arm/boot/dts/exynos5260.dtsi
-+++ b/arch/arm/boot/dts/exynos5260.dtsi
-@@ -333,7 +333,8 @@ chipid: chipid@10000000 {
- 		};
- 
- 		mct: timer@100b0000 {
--			compatible = "samsung,exynos4210-mct";
-+			compatible = "samsung,exynos5260-mct",
-+				     "samsung,exynos4210-mct";
- 			reg = <0x100B0000 0x1000>;
- 			clocks = <&fin_pll>, <&clock_peri PERI_CLK_MCT>;
- 			clock-names = "fin_pll", "mct";
-diff --git a/arch/arm/boot/dts/exynos54xx.dtsi b/arch/arm/boot/dts/exynos54xx.dtsi
-index 2ddb7a5f12b3..3ec43761d8b9 100644
---- a/arch/arm/boot/dts/exynos54xx.dtsi
-+++ b/arch/arm/boot/dts/exynos54xx.dtsi
-@@ -74,7 +74,8 @@ smp-sram@53000 {
- 		};
- 
- 		mct: timer@101c0000 {
--			compatible = "samsung,exynos4210-mct";
-+			compatible = "samsung,exynos5420-mct",
-+				     "samsung,exynos4210-mct";
- 			reg = <0x101c0000 0xb00>;
- 			interrupts-extended = <&combiner 23 3>,
- 					      <&combiner 23 4>,
--- 
-2.32.0
+There are a *few* users of FIELD_PREP() and FIELD_GET():
 
+  git grep -E "FIELD_(GET|PREP)\(PCI_EXP"
+
+and I'm inclined to go that direction in the future.  What do you
+think?
+
+Bjorn
