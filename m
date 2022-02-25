@@ -2,147 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64BC2C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8189C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239696AbiBYKkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 05:40:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53630 "EHLO
+        id S239707AbiBYKki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 05:40:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239691AbiBYKkW (ORCPT
+        with ESMTP id S238106AbiBYKkf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 05:40:22 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F14868F9E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 02:39:50 -0800 (PST)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id EA49221114;
-        Fri, 25 Feb 2022 10:39:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645785588; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ahs8xAWJnTUeFm8mayyoprYbMUR2xi8uypk5DkAI7Jk=;
-        b=li02W+4CVQaEnfPXLfd+rNHAW9NiRUJ9keX1sztepXJ/9vi+6SoZyAH2OWSHt7B5mOfMmz
-        VJnxpZMKAni6EBeJl5tSQa2rPsjtxn8ZoLudn6rGxaa2WS5rooI06DkuJaWgJRpLMRTOeE
-        Y8Djg+789HA/LUhOrfzyM+6sj5wOy8s=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645785588;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ahs8xAWJnTUeFm8mayyoprYbMUR2xi8uypk5DkAI7Jk=;
-        b=Dyg22q9OODbCq/87IZuFouV9ej6aWXRNegKPYGtW3hn1IVrSH175qsaJEENlKapHVCfwdX
-        sQpMuw7bxCQHrzCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B721713ACB;
-        Fri, 25 Feb 2022 10:39:48 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id r+IELPSxGGJ4eAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 25 Feb 2022 10:39:48 +0000
-Message-ID: <d7f56188-5512-1365-243a-1e70acddf5c1@suse.cz>
-Date:   Fri, 25 Feb 2022 11:39:48 +0100
+        Fri, 25 Feb 2022 05:40:35 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E1768F95
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 02:40:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645785604; x=1677321604;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=mudAdqXMqc4msOewE4p+yyZWAmcOkujoS1WyKCFB/IE=;
+  b=FFt9T0WqV5lV0JWgsvtJ5hCpdEe5PSWe8/tEotcquxQW/KPePRr2bvB0
+   qPjSHDobENEcom6S6D+/E08H5kHBdIsyA1n4MKcmRe4lV7iZ9OTD+EytG
+   08lVcRtSxizWRemLnpW+RY/s0JD7eHLnUyOCKTskEQR0vlRLtrkP6mrQg
+   s=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 25 Feb 2022 02:40:04 -0800
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 02:40:03 -0800
+Received: from hu-rbankapu-blr.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Fri, 25 Feb 2022 02:39:59 -0800
+From:   Raghu Bankapur <quic_rbankapu@quicinc.com>
+To:     Vinod Koul <vkoul@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+        "Takashi Iwai" <tiwai@suse.com>,
+        ierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        "Kai Vehmanen" <kai.vehmanen@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        Raghu Bankapur <quic_rbankapu@quicinc.com>,
+        <alsa-devel@alsa-project.org>, Zubin Mithra <zsm@chromium.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Krishna Jha <quic_kkishorj@quicinc.com>
+Subject: [PATCH V0 0/1] ALSA: pcm: fix blocking while loop in 
+Date:   Fri, 25 Feb 2022 16:09:31 +0530
+Message-ID: <cover.1645784757.git.quic_rbankapu@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Content-Language: en-US
-To:     Liam Howlett <liam.howlett@oracle.com>,
-        =?UTF-8?Q?Jakub_Mat=c4=9bna?= <matenajakub@gmail.com>
-Cc:     "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "patches@lists.linux.dev" <patches@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mhocko@kernel.org" <mhocko@kernel.org>,
-        "mgorman@techsingularity.net" <mgorman@techsingularity.net>,
-        "willy@infradead.org" <willy@infradead.org>,
-        "hughd@google.com" <hughd@google.com>,
-        "kirill@shutemov.name" <kirill@shutemov.name>,
-        "riel@surriel.com" <riel@surriel.com>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>
-References: <20220218122019.130274-1-matenajakub@gmail.com>
- <20220218122019.130274-5-matenajakub@gmail.com>
- <20220218195729.oa5olrcsq6yox7hp@revolver>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [RFC PATCH 4/4] [PATCH 4/4] mm: add tracing for VMA merges
-In-Reply-To: <20220218195729.oa5olrcsq6yox7hp@revolver>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/18/22 20:57, Liam Howlett wrote:
->>  	/*
->>  	 * Can we merge both predecessor and successor?
->>  	 */
->> -	if (merge_prev && merge_next)
->> +	if (merge_prev >= MERGE_OK && merge_next >= MERGE_OK) {
-> 
-> What happened to making vma_merge easier to read?  What does > MERGE_OK
-> mean?  I guess this answers why booleans were not used, but I don't like
+When period interrupts are disabled, while loop in snd_pcm_update_hw_ptr0()
+results in the machine locking up if runtime->hw_ptr_buffer_jiffies is 0.
+Validate runtime->hw_ptr_buffer_jiffies value before while loop to avoid
+delta check.
 
-It's similar to e.g. enum compact_priority where specific values are defined
-as well as more abstract aliases.
 
-> it.   Couldn't you just log the err/success and the value of
-> merge_prev/merge_next?  It's not like the code tries more than one way
-> of merging on failure..
+when runtime->hw_ptr_buffer_jiffies is 0 then update of while condition 
+hdelta > xrun_threshold will be always true because hdelta will not
+change. This will lead to infinite loop causing lock-up
 
-An initial version had the "log" (trace point really) at multiple places and
-it was uglier than collecting details in the variables and having a single
-tracepoint call site.
+This issue found during stability test, below log explains CPU lock-up on CPU1
 
-Note that the tracepoint is being provided as part of the series mainly to
-allow evaluation of the series. If it's deemed too specific to be included
-in mainline in the end, so be it.
+[ 922.249028] sched: RT throttling activated for rt_rq ffffffc0f9970778 (cpu 1)
+[ 922.249028] potential CPU hogs:
+[ 922.249028] **FastCapture (11426)
+[ 922.249105] ------------[ cut here ]---------
 
->>  		merge_both = is_mergeable_anon_vma(prev->anon_vma, next->anon_vma, NULL);
->> +	}
->>  
->> -	if (merge_both) {	 /* cases 1, 6 */
->> +	if (merge_both >= MERGE_OK) {	 /* cases 1, 6 */
->>  		err = __vma_adjust(prev, prev->vm_start,
->>  					next->vm_end, prev->vm_pgoff, NULL,
->>  					prev);
->>  		area = prev;
->> -	} else if (merge_prev) {			/* cases 2, 5, 7 */
->> +	} else if (merge_prev >= MERGE_OK) {			/* cases 2, 5, 7 */
->>  		err = __vma_adjust(prev, prev->vm_start,
->>  					end, prev->vm_pgoff, NULL, prev);
->>  		area = prev;
->> -	} else if (merge_next) {
->> +	} else if (merge_next >= MERGE_OK) {
->>  		if (prev && addr < prev->vm_end)	/* case 4 */
->>  			err = __vma_adjust(prev, prev->vm_start,
->>  					addr, prev->vm_pgoff, NULL, next);
->> @@ -1252,7 +1255,7 @@ struct vm_area_struct *vma_merge(struct mm_struct *mm,
->>  	} else {
->>  		err = -1;
->>  	}
->> -
->> +	trace_vm_av_merge(err, merge_prev, merge_next, merge_both);
->>  	/*
->>  	 * Cannot merge with predecessor or successor or error in __vma_adjust?
->>  	 */
->> @@ -3359,6 +3362,8 @@ struct vm_area_struct *copy_vma(struct vm_area_struct **vmap,
->>  		/*
->>  		 * Source vma may have been merged into new_vma
->>  		 */
->> +		trace_vm_pgoff_merge(vma, anon_pgoff_updated);
->> +
->>  		if (unlikely(vma_start >= new_vma->vm_start &&
->>  			     vma_start < new_vma->vm_end)) {
->>  			/*
->> -- 
->> 2.34.1
->> 
+To fix this lock-up issue, added new condition to check if runtime->
+hw_ptr_buffer_jiffies is ZERO or negative.
+
+Raghu Bankapur (1):
+  ALSA: pcm: fix blocking while loop in snd_pcm_update_hw_ptr0()
+
+ sound/core/pcm_lib.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+-- 
+2.17.1
 
