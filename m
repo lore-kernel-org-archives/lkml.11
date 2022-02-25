@@ -2,49 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA2CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbiBYSEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 13:04:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
+        id S232360AbiBYSEh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 13:04:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231883AbiBYSEZ (ORCPT
+        with ESMTP id S232086AbiBYSE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 13:04:25 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B2C2510ED
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:03:52 -0800 (PST)
+        Fri, 25 Feb 2022 13:04:26 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 999DE2782B2
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:03:53 -0800 (PST)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 34D1E1F38D;
-        Fri, 25 Feb 2022 18:03:51 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 2C0682170E;
+        Fri, 25 Feb 2022 18:03:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1645812231; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=A4/rQl3tq18iWBnpNxSNODMK+KHp/IyzTqksKPj3yNY=;
-        b=0/gABR4GV5MunslmpIWsHjyu4tyKJAyYu76tJS249RgGTcGDyCFi70riWxl9Ov5d2uBTMh
-        Kdqw4hlU1urqBBZvYnly7TfdIbXWovGZdlGevpW5Waaq1vM9Ybx/gmbZHKC3I5YDJfBw0C
-        YtzemmL1HiiRSyj34s8NU+UaAZgByGs=
+        t=1645812232; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JD9hqNkoA5J42agtjJGEVLrQTac6+7vbg/b1GAr+BEA=;
+        b=YGjh6vBj2Ti9mp6ef4y1E4kNoGSitUTTqmSgcdiMzYS2NpOjuV6CQ+3zktn+383Gx7dtGZ
+        hjCQub9XAeHxD5coz/ymq3VtM6VhQhTJ3TrN+CdCIa4cwDbhQeOEwnnBjaoUSSid7dsvUk
+        9ablYY2/K0CpXb1fp7knvPHt6MORxv4=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1645812231;
+        s=susede2_ed25519; t=1645812232;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
-        bh=A4/rQl3tq18iWBnpNxSNODMK+KHp/IyzTqksKPj3yNY=;
-        b=jU0i+cFTNOB5gp2RO7cU6gFA7DdKmp1FGp6LrtKnfBTh+Wp3oKgUo3eQhzC5mSsgvKEKaA
-        eoRLawnX88wWGaCA==
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JD9hqNkoA5J42agtjJGEVLrQTac6+7vbg/b1GAr+BEA=;
+        b=l6p/u75O17s5invG2b8ryOwS/RnwgniwqiB1avm9l3/Pnafe1VtUc1NreH3dSOi8uSq9fM
+        5LfezO/U5bCC6MDQ==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0220213C17;
-        Fri, 25 Feb 2022 18:03:50 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C243913C17;
+        Fri, 25 Feb 2022 18:03:51 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id A6RCOwYaGWKSRQAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Fri, 25 Feb 2022 18:03:50 +0000
+        id 0G3PLgcaGWKSRQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Fri, 25 Feb 2022 18:03:51 +0000
 From:   Vlastimil Babka <vbabka@suse.cz>
 To:     David Rientjes <rientjes@google.com>,
         Christoph Lameter <cl@linux.com>,
@@ -55,61 +59,74 @@ Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
         patches@lists.linux.dev, linux-kernel@vger.kernel.org,
         Oliver Glitta <glittao@gmail.com>,
         Faiyaz Mohammed <faiyazm@codeaurora.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: [PATCH 0/5] SLUB debugfs improvements based on stackdepot
-Date:   Fri, 25 Feb 2022 19:03:13 +0100
-Message-Id: <20220225180318.20594-1-vbabka@suse.cz>
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH 4/5] mm/slub: sort debugfs output by frequency of stack traces
+Date:   Fri, 25 Feb 2022 19:03:17 +0100
+Message-Id: <20220225180318.20594-5-vbabka@suse.cz>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220225180318.20594-1-vbabka@suse.cz>
+References: <20220225180318.20594-1-vbabka@suse.cz>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1659; h=from:subject; bh=7wwPXU515VXzTFQhi+Z7ay+IsgwNFlOHE+QlyVJRv0w=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiGRnheS0dliAu4MteOLhQX7Og68SjckV01rHav/ln pW7FOUCJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYhkZ4QAKCRDgIcpz8YmpEBj6CA CynvJCe2aNMVhwZqBM7dyo023A1PjHtuiVCQ2on0ah9ITaCEx19EafpJQkKZqI5HFd5kVrzjCsle49 84HK5oQJ/kzR4yg887e2KkyWsoQ/gaF/DCAEKxij/AfENV/daLafKzexJ41mw3S8pdBvGb7/tnN5WX ISSGtk0P4DunpWry3i8YVtyreyCXpX3lKJqqlTlzVl8SydeqXJv8Lnbt3sDyIQ0yHQLLUlewt9/P4u Rk6y/dnFb1uh5xJtTO7TaGIW5tx3JdhJE8jx12WYV1VyLmq2UpD1tbM2YmVcZfacqQZHb0hD4KRCLC zWfz3bsUFt16I9tbnqkZ69vn0rCPpY
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1524; i=vbabka@suse.cz; h=from:subject; bh=xon+abvw43ttzY/JL7dHk0VJGFJj42xBf676Lz8+8ko=; b=owEBbQGS/pANAwAIAeAhynPxiakQAcsmYgBiGRnkU4GtGDN+xfeUVAn46PwUBpP9RxYL6YJ8EmhE gxqahSmJATMEAAEIAB0WIQSNS5MBqTXjGL5IXszgIcpz8YmpEAUCYhkZ5AAKCRDgIcpz8YmpEPY8B/ 98BKdLhZDN6HhOVm0tL7NIdHDDDgyiOrkS6i3h+AjEpuQDeg3BCKLN9NiVU5UgDFE1CJk+1FbKNVLL aVYGQQQ0EELV2AclZOqeFxeCDEiRLqEP0miGwAhwYy4wiWvVveayeLFNdmmWSNVmwPo10g5PWSaT7b 8N2S/whmykcaLi9znc3uHNzPEHxN2ZCgPiKUa6g7ekYCz5rYPXOchAFB58HrbLbkB11dAykIq4uNFj L95uNYrhhWiu67zzKPR3qRWHazTSh/iDIySvg0iaAhFXvsD17ZQAiW6UxI0NM6qhGl/OUoivTiF4Hy sD/E+PWVRJzM+9k8nvTo0d+pnRJTXc
 X-Developer-Key: i=vbabka@suse.cz; a=openpgp; fpr=A940D434992C2E8E99103D50224FA7E7CC82A664
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Oliver Glitta <glittao@gmail.com>
 
-this series combines and revives patches from Oliver's last year
-bachelor thesis (where I was the advisor) that make SLUB's debugfs
-files alloc_traces and free_traces more useful.
-The resubmission was blocked on stackdepot changes that are now merged,
-as explained in patch 2.
+Sort the output of debugfs alloc_traces and free_traces by the frequency
+of allocation/freeing stack traces. Most frequently used stack traces
+will be printed first, e.g. for easier memory leak debugging.
 
-Patch 1 is a new preparatory cleanup.
+Signed-off-by: Oliver Glitta <glittao@gmail.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+---
+ mm/slub.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-Patch 2 originally submitted here [1], was merged to mainline but
-reverted for stackdepot related issues as explained in the patch.
-
-Patches 3-5 originally submitted as RFC here [2]. In this submission I
-have omitted the new file 'all_objects' (patch 3/3 in [2]) as it might
-be considered too intrusive so I will postpone it for later. The docs
-patch is adjusted accordingly.
-
-Also available in git, based on v5.17-rc1:
-https://git.kernel.org/pub/scm/linux/kernel/git/vbabka/linux.git/log/?h=slub-stackdepot-v1
-
-I'd like to ask for some review before I add this to the slab tree.
-
-[1] https://lore.kernel.org/all/20210414163434.4376-1-glittao@gmail.com/
-[2] https://lore.kernel.org/all/20210521121127.24653-1-glittao@gmail.com/
-
-Oliver Glitta (4):
-  mm/slub: use stackdepot to save stack trace in objects
-  mm/slub: aggregate and print stack traces in debugfs files
-  mm/slub: sort debugfs output by frequency of stack traces
-  slab, documentation: add description of debugfs files for SLUB caches
-
-Vlastimil Babka (1):
-  mm/slub: move struct track init out of set_track()
-
- Documentation/vm/slub.rst |  61 +++++++++++++++
- init/Kconfig              |   1 +
- mm/slub.c                 | 152 +++++++++++++++++++++++++-------------
- 3 files changed, 162 insertions(+), 52 deletions(-)
-
+diff --git a/mm/slub.c b/mm/slub.c
+index 06599db4faa3..a74afe59a403 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -38,6 +38,7 @@
+ #include <linux/memcontrol.h>
+ #include <linux/random.h>
+ #include <kunit/test.h>
++#include <linux/sort.h>
+ 
+ #include <linux/debugfs.h>
+ #include <trace/events/kmem.h>
+@@ -6150,6 +6151,17 @@ static void *slab_debugfs_next(struct seq_file *seq, void *v, loff_t *ppos)
+ 	return NULL;
+ }
+ 
++static int cmp_loc_by_count(const void *a, const void *b, const void *data)
++{
++	struct location *loc1 = (struct location *)a;
++	struct location *loc2 = (struct location *)b;
++
++	if (loc1->count > loc2->count)
++		return -1;
++	else
++		return 1;
++}
++
+ static void *slab_debugfs_start(struct seq_file *seq, loff_t *ppos)
+ {
+ 	struct loc_track *t = seq->private;
+@@ -6211,6 +6223,10 @@ static int slab_debug_trace_open(struct inode *inode, struct file *filep)
+ 		spin_unlock_irqrestore(&n->list_lock, flags);
+ 	}
+ 
++	/* Sort locations by count */
++	sort_r(t->loc, t->count, sizeof(struct location),
++		cmp_loc_by_count, NULL, NULL);
++
+ 	bitmap_free(obj_map);
+ 	return 0;
+ }
 -- 
 2.35.1
 
