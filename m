@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D70C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC96C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236992AbiBYDOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:14:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
+        id S236960AbiBYDN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:13:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236965AbiBYDN7 (ORCPT
+        with ESMTP id S230117AbiBYDNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:13:59 -0500
+        Thu, 24 Feb 2022 22:13:46 -0500
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510127DA98;
-        Thu, 24 Feb 2022 19:13:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1BD64BE7;
+        Thu, 24 Feb 2022 19:13:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645758807; x=1677294807;
+  t=1645758796; x=1677294796;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=rH1pJ8ne/FKJWQirIoIp2z6yrhy7FoypqadKznLIPjE=;
-  b=e6zD/M8itgBK6qi1uesdav5jgzgmaVetyzpgPx0Zx32fsan74oOMRFc4
-   /EMw+D0u5bjOHtufoBjkXm+PMotx1emL/daN7Y/HJ7hPpP5Z0Rd4dwEck
-   foYCcOdgFVSvRqTWqlWfcYRSfl7+5yNxE6bWaiKwVnhBd8LAALHDsmYmp
-   hrOFR7K1g/4pV4wIOxNNsF5A+uBUswzH3RxcrcOK7kgJCa9b2MwdEI56Q
-   /uM0H4vpmYh3khClb7zVJkAEnoI/fz4U2xf2O20oGEQXnpVRNpXs2BFXV
-   ZqYjch9SYhuWrDC05Rq/WEbYPs0iotWT50XJ66vNPO1VxBk7r6NE6Hmw6
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252603002"
+  bh=peqfZ+rFk7ZwJ07YEOVnePiWyPNcAj7SeTjZgu1wjWo=;
+  b=mKTR7uZ+ydvOMo1yALM61PTrA/p2IB7YdtLmPADCk6wkgzcHYlxrndUE
+   YyaMT/+BXHkjEMFZQcQ/6E0DzT3GWdF0CQCHKcvGaKYn1W5A3u02xycvO
+   jSIfLJmUaJrWTkF6H9t5jq6DAFxjQ+9GGyuFnN1F/pqxVE5QYyitB6Kw8
+   813Sfc9aXpJ0XXScON239lcz1r2KlHKyYYJhPt4YggrUiXCZjE9Gdp6G8
+   qItU74Ap2bVLlIYFwaZhwmCuHY/wIziCFBN8r7eh/N1AYVTFLHDnsRFMb
+   Yb8LSCCidmPAFT1Zk+G5uYes+jTqw10ZMPmAoMglh1hw7PX+6uzakRndv
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252602981"
 X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; 
-   d="scan'208";a="252603002"
+   d="scan'208";a="252602981"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 19:13:27 -0800
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 19:13:16 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; 
-   d="scan'208";a="684512515"
+   d="scan'208";a="684512442"
 Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 19:13:24 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 19:13:13 -0800
 From:   Tianfei zhang <tianfei.zhang@intel.com>
 To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
         yilun.xu@intel.com, linux-fpga@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     corbet@lwn.net, Tianfei zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v2 5/5] Documentation: fpga: dfl: add description of IOFS
-Date:   Thu, 24 Feb 2022 22:10:02 -0500
-Message-Id: <20220225031002.261264-6-tianfei.zhang@intel.com>
+Cc:     corbet@lwn.net, Matthew Gerlach <matthew.gerlach@linux.intel.com>,
+        Tianfei Zhang <tianfei.zhang@intel.com>
+Subject: [PATCH v2 1/5] fpga: dfl: Allow for ports without specific bar space.
+Date:   Thu, 24 Feb 2022 22:09:58 -0500
+Message-Id: <20220225031002.261264-2-tianfei.zhang@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20220225031002.261264-1-tianfei.zhang@intel.com>
 References: <20220225031002.261264-1-tianfei.zhang@intel.com>
@@ -55,142 +56,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds description about IOFS support for DFL.
+From: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+
+In IOFS, there is a Port device for each PR slot, like Port
+control, Port user clock control and Port errors, those feature
+devices are linked with DFL. The DFL of Port device was located
+in PCIe Bar 0 MMIO space by default, but it also can put into any
+PCIe Bar space. If the BarID (3bits field) in PORTn_OFFSET register
+set to invalid means that DFL of Port device is located in the Bar 0
+by default, in this case, it don't need add the Bar 0 into dfl list
+twice.
 
 ---
-v2:
-* Fixs some typos.
-* Adds more detail description about the models of AFU access which supported in IOFS.
+v2: use FME_HDR_NO_PORT_BAR instead of PCI_STD_NUM_BARS.
 
-Signed-off-by: Tianfei zhang <tianfei.zhang@intel.com>
+Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
 ---
- Documentation/fpga/dfl.rst | 113 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 113 insertions(+)
+ drivers/fpga/dfl-pci.c | 6 ++++++
+ drivers/fpga/dfl.h     | 1 +
+ 2 files changed, 7 insertions(+)
 
-diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
-index ef9eec71f6f3..4c3ac6f452bc 100644
---- a/Documentation/fpga/dfl.rst
-+++ b/Documentation/fpga/dfl.rst
-@@ -556,6 +556,119 @@ new DFL feature via UIO direct access, its feature id should be added to the
- driver's id_table.
+diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
+index 4d68719e608f..33545c999c06 100644
+--- a/drivers/fpga/dfl-pci.c
++++ b/drivers/fpga/dfl-pci.c
+@@ -258,6 +258,12 @@ static int find_dfls_by_default(struct pci_dev *pcidev,
+ 			 */
+ 			bar = FIELD_GET(FME_PORT_OFST_BAR_ID, v);
+ 			offset = FIELD_GET(FME_PORT_OFST_DFH_OFST, v);
++			if (bar >= FME_HDR_NO_PORT_BAR) {
++				dev_dbg(&pcidev->dev, "skipping port without specific BAR space %d\n",
++					bar);
++				continue;
++			}
++
+ 			start = pci_resource_start(pcidev, bar) + offset;
+ 			len = pci_resource_len(pcidev, bar) - offset;
  
+diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
+index 53572c7aced0..1fd493e82dd8 100644
+--- a/drivers/fpga/dfl.h
++++ b/drivers/fpga/dfl.h
+@@ -91,6 +91,7 @@
+ #define FME_HDR_PORT_OFST(n)	(0x38 + ((n) * 0x8))
+ #define FME_HDR_BITSTREAM_ID	0x60
+ #define FME_HDR_BITSTREAM_MD	0x68
++#define FME_HDR_NO_PORT_BAR	7
  
-+Intel Open FPGA stack
-+=====================
-+
-+Intel Open FPGA stack aka IOFS, Intel's version of a common core set of
-+RTL to allow customers to easily interface to logic and IP on the FPGA.
-+IOFS leverages the DFL for the implementation of the FPGA RTL design.
-+
-+IOFS designs allow for the arrangement of software interfaces across multiple
-+PCIe endpoints. Some of these interfaces may be PFs defined in the static region
-+that connect to interfaces in an IP that is loaded via Partial Reconfiguration (PR).
-+And some of these interfaces may be VFs defined in the PR region that can be
-+reconfigured by the end-user. Furthermore, these PFs/VFs may also be arranged
-+using a DFL such that features may be discovered and accessed in user space
-+(with the aid of a generic kernel driver like vfio-pci). The diagram below depicts
-+an example design with two PFs and two VFs. In this example, it will export the
-+management functions via PF0, PF1 will bind with virtio-net driver presenting itself
-+as a network interface to the OS. The other functions, VF0 and VF1, leverage VFIO
-+to export the MMIO space to an application or assign to a VM.
-+::
-+
-+     +-----------------+  +--------------+  +-------------+  +------------+
-+     | FPGA Management |  |   VirtIO     |  |  User App   |  | Virtual    |
-+     |      App        |  |     App      |  |             |  | Machine    |
-+     +--------+--------+  +------+-------+  +------+------+  +-----+------+
-+              |                  |                 |               |
-+     +--------+--------+  +------+-------+  +------+------+        |
-+     |     DFL Driver  |  |VirtIO driver |  |    VFIO     |        |
-+     +--------+--------+--+------+-------+  +------+------+        |
-+              |                  |                 |               |
-+              |                  |                 |               |
-+     +--------+--------+  +------+-------+  +------+------+   +----+------+
-+     |     PF0         |  |     PF1      |  |   PF0_VF0   |   |  PF0_VF1  |
-+     +-----------------+  +--------------+  +-------------+   +-----------+
-+
-+As accelerators are specialized hardware, they are typically limited in the
-+number installed in a given system. Many use cases require them to be shared
-+across multiple software contexts or threads of software execution, either
-+through partitioning of individual dedicated resources, or virtualization of
-+shared resources. On IOFS, it provides several models to share the AFU
-+resources via PR mechanism and hardware-based virtualization schemes.
-+
-+1. Legacy model.
-+   In legacy FPGA card platforms (like Intel PAC N3000 or N5000 Card),there is
-+   a notion that the boundary between the AFU and the shell is also the unit of
-+   PR for those FPGA platforms. In this model, it can only able to handle a
-+   single context, because it only has one PR engine, and one PR region which
-+   has an associated Port device.
-+2. Multiple VFs per PR slot.
-+   In this model, available AFU resources may allow instantiation of many of VFs
-+   which has a dedicated PCIe function with their own dedicated MMIO space, or
-+   partition a region of MMIO space on a single PCIe function.
-+   In this model, the Port device would not connected to AFU/PR slot, so we don't
-+   need to release the Port device before creating the VFs. For DFL's view, the AFU
-+   will not connect to Port device, so the Next_AFU pointer in FIU feature header
-+   of port device points to NULL in this model. On the other hand, each VF can start
-+   with an AFU feature header without connected to a FIU Port feature header.
-+3. Micro-Personas in AFU.
-+   IOFS introducing a new concept to extend the FPGA usage, Micro-Personas in
-+   AFU. It finds some downsides of the legacy model to be unacceptable, because
-+   this may be desirable by a customer who intends to switch out one accelerator
-+   for another accelerator without having to reconfigure the entire FPGA.
-+   Micro-Personas allow the developer to designate their own AFU-defined PR
-+   regions. In this model the unit of PR is not the entire AFU, instead
-+   the unit of PR can be any size block or blocks inside the AFU.
-+   In this model, it has PR capability includes one PR engine and multiple PR regions,
-+   and each PR region has an associated port gasket. A PR region may also be
-+   referred to as a PR slot. Port gasket is similar with port device in legacy
-+   model which include the port control, port user clock control and port errors.
-+
-+IOFS provides the diversity for access the AFU resource to RTL developer.
-+An IP designer may choose to add more than one PF for interfacing with IP
-+on the FPGA and choose different model to access the AFU resource.
-+
-+There is one reference architecture design using the "Multiple VFs per PR slot"
-+model for IOFS as illustrated below. In this reference design, it exports the
-+FPGA management functions via PF0. PF1 will bind with virtio-net driver
-+presenting itself as a network interface to the OS. PF2 will bound to the
-+vfio-pci driver allowing the user space software to discover and interface
-+with the specific workload like diagnostic test. To access the AFU resource,
-+it uses SR-IOV to partition workload interfaces across various VFs.
-+::
-+
-+                              +----------------------+
-+                              |   PF/VF mux/demux    |
-+                              +--+--+-----+------+-+-+
-+                                 |  |     |      | |
-+        +------------------------+  |     |      | |
-+  PF0   |                 +---------+   +-+      | |
-+    +---+---+             |         +---+----+   | |
-+    |  DFH  |             |         |   DFH  |   | |
-+    +-------+       +-----+----+    +--------+   | |
-+    |  FME  |       |  VirtIO  |    |  Test  |   | |
-+    +---+---+       +----------+    +--------+   | |
-+        |                PF1            PF2      | |
-+        |                                        | |
-+        |                             +----------+ |
-+        |                             |           ++
-+        |                             |           |
-+        |                             | PF0_VF0   | PF0_VF1
-+        |           +-----------------+-----------+------------+
-+        |           |           +-----+-----------+--------+   |
-+        |           |           |     |           |        |   |
-+        |           | +------+  |  +--+ -+     +--+---+    |   |
-+        |           | | Port |  |  | DFH |     |  DFH |    |   |
-+        +-----------+ +------+  |  +-----+     +------+    |   |
-+                    |           |  | DEV |     |  DEV |    |   |
-+                    |           |  +-----+     +------+    |   |
-+                    |           |            PR Slot       |   |
-+                    |           +--------------------------+   |
-+                    | Port Gasket                              |
-+                    +------------------------------------------+
-+
-+
- Open discussion
- ===============
- FME driver exports one ioctl (DFL_FPGA_FME_PORT_PR) for partial reconfiguration
+ /* FME Fab Capability Register Bitfield */
+ #define FME_CAP_FABRIC_VERID	GENMASK_ULL(7, 0)	/* Fabric version ID */
 -- 
 2.26.2
 
