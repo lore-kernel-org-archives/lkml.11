@@ -2,101 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB34C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 06:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3299AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 06:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237686AbiBYGQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 01:16:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
+        id S237794AbiBYGYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 01:24:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237766AbiBYGQi (ORCPT
+        with ESMTP id S236480AbiBYGY1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 01:16:38 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BE61C6EF3;
-        Thu, 24 Feb 2022 22:16:06 -0800 (PST)
-X-UUID: 0d2856bb4180414badd3a37ee335b04f-20220225
-X-UUID: 0d2856bb4180414badd3a37ee335b04f-20220225
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <lena.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 809528167; Fri, 25 Feb 2022 14:15:20 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 25 Feb 2022 14:15:19 +0800
-Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 25 Feb 2022 14:15:19 +0800
-From:   Lena Wang <lena.wang@mediatek.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <matthias.bgg@gmail.com>
-CC:     <wsd_upstream@mediatek.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lena.wang@mediatek.com>,
-        <hao.lin@mediatek.com>
-Subject: [PATCH] net:fix up skbs delta_truesize in UDP GRO frag_list
-Date:   Fri, 25 Feb 2022 14:09:13 +0800
-Message-ID: <1645769353-7171-2-git-send-email-lena.wang@mediatek.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1645769353-7171-1-git-send-email-lena.wang@mediatek.com>
-References: <1645769353-7171-1-git-send-email-lena.wang@mediatek.com>
+        Fri, 25 Feb 2022 01:24:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA0F23584B;
+        Thu, 24 Feb 2022 22:23:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B01961A4D;
+        Fri, 25 Feb 2022 06:23:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55565C340E7;
+        Fri, 25 Feb 2022 06:23:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645770234;
+        bh=JIjPLXAFteEFGFpis11xNVKv9A9z+UArDoDbTHvX+Z0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RxRmf/Vgkh0rt6lUwdVqBhKNdailJzKBY9PYNbPw3Udm2O5kKkNq5QaXrHd1unw4E
+         MLfd38LlZYPjmtadv883rVLUTVLNbDzmNxGkLoREjgHPXiU/21ZrmI45Dzv2nfzigK
+         +wJ+ItW5mtOzkTIp+FVojs4FZTgkPkJopYflTV6Y=
+Date:   Fri, 25 Feb 2022 07:23:50 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Henry Lin <henryl@nvidia.com>
+Cc:     mathias.nyman@intel.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] xhci: fix runtime PM imbalance in USB2 resume
+Message-ID: <Yhh19qsTsGRhsLWT@kroah.com>
+References: <20220225055311.92447-1-henryl@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220225055311.92447-1-henryl@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: lena wang <lena.wang@mediatek.com>
+On Fri, Feb 25, 2022 at 01:53:11PM +0800, Henry Lin wrote:
+> USB2 resume starts with usb_hcd_start_port_resume() in port status
+> change handling for RESUME link state. usb_hcd_end_port_resume() call is
+> needed to keep runtime PM balance.
+> 
+> Signed-off-by: Henry Lin <henryl@nvidia.com>
+> ---
+>  drivers/usb/host/xhci-hub.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-The truesize for a UDP GRO packet is added by main skb and skbs in main
-skb's frag_list:
-skb_gro_receive_list
-        p->truesize += skb->truesize;
-
-When uncloning skb, it will call pskb_expand_head and trusesize for
-frag_list skbs may increase. This can occur when allocators uses
-__netdev_alloc_skb and not jump into __alloc_skb. This flow does not
-use ksize(len) to calculate truesize while pskb_expand_head uses.
-skb_segment_list
-err = skb_unclone(nskb, GFP_ATOMIC);
-pskb_expand_head
-        if (!skb->sk || skb->destructor == sock_edemux)
-                skb->truesize += size - osize;
-
-If we uses increased truesize adding as delta_truesize, it will be
-larger than before and even larger than previous total truesize value
-if skbs in frag_list are abundant. The main skb truesize will become
-smaller and even a minus value or a huge value for an unsigned int
-parameter. Then the following memory check will drop this abnormal skb.
-
-To avoid this error we should use the original truesize to segment the
-main skb.
-
-Signed-off-by: lena wang <lena.wang@mediatek.com>
----
- net/core/skbuff.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 9d0388be..8b7356c 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3876,6 +3876,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		list_skb = list_skb->next;
- 
- 		err = 0;
-+		delta_truesize += nskb->truesize;
- 		if (skb_shared(nskb)) {
- 			tmp = skb_clone(nskb, GFP_ATOMIC);
- 			if (tmp) {
-@@ -3900,7 +3901,6 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
- 		tail = nskb;
- 
- 		delta_len += nskb->len;
--		delta_truesize += nskb->truesize;
- 
- 		skb_push(nskb, -skb_network_offset(nskb) + offset);
- 
--- 
-1.9.1
-
+What commit does this fix?
