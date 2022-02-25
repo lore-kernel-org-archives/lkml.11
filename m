@@ -2,130 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2BD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:42:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236393AbiBYMmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 07:42:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
+        id S237299AbiBYMmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 07:42:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230513AbiBYMmI (ORCPT
+        with ESMTP id S230513AbiBYMmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 07:42:08 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E93B634F;
-        Fri, 25 Feb 2022 04:41:34 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 48FBF12FC;
-        Fri, 25 Feb 2022 04:41:34 -0800 (PST)
-Received: from [10.57.71.82] (unknown [10.57.71.82])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 90DCD3F5A1;
-        Fri, 25 Feb 2022 04:41:30 -0800 (PST)
-Subject: Re: [PATCH 2/2] perf arm-spe: Parse more SPE fields and store source
-To:     Ali Saidi <alisaidi@amazon.com>
-Cc:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        andrew.kilroy@arm.com, benh@kernel.crashing.org,
-        james.clark@arm.com, john.garry@huawei.com, jolsa@redhat.com,
-        leo.yan@linaro.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        mark.rutland@arm.com, mathieu.poirier@linaro.org, mingo@redhat.com,
-        namhyung@kernel.org, peterz@infradead.org, will@kernel.org
-References: <9266bfb6-341c-1d9c-e96f-c9f856a5ffb6@arm.com>
- <20220222192943.20137-1-alisaidi@amazon.com>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <46ba455e-277d-6618-f710-e92a2243898d@arm.com>
-Date:   Fri, 25 Feb 2022 12:40:38 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 25 Feb 2022 07:42:32 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83216949E
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 04:42:00 -0800 (PST)
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id EEFEE3F1B6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 12:41:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645792918;
+        bh=5wR2inrb50SGryPV3ql5qm7RIRt9i7gNq/sby+Clcps=;
+        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=FOvyzcUt7DvbL9/Vgde1Q4k4ZUGno96zyoj/3oJR1kJOj8jn1RpTHAInOTot2DEY3
+         rAmnZVWebB7uEZ2xX0QsRNnw7egvOM+kxs1VpIexclZGnbmGjOD/2A0XlXvg/LtQVX
+         tOFcriMXwbAtesIrhXwi3LoMkSg7yYdfPTIhqE63b7i7z5XExeBMbEkhKKTXYVW/mx
+         FPqGRPrusbYPRvWRx3tP/z0+Ie069tZDV4fBbkDS1T//CwgtKj0x/SlhY+hfgITDKO
+         FRbWo2uo0jqM3UAGyWz6qwirA+sAyGRINivzHE+sTjY1Ii3p2yc0ELfxD7AhfGsCCY
+         T7DKlRGyYyOyQ==
+Received: by mail-wm1-f72.google.com with SMTP id r206-20020a1c44d7000000b00380e36c6d34so1510302wma.4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 04:41:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5wR2inrb50SGryPV3ql5qm7RIRt9i7gNq/sby+Clcps=;
+        b=tYJR5+wUKJlfsg3qAym1hWP1ffmwcMrBr5u8lSbhY6vODYhNU2A8B9eoX5XFpBpFab
+         O+gsbqr+gxqpL8lkYIfJAfOT+C/sHvSJYpXDNkwNPB5pw3oV7G2TaFeZySjSGkW8UeVr
+         FyfDFWgAUUlnI+qHEQ5EqFPZ1NvqcJSbpo3WiwmJfO1Da8fnW9wU1hNVqbi03qMV3UBB
+         ebjcVhAFI3lqcupUF0ds+bOPlpYJTaVlbnkP0SXxbwSW87o/VbduGQMUd57PHZSDTRgy
+         7EJoCX/JJR62qpssIdRcMAA95vHjOxr1eGRaFNoW4JXJmFYRoF3GsWUMR5/tfydpRt1t
+         8Xvw==
+X-Gm-Message-State: AOAM531sCTUL/yVsPgZCdD6tcunbf7yIzvD4RyTtOJ2/v4SOrFHXAmQR
+        VWzi6aYErlWzZuwVEn/sT99i9veWlgINNMzp/+vtyvvP3kbG8GsxHtcTnkEitHHeylZIna3ueJG
+        6dIW42SPcYIvVnRY6al/w4p2TQ+rgsi2lMlujkcP7cw==
+X-Received: by 2002:adf:80c2:0:b0:1e3:3b9e:ab6d with SMTP id 60-20020adf80c2000000b001e33b9eab6dmr6234414wrl.253.1645792918685;
+        Fri, 25 Feb 2022 04:41:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx83iJoyNT5BQRvq3mMRYqD931oXS9YXkhhT249/SBb5EDJpj7lWu/6JE6+IOyTRBie/j9F6Q==
+X-Received: by 2002:adf:80c2:0:b0:1e3:3b9e:ab6d with SMTP id 60-20020adf80c2000000b001e33b9eab6dmr6234407wrl.253.1645792918458;
+        Fri, 25 Feb 2022 04:41:58 -0800 (PST)
+Received: from localhost.localdomain (lfbn-gre-1-195-1.w90-112.abo.wanadoo.fr. [90.112.158.1])
+        by smtp.gmail.com with ESMTPSA id p18-20020adfba92000000b001e4ae791663sm2234860wrg.62.2022.02.25.04.41.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 04:41:58 -0800 (PST)
+From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Nick Hu <nickhu@andestech.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com
+Subject: [PATCH -fixes v3 2/6] riscv: Fix config KASAN && SPARSEMEM && !SPARSE_VMEMMAP
+Date:   Fri, 25 Feb 2022 13:39:49 +0100
+Message-Id: <20220225123953.3251327-3-alexandre.ghiti@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220225123953.3251327-1-alexandre.ghiti@canonical.com>
+References: <20220225123953.3251327-1-alexandre.ghiti@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <20220222192943.20137-1-alisaidi@amazon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In order to get the pfn of a struct page* when sparsemem is enabled
+without vmemmap, the mem_section structures need to be initialized which
+happens in sparse_init.
 
-On 22/02/2022 19:29, Ali Saidi wrote:
-> Hi German & Yan,
->
-> Sorry about the delay in responding.
->
->> Hi German, Ali,
->>
-> [...]
->>>>>  };
->>>>>>  
->>>>>>  enum arm_spe_op_type {
->>>>>>  	ARM_SPE_LD		= 1 << 0,
->>>>>>  	ARM_SPE_ST		= 1 << 1,
->>>>>> +	ARM_SPE_LDST_EXCL	= 1 << 2,
->>>>>> +	ARM_SPE_LDST_ATOMIC	= 1 << 3,
->>>>>> +	ARM_SPE_LDST_ACQREL	= 1 << 4,
->>> Wondering if we can store this in perf_sample->flags. The values are
->>> defined in "util/event.h" (PERF_IP_*). Maybe we can extend it to allow
->>> doing "sample->flags = PERF_LDST_FLAG_LD | PERF_LDST_FLAG_ATOMIC" and
->>> such.
->>>
->>> @Leo do you think that could work?
->> Let's step back a bit and divide the decoding flow into two parts:
->> backend and frontend.
->>
->> For the backend part, we decode the SPE hardware trace data and
->> generate the SPE record in the file
->> util/arm-spe-decoder/arm-spe-decoder.c.  As we want to support
->> complete operation types, we can extend arm_spe_op_type as below:
->>
->> enum arm_spe_op_type {
->>        /* First level operation type */
->> 	ARM_SPE_OP_OTHER        = 1 << 0,
->> 	ARM_SPE_OP_LDST		= 1 << 1,
-> [...]
->
-> I'm OK with this approach, but perhaps instead the op type should
-> just be the raw traces op-type and op-type-payload? Macros to decode
-> this information are already present and extensively used in the text
-> decoding of the packet. While it's a little bit harder than just picking
-> a bit, the op_type is only used in a single place today outside of
-> the existing textual script decoding and what would be this decoding.
-> Do we forsee many more uses that would justify having to maintain
+But kasan_early_init calls pfn_to_page way before sparse_init is called,
+which then tries to dereference a null mem_section pointer.
 
-I wanted to include some of the sve/simd bits in the perf samples.
+Fix this by removing the usage of this function in kasan_early_init.
 
-For that I would be using a few of these flags.
+Fixes: 8ad8b72721d0 ("riscv: Add KASAN support")
+Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+---
+ arch/riscv/mm/kasan_init.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> the immediate format vs finding a way to unify arm_spe_pkt_desc_op_type
-> to support both the text decoding and this?
->
-> [...]
->> So I am just wandering if we can set the field
->> sample::data_src::mem_lock for atomic operations, like:
->>
->>    data_src.mem_op   = PERF_MEM_OP_LOAD;
->>    data_src.mem_lock = PERF_MEM_LOCK_ATOMIC;
->>
->> The field "mem_lock" is only two bits, we can consider to extend the
->> structure with an extra filed "mem_lock_ext" if it cannot meet our
->> requirement.
-> These are for the LOCK instruction on x86. I don't know that we want to
-> overload the meaning here. Minimally there is value in differentiating
-> exclusives vs atomics.
->
->>>>>> +	ARM_SPE_BR		= 1 << 5,
->>>>>> +	ARM_SPE_BR_COND		= 1 << 6,
->>>>>> +	ARM_SPE_BR_IND		= 1 << 7,
->>> Seems like we can store BR_COND in the existing "branch-miss" event
->>> (--itrace=b) with:
->>>
->>> sample->flags = PERF_IP_FLAG_BRANCH;
->>> sample->flags |= PERF_IP_FLAG_CONDITIONAL;
->>> and/or
->>> sample->flags |= PERF_IP_FLAG_INDIRECT;
->>>
->>> PERF_IP_FLAG_INDIRECT doesn't exist yet but we can probably add it.
->> Yes, for branch samples, this makes sense for me.
-> makes sense to me too.
->
-> Ali
->
+diff --git a/arch/riscv/mm/kasan_init.c b/arch/riscv/mm/kasan_init.c
+index f61f7ca6fe0f..85e849318389 100644
+--- a/arch/riscv/mm/kasan_init.c
++++ b/arch/riscv/mm/kasan_init.c
+@@ -202,8 +202,7 @@ asmlinkage void __init kasan_early_init(void)
+ 
+ 	for (i = 0; i < PTRS_PER_PTE; ++i)
+ 		set_pte(kasan_early_shadow_pte + i,
+-			mk_pte(virt_to_page(kasan_early_shadow_page),
+-			       PAGE_KERNEL));
++			pfn_pte(virt_to_pfn(kasan_early_shadow_page), PAGE_KERNEL));
+ 
+ 	for (i = 0; i < PTRS_PER_PMD; ++i)
+ 		set_pmd(kasan_early_shadow_pmd + i,
+-- 
+2.32.0
+
