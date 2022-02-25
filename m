@@ -2,111 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B2E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A025C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:47:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241651AbiBYNqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:46:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33464 "EHLO
+        id S231280AbiBYNrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:47:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241635AbiBYNqP (ORCPT
+        with ESMTP id S229615AbiBYNrZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:46:15 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F08210D70
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:45:41 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: rcn)
-        with ESMTPSA id 83DA71F4107C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645796740;
-        bh=Jse5jslyQwK8jYrGmsf8TVyXCyfWaI4dN1Xg9g/UKcA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gc1+GTNX4IdQTjOQM2VQD5ijDrvyUPUpqyrQFN0haUjKHtHW0sNDisvEDtU17qO46
-         bigv6hv4lf6EzHG5cLoEnnD//MUgMcFWQJQNA6pJB7qyus7PPI3jYDFa6XZUchQOsF
-         BoUAJqJxSzl2U50ux1ZNInoIRGQ7sN8xEw9JuG3JQdokodMBPz4PK26qenZpfwRyiS
-         BdPmG6p0EvgIyZ0iaU3W1pdk4lCqFjUd6RpScWwzbgXHbgaZgq4zFRECK+3yNvp6jI
-         pK9lmNlAohPakmyxW8VT2umSKzX/PvIHVAom67c/lItl2j6WJXzcddmsYjtJoCaaIw
-         nZayvxyFFqCwQ==
-From:   =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>
-To:     dri-devel@lists.freedesktop.org
-Cc:     =?UTF-8?q?Ricardo=20Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        kernel@collabora.com, andrzej.hajda@intel.com,
-        narmstrong@baylibre.com, maarten.lankhorst@linux.intel.com,
-        mripard@kernel.org
-Subject: [PATCH 0/2] Mitigate race condition problems when unbinding DRM driver
-Date:   Fri, 25 Feb 2022 14:45:02 +0100
-Message-Id: <20220225134504.457245-1-ricardo.canuelo@collabora.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 25 Feb 2022 08:47:25 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D33E40E4A;
+        Fri, 25 Feb 2022 05:46:51 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id m13-20020a7bca4d000000b00380e379bae2so1708587wml.3;
+        Fri, 25 Feb 2022 05:46:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WOJDawq4UDbuTj1KJIDLM/jMOXSHv7p8EKE/sG/KKz4=;
+        b=m8MYoDvvDvREAkO3wGE+9kmU/6N48Gb8khl9XPXk5O6MghtnOMfqjmzVlSuKTF+E/4
+         t0Ea3BgebQXkcOHIENHCSRrGLk2C4N3q9DOnkxVD1cMmVP03BOIsx50aqfxw8Pqkmk/l
+         gaeu6LCeCoi1WM6Gfgv+pTZjg9+JEXf/nET+KDKLdlaaPOPqQb0Sk90gGziWd4+OC2ba
+         6vMvhdbExhPhrGrKczjvFnsRmEjbBT9hJY5QQbLQEhjEShWl6oibmp2pXwGIm3KdGn+W
+         bTR1sJypb4YN9NjCIUVOd644rvV8qlLhsARi4cCwsUs0ch/N2/cCOxbtx3JyGQuDtG57
+         vAlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WOJDawq4UDbuTj1KJIDLM/jMOXSHv7p8EKE/sG/KKz4=;
+        b=1yEdjwD2A2O/oE34R9ibZXVKa3RIA/SBtLglkZm81F6nsqV7OWH9lWrWLBq5EJj5nq
+         EddDum6YogMGDXwuPzcJTFqHnO55HzePBOGvxWCf6mnFVVZvOJ/g5U/HBXnQzq/W3P3u
+         Qw1WkuHMex6Q4UaAVmjsGE8aV7bCZ+qDiNqCBPXwwfjsfCzhWB/tme8vcAEi8o4VhSAB
+         qJVx5PDdwJBHtwKJL/mRiwLnLl+bq+1VOSZiDzefo9AZfTfh1vBCJufvAvrdjAEbDVbr
+         FOh5g1YqofbFDEm+DZ+KJGo2hA6WvC5k2cAqkghQlIfQ4VZnS0Qc2wLuWrp3wpbvdX6U
+         YKnQ==
+X-Gm-Message-State: AOAM533Br5yujm98/ZcaXxcnrPmzvUZgvh2cp8IJtL/LiyyVEPR04RxN
+        DUvkSo5dE4HOySAzbl9XKsI=
+X-Google-Smtp-Source: ABdhPJyWomoCRJMSMC6pFRaLjTLNDleYv44mHjL3o7g8/yIrnOR8RMVvw1KQdtpLA/x53shX8Gj7ew==
+X-Received: by 2002:a05:600c:1e8a:b0:37f:deb2:6aec with SMTP id be10-20020a05600c1e8a00b0037fdeb26aecmr2801976wmb.86.1645796810049;
+        Fri, 25 Feb 2022 05:46:50 -0800 (PST)
+Received: from orome ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id n15-20020a05600c3b8f00b0037bc64fbd17sm6196397wms.11.2022.02.25.05.46.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 05:46:49 -0800 (PST)
+Date:   Fri, 25 Feb 2022 14:46:47 +0100
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     richard.leitner@linux.dev
+Cc:     richard.leitner@skidata.com, Rob Herring <robh+dt@kernel.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        devicetree@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ARM: tegra: tamonten: Fix I2C3 pad setting
+Message-ID: <Yhjdx49OcmfqipxV@orome>
+References: <20211201161148.238263-1-richard.leitner@linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="AxXtD6Dj3Z4zzjbO"
+Content-Disposition: inline
+In-Reply-To: <20211201161148.238263-1-richard.leitner@linux.dev>
+User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
 
-I'm sending these patches to try to improve the current situation for a
-particular corner case (DRM driver unbinding).
+--AxXtD6Dj3Z4zzjbO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I could reproduce a specific race condition during the unbinding of the
-mediatek-drm driver that caused an invalid memory address. The race
-condition is triggered by a userspace event (gnome-shell requesting a
-DRM GET_CONNECTOR ioctl) while the encoders and drivers are in the
-process of being disabled.
+On Wed, Dec 01, 2021 at 05:11:48PM +0100, richard.leitner@linux.dev wrote:
+> From: Richard Leitner <richard.leitner@skidata.com>
+>=20
+> This patch fixes the tristate configuration for i2c3 function assigned
+> to the dtf pins on the Tamonten Tegra20 SoM.
+>=20
+> Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
+> ---
+>  arch/arm/boot/dts/tegra20-tamonten.dtsi | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
-While I tried to mitigate this by making a small change in the
-parade-ps8640 driver (for the bridge I'm testing on) and by making a
-couple of functions in drm_bridge.c more robust, this is only a symptom
-of a larger problem that might not be getting enough attention,
-understandably, because this is an unusual corner case.
+This fell through the cracks for last cycle. Applied now, thanks.
 
-The scenario looks like this:
+Thierry
 
-<userspace>: unbind mediatek-drm   --------------------+
-              |                                        |
-           <kernel>                                    |
-              |                                        |
-             ...                                       |
-              |                                       ...
-        mtk_dsi_unbind                                 |
-              |                                        |
-              `- drm_encoder_cleanup                   v
-              |   |                                 gnome-shell
-             ...  `- drm_bridge_detach *<------ ioctl (GET_CONNECTOR)
-                                                   |
-                                                <kernel>
-                                                   |
-                                                  ...
-                                                   |
-                                                   |
-                                      ps8640_bridge_get_edid
-                                         |
-                                          `drm_bridge_chain_post_disable
+--AxXtD6Dj3Z4zzjbO
+Content-Type: application/pgp-signature; name="signature.asc"
 
-which causes drm_bridge_chain_post_disable() to walk the bridge chain
-after the bridge has already been detached and removed from the list. I
-guess a more radical and subsystem-wide solution would be to not allow
-or to block certain ioctl calls once the driver has started to unbind,
-but I'd like to hear your opinion on this.
+-----BEGIN PGP SIGNATURE-----
 
-This was tested on an Acer Chromebook R13 (Elm, MT8173) running Debian
-Sid, the command that triggers the race condition is
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIY3ccACgkQ3SOs138+
+s6HnTA//c25d7M3OmIF12IRyNITho0et8saGGqV9u8LhkDG6QYMxspuvEwVLJNUO
+o5xJsEeM2RF23H/crRQ56+Fk5bV/xhdkYPJWau98AHPbYG626eUvyIKvKaIW5s4B
+HtufuoJRKg+2riMkyNkLdrl6Eka0MZjpwawiBsk23fWQrNotxFgrHXEulD4c27so
+m1aD3u2VrYPZ0mIDNHrd4NW+yhPI1SYxERJoqwQBq5c6PVO7/JcMt9bJkYHVdGDN
+FHbjy3DoHukv9pj8RtAnk9gR5j60bqT+1CNdelxsZ1FW4wr5A73CP/EdP918YgK1
+mOJqDlZU0yFPUZOCf4D+Ag6ttlsykhxtxWuYae+WjtWhKOodjoAvo5ioWBKu1PJ8
+rqYPABbudsRO6IIHCLdPx91BvaLOcKeOAyVP/dAJHmgAqEXLNOqq9UO8tdaQApnn
+AdItCp3ALGSeUy9bXd9wQgIzg2+ia3EneRrzgeU9aS5YE8BZCy8IfoGVIUN1ONOm
+Ii6TNVRoz43tQE3l8KuW6fgjRVlD/KJsgXYZqu7cIkDfynf1ksIv0YYYjbF/pEsI
+K77k/COeGAEeC0OslSMxKLtxwT1g6Tfg4JRCIE4XrOPC0jZEcsR1l4bxQwRgQe38
+c5/bTGJX2m2/95ynLnpKGWaOyGzXeorqLnyZTR6AwP7sDEAFgIo=
+=O1Ys
+-----END PGP SIGNATURE-----
 
-echo mediatek-drm.12.auto > /sys/bus/platform/drivers/mediatek-drm/unbind
-
-Cheers,
-Ricardo
-
-Ricardo Cañuelo (2):
-  drm/bridge: parade-ps8640: avoid race condition on driver unbinding
-  drm/bridge: Add extra checks in pre_enable and post_enable
-
- drivers/gpu/drm/bridge/parade-ps8640.c | 6 +++---
- drivers/gpu/drm/drm_bridge.c           | 4 ++--
- 2 files changed, 5 insertions(+), 5 deletions(-)
-
---
-2.25.1
+--AxXtD6Dj3Z4zzjbO--
