@@ -2,147 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:30:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:32:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241384AbiBYNbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:31:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
+        id S241058AbiBYNcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:32:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241369AbiBYNbP (ORCPT
+        with ESMTP id S233609AbiBYNco (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:31:15 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FFA72275A5
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:30:41 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id y5so1682225wmi.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:30:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=iCYug2uN0yJ0h5qzrzM0t/ZXG7y0pW69zdo3//wJ5Mc=;
-        b=Iz/C4kfIg+QU3WpdVAdERt4dHyjlNNmL0wic5dOiAa2/KqYsxtSwe/Xosjkk2QmiZU
-         8ryyBpvt8iNhB254uJeBq90QEsX8cWGXS8YcWBMjUH2iWu/2UItIYU0qDGVKCdEObZo4
-         426WHxKm1HRvHqkWld/rVUJ4k43SvcEkPjifb6JeKZUzRmifV18ZJYgQTfQGC59Ewh/f
-         5kQQWOMynPpZOME2jygah+5n4SJ8rRBuRMf96P3q4s38/eob6pzdWzH4I1pbPxun86su
-         PylozFcPJ87NWL7Stzbx/8tmSSJCD2qL49xvM7G77NOhRLt4UQEq8HqsPW0LUKlFLn/a
-         v8tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=iCYug2uN0yJ0h5qzrzM0t/ZXG7y0pW69zdo3//wJ5Mc=;
-        b=uWVapzcE+i70nB18WtWcbc8BMtQW5mvmK++WYVzb8g1s4pzOPloitewinFBI5QOCf5
-         S/EZHsSb+DG337+TEK8xFf/VLwgYIz3zfz1yvFnpMIEK6d0RxjaVdKHRJz4m2c/lQi6Q
-         R1pnqt5hCBIEXE8ag45sC8/yF4nLVKnGhh5E4cuyFzTA1O4VFp8mI8Mah8sFySm0DjN4
-         Ttnu9UWj/hLmuFrhMpNITBezxCiL0kuzVV5koToK9uBj3364FRUNJiFED6O+bc+pjkch
-         nsBZ/wEW3GQXSfESsxzVsUHScoSSSSpCCBI3b8H88tIYxx6DdLPA4yQv5UnF061OT+IJ
-         GzmA==
-X-Gm-Message-State: AOAM532BKACe4TO/ZCfL9eUTEiISj38w+mfxZiYeJEXo23h3G0K6ed+2
-        bdhmqDcZZp3AEGM8cGo0gG0z9w==
-X-Google-Smtp-Source: ABdhPJxNOwK0M2yG7dyNvpA4W4t769Dz57u4tDUZ5Yawlwr+ZqoHjyWnaBVu9T+EYcXrNna7M8ECuA==
-X-Received: by 2002:a05:600c:211a:b0:380:d7b5:6e3a with SMTP id u26-20020a05600c211a00b00380d7b56e3amr2732823wml.125.1645795839794;
-        Fri, 25 Feb 2022 05:30:39 -0800 (PST)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id a8-20020a056000100800b001e30ef6f9basm3305843wrx.18.2022.02.25.05.30.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Feb 2022 05:30:39 -0800 (PST)
-Message-ID: <852e35f6-ec8b-ddc6-f81f-f666e899b543@linaro.org>
-Date:   Fri, 25 Feb 2022 13:30:38 +0000
+        Fri, 25 Feb 2022 08:32:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9B31BA93B
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:32:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB05B61D59
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 13:32:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 982FEC340E7;
+        Fri, 25 Feb 2022 13:32:10 +0000 (UTC)
+Date:   Fri, 25 Feb 2022 08:32:09 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Sergey Senozhatsky <senozhatsky@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        John Ogness <john.ogness@linutronix.de>
+Subject: Re: Strange output on the console
+Message-ID: <20220225083209.24bafe2c@gandalf.local.home>
+In-Reply-To: <Yhhj9MLZTrhjSWUE@google.com>
+References: <20220224230035.36547137@gandalf.local.home>
+        <Yhhh730RX1HpdXp2@google.com>
+        <Yhhj9MLZTrhjSWUE@google.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V3 2/3] dt-bindings: nvmem: brcm,nvram: add basic NVMEM
- cells
-Content-Language: en-US
-To:     =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        bcm-kernel-feedback-list@broadcom.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-References: <20220124160300.25131-1-zajec5@gmail.com>
- <20220218070729.3256-1-zajec5@gmail.com>
- <20220218070729.3256-3-zajec5@gmail.com>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-In-Reply-To: <20220218070729.3256-3-zajec5@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, 25 Feb 2022 14:07:00 +0900
+Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
 
-
-On 18/02/2022 07:07, Rafał Miłecki wrote:
-> From: Rafał Miłecki <rafal@milecki.pl>
+> > Steven, did you notice this recently?
+> > May I perhaps suggest git bisect? (sorry)  
 > 
-> NVRAM doesn't have cells at hardcoded addresses. They are stored in
-> internal struct (custom & dynamic format). It's still important to
-> define relevant cells in DT so NVMEM consumers can reference them.
+> On the off chance - do you have this revert in your kernel?
 > 
-> Update binding to allow including basic cells as NVMEM device subnodes.
+> commit 6a7b9f002eca6788d346c16a6ff0c218b41f8d1d
+> Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Date:   Wed Jan 26 14:33:58 2022 +0100
 > 
-> Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
-
-Applied thanks,
-
---srini
-
-> ---
-> V2: Add children nodes description per Rob's request
-> V3: Document NVMEM cells as properties
-> ---
->   .../devicetree/bindings/nvmem/brcm,nvram.yaml | 25 +++++++++++++++++--
->   1 file changed, 23 insertions(+), 2 deletions(-)
+>     Revert "tty: serial: Use fifo in 8250 console driver"
 > 
-> diff --git a/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml b/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
-> index 8c3f0cd22821..25033de3ef6b 100644
-> --- a/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
-> +++ b/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
-> @@ -14,6 +14,8 @@ description: |
->     NVRAM can be accessed on Broadcom BCM47xx MIPS and Northstar ARM Cortex-A9
->     devices usiong I/O mapped memory.
->   
-> +  NVRAM variables can be defined as NVMEM device subnodes.
-> +
->   maintainers:
->     - Rafał Miłecki <rafal@milecki.pl>
->   
-> @@ -27,11 +29,30 @@ properties:
->     reg:
->       maxItems: 1
->   
-> +  board_id:
-> +    type: object
-> +    description: Board identification name
-> +
-> +  et0macaddr:
-> +    type: object
-> +    description: First Ethernet interface's MAC address
-> +
-> +  et1macaddr:
-> +    type: object
-> +    description: Second Ethernet interface's MAC address
-> +
-> +  et2macaddr:
-> +    type: object
-> +    description: Third Ethernet interface's MAC address
-> +
->   unevaluatedProperties: false
->   
->   examples:
->     - |
->       nvram@1eff0000 {
-> -            compatible = "brcm,nvram";
-> -            reg = <0x1eff0000 0x10000>;
-> +        compatible = "brcm,nvram";
-> +        reg = <0x1eff0000 0x10000>;
-> +
-> +        mac: et0macaddr {
-> +        };
->       };
+>     This reverts commit 5021d709b31b8a14317998a33cbc78be0de9ab30.
+> 
+>     The patch is still a bit buggy, and this breaks some other hardware
+>     types.  It needs to be resubmitted in a non-buggy way, and make sure the
+>     other hardware types also continue to work properly.
+
+My tree does not have this.
+
+I just applied it and I'm building now. I'll let you know if this fixes the
+issue or not.
+
+Thanks,
+
+-- Steve
