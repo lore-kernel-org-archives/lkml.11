@@ -2,82 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B5FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F727C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:26:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239457AbiBYKZ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 05:25:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33092 "EHLO
+        id S239473AbiBYK0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 05:26:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231214AbiBYKZY (ORCPT
+        with ESMTP id S231214AbiBYK0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 05:25:24 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0C21DDFD7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 02:24:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=HnnMVWtbTd/SIAdg2NuHnARmzN5yACli763zGjn5X+o=; b=cbMnRAl0zd/ZS47ZcZk5SUe1Gu
-        FD3t+QWmGDhkAdWrxixISbMlDya7dk3H6iuwE1LR9SdXDPO7BOuY7MzTfQYZzK6bDXhHZURsNEQjr
-        tOsDf4eSMHiC1jNu6a574WuwbdTCtW82snf3wwnONIs+ijYHAWL0jIPFuwfHzoALouKD9tMdsMli7
-        Bsr9lbyOK8aLdwW6xl2lNPFhioIaoJAUbi1qtDkwUbs4sVzfdDAmai89dSk90XXOdANslBftIReLN
-        Jzohtebc6SMIyQlM4iYUr7t+xn0XZwyQ98GeElpn0o5vkG/vr/ziSFnDpWUxN3/VRs8bjRt6Lzsw/
-        A28o9H4Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNXm8-005gu5-O7; Fri, 25 Feb 2022 10:24:36 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 5B7A23001C0;
-        Fri, 25 Feb 2022 11:24:36 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 45D3F2D66C436; Fri, 25 Feb 2022 11:24:36 +0100 (CET)
-Date:   Fri, 25 Feb 2022 11:24:36 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 11/39] x86/ibt,kvm: Add ENDBR to fastops
-Message-ID: <YhiuZJpwq/bMZYgn@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151322.656194153@infradead.org>
- <202202241651.B5FB7DBE@keescook>
+        Fri, 25 Feb 2022 05:26:50 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216BE1DDFEF;
+        Fri, 25 Feb 2022 02:26:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1645784778; x=1677320778;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Od2Q0PrAzsRZXZ0/z1Qgjp51QpoNvxr0jp+QIqhly54=;
+  b=1N2xLO06AH5D+xfj4zQjH/E2qM4Lf8HyqCLW1M11IF+wXf1k6KT6r3Rf
+   IdIQmRdH2wYHvcfy5P4LEaeYUt9UpCy4aAOhWRFdleKpycvPF4tAQHhyU
+   R7odGBCRSwrmV/RRmetGUlVwgL6absWITu8Qw0zK0foFfEJdm9DRQg88Y
+   zoV8Qa+qTJFkW/HpvO2GLdrmq35hCGmXNVXiDFQJXhb+392mA5BD8qNGu
+   GXv8Xm0P2D/vNRC6HL8O4bpW8Z7P87bLWkFyrPqZvF9lydqw9RY/4BkwQ
+   VGyNPvoMZmJHXYKzjQQcVTe7MTIUsqWCdgn5Bw8TZiBK7Sz1U/xn7hD0U
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,136,1643698800"; 
+   d="scan'208";a="154399769"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Feb 2022 03:26:17 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 25 Feb 2022 03:26:16 -0700
+Received: from [10.12.72.56] (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 25 Feb 2022 03:26:13 -0700
+Message-ID: <3f5fdfca-1bbc-d6aa-4649-c50a9cd92052@microchip.com>
+Date:   Fri, 25 Feb 2022 11:26:12 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202202241651.B5FB7DBE@keescook>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7] ARM: dts: add DT for lan966 SoC and 2-port board
+ pcb8291
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
+CC:     Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        <arnd@arndb.de>, <alexandre.belloni@bootlin.com>, <olof@lixom.net>,
+        <soc@kernel.org>, <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <Manohar.Puri@microchip.com>
+References: <20220221080858.14233-1-kavyasree.kotagiri@microchip.com>
+ <3b4c56201a478876783e69243c901cd8@walle.cc>
+ <85566f97-dcfc-f477-1ebb-5cac955b791a@microchip.com>
+ <413b29b8a2e7a73561f942d4b7c78b9b@walle.cc>
+From:   Nicolas Ferre <nicolas.ferre@microchip.com>
+Organization: microchip
+In-Reply-To: <413b29b8a2e7a73561f942d4b7c78b9b@walle.cc>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 04:54:04PM -0800, Kees Cook wrote:
-> On Thu, Feb 24, 2022 at 03:51:49PM +0100, Peter Zijlstra wrote:
-> > 
-> > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > ---
-> >  arch/x86/kvm/emulate.c |    6 ++++--
-> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> > 
-> > --- a/arch/x86/kvm/emulate.c
-> > +++ b/arch/x86/kvm/emulate.c
-> > @@ -189,7 +189,7 @@
-> >  #define X16(x...) X8(x), X8(x)
-> >  
-> >  #define NR_FASTOP (ilog2(sizeof(ulong)) + 1)
-> > -#define FASTOP_SIZE 8
-> > +#define FASTOP_SIZE (8 * (1 + HAS_KERNEL_IBT))
+On 24/02/2022 at 15:55, Michael Walle wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> Err, is this right? FASTOP_SIZE is used both as a size and an alignment.
-> But the ENDBR instruction is 4 bytes? Commit log maybe needed to
-> describe this.
+> Hi,
+> 
+> Am 2022-02-24 15:51, schrieb Nicolas Ferre:
+>>>> +/ {
+>>>> +     model = "Microchip LAN966 family SoC";
+>>>> +     compatible = "microchip,lan966";
+>>>
+>>> As mentioned earlier, this isn't a documented compatible string. So,
+>>> I guess without overwriting this in the board dts it will throw an
+>>> error with the dt schema validator. OTOH, there are many dtsi files
+>>> in arch/arm/boot/dts/ doing this. I don't know what is correct here.
+>>
+>> I see it documented here:
+>> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/devicetree/bindings/arm/atmel-at91.yaml#n165
+>>
+>> Isn't it what is expected?
+> 
+> That only documents
+>     compatible = "microchip,lan9662-pcb8291", "microchip,lan9662",
+> "microchip,lan966";
+> 
+> But not the one above.
 
-Note how that comes out as 8*1 or 8*2, iow 8 or 16. Does that clarify?
-That is, 8+4 being 12 is ovbiuosly a fail for alignment.
+Oh, you mean the "microchip,lan966" string alone in the compatibility 
+string and not with the other ones before it...
+I didn't know it could be different in yaml syntax. Thanks for 
+highlighting that.
+
+Best regards,
+   Nicolas
+
+> 
+>>
+>>> Everthing else looks good.
+>>
+>> Thanks a lot for your reviews.
+>>
+>>> Reviewed-by: Michael Walle <michael@walle.cc>
+>>
+>> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+>> I'm queuing it to at91-dt branch for reaching arm-soc in 5.18 merge
+>> window.
+> 
+> Nice, then I'm good to go for my patches on top of this :)
+> 
+> -michael
+
+
+-- 
+Nicolas Ferre
