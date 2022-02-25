@@ -2,90 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86675C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F149FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240858AbiBYNEa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:04:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35514 "EHLO
+        id S240876AbiBYNEd convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:04:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240846AbiBYNE1 (ORCPT
+        with ESMTP id S236661AbiBYNE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:04:27 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB4051DA032;
-        Fri, 25 Feb 2022 05:03:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645794236; x=1677330236;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=fsfEpXp/R6vgIl41E1AMEPl55k+ufZpqMJPFBg1XTm8=;
-  b=f9GXGW6+ethldR76MtIqBX5SfqyFW03xyAdxcCUTJMVKWncL9udv77D7
-   Bv0SZyIQV1fcd/4yF5ywDXY6tR39R68dO6oremCu78dWrhQnDCJ7nQ29J
-   3yWULs5ex5PPE+9eUpxrt9kFJLYFI/WH4dN9E1jLmt4QFVVcKSzuATVt/
-   k=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 25 Feb 2022 05:03:55 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 05:03:54 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Fri, 25 Feb 2022 05:03:54 -0800
-Received: from blr-ubuntu-525.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Fri, 25 Feb 2022 05:03:51 -0800
-From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
-To:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <pure.logic@nexus-software.ie>,
-        <bjorn.andersson@linaro.org>, <greg@kroah.com>, <robh@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <quic_rjendra@quicinc.com>,
-        <quic_saipraka@quicinc.com>, <quic_schowdhu@quicinc.com>
-Subject: [PATCH V2 1/2] Revert "arm64: dts: qcom: sc7280: Set the default dr_mode for usb2"
-Date:   Fri, 25 Feb 2022 18:33:00 +0530
-Message-ID: <87008876afb33d8e1b7fd78d2fd5b6d9ec343d7d.1645793187.git.quic_schowdhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1645793187.git.quic_schowdhu@quicinc.com>
-References: <cover.1645793187.git.quic_schowdhu@quicinc.com>
+        Fri, 25 Feb 2022 08:04:29 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 202561E2FFE
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:03:56 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-238-3PwpcQMaNcGeF_-ybm3OzQ-1; Fri, 25 Feb 2022 13:03:54 +0000
+X-MC-Unique: 3PwpcQMaNcGeF_-ybm3OzQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Fri, 25 Feb 2022 13:03:52 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Fri, 25 Feb 2022 13:03:52 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Willy Tarreau' <w@1wt.eu>
+CC:     'Steven Rostedt' <rostedt@goodmis.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        "Sergey Senozhatsky" <senozhatsky@chromium.org>,
+        John Ogness <john.ogness@linutronix.de>
+Subject: RE: Strange output on the console
+Thread-Topic: Strange output on the console
+Thread-Index: AQHYKfxF0QTTTto/+k+8VsyEcwRQo6yjyM1ggAAHToCAADtxAIAABoGAgAAGDGCAABmPAIAACcBQ
+Date:   Fri, 25 Feb 2022 13:03:51 +0000
+Message-ID: <daa9769e1710410d9679e174cf8d3f41@AcuMS.aculab.com>
+References: <20220224230035.36547137@gandalf.local.home>
+ <61226fc12ff9459d8daed8e346d6ab94@AcuMS.aculab.com>
+ <20220225063637.GA18039@1wt.eu>
+ <1dcb185901f04a5ea2476a449e371167@AcuMS.aculab.com>
+ <20220225103239.GA18720@1wt.eu>
+ <32a7af26f4494f47a03a6d965ac7c99a@AcuMS.aculab.com>
+ <20220225122546.GB18720@1wt.eu>
+In-Reply-To: <20220225122546.GB18720@1wt.eu>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit c18553956f34819e224a79c9890eba2ba0604e15.
+From: Willy Tarreau
+> Sent: 25 February 2022 12:26
+...
+> That could be one option I thought about but still, that sounds quite
+> suspicious. You don't even get any #!:$/ etc. Or maybe the UART is
+> configured in 6-bit mode (most 16550 support 5-8 bits), and maybe even
+> the stop bit and/or parity participates.
 
-Revert the change to set dr_mode for usb2 in case of
-Embedded USB Debugger(EUD). This change needs to be
-reverted as the DT changes for QCOM should go through
-the QCOM tree and not the USB tree.
+I've been known to resort to an oscilloscope to get an async link
+working :-)
 
-Signed-off-by: Souradeep Chowdhury <quic_schowdhu@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280-idp.dts | 4 ----
- 1 file changed, 4 deletions(-)
+	David
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dts b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-index f40eaa5..9b991ba 100644
---- a/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-+++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dts
-@@ -61,10 +61,6 @@
- 	modem-init;
- };
- 
--&usb_2_dwc3 {
--	dr_mode = "otg";
--};
 -
- &pmk8350_rtc {
- 	status = "okay";
- };
--- 
-2.7.4
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
