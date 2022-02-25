@@ -2,234 +2,281 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42051C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD76C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:53:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235117AbiBYIww (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 03:52:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
+        id S238690AbiBYIxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 03:53:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234673AbiBYIwp (ORCPT
+        with ESMTP id S234513AbiBYIxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 03:52:45 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21FEC1B403B;
-        Fri, 25 Feb 2022 00:52:09 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B0320106F;
-        Fri, 25 Feb 2022 00:52:08 -0800 (PST)
-Received: from [10.163.51.16] (unknown [10.163.51.16])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 855243F70D;
-        Fri, 25 Feb 2022 00:52:06 -0800 (PST)
-Subject: Re: [PATCH 25/30] nios2/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-To:     Dinh Nguyen <dinguyen@kernel.org>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-arch@vger.kernel.org
-References: <1644805853-21338-1-git-send-email-anshuman.khandual@arm.com>
- <1644805853-21338-26-git-send-email-anshuman.khandual@arm.com>
- <50ac6dc2-7c71-2a8b-aa00-78926351b252@kernel.org>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <637cfc45-60ad-3cd1-5127-76ecabb87def@arm.com>
-Date:   Fri, 25 Feb 2022 14:22:03 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <50ac6dc2-7c71-2a8b-aa00-78926351b252@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        Fri, 25 Feb 2022 03:53:48 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF5021BC6D;
+        Fri, 25 Feb 2022 00:53:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645779197; x=1677315197;
+  h=from:to:cc:subject:date:message-id;
+  bh=0LgImPhIfJo7wukyAu8UzJEqlV+9q6Hx0k4sGMZFBuc=;
+  b=E6eYCNtTQtl39Ok0bwr8F49/gv4qdF8mcDOdOPuzLXBDGYdPAoapGlc0
+   dPFgN+ZTOAjNQ2I2u9HVFGvTIJz1yF1vn6JUmrNkxXqfQ/Yxu5TumZrB9
+   xliIoBCScrHXGKguJJLiSUTL9YOJaVrtZvBCFhMWfkQQy7tNNN8o6AGQQ
+   VRP+FCoOfSCLwe4P8oJtGhORFPST/3qWhqvQO7ZqB/mvTWb/TpOKuq7jL
+   HEOvxY+UjpgJ9kY1mQtRrtAL8K/zw2IJZubyZErsa64nvjcmv1v7ozTs9
+   8PU2p0jHkC3x5TRi+V7N3LpHmq9LFUm1z1TgCLpowVBns1O+54cm1M1i2
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="250037324"
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="250037324"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 00:53:16 -0800
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="549186407"
+Received: from arthur-vostro-3668.sh.intel.com ([10.239.13.120])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 00:53:01 -0800
+From:   Zeng Guang <guang.zeng@intel.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
+        Zeng Guang <guang.zeng@intel.com>
+Subject: [PATCH v6 0/9] IPI virtualization support for VM
+Date:   Fri, 25 Feb 2022 16:22:14 +0800
+Message-Id: <20220225082223.18288-1-guang.zeng@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Currently, issuing an IPI except self-ipi in guest on Intel CPU
+always causes a VM-exit. It can lead to non-negligible overhead
+to some workloads involving frequent IPIs when running in VMs.
+
+IPI virtualization is a new VT-x feature, targeting to eliminate
+VM-exits on source vCPUs when issuing unicast, physical-addressing
+IPIs. Once it is enabled, the processor virtualizes following kinds
+of operations that send IPIs without causing VM-exits:
+- Memory-mapped ICR writes
+- MSR-mapped ICR writes
+- SENDUIPI execution
+
+This patch series implements IPI virtualization support in KVM.
+
+Patches 1-4 add tertiary processor-based VM-execution support
+framework, which is used to enumerate IPI virtualization.
+
+Patch 5 handles APIC-write VM exit due to writes to ICR MSR when
+guest works in x2APIC mode. This is a new case introduced by
+Intel VT-x.
+
+Patch 6 disable the APIC ID change in any case.
+
+Patch 7 implements IPI virtualization related function including
+feature enabling through tertiary processor-based VM-execution in
+various scenarios of VMCS configuration, PID table setup in vCPU
+creation and vCPU block consideration.
+
+Patch 8-9 provide userspace capability to set maximum possible VCPU
+ID for current VM. IPIv can refer to this value to allocate essential
+memory for PID-pointer table instead of using KVM_MAX_VCPU_IDS. It 
+targets to reduce overall memory footprint.
+
+Document for IPI virtualization is now available at the latest "Intel
+Architecture Instruction Set Extensions Programming Reference".
+
+Document Link:
+https://software.intel.com/content/www/us/en/develop/download/intel-architecture-instruction-set-extensions-programming-reference.html
+
+We did experiment to measure average time sending IPI from source vCPU
+to the target vCPU completing the IPI handling by kvm unittest w/ and
+w/o IPI virtualization. When IPI virtualization enabled, it will reduce
+22.21% and 15.98% cycles consuming in xAPIC mode and x2APIC mode
+respectively.
+
+--------------------------------------
+KVM unittest:vmexit/ipi
+
+2 vCPU, AP was modified to run in idle loop instead of halt to ensure
+no VM exit impact on target vCPU.
+
+                Cycles of IPI
+                xAPIC mode              x2APIC mode
+        test    w/o IPIv  w/ IPIv       w/o IPIv  w/ IPIv
+        1       6106      4816          4265      3768
+        2       6244      4656          4404      3546
+        3       6165      4658          4233      3474
+        4       5992      4710          4363      3430
+        5       6083      4741          4215      3551
+        6       6238      4904          4304      3547
+        7       6164      4617          4263      3709
+        8       5984      4763          4518      3779
+        9       5931      4712          4645      3667
+        10      5955      4530          4332      3724
+        11      5897      4673          4283      3569
+        12      6140      4794          4178      3598
+        13      6183      4728          4363      3628
+        14      5991      4994          4509      3842
+        15      5866      4665          4520      3739
+        16      6032      4654          4229      3701
+        17      6050      4653          4185      3726
+        18      6004      4792          4319      3746
+        19      5961      4626          4196      3392
+        20      6194      4576          4433      3760
+
+Average cycles  6059      4713.1        4337.85   3644.8
+%Reduction                -22.21%                 -15.98%
+
+--------------------------------------
+IPI microbenchmark:
+(https://lore.kernel.org/kvm/20171219085010.4081-1-ynorov@caviumnetworks.com)
+
+2 vCPUs, 1:1 pin vCPU to pCPU, guest VM runs with idle=poll, x2APIC mode
+
+Result with IPIv enabled:
+
+Dry-run:                         0,             272798 ns
+Self-IPI:                  5094123,           11114037 ns
+Normal IPI:              131697087,          173321200 ns
+Broadcast IPI:                   0,          155649075 ns
+Broadcast lock:                  0,          161518031 ns
+
+Result with IPIv disabled:
+
+Dry-run:                         0,             272766 ns
+Self-IPI:                  5091788,           11123699 ns
+Normal IPI:              145215772,          174558920 ns
+Broadcast IPI:                   0,          175785384 ns
+Broadcast lock:                  0,          149076195 ns
 
 
-On 2/25/22 7:01 AM, Dinh Nguyen wrote:
-> Hi Anshuman,
-> 
-> On 2/13/22 20:30, Anshuman Khandual wrote:
->> This defines and exports a platform specific custom vm_get_page_prot() via
->> subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
->> macros can be dropped which are no longer needed.
->>
->> Cc: Dinh Nguyen <dinguyen@kernel.org>
->> Cc: linux-kernel@vger.kernel.org
->> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->> Acked-by: Dinh Nguyen <dinguyen@kernel.org>
->> ---
->>   arch/nios2/Kconfig               |  1 +
->>   arch/nios2/include/asm/pgtable.h | 16 ------------
->>   arch/nios2/mm/init.c             | 45 ++++++++++++++++++++++++++++++++
->>   3 files changed, 46 insertions(+), 16 deletions(-)
->>
->> diff --git a/arch/nios2/Kconfig b/arch/nios2/Kconfig
->> index 33fd06f5fa41..85a58a357a3b 100644
->> --- a/arch/nios2/Kconfig
->> +++ b/arch/nios2/Kconfig
->> @@ -6,6 +6,7 @@ config NIOS2
->>       select ARCH_HAS_SYNC_DMA_FOR_CPU
->>       select ARCH_HAS_SYNC_DMA_FOR_DEVICE
->>       select ARCH_HAS_DMA_SET_UNCACHED
->> +    select ARCH_HAS_VM_GET_PAGE_PROT
->>       select ARCH_NO_SWAP
->>       select COMMON_CLK
->>       select TIMER_OF
->> diff --git a/arch/nios2/include/asm/pgtable.h b/arch/nios2/include/asm/pgtable.h
->> index 4a995fa628ee..2678dad58a63 100644
->> --- a/arch/nios2/include/asm/pgtable.h
->> +++ b/arch/nios2/include/asm/pgtable.h
->> @@ -40,24 +40,8 @@ struct mm_struct;
->>    */
->>     /* Remove W bit on private pages for COW support */
->> -#define __P000    MKP(0, 0, 0)
->> -#define __P001    MKP(0, 0, 1)
->> -#define __P010    MKP(0, 0, 0)    /* COW */
->> -#define __P011    MKP(0, 0, 1)    /* COW */
->> -#define __P100    MKP(1, 0, 0)
->> -#define __P101    MKP(1, 0, 1)
->> -#define __P110    MKP(1, 0, 0)    /* COW */
->> -#define __P111    MKP(1, 0, 1)    /* COW */
->>     /* Shared pages can have exact HW mapping */
->> -#define __S000    MKP(0, 0, 0)
->> -#define __S001    MKP(0, 0, 1)
->> -#define __S010    MKP(0, 1, 0)
->> -#define __S011    MKP(0, 1, 1)
->> -#define __S100    MKP(1, 0, 0)
->> -#define __S101    MKP(1, 0, 1)
->> -#define __S110    MKP(1, 1, 0)
->> -#define __S111    MKP(1, 1, 1)
->>     /* Used all over the kernel */
->>   #define PAGE_KERNEL __pgprot(_PAGE_PRESENT | _PAGE_CACHED | _PAGE_READ | \
->> diff --git a/arch/nios2/mm/init.c b/arch/nios2/mm/init.c
->> index 613fcaa5988a..311b2146a248 100644
->> --- a/arch/nios2/mm/init.c
->> +++ b/arch/nios2/mm/init.c
->> @@ -124,3 +124,48 @@ const char *arch_vma_name(struct vm_area_struct *vma)
->>   {
->>       return (vma->vm_start == KUSER_BASE) ? "[kuser]" : NULL;
->>   }
->> +
->> +pgprot_t vm_get_page_prot(unsigned long vm_flags)
->> +{
->> +    switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
->> +    case VM_NONE:
->> +        return MKP(0, 0, 0);
->> +    case VM_READ:
->> +        return MKP(0, 0, 1);
->> +    /* COW */
->> +    case VM_WRITE:
->> +        return MKP(0, 0, 0);
->> +    /* COW */
->> +    case VM_WRITE | VM_READ:
->> +        return MKP(0, 0, 1);
->> +    case VM_EXEC:
->> +        return MKP(1, 0, 0);
->> +    case VM_EXEC | VM_READ:
->> +        return MKP(1, 0, 1);
->> +    /* COW */
->> +    case VM_EXEC | VM_WRITE:
->> +        return MKP(1, 0, 0);
->> +    /* COW */
->> +    case VM_EXEC | VM_WRITE | VM_READ:
->> +        return MKP(1, 0, 1);
->> +    case VM_SHARED:
->> +        return MKP(0, 0, 0);
->> +    case VM_SHARED | VM_READ:
->> +        return MKP(0, 0, 1);
->> +    case VM_SHARED | VM_WRITE:
->> +        return MKP(0, 1, 0);
->> +    case VM_SHARED | VM_WRITE | VM_READ:
->> +        return MKP(0, 1, 1);
->> +    case VM_SHARED | VM_EXEC:
->> +        return MKP(1, 0, 0);
->> +    case VM_SHARED | VM_EXEC | VM_READ:
->> +        return MKP(1, 0, 1);
->> +    case VM_SHARED | VM_EXEC | VM_WRITE:
->> +        return MKP(1, 1, 0);
->> +    case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
->> +        return MKP(1, 1, 1);
->> +    default:
->> +        BUILD_BUG();
->> +    }
->> +}
->> +EXPORT_SYMBOL(vm_get_page_prot);
-> 
-> I'm getting this compile error after applying this patch when build NIOS2:
+As IPIv can benefit unicast IPI to other CPU, Normal IPI test case gain
+about 9.73% time saving on average out of 15 test runs when IPIv is
+enabled.
 
-Hmm, that is strange.
+Normal IPI statistics (unit:ns):
+        test    w/o IPIv        w/ IPIv
+        1       153346049       140907046
+        2       147218648       141660618
+        3       145215772       117890672
+        4       146621682       136430470
+        5       144821472       136199421
+        6       144704378       131676928
+        7       141403224       131697087
+        8       144775766       125476250
+        9       140658192       137263330
+        10      144768626       138593127
+        11      145166679       131946752
+        12      145020451       116852889
+        13      148161353       131406280
+        14      148378655       130174353
+        15      148903652       127969674
 
-Did you apply the entire series or atleast upto the nios2 patch ? Generic
-vm_get_page_prot() should not be called (which is build complaining here)
-when ARCH_HAS_VM_GET_PAGE_PROT is already enabled on nios2 platform.
+Average time    145944306.6     131742993.1 ns
+%Reduction                      -9.73%
 
-Ran a quick build test on nios2 for the entire series and also just upto
-this particular patch, build was successful.
+--------------------------------------
+hackbench:
 
-> 
-> 
-> mm/mmap.c:105:2: error: ‘__P000’ undeclared here (not in a function)
-> 
->   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
-> 
->       |  ^~~~~~
-> 
-> mm/mmap.c:105:10: error: ‘__P001’ undeclared here (not in a function)
-> 
->   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
-> 
->       |          ^~~~~~
-> 
-> mm/mmap.c:105:18: error: ‘__P010’ undeclared here (not in a function)
-> 
->   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
-> 
->       |                  ^~~~~~
-> 
->   AR      fs/devpts/built-in.a
-> 
-> mm/mmap.c:105:26: error: ‘__P011’ undeclared here (not in a function)
-> 
->   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
-> 
->       |                          ^~~~~~
-> 
-> mm/mmap.c:105:34: error: ‘__P100’ undeclared here (not in a function)
-> 
->   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
-> 
->       |                                  ^~~~~~
-> 
-> mm/mmap.c:105:42: error: ‘__P101’ undeclared here (not in a function)
-> 
->   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
-> 
->       |                                          ^~~~~~
-> 
-> mm/mmap.c:105:50: error: ‘__P110’ undeclared here (not in a function)
-> 
->   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
-> 
->       |                                                  ^~~~~~
-> 
-> mm/mmap.c:105:58: error: ‘__P111’ undeclared here (not in a function)
-> 
->   105 |  __P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
-> 
->       |                                                          ^~~~~~
-> 
-> mm/mmap.c:106:2: error: ‘__S000’ undeclared here (not in a function)
-> 
->   106 |  __S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
-> 
->       |  ^~~~~~
-> 
-> mm/mmap.c:106:10: error: ‘__S001’ undeclared here (not in a function)
-> 
->   106 |  __S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
-> 
-> 
-> 
-> Dinh
-> 
+8 vCPUs, guest VM free run, x2APIC mode
+./hackbench -p -l 100000
+
+                w/o IPIv        w/ IPIv
+Time            91.887          74.605
+%Reduction                      -18.808%
+
+96 vCPUs, guest VM free run, x2APIC mode
+./hackbench -p -l 1000000
+
+                w/o IPIv        w/ IPIv
+Time            287.504         235.185
+%Reduction                      -18.198%
+
+--------------------------------------
+v5->v6:
+1. Adapt kvm_apic_write_nodecode() implementation based
+   on Sean's fix of x2apic's ICR register process.
+2. Drop the patch handling IPIv table entry setting in 
+   case APIC ID changed, instead applying Levitsky's patch
+   to disallow setting APIC ID in any case.
+3. Drop the patch resizing the PID-pointer table on demand.
+   Allow userspace to set maximum vcpu id at runtime that
+   IPIv can refer to the practical value to allocate necessary
+   memory for PID-pointer table. 
+
+v4 -> v5:
+1. Deal with enable_ipiv parameter following current
+   vmcs configuration rule.
+2. Allocate memory for PID-pointer table dynamically
+3. Support guest runtime modify APIC ID in xAPIC mode
+4. Helper to judge possibility to take PI block in IPIv case
+
+v3 -> v4:
+1. Refine code style of patch 2
+2. Move tertiary control shadow build into patch 3
+3. Make vmx_tertiary_exec_control to be static function
+
+v2 -> v3:
+1. Misc change on tertiary execution control
+   definition and capability setup
+2. Alternative to get tertiary execution
+   control configuration
+
+v1 -> v2:
+1. Refine the IPIv enabling logic for VM.
+   Remove ipiv_active definition per vCPU.
+
+--------------------------------------
+
+Gao Chao (1):
+  KVM: VMX: enable IPI virtualization
+
+Maxim Levitsky (1):
+  KVM: x86: lapic: don't allow to change APIC ID unconditionally
+
+Robert Hoo (4):
+  x86/cpu: Add new VMX feature, Tertiary VM-Execution control
+  KVM: VMX: Extend BUILD_CONTROLS_SHADOW macro to support 64-bit
+    variation
+  KVM: VMX: Detect Tertiary VM-Execution control when setup VMCS config
+  KVM: VMX: dump_vmcs() reports tertiary_exec_control field as well
+
+Zeng Guang (3):
+  KVM: x86: Add support for vICR APIC-write VM-Exits in x2APIC mode
+  KVM: x86: Allow userspace set maximum VCPU id for VM
+  KVM: VMX: Optimize memory allocation for PID-pointer table
+
+ arch/x86/include/asm/kvm_host.h    |   6 ++
+ arch/x86/include/asm/msr-index.h   |   1 +
+ arch/x86/include/asm/vmx.h         |  11 +++
+ arch/x86/include/asm/vmxfeatures.h |   5 +-
+ arch/x86/kernel/cpu/feat_ctl.c     |   9 +-
+ arch/x86/kvm/lapic.c               |  50 ++++++++---
+ arch/x86/kvm/vmx/capabilities.h    |  13 +++
+ arch/x86/kvm/vmx/evmcs.c           |   2 +
+ arch/x86/kvm/vmx/evmcs.h           |   1 +
+ arch/x86/kvm/vmx/posted_intr.c     |  12 ++-
+ arch/x86/kvm/vmx/vmcs.h            |   1 +
+ arch/x86/kvm/vmx/vmx.c             | 140 ++++++++++++++++++++++++++---
+ arch/x86/kvm/vmx/vmx.h             |  63 +++++++------
+ arch/x86/kvm/x86.c                 |  11 +++
+ 14 files changed, 274 insertions(+), 51 deletions(-)
+
+-- 
+2.27.0
+
