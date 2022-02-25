@@ -2,134 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A30EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 23:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF31C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 23:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239364AbiBYXYV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 18:24:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43296 "EHLO
+        id S239426AbiBYXbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 18:31:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbiBYXYT (ORCPT
+        with ESMTP id S239336AbiBYXbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 18:24:19 -0500
-Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F81BF511;
-        Fri, 25 Feb 2022 15:23:45 -0800 (PST)
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 21PNLLWc016897
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 18:21:22 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 6F72115C0038; Fri, 25 Feb 2022 18:21:21 -0500 (EST)
-Date:   Fri, 25 Feb 2022 18:21:21 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     Eric Biggers <ebiggers@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, linux-ext4@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>,
-        Dave Chinner <dchinner@redhat.com>,
-        Goldwyn Rodrigues <rgoldwyn@suse.com>,
-        "Darrick J . Wong" <darrick.wong@oracle.com>,
-        Bob Peterson <rpeterso@redhat.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        Andreas Gruenbacher <agruenba@redhat.com>,
-        Ritesh Harjani <riteshh@linux.ibm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Johannes Thumshirn <jth@kernel.org>, linux-xfs@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, cluster-devel@redhat.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -v3] ext4: don't BUG if kernel subsystems dirty pages
- without asking ext4 first
-Message-ID: <YhlkcYjozFmt3Kl4@mit.edu>
-References: <Yg0m6IjcNmfaSokM@google.com>
- <Yhks88tO3Em/G370@mit.edu>
- <YhlBUCi9O30szf6l@sol.localdomain>
- <YhlFRoJ3OdYMIh44@mit.edu>
- <YhlIvw00Y4MkAgxX@mit.edu>
- <2f9933b3-a574-23e1-e632-72fc29e582cf@nvidia.com>
+        Fri, 25 Feb 2022 18:31:02 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F32119F473
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 15:30:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645831829; x=1677367829;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=++ug63gMtYQuPNSVQoZUYLJuaPAipqR7J008vxy9R48=;
+  b=fYjQX9P2cOramIe9kh1QliTbfMeEjxbfUZ7ui4J6VylsWxQdjM/h5sJy
+   naTBf5uH7uW9dreHSW/ffamEUMXTk2R79Va99qQbjHBetgiAAINXaPlx5
+   ik7iVcBb5JcTAdd+o6HiPOZ55xpbfbhZSilmcC+1yIG9NcqQdNKiiPYH7
+   iq+R8q9VlxAdsMT8PR3mRnyek6uvMtg2SSR+tw5R2gphsJ27vfx97EITT
+   JIMD4mwc8bNn827HKQVNgGdChUoy2MbK/LhFX0gLzvTXd9p9hJ90US+Tl
+   Yx+PbC23YEFNIpCAaCeR2YNJnsw1rEKAymTQQoCpSJ6gXC8uhpUe/tgNG
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10269"; a="236108634"
+X-IronPort-AV: E=Sophos;i="5.90,137,1643702400"; 
+   d="scan'208";a="236108634"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 15:30:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,137,1643702400"; 
+   d="scan'208";a="509429973"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 25 Feb 2022 15:30:27 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nNk2c-0004og-L7; Fri, 25 Feb 2022 23:30:26 +0000
+Date:   Sat, 26 Feb 2022 07:29:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vineet Gupta <vgupta@synopsys.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org
+Subject: arch/arc/kernel/signal.c:77:31: sparse: sparse: incorrect type in
+ argument 1 (different address spaces)
+Message-ID: <202202260759.DXHGI8gG-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2f9933b3-a574-23e1-e632-72fc29e582cf@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 01:33:33PM -0800, John Hubbard wrote:
-> On 2/25/22 13:23, Theodore Ts'o wrote:
-> > [un]pin_user_pages_remote is dirtying pages without properly warning
-> > the file system in advance.  This was noted by Jan Kara in 2018[1] and
-> 
-> In 2018, [un]pin_user_pages_remote did not exist. And so what Jan reported
-> was actually that dio_bio_complete() was calling set_page_dirty_lock()
-> on pages that were not (any longer) set up for that.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   53ab78cd6d5aba25575a7cfb95729336ba9497d8
+commit: 96f1b00138cb8f04c742c82d0a7c460b2202e887 ARCv2: save ABI registers across signal handling
+date:   9 months ago
+config: arc-randconfig-s032-20220226 (https://download.01.org/0day-ci/archive/20220226/202202260759.DXHGI8gG-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=96f1b00138cb8f04c742c82d0a7c460b2202e887
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 96f1b00138cb8f04c742c82d0a7c460b2202e887
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arc SHELL=/bin/bash arch/arc/kernel/ drivers/remoteproc/ fs/ kernel/
 
-Fair enough, there are two problems that are getting conflated here,
-and that's my bad.  The problem which Jan pointed out is one where the
-Direct I/O read path triggered a page fault, so page_mkwrite() was
-actually called.  So in this case, the file system was actually
-notified, and the page was marked dirty after the file system was
-notified.  But then the DIO read was racing with the page cleaner,
-which would call writepage(), and then clear the page, and then remove
-the buffer_heads.  Then dio_bio_complete() would call set_page_dirty()
-a second time, and that's what would trigger the BUG.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-But in the syzbot reproducer, it's a different problem.  In this case,
-process_vm_writev() calling [un]pin_user_pages_remote(), and
-page_mkwrite() is never getting called.  So there is no need to race
-with the page cleaner, and so the BUG triggers much more reliably.
 
-> > more recently has resulted in bug reports by Syzbot in various Android
-> > kernels[2].
-> > 
-> > This is technically a bug in mm/gup.c, but arguably ext4 is fragile in
-> 
-> Is it, really? unpin_user_pages_dirty_lock() moved the set_page_dirty_lock()
-> call into mm/gup.c, but that merely refactored things. The callers are
-> all over the kernel, and those callers are what need changing in order
-> to fix this.
+sparse warnings: (new ones prefixed by >>)
+>> arch/arc/kernel/signal.c:77:31: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void [noderef] __user *to @@     got struct user_regs_arcv2 * @@
+   arch/arc/kernel/signal.c:77:31: sparse:     expected void [noderef] __user *to
+   arch/arc/kernel/signal.c:77:31: sparse:     got struct user_regs_arcv2 *
+>> arch/arc/kernel/signal.c:88:41: sparse: sparse: incorrect type in argument 2 (different address spaces) @@     expected void const [noderef] __user *from @@     got struct user_regs_arcv2 * @@
+   arch/arc/kernel/signal.c:88:41: sparse:     expected void const [noderef] __user *from
+   arch/arc/kernel/signal.c:88:41: sparse:     got struct user_regs_arcv2 *
+>> arch/arc/kernel/signal.c:134:42: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct sigcontext *mctx @@     got struct sigcontext [noderef] __user * @@
+   arch/arc/kernel/signal.c:134:42: sparse:     expected struct sigcontext *mctx
+   arch/arc/kernel/signal.c:134:42: sparse:     got struct sigcontext [noderef] __user *
+   arch/arc/kernel/signal.c:153:45: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct sigcontext *mctx @@     got struct sigcontext [noderef] __user * @@
+   arch/arc/kernel/signal.c:153:45: sparse:     expected struct sigcontext *mctx
+   arch/arc/kernel/signal.c:153:45: sparse:     got struct sigcontext [noderef] __user *
 
-From my perspective, the bug is calling set_page_dirty() without first
-calling the file system's page_mkwrite().  This is necessary since the
-file system needs to allocate file system data blocks in preparation
-for a future writeback.
+vim +77 arch/arc/kernel/signal.c
 
-Now, calling page_mkwrite() by itself is not enough, since the moment
-you make the page dirty, the page cleaner could go ahead and call
-writepage() behind your back and clean it.  In actual practice, with a
-Direct I/O read request racing with writeback, this is race was quite
-hard to hit, because the that would imply that the background
-writepage() call would have to complete ahead of the synchronous read
-request, and the block layer generally prioritizes synchronous reads
-ahead of background write requests.  So in practice, this race was
-***very*** hard to hit.  Jan may have reported it in 2018, but I don't
-think I've ever seen it happen myself.
+    63	
+    64	static int save_arcv2_regs(struct sigcontext *mctx, struct pt_regs *regs)
+    65	{
+    66		int err = 0;
+    67	#ifndef CONFIG_ISA_ARCOMPACT
+    68		struct user_regs_arcv2 v2abi;
+    69	
+    70		v2abi.r30 = regs->r30;
+    71	#ifdef CONFIG_ARC_HAS_ACCL_REGS
+    72		v2abi.r58 = regs->r58;
+    73		v2abi.r59 = regs->r59;
+    74	#else
+    75		v2abi.r58 = v2abi.r59 = 0;
+    76	#endif
+  > 77		err = __copy_to_user(&mctx->v2abi, &v2abi, sizeof(v2abi));
+    78	#endif
+    79		return err;
+    80	}
+    81	
+    82	static int restore_arcv2_regs(struct sigcontext *mctx, struct pt_regs *regs)
+    83	{
+    84		int err = 0;
+    85	#ifndef CONFIG_ISA_ARCOMPACT
+    86		struct user_regs_arcv2 v2abi;
+    87	
+  > 88		err = __copy_from_user(&v2abi, &mctx->v2abi, sizeof(v2abi));
+    89	
+    90		regs->r30 = v2abi.r30;
+    91	#ifdef CONFIG_ARC_HAS_ACCL_REGS
+    92		regs->r58 = v2abi.r58;
+    93		regs->r59 = v2abi.r59;
+    94	#endif
+    95	#endif
+    96		return err;
+    97	}
+    98	
+    99	static int
+   100	stash_usr_regs(struct rt_sigframe __user *sf, struct pt_regs *regs,
+   101		       sigset_t *set)
+   102	{
+   103		int err;
+   104		struct user_regs_struct uregs;
+   105	
+   106		uregs.scratch.bta	= regs->bta;
+   107		uregs.scratch.lp_start	= regs->lp_start;
+   108		uregs.scratch.lp_end	= regs->lp_end;
+   109		uregs.scratch.lp_count	= regs->lp_count;
+   110		uregs.scratch.status32	= regs->status32;
+   111		uregs.scratch.ret	= regs->ret;
+   112		uregs.scratch.blink	= regs->blink;
+   113		uregs.scratch.fp	= regs->fp;
+   114		uregs.scratch.gp	= regs->r26;
+   115		uregs.scratch.r12	= regs->r12;
+   116		uregs.scratch.r11	= regs->r11;
+   117		uregs.scratch.r10	= regs->r10;
+   118		uregs.scratch.r9	= regs->r9;
+   119		uregs.scratch.r8	= regs->r8;
+   120		uregs.scratch.r7	= regs->r7;
+   121		uregs.scratch.r6	= regs->r6;
+   122		uregs.scratch.r5	= regs->r5;
+   123		uregs.scratch.r4	= regs->r4;
+   124		uregs.scratch.r3	= regs->r3;
+   125		uregs.scratch.r2	= regs->r2;
+   126		uregs.scratch.r1	= regs->r1;
+   127		uregs.scratch.r0	= regs->r0;
+   128		uregs.scratch.sp	= regs->sp;
+   129	
+   130		err = __copy_to_user(&(sf->uc.uc_mcontext.regs.scratch), &uregs.scratch,
+   131				     sizeof(sf->uc.uc_mcontext.regs.scratch));
+   132	
+   133		if (is_isa_arcv2())
+ > 134			err |= save_arcv2_regs(&(sf->uc.uc_mcontext), regs);
+   135	
+   136		err |= __copy_to_user(&sf->uc.uc_sigmask, set, sizeof(sigset_t));
+   137	
+   138		return err ? -EFAULT : 0;
+   139	}
+   140	
 
-For process_vm_writev() this is a case where user pages are pinned and
-then released in short order, so I suspect that race with the page
-cleaner would also be very hard to hit.  But we could completely
-remove the potential for the race, and also make things kinder for
-f2fs and btrfs's compressed file write support, by making things work
-much like the write(2) system call.  Imagine if we had a
-"pin_user_pages_local()" which calls write_begin(), and a
-"unpin_user_pages_local()" which calls write_end(), and the
-presumption with the "[un]pin_user_pages_local" API is that you don't
-hold the pinned pages for very long --- say, not across a system call
-boundary, and then it would work the same way the write(2) system call
-works does except that in the case of process_vm_writev(2) the pages
-are identified by another process's address space where they happen to
-be mapped.
-
-This obviously doesn't work when pinning pages for remote DMA, because
-in that case the time between pin_user_pages_remote() and
-unpin_user_pages_remote() could be a long, long time, so that means we
-can't use using write_begin/write_end; we'd need to call page_mkwrite()
-when the pages are first pinned and then somehow prevent the page
-cleaner from touching a dirty page which is pinned for use by the
-remote DMA.
-
-Does that make sense?
-
-							- Ted
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
