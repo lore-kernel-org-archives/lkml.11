@@ -2,88 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C04C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 00:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97376C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 00:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236091AbiBYA2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 19:28:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55906 "EHLO
+        id S232060AbiBYAaN convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 19:30:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235581AbiBYA2R (ORCPT
+        with ESMTP id S229558AbiBYAaL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 19:28:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C82E194A81;
-        Thu, 24 Feb 2022 16:27:46 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14A7CB82A2D;
-        Fri, 25 Feb 2022 00:27:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16209C340E9;
-        Fri, 25 Feb 2022 00:27:42 +0000 (UTC)
-Date:   Thu, 24 Feb 2022 19:27:41 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     LKML <linux-kernel@vger.kernel.org>, linux-fsdevel@vger.kernel.org
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Stefan Roesch <shr@fb.com>, Jens Axboe <axboe@kernel.dk>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH][linux-next] fs: Fix lookup_flags in vfs_statx()
-Message-ID: <20220224192741.660cdacb@gandalf.local.home>
-In-Reply-To: <20220224191727.55b300c4@gandalf.local.home>
-References: <20220224191727.55b300c4@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 24 Feb 2022 19:30:11 -0500
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC4329F412;
+        Thu, 24 Feb 2022 16:29:41 -0800 (PST)
+Received: from in01.mta.xmission.com ([166.70.13.51]:42592)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nNOUI-001Ewm-DQ; Thu, 24 Feb 2022 17:29:34 -0700
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:56954 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nNOUH-000XdN-5K; Thu, 24 Feb 2022 17:29:34 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Linux API <linux-api@vger.kernel.org>,
+        Etienne Dechamps <etienne@edechamps.fr>,
+        Alexey Gladkov <legion@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Brauner <brauner@kernel.org>,
+        Solar Designer <solar@openwall.com>,
+        Ran Xiaokai <ran.xiaokai@zte.com.cn>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Containers <containers@lists.linux-foundation.org>,
+        Michal =?utf-8?Q?Koutn=C3=BD?= <mkoutny@suse.com>,
+        Security Officers <security@kernel.org>,
+        Neil Brown <neilb@cse.unsw.edu.au>, NeilBrown <neilb@suse.de>,
+        "Serge E. Hallyn" <serge@hallyn.com>, Jann Horn <jannh@google.com>,
+        Andy Lutomirski <luto@kernel.org>, Willy Tarreau <w@1wt.eu>,
+        Linus Torvalds <linus@torvalds.org>
+References: <20220207121800.5079-1-mkoutny@suse.com>
+        <e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr>
+        <20220215101150.GD21589@blackbody.suse.cz>
+        <87zgmi5rhm.fsf@email.froward.int.ebiederm.org>
+        <87fso91n0v.fsf_-_@email.froward.int.ebiederm.org>
+        <CAHk-=wjX3VK8QRMDUWwigCTKdHJt0ESXh0Hy5HNaXf7YkEdCAA@mail.gmail.com>
+        <878ru1qcos.fsf@email.froward.int.ebiederm.org>
+        <CAHk-=wgW8+vmqhx4t+uFiZL==8Ac5VWTqCm_oshA0e47B73qPw@mail.gmail.com>
+        <87tucpko7d.fsf@email.froward.int.ebiederm.org>
+        <87sfs8jmpz.fsf_-_@email.froward.int.ebiederm.org>
+        <202202240826.E31BADF@keescook>
+Date:   Thu, 24 Feb 2022 18:29:24 -0600
+In-Reply-To: <202202240826.E31BADF@keescook> (Kees Cook's message of "Thu, 24
+        Feb 2022 08:28:41 -0800")
+Message-ID: <87y21zhjq3.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-XM-SPF: eid=1nNOUH-000XdN-5K;;;mid=<87y21zhjq3.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1+tiJNf1YjykR+rfILbUT6/qjREErIq3zE=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH] ucounts: Fix systemd LimigtNPROC with private users
+ regression
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[ Adding Stephen. This was on next-20220223 ]
+Kees Cook <keescook@chromium.org> writes:
 
-On Thu, 24 Feb 2022 19:17:27 -0500
-Steven Rostedt <rostedt@goodmis.org> wrote:
+> typo: Subject's LimigtNPROC -> LimitNPROC
+>
+> On Thu, Feb 24, 2022 at 09:41:44AM -0600, Eric W. Biederman wrote:
+>> 
+>> Long story short recursively enforcing RLIMIT_NPROC when it is not
+>> enforced on the process that creates a new user namespace, causes
+>> currently working code to fail.  There is no reason to enforce
+>> RLIMIT_NPROC recursively when we don't enforce it normally so update
+>> the code to detect this case.
+>> 
+>> I would like to simply use capable(CAP_SYS_RESOURCE) to detect when
+>> RLIMIT_NPROC is not enforced upon the caller.  Unfortunately because
+>> RLIMIT_NPROC is charged and checked for enforcement based upon the
+>> real uid, using capable() wich is euid based is inconsistent with reality.
+>
+> typo: wich -> which
 
-> From: Steven Rostedt (Google) <rostedt@goodmis.org>
-> 
-> I needed to test Linux next and it locked up at starting init.
-> 
-> I bisected it down to:
-> 
-> 30512d54fae35 ("fs: replace const char* parameter in vfs_statx and do_statx with struct filename")
-> 1e0561928e3ab ("io-uring: Copy path name during prepare stage for statx")
-> 
-> The first commit did not even compile, so I consider the two of the them
-> the same commit.
-> 
-> Looking at what was changed, I see that the lookup_flags were removed from
-> the filename_lookup() in the vfs_statx() function, and that the
-> lookup_flags that were used later on in the function, were never properly
-> updated either.
-> 
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> ---
-> diff --git a/fs/stat.c b/fs/stat.c
-> index f0a9702cee67..2a2132670929 100644
-> --- a/fs/stat.c
-> +++ b/fs/stat.c
-> @@ -217,7 +217,7 @@ static int vfs_statx(int dfd, struct filename
-> *filename, int flags, struct kstat *stat, u32 request_mask)
->  {
->  	struct path path;
-> -	unsigned lookup_flags = 0;
-> +	unsigned lookup_flags = getname_statx_lookup_flags(flags);
->  	int error;
->  
->  	if (flags & ~(AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT |
-> AT_EMPTY_PATH | @@ -225,7 +225,7 @@ static int vfs_statx(int dfd, struct
-> filename *filename, int flags, return -EINVAL;
->  
->  retry:
-> -	error = filename_lookup(dfd, filename, flags, &path, NULL);
-> +	error = filename_lookup(dfd, filename, lookup_flags, &path, NULL);
->  	if (error)
->  		goto out;
->  
+Ahh... Typos.
 
+>> Come as close as possible to testing for capable(CAP_SYS_RESOURCE) by
+>> testing for when the real uid would match the conditions when
+>> CAP_SYS_RESOURCE would be present if the real uid was the effective
+>> uid.
+>> 
+>> Reported-by: Etienne Dechamps <etienne@edechamps.fr>
+>> Link: https://bugzilla.kernel.org/show_bug.cgi?id=215596
+>> Link: https://lkml.kernel.org/r/e9589141-cfeb-90cd-2d0e-83a62787239a@edechamps.fr
+>> Fixes: 21d1c5e386bc ("Reimplement RLIMIT_NPROC on top of ucounts")
+>> Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+>> ---
+>> 
+>> The previous conversation has given me enough clarity that I can see
+>> which tests I am comfortable with use for this pending regression fix.
+>> 
+>> I have tested this and it works for me.  Does anyone have any concerns
+>> with this change?
+>
+> I'd really love some kind of selftest that exercises the edge cases; do
+> you have your tests in some form that could be converted?
+>
+> But otherwise, yes, this looks like the best option here.
+
+Let's start with Michal Koutný tests.  I keep forgetting to look at
+them.  This cold has really been kicking my butt.
+
+For this issue the test case was a systemd unit file.  Which is simple
+and demonstrates the real-world regression but not really minimal in the
+way a kernel selftest should be.
+
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+>
+>> 
+>>  kernel/user_namespace.c | 14 +++++++++++++-
+>>  1 file changed, 13 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
+>> index 6b2e3ca7ee99..5481ba44a8d6 100644
+>> --- a/kernel/user_namespace.c
+>> +++ b/kernel/user_namespace.c
+>> @@ -58,6 +58,18 @@ static void set_cred_user_ns(struct cred *cred, struct user_namespace *user_ns)
+>>  	cred->user_ns = user_ns;
+>>  }
+>>  
+>> +static unsigned long enforced_nproc_rlimit(void)
+>> +{
+>> +	unsigned long limit = RLIM_INFINITY;
+>> +
+>> +	/* Is RLIMIT_NPROC currently enforced? */
+>> +	if (!uid_eq(current_uid(), GLOBAL_ROOT_UID) ||
+>> +	    (current_user_ns() != &init_user_ns))
+>> +		limit = rlimit(RLIMIT_NPROC);
+>> +
+>> +	return limit;
+>> +}
+>> +
+>>  /*
+>>   * Create a new user namespace, deriving the creator from the user in the
+>>   * passed credentials, and replacing that user with the new root user for the
+>> @@ -122,7 +134,7 @@ int create_user_ns(struct cred *new)
+>>  	for (i = 0; i < MAX_PER_NAMESPACE_UCOUNTS; i++) {
+>>  		ns->ucount_max[i] = INT_MAX;
+>>  	}
+>> -	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC));
+>> +	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_NPROC, enforced_nproc_rlimit());
+>>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MSGQUEUE, rlimit(RLIMIT_MSGQUEUE));
+>>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_SIGPENDING, rlimit(RLIMIT_SIGPENDING));
+>>  	set_rlimit_ucount_max(ns, UCOUNT_RLIMIT_MEMLOCK, rlimit(RLIMIT_MEMLOCK));
+>> -- 
+>> 2.29.2
+>> 
+
+Eric
