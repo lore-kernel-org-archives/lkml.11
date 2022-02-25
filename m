@@ -2,533 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 05:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 303D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 05:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237637AbiBYFx0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 00:53:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59306 "EHLO
+        id S237651AbiBYFxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 00:53:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232335AbiBYFxW (ORCPT
+        with ESMTP id S236106AbiBYFxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 00:53:22 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C4B017C415
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 21:52:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645768369; x=1677304369;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TA/k0CHLCiZ1r5tGqOAV5X4o5ff0zUY5Hb9mZJDsagM=;
-  b=AYoqLoa4TP1RDOS/bnjuNEFXH+LpHVcG8kUIzkSO221hHUEbkXSqqu80
-   7EuZL6XHv6Mz1yy1w3hf2WZTGvaBAJdBAsr6FvuDtXVMYcz2VGrDWBToG
-   TZ1o/FTsh2vyqB33G1UMeFFNc/z6kl03TWX8gsITgTsgH9vdR/r4rpv16
-   bialiTxJ1CVOfDkMQP85ZKR11iy6apo0NfZPy45PHlnW1wMQFnWAoSsIM
-   LpkN/SWX6rMmMIeSVCqFRh1lixKVQiPiC/Iv7ozVxYjWSwgpsfJ6soXPo
-   2yW5LOxumkGX9E4zVWQxvFwzb3P6GLAEf9VOSP0lk39f0tCA9SqZDsdw6
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="313146676"
-X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; 
-   d="scan'208";a="313146676"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 21:52:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; 
-   d="scan'208";a="491875486"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 24 Feb 2022 21:52:46 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nNTX3-0003tU-Uf; Fri, 25 Feb 2022 05:52:45 +0000
-Date:   Fri, 25 Feb 2022 13:51:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dinh Nguyen <dinguyen@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>
-Subject: [dinguyen:nios2_for_v5.18 6/6] include/asm-generic/uaccess.h:225:7:
- error: implicit declaration of function 'get_fs'
-Message-ID: <202202251308.WOVSZ75H-lkp@intel.com>
+        Fri, 25 Feb 2022 00:53:48 -0500
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E76B1187BB2
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 21:53:15 -0800 (PST)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21P4gRfQ028590;
+        Fri, 25 Feb 2022 05:53:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=lXdkL+Y7olObt0KiApgt769C/ClM0KO4aZeqchaeitY=;
+ b=yhlZumgNshx+MDGlVP3IfUhRJ0uz4r85g5Cdr/tfa8441j012nvfshGc5cn0nCs4J5Qn
+ Csknb8fxS3n+5QfLwo8Xf+ZCfBBpaTzOL8P2TdsUq2ksYTo01juhDfczFpUoqsud7aNS
+ bD9ed1W3CF8+MGOXLac0pqEi6J3TeniP0nIG82gBb4V70ugSyQD4+fagHY5zwxT5VvtH
+ mmtdvCLePqz1v/mhB6zpmP1D2olI2MBo/LpdFaIqG2Ula42hQl4nUGBOsC1+kmdswxvP
+ ASvh4xbYzXTZD9IyhN8WLrYSBPHojiinaDAIOfCWf/z21+MwyQn5t2hgEqMUYFv7SLWG DA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ecvar8vsj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Feb 2022 05:53:10 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21P5V1Lr026689;
+        Fri, 25 Feb 2022 05:53:09 GMT
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2102.outbound.protection.outlook.com [104.47.55.102])
+        by aserp3030.oracle.com with ESMTP id 3eapkm958q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Feb 2022 05:53:09 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gGFXX4XPD56jXdjkTnBFaQlXWftNl6fpEK1a7LCFLfgFiFCgYvwg2xPRxEf1WKsOqGD4RIhSZVMVQXw4sHBa3sTDm8ckCEwyOLtkbp0w9tWFPbYu0OWrDs/CLDz6wzEWoGNSo24I3ethiz6hK4hQ3YABYSHvymE7x4Ko15XAi5XwzurPlz0eqJ4eX9/C2p+QpyWDmplY+WbrY9bc2czJOaP6KvVdqb6SDsQG0vPxyMil3OIkp4EZgT3SzkqBFzSgUITLpIaBqEXeiNqjT7zHJJCH1zwWLpqp44zygas13vilwV/Oh1A/Alj9DSi5Z71MG1LWp10E+g+Z3eX8EG7qFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lXdkL+Y7olObt0KiApgt769C/ClM0KO4aZeqchaeitY=;
+ b=lLgqdjjYuDbsqZXK5IeaY/F+OaowfB14mMIPksEZigPul11xQX6Sp/a2jNGALNEw0IGkESmJ+83LOQTHz71640V0Q7b/JRn8h0s2FcrubCeixKo8Rz4AhTA0lMjEBRp4+FNKTwqhxG/Sn7i5nx0MbLDkyL9wT1haCba1Knrx/EBu3Efxt7cjbn8b4WOehqmiHoNMKvbNZCkUD+skqBtob+9lL59GnNQsGz8bQRMx1AzEg9JBAv4HDSxc7T0gLcoYzuTeyiz6IK/7rt6RpV3etPEcI75D8ObcC3bJhhBW7QFcc1q7X0qTHiUeQd+oKo5v6SD79iR7miEG9o+2EjsZvw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lXdkL+Y7olObt0KiApgt769C/ClM0KO4aZeqchaeitY=;
+ b=PQp0jIROzjaSRmap/sOvcJTLxvnM2AxPxnGgJeMn7uokVpF0FK4SC5qCSmkrLPU3ihh8qAR+t4OueAJPvz2YotgZ+bjj0UWlwoykiLYiBwRJ9pbCwk+9/KnygsM8ufMSleYV4Vte3Caui2NlpoCzbvHhZIJuD6mlDz/QrkO80B0=
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com (2603:10b6:303:6c::24)
+ by DM6PR10MB2460.namprd10.prod.outlook.com (2603:10b6:5:b0::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Fri, 25 Feb
+ 2022 05:53:06 +0000
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::b5ab:1c3e:6540:d2fa]) by CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::b5ab:1c3e:6540:d2fa%9]) with mapi id 15.20.5017.025; Fri, 25 Feb 2022
+ 05:53:06 +0000
+Message-ID: <23ceb6f7-93b8-f633-09bc-76bccfa0fa10@oracle.com>
+Date:   Fri, 25 Feb 2022 16:52:57 +1100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH v6 6/7] kernfs: Introduce hashed rw-sem to replace per-fs
+ kernfs_rwsem.
+Content-Language: en-US
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     tj@kernel.org, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org
+References: <20220214120322.2402628-1-imran.f.khan@oracle.com>
+ <20220214120322.2402628-7-imran.f.khan@oracle.com>
+ <YgxXh3clQqpxUPba@zeniv-ca.linux.org.uk>
+ <bfdef75d-4343-2734-2723-d8546df37c69@oracle.com>
+ <Yg8Rq2H1C1ihFqds@zeniv-ca.linux.org.uk>
+From:   Imran Khan <imran.f.khan@oracle.com>
+In-Reply-To: <Yg8Rq2H1C1ihFqds@zeniv-ca.linux.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SYCP282CA0004.AUSP282.PROD.OUTLOOK.COM
+ (2603:10c6:10:80::16) To CO1PR10MB4468.namprd10.prod.outlook.com
+ (2603:10b6:303:6c::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3c96993b-5534-4500-4316-08d9f8231850
+X-MS-TrafficTypeDiagnostic: DM6PR10MB2460:EE_
+X-Microsoft-Antispam-PRVS: <DM6PR10MB24603B4B7688B02AADB221EDB03E9@DM6PR10MB2460.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RcWp9InYKVcD9OBJeFQNXOMCYl2xG0oTlFrHuU/Ni35/8/QemU0UNYDdv5U73zM/auKLB2rPcvdtznAp39Lbrk7FTvc5b6QZIoPoouRuF4X1nhmnOO/Yf9ATIL/4s2pCR2e7UkpxAiZpxu+ZY0dJndv3f95+R8B6EtGnbj3VXx3+HhCK5+3QLkfXtqz3/sma4AcrQwdX5oigPhD3HyBQXCc4Ox62mUHc/+Vky+f6ke7m0jGDk/x30PYTkv/C907TT0E4XyjO34Fky83bl7oKsOoEH1k2c/GnX4S16gLyOyGvM7ExEzJDP11WYBJZhpwL1gsF5a91XJNVQR5xN0oMx3A7ZiENhwhoGJgFmSIS0RDngeb4OdZjWgj72SgA7R1dSDnpGIP8McKHHK3RZbbwpy601Nwf50rh8EK7tcwqoZrrK9mlkPNOMzUYbt7U95N1pvtFuEpbz+xHwTWV32YI1KoQX4s2ibU44LNXZTbqfbRBHZOiAaOti/XkSjb2KUpO2+TzABXyErY3cbbW/5wFD2f4gKBq+rG8nolxBokU9IqedhmshGBXUpkDDF/szWjmG091rs7w2/TFN7lbvGVlAT5gYf3fOEyUexi8EuG8NkGI2wqS+YhoOFZM1hkoya7gHbdcWgCX5MS72FfT3Ocue3Cq9uQER9LJUKs9NK4qauGBQBOIUmhyU78Kp2Fag7e6qwI2HW+wW1RO7dMIUhLFq0zSNRk+aZoNDM2VF8L7hRJMleBBSnj4t7G57M29U3wAKgGvLtVicgF9XCM7Sw4baxYD62Am5W3hdBooK4ONthV838yglITJdx/SNA3lk/Uv
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4468.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(6666004)(66556008)(83380400001)(6506007)(36756003)(66476007)(66946007)(508600001)(6486002)(966005)(53546011)(6512007)(38100700002)(31686004)(26005)(186003)(2616005)(2906002)(86362001)(8676002)(8936002)(4326008)(5660300002)(31696002)(6916009)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NW04ZGpwbks3M0xhK2dYMEFyRkhrQmVTbEtYdmZHa0YzOWk5M2RjWWRpVHpE?=
+ =?utf-8?B?WUVLdGZ1NWYxNklaS084cnpPNUs5VTdpSHVFMEUvcEVnVWwzc3ErOHVCMVVu?=
+ =?utf-8?B?VmxVa2IweVFJQmJLTTVzQzllRmRmeFllaTFwZUtKRkJwdnJUeDlSakdhc2lz?=
+ =?utf-8?B?Ly9tV0RTc3VqUkQ1eVladHd3eVhXcFhkSWFVMENpWGZVYzRIZlhMTDZpK21R?=
+ =?utf-8?B?cElTRjhhTFpSR1pjSG1Sem9McnNhU2p1MVl4TXFlRWdMV2phemp5UVJYdFBU?=
+ =?utf-8?B?WHRJdTFvck84YTUxUEVpeVA2dldlZDJPZ1RIZmxpbXEybTk4V01ydCt0QTJ3?=
+ =?utf-8?B?ZXVvVnl0N0RXdzZZem5qWHFyU3NKZzBIQVZjek01Sno3ZTZYTDhWK1NySXZF?=
+ =?utf-8?B?MWY1eW1YZFJZVzYvcjRlWURXMUZkLzB5azljcE52ZXdQK1FHZEZvYXJoaFlp?=
+ =?utf-8?B?MHE1Wjg0NG1kaWVNUmxMZ3dLQS9hNnZMbnlCTTc1VjM1L0NqN3cvV1ptalFr?=
+ =?utf-8?B?S0Zqb2hCSVIrVU1nYXB1TktQSTFWMU9LdmFxSGVmMXk3amZxRHhrQ2VqZnVT?=
+ =?utf-8?B?eVdmMGVmMGRFNEhRL3AyVjNoYXVZR0FoSTVkYlFXSjgyL09nR2g3NFMrcHp3?=
+ =?utf-8?B?K0Z2RWxOcm9zalR2RG5HY2xDUnIvVUw1YjFFRThaaVpYbkdTcTZBR2hFakxm?=
+ =?utf-8?B?QlJxdVBVQXg0MkE5aXdaZTVmQkdwUTcyRVJ1UGJKcDNVOEN1bnpsVW9CRXR4?=
+ =?utf-8?B?NDZEMVJBbEk0K3QraTVpTTJlUXJzN3N2TnE5NDVmMmZTc0JtRTNWeWR4dXBw?=
+ =?utf-8?B?b3V6dFIreCtIOWVaN0w2TnBPMzdtRHliTkFDeWsrVE1qYWN1d1BjcXdxRXpS?=
+ =?utf-8?B?MnI0MWEvWmp1bkxNdDE5bWlEYU5sV1BFdnlxUTFRNkNvYVhJcHRTUDVNdjRr?=
+ =?utf-8?B?ME9ZbGQyM29vZVhFVWpTMnl2UFMzRlMzNmpWcDd0YjZHM2I2SnptZnR0dWoz?=
+ =?utf-8?B?Z2lHaG1adTVvZW5NRFBuY2JqdGNKOTMvVE95VHhiZHpWT3VORndBZlNEQVZS?=
+ =?utf-8?B?V1RzYjBLb1d0NDdHZVJ4c280T2xYWTljN0xuN1hYdHJQS2g5bEh0SXozLzVW?=
+ =?utf-8?B?d1VVaEdXZWxBTk9aMjhTUk8za2lUZjBTS0tiMm1GV0p1a0JRbUVZRFRNNTBB?=
+ =?utf-8?B?MUlQUVZwUFMwQXhmY0pqS3k3SHowS3NrYWJ5aUZRZ1pjOFE4VjIyU084Tkpi?=
+ =?utf-8?B?eWpuaUVnWEQxTHN5N2lXbXBjV3lyUDdIUzN2bFVDWHRHaFpBNFVKRlZ3R1ZK?=
+ =?utf-8?B?MVlFWW9ZM3E0SnRsTS9tZEh6ckJPamVQTVF5emNOQ2VmWFhjM1drRUFxZzRJ?=
+ =?utf-8?B?NStQUzVvK2R1bjAvM1E2c3h2dHlGdGpVeTBrT2N6SWxJSk5tY3E0RUZFcjdQ?=
+ =?utf-8?B?aUZyaklnWDA5ZXNFZDI2Y3BmMlV0YmhNTE5ya0RSWXpEOWhJRThRN205QVZK?=
+ =?utf-8?B?ci80dktiWThmRGxJOUFtK0l2b1RLKzhpNVg4ZTY4OWtXWGtMR3hXZlJaa2U3?=
+ =?utf-8?B?WEI4dHVCVmlVRTh0V2NCQzVLeVJYWFRRQm9zVnBESGtNQlEwZzNvQkpGUC95?=
+ =?utf-8?B?aWtjMjhFZ05rYzVrWXh4dmg4MHJ2WHFkMjAraGJvalFzOG16Q3J4SEg5NlRK?=
+ =?utf-8?B?emllSmVtWFFFTWZJbktJeitEY29IMnJoRTBndGNrK1NyRDdiak1sckdjcmxi?=
+ =?utf-8?B?OGZlUjNTbGhUS05DaWlZRjl2aC9oVXA0OS90a1JEN1h1N3pESm5wYXdDL0Nv?=
+ =?utf-8?B?TnQ1aFNOYlZhMkltbmtEMVJzbFpFdzVkNld5eEpHT1FsV1BJaERmRE9qaGtl?=
+ =?utf-8?B?SVlOWTkwUUswODArWjFtcGwyelFaWmZWanNyMFU3NlNjdFhSNkMxZzUrcWY5?=
+ =?utf-8?B?WFpLelBQVEpZSExZY1VoQmNrNHdVQ1E4UWRNQmhLbFZPTk5BU0k1WExWUExt?=
+ =?utf-8?B?ZHh5QUtvTmgzSUVjT2xWcmJNeDNkSnpsRTNyMnBqaDZxYVRXL3kzbWhPbGZa?=
+ =?utf-8?B?Q3A1dGUvUUE5aTQxaFE4clg5cU1tS2xkYitUdldpblphbDByOWRIOEZuMk5D?=
+ =?utf-8?B?NHg3NGhRU21EVnZJR1dYcW1VcEtYZVh2NmxvcEFTRDhxN3BQS1NTWEtxVE9N?=
+ =?utf-8?Q?4kMYIYHKR3+BHmj7IXMZj0w=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c96993b-5534-4500-4316-08d9f8231850
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4468.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 05:53:06.8060
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QIMKlzITKg2uNd3fHVeK6a83YZmb3euPLxoPigQMar+7hsrB3H/yFZuVlZlUfN9tcF+ejDuZmSvl7+Klw0+JWQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB2460
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10268 signatures=684655
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 suspectscore=0 mlxscore=0
+ spamscore=0 mlxlogscore=999 adultscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202250028
+X-Proofpoint-GUID: clzK0JDAq02yZNxW6SziGFbNLUs7IPXO
+X-Proofpoint-ORIG-GUID: clzK0JDAq02yZNxW6SziGFbNLUs7IPXO
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/dinguyen/linux.git nios2_for_v5.18
-head:   048b7695b48a3a4523a7a7fbfedc396b40ccf62f
-commit: 048b7695b48a3a4523a7a7fbfedc396b40ccf62f [6/6] uaccess: drop maining CONFIG_SET_FS users
-config: hexagon-randconfig-r004-20220225 (https://download.01.org/0day-ci/archive/20220225/202202251308.WOVSZ75H-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/dinguyen/linux.git/commit/?id=048b7695b48a3a4523a7a7fbfedc396b40ccf62f
-        git remote add dinguyen https://git.kernel.org/pub/scm/linux/kernel/git/dinguyen/linux.git
-        git fetch --no-tags dinguyen nios2_for_v5.18
-        git checkout 048b7695b48a3a4523a7a7fbfedc396b40ccf62f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon prepare
+Hello Al,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks for the feedback and suggestions. I have addressed these in v7 of
+the patchset at [1].
 
-All errors (new ones prefixed by >>):
+On 18/2/22 2:25 pm, Al Viro wrote:
+> On Wed, Feb 16, 2022 at 03:57:09PM +1100, Imran Khan wrote:
+> 
+[...]
+> 
+> Maybe...  TBH, kernfs_remove_ns() calling conventions suck; "move this
+> (wherever it is) there under that name", especially combined with
+> topology-modifying moves, makes life very unpleasant for callers who
+> want to use it safely.  And I'm not at all sure they manage (or care to)
+> use it safely...
+> 
+> There are very few sources of cross-directory moves in the entire system.
+> One is cross-directory cgroup rename(2) (already serialized on per-fs basis
+> on VFS level), another is device_move().  Which is uncommon (5 callers
+> in the entire system, one in drivers/media/usb/pvrusb2/, another in
+> drivers/s390/cio, 3 more in net/bluetooth) and AFAICS unsafe wrt e.g.
+> kobject_get_path().  Not for kernfs data structures - unsafe use of
+> kobject->parent pointers.  I could be wrong - that's just from some grepping
+> around, but it looks like a use-after-free race in the best case.
+> 
+> So changes of kn->parent can be considered a very cold path.  Just make sure
+> you pin the damn thing, so it won't disapper away from under you while you
+> are grabbing the locks.
+> 
 
-   scripts/genksyms/parse.y: warning: 9 shift/reduce conflicts [-Wconflicts-sr]
-   scripts/genksyms/parse.y: warning: 5 reduce/reduce conflicts [-Wconflicts-rr]
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
-   In file included from include/linux/uaccess.h:11:
-   In file included from arch/hexagon/include/asm/uaccess.h:60:
->> include/asm-generic/uaccess.h:225:7: error: implicit declaration of function 'get_fs' [-Werror,-Wimplicit-function-declaration]
-           if (!access_ok(to, n))
-                ^
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^
-   arch/hexagon/include/asm/uaccess.h:36:4: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-             ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
-   In file included from include/linux/uaccess.h:11:
-   In file included from arch/hexagon/include/asm/uaccess.h:60:
->> include/asm-generic/uaccess.h:225:7: error: member reference base type 'int' is not a structure or union
-           if (!access_ok(to, n))
-                ^~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:36:12: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-             ~~~~~~~~^~~~
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
-   In file included from include/linux/uaccess.h:11:
-   In file included from arch/hexagon/include/asm/uaccess.h:60:
->> include/asm-generic/uaccess.h:225:7: error: use of undeclared identifier 'KERNEL_DS'
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^
-   arch/hexagon/include/asm/uaccess.h:36:20: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-                             ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
-   In file included from include/linux/uaccess.h:11:
-   In file included from arch/hexagon/include/asm/uaccess.h:60:
->> include/asm-generic/uaccess.h:225:7: error: member reference base type 'int' is not a structure or union
-           if (!access_ok(to, n))
-                ^~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:37:34: note: expanded from macro '__access_ok'
-           (((unsigned long)addr < get_fs().seg) && \
-                                   ~~~~~~~~^~~~
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
-   In file included from include/linux/uaccess.h:11:
-   In file included from arch/hexagon/include/asm/uaccess.h:60:
->> include/asm-generic/uaccess.h:225:7: error: member reference base type 'int' is not a structure or union
-           if (!access_ok(to, n))
-                ^~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:38:35: note: expanded from macro '__access_ok'
-             (unsigned long)size < (get_fs().seg - (unsigned long)addr)))
-                                    ~~~~~~~~^~~~
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
-   In file included from include/linux/uaccess.h:11:
-   In file included from arch/hexagon/include/asm/uaccess.h:60:
->> include/asm-generic/uaccess.h:225:7: error: member reference base type 'int' is not a structure or union
-           if (!access_ok(to, n))
-                ^~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:36:12: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-             ~~~~~~~~^~~~
-   include/linux/compiler.h:45:66: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                                                        ^
-   include/linux/compiler.h:35:19: note: expanded from macro '__branch_check__'
-                                                expect, is_constant);      \
-                                                        ^~~~~~~~~~~
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
-   In file included from include/linux/uaccess.h:11:
-   In file included from arch/hexagon/include/asm/uaccess.h:60:
->> include/asm-generic/uaccess.h:225:7: error: use of undeclared identifier 'KERNEL_DS'
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^
-   arch/hexagon/include/asm/uaccess.h:36:20: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-                             ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
-   In file included from include/linux/uaccess.h:11:
-   In file included from arch/hexagon/include/asm/uaccess.h:60:
->> include/asm-generic/uaccess.h:225:7: error: member reference base type 'int' is not a structure or union
-           if (!access_ok(to, n))
-                ^~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:37:34: note: expanded from macro '__access_ok'
-           (((unsigned long)addr < get_fs().seg) && \
-                                   ~~~~~~~~^~~~
-   include/linux/compiler.h:45:66: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                                                        ^
-   include/linux/compiler.h:35:19: note: expanded from macro '__branch_check__'
-                                                expect, is_constant);      \
-                                                        ^~~~~~~~~~~
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
-   In file included from include/linux/uaccess.h:11:
-   In file included from arch/hexagon/include/asm/uaccess.h:60:
->> include/asm-generic/uaccess.h:225:7: error: member reference base type 'int' is not a structure or union
-           if (!access_ok(to, n))
-                ^~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:38:35: note: expanded from macro '__access_ok'
-             (unsigned long)size < (get_fs().seg - (unsigned long)addr)))
-                                    ~~~~~~~~^~~~
-   include/linux/compiler.h:45:66: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                                                        ^
-   include/linux/compiler.h:35:19: note: expanded from macro '__branch_check__'
-                                                expect, is_constant);      \
-                                                        ^~~~~~~~~~~
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: implicit declaration of function 'get_fs' [-Werror,-Wimplicit-function-declaration]
-           if (!should_fail_usercopy() && likely(access_ok(from, n))) {
-                                                 ^
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^
-   arch/hexagon/include/asm/uaccess.h:36:4: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-             ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: member reference base type 'int' is not a structure or union
-           if (!should_fail_usercopy() && likely(access_ok(from, n))) {
-                                                 ^~~~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:36:12: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-             ~~~~~~~~^~~~
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: use of undeclared identifier 'KERNEL_DS'
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^
-   arch/hexagon/include/asm/uaccess.h:36:20: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-                             ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: member reference base type 'int' is not a structure or union
-           if (!should_fail_usercopy() && likely(access_ok(from, n))) {
-                                                 ^~~~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:37:34: note: expanded from macro '__access_ok'
-           (((unsigned long)addr < get_fs().seg) && \
-                                   ~~~~~~~~^~~~
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: member reference base type 'int' is not a structure or union
-           if (!should_fail_usercopy() && likely(access_ok(from, n))) {
-                                                 ^~~~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:38:35: note: expanded from macro '__access_ok'
-             (unsigned long)size < (get_fs().seg - (unsigned long)addr)))
-                                    ~~~~~~~~^~~~
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: member reference base type 'int' is not a structure or union
-           if (!should_fail_usercopy() && likely(access_ok(from, n))) {
-                                                 ^~~~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:36:12: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-             ~~~~~~~~^~~~
-   include/linux/compiler.h:45:66: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                                                        ^
-   include/linux/compiler.h:35:19: note: expanded from macro '__branch_check__'
-                                                expect, is_constant);      \
-                                                        ^~~~~~~~~~~
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: use of undeclared identifier 'KERNEL_DS'
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^
-   arch/hexagon/include/asm/uaccess.h:36:20: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-                             ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: member reference base type 'int' is not a structure or union
-           if (!should_fail_usercopy() && likely(access_ok(from, n))) {
-                                                 ^~~~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:37:34: note: expanded from macro '__access_ok'
-           (((unsigned long)addr < get_fs().seg) && \
-                                   ~~~~~~~~^~~~
-   include/linux/compiler.h:45:66: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                                                        ^
-   include/linux/compiler.h:35:19: note: expanded from macro '__branch_check__'
-                                                expect, is_constant);      \
-                                                        ^~~~~~~~~~~
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: member reference base type 'int' is not a structure or union
-           if (!should_fail_usercopy() && likely(access_ok(from, n))) {
-                                                 ^~~~~~~~~~~~~~~~~~
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^~~~~~~~~~~~~~~~~~~~~~~
-   arch/hexagon/include/asm/uaccess.h:38:35: note: expanded from macro '__access_ok'
-             (unsigned long)size < (get_fs().seg - (unsigned long)addr)))
-                                    ~~~~~~~~^~~~
-   include/linux/compiler.h:45:66: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                                                        ^
-   include/linux/compiler.h:35:19: note: expanded from macro '__branch_check__'
-                                                expect, is_constant);      \
-                                                        ^~~~~~~~~~~
-   include/linux/compiler.h:45:39: note: expanded from macro 'likely'
-   #  define likely(x)     (__branch_check__(x, 1, __builtin_constant_p(x)))
-                                             ^
-   include/linux/compiler.h:33:34: note: expanded from macro '__branch_check__'
-                           ______r = __builtin_expect(!!(x), expect);      \
-                                                         ^
-   In file included from arch/hexagon/kernel/asm-offsets.c:12:
-   In file included from include/linux/compat.h:17:
-   In file included from include/linux/fs.h:33:
-   In file included from include/linux/percpu-rwsem.h:7:
-   In file included from include/linux/rcuwait.h:6:
-   In file included from include/linux/sched/signal.h:9:
-   In file included from include/linux/sched/task.h:11:
->> include/linux/uaccess.h:117:40: error: implicit declaration of function 'get_fs' [-Werror,-Wimplicit-function-declaration]
-   include/asm-generic/access_ok.h:48:38: note: expanded from macro 'access_ok'
-   #define access_ok(addr, size) likely(__access_ok(addr, size))
-                                        ^
-   arch/hexagon/include/asm/uaccess.h:36:4: note: expanded from macro '__access_ok'
-           ((get_fs().seg == KERNEL_DS.seg) || \
-             ^
-   fatal error: too many errors emitted, stopping now [-ferror-limit=]
-   20 errors generated.
-   make[2]: *** [scripts/Makefile.build:121: arch/hexagon/kernel/asm-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1191: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+Done.
 
+>> I have run my tests with lockdep enabled as well. Could you please let
+>> me know if there is something that can be done as proof of correctness.
+>> For sanity of patches, my current tests include LTP sysfs tests, CPU
+>> hotplugging and cgroup access/creation/removal. I am booting oracle
+>> linux as well which involves cgroupfs access(via systemd). If you could
+>> suggest some other tests I can execute those as well.
+>>
+>> Also regarding locking rules, I am not sure where to mention it. If I
+>> put accompanying comments, at all the places where I am taking hashed
+>> rwsems, to explain why lock corresponding to a node or corresponding to
+>> its parent is being taken, will that be enough as description of locking
+>> rules.
+> 
+> A separate text, along the lines of "foo->bar is modified only when we
+> are holding this, this and that; any of those is sufficient to stabilize
+> it.  Locking order is such-and-such.  Such-and-such predicate is guaranteed
+> to be true when you acquire this lock and must be true again by the time
+> you drop it.", etc.  Some of that might go into the comments somewhere
+> in source (e.g. when it's about data structures dealt with only one
+> file, or in the header where the data structures are declared), some -
+> in a separate text, perhaps in fs/kernfs/, perhaps in Documentation/filesystems/)
+> 
+> And, of course, there's the cover letter of series and commit messages.
+> 
 
-vim +/get_fs +225 include/asm-generic/uaccess.h
+I have added a document to describe usage and proof of correctness for
+hashed locks. This should highlight if I have misunderstood something or
+if I have overlooked some scenarios while making these changes. I will
+await your feedback regarding this.
 
-eed417ddd52146 Arnd Bergmann      2009-05-13  220  
-eed417ddd52146 Arnd Bergmann      2009-05-13  221  static inline __must_check unsigned long
-eed417ddd52146 Arnd Bergmann      2009-05-13  222  clear_user(void __user *to, unsigned long n)
-eed417ddd52146 Arnd Bergmann      2009-05-13  223  {
-e0acd0bd059416 Michael S. Tsirkin 2013-05-26  224  	might_fault();
-96d4f267e40f95 Linus Torvalds     2019-01-03 @225  	if (!access_ok(to, n))
-eed417ddd52146 Arnd Bergmann      2009-05-13  226  		return n;
-eed417ddd52146 Arnd Bergmann      2009-05-13  227  
-eed417ddd52146 Arnd Bergmann      2009-05-13  228  	return __clear_user(to, n);
-eed417ddd52146 Arnd Bergmann      2009-05-13  229  }
-eed417ddd52146 Arnd Bergmann      2009-05-13  230  
+Thanks
+ -- Imran
 
-:::::: The code at line 225 was first introduced by commit
-:::::: 96d4f267e40f9509e8a66e2b39e8b95655617693 Remove 'type' argument from access_ok() function
-
-:::::: TO: Linus Torvalds <torvalds@linux-foundation.org>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+[1]:
+https://lore.kernel.org/lkml/20220225052116.1243150-1-imran.f.khan@oracle.com/
