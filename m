@@ -2,92 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 17:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08E64C43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 17:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243752AbiBYRee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 12:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
+        id S243766AbiBYRfX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 12:35:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238311AbiBYRec (ORCPT
+        with ESMTP id S242030AbiBYRfV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 12:34:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CB41637FD;
-        Fri, 25 Feb 2022 09:34:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7679B832D0;
-        Fri, 25 Feb 2022 17:33:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57A3DC340F1;
-        Fri, 25 Feb 2022 17:33:57 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="PxBxo4FT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1645810434;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5/UfaZITJxu0H1BQwiMhOXGkrGHeskVTi/A9G28Of3c=;
-        b=PxBxo4FTEb2YcdGU6iJx5RXgFvNLDy/JCeoJNRQ/Aa7R3Lfg7yRyOXXIRKGiBV0f+yGzM/
-        C2CFBt8UQhl7eqDikkacwsWRJW12yY/SN9+cCYTHlG2ijA+CDQV61vuXvur47uVMzNhdSX
-        tIGxR60SfazHMPq2RAQAiajq9yjO4zM=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8eda722c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 25 Feb 2022 17:33:54 +0000 (UTC)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2d310db3812so41434197b3.3;
-        Fri, 25 Feb 2022 09:33:54 -0800 (PST)
-X-Gm-Message-State: AOAM532yi2NHWIXamUiQgJoXKKd9Ud1//T9z+VxXovDhHqeXR2h0UlaC
-        XTB5qvl3WaPzIDTxitupqAzw7hKKIqu/2EB2hyw=
-X-Google-Smtp-Source: ABdhPJxswLWCUsTRFGAuxcief/Pj1DvT7KnwtUGFELbRndJZsvrVIdz4BWtlerGT5nE8NSVfb8AtBsNIQf3/c3WJZis=
-X-Received: by 2002:a81:c74c:0:b0:2d6:b681:af58 with SMTP id
- i12-20020a81c74c000000b002d6b681af58mr8883802ywl.100.1645810433242; Fri, 25
- Feb 2022 09:33:53 -0800 (PST)
+        Fri, 25 Feb 2022 12:35:21 -0500
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98611B018E
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 09:34:47 -0800 (PST)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-2d6923bca1aso41285927b3.9
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 09:34:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sKDGRVrx3ECjs9tzSu+MgNx/MKkwTYJHbTI9lvl1n+Y=;
+        b=VlR18ULWoCstYA5gIkmz7l0HXQ0IElHdp2JeAon7+pj6WLH3SwpPLYZuRks8+Tvh1e
+         xeqQHhvQEZEcHLXqFNtG20gkkSFZAPLJvbvXF+VjAYp9Mi17F/Z4z5NIENj+tkwDjfq1
+         Rmp/NtBhANiDVSt8GwDM7PrCPVzrHoI5qzcSt42UhaAxudfydDqlDSwfC/dcXzxcI3TA
+         aN0x8KXBNWwe2wt8Y3dDUVpVdCoRQefND8+pNOAkzQadkVR8FL7u/7yDYFH7Kcl7dHTA
+         2IcR+udnS6P2FHOUKUy/CYx7IijEJWvRHghLRRX858kxHxzshs6AU1ZAqxpjFLD83+Im
+         aVsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sKDGRVrx3ECjs9tzSu+MgNx/MKkwTYJHbTI9lvl1n+Y=;
+        b=RCLx/vCd4CvMmJnx9MluDtRWtABv9rc00fhQG4RK+9e3wGUab2d8Ws9z1ny/Jh/ZFd
+         EorOEx9pQY1LpkmcmJvHlwehoHiLmN1ucWsaj4hHMo09F4jLhJ9YO5/sKJM0+s0yBLUQ
+         QjRvkRA2yjpvFugrW6QmaRz35xCxsYvjpZ/2mgnyz28j5pppEoWVeQ6s6jaE7WfGgAWP
+         ELUDSqWoB+Q0Xlj+VIwXSi4Duq7gp0lcuExYuqESH08ia14OS6bkKnBtcGyFtFyz4V84
+         6dJL13xGPxJT6M7lqgvbLRiZta/JGLETIoXdvtFM/SAyFxSY35BvyKxedNDyGx5cVd4H
+         W+oQ==
+X-Gm-Message-State: AOAM533/3mIQaEg+WIIzWVAB+IHcTEmc5SCPh8nibktasqV8wnCTiM8h
+        4DeKbcYaotMloFetTh6RjjqwHpOE/MJLWx4Tw3zhdA==
+X-Google-Smtp-Source: ABdhPJye1+jWLWYoAs1WFm4EV8J6YW+JtTjjp5xP5N0+HWl2W3ELbu5vri1w6kd9PYaGXz//CQicOFM3sFJHXMQzG7s=
+X-Received: by 2002:a81:6307:0:b0:2d6:6aee:dc75 with SMTP id
+ x7-20020a816307000000b002d66aeedc75mr8638606ywb.249.1645810486799; Fri, 25
+ Feb 2022 09:34:46 -0800 (PST)
 MIME-Version: 1.0
-References: <20220225155552.30636-1-graf@amazon.com> <CAMj1kXGtANm3SMoREymDSyx+wpn3L=Ex5q5mpgQigOwmEp33Lg@mail.gmail.com>
- <YhkQKfE8ErtFBmSB@zx2c4.com> <CAMj1kXEtUUod8Hp6VhS6k7iDKYkFj_t_J=qS2XF1p2X_SFdTvg@mail.gmail.com>
-In-Reply-To: <CAMj1kXEtUUod8Hp6VhS6k7iDKYkFj_t_J=qS2XF1p2X_SFdTvg@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 25 Feb 2022 18:33:42 +0100
-X-Gmail-Original-Message-ID: <CAHmME9oJpL_y4bDaLwrZZZ54p5_C0YF9=vW7Zz1iUhpBHx2TvA@mail.gmail.com>
-Message-ID: <CAHmME9oJpL_y4bDaLwrZZZ54p5_C0YF9=vW7Zz1iUhpBHx2TvA@mail.gmail.com>
-Subject: Re: [PATCH] ACPI: bus: Match first 9 bytes of device IDs
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Alexander Graf <graf@amazon.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "Woodhouse, David" <dwmw@amazon.co.uk>
+References: <20220224172559.4170192-1-rananta@google.com> <20220224172559.4170192-3-rananta@google.com>
+ <Yhh6cI4P5VEMitkg@google.com>
+In-Reply-To: <Yhh6cI4P5VEMitkg@google.com>
+From:   Raghavendra Rao Ananta <rananta@google.com>
+Date:   Fri, 25 Feb 2022 09:34:35 -0800
+Message-ID: <CAJHc60zn0df4e-TXaeKEgkej4G34VzbFdQUpX_6ii_XwTNY2tg@mail.gmail.com>
+Subject: Re: [PATCH v4 02/13] KVM: arm64: Introduce KVM_CAP_ARM_REG_SCOPE
+To:     Oliver Upton <oupton@google.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 6:30 PM Ard Biesheuvel <ardb@kernel.org> wrote:
-> Yeah, good point. I think this is fine, although there are a few other
-> uses of ACPI_ID_LEN in the tree. So perhaps this should be something
-> like
->
-> #define ACPI_ID_LEN    9
-> #define ACPI_CID_LEN    16
->
-> /* explanation goes here */
->
-> struct acpi_device_id {
->     __u8 id[ACPI_CID_LEN];
->
-> instead? At a quick glance, none of those ACPI_ID_LEN users seem
-> related to the CID or the match metadata.
+Hey Oliver,
 
-Either way is fine by me. Looking at all the current users of
-ACPI_ID_LEN, none of them really mind if it's >9. I can't see where
-it'd change any behavior or performance or really anything at all,
-anywhere. So I'm inclined to go with my original simpler solution. But
-again, either way is fine.
+On Thu, Feb 24, 2022 at 10:43 PM Oliver Upton <oupton@google.com> wrote:
+>
+> On Thu, Feb 24, 2022 at 05:25:48PM +0000, Raghavendra Rao Ananta wrote:
+> > KVM_[GET|SET]_ONE_REG act on per-vCPU basis. Currently certain
+> > ARM64 registers, such as KVM_REG_ARM_SMCCC_ARCH_WORKAROUND_[1|2],
+> > are accessed via this interface even though the effect that
+> > they have are really per-VM. As a result, userspace could just
+> > waste cycles to read/write the same information for every vCPU
+> > that it spawns, only to realize that there's absolutely no change
+> > in the VM's state. The problem gets worse in proportion to the
+> > number of vCPUs created.
+> >
+> > As a result, to avoid this redundancy, introduce the capability
+> > KVM_CAP_ARM_REG_SCOPE. If enabled, KVM_GET_REG_LIST will advertise
+> > the registers that are VM-scoped by dynamically modifying the
+> > register encoding. KVM_REG_ARM_SCOPE_* helper macros are introduced
+> > to decode the same. By learning this, userspace can access such
+> > registers only once.
+> >
+> > Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+> > ---
+> >  Documentation/virt/kvm/api.rst    | 16 ++++++++++++++++
+> >  arch/arm64/include/asm/kvm_host.h |  3 +++
+> >  arch/arm64/include/uapi/asm/kvm.h |  6 ++++++
+> >  arch/arm64/kvm/arm.c              | 13 +++++++------
+> >  include/uapi/linux/kvm.h          |  1 +
+> >  5 files changed, 33 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+> > index a4267104db50..7e7b3439f540 100644
+> > --- a/Documentation/virt/kvm/api.rst
+> > +++ b/Documentation/virt/kvm/api.rst
+> > @@ -7561,3 +7561,19 @@ The argument to KVM_ENABLE_CAP is also a bitmask, and must be a subset
+> >  of the result of KVM_CHECK_EXTENSION.  KVM will forward to userspace
+> >  the hypercalls whose corresponding bit is in the argument, and return
+> >  ENOSYS for the others.
+> > +
+> > +8.34 KVM_CAP_ARM_REG_SCOPE
+> > +--------------------------
+> > +
+> > +:Architectures: arm64
+> > +
+> > +The capability, if enabled, amends the existing register encoding
+> > +with additional information to the userspace if a particular register
+> > +is scoped per-vCPU or per-VM via KVM_GET_REG_LIST. KVM provides
+> > +KVM_REG_ARM_SCOPE_* helper macros to decode the same. Userspace can
+> > +use this information from the register encoding to access a VM-scopped
+> > +regiser only once, as opposed to accessing it for every vCPU for the
+> > +same effect.
+> > +
+>
+> Could you describe the encoding changes in 4.68 'KVM_SET_ONE_REG', along
+> with the other ARM encoding details?
+>
+> > +On the other hand, if the capability is disabled, all the registers
+> > +remain vCPU-scopped by default, retaining backward compatibility.
+>
+> typo: vCPU-scoped
+>
+> That said, I don't believe we need to document behavior if the CAP is
+> disabled, as the implicated ioctls should continue to work the same.
+>
+Sure, I'll address the above two Doc comments.
+> > diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+> > index 5bc01e62c08a..8132de6bd718 100644
+> > --- a/arch/arm64/include/asm/kvm_host.h
+> > +++ b/arch/arm64/include/asm/kvm_host.h
+> > @@ -136,6 +136,9 @@ struct kvm_arch {
+> >
+> >       /* Memory Tagging Extension enabled for the guest */
+> >       bool mte_enabled;
+> > +
+> > +     /* Register scoping enabled for KVM registers */
+> > +     bool reg_scope_enabled;
+> >  };
+> >
+> >  struct kvm_vcpu_fault_info {
+> > diff --git a/arch/arm64/include/uapi/asm/kvm.h b/arch/arm64/include/uapi/asm/kvm.h
+> > index b3edde68bc3e..c35447cc0e0c 100644
+> > --- a/arch/arm64/include/uapi/asm/kvm.h
+> > +++ b/arch/arm64/include/uapi/asm/kvm.h
+> > @@ -199,6 +199,12 @@ struct kvm_arm_copy_mte_tags {
+> >  #define KVM_REG_ARM_COPROC_MASK              0x000000000FFF0000
+> >  #define KVM_REG_ARM_COPROC_SHIFT     16
+> >
+> > +/* Defines if a KVM register is one per-vCPU or one per-VM */
+> > +#define KVM_REG_ARM_SCOPE_MASK               0x0000000010000000
+> > +#define KVM_REG_ARM_SCOPE_SHIFT              28
+>
+> Thinking about the advertisement of VM- and vCPU-scoped registers, this
+> could be generally useful. Might it make sense to add such an encoding
+> to the arch-generic register definitions?
+>
+> If that is the case, we may want to snap up a few more bits (a nybble)
+> for future expansion.
+>
+That's a great idea! But I wonder if we'll get a push-back since there
+are no users of it in other arch(s) yet. Not sure if there was any
+need/discussion regarding the same, but I'm happy to share a patch for
+the same if you sense that there's a strong potential for the patch.
 
-Alex, do you want to pick one of these and submit a v2 based on it? Or
-do you see a shortcoming in that approach?
+> > +#define KVM_REG_ARM_SCOPE_VCPU               0
+> > +#define KVM_REG_ARM_SCOPE_VM         1
+> > +
+> >  /* Normal registers are mapped as coprocessor 16. */
+> >  #define KVM_REG_ARM_CORE             (0x0010 << KVM_REG_ARM_COPROC_SHIFT)
+> >  #define KVM_REG_ARM_CORE_REG(name)   (offsetof(struct kvm_regs, name) / sizeof(__u32))
+> > diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+> > index ecc5958e27fe..107977c82c6c 100644
+> > --- a/arch/arm64/kvm/arm.c
+> > +++ b/arch/arm64/kvm/arm.c
+> > @@ -81,26 +81,26 @@ int kvm_arch_check_processor_compat(void *opaque)
+> >  int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
+> >                           struct kvm_enable_cap *cap)
+> >  {
+> > -     int r;
+> > +     int r = 0;
+> >
+> >       if (cap->flags)
+> >               return -EINVAL;
+> >
+> >       switch (cap->cap) {
+> >       case KVM_CAP_ARM_NISV_TO_USER:
+> > -             r = 0;
+> >               kvm->arch.return_nisv_io_abort_to_user = true;
+> >               break;
+> >       case KVM_CAP_ARM_MTE:
+> >               mutex_lock(&kvm->lock);
+> > -             if (!system_supports_mte() || kvm->created_vcpus) {
+> > +             if (!system_supports_mte() || kvm->created_vcpus)
+> >                       r = -EINVAL;
+> > -             } else {
+> > -                     r = 0;
+> > +             else
+> >                       kvm->arch.mte_enabled = true;
+> > -             }
+> >               mutex_unlock(&kvm->lock);
+> >               break;
+>
+> Hmm.. these all look like cleanups. If you want to propose these, could
+> you do it in a separate patch?
+>
+Ahh, I thought I could squeeze it in. But sure, I can separate it out.
+> > +     case KVM_CAP_ARM_REG_SCOPE:
+> > +             WRITE_ONCE(kvm->arch.reg_scope_enabled, true);
+> > +             break;
+> >       default:
+> >               r = -EINVAL;
+> >               break;
+> > @@ -209,6 +209,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+> >       case KVM_CAP_SET_GUEST_DEBUG:
+> >       case KVM_CAP_VCPU_ATTRIBUTES:
+> >       case KVM_CAP_PTP_KVM:
+> > +     case KVM_CAP_ARM_REG_SCOPE:
+>
+> It is a bit odd to advertise a capability (and allow userspace to enable
+> it), despite the fact that the feature itself hasn't yet been
+> implemented.
+>
+> Is it possible to fold the feature in to the patch that exposes it to
+> userspace? Otherwise, you could punt advertisement of the CAP until it
+> is actually implemented in kernel.
+>
+Well, I didn't want to complicate the patch, but technically the
+feature is available with this patch, including all the CAP and macro
+definitions. Userspace can still decode the scope information, only
+that no registers are added yet, which is done in the next patch. So,
+the userspace can still remain the same between this and the next
+patch.
 
-Jason
+Thank you.
+Raghavendra
+> --
+> Oliver
+>
