@@ -2,77 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3E76C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:05:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F18C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240909AbiBYNFb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:05:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40162 "EHLO
+        id S240372AbiBYNFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:05:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239942AbiBYNFZ (ORCPT
+        with ESMTP id S240914AbiBYNFd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:05:25 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9340188848
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:04:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=NTSZStXAUG9B0y1Cy11XnlSpMWqZYq+VuPifbu1y+dg=; b=BUmiqCunIQcR2FS/z7HyWJxz5W
-        pbESasqbW4QmgyvW11G/gI8qgIj0FpcLlxr6ry/jc3K1PFDOy//EsMMsIu5WvNu9hbisJbEOGMR70
-        Jx2DZkIFQMaP3J6/XsUn7rIrJfgFzT3AiJCmpxnbjVyYAeytfCJlbpECxiZU97J6voHHYP7QJYEbM
-        j+4+mj3CXI0xbDRhAeEZHPeFuAGFIjWw+uLifxLoT3HUdVi/h/hrsJ7U+ij04KH/3jtc2OeTfnSkz
-        YnG+ssyBqjX6fpkAXFL0bHiV+/9+veoelE7Jms/peVv9YGVgnz4EFzX7BZOB9D/6lmul7hgDxwqH/
-        TxFl4Nug==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNaGp-00CxuK-Rz; Fri, 25 Feb 2022 13:04:28 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C5E9E300067;
-        Fri, 25 Feb 2022 14:04:26 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id A9C58235EF285; Fri, 25 Feb 2022 14:04:26 +0100 (CET)
-Date:   Fri, 25 Feb 2022 14:04:26 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 21/39] x86/ibt: Annotate text references
-Message-ID: <YhjT2uSg53IbuGeF@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151323.248523488@infradead.org>
- <20220225004716.epyhpxi5lunphzi4@treble>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220225004716.epyhpxi5lunphzi4@treble>
+        Fri, 25 Feb 2022 08:05:33 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C25D1E5A5D;
+        Fri, 25 Feb 2022 05:05:00 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id x15so4408265wrg.8;
+        Fri, 25 Feb 2022 05:05:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=vjStoIuqx4/+xKn8hhME8xw2P1U6/FgR67qcc7GF0Co=;
+        b=kBPHoRZ6GUxR3CkARd+hQ03jaD2d3oT3/qF94dp+4Z1PDLrGA4ZDYwes2ePSZbAMXi
+         /wBslFDXVk3GGK/lyF53J88QCvbxcZHOjQlDVkrvwX0LWH1d59DHX64oCN/tHet0zNdp
+         Iu5e/+57MxNk1herkrIzXxYdcKlqoikgVQDnZSsOxM0Cf+9k5TcLkNGmeI3U3PWHyIe6
+         +j5FdL8dw+JdsG158BpoFmN4LNx+C7K4Rnk8LCBs5bhx5TAqKAk53/jZmw87/CpYm7XF
+         vSN17AlKfeZ12hqldO0NY3iz6m/nV0Aw8H5PmaZ6e6y5ls/Pxrz0PdQ1TCxEjmcyflr3
+         Z69A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=vjStoIuqx4/+xKn8hhME8xw2P1U6/FgR67qcc7GF0Co=;
+        b=wANwUl5Xee9DPecO80oB3vufxLUxz96X/TVYqU/USl3O4pQvnCUyGERDS4Xd8GkxRu
+         d2Y9zVYs+DOlHcHmwwDfcULfWU/AfV452VP03DQzBmeKdvT5acM7DGoB7WZozxyvGZvv
+         wooVkX5Jjjd+pvglANUsGa1r6dTFz/sConhJ801rRztGQhDCnFlK4h3dH4eZfrrC8Qy0
+         oRYVHDfTPSNDESgkH4F6kxVfRV6YOsyWbOJfbay95jXrvWfkMB2jMQiy382Ldz1L/bFw
+         e8tcKUaknkKDUjGIpSaSnvwZa4Jd98tQDRQRbZpDxWRoFE4MSqCQPVZwuGqXi8uLTeHF
+         s5qg==
+X-Gm-Message-State: AOAM530veb80IZOMS8zZLuqC8U6cX1TJculdymdMSZePrzkVvQDtWzSM
+        ntsmiuRCdo/T57TrG0kJWBs=
+X-Google-Smtp-Source: ABdhPJyLzqnIfBLpLiSqrfRSyKpPpg1yJRFwLRgi24JCgan5tokl7y5jvyZO0t7e3+tSCJHDtygDJw==
+X-Received: by 2002:adf:fa8b:0:b0:1ee:d06f:ed0f with SMTP id h11-20020adffa8b000000b001eed06fed0fmr4658846wrr.535.1645794298905;
+        Fri, 25 Feb 2022 05:04:58 -0800 (PST)
+Received: from localhost.localdomain ([64.64.123.58])
+        by smtp.gmail.com with ESMTPSA id d6-20020a5d4f86000000b001ea8119512bsm2148489wru.55.2022.02.25.05.04.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 05:04:58 -0800 (PST)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     hdegoede@redhat.com, markgross@kernel.org
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] platform: x86: huawei-wmi: check the return value of device_create_file()
+Date:   Fri, 25 Feb 2022 05:04:48 -0800
+Message-Id: <20220225130448.27063-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 04:47:16PM -0800, Josh Poimboeuf wrote:
-> On Thu, Feb 24, 2022 at 03:51:59PM +0100, Peter Zijlstra wrote:
-> > @@ -563,12 +564,14 @@ SYM_CODE_END(\asmsym)
-> >  	.align 16
-> >  	.globl __irqentry_text_start
-> >  __irqentry_text_start:
-> > +	ANNOTATE_NOENDBR // unwinders
-> 
-> But the instruction here (first idt entry) actually does have an
-> endbr64...
-> 
-> Also I'm wondering if it would make sense to create an
-> 'idt_entry_<vector>' symbol for each entry so objtool knows to validate
-> their ENDBRs.
+The function device_create_file() in huawei_wmi_battery_add() can fail,
+so its return value should be checked.
 
-I think we're good on that front since irq_entries_start and
-spurious_entries_start capture the first entry and the rest is .rept off
-of that.
+Fixes: 355a070b09ab ("platform/x86: huawei-wmi: Add battery charging thresholds")
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/platform/x86/huawei-wmi.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/platform/x86/huawei-wmi.c b/drivers/platform/x86/huawei-wmi.c
+index a2d846c4a7ee..2ffd3840f3e8 100644
+--- a/drivers/platform/x86/huawei-wmi.c
++++ b/drivers/platform/x86/huawei-wmi.c
+@@ -470,10 +470,19 @@ static DEVICE_ATTR_RW(charge_control_thresholds);
+ 
+ static int huawei_wmi_battery_add(struct power_supply *battery)
+ {
+-	device_create_file(&battery->dev, &dev_attr_charge_control_start_threshold);
+-	device_create_file(&battery->dev, &dev_attr_charge_control_end_threshold);
++	int err = 0; 
++	err = device_create_file(&battery->dev, 
++						&dev_attr_charge_control_start_threshold);
++	if (err)
++		return err;
++	err = device_create_file(&battery->dev, 
++						&dev_attr_charge_control_end_threshold);
++	if (err) {
++		device_remove_file(&battery->dev, 
++						&dev_attr_charge_control_start_threshold);
++	}
+ 
+-	return 0;
++	return err;
+ }
+ 
+ static int huawei_wmi_battery_remove(struct power_supply *battery)
+-- 
+2.17.1
+
