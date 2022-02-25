@@ -2,61 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C48C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 24 Feb 2022 23:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 00:02:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235986AbiBXX6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 18:58:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        id S231397AbiBYADB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 19:03:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231144AbiBXX6F (ORCPT
+        with ESMTP id S229479AbiBYADA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 18:58:05 -0500
+        Thu, 24 Feb 2022 19:03:00 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14553BBD2;
-        Thu, 24 Feb 2022 15:57:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 531B718F239;
+        Thu, 24 Feb 2022 16:02:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C8F561CCE;
-        Thu, 24 Feb 2022 23:57:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE475C340E9;
-        Thu, 24 Feb 2022 23:57:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C689361C5A;
+        Fri, 25 Feb 2022 00:02:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEC0FC340E9;
+        Fri, 25 Feb 2022 00:02:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645747052;
-        bh=sNTYtPi+6hAgPaC/LiwoHJXsz7tSPi4IB1Cl9XDMDio=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=WbBdSpyffyWlomu85xizVE8bw0OA2h93ZckJVBYFR9Xr0eGNIChoJfRYkaPcn1Uko
-         Db1mp5I+2MekLBbI9O4zftL2oh55iSzKt/3YhHDwIOT8l4NaIbKQiZ1z4fPDMgYw2c
-         fLPN+7GHo3hbg9q67b53DNFkW5zZJEGnjYxIQGEDTA7MRy5weOD704DwPkgob4ZXKK
-         Ye4LIQyertL9v1OZNvcVTugjUIKHtF3oLXNd1X9dSzuPVHdlLS9tBV3kMKgpI5sSdC
-         heWc3wnX9PHrKlS5SiH4IrwtpudZ/2OH6DS2Ia/LFOv/6I53Iyn+i1YW1IXCrG+CGm
-         s6aoXqQzYoKlw==
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1645747348;
+        bh=B5C/irAy5Ksddk0oeAfWCNVXMjjzHhykOfXsUHlDfiU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=FnBk0yBT8P4/HNhq/XNKvxXaoDFhHO5SqZmvwFrWWsqUJQw/kezs9NKd44trxe2ol
+         dAD/Lef2N0wukNLou1M1AorFCxCh1Ck+CeuJyDXugG0qE4EMC/GNA98cpRN9PWi2Tu
+         xNphdc525yVvjRdNZVda4zNu4ZpZg7osW6myVg1OjCalqiQI3nvgn3ScInTdNp2iJu
+         ze0uT9v8Ux3rbKeCrE7WiwNDbuA4Hi5HksoggPw3TYjsU0SM4Pr9dpAMoqJ0VYipVM
+         4u/FLsn2RhgLPO8FTk3ZV4fXrwxRMLeoNmv2/V/k969Z8FiCv3TU4U9P/T09VOSZGo
+         k6mQtILoRoVnQ==
+Date:   Thu, 24 Feb 2022 18:02:26 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 04/12] dt-bindings: PCI: mvebu: Add num-lanes property
+Message-ID: <20220225000226.GA304258@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <1645505785-2271-6-git-send-email-quic_rohiagar@quicinc.com>
-References: <1645505785-2271-1-git-send-email-quic_rohiagar@quicinc.com> <1645505785-2271-6-git-send-email-quic_rohiagar@quicinc.com>
-Subject: Re: [PATCH v4 5/5] clk: qcom: Add SDX65 APCS clock controller support
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rohit Agarwal <quic_rohiagar@quicinc.com>
-To:     Rohit Agarwal <quic_rohiagar@quicinc.com>, agross@kernel.org,
-        bjorn.andersson@linaro.org, manivannan.sadhasivam@linaro.org,
-        mturquette@baylibre.com, robh+dt@kernel.org
-Date:   Thu, 24 Feb 2022 15:57:30 -0800
-User-Agent: alot/0.10
-Message-Id: <20220224235732.BE475C340E9@smtp.kernel.org>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220222155030.988-5-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Rohit Agarwal (2022-02-21 20:56:25)
-> Update APCS Kconfig to reflect support for SDX65
-> APCS clock controller.
->=20
-> Signed-off-by: Rohit Agarwal <quic_rohiagar@quicinc.com>
+On Tue, Feb 22, 2022 at 04:50:22PM +0100, Pali Rohár wrote:
+> Controller driver needs to correctly configure PCIe link if it contains 1
+> or 4 SerDes PCIe lanes. Therefore add a new 'num-lanes' DT property for
+> mvebu PCIe controller. Property 'num-lanes' seems to be de-facto standard
+> way how number of lanes is specified in other PCIe controllers.
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> Acked-by: Rob Herring <robh@kernel.org>
 > ---
+>  Documentation/devicetree/bindings/pci/mvebu-pci.txt | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/mvebu-pci.txt b/Documentation/devicetree/bindings/pci/mvebu-pci.txt
+> index 6173af6885f8..24225852bce0 100644
+> --- a/Documentation/devicetree/bindings/pci/mvebu-pci.txt
+> +++ b/Documentation/devicetree/bindings/pci/mvebu-pci.txt
+> @@ -77,6 +77,7 @@ and the following optional properties:
+>  - marvell,pcie-lane: the physical PCIe lane number, for ports having
+>    multiple lanes. If this property is not found, we assume that the
+>    value is 0.
+> +- num-lanes: number of SerDes PCIe lanes for this link (1 or 4)
+>  - reset-gpios: optional GPIO to PERST#
+>  - reset-delay-us: delay in us to wait after reset de-assertion, if not
+>    specified will default to 100ms, as required by the PCIe specification.
+> @@ -141,6 +142,7 @@ pcie-controller {
+>  		interrupt-map = <0 0 0 0 &mpic 58>;
+>  		marvell,pcie-port = <0>;
+>  		marvell,pcie-lane = <0>;
+> +		num-lanes = <1>;
 
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Is this patch really necessary?  AFAICS, the related driver change
+only sets "port->is_x4 = true" when "num-lanes = <4>", and in all
+other cases it defaults to a Max Link Width of 1:
+
+  lnkcap |= (port->is_x4 ? 4 : 1) << 4;
+
+I don't see the point of adding a value that we don't validate or do
+anything with.  E.g., I don't see an error message that would catch
+"num-lanes = <3>".
+
+Bjorn
