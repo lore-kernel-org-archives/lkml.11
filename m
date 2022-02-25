@@ -2,140 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B691C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242454AbiBYP46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 10:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
+        id S242465AbiBYP5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 10:57:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237999AbiBYP44 (ORCPT
+        with ESMTP id S237999AbiBYP5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 10:56:56 -0500
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237941D8A82;
-        Fri, 25 Feb 2022 07:56:24 -0800 (PST)
+        Fri, 25 Feb 2022 10:57:02 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A0201D8A82;
+        Fri, 25 Feb 2022 07:56:30 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id z15so5031417pfe.7;
+        Fri, 25 Feb 2022 07:56:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1645804584; x=1677340584;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=SWyuAuqtzwMzh5dusk1nwmrFDHzqhA5gzL9zdrzlblw=;
-  b=nxT/lWz5t/rOIFwsLbsG74pH+PZoN4XgwZdxmqDd8kAeax/xutL6lxDS
-   cvYkqcF3LgwHR7tkop9//Ku0kzu4oEZla5Sa12XN9t9AQk4XIPZ3gMXwG
-   0Rf1aaaUis3J5qQ7WInRsNFFF/2/JA/VrCVySaPUHVesqd/1WjHvJaWPC
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.90,136,1643673600"; 
-   d="scan'208";a="66236117"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1d-9a235a16.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 25 Feb 2022 15:56:06 +0000
-Received: from EX13MTAUWC002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-9a235a16.us-east-1.amazon.com (Postfix) with ESMTPS id DEFF381488;
-        Fri, 25 Feb 2022 15:56:02 +0000 (UTC)
-Received: from EX13D20UWC001.ant.amazon.com (10.43.162.244) by
- EX13MTAUWC002.ant.amazon.com (10.43.162.240) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Fri, 25 Feb 2022 15:56:02 +0000
-Received: from u79c5a0a55de558.ant.amazon.com (10.43.160.203) by
- EX13D20UWC001.ant.amazon.com (10.43.162.244) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Fri, 25 Feb 2022 15:56:00 +0000
-From:   Alexander Graf <graf@amazon.com>
-To:     <linux-acpi@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, Len Brown <lenb@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>,
-        "Greg KH" <gregkh@linuxfoundation.org>, <ardb@kernel.org>,
-        <dwmw@amazon.co.uk>
-Subject: [PATCH] ACPI: bus: Match first 9 bytes of device IDs
-Date:   Fri, 25 Feb 2022 16:55:52 +0100
-Message-ID: <20220225155552.30636-1-graf@amazon.com>
-X-Mailer: git-send-email 2.28.0.394.ge197136389
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f+8G7tfQjV4ABkTw2q7bkb0w4qL2HQLeYpElCFm5+0A=;
+        b=VCZCpTm8gU7mIFzNDCQAeyjVWNwhmu1TRcK5A69m8/XMTsoIWllTmkIupPLKk5z2+l
+         uVvCna5KOSqGga2gVYdk/N7NnwPg8voVsGltJ6wo7DRp0w8Vmfyi05mVDiIHVEqAQ4U8
+         TMUJUZAM907TANUSba0fmcdyC7zBOGZ47wmMs702JQDToRIv+uKjO+RZFthTuWaUMZum
+         HilTGn3V760r0bJaqVpZ25uVKEZdYTstTyu2JyaKs+Vd3eHj6w+CDockKOg14xBvWrBC
+         9FFkvCZz9hvsz3NNg0+pFmGlfiAokYd6qL7AUIpWy3hNm6wtW8TndKaNpH5Vi827m6Qb
+         08/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f+8G7tfQjV4ABkTw2q7bkb0w4qL2HQLeYpElCFm5+0A=;
+        b=2AjJgzgVkhF1OpI93d9RWfTv88NPnP2LJD4uVq2dyFkl8Ashj3Lc8j5A2ffI4xj/ia
+         0P4CxESNW4QBqFJTDYWx+OgDU+Cjb6WyfFA+be1R6/Ry5PLZoBhQQm0CsthXd2iY1nUE
+         wCm1m6QMVa2a0ly8Et/aUlgQpNXI0fOqXJWFMCec3VZipVMyFmlnIrD0sNxQpknx2GL5
+         8ZsTcNYs2NegaNPfMFAH0B5dSi5QREOx6vAY7eVzLhOH8ms7w6na7aHbUXdturc9YStv
+         BL8Wh5HxsjmeFnX45eL/bNEHrxln7EbEk0hqT11gxIgVMTAT5b+KGPpZEl+XaZpLXNHw
+         Fexw==
+X-Gm-Message-State: AOAM532uydTFjZXP0RaPHWFzXz0v/ohC/LHChub+XaWjniWS1UoInWhp
+        M72JT/6SyFLivbXYIQKMGgJ0cdZ1NFImtY1O
+X-Google-Smtp-Source: ABdhPJyKZMHrRt1ODKefYe6udSponfLE0sQv56Y0NLeGtURzbrTz0pYERo9eU71Qk3xSTEv8v+8+Ng==
+X-Received: by 2002:a63:c22:0:b0:373:3d5b:ee98 with SMTP id b34-20020a630c22000000b003733d5bee98mr6515812pgl.252.1645804589451;
+        Fri, 25 Feb 2022 07:56:29 -0800 (PST)
+Received: from localhost.localdomain ([2402:4000:2281:554f:f1f7:ced3:4a51:c107])
+        by smtp.gmail.com with ESMTPSA id m6-20020a056a00080600b004e1bb196743sm4150254pfk.5.2022.02.25.07.56.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 07:56:29 -0800 (PST)
+From:   Husni Faiz <ahamedhusni73@gmail.com>
+To:     mchehab@kernel.org, gregkh@linuxfoundation.org
+Cc:     Husni Faiz <ahamedhusni73@gmail.com>, linux-media@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] media: av7110: av7110_av: Fix Switch and Case Same Indent Style Error
+Date:   Fri, 25 Feb 2022 21:26:22 +0530
+Message-Id: <20220225155622.585621-1-ahamedhusni73@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Originating-IP: [10.43.160.203]
-X-ClientProxiedBy: EX13D16UWC004.ant.amazon.com (10.43.162.72) To
- EX13D20UWC001.ant.amazon.com (10.43.162.244)
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We create a list of ACPI "PNP" IDs which contains _HID, _CID and CLS
-entries of the respective devices. However, we squeeze them into
-struct acpi_device_id which only has 9 bytes space to store the identifier
-based on the ACPI spec:
+This patch fixes "switch and case should be at the same indent"
+checkpatch error.
 
-"""
-A _HID object evaluates to either a numeric 32-bit compressed EISA
-type ID or a string. If a string, the format must be an alphanumeric
-PNP or ACPI ID with no asterisk or other leading characters.
-A valid PNP ID must be of the form "AAA####" where A is an uppercase
-letter and # is a hex digit.
-A valid ACPI ID must be of the form "NNNN####" where N is an uppercase
-letter or a digit ('0'-'9') and # is a hex digit. This specification
-reserves the string "ACPI" for use only with devices defined herein.
-It further reserves all strings representing 4 HEX digits for
-exclusive use with PCI-assigned Vendor IDs.
-"""
-
-While most people adhere to the ACPI specs, Microsoft decided that its
-VM Generation Counter device [1] should only be identifiable by _CID with
-an value of "VM_Gen_Counter" - longer than 9 characters.
-
-To still allow device drivers to match identifiers that exceed the 9 byte
-limit, without wasting memory for the unlikely case that you have long
-identifiers, let's match only the first 9 characters of the identifier.
-
-This patch is a prerequisite to add support for VMGenID in Linux [2].
-
-[1] https://download.microsoft.com/download/3/1/C/31CFC307-98CA-4CA5-914C-D9772691E214/VirtualMachineGenerationID.docx
-[2] https://lore.kernel.org/lkml/20220225124848.909093-1-Jason@zx2c4.com/
-
-Signed-off-by: Alexander Graf <graf@amazon.com>
-
+Signed-off-by: Husni Faiz <ahamedhusni73@gmail.com>
 ---
+ drivers/staging/media/av7110/av7110_av.c | 30 ++++++++++++------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-Alternatives to the approach above would be:
-
-  1) Always set id[8] = '\0' in acpi_add_id()
-  2) Allocate the id in struct acpi_device_id dynamically
-
-I'm happy to explore option 1 instead if people believe it's cleaner.
-Option 2 on the other hand seems overkill for the issue at hand. We don't
-have a lot of devices that exceed the 8 character threshold, so chance of
-collision is quite small. On the other hand, the extra overhead of
-maintaining the string allocation dynamically will quickly become a
-headache.
-
----
- drivers/acpi/bus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-index 07f604832fd6..aba93171739f 100644
---- a/drivers/acpi/bus.c
-+++ b/drivers/acpi/bus.c
-@@ -829,7 +829,7 @@ static bool __acpi_match_device(struct acpi_device *device,
- 		/* First, check the ACPI/PNP IDs provided by the caller. */
- 		if (acpi_ids) {
- 			for (id = acpi_ids; id->id[0] || id->cls; id++) {
--				if (id->id[0] && !strcmp((char *)id->id, hwid->id))
-+				if (id->id[0] && !strncmp((char *)id->id, hwid->id, ACPI_ID_LEN))
- 					goto out_acpi_match;
- 				if (id->cls && __acpi_match_device_cls(id, hwid))
- 					goto out_acpi_match;
+diff --git a/drivers/staging/media/av7110/av7110_av.c b/drivers/staging/media/av7110/av7110_av.c
+index 91f4866c7e59..1d42862e9669 100644
+--- a/drivers/staging/media/av7110/av7110_av.c
++++ b/drivers/staging/media/av7110/av7110_av.c
+@@ -770,22 +770,22 @@ static void p_to_t(u8 const *buf, long int length, u16 pid, u8 *counter,
+ 	if (length > 3 &&
+ 	     buf[0] == 0x00 && buf[1] == 0x00 && buf[2] == 0x01)
+ 		switch (buf[3]) {
+-			case PROG_STREAM_MAP:
+-			case PRIVATE_STREAM2:
+-			case PROG_STREAM_DIR:
+-			case ECM_STREAM     :
+-			case EMM_STREAM     :
+-			case PADDING_STREAM :
+-			case DSM_CC_STREAM  :
+-			case ISO13522_STREAM:
+-			case PRIVATE_STREAM1:
+-			case AUDIO_STREAM_S ... AUDIO_STREAM_E:
+-			case VIDEO_STREAM_S ... VIDEO_STREAM_E:
+-				pes_start = 1;
+-				break;
++		case PROG_STREAM_MAP:
++		case PRIVATE_STREAM2:
++		case PROG_STREAM_DIR:
++		case ECM_STREAM     :
++		case EMM_STREAM     :
++		case PADDING_STREAM :
++		case DSM_CC_STREAM  :
++		case ISO13522_STREAM:
++		case PRIVATE_STREAM1:
++		case AUDIO_STREAM_S ... AUDIO_STREAM_E:
++		case VIDEO_STREAM_S ... VIDEO_STREAM_E:
++			pes_start = 1;
++			break;
+ 
+-			default:
+-				break;
++		default:
++			break;
+ 		}
+ 
+ 	while (c < length) {
 -- 
-2.16.4
-
-
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
-
+2.25.1
 
