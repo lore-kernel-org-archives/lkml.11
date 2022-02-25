@@ -2,122 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 685B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:39:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFE6BC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:39:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242259AbiBYPkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 10:40:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
+        id S242243AbiBYPkZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 10:40:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242230AbiBYPj7 (ORCPT
+        with ESMTP id S240358AbiBYPkV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 10:39:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60F5B1D1781
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 07:39:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645803566;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PKwIaA6vJQ86hsYmx90S5GHPLZ3QnL0/6rDtNGfZPd8=;
-        b=TbGpEsToCmR6NIPZ8S6Rl5aG1GEm6rf6XAVHcQa6Zy4yIuHqmmn6a0Myi3v8ZlxxmdB2v0
-        NzrOaryyK43wQHBhL0mQ54rAIjOS53gKQ++Nv9MF+lJHNO583smCZ3F0TmdpWfTA12RVAk
-        kmlHmtNTpmvzaKjd+wA5mmJeQlV6Atc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-370-e41bORCJP4O_0wUA4GSfZw-1; Fri, 25 Feb 2022 10:39:23 -0500
-X-MC-Unique: e41bORCJP4O_0wUA4GSfZw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4391C1091DA0;
-        Fri, 25 Feb 2022 15:39:19 +0000 (UTC)
-Received: from localhost (ovpn-12-89.pek2.redhat.com [10.72.12.89])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 507087F0DB;
-        Fri, 25 Feb 2022 15:39:05 +0000 (UTC)
-Date:   Fri, 25 Feb 2022 23:39:02 +0800
-From:   'Baoquan He' <bhe@redhat.com>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Christoph Hellwig <hch@lst.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "cl@linux.com" <cl@linux.com>,
-        "42.hyeyoo@gmail.com" <42.hyeyoo@gmail.com>,
-        "penberg@kernel.org" <penberg@kernel.org>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "iamjoonsoo.kim@lge.com" <iamjoonsoo.kim@lge.com>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "david@redhat.com" <david@redhat.com>,
-        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "steffen.klassert@secunet.com" <steffen.klassert@secunet.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "hca@linux.ibm.com" <hca@linux.ibm.com>,
-        "gor@linux.ibm.com" <gor@linux.ibm.com>,
-        "agordeev@linux.ibm.com" <agordeev@linux.ibm.com>,
-        "borntraeger@linux.ibm.com" <borntraeger@linux.ibm.com>,
-        "svens@linux.ibm.com" <svens@linux.ibm.com>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "michael@walle.cc" <michael@walle.cc>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "wsa@kernel.org" <wsa@kernel.org>
-Subject: Re: [PATCH 1/2] dma-mapping: check dma_mask for streaming mapping
- allocs
-Message-ID: <20220225153902.GA148875@MiWiFi-R3L-srv>
-References: <20220220084044.GC93179@MiWiFi-R3L-srv>
- <20220222084530.GA6210@lst.de>
- <YhSpaGfiQV8Nmxr+@MiWiFi-R3L-srv>
- <20220222131120.GB10093@lst.de>
- <YhToFzlSufrliUsi@MiWiFi-R3L-srv>
- <20220222155904.GA13323@lst.de>
- <YhV/nabDa5zdNL/4@MiWiFi-R3L-srv>
- <20220223142555.GA5986@lst.de>
- <YheSBTJY216m6izG@MiWiFi-R3L-srv>
- <1fead34bceda468cbe34077a28c4a4b1@AcuMS.aculab.com>
+        Fri, 25 Feb 2022 10:40:21 -0500
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A66C227597;
+        Fri, 25 Feb 2022 07:39:49 -0800 (PST)
+Received: by mail-yb1-f182.google.com with SMTP id j12so6616620ybh.8;
+        Fri, 25 Feb 2022 07:39:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GR/V12DMRnmBhcnV69/MsoszncUmgemPWBCEqb7uAFo=;
+        b=m10JZXzVRLIm4AZivXGdL5Y1yCdyaWQIHbLPypVEA93zDPifkLOZ+Rhaj7wuQ6+8K+
+         qp5mW82ynzQWliptYAN5ghn56vFcafHZh7NEBzPwhrMXyR9KoUDJevx4r66bLWgaPJMA
+         B+SZPaWA5iIUPoL4ymXbIRmYBEl0ZlV9si5Fzte4Mqj0yhtWqeSXspIkdZ4aYBtj1R0y
+         AgkipalUVWD+RkXe1DEhSBoxvFpb8uagIRbp4itrRzAnG6qSUJSyavJia1rerkkovhnB
+         XunqU9udnzKx8kuB3KfiJM4nXSxiqFvZ2rB7BWJrnw8zs7R8ZvVznL6FJDaGkEJUtKVm
+         AhHg==
+X-Gm-Message-State: AOAM530P7rgUjpfYkOxoCFSfCGYpmRy8S9hBfYN9zvikNpIQKB/yK/RX
+        Sd+ZO626Pr6CNmD/jr30YD04lwJ8JWxkp7GvL7E=
+X-Google-Smtp-Source: ABdhPJzrx7n2dUleHMsZHJQcp+57rEJCDv9wJM6JngPqQvdEjC+z5wBhZrLOBtGS3O9r22saq3TEeeT6l0ZYLqQQJhw=
+X-Received: by 2002:a25:bbc1:0:b0:610:b4ce:31db with SMTP id
+ c1-20020a25bbc1000000b00610b4ce31dbmr7698406ybk.482.1645803588829; Fri, 25
+ Feb 2022 07:39:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1fead34bceda468cbe34077a28c4a4b1@AcuMS.aculab.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20220224113807.91771-1-pmenzel@molgen.mpg.de> <20220224113807.91771-3-pmenzel@molgen.mpg.de>
+In-Reply-To: <20220224113807.91771-3-pmenzel@molgen.mpg.de>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 25 Feb 2022 16:39:38 +0100
+Message-ID: <CAJZ5v0gLn=EEsLLZBtFUKA9SkK88S1HQxj_Z11sPgnRE9T_RmQ@mail.gmail.com>
+Subject: Re: [PATCH 3/4] acpi: exsystem: Warn about sleeps greater than 50 ms
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Robert Moore <robert.moore@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 02/24/22 at 02:27pm, David Laight wrote:
-> From: Baoquan He
-> > Sent: 24 February 2022 14:11
-> ...
-> > With my understanding, there are two kinds of DMA mapping, coherent
-> > mapping (which is also persistent mapping), and streaming mapping. The
-> > coherent mapping will be handled during driver init, and released during
-> > driver de-init. While streaming mapping will be done when needed at any
-> > time, and released after usage.
-> 
-> The lifetime has absolutely nothing to do with it.
-> 
-> It is all about how the DMA cycles (from the device) interact with
-> (or more don't interact with) the cpu memory cache.
-> 
-> For coherent mapping the cpu and device can write to (different)
-> words in the same cache line at the same time, and both will see
-> both updates.
-> On some systems this can only be achieved by making the memory
-> uncached - which significantly slows down cpu access.
-> 
-> For non-coherent (streaming) mapping the cpu writes back and/or
-> invalidates the data cache so that the dma read cycles from memory
-> read the correct data and the cpu re-reads the cache line after
-> the dma has completed.
-> They are only really suitable for data buffers.
+On Thu, Feb 24, 2022 at 12:38 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> Quick boottime is important, so warn about sleeps greater than 50 ms in
+> ACPI.
+>
+> 50 ms is still long compared to distribution Linux kernels reaching initrd
+> in 350 ms, so should probably changed to 10 ms, so people are aware
+> about this.
+>
+> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 
-Thanks for valuable input, I agree the lifetime is not stuff we can rely
-on to judge. But how do we explain dma_alloc_noncoherent() is not streaming
-mapping? Then which kind of dma mapping is it?
+First off, as ACPICA material, this should be submitted to the
+upstream project via https://github.com/acpica/acpica/.
 
-I could miss something important to understand this which is obvious to
-other people, I will make time to check.
+> ---
+>  drivers/acpi/acpica/exsystem.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/drivers/acpi/acpica/exsystem.c b/drivers/acpi/acpica/exsystem.c
+> index 00f66af31ffa..bdffb8aac05c 100644
+> --- a/drivers/acpi/acpica/exsystem.c
+> +++ b/drivers/acpi/acpica/exsystem.c
+> @@ -167,6 +167,11 @@ acpi_status acpi_ex_system_do_sleep(u64 how_long_ms)
+>
+>         acpi_ex_exit_interpreter();
+>
+> +       if (how_long_ms > 50) {
+> +               ACPI_WARNING((AE_INFO,
 
+Second, the log level is somewhat high for something like this.
+
+> +                   "Time parameter %llu > 50 ms. Please contact firmware vendor for more responsive system.", how_long_ms));
+
+Also, I would rephrase the warning message to something like "Firmware
+issue: Excessive delay (%llu ms) in ACPI Control Method".
+
+> +       }
+> +
+>         /*
+>          * For compatibility with other ACPI implementations and to prevent
+>          * accidental deep sleeps, limit the sleep time to something reasonable.
+> --
+> 2.35.1
+>
