@@ -2,106 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C788C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 00:32:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96852C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 00:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232764AbiBYAcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 19:32:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35576 "EHLO
+        id S233862AbiBYAfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 19:35:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232278AbiBYAck (ORCPT
+        with ESMTP id S232278AbiBYAfF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 19:32:40 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53AA1B45DD;
-        Thu, 24 Feb 2022 16:32:08 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id q11so3337737pln.11;
-        Thu, 24 Feb 2022 16:32:08 -0800 (PST)
+        Thu, 24 Feb 2022 19:35:05 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5774724FA2E
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 16:34:33 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id s14so5282877edw.0
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 16:34:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:subject:to:cc:references:in-reply-to:mime-version
-         :message-id:content-transfer-encoding;
-        bh=tKC1TRHCBri+KzcoCYvPSpdvCg/HdwcBnsM6kDgfriM=;
-        b=aFvL07xt/0stKeZefxUZbUC+5wQ0c2t8VfgbSdA4KnIJogwafaubJUI86KN4/FvFV5
-         jbLhM+LrJv3ypnussHBfpu7uj5KI0PXVQ96Jdo+lCX3ypLIHQGZHtAkyVdAh4mtCu2qS
-         ap4TAiaH3AgnoAQmDOleF4kCeej300au8cAl/UdmZr0lqIgLVI2qY4xeiFfraLkMfPy+
-         3rauidoZEYE8aGNlxrQXELwdFr9QiuiKZh5bLLIvF73t45sBCn4jewpG/0Te1MH9Hphe
-         o/sRG6BxKY9eG6wcyZ3QNsOS/fLPbBIUJS5HWzi/+UPcL9L4idltFRILXZRMw5LpG4at
-         ebhg==
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=y7JZLiTaaSBR+Poz7SRaGfgsdoBr6p+bG2YMfUy3Slw=;
+        b=kg2PGF0EVFDRcG1mIXlLVEv5Ej1ZhQ7nNfe4zx5FcXv2Z07350v9XCQ87Fy0kkQMHj
+         12qdDKOYqzndeSrhOXAjHk39Xowv3LtN14PQ+2zqEkoxbWdoS3L+Yr3ILhg0aV9jDzMU
+         nEzwTLq7qo/OpikrpjRdL66whBt4gns2ydEz4+42D0JFsDsm/IbcmPypfgIfrEZmJNUr
+         RLah9HnZHqHB+yIswc5D04W2DJkHzdtkGYTr8FQ9sAbu7v2boYFMPMIrRbbjWepcwFTG
+         9+Opr8Zt6xNA9iQcdK5rGvdkIOl3piw5hI7REcbQGJsvH9Kg77wOhUda1JHAhW/BMzVF
+         DcTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:subject:to:cc:references:in-reply-to
-         :mime-version:message-id:content-transfer-encoding;
-        bh=tKC1TRHCBri+KzcoCYvPSpdvCg/HdwcBnsM6kDgfriM=;
-        b=b993J+MUOCdsdA+nS1VKIX/OClj8gche/Wk7PbQ9WeRroS1Xcm+3khHo6Fc9RCuWur
-         pAL90ZyXLV1nzgClSeJ7kgkpm1CAF6yba5n5hwrAESTcDd7re5BArrfig1j8W7NMt10b
-         Uy2QkiDxugL1+SjZuXHp1wwesuTt1GNz3A14I2ECcl+dxrxFqMiGmUcb+sN0wIWnrKZL
-         VGbYRarRCIv4djNzBRfQlnnaa04rYwSg3RrkFeqA2PfaNnaxcIJwEDdIKwwKT0zllE5d
-         icjqE0GPLmaiMrEHrfBupf/TlqPwwpU0/CeXCrT+jgbFRQR/TRipwzSZ8pXW/TBbFbtU
-         XM4Q==
-X-Gm-Message-State: AOAM530Gwwmsp07+wvWvwJV0IboDd60GtZv/38ZrezjvngFTl+a40mb9
-        EqcbpoP9qW50J9r4mChyMSDOlhSrCi4=
-X-Google-Smtp-Source: ABdhPJx6JkQFQ7K41lpXb/O0ach2L1AgRseaw/gapGt3TSCEZRFc8m8HvGMfvjmlWhxUObOSXiOjgw==
-X-Received: by 2002:a17:902:f701:b0:14d:7cea:82af with SMTP id h1-20020a170902f70100b0014d7cea82afmr4868065plo.71.1645749128161;
-        Thu, 24 Feb 2022 16:32:08 -0800 (PST)
-Received: from localhost (115-64-212-59.static.tpgi.com.au. [115.64.212.59])
-        by smtp.gmail.com with ESMTPSA id g28-20020a63111c000000b00374646abc42sm602400pgl.36.2022.02.24.16.32.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 16:32:07 -0800 (PST)
-Date:   Fri, 25 Feb 2022 10:32:02 +1000
-From:   Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: [PATCH 2/3] powerpc: fix build errors
-To:     Segher Boessenkool <segher@kernel.crashing.org>
-Cc:     Anders Roxell <anders.roxell@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, mpe@ellerman.id.au,
-        stable@vger.kernel.org
-References: <20220223135820.2252470-1-anders.roxell@linaro.org>
-        <20220223135820.2252470-2-anders.roxell@linaro.org>
-        <1645670923.t0z533n7uu.astroid@bobo.none>
-        <1645678884.dsm10mudmp.astroid@bobo.none>
-        <20220224171207.GM614@gate.crashing.org>
-In-Reply-To: <20220224171207.GM614@gate.crashing.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=y7JZLiTaaSBR+Poz7SRaGfgsdoBr6p+bG2YMfUy3Slw=;
+        b=FQ0apJ1H2eaPt3fOUZXfcYDusHH6jPPMQschTX8vWVHNef/odxAu+lSWEHBHcnKBnz
+         bKUBx/dSJeDcWifYm3W6lFxbb/3JSd0KAT2+Tsg4aZUHC2Oda2anv5cCdHJlIYb0BZ0j
+         pW22Dd6csXEdj3179yR99NkbrIAxImy5bccReI1dzd1hfETNItCnu9h4FwvEHgNnaN/0
+         tJWwGwuEp1qSePEK4JInAp/6jCmMYdiqnrDvJ2RabPAZltKKZTpWw4o4DI87slf3NFZ+
+         CFTvP4PUnR3I0lOjlLYm+rtmlJXexcf9pwxgDjeXqIpfgUiN6vNetd6omcoJBlyugUw/
+         GIwQ==
+X-Gm-Message-State: AOAM533FWBjmm40+pXMkH/31XolZ3GSXEMSbDpkDHIYJwxkVOcH7VHNX
+        O0ftI7cMUJW0qgLkxS+87vChqVCgu+5gZLSfHDE1
+X-Google-Smtp-Source: ABdhPJw1CgqWyynCBf+FLm6LEHLJR8C5F5nAupSJMqeBc+oQWEUfQtfsZ/DTgiH22ChcD6v/sqSjwhOyjeyeCGJXlDQ=
+X-Received: by 2002:a50:e004:0:b0:410:a39b:e30c with SMTP id
+ e4-20020a50e004000000b00410a39be30cmr4645925edl.198.1645749271746; Thu, 24
+ Feb 2022 16:34:31 -0800 (PST)
 MIME-Version: 1.0
-Message-Id: <1645748601.idp48wexp9.astroid@bobo.none>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220224102417.42268-1-richard_c_haines@btinternet.com>
+In-Reply-To: <20220224102417.42268-1-richard_c_haines@btinternet.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 24 Feb 2022 19:34:20 -0500
+Message-ID: <CAHC9VhT4V=d8LtNT2mbiB6m1eUypi5WxPdRux_YNJ9iCV=WjWg@mail.gmail.com>
+Subject: Re: [PATCH V3] security/selinux: Always allow FIOCLEX and FIONCLEX
+To:     Richard Haines <richard_c_haines@btinternet.com>,
+        selinux@vger.kernel.org
+Cc:     stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        demiobenour@gmail.com, linux-kernel@vger.kernel.org,
+        selinux-refpolicy@vger.kernel.org, jeffv@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Excerpts from Segher Boessenkool's message of February 25, 2022 3:12 am:
-> On Thu, Feb 24, 2022 at 03:05:28PM +1000, Nicholas Piggin wrote:
->> + * gcc 10 started to emit a .machine directive at the beginning of gene=
-rated
->> + * .s files, which overrides assembler -Wa,-m<cpu> options passed down.
->> + * Unclear if this behaviour will be reverted.
->=20
-> It will not be reverted.  If you need a certain .machine for some asm
-> code, you should write just that!
+On Thu, Feb 24, 2022 at 5:24 AM Richard Haines
+<richard_c_haines@btinternet.com> wrote:
+>
+> These ioctls are equivalent to fcntl(fd, F_SETFD, flags), which SELinux
+> always allows too.  Furthermore, a failed FIOCLEX could result in a file
+> descriptor being leaked to a process that should not have access to it.
+>
+> As this patch removes access controls, a policy capability needs to be
+> enabled in policy to always allow these ioctls.
+>
+> Based-on-patch-by: Demi Marie Obenour <demiobenour@gmail.com>
+> Signed-off-by: Richard Haines <richard_c_haines@btinternet.com>
+> ---
+> V2 Change: Control via a policy capability.
+> V3 Change: Update switch check.
+>
+>  security/selinux/hooks.c                   | 6 ++++++
+>  security/selinux/include/policycap.h       | 1 +
+>  security/selinux/include/policycap_names.h | 3 ++-
+>  security/selinux/include/security.h        | 7 +++++++
+>  4 files changed, 16 insertions(+), 1 deletion(-)
 
-It should be reverted because it breaks old binutils which did not have
-the workaround patch for this broken gcc behaviour. And it is just
-unnecessary because -m option can already be used to do the same thing.
+This looks good to me, but before I merge this are the SELinux
+userspace folks okay with the policy capability's name and enum value?
 
-Not that I expect gcc to revert it.
+> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> index 5b6895e4f..d369c2d82 100644
+> --- a/security/selinux/hooks.c
+> +++ b/security/selinux/hooks.c
+> @@ -3745,6 +3745,12 @@ static int selinux_file_ioctl(struct file *file, unsigned int cmd,
+>                                             CAP_OPT_NONE, true);
+>                 break;
+>
+> +       case FIOCLEX:
+> +       case FIONCLEX:
+> +               if (!selinux_policycap_ioctl_skip_cloexec())
+> +                       error = ioctl_has_perm(cred, file, FILE__IOCTL, (u16) cmd);
+> +               break;
+> +
+>         /* default case assumes that the command will go
+>          * to the file's ioctl() function.
+>          */
+> diff --git a/security/selinux/include/policycap.h b/security/selinux/include/policycap.h
+> index 2ec038efb..44d73dc32 100644
+> --- a/security/selinux/include/policycap.h
+> +++ b/security/selinux/include/policycap.h
+> @@ -11,6 +11,7 @@ enum {
+>         POLICYDB_CAPABILITY_CGROUPSECLABEL,
+>         POLICYDB_CAPABILITY_NNP_NOSUID_TRANSITION,
+>         POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS,
+> +       POLICYDB_CAPABILITY_IOCTL_CLOEXEC,
+>         __POLICYDB_CAPABILITY_MAX
+>  };
+>  #define POLICYDB_CAPABILITY_MAX (__POLICYDB_CAPABILITY_MAX - 1)
+> diff --git a/security/selinux/include/policycap_names.h b/security/selinux/include/policycap_names.h
+> index b89289f09..ebd64afe1 100644
+> --- a/security/selinux/include/policycap_names.h
+> +++ b/security/selinux/include/policycap_names.h
+> @@ -12,7 +12,8 @@ const char *selinux_policycap_names[__POLICYDB_CAPABILITY_MAX] = {
+>         "always_check_network",
+>         "cgroup_seclabel",
+>         "nnp_nosuid_transition",
+> -       "genfs_seclabel_symlinks"
+> +       "genfs_seclabel_symlinks",
+> +       "ioctl_skip_cloexec"
+>  };
+>
+>  #endif /* _SELINUX_POLICYCAP_NAMES_H_ */
+> diff --git a/security/selinux/include/security.h b/security/selinux/include/security.h
+> index ac0ece013..8a789c22b 100644
+> --- a/security/selinux/include/security.h
+> +++ b/security/selinux/include/security.h
+> @@ -219,6 +219,13 @@ static inline bool selinux_policycap_genfs_seclabel_symlinks(void)
+>         return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_GENFS_SECLABEL_SYMLINKS]);
+>  }
+>
+> +static inline bool selinux_policycap_ioctl_skip_cloexec(void)
+> +{
+> +       struct selinux_state *state = &selinux_state;
+> +
+> +       return READ_ONCE(state->policycap[POLICYDB_CAPABILITY_IOCTL_CLOEXEC]);
+> +}
+> +
+>  struct selinux_policy_convert_data;
+>
+>  struct selinux_load_state {
+> --
+> 2.35.1
 
->=20
->> +#ifdef CONFIG_CC_IS_GCC
->> +#if (GCC_VERSION >=3D 100000)
->> +#if (CONFIG_AS_VERSION =3D=3D 23800)
->> +asm(".machine any");
->> +#endif
->> +#endif
->> +#endif
->> +#endif /* __ASSEMBLY__ */
->=20
-> Abusing toplevel asm like this is broken and you *will* end up with
-> unhappiness all around.
-
-It actually unbreaks things and reduces my unhappiness. It's only done=20
-for broken compiler versions and only where as does not have the=20
-workaround for the breakage.
-
-Thanks,
-Nick
+-- 
+paul-moore.com
