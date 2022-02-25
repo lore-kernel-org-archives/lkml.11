@@ -2,97 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65BD0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D85C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbiBYNG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:06:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
+        id S233262AbiBYNIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:08:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbiBYNGw (ORCPT
+        with ESMTP id S237704AbiBYNH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:06:52 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5AFA1E5A63
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:06:20 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id j2so5839563ybu.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:06:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=91lfqerMyrhcvkt/Xxml96fIqw1rCGTngu2Yekjv2ZI=;
-        b=E+tFHAQ5pyr27wKtgDUnzIAZDktAJK1JxSFWfkF+uK5aNwQybxvr9cfZBFwUHlYZZ0
-         MK6E+8qKnHRMT2xPb+Y3izP3sho0aJIaHAWWU6WGuMItBEnSLrYkcV2CPRjJzz6ddAD8
-         J+br2bR3zJSJbZ1lAl0Zvhjwde64U/c0dbzLVJokqOYSaVRdGySmQbY+mcgRVV91wJ/S
-         S0gSuJmSMUVTB3rcIJiMxIy2B8ateNHDJ54h/N+KaemldpyDH7ioajAiIRB41VhZYbzZ
-         2wUnoYDRvJ3UgTuByfaLZj+2wiy2OjRN7WW0Gev0AeiFZk/NzaBfeAurcujexBgjgpq9
-         dmZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=91lfqerMyrhcvkt/Xxml96fIqw1rCGTngu2Yekjv2ZI=;
-        b=Ya1RIpM0EZC5YJlnz8U5z4/rkZbhr1mYrTJZps1GI/veaYRb/wrvxafCOHD/tAC3E8
-         DMvDYb1FvkeWsRjmFLY0BafKZc1Ah1OktGLLD+493wrEqotzIm6hBjkl12Oq0YpkmM2J
-         fN4PqR15xnDGb3Aax85sUznrsLyC762AVK6A7GspZuC/dF9lTjFSHDuNFu/3syW/9Af6
-         2JHoeJzZtk+3Tsx1muFdmHlziQVMuS3wFWz+EanXbIe1gLjYWw2eSRLtg19VeQr8fgl5
-         /NHERN2VQUVLVGmJ6+JaKFGtsL2p7KMYiU7643Orp3Alcw3nQ1HD/fp00vgxDIo22I12
-         sJAg==
-X-Gm-Message-State: AOAM531I/gIyNchzdE/B9+IWD2QwmuHrxre/scvm5iTqdbs2JUPT4+l3
-        qqlkdsiZvFg4hyjcIy53H5jZrXGm6j5ALni10Y8Gxw==
-X-Google-Smtp-Source: ABdhPJxnv0D/Higle+O11O1DFAqioIx1d2WO7mloPNrhUPfrQPNRwDoAfE17Xn9OXd9PJjOxozfDe+0uLf3STxtqJ9A=
-X-Received: by 2002:a05:6902:2:b0:624:4cb5:fd3b with SMTP id
- l2-20020a056902000200b006244cb5fd3bmr7286257ybh.1.1645794379723; Fri, 25 Feb
- 2022 05:06:19 -0800 (PST)
-MIME-Version: 1.0
-References: <20220225123953.3251327-1-alexandre.ghiti@canonical.com>
-In-Reply-To: <20220225123953.3251327-1-alexandre.ghiti@canonical.com>
-From:   Marco Elver <elver@google.com>
-Date:   Fri, 25 Feb 2022 14:05:42 +0100
-Message-ID: <CANpmjNN304EZfFN2zobxKGXbXWXAfr92nP1KvtR7j-YqSFShvQ@mail.gmail.com>
-Subject: Re: [PATCH -fixes v3 0/6] Fixes KASAN and other along the way
-To:     Alexandre Ghiti <alexandre.ghiti@canonical.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Nick Hu <nickhu@andestech.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 25 Feb 2022 08:07:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E2120E781;
+        Fri, 25 Feb 2022 05:07:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C046E61C99;
+        Fri, 25 Feb 2022 13:07:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC2FC340E7;
+        Fri, 25 Feb 2022 13:07:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645794445;
+        bh=eIxa0pUPO6TwcE0sGdfKLgNjUfSzHpTb/0ESBrWvFUU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rywcizEbu4dw1+Cjgd8QZRVHIFNsVKE9uxAiC3Q8f71DVB9mLcEUyItMhBgzA/IDv
+         suKSVACS9qvmcaA0JPoXLHxe0x+9rGi+ViSJ7h9TtiUEOgyozUNVloVFEJfTZjyzNZ
+         9a4agL/RQ99IxFU05KbKvYU3EBvEeYK7sBCblbQfXDcGJGBj6LCGqyouuj+XAAcRqm
+         +uIYOZb2e5854VLGwoSXHq6VjnDpmx5Ll8gr5F9wGHSp4C0l9PaS+DghZFXqCtJIH3
+         c1rCdgJIGsMRJwjcyLEeCDHY2teSdGCJROmFcF7pxGLPtWMybSfu0VA1Ttl7iAM6H4
+         sbg2U1L2GmT7Q==
+From:   SeongJae Park <sj@kernel.org>
+To:     akpm@linux-foundation.org
+Cc:     corbet@lwn.net, skhan@linuxfoundation.org, rientjes@google.com,
+        xhao@linux.alibaba.com, linux-damon@amazon.com, linux-mm@kvack.org,
+        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
+Subject: [PATCH v2 01/13] mm/damon/core: Allow non-exclusive DAMON start/stop
+Date:   Fri, 25 Feb 2022 13:07:00 +0000
+Message-Id: <20220225130712.12682-2-sj@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220225130712.12682-1-sj@kernel.org>
+References: <20220225130712.12682-1-sj@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Feb 2022 at 13:40, Alexandre Ghiti
-<alexandre.ghiti@canonical.com> wrote:
->
-> As reported by Aleksandr, syzbot riscv is broken since commit
-> 54c5639d8f50 ("riscv: Fix asan-stack clang build"). This commit actually
-> breaks KASAN_INLINE which is not fixed in this series, that will come later
-> when found.
->
-> Nevertheless, this series fixes small things that made the syzbot
-> configuration + KASAN_OUTLINE fail to boot.
->
-> Note that even though the config at [1] boots fine with this series, I
-> was not able to boot the small config at [2] which fails because
-> kasan_poison receives a really weird address 0x4075706301000000 (maybe a
-> kasan person could provide some hint about what happens below in
-> do_ctors -> __asan_register_globals):
+To avoid interference between DAMON contexts monitoring overlapping
+memory regions, damon_start() works in an exclusive manner.  That is,
+damon_start() does nothing bug fails if any context that started by
+another instance of the function is still running.   This makes its
+usage a little bit restrictive.  However, admins could aware each DAMON
+usage and address such interferences on their own in some cases.
 
-asan_register_globals is responsible for poisoning redzones around
-globals. As hinted by 'do_ctors', it calls constructors, and in this
-case a compiler-generated constructor that calls
-__asan_register_globals with metadata generated by the compiler. That
-metadata contains information about global variables. Note, these
-constructors are called on initial boot, but also every time a kernel
-module (that has globals) is loaded.
+This commit hence implements non-exclusive mode of the function and
+allows the callers to select the mode.  Note that the exclusive groups
+and non-exclusive groups of contexts will respect each other in a manner
+similar to that of reader-writer locks.  Therefore, this commit will not
+cause any behavioral change to the exclusive groups.
 
-It may also be a toolchain issue, but it's hard to say. If you're
-using GCC to test, try Clang (11 or later), and vice-versa.
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ include/linux/damon.h |  2 +-
+ mm/damon/core.c       | 23 +++++++++++++++--------
+ mm/damon/dbgfs.c      |  2 +-
+ mm/damon/reclaim.c    |  2 +-
+ 4 files changed, 18 insertions(+), 11 deletions(-)
+
+diff --git a/include/linux/damon.h b/include/linux/damon.h
+index 49c4a11ecf20..f8e99e47d747 100644
+--- a/include/linux/damon.h
++++ b/include/linux/damon.h
+@@ -508,7 +508,7 @@ int damon_nr_running_ctxs(void);
+ int damon_register_ops(struct damon_operations *ops);
+ int damon_select_ops(struct damon_ctx *ctx, enum damon_ops_id id);
+ 
+-int damon_start(struct damon_ctx **ctxs, int nr_ctxs);
++int damon_start(struct damon_ctx **ctxs, int nr_ctxs, bool exclusive);
+ int damon_stop(struct damon_ctx **ctxs, int nr_ctxs);
+ 
+ #endif	/* CONFIG_DAMON */
+diff --git a/mm/damon/core.c b/mm/damon/core.c
+index 82e0a4620c4f..c1e0fed4e877 100644
+--- a/mm/damon/core.c
++++ b/mm/damon/core.c
+@@ -24,6 +24,7 @@
+ 
+ static DEFINE_MUTEX(damon_lock);
+ static int nr_running_ctxs;
++static bool running_exclusive_ctxs;
+ 
+ static DEFINE_MUTEX(damon_ops_lock);
+ static struct damon_operations damon_registered_ops[NR_DAMON_OPS];
+@@ -434,22 +435,25 @@ static int __damon_start(struct damon_ctx *ctx)
+  * damon_start() - Starts the monitorings for a given group of contexts.
+  * @ctxs:	an array of the pointers for contexts to start monitoring
+  * @nr_ctxs:	size of @ctxs
++ * @exclusive:	exclusiveness of this contexts group
+  *
+  * This function starts a group of monitoring threads for a group of monitoring
+  * contexts.  One thread per each context is created and run in parallel.  The
+- * caller should handle synchronization between the threads by itself.  If a
+- * group of threads that created by other 'damon_start()' call is currently
+- * running, this function does nothing but returns -EBUSY.
++ * caller should handle synchronization between the threads by itself.  If
++ * @exclusive is true and a group of threads that created by other
++ * 'damon_start()' call is currently running, this function does nothing but
++ * returns -EBUSY.
+  *
+  * Return: 0 on success, negative error code otherwise.
+  */
+-int damon_start(struct damon_ctx **ctxs, int nr_ctxs)
++int damon_start(struct damon_ctx **ctxs, int nr_ctxs, bool exclusive)
+ {
+ 	int i;
+ 	int err = 0;
+ 
+ 	mutex_lock(&damon_lock);
+-	if (nr_running_ctxs) {
++	if ((exclusive && nr_running_ctxs) ||
++			(!exclusive && running_exclusive_ctxs)) {
+ 		mutex_unlock(&damon_lock);
+ 		return -EBUSY;
+ 	}
+@@ -460,13 +464,15 @@ int damon_start(struct damon_ctx **ctxs, int nr_ctxs)
+ 			break;
+ 		nr_running_ctxs++;
+ 	}
++	if (exclusive && nr_running_ctxs)
++		running_exclusive_ctxs = true;
+ 	mutex_unlock(&damon_lock);
+ 
+ 	return err;
+ }
+ 
+ /*
+- * __damon_stop() - Stops monitoring of given context.
++ * __damon_stop() - Stops monitoring of a given context.
+  * @ctx:	monitoring context
+  *
+  * Return: 0 on success, negative error code otherwise.
+@@ -504,9 +510,8 @@ int damon_stop(struct damon_ctx **ctxs, int nr_ctxs)
+ 		/* nr_running_ctxs is decremented in kdamond_fn */
+ 		err = __damon_stop(ctxs[i]);
+ 		if (err)
+-			return err;
++			break;
+ 	}
+-
+ 	return err;
+ }
+ 
+@@ -1102,6 +1107,8 @@ static int kdamond_fn(void *data)
+ 
+ 	mutex_lock(&damon_lock);
+ 	nr_running_ctxs--;
++	if (!nr_running_ctxs && running_exclusive_ctxs)
++		running_exclusive_ctxs = false;
+ 	mutex_unlock(&damon_lock);
+ 
+ 	return 0;
+diff --git a/mm/damon/dbgfs.c b/mm/damon/dbgfs.c
+index 05b574cbcea8..a0dab8b5e45f 100644
+--- a/mm/damon/dbgfs.c
++++ b/mm/damon/dbgfs.c
+@@ -967,7 +967,7 @@ static ssize_t dbgfs_monitor_on_write(struct file *file,
+ 				return -EINVAL;
+ 			}
+ 		}
+-		ret = damon_start(dbgfs_ctxs, dbgfs_nr_ctxs);
++		ret = damon_start(dbgfs_ctxs, dbgfs_nr_ctxs, true);
+ 	} else if (!strncmp(kbuf, "off", count)) {
+ 		ret = damon_stop(dbgfs_ctxs, dbgfs_nr_ctxs);
+ 	} else {
+diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
+index b53d9c22fad1..e34c4d0c4d93 100644
+--- a/mm/damon/reclaim.c
++++ b/mm/damon/reclaim.c
+@@ -330,7 +330,7 @@ static int damon_reclaim_turn(bool on)
+ 	if (err)
+ 		goto free_scheme_out;
+ 
+-	err = damon_start(&ctx, 1);
++	err = damon_start(&ctx, 1, true);
+ 	if (!err) {
+ 		kdamond_pid = ctx->kdamond->pid;
+ 		return 0;
+-- 
+2.17.1
+
