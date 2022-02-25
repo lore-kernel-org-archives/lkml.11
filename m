@@ -2,80 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A40EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F095C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242100AbiBYP3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 10:29:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
+        id S242119AbiBYPb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 10:31:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242086AbiBYP3i (ORCPT
+        with ESMTP id S233758AbiBYPbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 10:29:38 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4401F7679
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 07:29:06 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1nNcWh-00083b-Bv; Fri, 25 Feb 2022 16:28:59 +0100
-Message-ID: <3e2f8cf8-3a41-d2e2-c9f1-6c1240b4a610@pengutronix.de>
-Date:   Fri, 25 Feb 2022 16:28:57 +0100
+        Fri, 25 Feb 2022 10:31:52 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545A1218CD9;
+        Fri, 25 Feb 2022 07:31:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1645803080; x=1677339080;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=eN9+O0QeW+Uix9xoRJt85GwthBkk74Jy4BjJPjZhA8Y=;
+  b=YhMRBxvfJGZT7Us4IsuVS6CHmYqUnzXnc1QjozOJHEcgbUJ4p/AOCm2t
+   oBRsQy8HKOdEfaDSrXj6EwZRklpGin8UEiBdiW0PcmuoUru4Ky+/F6DDd
+   rOCIEo+XNZ5CtWLjcWvuEPMMM6mOq/eYfI18EtV6AEtJp7RyHmQrzKj5r
+   A=;
+X-IronPort-AV: E=Sophos;i="5.90,136,1643673600"; 
+   d="scan'208";a="66229061"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 25 Feb 2022 15:31:18 +0000
+Received: from EX13MTAUWC002.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com (Postfix) with ESMTPS id E9E1387A16;
+        Fri, 25 Feb 2022 15:31:11 +0000 (UTC)
+Received: from EX13D20UWC001.ant.amazon.com (10.43.162.244) by
+ EX13MTAUWC002.ant.amazon.com (10.43.162.240) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Fri, 25 Feb 2022 15:31:10 +0000
+Received: from [0.0.0.0] (10.43.162.216) by EX13D20UWC001.ant.amazon.com
+ (10.43.162.244) with Microsoft SMTP Server (TLS) id 15.0.1497.28; Fri, 25 Feb
+ 2022 15:31:04 +0000
+Message-ID: <0b8a2c25-df48-143d-7fac-dc9b4ef68d3c@amazon.com>
+Date:   Fri, 25 Feb 2022 16:31:02 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [Linux-stm32] [PATCH v2 00/13] Introduction of STM32MP13 RCC
- driver (Reset Clock Controller)
-Content-Language: en-US
-To:     gabriel.fernandez@foss.st.com,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com
-References: <20220225133137.813919-1-gabriel.fernandez@foss.st.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <20220225133137.813919-1-gabriel.fernandez@foss.st.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v4] virt: vmgenid: introduce driver for reinitializing RNG
+ on VM fork
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     "Jason A. Donenfeld" <Jason@zx2c4.com>, <kvm@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <linux-hyperv@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <adrian@parity.io>,
+        <ardb@kernel.org>, <ben@skyportsystems.com>, <berrange@redhat.com>,
+        <colmmacc@amazon.com>, <decui@microsoft.com>, <dwmw@amazon.co.uk>,
+        <ebiggers@kernel.org>, <ehabkost@redhat.com>,
+        <haiyangz@microsoft.com>, <imammedo@redhat.com>,
+        <jannh@google.com>, <kys@microsoft.com>, <lersek@redhat.com>,
+        <linux@dominikbrodowski.net>, <mst@redhat.com>,
+        <qemu-devel@nongnu.org>, <raduweis@amazon.com>,
+        <sthemmin@microsoft.com>, <tytso@mit.edu>, <wei.liu@kernel.org>
+References: <CAHmME9pJ3wb=EbUErJrCRC=VYGhFZqj2ar_AkVPsUvAnqGtwwg@mail.gmail.com>
+ <20220225124848.909093-1-Jason@zx2c4.com>
+ <05c9f2a9-accb-e0de-aac7-b212adac7eb2@amazon.com>
+ <YhjphtYyXoYZ9lXY@kroah.com>
+From:   Alexander Graf <graf@amazon.com>
+In-Reply-To: <YhjphtYyXoYZ9lXY@kroah.com>
+X-Originating-IP: [10.43.162.216]
+X-ClientProxiedBy: EX13D41UWC004.ant.amazon.com (10.43.162.31) To
+ EX13D20UWC001.ant.amazon.com (10.43.162.244)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25.02.22 14:31, gabriel.fernandez@foss.st.com wrote:
-> From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
-> 
-> This patchset introduce the reset and clock driver of STM32MP13 SoC.
-> It uses a clk-stm32-core module to manage stm32 gate, mux and divider
-> for STM32MP13 and for new future STMP32 SoC.
-> 
-> v2:
->   - Resend because patch 9,10,12,13 has not been sent
->   - add Reviewed by Krzysztof Kozlowski for patch 1
-> 
-> Gabriel Fernandez (13):
->   dt-bindings: rcc: stm32: add new compatible for STM32MP13 SoC
->   clk: stm32: Introduce STM32MP13 RCC drivers (Reset Clock Controller)
+Ck9uIDI1LjAyLjIyIDE1OjM2LCBHcmVnIEtIIHdyb3RlOgo+IE9uIEZyaSwgRmViIDI1LCAyMDIy
+IGF0IDAyOjU3OjM4UE0gKzAxMDAsIEFsZXhhbmRlciBHcmFmIHdyb3RlOgo+Pj4gKwo+Pj4gKyAg
+ICAgICBwaHlzX2FkZHIgPSAob2JqLT5wYWNrYWdlLmVsZW1lbnRzWzBdLmludGVnZXIudmFsdWUg
+PDwgMCkgfAo+Pj4gKyAgICAgICAgICAgICAgICAgICAob2JqLT5wYWNrYWdlLmVsZW1lbnRzWzFd
+LmludGVnZXIudmFsdWUgPDwgMzIpOwo+Pj4gKyAgICAgICBzdGF0ZS0+bmV4dF9pZCA9IGRldm1f
+bWVtcmVtYXAoJmRldmljZS0+ZGV2LCBwaHlzX2FkZHIsIFZNR0VOSURfU0laRSwgTUVNUkVNQVBf
+V0IpOwo+Pj4gKyAgICAgICBpZiAoIXN0YXRlLT5uZXh0X2lkKSB7Cj4+PiArICAgICAgICAgICAg
+ICAgcmV0ID0gLUVOT01FTTsKPj4+ICsgICAgICAgICAgICAgICBnb3RvIG91dDsKPj4+ICsgICAg
+ICAgfQo+Pj4gKwo+Pj4gKyAgICAgICBtZW1jcHkoc3RhdGUtPnRoaXNfaWQsIHN0YXRlLT5uZXh0
+X2lkLCBzaXplb2Yoc3RhdGUtPnRoaXNfaWQpKTsKPj4+ICsgICAgICAgYWRkX2RldmljZV9yYW5k
+b21uZXNzKHN0YXRlLT50aGlzX2lkLCBzaXplb2Yoc3RhdGUtPnRoaXNfaWQpKTsKPj4KPj4gUGxl
+YXNlIGV4cG9zZSB0aGUgdm1nZW5pZCB2aWEgL3N5c2ZzIHNvIHRoYXQgdXNlciBzcGFjZSBldmVu
+IHJlbW90ZWx5IGhhcyBhCj4+IGNoYW5jZSB0byBjaGVjayBpZiBpdCdzIGJlZW4gY2xvbmVkLgo+
+IEV4cG9ydCBpdCBob3c/ICBBbmQgd2h5LCB3aG8gd291bGQgY2FyZT8KCgpZb3UgY2FuIGp1c3Qg
+Y3JlYXRlIGEgc3lzZnMgZmlsZSB0aGF0IGNvbnRhaW5zIGl0LiBUaGUgc2FtZSB3YXkgd2UgaGF2
+ZSAKc3lzZnMgZmlsZXMgZm9yIFVFRkkgY29uZmlnIHRhYmxlcy4gT3Igc3lzZnMgZmlsZXMgZm9y
+IHRoZSBhY3BpIGRldmljZSAKbm9kZXMgdGhlbXNlbHZlcy4KCkkgcGVyc29uYWxseSBkb24ndCBj
+YXJlIGlmIHdlIHB1dCB0aGlzIGludG8gYSBnZW5lcmljIGxvY2F0aW9uIAooL3N5cy9oeXBlcnZp
+c29yIGZvciBleGFtcGxlKSBvciBpbnRvIHRoZSBleGlzdGluZyBhY3BpIGRldmljZSBub2RlIGFz
+IAphZGRpdGlvbmFsIGZpbGUgeW91IGNhbiBqdXN0IHJlYWQuCgpXaG8gd291bGQgY2FyZT8gV2Vs
+bCwgZm9yIHN0YXJ0ZXJzIEkgd291bGQgY2FyZSBmb3IgZGVidWdnaW5nIHB1cnBvc2VzIAo6KS4g
+RXh0cmFjdGluZyB0aGUgSUQgYW5kIHZhbGlkYXRpbmcgdGhhdCBpdCdzIGRpZmZlcmVudCB0aGFu
+IGJlZm9yZSBpcyAKcXVpdGUgdXNlZnVsIHdoZW4geW91IHdhbnQgdG8gY2hlY2sgaWYgdGhlIGNs
+b25lIHJuZyBhZGp1c3RtZW50IGFjdHVhbGx5IAp3b3JrZWQuCgpJIGRvbid0IGhhdmUgdmVyeSBz
+dHJvbmcgZmVlbGluZ3Mgb24gaXQgdGhvdWdoIC0gdW5saWtlIHRoZSBfQ0lEIApjb252ZXJzYXRp
+b24uCgoKQWxleAoKCgoKCkFtYXpvbiBEZXZlbG9wbWVudCBDZW50ZXIgR2VybWFueSBHbWJICkty
+YXVzZW5zdHIuIDM4CjEwMTE3IEJlcmxpbgpHZXNjaGFlZnRzZnVlaHJ1bmc6IENocmlzdGlhbiBT
+Y2hsYWVnZXIsIEpvbmF0aGFuIFdlaXNzCkVpbmdldHJhZ2VuIGFtIEFtdHNnZXJpY2h0IENoYXJs
+b3R0ZW5idXJnIHVudGVyIEhSQiAxNDkxNzMgQgpTaXR6OiBCZXJsaW4KVXN0LUlEOiBERSAyODkg
+MjM3IDg3OQoKCg==
 
-This patch seems to not have reached linux-stm32. It's not in my inbox
-and https://st-md-mailman.stormreply.com/pipermail/linux-stm32/2022-February/014533.html
-doesn't list it either. It's indexed by lore.kernel.org though.
-
-Cheers,
-Ahmad
-
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
