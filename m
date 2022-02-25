@@ -2,72 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7CB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D750C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233226AbiBYSba (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 13:31:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36474 "EHLO
+        id S233244AbiBYSeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 13:34:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231935AbiBYSb1 (ORCPT
+        with ESMTP id S232563AbiBYSee (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 13:31:27 -0500
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5412261C6;
-        Fri, 25 Feb 2022 10:30:52 -0800 (PST)
-Received: by mail-oo1-f47.google.com with SMTP id x6-20020a4a4106000000b003193022319cso7439937ooa.4;
-        Fri, 25 Feb 2022 10:30:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nO46MVOxeBfrtpgtlpU0KanUna9yJ6hZKlTky8BlctQ=;
-        b=YpqbsMG8rmnCi7wV84vccmWgr1YPtz7FZEX6KFVKU4XIKJtRJTo1uhIgP6RkKhWimb
-         ZjzHdYmyPwfiQAhsRUllhhlk9zj3d2kKlCZErwbU7EJqdNz1sANIg9hEKKhTWofl/WIU
-         yvEnE1filsAsOnx8fhS9CktEXysErYcdQDby8WGYssYYhRjU9vMl54+b8IpqZqlqKzIv
-         ysMECoqZO1S4kR8VVZOab5Qr0Q2/GyPurYTBzcOy+ZiKbLs+fXN/jm16BQ/+VHh7skDo
-         qV9MilE+/SRSAoGWSC7MsAXrkWiCrUHa0rtYlhNNxlR++aQ6iPtT092dpg7/SrjgAId5
-         xRuw==
-X-Gm-Message-State: AOAM530TDEPkAN6eqaIyMSkXcHidwddQZdVS1UuoHWKLkybEfl4CeAKT
-        +3ZnRMDqHLu6Stk6M6lFKw==
-X-Google-Smtp-Source: ABdhPJwze7ScTwIWh5otCQGWo8AuNWqBADfUNufKuQfg4u37IUgUudm8gG9CpH7NlIUPHuoaXkQGjg==
-X-Received: by 2002:a05:6870:3048:b0:c4:7dc0:d758 with SMTP id u8-20020a056870304800b000c47dc0d758mr1983376oau.299.1645813851685;
-        Fri, 25 Feb 2022 10:30:51 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id bx10-20020a0568081b0a00b002d70da1ac54sm1765902oib.19.2022.02.25.10.30.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 10:30:51 -0800 (PST)
-Received: (nullmailer pid 1208822 invoked by uid 1000);
-        Fri, 25 Feb 2022 18:30:48 -0000
-Date:   Fri, 25 Feb 2022 12:30:48 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Rex Nie <rexnie3@gmail.com>
-Cc:     Daniel Vetter <daniel@ffwll.ch>, Rob Herring <robh+dt@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        hsinyi@chromium.org, dri-devel@lists.freedesktop.org,
-        devicetree@vger.kernel.org, David Airlie <airlied@linux.ie>
-Subject: Re: [PATCH 2/2] dt-bindings: display: simple: Add InnoLux
- n140hca-eac panel
-Message-ID: <YhkgWH1Q1T3vA7BG@robh.at.kernel.org>
-References: <20220218102815.1634561-1-rexnie3@gmail.com>
+        Fri, 25 Feb 2022 13:34:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A2C61190C13
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:34:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645814040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MeVbMsvqeKcfRpUCeZE0zT6P3QtSSS2eFOANTWB92Lg=;
+        b=bc24pSb8LIzfiDfrbImqVLPGJckxn9A+TAp5Pik+eZV6DROLB89HSn4HAqX0aXVYGgKjPy
+        sg2BGIYovhm6zAb/wnnm/9kxvesa7an8UTmvhQaFixMqbNdI+Cy/7jR6Qk7QhBETnE1NnX
+        b03WwxA5HImKFq95CSNatvetLODFxLg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-189-ExnxXd68PXSu9dwL9DMSig-1; Fri, 25 Feb 2022 13:33:57 -0500
+X-MC-Unique: ExnxXd68PXSu9dwL9DMSig-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C5B94180FCD9;
+        Fri, 25 Feb 2022 18:33:55 +0000 (UTC)
+Received: from starship (unknown [10.40.195.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 46A7D105C883;
+        Fri, 25 Feb 2022 18:33:53 +0000 (UTC)
+Message-ID: <6d01c59eab7f31eef1b4249a85869600410336b7.camel@redhat.com>
+Subject: Re: [PATCH 4/4] KVM: x86: hyper-v: HVCALL_SEND_IPI_EX is an XMM
+ fast hypercall
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 25 Feb 2022 20:33:52 +0200
+In-Reply-To: <20220222154642.684285-5-vkuznets@redhat.com>
+References: <20220222154642.684285-1-vkuznets@redhat.com>
+         <20220222154642.684285-5-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220218102815.1634561-1-rexnie3@gmail.com>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 18 Feb 2022 18:28:15 +0800, Rex Nie wrote:
-> Add support for InnoLux n140hca-eac display panel. It is a 14" eDP panel
-> with 1920x1080 display resolution.
+On Tue, 2022-02-22 at 16:46 +0100, Vitaly Kuznetsov wrote:
+> It has been proven on practice that at least Windows Server 2019 tries
+> using HVCALL_SEND_IPI_EX in 'XMM fast' mode when it has more than 64 vCPUs
+> and it needs to send an IPI to a vCPU > 63. Similarly to other XMM Fast
+> hypercalls (HVCALL_FLUSH_VIRTUAL_ADDRESS_{LIST,SPACE}{,_EX}), this
+> information is missing in TLFS as of 6.0b. Currently, KVM returns an error
+> (HV_STATUS_INVALID_HYPERCALL_INPUT) and Windows crashes.
 > 
-> Signed-off-by: Rex Nie <rexnie3@gmail.com>
+> Note, HVCALL_SEND_IPI is a 'standard' fast hypercall (not 'XMM fast') as
+> all its parameters fit into RDX:R8 and this is handled by KVM correctly.
+> 
+> Fixes: d8f5537a8816 ("KVM: hyper-v: Advertise support for fast XMM hypercalls")
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 > ---
->  .../devicetree/bindings/display/panel/panel-simple.yaml         | 2 ++
->  1 file changed, 2 insertions(+)
+>  arch/x86/kvm/hyperv.c | 52 ++++++++++++++++++++++++++++---------------
+>  1 file changed, 34 insertions(+), 18 deletions(-)
 > 
+> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+> index 6dda93bf98ae..3060057bdfd4 100644
+> --- a/arch/x86/kvm/hyperv.c
+> +++ b/arch/x86/kvm/hyperv.c
+> @@ -1890,6 +1890,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+>  	int sparse_banks_len;
+>  	u32 vector;
+>  	bool all_cpus;
+> +	int i;
+>  
+>  	if (hc->code == HVCALL_SEND_IPI) {
+>  		if (!hc->fast) {
+> @@ -1910,9 +1911,15 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+>  
+>  		trace_kvm_hv_send_ipi(vector, sparse_banks[0]);
+>  	} else {
+> -		if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
+> -					    sizeof(send_ipi_ex))))
+> -			return HV_STATUS_INVALID_HYPERCALL_INPUT;
+> +		if (!hc->fast) {
+> +			if (unlikely(kvm_read_guest(kvm, hc->ingpa, &send_ipi_ex,
+> +						    sizeof(send_ipi_ex))))
+> +				return HV_STATUS_INVALID_HYPERCALL_INPUT;
+> +		} else {
+> +			send_ipi_ex.vector = (u32)hc->ingpa;
+> +			send_ipi_ex.vp_set.format = hc->outgpa;
+> +			send_ipi_ex.vp_set.valid_bank_mask = sse128_lo(hc->xmm[0]);
+> +		}
+>  
+>  		trace_kvm_hv_send_ipi_ex(send_ipi_ex.vector,
+>  					 send_ipi_ex.vp_set.format,
+> @@ -1920,8 +1927,7 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+>  
+>  		vector = send_ipi_ex.vector;
+>  		valid_bank_mask = send_ipi_ex.vp_set.valid_bank_mask;
+> -		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64) *
+> -			sizeof(sparse_banks[0]);
+> +		sparse_banks_len = bitmap_weight(&valid_bank_mask, 64);
+Is this change intentional? 
 
-Acked-by: Rob Herring <robh@kernel.org>
+I haven't fully reviewed this, because kvm/queue seem to have a bit different
+version of this, and I didn't fully follow on all of this.
+
+Best regards,
+	Maxim Levitsky
+
+>  
+>  		all_cpus = send_ipi_ex.vp_set.format == HV_GENERIC_SET_ALL;
+>  
+> @@ -1931,12 +1937,27 @@ static u64 kvm_hv_send_ipi(struct kvm_vcpu *vcpu, struct kvm_hv_hcall *hc)
+>  		if (!sparse_banks_len)
+>  			goto ret_success;
+>  
+> -		if (kvm_read_guest(kvm,
+> -				   hc->ingpa + offsetof(struct hv_send_ipi_ex,
+> -							vp_set.bank_contents),
+> -				   sparse_banks,
+> -				   sparse_banks_len))
+> -			return HV_STATUS_INVALID_HYPERCALL_INPUT;
+> +		if (!hc->fast) {
+> +			if (kvm_read_guest(kvm,
+> +					   hc->ingpa + offsetof(struct hv_send_ipi_ex,
+> +								vp_set.bank_contents),
+> +					   sparse_banks,
+> +					   sparse_banks_len * sizeof(sparse_banks[0])))
+> +				return HV_STATUS_INVALID_HYPERCALL_INPUT;
+> +		} else {
+> +			/*
+> +			 * The lower half of XMM0 is already consumed, each XMM holds
+> +			 * two sparse banks.
+> +			 */
+> +			if (sparse_banks_len > (2 * HV_HYPERCALL_MAX_XMM_REGISTERS - 1))
+> +				return HV_STATUS_INVALID_HYPERCALL_INPUT;
+> +			for (i = 0; i < sparse_banks_len; i++) {
+> +				if (i % 2)
+> +					sparse_banks[i] = sse128_lo(hc->xmm[(i + 1) / 2]);
+> +				else
+> +					sparse_banks[i] = sse128_hi(hc->xmm[i / 2]);
+> +			}
+> +		}
+>  	}
+>  
+>  check_and_send_ipi:
+> @@ -2098,6 +2119,7 @@ static bool is_xmm_fast_hypercall(struct kvm_hv_hcall *hc)
+>  	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE:
+>  	case HVCALL_FLUSH_VIRTUAL_ADDRESS_LIST_EX:
+>  	case HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE_EX:
+> +	case HVCALL_SEND_IPI_EX:
+>  		return true;
+>  	}
+>  
+> @@ -2265,14 +2287,8 @@ int kvm_hv_hypercall(struct kvm_vcpu *vcpu)
+>  		ret = kvm_hv_flush_tlb(vcpu, &hc);
+>  		break;
+>  	case HVCALL_SEND_IPI:
+> -		if (unlikely(hc.rep)) {
+> -			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+> -			break;
+> -		}
+> -		ret = kvm_hv_send_ipi(vcpu, &hc);
+> -		break;
+>  	case HVCALL_SEND_IPI_EX:
+> -		if (unlikely(hc.fast || hc.rep)) {
+> +		if (unlikely(hc.rep)) {
+>  			ret = HV_STATUS_INVALID_HYPERCALL_INPUT;
+>  			break;
+>  		}
+
+
