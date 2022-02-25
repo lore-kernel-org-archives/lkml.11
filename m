@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C06CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 17:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB530C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 17:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231364AbiBYR7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 12:59:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
+        id S231470AbiBYR71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 12:59:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231178AbiBYR7T (ORCPT
+        with ESMTP id S231294AbiBYR7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 12:59:19 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DB311BBF5C
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 09:58:46 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id d14-20020a05600c34ce00b0037bf4d14dc7so2153314wmq.3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 09:58:46 -0800 (PST)
+        Fri, 25 Feb 2022 12:59:21 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DA21BF93A
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 09:58:48 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id bg16-20020a05600c3c9000b00380f6f473b0so2166268wmb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 09:58:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4aleIewlwKJ1poVk10Jw8E3A1niTjHR1aIKsYOteRaE=;
-        b=PfUwWn5+6UEKSBSJSnsKTXOfu7BCeNBeueveB86gaDf3xbEpm69XTzGBRnofGXBwre
-         HfMbIx+KQkntMerVVbNP1xCc/nbhMA3wF8NJaWh/ijDRx+nfAThKRJSckHaPHHO9u1hf
-         gRUVQ2i8dIZowl0zS/lW5/5A6Evr51RJAWJFywF5oqFV3xlmdkZgjjq8YL0PRmjlhq31
-         dapWDAtrhqjNiTDB1DHVqtwuXYNcZHfF9h4TsNImsLDwaLgorOk+hSsC5iTWdxMRBYFR
-         plpaja9XzoR1ydBgfDhzUTO3qWxdnhkvANPh9vdS2YiTHUjfnxRKHgMdeNNB357R1VhZ
-         wQ+A==
+        bh=TToHHhQ9e3UF7DAGb1X/L762Cx9ZwKjwgUki3iHq62w=;
+        b=b1l/w/YSXYX7+AXroPrKESOq2dTiEMdf9vimQ/VnLm62eIy2NGJVm3hk34x+wsIkOb
+         f6+CDfRjN3t53enSilCo6dy/7VqHLKdtw9atzEJPMJ72cXMXR6S4r8DvXFxcnaaog2+z
+         32+earhfFmLvPwkFwhDS4LLhzuu/me2zdDO8pVkg2+Spmyb1ZVdi5sc2bYqQiZicQswU
+         EnzA3Va4hOiejHsk+lXoW7nS84JFbfks0n25/hbFeWxpHrPEj2iSj2ZVf2lSppGDkx/S
+         L06LSbk4K/TFmKftG7fupA7EutWWsMU3GcHtTV0kJSzDOa+egw1Lh+tf3ytyAscbRqqb
+         zqvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4aleIewlwKJ1poVk10Jw8E3A1niTjHR1aIKsYOteRaE=;
-        b=u4ru1X8Kug8RtMCAeFJs2agzk9yJCjtfq6uY7bNZjG++s2dcrxKTx3uxwdUNif/8By
-         rVVzbp7quQ4GIFBfDGUDYj0XSu9z73v+x/1fionjQwObEXNMTM/U1vea+Corj9I0oBhX
-         Pwz9xXRSzYPNaI4fA9hOMzXH7X2t3tWWT5ZogqGq0gTJ4s5sQtCDBtsLADkXS9IedA2k
-         0C5EF8CQZRJMR6VzqCy7fHJcrvetRrrF+Ya5pgvWUE53LH2tQUKwxZCYW7U5DFcnw8Ad
-         Zzh0vuaHxHRYuJrWcoWuUPcnraV2ZXT/5L8ACmcSVUF8wNF3KkM0DGdr5wp9r/cHtwbi
-         9OQA==
-X-Gm-Message-State: AOAM532nvFjWQsWG78gqnAQNmzd1MZR4cEg9rMkUEGisacA17bUd8/L0
-        t1ItsBcg3cglYk0rWux3S6M0Qw==
-X-Google-Smtp-Source: ABdhPJwED8ZFQcWOXXVX/CYMkODNcBl04QDeIURlCgk/IzGxCDkxnhvhyZQhp//vtJjoPUq6aGUOxg==
-X-Received: by 2002:a05:600c:4182:b0:381:42:ac91 with SMTP id p2-20020a05600c418200b003810042ac91mr3710003wmh.116.1645811924887;
-        Fri, 25 Feb 2022 09:58:44 -0800 (PST)
+        bh=TToHHhQ9e3UF7DAGb1X/L762Cx9ZwKjwgUki3iHq62w=;
+        b=iVrAgP32sddt/E8eZavmWJPjHY9C3pLvNL3rbrCNpvGBHyxvr3l9+4DLuGh4QeDar3
+         TwskCJQPr7ZN51LpcTQQgQXFfbPD7v1mZwa3ZnW+f3bTk+CPb7jcJl51Jc3ezV33l2JL
+         /hA/YXW/kyQPo1NJ98N2kgrNWY4QOliew00YrfH7NQCQlEFEwu8Et85fOXDeAMvkTpdD
+         8gIya1TnINku1fGETw9fSgWBFc2Z4HMcVwI7Yj9tM+eLXKPnu65A5D1J9MAADRxgZS8L
+         sRrooFaTWNb1pHn2JEXZNFm6b7NKSvdM0GZeG6ATUhpV9vP/KvubgG3JPaE1ad+ZggPd
+         vlkw==
+X-Gm-Message-State: AOAM532A2ED9joeR37kEGfpfgnQHlRGR8aBuzfhahABk9s+xRk4KRzs4
+        S8Y8PObS1aSgpLM+W69cOCCL2Q==
+X-Google-Smtp-Source: ABdhPJzIrSRHpSy3s2TEPlKdC96c8Ay/w1HBZW8pOPhVyk9/ZGKa99x9C3ugV7b3cxf64njV06CAJA==
+X-Received: by 2002:a7b:c932:0:b0:381:c66:fff2 with SMTP id h18-20020a7bc932000000b003810c66fff2mr3752039wml.42.1645811927147;
+        Fri, 25 Feb 2022 09:58:47 -0800 (PST)
 Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id t8-20020a05600c2f8800b00381428ad88dsm74172wmn.15.2022.02.25.09.58.43
+        by smtp.gmail.com with ESMTPSA id t8-20020a05600c2f8800b00381428ad88dsm74172wmn.15.2022.02.25.09.58.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 09:58:44 -0800 (PST)
+        Fri, 25 Feb 2022 09:58:46 -0800 (PST)
 From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>,
+        Rob Herring <robh@kernel.org>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 2/4] nvmem: brcm_nvram: parse NVRAM content into NVMEM cells
-Date:   Fri, 25 Feb 2022 17:58:20 +0000
-Message-Id: <20220225175822.8293-3-srinivas.kandagatla@linaro.org>
+Subject: [PATCH 4/4] dt-bindings: nvmem: brcm,nvram: add basic NVMEM cells
+Date:   Fri, 25 Feb 2022 17:58:22 +0000
+Message-Id: <20220225175822.8293-5-srinivas.kandagatla@linaro.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220225175822.8293-1-srinivas.kandagatla@linaro.org>
 References: <20220225175822.8293-1-srinivas.kandagatla@linaro.org>
@@ -68,144 +69,65 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-NVRAM consist of header and NUL separated key-value pairs. Parse it and
-create NVMEM cell for every key-value entry.
+NVRAM doesn't have cells at hardcoded addresses. They are stored in
+internal struct (custom & dynamic format). It's still important to
+define relevant cells in DT so NVMEM consumers can reference them.
+
+Update binding to allow including basic cells as NVMEM device subnodes.
 
 Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- drivers/nvmem/brcm_nvram.c | 90 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
+ .../devicetree/bindings/nvmem/brcm,nvram.yaml | 25 +++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvmem/brcm_nvram.c b/drivers/nvmem/brcm_nvram.c
-index bd2ecaaf4585..439f00b9eef6 100644
---- a/drivers/nvmem/brcm_nvram.c
-+++ b/drivers/nvmem/brcm_nvram.c
-@@ -6,12 +6,26 @@
- #include <linux/io.h>
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
-+#include <linux/nvmem-consumer.h>
- #include <linux/nvmem-provider.h>
- #include <linux/platform_device.h>
-+#include <linux/slab.h>
-+
-+#define NVRAM_MAGIC			"FLSH"
+diff --git a/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml b/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
+index 8c3f0cd22821..25033de3ef6b 100644
+--- a/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
++++ b/Documentation/devicetree/bindings/nvmem/brcm,nvram.yaml
+@@ -14,6 +14,8 @@ description: |
+   NVRAM can be accessed on Broadcom BCM47xx MIPS and Northstar ARM Cortex-A9
+   devices usiong I/O mapped memory.
  
- struct brcm_nvram {
- 	struct device *dev;
- 	void __iomem *base;
-+	struct nvmem_cell_info *cells;
-+	int ncells;
-+};
++  NVRAM variables can be defined as NVMEM device subnodes.
 +
-+struct brcm_nvram_header {
-+	char magic[4];
-+	__le32 len;
-+	__le32 crc_ver_init;	/* 0:7 crc, 8:15 ver, 16:31 sdram_init */
-+	__le32 config_refresh;	/* 0:15 sdram_config, 16:31 sdram_refresh */
-+	__le32 config_ncdl;	/* ncdl values for memc */
- };
+ maintainers:
+   - Rafał Miłecki <rafal@milecki.pl>
  
- static int brcm_nvram_read(void *context, unsigned int offset, void *val,
-@@ -26,6 +40,75 @@ static int brcm_nvram_read(void *context, unsigned int offset, void *val,
- 	return 0;
- }
+@@ -27,11 +29,30 @@ properties:
+   reg:
+     maxItems: 1
  
-+static int brcm_nvram_add_cells(struct brcm_nvram *priv, uint8_t *data,
-+				size_t len)
-+{
-+	struct device *dev = priv->dev;
-+	char *var, *value, *eq;
-+	int idx;
++  board_id:
++    type: object
++    description: Board identification name
 +
-+	priv->ncells = 0;
-+	for (var = data + sizeof(struct brcm_nvram_header);
-+	     var < (char *)data + len && *var;
-+	     var += strlen(var) + 1) {
-+		priv->ncells++;
-+	}
++  et0macaddr:
++    type: object
++    description: First Ethernet interface's MAC address
 +
-+	priv->cells = devm_kcalloc(dev, priv->ncells, sizeof(*priv->cells), GFP_KERNEL);
-+	if (!priv->cells)
-+		return -ENOMEM;
++  et1macaddr:
++    type: object
++    description: Second Ethernet interface's MAC address
 +
-+	for (var = data + sizeof(struct brcm_nvram_header), idx = 0;
-+	     var < (char *)data + len && *var;
-+	     var = value + strlen(value) + 1, idx++) {
-+		eq = strchr(var, '=');
-+		if (!eq)
-+			break;
-+		*eq = '\0';
-+		value = eq + 1;
++  et2macaddr:
++    type: object
++    description: Third Ethernet interface's MAC address
 +
-+		priv->cells[idx].name = devm_kstrdup(dev, var, GFP_KERNEL);
-+		if (!priv->cells[idx].name)
-+			return -ENOMEM;
-+		priv->cells[idx].offset = value - (char *)data;
-+		priv->cells[idx].bytes = strlen(value);
-+	}
-+
-+	return 0;
-+}
-+
-+static int brcm_nvram_parse(struct brcm_nvram *priv)
-+{
-+	struct device *dev = priv->dev;
-+	struct brcm_nvram_header header;
-+	uint8_t *data;
-+	size_t len;
-+	int err;
-+
-+	memcpy_fromio(&header, priv->base, sizeof(header));
-+
-+	if (memcmp(header.magic, NVRAM_MAGIC, 4)) {
-+		dev_err(dev, "Invalid NVRAM magic\n");
-+		return -EINVAL;
-+	}
-+
-+	len = le32_to_cpu(header.len);
-+
-+	data = kcalloc(1, len, GFP_KERNEL);
-+	memcpy_fromio(data, priv->base, len);
-+	data[len - 1] = '\0';
-+
-+	err = brcm_nvram_add_cells(priv, data, len);
-+	if (err) {
-+		dev_err(dev, "Failed to add cells: %d\n", err);
-+		return err;
-+	}
-+
-+	kfree(data);
-+
-+	return 0;
-+}
-+
- static int brcm_nvram_probe(struct platform_device *pdev)
- {
- 	struct nvmem_config config = {
-@@ -35,6 +118,7 @@ static int brcm_nvram_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	struct resource *res;
- 	struct brcm_nvram *priv;
-+	int err;
+ unevaluatedProperties: false
  
- 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
-@@ -46,7 +130,13 @@ static int brcm_nvram_probe(struct platform_device *pdev)
- 	if (IS_ERR(priv->base))
- 		return PTR_ERR(priv->base);
- 
-+	err = brcm_nvram_parse(priv);
-+	if (err)
-+		return err;
+ examples:
+   - |
+     nvram@1eff0000 {
+-            compatible = "brcm,nvram";
+-            reg = <0x1eff0000 0x10000>;
++        compatible = "brcm,nvram";
++        reg = <0x1eff0000 0x10000>;
 +
- 	config.dev = dev;
-+	config.cells = priv->cells;
-+	config.ncells = priv->ncells;
- 	config.priv = priv;
- 	config.size = resource_size(res);
- 
++        mac: et0macaddr {
++        };
+     };
 -- 
 2.21.0
 
