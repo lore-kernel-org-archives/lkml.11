@@ -2,158 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD68DC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:05:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEEA4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:06:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237977AbiBYHGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 02:06:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
+        id S237986AbiBYHGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 02:06:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiBYHGK (ORCPT
+        with ESMTP id S229597AbiBYHGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 02:06:10 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59D61DD0C0;
-        Thu, 24 Feb 2022 23:05:35 -0800 (PST)
-Received: from kwepemi500026.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K4gjw1D6YzdZhK;
-        Fri, 25 Feb 2022 15:04:04 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi500026.china.huawei.com (7.221.188.247) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.18; Fri, 25 Feb 2022 15:05:17 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 25 Feb
- 2022 15:05:16 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <ming.lei@redhat.com>, <axboe@kernel.dk>
-CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
-Subject: [PATCH] blk-mq: fix potential uaf for 'queue_hw_ctx'
-Date:   Fri, 25 Feb 2022 15:20:53 +0800
-Message-ID: <20220225072053.2472431-1-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Fri, 25 Feb 2022 02:06:37 -0500
+Received: from isilmar-4.linta.de (isilmar-4.linta.de [136.243.71.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B30711E016C
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 23:06:03 -0800 (PST)
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 5A1CD2013FA;
+        Fri, 25 Feb 2022 07:06:01 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id BA8ED802B3; Fri, 25 Feb 2022 08:05:43 +0100 (CET)
+Date:   Fri, 25 Feb 2022 08:05:43 +0100
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] random: cleanup UUID handling
+Message-ID: <Yhh/x2C0b8QvTm2N@owl.dominikbrodowski.net>
+References: <20220224220958.93263-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220224220958.93263-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-blk_mq_realloc_hw_ctxs() will free the 'queue_hw_ctx'(e.g. undate
-submit_queues through configfs for null_blk), while it might still be
-used from other context(e.g. switch elevator to none):
+Am Thu, Feb 24, 2022 at 11:09:58PM +0100 schrieb Jason A. Donenfeld:
+> Rather than hard coding various lengths, we can use the right constants.
+> Strings should be `char *` while buffers should be `u8 *`. Rather than
+> have a nonsensical and unused maxlength, just remove it. Finally, use
+> snprintf instead of sprintf, just out of good hygiene.
+> 
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-t1					t2
-elevator_switch
- blk_mq_unquiesce_queue
-  blk_mq_run_hw_queues
-   queue_for_each_hw_ctx
-    // assembly code for hctx = (q)->queue_hw_ctx[i]
-    mov    0x48(%rbp),%rdx -> read old queue_hw_ctx
+	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
 
-					__blk_mq_update_nr_hw_queues
-					 blk_mq_realloc_hw_ctxs
-					  hctxs = q->queue_hw_ctx
-					  q->queue_hw_ctx = new_hctxs
-					  kfree(hctxs)
-    movslq %ebx,%rax
-    mov    (%rdx,%rax,8),%rdi ->uaf
-
-This problem was found by code review, and I comfirmed that the concurrent
-scenario do exist(specifically 'q->queue_hw_ctx' can be changed during
-blk_mq_run_hw_queues()), however, the uaf problem hasn't been repoduced yet
-without hacking the kernel.
-
-Sicne the queue is freezed in __blk_mq_update_nr_hw_queues(), fix the
-problem by protecting 'queue_hw_ctx' through rcu where it can be accessed
-without grabbing 'q_usage_counter'.
-
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
----
-changes from rfc
- - move queue_hctx() to blk-mq.h
- - add review tag
-
- block/blk-mq.c         |  8 +++++++-
- block/blk-mq.h         | 11 +++++++++++
- include/linux/blk-mq.h |  2 +-
- include/linux/blkdev.h |  2 +-
- 4 files changed, 20 insertions(+), 3 deletions(-)
-
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index f1b067d06ab5..3fab7f925011 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -3937,7 +3937,13 @@ static void blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
- 		if (hctxs)
- 			memcpy(new_hctxs, hctxs, q->nr_hw_queues *
- 			       sizeof(*hctxs));
--		q->queue_hw_ctx = new_hctxs;
-+
-+		rcu_assign_pointer(q->queue_hw_ctx, new_hctxs);
-+		/*
-+		 * Make sure reading the old queue_hw_ctx from other
-+		 * context concurrently won't trigger uaf.
-+		 */
-+		synchronize_rcu();
- 		kfree(hctxs);
- 		hctxs = new_hctxs;
- 	}
-diff --git a/block/blk-mq.h b/block/blk-mq.h
-index 948791ea2a3e..20dcfc74d9ee 100644
---- a/block/blk-mq.h
-+++ b/block/blk-mq.h
-@@ -86,6 +86,17 @@ static inline struct blk_mq_hw_ctx *blk_mq_map_queue_type(struct request_queue *
- 	return q->queue_hw_ctx[q->tag_set->map[type].mq_map[cpu]];
- }
- 
-+static inline struct blk_mq_hw_ctx *queue_hctx(struct request_queue *q, int id)
-+{
-+	struct blk_mq_hw_ctx *hctx;
-+
-+	rcu_read_lock();
-+	hctx = *(rcu_dereference(q->queue_hw_ctx) + id);
-+	rcu_read_unlock();
-+
-+	return hctx;
-+}
-+
- static inline enum hctx_type blk_mq_get_hctx_type(unsigned int flags)
- {
- 	enum hctx_type type = HCTX_TYPE_DEFAULT;
-diff --git a/include/linux/blk-mq.h b/include/linux/blk-mq.h
-index 3a41d50b85d3..34eab6cd95f8 100644
---- a/include/linux/blk-mq.h
-+++ b/include/linux/blk-mq.h
-@@ -918,7 +918,7 @@ static inline void *blk_mq_rq_to_pdu(struct request *rq)
- 
- #define queue_for_each_hw_ctx(q, hctx, i)				\
- 	for ((i) = 0; (i) < (q)->nr_hw_queues &&			\
--	     ({ hctx = (q)->queue_hw_ctx[i]; 1; }); (i)++)
-+	     ({ hctx = queue_hctx((q), i); 1; }); (i)++)
- 
- #define hctx_for_each_ctx(hctx, ctx, i)					\
- 	for ((i) = 0; (i) < (hctx)->nr_ctx &&				\
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 51a7399a98a1..b16785d1286d 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -354,7 +354,7 @@ struct request_queue {
- 	unsigned int		queue_depth;
- 
- 	/* hw dispatch queues */
--	struct blk_mq_hw_ctx	**queue_hw_ctx;
-+	struct blk_mq_hw_ctx __rcu	**queue_hw_ctx;
- 	unsigned int		nr_hw_queues;
- 
- 	/*
--- 
-2.31.1
-
+Thanks,
+	Dominik
