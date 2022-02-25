@@ -2,116 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7057CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B873C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240703AbiBYMqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 07:46:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60322 "EHLO
+        id S240714AbiBYMqo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 07:46:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230124AbiBYMqg (ORCPT
+        with ESMTP id S240706AbiBYMql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 07:46:36 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24A421CD12
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 04:46:04 -0800 (PST)
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A602C3F1C9
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 12:46:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645793163;
-        bh=IZZDTFAqzc8aGjWg1aZGEvUIk/RV0NTNXI1qwgw2jtM=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=NbuplYwpZDA6vimglNGnb8sl8yD7+jhJ2oi2Ti0IUGF2J8G0s9m/GZ+8jhnFutli7
-         5Y/Ldq7Ixg47hG+FvmiBCry+Tp5sr26yKf4JRpOvFLrfi8/Lpl9dPIzsgq7lpu8Ozj
-         KLe95HHy8+5oGLpMPcRsrSHu4fIr55Z47JvXsBPcnoUcgLNgqrigfjUQFk/tV88G7r
-         t6vujrku7IlIqFQ/9Y6We8xM4uT8TJuQLRIOjs/R9lE0l4xg2bsUBtlv/FmKcYAHkU
-         qiK3MXgm0a3NJakRdxbIAWeelxK8C3XhS53DBYDYoiePomfoUPJ6G03o+FWa3R4oA+
-         0dx1/xoQYLzEw==
-Received: by mail-wm1-f69.google.com with SMTP id w3-20020a7bc743000000b0037c5168b3c4so1510781wmk.7
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 04:46:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IZZDTFAqzc8aGjWg1aZGEvUIk/RV0NTNXI1qwgw2jtM=;
-        b=5MFNklMRl4lPD1dBHw6iQRs6qpAfetCZZFL9EAFzXMsrN9fHIIUh1TnbEypkD6jVQW
-         dtxokPL0gVgyMdqZP9CSj3bEByw5k6aC5aRUXHWXR5hAZDTTAPNn/jT9B5A8vi+oynwE
-         0RVNSzt3xYiCTiD92fAkuanttp0qONjLVPSU4tVubtUgHsJ1HXtJdCf5vRAWmHiBewHV
-         ElRXMHHVjkPxl39lGdTh3VClILARJBNhY+k/RKPjIpf8xynKSsHvFe6liWMNDV73RMwF
-         WzuXn9BhCdHo7M43okBU7vjCfAuavyIJ68LooQBmLoYihd66mponshpe5LhrGmuGM+Lm
-         42Qw==
-X-Gm-Message-State: AOAM531QnMq/ZcoBPoFYjqTrF+kB+M7wvz1Hon5AOe+Tzl/iRGRcW3qk
-        lEsi0339dlKXI+ZK3vgjn+FySuKqCl6veRCc2N89zHMIS00MUoxJsBUTg07yD6k+X1/tP11LR5b
-        DUKdPeYjpuHx90XYq1tb8h2/aRzZ38LbZ00LlCmYpZA==
-X-Received: by 2002:a5d:59af:0:b0:1e4:a027:ce3b with SMTP id p15-20020a5d59af000000b001e4a027ce3bmr5811393wrr.318.1645793163256;
-        Fri, 25 Feb 2022 04:46:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxO7k/BdZpfrSelXcnhXik1Fk/jhx3wZbS/FHtdA4vPeJI99+BzxjzzIqpykVUwH5wXXBm4Wg==
-X-Received: by 2002:a5d:59af:0:b0:1e4:a027:ce3b with SMTP id p15-20020a5d59af000000b001e4a027ce3bmr5811384wrr.318.1645793163068;
-        Fri, 25 Feb 2022 04:46:03 -0800 (PST)
-Received: from localhost.localdomain (lfbn-gre-1-195-1.w90-112.abo.wanadoo.fr. [90.112.158.1])
-        by smtp.gmail.com with ESMTPSA id e33-20020a05600c4ba100b003810c690ba2sm4741109wmp.3.2022.02.25.04.46.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 04:46:02 -0800 (PST)
-From:   Alexandre Ghiti <alexandre.ghiti@canonical.com>
-To:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Nick Hu <nickhu@andestech.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com
-Subject: [PATCH -fixes v3 6/6] riscv: Fix kasan pud population
-Date:   Fri, 25 Feb 2022 13:39:53 +0100
-Message-Id: <20220225123953.3251327-7-alexandre.ghiti@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220225123953.3251327-1-alexandre.ghiti@canonical.com>
-References: <20220225123953.3251327-1-alexandre.ghiti@canonical.com>
+        Fri, 25 Feb 2022 07:46:41 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98BD21CD21;
+        Fri, 25 Feb 2022 04:46:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645793169; x=1677329169;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=hxjx1k1dTQ1X3VcpcvhZpVGbKp3swFMdHJk9USMfQsI=;
+  b=nmUrBzBnIkNutN0FXJ1lbgAXJxqlwEX+JPafMJ+JXCz2I27yXG1zmGaN
+   dbxjxslpP2xvO+ZVtHC8sklDwJHi7mOaAu9ePKNYPDAlgT1NDXaMILNfa
+   SMYgGEDk0IiYcqDOyPGjD7j91RiWQU/TFHGKzeusiY/uvfz3ZpTSS+ihW
+   GPOjnzD9mt4WQRb375fZmi5sQDZRxvTiJppRLjv7y7aOcOo61WudDkeO3
+   VMj9C3D8frtrz3R8Nr7BgBk4lCiHhHT5G+3HxoR5zjC6zI743YimbUdVZ
+   Ko4EfoSdYZF4BNhxUxp6ycY2+YKbiVIuEYNtpaE5z4qjFhdhcGBE1X7Lv
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="277121994"
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="277121994"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 04:46:09 -0800
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="628832414"
+Received: from xiaoyaol-hp-g830.ccr.corp.intel.com (HELO [10.255.30.203]) ([10.255.30.203])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 04:46:07 -0800
+Message-ID: <2809f506-a3ed-d2ec-dbeb-d7f2b3edbd37@intel.com>
+Date:   Fri, 25 Feb 2022 20:46:05 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.6.1
+Subject: Re: [PATCH v3] KVM: VMX: Enable Notify VM exit
+Content-Language: en-US
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Chenyi Qiang <chenyi.qiang@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>
+Cc:     Tao Xu <tao3.xu@intel.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220223062412.22334-1-chenyi.qiang@intel.com>
+ <c7681cf8-7b99-eb43-0195-d35adb011f21@redhat.com>
+From:   Xiaoyao Li <xiaoyao.li@intel.com>
+In-Reply-To: <c7681cf8-7b99-eb43-0195-d35adb011f21@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In sv48, the kasan inner regions are not aligned on PGDIR_SIZE and then
-when we populate the kasan linear mapping region, we clear the kasan
-vmalloc region which is in the same PGD.
+On 2/25/2022 7:54 PM, Paolo Bonzini wrote:
+> On 2/23/22 07:24, Chenyi Qiang wrote:
+>> Nested handling
+>> - Nested notify VM exits are not supported yet. Keep the same notify
+>>    window control in vmcs02 as vmcs01, so that L1 can't escape the
+>>    restriction of notify VM exits through launching L2 VM.
+>> - When L2 VM is context invalid, synthesize a nested
+>>    EXIT_REASON_TRIPLE_FAULT to L1 so that L1 won't be killed due to L2's
+>>    VM_CONTEXT_INVALID happens.
+>>
+>> Notify VM exit is defined in latest Intel Architecture Instruction Set
+>> Extensions Programming Reference, chapter 9.2.
+>>
+>> TODO: Allow to change the window size (to enable the feature) at runtime,
+>> which can make it more flexible to do management.
+> 
+> I only have a couple questions, any changes in response to the question
+> I can do myself.
+> 
+>> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+>> index 1dfe23963a9e..f306b642c3e1 100644
+>> --- a/arch/x86/kvm/vmx/nested.c
+>> +++ b/arch/x86/kvm/vmx/nested.c
+>> @@ -2177,6 +2177,9 @@ static void prepare_vmcs02_constant_state(struct 
+>> vcpu_vmx *vmx)
+>>       if (cpu_has_vmx_encls_vmexit())
+>>           vmcs_write64(ENCLS_EXITING_BITMAP, INVALID_GPA);
+>> +    if (notify_window >= 0)
+>> +        vmcs_write32(NOTIFY_WINDOW, notify_window);
+> 
+> Is a value of 0 valid?  
 
-Fix this by copying the content of the kasan early pud after allocating a
-new PGD for the first time.
+Yes, 0 is valid. That's why there is an internal value to ensure even 0 
+won't cause false positive
 
-Fixes: e8a62cc26ddf ("riscv: Implement sv48 support")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
----
- arch/riscv/mm/kasan_init.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> Should it be changed to the recommended value of
+> 128000 in hardware_setup()?
+> 
+>> +    case EXIT_REASON_NOTIFY:
+>> +        return nested_cpu_has2(vmcs12,
+>> +            SECONDARY_EXEC_NOTIFY_VM_EXITING);
+> 
+> This should be "return false" since you don't expose the secondary
+> control to L1 (meaning, it will never be set).
 
-diff --git a/arch/riscv/mm/kasan_init.c b/arch/riscv/mm/kasan_init.c
-index 85e849318389..cd1a145257b7 100644
---- a/arch/riscv/mm/kasan_init.c
-+++ b/arch/riscv/mm/kasan_init.c
-@@ -113,8 +113,11 @@ static void __init kasan_populate_pud(pgd_t *pgd,
- 		base_pud = pt_ops.get_pud_virt(pfn_to_phys(_pgd_pfn(*pgd)));
- 	} else {
- 		base_pud = (pud_t *)pgd_page_vaddr(*pgd);
--		if (base_pud == lm_alias(kasan_early_shadow_pud))
-+		if (base_pud == lm_alias(kasan_early_shadow_pud)) {
- 			base_pud = memblock_alloc(PTRS_PER_PUD * sizeof(pud_t), PAGE_SIZE);
-+			memcpy(base_pud, (void *)kasan_early_shadow_pud,
-+			       sizeof(pud_t) * PTRS_PER_PUD);
-+		}
- 	}
- 
- 	pudp = base_pud + pud_index(vaddr);
--- 
-2.32.0
+Fine with either.
+
+>> +         * L0 will synthensize a nested TRIPLE_FAULT to kill L2 when
+>> +         * notify VM exit occurred in L2 and 
+>> NOTIFY_VM_CONTEXT_INVALID is
+>> +         * set in exit qualification. In this case, if notify VM exit
+>> +         * occurred incident to delivery of a vectored event, the IDT
+>> +         * vectoring info are recorded in VMCS. Drop the pending event
+>> +         * in vmcs12, otherwise L1 VMM will exit to userspace with
+>> +         * internal error due to delivery event.
+>>           */
+>> -        vmcs12_save_pending_event(vcpu, vmcs12);
+>> +        if (to_vmx(vcpu)->exit_reason.basic != EXIT_REASON_NOTIFY)
+>> +            vmcs12_save_pending_event(vcpu, vmcs12);
+> 
+> I would prefer to call out the triple fault here:
+> 
+>                  /*
+>                   * Transfer the event that L0 or L1 may have wanted to 
+> inject into
+>                   * L2 to IDT_VECTORING_INFO_FIELD.
+>                   *
+>                   * Skip this if the exit is due to a 
+> NOTIFY_VM_CONTEXT_INVALID
+>                   * exit; in that case, L0 will synthesize a nested 
+> TRIPLE_FAULT
+>                   * vmexit to kill L2.  No IDT vectoring info is 
+> recorded for
+>                   * triple faults, and __vmx_handle_exit does not expect 
+> it.
+>                   */
+>                  if (!(to_vmx(vcpu)->exit_reason.basic == 
+> EXIT_REASON_NOTIFY)
+>                        && kvm_test_request(KVM_REQ_TRIPLE_FAULT, vcpu))
+>                          vmcs12_save_pending_event(vcpu, vmcs12);
+
+looks good to me.
+
+> What do you think?
+> 
+> Paolo
+> 
 
