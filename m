@@ -2,107 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1271C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DD6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:04:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240897AbiBYNEm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:04:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
+        id S240906AbiBYNFE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:05:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240846AbiBYNEb (ORCPT
+        with ESMTP id S240882AbiBYNE7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:04:31 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 848AC1E374D;
-        Fri, 25 Feb 2022 05:03:59 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id x15so4403484wrg.8;
-        Fri, 25 Feb 2022 05:03:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FiLW0R7L/dZRfqfxW28BOR12U87eLnNRWa67PzOy/CI=;
-        b=HHrWK7ne97eI6fFX7Fv835jZNK5hk+zS0o37dYh4zMpZ48ZCsoXwSBrbFhU31sgYQi
-         lAUmjiRExX2V5fdeAloRqNXELDIpBAxEbWOWpAGphmSnP8L8jdKvBF3DAY1auH6V13Pn
-         CHETEmfIKf+kEuXvDei7y3d/AwbzD1BHsDrtOSAd/wnIClLCgO+kg9GpTIweShTsb9Tp
-         4EZULZf4/o4Lh/+ETyx5qscnWrmt0HyafLeqaJY2QSNNSrifH1UTDS+1bZ1hJNnWwa40
-         UQRQpmORxDXiJOuy7DYefgqqgDJdS/qMATk3j20ycljtYTPEwdBtef4QQD50dWwYPmhO
-         UBbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FiLW0R7L/dZRfqfxW28BOR12U87eLnNRWa67PzOy/CI=;
-        b=jEjCSBqp7ZZ8S7KdxuhY0LWPIBeWenfWfBn+HUKbjKcbAv7kjNUL4KAUEVCSw5EXbq
-         5l+3a+50LIcPc1draTneONLS9BNY37iUw5mAwhot/pbWZCq8dVN+I5za/t5+hU7OGK9p
-         +YmCOA/n7nD2qkIUq0oxD2ApGvtrBzmV5FmktlHhS31K+6T3n5/RSdhfkEI6/mZQtFM7
-         i5GFwlewm4FSku1uHkjf0NLK9y5gASfNOqio27PwJfq5N12GhcknJ+WfjZNWrYaQt8bg
-         GxxMdsU3DRszwEdN7j08K62Tidru6UwDd6VuSyDTQ9StXN9w9GywyV4K1PaQYREsQ+U4
-         qtnQ==
-X-Gm-Message-State: AOAM532IbLJgBrsqPwSOo6Uv0f4VGGhKvdBMxCYe1RpxcydFKBaU29NB
-        OGsHNcSCwzXi+8gx+dRc8Ws=
-X-Google-Smtp-Source: ABdhPJyz0Q8QDhOWS3XCU+i92LkHDxlAgtGQ8dY8haf/uZWkN5FsPOJpWFC2E/2dJxW+SQiXbc6W1w==
-X-Received: by 2002:a5d:598f:0:b0:1e3:649:e6c3 with SMTP id n15-20020a5d598f000000b001e30649e6c3mr6182784wri.520.1645794237992;
-        Fri, 25 Feb 2022 05:03:57 -0800 (PST)
-Received: from orome ([62.96.65.119])
-        by smtp.gmail.com with ESMTPSA id b10-20020a5d550a000000b001e30e81afd1sm2293641wrv.2.2022.02.25.05.03.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 05:03:56 -0800 (PST)
-Date:   Fri, 25 Feb 2022 14:03:54 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     christian.koenig@amd.com, digetx@gmail.com, jonathanh@nvidia.com,
-        ldewangan@nvidia.com, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-        mperttunen@nvidia.com, p.zabel@pengutronix.de,
-        sumit.semwal@linaro.org
-Subject: Re: [PATCH RESEND] i2c: tegra: Add SMBus block read function
-Message-ID: <YhjTum2zWhRF3Ya4@orome>
-References: <20220210153603.61894-1-akhilrajeev@nvidia.com>
+        Fri, 25 Feb 2022 08:04:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA721E5A5A;
+        Fri, 25 Feb 2022 05:04:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F8DD61C3F;
+        Fri, 25 Feb 2022 13:04:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1710C340E7;
+        Fri, 25 Feb 2022 13:04:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645794266;
+        bh=gdf8s76fH34Bh2Vwgt/Faw/t+5GPOkcmWqEgY93CwF0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FRmByzmjAFfB81VvBzGdQnHWmjKxktkTlmz6ZRQ61ZMvzec5bEvOJcSOTlGhwT9LS
+         cHRE8zzfE8qWtuZHce1el1sEhpq2QgDOxTzPVc5WnDxl+91mQSVH2JY6yhbfc11OMF
+         OCArkVPrIm+uuPhNVRaPfT2FMdxSCC4DVb6+yEe8fblhDsABBsvPgO5M4HJDlZEVvU
+         hcY16n9Dvo++UKp2UEURFpXtiovPzKPtOJ9mDvMTz/0DG7iBo3mcwo/SLinhVQRpUE
+         eYpgYBCDGXRqZnbMfvsQ99BlrM612b6h85RHYgNGid0a7BcKZohEmtNcJye0Dv2HO+
+         GQm0BOkv91s+A==
+Received: by pali.im (Postfix)
+        id F223F7EF; Fri, 25 Feb 2022 14:04:22 +0100 (CET)
+Date:   Fri, 25 Feb 2022 14:04:22 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v4 05/12] PCI: mvebu: Correctly configure x1/x4 mode
+Message-ID: <20220225130422.2aordy6mb2nxcxht@pali>
+References: <20220222155030.988-6-pali@kernel.org>
+ <20220225000800.GA304526@bhelgaas>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="lWAEqUEAsHWaCsS8"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220210153603.61894-1-akhilrajeev@nvidia.com>
-User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220225000800.GA304526@bhelgaas>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thursday 24 February 2022 18:08:00 Bjorn Helgaas wrote:
+> On Tue, Feb 22, 2022 at 04:50:23PM +0100, Pali Rohár wrote:
+> > If x1/x4 mode is not set correctly then link with endpoint card is not
+> > established.
+> > 
+> > Use DTS property 'num-lanes' to deteriminate x1/x4 mode.
+> 
+> I know this is already merged, but if tweaking for any other reason,
+> s/deteriminate/determine/
+> 
+> > +	 * Set Maximum Link Width to X1 or X4 in Root Port's PCIe Link
+> > +	 * Capability register. This register is defined by PCIe specification
+> > +	 * as read-only but this mvebu controller has it as read-write and must
+> > +	 * be set to number of SerDes PCIe lanes (1 or 4). If this register is
+> > +	 * not set correctly then link with endpoint card is not established.
+> 
+> True, everything in Link Capability is RO or HwInit, but that's for
+> the architected access via config space.  I think a device-specific
+> mechanism like this is fair game as long as you do it before anybody
+> can read it via config space.
 
---lWAEqUEAsHWaCsS8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Maybe I was not clear and explicit in above comment, but this register
+sets number of PCIe lanes which HW will use. Armada PCIe controllers
+supports only x1 and x4. Sometimes default HW value is 4 for x1 HW and
+sometimes default value for x4 HW is 1. First case cause that link never
+comes up (HW is trying to setup 4 lanes but in reality there is only
+one, so link training never finish) and second case cause degraded
+performance (x4 link is established only in x1 mode as HW is via this
+register instructed to ignores other 3 lanes).
 
-On Thu, Feb 10, 2022 at 09:06:03PM +0530, Akhil R wrote:
-> Emulate SMBus block read using ContinueXfer to read the length byte
->=20
-> Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-> ---
->  drivers/i2c/busses/i2c-tegra.c | 18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
+So basically HW designers misused this Link Capability register for
+configuring PCIe Link of PCIe Root Port.
 
-Acked-by: Thierry Reding <treding@nvidia.com>
-
---lWAEqUEAsHWaCsS8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIY07oACgkQ3SOs138+
-s6GwVhAAmLZXYPEtR5O+sa6Wbv/sGE5ainR5eQ4QkP3KEsBu65zUsivQF0e/gL51
-nU3UWLjbgW6r+KL+0rlb/p55E5n6OwFPHsXZM9oSBtBfg75TuhJT8JCqvEnV8oKS
-edblc5WW2X32hhYpZOo5/EInl2kXM6gzluasrC+ZAjz8dIcF6ynuNa6uotFMcujI
-ZG+iOtPt7AaVEP0u8MBJU1u+Ni4UXUw8tMaJ+5QoiXqVI4dtnbsNr/3fGEE4lc/O
-jVIbKXM0fwMfcGuNxfBoM8Yq5vIJshpnNsyJUjTyiWNteeZkTqAA8OcDXejoh6x9
-En8QxZjO8s/l8DAW5u1ZiUvqLSYBZoJG8NrhjnHLb6GPbN5JtbCCyMo8YeOD2lG8
-prCLh9LVSbcM0zo9xoBFIC2N3alybgH2THZ3IeQCMW7/2ITnZwk0FISOoXnEFOmp
-98hZNgPQ436PHB15iSwF2FuaWq95Tfoinnrf0qWedMGCkOY0CdocvPiOnuMLW9o1
-2XYXEagCwLKO3H0SJdsofPvGLPx5tuWqu2sXL/yyzy4dhwcmtMqjywkIuSkF8aHD
-6UpZMqApcaE82shB3jtFIfX4rqDD0oOos6JRvVskesLhlXxoGck0fdBE7POLOCwA
-ZTjRhKuFZLmOEGPBUyOHrBQSvx3lSiur8Rqus+/6hR5ke2mxmlE=
-=PNMy
------END PGP SIGNATURE-----
-
---lWAEqUEAsHWaCsS8--
+> > +	 */
+> > +	lnkcap = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_LNKCAP);
+> > +	lnkcap &= ~PCI_EXP_LNKCAP_MLW;
+> > +	lnkcap |= (port->is_x4 ? 4 : 1) << 4;
+> > +	mvebu_writel(port, lnkcap, PCIE_CAP_PCIEXP + PCI_EXP_LNKCAP);
