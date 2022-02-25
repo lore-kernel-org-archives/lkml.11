@@ -2,91 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95FF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242489AbiBYP5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 10:57:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41616 "EHLO
+        id S242494AbiBYP6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 10:58:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235252AbiBYP5d (ORCPT
+        with ESMTP id S242585AbiBYP6C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 10:57:33 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112811DC98A;
-        Fri, 25 Feb 2022 07:57:01 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id BCB601F380;
-        Fri, 25 Feb 2022 15:56:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1645804619; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=5TiYyUbi82Jc4N9YQSVkhw89f6hPd1w+8UfjYmR5n30=;
-        b=ciky6OZbxV5jgiFZqdsa1os2xNkmiaBS43SX3NNV6sd/cKloeiIL/KcG+DO3MMR7A/J75D
-        shPjWZurivt8YVWKzD/ytM0LmGV4B+VDEJs6W+AcwMByq+jwcEqrX2dLV6s2KnDvCBJvJb
-        s2qfa3/0NeIqszwtmt91eJycDggW0To=
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id B5019A3B88;
-        Fri, 25 Feb 2022 15:56:59 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id E72C1DA818; Fri, 25 Feb 2022 16:53:09 +0100 (CET)
-From:   David Sterba <dsterba@suse.com>
-To:     torvalds@linux-foundation.org
-Cc:     David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Btrfs fixes for 5.17-rc6
-Date:   Fri, 25 Feb 2022 16:53:04 +0100
-Message-Id: <cover.1645801545.git.dsterba@suse.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 25 Feb 2022 10:58:02 -0500
+Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7803A5AA47;
+        Fri, 25 Feb 2022 07:57:30 -0800 (PST)
+Received: by mail-oo1-f43.google.com with SMTP id u47-20020a4a9732000000b00316d0257de0so6727157ooi.7;
+        Fri, 25 Feb 2022 07:57:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hK1faAZYddl8pmB2/voy3xPMUXCWPdg9Bm9+NsKrySI=;
+        b=F5xkvRTiFnlSlNbGap7H9PRravdXO3m91S4b3HWEx0ZE40OwiqeIC0xsO8EIVFRgTs
+         OvNh1tAL5s2AevWcU9WecYti+56kTGQ1hOBrgB3Cr5o3LKX2NUzF1w+9vjWz9tjcStC5
+         EWh5Chlo9lMhdB+TV0mZuHLSXWkY1ZUihdHPasiVYfi/vL1WskhV9GkaBbORvuVFZQEJ
+         5Ms6KE+tvHgozgc9ILyuGMw3lqnQ1WHs4LSjwXo+RrK+Lu99jsrYDsWDMZg8tA3cV9VL
+         JuD3gC+go0cDz9b51VrxYZ+NPHhUizcrVL4xE+KwxKDWU013g8PZdf3DnMrluTp80Q84
+         Y/tA==
+X-Gm-Message-State: AOAM53141d9P650rMmNI7wbXa0qHdrnF2fKJiTqFzxbj6J5wYSYmicnu
+        fu0oKXKNINMdoyqoXA33oA==
+X-Google-Smtp-Source: ABdhPJwrgcW8uLcZCNKBfHjc5LV76NJKYvicXJSrUlEvUWVLu2T6GCcj5k/JJKNvhVHwkkmIWmDxYQ==
+X-Received: by 2002:a05:6870:91c4:b0:d6:cd13:cac6 with SMTP id c4-20020a05687091c400b000d6cd13cac6mr1488969oaf.301.1645804649824;
+        Fri, 25 Feb 2022 07:57:29 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id l34-20020a9d1ca2000000b005acea92e8absm1280869ota.42.2022.02.25.07.57.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 07:57:29 -0800 (PST)
+Received: (nullmailer pid 998780 invoked by uid 1000);
+        Fri, 25 Feb 2022 15:57:27 -0000
+Date:   Fri, 25 Feb 2022 09:57:27 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc:     wim@linux-watchdog.org, linux@roeck-us.net,
+        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        festevam@gmail.com, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org, shawnguo@kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH] dt-bindings: watchdog: imx7ulp-wdt: Add imx93 compatible
+ string
+Message-ID: <Yhj8Z+dtsu8a+VQP@robh.at.kernel.org>
+References: <20220215081202.787853-1-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220215081202.787853-1-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, 15 Feb 2022 16:12:02 +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> The wdog on i.MX93 is modified from i.MX8ULP with some changes,
+> it uses one compatible string, so add i.MX93 support.
+> 
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  Documentation/devicetree/bindings/watchdog/fsl-imx7ulp-wdt.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-this is a hopefully last batch of fixes for defrag that got broken in
-5.16, all stable material. The remaining reported problem is excessive
-IO with autodefrag due to various conditions in the defrag code not met
-or missing.
-
-Please pull, thanks.
-
-----------------------------------------------------------------
-The following changes since commit 2e7be9db125a0bf940c5d65eb5c40d8700f738b5:
-
-  btrfs: send: in case of IO error log it (2022-02-09 18:53:26 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.17-rc5-tag
-
-for you to fetch changes up to 558732df2122092259ab4ef85594bee11dbb9104:
-
-  btrfs: reduce extent threshold for autodefrag (2022-02-24 16:11:28 +0100)
-
-----------------------------------------------------------------
-Dāvis Mosāns (1):
-      btrfs: prevent copying too big compressed lzo segment
-
-Qu Wenruo (8):
-      btrfs: defrag: allow defrag_one_cluster() to skip large extent which is not a target
-      btrfs: defrag: don't try to merge regular extents with preallocated extents
-      btrfs: defrag: don't defrag extents which are already at max capacity
-      btrfs: defrag: remove an ambiguous condition for rejection
-      btrfs: defrag: bring back the old file extent search behavior
-      btrfs: defrag: don't use merged extent map for their generation check
-      btrfs: autodefrag: only scan one inode once
-      btrfs: reduce extent threshold for autodefrag
-
- fs/btrfs/ctree.h      |   2 +-
- fs/btrfs/extent_map.c |   2 +
- fs/btrfs/extent_map.h |   8 ++
- fs/btrfs/file.c       |  97 +++++++------------
- fs/btrfs/inode.c      |   4 +-
- fs/btrfs/ioctl.c      | 256 ++++++++++++++++++++++++++++++++++++++++++++++----
- fs/btrfs/lzo.c        |  11 +++
- 7 files changed, 296 insertions(+), 84 deletions(-)
+Acked-by: Rob Herring <robh@kernel.org>
