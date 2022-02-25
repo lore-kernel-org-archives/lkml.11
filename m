@@ -2,219 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D897C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240573AbiBYMPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 07:15:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46928 "EHLO
+        id S231971AbiBYMR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 07:17:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236585AbiBYMPw (ORCPT
+        with ESMTP id S229468AbiBYMRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 07:15:52 -0500
-Received: from ni.piap.pl (ni.piap.pl [195.187.100.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E9A2275A4
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 04:15:16 -0800 (PST)
-Received: from t19.piap.pl (OSB1819.piap.pl [10.0.9.19])
-        by ni.piap.pl (Postfix) with ESMTPSA id 69F00C3EEAFF;
-        Fri, 25 Feb 2022 13:15:11 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ni.piap.pl 69F00C3EEAFF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=piap.pl; s=mail;
-        t=1645791312; bh=uznWO2E4e4XX8oTlSGFj0SCiL5sa3KQXgvli76Fp7YM=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=oeplpv2oO2fh5hpfY9o2jQkQhruDFE66OIcT2R/QNxtZAlqgWf7YhijwO83OSQ20L
-         r+iLlqiaCkJRzUKxMGX0kiJ3jmZbXJYaw50ahnnrqrDKx+xzEM/vx+AGy6TGiG+Jy5
-         FUyX70Md8zLIdlz57RY2wwAojCJRec1Ph8uQt/+c=
-From:   =?utf-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
-To:     Jacopo Mondi <jacopo@jmondi.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Sakari Ailus <sakari.ailus@iki.fi>,
-        Joe Perches <joe@perches.com>
-Subject: Re: [PATCH v7 2/2] Driver for ON Semi AR0521 camera sensor
-References: <m3czl9eylt.fsf@t19.piap.pl> <m34k6leyb1.fsf@t19.piap.pl>
-        <20220109153439.bfnfigocaeeeghmp@uno.localdomain>
-Sender: khalasa@piap.pl
-Date:   Fri, 25 Feb 2022 13:15:11 +0100
-In-Reply-To: <20220109153439.bfnfigocaeeeghmp@uno.localdomain> (Jacopo Mondi's
-        message of "Sun, 9 Jan 2022 16:34:39 +0100")
-Message-ID: <m35yp387n4.fsf@t19.piap.pl>
+        Fri, 25 Feb 2022 07:17:25 -0500
+Received: from mslow1.mail.gandi.net (mslow1.mail.gandi.net [217.70.178.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0714966217;
+        Fri, 25 Feb 2022 04:16:52 -0800 (PST)
+Received: from relay3-d.mail.gandi.net (unknown [IPv6:2001:4b98:dc4:8::223])
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 0B6A3CC3AF;
+        Fri, 25 Feb 2022 12:03:05 +0000 (UTC)
+Received: (Authenticated sender: herve.codina@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPA id DC5E960006;
+        Fri, 25 Feb 2022 12:03:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1645790581;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=xmAETL88ozFterU6nFZtAF7xxcPU2p4puDat4V2JVsI=;
+        b=Tz4YK8B/W7g7MiVtr3UWlLFxHBsG+ANM08f1HlngBpuAnFgWC290P2wAfu0j2x1qmk81FH
+        xG0Ih1XCbbQpQWAYZbsi3ApTHBX7Kxg/YUEP3mx1LAuS48b0f6e0VAmu6ISiiibIU/Bjl1
+        g5yQzZ3YcA/rx8FwrqIf8jf8L6OHUU9N5u0NmYZeh66bgdFworBFZ0l7ZT1m2BDvM7O6/1
+        f48v+kR2SfJEf49maj4f3ZN1qzGoMmrxnIyAn6ukUMH6ZrMW4hu1fKh4H7+U73rLCLmnFL
+        HDeVDX9jghq9pdnJSSn/Z+w8of+zb89kT3dxDPvkIF/h2l9uD4frmaczBqLIcw==
+From:   Herve Codina <herve.codina@bootlin.com>
+To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>
+Subject: [PATCH 1/1] dmaengine: dw-edma: Fix unaligned 64bit access
+Date:   Fri, 25 Feb 2022 13:02:52 +0100
+Message-Id: <20220225120252.309404-1-herve.codina@bootlin.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-KLMS-Rule-ID: 3
-X-KLMS-Message-Action: skipped
-X-KLMS-AntiSpam-Status: not scanned, whitelist
-X-KLMS-AntiPhishing: not scanned, whitelist
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, not scanned, whitelist
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jacopo,
+On some arch (ie aarch64 iMX8MM) unaligned PCIe accesses are
+not allowed and lead to a kernel Oops.
+  [ 1911.668835] Unable to handle kernel paging request at virtual address ffff80001bc00a8c
+  [ 1911.668841] Mem abort info:
+  [ 1911.668844]   ESR = 0x96000061
+  [ 1911.668847]   EC = 0x25: DABT (current EL), IL = 32 bits
+  [ 1911.668850]   SET = 0, FnV = 0
+  [ 1911.668852]   EA = 0, S1PTW = 0
+  [ 1911.668853] Data abort info:
+  [ 1911.668855]   ISV = 0, ISS = 0x00000061
+  [ 1911.668857]   CM = 0, WnR = 1
+  [ 1911.668861] swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000040ff4000
+  [ 1911.668864] [ffff80001bc00a8c] pgd=00000000bffff003, pud=00000000bfffe003, pmd=0068000018400705
+  [ 1911.668872] Internal error: Oops: 96000061 [#1] PREEMPT SMP
+  ...
 
-Sorry it took that long. Unfortunately I no longer have much time to
-work on this, thus the delays.
+The llp register present in the channel group registers is not
+aligned on 64bit.
 
-Jacopo Mondi <jacopo@jmondi.org> writes:
+Fix unaligned 64bit access using two 32bit accesses
 
->> +static int ar0521_s_ctrl(struct v4l2_ctrl *ctrl)
->> +{
->> +	struct v4l2_subdev *sd =3D ctrl_to_sd(ctrl);
->> +	struct ar0521_dev *sensor =3D to_ar0521_dev(sd);
->> +	int ret;
->> +
->> +	/* v4l2_ctrl_lock() locks our own mutex */
->> +
->> +	dev_dbg(&sensor->i2c_client->dev, "%s(0x%X)\n", __func__, ctrl->id);
->> +
->> +	switch (ctrl->id) {
->> +	case V4L2_CID_HBLANK:
->> +	case V4L2_CID_VBLANK:
->> +		sensor->total_width =3D sensor->fmt.width +
->> +			sensor->ctrls.hblank->val;
->> +		sensor->total_height =3D sensor->fmt.width +
->> +			sensor->ctrls.vblank->val;
->> +		break;
->> +	default:
->> +		ret =3D -EINVAL;
->> +		break;
->> +	}
->> +
->> +	// access the sensor only if it's powered up
->> +	if (!pm_runtime_get_if_in_use(&sensor->i2c_client->dev))
->
-> As you correctly do not access the chip's registers if it's powered
-> off, you have to call __v4l2_ctrl_handler_setup() at power on time to
-> make sure controls are actually set.
+Fixes: 04e0a39fc10f ("dmaengine: dw-edma: Add writeq() and readq() for 64 bits architectures")
+Signed-off-by: Herve Codina <herve.codina@bootlin.com>
+---
+ drivers/dma/dw-edma/dw-edma-v0-core.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-These registers are also written in ar0521_set_stream(), isn't it
-enough?
+diff --git a/drivers/dma/dw-edma/dw-edma-v0-core.c b/drivers/dma/dw-edma/dw-edma-v0-core.c
+index 329fc2e57b70..b5b8f8181e77 100644
+--- a/drivers/dma/dw-edma/dw-edma-v0-core.c
++++ b/drivers/dma/dw-edma/dw-edma-v0-core.c
+@@ -415,8 +415,11 @@ void dw_edma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
+ 			  (DW_EDMA_V0_CCS | DW_EDMA_V0_LLE));
+ 		/* Linked list */
+ 		#ifdef CONFIG_64BIT
+-			SET_CH_64(dw, chan->dir, chan->id, llp.reg,
+-				  chunk->ll_region.paddr);
++			/* llp is not aligned on 64bit -> keep 32bit accesses */
++			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
++				  lower_32_bits(chunk->ll_region.paddr));
++			SET_CH_32(dw, chan->dir, chan->id, llp.msb,
++				  upper_32_bits(chunk->ll_region.paddr));
+ 		#else /* CONFIG_64BIT */
+ 			SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
+ 				  lower_32_bits(chunk->ll_region.paddr));
+-- 
+2.35.1
 
->> +	ctrls->hblank =3D v4l2_ctrl_new_std(hdl, ops, V4L2_CID_HBLANK,
->> +					  AR0521_WIDTH_BLANKING_MIN, 4094, 1,
->> +					  AR0521_WIDTH_BLANKING_MIN);
->> +	ctrls->vblank =3D v4l2_ctrl_new_std(hdl, ops, V4L2_CID_VBLANK,
->> +					  AR0521_HEIGHT_BLANKING_MIN, 4094, 2,
->> +					  AR0521_HEIGHT_BLANKING_MIN);
->> +	v4l2_ctrl_cluster(2, &ctrls->hblank);
->
-> Is it intended to have vblank and hblank as cluster, can't they change
-> independently ?
-
-They can. It appears, though, that clusters aren't about controls which
-can't change independently. Both of the two are written to the hardware
-at the same time, which appears to be a valid reason to combine them
-into a cluster.
-This is similar to the gain/balance controls, and BTW the use of
-clusters there was suggested by you.
-
-Please correct me if I'm wrong.
-
->> +	/* Read-only */
->> +	ctrls->pixrate =3D v4l2_ctrl_new_std(hdl, ops, V4L2_CID_PIXEL_RATE,
->> +					   AR0521_PIXEL_CLOCK_MIN,
->> +					   AR0521_PIXEL_CLOCK_MAX, 1,
->> +					   AR0521_PIXEL_CLOCK_RATE);
->
-> so you have to mark it as read-only
-
-Oh, I'd be happy for this control to be R/W. Unfortunately the core
-media core enforces R/O. This is only a comment about what the core code
-does, currently at least.
-
->> +	dev_dbg(dev, "%s()\n", __func__);
->
-> Rather useless, please drop. Same for all other debug functions that
-> just print the current function name in other parts of the driver.
-> While maybe useful when developing, they're mostly noise for users
-> imo.
-
-Fine, will drop the rest of the debug. In fact, I already dropped the
-most useful parts (I2C register access debugging).
-
->> +	endpoint =3D fwnode_graph_get_endpoint_by_id(dev_fwnode(dev), 0, 0,
->> +						   FWNODE_GRAPH_ENDPOINT_NEXT);
->
-> The drivers supports a single endpoint right ? Then
-> fwnode_graph_get_next_enpoint() can be used
-
-Well, I originally used
-fwnode_graph_get_next_endpoint(of_fwnode_handle(dev->of_node), NULL).
-Sakari suggested I should use the above
-fwnode_graph_get_endpoint_by_id().
-It could be a good idea to agree on this. Not sure about the difference.
-
->> +	for (cnt =3D 0; cnt < ARRAY_SIZE(ar0521_supply_names); cnt++) {
->> +		struct regulator *supply =3D devm_regulator_get(dev,
->> +						ar0521_supply_names[cnt]);
->> +
->> +		if (IS_ERR(supply)) {
->> +			dev_info(dev, "no %s regulator found: %li\n",
->> +				 ar0521_supply_names[cnt], PTR_ERR(supply));
->> +			return PTR_ERR(supply);
->> +		}
->> +		sensor->supplies[cnt] =3D supply;
->> +	}
->
-> Using the regulator bulk api would simplify this.
-> See drivers/media/i2c/ccs/ccs-core.c
-
-The bulk API doesn't allow for delays between individual supplies, does it?
-The delays are mandated by the manufacturer.
-
->> +
->> +	mutex_init(&sensor->lock);
->> +
->> +	ret =3D ar0521_init_controls(sensor);
->> +	if (ret)
->> +		goto entity_cleanup;
->> +
->> +	ar0521_adj_fmt(&sensor->fmt);
->
-> Called already here above.
-
-Right, I will remove the first one.
-
->> +	ret =3D v4l2_async_register_subdev(&sensor->sd);
->> +	if (ret)
->> +		goto free_ctrls;
->> +
->> +	/* Turn on the device and enable runtime PM */
->> +	ret =3D ar0521_power_on(&client->dev);
->> +	if (ret)
->> +		goto disable;
->
-> Does the device stay powered all the time ?
-
-Depends on the hw, but the power could be disabled, yes.
-
-> Doesn't your resume callback call power_on() already ?
-
-It does, when the PM is enabled.
-
-Should the above code be changed?
-
->> +static struct i2c_driver ar0521_i2c_driver =3D {
->> +	.driver =3D {
->> +		.name  =3D "ar0521",
->> +		.pm =3D &ar0521_pm_ops,
->> +		.of_match_table	=3D ar0521_dt_ids,
->> +	},
->> +	.probe    =3D ar0521_probe,
->
-> You could use probe_new and drop the "const struct i2c_device_id *id"
-> argument to probe()
-
-You are right again.
-
-That said, I wonder if it would be better (like easier) to have this
-driver added to the staging area instead.
---=20
-Krzysztof "Chris" Ha=C5=82asa
-
-Sie=C4=87 Badawcza =C5=81ukasiewicz
-Przemys=C5=82owy Instytut Automatyki i Pomiar=C3=B3w PIAP
-Al. Jerozolimskie 202, 02-486 Warszawa
