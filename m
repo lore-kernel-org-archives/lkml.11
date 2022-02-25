@@ -2,256 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D13EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A990C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 08:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238600AbiBYIqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 03:46:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
+        id S238618AbiBYIrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 03:47:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238565AbiBYIqP (ORCPT
+        with ESMTP id S238603AbiBYIrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 03:46:15 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E395622A291;
-        Fri, 25 Feb 2022 00:45:42 -0800 (PST)
-Received: from [IPV6:2a01:e0a:120:3210:947c:7c9e:f96:1bc] (unknown [IPv6:2a01:e0a:120:3210:947c:7c9e:f96:1bc])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 291941F45AA0;
-        Fri, 25 Feb 2022 08:45:41 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645778741;
-        bh=gnwbRxc18loCgRCB6rcxx3cvSPmow0GcZBZIedu6UtE=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=PlFkgOOfMyBIiUsINOcxFv18FXnvCRKbFiQXpLwzD2kFZgO9QLSCHPH8ZOq+9X9ip
-         UycqayHxFXjIQjkdNxJ7IVcrC2rXjb9axLkcuiuXF1UIgViJ9xFOIKaU6qk7wxlDql
-         TXra1VCOFRRhTqjeASDHhD3JdBhaaZyreXmqk1Vpz7VnBbK7IgVGfwG66oU5W33WrE
-         cocpdayX3uMGgAPHXZ/J3jVephXKXiA7UHthbaSRJASxyCQOcBBCje0EnGcD0O5dcr
-         xlypBDKLY/bAIbXmqWUQ/MK2o+ssqsbMR9Fj44hwmHBmVJTmBqFQJzhMqDAeeBvY2S
-         H5d+diYs2dl/w==
-Message-ID: <02f51893-3dae-c3d3-c296-52915d451dc7@collabora.com>
-Date:   Fri, 25 Feb 2022 09:45:38 +0100
+        Fri, 25 Feb 2022 03:47:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72D5B2A242
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 00:46:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645778798;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/63QecjVRTlyc4mXw5SxJXv1w/J0+vHHzMDdcnAuAe8=;
+        b=i0oZvH2uUzjvYh3R2rXEj5NDKPoptzO/I7b2mwxBBsCmLOAAP6SwxQ23fvDm8Kv50trtVz
+        c/hcQrs/KjqA/udLK4RkbAsPeK6y1JMoKuAuP5Suxj48KUriew90qFeOTXzUGtDkYhUiQZ
+        U68GNYsygCTeXKr/Gl6ZHSc3TvPlC5w=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-104-LzM4_Q8fOIqLvr2mf3FLTA-1; Fri, 25 Feb 2022 03:46:37 -0500
+X-MC-Unique: LzM4_Q8fOIqLvr2mf3FLTA-1
+Received: by mail-wm1-f69.google.com with SMTP id h206-20020a1c21d7000000b003552c13626cso1256325wmh.3
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 00:46:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=/63QecjVRTlyc4mXw5SxJXv1w/J0+vHHzMDdcnAuAe8=;
+        b=0yBn+dl8ulSArtdwUVaJXVce/d8NTZcibOGGg+57w5NlEb4V7c1/85ATe4Ed2o35HW
+         KOp6YnBbIp3E0PCI9yAjkT0QYVffXVKYh7q7Ys+ptR5xJ7ENovJs+29vujFmMZISq5Cw
+         czIpNC6AVz2G0AEU0/+DaxDoJGe/vBIXeyMHxMHPg1p1NuSxHmiQexjihqUe4U/N8Iog
+         4OekuY+qQA0E2QmXHf++DjgoaYSjwYSDoOT8x69+l4LpOfcofYTzTQ8kiGkWpab0IolB
+         LggvpjbQGsFD9ljjdS2wDw7T3IdmxM79L/8YXE1OoH1bwgzSMl1djGxJ/FkMI4ubfwSQ
+         tDCQ==
+X-Gm-Message-State: AOAM5320aMyPSULh+dRrQmnwc+x1yuBcP44Sc8Ud7kdjSeneQmEpWV+t
+        xnTm5r2CsjOVXJSK9FTM/hLvYkPqFXZ1rciOtgri32vhZ0z1F/xHPWIAXDH+7gECWrBOU0GOEXQ
+        fKfPtfvgdAYjevfha+P5qM5jM
+X-Received: by 2002:a7b:c216:0:b0:381:21f4:4965 with SMTP id x22-20020a7bc216000000b0038121f44965mr1756546wmi.167.1645778796001;
+        Fri, 25 Feb 2022 00:46:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJweIQgiKOqGgrEPQnlyECuG8dpM9fCwjhyPYQBprWncbs0xzV9rJWY6PsFOjTDKql0KRFdDcg==
+X-Received: by 2002:a7b:c216:0:b0:381:21f4:4965 with SMTP id x22-20020a7bc216000000b0038121f44965mr1756529wmi.167.1645778795768;
+        Fri, 25 Feb 2022 00:46:35 -0800 (PST)
+Received: from gerbillo.redhat.com (146-241-242-142.dyn.eolo.it. [146.241.242.142])
+        by smtp.gmail.com with ESMTPSA id g17-20020a5d5411000000b001e688b4ee6asm1812504wrv.35.2022.02.25.00.46.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 00:46:35 -0800 (PST)
+Message-ID: <0b026eb24a0348d32b6dda94950f6517f8304456.camel@redhat.com>
+Subject: Re: [PATCH] net:fix up skbs delta_truesize in UDP GRO frag_list
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Lena Wang <lena.wang@mediatek.com>, davem@davemloft.net,
+        kuba@kernel.org, matthias.bgg@gmail.com
+Cc:     wsd_upstream@mediatek.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hao.lin@mediatek.com,
+        Eric Dumazet <edumazet@google.com>
+Date:   Fri, 25 Feb 2022 09:46:34 +0100
+In-Reply-To: <1645769353-7171-2-git-send-email-lena.wang@mediatek.com>
+References: <1645769353-7171-1-git-send-email-lena.wang@mediatek.com>
+         <1645769353-7171-2-git-send-email-lena.wang@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH RFC v2] media: hantro: Implement support for encoder
- commands
-Content-Language: en-US
-To:     Chen-Yu Tsai <wenst@chromium.org>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Cc:     Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-        linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20220211110617.2202714-1-wenst@chromium.org>
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <20220211110617.2202714-1-wenst@chromium.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
-Le 11/02/2022 à 12:06, Chen-Yu Tsai a écrit :
-> The V4L2 stateful encoder uAPI specification requires that drivers
-> support the ENCODER_CMD ioctl to allow draining of buffers. This
-> however was not implemented, and causes issues for some userspace
-> applications.
->
-> Implement support for the ENCODER_CMD ioctl using v4l2-mem2mem helpers.
-> This is entirely based on existing code found in the vicodec test
-> driver.
->
-> Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Re-adding Eric, as Jakub cc-ed him in the previous iteration, but his
+address has been lost here.
 
-Reviewed-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+On Fri, 2022-02-25 at 14:09 +0800, Lena Wang wrote:
+> From: lena wang <lena.wang@mediatek.com>
+> 
+> The truesize for a UDP GRO packet is added by main skb and skbs in main
+> skb's frag_list:
+> skb_gro_receive_list
+>         p->truesize += skb->truesize;
+> 
+> When uncloning skb, it will call pskb_expand_head and trusesize for
+> frag_list skbs may increase. This can occur when allocators uses
+> __netdev_alloc_skb and not jump into __alloc_skb. This flow does not
+> use ksize(len) to calculate truesize while pskb_expand_head uses.
+> skb_segment_list
+> err = skb_unclone(nskb, GFP_ATOMIC);
+> pskb_expand_head
+>         if (!skb->sk || skb->destructor == sock_edemux)
+>                 skb->truesize += size - osize;
+> 
+> If we uses increased truesize adding as delta_truesize, it will be
+> larger than before and even larger than previous total truesize value
+> if skbs in frag_list are abundant. The main skb truesize will become
+> smaller and even a minus value or a huge value for an unsigned int
+> parameter. Then the following memory check will drop this abnormal skb.
+> 
+> To avoid this error we should use the original truesize to segment the
+> main skb.
 
+For some reasons 3 different mails with this patch lanted on the ML, I
+guess 1 would have sufficed :)
+
+This looks like a fix for the -net tree, please specify the target tree
+in the patch subj and a suitable 'fixes' tag. Likely:
+
+Fixes: 53475c5dd856 ("net: fix use-after-free when UDP GRO with shared fraglist")
+
+> 
+> 
+> Signed-off-by: lena wang <lena.wang@mediatek.com>
 > ---
->
-> Changes since v1:
-> - Correctly handle last buffers that are empty
-> - Correctly handle last buffers that just got queued
-> - Disable (TRY_)ENCODER_CMD ioctls for hantro decoder
->
-> This is based on linux-next-20220208, and was tested on RK3399 with
-> Gstreamer running the JPEG encoder. It was also tested on ChromeOS
-> 5.10 on Kevin with the video encoder used in ChromeOS ARC, which
-> requires this. For ChromeOS, both encoder and decoder tests were run
-> to check for regressions.
->
-> Everything really works OK now, but since I'm not very familiar with
-> the mem2mem framework, I might be missing something, causing resource
-> leaks. Hence this patch is labeled RFC.
->
-> Last, I suppose we could also add support for (TRY_)DECODER_CMD now?
->
-> ---
->   drivers/staging/media/hantro/hantro_drv.c  | 17 +++++-
->   drivers/staging/media/hantro/hantro_v4l2.c | 68 +++++++++++++++++++++-
->   2 files changed, 81 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
-> index bc9bcb4eaf46..99bc650a5a93 100644
-> --- a/drivers/staging/media/hantro/hantro_drv.c
-> +++ b/drivers/staging/media/hantro/hantro_drv.c
-> @@ -56,6 +56,10 @@ dma_addr_t hantro_get_ref(struct hantro_ctx *ctx, u64 ts)
->   	return hantro_get_dec_buf_addr(ctx, buf);
->   }
->   
-> +static const struct v4l2_event hantro_eos_event = {
-> +	.type = V4L2_EVENT_EOS
-> +};
-> +
->   static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
->   				    struct hantro_ctx *ctx,
->   				    enum vb2_buffer_state result)
-> @@ -73,6 +77,12 @@ static void hantro_job_finish_no_pm(struct hantro_dev *vpu,
->   	src->sequence = ctx->sequence_out++;
->   	dst->sequence = ctx->sequence_cap++;
->   
-> +	if (v4l2_m2m_is_last_draining_src_buf(ctx->fh.m2m_ctx, src)) {
-> +		dst->flags |= V4L2_BUF_FLAG_LAST;
-> +		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
-> +		v4l2_m2m_mark_stopped(ctx->fh.m2m_ctx);
-> +	}
-> +
->   	v4l2_m2m_buf_done_and_job_finish(ctx->dev->m2m_dev, ctx->fh.m2m_ctx,
->   					 result);
->   }
-> @@ -807,10 +817,13 @@ static int hantro_add_func(struct hantro_dev *vpu, unsigned int funcid)
->   	snprintf(vfd->name, sizeof(vfd->name), "%s-%s", match->compatible,
->   		 funcid == MEDIA_ENT_F_PROC_VIDEO_ENCODER ? "enc" : "dec");
->   
-> -	if (funcid == MEDIA_ENT_F_PROC_VIDEO_ENCODER)
-> +	if (funcid == MEDIA_ENT_F_PROC_VIDEO_ENCODER) {
->   		vpu->encoder = func;
-> -	else
-> +	} else {
->   		vpu->decoder = func;
-> +		v4l2_disable_ioctl(vfd, VIDIOC_TRY_ENCODER_CMD);
-> +		v4l2_disable_ioctl(vfd, VIDIOC_ENCODER_CMD);
-> +	}
->   
->   	video_set_drvdata(vfd, vpu);
->   
-> diff --git a/drivers/staging/media/hantro/hantro_v4l2.c b/drivers/staging/media/hantro/hantro_v4l2.c
-> index 67148ba346f5..777bd3dbd875 100644
-> --- a/drivers/staging/media/hantro/hantro_v4l2.c
-> +++ b/drivers/staging/media/hantro/hantro_v4l2.c
-> @@ -628,6 +628,39 @@ static int vidioc_s_selection(struct file *file, void *priv,
->   	return 0;
->   }
->   
-> +static const struct v4l2_event hantro_eos_event = {
-> +	.type = V4L2_EVENT_EOS
-> +};
-> +
-> +static int vidioc_encoder_cmd(struct file *file, void *priv,
-> +			      struct v4l2_encoder_cmd *ec)
-> +{
-> +	struct hantro_ctx *ctx = fh_to_ctx(priv);
-> +	int ret;
-> +
-> +	ret = v4l2_m2m_ioctl_try_encoder_cmd(file, priv, ec);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (!vb2_is_streaming(v4l2_m2m_get_src_vq(ctx->fh.m2m_ctx)) ||
-> +	    !vb2_is_streaming(v4l2_m2m_get_dst_vq(ctx->fh.m2m_ctx)))
-> +		return 0;
-> +
-> +	ret = v4l2_m2m_ioctl_encoder_cmd(file, priv, ec);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (ec->cmd == V4L2_ENC_CMD_STOP &&
-> +	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
-> +		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
-> +
-> +	if (ec->cmd == V4L2_ENC_CMD_START &&
-> +	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
-> +		vb2_clear_last_buffer_dequeued(&ctx->fh.m2m_ctx->cap_q_ctx.q);
-> +
-> +	return 0;
-> +}
-> +
->   const struct v4l2_ioctl_ops hantro_ioctl_ops = {
->   	.vidioc_querycap = vidioc_querycap,
->   	.vidioc_enum_framesizes = vidioc_enum_framesizes,
-> @@ -657,6 +690,9 @@ const struct v4l2_ioctl_ops hantro_ioctl_ops = {
->   
->   	.vidioc_g_selection = vidioc_g_selection,
->   	.vidioc_s_selection = vidioc_s_selection,
-> +
-> +	.vidioc_try_encoder_cmd = v4l2_m2m_ioctl_try_encoder_cmd,
-> +	.vidioc_encoder_cmd = vidioc_encoder_cmd,
->   };
->   
->   static int
-> @@ -733,8 +769,12 @@ static int hantro_buf_prepare(struct vb2_buffer *vb)
->   	 * (for OUTPUT buffers, if userspace passes 0 bytesused, v4l2-core sets
->   	 * it to buffer length).
->   	 */
-> -	if (V4L2_TYPE_IS_CAPTURE(vq->type))
-> -		vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-> +	if (V4L2_TYPE_IS_CAPTURE(vq->type)) {
-> +		if (ctx->is_encoder)
-> +			vb2_set_plane_payload(vb, 0, 0);
-> +		else
-> +			vb2_set_plane_payload(vb, 0, pix_fmt->plane_fmt[0].sizeimage);
-> +	}
->   
->   	return 0;
->   }
-> @@ -744,6 +784,22 @@ static void hantro_buf_queue(struct vb2_buffer *vb)
->   	struct hantro_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
->   	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
->   
-> +	if (V4L2_TYPE_IS_CAPTURE(vb->vb2_queue->type) &&
-> +	    vb2_is_streaming(vb->vb2_queue) &&
-> +	    v4l2_m2m_dst_buf_is_last(ctx->fh.m2m_ctx)) {
-> +		unsigned int i;
-> +
-> +		for (i = 0; i < vb->num_planes; i++)
-> +			vb->planes[i].bytesused = 0;
-> +
-> +		vbuf->field = V4L2_FIELD_NONE;
-> +		vbuf->sequence = ctx->sequence_cap++;
-> +
-> +		v4l2_m2m_last_buffer_done(ctx->fh.m2m_ctx, vbuf);
-> +		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
-> +		return;
-> +	}
-> +
->   	v4l2_m2m_buf_queue(ctx->fh.m2m_ctx, vbuf);
->   }
->   
-> @@ -759,6 +815,8 @@ static int hantro_start_streaming(struct vb2_queue *q, unsigned int count)
->   	struct hantro_ctx *ctx = vb2_get_drv_priv(q);
->   	int ret = 0;
->   
-> +	v4l2_m2m_update_start_streaming_state(ctx->fh.m2m_ctx, q);
-> +
->   	if (V4L2_TYPE_IS_OUTPUT(q->type))
->   		ctx->sequence_out = 0;
->   	else
-> @@ -831,6 +889,12 @@ static void hantro_stop_streaming(struct vb2_queue *q)
->   		hantro_return_bufs(q, v4l2_m2m_src_buf_remove);
->   	else
->   		hantro_return_bufs(q, v4l2_m2m_dst_buf_remove);
-> +
-> +	v4l2_m2m_update_stop_streaming_state(ctx->fh.m2m_ctx, q);
-> +
-> +	if (V4L2_TYPE_IS_OUTPUT(q->type) &&
-> +	    v4l2_m2m_has_stopped(ctx->fh.m2m_ctx))
-> +		v4l2_event_queue_fh(&ctx->fh, &hantro_eos_event);
->   }
->   
->   static void hantro_buf_request_complete(struct vb2_buffer *vb)
+>  net/core/skbuff.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 9d0388be..8b7356c 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -3876,6 +3876,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+>  		list_skb = list_skb->next;
+>  
+>  		err = 0;
+> +		delta_truesize += nskb->truesize;
+>  		if (skb_shared(nskb)) {
+>  			tmp = skb_clone(nskb, GFP_ATOMIC);
+>  			if (tmp) {
+> @@ -3900,7 +3901,6 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+>  		tail = nskb;
+>  
+>  		delta_len += nskb->len;
+> -		delta_truesize += nskb->truesize;
+>  
+>  		skb_push(nskb, -skb_network_offset(nskb) + offset);
+>  
+
+Looks correct to me:
+
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+
+I *think* posting a v2 could be the easier way to handle the above
+glitches. If you do so (no changes to the patch body), please retain my
+ack.
+
+Cheers,
+
+Paolo
+
