@@ -2,94 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E81C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:13:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E4A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236939AbiBYDNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:13:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41840 "EHLO
+        id S236978AbiBYDOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:14:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230117AbiBYDNo (ORCPT
+        with ESMTP id S236945AbiBYDNy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:13:44 -0500
+        Thu, 24 Feb 2022 22:13:54 -0500
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C93464BE8;
-        Thu, 24 Feb 2022 19:13:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34FA74618;
+        Thu, 24 Feb 2022 19:13:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645758793; x=1677294793;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=eue+oUcpUjQ1aiaVWgYLbzCGLiuuI90oSMfd5QhnL5Y=;
-  b=gEIC+QRLKzvHdaJ2yanMhqY/Di6HKp+3XKOr/7VuQV7qtJAInnx+yCiS
-   0HlHfe+q0lftmlcomnC9fx/y2um6sOqv+RvHKtEZknVLraHBj1wFPGRCN
-   uSAJ3PE26EFAmRs8c9BtJla1m1TFBGsMkS/qWqF8k5EqjWk4fACszC4oU
-   9YVcGdhia1iMy8bRp+LbCJLV72JW0tgC9fTgLOX9PFfJ3jDY1FhN5W427
-   FjpjAOQjwSuM5jUS7y3PIyV07rBBQSEHLwNrH0Wfnf7XYN0wR2W/L3Qwm
-   WRecrH5bt8oMwju1J5sksLUy0WgPZdXdXY1J9NqFCy9wTbDR8atvrjud8
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252602975"
+  t=1645758801; x=1677294801;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=UwdCvXzSdTBDzvJOc2d5fc844vP3KlSqJURgIRaEWqs=;
+  b=FMmsHONSgVQ9dSUzhiiW8rpdlNKz8FaqEzHDJvKwDsh4ulXSuTGTpV4t
+   fUxcx83oNSG/icbTawHHsQJpWxU1s5t8UWMAqaR7YWsi7HB4oGe/x3sY+
+   SI6GsJYqPdYEGCXu94eJlGSAkx5OR8wFYcY2zpqFoVqp+tNExgCql3GUh
+   /FGoQMiUXnVxpxNcRY/ZYhxmlchb597TLUpp3HKrbhFurArYzQwUdag27
+   PgUZ3fFKW/uOsXaU1dwo+xaC1UKPqTBwAXMLptDmSscsNgmSNadSaTipk
+   PXZ8zn64nHvSFsKijjy7ztOLyFZS1AJOCbOU4dd97JlIsqZpWJkpss9d3
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="252602995"
 X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; 
-   d="scan'208";a="252602975"
+   d="scan'208";a="252602995"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 19:13:13 -0800
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 19:13:21 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,135,1643702400"; 
-   d="scan'208";a="684512419"
+   d="scan'208";a="684512482"
 Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 19:13:10 -0800
+  by fmsmga001.fm.intel.com with ESMTP; 24 Feb 2022 19:13:18 -0800
 From:   Tianfei zhang <tianfei.zhang@intel.com>
 To:     hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
         yilun.xu@intel.com, linux-fpga@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     corbet@lwn.net, Tianfei zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v2 0/5] Add Intel OFS support for DFL driver
-Date:   Thu, 24 Feb 2022 22:09:57 -0500
-Message-Id: <20220225031002.261264-1-tianfei.zhang@intel.com>
+Cc:     corbet@lwn.net, Tianfei zhang <tianfei.zhang@intel.com>,
+        Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Subject: [PATCH v2 3/5] fpga: dfl: fix VF creation in IOFS
+Date:   Thu, 24 Feb 2022 22:10:00 -0500
+Message-Id: <20220225031002.261264-4-tianfei.zhang@intel.com>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20220225031002.261264-1-tianfei.zhang@intel.com>
+References: <20220225031002.261264-1-tianfei.zhang@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is v2 patchset adding IOFS (Intel Open FPGA stack) support for
-DFL driver. IOFS is Intel's version of a common core set of
-RTL to allow customers to easily interface to logic and IP
-on the FPGA. IOFS leverages the DFL for the implementation of
-the FPGA RTL design.
+In IOFS legacy model, there is only 1 Port device related to
+1 VF, the flag DFL_FEAT_PORT_CONNECTED_AFU will take notes for
+this model. In legacy model, it need to check the released port
+number match VF device number or not. But in "Multiple VFs per
+PR slot" model, the Port device would not connected to AFU/PR
+slot, so we don't need to release the Port device before creating
+the VFs.
 
-Patch 1, allows for ports without specific bar space.
-Patch 2, introduces features in dfl_fpga_cdev after DFL enumeration.
-On IOFS, we will add more extensions or features in DFL in
-future, so adding a new member "features"in dfl_fpga_cdev.
-Patch 3, fixs VF creation in "Multiple VFs per PR slot" and legacy model.
-Patch 4, handles dfl's starting with AFU and allows for VFs to be created.
-Patch 5, adds architecture description about IOFS support for DFL
-in documentation.
+Signed-off-by: Matthew Gerlach <matthew.gerlach@linux.intel.com>
+Signed-off-by: Tianfei zhang <tianfei.zhang@intel.com>
+---
+ drivers/fpga/dfl.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Changelog v1 -> v2:
-   - Introducing a new member "features" in dfl_fpga_cdev for feature
-     control.
-   - Adding new flag DFL_FEAT_PORT_CONNECTED_AFU for IOFS legacy model.
-   - Updates the documentation for the access models about AFU in IOFS.
-   - Drop the PCI PID patch and will send it later.
-
-Matthew Gerlach (2):
-  fpga: dfl: Allow for ports without specific bar space.
-  fpga: dfl: Handle dfl's starting with AFU
-
-Tianfei zhang (3):
-  fpga: dfl: add features in dfl_fpga_cdev
-  fpga: dfl: fix VF creation in IOFS
-  Documentation: fpga: dfl: add description of IOFS
-
- Documentation/fpga/dfl.rst | 113 +++++++++++++++++++++++++++++++++++++
- drivers/fpga/dfl-pci.c     |  13 ++++-
- drivers/fpga/dfl.c         |  38 ++++++++-----
- drivers/fpga/dfl.h         |   6 ++
- 4 files changed, 155 insertions(+), 15 deletions(-)
-
+diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+index 9b7a01a4af04..afa9311c30d5 100644
+--- a/drivers/fpga/dfl.c
++++ b/drivers/fpga/dfl.c
+@@ -1708,11 +1708,13 @@ int dfl_fpga_cdev_config_ports_vf(struct dfl_fpga_cdev *cdev, int num_vfs)
+ 
+ 	mutex_lock(&cdev->lock);
+ 	/*
+-	 * can't turn multiple ports into 1 VF device, only 1 port for 1 VF
+-	 * device, so if released port number doesn't match VF device number,
+-	 * then reject the request with -EINVAL error code.
++	 * In the IOFS legacy model, it can't turn multiple ports into 1 VF
++	 * device, because only 1 port conneced to 1 VF device, so if released
++	 * port number doesn't match VF device number, then reject the request
++	 * with -EINVAL error code.
+ 	 */
+-	if (cdev->released_port_num != num_vfs) {
++	if ((cdev->features & DFL_FEAT_PORT_CONNECTED_AFU) &&
++	    cdev->released_port_num != num_vfs) {
+ 		ret = -EINVAL;
+ 		goto done;
+ 	}
 -- 
 2.26.2
 
