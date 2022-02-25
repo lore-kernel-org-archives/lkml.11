@@ -2,84 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5DB0C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:52:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E8BC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:52:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240759AbiBYMxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 07:53:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
+        id S240771AbiBYMxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 07:53:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240751AbiBYMxP (ORCPT
+        with ESMTP id S240760AbiBYMxX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 07:53:15 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2A616AA43;
-        Fri, 25 Feb 2022 04:52:43 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id o62-20020a1ca541000000b00380e3cc26b7so1666183wme.0;
-        Fri, 25 Feb 2022 04:52:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=oWC0YbmclU1/rupUD32FXFHq6eElAXM2xq7gQcBXak0=;
-        b=ZBbh+Q/xIlciESMD0GrmlN7WswAz2h4ORJHQgFeNhyFVSRDu7C0zlV+k4Ah8oeGGzZ
-         bIdvFnHnMDAg7ujH6gc6zb+jFMGR28blPonpfYee/GJu0jQqN+dntWTobfMndQNXi7Pr
-         b0XEc9sFSz41izSWUO7Z2NISBIB+MKBoh9BPSb/Er8iTbrVstwbnpzsRTk5ayLbM2lQP
-         aFaEmRulRdGTynm4NEo6+bzOtx2h9zz1maMOimDON6MVzWaJPl0P0QB2S+kuCfnDnhxC
-         XSxTTC1N+1dCgw8ZYVVNkDvF4EqoAu1v8QbZwKBq9aUtR7seHdmPFowFi6W3E0liL/jC
-         HUEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=oWC0YbmclU1/rupUD32FXFHq6eElAXM2xq7gQcBXak0=;
-        b=tQSaT88f74etuhwj+/qDLtnLJi8NB587S+xPDnwOXoks86mco5CYr2QYOUDJymj8ca
-         W1r2Nd7oHvWjvowoXRgKuENw4z/ZiPuIvBWX9rMZRrUyGQzgVEwVbOSyiYPTCjFvDjBn
-         KPwsNr7SVsE3rjrY1DJBHQSKLLDcH4K5524JuzwbGLq7T0Xl+0sjgueAmwI6/M3RftXT
-         mPwFb5QPmUhKydJt64dN24/ZKiRe2wO0hIzWvYqTB3yAs0GdZwlBL9eG1a77V+oYCxrp
-         gDsvqT/fgx6VjQCfGia4Scq8JuJovlfKxwEFqBKFVRILQhjk88IzbcXN+1NNWqBFf2Vn
-         DwXw==
-X-Gm-Message-State: AOAM533ztiZNbGiTylk01t5bI2E6bwiONdI/fuetcE4QLiI0Hpck/3E2
-        tc5uLU3NxPKvuhaz4BbxsdfqqTVI9g6wuQ==
-X-Google-Smtp-Source: ABdhPJxC56iBIkZNIpZl+UpjBQOMRnaxmMhkcz7Atp4KHK8CYiIsSv/nPy1fjD4h4B236iksMyYC3Q==
-X-Received: by 2002:a05:600c:1c8d:b0:37b:fb3b:adf3 with SMTP id k13-20020a05600c1c8d00b0037bfb3badf3mr2642601wms.64.1645793561858;
-        Fri, 25 Feb 2022 04:52:41 -0800 (PST)
-Received: from localhost.localdomain ([64.64.123.58])
-        by smtp.gmail.com with ESMTPSA id x1-20020a05600c420100b003811fb95734sm3167713wmh.37.2022.02.25.04.52.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 04:52:41 -0800 (PST)
-From:   Jia-Ju Bai <baijiaju1990@gmail.com>
-To:     3chas3@gmail.com
-Cc:     linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
-Subject: [PATCH] atm: firestream: check the return value of ioremap() in fs_init()
-Date:   Fri, 25 Feb 2022 04:52:30 -0800
-Message-Id: <20220225125230.26707-1-baijiaju1990@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 25 Feb 2022 07:53:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D9D175850;
+        Fri, 25 Feb 2022 04:52:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C786B82FE1;
+        Fri, 25 Feb 2022 12:52:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A22AEC340E7;
+        Fri, 25 Feb 2022 12:52:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645793568;
+        bh=k70Mm1upOxGWmsfQxSUf0akmkVM2raW07xRde9JsJKM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=T5TGdmUfWYwiM40dkWqh42IVnuCj4XBrMYt/8xkHE3INhGb0RcLcrKgWBpasl5Jco
+         ODZYMZ03HmZ6KUnRGTpiSiCixKNgP/lHMkBCJUVWX/denDe4MKXhQws+z9fo7YJHTA
+         UqqeN6ei8Wvh5P86Uw9+qrv80O1PbBQjyQEB09TA=
+Date:   Fri, 25 Feb 2022 13:52:45 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+        adrian@parity.io, ardb@kernel.org, ben@skyportsystems.com,
+        berrange@redhat.com, colmmacc@amazon.com, decui@microsoft.com,
+        dwmw@amazon.co.uk, ebiggers@kernel.org, ehabkost@redhat.com,
+        graf@amazon.com, haiyangz@microsoft.com, imammedo@redhat.com,
+        jannh@google.com, kys@microsoft.com, lersek@redhat.com,
+        linux@dominikbrodowski.net, mst@redhat.com, qemu-devel@nongnu.org,
+        raduweis@amazon.com, sthemmin@microsoft.com, tytso@mit.edu,
+        wei.liu@kernel.org
+Subject: Re: [PATCH v4] virt: vmgenid: introduce driver for reinitializing
+ RNG on VM fork
+Message-ID: <YhjRHW0t/sxjb7Hi@kroah.com>
+References: <CAHmME9pJ3wb=EbUErJrCRC=VYGhFZqj2ar_AkVPsUvAnqGtwwg@mail.gmail.com>
+ <20220225124848.909093-1-Jason@zx2c4.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220225124848.909093-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function ioremap() in fs_init() can fail, so its return value should
-be checked.
+On Fri, Feb 25, 2022 at 01:48:48PM +0100, Jason A. Donenfeld wrote:
+> VM Generation ID is a feature from Microsoft, described at
+> <https://go.microsoft.com/fwlink/?LinkId=260709>, and supported by
+> Hyper-V and QEMU. Its usage is described in Microsoft's RNG whitepaper,
+> <https://aka.ms/win10rng>, as:
+> 
+>     If the OS is running in a VM, there is a problem that most
+>     hypervisors can snapshot the state of the machine and later rewind
+>     the VM state to the saved state. This results in the machine running
+>     a second time with the exact same RNG state, which leads to serious
+>     security problems.  To reduce the window of vulnerability, Windows
+>     10 on a Hyper-V VM will detect when the VM state is reset, retrieve
+>     a unique (not random) value from the hypervisor, and reseed the root
+>     RNG with that unique value.  This does not eliminate the
+>     vulnerability, but it greatly reduces the time during which the RNG
+>     system will produce the same outputs as it did during a previous
+>     instantiation of the same VM state.
+> 
+> Linux has the same issue, and given that vmgenid is supported already by
+> multiple hypervisors, we can implement more or less the same solution.
+> So this commit wires up the vmgenid ACPI notification to the RNG's newly
+> added add_vmfork_randomness() function.
+> 
+> It can be used from qemu via the `-device vmgenid,guid=auto` parameter.
+> After setting that, use `savevm` in the monitor to save the VM state,
+> then quit QEMU, start it again, and use `loadvm`. That will trigger this
+> driver's notify function, which hands the new UUID to the RNG. This is
+> described in <https://git.qemu.org/?p=qemu.git;a=blob;f=docs/specs/vmgenid.txt>.
+> And there are hooks for this in libvirt as well, described in
+> <https://libvirt.org/formatdomain.html#general-metadata>.
+> 
+> Note, however, that the treatment of this as a UUID is considered to be
+> an accidental QEMU nuance, per
+> <https://github.com/libguestfs/virt-v2v/blob/master/docs/vm-generation-id-across-hypervisors.txt>,
+> so this driver simply treats these bytes as an opaque 128-bit binary
+> blob, as per the spec. This doesn't really make a difference anyway,
+> considering that's how it ends up when handed to the RNG in the end.
+> 
+> Cc: Adrian Catangiu <adrian@parity.io>
+> Cc: Daniel P. Berrangé <berrange@redhat.com>
+> Cc: Dominik Brodowski <linux@dominikbrodowski.net>
+> Cc: Ard Biesheuvel <ardb@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Reviewed-by: Laszlo Ersek <lersek@redhat.com>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
----
- drivers/atm/firestream.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/atm/firestream.c b/drivers/atm/firestream.c
-index 3bc3c314a467..4f67404fe64c 100644
---- a/drivers/atm/firestream.c
-+++ b/drivers/atm/firestream.c
-@@ -1676,6 +1676,8 @@ static int fs_init(struct fs_dev *dev)
- 	dev->hw_base = pci_resource_start(pci_dev, 0);
- 
- 	dev->base = ioremap(dev->hw_base, 0x1000);
-+	if (!dev->base)
-+		return 1;
- 
- 	reset_chip (dev);
-   
--- 
-2.17.1
-
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
