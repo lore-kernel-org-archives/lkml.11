@@ -2,159 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AECC4C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B33C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243352AbiBYQrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:47:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50702 "EHLO
+        id S243189AbiBYQsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:48:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243217AbiBYQqv (ORCPT
+        with ESMTP id S243300AbiBYQrU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 11:46:51 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F9722D646;
-        Fri, 25 Feb 2022 08:46:19 -0800 (PST)
-Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:947c:7c9e:f96:1bc])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 7A4871F462DD;
-        Fri, 25 Feb 2022 16:46:17 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1645807578;
-        bh=ZKLccwCI9e2jto29+P03GlKR+XxsqNInVtVq+uWxfHg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LULVDE0C7aEvjvxnL1X7ZHcPQ2WANd5bc1/sqOwzfGUv2qJAo0v0JmlCX788ILKSx
-         fwtEc7bBNlg/p63mAvF8DH3MnM45dxAuAddG7EVM+xt3a7J8oFA+vZs3TcQQB55V1U
-         T5IWxuu8An6d4rordaElKHBuDU/gmGebx2xeaFHaSSpI+MnEqjI+fq+lsIgmcPPBl1
-         04qae8WxnaDaniQ06sImJG4vqEf1VcMGqLjMuOSuM2QP7tYflcwriLqYH8pN3oEIS8
-         H0yLGj7pLuA4ooPxSEpYVR2On/iWRjgf1r4Ag5xvvbr9LerWiNdBCC36+XBUCHVhef
-         vysOb5oITixGA==
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To:     mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, jonas@kwiboo.se, nicolas@ndufresne.ca
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com, knaerzche@gmail.com, jc@kynesim.co.uk,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v3 12/14] media: uapi: Create a dedicated header for Hantro control
-Date:   Fri, 25 Feb 2022 17:45:58 +0100
-Message-Id: <20220225164600.1044663-13-benjamin.gaignard@collabora.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220225164600.1044663-1-benjamin.gaignard@collabora.com>
-References: <20220225164600.1044663-1-benjamin.gaignard@collabora.com>
+        Fri, 25 Feb 2022 11:47:20 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B9AB2510D0
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:46:37 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id f37so10354025lfv.8
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:46:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=squareup.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=h+/c/SRTSFW4bUr7uZwCZvPDV13JvSZpjRW/Ah6HmPo=;
+        b=N4LP5Oh9x++Pocr8eHXKA2242EquvbDfLIw5chVlFT67q3k/SHnTT8xSaf51V0TpWM
+         gbAzCWRp9vhBWkZ+eBJH7Bi92oFuDR7P0A4KuRoAHY5MdTlylTX7oSWabG6DM1/Zvusu
+         0KboIZS+04K1i4d8b/9DqYFPzt+FBktUNpbCg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=h+/c/SRTSFW4bUr7uZwCZvPDV13JvSZpjRW/Ah6HmPo=;
+        b=mPmo1LGRXzLPbib26e3ZaMryCMsy57Sk8qDCRAvvllYGC8Y7Kk/nJSqdhsSnj23AcO
+         AuHpZJUxVGOH9AFygDT25YWPhceysof04EK9nsvZkQ3/CU/kM2nYjZTRBXBCNn+5rG88
+         /UC5DqgwITjV4R7ocJ88NP/wukMpmjP/OAc5CVOkHN194PHtcXhR1zgB5hanOZejtQVz
+         LvqhUgpvnVVp1PF3mF/3L1HkBjbwQZRtskuSiE1oX7QiNDlseV5/qWdSYAzsic+TsUqP
+         osBorUPDBSEVIInPbQYk8ZKV6s+lgCVsnYZnWACwR/7sqjcSIfUMHUETUPZJ0pehrTuL
+         jQ9g==
+X-Gm-Message-State: AOAM5313SFa/Y88odQITm5dD/I0tlYi5B6aKIE+x1cTReOPFd5ZZsaOA
+        SS8Ca/GCKDuUh9bW2qnOv8EGMdtjCaEwxhJ2w7dWTA==
+X-Google-Smtp-Source: ABdhPJzZSaGfd/xFfmtsAFmny7WwR+Mh9Q+xBU6CnvOdzp20DNpqm62ynakHcmApJg4ZguxiE764J/Vueg5/qFsdL3w=
+X-Received: by 2002:ac2:4474:0:b0:43a:7681:8fac with SMTP id
+ y20-20020ac24474000000b0043a76818facmr5538482lfl.316.1645807595152; Fri, 25
+ Feb 2022 08:46:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220120200153.1214-1-benl@squareup.com> <422bd780-354d-d4ac-7b7a-8060325fc13e@linaro.org>
+In-Reply-To: <422bd780-354d-d4ac-7b7a-8060325fc13e@linaro.org>
+From:   Benjamin Li <benl@squareup.com>
+Date:   Fri, 25 Feb 2022 08:46:23 -0800
+Message-ID: <CACOsgWZ7KFSqC21sSq7hGYk_g2RoKTPPfoYQwcWmwCNSx5c-YQ@mail.gmail.com>
+Subject: Re: [PATCH v3] drivers: thermal: tsens: respect thermal_device_mode
+ in threshold irq reporting
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Zac Crosby <zac@squareup.com>, Andy Gross <agross@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hantro hardware needs a dedicated v4l2 control to perform HEVC
-decoding. Move it to a dedicated header file to prepare HEVC
-uAPI un-staging.
+On Fri, Feb 25, 2022 at 6:02 AM Daniel Lezcano
+<daniel.lezcano@linaro.org> wrote:
+> > Some drivers that support thermal zone disabling implement a set_mode
+> > operation and simply disable the sensor or the relevant IRQ(s), so they
+> > actually don't log anything when zones are disabled. These drivers are
+> > imx_thermal.c, intel_quark_dts_thermal.c, and int3400_thermal.c.
+> >
+> > For tsens.c, implementing a change_mode would require migrating the dri=
+ver
+> > from devm_thermal_zone_of_sensor_register to thermal_zone_device_regist=
+er
+> > (or updating thermal_of.c to add a change_mode operation in thermal_zon=
+e_
+> > of_device_ops).
+> >
+> > stm_thermal.c seems to use this patch's model of not disabling IRQs whe=
+n
+> > the zone is disabled (they still perform the thermal_zone_device_update
+> > upon IRQ, but return -EAGAIN from their get_temp).
+>
+> What is the concern by changing the core code to have a correct handling
+> of the disabled / enabled state in this driver ? (and by this way give
+> the opportunity to other drivers to fix their code)'
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
----
- .../userspace-api/media/drivers/hantro.rst    |  5 -----
- drivers/staging/media/hantro/hantro_drv.c     |  1 +
- include/media/hevc-ctrls.h                    | 13 -------------
- include/uapi/linux/hantro-media.h             | 19 +++++++++++++++++++
- include/uapi/linux/v4l2-controls.h            |  5 +++++
- 5 files changed, 25 insertions(+), 18 deletions(-)
- create mode 100644 include/uapi/linux/hantro-media.h
+It seems fine, is that the preference? Updating thermal_of.c to add a
+change_mode
+operation in thermal_zone_of_device_ops?
 
-diff --git a/Documentation/userspace-api/media/drivers/hantro.rst b/Documentation/userspace-api/media/drivers/hantro.rst
-index cd9754b4e005..78dcd2a44a03 100644
---- a/Documentation/userspace-api/media/drivers/hantro.rst
-+++ b/Documentation/userspace-api/media/drivers/hantro.rst
-@@ -12,8 +12,3 @@ The Hantro video decoder driver implements the following driver-specific control
-     to before syntax element "slice_temporal_mvp_enabled_flag".
-     If IDR, the skipped bits are just "pic_output_flag"
-     (separate_colour_plane_flag is not supported).
--
--.. note::
--
--        This control is not yet part of the public kernel API and
--        it is expected to change.
-diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
-index 6f58c259d8fc..783a92a38c8e 100644
---- a/drivers/staging/media/hantro/hantro_drv.c
-+++ b/drivers/staging/media/hantro/hantro_drv.c
-@@ -11,6 +11,7 @@
-  */
- 
- #include <linux/clk.h>
-+#include <linux/hantro-media.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
-diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
-index cbf41d180fe9..f29298c8c2f8 100644
---- a/include/media/hevc-ctrls.h
-+++ b/include/media/hevc-ctrls.h
-@@ -443,17 +443,4 @@ struct v4l2_ctrl_hevc_scaling_matrix {
- 	__u8	scaling_list_dc_coef_32x32[2];
- };
- 
--/*  MPEG-class control IDs specific to the Hantro driver as defined by V4L2 */
--#define V4L2_CID_CODEC_HANTRO_BASE				(V4L2_CTRL_CLASS_CODEC | 0x1200)
--/*
-- * V4L2_CID_HANTRO_HEVC_SLICE_HEADER_SKIP -
-- * the number of data (in bits) to skip in the
-- * slice segment header.
-- * If non-IDR, the bits to be skipped go from syntax element "pic_output_flag"
-- * to before syntax element "slice_temporal_mvp_enabled_flag".
-- * If IDR, the skipped bits are just "pic_output_flag"
-- * (separate_colour_plane_flag is not supported).
-- */
--#define V4L2_CID_HANTRO_HEVC_SLICE_HEADER_SKIP	(V4L2_CID_CODEC_HANTRO_BASE + 0)
--
- #endif
-diff --git a/include/uapi/linux/hantro-media.h b/include/uapi/linux/hantro-media.h
-new file mode 100644
-index 000000000000..b4e7ab7e6452
---- /dev/null
-+++ b/include/uapi/linux/hantro-media.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+
-+#ifndef __UAPI_HANTRO_MEDIA_H__
-+#define __UAPI_HANTRO_MEDIA_H__
-+
-+#include <linux/v4l2-controls.h>
-+
-+/*
-+ * V4L2_CID_HANTRO_HEVC_SLICE_HEADER_SKIP -
-+ * the number of data (in bits) to skip in the
-+ * slice segment header.
-+ * If non-IDR, the bits to be skipped go from syntax element "pic_output_flag"
-+ * to before syntax element "slice_temporal_mvp_enabled_flag".
-+ * If IDR, the skipped bits are just "pic_output_flag"
-+ * (separate_colour_plane_flag is not supported).
-+ */
-+#define V4L2_CID_HANTRO_HEVC_SLICE_HEADER_SKIP	(V4L2_CID_USER_HANTRO_BASE + 0)
-+
-+#endif /* __UAPI_HANTRO_MEDIA_H__ */
-diff --git a/include/uapi/linux/v4l2-controls.h b/include/uapi/linux/v4l2-controls.h
-index c8e0f84d204d..d56a1c7fb91d 100644
---- a/include/uapi/linux/v4l2-controls.h
-+++ b/include/uapi/linux/v4l2-controls.h
-@@ -218,6 +218,11 @@ enum v4l2_colorfx {
-  * We reserve 16 controls for this driver.
-  */
- #define V4L2_CID_USER_ALLEGRO_BASE		(V4L2_CID_USER_BASE + 0x1170)
-+/*
-+ * The base for Hantro driver controls.
-+ * We reserve 128 controls for this driver.
-+ */
-+#define V4L2_CID_USER_HANTRO_BASE		(V4L2_CID_USER_BASE + 0x1180)
- 
- /* MPEG-class control IDs */
- /* The MPEG controls are applicable to all codec controls
--- 
-2.32.0
+Ben
 
+>
+>
+> --
+> <http://www.linaro.org/> Linaro.org =E2=94=82 Open source software for AR=
+M SoCs
+>
+> Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+> <http://twitter.com/#!/linaroorg> Twitter |
+> <http://www.linaro.org/linaro-blog/> Blog
