@@ -2,462 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A28C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:29:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6871C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239112AbiBYN3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:29:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51752 "EHLO
+        id S241351AbiBYNaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:30:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230508AbiBYN3r (ORCPT
+        with ESMTP id S230508AbiBYNaL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:29:47 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5022028B1
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:29:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645795754; x=1677331754;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QMuz2HIQuhbF+wGFSkoCZfpI79fD7MB5mtNmCDxoY8c=;
-  b=ApUz85Ec1MhduDoonTYwxEW8++YolOwHNNZ+UOcEBEsS1OylGC2p4e2b
-   IUWRjn+KRDawyhn4Z+RsmKeumGHXhbCyLlNG4x0Rf204vvs6UAq3uoLzV
-   ONojtCf+8vohdgOkT/hiH3On7BqVjrgcl1NtYJFd2K5Ph/dONr2KJoKP3
-   mFRlcO6X0HHbD53oSi2/dmkD4FWdTSH6xxwRw5NlxXo84BHaOKRaC4hZv
-   pazS+h0tCMN0/nbUYiYhurLv+0VNHDpk4SbAZlaerANHWXQKsWCO87gNI
-   lfLG4rWc3tpQ5UascYAOOcNwV2ZexQL7sZ2dz6wvDRnOOGR1AuDCQAzEV
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="232466639"
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="232466639"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 05:29:14 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="791797582"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 25 Feb 2022 05:29:12 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nNaem-0004Lc-8u; Fri, 25 Feb 2022 13:29:12 +0000
-Date:   Fri, 25 Feb 2022 21:28:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dinh Nguyen <dinguyen@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [dinguyen:nios2_for_v5.18 6/6]
- arch/csky/include/asm/uaccess.h:11:52: error: 'struct thread_info' has no
- member named 'addr_limit'
-Message-ID: <202202252125.PgFR0SAq-lkp@intel.com>
+        Fri, 25 Feb 2022 08:30:11 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880B22028AB;
+        Fri, 25 Feb 2022 05:29:39 -0800 (PST)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21PBMjBr012240;
+        Fri, 25 Feb 2022 13:29:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Vn90irpMkq00xDd5Ps246VaLOSORd2MB7UfmWYtLgDY=;
+ b=shJRun8UpwV0xolVsawwfTahqO4L9+yQMO8GLTv9XS0PXoAJnD5OIQakTzg4bfro1uYa
+ lHQO8A/eEfAcUAdZFcrbfY0LO6pHszXOFVD+Gv2y6/ZQ6Pg4UnPlS+JDG9/My96PQao0
+ Lm6NC9yjZaoFHoC602oIXiTpz4ipwWCLVyTYFrDwGHMzsUPPwkKzel8D8BxImGk0Czdv
+ M02BFpZ7+Ifnq0g5wA2+x+Cq8LmQzju4Hl1NAt0pOiW7zNxex+REkcSfkt3cohHmIoFD
+ x/f2/T2WzylKkDJ/D/QaCTFRx99hSEiTc5zLYkAIdPtdLmHba2+xTGiruEs2hydZsSmW 5g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3edtv98rt0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 13:29:38 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21PDTbPF015924;
+        Fri, 25 Feb 2022 13:29:37 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3edtv98rsh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 13:29:37 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21PDOpIL012123;
+        Fri, 25 Feb 2022 13:29:35 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06ams.nl.ibm.com with ESMTP id 3eaqtjrwmc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Feb 2022 13:29:35 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21PDImsF44433800
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 25 Feb 2022 13:18:48 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9952811C05C;
+        Fri, 25 Feb 2022 13:29:32 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BEC3811C04A;
+        Fri, 25 Feb 2022 13:29:31 +0000 (GMT)
+Received: from [9.171.85.161] (unknown [9.171.85.161])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 25 Feb 2022 13:29:31 +0000 (GMT)
+Message-ID: <9869257e-d257-da83-edd6-0c167f915829@de.ibm.com>
+Date:   Fri, 25 Feb 2022 14:29:31 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 1/1] KVM: s390: pv: make use of ultravisor AIV support
+Content-Language: en-US
+To:     Michael Mueller <mimu@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     cohuck@redhat.com, frankja@linux.ibm.com, thuth@redhat.com,
+        pasic@linux.ibm.com, david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220209152217.1793281-1-mimu@linux.ibm.com>
+ <20220209152217.1793281-2-mimu@linux.ibm.com>
+ <803275d5-58f4-21d9-8020-e56f05737450@de.ibm.com>
+ <d58a6a64-a6b6-3238-00d7-573e4177f38c@linux.ibm.com>
+From:   Christian Borntraeger <borntraeger@de.ibm.com>
+In-Reply-To: <d58a6a64-a6b6-3238-00d7-573e4177f38c@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: DPAlZUnDsQXp0G3lMS7BeJ8GZ0UyHu0k
+X-Proofpoint-GUID: LNeVDkjWMcUVakMx_AjGSCG8Wmrywwhe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-25_07,2022-02-25_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ phishscore=0 priorityscore=1501 impostorscore=0 mlxscore=0 adultscore=0
+ mlxlogscore=999 bulkscore=0 lowpriorityscore=0 spamscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202250074
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/dinguyen/linux.git nios2_for_v5.18
-head:   048b7695b48a3a4523a7a7fbfedc396b40ccf62f
-commit: 048b7695b48a3a4523a7a7fbfedc396b40ccf62f [6/6] uaccess: drop maining CONFIG_SET_FS users
-config: csky-defconfig (https://download.01.org/0day-ci/archive/20220225/202202252125.PgFR0SAq-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/dinguyen/linux.git/commit/?id=048b7695b48a3a4523a7a7fbfedc396b40ccf62f
-        git remote add dinguyen https://git.kernel.org/pub/scm/linux/kernel/git/dinguyen/linux.git
-        git fetch --no-tags dinguyen nios2_for_v5.18
-        git checkout 048b7695b48a3a4523a7a7fbfedc396b40ccf62f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from include/linux/proc_fs.h:10,
-                    from init/main.c:18:
-   arch/csky/include/asm/uaccess.h: In function '__access_ok':
->> arch/csky/include/asm/uaccess.h:11:52: error: 'struct thread_info' has no member named 'addr_limit'
-      11 |         unsigned long limit = current_thread_info()->addr_limit.seg;
-         |                                                    ^~
-   In file included from include/linux/build_bug.h:5,
-                    from include/linux/container_of.h:5,
-                    from include/linux/list.h:5,
-                    from include/linux/module.h:12,
-                    from init/main.c:17:
-   include/asm-generic/uaccess.h: In function 'clear_user':
-   include/asm-generic/uaccess.h:225:24: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-     225 |         if (!access_ok(to, n))
-         |                        ^~
-         |                        |
-         |                        void *
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   include/asm-generic/uaccess.h:225:14: note: in expansion of macro 'access_ok'
-     225 |         if (!access_ok(to, n))
-         |              ^~~~~~~~~
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from include/linux/proc_fs.h:10,
-                    from init/main.c:18:
-   arch/csky/include/asm/uaccess.h:9:45: note: expected 'long unsigned int' but argument is of type 'void *'
-       9 | static inline int __access_ok(unsigned long addr, unsigned long size)
-         |                               ~~~~~~~~~~~~~~^~~~
-   init/main.c: At top level:
-   init/main.c:768:20: warning: no previous prototype for 'arch_post_acpi_subsys_init' [-Wmissing-prototypes]
-     768 | void __init __weak arch_post_acpi_subsys_init(void) { }
-         |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   init/main.c:780:20: warning: no previous prototype for 'mem_encrypt_init' [-Wmissing-prototypes]
-     780 | void __init __weak mem_encrypt_init(void) { }
-         |                    ^~~~~~~~~~~~~~~~
-   init/main.c:782:20: warning: no previous prototype for 'poking_init' [-Wmissing-prototypes]
-     782 | void __init __weak poking_init(void) { }
-         |                    ^~~~~~~~~~~
---
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from include/linux/tty.h:5,
-                    from init/do_mounts.c:6:
-   arch/csky/include/asm/uaccess.h: In function '__access_ok':
->> arch/csky/include/asm/uaccess.h:11:52: error: 'struct thread_info' has no member named 'addr_limit'
-      11 |         unsigned long limit = current_thread_info()->addr_limit.seg;
-         |                                                    ^~
-   In file included from include/linux/build_bug.h:5,
-                    from include/linux/container_of.h:5,
-                    from include/linux/list.h:5,
-                    from include/linux/module.h:12,
-                    from init/do_mounts.c:2:
-   include/asm-generic/uaccess.h: In function 'clear_user':
-   include/asm-generic/uaccess.h:225:24: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-     225 |         if (!access_ok(to, n))
-         |                        ^~
-         |                        |
-         |                        void *
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   include/asm-generic/uaccess.h:225:14: note: in expansion of macro 'access_ok'
-     225 |         if (!access_ok(to, n))
-         |              ^~~~~~~~~
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from include/linux/tty.h:5,
-                    from init/do_mounts.c:6:
-   arch/csky/include/asm/uaccess.h:9:45: note: expected 'long unsigned int' but argument is of type 'void *'
-       9 | static inline int __access_ok(unsigned long addr, unsigned long size)
-         |                               ~~~~~~~~~~~~~~^~~~
-   In file included from include/linux/build_bug.h:5,
-                    from include/linux/container_of.h:5,
-                    from include/linux/list.h:5,
-                    from include/linux/module.h:12,
-                    from init/do_mounts.c:2:
-   include/asm-generic/termios.h: In function 'user_termio_to_kernel_termios':
-   include/asm-generic/uaccess.h:192:19: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-     192 |         access_ok(__p, sizeof(*ptr)) ?          \
-         |                   ^~~
-         |                   |
-         |                   const void *
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   include/asm-generic/uaccess.h:192:9: note: in expansion of macro 'access_ok'
-     192 |         access_ok(__p, sizeof(*ptr)) ?          \
-         |         ^~~~~~~~~
-   include/asm-generic/termios.h:25:13: note: in expansion of macro 'get_user'
-      25 |         if (get_user(tmp, &termio->c_iflag) < 0)
-         |             ^~~~~~~~
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from include/linux/tty.h:5,
-                    from init/do_mounts.c:6:
-   arch/csky/include/asm/uaccess.h:9:45: note: expected 'long unsigned int' but argument is of type 'const void *'
-       9 | static inline int __access_ok(unsigned long addr, unsigned long size)
-         |                               ~~~~~~~~~~~~~~^~~~
-   In file included from include/linux/build_bug.h:5,
-                    from include/linux/container_of.h:5,
-                    from include/linux/list.h:5,
-                    from include/linux/module.h:12,
-                    from init/do_mounts.c:2:
-   include/asm-generic/uaccess.h:192:19: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-     192 |         access_ok(__p, sizeof(*ptr)) ?          \
-         |                   ^~~
-         |                   |
-         |                   const void *
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   include/asm-generic/uaccess.h:192:9: note: in expansion of macro 'access_ok'
-     192 |         access_ok(__p, sizeof(*ptr)) ?          \
-         |         ^~~~~~~~~
-   include/asm-generic/termios.h:29:13: note: in expansion of macro 'get_user'
-      29 |         if (get_user(tmp, &termio->c_oflag) < 0)
-         |             ^~~~~~~~
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from include/linux/tty.h:5,
-                    from init/do_mounts.c:6:
-   arch/csky/include/asm/uaccess.h:9:45: note: expected 'long unsigned int' but argument is of type 'const void *'
-       9 | static inline int __access_ok(unsigned long addr, unsigned long size)
-         |                               ~~~~~~~~~~~~~~^~~~
-   In file included from include/linux/build_bug.h:5,
-                    from include/linux/container_of.h:5,
-                    from include/linux/list.h:5,
-                    from include/linux/module.h:12,
-                    from init/do_mounts.c:2:
-   include/asm-generic/uaccess.h:192:19: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-     192 |         access_ok(__p, sizeof(*ptr)) ?          \
-         |                   ^~~
-         |                   |
---
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from init/do_mounts_rd.c:3:
-   arch/csky/include/asm/uaccess.h: In function '__access_ok':
->> arch/csky/include/asm/uaccess.h:11:52: error: 'struct thread_info' has no member named 'addr_limit'
-      11 |         unsigned long limit = current_thread_info()->addr_limit.seg;
-         |                                                    ^~
-   In file included from include/linux/kernel.h:20,
-                    from init/do_mounts_rd.c:2:
-   include/asm-generic/uaccess.h: In function 'clear_user':
-   include/asm-generic/uaccess.h:225:24: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-     225 |         if (!access_ok(to, n))
-         |                        ^~
-         |                        |
-         |                        void *
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   include/asm-generic/uaccess.h:225:14: note: in expansion of macro 'access_ok'
-     225 |         if (!access_ok(to, n))
-         |              ^~~~~~~~~
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from init/do_mounts_rd.c:3:
-   arch/csky/include/asm/uaccess.h:9:45: note: expected 'long unsigned int' but argument is of type 'void *'
-       9 | static inline int __access_ok(unsigned long addr, unsigned long size)
-         |                               ~~~~~~~~~~~~~~^~~~
---
-   In file included from include/linux/uaccess.h:11,
-                    from arch/csky/kernel/signal.c:4:
-   arch/csky/include/asm/uaccess.h: In function '__access_ok':
->> arch/csky/include/asm/uaccess.h:11:52: error: 'struct thread_info' has no member named 'addr_limit'
-      11 |         unsigned long limit = current_thread_info()->addr_limit.seg;
-         |                                                    ^~
-   In file included from arch/csky/include/asm/bug.h:6,
-                    from include/linux/bug.h:5,
-                    from include/linux/signal.h:5,
-                    from arch/csky/kernel/signal.c:3:
-   include/asm-generic/uaccess.h: In function 'clear_user':
-   include/asm-generic/uaccess.h:225:24: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-     225 |         if (!access_ok(to, n))
-         |                        ^~
-         |                        |
-         |                        void *
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   include/asm-generic/uaccess.h:225:14: note: in expansion of macro 'access_ok'
-     225 |         if (!access_ok(to, n))
-         |              ^~~~~~~~~
-   In file included from include/linux/uaccess.h:11,
-                    from arch/csky/kernel/signal.c:4:
-   arch/csky/include/asm/uaccess.h:9:45: note: expected 'long unsigned int' but argument is of type 'void *'
-       9 | static inline int __access_ok(unsigned long addr, unsigned long size)
-         |                               ~~~~~~~~~~~~~~^~~~
-   In file included from arch/csky/include/asm/bug.h:6,
-                    from include/linux/bug.h:5,
-                    from include/linux/signal.h:5,
-                    from arch/csky/kernel/signal.c:3:
-   arch/csky/kernel/signal.c: In function 'sys_rt_sigreturn':
-   arch/csky/kernel/signal.c:80:24: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-      80 |         if (!access_ok(frame, sizeof(*frame)))
-         |                        ^~~~~
-         |                        |
-         |                        struct rt_sigframe *
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   arch/csky/kernel/signal.c:80:14: note: in expansion of macro 'access_ok'
-      80 |         if (!access_ok(frame, sizeof(*frame)))
-         |              ^~~~~~~~~
-   In file included from include/linux/uaccess.h:11,
-                    from arch/csky/kernel/signal.c:4:
-   arch/csky/include/asm/uaccess.h:9:45: note: expected 'long unsigned int' but argument is of type 'struct rt_sigframe *'
-       9 | static inline int __access_ok(unsigned long addr, unsigned long size)
-         |                               ~~~~~~~~~~~~~~^~~~
-   In file included from arch/csky/include/asm/bug.h:6,
-                    from include/linux/bug.h:5,
-                    from include/linux/signal.h:5,
-                    from arch/csky/kernel/signal.c:3:
-   arch/csky/kernel/signal.c: In function 'setup_rt_frame':
-   arch/csky/kernel/signal.c:143:24: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-     143 |         if (!access_ok(frame, sizeof(*frame)))
-         |                        ^~~~~
-         |                        |
-         |                        struct rt_sigframe *
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   arch/csky/kernel/signal.c:143:14: note: in expansion of macro 'access_ok'
-     143 |         if (!access_ok(frame, sizeof(*frame)))
-         |              ^~~~~~~~~
-   In file included from include/linux/uaccess.h:11,
-                    from arch/csky/kernel/signal.c:4:
-   arch/csky/include/asm/uaccess.h:9:45: note: expected 'long unsigned int' but argument is of type 'struct rt_sigframe *'
-       9 | static inline int __access_ok(unsigned long addr, unsigned long size)
-         |                               ~~~~~~~~~~~~~~^~~~
-   arch/csky/kernel/signal.c: At top level:
-   arch/csky/kernel/signal.c:257:17: warning: no previous prototype for 'do_notify_resume' [-Wmissing-prototypes]
-     257 | asmlinkage void do_notify_resume(struct pt_regs *regs,
-         |                 ^~~~~~~~~~~~~~~~
---
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from arch/csky/kernel/traps.c:7:
-   arch/csky/include/asm/uaccess.h: In function '__access_ok':
->> arch/csky/include/asm/uaccess.h:11:52: error: 'struct thread_info' has no member named 'addr_limit'
-      11 |         unsigned long limit = current_thread_info()->addr_limit.seg;
-         |                                                    ^~
-   In file included from arch/csky/include/asm/bug.h:6,
-                    from include/linux/bug.h:5,
-                    from include/linux/thread_info.h:13,
-                    from include/asm-generic/current.h:5,
-                    from ./arch/csky/include/generated/asm/current.h:1,
-                    from include/linux/sched.h:12,
-                    from arch/csky/kernel/traps.c:4:
-   include/asm-generic/uaccess.h: In function 'clear_user':
-   include/asm-generic/uaccess.h:225:24: warning: passing argument 1 of '__access_ok' makes integer from pointer without a cast [-Wint-conversion]
-     225 |         if (!access_ok(to, n))
-         |                        ^~
-         |                        |
-         |                        void *
-   include/linux/compiler.h:77:45: note: in definition of macro 'likely'
-      77 | # define likely(x)      __builtin_expect(!!(x), 1)
-         |                                             ^
-   include/asm-generic/uaccess.h:225:14: note: in expansion of macro 'access_ok'
-     225 |         if (!access_ok(to, n))
-         |              ^~~~~~~~~
-   In file included from include/linux/uaccess.h:11,
-                    from include/linux/sched/task.h:11,
-                    from include/linux/sched/signal.h:9,
-                    from include/linux/rcuwait.h:6,
-                    from include/linux/percpu-rwsem.h:7,
-                    from include/linux/fs.h:33,
-                    from include/linux/huge_mm.h:8,
-                    from include/linux/mm.h:697,
-                    from arch/csky/kernel/traps.c:7:
-   arch/csky/include/asm/uaccess.h:9:45: note: expected 'long unsigned int' but argument is of type 'void *'
-       9 | static inline int __access_ok(unsigned long addr, unsigned long size)
-         |                               ~~~~~~~~~~~~~~^~~~
-   arch/csky/kernel/traps.c: At top level:
-   arch/csky/kernel/traps.c:57:13: warning: no previous prototype for 'trap_init' [-Wmissing-prototypes]
-      57 | void __init trap_init(void)
-         |             ^~~~~~~~~
-   arch/csky/kernel/traps.c:150:15: warning: no previous prototype for 'do_trap_unknown' [-Wmissing-prototypes]
-     150 | DO_ERROR_INFO(do_trap_unknown,
-         |               ^~~~~~~~~~~~~~~
-   arch/csky/kernel/traps.c:145:27: note: in definition of macro 'DO_ERROR_INFO'
-     145 | asmlinkage __visible void name(struct pt_regs *regs)                    \
-         |                           ^~~~
-   arch/csky/kernel/traps.c:152:15: warning: no previous prototype for 'do_trap_zdiv' [-Wmissing-prototypes]
-     152 | DO_ERROR_INFO(do_trap_zdiv,
-         |               ^~~~~~~~~~~~
-   arch/csky/kernel/traps.c:145:27: note: in definition of macro 'DO_ERROR_INFO'
-     145 | asmlinkage __visible void name(struct pt_regs *regs)                    \
-         |                           ^~~~
-   arch/csky/kernel/traps.c:154:15: warning: no previous prototype for 'do_trap_buserr' [-Wmissing-prototypes]
-     154 | DO_ERROR_INFO(do_trap_buserr,
-         |               ^~~~~~~~~~~~~~
-   arch/csky/kernel/traps.c:145:27: note: in definition of macro 'DO_ERROR_INFO'
-     145 | asmlinkage __visible void name(struct pt_regs *regs)                    \
-         |                           ^~~~
-   arch/csky/kernel/traps.c:157:17: warning: no previous prototype for 'do_trap_misaligned' [-Wmissing-prototypes]
-     157 | asmlinkage void do_trap_misaligned(struct pt_regs *regs)
-         |                 ^~~~~~~~~~~~~~~~~~
-   arch/csky/kernel/traps.c:168:17: warning: no previous prototype for 'do_trap_bkpt' [-Wmissing-prototypes]
-     168 | asmlinkage void do_trap_bkpt(struct pt_regs *regs)
-         |                 ^~~~~~~~~~~~
-   arch/csky/kernel/traps.c:187:17: warning: no previous prototype for 'do_trap_illinsn' [-Wmissing-prototypes]
-     187 | asmlinkage void do_trap_illinsn(struct pt_regs *regs)
-         |                 ^~~~~~~~~~~~~~~
-   arch/csky/kernel/traps.c:210:17: warning: no previous prototype for 'do_trap_fpe' [-Wmissing-prototypes]
-     210 | asmlinkage void do_trap_fpe(struct pt_regs *regs)
-         |                 ^~~~~~~~~~~
-   arch/csky/kernel/traps.c:220:17: warning: no previous prototype for 'do_trap_priv' [-Wmissing-prototypes]
-     220 | asmlinkage void do_trap_priv(struct pt_regs *regs)
-         |                 ^~~~~~~~~~~~
-   arch/csky/kernel/traps.c:230:17: warning: no previous prototype for 'trap_c' [-Wmissing-prototypes]
-     230 | asmlinkage void trap_c(struct pt_regs *regs)
-         |                 ^~~~~~
-..
 
 
-vim +11 arch/csky/include/asm/uaccess.h
+Am 24.02.22 um 16:47 schrieb Michael Mueller:
+> 
+> 
+> On 22.02.22 09:13, Christian Borntraeger wrote:
+>> Am 09.02.22 um 16:22 schrieb Michael Mueller:
+>>> This patch enables the ultravisor adapter interruption vitualization
+>>> support indicated by UV feature BIT_UV_FEAT_AIV. This allows ISC
+>>> interruption injection directly into the GISA IPM for PV kvm guests.
+>>>
+>>> Hardware that does not support this feature will continue to use the
+>>> UV interruption interception method to deliver ISC interruptions to
+>>> PV kvm guests. For this purpose, the ECA_AIV bit for all guest cpus
+>>> will be cleared and the GISA will be disabled during PV CPU setup.
+>>>
+>>> In addition a check in __inject_io() has been removed. That reduces the
+>>> required instructions for interruption handling for PV and traditional
+>>> kvm guests.
+>>>
+>>> Signed-off-by: Michael Mueller <mimu@linux.ibm.com>
+>>
+>> The CI said the following with gisa_disable in the calltrace.
+>> Will drop from next for now.
+> 
+> It turns out this is related to kvm_s390_set_tod_clock() which
+> is triggered by a kvm-unit-test (sac_PV) and not related directly
+> to this patch. Please re-apply.
 
-da551281947cb2 Guo Ren 2018-09-05   5  
-e58a41c2226847 Guo Ren 2021-04-21   6  #define user_addr_max() \
-e58a41c2226847 Guo Ren 2021-04-21  @7  	(uaccess_kernel() ? KERNEL_DS.seg : get_fs().seg)
-da551281947cb2 Guo Ren 2018-09-05   8  
-e58a41c2226847 Guo Ren 2021-04-21   9  static inline int __access_ok(unsigned long addr, unsigned long size)
-da551281947cb2 Guo Ren 2018-09-05  10  {
-da551281947cb2 Guo Ren 2018-09-05 @11  	unsigned long limit = current_thread_info()->addr_limit.seg;
-da551281947cb2 Guo Ren 2018-09-05  12  
-e58a41c2226847 Guo Ren 2021-04-21  13  	return ((addr < limit) && ((addr + size) < limit));
-da551281947cb2 Guo Ren 2018-09-05  14  }
-e58a41c2226847 Guo Ren 2021-04-21  15  #define __access_ok __access_ok
-da551281947cb2 Guo Ren 2018-09-05  16  
+Done. We need to fix the sck handler instead.
 
-:::::: The code at line 11 was first introduced by commit
-:::::: da551281947cb2c0ab6e0045529a706af5d79584 csky: User access
-
-:::::: TO: Guo Ren <ren_guo@c-sky.com>
-:::::: CC: Guo Ren <ren_guo@c-sky.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
+>>
+>>     LOCKDEP_CIRCULAR (suite: kvm-unit-tests-kvm, case: -)
+>>                  WARNING: possible circular locking dependency detected
+>> 5.17.0-20220221.rc5.git1.b8f0356a093a.300.fc35.s390x+debug #1 Not tainted
+>>                  ------------------------------------------------------
+>>                  qemu-system-s39/161139 is trying to acquire lock:
+>>                  0000000280dc0b98 (&kvm->lock){+.+.}-{3:3}, at: kvm_s390_set_tod_clock+0x36/0x220 [kvm]
+>>                  but task is already holding lock:
+>>                  0000000280f4e4b8 (&vcpu->mutex){+.+.}-{3:3}, at: kvm_vcpu_ioctl+0x9a/0xa40 [kvm]
+>>                  which lock already depends on the new lock.
+>>                  the existing dependency chain (in reverse order) is:
+>>                  -> #1 (&vcpu->mutex){+.+.}-{3:3}:
+>>                         __lock_acquire+0x604/0xbd8
+>>                         lock_acquire.part.0+0xe2/0x250
+>>                         lock_acquire+0xb0/0x200
+>>                         __mutex_lock+0x9e/0x8a0
+>>                         mutex_lock_nested+0x32/0x40
+>>                         kvm_s390_gisa_disable+0xa4/0x130 [kvm]
+>>                         kvm_s390_handle_pv+0x718/0x778 [kvm]
+>>                         kvm_arch_vm_ioctl+0x4ac/0x5f8 [kvm]
+>>                         kvm_vm_ioctl+0x336/0x530 [kvm]
+>>                         __s390x_sys_ioctl+0xbe/0x100
+>>                         __do_syscall+0x1da/0x208
+>>                         system_call+0x82/0xb0
+>>                  -> #0 (&kvm->lock){+.+.}-{3:3}:
+>>                         check_prev_add+0xe0/0xed8
+>>                         validate_chain+0x736/0xb20
+>>                         __lock_acquire+0x604/0xbd8
+>>                         lock_acquire.part.0+0xe2/0x250
+>>                         lock_acquire+0xb0/0x200
+>>                         __mutex_lock+0x9e/0x8a0
+>>                         mutex_lock_nested+0x32/0x40
+>>                         kvm_s390_set_tod_clock+0x36/0x220 [kvm]
+>>                         kvm_s390_handle_b2+0x378/0x728 [kvm]
+>>                         kvm_handle_sie_intercept+0x13a/0x448 [kvm]
+>>                         vcpu_post_run+0x28e/0x560 [kvm]
+>>                         __vcpu_run+0x266/0x388 [kvm]
+>>                         kvm_arch_vcpu_ioctl_run+0x10a/0x270 [kvm]
+>>                         kvm_vcpu_ioctl+0x27c/0xa40 [kvm]
+>>                         __s390x_sys_ioctl+0xbe/0x100
+>>                         __do_syscall+0x1da/0x208
+>>                         system_call+0x82/0xb0
+>>                  other info that might help us debug this:
+>>                   Possible unsafe locking scenario:
+>>                         CPU0                    CPU1
+>>                         ----                    ----
+>>                    lock(&vcpu->mutex);
+>>                                                 lock(&kvm->lock);
+>>                                                 lock(&vcpu->mutex);
+>>                    lock(&kvm->lock);
+>>                   *** DEADLOCK ***
+>>                  2 locks held by qemu-system-s39/161139:
+>>                   #0: 0000000280f4e4b8 (&vcpu->mutex){+.+.}-{3:3}, at: kvm_vcpu_ioctl+0x9a/0xa40 [kvm]
+>>                   #1: 0000000280dc47c8 (&kvm->srcu){....}-{0:0}, at: __vcpu_run+0x1d4/0x388 [kvm]
+>>                  stack backtrace:
+>>                  CPU: 10 PID: 161139 Comm: qemu-system-s39 Not tainted 5.17.0-20220221.rc5.git1.b8f0356a093a.300.fc35.s390x+debug #1
+>>                  Hardware name: IBM 8561 T01 701 (LPAR)
+>>                  Call Trace:
+>>                   [<00000001da4e89de>] dump_stack_lvl+0x8e/0xc8
+>>                   [<00000001d9876c56>] check_noncircular+0x136/0x158
+>>                   [<00000001d9877c70>] check_prev_add+0xe0/0xed8
+>>                   [<00000001d987919e>] validate_chain+0x736/0xb20
+>>                   [<00000001d987b23c>] __lock_acquire+0x604/0xbd8
+>>                   [<00000001d987c432>] lock_acquire.part.0+0xe2/0x250
+>>                   [<00000001d987c650>] lock_acquire+0xb0/0x200
+>>                   [<00000001da4f72ae>] __mutex_lock+0x9e/0x8a0
+>>                   [<00000001da4f7ae2>] mutex_lock_nested+0x32/0x40
+>>                   [<000003ff8070cd6e>] kvm_s390_set_tod_clock+0x36/0x220 [kvm]
+>>                   [<000003ff8071dd68>] kvm_s390_handle_b2+0x378/0x728 [kvm]
+>>                   [<000003ff8071146a>] kvm_handle_sie_intercept+0x13a/0x448 [kvm]
+>>                   [<000003ff8070dd46>] vcpu_post_run+0x28e/0x560 [kvm]
+>>                   [<000003ff8070e27e>] __vcpu_run+0x266/0x388 [kvm]
+>>                   [<000003ff8070eba2>] kvm_arch_vcpu_ioctl_run+0x10a/0x270 [kvm]
+>>                   [<000003ff806f4044>] kvm_vcpu_ioctl+0x27c/0xa40 [kvm]
+>>                   [<00000001d9b47ac6>] __s390x_sys_ioctl+0xbe/0x100
+>>                   [<00000001da4ec152>] __do_syscall+0x1da/0x208
+>>                   [<00000001da4fec42>] system_call+0x82/0xb0
+>>                  INFO: lockdep is turned off.
