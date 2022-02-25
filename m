@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86813C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43349C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 10:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239397AbiBYKTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 05:19:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40588 "EHLO
+        id S239413AbiBYKTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 05:19:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239370AbiBYKSx (ORCPT
+        with ESMTP id S237042AbiBYKSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 05:18:53 -0500
+        Fri, 25 Feb 2022 05:18:54 -0500
 Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CED718CC53;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A99818E3EE;
         Fri, 25 Feb 2022 02:18:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
          s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
@@ -21,22 +21,22 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=DxOXxIW0oNb1NkSwODLS6r1eDbL6738IlX9qVviaol4=; b=FbsS5rnkdnhlt4LlHdXE6DO2uD
-        Mppn0jqJI8jut6Nk/HtYK/E6NqHNMzA6u2HNL7oJkTslNXH2cN7ChUge6UBX9XqoHY/GSvQuA1g8c
-        86vemT1nA1f6abyqcfbppEOXdyPU3XfuwBYuQwiOuMAx5VsdEOvR45bId6E4ba502etc=;
+        bh=R1TUjW3FR0g4N/arQpSNxRqerqgJRvX9AVweP0pFvqk=; b=QBZQTz00vs0LOMzxKJLWEYQ750
+        9kk0tkqlrECDqILShqnXPoZdE/WX87gvPOU4yOZV2lCy/QU7H7ww3Mfa+MUwtcVgRGK1QuwbR4FON
+        0hH64DSko2JnCeEGkecUym2xqzV0xwaZdNOUke2+6LIVIIihto1+0wsV/prpJheAo4lI=;
 Received: from p200300daa7204f00f847964d075b2b3d.dip0.t-ipconnect.de ([2003:da:a720:4f00:f847:964d:75b:2b3d] helo=localhost.localdomain)
         by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <nbd@nbd.name>)
-        id 1nNXfx-0007J1-U9; Fri, 25 Feb 2022 11:18:14 +0100
+        id 1nNXg1-0007J1-AM; Fri, 25 Feb 2022 11:18:17 +0100
 From:   Felix Fietkau <nbd@nbd.name>
 To:     netdev@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 02/11] arm64: dts: mediatek: mt7622: add support for coherent DMA
-Date:   Fri, 25 Feb 2022 11:18:01 +0100
-Message-Id: <20220225101811.72103-3-nbd@nbd.name>
+Subject: [PATCH 05/11] arm64: dts: mediatek: mt7622: introduce nodes for Wireless Ethernet Dispatch
+Date:   Fri, 25 Feb 2022 11:18:04 +0100
+Message-Id: <20220225101811.72103-6-nbd@nbd.name>
 X-Mailer: git-send-email 2.32.0 (Apple Git-132)
 In-Reply-To: <20220225101811.72103-1-nbd@nbd.name>
 References: <20220225101811.72103-1-nbd@nbd.name>
@@ -46,35 +46,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It improves performance by eliminating the need for a cache flush on rx and tx
+Introduce wed0 and wed1 nodes in order to enable offloading forwarding
+between ethernet and wireless devices on the mt7622 chipset.
 
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- arch/arm64/boot/dts/mediatek/mt7622.dtsi | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/mediatek/mt7622.dtsi | 28 ++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/mediatek/mt7622.dtsi b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-index 6f8cb3ad1e84..a2257ec6d256 100644
+index a2257ec6d256..47d223e28f8d 100644
 --- a/arch/arm64/boot/dts/mediatek/mt7622.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt7622.dtsi
-@@ -357,7 +357,7 @@ cci_control1: slave-if@4000 {
+@@ -901,6 +901,11 @@ sata_port: sata-phy@1a243000 {
  		};
+ 	};
  
- 		cci_control2: slave-if@5000 {
--			compatible = "arm,cci-400-ctrl-if";
-+			compatible = "arm,cci-400-ctrl-if", "syscon";
- 			interface-type = "ace";
- 			reg = <0x5000 0x1000>;
- 		};
-@@ -945,6 +945,8 @@ eth: ethernet@1b100000 {
- 		power-domains = <&scpsys MT7622_POWER_DOMAIN_ETHSYS>;
++	hifsys: syscon@1af00000 {
++		compatible = "mediatek,mt7622-hifsys", "syscon";
++		reg = <0 0x1af00000 0 0x70>;
++	};
++
+ 	ethsys: syscon@1b000000 {
+ 		compatible = "mediatek,mt7622-ethsys",
+ 			     "syscon";
+@@ -919,6 +924,26 @@ hsdma: dma-controller@1b007000 {
+ 		#dma-cells = <1>;
+ 	};
+ 
++	pcie_mirror: pcie-mirror@10000400 {
++		compatible = "mediatek,mt7622-pcie-mirror",
++			     "syscon";
++		reg = <0 0x10000400 0 0x10>;
++	};
++
++	wed0: wed@1020a000 {
++		compatible = "mediatek,mt7622-wed",
++			     "syscon";
++		reg = <0 0x1020a000 0 0x1000>;
++		interrupts = <GIC_SPI 214 IRQ_TYPE_LEVEL_LOW>;
++	};
++
++	wed1: wed@1020b000 {
++		compatible = "mediatek,mt7622-wed",
++			     "syscon";
++		reg = <0 0x1020b000 0 0x1000>;
++		interrupts = <GIC_SPI 215 IRQ_TYPE_LEVEL_LOW>;
++	};
++
+ 	eth: ethernet@1b100000 {
+ 		compatible = "mediatek,mt7622-eth",
+ 			     "mediatek,mt2701-eth",
+@@ -946,6 +971,9 @@ eth: ethernet@1b100000 {
  		mediatek,ethsys = <&ethsys>;
  		mediatek,sgmiisys = <&sgmiisys>;
-+		mediatek,cci-control = <&cci_control2>;
-+		dma-coherent;
+ 		mediatek,cci-control = <&cci_control2>;
++		mediatek,wed = <&wed0>, <&wed1>;
++		mediatek,pcie-mirror = <&pcie_mirror>;
++		mediatek,hifsys = <&hifsys>;
+ 		dma-coherent;
  		#address-cells = <1>;
  		#size-cells = <0>;
- 		status = "disabled";
 -- 
 2.32.0 (Apple Git-132)
 
