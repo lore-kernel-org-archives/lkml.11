@@ -2,129 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD3F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD68DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 07:05:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237973AbiBYHDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 02:03:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
+        id S237977AbiBYHGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 02:06:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbiBYHC6 (ORCPT
+        with ESMTP id S229597AbiBYHGK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 02:02:58 -0500
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2055.outbound.protection.outlook.com [40.107.237.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93AD9B3E40;
-        Thu, 24 Feb 2022 23:02:26 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AprKn7yZekfQ/kx/KdtiKNx2dUV1dTizlMTASNFu2Q9EPxVKGZ5qzdpmFTtWWSXB1gki97k6IDS2VBLSLm5FCEM80Yaj2BiDHSuiQQg/JjO93HZ1vFDtwW8S/aCmGhO9SOT3Aq3lnwptXra5rVnyfrLOIQBuiJ1eCWBPy0O39y3pBFj7c7inH543deJ4a4ikp3jPXR5u+Wxz6y6vMN/LYxHkh4hg8RS7xa97nbqWI78c1ndt+49eLdijsma4eAn0sHLDHDp87WH7h0cXBf/C2D+tgZdgvee8JJnTBzmTzq8P9fDbATSpD5V7hnb/yyDccpZ4JgL02Cda5NcXQF5Mgw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K9wr2ZD0wa4iYVYepEsxFczqboHXVd+BimK5TpHRStQ=;
- b=JHNm9C0bd5jyT+Wpm1Cfo6wHDOeNjM8Ib+GC76xy35D0aO+qJF3hZW43B4y2vtWU+JwbWGq2J2w+/pZ/QDHmDuMWpJNOYEXJrH41aEDhE3UQMckP/0zsHlO2/X/5dcJKy+gzxa8wHDtxy/2aHuwK0WFkDNtNm1uoS0LOaUAFKWlFIm9uoUsCSQQHrF/u5OCAUNsa2UCW+XAjhwc9Bz55KhEXyvQgx+PMF7uqG9bQiGk9vNDOA4hdLD5rOo00wuQS3uoYdCKvA5KLXo4ocl948ez2lahd8zvLO3y5/x0Cr6Iel8HFp2EbzxOfPUVbWEEXnhtptMj0Th1DmZCudYDaJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K9wr2ZD0wa4iYVYepEsxFczqboHXVd+BimK5TpHRStQ=;
- b=Mz4wgsG1ohFh9Gepl1g9WubWZaWPgIOoSBwbN7s9T+QV9rGvo4XrPNjD3/IXCHmqNDXLgp6vP28oekeBrxBeepdy2UP8WDY1L7e99gG3PwSxGaCYLTGwogi1AsxEo1/z7pnFZ9pdduFHE20LjuMfvmgwa5ykIz+0l2roG43IEDVuhDNpWSC8xZfLRwEqlfZuEhQDbYkywxDA2ldN0I9hNbRk3eJq61szGQlTpuqYTkbTG/8q+pLTi1l5DRqV+/XJCNqujXxZivtBZRQEufU4bXfOQAjfmo6jyBI4vsgFB9JgC0A5O0/I9f7l+2pbC59Dktrp/CG1SK8cnIWtN3KvAA==
-Received: from CH0PR12MB5089.namprd12.prod.outlook.com (2603:10b6:610:bc::8)
- by DM6PR12MB4500.namprd12.prod.outlook.com (2603:10b6:5:28f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Fri, 25 Feb
- 2022 07:02:24 +0000
-Received: from CH0PR12MB5089.namprd12.prod.outlook.com
- ([fe80::2158:bc32:112a:2860]) by CH0PR12MB5089.namprd12.prod.outlook.com
- ([fe80::2158:bc32:112a:2860%2]) with mapi id 15.20.5017.025; Fri, 25 Feb 2022
- 07:02:24 +0000
-From:   Henry Lin <henryl@nvidia.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     "mathias.nyman@intel.com" <mathias.nyman@intel.com>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] xhci: fix runtime PM imbalance in USB2 resume
-Thread-Topic: [PATCH] xhci: fix runtime PM imbalance in USB2 resume
-Thread-Index: AQHYKgwFCgHVyOvH4ESDy/u/4+LZrKyjzGkAgAADKIWAAAPnAIAAAxWk
-Date:   Fri, 25 Feb 2022 07:02:24 +0000
-Message-ID: <CH0PR12MB5089F5EF1D1AFE54476E5E49AC3E9@CH0PR12MB5089.namprd12.prod.outlook.com>
-References: <20220225055311.92447-1-henryl@nvidia.com>
- <Yhh19qsTsGRhsLWT@kroah.com>
- <CH0PR12MB5089EB28FAA6DF61F57F6D09AC3E9@CH0PR12MB5089.namprd12.prod.outlook.com>
- <Yhh74nrKH5XuRZ/U@kroah.com>
-In-Reply-To: <Yhh74nrKH5XuRZ/U@kroah.com>
-Accept-Language: en-US, zh-TW
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-suggested_attachment_session_id: 8b1bde43-52d4-12e2-38fd-a22d93c02113
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bd990e28-8f76-41a9-6164-08d9f82cc697
-x-ms-traffictypediagnostic: DM6PR12MB4500:EE_
-x-microsoft-antispam-prvs: <DM6PR12MB450074A18EE1C735130AB839AC3E9@DM6PR12MB4500.namprd12.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: K/TI1CZljbYZ6njW+WW7cj7LpQrXBpgYq39tADTJy0utLx/Ay9s1EiR4lDvSS1HxkvZIp2sYXSLsQWfTZoiEhwuchNigOAhAUnYrn4DOHv6tYG8cxRagZt9/BSoZg7D/7bYXfAmLMTdvCmP8bFVk0U+oP+2LLQWCCBFTiKxGM0Vb8mmILkMw8i8ipCsTMzMh5RilDfboByYhuETNjghRvMAH6NrA+MoxVHpYGfEyd2Fz1zK7dr4FF1jwKKon6BHGUMOA9cYZyAtSXR671Fyzbx00maD9jzKCemxpL4fCaXqYF1R4AYfIBC/ea3UKtgYfj0bCFCiTZrhV13rIKieZwOchwNI33jNOeTl7WEUcEtg/gc3dg0fwwO4yzdEATWy365MfrM3EiRiKRGZV63K5dgkAzPlPTYIjsnQCX6ZpkgQH7phimS0gtzfJnev+U4XGbH796iGaFyweedTHiro3UaI2h0Synd6YLm6fNzrqyLHbtHHsXy5/93k2lBKLptTXhDxvveKa2hpUokUZpsolhzvQUB4RqOwEg7Qxd51EQEbsCt5XCIVtnS6toQ5WPh3wBOSlVwU4N4c9igNkCesq6lECYW5c10s3cCR8cediqO0SgM+OtcDlWKA2EYbWT7GtkCPPfIAaWa+ux1zmkQIxkiBHFilOQQiTmb7+yHcUd0SQm+U8eHqoYO5hnVPYDP25So+KH4hNoJYWp+ntafheRg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR12MB5089.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(71200400001)(86362001)(9686003)(26005)(7696005)(2906002)(8936002)(6506007)(186003)(5660300002)(8676002)(6916009)(33656002)(4326008)(122000001)(54906003)(38070700005)(64756008)(508600001)(38100700002)(91956017)(66446008)(558084003)(66476007)(66556008)(55016003)(316002)(52536014)(66946007)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?fmKKysyajGVKXnnTOkfAVF/vToOa0Sp9bG9g8FuDWDSW4SrqBBXOU67lvE?=
- =?iso-8859-1?Q?boPkYTTeXiK1wl+4hoVavCqDii5lgdiNkVB9iOxDMn8a68p+wp+b5fs+py?=
- =?iso-8859-1?Q?MxCgfBFFhGZsOL5ilhlsXgK1yV7glZNQ2/WM1yq4fWMHETx1/yG19iohm/?=
- =?iso-8859-1?Q?Kv434VoXs529DAGTfFj7Zhq6kOzAp9JF2HhuW66ZjLm98DzZbspy4cQ2a7?=
- =?iso-8859-1?Q?d5KP0Nu9LUZftJKxVvq1qmtk2n+6ZFTQYLLW+yTmqGaP9xlXMEpFkVJvwR?=
- =?iso-8859-1?Q?hsQhh2OxBcrpFFPQgR+Zgu440AdJ6II9ee/dAZysZ+EMCbWyp0VJr80qTv?=
- =?iso-8859-1?Q?RS0R6xkBTNS/q2lkJtJGSiMA9pMyf7UAZDctmhXDCJ2sQlvEe6XmEwUwcy?=
- =?iso-8859-1?Q?aY6d7OW/YPk+Q5WLN0gtOT7yyL6HgftJzRdQbS8IpH89te56P40FcMnN5z?=
- =?iso-8859-1?Q?zyfGh20ciW85RsjS1yJpxNbA671AsCJyGy+CdL50S0Lg184FKIAZKArHgY?=
- =?iso-8859-1?Q?jrpdLXxXK1tf9efZHTsE/3GBdg6AA5cvVhoGlS8KbXWY9mnnKzv2nIev5U?=
- =?iso-8859-1?Q?TfRuMKfHMMT19tmlLM7z0Ot0SAYzn+cImNhufrj6qeQut8r13RmdaPr7tc?=
- =?iso-8859-1?Q?XQGmWMBxUW5CFRv1ciQ5ljcBocCjmm8vr7qeZt0wgvtPTq9HEvWqyZ8SJ2?=
- =?iso-8859-1?Q?ozQ9ODLbAa+MYXaCbn0x0P2+aoNmusglkzs8F7rRDcFzzk7vVTR4cGJXk3?=
- =?iso-8859-1?Q?nhOlQHa4S6QhJ+jG6d2JfIfo9EjkNZP9lE7GsP4icdcqDEZPdk+XVIoCZq?=
- =?iso-8859-1?Q?VaFF1C9OAdFbo8ofk8Co8Ecszn/Kgtn7t9jizMVZSj+I7ROBrbwqgUltGV?=
- =?iso-8859-1?Q?OiSNgi7ZlVYDASueO6w5nEdQ+VUwKqc+u+biCnXAcay+vN4I9g17dqm1Qm?=
- =?iso-8859-1?Q?3wKpcSLXjKEn+jj5ZUfs234ye0Ao2Xo8e3eGY5bIgEjfgZfLiNcGKNpCR4?=
- =?iso-8859-1?Q?4FomTwPwgL06nRS67lAEY4QBZillVagfJesv433ELkHVWKX/1wrQih2mgs?=
- =?iso-8859-1?Q?O90o3xlp/MySZ88eGDuk0MAo+RjRm5Jt4ci9905OhFu+eVKpjFOgDj5zRu?=
- =?iso-8859-1?Q?Y7LdmGJajK0whBrVuFXaBid05Y+adR2IC7HQRGA3ZRkEdPRey5vQ2aLsPG?=
- =?iso-8859-1?Q?hIGTu9IsS9lUdko47fZgwqNoFNL7u3i8kZSvllpyfyJCzVcuP8R8PojVyd?=
- =?iso-8859-1?Q?xsudgJjQm+vwu6o/dn5B8b/B4/92CzA0DVoCWjKyfwqRByUPimA2AHYi6I?=
- =?iso-8859-1?Q?6ky5B5ysQ/6RwUXFMjBP25Mw4G+i40Uz4a0LR65cyLT4oAYN+w/goJjDeC?=
- =?iso-8859-1?Q?2aDao0ZwGcwBLT78ZSYOVmI1AbQLNXZudZ/Gf1rzspQsO4f1QCBvLpZR9y?=
- =?iso-8859-1?Q?FJrIfp0IN7tOX9MRkYtHOZMHaFVwMCkjh5k+3aXYiTfvTO0k4Ljj5YuH7G?=
- =?iso-8859-1?Q?PMZrCdwm5uJmX20Zuk0EEw7S+Js+wQnNTnbk/NLK/88+dDO5ZD3JUrCz2p?=
- =?iso-8859-1?Q?hunuPZm+iRi4vXT4YhALZSczo/gxdO7G4p+K62B4UhaBnvN/iRoZVnp5VO?=
- =?iso-8859-1?Q?e/anl9nVyqDgeYVDr65+zvrCzVP+kG26jFL/vQwD4d/CScR7kY96h6Wg?=
- =?iso-8859-1?Q?=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 25 Feb 2022 02:06:10 -0500
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59D61DD0C0;
+        Thu, 24 Feb 2022 23:05:35 -0800 (PST)
+Received: from kwepemi500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K4gjw1D6YzdZhK;
+        Fri, 25 Feb 2022 15:04:04 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500026.china.huawei.com (7.221.188.247) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Fri, 25 Feb 2022 15:05:17 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 25 Feb
+ 2022 15:05:16 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <ming.lei@redhat.com>, <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH] blk-mq: fix potential uaf for 'queue_hw_ctx'
+Date:   Fri, 25 Feb 2022 15:20:53 +0800
+Message-ID: <20220225072053.2472431-1-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CH0PR12MB5089.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bd990e28-8f76-41a9-6164-08d9f82cc697
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Feb 2022 07:02:24.2746
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +03TgGNLvn3sK95g/BNfxLlbapKjqR+eWwVGLZCG41eu3RiEOYkh8zdPkaUzUZyAY356mHbrXXppkJ1imeFD2g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4500
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Great, please add a "Fixes:" tag to the patch when resubmitting it.=0A=
-I will resubmit soon.=0A=
-=0A=
-> And the "no functional changes" seems not to have been true, right?=0A=
-Yes.=0A=
-> Does this need to go into the stable kernels?=0A=
-Yes, this need to go into stable kernels. =0A=
-=0A=
-Thanks,=0A=
-Henry=0A=
+blk_mq_realloc_hw_ctxs() will free the 'queue_hw_ctx'(e.g. undate
+submit_queues through configfs for null_blk), while it might still be
+used from other context(e.g. switch elevator to none):
+
+t1					t2
+elevator_switch
+ blk_mq_unquiesce_queue
+  blk_mq_run_hw_queues
+   queue_for_each_hw_ctx
+    // assembly code for hctx = (q)->queue_hw_ctx[i]
+    mov    0x48(%rbp),%rdx -> read old queue_hw_ctx
+
+					__blk_mq_update_nr_hw_queues
+					 blk_mq_realloc_hw_ctxs
+					  hctxs = q->queue_hw_ctx
+					  q->queue_hw_ctx = new_hctxs
+					  kfree(hctxs)
+    movslq %ebx,%rax
+    mov    (%rdx,%rax,8),%rdi ->uaf
+
+This problem was found by code review, and I comfirmed that the concurrent
+scenario do exist(specifically 'q->queue_hw_ctx' can be changed during
+blk_mq_run_hw_queues()), however, the uaf problem hasn't been repoduced yet
+without hacking the kernel.
+
+Sicne the queue is freezed in __blk_mq_update_nr_hw_queues(), fix the
+problem by protecting 'queue_hw_ctx' through rcu where it can be accessed
+without grabbing 'q_usage_counter'.
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+---
+changes from rfc
+ - move queue_hctx() to blk-mq.h
+ - add review tag
+
+ block/blk-mq.c         |  8 +++++++-
+ block/blk-mq.h         | 11 +++++++++++
+ include/linux/blk-mq.h |  2 +-
+ include/linux/blkdev.h |  2 +-
+ 4 files changed, 20 insertions(+), 3 deletions(-)
+
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index f1b067d06ab5..3fab7f925011 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -3937,7 +3937,13 @@ static void blk_mq_realloc_hw_ctxs(struct blk_mq_tag_set *set,
+ 		if (hctxs)
+ 			memcpy(new_hctxs, hctxs, q->nr_hw_queues *
+ 			       sizeof(*hctxs));
+-		q->queue_hw_ctx = new_hctxs;
++
++		rcu_assign_pointer(q->queue_hw_ctx, new_hctxs);
++		/*
++		 * Make sure reading the old queue_hw_ctx from other
++		 * context concurrently won't trigger uaf.
++		 */
++		synchronize_rcu();
+ 		kfree(hctxs);
+ 		hctxs = new_hctxs;
+ 	}
+diff --git a/block/blk-mq.h b/block/blk-mq.h
+index 948791ea2a3e..20dcfc74d9ee 100644
+--- a/block/blk-mq.h
++++ b/block/blk-mq.h
+@@ -86,6 +86,17 @@ static inline struct blk_mq_hw_ctx *blk_mq_map_queue_type(struct request_queue *
+ 	return q->queue_hw_ctx[q->tag_set->map[type].mq_map[cpu]];
+ }
+ 
++static inline struct blk_mq_hw_ctx *queue_hctx(struct request_queue *q, int id)
++{
++	struct blk_mq_hw_ctx *hctx;
++
++	rcu_read_lock();
++	hctx = *(rcu_dereference(q->queue_hw_ctx) + id);
++	rcu_read_unlock();
++
++	return hctx;
++}
++
+ static inline enum hctx_type blk_mq_get_hctx_type(unsigned int flags)
+ {
+ 	enum hctx_type type = HCTX_TYPE_DEFAULT;
+diff --git a/include/linux/blk-mq.h b/include/linux/blk-mq.h
+index 3a41d50b85d3..34eab6cd95f8 100644
+--- a/include/linux/blk-mq.h
++++ b/include/linux/blk-mq.h
+@@ -918,7 +918,7 @@ static inline void *blk_mq_rq_to_pdu(struct request *rq)
+ 
+ #define queue_for_each_hw_ctx(q, hctx, i)				\
+ 	for ((i) = 0; (i) < (q)->nr_hw_queues &&			\
+-	     ({ hctx = (q)->queue_hw_ctx[i]; 1; }); (i)++)
++	     ({ hctx = queue_hctx((q), i); 1; }); (i)++)
+ 
+ #define hctx_for_each_ctx(hctx, ctx, i)					\
+ 	for ((i) = 0; (i) < (hctx)->nr_ctx &&				\
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 51a7399a98a1..b16785d1286d 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -354,7 +354,7 @@ struct request_queue {
+ 	unsigned int		queue_depth;
+ 
+ 	/* hw dispatch queues */
+-	struct blk_mq_hw_ctx	**queue_hw_ctx;
++	struct blk_mq_hw_ctx __rcu	**queue_hw_ctx;
+ 	unsigned int		nr_hw_queues;
+ 
+ 	/*
+-- 
+2.31.1
+
