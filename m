@@ -2,107 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A87CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 11:21:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE56C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 11:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240005AbiBYLVn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 06:21:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
+        id S240013AbiBYLYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 06:24:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235085AbiBYLVl (ORCPT
+        with ESMTP id S235085AbiBYLYU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 06:21:41 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94F721DF19
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 03:21:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=CkQKHfXHcP4U0h6j4AIzYw5C4UqDwewYRL04vYWYbJM=; b=jkRMBMDVF9HF2jmJxoBj96sj+B
-        tfKJr4BjF+HQh6ZUU4RDFI9i8DyT4uHIZ2zNPkU4O+1SkKWDOeTNA2H37VkCh9AP4TXxn5ynyRwDu
-        DB87ysaUqu83mxPaqMApTukxXhlYXPdP48ii8qAxXqEVRpP+SrYZJFwBOwEbY0jBcsLYyOXr0ovGB
-        4wBBlB0ugkc4d71Aaqznol3iUv8PP9S4paxYcSj0K5IIj3VxSIKkyW1k0zn4stSX8ROfGOMMrEViM
-        vWrStEGxqy3P76IfTYYMh5NR7oxgX5ySiJNg8axpKdRahUB75xFJVuKFglntoTy9Mw6cy7aAAvKGJ
-        rVRvaNUQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nNYeV-005jMc-Iw; Fri, 25 Feb 2022 11:20:47 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1D4F93001C0;
-        Fri, 25 Feb 2022 12:20:47 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 019BA2D66F33D; Fri, 25 Feb 2022 12:20:46 +0100 (CET)
-Date:   Fri, 25 Feb 2022 12:20:46 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 16/39] x86/bpf: Add ENDBR instructions to prologue and
- trampoline
-Message-ID: <Yhi7jsnP8bRnx3If@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151322.950111925@infradead.org>
- <20220224233731.7hdwbszv5c6fgx4y@treble>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220224233731.7hdwbszv5c6fgx4y@treble>
+        Fri, 25 Feb 2022 06:24:20 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85CC01B0BC0
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 03:23:43 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 8E24F1F380;
+        Fri, 25 Feb 2022 11:23:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1645788222; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I1cUAs5p8YagTc3OqTQ5ToQ2uL2zX4mTWJqUy1RYpiQ=;
+        b=1VDkWvmhd1vjegxFPyX4ZXFS4Iucrp8NxNRwXRESdtEb+H5w/8tMd4ag8b3K4MChdT3YBw
+        EdfziVpxjjyaQGqqtQE0AiBklnC8eJcyQOaveWa7P22yh0qAiE9nTHZ1G7wG49+O0zwFQb
+        X+6+8qdubHI53uukfAgnPD205yxz3x0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1645788222;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=I1cUAs5p8YagTc3OqTQ5ToQ2uL2zX4mTWJqUy1RYpiQ=;
+        b=1WdlpGXT3y/D/5RcLIfHAy6h4oYgxPVF9hPhChETqvt4Kczbc8bEylR6lfliUQBHgXMu7G
+        QkmhgOFJ0TYAQnAA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 90E9EA3B84;
+        Fri, 25 Feb 2022 11:23:41 +0000 (UTC)
+Date:   Fri, 25 Feb 2022 12:23:41 +0100
+Message-ID: <s5hee3rur42.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Jaroslav Kysela <perex@perex.cz>
+Cc:     Raghu Bankapur <quic_rbankapu@quicinc.com>,
+        Vinod Koul <vkoul@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        ierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        alsa-devel@alsa-project.org, Zubin Mithra <zsm@chromium.org>,
+        linux-kernel@vger.kernel.org,
+        Krishna Jha <quic_kkishorj@quicinc.com>
+Subject: Re: [PATCH V0 1/1] ALSA: pcm: fix blocking while loop in snd_pcm_update_hw_ptr0()
+In-Reply-To: <83e4b67d-91d3-dca9-4b1f-d209f927d517@perex.cz>
+References: <cover.1645784757.git.quic_rbankapu@quicinc.com>
+        <4d8b1cb4b0db88c3e28207a81403fbf1e4a87bff.1645784757.git.quic_rbankapu@quicinc.com>
+        <83e4b67d-91d3-dca9-4b1f-d209f927d517@perex.cz>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 03:37:31PM -0800, Josh Poimboeuf wrote:
-> On Thu, Feb 24, 2022 at 03:51:54PM +0100, Peter Zijlstra wrote:
-> > @@ -339,9 +350,18 @@ static int __bpf_arch_text_poke(void *ip
-> >  	u8 *prog;
-> >  	int ret;
-> >  
-> > +#ifdef CONFIG_X86_KERNEL_IBT
-> > +	if (is_endbr(*(u32 *)ip))
-> > +		ip += 4;
-> > +#endif
-> > +
-> >  	memcpy(old_insn, nop_insn, X86_PATCH_SIZE);
-> >  	if (old_addr) {
-> >  		prog = old_insn;
-> > +#ifdef CONFIG_X86_KERNEL_IBT
-> > +		if (is_endbr(*(u32 *)old_addr))
-> > +			old_addr += 4;
-> > +#endif
-> >  		ret = t == BPF_MOD_CALL ?
-> >  		      emit_call(&prog, old_addr, ip) :
-> >  		      emit_jump(&prog, old_addr, ip);
-> > @@ -352,6 +372,10 @@ static int __bpf_arch_text_poke(void *ip
-> >  	memcpy(new_insn, nop_insn, X86_PATCH_SIZE);
-> >  	if (new_addr) {
-> >  		prog = new_insn;
-> > +#ifdef CONFIG_X86_KERNEL_IBT
-> > +		if (is_endbr(*(u32 *)new_addr))
-> > +			new_addr += 4;
-> > +#endif
+On Fri, 25 Feb 2022 11:52:05 +0100,
+Jaroslav Kysela wrote:
 > 
-> All the above ifdef-itis should be able to be removed since is_endbr()
-> returns false for !IBT.
+> On 25. 02. 22 11:39, Raghu Bankapur wrote:
+> > When period interrupts are disabled, while loop in snd_pcm_update_hw_ptr0()
+> > results in the machine locking up if runtime->hw_ptr_buffer_jiffies is 0.
+> > Validate runtime->hw_ptr_buffer_jiffies value before while loop to avoid
+> > delta check.
+> 
+> I would set hw_ptr_buffer_jiffies to 1 in this case in snd_pcm_post_start().
 
-So I've been pondering a skip_endbr() function for all these sites.
+I thought of it at the first glance, but after reading the code again,
+I doubt whether it makes sense at all to allow this condition.
+Since the buffer size is too small and the rate is too high, we can't
+calculate the buffer crossing condition accurately under such
+condition.
 
-I just couldn't decide making it a 'function' and having a signature
-like:
+But, having either this zero check or minimal hw_ptr_buffer_jiffies=1
+would be good in anyway, even if we add more check for the hw_params
+for no-period-wakeup case.
 
-	ip = skip_endbr(ip);
 
-or making it macro magic and it reading:
+thanks,
 
-	skip_endbr(ip);
-
-Which is why I've not cleaned it up yet.  This being C(ish) I suppose
-the former is less confusing, so let me go do that.
-
+Takashi
