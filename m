@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13508C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A78C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233266AbiBYTYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 14:24:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59708 "EHLO
+        id S233362AbiBYTYU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 14:24:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231931AbiBYTYM (ORCPT
+        with ESMTP id S231931AbiBYTYQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 14:24:12 -0500
+        Fri, 25 Feb 2022 14:24:16 -0500
 Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
-        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id CBBCB1D8316
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 11:23:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with UTF8SMTPS id C10D11D8331
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 11:23:43 -0800 (PST)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1645817019; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=XlQOgqUg+qM4j70seDDgBCK3GOdeY/KDt3HMzK3r7eU=; b=HE+qn7QCQADUHlTZ4tcjOR4RT8bMbETHd6+IEiSbRtXpSOmbQe/YmmQB3WwlQJ+9OOXzBVrH
- MQE7GDWVozCkf17m0ZU0FbbdehxRurcxtOioCH9iuPFru6OQnVWt1grfjGbWGcOOGRfvB/5v
- ccWf3NvMr74Kkc4bEL0HsKFJAHE=
+ s=smtp; t=1645817023; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=tZD1ax3jsnPy6TzQA2DQRsI4QX4jijvlAnNWj4gYHnE=; b=opRIkgAetdNcbjOrsM94URq1nGa/i84ep50i9HDdIhNs872wWun1wlWMUYnF1ZwY1w0crrf4
+ ks53K6KnlNfsUg/H+aYTRIlATAR0RloHXFK8DLMA9p5WBTJBvFv9WU+FNj8EvcirCODCp0E6
+ fq+IgcqBX9MQPp3xRaRZGTba2Tg=
 X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 62192c576f8d3f1389bd1e86 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 25 Feb 2022 19:21:59
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 62192c4ce1c212bb9c4ab206 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 25 Feb 2022 19:21:48
  GMT
 Sender: quic_akhilpo=quicinc.com@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 784F0C43616; Fri, 25 Feb 2022 19:21:58 +0000 (UTC)
+        id DF1D3C43637; Fri, 25 Feb 2022 19:21:47 +0000 (UTC)
 Received: from hyd-lnxbld559.qualcomm.com (unknown [202.46.22.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akhilpo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 2FC54C43618;
-        Fri, 25 Feb 2022 19:21:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 2FC54C43618
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 152C0C4338F;
+        Fri, 25 Feb 2022 19:21:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 152C0C4338F
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
@@ -50,91 +49,53 @@ To:     freedreno <freedreno@lists.freedesktop.org>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
         AngeloGioacchino Del Regno 
         <angelogioacchino.delregno@collabora.com>,
         =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
+        Douglas Anderson <dianders@chromium.org>,
         Jonathan Marek <jonathan@marek.ca>,
         Jordan Crouse <jordan@cosmicpenguin.net>,
-        Sean Paul <sean@poorly.run>,
+        Rob Herring <robh+dt@kernel.org>, Sean Paul <sean@poorly.run>,
         Stephen Boyd <swboyd@chromium.org>,
         Vladimir Lypak <vladimir.lypak@gmail.com>,
         Yangtao Li <tiny.windzz@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/5] drm/msm/adreno: Generate name from chipid for 7c3
-Date:   Sat, 26 Feb 2022 00:51:29 +0530
-Message-Id: <20220226005021.v2.2.I9436e0e300f76b2e6c34136a0b902e8cfd73e0d6@changeid>
+Subject: [PATCH v2 0/5] Support 7c3 gpu SKUs
+Date:   Sat, 26 Feb 2022 00:51:27 +0530
+Message-Id: <1645816893-22815-1-git-send-email-quic_akhilpo@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1645816893-22815-1-git-send-email-quic_akhilpo@quicinc.com>
-References: <1645816893-22815-1-git-send-email-quic_akhilpo@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a gpu name which is sprintf'ed from the chipid for 7c3 gpu instead of
-hardcoding one. This helps to avoid code churn in case of a gpu rename.
+This series supercedes [1]. Major change in this series is that it is now
+optional to include a gpu name in the gpu-list. This helps to avoid the
+confusion when we have different SKUs with different gpu names. And also
+I am pretty happy that the overall changes are smaller now.
 
-Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
----
+[1] https://patchwork.freedesktop.org/series/99048/
 
 Changes in v2:
 - use devm_kasprintf() to generate gpu name (Rob)
 
- drivers/gpu/drm/msm/adreno/adreno_device.c |  1 -
- drivers/gpu/drm/msm/adreno/adreno_gpu.c    | 15 +++++++++++++--
- 2 files changed, 13 insertions(+), 3 deletions(-)
+Akhil P Oommen (5):
+  drm/msm: Use generic name for gpu resources
+  drm/msm/adreno: Generate name from chipid for 7c3
+  drm/msm/a6xx: Add support for 7c3 SKUs
+  drm/msm/adreno: Expose speedbin to userspace
+  arm64: dts: qcom: sc7280: Support gpu speedbin
 
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
-index fb26193..89cfd84 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-@@ -318,7 +318,6 @@ static const struct adreno_info gpulist[] = {
- 		.hwcg = a660_hwcg,
- 	}, {
- 		.rev = ADRENO_REV(6, 3, 5, ANY_ID),
--		.name = "Adreno 7c Gen 3",
- 		.fw = {
- 			[ADRENO_FW_SQE] = "a660_sqe.fw",
- 			[ADRENO_FW_GMU] = "a660_gmu.bin",
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index f33cfa4..d9d0c13 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -929,12 +929,23 @@ int adreno_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 	struct adreno_platform_config *config = dev->platform_data;
- 	struct msm_gpu_config adreno_gpu_config  = { 0 };
- 	struct msm_gpu *gpu = &adreno_gpu->base;
-+	struct adreno_rev *rev = &config->rev;
-+	const char *gpu_name;
- 
- 	adreno_gpu->funcs = funcs;
- 	adreno_gpu->info = adreno_info(config->rev);
- 	adreno_gpu->gmem = adreno_gpu->info->gmem;
- 	adreno_gpu->revn = adreno_gpu->info->revn;
--	adreno_gpu->rev = config->rev;
-+	adreno_gpu->rev = *rev;
-+
-+	gpu_name = adreno_gpu->info->name;
-+	if (!gpu_name) {
-+		gpu_name = devm_kasprintf(dev, GFP_KERNEL, "%d.%d.%d.%d",
-+				rev->core, rev->major, rev->minor,
-+				rev->patchid);
-+		if (!gpu_name)
-+			return -ENOMEM;
-+	}
- 
- 	adreno_gpu_config.ioname = "kgsl_3d0_reg_memory";
- 
-@@ -948,7 +959,7 @@ int adreno_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 	pm_runtime_enable(dev);
- 
- 	return msm_gpu_init(drm, pdev, &adreno_gpu->base, &funcs->base,
--			adreno_gpu->info->name, &adreno_gpu_config);
-+			gpu_name, &adreno_gpu_config);
- }
- 
- void adreno_gpu_cleanup(struct adreno_gpu *adreno_gpu)
+ arch/arm64/boot/dts/qcom/sc7280.dtsi       | 46 ++++++++++++++++++++++++++++++
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c      | 18 ++++++++++--
+ drivers/gpu/drm/msm/adreno/adreno_device.c |  1 -
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c    | 36 +++++++++++++++++++----
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h    |  3 ++
+ drivers/gpu/drm/msm/msm_gpu.c              |  4 +--
+ 6 files changed, 97 insertions(+), 11 deletions(-)
+
 -- 
 2.7.4
 
