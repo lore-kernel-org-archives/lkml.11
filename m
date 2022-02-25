@@ -2,96 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A10E8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A590C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233232AbiBYNuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:50:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46378 "EHLO
+        id S233459AbiBYNvC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:51:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231828AbiBYNt7 (ORCPT
+        with ESMTP id S231828AbiBYNvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:49:59 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02A441DDFC3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:49:28 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C1E0712FC;
-        Fri, 25 Feb 2022 05:49:27 -0800 (PST)
-Received: from e122027.cambridge.arm.com (e122027.cambridge.arm.com [10.1.32.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A7F093F5A1;
-        Fri, 25 Feb 2022 05:49:25 -0800 (PST)
-From:   Steven Price <steven.price@arm.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, Baokun Li <libaokun1@huawei.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Vincent Donnefort <vincent.donnefort@arm.com>,
-        YueHaibing <yuehaibing@huawei.com>,
-        Steven Price <steven.price@arm.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>
-Subject: [PATCH] cpu/hotplug: Set st->cpu earlier
-Date:   Fri, 25 Feb 2022 13:49:18 +0000
-Message-Id: <20220225134918.105796-1-steven.price@arm.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 25 Feb 2022 08:51:01 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 291631DA440
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:50:29 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id d3so4671826wrf.1
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 05:50:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=monstr-eu.20210112.gappssmtp.com; s=20210112;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VkNCX+lIAf7Yd75ITkXB1i7sYuA9EWWkYAIfdUFPMio=;
+        b=PLOhf6DTDfANHg1DrFIbOCgA2YIKq5CmFD9eWLd3Zvx9JKuNevzFbEIOzCXTvnxKc8
+         Yq0itCHLyrATx+oYWbzRCvhkkNz/y2ke28gqsvJxjLYvsltiAXaje0TnoXYbyQvZc2/T
+         hujYboNeTUKh50rugo5jE8OA1HdMmFuHIQkgwD1e8iFZG4hA7OgrKabYCZ2HbHmTxqaL
+         RxkjxvLmhvzhDYvJh81+pTFN1fwOei3UyIsC05IvM36v4OfhMwmwey6yEeBVjYTofAy7
+         2jTb45dMHyXPmTnR8uraKnO5y6o3jy0Gnl4TWCJ0gypeYzKEaytXx+khXRfXVBlQd3p+
+         SCPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=VkNCX+lIAf7Yd75ITkXB1i7sYuA9EWWkYAIfdUFPMio=;
+        b=DQpbXiH7NpjL2EQNsJio0JDK71hg3FiZLWipcvAn/+LS5tQk8LkPiqrH1ZZ0oCKWCq
+         H8eRgGOBoGLzpGiikl+sMDiarhAsFw2q39RcMKB2P0TxLFVoEBvcnhHvVHphub/WUCch
+         3jGOSw7XC6F6PZil8gCItq2r5fi0etbHHXtiAAVqPU1NVM0OuKSI34t/kkYgSa2+Tgcw
+         KECOb7I2ySAu5uuwi/2mZvW/ZKOtUMYV7pK3fi9vLPsm0EOp7ZG+jtOedlxpyKysOAG+
+         z6Iqi2MSbLwSnGlnRksiIZAv+YBftx5RWlfVA5hgfj+XyzhAVVP3ib2Qszz+ieJXbujg
+         pyYg==
+X-Gm-Message-State: AOAM530xSsyTqwpRsHtmmztNNiZHoCR6IpjCx0c2VLlEMDZFhCyN1hrG
+        B5A5kA3IFzw9ahJ8icQTJ4KkFnh6Km1itw==
+X-Google-Smtp-Source: ABdhPJzyaZ4XaDW6SSc/elFUIccxixDAYELf3UPMmPM7MA0yvu6nYV6CtDCQOhNmsIJ0WVqSf5FZNQ==
+X-Received: by 2002:adf:e54e:0:b0:1ea:9746:16d5 with SMTP id z14-20020adfe54e000000b001ea974616d5mr6218619wrm.186.1645797027448;
+        Fri, 25 Feb 2022 05:50:27 -0800 (PST)
+Received: from localhost ([2a02:768:2307:40d6::f9e])
+        by smtp.gmail.com with ESMTPSA id x1-20020a05600c420100b003811fb95734sm3295346wmh.37.2022.02.25.05.50.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 25 Feb 2022 05:50:26 -0800 (PST)
+Sender: Michal Simek <monstr@monstr.eu>
+From:   Michal Simek <michal.simek@xilinx.com>
+To:     linux-kernel@vger.kernel.org, monstr@monstr.eu,
+        michal.simek@xilinx.com, git@xilinx.com
+Cc:     Mahesh Bodapati <mbodapat@xilinx.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH 0/1] microblaze: Fix issues with freestanding
+Date:   Fri, 25 Feb 2022 14:50:24 +0100
+Message-Id: <cover.1645797022.git.michal.simek@xilinx.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Setting the 'cpu' member of struct cpuhp_cpu_state in cpuhp_create() is
-too late as other callbacks can be made before that point. In particular
-if one of the earlier callbacks fails and triggers a rollback that
-rollback will be done with st->cpu==0 causing CPU0 to be erroneously set
-to be dying, causing the scheduler to get mightily confused and throw
-its toys out of the pram.
+Hi,
 
-Move the assignment earlier before any callbacks have a chance to run.
+with GCC 10 there is issue with simple memset implementation which is
+called recursively. There are couple of discussions about it and the first
+two patches are trying to workaround this.
+The third patch only removes simple implementations from arch code and use
+generic one which is the same.
 
-Signed-off-by: Steven Price <steven.price@arm.com>
-CC: Dietmar Eggemann <dietmar.eggemann@arm.com>
----
-This was initially triggered by a VM which didn't have enough memory for
-its VCPUs, but an easier way of triggering it is to make a change like
-below in __smpboot_create_thread (as suggested by Dietmar Eggemann) to
-pretend the memory allocation fails for a particular CPU:
+Thanks,
+Michal
 
- 	td = kzalloc_node(sizeof(*td), GFP_KERNEL, cpu_to_node(cpu));
--	if (!td)
-+	if (!td || cpu == 1)
- 		return -ENOMEM;
 
-I'm not entirely sure quite where the best place to set st->cpu is, so
-please do let me know if there's a better place to do the assignment.
----
- kernel/cpu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Michal Simek (1):
+  microblaze: Use simple memmove/memcpy implementation from lib/string.c
 
-diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 407a2568f35e..49c3ef6067e5 100644
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -720,7 +720,6 @@ static void cpuhp_create(unsigned int cpu)
- 
- 	init_completion(&st->done_up);
- 	init_completion(&st->done_down);
--	st->cpu = cpu;
- }
- 
- static int cpuhp_should_run(unsigned int cpu)
-@@ -1333,6 +1332,8 @@ static int _cpu_up(unsigned int cpu, int tasks_frozen, enum cpuhp_state target)
- 		goto out;
- 	}
- 
-+	st->cpu = cpu;
-+
- 	/*
- 	 * The caller of cpu_up() might have raced with another
- 	 * caller. Nothing to do.
+ arch/microblaze/include/asm/string.h |  2 +-
+ arch/microblaze/lib/memcpy.c         | 18 ++---------------
+ arch/microblaze/lib/memmove.c        | 29 ++--------------------------
+ 3 files changed, 5 insertions(+), 44 deletions(-)
+
 -- 
-2.25.1
+2.35.1
 
