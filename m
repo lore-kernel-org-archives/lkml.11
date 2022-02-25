@@ -2,100 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A23C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:12:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68274C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242674AbiBYQNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:13:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54248 "EHLO
+        id S242676AbiBYQNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:13:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242667AbiBYQM5 (ORCPT
+        with ESMTP id S242666AbiBYQNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 11:12:57 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19AA012630
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:12:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645805545; x=1677341545;
-  h=message-id:date:mime-version:to:cc:references:from:
-   subject:in-reply-to:content-transfer-encoding;
-  bh=0EV53wMM4MbvqAek/crIdddmgI/kzwQ1zNCaQJuAmyA=;
-  b=B88SukdaqAtk+o+FPqnkgh5ebfHDMx6Pk5/ofdpn1uvojk7O3OdIil9U
-   XDTvCQKb5FYYiHuq90jNh2I4Eg/w4NsaJpGBnCHJ7Ht9h/dLyYiRX2ic2
-   KAqFVqgVCKtaVTZ4/UraaHYxfo6IEAeBy7U4V/yUOxjyUK579rf+D51CK
-   s3StubIh/lk7qC5xyEx7S/vEvwxBfUy5ib9D/1/Wio5VPCh19WwKGhJr7
-   7l67NmW8RP053v9yfG9tvXHcOwq77/Q4hn9CCv6s7EU6OzJEo1doifJ2+
-   ViMucraYVvRkV3MicAFNwI4cUM1wqZlVaRYr63QBm1mQuhvEkMLlZ2Nvf
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="233147942"
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="233147942"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 08:12:24 -0800
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="533619056"
-Received: from wreed-mobl.amr.corp.intel.com (HELO [10.212.247.12]) ([10.212.247.12])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 08:12:23 -0800
-Message-ID: <9daceae8-55f3-131b-6914-bfab16928d44@intel.com>
-Date:   Fri, 25 Feb 2022 08:12:18 -0800
+        Fri, 25 Feb 2022 11:13:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9684D9F8;
+        Fri, 25 Feb 2022 08:13:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 634D961743;
+        Fri, 25 Feb 2022 16:13:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C090C340E7;
+        Fri, 25 Feb 2022 16:13:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645805581;
+        bh=jt01kIc8j089u4k2Qkwdo2wyv3o+TW0lyH1J9zmLffY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mtsCG6GWUXJc3Bz0PD+LGadcwO49hYXB9NxWwK58IRveizIGJHxPcl/nCtE9xDB3O
+         zzUF3KVgw5qJhG4u3RaGtW1rOebnEJo6nyfO4ed9pMr7IOgujwZHqRdb3l0LUa/xdO
+         1Y22GWteHEf5kfOz4bfoty8L1/jT2nsSMVVEZgU4JaYe+JomrfvrT1ZQrhgVAKMVV5
+         BVRB70E5ynby6zEgleP5g85w3DsopvUV962TRS6mDzIigOUNH4OG1iCuAMShznJIwI
+         4JwDzSI3XRPpKfQam2qHoRSf2yNBadLgfV9TRLtWmArvp+5yE6ZBEl6B+BOA5Kaotm
+         8TpOo2S0DJneQ==
+Date:   Fri, 25 Feb 2022 08:12:59 -0800
+From:   Keith Busch <kbusch@kernel.org>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org, axboe@kernel.dk,
+        martin.petersen@oracle.com, colyli@suse.de
+Subject: Re: [PATCHv3 07/10] lib: add crc64 tests
+Message-ID: <20220225161259.GA4111669@dhcp-10-100-145-180.wdc.com>
+References: <20220222163144.1782447-1-kbusch@kernel.org>
+ <20220222163144.1782447-8-kbusch@kernel.org>
+ <20220225160509.GE13610@lst.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
- <20220224155630.52734-4-kirill.shutemov@linux.intel.com>
- <faeb3c16-55a9-912d-1222-9dab364f56c7@intel.com>
- <20220224231011.c6mbmsj2ahtw4wmt@black.fi.intel.com>
- <bd62c848-0fb8-7876-8a92-3d316318a568@intel.com>
- <20220225154650.2yfx3gtyrem3to7v@black.fi.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCHv4 03/30] x86/tdx: Provide common base for SEAMCALL and
- TDCALL C wrappers
-In-Reply-To: <20220225154650.2yfx3gtyrem3to7v@black.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220225160509.GE13610@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Bit 63 also has to be set as it represents error (0 is success with
-> possible warning).
+On Fri, Feb 25, 2022 at 05:05:09PM +0100, Christoph Hellwig wrote:
+> On Tue, Feb 22, 2022 at 08:31:41AM -0800, Keith Busch wrote:
+> > Provide a module to test the rocksoft crc64 calculations with well known
+> > inputs and exepected values. Check the generic table implementation and
+> > whatever module is registered from the crypto library, and compare their
+> > speeds.
 > 
-> Bit 62 indicates if the error is recoverable. (0 is recoverable)
-> 
-> Bits 61:48 are reserved and must be 0. For this reason -1UL is not right.
-> 
-> Bits 47:40 are class.
-> 
-> Bits below that are up to grub.
-> 
-> See Table 17.6 of TDX module 1.0 spec.
-> 
-> So we can use 
-> 
-> #define TDX_SW_CLASS(code)		((code) | GENMASK_ULL(40, 47))
-> #define TDX_ERROR(code)			((code) | (1UL << 63))
-> #define TDX_SEAMCALL_VMFAILINVALID	TDX_ERROR(TDX_SW_CLASS(0xFFFF0000ULL))
-> 
-> But it looks silly to me. It brings more confusion than solves.
+> The code looks good, but isn't the trent to use the kunit framework
+> for these kinds of tests these days?
 
-Passing 'code' is kinda silly now that I look at it.  But, this:
+I don't have experience with kunit, but I'll look into that.
 
-#define TDX_ERROR			(1UL << 63)
-#define TDX_SW_ERROR 			(TDX_ERROR | GENMASK_ULL(40, 47))
-#define TDX_SEAMCALL_VMFAILINVALID	(TDX_SW_ERROR | 0xFFFF0000ULL)
-
-Actually gives you a chance in hell of connecting this code back to the
-spec.
+I am already changing the way this gets tested. Eric recommended adding
+to the crypto "testmgr", and I've done that on my private tree. That
+test framework exercises a lot more than this this patch, and it did
+reveal a problem with how I've implemented the initial XOR when the
+buffer is split, so I have some minor updates coming soon.
