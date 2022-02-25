@@ -2,120 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5837BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C87C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 12:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240618AbiBYMXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 07:23:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
+        id S240629AbiBYMZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 07:25:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240610AbiBYMXc (ORCPT
+        with ESMTP id S238094AbiBYMZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 07:23:32 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C485920DB34;
-        Fri, 25 Feb 2022 04:23:00 -0800 (PST)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21PBMmcS033280;
-        Fri, 25 Feb 2022 12:22:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=psUjqUDIXrQuDk/0U0G6bTiHSZGQTDTjSpKnanVkLOU=;
- b=C9VXNBfrBDhDc8KObk6NsCnVFIFb8LpS7RxunFyXY51/VhKLVTZz3iRXBc34CT4dHcvT
- GZZ6KWKZKpFWHcmralHqPLGOkoDTgYTVkEfYtal6M+jF1CI0oaE+/4zERNu3LmmsUwJC
- /0mv3GSl02qg2qKaWcyuT96FO7QI00bpvtXhx24+0IATu4ws7bLeeRgTWOCzotp8qOdk
- 0TWZunph8PM5ua4RLs9F1bBPdjiflcVBXwBFz/JQwnGUdNieLIdXaeS0803Hf8Pg7Ycr
- 0QNVAQVA6jnfsq4l1VdvAjcSYVdIqEl0l2/B0JHGZvvmngiEuapSBcYtdYcJFhoHp0KZ VQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eewpn291c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 12:22:41 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21PBQta4004716;
-        Fri, 25 Feb 2022 12:22:40 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eewpn290a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 12:22:40 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21PCIwCq030560;
-        Fri, 25 Feb 2022 12:22:38 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma03ams.nl.ibm.com with ESMTP id 3ear69rf5v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 12:22:38 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21PCBqMg14745858
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 25 Feb 2022 12:11:52 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D912B52054;
-        Fri, 25 Feb 2022 12:22:35 +0000 (GMT)
-Received: from [9.145.163.29] (unknown [9.145.163.29])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 3FB7952059;
-        Fri, 25 Feb 2022 12:22:35 +0000 (GMT)
-Message-ID: <65d40e00-d7a4-0210-5253-d5d1744f0343@linux.ibm.com>
-Date:   Fri, 25 Feb 2022 13:22:34 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [next] next-20220223 kernel crash
-Content-Language: en-US
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Tejun Heo <tj@kernel.org>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Lai Jiangshan <laijs@linux.alibaba.com>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, regressions@lists.linux.dev,
-        lkft-triage@lists.linaro.org
-References: <CA+G9fYtzLr+9T9Z1N8QLznW6DqTOU8iSHvgMftdhe2XkEf8F8g@mail.gmail.com>
-From:   Steffen Maier <maier@linux.ibm.com>
-In-Reply-To: <CA+G9fYtzLr+9T9Z1N8QLznW6DqTOU8iSHvgMftdhe2XkEf8F8g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 8iR0yfi5CRn2OiGcAc3R2PeQ1PHYEQN4
-X-Proofpoint-ORIG-GUID: jXsduC_UmntOMfiR-ERJZIlWIGPVZ4ni
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 25 Feb 2022 07:25:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12C320E7AE;
+        Fri, 25 Feb 2022 04:24:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96CCFB82F7B;
+        Fri, 25 Feb 2022 12:24:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00583C340E7;
+        Fri, 25 Feb 2022 12:24:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645791895;
+        bh=cSQNpBISw0MlYXiiY3XgnX1pKxAMGAwP//OJtPfreTQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TwGZUaoCOgsdUuXBm54rN2MROfbhe7Ixmm084Pw0jBXJyna/O+U1jQSHYm06O6XsI
+         ZjDDwyiDRgZ10heeyYGUj1hjK3QjZ2miuFKOv0WhLXW0Y69Jr0FpA4OA6rSWNs8LuZ
+         RossxCTPTzuTcqs/tFVhRTkvcrYCVvYWCe+Xp0X/48OzIyRybuJh9vlFx4hCdso88i
+         iWAf7mQt0a841UqiANX8P2Ew8SJRJLVX+ZlmvOHs++qTPIR/l23yCdHTvx3kkaBAg9
+         kWZ9CgRX/LI28ljzOivmW+CCdWBBhgvNJQdghuIGOqmKWih9aIOVAV4X/SAbG4API0
+         P+6c5feTQNTdw==
+Received: by pali.im (Postfix)
+        id 109B37EF; Fri, 25 Feb 2022 13:24:51 +0100 (CET)
+Date:   Fri, 25 Feb 2022 13:24:51 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/6] PCI: Add PCI_EXP_SLTCAP_*_SHIFT macros
+Message-ID: <20220225122451.fa2fiyzohwme2d66@pali>
+References: <20220222163158.1666-3-pali@kernel.org>
+ <20220224202843.GA291544@bhelgaas>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-25_07,2022-02-25_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- impostorscore=0 lowpriorityscore=0 suspectscore=0 phishscore=0 spamscore=0
- clxscore=1011 mlxscore=0 adultscore=0 malwarescore=0 bulkscore=0
- mlxlogscore=966 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202250066
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220224202843.GA291544@bhelgaas>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/24/22 14:28, Naresh Kamboju wrote:
-> Linux next-20220223 boot failed due to the kernel crash on all devices.
-
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+On Thursday 24 February 2022 14:28:43 Bjorn Helgaas wrote:
+> On Tue, Feb 22, 2022 at 05:31:54PM +0100, Pali Rohár wrote:
+> > These macros allows to easily compose and extract Slot Power Limit and
+> > Physical Slot Number values from Slot Capability Register.
+> >
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > Signed-off-by: Marek Behún <kabel@kernel.org>
+> > ---
+> >  include/uapi/linux/pci_regs.h | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
+> > index 108f8523fa04..3fc9a4cac630 100644
+> > --- a/include/uapi/linux/pci_regs.h
+> > +++ b/include/uapi/linux/pci_regs.h
+> > @@ -591,10 +591,13 @@
+> >  #define  PCI_EXP_SLTCAP_HPS	0x00000020 /* Hot-Plug Surprise */
+> >  #define  PCI_EXP_SLTCAP_HPC	0x00000040 /* Hot-Plug Capable */
+> >  #define  PCI_EXP_SLTCAP_SPLV	0x00007f80 /* Slot Power Limit Value */
+> > +#define  PCI_EXP_SLTCAP_SPLV_SHIFT	7  /* Slot Power Limit Value shift */
 > 
-> crash log on x86_64 machine [1]:
-> [    5.326681] Please do not flush events WQ.
-> [    5.327480] CPU: 0 PID: 1 Comm: swapper/0 Not tainted
-> 5.17.0-rc5-next-20220223 #1
+> Is there a way to use FIELD_PREP() and FIELD_GET() instead?  It seems
+> like that's what the cool kids are doing now.
 
-Is this related?:
-https://lore.kernel.org/all/4e5fe60d-abbb-6e73-b8cc-c3e1a314fbce@samsung.com/T/#u
+This is possible too.
 
+I have proposed a patch with _SHIFT macros as this is the way how are
+other macros in this file defined and used.
 
--- 
-Mit freundlichen Gruessen / Kind regards
-Steffen Maier
-
-Linux on IBM Z and LinuxONE
-
-https://www.ibm.com/privacy/us/en/
-IBM Deutschland Research & Development GmbH
-Vorsitzender des Aufsichtsrats: Gregor Pillen
-Geschaeftsfuehrung: David Faller
-Sitz der Gesellschaft: Boeblingen
-Registergericht: Amtsgericht Stuttgart, HRB 243294
+> At first I didn't really like them, but they do remove the need for
+> adding _SHIFT macros that have to be manually related to the other.
+> 
+> >  #define  PCI_EXP_SLTCAP_SPLS	0x00018000 /* Slot Power Limit Scale */
+> > +#define  PCI_EXP_SLTCAP_SPLS_SHIFT	15 /* Slot Power Limit Scale shift */
+> >  #define  PCI_EXP_SLTCAP_EIP	0x00020000 /* Electromechanical Interlock Present */
+> >  #define  PCI_EXP_SLTCAP_NCCS	0x00040000 /* No Command Completed Support */
+> >  #define  PCI_EXP_SLTCAP_PSN	0xfff80000 /* Physical Slot Number */
+> > +#define  PCI_EXP_SLTCAP_PSN_SHIFT	19 /* Physical Slot Number shift */
+> >  #define PCI_EXP_SLTCTL		0x18	/* Slot Control */
+> >  #define  PCI_EXP_SLTCTL_ABPE	0x0001	/* Attention Button Pressed Enable */
+> >  #define  PCI_EXP_SLTCTL_PFDE	0x0002	/* Power Fault Detected Enable */
+> > -- 
+> > 2.20.1
+> > 
