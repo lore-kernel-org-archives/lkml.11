@@ -2,85 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B42DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243258AbiBYQxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:53:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37416 "EHLO
+        id S243311AbiBYQx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:53:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242788AbiBYQwx (ORCPT
+        with ESMTP id S243152AbiBYQwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 11:52:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1271AF0E;
-        Fri, 25 Feb 2022 08:52:20 -0800 (PST)
+        Fri, 25 Feb 2022 11:52:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFD31AF16
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:52:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2226161CF2;
-        Fri, 25 Feb 2022 16:52:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80642C340F5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F216961CE5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:52:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AAC3C340F1;
         Fri, 25 Feb 2022 16:52:19 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nNdpK-00B8J8-J9;
+        id 1nNdpK-00B8Hy-6o;
         Fri, 25 Feb 2022 11:52:18 -0500
-Message-ID: <20220225165218.424446548@goodmis.org>
+Message-ID: <20220225165151.824659113@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 25 Feb 2022 11:51:53 -0500
+Date:   Fri, 25 Feb 2022 11:51:51 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org, Tom Zanussi <zanussi@kernel.org>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>
-Subject: [for-linus][PATCH 02/13] tracing: Dump stacktrace trigger to the corresponding instance
-References: <20220225165151.824659113@goodmis.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [for-linus][PATCH 00/13] tracing: Updates for 5.17-rc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-The stacktrace event trigger is not dumping the stacktrace to the instance
-where it was enabled, but to the global "instance."
+Tracing fixes for 5.17:
 
-Use the private_data, pointing to the trigger file, to figure out the
-corresponding trace instance, and use it in the trigger action, like
-snapshot_trigger does.
+ - rtla (Real-Time Linux Analysis tool): fix typo in man page
 
-Link: https://lkml.kernel.org/r/afbb0b4f18ba92c276865bc97204d438473f4ebc.1645396236.git.bristot@kernel.org
+ - rtla: Update API -e to -E before it is released
 
-Cc: stable@vger.kernel.org
-Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
-Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-Tested-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- kernel/trace/trace_events_trigger.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ - rlla: Error message fix and memory leak fix
 
-diff --git a/kernel/trace/trace_events_trigger.c b/kernel/trace/trace_events_trigger.c
-index d00fee705f9c..e0d50c9577f3 100644
---- a/kernel/trace/trace_events_trigger.c
-+++ b/kernel/trace/trace_events_trigger.c
-@@ -1540,7 +1540,12 @@ stacktrace_trigger(struct event_trigger_data *data,
- 		   struct trace_buffer *buffer,  void *rec,
- 		   struct ring_buffer_event *event)
- {
--	trace_dump_stack(STACK_SKIP);
-+	struct trace_event_file *file = data->private_data;
-+
-+	if (file)
-+		__trace_stack(file->tr, tracing_gen_ctx(), STACK_SKIP);
-+	else
-+		trace_dump_stack(STACK_SKIP);
- }
- 
- static void
--- 
-2.34.1
+ - Partially unline trace event soft disable to shrink text
+
+ - Fix function graph start up test
+
+ - Have triggers affect the trace instance they are in and not top level
+
+ - Have osnoise sleep in the units it says it uses
+
+ - Remove unused ftrace stub function
+
+ - Remove event probe reduntant info from event in the buffer
+
+ - Fix group ownership setting in tracefs
+
+ - Ensure trace buffer is minimum size to prevent crashes
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+ftrace/urgent
+
+Head SHA1: f4b8715634f04fa03e730f1493ee919b56468de8
+
+
+Arnaldo Carvalho de Melo (1):
+      rtla: Fix systme -> system typo on man page
+
+Christophe Leroy (2):
+      tracing: Uninline trace_trigger_soft_disabled() partly
+      tracing: Fix selftest config check for function graph start up test
+
+Daniel Bristot de Oliveira (5):
+      tracing: Dump stacktrace trigger to the corresponding instance
+      tracing/osnoise: Make osnoise_main to sleep for microseconds
+      rtla/hist: Make -E the short version of --entries
+      rtla/osnoise: Free params at the exit
+      rtla/osnoise: Fix error message when failing to enable trace instance
+
+Nathan Chancellor (1):
+      ftrace: Remove unused ftrace_startup_enable() stub
+
+Steven Rostedt (Google) (3):
+      tracing: Have traceon and traceoff trigger honor the instance
+      eprobes: Remove redundant event type information
+      tracefs: Set the group ownership in apply_options() not parse_options()
+
+Sven Schnelle (1):
+      tracing: Ensure trace buffer is at least 4096 bytes large
+
+----
+ Documentation/tools/rtla/common_hist_options.rst   |  2 +-
+ .../tools/rtla/common_osnoise_description.rst      |  2 +-
+ Documentation/tools/rtla/rtla-osnoise-hist.rst     |  2 +-
+ fs/tracefs/inode.c                                 |  4 +-
+ include/linux/trace_events.h                       | 22 ++++---
+ kernel/trace/ftrace.c                              |  1 -
+ kernel/trace/trace.c                               | 10 +--
+ kernel/trace/trace.h                               |  1 -
+ kernel/trace/trace_eprobe.c                        | 16 +++--
+ kernel/trace/trace_events_trigger.c                | 73 +++++++++++++++++++---
+ kernel/trace/trace_osnoise.c                       | 53 +++++++++-------
+ kernel/trace/trace_probe.c                         | 10 +--
+ kernel/trace/trace_probe.h                         |  1 -
+ kernel/trace/trace_selftest.c                      |  6 +-
+ tools/tracing/rtla/src/osnoise.c                   |  2 +-
+ tools/tracing/rtla/src/osnoise_hist.c              | 10 +--
+ tools/tracing/rtla/src/osnoise_top.c               |  1 +
+ tools/tracing/rtla/src/timerlat_hist.c             | 10 +--
+ 18 files changed, 148 insertions(+), 78 deletions(-)
