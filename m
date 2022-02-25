@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 733C1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:33:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D9EC4321E
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:33:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241421AbiBYNd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:33:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32802 "EHLO
+        id S241438AbiBYNeE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:34:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235464AbiBYNd5 (ORCPT
+        with ESMTP id S241308AbiBYNd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Feb 2022 08:33:57 -0500
 Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DC620BCCE;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9AA20BCDD;
         Fri, 25 Feb 2022 05:33:25 -0800 (PST)
 Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21PD5HGj003464;
-        Fri, 25 Feb 2022 14:33:13 +0100
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21PDGZ6Y003206;
+        Fri, 25 Feb 2022 14:33:12 +0100
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=selector1;
- bh=ttTWXMFriJVCywKTnYHtOeXYaWJ9TXpTQVubwl3aJjQ=;
- b=IMcu5UJMTT6AyKSm+vfxWyWNC9f61obzxYdrcQfzaMcMi1smXEoyo3vQqnH1lBeKka77
- ntTGCbixNkVS8CdcO8vzmRv40rHWh3eoI9fgn4EEhg94JyIn+oZc73l7C8akmecVczSn
- GY55wiI6wm0lidunu1/HdxJVMnSgFnUHxvH9US3REKyN7GGDcvMqnINSuqyLlzEdNcMj
- ZiOLn/QA9rqiCCis/Lcoew83RtA6karxpS+OIiHonGoKmJyj+3DMGB/HmqsU0ofCaT1a
- eI+G1HCWRlQ7uGJ15E4d4NARj+lU+JLdDsp3OsMgAhMOlb9S/yCM2p9kavs7LY1VjmJo gA== 
+ bh=SzLXOSkhzGzN5m22rAwAREfKfOZltcH16yNIJ5ynJA4=;
+ b=LLNUtAF9QF2ZYfieOw0ljVt2iqUp+nu+OVKkORdPFIdaSzNODag5gyuYnsGVgkneBpCL
+ N3Px+BTvSLSlfsAGQkcC9DCZpWDUYq7CFIqGWKFNxe7P8rJJX7+juurMM8iKZslMy5fs
+ sZpMbfcg8S7/xo+6cAH9GJGIelDHobxZmhkMxJBDgUGS7HaHchcyCGMRLlhADz4r9k71
+ skyozcUSl7D+BmHkcttEtXUYE9UF95izhqxdAFbX93WAPB/WYUlEWV2oeGCVSYWh+TPw
+ nIoGZMBq7/zz6tL+5kNuxOViYXOlU0cSMep2uZZymN1feQTc7yLvJyp4HTnUkVp9RBsi Qw== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3eetrn27mk-1
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3eetrn27mg-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 25 Feb 2022 14:33:13 +0100
+        Fri, 25 Feb 2022 14:33:11 +0100
 Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 78EA310002A;
-        Fri, 25 Feb 2022 14:33:12 +0100 (CET)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 66B1610002A;
+        Fri, 25 Feb 2022 14:33:11 +0100 (CET)
 Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 6CE2F2278A4;
-        Fri, 25 Feb 2022 14:33:12 +0100 (CET)
-Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 25 Feb 2022 14:33:12
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5C7712278A4;
+        Fri, 25 Feb 2022 14:33:11 +0100 (CET)
+Received: from localhost (10.75.127.45) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 25 Feb 2022 14:33:11
  +0100
 From:   <gabriel.fernandez@foss.st.com>
 To:     Michael Turquette <mturquette@baylibre.com>,
@@ -53,16 +53,16 @@ CC:     <linux-clk@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 07/13] clk: stm32mp13: manage secured clocks
-Date:   Fri, 25 Feb 2022 14:31:31 +0100
-Message-ID: <20220225133137.813919-8-gabriel.fernandez@foss.st.com>
+Subject: [PATCH v2 05/13] clk: stm32mp13: add stm32 divider clock
+Date:   Fri, 25 Feb 2022 14:31:29 +0100
+Message-ID: <20220225133137.813919-6-gabriel.fernandez@foss.st.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220225133137.813919-1-gabriel.fernandez@foss.st.com>
 References: <20220225133137.813919-1-gabriel.fernandez@foss.st.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
+X-Originating-IP: [10.75.127.45]
 X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
  (10.75.127.5)
 X-Proofpoint-Virus-Version: vendor=baseguard
@@ -74,266 +74,290 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 
-Don't register a clock if this clock is secured.
+Just to introduce management of a stm32 divider clock
 
 Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 ---
- drivers/clk/stm32/clk-stm32-core.c |   4 +
- drivers/clk/stm32/clk-stm32-core.h |  22 +++--
- drivers/clk/stm32/clk-stm32mp13.c  | 152 ++++++++++++++++++++++++++++-
- 3 files changed, 164 insertions(+), 14 deletions(-)
+ drivers/clk/stm32/clk-stm32-core.c | 161 +++++++++++++++++++++++++++++
+ drivers/clk/stm32/clk-stm32-core.h |  36 +++++++
+ drivers/clk/stm32/clk-stm32mp13.c  |   7 ++
+ 3 files changed, 204 insertions(+)
 
 diff --git a/drivers/clk/stm32/clk-stm32-core.c b/drivers/clk/stm32/clk-stm32-core.c
-index 3b00918d0753..fc32e62e0b44 100644
+index 91eae0386e5e..57d039168779 100644
 --- a/drivers/clk/stm32/clk-stm32-core.c
 +++ b/drivers/clk/stm32/clk-stm32-core.c
-@@ -46,6 +46,10 @@ static int stm32_rcc_clock_init(struct device *dev,
- 		const struct clock_config *cfg_clock = &data->tab_clocks[n];
- 		struct clk_hw *hw = ERR_PTR(-ENOENT);
- 
-+		if (data->check_security &&
-+		    data->check_security(base, cfg_clock))
-+			continue;
-+
- 		if (cfg_clock->func)
- 			hw = (*cfg_clock->func)(dev, data, base, &rlock,
- 						cfg_clock);
-diff --git a/drivers/clk/stm32/clk-stm32-core.h b/drivers/clk/stm32/clk-stm32-core.h
-index 846d063ecc6f..8ffa700323b8 100644
---- a/drivers/clk/stm32/clk-stm32-core.h
-+++ b/drivers/clk/stm32/clk-stm32-core.h
-@@ -46,6 +46,7 @@ struct stm32_composite_cfg {
- 
- struct clock_config {
- 	unsigned long	id;
-+	int		sec_id;
- 	void		*clock_cfg;
- 
- 	struct clk_hw *(*func)(struct device *dev,
-@@ -69,6 +70,8 @@ struct stm32_rcc_match_data {
- 	unsigned int			maxbinding;
- 	struct clk_stm32_clock_data	*clock_data;
- 	u32				clear_offset;
-+	int (*check_security)(void __iomem *base,
-+			      const struct clock_config *cfg);
+@@ -195,6 +195,146 @@ const struct clk_ops clk_stm32_gate_ops = {
+ 	.disable_unused	= clk_stm32_gate_disable_unused,
  };
  
- int stm32_rcc_reset_init(struct device *dev, const struct of_device_id *match,
-@@ -208,25 +211,26 @@ struct clk_hw *clk_stm32_composite_register(struct device *dev,
- 					    spinlock_t *lock,
- 					    const struct clock_config *cfg);
- 
--#define STM32_CLOCK_CFG(_binding, _clk, _struct, _register)\
-+#define STM32_CLOCK_CFG(_binding, _clk, _sec_id, _struct, _register)\
- {\
- 	.id		= (_binding),\
-+	.sec_id		= (_sec_id),\
- 	.clock_cfg	= (_struct) {_clk},\
- 	.func		= (_register),\
- }
- 
--#define STM32_GATE_CFG(_binding, _clk)\
--	STM32_CLOCK_CFG(_binding, &(_clk), struct clk_stm32_gate *,\
-+#define STM32_GATE_CFG(_binding, _clk, _sec_id)\
-+	STM32_CLOCK_CFG(_binding, &(_clk), _sec_id, struct clk_stm32_gate *,\
- 			&clk_stm32_gate_register)
- 
--#define STM32_DIV_CFG(_binding, _clk)\
--	STM32_CLOCK_CFG(_binding, &(_clk), struct clk_stm32_div *,\
-+#define STM32_DIV_CFG(_binding, _clk, _sec_id)\
-+	STM32_CLOCK_CFG(_binding, &(_clk), _sec_id, struct clk_stm32_div *,\
- 			&clk_stm32_div_register)
- 
--#define STM32_MUX_CFG(_binding, _clk)\
--	STM32_CLOCK_CFG(_binding, &(_clk), struct clk_stm32_mux *,\
-+#define STM32_MUX_CFG(_binding, _clk, _sec_id)\
-+	STM32_CLOCK_CFG(_binding, &(_clk), _sec_id, struct clk_stm32_mux *,\
- 			&clk_stm32_mux_register)
- 
--#define STM32_COMPOSITE_CFG(_binding, _clk)\
--	STM32_CLOCK_CFG(_binding, &(_clk), struct clk_stm32_composite *,\
-+#define STM32_COMPOSITE_CFG(_binding, _clk, _sec_id)\
-+	STM32_CLOCK_CFG(_binding, &(_clk), _sec_id, struct clk_stm32_composite *,\
- 			&clk_stm32_composite_register)
-diff --git a/drivers/clk/stm32/clk-stm32mp13.c b/drivers/clk/stm32/clk-stm32mp13.c
-index 1b27c5d4b97d..7e83204dd405 100644
---- a/drivers/clk/stm32/clk-stm32mp13.c
-+++ b/drivers/clk/stm32/clk-stm32mp13.c
-@@ -400,6 +400,131 @@ static const struct stm32_mux_cfg stm32mp13_muxes[] = {
- 	CFG_MUX(MUX_SDMMC2,	RCC_SDMMC12CKSELR,	3, 3),
- };
- 
-+struct clk_stm32_securiy {
-+	u32	offset;
-+	u8	bit_idx;
-+	unsigned long scmi_id;
-+};
++static unsigned int _get_table_div(const struct clk_div_table *table,
++				   unsigned int val)
++{
++	const struct clk_div_table *clkt;
 +
-+enum securit_clk {
-+	SECF_NONE,
-+	SECF_LPTIM2,
-+	SECF_LPTIM3,
-+	SECF_VREF,
-+	SECF_DCMIPP,
-+	SECF_USBPHY,
-+	SECF_TZC,
-+	SECF_ETZPC,
-+	SECF_IWDG1,
-+	SECF_BSEC,
-+	SECF_STGENC,
-+	SECF_STGENRO,
-+	SECF_USART1,
-+	SECF_USART2,
-+	SECF_SPI4,
-+	SECF_SPI5,
-+	SECF_I2C3,
-+	SECF_I2C4,
-+	SECF_I2C5,
-+	SECF_TIM12,
-+	SECF_TIM13,
-+	SECF_TIM14,
-+	SECF_TIM15,
-+	SECF_TIM16,
-+	SECF_TIM17,
-+	SECF_DMA3,
-+	SECF_DMAMUX2,
-+	SECF_ADC1,
-+	SECF_ADC2,
-+	SECF_USBO,
-+	SECF_TSC,
-+	SECF_PKA,
-+	SECF_SAES,
-+	SECF_CRYP1,
-+	SECF_HASH1,
-+	SECF_RNG1,
-+	SECF_BKPSRAM,
-+	SECF_MCE,
-+	SECF_FMC,
-+	SECF_QSPI,
-+	SECF_SDMMC1,
-+	SECF_SDMMC2,
-+	SECF_ETH1CK,
-+	SECF_ETH1TX,
-+	SECF_ETH1RX,
-+	SECF_ETH1MAC,
-+	SECF_ETH1STP,
-+	SECF_ETH2CK,
-+	SECF_ETH2TX,
-+	SECF_ETH2RX,
-+	SECF_ETH2MAC,
-+	SECF_ETH2STP,
-+	SECF_MCO1,
-+	SECF_MCO2
-+};
-+
-+#define SECF(_sec_id, _offset, _bit_idx)[_sec_id] = {\
-+	.offset	= _offset,\
-+	.bit_idx	= _bit_idx,\
-+	.scmi_id	= -1,\
++	for (clkt = table; clkt->div; clkt++)
++		if (clkt->val == val)
++			return clkt->div;
++	return 0;
 +}
 +
-+static const struct clk_stm32_securiy stm32mp13_security[] = {
-+	SECF(SECF_LPTIM2, RCC_APB3SECSR, RCC_APB3SECSR_LPTIM2SECF),
-+	SECF(SECF_LPTIM3, RCC_APB3SECSR, RCC_APB3SECSR_LPTIM3SECF),
-+	SECF(SECF_VREF, RCC_APB3SECSR, RCC_APB3SECSR_VREFSECF),
-+	SECF(SECF_DCMIPP, RCC_APB4SECSR, RCC_APB4SECSR_DCMIPPSECF),
-+	SECF(SECF_USBPHY, RCC_APB4SECSR, RCC_APB4SECSR_USBPHYSECF),
-+	SECF(SECF_TZC, RCC_APB5SECSR, RCC_APB5SECSR_TZCSECF),
-+	SECF(SECF_ETZPC, RCC_APB5SECSR, RCC_APB5SECSR_ETZPCSECF),
-+	SECF(SECF_IWDG1, RCC_APB5SECSR, RCC_APB5SECSR_IWDG1SECF),
-+	SECF(SECF_BSEC, RCC_APB5SECSR, RCC_APB5SECSR_BSECSECF),
-+	SECF(SECF_STGENC, RCC_APB5SECSR, RCC_APB5SECSR_STGENCSECF),
-+	SECF(SECF_STGENRO, RCC_APB5SECSR, RCC_APB5SECSR_STGENROSECF),
-+	SECF(SECF_USART1, RCC_APB6SECSR, RCC_APB6SECSR_USART1SECF),
-+	SECF(SECF_USART2, RCC_APB6SECSR, RCC_APB6SECSR_USART2SECF),
-+	SECF(SECF_SPI4, RCC_APB6SECSR, RCC_APB6SECSR_SPI4SECF),
-+	SECF(SECF_SPI5, RCC_APB6SECSR, RCC_APB6SECSR_SPI5SECF),
-+	SECF(SECF_I2C3, RCC_APB6SECSR, RCC_APB6SECSR_I2C3SECF),
-+	SECF(SECF_I2C4, RCC_APB6SECSR, RCC_APB6SECSR_I2C4SECF),
-+	SECF(SECF_I2C5, RCC_APB6SECSR, RCC_APB6SECSR_I2C5SECF),
-+	SECF(SECF_TIM12, RCC_APB6SECSR, RCC_APB6SECSR_TIM12SECF),
-+	SECF(SECF_TIM13, RCC_APB6SECSR, RCC_APB6SECSR_TIM13SECF),
-+	SECF(SECF_TIM14, RCC_APB6SECSR, RCC_APB6SECSR_TIM14SECF),
-+	SECF(SECF_TIM15, RCC_APB6SECSR, RCC_APB6SECSR_TIM15SECF),
-+	SECF(SECF_TIM16, RCC_APB6SECSR, RCC_APB6SECSR_TIM16SECF),
-+	SECF(SECF_TIM17, RCC_APB6SECSR, RCC_APB6SECSR_TIM17SECF),
-+	SECF(SECF_DMA3, RCC_AHB2SECSR, RCC_AHB2SECSR_DMA3SECF),
-+	SECF(SECF_DMAMUX2, RCC_AHB2SECSR, RCC_AHB2SECSR_DMAMUX2SECF),
-+	SECF(SECF_ADC1, RCC_AHB2SECSR, RCC_AHB2SECSR_ADC1SECF),
-+	SECF(SECF_ADC2, RCC_AHB2SECSR, RCC_AHB2SECSR_ADC2SECF),
-+	SECF(SECF_USBO, RCC_AHB2SECSR, RCC_AHB2SECSR_USBOSECF),
-+	SECF(SECF_TSC, RCC_AHB4SECSR, RCC_AHB4SECSR_TSCSECF),
-+	SECF(SECF_PKA, RCC_AHB5SECSR, RCC_AHB5SECSR_PKASECF),
-+	SECF(SECF_SAES, RCC_AHB5SECSR, RCC_AHB5SECSR_SAESSECF),
-+	SECF(SECF_CRYP1, RCC_AHB5SECSR, RCC_AHB5SECSR_CRYP1SECF),
-+	SECF(SECF_HASH1, RCC_AHB5SECSR, RCC_AHB5SECSR_HASH1SECF),
-+	SECF(SECF_RNG1, RCC_AHB5SECSR, RCC_AHB5SECSR_RNG1SECF),
-+	SECF(SECF_BKPSRAM, RCC_AHB5SECSR, RCC_AHB5SECSR_BKPSRAMSECF),
-+	SECF(SECF_MCE, RCC_AHB6SECSR, RCC_AHB6SECSR_MCESECF),
-+	SECF(SECF_FMC, RCC_AHB6SECSR, RCC_AHB6SECSR_FMCSECF),
-+	SECF(SECF_QSPI, RCC_AHB6SECSR, RCC_AHB6SECSR_QSPISECF),
-+	SECF(SECF_SDMMC1, RCC_AHB6SECSR, RCC_AHB6SECSR_SDMMC1SECF),
-+	SECF(SECF_SDMMC2, RCC_AHB6SECSR, RCC_AHB6SECSR_SDMMC2SECF),
-+	SECF(SECF_ETH1CK, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH1CKSECF),
-+	SECF(SECF_ETH1TX, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH1TXSECF),
-+	SECF(SECF_ETH1RX, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH1RXSECF),
-+	SECF(SECF_ETH1MAC, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH1MACSECF),
-+	SECF(SECF_ETH1STP, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH1STPSECF),
-+	SECF(SECF_ETH2CK, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH2CKSECF),
-+	SECF(SECF_ETH2TX, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH2TXSECF),
-+	SECF(SECF_ETH2RX, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH2RXSECF),
-+	SECF(SECF_ETH2MAC, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH2MACSECF),
-+	SECF(SECF_ETH2STP, RCC_AHB6SECSR, RCC_AHB6SECSR_ETH2STPSECF),
-+	SECF(SECF_MCO1, RCC_SECCFGR, RCC_SECCFGR_MCO1SEC),
-+	SECF(SECF_MCO2, RCC_SECCFGR, RCC_SECCFGR_MCO2SEC),
-+};
-+
- static const char * const eth12_src[] = {
- 	"pll4_p", "pll3_q"
- };
-@@ -448,13 +573,29 @@ static struct clk_stm32_composite ck_mco2 = {
- };
- 
- static const struct clock_config stm32mp13_clock_cfg[] = {
--	STM32_MUX_CFG(NO_ID, ck_ker_eth1),
--	STM32_GATE_CFG(ETH1CK_K, eth1ck_k),
--	STM32_DIV_CFG(ETH1PTP_K, eth1ptp_k),
--	STM32_COMPOSITE_CFG(CK_MCO1, ck_mco1),
--	STM32_COMPOSITE_CFG(CK_MCO2, ck_mco2),
-+	STM32_MUX_CFG(NO_ID, ck_ker_eth1, SECF_ETH1CK),
-+	STM32_GATE_CFG(ETH1CK_K, eth1ck_k, SECF_ETH1CK),
-+	STM32_DIV_CFG(ETH1PTP_K, eth1ptp_k, SECF_ETH1CK),
-+	STM32_COMPOSITE_CFG(CK_MCO1, ck_mco1, SECF_MCO1),
-+	STM32_COMPOSITE_CFG(CK_MCO2, ck_mco2, SECF_MCO2),
- };
- 
-+static int stm32mp13_clock_is_provided_by_secure(void __iomem *base,
-+						 const struct clock_config *cfg)
++static unsigned int _get_div(const struct clk_div_table *table,
++			     unsigned int val, unsigned long flags, u8 width)
 +{
-+	int sec_id = cfg->sec_id;
++	if (flags & CLK_DIVIDER_ONE_BASED)
++		return val;
++	if (flags & CLK_DIVIDER_POWER_OF_TWO)
++		return 1 << val;
++	if (table)
++		return _get_table_div(table, val);
++	return val + 1;
++}
 +
-+	if (sec_id != SECF_NONE) {
-+		const struct clk_stm32_securiy *secf;
++unsigned long clk_stm32_get_rate_divider(void __iomem *base,
++					 struct clk_stm32_clock_data *data,
++					 u16 div_id, unsigned long parent_rate)
++{
++	const struct stm32_div_cfg *divider = &data->dividers[div_id];
++	unsigned int val;
++	unsigned int div;
 +
-+		secf = &stm32mp13_security[sec_id];
++	val =  readl(base + divider->offset) >> divider->shift;
++	val &= clk_div_mask(divider->width);
++	div = _get_div(divider->table, val, divider->flags, divider->width);
 +
-+		return !!(readl(base + secf->offset) & BIT(secf->bit_idx));
++	if (!div) {
++		WARN(!(divider->flags & CLK_DIVIDER_ALLOW_ZERO),
++		     "%d: Zero divisor and CLK_DIVIDER_ALLOW_ZERO not set\n",
++		     div_id);
++		return parent_rate;
 +	}
++
++	return DIV_ROUND_UP_ULL((u64)parent_rate, div);
++}
++
++int clk_stm32_set_rate_divider(void __iomem *base,
++			       struct clk_stm32_clock_data *data,
++			       u16 div_id,
++			       unsigned long rate,
++			       unsigned long parent_rate)
++{
++	const struct stm32_div_cfg *divider = &data->dividers[div_id];
++	int value;
++	u32 val;
++
++	value = divider_get_val(rate, parent_rate, divider->table,
++				divider->width, divider->flags);
++	if (value < 0)
++		return value;
++
++	if (divider->flags & CLK_DIVIDER_HIWORD_MASK) {
++		val = clk_div_mask(divider->width) << (divider->shift + 16);
++	} else {
++		val = readl(base + divider->offset);
++		val &= ~(clk_div_mask(divider->width) << divider->shift);
++	}
++
++	val |= (u32)value << divider->shift;
++
++	writel(val, base + divider->offset);
 +
 +	return 0;
 +}
 +
- u16 stm32mp13_cpt_gate[GATE_NB];
++int clk_stm32_divider_set_rate(struct clk_hw *hw, unsigned long rate,
++			       unsigned long parent_rate)
++{
++	struct clk_stm32_div *div = to_clk_stm32_divider(hw);
++	unsigned long flags = 0;
++	int ret;
++
++	if (div->div_id == NO_STM32_DIV)
++		return rate;
++
++	spin_lock_irqsave(div->lock, flags);
++
++	ret = clk_stm32_set_rate_divider(div->base, div->clock_data, div->div_id,
++					 rate, parent_rate);
++
++	spin_unlock_irqrestore(div->lock, flags);
++
++	return ret;
++}
++
++long clk_stm32_divider_round_rate(struct clk_hw *hw, unsigned long rate,
++				  unsigned long *prate)
++{
++	struct clk_stm32_div *div = to_clk_stm32_divider(hw);
++	const struct stm32_div_cfg *divider;
++
++	if (div->div_id == NO_STM32_DIV)
++		return rate;
++
++	divider = &div->clock_data->dividers[div->div_id];
++
++	/* if read only, just return current value */
++	if (divider->flags & CLK_DIVIDER_READ_ONLY) {
++		u32 val;
++
++		val =  readl(div->base + divider->offset) >> divider->shift;
++		val &= clk_div_mask(divider->width);
++
++		return divider_ro_round_rate(hw, rate, prate, divider->table,
++				divider->width, divider->flags,
++				val);
++	}
++
++	return divider_round_rate_parent(hw, clk_hw_get_parent(hw),
++					 rate, prate, divider->table,
++					 divider->width, divider->flags);
++}
++
++unsigned long clk_stm32_divider_recalc_rate(struct clk_hw *hw,
++					    unsigned long parent_rate)
++{
++	struct clk_stm32_div *div = to_clk_stm32_divider(hw);
++
++	if (div->div_id == NO_STM32_DIV)
++		return parent_rate;
++
++	return clk_stm32_get_rate_divider(div->base, div->clock_data,
++					  div->div_id, parent_rate);
++}
++
++const struct clk_ops clk_stm32_divider_ops = {
++	.recalc_rate	= clk_stm32_divider_recalc_rate,
++	.round_rate	= clk_stm32_divider_round_rate,
++	.set_rate	= clk_stm32_divider_set_rate,
++};
++
+ u8 clk_stm32_get_parent_mux(void __iomem *base,
+ 			    struct clk_stm32_clock_data *data,
+ 			    u16 mux_id)
+@@ -274,6 +414,27 @@ struct clk_hw *clk_stm32_gate_register(struct device *dev,
+ 	return hw;
+ }
  
- struct clk_stm32_clock_data stm32mp13_clock_data = {
-@@ -468,6 +609,7 @@ static const struct stm32_rcc_match_data stm32mp13_data = {
- 	.tab_clocks	= stm32mp13_clock_cfg,
- 	.num_clocks	= ARRAY_SIZE(stm32mp13_clock_cfg),
- 	.clock_data	= &stm32mp13_clock_data,
-+	.check_security = &stm32mp13_clock_is_provided_by_secure,
- 	.maxbinding	= STM32MP1_LAST_CLK,
- 	.clear_offset	= RCC_CLR_OFFSET,
++struct clk_hw *clk_stm32_div_register(struct device *dev,
++				      const struct stm32_rcc_match_data *data,
++				      void __iomem *base,
++				      spinlock_t *lock,
++				      const struct clock_config *cfg)
++{
++	struct clk_stm32_div *div = cfg->clock_cfg;
++	struct clk_hw *hw = &div->hw;
++	int err;
++
++	div->base = base;
++	div->lock = lock;
++	div->clock_data = data->clock_data;
++
++	err = clk_hw_register(dev, hw);
++	if (err)
++		return ERR_PTR(err);
++
++	return hw;
++}
++
+ struct clk_hw *clk_stm32_mux_register(struct device *dev,
+ 				      const struct stm32_rcc_match_data *data,
+ 				      void __iomem *base,
+diff --git a/drivers/clk/stm32/clk-stm32-core.h b/drivers/clk/stm32/clk-stm32-core.h
+index 1b4a73556512..833a3d4a064f 100644
+--- a/drivers/clk/stm32/clk-stm32-core.h
++++ b/drivers/clk/stm32/clk-stm32-core.h
+@@ -94,6 +94,16 @@ struct clk_stm32_gate {
+ 
+ #define to_clk_stm32_gate(_hw) container_of(_hw, struct clk_stm32_gate, hw)
+ 
++struct clk_stm32_div {
++	u16 div_id;
++	struct clk_hw hw;
++	void __iomem *base;
++	struct clk_stm32_clock_data *clock_data;
++	spinlock_t *lock; /* spin lock */
++};
++
++#define to_clk_stm32_divider(_hw) container_of(_hw, struct clk_stm32_div, hw)
++
+ struct clk_stm32_mux {
+ 	u16 mux_id;
+ 	struct clk_hw hw;
+@@ -121,6 +131,21 @@ void clk_stm32_gate_disable(struct clk_hw *hw);
+ int clk_stm32_gate_is_enabled(struct clk_hw *hw);
+ void clk_stm32_gate_disable_unused(struct clk_hw *hw);
+ 
++int clk_stm32_set_rate_divider(void __iomem *base,
++			       struct clk_stm32_clock_data *data,
++			       u16 div_id, unsigned long rate,
++			       unsigned long parent_rate);
++unsigned long clk_stm32_get_rate_divider(void __iomem *base,
++					 struct clk_stm32_clock_data *data,
++					 u16 div_id, unsigned long parent_rate);
++
++int clk_stm32_divider_set_rate(struct clk_hw *hw, unsigned long rate,
++			       unsigned long parent_rate);
++long clk_stm32_divider_round_rate(struct clk_hw *hw, unsigned long rate,
++				  unsigned long *prate);
++unsigned long clk_stm32_divider_recalc_rate(struct clk_hw *hw,
++					    unsigned long parent_rate);
++
+ u8 clk_stm32_get_parent_mux(void __iomem *base,
+ 			    struct clk_stm32_clock_data *data, u16 mux_id);
+ 
+@@ -132,6 +157,7 @@ u8 clk_stm32_mux_get_parent(struct clk_hw *hw);
+ int clk_stm32_mux_set_parent(struct clk_hw *hw, u8 index);
+ 
+ extern const struct clk_ops clk_stm32_gate_ops;
++extern const struct clk_ops clk_stm32_divider_ops;
+ extern const struct clk_ops clk_stm32_mux_ops;
+ 
+ /* Clock registering */
+@@ -141,6 +167,12 @@ struct clk_hw *clk_stm32_gate_register(struct device *dev,
+ 				       spinlock_t *lock,
+ 				       const struct clock_config *cfg);
+ 
++struct clk_hw *clk_stm32_div_register(struct device *dev,
++				      const struct stm32_rcc_match_data *data,
++				      void __iomem *base,
++				      spinlock_t *lock,
++				      const struct clock_config *cfg);
++
+ struct clk_hw *clk_stm32_mux_register(struct device *dev,
+ 				      const struct stm32_rcc_match_data *data,
+ 				      void __iomem *base,
+@@ -158,6 +190,10 @@ struct clk_hw *clk_stm32_mux_register(struct device *dev,
+ 	STM32_CLOCK_CFG(_binding, &(_clk), struct clk_stm32_gate *,\
+ 			&clk_stm32_gate_register)
+ 
++#define STM32_DIV_CFG(_binding, _clk)\
++	STM32_CLOCK_CFG(_binding, &(_clk), struct clk_stm32_div *,\
++			&clk_stm32_div_register)
++
+ #define STM32_MUX_CFG(_binding, _clk)\
+ 	STM32_CLOCK_CFG(_binding, &(_clk), struct clk_stm32_mux *,\
+ 			&clk_stm32_mux_register)
+diff --git a/drivers/clk/stm32/clk-stm32mp13.c b/drivers/clk/stm32/clk-stm32mp13.c
+index 24c0c9ff3602..66ebfe810b08 100644
+--- a/drivers/clk/stm32/clk-stm32mp13.c
++++ b/drivers/clk/stm32/clk-stm32mp13.c
+@@ -415,9 +415,16 @@ static struct clk_stm32_gate eth1ck_k = {
+ 	.hw.init = CLK_HW_INIT_HW("eth1ck_k", &ck_ker_eth1.hw, &clk_stm32_gate_ops, 0),
  };
+ 
++static struct clk_stm32_div eth1ptp_k = {
++	.div_id = DIV_ETH1PTP,
++	.hw.init = CLK_HW_INIT_HW("eth1ptp_k", &ck_ker_eth1.hw, &clk_stm32_divider_ops,
++				  CLK_SET_RATE_NO_REPARENT),
++};
++
+ static const struct clock_config stm32mp13_clock_cfg[] = {
+ 	STM32_MUX_CFG(NO_ID, ck_ker_eth1),
+ 	STM32_GATE_CFG(ETH1CK_K, eth1ck_k),
++	STM32_DIV_CFG(ETH1PTP_K, eth1ptp_k),
+ };
+ 
+ u16 stm32mp13_cpt_gate[GATE_NB];
 -- 
 2.25.1
 
