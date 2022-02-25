@@ -2,77 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA06BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F7E8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243272AbiBYQzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:55:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45962 "EHLO
+        id S243328AbiBYQzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:55:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241873AbiBYQzn (ORCPT
+        with ESMTP id S241873AbiBYQzu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 11:55:43 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082D91E6953;
-        Fri, 25 Feb 2022 08:55:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645808111; x=1677344111;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=a/2QHHN/ETWTPtmCEfGXBl9buOitSAcfb/bJHn2KyY0=;
-  b=aEtKsCDGlXMH+++MMqQOG1eb2JKVNPnIchpUA7Pn4EeVmtTFyOPlwRi/
-   Ilqpgpb28m9jcp/DlbzGPESomgkChUTuva5sA8Bd/CpwMwLIOCpEiCyXK
-   SY+EhDyV57W5AxuAssbPuPmd7WJpnYlf68+nnmSnHzAaBxYh35c5nYX5J
-   4G9npQ7GRcVRdefsQ7RUxdFmxBDwb3wcWifVa0ZiJrMjNwsZ2GkStFihi
-   KW0w9ND5ZznU7vRRj7J6waYsSw+lUmUJBJzoiY8IFPSXLP+3ke3HCu/oz
-   LBIg8XQXetQ5DHTX3pF/QpDYDvKIsrCjaAc+EamfV8irEO+LZGKjzS0YA
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="250112543"
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="250112543"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 08:55:10 -0800
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="640169939"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 08:55:07 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nNdrG-008GpT-3G;
-        Fri, 25 Feb 2022 18:54:18 +0200
-Date:   Fri, 25 Feb 2022 18:54:17 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     ulf.hansson@linaro.org, wsa+renesas@sang-engineering.com,
-        yoshihiro.shimoda.uh@renesas.com, adrian.hunter@intel.com,
-        swboyd@chromium.org, dev@lynxeye.de, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mmc: core: check the return value of
- wakeup_source_register()
-Message-ID: <YhkJuZb7PfGvmRTY@smile.fi.intel.com>
-References: <20220225121858.25638-1-baijiaju1990@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220225121858.25638-1-baijiaju1990@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        Fri, 25 Feb 2022 11:55:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA94E1D9B4D
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:55:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8861861CEA
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:55:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 678CAC340E7;
+        Fri, 25 Feb 2022 16:55:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645808117;
+        bh=J7xPnwpV/EL7PO4VknzFRtwLyYRXdvMHKSloPxQ3AxY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AIxyXux2Bhrsjs/kGOepbXbOd1iT07wlbe5s/d59SWP5ED2ljuU69VRCUDt02MOb4
+         AJ+21IuejkkvI7Cba8qoSlL+vAmaeDzbnBS2USEDMXlNpxFovGMNvvEZrmlo//v0+w
+         fX/0yGIhLMUFdIyjsFBcdtrRg4NVLMnvqXmRUP5+BCYnw8OpSdO0gv7GanPz9FTNIC
+         N+Cxz/ehTO4DRf3ILyoCRXM8CWe8VYTBe1VtdO/5SM1QQXAV/8lAaoxLld4S1rpudl
+         UD8KxRinb9KYCGu3OwKFcLkU0NjiWWxTKL5cV16MNHhSHyQK7xY6Tb+m7q+SdzKHS3
+         0c4vET58MIcVg==
+From:   Mark Brown <broonie@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: [GIT PULL] regmap fixes for v5.17-rc5
+Date:   Fri, 25 Feb 2022 16:55:04 +0000
+Message-Id: <20220225165516.678CAC340E7@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 04:18:58AM -0800, Jia-Ju Bai wrote:
-> The function wakeup_source_register() in mmc_alloc_host() can fail, so
-> its return value should be checked.
+The following changes since commit b56a7cbf40c895cbe8b67ce5649a26b7a7bc48be:
 
-NAK.
+  regmap: debugfs: Fix indentation (2022-01-07 19:16:23 +0000)
 
-This doesn't explain why this resource must be non-optional.
+are available in the Git repository at:
 
-One should not dumbly use the robots.
+  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git tags/regmap-fix-v5.17-rc5
 
--- 
-With Best Regards,
-Andy Shevchenko
+for you to fetch changes up to d04ad245d67a3991dfea5e108e4c452c2ab39bac:
 
+  regmap-irq: Update interrupt clear register for proper reset (2022-02-17 15:33:15 +0000)
 
+----------------------------------------------------------------
+regmap: Fix for v5.17
+
+A fix for interrupt controllers which require the explicit
+acknowledgement of interrupts using a different register to the one
+where interrupts are reported.  Urgent for the few devices this affects.
+
+----------------------------------------------------------------
+Prasad Kumpatla (1):
+      regmap-irq: Update interrupt clear register for proper reset
+
+ drivers/base/regmap/regmap-irq.c | 20 ++++++--------------
+ 1 file changed, 6 insertions(+), 14 deletions(-)
