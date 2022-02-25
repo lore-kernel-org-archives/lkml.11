@@ -2,68 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F7E8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F05C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:55:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243328AbiBYQzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:55:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46080 "EHLO
+        id S243314AbiBYQ4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:56:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241873AbiBYQzu (ORCPT
+        with ESMTP id S241376AbiBYQ4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 11:55:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA94E1D9B4D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:55:17 -0800 (PST)
+        Fri, 25 Feb 2022 11:56:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB531D9B5D
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:55:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8861861CEA
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:55:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 678CAC340E7;
-        Fri, 25 Feb 2022 16:55:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE9B1B8329F
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:55:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9E91C340E7;
+        Fri, 25 Feb 2022 16:55:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645808117;
-        bh=J7xPnwpV/EL7PO4VknzFRtwLyYRXdvMHKSloPxQ3AxY=;
+        s=k20201202; t=1645808138;
+        bh=SThHsGFG4/uZ0Ee/cYQXDqKMN7r9bVhj/3XHQpO/k8g=;
         h=From:To:Cc:Subject:Date:From;
-        b=AIxyXux2Bhrsjs/kGOepbXbOd1iT07wlbe5s/d59SWP5ED2ljuU69VRCUDt02MOb4
-         AJ+21IuejkkvI7Cba8qoSlL+vAmaeDzbnBS2USEDMXlNpxFovGMNvvEZrmlo//v0+w
-         fX/0yGIhLMUFdIyjsFBcdtrRg4NVLMnvqXmRUP5+BCYnw8OpSdO0gv7GanPz9FTNIC
-         N+Cxz/ehTO4DRf3ILyoCRXM8CWe8VYTBe1VtdO/5SM1QQXAV/8lAaoxLld4S1rpudl
-         UD8KxRinb9KYCGu3OwKFcLkU0NjiWWxTKL5cV16MNHhSHyQK7xY6Tb+m7q+SdzKHS3
-         0c4vET58MIcVg==
+        b=iJrDD+3qJgIqeqa2SBvG+49rrDwZ3/cuhrDB0cY9ouUzMZMmFypN76sfvgpfrxCt5
+         uuEHEh+3+flwb4A0nsR18Cj/bQ47eisSXv6B7Qg35i2CDe2ArH9wshIvmamEfULhKU
+         WEWdXxsId9g7b8Y17uh6FIdTUbhZZlCNjsDkuk0ylqWHQNGgyIkh/WvL0A3BfSMa2X
+         8LoQXSARcUUH2xT6E+QyYEMNRCK9u3uHI7HzIloQff0E8H2jlxVblgzTuAbWnUE7fm
+         LliZ+6J70/7BPZ/5Gz9tjQAJQBk+YIkTEvOGQTi8AJjJ1MXHPYtZ88MGO8e07UIKY9
+         eNva8IZfc2N+w==
 From:   Mark Brown <broonie@kernel.org>
 To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
-Subject: [GIT PULL] regmap fixes for v5.17-rc5
-Date:   Fri, 25 Feb 2022 16:55:04 +0000
-Message-Id: <20220225165516.678CAC340E7@smtp.kernel.org>
+Cc:     Liam Girdwood <lgirdwood@gmail.com>, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>
+Subject: [GIT PULL] regulator fixes for v5.17-rc5
+Date:   Fri, 25 Feb 2022 16:55:23 +0000
+Message-Id: <20220225165537.E9E91C340E7@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit b56a7cbf40c895cbe8b67ce5649a26b7a7bc48be:
+The following changes since commit 4e2a354e3775870ca823f1fb29bbbffbe11059a6:
 
-  regmap: debugfs: Fix indentation (2022-01-07 19:16:23 +0000)
+  regulator: core: fix false positive in regulator_late_cleanup() (2022-02-08 13:37:48 +0000)
 
 are available in the Git repository at:
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git tags/regmap-fix-v5.17-rc5
+  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git tags/regulator-fix-v5.17-rc5
 
-for you to fetch changes up to d04ad245d67a3991dfea5e108e4c452c2ab39bac:
+for you to fetch changes up to 9c7cf33c53ce833b58de9e5c192b4736dbd09cb1:
 
-  regmap-irq: Update interrupt clear register for proper reset (2022-02-17 15:33:15 +0000)
-
-----------------------------------------------------------------
-regmap: Fix for v5.17
-
-A fix for interrupt controllers which require the explicit
-acknowledgement of interrupts using a different register to the one
-where interrupts are reported.  Urgent for the few devices this affects.
+  regulator: da9121: Remove surplus DA9141 parameters (2022-02-22 11:56:29 +0000)
 
 ----------------------------------------------------------------
-Prasad Kumpatla (1):
-      regmap-irq: Update interrupt clear register for proper reset
+regulator: Fixes for v5.17
 
- drivers/base/regmap/regmap-irq.c | 20 ++++++--------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
+A series of fixes for the da9121 driver.
+
+----------------------------------------------------------------
+Adam Ward (3):
+      regulator: da9121: Fix DA914x current values
+      regulator: da9121: Fix DA914x voltage value
+      regulator: da9121: Remove surplus DA9141 parameters
+
+ drivers/regulator/da9121-regulator.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
