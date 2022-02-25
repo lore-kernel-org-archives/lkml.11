@@ -2,98 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF91C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 15:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D835C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242532AbiBYP7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 10:59:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46262 "EHLO
+        id S242462AbiBYQB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:01:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242513AbiBYP67 (ORCPT
+        with ESMTP id S237269AbiBYQBV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 10:58:59 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B95186432;
-        Fri, 25 Feb 2022 07:58:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1645804707; x=1677340707;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=7UCNu88R5r7rsyWiBT1P3baB0nFrj2ADgGHSvTpTj0w=;
-  b=L+VMfW5QofFIdOSFlEDc1w8Fuky6WZUb3GBSKWmA0ElPY2AWBofndRvZ
-   g4zdWBkMMabG5N7qEK3CoYs1YEvd+mbxK0ZOR8YbWvLuS+DRdEmYwpgkw
-   xt1+6Hlb0wS7VfyT4MHE2QdXnC0q5cKWrWzIDQcFOyeWcaKgNtFVPxf6b
-   U=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 25 Feb 2022 07:58:27 -0800
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 25 Feb 2022 07:58:26 -0800
-X-QCInternal: smtphost
-Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 25 Feb 2022 21:28:15 +0530
-Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
-        id EB57153E9; Fri, 25 Feb 2022 21:28:14 +0530 (IST)
-From:   Vinod Polimera <quic_vpolimer@quicinc.com>
-To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
-        linux-kernel@vger.kernel.org, robdclark@gmail.com,
-        dianders@chromium.org, swboyd@chromium.org,
-        quic_kalyant@quicinc.com
-Subject: [PATCH v2 1/2] arm64/dts/qcom/sc7280: remove assigned-clock-rate property for mdp clk
-Date:   Fri, 25 Feb 2022 21:27:49 +0530
-Message-Id: <1645804670-21898-2-git-send-email-quic_vpolimer@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1645804670-21898-1-git-send-email-quic_vpolimer@quicinc.com>
-References: <1645804670-21898-1-git-send-email-quic_vpolimer@quicinc.com>
+        Fri, 25 Feb 2022 11:01:21 -0500
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A451F1244;
+        Fri, 25 Feb 2022 08:00:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645804849; x=1677340849;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=K8VkR/kbOb0KBxltMFpm/So3glqC1wOwZKLM8ttnp2Q=;
+  b=mfHUs5xE4+Fv4pz5ToCOywZ/faV6RtODyr4dR0Y2FlbJcYOxAUzw5xE5
+   anh25m2VfiysZ4hK8/6KXl2nINzsVwWfJdwXd+Hdui5ibARUPW06aHaCh
+   VN+uFzzF+FAfyfwnhJ5aBUPwtYbRwXD6gaqNsHVegSSWUMBnGwF75vQ/v
+   sQqfQ1i5uhs+FBoGeyoudd93oCwJp/QJ64Ewr44QXukRABbXEiYpqWBLu
+   OGEhKWzjAsllVJMWGDQgZe/Iq0qB5s5wP7O8rnHstjYNBgyZ82WLgd6y0
+   iR3teCHu+AMudlUOScmv4lMOTWEwMQI+qx2VfN5sWaYp01VELfGgu3H5E
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="315737207"
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="315737207"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 08:00:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
+   d="scan'208";a="533615385"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.68])
+  by orsmga007.jf.intel.com with ESMTP; 25 Feb 2022 08:00:47 -0800
+Date:   Fri, 25 Feb 2022 23:52:08 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Yusuf Khan <yusisamerican@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
+        mdf@kernel.org, trix@redhat.com, hao.wu@intel.com
+Subject: Re: [PATCH -next] pga: dfl: pci: Make sure DMA related error check
+ is  not done twice
+Message-ID: <20220225155208.GA1377611@yilunxu-OptiPlex-7050>
+References: <20220222042700.385001-1-yusisamerican@gmail.com>
+ <CAJoG2+-97KyWrxym2NXECRtjT9OxVQE_=DcNkUfOsPm_Ax90Aw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJoG2+-97KyWrxym2NXECRtjT9OxVQE_=DcNkUfOsPm_Ax90Aw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kernel clock driver assumes that initial rate is the
-max rate for that clock and was not allowing it to scale
-beyond the assigned clock value.
+On Mon, Feb 21, 2022 at 08:39:48PM -0800, Yusuf Khan wrote:
+> Note: This bug was introduced here:
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/patch/?id=ada3caabaf6135150077c3f729bb06e8f3b5b8f6
+> I saw this commit inside the linux-next branch, it is not present in
+> the mainline branch.
+> The linux-next branch was last updated 5 days ago, so I am unsure
+> about the state of that commit.
+> 
+> On Mon, Feb 21, 2022 at 8:27 PM Yusuf Khan <yusisamerican@gmail.com> wrote:
+> >
+> > In the case that the DMA 64 bit bit mask error check does not fail,
+> > the error check will be done twice, this patch fixed that.
+> >
+> > NOTE: This patch is only for use in the linux-next branch as the
+> > commit that caused this bug happened there.
+> >
+> > Signed-off-by: Yusuf Khan <yusisamerican@gmail.com>
+> > ---
+> >  drivers/fpga/dfl-pci.c | 9 +++++----
+> >  1 file changed, 5 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
+> > index 717ac9715970..6222f18aed4b 100644
+> > --- a/drivers/fpga/dfl-pci.c
+> > +++ b/drivers/fpga/dfl-pci.c
+> > @@ -356,11 +356,12 @@ int cci_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *pcidevid)
+> >         pci_set_master(pcidev);
+> >
+> >         ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(64));
+> > -       if (ret)
+> > -               ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32));
+> >         if (ret) {
+> > -               dev_err(&pcidev->dev, "No suitable DMA support available.\n");
+> > -               goto disable_error_report_exit;
+> > +               ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32));
+> > +               if (ret) {
+> > +                       dev_err(&pcidev->dev, "No suitable DMA support available.\n");
+> > +                       goto disable_error_report_exit;
+> > +               }
 
-drop the assigned clock rate property and set it
-during resume sequence with max value in the opp table.
+Looks good to me.
 
-Fixes: 62fbdce91("arm64: dts: qcom: sc7280: add display dt nodes")
+Acked-by: Xu Yilun <yilun.xu@intel.com>
 
-Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
----
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index baf1653..408cf6c 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -2856,9 +2856,6 @@
- 				      "ahb",
- 				      "core";
- 
--			assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>;
--			assigned-clock-rates = <300000000>;
--
- 			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-controller;
- 			#interrupt-cells = <1>;
-@@ -2892,11 +2889,9 @@
- 					      "lut",
- 					      "core",
- 					      "vsync";
--				assigned-clocks = <&dispcc DISP_CC_MDSS_MDP_CLK>,
--						<&dispcc DISP_CC_MDSS_VSYNC_CLK>,
-+				assigned-clocks = <&dispcc DISP_CC_MDSS_VSYNC_CLK>,
- 						<&dispcc DISP_CC_MDSS_AHB_CLK>;
--				assigned-clock-rates = <300000000>,
--							<19200000>,
-+				assigned-clock-rates = <19200000>,
- 							<19200000>;
- 				operating-points-v2 = <&mdp_opp_table>;
- 				power-domains = <&rpmhpd SC7280_CX>;
--- 
-2.7.4
-
+> >         }
+> >
+> >         ret = cci_init_drvdata(pcidev);
+> > --
+> > 2.25.1
+> >
