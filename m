@@ -2,163 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6499C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 17:28:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BBD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 17:30:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236298AbiBYR25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 12:28:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
+        id S243713AbiBYRai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 12:30:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240627AbiBYR2l (ORCPT
+        with ESMTP id S237679AbiBYRag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 12:28:41 -0500
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2053.outbound.protection.outlook.com [40.107.96.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C00503C73F;
-        Fri, 25 Feb 2022 09:28:07 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bFL1WKz2otNOnxDiFC3dtMkOJNWh9hZZGHZLHo0D4Z4gR+rTMV+0DQui1L3xlsyIVO0uCNp7+FpZsjSMjSeYECs+0ammc5W6uHFybS0QxaaaN7/d9Apzhhh2Y2u5HlE15cvtQNOZxF0k5kBYRA75Fycd4JubHI23zWfN5nmaKiv75HqmW2OhVVdUUS9QzDMW4mvrP/mifCbjXdAnIeVcOHzrzhIluU2AP8Sb4auc46q6Sv/jgqS0mVV2Y2h12z9K9hwOaO+4cSAL7oDvwS+Mx/CINqCPnmcMBItbejhksdVSFM5QVmumj4PtI5CrNavLKhpw4Bz3FttuiWPCwBWVaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tr/1XPFLbMW4ojzLqwNhUkn8i9Hz0OhA8OYCXVJaLto=;
- b=axFGL3781wIQZPtZ9qTl0lnEJhf1WHhc4xKvdr/PZeWCT3cm03htKCb7CfBkYmv7elGz0WQwvUeMC3xzKUsgaQda5pXXqaO3cLRpQBQFB+WM/RtxNoid77E1SJb5HV5z9OtM5LW8rawp7HDT9XH8I4oSiJtvHUWjpdwEojeoFfJhxLesRG4x21vTFisEdZPvMw7YsSKGZ99pFSte0uasZV0Mfc+O5whLSGhaaXWXKQHHNw/hasx2VF+YxTm5t5ZkJHe+2p4/jcq0Y1K1Jh6LVR7H0yu3a7QySanJVe3WOUrbigBNWpk0uwL3UgirLelLQIZEE3OdSqVmQqNOYeZMAQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=opensource.wdc.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tr/1XPFLbMW4ojzLqwNhUkn8i9Hz0OhA8OYCXVJaLto=;
- b=ROQKug3tWccu6ztojyuL8Ak6O81bmYk8PiHohzDK2GzNsmBIWg2FZHOsqYXxE3oCYYX4Gfj6VdTlZulCQHq4nNN2I+XmDTpS4J7t86D7VR6JoJpBzhJ6DrhJx0KMwufwi6OvknqW0LKUj+oKJOqFaJVq+mXkvYsy6BcpNdnTp1o=
-Received: from DM5PR18CA0074.namprd18.prod.outlook.com (2603:10b6:3:3::12) by
- DM6PR12MB3836.namprd12.prod.outlook.com (2603:10b6:5:1c3::33) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5017.21; Fri, 25 Feb 2022 17:28:03 +0000
-Received: from DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:3:cafe::38) by DM5PR18CA0074.outlook.office365.com
- (2603:10b6:3:3::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26 via Frontend
- Transport; Fri, 25 Feb 2022 17:28:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT060.mail.protection.outlook.com (10.13.173.63) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5017.22 via Frontend Transport; Fri, 25 Feb 2022 17:28:02 +0000
-Received: from localhost.localdomain (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 25 Feb
- 2022 11:28:00 -0600
-From:   Mario Limonciello <mario.limonciello@amd.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-CC:     "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        <pmenzel@molgen.mpg.de>, <hdegoede@redhat.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH v3 3/3] ata: ahci: Rename CONFIG_SATA_LPM_MOBILE_POLICY configuration item
-Date:   Fri, 25 Feb 2022 11:23:19 -0600
-Message-ID: <20220225172319.846891-3-mario.limonciello@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220225172319.846891-1-mario.limonciello@amd.com>
-References: <20220225172319.846891-1-mario.limonciello@amd.com>
+        Fri, 25 Feb 2022 12:30:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D0A060D8B
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 09:30:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645810203;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ojV+v8nU5UgxoBRpf2GOrPq7WAn6iAeXjWuAfgZUBsE=;
+        b=ZR07CEUPfzLTaJja7B5dmHrX04orjBOP74svMGoxtsIqNgP93gmeYPXjY/NhKjPWVMCZeK
+        rMdzgKPkcm6O78Da1vIGhj4XDw3mcarlCkuStzudOIP6xiKhz0VGb5aBkYzaj6j6WlC9Y+
+        BVw9CDyssOFcPUyosC8ucYAoZFqqn10=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-54-OnJVrDTmMeWgqctbBlz31w-1; Fri, 25 Feb 2022 12:30:00 -0500
+X-MC-Unique: OnJVrDTmMeWgqctbBlz31w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A0C7E1006AA6;
+        Fri, 25 Feb 2022 17:29:57 +0000 (UTC)
+Received: from starship (unknown [10.40.195.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7EF3380009;
+        Fri, 25 Feb 2022 17:29:45 +0000 (UTC)
+Message-ID: <113db01c73b8fe061b8226e75849317bac7873a5.camel@redhat.com>
+Subject: Re: [PATCH v6 9/9] KVM: VMX: Optimize memory allocation for
+ PID-pointer table
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Zeng Guang <guang.zeng@intel.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>
+Date:   Fri, 25 Feb 2022 19:29:39 +0200
+In-Reply-To: <20220225082223.18288-10-guang.zeng@intel.com>
+References: <20220225082223.18288-1-guang.zeng@intel.com>
+         <20220225082223.18288-10-guang.zeng@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fe12e517-23e3-4eb3-4556-08d9f8842d32
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3836:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB3836D36AB8B5DB064536D28AE23E9@DM6PR12MB3836.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aUk35o5yUQ0QEaVbaggVtISFvZVoA6L6bFN30GEWH10nC6GCwcTVm5TFYqrxaoSC3Qfif0y7kd6Gix1qi2SUbUkJmHmU6/+D7glisMu65X6VpiQSC/Z3bMpqVIlm6iRcXpkv7HnyLIJs6uEdp0IPBRD/87SfXKqkq4M9X+z14BZzMs+WTKcAZulYQf11WxxqRKTCUwQt7/dBQiyyffyzZmGnMc4bp8sZdBVlFOGkrmOgSMMqodlkzHNPbtBWl0imYZTe2UEkNd4ztLyAhYATEfZBvQGYL+ugmSodr0DuMI7oTkckV+YJUrZU0X97stS3sMFwvim7diRQ9e7PL0PA8naoV/9fMJmFLjMkzS+sUtcnr2AvEY8foa5j2+BOEArglgKMUH4zRxUktlOvHlaoLQSGecCR/CifD9a/ckFHyltg5DAIjuNnodFGQGe4FV6MkIIOSRVlRXhSS9Gd1c5BskcnPoR3q2etJywvRTu7zS+tFsiufZt3QkY/+7dUAFOHr5OizvBvsb+UXYZs04OpLKWTEk2aJ/Foiyn/gMCUd45o5YA5WVR7u5oPrduorZX3qHW/s9Z6lF6zCQcPw0hZ0/zSSxN6GQxArZ78REFcI4vayHvDGGIddkIttIghI+NP25/slE9FruGGfq1B0EKCzOAmHjndgtl3784NfsfE60108T75EVnNsk88X/oqLFaW9EDxQ4KRjmhbbU5vwcwMXg==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(186003)(8676002)(16526019)(4326008)(36860700001)(36756003)(356005)(83380400001)(2906002)(44832011)(426003)(336012)(47076005)(40460700003)(6666004)(8936002)(54906003)(70206006)(6916009)(81166007)(26005)(70586007)(508600001)(1076003)(2616005)(82310400004)(316002)(86362001)(5660300002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 17:28:02.6182
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe12e517-23e3-4eb3-4556-08d9f8842d32
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3836
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-`CONFIG_SATA_LPM_MOBILE_POLICY` reflects a configuration to apply only to
-mobile chipsets.  As some desktop boards may want to use this policy by
-default as well, rename the configuration item to `SATA_LPM_POLICY`.
+On Fri, 2022-02-25 at 16:22 +0800, Zeng Guang wrote:
+> Current kvm allocates 8 pages in advance for Posted Interrupt Descriptor
+> pointer (PID-pointer) table to accommodate vCPUs with APIC ID up to
+> KVM_MAX_VCPU_IDS - 1. This policy wastes some memory because most of
+> VMs have less than 512 vCPUs and then just need one page.
+> 
+> If user hypervisor specify max practical vcpu id prior to vCPU creation,
+> IPIv can allocate only essential memory for PID-pointer table and reduce
+> the memory footprint of VMs.
+> 
+> Suggested-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Zeng Guang <guang.zeng@intel.com>
+> ---
+>  arch/x86/kvm/vmx/vmx.c | 45 ++++++++++++++++++++++++++++--------------
+>  1 file changed, 30 insertions(+), 15 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index 0cb141c277ef..22bfb4953289 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -230,9 +230,6 @@ static const struct {
+>  };
+>  
+>  #define L1D_CACHE_ORDER 4
+> -
+> -/* PID(Posted-Interrupt Descriptor)-pointer table entry is 64-bit long */
+> -#define MAX_PID_TABLE_ORDER get_order(KVM_MAX_VCPU_IDS * sizeof(u64))
+>  #define PID_TABLE_ENTRY_VALID 1
+>  
+>  static void *vmx_l1d_flush_pages;
+> @@ -4434,6 +4431,24 @@ static u32 vmx_secondary_exec_control(struct vcpu_vmx *vmx)
+>  	return exec_control;
+>  }
+>  
+> +static int vmx_alloc_pid_table(struct kvm_vmx *kvm_vmx)
+> +{
+> +	struct page *pages;
+> +
+> +	if(kvm_vmx->pid_table)
+> +		return 0;
+> +
+> +	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO,
+> +			get_order(kvm_vmx->kvm.arch.max_vcpu_id * sizeof(u64)));
+> +
+> +	if (!pages)
+> +		return -ENOMEM;
+> +
+> +	kvm_vmx->pid_table = (void *)page_address(pages);
+> +	kvm_vmx->pid_last_index = kvm_vmx->kvm.arch.max_vcpu_id - 1;
+> +	return 0;
+> +}
+> +
+>  #define VMX_XSS_EXIT_BITMAP 0
+>  
+>  static void init_vmcs(struct vcpu_vmx *vmx)
+> @@ -7159,6 +7174,16 @@ static int vmx_create_vcpu(struct kvm_vcpu *vcpu)
+>  			goto free_vmcs;
+>  	}
+>  
+> +	if (enable_ipiv && kvm_vcpu_apicv_active(vcpu)) {
+> +		struct kvm_vmx *kvm_vmx = to_kvm_vmx(vcpu->kvm);
+> +
+> +		mutex_lock(&vcpu->kvm->lock);
+> +		err = vmx_alloc_pid_table(kvm_vmx);
+> +		mutex_unlock(&vcpu->kvm->lock);
+> +		if (err)
+> +			goto free_vmcs;
+> +	}
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
-Changes from v2->v3:
- * Add tags
- drivers/ata/Kconfig | 6 +++---
- drivers/ata/ahci.c  | 2 +-
- drivers/ata/ahci.h  | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+This could be dangerous. If APICv is temporary inhibited,
+this code won't run and we will end up without PID table.
 
-diff --git a/drivers/ata/Kconfig b/drivers/ata/Kconfig
-index cb54631fd950..cb9e71b4ca4d 100644
---- a/drivers/ata/Kconfig
-+++ b/drivers/ata/Kconfig
-@@ -115,14 +115,14 @@ config SATA_AHCI
- 
- 	  If unsure, say N.
- 
--config SATA_MOBILE_LPM_POLICY
--	int "Default SATA Link Power Management policy for mobile chipsets"
-+config SATA_LPM_POLICY
-+	int "Default SATA Link Power Management policy for low power chipsets"
- 	range 0 4
- 	default 0
- 	depends on SATA_AHCI
- 	help
- 	  Select the Default SATA Link Power Management (LPM) policy to use
--	  for mobile / laptop variants of chipsets / "South Bridges".
-+	  for chipsets / "South Bridges" designated as supporting low power.
- 
- 	  The value set has the following meanings:
- 		0 => Keep firmware settings
-diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-index 3a6db73d28d0..ffaad9eaa79d 100644
---- a/drivers/ata/ahci.c
-+++ b/drivers/ata/ahci.c
-@@ -1592,7 +1592,7 @@ static int ahci_init_msi(struct pci_dev *pdev, unsigned int n_ports,
- static void ahci_update_initial_lpm_policy(struct ata_port *ap,
- 					   struct ahci_host_priv *hpriv)
- {
--	int policy = CONFIG_SATA_MOBILE_LPM_POLICY;
-+	int policy = CONFIG_SATA_LPM_POLICY;
- 
- 
- 	/* Ignore processing for chipsets that don't use policy */
-diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-index 1ad48e2fe573..5badbaca05a0 100644
---- a/drivers/ata/ahci.h
-+++ b/drivers/ata/ahci.h
-@@ -236,7 +236,7 @@ enum {
- 	AHCI_HFLAG_NO_WRITE_TO_RO	= (1 << 24), /* don't write to read
- 							only registers */
- 	AHCI_HFLAG_USE_LPM_POLICY	= (1 << 25), /* chipset that should use
--							SATA_MOBILE_LPM_POLICY
-+							SATA_LPM_POLICY
- 							as default lpm_policy */
- 	AHCI_HFLAG_SUSPEND_PHYS		= (1 << 26), /* handle PHYs during
- 							suspend/resume */
--- 
-2.34.1
+I think that kvm_vcpu_apicv_active should be just dropped
+from this condition.
+
+Best regards,
+	Maxim Levitsky
+
+
+> +
+>  	return 0;
+>  
+>  free_vmcs:
+> @@ -7202,17 +7227,6 @@ static int vmx_vm_init(struct kvm *kvm)
+>  		}
+>  	}
+>  
+> -	if (enable_ipiv) {
+> -		struct page *pages;
+> -
+> -		pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, MAX_PID_TABLE_ORDER);
+> -		if (!pages)
+> -			return -ENOMEM;
+> -
+> -		to_kvm_vmx(kvm)->pid_table = (void *)page_address(pages);
+> -		to_kvm_vmx(kvm)->pid_last_index = KVM_MAX_VCPU_IDS - 1;
+> -	}
+> -
+>  	return 0;
+>  }
+>  
+> @@ -7809,7 +7823,8 @@ static void vmx_vm_destroy(struct kvm *kvm)
+>  	struct kvm_vmx *kvm_vmx = to_kvm_vmx(kvm);
+>  
+>  	if (kvm_vmx->pid_table)
+> -		free_pages((unsigned long)kvm_vmx->pid_table, MAX_PID_TABLE_ORDER);
+> +		free_pages((unsigned long)kvm_vmx->pid_table,
+> +			get_order((kvm_vmx->pid_last_index + 1) * sizeof(u64)));
+>  }
+>  
+>  static struct kvm_x86_ops vmx_x86_ops __initdata = {
+
+
+
 
