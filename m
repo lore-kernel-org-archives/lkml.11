@@ -2,132 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B964FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 11:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D712C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 11:10:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239928AbiBYLIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 06:08:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41290 "EHLO
+        id S239933AbiBYLKl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 06:10:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235030AbiBYLIc (ORCPT
+        with ESMTP id S239879AbiBYLKh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 06:08:32 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 519A61680B3
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 03:07:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1645787279; x=1677323279;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=8FsoNF2tMXyFoXs3+t8dZx7wo5mEegZv38u3HgPYn98=;
-  b=sDQgbHy3AoSD8800p9+zVedS4onqNIeDAsDAdcmvwF48N5k+TTfwFTMv
-   /vItT7sxWWV8ydZfO4KRoPy9w397cVJWSJ7z28qZbe3Pd+8mfvciq2T28
-   Eik3Mih1W7KntfylJcxLQiSNZVnxe3xr8zokNYA3gqrq+UpSREsrf5E79
-   R3F5sot6W2I+X47//1pSiBIXQ0rXRAAG7tanj/OXqOGKf3mU/DvfSA8PI
-   NUou9CeGvsBV34QjA25jaQbNwni5ZX+fWqQsYFDyCzxv+TCubZsJRfu16
-   v3TI0VTfjeFvHMmb0snLhnxcWiqjX7+3kHUJFZGKmUfvzNwRSRSIwZ6td
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,136,1643698800"; 
-   d="scan'208";a="147273535"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Feb 2022 04:07:58 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 25 Feb 2022 04:07:56 -0700
-Received: from ness.home (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 25 Feb 2022 04:07:54 -0700
-From:   <nicolas.ferre@microchip.com>
-To:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        <arm@kernel.org>, <soc@kernel.org>
-CC:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Linux Kernel list <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>,
-        Michael Walle <michael@walle.cc>,
-        "Horatiu Vultur" <horatiu.vultur@microchip.com>
-Subject: [GIT PULL] ARM: at91: dt for 5.18
-Date:   Fri, 25 Feb 2022 12:07:35 +0100
-Message-ID: <20220225110735.18080-1-nicolas.ferre@microchip.com>
-X-Mailer: git-send-email 2.32.0
+        Fri, 25 Feb 2022 06:10:37 -0500
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0A419F44D
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 03:10:05 -0800 (PST)
+Received: by mail-oo1-xc33.google.com with SMTP id s203-20020a4a3bd4000000b003191c2dcbe8so5762944oos.9
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 03:10:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc:content-transfer-encoding;
+        bh=uCe/+8iKUxzMUiuInd3yAhEeQs4vdxnzQkm5bIEbNEw=;
+        b=3quStgJE4CNplUYYKndunJnY4NULD271ISTymr6In2H9wvWQ46ynTFUwPSh3NKVoKO
+         XO4uix0XDRtyEYj7qkgyNbao0VNsn/v9DyTp5E6MeOCrYZ7UHnrZSG25ljWcwzNZXWtM
+         CK25RXGKu7gtNKH69yAXi2/cmw/9laIfo+AIvEyQXQO0M+yNR7o7LR3kCYQ0GhecodX3
+         0Yf39evCS/HIrNRyUizqYBNSZK0dgtE8NmgJi1WqVMQsdFuWPWRcekxxZDZoDZzegsrZ
+         eGdZk0yx/7/PS7SJ3+IWqErs4rB+57192rbUR/75nCEiwVLsRQAgfLPhmb5NU7fcOvcj
+         rAqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc:content-transfer-encoding;
+        bh=uCe/+8iKUxzMUiuInd3yAhEeQs4vdxnzQkm5bIEbNEw=;
+        b=VMir9iUdnp3RHn0sgMH6AHF9Fxkjjo10CmVC3sU/l8OGC8TTJb7/nLGSrDZbWCXt5y
+         KfETBuJKh59a8veQWNm/uLHetQBlhBLpGptxRgm3zl9WO2GAkhEOp0pdquAEjA7HbW5H
+         ZONTH5jSFoCJGvOtsFtiOcgDIuemd61wStFTsjUsCPMPKHj7Ej5jW7Yamu62KP7RfpWM
+         1swN7IAQWecm99EFrEyXoOz+W2JoEb5YHVTVcIGkTVgcOuh0JM+aZso1NzQ4OBLN6MLW
+         uFqBdsWibfH3rt6WigHD2C91BJAsPsUd8hN+wczI1PA2tujYlSGIO20vDs8vsY2kqc2U
+         K5DQ==
+X-Gm-Message-State: AOAM530D4WxlzswYsFVTtuL7kCRV+UAEmdu1+zHj1tgrKUxup4Rcs1V3
+        rcjJaZ34BKRaFCwF628mrAsb+L1KiWT9q5CFRH02eQ==
+X-Google-Smtp-Source: ABdhPJxQVXm0aOfETMn/jYI9liemPaFUC9qpKMV22X3YKscJ2KB1O1xhKAWhMyhOXCXayIJus//3i7D2cxvCV3+EqA4=
+X-Received: by 2002:a05:6870:3112:b0:ce:c0c9:62b with SMTP id
+ v18-20020a056870311200b000cec0c9062bmr1047419oaa.125.1645787404480; Fri, 25
+ Feb 2022 03:10:04 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 25 Feb 2022 03:10:03 -0800
 MIME-Version: 1.0
-Organization: microchip
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+In-Reply-To: <CAAOTY_9cOLJnTK0tSqfzyK4tUn_LUAywRPa+z7tTCOSien2j1Q@mail.gmail.com>
+References: <20220218145437.18563-1-granquet@baylibre.com> <20220218145437.18563-11-granquet@baylibre.com>
+ <CAAOTY_9cOLJnTK0tSqfzyK4tUn_LUAywRPa+z7tTCOSien2j1Q@mail.gmail.com>
+From:   Guillaume Ranquet <granquet@baylibre.com>
+User-Agent: alot/0.10
+Date:   Fri, 25 Feb 2022 03:10:03 -0800
+Message-ID: <CABnWg9secW5CO=wfo68mA9Z+v=iB50uZRUQGjm=jrGiS379nJA@mail.gmail.com>
+Subject: Re: [PATCH v8 10/19] drm/mediatek: dpi: move swap_shift to board config
+To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, deller@gmx.de,
+        CK Hu <ck.hu@mediatek.com>, Jitao Shi <jitao.shi@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        "ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+        DTML <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-phy@lists.infradead.org, linux-fbdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Ferre <nicolas.ferre@microchip.com>
+Quoting Chun-Kuang Hu (2022-02-21 04:24:32)
+> Hi, Guillaume:
+>
+> Guillaume Ranquet <granquet@baylibre.com> =E6=96=BC 2022=E5=B9=B42=E6=9C=
+=8818=E6=97=A5 =E9=80=B1=E4=BA=94 =E4=B8=8B=E5=8D=8810:56=E5=AF=AB=E9=81=93=
+=EF=BC=9A
+> >
+> > Add flexibility by moving the swap shift value to board config
+> >
+> > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > ---
+> >  drivers/gpu/drm/mediatek/mtk_dpi.c | 8 +++++++-
+> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_dpi.c b/drivers/gpu/drm/media=
+tek/mtk_dpi.c
+> > index 0d3acd08ea358..ec221e24e0fee 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_dpi.c
+> > @@ -131,6 +131,7 @@ struct mtk_dpi_conf {
+> >         u32 dimension_mask;
+> >         // Mask used for HSIZE and VSIZE (no shift)
+> >         u32 hvsize_mask;
+> > +       u32 channel_swap_shift;
+> >         const struct mtk_dpi_yc_limit *limit;
+> >  };
+> >
+> > @@ -349,7 +350,8 @@ static void mtk_dpi_config_channel_swap(struct mtk_=
+dpi *dpi,
+> >                 break;
+> >         }
+> >
+> > -       mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, val << CH_SWAP, CH_SWAP_M=
+ASK);
+> > +       mtk_dpi_mask(dpi, DPI_OUTPUT_SETTING, val << CH_SWAP,
+> > +                    CH_SWAP_MASK << dpi->conf->channel_swap_shift);
+>
+> This may be wrong because of these definition:
+>
+> #define DPINTF_CH_SWAP BIT(1)
+> #define DPINTF_CH_SWAP_MASK (0x7 << 1)
+>
+> Regards,
+> Chun-Kuang.
+>
 
-Arnd, Olof,
+You are right, DPINTF_CH_SWAP_MASK is unused, which is wrong on multiple le=
+vels.
 
-Here are the dt changes for 5.18. They include both at91 changes and lan966
-first DT patches which I'm happy to take as part of our pull request.
-
-Please pull. Thanks, best regards,
-  Nicolas
-
-The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
-
-  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/at91/linux.git tags/at91-dt-5.18
-
-for you to fetch changes up to 3c8a9c2e2daf51bd3dcaedd321ecc79f10227c41:
-
-  ARM: dts: at91: sama7g5: add opps (2022-02-25 11:32:22 +0100)
-
-----------------------------------------------------------------
-AT91 & LAN966 DT #1 for 5.18:
-
-- lan966x basic DT and associated evaluation board pcb8291 (2-ports)
-- documentation for an upcoming Kontron switch board featuring a LAN9668
-- one fix for an old bug we have with PMECC on sama5d2 in some corner
-  cases
-- sama7g5 and its EK: crypto, CAN and DVFS operating points
-
-----------------------------------------------------------------
-Claudiu Beznea (4):
-      ARM: dts: at91: remove status = "okay" from soc specific dtsi
-      ARM: dts: at91: fix low limit for CPU regulator
-      ARM: dts: at91: sama7g5ek: set regulator voltages for standby state
-      ARM: dts: at91: sama7g5: add opps
-
-Hari Prasath (2):
-      ARM: dts: at91: sama7g5: Add can controllers of sama7g5
-      ARM: dts: at91: sama7g5: Enable can0 and can1 support in sama7g5-ek
-
-Kavyasree Kotagiri (1):
-      ARM: dts: add DT for lan966 SoC and 2-port board pcb8291
-
-Michael Walle (1):
-      dt-bindings: arm: at91: add Kontron's new KSwitches
-
-Tudor Ambarus (3):
-      ARM: dts: at91: sama5d2: Fix PMERRLOC resource size
-      ARM: dts: at91: Use the generic "crypto" node name for the crypto IPs
-      ARM: dts: at91: sama7g5: Add crypto nodes
-
- .../devicetree/bindings/arm/atmel-at91.yaml        |   9 +
- arch/arm/boot/dts/Makefile                         |   2 +
- arch/arm/boot/dts/at91-sama7g5ek.dts               |  32 ++-
- arch/arm/boot/dts/lan966x-pcb8291.dts              |  64 ++++++
- arch/arm/boot/dts/lan966x.dtsi                     | 237 +++++++++++++++++++++
- arch/arm/boot/dts/sam9x60.dtsi                     |  10 +-
- arch/arm/boot/dts/sama5d2.dtsi                     |  11 +-
- arch/arm/boot/dts/sama5d3.dtsi                     |   6 +-
- arch/arm/boot/dts/sama5d4.dtsi                     |   9 +-
- arch/arm/boot/dts/sama7g5.dtsi                     | 169 ++++++++++++++-
- 10 files changed, 522 insertions(+), 27 deletions(-)
- create mode 100644 arch/arm/boot/dts/lan966x-pcb8291.dts
- create mode 100644 arch/arm/boot/dts/lan966x.dtsi
-
--- 
-Nicolas Ferre
+> >  }
+> >
+> >  static void mtk_dpi_config_yuv422_enable(struct mtk_dpi *dpi, bool ena=
+ble)
+> > @@ -821,6 +823,7 @@ static const struct mtk_dpi_conf mt8173_conf =3D {
+> >         .swap_input_support =3D true,
+> >         .dimension_mask =3D HPW_MASK,
+> >         .hvsize_mask =3D HSIZE_MASK,
+> > +       .channel_swap_shift =3D CH_SWAP,
+> >         .limit =3D &mtk_dpi_limit,
+> >  };
+> >
+> > @@ -835,6 +838,7 @@ static const struct mtk_dpi_conf mt2701_conf =3D {
+> >         .swap_input_support =3D true,
+> >         .dimension_mask =3D HPW_MASK,
+> >         .hvsize_mask =3D HSIZE_MASK,
+> > +       .channel_swap_shift =3D CH_SWAP,
+> >         .limit =3D &mtk_dpi_limit,
+> >  };
+> >
+> > @@ -848,6 +852,7 @@ static const struct mtk_dpi_conf mt8183_conf =3D {
+> >         .swap_input_support =3D true,
+> >         .dimension_mask =3D HPW_MASK,
+> >         .hvsize_mask =3D HSIZE_MASK,
+> > +       .channel_swap_shift =3D CH_SWAP,
+> >         .limit =3D &mtk_dpi_limit,
+> >  };
+> >
+> > @@ -861,6 +866,7 @@ static const struct mtk_dpi_conf mt8192_conf =3D {
+> >         .swap_input_support =3D true,
+> >         .dimension_mask =3D HPW_MASK,
+> >         .hvsize_mask =3D HSIZE_MASK,
+> > +       .channel_swap_shift =3D CH_SWAP,
+> >         .limit =3D &mtk_dpi_limit,
+> >  };
+> >
+> > --
+> > 2.34.1
+> >
