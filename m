@@ -2,82 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3882C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A149C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233803AbiBYSz5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 13:55:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
+        id S233836AbiBYS5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 13:57:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230051AbiBYSz4 (ORCPT
+        with ESMTP id S233829AbiBYS5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 13:55:56 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EDF1CABCE
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:55:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645815323; x=1677351323;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Y60gl5XzQCq+fmeyaGBJHZqpd2XBH6eJ043j+RfHgT8=;
-  b=BxlYXkxl3nbeyExHXjDsBi8DoJXwRu3VeFtPuvsn5x8NgcMeAGUG7ibx
-   1lunJHEkhmEPESUdHqdqUlcpuAMAU9uDS3/HIn39SksjfeLrlZYwf2A7A
-   Cbsh8JXOkW0wwQmE5byb8mOKfUBA022BCc9Qwoi2A4+ub7vq7KS+fwilg
-   m+QLrhdhNY72QItCnSmCyvd4J35cEYYhlxnNnmX7zOMsAbDf/uxRGNcJy
-   W0jaJBhsA8iWM4HKykjgrZcGtY65r1yI5ubl7kdi96HMuSW/EZrwnSde8
-   AehLGyt+8dM+hmoSoAKLY3SPawS04Aizzfq2ZTu0DP+nTuTA0vfKddwR1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="313277864"
-X-IronPort-AV: E=Sophos;i="5.90,137,1643702400"; 
-   d="scan'208";a="313277864"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 10:55:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,137,1643702400"; 
-   d="scan'208";a="574686174"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 25 Feb 2022 10:55:22 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nNfkP-0004cr-SQ; Fri, 25 Feb 2022 18:55:21 +0000
-Date:   Sat, 26 Feb 2022 02:54:42 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Liu Yi L <yi.l.liu@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [luxis1999-iommufd:iommufd-v5.17-rc4 14/25] ERROR: modpost:
- "vfio_platform_ops" [drivers/vfio/platform/vfio-platform.ko] undefined!
-Message-ID: <202202260238.ppsRDcTe-lkp@intel.com>
+        Fri, 25 Feb 2022 13:57:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF1E1E1111
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:56:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0F20B83302
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 18:56:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7B43C340E7;
+        Fri, 25 Feb 2022 18:56:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645815391;
+        bh=5mFg1geK3/HpS6b4jbVxVyn7sGWeVlBfS0uJ3vxTLPk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=j6nHidPSurApkrvwM5GPgOG7CsQ8u18KemJYtHn3HjFXS1np8mUcx0zI744hfeOey
+         ROb5f4lWlKqY9JZytGTUOFkVnHAhm61LLUoTJi4pIw2tWvYNYh+TTjM6OXdar3IRr3
+         1rNxy+M7Eu9E3N3Ci3+Pz3I1SZmTNiPEdojg/rvz6+YjtpVz14SlT9BFO3IWAetSh+
+         fUyu+2DAipF402RXJoZATPyKLMvWFvpTjfH2zhyEc0bxuY7w40O4pxr5gow/V+GgoS
+         zwIP2ynaQjajD6beApp+vzzM8QMkIDW7LjNxrcKkUF99AEhWZa7TPSNBM1HWjsxwzz
+         CnWHmZEEONvSg==
+Date:   Fri, 25 Feb 2022 19:56:26 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Michal Simek <michal.simek@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, monstr@monstr.eu, git@xilinx.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: Re: [PATCH] scripts: get_abi.pl: Fix typo in help message
+Message-ID: <20220225195626.71a4f810@coco.lan>
+In-Reply-To: <1ff3605db3dead41bbde33fbbff6754900eceead.1645789205.git.michal.simek@xilinx.com>
+References: <1ff3605db3dead41bbde33fbbff6754900eceead.1645789205.git.michal.simek@xilinx.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/luxis1999/iommufd iommufd-v5.17-rc4
-head:   034a4f5bce51691aff0f8104f3e0b1f376c4f50d
-commit: 6c62a443fb8c1a82c6337b96e1d73949f616eef9 [14/25] vifo_platform: Use vfio_alloc/put_device()
-config: arc-randconfig-r003-20220225 (https://download.01.org/0day-ci/archive/20220226/202202260238.ppsRDcTe-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/luxis1999/iommufd/commit/6c62a443fb8c1a82c6337b96e1d73949f616eef9
-        git remote add luxis1999-iommufd https://github.com/luxis1999/iommufd
-        git fetch --no-tags luxis1999-iommufd iommufd-v5.17-rc4
-        git checkout 6c62a443fb8c1a82c6337b96e1d73949f616eef9
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
+Em Fri, 25 Feb 2022 12:40:08 +0100
+Michal Simek <michal.simek@xilinx.com> escreveu:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Fix misspelled word in the script. (s/COMAND/COMMAND/).
+> 
+> Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+Reviewed-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> ---
+> 
+>  scripts/get_abi.pl | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/scripts/get_abi.pl b/scripts/get_abi.pl
+> index 6212f58b69c6..1068cd0e3e90 100755
+> --- a/scripts/get_abi.pl
+> +++ b/scripts/get_abi.pl
+> @@ -987,7 +987,7 @@ abi_book.pl - parse the Linux ABI files and produce a ReST book.
+>  B<abi_book.pl> [--debug <level>] [--enable-lineno] [--man] [--help]
+>  	       [--(no-)rst-source] [--dir=<dir>] [--show-hints]
+>  	       [--search-string <regex>]
+> -	       <COMAND> [<ARGUMENT>]
+> +	       <COMMAND> [<ARGUMENT>]
+>  
+>  Where B<COMMAND> can be:
+>  
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
 
->> ERROR: modpost: "vfio_platform_ops" [drivers/vfio/platform/vfio-platform.ko] undefined!
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Thanks,
+Mauro
