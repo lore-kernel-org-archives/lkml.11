@@ -2,235 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E255C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 05:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4AECC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 05:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237559AbiBYFcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 00:32:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
+        id S237566AbiBYFfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 00:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237478AbiBYFch (ORCPT
+        with ESMTP id S236037AbiBYFfk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 00:32:37 -0500
-Received: from cloud48395.mywhc.ca (cloud48395.mywhc.ca [173.209.37.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EA64131D;
-        Thu, 24 Feb 2022 21:32:03 -0800 (PST)
-Received: from [45.44.224.220] (port=57022 helo=[192.168.1.179])
-        by cloud48395.mywhc.ca with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <olivier@trillion01.com>)
-        id 1nNTD0-0002G7-JX; Fri, 25 Feb 2022 00:32:02 -0500
-Message-ID: <f84f59e3edd9b4973ea2013b2893d4394a7bdb61.camel@trillion01.com>
-Subject: Re: [PATCH v1] io_uring: Add support for napi_busy_poll
-From:   Olivier Langlois <olivier@trillion01.com>
-To:     Hao Xu <haoxu@linux.alibaba.com>, Jens Axboe <axboe@kernel.dk>
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        io-uring <io-uring@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Date:   Fri, 25 Feb 2022 00:32:01 -0500
-In-Reply-To: <aee0e905-7af4-332c-57bc-ece0bca63ce2@linux.alibaba.com>
-References: <d11e31bd59c75b2cce994dd90a07e769d4e039db.1645257310.git.olivier@trillion01.com>
-         <aee0e905-7af4-332c-57bc-ece0bca63ce2@linux.alibaba.com>
-Organization: Trillion01 Inc
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.42.4 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - cloud48395.mywhc.ca
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - trillion01.com
-X-Get-Message-Sender-Via: cloud48395.mywhc.ca: authenticated_id: olivier@trillion01.com
-X-Authenticated-Sender: cloud48395.mywhc.ca: olivier@trillion01.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+        Fri, 25 Feb 2022 00:35:40 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6F11B4027;
+        Thu, 24 Feb 2022 21:35:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1645767309; x=1677303309;
+  h=from:to:cc:subject:date:message-id;
+  bh=K/ZmoVmGsoJHp14aeR2Uuw0XLgHND2lgxjfjAK/d/VY=;
+  b=hLV8EZbAUxAjuNt255hv/p71wW77Nm0/AZG6PtO0vH4OnJn151VsusmZ
+   iuQKebAHo4hMEPPKozQKeKBDdD4Q6Kgq5xrOonnro4ZVV3YktPPrZch3e
+   QwigbEWkLdHlL4umqcpMhvCex2KNPz+khpbrBwsMEf+H3YjrvT3yuuv2H
+   k=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 24 Feb 2022 21:35:09 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 24 Feb 2022 21:35:07 -0800
+X-QCInternal: smtphost
+Received: from hyd-lablnx377.qualcomm.com ([10.204.178.226])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 25 Feb 2022 11:04:49 +0530
+Received: by hyd-lablnx377.qualcomm.com (Postfix, from userid 4035820)
+        id E06BA21673; Fri, 25 Feb 2022 11:04:47 +0530 (IST)
+From:   Sai Teja Aluvala <quic_saluvala@quicinc.com>
+To:     gross@kernel.org, robh+dt@kernel.org, bjorn.andersson@linaro.org,
+        krzysztof.kozlowski@canonical.com, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcel@holtmann.org, johan.hedberg@gmail.com
+Cc:     mka@chromium.org, linux-bluetooth@vger.kernel.org,
+        quic_hemantg@quicinc.com, quic_bgodavar@quicinc.com,
+        quic_rjliao@quicinc.com, mcchou@chromium.org,
+        Sai Teja Aluvala <quic_saluvala@quicinc.com>
+Subject: [PATCH v3] arm64: dts: qcom: sc7280: Add IO regulator handler in SC7280 CRD based platforms
+Date:   Fri, 25 Feb 2022 11:04:45 +0530
+Message-Id: <1645767286-13890-1-git-send-email-quic_saluvala@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-21 at 13:23 +0800, Hao Xu wrote:
-> > @@ -5776,6 +5887,7 @@ static int __io_arm_poll_handler(struct
-> > io_kiocb *req,
-> >                 __io_poll_execute(req, mask);
-> >                 return 0;
-> >         }
-> > +       io_add_napi(req->file, req->ctx);
-> 
-> I think this may not be the right place to do it. the process will
-> be:
-> arm_poll sockfdA--> get invalid napi_id from sk->napi_id --> event
-> triggered --> arm_poll for sockfdA again --> get valid napi_id
-> then why not do io_add_napi() in event
-> handler(apoll_task_func/poll_task_func).
+Add IO regulator handler in SC7280 CRD based platforms.
+As IO regulator varies in different SC7280 platforms
+updating this handler in individual platform bluetooth node.
 
-You have a valid concern that the first time a socket is passed to
-io_uring that napi_id might not be assigned yet.
+Signed-off-by: Sai Teja Aluvala <quic_saluvala@quicinc.com>
+---
+V3: Updated commit text to reflect the change
+v2: updated reviewer comments.
+v1: intial patch 
+---
+ arch/arm64/boot/dts/qcom/sc7280-crd.dts | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-OTOH, getting it after data is available for reading does not help
-neither since busy polling must be done before data is received.
-
-for both places, the extracted napi_id will only be leveraged at the
-next polling.
-
-Your suggestion is superior because it might be the only working way
-for MULTIPOLL requests.
-
-However, I choose __io_arm_poll_handler() because if napi_busy_poll()
-is desired without a sqpoll thread, the context must be locked when
-calling io_add_napi(). This is the case when __io_arm_poll_handler() is
-called AFAIK.
-
-and I don't think that the context is locked when
-(apoll_task_func/poll_task_func) are called.
-
-I acknowledge that this is an issue that needs to be fixed but right
-now I am not sure how to address this so let me share v2 of the patch
-and plan a v3 for at least this pending issue.
-
-> > 
-> > +#ifdef CONFIG_NET_RX_BUSY_POLL
-> > +static void io_adjust_busy_loop_timeout(struct timespec64 *ts,
-> > +                                       struct io_wait_queue *iowq)
-> > +{
-> > +       unsigned busy_poll_to = READ_ONCE(sysctl_net_busy_poll);
-> > +       struct timespec64 pollto = ns_to_timespec64(1000 *
-> > (s64)busy_poll_to);
-> > +
-> > +       if (timespec64_compare(ts, &pollto) > 0) {
-> > +               *ts = timespec64_sub(*ts, pollto);
-> > +               iowq->busy_poll_to = busy_poll_to;
-> > +       } else {
-> > +               iowq->busy_poll_to = timespec64_to_ns(ts) / 1000;
-> 
-> How about timespec64_tons(ts) >> 10, since we don't need accurate
-> number.
-
-Fantastic suggestion! The kernel test robot did also detect an issue
-with that statement. I did discover do_div() in the meantime but what
-you suggest is better, IMHO...
-
-> > +static void io_blocking_napi_busy_loop(struct io_ring_ctx *ctx,
-> > +                                      struct io_wait_queue *iowq)
-> > +{
-> > +       unsigned long start_time =
-> > +               list_is_singular(&ctx->napi_list) ? 0 :
-> > +               busy_loop_current_time();
-> > +
-> > +       do {
-> > +               if (list_is_singular(&ctx->napi_list)) {
-> > +                       struct napi_entry *ne =
-> > +                               list_first_entry(&ctx->napi_list,
-> > +                                                struct napi_entry,
-> > list);
-> > +
-> > +                       napi_busy_loop(ne->napi_id,
-> > io_busy_loop_end, iowq,
-> > +                                      true, BUSY_POLL_BUDGET);
-> > +                       io_check_napi_entry_timeout(ne);
-> > +                       break;
-> > +               }
-> > +       } while (io_napi_busy_loop(ctx) &&
-> 
-> Why don't we setup busy_loop_end callback for normal(non-singular)
-> case,
-> we can record the number of napi_entry, and divide the time frame to
-> each entry.
-
-This is from intuition that iterating through all the napi devices in a
-'sprinkler' pattern is the correct way to proceed when handling several
-devices.
-
-If you busy poll the first devices for a certain amount of time and a
-packet is received in the last device, you won't know until you reach
-it which will be much later than with the proposed 'sprinkler' way.
-
-singular case is treated differently because entering/exiting
-napi_busy_loop() incur setup overhead that you don't need for that
-special case.
-
-> > +                !io_busy_loop_end(iowq, start_time));
-> > +}
-> > +#endif /* CONFIG_NET_RX_BUSY_POLL */
-> > +
-> >   /*
-> >    * Wait until events become available, if we don't already have
-> > some. The
-> >    * application must reap them itself, as they reside on the
-> > shared cq ring.
-> > @@ -7729,12 +7906,20 @@ static int io_cqring_wait(struct
-> > io_ring_ctx *ctx, int min_events,
-> >                 if (!io_run_task_work())
-> >                         break;
-> >         } while (1);
-> > -
-> > +#ifdef CONFIG_NET_RX_BUSY_POLL
-> > +       iowq.busy_poll_to = 0;
-> > +#endif
-> >         if (uts) {
-> >                 struct timespec64 ts;
-> >   
-> >                 if (get_timespec64(&ts, uts))
-> >                         return -EFAULT;
-> > +#ifdef CONFIG_NET_RX_BUSY_POLL
-> > +               if (!(ctx->flags & IORING_SETUP_SQPOLL) &&
-> > +                   !list_empty(&ctx->napi_list)) {
-> > +                       io_adjust_busy_loop_timeout(&ts, &iowq);
-> > +               }
-> > +#endif
-> >                 timeout = timespec64_to_jiffies(&ts);
-> >         }
-> >   
-> > @@ -7759,6 +7944,10 @@ static int io_cqring_wait(struct io_ring_ctx
-> > *ctx, int min_events,
-> >         iowq.cq_tail = READ_ONCE(ctx->rings->cq.head) + min_events;
-> >   
-> >         trace_io_uring_cqring_wait(ctx, min_events);
-> > +#ifdef CONFIG_NET_RX_BUSY_POLL
-> > +       if (iowq.busy_poll_to)
-> > +               io_blocking_napi_busy_loop(ctx, &iowq);
-> 
-> We may not need locks for the napi_list, the reason is we don't need
-> to
-> poll an accurate list, the busy polling/NAPI itself is kind of
-> speculation. So the deletion is not an emergency.
-> To say the least, we can probably delay the deletion to some safe
-> place
-> like the original task's task work though this may cause other
-> problems...
-
-There are 2 concerns here.
-
-1. Iterating a list while another thread modify it is not thread-safe
-unless you use a lock.
-
-If we offer napi_busy_poll() without sqpoll with the modification in
-io_cqring_wait(), this is a real possibility. A thread could call
-io_uring_enter(IORING_ENTER_GETEVENTS) while another thread calls
-io_uring_enter() to submit new sqes that could trigger a call to
-io_add_napi().
-
-If napi_busy_poll() is only offered through sqpoll thread, this becomes
-a non-issue since the only thread accessing/modifying the napi_list
-field is the sqpoll thread.
-
-Providing the patch benchmark result with v2 could help deciding what
-to do with this choice.
-
-2. You are correct when you say that deletion is not an emergency. 
-
-However, the design guideline that I did follow when writing the patch
-is that napi_busy_poll support should not impact users not using this
-feature. Doing the deletion where that patch is doing it fullfill this
-goal.
-
-Comparing a timeout value with the jiffies variable is very cheap and
-will only be performed when napi_busy_poll is used.
-
-The other option would be to add a refcount to each napi_entry and
-decrement it if needed everytime a request is discarded. Doing that
-that check for every requests that io_uring discards on completion, I
-am very confident that this would negatively impact various performance
-benchmarks that Jens routinely perform...
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+index e2efbdd..6cbbddc 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
+@@ -35,6 +35,10 @@
+ 	};
+ };
+ 
++&bluetooth {
++	vddio-supply = <&vreg_l18b_1p8>;
++};
++
+ ap_tp_i2c: &i2c0 {
+ 	status = "okay";
+ 	clock-frequency = <400000>;
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc.
 
