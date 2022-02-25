@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08441C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E66C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 18:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232930AbiBYSXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 13:23:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38538 "EHLO
+        id S232366AbiBYSXv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 13:23:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232308AbiBYSX3 (ORCPT
+        with ESMTP id S232183AbiBYSXb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 13:23:29 -0500
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A81991029E5
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:22:55 -0800 (PST)
-Received: by mail-pg1-x54a.google.com with SMTP id bj8-20020a056a02018800b0035ec8c16f0bso3059185pgb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:22:55 -0800 (PST)
+        Fri, 25 Feb 2022 13:23:31 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7ED61029E5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:22:58 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id n188-20020a6340c5000000b003747606cb0dso3054220pga.6
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 10:22:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=uyp+YpR2LCYPHpmAeEJtjNTYELJqSix3hhuKEFkcmAA=;
-        b=K/9NSmTITbjmwLiBOKORmckVTpBtCOjqt8lM1ExKYGpgAuDfMMyKDuPAoxGFdQQmyO
-         Cl/ZSWyRgjEsfD324NAAE7370ShErimNCl8bDVTbiDi9haRm21z+Lfzg6UO7EVjC4QIz
-         0b5azA44faCG+4MUUYxMY7rRTfxPaiN3PdpTmzbZkXD97uZboDH6t+NKrk3XYbUoN+fN
-         ZGgkN7NdIl00CZWchQwR+ORPvF4iJZwkdc941znlbhq3bqKlFB8bhW7HtC2n9abovu6x
-         ccCEz7dl+1u3mgWVgvF/H8fzUWaYgKpUgHEKHklpNZi3oWF/2sS4xwue0wqCIGhAIwAM
-         zn6g==
+        bh=yJjWTGvj3xklna+YumgfwjW/70CkdMmVGz7JULQJc9w=;
+        b=CQmcUVe96I5qFAe4jXJ6N24Z0ricyasxuL9MqcTlxQ9hAjj2K5BzVagYNRYvvxHXDU
+         RHryQu0J0EwAqWcJ6xQ524QpN6qApH6AraFM+RRtmeZ51JPN604CQvnR6RnU5V8Jh4RM
+         FtLlQ4SLJCco5XLwRzMTYTp73sE15/eYjZ0uqBkUA3cdFA38FG4iLC+dRoBixOVkjR/t
+         kXMeIDO99qxMbkgRdnAVKdYm9kSstrFQbh7UpolsLsBcOZoJCZVAVLJgtUrxKPvSVJJQ
+         j9WRUPkxwqU+/YEmmsiWMZQ+lt5O3vitEpjhyqm41PhfcRdodpnz7ihoFJaMS850sNz5
+         FGAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=uyp+YpR2LCYPHpmAeEJtjNTYELJqSix3hhuKEFkcmAA=;
-        b=U/uJzOFLf7RLTCpRR9AXy2opZnWP+uocr9HT1D1fuQXyikZcNwxzjzUZ1914RUGtxH
-         f2awZUikZQitz5Fqof/xiYkPnYahZCyoG4k/VacQy0a2nmCIBVW+QF8geP5qqCJZ6S2A
-         ScwNQuJGK7hDJJyZu+VTcdipQWgBFtwKH0ufjwtALtPJjmueS8if0eBvKYhK87Vcbkij
-         wQFzhg5EdixdaCc3QYWBOe51uUOdMtH8vYkzMHO/zDYs2UwSdCVBRnTacxnQu0II4NBq
-         U72ePMwKhbBeClkIMpTXy45U8I53s/oBakJUnoiaKrfN3gfu9R/NJf7Tvp/MTJvzTpR4
-         VHMA==
-X-Gm-Message-State: AOAM531ku6+IyVvidC8HZeOSzOBNvV725wcX2T5ehq/wqHdl0Yph+mGu
-        7SrkQRov/F6aH/nJVJndn6+24qqqAqg=
-X-Google-Smtp-Source: ABdhPJyOha9usWYX4MGUAJDF97U64lo1sBxpvSHGuIbz/lOMQKj21CeheradWAoSeC33U/vg9C8Yo7X2eLE=
+        bh=yJjWTGvj3xklna+YumgfwjW/70CkdMmVGz7JULQJc9w=;
+        b=g9R2nxD+RRCQY8yIDs0kIxYD58JeoqXRsszh5JTrPCeuGlDdt3qCsvEJLPOcsDYSRg
+         CMG+T5PoyWnq0VUMbE3Gv5GvmuvPURn/xu3dKDyU4BI6D2PuH9sssYpbgHuJyoyQ4HIT
+         IN9eIpTKXh0Oar33i8l+lIx0s0hU9Q9F57WavBwBg1uTPPNdT66+HsmxZPAjMxTQKxmx
+         O1ZH3RyCY5dgLquUmSZ4Qsh9oEJ+gb3apXU14KMmUKat4NQlXJVkvV858Am3vq5Sy46S
+         qrRRjX1i2FT373o8ab1yAXK4jCxVuN3k10GKRj4q9u9ejezqqbHGeiT6Zkf9jw9Zs5CP
+         VPzQ==
+X-Gm-Message-State: AOAM532IoP0H9gU0LGBiQw1fZyMRtpur2n13nBc9rY8dCumjrQd4vLDN
+        P9VhUVoVFz+RHdKyHKxu2A4p/tt9Lbo=
+X-Google-Smtp-Source: ABdhPJwqiIRfaVu24g/26s1NG9RDLXkL5Soz2O1/mDxe1b9k+mFjwrTrkF1v4W13AzJ6xBLpa8bZDPY/cKc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a62:770a:0:b0:4e0:2547:9219 with SMTP id
- s10-20020a62770a000000b004e025479219mr8651634pfc.43.1645813375172; Fri, 25
- Feb 2022 10:22:55 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:90a:67c1:b0:1bc:f062:62e8 with SMTP id
+ g1-20020a17090a67c100b001bcf06262e8mr3951454pjm.86.1645813378248; Fri, 25 Feb
+ 2022 10:22:58 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 25 Feb 2022 18:22:44 +0000
+Date:   Fri, 25 Feb 2022 18:22:46 +0000
 In-Reply-To: <20220225182248.3812651-1-seanjc@google.com>
-Message-Id: <20220225182248.3812651-4-seanjc@google.com>
+Message-Id: <20220225182248.3812651-6-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220225182248.3812651-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH v2 3/7] KVM: Drop kvm_reload_remote_mmus(), open code request
- in x86 users
+Subject: [PATCH v2 5/7] KVM: s390: Replace KVM_REQ_MMU_RELOAD usage with arch
+ specific request
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Christian Borntraeger <borntraeger@linux.ibm.com>,
@@ -73,100 +73,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the generic kvm_reload_remote_mmus() and open code its
-functionality into the two x86 callers.  x86 is (obviously) the only
-architecture that uses the hook, and is also the only architecture that
-uses KVM_REQ_MMU_RELOAD in a way that's consistent with the name.  That
-will change in a future patch, as x86's usage when zapping a single
-shadow page x86 doesn't actually _need_ to reload all vCPUs' MMUs, only
-MMUs whose root is being zapped actually need to be reloaded.
-
-s390 also uses KVM_REQ_MMU_RELOAD, but for a slightly different purpose.
-
-Drop the generic code in anticipation of implementing s390 and x86 arch
-specific requests, which will allow dropping KVM_REQ_MMU_RELOAD entirely.
-
-Opportunistically reword the x86 TDP MMU comment to avoid making
-references to functions (and requests!) when possible, and to remove the
-rather ambiguous "this".
+Add an arch request, KVM_REQ_REFRESH_GUEST_PREFIX, to deal with guest
+prefix changes instead of piggybacking KVM_REQ_MMU_RELOAD.  This will
+allow for the removal of the generic KVM_REQ_MMU_RELOAD, which isn't
+actually used by generic KVM.
 
 No functional change intended.
 
-Cc: Ben Gardon <bgardon@google.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/mmu/mmu.c   | 14 +++++++-------
- include/linux/kvm_host.h |  1 -
- virt/kvm/kvm_main.c      |  5 -----
- 3 files changed, 7 insertions(+), 13 deletions(-)
+ arch/s390/include/asm/kvm_host.h | 2 ++
+ arch/s390/kvm/kvm-s390.c         | 8 ++++----
+ arch/s390/kvm/kvm-s390.h         | 2 +-
+ 3 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index b2c1c4eb6007..32c6d4b33d03 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -2353,7 +2353,7 @@ static bool __kvm_mmu_prepare_zap_page(struct kvm *kvm,
- 		 * treats invalid shadow pages as being obsolete.
- 		 */
- 		if (!is_obsolete_sp(kvm, sp))
--			kvm_reload_remote_mmus(kvm);
-+			kvm_make_all_cpus_request(kvm, KVM_REQ_MMU_RELOAD);
+diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
+index a22c9266ea05..766028d54a3e 100644
+--- a/arch/s390/include/asm/kvm_host.h
++++ b/arch/s390/include/asm/kvm_host.h
+@@ -45,6 +45,8 @@
+ #define KVM_REQ_START_MIGRATION KVM_ARCH_REQ(3)
+ #define KVM_REQ_STOP_MIGRATION  KVM_ARCH_REQ(4)
+ #define KVM_REQ_VSIE_RESTART	KVM_ARCH_REQ(5)
++#define KVM_REQ_REFRESH_GUEST_PREFIX	\
++	KVM_ARCH_REQ_FLAGS(6, KVM_REQUEST_WAIT | KVM_REQUEST_NO_WAKEUP)
+ 
+ #define SIGP_CTRL_C		0x80
+ #define SIGP_CTRL_SCN_MASK	0x3f
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index 577f1ead6a51..db8c113562cf 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -3394,7 +3394,7 @@ static void kvm_gmap_notifier(struct gmap *gmap, unsigned long start,
+ 		if (prefix <= end && start <= prefix + 2*PAGE_SIZE - 1) {
+ 			VCPU_EVENT(vcpu, 2, "gmap notifier for %lx-%lx",
+ 				   start, end);
+-			kvm_s390_sync_request(KVM_REQ_MMU_RELOAD, vcpu);
++			kvm_s390_sync_request(KVM_REQ_REFRESH_GUEST_PREFIX, vcpu);
+ 		}
  	}
- 
- 	if (sp->lpage_disallowed)
-@@ -5639,11 +5639,11 @@ static void kvm_mmu_zap_all_fast(struct kvm *kvm)
+ }
+@@ -3796,19 +3796,19 @@ static int kvm_s390_handle_requests(struct kvm_vcpu *vcpu)
+ 	if (!kvm_request_pending(vcpu))
+ 		return 0;
+ 	/*
+-	 * We use MMU_RELOAD just to re-arm the ipte notifier for the
++	 * If the guest prefix changed, re-arm the ipte notifier for the
+ 	 * guest prefix page. gmap_mprotect_notify will wait on the ptl lock.
+ 	 * This ensures that the ipte instruction for this request has
+ 	 * already finished. We might race against a second unmapper that
+ 	 * wants to set the blocking bit. Lets just retry the request loop.
  	 */
- 	kvm->arch.mmu_valid_gen = kvm->arch.mmu_valid_gen ? 0 : 1;
+-	if (kvm_check_request(KVM_REQ_MMU_RELOAD, vcpu)) {
++	if (kvm_check_request(KVM_REQ_REFRESH_GUEST_PREFIX, vcpu)) {
+ 		int rc;
+ 		rc = gmap_mprotect_notify(vcpu->arch.gmap,
+ 					  kvm_s390_get_prefix(vcpu),
+ 					  PAGE_SIZE * 2, PROT_WRITE);
+ 		if (rc) {
+-			kvm_make_request(KVM_REQ_MMU_RELOAD, vcpu);
++			kvm_make_request(KVM_REQ_REFRESH_GUEST_PREFIX, vcpu);
+ 			return rc;
+ 		}
+ 		goto retry;
+diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
+index 098831e815e6..45b7c1edd85f 100644
+--- a/arch/s390/kvm/kvm-s390.h
++++ b/arch/s390/kvm/kvm-s390.h
+@@ -105,7 +105,7 @@ static inline void kvm_s390_set_prefix(struct kvm_vcpu *vcpu, u32 prefix)
+ 		   prefix);
+ 	vcpu->arch.sie_block->prefix = prefix >> GUEST_PREFIX_SHIFT;
+ 	kvm_make_request(KVM_REQ_TLB_FLUSH, vcpu);
+-	kvm_make_request(KVM_REQ_MMU_RELOAD, vcpu);
++	kvm_make_request(KVM_REQ_REFRESH_GUEST_PREFIX, vcpu);
+ }
  
--	/* In order to ensure all threads see this change when
--	 * handling the MMU reload signal, this must happen in the
--	 * same critical section as kvm_reload_remote_mmus, and
--	 * before kvm_zap_obsolete_pages as kvm_zap_obsolete_pages
--	 * could drop the MMU lock and yield.
-+	/*
-+	 * In order to ensure all vCPUs drop their soon-to-be invalid roots,
-+	 * invalidating TDP MMU roots must be done while holding mmu_lock for
-+	 * write and in the same critical section as making the reload request,
-+	 * e.g. before kvm_zap_obsolete_pages() could drop mmu_lock and yield.
- 	 */
- 	if (is_tdp_mmu_enabled(kvm))
- 		kvm_tdp_mmu_invalidate_all_roots(kvm);
-@@ -5656,7 +5656,7 @@ static void kvm_mmu_zap_all_fast(struct kvm *kvm)
- 	 * Note: we need to do this under the protection of mmu_lock,
- 	 * otherwise, vcpu would purge shadow page but miss tlb flush.
- 	 */
--	kvm_reload_remote_mmus(kvm);
-+	kvm_make_all_cpus_request(kvm, KVM_REQ_MMU_RELOAD);
- 
- 	kvm_zap_obsolete_pages(kvm);
- 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index f11039944c08..0aeb47cffd43 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1325,7 +1325,6 @@ int kvm_vcpu_yield_to(struct kvm_vcpu *target);
- void kvm_vcpu_on_spin(struct kvm_vcpu *vcpu, bool usermode_vcpu_not_eligible);
- 
- void kvm_flush_remote_tlbs(struct kvm *kvm);
--void kvm_reload_remote_mmus(struct kvm *kvm);
- 
- #ifdef KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE
- int kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int min);
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 83c57bcc6eb6..66bb1631cb89 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -354,11 +354,6 @@ void kvm_flush_remote_tlbs(struct kvm *kvm)
- EXPORT_SYMBOL_GPL(kvm_flush_remote_tlbs);
- #endif
- 
--void kvm_reload_remote_mmus(struct kvm *kvm)
--{
--	kvm_make_all_cpus_request(kvm, KVM_REQ_MMU_RELOAD);
--}
--
- #ifdef KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE
- static inline void *mmu_memory_cache_alloc_obj(struct kvm_mmu_memory_cache *mc,
- 					       gfp_t gfp_flags)
+ static inline u64 kvm_s390_get_base_disp_s(struct kvm_vcpu *vcpu, u8 *ar)
 -- 
 2.35.1.574.g5d30c73bfb-goog
 
