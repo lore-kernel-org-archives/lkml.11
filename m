@@ -2,112 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F58CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 01:17:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6865C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 01:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236297AbiBYBRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 20:17:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55208 "EHLO
+        id S236309AbiBYBVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 20:21:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiBYBRg (ORCPT
+        with ESMTP id S231347AbiBYBVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 20:17:36 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE65570931
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 17:17:04 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id bx9-20020a17090af48900b001bc64ee7d3cso3450109pjb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 17:17:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=N4Y8/f5h2c+8qmPFONzyrb+xWyQQ0xn3lzmmRXMaZ0c=;
-        b=ZaCIcK/AmAgJW8ORzlH2l0M239cWbI0Yy9USxUhedpS+8F5aQlItAz/eNqUI/SxeqG
-         6KewFCiWWDIzWWNjGm470yCRsMILiy4B1zeIccNO7G3ceF6tE4uZ4hoftfdCh1dcwIWy
-         zKZOlNiOKExtdZ2mSm924KsAmV5cGENaAN1UY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=N4Y8/f5h2c+8qmPFONzyrb+xWyQQ0xn3lzmmRXMaZ0c=;
-        b=GS4HgRmjG1zT5Mj4/PGUKTYzF9l9PcTFNQUmbFsX+ZAhLfwAtZmCNYf0NTVUESj1Yq
-         U08qMcGENbX5+zy+GNcTrxvWdniiJsFmyu/7InwFK7qyoveG+V4gkoPDRH9jw778YQws
-         FXjCNMroRXJWnwcyN29tA17cBWpwZnME49wh+Oorc+D6RVXF7ueV1gwmLMHQXJBXtajv
-         s5VEgP+z2zY4b+XJ7WSF5Hkak6vlvPuZzpNnDRL2QypdqXDyQhlCYjp3hyVdltYlBio8
-         XtrI4QcXJNXt1D/AhJYLuUhMFyylwzTQxElGMJdQdjlTSPM9De7ZPa1oxjHv9cw5Ysr4
-         LBQw==
-X-Gm-Message-State: AOAM531C+s+4RRuS2wAakgCjRXvmuKhD/Krkx9mAcH3WpkEWcFtxopIm
-        nwbodG4lyD4rx61ro2VcrmttnA==
-X-Google-Smtp-Source: ABdhPJxUSI6d5OVKHvIHPJlIQ1IS0ljtDIF332/NI8MGgqJDszVUoVyDKrcpaQleuuGzbWYXWI3d8Q==
-X-Received: by 2002:a17:902:760e:b0:14f:d760:51d0 with SMTP id k14-20020a170902760e00b0014fd76051d0mr5089535pll.5.1645751824444;
-        Thu, 24 Feb 2022 17:17:04 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q93-20020a17090a4fe600b001b9ba2a1dc3sm7262773pjh.25.2022.02.24.17.17.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 24 Feb 2022 17:17:04 -0800 (PST)
-Date:   Thu, 24 Feb 2022 17:17:03 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     David Gow <davidgow@google.com>, Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        llvm@lists.linux.dev, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] lib: stackinit: Convert to KUnit
-Message-ID: <202202241714.DC112086@keescook>
-References: <20220224055145.1853657-1-keescook@chromium.org>
- <CAGS_qxrRi0zvGnoi-Ne=wp8xkuFKPzNj9d57eq=51gg5gwX=eA@mail.gmail.com>
+        Thu, 24 Feb 2022 20:21:10 -0500
+X-Greylist: delayed 476 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 24 Feb 2022 17:20:38 PST
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D9AB720D538;
+        Thu, 24 Feb 2022 17:20:38 -0800 (PST)
+Received: from [10.130.0.193] (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxKMoGLRhih7AGAA--.12265S3;
+        Fri, 25 Feb 2022 09:12:39 +0800 (CST)
+Subject: Re: [PATCH] MIPS: Refactor early_parse_mem() to fix mem= parameter
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+References: <1645707132-10121-1-git-send-email-yangtiezhu@loongson.cn>
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From:   Youling Tang <tangyouling@loongson.cn>
+Message-ID: <20d9c6d4-7df4-8a26-4b0f-a5a192cae78d@loongson.cn>
+Date:   Fri, 25 Feb 2022 09:12:38 +0800
+User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
+ Thunderbird/45.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGS_qxrRi0zvGnoi-Ne=wp8xkuFKPzNj9d57eq=51gg5gwX=eA@mail.gmail.com>
+In-Reply-To: <1645707132-10121-1-git-send-email-yangtiezhu@loongson.cn>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: AQAAf9DxKMoGLRhih7AGAA--.12265S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxZF1UKw47Jry7Kr4Utw18Xwb_yoW5Xw4kpw
+        4Iv34SkrsrJF97ZayxtFn8urWrZw1vkFy0qa4Ikwn5A3Wqkr18Gr1IgF45ZryIgrW8A3W0
+        qF1qyasY939Fy3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVWUJVW8JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxV
+        WxJr0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2Wl
+        Yx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbV
+        WUJVW8JwACjcxG0xvEwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07Al
+        zVAYIcxG8wCY02Avz4vE14v_KwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAI
+        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa
+        73UjIFyTuYvjfU5kucDUUUU
+X-CM-SenderInfo: 5wdqw5prxox03j6o00pqjv00gofq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 11:43:40AM -0800, Daniel Latypov wrote:
-> On Wed, Feb 23, 2022 at 9:51 PM Kees Cook <keescook@chromium.org> wrote:
-> >
-> 
-> <snip>
-> 
-> 
-> >  /* Userspace headers. */
-> > +#define _GNU_SOURCE
-> >  #include <stdio.h>
-> >  #include <stdint.h>
-> > +#include <stdlib.h>
-> >  #include <string.h>
-> >  #include <stdbool.h>
-> >  #include <errno.h>
-> >  #include <sys/types.h>
-> >
-> >  /* Linux kernel-ism stubs for stand-alone userspace build. */
-> 
-> This is neat and esp. so that it works.
-> But may I ask, what's the value of using this vs UML?
+Hi, Tiezhu
 
-Mainly it's been for giving a single stand-alone file for testing to
-compiler devs, packagers, and distro maintainers instead of asking them
-to pull down the entire kernel, etc, etc. :)
+On 02/24/2022 08:52 PM, Tiezhu Yang wrote:
+> According to Documentation/admin-guide/kernel-parameters.txt,
+> the kernel command-line parameter mem= means "Force usage of
+> a specific amount of memory", but when add "mem=3G" to the
+> command-line, kernel boot hangs in sparse_init().
+>
+> This commit is similar with the implementation of the other
+> archs such as arm64, powerpc and riscv, refactor the function
+> early_parse_mem() and then use memblock_enforce_memory_limit()
+> to limit the memory size.
+>
+> With this patch, when add "mem=3G" to the command-line, the
+> kernel boots successfully, we can see the following messages:
+>
+>    [    0.000000] Memory limited to 3072MB
+>    ...
+>    [    0.000000] Memory: 2991952K/3145728K available (...)
+>
+> After login, the output of free command is consistent with the
+> above log.
+>
+> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> ---
+>   arch/mips/kernel/setup.c | 25 ++++++++-----------------
+>   1 file changed, 8 insertions(+), 17 deletions(-)
+>
+> diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
+> index f979adf..2917412 100644
+> --- a/arch/mips/kernel/setup.c
+> +++ b/arch/mips/kernel/setup.c
+> @@ -339,27 +339,15 @@ static void __init bootmem_init(void)
+>   #endif	/* CONFIG_SGI_IP27 */
+>   
+>   static int usermem __initdata;
+> +static phys_addr_t memory_limit;
+>   
+>   static int __init early_parse_mem(char *p)
+>   {
+> -	phys_addr_t start, size;
+> -
+> -	/*
+> -	 * If a user specifies memory size, we
+> -	 * blow away any automatically generated
+> -	 * size.
+> -	 */
+> -	if (usermem == 0) {
+> -		usermem = 1;
+> -		memblock_remove(memblock_start_of_DRAM(),
+> -			memblock_end_of_DRAM() - memblock_start_of_DRAM());
+> -	}
+> -	start = 0;
+> -	size = memparse(p, &p);
+> -	if (*p == '@')
+> -		start = memparse(p + 1, &p);
+> +	if (!p)
+> +		return 1;
+>   
+> -	memblock_add(start, size);
+> +	memory_limit = memparse(p, &p) & PAGE_MASK;
+> +	pr_notice("Memory limited to %lldMB\n", memory_limit >> 20);
+>   
+>   	return 0;
 
-> Given this has changed into mainly just a KUnit-compatibility layer,
-> it feels like it can maybe live as a standalone file, if there's ever
-> interest in doing this for other tests.
+After applying this patch, my guess is that the kdump operation will fail.
 
-That's a terrifying and lovely idea!
+In the MIPS architecture, when the kdump operation is performed, a
+"mem=YM@XM" parameter will be added to the capture kernel (added by
+kexec-tools), indicating that the available memory range of the
+capture kernel is [X, X+Y).
 
-> It feels like something that will never quite be "supported", but I
-> find it neat enough I'd have fun sending some patches to make it more
-> realistic.
+After the "mem" parameter is changed to the above, there will be only
+a similar parsing function like "mem=3G", and the type like
+"mem=128M@64M" cannot be correctly parsed.
 
-Right, and as you found, I took some short-cuts that were specific to
-how this code used KUnit. :P
+Thanks,
+Youling.
+>   }
+> @@ -633,6 +621,9 @@ static void __init arch_mem_init(char **cmdline_p)
+>   
+>   	parse_early_param();
+>   
+> +	/* Limit the memory size via mem= command-line parameter */
+> +	memblock_enforce_memory_limit(memory_limit);
+> +
+>   	if (usermem)
+>   		pr_info("User-defined physical RAM map overwrite\n");
+>   
 
-I'll ponder this and go through your other suggestions. Thanks!
-
--Kees
-
--- 
-Kees Cook
