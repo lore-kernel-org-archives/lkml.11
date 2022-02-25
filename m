@@ -2,67 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E422C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 01:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 202EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 01:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236595AbiBYBzF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 20:55:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57790 "EHLO
+        id S236604AbiBYBzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 20:55:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236586AbiBYBzC (ORCPT
+        with ESMTP id S236586AbiBYBzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 20:55:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4B529EB89;
-        Thu, 24 Feb 2022 17:54:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79B8561330;
-        Fri, 25 Feb 2022 01:54:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBBCDC340EB;
-        Fri, 25 Feb 2022 01:54:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645754070;
-        bh=kycMrUN1WEI5srmmMPpg1iEqDcJ1sVjM56iKmh9KRqQ=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=qqmEUxXjecGbRIB02ZAcL+stxDi397H8AQPnEuEtgXq+axoxBU54Gfw6/ZnI5VvM7
-         Rm5jY4Dn2Be0rp0WfRdKap+O8Q3QxemlccoWeSWGCjoAKxOiDpcF1EixCdBGEJEqfW
-         FdjrEeVJEXeZOf0P0yxpX5CuAA4lhHiF5dQauFkx1R1UMqVitAlnXEXi1P0NPB/NDq
-         VMYX6oTbjULMAIVASDgZOv2jd7PuKF3sHnuN3J06e1nNKT/NC0w+jKRpIP3ZoZT27W
-         sqdUYiBJ1Y/2bS3kdiJwHzjStz9XHLFwsHzNlLUHcgvIYsi/UBsnuMS8wGt5+OVgzZ
-         MZdSL5d4UDl5A==
-Content-Type: text/plain; charset="utf-8"
+        Thu, 24 Feb 2022 20:55:10 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B9C29DD20
+        for <linux-kernel@vger.kernel.org>; Thu, 24 Feb 2022 17:54:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645754079; x=1677290079;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mUtNdgA9eIG3EQUM/FNY38W2dgxVgh4wTcxODYjZ4f4=;
+  b=hjsKuGRxGLhPkR2Fwu+0cetGFMq33SSViBPBLVFQfwWYqK01bbnqVmgL
+   PyJWGM3nT9mdTSJ2NHgt9TuqJYhzlIQj5ECGtAf9fOAcuQt97hAwg/QZ9
+   eS19bwAVW/V5nqYmLd7v4oL8Eqzr1ut5oPEASuvFsMa4WMUdqidDXTjKj
+   MFuEsdJMYWNjimK1fKG6qeVyR3WX4767l/fSeyAs2tC5HNjpIciPQm+X7
+   pxeUQbjwLiq/onEuj7/MlgTkl9mz+4Vzm9jRGQjwdCOQVBK4jasxzY7BE
+   rfmG6VoCRlkMEBlAoV9ThboIxs7QwCJIrLk0qanKFpoCZy0z64gPbGmKg
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="249978620"
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="249978620"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2022 17:54:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,134,1643702400"; 
+   d="scan'208";a="533385060"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
+  by orsmga007.jf.intel.com with ESMTP; 24 Feb 2022 17:54:35 -0800
+Message-ID: <ed5c4e45-e25e-59a7-d3e2-ba414f161dd1@linux.intel.com>
+Date:   Fri, 25 Feb 2022 09:53:05 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220225014234.1766305-3-peng.fan@oss.nxp.com>
-References: <20220225014234.1766305-1-peng.fan@oss.nxp.com> <20220225014234.1766305-3-peng.fan@oss.nxp.com>
-Subject: Re: [PATCH V5 2/5] dt-bindings: clock: add i.MX93 clock definition
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Peng Fan <peng.fan@nxp.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh@kernel.org>
-To:     Peng Fan (OSS) <peng.fan@oss.nxp.com>, abel.vesa@nxp.com,
-        robh+dt@kernel.org, s.hauer@pengutronix.de, shawnguo@kernel.org
-Date:   Thu, 24 Feb 2022 17:54:29 -0800
-User-Agent: alot/0.10
-Message-Id: <20220225015430.CBBCDC340EB@smtp.kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Liu Yi L <yi.l.liu@intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@lst.de>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 09/11] iommu/vt-d: Remove commented code
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220214025704.3184654-1-baolu.lu@linux.intel.com>
+ <20220214025704.3184654-10-baolu.lu@linux.intel.com>
+ <20220224130945.GL6413@nvidia.com>
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220224130945.GL6413@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Peng Fan (OSS) (2022-02-24 17:42:31)
-> From: Peng Fan <peng.fan@nxp.com>
->=20
-> Add i.MX93 clock definition
->=20
-> Reviewed-by: Abel Vesa <abel.vesa@nxp.com>
-> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
+On 2/24/22 9:09 PM, Jason Gunthorpe wrote:
+> On Mon, Feb 14, 2022 at 10:57:02AM +0800, Lu Baolu wrote:
+>> This removes unnecessary commented code.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.c | 10 +---------
+>>   1 file changed, 1 insertion(+), 9 deletions(-)
+> 
+> Assuming you don't want to uncomment it
 
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+I planned to postpone the decision as I need time to check the details
+in the VT-d spec and talk to the architecture experts if needed.
+
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> 
+> Jason
+
+Best regards,
+baolu
