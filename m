@@ -2,157 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8723CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 09:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2380EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 09:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238912AbiBYJK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 04:10:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39596 "EHLO
+        id S238920AbiBYJMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 04:12:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236156AbiBYJK4 (ORCPT
+        with ESMTP id S233873AbiBYJMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 04:10:56 -0500
-Received: from 189.cn (ptr.189.cn [183.61.185.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4BD2A252917;
-        Fri, 25 Feb 2022 01:10:23 -0800 (PST)
-HMM_SOURCE_IP: 10.64.8.43:41026.848260822
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-123.150.8.43 (unknown [10.64.8.43])
-        by 189.cn (HERMES) with SMTP id 387FD1001B5;
-        Fri, 25 Feb 2022 17:10:21 +0800 (CST)
-Received: from  ([123.150.8.43])
-        by gateway-153622-dep-749df8664c-nmrf6 with ESMTP id 75c1cd44fa064a4c95e0a92083346293 for johan@kernel.org;
-        Fri, 25 Feb 2022 17:10:22 CST
-X-Transaction-ID: 75c1cd44fa064a4c95e0a92083346293
-X-Real-From: chensong_2000@189.cn
-X-Receive-IP: 123.150.8.43
-X-MEDUSA-Status: 0
-Sender: chensong_2000@189.cn
-From:   Song Chen <chensong_2000@189.cn>
-To:     johan@kernel.org, elder@kernel.org, gregkh@linuxfoundation.org,
-        thierry.reding@gmail.com, u.kleine-koenig@pengutronix.de,
-        lee.jones@linaro.org, greybus-dev@lists.linaro.org,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org, elder@ieee.org
-Cc:     Song Chen <chensong_2000@189.cn>
-Subject: [PATCH v3] staging: greybus: introduce pwm_ops::apply
-Date:   Fri, 25 Feb 2022 17:16:01 +0800
-Message-Id: <1645780561-18481-1-git-send-email-chensong_2000@189.cn>
-X-Mailer: git-send-email 2.7.4
+        Fri, 25 Feb 2022 04:12:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C6E673C0;
+        Fri, 25 Feb 2022 01:12:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01563B82C91;
+        Fri, 25 Feb 2022 09:12:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20CA3C340E7;
+        Fri, 25 Feb 2022 09:11:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645780318;
+        bh=t0jy4qpB4w9g+G1LKwCTnG1XlrLlJoe+llPCFjMaO00=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rBK1jeOZWu75/kRVG76Kj+91pqiNXrshuPp2tRusz2zKpRvrSigivtyqHpw8tnJxV
+         +sdVHAf1cc1MJUD5fdbq9FBjKTMNjqqE6kOX1TzEOY7d+nh2qSSI8ZQJaS+mvTCEmd
+         sGY/7VYcIl2hq52PtF1b7Q+c0COAx4HtfXEsshSk=
+Date:   Fri, 25 Feb 2022 10:11:56 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Luca Weiss <luca@z3ntu.xyz>, linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh@kernel.org>, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Manu Gautam <mgautam@codeaurora.org>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 03/10] dt-bindings: usb: qcom,dwc3: Add msm8953
+ compatible
+Message-ID: <YhidXLh5akwgqnDm@kroah.com>
+References: <20220220201909.445468-1-luca@z3ntu.xyz>
+ <20220220201909.445468-4-luca@z3ntu.xyz>
+ <Yhfmgm2i5h7zEuvA@builder.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yhfmgm2i5h7zEuvA@builder.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce apply in pwm_ops to replace legacy operations,
-like enable, disable, config and set_polarity.
+On Thu, Feb 24, 2022 at 02:11:46PM -0600, Bjorn Andersson wrote:
+> On Sun 20 Feb 14:18 CST 2022, Luca Weiss wrote:
+> 
+> > Document the compatible string for the DWC3 controller in msm8953.
+> > 
+> > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> > Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> > Acked-by: Rob Herring <robh@kernel.org>
+> 
+> Greg, can you please pick this patch through the USB tree.
 
-Signed-off-by: Song Chen <chensong_2000@189.cn>
+Will do, thanks.
 
----
-v2:
-1, define duty_cycle and period as u64 in gb_pwm_config_operation.
-2, define duty and period as u64 in gb_pwm_config_request.
-3, disable before configuring duty and period if the eventual goal
-   is a disabled state.
-
-v3:
-Regarding duty_cycle and period, I read more discussion in this thread,
-min, warn or -EINVAL, seems no perfect way acceptable for everyone.
-How about we limit their value to INT_MAX and throw a warning at the
-same time when they are wrong?
----
- drivers/staging/greybus/pwm.c | 66 +++++++++++++++++++++--------------
- 1 file changed, 40 insertions(+), 26 deletions(-)
-
-diff --git a/drivers/staging/greybus/pwm.c b/drivers/staging/greybus/pwm.c
-index 891a6a672378..3ec5bc54d616 100644
---- a/drivers/staging/greybus/pwm.c
-+++ b/drivers/staging/greybus/pwm.c
-@@ -204,43 +204,57 @@ static void gb_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
- 	gb_pwm_deactivate_operation(pwmc, pwm->hwpwm);
- }
- 
--static int gb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
--			 int duty_ns, int period_ns)
-+static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
-+			const struct pwm_state *state)
- {
-+	int err;
-+	bool enabled = pwm->state.enabled;
-+	u64 period = state->period;
-+	u64 duty_cycle = state->duty_cycle;
- 	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
- 
--	return gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_ns, period_ns);
--};
--
--static int gb_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
--			       enum pwm_polarity polarity)
--{
--	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
--
--	return gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, polarity);
--};
-+	/* set polarity */
-+	if (state->polarity != pwm->state.polarity) {
-+		if (enabled) {
-+			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-+			enabled = false;
-+		}
-+		err = gb_pwm_set_polarity_operation(pwmc, pwm->hwpwm, state->polarity);
-+		if (err)
-+			return err;
-+	}
- 
--static int gb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
-+	if (!state->enabled) {
-+		if (enabled)
-+			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
-+		return 0;
-+	}
- 
--	return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
--};
-+	/* set period and duty cycle*/
-+	if (period > INT_MAX) {
-+		period = INT_MAX;
-+		dev_warn(chip->dev, "period is %llu ns, out of range\n", state->period);
-+	}
-+	if (duty_cycle > INT_MAX) {
-+		duty_cycle = INT_MAX;
-+		dev_warn(chip->dev,
-+			 "duty cycle is %llu ns, out of range\n", state->duty_cycle);
-+	}
-+	err = gb_pwm_config_operation(pwmc, pwm->hwpwm, duty_cycle, period);
-+	if (err)
-+		return err;
- 
--static void gb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
--{
--	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
-+	/* enable/disable */
-+	if (!enabled)
-+		return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
- 
--	gb_pwm_disable_operation(pwmc, pwm->hwpwm);
--};
-+	return 0;
-+}
- 
- static const struct pwm_ops gb_pwm_ops = {
- 	.request = gb_pwm_request,
- 	.free = gb_pwm_free,
--	.config = gb_pwm_config,
--	.set_polarity = gb_pwm_set_polarity,
--	.enable = gb_pwm_enable,
--	.disable = gb_pwm_disable,
-+	.apply = gb_pwm_apply,
- 	.owner = THIS_MODULE,
- };
- 
--- 
-2.25.1
-
+gre gk-h
