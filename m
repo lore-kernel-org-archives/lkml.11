@@ -2,81 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F86EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA141C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 03:16:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236588AbiBYDPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 24 Feb 2022 22:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48132 "EHLO
+        id S236972AbiBYDQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 24 Feb 2022 22:16:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229805AbiBYDPo (ORCPT
+        with ESMTP id S229805AbiBYDQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 24 Feb 2022 22:15:44 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82EF01B65EB;
-        Thu, 24 Feb 2022 19:15:12 -0800 (PST)
-Received: from kwepemi100009.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K4ZYn6QKhz9sJ0;
-        Fri, 25 Feb 2022 11:11:41 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100009.china.huawei.com (7.221.188.242) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Feb 2022 11:15:10 +0800
-Received: from [10.174.176.73] (10.174.176.73) by
- kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 25 Feb 2022 11:15:09 +0800
-Subject: Re: [PATCH RFC] blk-mq: fix potential uaf for 'queue_hw_ctx'
-To:     Ming Lei <ming.lei@redhat.com>
-CC:     <axboe@kernel.dk>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
-References: <20220223112601.2902761-1-yukuai3@huawei.com>
- <YhhBh0ehPjdARU5h@T590>
-From:   "yukuai (C)" <yukuai3@huawei.com>
-Message-ID: <593de98e-6b94-43dc-c62f-12388b11533e@huawei.com>
-Date:   Fri, 25 Feb 2022 11:15:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Thu, 24 Feb 2022 22:16:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD851B65EB;
+        Thu, 24 Feb 2022 19:16:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6641616BD;
+        Fri, 25 Feb 2022 03:15:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0BCC340E9;
+        Fri, 25 Feb 2022 03:15:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645758959;
+        bh=YQBwiO0RElQQGuGz2YXzyyRpxa66lfHk5yUyBMIL3V8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=bpRoz38oufg+FQjPVI6nkCQnG5bV6eydQQwz1g3st1ZwlPGFWvV7EbmopG/9tNKOs
+         fazzsTZoP4QOE5SocxIRlhE74mDxIJBaM4h1FcgxqRuwTKu2aPehZixzZED09Ws17D
+         0kPL0cvT7FX/Wd7Ex4+Pt/Zuxg3tyNKTW1wV8jafu8gC4FF8fg4vH9EKrOxVsrk/UA
+         hSmKlEHzoTnBu7NQD921pA6tfSuJacwxFMq2RNZn74Ysx194N8lzEWpGBIq++7Tv4Y
+         JZ088bC867VKq4lhY0hAzoZCehdhwyfu2M2YaojIrtefglMiiN5+cELWaKBssdDH94
+         s+m2Auh6ktplQ==
+Message-ID: <26c10903-53a1-cab4-b213-440f4a5a18f6@kernel.org>
+Date:   Thu, 24 Feb 2022 20:15:58 -0700
 MIME-Version: 1.0
-In-Reply-To: <YhhBh0ehPjdARU5h@T590>
-Content-Type: text/plain; charset="gbk"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.73]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.0
+Subject: Re: [PATCH v3] net/tcp: Merge TCP-MD5 inbound callbacks
+Content-Language: en-US
+To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org
+References: <20220223175740.452397-1-dima@arista.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220223175740.452397-1-dima@arista.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ÔÚ 2022/02/25 10:40, Ming Lei Ð´µÀ:
+On 2/23/22 10:57 AM, Dmitry Safonov wrote:
+> The functions do essentially the same work to verify TCP-MD5 sign.
+> Code can be merged into one family-independent function in order to
+> reduce copy'n'paste and generated code.
+> Later with TCP-AO option added, this will allow to create one function
+> that's responsible for segment verification, that will have all the
+> different checks for MD5/AO/non-signed packets, which in turn will help
+> to see checks for all corner-cases in one function, rather than spread
+> around different families and functions.
+> 
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Dmitry Safonov <dima@arista.com>
+> ---
+> v2: Rebased on net-next
+> v3: Correct rebase on net-next for !CONFIG_TCP_MD5
+> 
+>  include/net/tcp.h   | 13 ++++++++
+>  net/ipv4/tcp.c      | 70 ++++++++++++++++++++++++++++++++++++++++
+>  net/ipv4/tcp_ipv4.c | 78 +++------------------------------------------
+>  net/ipv6/tcp_ipv6.c | 62 +++--------------------------------
+>  4 files changed, 92 insertions(+), 131 deletions(-)
+> 
 
->> +static inline struct blk_mq_hw_ctx *queue_hctx(struct request_queue *q, int id)
->> +{
->> +	struct blk_mq_hw_ctx *hctx;
->> +
->> +	rcu_read_lock();
->> +	hctx = *(rcu_dereference(q->queue_hw_ctx) + id);
->> +	rcu_read_unlock();
->> +
->> +	return hctx;
->> +}
-> 
-> queue_hctx() should be moved into linux/blk-mq.h, otherwise feel free to
-> add:
-> 
-> Reviewed-by: Ming Lei <ming.lei@redhat.com>
 
-Thanks for the review, I will send a new patch and move queue_hctx.
-
-Kuai
-> 
-> Also it should be fine to implement queue_for_each_hw_ctx() as list, then we
-> can avoid the allocation for q->queue_hw_ctx without extra cost. I will work
-> toward that direction for improving the code.
-> 
-> Thanks,
-> Ming
-> 
-> .
-> 
+Reviewed-by: David Ahern <dsahern@kernel.org>
