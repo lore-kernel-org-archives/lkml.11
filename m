@@ -2,295 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0239AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FFAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 14:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241739AbiBYObH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 09:31:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49190 "EHLO
+        id S241755AbiBYObL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 09:31:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233831AbiBYObC (ORCPT
+        with ESMTP id S241742AbiBYObD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 09:31:02 -0500
+        Fri, 25 Feb 2022 09:31:03 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A5142325EA
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 06:30:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0584A2325EA
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 06:30:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1645799428;
+        s=mimecast20190719; t=1645799431;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gsFPcx+8cECH3pU7E+X+a8TC3R17DTuLbJ7iNefsFWs=;
-        b=cmBC7LgoZ4A44YqBRCM3Y6eGtS+sHms7eMOksnLLoONUMfNMGWvqyE9jxUviZusk6JIckX
-        MNqvaqgLikGJKRkQcU98BJR1kSmjhWt3Phk1n5JXSaNhop4Ws46tL/zWY5BZH6wcVzYcqI
-        umOvXhm8+CvlyljbkcaLExChBrwPS10=
+        bh=31ddj2FGbLXm1jpn+KxL0nZeHBs+QByAvpjKBS8rBxM=;
+        b=bAbFITOEn0K7yvglkV1TV1z6/LUkMGj8BU/bl6Y3zkNCT2BcYMW9uXHbRXaIJb30PRaXwo
+        wGHjxBpOGjWgpwvD/kiPQrX+NVsc2yu6Tm4Pgs/nKy64qRpSaL3RYoq/PmaG2FqiXsUmtt
+        FluwhGpv9ezXTnWhWQQpEm1k4yVDCNM=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-111-J7niIcJpMZKa8LQzhSaQTw-1; Fri, 25 Feb 2022 09:30:25 -0500
-X-MC-Unique: J7niIcJpMZKa8LQzhSaQTw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+ us-mta-475-sviDcEc-OXO9S9jHIznklg-1; Fri, 25 Feb 2022 09:30:25 -0500
+X-MC-Unique: sviDcEc-OXO9S9jHIznklg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9FB951006AA5;
-        Fri, 25 Feb 2022 14:30:22 +0000 (UTC)
-Received: from starship (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B87B523789;
-        Fri, 25 Feb 2022 14:30:16 +0000 (UTC)
-Message-ID: <ef368bdef58c3db2cac47d0f30df0bdc0d5df73e.camel@redhat.com>
-Subject: Re: [PATCH v6 3/9] KVM: VMX: Detect Tertiary VM-Execution control
- when setup VMCS config
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Zeng Guang <guang.zeng@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Robert Hu <robert.hu@intel.com>, Gao Chao <chao.gao@intel.com>,
-        Robert Hoo <robert.hu@linux.intel.com>
-Date:   Fri, 25 Feb 2022 16:30:15 +0200
-In-Reply-To: <20220225082223.18288-4-guang.zeng@intel.com>
-References: <20220225082223.18288-1-guang.zeng@intel.com>
-         <20220225082223.18288-4-guang.zeng@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 25E061006AA6;
+        Fri, 25 Feb 2022 14:30:24 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.22.17.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 010EF7C5B8;
+        Fri, 25 Feb 2022 14:30:23 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id 73F492237E9; Fri, 25 Feb 2022 09:30:23 -0500 (EST)
+Date:   Fri, 25 Feb 2022 09:30:23 -0500
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Steve French <smfrench@gmail.com>,
+        lsf-pc@lists.linux-foundation.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ioannis Angelakopoulos <jaggel@bu.edu>
+Subject: Re: [LSF/MM/BPF TOPIC] Enabling change notification for network and
+ cluster fs
+Message-ID: <Yhjn/zmdlAFtvRR0@redhat.com>
+References: <CAH2r5mt9OfU+8PoKsmv_7aszhbw-dOuDCL6BOxb_2yRwc4HHCw@mail.gmail.com>
+ <Yhf+FemcQQToB5x+@redhat.com>
+ <CAH2r5mt6Sh7qorfCHWnZzc6LUDd-s_NzGB=sa-UDM2-ivzpmAQ@mail.gmail.com>
+ <YhjYSMIE2NBZ/dGr@redhat.com>
+ <YhjeX0HvXbED65IM@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhjeX0HvXbED65IM@casper.infradead.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-02-25 at 16:22 +0800, Zeng Guang wrote:
-> From: Robert Hoo <robert.hu@linux.intel.com>
+On Fri, Feb 25, 2022 at 01:49:19PM +0000, Matthew Wilcox wrote:
+> On Fri, Feb 25, 2022 at 08:23:20AM -0500, Vivek Goyal wrote:
+> > What about local events. I am assuming you want to supress local events
+> > and only deliver remote events. Because having both local and remote
+> > events delivered at the same time will be just confusing at best.
 > 
-> Check VMX features on tertiary execution control in VMCS config setup.
-> Sub-features in tertiary execution control to be enabled are adjusted
-> according to hardware capabilities although no sub-feature is enabled
-> in this patch.
+> This paragraph confuses me.  If I'm writing, for example, a file manager
+> and I want it to update its display automatically when another task alters
+> the contents of a directory, I don't care whether the modification was
+> done locally or remotely.
 > 
-> EVMCSv1 doesn't support tertiary VM-execution control, so disable it
-> when EVMCSv1 is in use. And define the auxiliary functions for Tertiary
-> control field here, using the new BUILD_CONTROLS_SHADOW().
-> 
-> Signed-off-by: Robert Hoo <robert.hu@linux.intel.com>
-> Signed-off-by: Zeng Guang <guang.zeng@intel.com>
-> ---
->  arch/x86/include/asm/vmx.h      |  3 +++
->  arch/x86/kvm/vmx/capabilities.h |  7 ++++++
->  arch/x86/kvm/vmx/evmcs.c        |  2 ++
->  arch/x86/kvm/vmx/evmcs.h        |  1 +
->  arch/x86/kvm/vmx/vmcs.h         |  1 +
->  arch/x86/kvm/vmx/vmx.c          | 38 ++++++++++++++++++++++++++++++++-
->  arch/x86/kvm/vmx/vmx.h          |  1 +
->  7 files changed, 52 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/include/asm/vmx.h b/arch/x86/include/asm/vmx.h
-> index 0ffaa3156a4e..8c929596a299 100644
-> --- a/arch/x86/include/asm/vmx.h
-> +++ b/arch/x86/include/asm/vmx.h
-> @@ -31,6 +31,7 @@
->  #define CPU_BASED_RDTSC_EXITING                 VMCS_CONTROL_BIT(RDTSC_EXITING)
->  #define CPU_BASED_CR3_LOAD_EXITING		VMCS_CONTROL_BIT(CR3_LOAD_EXITING)
->  #define CPU_BASED_CR3_STORE_EXITING		VMCS_CONTROL_BIT(CR3_STORE_EXITING)
-> +#define CPU_BASED_ACTIVATE_TERTIARY_CONTROLS	VMCS_CONTROL_BIT(TERTIARY_CONTROLS)
->  #define CPU_BASED_CR8_LOAD_EXITING              VMCS_CONTROL_BIT(CR8_LOAD_EXITING)
->  #define CPU_BASED_CR8_STORE_EXITING             VMCS_CONTROL_BIT(CR8_STORE_EXITING)
->  #define CPU_BASED_TPR_SHADOW                    VMCS_CONTROL_BIT(VIRTUAL_TPR)
-> @@ -221,6 +222,8 @@ enum vmcs_field {
->  	ENCLS_EXITING_BITMAP_HIGH	= 0x0000202F,
->  	TSC_MULTIPLIER                  = 0x00002032,
->  	TSC_MULTIPLIER_HIGH             = 0x00002033,
-> +	TERTIARY_VM_EXEC_CONTROL	= 0x00002034,
-> +	TERTIARY_VM_EXEC_CONTROL_HIGH	= 0x00002035,
->  	GUEST_PHYSICAL_ADDRESS          = 0x00002400,
->  	GUEST_PHYSICAL_ADDRESS_HIGH     = 0x00002401,
->  	VMCS_LINK_POINTER               = 0x00002800,
-> diff --git a/arch/x86/kvm/vmx/capabilities.h b/arch/x86/kvm/vmx/capabilities.h
-> index 3f430e218375..31f3d88b3e4d 100644
-> --- a/arch/x86/kvm/vmx/capabilities.h
-> +++ b/arch/x86/kvm/vmx/capabilities.h
-> @@ -59,6 +59,7 @@ struct vmcs_config {
->  	u32 pin_based_exec_ctrl;
->  	u32 cpu_based_exec_ctrl;
->  	u32 cpu_based_2nd_exec_ctrl;
-> +	u64 cpu_based_3rd_exec_ctrl;
->  	u32 vmexit_ctrl;
->  	u32 vmentry_ctrl;
->  	struct nested_vmx_msrs nested;
-> @@ -131,6 +132,12 @@ static inline bool cpu_has_secondary_exec_ctrls(void)
->  		CPU_BASED_ACTIVATE_SECONDARY_CONTROLS;
->  }
->  
-> +static inline bool cpu_has_tertiary_exec_ctrls(void)
-> +{
-> +	return vmcs_config.cpu_based_exec_ctrl &
-> +		CPU_BASED_ACTIVATE_TERTIARY_CONTROLS;
-> +}
-> +
->  static inline bool cpu_has_vmx_virtualize_apic_accesses(void)
->  {
->  	return vmcs_config.cpu_based_2nd_exec_ctrl &
-> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-> index 87e3dc10edf4..6a61b1ae7942 100644
-> --- a/arch/x86/kvm/vmx/evmcs.c
-> +++ b/arch/x86/kvm/vmx/evmcs.c
-> @@ -297,8 +297,10 @@ const unsigned int nr_evmcs_1_fields = ARRAY_SIZE(vmcs_field_to_evmcs_1);
->  #if IS_ENABLED(CONFIG_HYPERV)
->  __init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
->  {
-> +	vmcs_conf->cpu_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_EXEC_CTRL;
->  	vmcs_conf->pin_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_PINCTRL;
->  	vmcs_conf->cpu_based_2nd_exec_ctrl &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
-> +	vmcs_conf->cpu_based_3rd_exec_ctrl = 0;
->  
->  	vmcs_conf->vmexit_ctrl &= ~EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
->  	vmcs_conf->vmentry_ctrl &= ~EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
-> diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-> index 8d70f9aea94b..f886a8ff0342 100644
-> --- a/arch/x86/kvm/vmx/evmcs.h
-> +++ b/arch/x86/kvm/vmx/evmcs.h
-> @@ -50,6 +50,7 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
->   */
->  #define EVMCS1_UNSUPPORTED_PINCTRL (PIN_BASED_POSTED_INTR | \
->  				    PIN_BASED_VMX_PREEMPTION_TIMER)
-> +#define EVMCS1_UNSUPPORTED_EXEC_CTRL (CPU_BASED_ACTIVATE_TERTIARY_CONTROLS)
->  #define EVMCS1_UNSUPPORTED_2NDEXEC					\
->  	(SECONDARY_EXEC_VIRTUAL_INTR_DELIVERY |				\
->  	 SECONDARY_EXEC_VIRTUALIZE_APIC_ACCESSES |			\
-> diff --git a/arch/x86/kvm/vmx/vmcs.h b/arch/x86/kvm/vmx/vmcs.h
-> index e325c290a816..e18dc68eeeeb 100644
-> --- a/arch/x86/kvm/vmx/vmcs.h
-> +++ b/arch/x86/kvm/vmx/vmcs.h
-> @@ -50,6 +50,7 @@ struct vmcs_controls_shadow {
->  	u32 pin;
->  	u32 exec;
->  	u32 secondary_exec;
-> +	u64 tertiary_exec;
->  };
->  
->  /*
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index c569dc2b9192..8a5713d49635 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -2422,6 +2422,21 @@ static __init int adjust_vmx_controls(u32 ctl_min, u32 ctl_opt,
->  	return 0;
->  }
->  
-> +static __init int adjust_vmx_controls_64(u64 ctl_min, u64 ctl_opt,
-> +					 u32 msr, u64 *result)
-> +{
-> +	u64 allowed1;
-> +
-> +	rdmsrl(msr, allowed1);
-> +
-> +	/* Ensure minimum (required) set of control bits are supported. */
-> +	if (ctl_min & ~allowed1)
-> +		return -EIO;
-> +
-> +	*result = (ctl_min | ctl_opt) & allowed1;
-> +	return 0;
-> +}
-> +
->  static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
->  				    struct vmx_capability *vmx_cap)
->  {
-> @@ -2430,6 +2445,7 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
->  	u32 _pin_based_exec_control = 0;
->  	u32 _cpu_based_exec_control = 0;
->  	u32 _cpu_based_2nd_exec_control = 0;
-> +	u64 _cpu_based_3rd_exec_control = 0;
->  	u32 _vmexit_control = 0;
->  	u32 _vmentry_control = 0;
->  
-> @@ -2451,7 +2467,8 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
->  
->  	opt = CPU_BASED_TPR_SHADOW |
->  	      CPU_BASED_USE_MSR_BITMAPS |
-> -	      CPU_BASED_ACTIVATE_SECONDARY_CONTROLS;
-> +	      CPU_BASED_ACTIVATE_SECONDARY_CONTROLS |
-> +	      CPU_BASED_ACTIVATE_TERTIARY_CONTROLS;
->  	if (adjust_vmx_controls(min, opt, MSR_IA32_VMX_PROCBASED_CTLS,
->  				&_cpu_based_exec_control) < 0)
->  		return -EIO;
-> @@ -2525,6 +2542,16 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
->  				"1-setting enable VPID VM-execution control\n");
->  	}
->  
-> +	if (_cpu_based_exec_control & CPU_BASED_ACTIVATE_TERTIARY_CONTROLS) {
-> +		u64 opt3 = 0;
-> +		u64 min3 = 0;
-> +
-> +		if (adjust_vmx_controls_64(min3, opt3,
-> +					   MSR_IA32_VMX_PROCBASED_CTLS3,
-> +					   &_cpu_based_3rd_exec_control))
-> +			return -EIO;
-> +	}
-> +
->  	min = VM_EXIT_SAVE_DEBUG_CONTROLS | VM_EXIT_ACK_INTR_ON_EXIT;
->  #ifdef CONFIG_X86_64
->  	min |= VM_EXIT_HOST_ADDR_SPACE_SIZE;
-> @@ -2611,6 +2638,7 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
->  	vmcs_conf->pin_based_exec_ctrl = _pin_based_exec_control;
->  	vmcs_conf->cpu_based_exec_ctrl = _cpu_based_exec_control;
->  	vmcs_conf->cpu_based_2nd_exec_ctrl = _cpu_based_2nd_exec_control;
-> +	vmcs_conf->cpu_based_3rd_exec_ctrl = _cpu_based_3rd_exec_control;
->  	vmcs_conf->vmexit_ctrl         = _vmexit_control;
->  	vmcs_conf->vmentry_ctrl        = _vmentry_control;
->  
-> @@ -4230,6 +4258,11 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
->  	return exec_control;
->  }
->  
-> +static u64 vmx_tertiary_exec_control(struct vcpu_vmx *vmx)
-> +{
-> +	return vmcs_config.cpu_based_3rd_exec_ctrl;
-> +}
-> +
->  /*
->   * Adjust a single secondary execution control bit to intercept/allow an
->   * instruction in the guest.  This is usually done based on whether or not a
-> @@ -4395,6 +4428,9 @@ static void init_vmcs(struct vcpu_vmx *vmx)
->  	if (cpu_has_secondary_exec_ctrls())
->  		secondary_exec_controls_set(vmx, vmx_secondary_exec_control(vmx));
->  
-> +	if (cpu_has_tertiary_exec_ctrls())
-> +		tertiary_exec_controls_set(vmx, vmx_tertiary_exec_control(vmx));
-> +
->  	if (kvm_vcpu_apicv_active(&vmx->vcpu)) {
->  		vmcs_write64(EOI_EXIT_BITMAP0, 0);
->  		vmcs_write64(EOI_EXIT_BITMAP1, 0);
-> diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-> index e07c76974fb0..d4a647d3ed4a 100644
-> --- a/arch/x86/kvm/vmx/vmx.h
-> +++ b/arch/x86/kvm/vmx/vmx.h
-> @@ -488,6 +488,7 @@ BUILD_CONTROLS_SHADOW(vm_exit, VM_EXIT_CONTROLS, 32)
->  BUILD_CONTROLS_SHADOW(pin, PIN_BASED_VM_EXEC_CONTROL, 32)
->  BUILD_CONTROLS_SHADOW(exec, CPU_BASED_VM_EXEC_CONTROL, 32)
->  BUILD_CONTROLS_SHADOW(secondary_exec, SECONDARY_VM_EXEC_CONTROL, 32)
-> +BUILD_CONTROLS_SHADOW(tertiary_exec, TERTIARY_VM_EXEC_CONTROL, 64)
->  
->  /*
->   * VMX_REGS_LAZY_LOAD_SET - The set of registers that will be updated in the
+> If I understand the SMB protocol correctly, it allows the client to take
+> out a lease on a directory and not send its modifications back to the
+> server until the client chooses to (or the server breaks the lease).
+> So you wouldn't get any remote notifications because the client hasn't
+> told the server.
 
+So we will get remote notifications when client flushes changes to server,
+IIUC. But in this case, given changes are happening on same client, local
+events will make sense because we will come to know about changes much
+sooner.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+But if another client was watching for changes too, it will not come to
+know about these events till first client flushes these changes to
+server.
 
-Best regards,
-	Maxim Levitsky
+Anyway, it is a good point. This is a good example of where we might want
+local events too. 
+
+This raises question how applications will handle the situation, if we allow
+both local and remote events, then there will be too many duplicate events.
+One event for local change and another will be sent by server when server
+notices the change.
+
+May be there needs to be a way to supress remote event if we already
+generated local event. But not sure how would one figure that out. If
+server can somehow not send remote events to the client which triggered
+the event (and send remote events to all other clients), may be that will
+help.
+
+Havid said that, it might not be easy for server to figure out which
+client triggered the event and not send remote event back to that client.
+
+May be we should allow both local and remote events. And probably event
+should carry additional property which says whether event was local or
+remote. And then let application deal with it?  I am not sure, just
+thinking loud. 
+
+Thanks
+Vivek
 
