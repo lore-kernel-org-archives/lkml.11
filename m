@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ADDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02034C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243412AbiBYQyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:54:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37630 "EHLO
+        id S243395AbiBYQyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:54:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243265AbiBYQw4 (ORCPT
+        with ESMTP id S243267AbiBYQw4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Feb 2022 11:52:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D57DB1AF0E
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:52:22 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BEC22311E
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 08:52:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8057261D01
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6145B832A2
         for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:52:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B5BDC3410A;
-        Fri, 25 Feb 2022 16:52:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 525A3C340FE;
+        Fri, 25 Feb 2022 16:52:20 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1nNdpM-00B8Ok-FG;
-        Fri, 25 Feb 2022 11:52:20 -0500
-Message-ID: <20220225165220.299987881@goodmis.org>
+        id 1nNdpL-00B8LK-Ar;
+        Fri, 25 Feb 2022 11:52:19 -0500
+Message-ID: <20220225165219.175895786@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Fri, 25 Feb 2022 11:52:03 -0500
+Date:   Fri, 25 Feb 2022 11:51:57 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>
-Subject: [for-linus][PATCH 12/13] rtla/osnoise: Free params at the exit
+        Sven Schnelle <svens@linux.ibm.com>
+Subject: [for-linus][PATCH 06/13] tracing: Ensure trace buffer is at least 4096 bytes large
 References: <20220225165151.824659113@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -43,34 +42,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Sven Schnelle <svens@linux.ibm.com>
 
-The variable that stores the parsed command line arguments are not
-being free()d at the rtla osnoise top exit path.
+Booting the kernel with 'trace_buf_size=1' give a warning at
+boot during the ftrace selftests:
 
-Free params variable before exiting.
+[    0.892809] Running postponed tracer tests:
+[    0.892893] Testing tracer function:
+[    0.901899] Callback from call_rcu_tasks_trace() invoked.
+[    0.983829] Callback from call_rcu_tasks_rude() invoked.
+[    1.072003] .. bad ring buffer .. corrupted trace buffer ..
+[    1.091944] Callback from call_rcu_tasks() invoked.
+[    1.097695] PASSED
+[    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
+[    1.353474] ------------[ cut here ]------------
+[    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
 
-Link: https://lkml.kernel.org/r/0be31d8259c7c53b98a39769d60cfeecd8421785.1645206561.git.bristot@kernel.org
+Therefore enforce a minimum of 4096 bytes to make the selftest pass.
 
-Fixes: 1eceb2fc2ca5 ("rtla/osnoise: Add osnoise top mode")
-Cc: Jonathan Corbet <corbet@lwn.net>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Link: https://lkml.kernel.org/r/20220214134456.1751749-1-svens@linux.ibm.com
+
+Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- tools/tracing/rtla/src/osnoise_top.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/trace/trace.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/tools/tracing/rtla/src/osnoise_top.c b/tools/tracing/rtla/src/osnoise_top.c
-index c67dc28ef716..7af769b9c0de 100644
---- a/tools/tracing/rtla/src/osnoise_top.c
-+++ b/tools/tracing/rtla/src/osnoise_top.c
-@@ -573,6 +573,7 @@ int osnoise_top_main(int argc, char **argv)
- 	osnoise_free_top(tool->data);
- 	osnoise_destroy_tool(record);
- 	osnoise_destroy_tool(tool);
-+	free(params);
- out_exit:
- 	exit(return_value);
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index 7c2578efde26..3050892d1812 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -1474,10 +1474,12 @@ static int __init set_buf_size(char *str)
+ 	if (!str)
+ 		return 0;
+ 	buf_size = memparse(str, &str);
+-	/* nr_entries can not be zero */
+-	if (buf_size == 0)
+-		return 0;
+-	trace_buf_size = buf_size;
++	/*
++	 * nr_entries can not be zero and the startup
++	 * tests require some buffer space. Therefore
++	 * ensure we have at least 4096 bytes of buffer.
++	 */
++	trace_buf_size = max(4096UL, buf_size);
+ 	return 1;
  }
+ __setup("trace_buf_size=", set_buf_size);
 -- 
 2.34.1
