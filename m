@@ -2,203 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1012DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 20:51:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED55C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 20:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237856AbiBYUwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 15:52:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
+        id S237880AbiBYUwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 15:52:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237742AbiBYUwN (ORCPT
+        with ESMTP id S237665AbiBYUwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 15:52:13 -0500
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C38A218CCB;
-        Fri, 25 Feb 2022 12:51:40 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 1A74B1F386;
-        Fri, 25 Feb 2022 20:51:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1645822299; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GwSV9X9cBAL7jKPsCDtGJI+oXYu/I6gPphK0UyD/Has=;
-        b=m1uc5nS25JuKFCqOvCHavPwuu+t5jJyl73fSytjg24NcyCXacu9e2XLnmQgvMAaUC6gQZo
-        TzyUA8hq/E5thj5TvF24f5GqNYwfVPHUg/K60CIBV2j9V4+RLKZv+5u2fgKzmrqFg3GOA2
-        tJG327HYtXOma6xvhudueQzLPp69a9E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1645822299;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=GwSV9X9cBAL7jKPsCDtGJI+oXYu/I6gPphK0UyD/Has=;
-        b=YTrlcG7ONp1HOlLCNbnGGjhp3zvZ6EY56aaFhcO32THvCp/NGL4dFrPGWZaf60TmFUm3J5
-        U49E1X2P9AkInlDA==
-Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
-        by relay2.suse.de (Postfix) with ESMTP id D6B6BA3B8B;
-        Fri, 25 Feb 2022 20:51:38 +0000 (UTC)
-From:   Michal Suchanek <msuchanek@suse.de>
-To:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Michal Suchanek <msuchanek@suse.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, Martin Mares <mj@ucw.cz>,
-        Helge Deller <deller@gmx.de>, Ard Biesheuvel <ardb@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Herrmann <dh.herrmann@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-video@atrey.karlin.mff.cuni.cz,
-        linux-efi@vger.kernel.org, Borislav Petkov <bp@suse.de>
-Subject: [PATCH v4 2/3] sysfb: Enable boot time VESA graphic mode selection
-Date:   Fri, 25 Feb 2022 21:51:34 +0100
-Message-Id: <948c39940a4e99f5b43bdbcbe537faae71a43e1d.1645822213.git.msuchanek@suse.de>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <1f13e6f2-a87c-83ac-7119-8632c8c8ac8e@redhat.com>
-References: <1f13e6f2-a87c-83ac-7119-8632c8c8ac8e@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 25 Feb 2022 15:52:44 -0500
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2027821EB82
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 12:52:12 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id v4-20020a63f844000000b003745fd0919aso3231110pgj.20
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 12:52:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
+        bh=NrKSXSX0Ejbdt8Wd9QgUP4pP5j8LyGhFsIy8SA/+5XM=;
+        b=Pu2BcAX6cGgskeOtQrxvdXFfweiJZCrYIIB6EECZjjrqNkVsu3hHzVB+1Ac7tPIFME
+         yCHyVnwWaiBbBKMtVy9IeNley7jmwwtNnBA27mqCxK8zYo3meVHV9WV5Jm5Hi6YHMgYx
+         v9N4gGBwh3dG0+Z8EK/D5Q/DPLUVUqDbfel+5PZF+GeUcYBk0InYlWPAi3WWoX6A0j1J
+         i4TNmsxKSaLCTEtoGER4SpPT+f+owTkiNUj98olnZK5GQ+u9Ml8IF/d4vZaAdg0+o+c+
+         t4UZ6zRQQhs9xFKzDbBzGMkisI05ofGYOfWNAIuPnVE+mB5D//YDX0pWIOBrRH55FNID
+         qWNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
+         :from:to:cc;
+        bh=NrKSXSX0Ejbdt8Wd9QgUP4pP5j8LyGhFsIy8SA/+5XM=;
+        b=kwWqcV70u4mrCf91MfhD+KaX5ZByx0WPl5ZIisS/PI4rZXms35+r2jBWWGoiiuJFSm
+         t9ktigDihsFOoPYo2nMvVFTZDTzMfhW8Vez8xclETJw6r4dyuNTA7dv1J/kp4aX65Dc6
+         jvnYcp7kKwLPOJ+svaGLHOdtM54gjDCCOovG2j0eK5hVUlEuYS5m3LXRNKaWdJCiXIfh
+         pC4GHw0aaAqrOcvgDJzPX/U+XI3IvrmOup+33cqvIf+MM1uJiN9B7IFuiC7QK3PRo8n7
+         t3jyyXNv5LuMZkTo/IEnedp2po590/qaBdjbgTouGfruR9ueMwcLrKWI4uGLCJhYsddY
+         54Tw==
+X-Gm-Message-State: AOAM530qOzKrX+Eiew0ZUji3hxvXbgM3PyhZTH1DnH68HP7nFs1rfHsi
+        jTy4xgh1Pgha7j8C2fJoEBQJGL/zPyY=
+X-Google-Smtp-Source: ABdhPJwfoRUZoJ+hDw1N8Cvy3Kw/BmQ8vhMH1ng3RzEoTtbyh/OZpSVtSD9LwNYyACW1jfK4AV7TuoL80dU=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:90b:364f:b0:1bc:7337:d7df with SMTP id
+ nh15-20020a17090b364f00b001bc7337d7dfmr4923152pjb.61.1645822331502; Fri, 25
+ Feb 2022 12:52:11 -0800 (PST)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Fri, 25 Feb 2022 20:52:09 +0000
+Message-Id: <20220225205209.3881130-1-seanjc@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
+Subject: [PATCH] KVM: SVM: Exit to userspace on ENOMEM/EFAULT GHCB errors
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Alper Gun <alpergun@google.com>,
+        Peter Gonda <pgonda@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since switch to simplefb/simpledrm VESA graphic mode selection with vga=
-kernel parameter is no longer available with legacy BIOS.
+Exit to userspace if setup_vmgexit_scratch() fails due to OOM or because
+copying data from guest (userspace) memory failed/faulted.  The OOM
+scenario is clearcut, it's userspace's decision as to whether it should
+terminate the guest, free memory, etc...
 
-The x86 realmode boot code enables the VESA graphic modes when option
-FB_BOOT_VESA_SUPPORT is enabled.
+As for -EFAULT, arguably, any guest issue is a violation of the guest's
+contract with userspace, and thus userspace needs to decide how to
+proceed.  E.g. userspace defines what is RAM vs. MMIO and communicates
+that directly to the guest, KVM is not involved in deciding what is/isn't
+RAM nor in communicating that information to the guest.  If the scratch
+GPA doesn't resolve to a memslot, then the guest is not honoring the
+memory configuration as defined by userspace.
 
-This option is selected by vesafb but not simplefb/simpledrm.
+And if userspace unmaps an hva for whatever reason, then exiting to
+userspace with -EFAULT is absolutely the right thing to do.  KVM's ABI
+currently sucks and doesn't provide enough information to act on the
+-EFAULT, but that will hopefully be remedied in the future as there are
+multiple use cases, e.g. uffd and virtiofs truncation, that shouldn't
+require any work in KVM beyond returning -EFAULT with a small amount of
+metadata.
 
-To enable use of VESA modes with simplefb in legacy BIOS boot mode drop
-dependency of BOOT_VESA_SUPPORT on FB, also drop the FB_ prefix. Select
-the option from sysfb rather than the drivers that depend on it.
+KVM could define its ABI such that failure to access the scratch area is
+reflected into the guest, i.e. establish a contract with userspace, but
+that's undesirable as it limits KVM's options in the future, e.g. in the
+potential uffd case any failure on a uaccess needs to kick out to
+userspace.  KVM does have several cases where it reflects these errors
+into the guest, e.g. kvm_pv_clock_pairing() and Hyper-V emulation, but
+KVM would preferably "fix" those instead of propagating the falsehood
+that any memory failure is the guest's fault.
 
-The BOOT_VESA_SUPPORT is not specific to framebuffer but rather to x86
-platform, move it from fbdev to x86 Kconfig.
+Lastly, returning a boolean as an "error" for that a helper that isn't
+named accordingly never works out well.
 
-Fixes: e3263ab389a7 ("x86: provide platform-devices for boot-framebuffers")
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Borislav Petkov <bp@suse.de>
+Fixes: ad5b353240c8 ("KVM: SVM: Do not terminate SEV-ES guests on GHCB validation failure")
+Cc: Alper Gun <alpergun@google.com>
+Cc: Peter Gonda <pgonda@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
-v2: Select BOOT_VESA_SUPPORT from simplefb rather than simpledrm. The
-simpledrm driver uses the firmware provided video modes only indirectly
-through simplefb, and both can be enabled independently.
-v3: Move BOOT_VESA_SUPPORT from fbdev to x86
-v4: Select BOOT_VESA_SUPPORT from sysfb rather than individial sysfb based drivers.
----
- arch/x86/Kconfig            |  6 ++++++
- arch/x86/boot/video-vesa.c  |  4 ++--
- drivers/firmware/Kconfig    |  1 +
- drivers/video/fbdev/Kconfig | 12 ++----------
- 4 files changed, 11 insertions(+), 12 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 9f5bd41bf660..cceb1aab0486 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -942,6 +942,12 @@ config GART_IOMMU
+This is feedback for the "fixed" commit that got lost[*].  I felt quite
+strongly about not returning booleans then, and I feel even more strongly
+now as Alper got burned by this when backporting SEV-ES support.  Even if
+we don't want to exit to userspace, we should at least avoid using bools
+as error codes.
+
+As before, compile tested only.
+
+[*] https://lore.kernel.org/all/YapIMYiJ+iIfHI+c@google.com
+
+ arch/x86/kvm/svm/sev.c | 36 +++++++++++++++++++++---------------
+ 1 file changed, 21 insertions(+), 15 deletions(-)
+
+diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+index 789b69294d28..75fa6dd268f0 100644
+--- a/arch/x86/kvm/svm/sev.c
++++ b/arch/x86/kvm/svm/sev.c
+@@ -2377,7 +2377,7 @@ static void sev_es_sync_from_ghcb(struct vcpu_svm *svm)
+ 	memset(ghcb->save.valid_bitmap, 0, sizeof(ghcb->save.valid_bitmap));
+ }
  
- 	  If unsure, say Y.
+-static bool sev_es_validate_vmgexit(struct vcpu_svm *svm)
++static int sev_es_validate_vmgexit(struct vcpu_svm *svm)
+ {
+ 	struct kvm_vcpu *vcpu;
+ 	struct ghcb *ghcb;
+@@ -2482,7 +2482,7 @@ static bool sev_es_validate_vmgexit(struct vcpu_svm *svm)
+ 		goto vmgexit_err;
+ 	}
  
-+config BOOT_VESA_SUPPORT
-+	bool
-+	help
-+	  If true, at least one selected framebuffer driver can take advantage
-+	  of VESA video modes set at an early boot stage via the vga= parameter.
-+
- config MAXSMP
- 	bool "Enable Maximum number of SMP Processors and NUMA Nodes"
- 	depends on X86_64 && SMP && DEBUG_KERNEL
-diff --git a/arch/x86/boot/video-vesa.c b/arch/x86/boot/video-vesa.c
-index 7e185977a984..c2c6d35e3a43 100644
---- a/arch/x86/boot/video-vesa.c
-+++ b/arch/x86/boot/video-vesa.c
-@@ -83,7 +83,7 @@ static int vesa_probe(void)
- 			   (vminfo.memory_layout == 4 ||
- 			    vminfo.memory_layout == 6) &&
- 			   vminfo.memory_planes == 1) {
--#ifdef CONFIG_FB_BOOT_VESA_SUPPORT
-+#ifdef CONFIG_BOOT_VESA_SUPPORT
- 			/* Graphics mode, color, linear frame buffer
- 			   supported.  Only register the mode if
- 			   if framebuffer is configured, however,
-@@ -121,7 +121,7 @@ static int vesa_set_mode(struct mode_info *mode)
- 	if ((vminfo.mode_attr & 0x15) == 0x05) {
- 		/* It's a supported text mode */
- 		is_graphic = 0;
--#ifdef CONFIG_FB_BOOT_VESA_SUPPORT
-+#ifdef CONFIG_BOOT_VESA_SUPPORT
- 	} else if ((vminfo.mode_attr & 0x99) == 0x99) {
- 		/* It's a graphics mode with linear frame buffer */
- 		is_graphic = 1;
-diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
-index 5265eca74ba1..be42ae6f079e 100644
---- a/drivers/firmware/Kconfig
-+++ b/drivers/firmware/Kconfig
-@@ -218,6 +218,7 @@ config QCOM_SCM_DOWNLOAD_MODE_DEFAULT
+-	return true;
++	return 0;
  
- config SYSFB
- 	bool
-+	select BOOT_VESA_SUPPORT
+ vmgexit_err:
+ 	vcpu = &svm->vcpu;
+@@ -2505,7 +2505,8 @@ static bool sev_es_validate_vmgexit(struct vcpu_svm *svm)
+ 	ghcb_set_sw_exit_info_1(ghcb, 2);
+ 	ghcb_set_sw_exit_info_2(ghcb, reason);
  
- config SYSFB_SIMPLEFB
- 	bool "Mark VGA/VBE/EFI FB as generic system framebuffer"
-diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
-index 907c305caf27..0e25434a71e1 100644
---- a/drivers/video/fbdev/Kconfig
-+++ b/drivers/video/fbdev/Kconfig
-@@ -66,13 +66,6 @@ config FB_DDC
- 	select I2C_ALGOBIT
- 	select I2C
+-	return false;
++	/* Resume the guest to "return" the error code. */
++	return 1;
+ }
  
--config FB_BOOT_VESA_SUPPORT
--	bool
--	depends on FB
--	help
--	  If true, at least one selected framebuffer driver can take advantage
--	  of VESA video modes set at an early boot stage via the vga= parameter.
--
- config FB_CFB_FILLRECT
- 	tristate
- 	depends on FB
-@@ -627,7 +620,6 @@ config FB_VESA
- 	select FB_CFB_FILLRECT
- 	select FB_CFB_COPYAREA
- 	select FB_CFB_IMAGEBLIT
--	select FB_BOOT_VESA_SUPPORT
- 	select SYSFB
- 	help
- 	  This is the frame buffer device driver for generic VESA 2.0
-@@ -1053,7 +1045,7 @@ config FB_INTEL
- 	select FB_CFB_FILLRECT
- 	select FB_CFB_COPYAREA
- 	select FB_CFB_IMAGEBLIT
--	select FB_BOOT_VESA_SUPPORT if FB_INTEL = y
-+	select BOOT_VESA_SUPPORT if FB_INTEL = y
- 	depends on !DRM_I915
- 	help
- 	  This driver supports the on-board graphics built in to the Intel
-@@ -1380,7 +1372,7 @@ config FB_SIS
- 	select FB_CFB_FILLRECT
- 	select FB_CFB_COPYAREA
- 	select FB_CFB_IMAGEBLIT
--	select FB_BOOT_VESA_SUPPORT if FB_SIS = y
-+	select BOOT_VESA_SUPPORT if FB_SIS = y
- 	select FB_SIS_300 if !FB_SIS_315
- 	help
- 	  This is the frame buffer device driver for the SiS 300, 315, 330
+ void sev_es_unmap_ghcb(struct vcpu_svm *svm)
+@@ -2564,7 +2565,7 @@ void pre_sev_run(struct vcpu_svm *svm, int cpu)
+ }
+ 
+ #define GHCB_SCRATCH_AREA_LIMIT		(16ULL * PAGE_SIZE)
+-static bool setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
++static int setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
+ {
+ 	struct vmcb_control_area *control = &svm->vmcb->control;
+ 	struct ghcb *ghcb = svm->sev_es.ghcb;
+@@ -2617,14 +2618,14 @@ static bool setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
+ 		}
+ 		scratch_va = kvzalloc(len, GFP_KERNEL_ACCOUNT);
+ 		if (!scratch_va)
+-			goto e_scratch;
++			return -ENOMEM;
+ 
+ 		if (kvm_read_guest(svm->vcpu.kvm, scratch_gpa_beg, scratch_va, len)) {
+ 			/* Unable to copy scratch area from guest */
+ 			pr_err("vmgexit: kvm_read_guest for scratch area failed\n");
+ 
+ 			kvfree(scratch_va);
+-			goto e_scratch;
++			return -EFAULT;
+ 		}
+ 
+ 		/*
+@@ -2640,13 +2641,13 @@ static bool setup_vmgexit_scratch(struct vcpu_svm *svm, bool sync, u64 len)
+ 	svm->sev_es.ghcb_sa = scratch_va;
+ 	svm->sev_es.ghcb_sa_len = len;
+ 
+-	return true;
++	return 0;
+ 
+ e_scratch:
+ 	ghcb_set_sw_exit_info_1(ghcb, 2);
+ 	ghcb_set_sw_exit_info_2(ghcb, GHCB_ERR_INVALID_SCRATCH_AREA);
+ 
+-	return false;
++	return 1;
+ }
+ 
+ static void set_ghcb_msr_bits(struct vcpu_svm *svm, u64 value, u64 mask,
+@@ -2784,17 +2785,18 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
+ 
+ 	exit_code = ghcb_get_sw_exit_code(ghcb);
+ 
+-	if (!sev_es_validate_vmgexit(svm))
+-		return 1;
++	ret = sev_es_validate_vmgexit(svm);
++	if (ret)
++		return ret;
+ 
+ 	sev_es_sync_from_ghcb(svm);
+ 	ghcb_set_sw_exit_info_1(ghcb, 0);
+ 	ghcb_set_sw_exit_info_2(ghcb, 0);
+ 
+-	ret = 1;
+ 	switch (exit_code) {
+ 	case SVM_VMGEXIT_MMIO_READ:
+-		if (!setup_vmgexit_scratch(svm, true, control->exit_info_2))
++		ret = setup_vmgexit_scratch(svm, true, control->exit_info_2);
++		if (ret)
+ 			break;
+ 
+ 		ret = kvm_sev_es_mmio_read(vcpu,
+@@ -2803,7 +2805,8 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
+ 					   svm->sev_es.ghcb_sa);
+ 		break;
+ 	case SVM_VMGEXIT_MMIO_WRITE:
+-		if (!setup_vmgexit_scratch(svm, false, control->exit_info_2))
++		ret = setup_vmgexit_scratch(svm, false, control->exit_info_2);
++		if (ret)
+ 			break;
+ 
+ 		ret = kvm_sev_es_mmio_write(vcpu,
+@@ -2836,6 +2839,7 @@ int sev_handle_vmgexit(struct kvm_vcpu *vcpu)
+ 			ghcb_set_sw_exit_info_2(ghcb, GHCB_ERR_INVALID_INPUT);
+ 		}
+ 
++		ret = 1;
+ 		break;
+ 	}
+ 	case SVM_VMGEXIT_UNSUPPORTED_EVENT:
+@@ -2855,6 +2859,7 @@ int sev_es_string_io(struct vcpu_svm *svm, int size, unsigned int port, int in)
+ {
+ 	int count;
+ 	int bytes;
++	int r;
+ 
+ 	if (svm->vmcb->control.exit_info_2 > INT_MAX)
+ 		return -EINVAL;
+@@ -2863,8 +2868,9 @@ int sev_es_string_io(struct vcpu_svm *svm, int size, unsigned int port, int in)
+ 	if (unlikely(check_mul_overflow(count, size, &bytes)))
+ 		return -EINVAL;
+ 
+-	if (!setup_vmgexit_scratch(svm, in, bytes))
+-		return 1;
++	r = setup_vmgexit_scratch(svm, in, bytes);
++	if (r)
++		return r;
+ 
+ 	return kvm_sev_es_string_io(&svm->vcpu, size, port, svm->sev_es.ghcb_sa,
+ 				    count, in);
+
+base-commit: 625e7ef7da1a4addd8db41c2504fe8a25b93acd5
 -- 
-2.34.1
+2.35.1.574.g5d30c73bfb-goog
 
