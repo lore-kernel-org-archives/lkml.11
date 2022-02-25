@@ -2,107 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D835C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 16:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242462AbiBYQB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 11:01:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52352 "EHLO
+        id S242538AbiBYQBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 11:01:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237269AbiBYQBV (ORCPT
+        with ESMTP id S237269AbiBYQBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 11:01:21 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A451F1244;
-        Fri, 25 Feb 2022 08:00:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645804849; x=1677340849;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=K8VkR/kbOb0KBxltMFpm/So3glqC1wOwZKLM8ttnp2Q=;
-  b=mfHUs5xE4+Fv4pz5ToCOywZ/faV6RtODyr4dR0Y2FlbJcYOxAUzw5xE5
-   anh25m2VfiysZ4hK8/6KXl2nINzsVwWfJdwXd+Hdui5ibARUPW06aHaCh
-   VN+uFzzF+FAfyfwnhJ5aBUPwtYbRwXD6gaqNsHVegSSWUMBnGwF75vQ/v
-   sQqfQ1i5uhs+FBoGeyoudd93oCwJp/QJ64Ewr44QXukRABbXEiYpqWBLu
-   OGEhKWzjAsllVJMWGDQgZe/Iq0qB5s5wP7O8rnHstjYNBgyZ82WLgd6y0
-   iR3teCHu+AMudlUOScmv4lMOTWEwMQI+qx2VfN5sWaYp01VELfGgu3H5E
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10268"; a="315737207"
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="315737207"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2022 08:00:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,136,1643702400"; 
-   d="scan'208";a="533615385"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.68])
-  by orsmga007.jf.intel.com with ESMTP; 25 Feb 2022 08:00:47 -0800
-Date:   Fri, 25 Feb 2022 23:52:08 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Yusuf Khan <yusisamerican@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        mdf@kernel.org, trix@redhat.com, hao.wu@intel.com
-Subject: Re: [PATCH -next] pga: dfl: pci: Make sure DMA related error check
- is  not done twice
-Message-ID: <20220225155208.GA1377611@yilunxu-OptiPlex-7050>
-References: <20220222042700.385001-1-yusisamerican@gmail.com>
- <CAJoG2+-97KyWrxym2NXECRtjT9OxVQE_=DcNkUfOsPm_Ax90Aw@mail.gmail.com>
+        Fri, 25 Feb 2022 11:01:40 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0459A1F125C;
+        Fri, 25 Feb 2022 08:01:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=wfjhhRO+5XQUgZqXRTp6j+39HFHaPTJy/wyfDgOULLA=; b=u96BIZxc+turssbOCVzJwjMepN
+        +prbPyjppZFBCcBqcM2h1LK4A0f6gF1ozzaUnu6LZe3hyl/F3fn8r/ne9Ph/RmOfKam0187y6rN5J
+        U2SOWvWp3GEhHGIbd72NzwoTwX9SoECBZCkDh33ZTwk075bsWBJYYnD1Pt/q6ja/rV2IoxpSLdPoX
+        VtQHBv/cAXe1mZPvc1E84sB25qi+Oi/uKTdezrhBXxjKpIxcbAzHnrcpSTThynVOEWV/5InAQ46yF
+        nJs/onZe86RLvJmKnTU8Pxft/pFvNP/V81PWX1bIH0bWnGgzel783pZ5jJFwti+WU/KiklijQWOHC
+        vEUuQlGw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nNd1h-005mFy-2R; Fri, 25 Feb 2022 16:01:01 +0000
+Date:   Fri, 25 Feb 2022 08:01:01 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        pmenzel@molgen.mpg.de, hdegoede@redhat.com
+Subject: Re: [PATCH v2 1/3] ata: ahci: Rename board_ahci_mobile
+Message-ID: <Yhj9Pdp/sHASmBw4@infradead.org>
+References: <20220225061113.223920-1-mario.limonciello@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJoG2+-97KyWrxym2NXECRtjT9OxVQE_=DcNkUfOsPm_Ax90Aw@mail.gmail.com>
+In-Reply-To: <20220225061113.223920-1-mario.limonciello@amd.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 21, 2022 at 08:39:48PM -0800, Yusuf Khan wrote:
-> Note: This bug was introduced here:
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/patch/?id=ada3caabaf6135150077c3f729bb06e8f3b5b8f6
-> I saw this commit inside the linux-next branch, it is not present in
-> the mainline branch.
-> The linux-next branch was last updated 5 days ago, so I am unsure
-> about the state of that commit.
+On Fri, Feb 25, 2022 at 12:11:11AM -0600, Mario Limonciello wrote:
+> This board definition was originally created for mobile devices to
+> designate default link power managmeent policy to influence runtime
+> power consumption.
 > 
-> On Mon, Feb 21, 2022 at 8:27 PM Yusuf Khan <yusisamerican@gmail.com> wrote:
-> >
-> > In the case that the DMA 64 bit bit mask error check does not fail,
-> > the error check will be done twice, this patch fixed that.
-> >
-> > NOTE: This patch is only for use in the linux-next branch as the
-> > commit that caused this bug happened there.
-> >
-> > Signed-off-by: Yusuf Khan <yusisamerican@gmail.com>
-> > ---
-> >  drivers/fpga/dfl-pci.c | 9 +++++----
-> >  1 file changed, 5 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
-> > index 717ac9715970..6222f18aed4b 100644
-> > --- a/drivers/fpga/dfl-pci.c
-> > +++ b/drivers/fpga/dfl-pci.c
-> > @@ -356,11 +356,12 @@ int cci_pci_probe(struct pci_dev *pcidev, const struct pci_device_id *pcidevid)
-> >         pci_set_master(pcidev);
-> >
-> >         ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(64));
-> > -       if (ret)
-> > -               ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32));
-> >         if (ret) {
-> > -               dev_err(&pcidev->dev, "No suitable DMA support available.\n");
-> > -               goto disable_error_report_exit;
-> > +               ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32));
-> > +               if (ret) {
-> > +                       dev_err(&pcidev->dev, "No suitable DMA support available.\n");
-> > +                       goto disable_error_report_exit;
-> > +               }
+> As this is interesting for more than just mobile designs, rename the
+> board to `board_ahci_low_power` to make it clear it is about default
+> policy.
 
-Looks good to me.
-
-Acked-by: Xu Yilun <yilun.xu@intel.com>
-
-> >         }
-> >
-> >         ret = cci_init_drvdata(pcidev);
-> > --
-> > 2.25.1
-> >
+Is there any good reason to not just apply the policy to all devices
+by default?
