@@ -2,153 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94888C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9816CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:33:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234909AbiBYTdu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 14:33:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
+        id S234954AbiBYTeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 14:34:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234759AbiBYTds (ORCPT
+        with ESMTP id S234759AbiBYTeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 14:33:48 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113941986F0;
-        Fri, 25 Feb 2022 11:33:15 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id d17so5942618wrc.9;
-        Fri, 25 Feb 2022 11:33:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mTabVBpdhiK8UZ6gYY0q0CbgdkcTzXpvDDahteadHtk=;
-        b=KqEfD0QFY48L5w9MBf4PJotkLP+NQN3xHmZQkR/HYQfcDqhuBk/QSn0Zyc4vZOsRvd
-         XqkzUYrkLvkyTkQPBAmA5aT28iuddvEajLv8Bcw38sfLscC4/I3Q90AWOWIyC6E2csW9
-         VqsIJausYk4BR8HMZgPd7G9EVuEPOBoMegz1lEfLVsFTbgs6TPFUJAt+zWcu6vsc2+Ab
-         mYU+UPAVgzwb5ki5lfDIkSUglJZQpsUBeKI0F1qKYqB8rXHdmt+8NtHC4OHT1dSKQfz6
-         z9JHi+2Kpm+ZbbCzq3U4aby39rvc8qSdwtkd1QfaZD65Uumb9VMs4+nFjxihf43YmPIL
-         MOLQ==
+        Fri, 25 Feb 2022 14:34:19 -0500
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A3B1986F0;
+        Fri, 25 Feb 2022 11:33:47 -0800 (PST)
+Received: by mail-ot1-f42.google.com with SMTP id g6-20020a9d6486000000b005acf9a0b644so4308820otl.12;
+        Fri, 25 Feb 2022 11:33:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mTabVBpdhiK8UZ6gYY0q0CbgdkcTzXpvDDahteadHtk=;
-        b=JyoIHsTwI3Aj2DdUgbAXJ6iPbf9C70cbn2hCXMx7EBAfMO/f7Pj+HlyCFWzvUQk9hT
-         F2K5UFDXLHoIuUzdzdKNajP02HTiTfkZFx0Zm2G/apE4otowReoYzJKrlFohqdcy+4kZ
-         l9ZQ/9gauH4Gmn5rj50SX9s47rykEE2cRzBHibc+PR/b+DswPtKcXilWDxEhnWiQSJMU
-         aToKEXgmBCw7J85cfjxLsxWfA9QQpomT3Ikr8/gCPGzcJJbVBpVtdwWZNTH3WcaPu/o1
-         1tHBu6uMVy4wljQWX0TQoezvikr5krexs4wgPLs1NLtDdO7NITOqbiQd3FXq+ALpyFny
-         CMeA==
-X-Gm-Message-State: AOAM532vKvUucHfpQqnPF/OKPBcYI9nzCifDZ49DwidwB76TOZHa7IYr
-        OsgYKkfBuLBmkxQ80VNNlDM=
-X-Google-Smtp-Source: ABdhPJyGFJ0ColLkne3T6BJpK+32d8j6YcS3hAhC7NRH0q1U0DWrDs5cqK3liozxoNnjPv3lwXBTMA==
-X-Received: by 2002:a5d:4d4a:0:b0:1ec:fab3:61bb with SMTP id a10-20020a5d4d4a000000b001ecfab361bbmr5128965wru.50.1645817593652;
-        Fri, 25 Feb 2022 11:33:13 -0800 (PST)
-Received: from kista.localnet (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
-        by smtp.gmail.com with ESMTPSA id w26-20020a7bc11a000000b0037bf8fa8c02sm3240281wmi.13.2022.02.25.11.33.12
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LXWgeu8+968e0Kmo1u41wpbvPdau1hEHUCnnzvatggs=;
+        b=fKOWqXIo2ZTw5ILsrdzx/IpT63kph4r3+5H8szQe/vQ8Bb8EY39rZvz4jGDCJk3iAC
+         XmpkrwwmhyRQTaOQZX+24nf4whMPV+/qUN/twmORXeE01OrbtPeKO7zM4FYouDaUKa/E
+         UGebIKNnWHob1rx7nODdrs0POHNXuhpR+Y59dC0FB26Oi3gAQJmPQ/bU2mG1yGiYX4Xi
+         jotQBgaTajwkYLOA5F0t6vXovgYjrdWu18ZmQ4SXblWxfJ4AGRBxsgzdiALCmuZ9VIaA
+         Fm36MkN4FD8m07F0PEnrAYg8nR9519jlp9qPTtDZRxo/qPqc5sxevcmWWuLw9IwFztPN
+         RDDw==
+X-Gm-Message-State: AOAM533J5YKOaL2LVuluAWz12X7ZbNKXa5xUb0tVrwAhCaSqWnDGuMlB
+        X9df49KL8i3AB+W8TxgKQw==
+X-Google-Smtp-Source: ABdhPJzWS5GZdRiTixomm/Zw4NMpp3+A1z1Lq0uTL92KKpb/O56qwbzhuIIrXP/F+SlhamPdwaRolA==
+X-Received: by 2002:a9d:b93:0:b0:5af:82ec:574e with SMTP id 19-20020a9d0b93000000b005af82ec574emr3573389oth.209.1645817626861;
+        Fri, 25 Feb 2022 11:33:46 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id a27-20020a4ae93b000000b0031be7c7d2d3sm1524442ooe.0.2022.02.25.11.33.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 11:33:13 -0800 (PST)
-From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To:     mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        jonas@kwiboo.se, nicolas@ndufresne.ca,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com, knaerzche@gmail.com, jc@kynesim.co.uk,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: Re: [PATCH v3 00/14] Move HEVC stateless controls out of staging
-Date:   Fri, 25 Feb 2022 20:33:12 +0100
-Message-ID: <1807725.tdWV9SEqCh@kista>
-In-Reply-To: <20220225164600.1044663-1-benjamin.gaignard@collabora.com>
-References: <20220225164600.1044663-1-benjamin.gaignard@collabora.com>
+        Fri, 25 Feb 2022 11:33:46 -0800 (PST)
+Received: (nullmailer pid 1299041 invoked by uid 1000);
+        Fri, 25 Feb 2022 19:33:45 -0000
+Date:   Fri, 25 Feb 2022 13:33:45 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Avri Altman <avri.altman@wdc.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Yaniv Gardi <ygardi@codeaurora.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Li Wei <liwei213@huawei.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Jan Kotas <jank@cadence.com>, Wei Xu <xuwei5@hisilicon.com>,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        linux-mediatek@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, linux-scsi@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Tero Kristo <kristo@kernel.org>, linux-kernel@vger.kernel.org,
+        Nishanth Menon <nm@ti.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>
+Subject: Re: [PATCH v2 05/15] dt-bindings: ufs: qcom,ufs: convert to dtschema
+Message-ID: <YhkvGS8dSA0Sh0nR@robh.at.kernel.org>
+References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
+ <20220222145854.358646-6-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220222145854.358646-6-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Benjamin!
-
-Dne petek, 25. februar 2022 ob 17:45:46 CET je Benjamin Gaignard napisal(a):
-> This series aims to make HEVC uapi stable and usable for hardware
-> decoder. HEVC uapi is used by 2 mainlined drivers (Cedrus and Hantro)
-> and 2 out of the tree drivers (rkvdec and RPI).
+On Tue, 22 Feb 2022 15:58:44 +0100, Krzysztof Kozlowski wrote:
+> Convert the Qualcomm Universal Flash Storage (UFS) Controller to DT
+> schema format.
 > 
-> After the remarks done on version 2, I have completely reworked to patches 
-> split so changelogs are meaningless. I have also drop "RFC" from the
-> titles.
+> Except the conversion, add also properties already present in DTS:
+> iommus, interconnects and power-domains.
 > 
-> In this v3 I do all the changes (new controls, documentation, etc..)
-> in the staging directory before moving the HEVC uAPI to stable 
-> steps by steps (unlike the big one patch in v2).
-> 
-> At the end fluster tests results on IMX8MQ is 77/147 for HEVC codec.
-
-I'm working on PoC code for V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSET on 
-Cedrus, which should be finished over weekend.
-
-Note: git am complained about trailing spaces. Run scripts/checkpatch.pl --
-strict on patches before sending next round.
-
-Best regards,
-Jernej
-
-> 
-> Benjamin
-> 
-> Benjamin Gaignard (11):
->   media: uapi: HEVC: Add missing fields in HEVC controls
->   media: uapi: HEVC: Rename HEVC stateless controls with STATELESS
->     prefix
->   media: uapi: HEVC: Add document uAPI structure
->   media: uapi: HEVC: Define V4L2_CID_STATELESS_HEVC_SLICE_PARAMS as a
->     dynamic array
->   media: uapi: Move parsed HEVC pixel format out of staging
->   media: uapi: Add V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSET control
->   media: uapi: Move the HEVC stateless control type out of staging
->   media: controls: Log HEVC stateless control in .std_log
->   media: uapi: Create a dedicated header for Hantro control
->   media: uapi: HEVC: fix padding in v4l2 control structures
->   media: uapi: move HEVC stateless controls out of staging
-> 
-> Hans Verkuil (3):
->   videodev2.h: add V4L2_CTRL_FLAG_DYNAMIC_ARRAY
->   v4l2-ctrls: add support for dynamically allocated arrays.
->   vivid: add dynamic array test control
-> 
->  .../userspace-api/media/drivers/hantro.rst    |   5 -
->  .../media/v4l/ext-ctrls-codec-stateless.rst   | 831 ++++++++++++++++++
->  .../media/v4l/ext-ctrls-codec.rst             | 780 ----------------
->  .../media/v4l/pixfmt-compressed.rst           |   7 +-
->  .../media/v4l/vidioc-g-ext-ctrls.rst          |  20 +
->  .../media/v4l/vidioc-queryctrl.rst            |   8 +
->  .../media/videodev2.h.rst.exceptions          |   5 +
->  .../media/test-drivers/vivid/vivid-ctrls.c    |  15 +
->  drivers/media/v4l2-core/v4l2-ctrls-api.c      | 103 ++-
->  drivers/media/v4l2-core/v4l2-ctrls-core.c     | 198 ++++-
->  drivers/media/v4l2-core/v4l2-ctrls-defs.c     |  32 +-
->  drivers/media/v4l2-core/v4l2-ctrls-priv.h     |   3 +-
->  drivers/media/v4l2-core/v4l2-ctrls-request.c  |  13 +-
->  drivers/staging/media/hantro/hantro_drv.c     |  27 +-
->  drivers/staging/media/hantro/hantro_hevc.c    |   8 +-
->  drivers/staging/media/sunxi/cedrus/cedrus.c   |  24 +-
->  .../staging/media/sunxi/cedrus/cedrus_dec.c   |  10 +-
->  include/media/hevc-ctrls.h                    | 250 ------
->  include/media/v4l2-ctrls.h                    |  48 +-
->  include/uapi/linux/hantro-media.h             |  19 +
->  include/uapi/linux/v4l2-controls.h            | 436 +++++++++
->  include/uapi/linux/videodev2.h                |  13 +
->  22 files changed, 1686 insertions(+), 1169 deletions(-)
->  delete mode 100644 include/media/hevc-ctrls.h
->  create mode 100644 include/uapi/linux/hantro-media.h
-> 
-> -- 
-> 2.32.0
-> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  .../devicetree/bindings/ufs/qcom,ufs.yaml     | 241 ++++++++++++++++++
+>  .../devicetree/bindings/ufs/ufshcd-pltfrm.txt |  90 -------
+>  2 files changed, 241 insertions(+), 90 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/ufs/qcom,ufs.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/ufs/ufshcd-pltfrm.txt
 > 
 
-
+Reviewed-by: Rob Herring <robh@kernel.org>
