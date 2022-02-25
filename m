@@ -2,127 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF868C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC252C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 19:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235137AbiBYTfn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 14:35:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57924 "EHLO
+        id S235317AbiBYTgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 14:36:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235262AbiBYTfj (ORCPT
+        with ESMTP id S235242AbiBYTgL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 14:35:39 -0500
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2083.outbound.protection.outlook.com [40.107.244.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9AF21045A
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 11:35:06 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WE3NJQCPyf6gGt8PnBdhmTjQ1VNN3HeeL/mNlCqjXpSx/R1N0Bt0NgNU4znH101vV0ipWyKoOC/Gu72aWwPL1iCUSkv0VZC+lPQKwlco0vcyS4oC/Qsjup0hQltyDW7r8/CNncBbrMfMGPpwsyPk1Lsd1p8jM9C1KQHzLCVHvM7PUBvrVvOKHgxzyb6Et6ZKNLrrIgLOh19EKZE3uUvWp9d3qrR1XD5+WNvt61kKghKccxozHkSFPis+DLe7vC7STZh3tzujnTGRARNHyvzR1g5wcCI1VY6BQyyMjKFQIUCmmHuZMYV9Z0GfLUVQ4KipRBRoTpP8ICND2gLW2Rf2YA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HC4ndKkpKXKWwiRAMnVGzBo7zxZ8TlguMupPQfnxF50=;
- b=YzV2YoLwZrDQu79NHYuZV2d5UGpanl8i0ChFjyDgK4MGDXYNWOuBKSD5eHFWiumA9RZwySpkpR+Y5uf0okMGG80RdevW27dKFMc/fyaNdnOB8XURmUJfsFOG7z5HbFWYlBDdiDOX2HD/iTgyoTjHmkcMl6ri7N2lb77v/KQntulYTwJAWXDqPvaXxlqX3kNlpRpVVxk+OTvwkG/rXO434XQuo7ryj/bNdIuEvtwyWQtlGzT9VmxCTMSTDjy9zbvAIrinqpWT9h+1ZFhJA7EkYrGpC/cOYmOTw3XKScoCWbpLxM71Q3RJowUoalRJ8G8QlShnutoVy9HcWzCJBsQalw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HC4ndKkpKXKWwiRAMnVGzBo7zxZ8TlguMupPQfnxF50=;
- b=q8afhGURvCTUKVblauuyjTxsH9Gi0a4Yr6AZIMfxYAO78S9tAXUVtZPTsfbW0K+SX+gXDPWUmR48SRNQbufJkgsiPpEPWn+3ByfF8SwyhNMQ5x7ksxrDd+cDC1YsssbWxQaQtTJ2rTzJ+j+FsjPQU8yLkNYnulGNs253+4hX+Hk=
-Received: from BN8PR15CA0039.namprd15.prod.outlook.com (2603:10b6:408:80::16)
- by MWHPR12MB1375.namprd12.prod.outlook.com (2603:10b6:300:10::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Fri, 25 Feb
- 2022 19:35:03 +0000
-Received: from BN8NAM11FT062.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:80:cafe::8) by BN8PR15CA0039.outlook.office365.com
- (2603:10b6:408:80::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26 via Frontend
- Transport; Fri, 25 Feb 2022 19:35:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB03.amd.com;
-Received: from SATLEXMB03.amd.com (165.204.84.17) by
- BN8NAM11FT062.mail.protection.outlook.com (10.13.177.34) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5017.22 via Frontend Transport; Fri, 25 Feb 2022 19:35:01 +0000
-Received: from SATLEXMB05.amd.com (10.181.40.146) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 25 Feb
- 2022 13:35:01 -0600
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB05.amd.com
- (10.181.40.146) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 25 Feb
- 2022 13:35:00 -0600
-Received: from LinuxHost.amd.com (10.180.168.240) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 25 Feb 2022 13:34:57 -0600
-From:   Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
-CC:     <Alexander.Deucher@amd.com>, <Sunil-kumar.Dommati@amd.com>,
-        <krisman@collabora.com>, <dan.carpenter@oracle.com>,
-        Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        "Jaroslav Kysela" <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH V2 4/4] ASoC: amd: vangogh: fix uninitialized symbol warning in machine driver
-Date:   Sat, 26 Feb 2022 01:00:25 +0530
-Message-ID: <20220225193054.24916-4-Vijendar.Mukunda@amd.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220225193054.24916-1-Vijendar.Mukunda@amd.com>
-References: <20220225193054.24916-1-Vijendar.Mukunda@amd.com>
+        Fri, 25 Feb 2022 14:36:11 -0500
+Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4754A1AAFF5;
+        Fri, 25 Feb 2022 11:35:36 -0800 (PST)
+Received: by mail-oo1-f51.google.com with SMTP id i6-20020a4ac506000000b0031c5ac6c078so7684853ooq.6;
+        Fri, 25 Feb 2022 11:35:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=89L85cYit20bkFsWPwAmB3tmEEHx1GMuglloEs9LbG8=;
+        b=yYrSuKQFhTq3AyIAhqJ0wynxlBnInRHpwKUeQsekn57J//VpEbHE8zJPpYjx+vB/PZ
+         YWC8iDO3Sf98ZK2A1Tc3M9Y0UPqoBM4dvw6DBgwxGznCNaTKJuQfPp1Pin9RgJuJXNGI
+         lBusokBpyjGzVThxKh2GHm/LGRe5TJ5JyVZ8z1GALZ/t1NKbLl3Pzsz5v4FSqkG6hXM7
+         E3fWDtVpBu24E6fhIhKHYAqefvp0qkK2/+HEWz6Pgo5ZyxcWQJL3h0M8i6Qmv5+0f0Gy
+         yrq+3oMGrqTQJpQOKDABlzG3rRbKCSfrIi4BTZYJ9tCBxB0ZmzPDnXJ0ZwzZMWlyZWyp
+         1Dxw==
+X-Gm-Message-State: AOAM532vdivS6I884S2mN/eBseBJQTa8lMoYKoXoX4VxPUGU9YNeYorF
+        hiqWCI2Q0IuxNJA5h+FmgQ==
+X-Google-Smtp-Source: ABdhPJwTB3dMTBlwo5pHLDzpohHjFzoCrMqR0lPTutQ46f+OsP6T04QO8IFX4yubZI0OTunbKa3GwQ==
+X-Received: by 2002:a05:6870:ee0d:b0:ce:c0c9:64a with SMTP id ga13-20020a056870ee0d00b000cec0c9064amr2072910oab.156.1645817735262;
+        Fri, 25 Feb 2022 11:35:35 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id j25-20020a4ad199000000b003171dfeb5bfsm1458351oor.15.2022.02.25.11.35.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 11:35:34 -0800 (PST)
+Received: (nullmailer pid 1301936 invoked by uid 1000);
+        Fri, 25 Feb 2022 19:35:33 -0000
+Date:   Fri, 25 Feb 2022 13:35:33 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, Tero Kristo <kristo@kernel.org>,
+        Jan Kotas <jank@cadence.com>,
+        Avri Altman <avri.altman@wdc.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        devicetree@vger.kernel.org, linux-scsi@vger.kernel.org,
+        Stanley Chu <stanley.chu@mediatek.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Nishanth Menon <nm@ti.com>, Wei Xu <xuwei5@hisilicon.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        linux-mediatek@lists.infradead.org,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
+        Li Wei <liwei213@huawei.com>,
+        Yaniv Gardi <ygardi@codeaurora.org>,
+        linux-kernel@vger.kernel.org,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v2 08/15] dt-bindings: ufs: snps,tc-dwc-g210: convert to
+ dtschema
+Message-ID: <YhkvhdFZXkVsteeq@robh.at.kernel.org>
+References: <20220222145854.358646-1-krzysztof.kozlowski@canonical.com>
+ <20220222145854.358646-9-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f1b923c0-100b-4ca3-f099-08d9f895ea63
-X-MS-TrafficTypeDiagnostic: MWHPR12MB1375:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR12MB13753995F049DE21377FC64E973E9@MWHPR12MB1375.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n8bZc+HLdk2ZszupwZE52TEbGpz9ZKYOOvqRyK1nAV7k0VRG7WulscfGPkCkfrCli6hRpCHOOyqbPPhrT9M9OZkEaWqjytK6bDkk606NqLgGIBARjuiwC0D3dgQ4Ach8geg0jup74/XWlf+ddCeMeq91Lk4skc1aoNzVAJGVMWRG/9NiJtSrlF1DuxSw1pg1gkyRwz2JsbDjLPBUmc3P/5V/Qgqg6062FcoN5DjGqjH4Z0ovQJzOUMn0bql3e4vXdrH2xyWizxedpN4ZGnR+FUxmwCP2bL5MJgh+ovv/btF6YsyYzuHSIvvV+P/vyp+HfZAYyuP7KqcwINdDlqM7p5z95mRlLOI/Z5HpimWhgLUGcyzP7Xr7F9IyZWXKt75X8eFvvwmf/ZFFBXlxYS6l/xIu8d/TpopNI1zAKXXiKFdVFMhyNfe7WpE4anZLa3N+CdjmT2J8Gm5ezmHvrQJJ40LCou8SbtmvugijOhwDYWcAonj4GWjb9k6KLIJiEJPz15+yIZSZRFgdDyYVIEMBl6ET9lkEmMmuEvEHjSCHvCqudOObB1RzXjAnBAxgOj+uPiVXKSdPztcht2ZQJC0gV24AunVJ6zt5ELgRK6eT3HAiYUP1OtmBedStPON6S3ezjS0lPN+TaMMFD4A6CnO4JarpRTQZ7i9lRVf3YDDIi+0jLzR0gXD1PyhAhl6WQNFpDGOmnhH0ZWAQ4X/V/wjXlw==
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(70586007)(70206006)(36860700001)(26005)(1076003)(82310400004)(7696005)(4326008)(8676002)(4744005)(2616005)(47076005)(2906002)(40460700003)(8936002)(356005)(316002)(81166007)(86362001)(6666004)(5660300002)(508600001)(426003)(186003)(336012)(110136005)(54906003)(36756003)(83380400001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Feb 2022 19:35:01.5088
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1b923c0-100b-4ca3-f099-08d9f895ea63
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT062.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1375
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220222145854.358646-9-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixed below smatch static checker warning.
-sound/soc/amd/vangogh/acp5x-mach.c:190 acp5x_cs35l41_hw_params()
-error: uninitialized symbol 'ret'.
+On Tue, 22 Feb 2022 15:58:47 +0100, Krzysztof Kozlowski wrote:
+> Convert the Synopsys Universal Flash Storage (UFS) Controller to DT
+> schema format.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  .../bindings/ufs/snps,tc-dwc-g210.yaml        | 51 +++++++++++++++++++
+>  .../bindings/ufs/tc-dwc-g210-pltfrm.txt       | 26 ----------
+>  2 files changed, 51 insertions(+), 26 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/ufs/snps,tc-dwc-g210.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/ufs/tc-dwc-g210-pltfrm.txt
+> 
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
----
- sound/soc/amd/vangogh/acp5x-mach.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/sound/soc/amd/vangogh/acp5x-mach.c b/sound/soc/amd/vangogh/acp5x-mach.c
-index c574e80907f0..5ae3de76283e 100644
---- a/sound/soc/amd/vangogh/acp5x-mach.c
-+++ b/sound/soc/amd/vangogh/acp5x-mach.c
-@@ -177,6 +177,7 @@ static int acp5x_cs35l41_hw_params(struct snd_pcm_substream *substream,
- 	unsigned int num_codecs = rtd->num_codecs;
- 	unsigned int bclk_val;
- 
-+	ret = 0;
- 	for (i = 0; i < num_codecs; i++) {
- 		codec_dai = asoc_rtd_to_codec(rtd, i);
- 		if ((strcmp(codec_dai->name, "spi-VLV1776:00") == 0) ||
--- 
-2.17.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
