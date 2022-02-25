@@ -2,67 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 475FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE1EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 25 Feb 2022 13:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240964AbiBYNLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 08:11:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        id S241002AbiBYNLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 08:11:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233784AbiBYNKz (ORCPT
+        with ESMTP id S240977AbiBYNLK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 08:10:55 -0500
-Received: from winds.org (winds.org [68.75.195.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B2931E7A43;
-        Fri, 25 Feb 2022 05:10:23 -0800 (PST)
-Received: by winds.org (Postfix, from userid 100)
-        id 8F7521CA5924; Fri, 25 Feb 2022 08:10:22 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by winds.org (Postfix) with ESMTP id 8D2511CA5920;
-        Fri, 25 Feb 2022 08:10:22 -0500 (EST)
-Date:   Fri, 25 Feb 2022 08:10:22 -0500 (EST)
-From:   Byron Stanoszek <gandalf@winds.org>
-To:     Matthew Wilcox <willy@infradead.org>
-cc:     Dave Chinner <david@fromorbit.com>, Jan Kara <jack@suse.cz>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        reiserfs-devel@vger.kernel.org
-Subject: Re: Is it time to remove reiserfs?
-In-Reply-To: <YhfzUc8afuoQkx/U@casper.infradead.org>
-Message-ID: <257dc4a9-dfa0-327e-f05a-71c0d9742e98@winds.org>
-References: <YhIwUEpymVzmytdp@casper.infradead.org> <20220222100408.cyrdjsv5eun5pzij@quack3.lan> <20220222221614.GC3061737@dread.disaster.area> <3ce45c23-2721-af6e-6cd7-648dc399597@winds.org> <YhfzUc8afuoQkx/U@casper.infradead.org>
+        Fri, 25 Feb 2022 08:11:10 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339FF1E7A7A;
+        Fri, 25 Feb 2022 05:10:38 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id d17so4419640wrc.9;
+        Fri, 25 Feb 2022 05:10:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=vlA3eK5Bl/FOBxIqQr2bttZn8OYu5JXlLYnsBhtHklM=;
+        b=VuBwrpJfbBOW1iuiiX8dWUcJxDuUJ+TBX4n14xRKUaMgGvkqFn1wfoGlRGk+NAh+nI
+         pkIgW9A+qpvKJTJCAJb7oquP1BxIcnRuGP+HSgi4UdUWyaWdAhJ06thtfoM/Ea3yEV/B
+         lJMx0sgO/HARsZgvWaDiOXJ1v4oriH5IEwwhsdK1AEkMYFN7NukdmTk6SPYCqPD+qTPD
+         gDuqGncUNOF73xbNLVQhgsk7cNwabNI6FXfMyVJx+i6f0vDn5JOmcNp66PI/m0NlpYMJ
+         xlFbVblvv8I3sxRKxTIK2PEWTSxdysMGovEVCdsbupdnYKWVigjFFpke/RPc/C/RFOuU
+         ub/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=vlA3eK5Bl/FOBxIqQr2bttZn8OYu5JXlLYnsBhtHklM=;
+        b=cnHEZrrQPjXnUXdpoVVf1L/EwFVgp95pW7+QAbx4Mi8lG+8CcFk6M3Xrf9IPczC1Fa
+         RvcQHtkpX/U0OuMOhwV/2xyHty9GK4nV+bDLcRBVIPs11vCIGc+IMOKNSSvGRuveemH6
+         9jxetmoJElZ4M6GC6TF4hgiW8sqbpOR8ZL4/YkBZv4/C1Mg92aBbY+L/E5CHfyYVsz+Y
+         YuovOl1+lXFoGhJOMRyGkiH12hcPfgD4rDnIf1wz4mzh1yFZy596mT8e7bfNfbvPkQJr
+         +Ctu4RmOTPRrak0VhPw3LhAaiYoPZylGLKkjwbrR8xbKs5QR6/4SKauSh5xA+Ngfuhsx
+         hvOQ==
+X-Gm-Message-State: AOAM533L1Napu0S+T6K3o4NAySkTVW+v+usDcjAoxQWwF/AOfxKpU0ed
+        niN0tRnqQM5VosifaQmrgOE750CGRNQ=
+X-Google-Smtp-Source: ABdhPJxWUW59vdNTJb1moblRywRu740NlcfJzv3mxAcUsIBZhOfAJSixEyfk+zfOEz3FpQ69xpKccQ==
+X-Received: by 2002:adf:c512:0:b0:1ed:c0bc:c228 with SMTP id q18-20020adfc512000000b001edc0bcc228mr6035477wrf.174.1645794636806;
+        Fri, 25 Feb 2022 05:10:36 -0800 (PST)
+Received: from orome ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id f17-20020adffcd1000000b001edbf438d83sm2296919wrs.32.2022.02.25.05.10.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 05:10:35 -0800 (PST)
+Date:   Fri, 25 Feb 2022 14:10:34 +0100
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     trix@redhat.com
+Cc:     jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] soc/tegra: bpmp: cleanup double word in comment
+Message-ID: <YhjVSre39nZ4evyc@orome>
+References: <20220207130951.2059795-1-trix@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="gaMB5m1ByvcdMX1c"
+Content-Disposition: inline
+In-Reply-To: <20220207130951.2059795-1-trix@redhat.com>
+User-Agent: Mutt/2.2.1 (c8109e14) (2022-02-19)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Feb 2022, Matthew Wilcox wrote:
-> On Wed, Feb 23, 2022 at 09:48:26AM -0500, Byron Stanoszek wrote:
->> For what it's worth, I have a number of production servers still using
->> Reiserfs, which I regularly maintain by upgrading to the latest Linux kernel
->> annually (mostly to apply security patches). I figured this filesystem would
->> still be available for several more years, since it's not quite y2038k yet.
->
-> Hey Byron, thanks for sharing your usage.
->
-> It's not entirely clear to me from your message whether you're aware
-> that our annual LTS release actually puts out new kernels every week (or
-> sometimes twice a week), and upgrades to the latest version are always
-> recommended.  Those LTS kernels typically get five years of support in
-> total; indeed we just retired the v4.4 series earlier this month which
-> was originally released in January 2016, so it got six years of support.
->
-> If we dropped reiserfs from the kernel today (and thanks to Edward, we
-> don't have to), you'd still be able to use a v5.15 based kernel with
-> regular updates until 2028.  If we drop it in two years, that should
-> take you through to 2030.  Is that enough for your usage?
 
-I'm aware of the LTS releases, but I hadn't thought about them in relation to
-this issue. That's a good point, and so it sounds like I have nothing to worry
-about.
+--gaMB5m1ByvcdMX1c
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for the recommendation.
+On Mon, Feb 07, 2022 at 05:09:51AM -0800, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+>=20
+> Remove the second 'or'.
+>=20
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>  include/soc/tegra/bpmp-abi.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards,
-  -Byron
+Applied, thanks.
 
+Thierry
+
+--gaMB5m1ByvcdMX1c
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmIY1UkACgkQ3SOs138+
+s6EwSg/9EfbRbWhVM+OH+ni+mN2umIXqF2gMUQp12pZneEmDnCPlfkFFIrXrEUtV
++hB7m2uTTCHiV7kpkAjoa2bpVSMH+Iz1w/gBCjxcI4B47juEwwxMz/iaNxVE3qk2
+h6hotb805FMsOKN4vyVTIIGuqv8CDQGXZM2FuWl1qjCYoYo9wlJbTzvhddPPfQLh
+u9N220LGHZw3hXWZM/HA2D6LyvE1KLzZD+ulNRMchjliuToadNgSocRN+goSm1Aj
+i5eqd54x+PgBaFxy4MOX3egogWh4xoeiMtmV4gvnKWyrhsBxQYJybe2tj8Q6qZa6
+BU/KmYZdhsCxoWm+CXT3tECHI6+ccz5v3hv1DRCpiWgqefx6Kc512gLZUuLfN8PD
+eW55wSwljECsXs3fcxkndW1sKIUT8kKtvwNRhCG/qKVD6/v9VnuiMP7j5X4U+Lmn
+J9JFJUHWZu/UoEC5ToU3dWjYDrzmpPFuchYP0uIRALDq2xz7WRe8016g+GgYia10
+JNKc4szSgepDNt0KJr85/DPOT3O+xM/+6XwZz9T6lhGIID33vJ6MsB/p1HmhcvNp
+6ocMa964idCjlc8aNXvum8GzpzkLrShuxYLKbQ6YPffemIitiNWptF8ZUuDQrWeO
+KqRbKAP4YMwrM5zeL3iDEbh8Zeon13HoxRZJ9L/P3ttNrD9m26s=
+=w44Z
+-----END PGP SIGNATURE-----
+
+--gaMB5m1ByvcdMX1c--
