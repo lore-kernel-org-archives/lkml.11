@@ -2,107 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0024C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 17 Feb 2022 14:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A4FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 20:21:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242174AbiBQOyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 17 Feb 2022 09:54:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:58404 "EHLO
+        id S229536AbiBZUVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 15:21:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230138AbiBQOyD (ORCPT
+        with ESMTP id S229447AbiBZUVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 17 Feb 2022 09:54:03 -0500
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF9A12CC04;
-        Thu, 17 Feb 2022 06:53:44 -0800 (PST)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21HElCPF013571;
-        Thu, 17 Feb 2022 14:53:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=Ie7MjdehH0xnUFlpIS6Po+Kb9Gi8VBM1gokV58n/GvI=;
- b=jzVjkUnBVuHd1EoH7jlJVt+slnwYl6cVaWO0XomYNJapAtfCUtBL204EONcm67VTnymL
- fBR7hx2yVKkFNQX3MsF6ClQTyn9jR1LfJgEkWpBPqqi5QRUHQGAkScSLC2ojwDhhrhWU
- vHTbt305o+IUBGS35pJetgJiVj0GIKG5F3PXYx0GMTqa/3Vytz4XWWhNwn8IuwJ1kxCY
- gYv7eQOzaVmNXS7TcFN/kfy/h0+X4l4Zrm8K/h5/41OVJnFGXA00tzicgUF6es1ve2vv
- I4x2/0rfCFbhNogH2T6Jifqc5xPV8NqcXOD3G+ikRmdOi1fBe+NxKnkECnDtnf7j7Wuc fQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e9reb84hb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 14:53:44 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21HEmhYu021962;
-        Thu, 17 Feb 2022 14:53:43 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3e9reb84gw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 14:53:43 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21HEjSgM017823;
-        Thu, 17 Feb 2022 14:53:42 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 3e64hakdqu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 17 Feb 2022 14:53:41 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21HErcOZ38928790
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 17 Feb 2022 14:53:38 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7FDB64C04E;
-        Thu, 17 Feb 2022 14:53:38 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 306F94C058;
-        Thu, 17 Feb 2022 14:53:38 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 17 Feb 2022 14:53:38 +0000 (GMT)
-From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        Thomas Huth <thuth@redhat.com>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: 
-Date:   Thu, 17 Feb 2022 15:53:34 +0100
-Message-Id: <20220217145336.1794778-1-scgl@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220211182215.2730017-11-scgl@linux.ibm.com>
-References: <20220211182215.2730017-11-scgl@linux.ibm.com>
+        Sat, 26 Feb 2022 15:21:43 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5A991AF36;
+        Sat, 26 Feb 2022 12:21:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=WmtOkSWO4SOmYPlhIfufKrnjbZHD9QNJg2d3XqVXAm0=; b=ta1KYpAi54ReQLVKTz+iyYJX4r
+        rW+r1l7AsJ22/OJGRcyrBAUUGXHJdCo3cVxh43DHYsIlne5Odk4tJR8BovoAisNUXd/LbBuEdlvLU
+        Rq264tn4tDtsPf2KFbugEkVevc72foqNiiMDrX5y/mNtpQLOZbwUsIMpk2NYXULh//6bxYpa2Au3z
+        EKJSr6Vj//G81fHZ6YnPoMtU6/hVeSODSPavM+MplwFYBfpIx2y2peEgUB/bxHq9tRfdwEfi6pSux
+        EWcatI5qWpM/WOkvJQuGcZ3ejlm7N4EuPzgD/MtUZHrxD7dzkrsA7D6Bd4/bsJh5C84b19SEjSAsk
+        C8cnw/ZQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nO3Ya-008U5D-40; Sat, 26 Feb 2022 20:20:44 +0000
+Date:   Sat, 26 Feb 2022 12:20:44 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     yingelin <yingelin@huawei.com>, ebiederm@xmission.com,
+        keescook@chromium.org, yzaikin@google.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, zengweilin@huawei.com,
+        chenjianguo3@huawei.com, nixiaoming@huawei.com,
+        qiuguorui1@huawei.com, young.liuyang@huawei.com
+Subject: Re: [PATCH sysctl-next] kernel/kexec_core: move kexec_core sysctls
+ into its own file
+Message-ID: <YhqLnIjopfoBEBcV@bombadil.infradead.org>
+References: <20220223030318.213093-1-yingelin@huawei.com>
+ <YhXwkTCwt3a4Dn9T@MiWiFi-R3L-srv>
+ <c60419f8-422b-660d-8254-291182a06cbe@huawei.com>
+ <Yhbu6UxoYXFtDyFk@fedora>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: yb_-3ly1ZlzcQmP_teriXRah2OQ5U6rz
-X-Proofpoint-GUID: JuWzhVlCiSepSFdTxWpeHWwRRLdxted9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-17_05,2022-02-17_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
- mlxlogscore=826 mlxscore=0 clxscore=1015 malwarescore=0 phishscore=0
- spamscore=0 bulkscore=0 lowpriorityscore=0 priorityscore=1501
- impostorscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2201110000 definitions=main-2202170066
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yhbu6UxoYXFtDyFk@fedora>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Subject: [PATCH 0/2] memop selftest for storage key checking
+On Thu, Feb 24, 2022 at 10:35:21AM +0800, Baoquan He wrote:
+> That seems to be an issue everything related to sysctl are all added to
+> kernel/sysctl.c. Do you have a pointer that someone complained about it
+> and people agree to scatter them into their own component code?
 
-As previously mentioned, I rewrote the memop selftest.
-It makes heavy use of macros, but that should be fine for a test.
-Feedback appreciated.
-Requires Thomas' recent SIDA memop selftest patch.
+https://lkml.kernel.org/r/20220226031054.47DF8C340E7@smtp.kernel.org
 
-Janis Schoetterl-Glausch (2):
-  KVM: s390: selftests: Refactor memop test
-  KVM: s390: selftests: Test vm and vcpu memop with keys
+> I understand your concern now, I am personally not confused by that
+> maybe because I haven't got stuff adding or changing into sysctls. My
+> concern is if we only care and move kexec knob, or we have plan to try
+> to move all of them. If there's some background information or
+> discussion with a link, that would be helpful.
 
- tools/testing/selftests/kvm/s390x/memop.c | 741 ++++++++++++++++++----
- 1 file changed, 623 insertions(+), 118 deletions(-)
+We're moving them all out. Sorry, yingelin's commit log message sucks
+and it needs to be fixed to account for the justification. All the
+filesystem sysctls are already moved out. Slowly we are moving the other
+ones out and also doing minor optimizations along the way.
 
--- 
-2.32.0
-
+  Luis
