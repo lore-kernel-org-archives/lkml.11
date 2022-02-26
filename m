@@ -2,82 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DAEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 10:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E72C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 10:47:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231169AbiBZKm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 05:42:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45916 "EHLO
+        id S231179AbiBZKru (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 05:47:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231148AbiBZKmY (ORCPT
+        with ESMTP id S229796AbiBZKrq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 05:42:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2391D290E5B;
-        Sat, 26 Feb 2022 02:41:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5B8DB819F3;
-        Sat, 26 Feb 2022 10:41:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAC31C340E8;
-        Sat, 26 Feb 2022 10:41:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645872107;
-        bh=RFf42czOySTnAdGGfHvyOuXGvWEvEYYr8UHE78R9vog=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=P0W4jnf8r/RLrt1ldnx1/CA03k8Lx1amb+1I73vssyUOGe9D3AgBLhKC2FZ9oMlBX
-         aEGNUopqHABz12o6bI8jGd1bCBl1bulYF2P7aetiKRwKten9aQKO4b7ImAiOhQUiBa
-         xp8+BFvmx93f6lzNj2ovWEZ6MB+ttxeGBSvntZtolfEXKZ/04rf70YoSgGOMq/qR2k
-         UYGJGmxeDWRS7bdlXWm85nSJgZm7HOv4Y/KGoh6EBw1eOAgF2FrcCkxJsaxt20c7c1
-         4bEN1vk2M7MZsHDx0LTiLiPu4E4mzXNVg9czHv5v1yQgKmRe777Jpyn4J4V6s9zhCe
-         11Gn2vhvaM7UQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v10 0/1] wfx: get out from the staging area
-References: <20220226092142.10164-1-Jerome.Pouiller@silabs.com>
-Date:   Sat, 26 Feb 2022 12:41:41 +0200
-In-Reply-To: <20220226092142.10164-1-Jerome.Pouiller@silabs.com> (Jerome
-        Pouiller's message of "Sat, 26 Feb 2022 10:21:41 +0100")
-Message-ID: <871qzpucyi.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Sat, 26 Feb 2022 05:47:46 -0500
+Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8CA5329C46F
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 02:47:11 -0800 (PST)
+Received: by angie.orcam.me.uk (Postfix, from userid 500)
+        id 78EC392009C; Sat, 26 Feb 2022 11:47:10 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by angie.orcam.me.uk (Postfix) with ESMTP id 6B9CA92009B;
+        Sat, 26 Feb 2022 10:47:10 +0000 (GMT)
+Date:   Sat, 26 Feb 2022 10:47:10 +0000 (GMT)
+From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
+To:     Bjorn Helgaas <bhelgaas@google.com>
+cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] PCI: Avoid handing out address 0 to devices
+Message-ID: <alpine.DEB.2.21.2202260044180.25061@angie.orcam.me.uk>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ jakub
+We have numerous platforms that permit assigning addresses from 0 to PCI 
+devices, both in the memory and the I/O bus space, and we happily do so 
+if there is no conflict, e.g.:
 
-Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+pci 0000:07:00.0: BAR 0: assigned [io  0x0000-0x0007]
+pci 0000:07:00.1: BAR 0: assigned [io  0x0008-0x000f]
+pci 0000:06:01.0: PCI bridge to [bus 07]
+pci 0000:06:01.0:   bridge window [io  0x0000-0x0fff]
 
-> The firmware and the PDS files (= antenna configurations) are now a part of
-> the linux-firmware repository.
->
-> All the issues have been fixed in staging tree. I think we are ready to get
-> out from the staging tree for the kernel 5.18.
+(with the SiFive HiFive Unmatched RISC-V board and a dual serial port 
+option card based on the OxSemi OXPCIe952 device wired for the legacy 
+UART mode).
 
-[...]
+Address 0 is treated specially however in many places, for example in 
+`pci_iomap_range' and `pci_iomap_wc_range' we require that the start 
+address is non-zero, and even if we let such an address through, then 
+individual device drivers could reject a request to handle a device at 
+such an address, such as in `uart_configure_port'.  Consequently given
+devices configured as shown above only one is actually usable:
 
->  rename Documentation/devicetree/bindings/{staging => }/net/wireless/silabs,wfx.yaml (98%)
+Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+serial 0000:07:00.0: enabling device (0000 -> 0001)
+serial: probe of 0000:07:00.0 failed with error -12
+serial 0000:07:00.1: enabling device (0000 -> 0001)
+serial 0000:07:00.1: detected caps 00000700 should be 00000500
+0000:07:00.1: ttyS0 at I/O 0x8 (irq = 39, base_baud = 15625000) is a 16C950/954
 
-I lost track, is this file acked by the DT maintainers now?
+Especially I/O space ranges are particularly valuable, because bridges 
+only decode bits from 12 up and consequently where 16-bit addressing is 
+in effect, as few as 16 separate ranges can be assigned to individual 
+buses only.
 
-What I suggest is that we queue this for v5.19. After v5.18-rc1 is
-released I could create an immutable branch containing this one commit.
-Then I would merge the branch to wireless-next and Greg could merge it
-to the staging tree, that way we would minimise the chance of conflicts
-between trees.
+Therefore avoid handing out address 0, however rather than bumping the 
+lowest address available to PCI via PCIBIOS_MIN_IO and PCIBIOS_MIN_MEM, 
+or doing an equivalent arrangement in `__pci_assign_resource', let the 
+whole range assigned to a bus start from that address and instead only 
+avoid it for actual devices.  Do it in `pci_bus_alloc_from_region' then 
+observing that bridge resources will have the IORESOURCE_STARTALIGN flag 
+set rather than IORESOURCE_SIZEALIGN and by making the least significant 
+bit decoded 1 according to the resource type, either memory or I/O.
 
-Greg, what do you think? Would this work for you? IIRC we did the same
-with wilc1000 back in 2020 and I recall it went without hiccups.
+With this in place the system in question we have:
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+pci 0000:07:00.0: BAR 0: assigned [io  0x0008-0x000f]
+pci 0000:07:00.1: BAR 0: assigned [io  0x0010-0x0017]
+pci 0000:06:01.0: PCI bridge to [bus 07]
+pci 0000:06:01.0:   bridge window [io  0x0000-0x0fff]
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+and then devices work correctly:
+
+Serial: 8250/16550 driver, 4 ports, IRQ sharing disabled
+serial 0000:07:00.0: enabling device (0000 -> 0001)
+serial 0000:07:00.0: detected caps 00000700 should be 00000500
+0000:07:00.0: ttyS0 at I/O 0x8 (irq = 38, base_baud = 15625000) is a 16C950/954
+serial 0000:07:00.1: enabling device (0000 -> 0001)
+serial 0000:07:00.1: detected caps 00000700 should be 00000500
+0000:07:00.1: ttyS1 at I/O 0x10 (irq = 39, base_baud = 15625000) is a 16C950/954
+
+Signed-off-by: Maciej W. Rozycki <macro@orcam.me.uk>
+---
+Hi,
+
+ NB I have an OxSemi OXPCIe952 based card that can be wired to either the 
+native or the legacy mode via a jumper block and I am so glad that I have 
+checked whether it works in the legacy mode as well.  I guess there are so 
+few legacy-free platforms still for nobody else to notice this issue yet.
+
+ I think I've chosen the right solution, but I'll be happy to hear any 
+suggestions for an alternative one.  Otherwise please apply.
+
+  Maciej
+---
+ drivers/pci/bus.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+linux-pci-bus-alloc-from-region-min.diff
+Index: linux-macro/drivers/pci/bus.c
+===================================================================
+--- linux-macro.orig/drivers/pci/bus.c
++++ linux-macro/drivers/pci/bus.c
+@@ -194,6 +194,15 @@ static int pci_bus_alloc_from_region(str
+ 		 */
+ 		if (avail.start)
+ 			min_used = avail.start;
++		/*
++		 * For non-bridge resources avoid assigning address 0 as
++		 * we assume that to mean no assignment in many places,
++		 * starting from `pci_iomap_range'.
++		 */
++		if (min_used == 0 && (res->flags & IORESOURCE_SIZEALIGN))
++			min_used = res->flags & IORESOURCE_IO ?
++				   ~PCI_BASE_ADDRESS_IO_MASK + 1 :
++				   ~PCI_BASE_ADDRESS_MEM_MASK + 1;
+ 
+ 		max = avail.end;
+ 
