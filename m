@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F07C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:18:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 108C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:18:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240910AbiBZASt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 19:18:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
+        id S241506AbiBZASy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 19:18:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241490AbiBZARz (ORCPT
+        with ESMTP id S241443AbiBZARz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 25 Feb 2022 19:17:55 -0500
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E44CD234039
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:56 -0800 (PST)
-Received: by mail-pf1-x449.google.com with SMTP id k130-20020a628488000000b004f362b45f28so3967041pfd.9
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:56 -0800 (PST)
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E1222559D
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:54 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id u17-20020a63a911000000b0037491401c44so3473955pge.17
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=eZ6FrXYp5R1CiB/zutWVqNTtHVIMJ9iK/usaw7re+ZM=;
-        b=hl4rpFhiL+jXYPutqrx0t6H9bf3KWGfYlj27fcEIS4FHVk2BLJKj160C755dQet0Om
-         5wKQ0jzn+T5sVODiQ3ZVUFHquVzV4gTyXE1RAGwfmiNCujdwofwFLe67wnXAwY3ijDky
-         6SOhAc6xWzGXY2bLPyVm02FJWPuCr90UPEKlq6cMCQPphEEo9LBJWScK66QVyzou7qc5
-         4ZmdsrFTu6j72r1Bz7uS+S46URV1CD9jrUh3nSS5KFhoixty4Wr8AgwFKpu5RV+sqjz+
-         u1EMjoVbVh8eUyq40oxulkA2xXnztTkZBRfq7UC5YNTfkYaybbE9PZdge8FPKML8hwGy
-         x+Ug==
+        bh=+ihvawenlM+RVaDEQQYPtZrNBiUrDBlH+9+s6Q7Lpgg=;
+        b=gi+AK6xiPwg8yu9CBcTyfHYef7XWZNnVoQKdY8/aXjUXsERCE0nm9lclBLqqNsXyiN
+         BxgwOHKiIJ6xXSFIMIdy0dJynk2AfLQcrOVwVN+9xCU6DhB7++i99o/ZVpat7qEINVP/
+         dOf5yjb3vUeCKhWb3Ot0z0Uq/Yq8Y53XbcNFZXRuArHSyqLPhx9yu6WugYFGdCmESrqa
+         piy8r4w9N51N7fmM6D39bBLP/0PoXTHA//5BOUoXupZrzOIjeiS8yFter7hyVp36xdvO
+         csPPbNPwXsFJOt3B1JZ2p9EQ8e1hKjJOkeatusfWeQpfXRr2hI8WjJLIWNhKMaMGzDHk
+         QtLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=eZ6FrXYp5R1CiB/zutWVqNTtHVIMJ9iK/usaw7re+ZM=;
-        b=Kv4PpF3ZXoK20UtiZQA8PJLDQEbSg8bKwxN+/oc6GHD52D2CLL8jEiWCP6kQZHnuMK
-         svA2Zvujd49pCQnu4ADZ/2UGw5ftfhyCP0GODzq++zT+56dSi/nmZy5KSWczX3/vMHjd
-         hRUpFExS6DCHbNfu1srtOIK0L/ayGu0U74Q89DAYkreKY3M6u9zXVsLpUf2WnP4TlLVW
-         gh82PSXRC/JUbiEI2LYJ93rRA2/czjGl9knJzJTQ5Q2+Zm8USjMTfhxVkSMRSdzxuSYS
-         mk2NO+ZZ/RvUmTSOZjtkEiNEZtYUTI1TIwashiqMMQNr5Cy401ofDjBou53tEOo+Dt5p
-         Eu5A==
-X-Gm-Message-State: AOAM530wZaeLK5sv5ZchdFL2NyP96ywJhmOZarQJKYDcF749ubSqzqIT
-        eObnNG4qkwULMfvhs9pFJ/T15bgRemw=
-X-Google-Smtp-Source: ABdhPJwZkbulWxQN1QcjvFOpJ/+q7sB6nKIs0wpPywx0Zluyg3uCsp5kDjezDFiO3Pz0lKzYCwPrRRNdG08=
+        bh=+ihvawenlM+RVaDEQQYPtZrNBiUrDBlH+9+s6Q7Lpgg=;
+        b=qoKtQpV7gA5kloV3t3d19sqXdPd+h5+sH78eD56MI1IxbXNp1EWXTP/FGr+sBPESTn
+         zIXaIv0Kv7qhqrE53W/fPCye9cF82Oodmvu37RMqWNvx6kYMzX6noWxX4MOiMle8nI4O
+         6yyitgE3vjkcxiXdFRX1phEG+NEPHy7Zmm8vfv4uGBagNIUNcCsqED3vLOOBhJ5Og+F9
+         GtWHV0xR4vCSb2kwP5+4zwAlkk1GITj1JCT27Tsd9Tgkm8hNZeRvBYXUnyisomvOLmer
+         8/lbnljggijIMtUvqogPnoXHz0goyKmEW8dUsxyT29omMYvEMXDK0nI45iB+Wj4vSLNQ
+         jPKg==
+X-Gm-Message-State: AOAM531HuZaUkeyF0i1jqIAsJ2zqtIBP+VrxHP6GAEx5oHF517HBxo2T
+        i991ZzF4FkemUPq84UFSKdHvhn1W/Pg=
+X-Google-Smtp-Source: ABdhPJx+UIaYHh+lMWdP364BFZ+D4/nfCyFwVwf964cgqgQ6fWSrhGA4Dl7N8WsaGSdET2qADpF3LMCjOjg=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:bc42:b0:14f:e6d0:fb7b with SMTP id
- t2-20020a170902bc4200b0014fe6d0fb7bmr9397561plz.127.1645834606838; Fri, 25
- Feb 2022 16:16:46 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:aa7:874b:0:b0:4df:808f:2a1d with SMTP id
+ g11-20020aa7874b000000b004df808f2a1dmr10259646pfo.68.1645834603632; Fri, 25
+ Feb 2022 16:16:43 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 26 Feb 2022 00:15:45 +0000
+Date:   Sat, 26 Feb 2022 00:15:43 +0000
 In-Reply-To: <20220226001546.360188-1-seanjc@google.com>
-Message-Id: <20220226001546.360188-28-seanjc@google.com>
+Message-Id: <20220226001546.360188-26-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220226001546.360188-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH v3 27/28] KVM: selftests: Define cpu_relax() helpers for s390
- and x86
+Subject: [PATCH v3 25/28] KVM: selftests: Move raw KVM_SET_USER_MEMORY_REGION
+ helper to utils
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Christian Borntraeger <borntraeger@linux.ibm.com>,
@@ -74,54 +74,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add cpu_relax() for s390 and x86 for use in arch-agnostic tests.  arm64
-already defines its own version.
+Move set_memory_region_test's KVM_SET_USER_MEMORY_REGION helper to KVM's
+utils so that it can be used by other tests.  Provide a raw version as
+well as an assert-success version to reduce the amount of boilerplate
+code need for basic usage.
+
+No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- tools/testing/selftests/kvm/include/s390x/processor.h  | 8 ++++++++
- tools/testing/selftests/kvm/include/x86_64/processor.h | 5 +++++
- 2 files changed, 13 insertions(+)
+ .../selftests/kvm/include/kvm_util_base.h     |  4 +++
+ tools/testing/selftests/kvm/lib/kvm_util.c    | 24 +++++++++++++
+ .../selftests/kvm/set_memory_region_test.c    | 35 +++++--------------
+ 3 files changed, 36 insertions(+), 27 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/s390x/processor.h b/tools/testing/selftests/kvm/include/s390x/processor.h
-index e0e96a5f608c..255c9b990f4c 100644
---- a/tools/testing/selftests/kvm/include/s390x/processor.h
-+++ b/tools/testing/selftests/kvm/include/s390x/processor.h
-@@ -5,6 +5,8 @@
- #ifndef SELFTEST_KVM_PROCESSOR_H
- #define SELFTEST_KVM_PROCESSOR_H
+diff --git a/tools/testing/selftests/kvm/include/kvm_util_base.h b/tools/testing/selftests/kvm/include/kvm_util_base.h
+index f987cf7c0d2e..573de0354175 100644
+--- a/tools/testing/selftests/kvm/include/kvm_util_base.h
++++ b/tools/testing/selftests/kvm/include/kvm_util_base.h
+@@ -147,6 +147,10 @@ void vcpu_dump(FILE *stream, struct kvm_vm *vm, uint32_t vcpuid,
  
-+#include <linux/compiler.h>
-+
- /* Bits in the region/segment table entry */
- #define REGION_ENTRY_ORIGIN	~0xfffUL /* region/segment table origin	   */
- #define REGION_ENTRY_PROTECT	0x200	 /* region protection bit	   */
-@@ -19,4 +21,10 @@
- #define PAGE_PROTECT	0x200		/* HW read-only bit  */
- #define PAGE_NOEXEC	0x100		/* HW no-execute bit */
+ void vm_create_irqchip(struct kvm_vm *vm);
  
-+/* Is there a portable way to do this? */
-+static inline void cpu_relax(void)
-+{
-+	barrier();
-+}
-+
- #endif
-diff --git a/tools/testing/selftests/kvm/include/x86_64/processor.h b/tools/testing/selftests/kvm/include/x86_64/processor.h
-index 8a470da7b71a..37db341d4cc5 100644
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -363,6 +363,11 @@ static inline unsigned long get_xmm(int n)
- 	return 0;
++void vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
++			       uint64_t gpa, uint64_t size, void *hva);
++int __vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
++				uint64_t gpa, uint64_t size, void *hva);
+ void vm_userspace_mem_region_add(struct kvm_vm *vm,
+ 	enum vm_mem_backing_src_type src_type,
+ 	uint64_t guest_paddr, uint32_t slot, uint64_t npages,
+diff --git a/tools/testing/selftests/kvm/lib/kvm_util.c b/tools/testing/selftests/kvm/lib/kvm_util.c
+index 64618032aa58..dcb8e96c6a54 100644
+--- a/tools/testing/selftests/kvm/lib/kvm_util.c
++++ b/tools/testing/selftests/kvm/lib/kvm_util.c
+@@ -839,6 +839,30 @@ static void vm_userspace_mem_region_hva_insert(struct rb_root *hva_tree,
+ 	rb_insert_color(&region->hva_node, hva_tree);
  }
  
-+static inline void cpu_relax(void)
++
++int __vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
++				uint64_t gpa, uint64_t size, void *hva)
 +{
-+	asm volatile("rep; nop" ::: "memory");
++	struct kvm_userspace_memory_region region = {
++		.slot = slot,
++		.flags = flags,
++		.guest_phys_addr = gpa,
++		.memory_size = size,
++		.userspace_addr = (uintptr_t)hva,
++	};
++
++	return ioctl(vm->fd, KVM_SET_USER_MEMORY_REGION, &region);
 +}
 +
- bool is_intel_cpu(void);
- bool is_amd_cpu(void);
++void vm_set_user_memory_region(struct kvm_vm *vm, uint32_t slot, uint32_t flags,
++			       uint64_t gpa, uint64_t size, void *hva)
++{
++	int ret = __vm_set_user_memory_region(vm, slot, flags, gpa, size, hva);
++
++	TEST_ASSERT(!ret, "KVM_SET_USER_MEMORY_REGION failed, errno = %d (%s)",
++		    errno, strerror(errno));
++}
++
+ /*
+  * VM Userspace Memory Region Add
+  *
+diff --git a/tools/testing/selftests/kvm/set_memory_region_test.c b/tools/testing/selftests/kvm/set_memory_region_test.c
+index 72a1c9b4882c..73bc297dabe6 100644
+--- a/tools/testing/selftests/kvm/set_memory_region_test.c
++++ b/tools/testing/selftests/kvm/set_memory_region_test.c
+@@ -329,22 +329,6 @@ static void test_zero_memory_regions(void)
+ }
+ #endif /* __x86_64__ */
+ 
+-static int test_memory_region_add(struct kvm_vm *vm, void *mem, uint32_t slot,
+-				   uint32_t size, uint64_t guest_addr)
+-{
+-	struct kvm_userspace_memory_region region;
+-	int ret;
+-
+-	region.slot = slot;
+-	region.flags = 0;
+-	region.guest_phys_addr = guest_addr;
+-	region.memory_size = size;
+-	region.userspace_addr = (uintptr_t) mem;
+-	ret = ioctl(vm_get_fd(vm), KVM_SET_USER_MEMORY_REGION, &region);
+-
+-	return ret;
+-}
+-
+ /*
+  * Test it can be added memory slots up to KVM_CAP_NR_MEMSLOTS, then any
+  * tentative to add further slots should fail.
+@@ -382,23 +366,20 @@ static void test_add_max_memory_regions(void)
+ 	TEST_ASSERT(mem != MAP_FAILED, "Failed to mmap() host");
+ 	mem_aligned = (void *)(((size_t) mem + alignment - 1) & ~(alignment - 1));
+ 
+-	for (slot = 0; slot < max_mem_slots; slot++) {
+-		ret = test_memory_region_add(vm, mem_aligned +
+-					     ((uint64_t)slot * MEM_REGION_SIZE),
+-					     slot, MEM_REGION_SIZE,
+-					     (uint64_t)slot * MEM_REGION_SIZE);
+-		TEST_ASSERT(ret == 0, "KVM_SET_USER_MEMORY_REGION IOCTL failed,\n"
+-			    "  rc: %i errno: %i slot: %i\n",
+-			    ret, errno, slot);
+-	}
++	for (slot = 0; slot < max_mem_slots; slot++)
++		vm_set_user_memory_region(vm, slot, 0,
++					  ((uint64_t)slot * MEM_REGION_SIZE),
++					  MEM_REGION_SIZE,
++					  mem_aligned + (uint64_t)slot * MEM_REGION_SIZE);
+ 
+ 	/* Check it cannot be added memory slots beyond the limit */
+ 	mem_extra = mmap(NULL, MEM_REGION_SIZE, PROT_READ | PROT_WRITE,
+ 			 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+ 	TEST_ASSERT(mem_extra != MAP_FAILED, "Failed to mmap() host");
+ 
+-	ret = test_memory_region_add(vm, mem_extra, max_mem_slots, MEM_REGION_SIZE,
+-				     (uint64_t)max_mem_slots * MEM_REGION_SIZE);
++	ret = __vm_set_user_memory_region(vm, max_mem_slots, 0,
++					  (uint64_t)max_mem_slots * MEM_REGION_SIZE,
++					  MEM_REGION_SIZE, mem_extra);
+ 	TEST_ASSERT(ret == -1 && errno == EINVAL,
+ 		    "Adding one more memory slot should fail with EINVAL");
  
 -- 
 2.35.1.574.g5d30c73bfb-goog
