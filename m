@@ -2,147 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A9BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 16:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C80C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 16:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232355AbiBZQjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 11:39:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37392 "EHLO
+        id S232378AbiBZQpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 11:45:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbiBZQjA (ORCPT
+        with ESMTP id S232355AbiBZQpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 11:39:00 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F8326CCFF;
-        Sat, 26 Feb 2022 08:38:26 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id ev16-20020a17090aead000b001bc3835fea8so7616591pjb.0;
-        Sat, 26 Feb 2022 08:38:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CUVRXEQjDfoKEnIhwgTgR29LkrM8Q5Udo+mcuXgqxmY=;
-        b=grgm2wFbK239cNsLuzTSkhY1fzbLdc1+OWLlurJMgls83pSJbwu15IopmmDkS32PPL
-         tNEmmBI0vNz9/Mydz6ArfC24pv2VrzwdsLMsf84Yms+r/DvKK2uUnGk8lAb6J3LpDch/
-         hzT/WYx4ugDyw4a5sICOVIRHCLT96cpcof/bhY3NZcW0mnM/ispEckofu/No/6QLbmPj
-         HzkEMzhgOMYUJIewtIiyD/BPzELZg9mfZSt7Ce3v1cdBxRU8NVs5Lo5l5ke8gpmHz4T3
-         7/IWy7u2LVZc6VR2ykF8rEpCSWFZIeYXrLYPqwXGu3vjef92ycMR9pJl14BBzZQSS61j
-         x0+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CUVRXEQjDfoKEnIhwgTgR29LkrM8Q5Udo+mcuXgqxmY=;
-        b=zHHCA+jvl2EKigiBuCFL2JBp8EwG5kJ29RQufDMPcMuWuF6Ts5ID+t8fL1zij3rAbK
-         +JNpJ2lWOlRkiATQhsjHTlxG3D7ayXWG8wQle7m4PArPCAlG5VWDkxREbwzmhYZX0Gf6
-         XiQT7n8VmI0TnoxetJMrVPc/32qx3DQOyLuLQfgAddgwKZReHg6IXv1IC/6EUdSdmID/
-         JwFS5fQN9UG6J8zIcBy+6uHpn/o39qwhiatIp2yZh5tYxVODp7ZbtTyosGtVuhHa3GxA
-         UtFXEqrjdCXa72uEQacmO0iSqy2/dOk4PEmv9qPRU263mEWTz7rn3FHm5f8E/2+WpyR9
-         EE3Q==
-X-Gm-Message-State: AOAM531KcJ6c4J6uLHcVj7S7b5UbdcngvuOEQy627Q6qidmFwaFlBlVl
-        x6lYzDqnv60q5WmiwdmhKk454k/S3tvgpQ==
-X-Google-Smtp-Source: ABdhPJyX3DH6/7pRuo98AF5k/wsbwDDIgDR8b7/uEgUSRy3dwdVRxE2BVCaEZc+fx8I6+XwbcMw8zA==
-X-Received: by 2002:a17:902:7205:b0:14c:9586:f9d5 with SMTP id ba5-20020a170902720500b0014c9586f9d5mr12627831plb.77.1645893505599;
-        Sat, 26 Feb 2022 08:38:25 -0800 (PST)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id g7-20020a656cc7000000b00375948e63d6sm5602217pgw.91.2022.02.26.08.38.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Feb 2022 08:38:25 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        =?UTF-8?q?Mauricio=20V=C3=A1squez?= <mauricio@kinvolk.io>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH bpf-next v2] bpftool: Remove redundant slashes
-Date:   Sun, 27 Feb 2022 00:38:15 +0800
-Message-Id: <20220226163815.520133-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220225161507.470763-1-ytcoode@gmail.com>
-References: <20220225161507.470763-1-ytcoode@gmail.com>
+        Sat, 26 Feb 2022 11:45:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6504E15A13
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 08:44:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645893894;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lwMysCu29wz4OMNuwMpG+mGhMkT1ZhFO9Qcz0+0ggms=;
+        b=JJ5P7jWSf0w7vM/8+LmNsNdq59qZH/Fzw9l9SghGbK1fz2rwDl6ojbPMhHcPvQk56M9ty0
+        uknvV5Wx7YLuYUsGtUEG+ywVERQH7Hp6R2QyttQVHNQLThXxEryLqvbKXWAF8EeFjc+tFU
+        BR5tE9M7Pg9fRay+ejyyB73OuTNsjAA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-317-Ua6DDJrUNHWzFxBM7yQ-4g-1; Sat, 26 Feb 2022 11:44:51 -0500
+X-MC-Unique: Ua6DDJrUNHWzFxBM7yQ-4g-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 38DAB180A08B;
+        Sat, 26 Feb 2022 16:44:49 +0000 (UTC)
+Received: from horse.redhat.com (unknown [10.22.32.69])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D387C6A4B9;
+        Sat, 26 Feb 2022 16:44:48 +0000 (UTC)
+Received: by horse.redhat.com (Postfix, from userid 10451)
+        id D890C2237E9; Sat, 26 Feb 2022 11:44:47 -0500 (EST)
+Date:   Sat, 26 Feb 2022 11:44:47 -0500
+From:   Vivek Goyal <vgoyal@redhat.com>
+To:     Steve French <smfrench@gmail.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        lsf-pc@lists.linux-foundation.org,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ioannis Angelakopoulos <jaggel@bu.edu>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        samba-technical <samba-technical@lists.samba.org>
+Subject: Re: [LSF/MM/BPF TOPIC] Enabling change notification for network and
+ cluster fs
+Message-ID: <YhpY/zZe3UA2u3fj@redhat.com>
+References: <CAH2r5mt9OfU+8PoKsmv_7aszhbw-dOuDCL6BOxb_2yRwc4HHCw@mail.gmail.com>
+ <Yhf+FemcQQToB5x+@redhat.com>
+ <CAH2r5mt6Sh7qorfCHWnZzc6LUDd-s_NzGB=sa-UDM2-ivzpmAQ@mail.gmail.com>
+ <YhjYSMIE2NBZ/dGr@redhat.com>
+ <YhjeX0HvXbED65IM@casper.infradead.org>
+ <CAH2r5mt9EtTEJCKsHkvRctfhMv7LnT6XT_JEvAb7ji6-oYnTPg@mail.gmail.com>
+ <YhkFZE8wUWhycwX2@redhat.com>
+ <CAH2r5msPz1JZK4OWX_=+2HTzKTZE07ACxbEv3xM-1T0HTnVWMw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAH2r5msPz1JZK4OWX_=+2HTzKTZE07ACxbEv3xM-1T0HTnVWMw@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Because the OUTPUT variable ends with a slash but CURDIR doesn't, to keep
-the _OUTPUT value consistent, we add a trailing slash to CURDIR when
-defining _OUTPUT variable.
+On Fri, Feb 25, 2022 at 01:11:10PM -0500, Steve French wrote:
+> > IOW, in general disable all local events and let filesystems decide which
+> local events to generate? And locally cached write is one such example?
+> 
+> The fs doesn't see cached writes so probably best to still use the common
+> existing code for notification on local writes
 
-Since the _OUTPUT variable holds a value ending with a trailing slash,
-there is no need to add another one when defining BOOTSTRAP_OUTPUT and
-LIBBPF_OUTPUT variables.
+Filesystems could provide a hook/function which local notifications could
+call and then filesystem could take a decision whether to allow that
+particular local event. 
 
-When defining LIBBPF_INCLUDE and LIBBPF_BOOTSTRAP_INCLUDE, we shouldn't
-add an extra slash either for the same reason.
+For example, Ioannis implemented inode operation ->fsnotify_event()
 
-When building libbpf, the value of the DESTDIR argument should also not
-end with a trailing slash.
+https://lore.kernel.org/linux-fsdevel/20211025204634.2517-6-iangelak@redhat.com/
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
----
-v1 -> v2: make the commit message more accurate
+This gives local event to fuse. And now fuse can decide whether to
+dispatch the event to user space by calling __fsnotify() or drop it
+on the floor.
 
- tools/bpf/bpftool/Makefile | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+As of now we drop everything on the floor if remote notifications are
+enabled. But I realize that cache=writeback mode can cache writes, so
+fs could selectively allow some local events.
 
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index ba647aede0d6..9800f966fd51 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -18,19 +18,19 @@ BPF_DIR = $(srctree)/tools/lib/bpf
- ifneq ($(OUTPUT),)
-   _OUTPUT := $(OUTPUT)
- else
--  _OUTPUT := $(CURDIR)
-+  _OUTPUT := $(CURDIR)/
- endif
--BOOTSTRAP_OUTPUT := $(_OUTPUT)/bootstrap/
-+BOOTSTRAP_OUTPUT := $(_OUTPUT)bootstrap/
- 
--LIBBPF_OUTPUT := $(_OUTPUT)/libbpf/
-+LIBBPF_OUTPUT := $(_OUTPUT)libbpf/
- LIBBPF_DESTDIR := $(LIBBPF_OUTPUT)
--LIBBPF_INCLUDE := $(LIBBPF_DESTDIR)/include
-+LIBBPF_INCLUDE := $(LIBBPF_DESTDIR)include
- LIBBPF_HDRS_DIR := $(LIBBPF_INCLUDE)/bpf
- LIBBPF := $(LIBBPF_OUTPUT)libbpf.a
- 
- LIBBPF_BOOTSTRAP_OUTPUT := $(BOOTSTRAP_OUTPUT)libbpf/
- LIBBPF_BOOTSTRAP_DESTDIR := $(LIBBPF_BOOTSTRAP_OUTPUT)
--LIBBPF_BOOTSTRAP_INCLUDE := $(LIBBPF_BOOTSTRAP_DESTDIR)/include
-+LIBBPF_BOOTSTRAP_INCLUDE := $(LIBBPF_BOOTSTRAP_DESTDIR)include
- LIBBPF_BOOTSTRAP_HDRS_DIR := $(LIBBPF_BOOTSTRAP_INCLUDE)/bpf
- LIBBPF_BOOTSTRAP := $(LIBBPF_BOOTSTRAP_OUTPUT)libbpf.a
- 
-@@ -44,7 +44,7 @@ $(LIBBPF_OUTPUT) $(BOOTSTRAP_OUTPUT) $(LIBBPF_BOOTSTRAP_OUTPUT) $(LIBBPF_HDRS_DI
- 
- $(LIBBPF): $(wildcard $(BPF_DIR)/*.[ch] $(BPF_DIR)/Makefile) | $(LIBBPF_OUTPUT)
- 	$(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_OUTPUT) \
--		DESTDIR=$(LIBBPF_DESTDIR) prefix= $(LIBBPF) install_headers
-+		DESTDIR=$(LIBBPF_DESTDIR:/=) prefix= $(LIBBPF) install_headers
- 
- $(LIBBPF_INTERNAL_HDRS): $(LIBBPF_HDRS_DIR)/%.h: $(BPF_DIR)/%.h | $(LIBBPF_HDRS_DIR)
- 	$(call QUIET_INSTALL, $@)
-@@ -52,7 +52,7 @@ $(LIBBPF_INTERNAL_HDRS): $(LIBBPF_HDRS_DIR)/%.h: $(BPF_DIR)/%.h | $(LIBBPF_HDRS_
- 
- $(LIBBPF_BOOTSTRAP): $(wildcard $(BPF_DIR)/*.[ch] $(BPF_DIR)/Makefile) | $(LIBBPF_BOOTSTRAP_OUTPUT)
- 	$(Q)$(MAKE) -C $(BPF_DIR) OUTPUT=$(LIBBPF_BOOTSTRAP_OUTPUT) \
--		DESTDIR=$(LIBBPF_BOOTSTRAP_DESTDIR) prefix= \
-+		DESTDIR=$(LIBBPF_BOOTSTRAP_DESTDIR:/=) prefix= \
- 		ARCH= CROSS_COMPILE= CC=$(HOSTCC) LD=$(HOSTLD) $@ install_headers
- 
- $(LIBBPF_BOOTSTRAP_INTERNAL_HDRS): $(LIBBPF_BOOTSTRAP_HDRS_DIR)/%.h: $(BPF_DIR)/%.h | $(LIBBPF_BOOTSTRAP_HDRS_DIR)
--- 
-2.35.1
+I guess for virtiofs, we could allow all local events. Supress remote
+events if event is triggered due to the action of same client. If we
+use fanotify on server, then it will report PID of process that caused
+the event. And if PID belongs to this virtiofsd instance, it probably
+could supress remote event. 
+
+That way an application running inside the guest will see all local
+events + remote events triggered by other clients. (But should not
+see duplicate events).
+
+Thanks
+Vivek
+
+> 
+> On Fri, Feb 25, 2022, 11:35 Vivek Goyal <vgoyal@redhat.com> wrote:
+> 
+> > On Fri, Feb 25, 2022 at 09:27:55AM -0600, Steve French wrote:
+> > > On Fri, Feb 25, 2022 at 7:49 AM Matthew Wilcox <willy@infradead.org>
+> > wrote:
+> > > >
+> > > > On Fri, Feb 25, 2022 at 08:23:20AM -0500, Vivek Goyal wrote:
+> > > > > What about local events. I am assuming you want to supress local
+> > events
+> > > > > and only deliver remote events. Because having both local and remote
+> > > > > events delivered at the same time will be just confusing at best.
+> > > >
+> > > > This paragraph confuses me.  If I'm writing, for example, a file
+> > manager
+> > > > and I want it to update its display automatically when another task
+> > alters
+> > > > the contents of a directory, I don't care whether the modification was
+> > > > done locally or remotely.
+> > > >
+> > > > If I understand the SMB protocol correctly, it allows the client to
+> > take
+> > > > out a lease on a directory and not send its modifications back to the
+> > > > server until the client chooses to (or the server breaks the lease).
+> > > > So you wouldn't get any remote notifications because the client hasn't
+> > > > told the server.
+> > >
+> > > Directory leases would be broken by file create so the more important
+> > > question is what happens when client 1 has a change notification on
+> > writes
+> > > to files in a directory then client 2 opens a file in the same directory
+> > and is
+> > > granted a file lease and starts writing to the file (which means the
+> > > writes could get cached).   This is probably a minor point because when
+> > > writes get flushed from client 2, client 1 (and any others with
+> > notifications
+> > > requested) will get notified of the event (changes to files in a
+> > directory
+> > > that they are watching).
+> > >
+> > > Local applications watching a file on a network or cluster mount in Linux
+> > > (just as is the case with Windows, Macs etc.) should be able to be
+> > notified of
+> > > local (cached) writes to a remote file or remote writes to the file from
+> > another
+> > > client.  I don't think the change is large, and there was an earlier
+> > version of
+> > > a patch circulated for this
+> >
+> > So local notifications are generated by filesystem code as needed?
+> >
+> > IOW, in general disable all local events and let filesystems decide which
+> > local events to generate? And locally cached write is one such example?
+> >
+> > Thanks
+> > Vivek
+> >
+> >
 
