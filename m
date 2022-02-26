@@ -2,163 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98AD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 09:41:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF650C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 09:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230444AbiBZJl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 04:41:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58436 "EHLO
+        id S230456AbiBZJo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 04:44:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiBZJl5 (ORCPT
+        with ESMTP id S229819AbiBZJoZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 04:41:57 -0500
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D485228860E
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 01:41:21 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4K5M3d3Fy3z1FDWQ;
-        Sat, 26 Feb 2022 17:36:45 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 26 Feb
- 2022 17:41:19 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>, <naoya.horiguchi@nec.com>,
-        <david@redhat.com>, <osalvador@suse.de>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH RFC] mm/memory-failure.c: fix memory failure race with memory offline
-Date:   Sat, 26 Feb 2022 17:40:34 +0800
-Message-ID: <20220226094034.23938-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Sat, 26 Feb 2022 04:44:25 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0540126E6;
+        Sat, 26 Feb 2022 01:43:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 331BDCE04AE;
+        Sat, 26 Feb 2022 09:43:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14EFFC340E8;
+        Sat, 26 Feb 2022 09:43:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1645868626;
+        bh=JTaGggqJo40LTAh1rqoyqhHAX2dNKs4MvAGcL3I/2YU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=u7BR+RpQbRGhCwzfThQMyQYRgeSFA3JtinFe9HxlpY5H6w0ahWTgZ0bJ5/7ORsbtq
+         nyHNwJQ8N0/2S4jGJX9KRzLgYEfw9K8+phb5KyWe702xvAZy9I/pk/6wm5V5W8vbxj
+         k1MJip36ObubPTdCazR4Ufr/T/HOp0aPcCtvizEI=
+Date:   Sat, 26 Feb 2022 10:43:44 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Yu Kuai <yukuai3@huawei.com>
+Cc:     axboe@kernel.dk, rostedt@goodmis.org, mingo@redhat.com,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH] blktrace: Revert "blktrace: remove debugfs file dentries
+ from struct blk_trace"
+Message-ID: <Yhn2UD7nY3poWzkN@kroah.com>
+References: <20220226095343.1121256-1-yukuai3@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220226095343.1121256-1-yukuai3@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is a theoretical race window between memory failure and memory
-offline. Think about the below scene:
+On Sat, Feb 26, 2022 at 05:53:43PM +0800, Yu Kuai wrote:
+> This reverts commit c0ea57608b691d6cde8aff23e11f9858a86b5918.
+> 
+> When tracing the whole disk, 'dropped' and 'msg' will be created
+> under 'q->debugfs_dir' and 'bt->dir' is NULL, thus blk_trace_free()
+> won't remove those files. What's worse, the following UAF can be
+> triggered because of stale 'dropped' and 'msg':
 
-  CPU A					  CPU B
-memory_failure				offline_pages
-  mutex_lock(&mf_mutex);
-  TestSetPageHWPoison(p)
-					  start_isolate_page_range
-					    has_unmovable_pages
-					      --PageHWPoison is movable
-					  do {
-					    scan_movable_pages
-					    do_migrate_range
-					      --PageHWPoison isn't migrated
-					  }
-					  test_pages_isolated
-					    --PageHWPoison is isolated
-					remove_memory
-  access page... bang
-  ...
+Only root has access to these files, right?
 
-When PageHWPoison is set, the page could be offlined anytime regardless
-of the page refcnt. It's bacause start_isolate_page_range treats HWPoison
-page as movable and already isolated, so the page range can be successfully
-isolated. soft_offline_page and unpoison_memory have the similar race. Fix
-this by using get_online_mems + put_online_mems pair to guard aginst memory
-offline when doing memory failure.
+> 
+> ==================================================================
+> BUG: KASAN: use-after-free in blk_dropped_read+0x89/0x100
+> Read of size 4 at addr ffff88816912f3d8 by task blktrace/1188
+> 
+> CPU: 27 PID: 1188 Comm: blktrace Not tainted 5.17.0-rc4-next-20220217+ #469
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-4
+> Call Trace:
+>  <TASK>
+>  dump_stack_lvl+0x34/0x44
+>  print_address_description.constprop.0.cold+0xab/0x381
+>  ? blk_dropped_read+0x89/0x100
+>  ? blk_dropped_read+0x89/0x100
+>  kasan_report.cold+0x83/0xdf
+>  ? blk_dropped_read+0x89/0x100
+>  kasan_check_range+0x140/0x1b0
+>  blk_dropped_read+0x89/0x100
+>  ? blk_create_buf_file_callback+0x20/0x20
+>  ? kmem_cache_free+0xa1/0x500
+>  ? do_sys_openat2+0x258/0x460
+>  full_proxy_read+0x8f/0xc0
+>  vfs_read+0xc6/0x260
+>  ksys_read+0xb9/0x150
+>  ? vfs_write+0x3d0/0x3d0
+>  ? fpregs_assert_state_consistent+0x55/0x60
+>  ? exit_to_user_mode_prepare+0x39/0x1e0
+>  do_syscall_64+0x35/0x80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7fbc080d92fd
+> Code: ce 20 00 00 75 10 b8 00 00 00 00 0f 05 48 3d 01 f0 ff ff 73 31 c3 48 83 1
+> RSP: 002b:00007fbb95ff9cb0 EFLAGS: 00000293 ORIG_RAX: 0000000000000000
+> RAX: ffffffffffffffda RBX: 00007fbb95ff9dc0 RCX: 00007fbc080d92fd
+> RDX: 0000000000000100 RSI: 00007fbb95ff9cc0 RDI: 0000000000000045
+> RBP: 0000000000000045 R08: 0000000000406299 R09: 00000000fffffffd
+> R10: 000000000153afa0 R11: 0000000000000293 R12: 00007fbb780008c0
+> R13: 00007fbb78000938 R14: 0000000000608b30 R15: 00007fbb780029c8
+>  </TASK>
+> 
+> Allocated by task 1050:
+>  kasan_save_stack+0x1e/0x40
+>  __kasan_kmalloc+0x81/0xa0
+>  do_blk_trace_setup+0xcb/0x410
+>  __blk_trace_setup+0xac/0x130
+>  blk_trace_ioctl+0xe9/0x1c0
+>  blkdev_ioctl+0xf1/0x390
+>  __x64_sys_ioctl+0xa5/0xe0
+>  do_syscall_64+0x35/0x80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Freed by task 1050:
+>  kasan_save_stack+0x1e/0x40
+>  kasan_set_track+0x21/0x30
+>  kasan_set_free_info+0x20/0x30
+>  __kasan_slab_free+0x103/0x180
+>  kfree+0x9a/0x4c0
+>  __blk_trace_remove+0x53/0x70
+>  blk_trace_ioctl+0x199/0x1c0
+>  blkdev_common_ioctl+0x5e9/0xb30
+>  blkdev_ioctl+0x1a5/0x390
+>  __x64_sys_ioctl+0xa5/0xe0
+>  do_syscall_64+0x35/0x80
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> The buggy address belongs to the object at ffff88816912f380
+>  which belongs to the cache kmalloc-96 of size 96
+> The buggy address is located 88 bytes inside of
+>  96-byte region [ffff88816912f380, ffff88816912f3e0)
+> The buggy address belongs to the page:
+> page:000000009a1b4e7c refcount:1 mapcount:0 mapping:0000000000000000 index:0x0f
+> flags: 0x17ffffc0000200(slab|node=0|zone=2|lastcpupid=0x1fffff)
+> raw: 0017ffffc0000200 ffffea00044f1100 dead000000000002 ffff88810004c780
+> raw: 0000000000000000 0000000000200020 00000001ffffffff 0000000000000000
+> page dumped because: kasan: bad access detected
+> 
+> Memory state around the buggy address:
+>  ffff88816912f280: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+>  ffff88816912f300: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+> >ffff88816912f380: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+>                                                     ^
+>  ffff88816912f400: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+>  ffff88816912f480: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
+> ==================================================================
+> 
+> Fixes: c0ea57608b69 ("blktrace: remove debugfs file dentries from struct blk_trace")
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+> ---
+>  include/linux/blktrace_api.h | 2 ++
+>  kernel/trace/blktrace.c      | 8 ++++++--
+>  2 files changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/blktrace_api.h b/include/linux/blktrace_api.h
+> index 22501a293fa5..f288d229727c 100644
+> --- a/include/linux/blktrace_api.h
+> +++ b/include/linux/blktrace_api.h
+> @@ -23,6 +23,8 @@ struct blk_trace {
+>  	u32 pid;
+>  	u32 dev;
+>  	struct dentry *dir;
+> +	struct dentry *dropped_file;
+> +	struct dentry *msg_file;
 
-There is a even worse race window. If the page refcnt is held, then memory
-failure happens, the page could be offlined while it's still in use. So The
-assumption that a page can not be offlined when the page refcnt is held is
-now broken. This theoretical race window could happen in every vm activity.
-But this race window might be too small to fix.
+No need to save these dentries.  Just look them up when you want to
+remove the files.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
----
- mm/memory-failure.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+>  	struct list_head running_list;
+>  	atomic_t dropped;
+>  };
+> diff --git a/kernel/trace/blktrace.c b/kernel/trace/blktrace.c
+> index 19514edc44f7..13152a17fdb3 100644
+> --- a/kernel/trace/blktrace.c
+> +++ b/kernel/trace/blktrace.c
+> @@ -312,6 +312,8 @@ static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
+>  
+>  static void blk_trace_free(struct blk_trace *bt)
+>  {
+> +	debugfs_remove(bt->msg_file);
+> +	debugfs_remove(bt->dropped_file);
+>  	relay_close(bt->rchan);
+>  	debugfs_remove(bt->dir);
 
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 5444a8ef4867..b85232a64104 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1702,6 +1702,7 @@ int memory_failure(unsigned long pfn, int flags)
- 	if (!sysctl_memory_failure_recovery)
- 		panic("Memory failure on page %lx", pfn);
- 
-+	get_online_mems();
- 	mutex_lock(&mf_mutex);
- 
- 	p = pfn_to_online_page(pfn);
-@@ -1894,11 +1895,13 @@ int memory_failure(unsigned long pfn, int flags)
- identify_page_state:
- 	res = identify_page_state(pfn, p, page_flags);
- 	mutex_unlock(&mf_mutex);
-+	put_online_mems();
- 	return res;
- unlock_page:
- 	unlock_page(p);
- unlock_mutex:
- 	mutex_unlock(&mf_mutex);
-+	put_online_mems();
- 	return res;
- }
- EXPORT_SYMBOL_GPL(memory_failure);
-@@ -2058,6 +2061,7 @@ int unpoison_memory(unsigned long pfn)
- 	if (!pfn_valid(pfn))
- 		return -ENXIO;
- 
-+	get_online_mems();
- 	p = pfn_to_page(pfn);
- 	page = compound_head(p);
- 
-@@ -2114,6 +2118,7 @@ int unpoison_memory(unsigned long pfn)
- 
- unlock_mutex:
- 	mutex_unlock(&mf_mutex);
-+	put_online_mems();
- 	return ret;
- }
- EXPORT_SYMBOL(unpoison_memory);
-@@ -2278,10 +2283,12 @@ int soft_offline_page(unsigned long pfn, int flags)
- 	if (flags & MF_COUNT_INCREASED)
- 		ref_page = pfn_to_page(pfn);
- 
-+	get_online_mems();
- 	/* Only online pages can be soft-offlined (esp., not ZONE_DEVICE). */
- 	page = pfn_to_online_page(pfn);
- 	if (!page) {
- 		put_ref_page(ref_page);
-+		put_online_mems();
- 		return -EIO;
- 	}
- 
-@@ -2291,13 +2298,12 @@ int soft_offline_page(unsigned long pfn, int flags)
- 		pr_info("%s: %#lx page already poisoned\n", __func__, pfn);
- 		put_ref_page(ref_page);
- 		mutex_unlock(&mf_mutex);
-+		put_online_mems();
- 		return 0;
- 	}
- 
- retry:
--	get_online_mems();
- 	ret = get_hwpoison_page(page, flags);
--	put_online_mems();
- 
- 	if (ret > 0) {
- 		ret = soft_offline_in_use_page(page);
-@@ -2310,6 +2316,7 @@ int soft_offline_page(unsigned long pfn, int flags)
- 	}
- 
- 	mutex_unlock(&mf_mutex);
-+	put_online_mems();
- 
- 	return ret;
- }
--- 
-2.23.0
+Why not just move this line up above relay_close()?
 
+Then you the whole directory is properly removed, along with the files
+in it.
+
+So this can just be a 1 line change :)
+
+thanks,
+
+greg k-h
