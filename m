@@ -2,86 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3219C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 18:07:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39740C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 18:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232517AbiBZSHs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 13:07:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
+        id S232526AbiBZSJm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 13:09:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiBZSHq (ORCPT
+        with ESMTP id S230391AbiBZSJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 13:07:46 -0500
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A530551331
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 10:07:11 -0800 (PST)
-Received: from martin by viti.kaiser.cx with local (Exim 4.89)
-        (envelope-from <martin@viti.kaiser.cx>)
-        id 1nO1TG-00016A-Ub; Sat, 26 Feb 2022 19:07:06 +0100
-Date:   Sat, 26 Feb 2022 19:07:06 +0100
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/6] staging: r8188eu: cnt is set but not used
-Message-ID: <20220226180706.wierfb2ancom32zn@viti.kaiser.cx>
-References: <20220226144843.1118951-1-martin@kaiser.cx>
- <20220226144843.1118951-4-martin@kaiser.cx>
- <1c44c931-5b90-03d8-94bd-5e68682c4787@gmail.com>
- <184f741c-60ed-fe32-5705-08f9769e926a@gmail.com>
+        Sat, 26 Feb 2022 13:09:41 -0500
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC2493EB9D;
+        Sat, 26 Feb 2022 10:09:04 -0800 (PST)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nO1Ux-0008U9-7Z; Sat, 26 Feb 2022 19:08:51 +0100
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     linux-rockchip@lists.infradead.org,
+        Frank Wunderlich <linux@fw-web.de>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] arm64: dts: rockchip: Add sata2 node to rk356x
+Date:   Sat, 26 Feb 2022 19:08:50 +0100
+Message-ID: <2815432.3mA4caTK8C@diego>
+In-Reply-To: <20220226135724.61516-1-linux@fw-web.de>
+References: <20220226135724.61516-1-linux@fw-web.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <184f741c-60ed-fe32-5705-08f9769e926a@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Sender: Martin Kaiser <martin@viti.kaiser.cx>
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thus wrote Pavel Skripkin (paskripkin@gmail.com):
+Hi Frank,
 
-> On 2/26/22 19:57, Pavel Skripkin wrote:
-> > Hi Martin,
+Am Samstag, 26. Februar 2022, 14:57:24 CET schrieb Frank Wunderlich:
+> From: Frank Wunderlich <frank-w@public-files.de>
+> 
+> RK356x supports up to 3 sata controllers which were compatible with the
+> existing snps,dwc-ahci binding.
+> 
+> My board has only sata2 connected to combphy2 so only add this one.
 
-> > On 2/26/22 17:48, Martin Kaiser wrote:
-> > > In function recv_func, the cnt variable is set but not used.
-> > > It can be removed.
+how far does the added node diverge from the vendor kernel?
 
-> > > Signed-off-by: Martin Kaiser <martin@kaiser.cx>
-> > > ---
-> > >   drivers/staging/r8188eu/core/rtw_recv.c | 2 --
-> > >   1 file changed, 2 deletions(-)
+If it's pretty much similar between both, we can assume the other nodes
+should work pretty well as well and therefore should all of them at once
+and hope for the best?
 
-> > > diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-> > > index 0144c4642911..9a2e2bc2e294 100644
-> > > --- a/drivers/staging/r8188eu/core/rtw_recv.c
-> > > +++ b/drivers/staging/r8188eu/core/rtw_recv.c
-> > > @@ -1798,11 +1798,9 @@ static int recv_func(struct adapter *padapter, struct recv_frame *rframe)
-> > >   	if (check_fwstate(mlmepriv, WIFI_STATION_STATE) &&
-> > >   	    psecuritypriv->busetkipkey) {
-> > >   		struct recv_frame *pending_frame;
-> > > -		int cnt = 0;
-> > >   		pending_frame = rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue);
-> > >   		while (pending_frame) {
+Thanks
+Heiko
 
-> > Just out of curiosity: is this thing infinity loop?
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> ---
+>  arch/arm64/boot/dts/rockchip/rk356x.dtsi | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+> index 7cdef800cb3c..7b6c8a0c8b84 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+> @@ -230,6 +230,21 @@ scmi_shmem: sram@0 {
+>  		};
+>  	};
+>  
+> +	sata2: sata@fc800000 {
+> +		compatible = "snps,dwc-ahci";
+> +		reg = <0 0xfc800000 0 0x1000>;
+> +		clocks = <&cru ACLK_SATA2>, <&cru CLK_SATA2_PMALIVE>,
+> +			 <&cru CLK_SATA2_RXOOB>;
+> +		clock-names = "sata", "pmalive", "rxoob";
+> +		interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+> +		interrupt-names = "hostc";
+> +		phys = <&combphy2 PHY_TYPE_SATA>;
+> +		phy-names = "sata-phy";
+> +		ports-implemented = <0x1>;
+> +		power-domains = <&power RK3568_PD_PIPE>;
+> +		status = "disabled";
+> +	};
+> +
+>  	gic: interrupt-controller@fd400000 {
+>  		compatible = "arm,gic-v3";
+>  		reg = <0x0 0xfd400000 0 0x10000>, /* GICD */
+> 
 
 
-> Hm.
 
-> This function is called only inside a tasklet. IIRC it's not ok to have this
-> kind of loops in softirq context
 
-What exactly is this doing that's not allowed in a tasklet? Does it call
-anything that could potentially block? 
-
-If I pull rtw_alloc_recvframe into the loop, that function uses spin_lock_bh +
-spin_unlock_bh, I guess this is ok. As for recv_func_posthandle, I don't
-see anything where we could be stuck...
-
-Thanks,
-Martin
