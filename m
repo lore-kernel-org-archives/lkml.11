@@ -2,68 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5868C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 19:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43592C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 19:14:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232896AbiBZTJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 14:09:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
+        id S232526AbiBZTOw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 14:14:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232876AbiBZTJA (ORCPT
+        with ESMTP id S230128AbiBZTOp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 14:09:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FB1636E
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 11:08:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C36F760F5D
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 19:08:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 34BEFC340E8;
-        Sat, 26 Feb 2022 19:08:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645902505;
-        bh=4izAxj7a+iBRtv9WYa9ixB3vP7meMrt2ONVYK8/J2SM=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=ePMBXWSt5ikTOSzg8mEMulxsy6c20rkmH4u/2vnSgFgWUzawWfpBcyb4aVFvKcJ7B
-         eBt/e/spSd7HItjmZE5y0QO5dQNMqbPdh/QOr0hyTCan2dH7/j9wqwMs6NwyvQGCTR
-         qLROdqlPkkluBN6Q8kkCAFGF4gLmF0im7UW03Xq42jIoAP+8jsLRAGZYupprPICzBC
-         mRXZOVhb9LjQYTxgrbSEKE+/wY0D/PjfQVQTvm5y9ZlDCpGIwmYj068bDB3EnPUt/w
-         j/wYZVUzRl1MdGSqxIO2tBSICy/acnn1zS6wN+rdSC8FK7613k4g/FqV7BojToL0TU
-         crKrlnwhnJWlg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1F90DE6D3DE;
-        Sat, 26 Feb 2022 19:08:25 +0000 (UTC)
-Subject: Re: [GIT PULL] RISC-V Fixes for 5.17-rc6
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <mhng-673458fa-1596-4318-ae4b-b0275abc5d23@palmer-mbp2014>
-References: <mhng-673458fa-1596-4318-ae4b-b0275abc5d23@palmer-mbp2014>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <mhng-673458fa-1596-4318-ae4b-b0275abc5d23@palmer-mbp2014>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.17-rc6
-X-PR-Tracked-Commit-Id: 22e2100b1b07d6f5acc71cc1acb53f680c677d77
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 2c8c230edab57eae6d2e8df7239ef121a45a1443
-Message-Id: <164590250512.22829.11386233979430643210.pr-tracker-bot@kernel.org>
-Date:   Sat, 26 Feb 2022 19:08:25 +0000
-To:     Palmer Dabbelt <palmer@rivosinc.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+        Sat, 26 Feb 2022 14:14:45 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079BF50062
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 11:14:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645902849; x=1677438849;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=lsaBfyn5qGrTgcE+xIMmhDbMYzBpoNLSF9JDzDjIEOA=;
+  b=dpBbd/cGuChypikcGArdYALmThktzTdMDu9fUMXqGwu6teIPU3629UZj
+   PgsHZx6FevaSsGmkAheZnLANlqkZRWxNf3833n5khx9Qy4sZjUyyZ6kYZ
+   9hClFJRqSTgJkkq3+Z/dz0fla1Quw/LHIvm3lqKVemacb//fRwf8oUy6e
+   BuvivUwR6XolkDCRet0HD9byBSA+fRPN1pFTQtuK/ifRlfrdBDPG/bvMl
+   moHMd7TTSPLZg2+R8Jfb98j0fkKA9tyVi1RfYiJdHiQjFRnY2WD1RMIGF
+   xCkFWbLVXCb/06Qqfl7X64b7iCmY3Lg6YlmU9xkBoiFZBCWVKhaNRFHvm
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10270"; a="252408082"
+X-IronPort-AV: E=Sophos;i="5.90,139,1643702400"; 
+   d="scan'208";a="252408082"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2022 11:14:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,139,1643702400"; 
+   d="scan'208";a="509618684"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 26 Feb 2022 11:14:06 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nO2W6-0005rz-1v; Sat, 26 Feb 2022 19:14:06 +0000
+Date:   Sun, 27 Feb 2022 03:14:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hannes Reinecke <hare@suse.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [hare-scsi-devel:tls-upcall.v2 142/159] ERROR: modpost:
+ "nvme_keyring_insert_tls" [drivers/nvme/host/nvme-tcp.ko] undefined!
+Message-ID: <202202262118.1B2yhvRS-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 25 Feb 2022 11:07:43 -0800 (PST):
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git tls-upcall.v2
+head:   21b520ae0b338bd30496feb1ca90a2820dab7a65
+commit: 4c6b8023e6fd977739a1df4a3309c661a21bb65e [142/159] nvme-tcp: derive keys and start TLS if requested
+config: m68k-buildonly-randconfig-r004-20220226 (https://download.01.org/0day-ci/archive/20220226/202202262118.1B2yhvRS-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git/commit/?id=4c6b8023e6fd977739a1df4a3309c661a21bb65e
+        git remote add hare-scsi-devel https://git.kernel.org/pub/scm/linux/kernel/git/hare/scsi-devel.git
+        git fetch --no-tags hare-scsi-devel tls-upcall.v2
+        git checkout 4c6b8023e6fd977739a1df4a3309c661a21bb65e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.17-rc6
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/2c8c230edab57eae6d2e8df7239ef121a45a1443
+All errors (new ones prefixed by >>, old ones prefixed by <<):
 
-Thank you!
+>> ERROR: modpost: "nvme_keyring_insert_tls" [drivers/nvme/host/nvme-tcp.ko] undefined!
+ERROR: modpost: "nvme_keyring_lookup_dhchap" [drivers/nvme/host/nvme-tcp.ko] undefined!
+ERROR: modpost: "nvme_keyring_lookup_psk" [drivers/nvme/host/nvme-tcp.ko] undefined!
+>> ERROR: modpost: "nvme_keyring_lookup_tls" [drivers/nvme/host/nvme-tcp.ko] undefined!
+ERROR: modpost: "nvme_keyring_init" [drivers/nvme/host/nvme-core.ko] undefined!
+ERROR: modpost: "nvme_keyring_exit" [drivers/nvme/host/nvme-core.ko] undefined!
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
