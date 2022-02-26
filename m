@@ -2,58 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F98EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 01:05:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC89C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 01:10:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241100AbiBZBFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 20:05:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38858 "EHLO
+        id S241212AbiBZBKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 20:10:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241098AbiBZBFr (ORCPT
+        with ESMTP id S241069AbiBZBKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 20:05:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF93321133B;
-        Fri, 25 Feb 2022 17:05:12 -0800 (PST)
+        Fri, 25 Feb 2022 20:10:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FEB1CC7F5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 17:10:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97089B833CB;
-        Sat, 26 Feb 2022 01:05:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B953C340E7;
-        Sat, 26 Feb 2022 01:05:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645837510;
-        bh=PAaSdPGySNFc1VO039b3tWnsHZqWT6o7AAn3fxs9kBc=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=Q39XRoMzrQ+4bVK6NpPwRWrEG9dV2VzdTjLerqp6foi3bl0fGtVoLxy0i1rAT/hgH
-         7tOik/nXDiKGgdzQZkmERgAYZLLg8oIiIy1Lr4oedsPy04qsWcmD3L0118K3eeMBqD
-         ZmsQ6xLW1SXXEk85ZwiYazvjDjgt3sCXtbky4Q9wsPppj59NAQLd8SKvqpKRn+tmxf
-         bGzEfP2jyrmltwKr9aOEYJnXNO+WTkvQ4p2/NBPzgYG1SKI+SIlae7a/5ietVm4PFm
-         6ZfDZ6CJirAJ90TpQUF3fDvuXbCuHYryIvsL5x5WcumrXVtmbzd7cHi9p+/c+Kfm+Z
-         O/oiTf0HorCyA==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220217220554.2711696-3-sboyd@kernel.org>
-References: <20220217220554.2711696-1-sboyd@kernel.org> <20220217220554.2711696-3-sboyd@kernel.org>
-Subject: Re: [PATCH 2/2] clk: Mark clk_core_evict_parent_cache_subtree() 'target' const
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Date:   Fri, 25 Feb 2022 17:05:08 -0800
-User-Agent: alot/0.10
-Message-Id: <20220226010510.3B953C340E7@smtp.kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D7F661DFC
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 01:10:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8D40C340E7;
+        Sat, 26 Feb 2022 01:10:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1645837804;
+        bh=kg0FEgqg2RbTbd4/G8UmAfj8jgJTKH9dc0ETYajXWGE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nLyJE8CkzO6RT7zL90b31sQRzCsqCsr16nYJDGLDEJ+oqkFw5uLAHV3x21H1hvsGk
+         WtmN/nKTTFVbm7qJGI54/SUb3fm/5g/0nOcARqnPAytFxZcbHU9X1LsGUg4CehkcpG
+         xdjpR0n81fsotdQncJjxyVERHjgDEBwUinQgUq+0=
+Date:   Fri, 25 Feb 2022 17:10:04 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        David Laight <David.Laight@ACULAB.COM>
+Subject: Re: [PATCH] Drop -Wdeclaration-after-statement
+Message-Id: <20220225171004.edfda47af82ae98ef1c18b9d@linux-foundation.org>
+In-Reply-To: <YhiQPhsoODiXRAPy@localhost.localdomain>
+References: <YhiQPhsoODiXRAPy@localhost.localdomain>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Stephen Boyd (2022-02-17 14:05:54)
-> Clarify that the 'target' clk isn't being modified, instead it's being
-> searched for. Mark it const so the function can't modify it.
->=20
-> Signed-off-by: Stephen Boyd <sboyd@kernel.org>
-> ---
+On Fri, 25 Feb 2022 11:15:58 +0300 Alexey Dobriyan <adobriyan@gmail.com> wrote:
 
-Applied to clk-next
+> Putting declarations before statement is relict of single pass compiler
+> era. It was necessary to allocate stack slots before generating code.
+> 
+> Recently added static_assert() is a declaration. -Wdeclaration-after-statement
+> prevents its placement anywhere in the code for no reason.
+> 
+> Placing variable declarations in the beginning of the block increases
+> variable "LOC lifetime" so to speak and chances that it will be misused.
+> This is very low probability bug but still. Declaring variables right
+> before first use will make "LOC lifetime" smaller.
+> 
+> 	{
+> 		int x;
+> 		[x is misused due to a typo]
+> 		f(x);	// first correct use
+> 	}
+> 
+> vs
+> 
+> 	{
+> 		[can't misuse undeclared variable]
+> 		int x;
+> 		f(x);	// first correct use
+> 	}
+> 
+
+Oh man.  I so wish you'd cc'ed Linus on this one so we could admire his
+reaction.
