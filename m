@@ -2,129 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D61ABC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 15:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BCB7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 15:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232253AbiBZPd1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 10:33:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44996 "EHLO
+        id S232263AbiBZP7k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 10:59:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232234AbiBZPdY (ORCPT
+        with ESMTP id S230390AbiBZP7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 10:33:24 -0500
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC2638BF;
-        Sat, 26 Feb 2022 07:32:47 -0800 (PST)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4K5VyN4DZVz9sTJ;
-        Sat, 26 Feb 2022 16:32:44 +0100 (CET)
-Message-ID: <c8c6391ce70ad5940b4951e3329b4f525e12252e.camel@sylv.io>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
-        t=1645889562;
+        Sat, 26 Feb 2022 10:59:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E7006179257
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 07:59:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1645891142;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=H1OH+fwFMAkE5HnuGiQoI6sTW5eya7KfWghjENThRfs=;
-        b=MUu68CU7dDpmpyscqcIa0HgfC1hvfLrGo3MegEINHcIt17xtaM9qACnMixKUCvjXIfWr+P
-        74phmknj19WQ/Co1slOWCX/r0L91B6+aJESY/oLXU182z1F6Ec2BkkLz3lK4/+7XkbhJJA
-        8pqFWJQlDoUo0B33eq1ONGMUhKtarZP/FhKeovXmsZdqvl39kMa9/3cMY+bbYpEMS6oJ+b
-        Ur5q1VSWrb5pEkFIDalYYmDgtMAeTnZYLQ/jR7F4x/bTEnC8lUR5aPjms9uQpSjtFu9BV8
-        eFNYYidp+xz7Fgy1ed9/pCdFIS5cP2m+uk1XFqGf4xYkz+rmspXjQAK83HnOGQ==
-Subject: Re: [PATCH v2 2/3] hwmon (xdpe12284): Add support for xdpe11280
-From:   Marcello Sylvester Bauer <sylv@sylv.io>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        linux-doc@vger.kernel.org
-Date:   Sat, 26 Feb 2022 16:32:37 +0100
-In-Reply-To: <8656b67c-e093-0a18-9c5f-02f5b4264bb2@roeck-us.net>
-References: <cover.1645108566.git.sylv@sylv.io>
-         <6103836f1116a045a25919ae3e5c18dfdc485902.1645108566.git.sylv@sylv.io>
-         <f1e13a4e-2e86-1d53-f34d-a04838e8e8f9@roeck-us.net>
-         <246de83631dd5e165f95904d7f1628502f030e02.camel@sylv.io>
-         <66d4ea0b-0377-c9ae-68eb-7303c32cf87e@roeck-us.net>
-         <7a567823d62b6ed00cbdc2ce239dc4a69e48b411.camel@sylv.io>
-         <aa82f347-1b1a-8c40-b5cb-9efe292ae0ec@roeck-us.net>
-         <337fe0598837b35ee96773339e9cdc8345a7c16e.camel@sylv.io>
-         <8656b67c-e093-0a18-9c5f-02f5b4264bb2@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Grhy4tvGVEY5R3BS2D+G2b4sVPmyn1TwoVnElYjF3HA=;
+        b=Ipku3yC4aCig8NgOKZ8/63iSE4nGmfoSLjuxW1bqxPDZvEpcUr+c6qF0mxWMUkbqXLfsuc
+        guDBKWK5pxhU5hj1i70wQJbBtUQpJsXXophs38njDH3QwCr55RAlU2bri4kayousVUgupD
+        o8gHsH6gX7egUXuZwNeGy+Kv4fcMFEg=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-64-IUfESuxqPIa4Iee-FS37WA-1; Sat, 26 Feb 2022 10:59:01 -0500
+X-MC-Unique: IUfESuxqPIa4Iee-FS37WA-1
+Received: by mail-qv1-f69.google.com with SMTP id hu9-20020a056214234900b0042c4017aeb3so8058657qvb.14
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 07:59:01 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Grhy4tvGVEY5R3BS2D+G2b4sVPmyn1TwoVnElYjF3HA=;
+        b=MZr870v/sth9oiLNd8AizZRC/7S0x0fy/Q2Y/W2BUf991Smnegjwxp9w5jcHgS/IMm
+         qKVHByI/GBJEaVnOGZKRo2gsXzbSRHfur8mKCb7hf3k7gCbbFKZbl6JbzgWsVnSVh8CC
+         qhe0Xu1ZqtOgCSxJ9xQ9Kinlr1TlT16zC9oH4ZHElzr8Iyn9/j/QD1Ldo1sQL4juwDlJ
+         1H+iyYmzKOSZqKMxccMYoymU76NRwaRWORNITE2iUqNOPnzbJV9vn36MX7KTqADN+mlG
+         qFzePiH7bDYCFJLBlSM6yAOjL5qb8XdkEeeNBMEr7ipvC2pPKKdVi/rT4xbw37a5nSr3
+         UmWw==
+X-Gm-Message-State: AOAM531zcQJDMO0in08Yvhl3cavWv02Ur1Sihas7lF9lSFXZLthNNF3I
+        dxDiCUrYuc6dIt5la+DfGGhzx3KrNDTiE++SNVfSteB9x/6sb7mp+ktMmluoU8770nkzYNIU/k6
+        iSIdXUs6qKdwevNEHrU8GsFwm
+X-Received: by 2002:a05:620a:122c:b0:47e:1445:15e8 with SMTP id v12-20020a05620a122c00b0047e144515e8mr7667248qkj.200.1645891141072;
+        Sat, 26 Feb 2022 07:59:01 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyep784W30LsjYckoKZZTZAqrxmyuQo5OmviyaAolfcaSK5XfS1laivNCE0UKTxjerrO/TlHg==
+X-Received: by 2002:a05:620a:122c:b0:47e:1445:15e8 with SMTP id v12-20020a05620a122c00b0047e144515e8mr7667237qkj.200.1645891140834;
+        Sat, 26 Feb 2022 07:59:00 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id w9-20020a05620a148900b005f188f755adsm2640064qkj.32.2022.02.26.07.58.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Feb 2022 07:59:00 -0800 (PST)
+From:   trix@redhat.com
+To:     alexander.deucher@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        nathan@kernel.org, ndesaulniers@google.com, nirmoy.das@amd.com,
+        lijo.lazar@amd.com, tom.stdenis@amd.com, evan.quan@amd.com,
+        kevin1.wang@amd.com, Amaranath.Somalapuram@amd.com
+Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] drm/amdgpu: Fix realloc of ptr
+Date:   Sat, 26 Feb 2022 07:58:51 -0800
+Message-Id: <20220226155851.4176109-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-02-25 at 08:39 -0800, Guenter Roeck wrote:
-> On 2/21/22 04:13, sylv wrote:
-> > On Thu, 2022-02-17 at 11:25 -0800, Guenter Roeck wrote:
-> > > On 2/17/22 10:38, sylv wrote:
-> > > [ ... ]
-> > > 
-> > > > > 
-> > > > > That makes me wonder if the chip needs to be added to this
-> > > > > driver
-> > > > > in
-> > > > > the first
-> > > > > place, or if it could be added to pmbus.c instead. Any idea ?
-> > > > 
-> > > > Oh, we did wrote a standalone driver too, and it works fine.
-> > > > Maybe it's better to upsteam it instead. :)
-> > > 
-> > > No, I meant if it would make sense to just add something like
-> > > 
-> > >          {"xdpe11280", (kernel_ulong_t)&pmbus_info_one },
-> > > 
-> > > to drivers/hwmon/pmbus/pmbus.c.
-> > > 
-> > > You only really need a standalone driver if it does something
-> > > special, such as a workaround for some register access (like
-> > > the xdpe12284 driver), or if support for manufacturer specific
-> > > registers is desired or needed. That would, for example, be
-> > > useful
-> > > if the xdpe11280 supports per-phase sensors.
-> > > 
-> > > Thanks,
-> > > Guenter
-> > 
-> > Hi,
-> > 
-> > I tested if the xdpe11280 can use the generic pmbus driver.
-> > Everything
-> > works fine except it does only detect READ_TEMPERATURE_1 on page 0.
-> > Looking at the pmbus_find_sensor_groups function it looks like only
-> > some commands are probed on each page (READ_VOUT, READ_IOUT, and
-> > READ_POUT) but not READ_TEMPERATURE_1.
-> > The PMBus spec 1.3.1 tells us: "Each page may offer the full range
-> > of
-> > PMBus commands available for each output or non-PMBus device." How
-> > could we adapt the generic driver so that it is possible to probe
-> > commands for each page?
-> > 
-> 
-> The problem is the "may". Some chips don't implement multi-page
-> support especially for temperature sensors. So we'll have to go
-> with adding support to the existing driver.
-> 
-> Guenter
+From: Tom Rix <trix@redhat.com>
 
-sgtm. So I'll continue working on this patch set.
+Clang static analysis reports this error
+amdgpu_debugfs.c:1690:9: warning: 1st function call
+  argument is an uninitialized value
+  tmp = krealloc_array(tmp, i + 1,
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-> 
-> > Furthermore, It would be great to add regulator and DT support. I
-> > created a WIP branch on GitHub with a possible way to implement
-> > this:
-> > https://github.com/9elements/linux/tree/upstreaming_pmbus_regulator_wip
-> > 
-> > What do you think?
-> > 
-> > Thanks,
-> > Marcello
-> > 
-> 
+realloc will free tmp, so tmp can not be garbage.
+And the return needs to be checked.
+
+Fixes: 5ce5a584cb82 ("drm/amdgpu: add debugfs for reset registers list")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
+index 9eb9b440bd438..159b97c0b4ebc 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_debugfs.c
+@@ -1676,7 +1676,7 @@ static ssize_t amdgpu_reset_dump_register_list_write(struct file *f,
+ {
+ 	struct amdgpu_device *adev = (struct amdgpu_device *)file_inode(f)->i_private;
+ 	char reg_offset[11];
+-	uint32_t *tmp;
++	uint32_t *tmp = NULL;
+ 	int ret, i = 0, len = 0;
+ 
+ 	do {
+@@ -1688,6 +1688,10 @@ static ssize_t amdgpu_reset_dump_register_list_write(struct file *f,
+ 		}
+ 
+ 		tmp = krealloc_array(tmp, i + 1, sizeof(uint32_t), GFP_KERNEL);
++		if (!tmp) {
++			ret = -ENOMEM;
++			goto error_free;
++		}
+ 		if (sscanf(reg_offset, "%X %n", &tmp[i], &ret) != 1) {
+ 			ret = -EINVAL;
+ 			goto error_free;
+-- 
+2.26.3
 
