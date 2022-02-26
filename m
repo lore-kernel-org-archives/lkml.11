@@ -2,121 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28A78C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 17:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 320B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 17:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232401AbiBZRBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 12:01:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40068 "EHLO
+        id S232411AbiBZRNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 12:13:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiBZRBj (ORCPT
+        with ESMTP id S229924AbiBZRN2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 12:01:39 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4418949F9B;
-        Sat, 26 Feb 2022 09:01:01 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id p14so16727232ejf.11;
-        Sat, 26 Feb 2022 09:01:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VPASw0Pjg3A9RSZK9b9pwu/T/TyfBQMtAUoZ8ftIZpE=;
-        b=S1FxSs+Ns1mvcG1GZiXmi/OLdfcHSI0aEKJDAnNS8Nr6lJ3VtE0KkcV46XaATYKf3Y
-         Xcy8Dc3kx9/bqw28H+d0AWHHOAbOrvLeGMF/fqyPH3waHJPvX5JdFfF1NxEBqfWU65TB
-         ZOjjOmtT+IqBTHiL5FlXaktRDS7DZz+qKvHfUVzKGQl5BD6ZoTjiPI4QNAXl+niiC1Ky
-         6t9TLSOIg9rXRhjNIAVSkmXm757Rd717FhuzWwiSl23JMWg6z0Orz8jSKR0xm/dGenOY
-         y86Y7Kup+afPuafNQn+Zsw3ZROCjhpGMEcn1vKeM6Plms7fCkg1eaK5RNOJzD5L7zkJT
-         tVCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VPASw0Pjg3A9RSZK9b9pwu/T/TyfBQMtAUoZ8ftIZpE=;
-        b=s48IaTbXw9RiUe4V5fEhfPUKzOGymZxwR3g+S8uixLXl83LpGWpZDj2gTmnO8X/FuG
-         CxBoNQci0vXeeqEmCdcOlDtPmUv0r0KqHCLXNrsXXTucZJDIlMxx96xHP9b3OpyC/UGt
-         ag5b/OPTRMzBIcJitd2IyLKZ8ofYS5FQ9T3cd1WgtVvVD7BUzAeTfYyPrax6058tUD8h
-         9C+ViNT8qThUNFU5f9Tr0DAFF47bPsJjnEC5OVoBt+3hEimFb+z7yjWuk3Z4tGNwD1Xa
-         uCR2txIs5neFRrtAIwcnAB79flDIbdzGmlPx0Z2YUzfbAkdiHRhatJBPf1XJAOQNTU+P
-         quGg==
-X-Gm-Message-State: AOAM532O+NBEHwzGlC8MYL4VKlP9E4ZS99fcDqof96Raet1phpWKWY+T
-        NKsefji6I4yoSp1GzlxrAi+j/mbP24Vy0RNb
-X-Google-Smtp-Source: ABdhPJzhyQMrwRwDl2geq4aP16/Ku6RYmQjlO4Fzg4EN6xIJWOP+nL7Vvfo9aCVWCciU6IK5rKmVfw==
-X-Received: by 2002:a17:906:edb5:b0:6b8:1a5a:f3a0 with SMTP id sa21-20020a170906edb500b006b81a5af3a0mr10313283ejb.501.1645894859782;
-        Sat, 26 Feb 2022 09:00:59 -0800 (PST)
-Received: from fedora ([95.180.24.23])
-        by smtp.gmail.com with ESMTPSA id g2-20020aa7c842000000b0041314b98872sm3028126edt.22.2022.02.26.09.00.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Feb 2022 09:00:59 -0800 (PST)
-Date:   Sat, 26 Feb 2022 18:00:57 +0100
-From:   Aleksa Savic <savicaleksa83@gmail.com>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-hwmon@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] hwmon: add driver for Aquacomputer Farbwerk 360
-Message-ID: <YhpcyU+9Rc+FmaFk@fedora>
-References: <20220221102157.13574-1-savicaleksa83@gmail.com>
- <5fa0a22c-5f55-bd38-8d76-a4ea31898bca@roeck-us.net>
- <YhpCrNhjfb0E8rLn@fedora>
- <fd9710d4-73a1-2b9d-7848-4c6291f6b2e1@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fd9710d4-73a1-2b9d-7848-4c6291f6b2e1@roeck-us.net>
+        Sat, 26 Feb 2022 12:13:28 -0500
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BEFBD7CC;
+        Sat, 26 Feb 2022 09:12:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1645895556;
+    s=strato-dkim-0002; d=goldelico.com;
+    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    From:Subject:Sender;
+    bh=rAYy4Z35sSvRmW3KU/N66fatHaFpRvigK4dz2yH4zPQ=;
+    b=RqqY8R83HtnL0jTR22tpkHKb0et4BaXXkFDbAnYqGNqqnpFOX9QewquRUQJaZa3rSW
+    BG/4dxSRpQFuQuMZ2+VUJ+bCkZRBHbDVopudOmBGnxDS/WZhnCKgqDUy6dEuYESKatQb
+    CUUThk3ThvCcrps0vfp4qr5HIamaMGW9KyP5wxhRsu3+kT85dNTBcFv0Cs4dmD/07ISv
+    7MS7g/W6qrEhi1nHziGAHNhVLGpxroWY4BT9OMlXNiPgQyuo5N3F2PfAqZXevz4upvoI
+    jhBSkOG7tCzQmA7a3dD7JjXmof7qoARDyYeVmz1CW+w/t0FstTI69LCo1X08z2VYjWP6
+    6wTg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj4Qpw9iZeHWElw43sTrQ="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+    by smtp.strato.de (RZmta 47.40.1 SBL|AUTH)
+    with ESMTPSA id V41e6fy1QHCYE1v
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+        (Client did not present a certificate);
+    Sat, 26 Feb 2022 18:12:34 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
+Subject: Re: [PATCH v15 4/7] drm/bridge: dw-hdmi: repair interworking with
+ hdmi-connector for jz4780
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <9c6f5c0b-5879-736f-344f-dfa12a0d7937@baylibre.com>
+Date:   Sat, 26 Feb 2022 18:12:34 +0100
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Paul Boddie <paul@boddie.org.uk>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        letux-kernel@openphoenux.org, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Jonas Karlman <jonas@kwiboo.se>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <3F01AD9B-EA49-4A34-A421-43E9E6268311@goldelico.com>
+References: <cover.1644681054.git.hns@goldelico.com>
+ <d4d08582c49ec089095dd0ede4cdf2752f9d1eb8.1644681054.git.hns@goldelico.com>
+ <9c6f5c0b-5879-736f-344f-dfa12a0d7937@baylibre.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+X-Mailer: Apple Mail (2.3445.104.21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 07:31:34AM -0800, Guenter Roeck wrote:
-> On 2/26/22 07:09, Aleksa Savic wrote:
-> > Hi,
-> > 
-> > On Thu, Feb 24, 2022 at 11:57:47AM -0800, Guenter Roeck wrote:
-> > > Hi,
-> > > 
-> > > On 2/21/22 02:21, Aleksa Savic wrote:
-> > > > This driver exposes hardware temperature sensors of the Aquacomputer
-> > > > Farbwerk 360 RGB controller, which communicates through a proprietary
-> > > > USB HID protocol.
-> > > > 
-> > > > Four temperature sensors are available. If a sensor is not connected,
-> > > > it will report zeroes. Additionally, serial number and firmware version
-> > > > are exposed through debugfs.
-> > > > 
-> > > > This driver has been tested on x86_64.
-> > > > 
-> > > > Signed-off-by: Aleksa Savic <savicaleksa83@gmail.com>
-> > > 
-> > > Unless I amm missing something, this driver is quite similar to the
-> > > d5next driver (drivers/hwmon/aquacomputer_d5next.c), except that there
-> > > are 4 instead of 1 temperature sensor, the sensor data is in a different place,
-> > > and there is _only_ temperature data. It should be quite straightforward
-> > > to merge the two drivers into one, so please  do that.
-> > > 
-> > > Additional comment inline.
-> > > 
-> > > Thanks,
-> > > Guenter
-> > 
-> > Yes, it's very similar, I based this one on that. I'll send a patch for
-> > the original driver. I also have code ready for Aquacomputer Octo (8 fans, 4
-> > temperature sensors, very similar to all this as well) with PWM write control
-> > support for the fans. And there is also WIP code for PWM and curve support for
-> > the D5 Next from contributors on my github repo, though we're working on that.
-> > 
-> > Considering that the driver would then contain support for more devices (the D5
-> > Next and the Farbwerk 360 for now), can it be renamed to just aquacomputer or
-> > something similar?
-> > 
-> 
-> We don't normally do that (because the Kconfig symbol is already established)
-> and just name the driver for the first chip (or, in this case, controller)
-> it supports.
-> 
-> Guenter
+Hi Neil,
 
-Got it.
+> Am 21.02.2022 um 09:11 schrieb Neil Armstrong =
+<narmstrong@baylibre.com>:
+>=20
+> Hi,
+>=20
+> On 12/02/2022 16:50, H. Nikolaus Schaller wrote:
+>> Commit 7cd70656d1285b ("drm/bridge: display-connector: implement bus =
+fmts callbacks")
+>> introduced a new mechanism to negotiate bus formats between hdmi =
+connector
+>> and the synopsys hdmi driver inside the jz4780.
+>> By this, the dw-hdmi is no longer the only bridge and sets up a list
+>> of formats in dw_hdmi_bridge_atomic_get_output_bus_fmts().
+>> This includes MEDIA_BUS_FMT_UYVY8_1X16 which is chosen for the jz4780 =
+but only
+>> produces a black screen.
+>> This fix is based on the observation that max_bpc =3D 0 when running =
+this
+>> function while info->bpc =3D 8. Since the formats checks before this =
+always test
+>> for max_bpc >=3D info->pbc indirectly my assumption is that we must =
+check it
+>> here as well.
+>> Adding the proposed patch makes the CI20/jz4780 panel work again in
+>> MEDIA_BUS_FMT_RGB888_1X24 mode.
+>> Fixes: 7cd70656d1285b ("drm/bridge: display-connector: implement bus =
+fmts callbacks")
+>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+>> ---
+>>  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c =
+b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> index b0d8110dd412c..826a055a7a273 100644
+>> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+>> @@ -2620,10 +2620,10 @@ static u32 =
+*dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+>>  		output_fmts[i++] =3D MEDIA_BUS_FMT_RGB101010_1X30;
+>>  	}
+>>  -	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
+>> +	if (max_bpc >=3D info->bpc && info->color_formats & =
+DRM_COLOR_FORMAT_YCBCR422)
+>>  		output_fmts[i++] =3D MEDIA_BUS_FMT_UYVY8_1X16;
+>>  -	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
+>> +	if (max_bpc >=3D info->bpc && info->color_formats & =
+DRM_COLOR_FORMAT_YCBCR444)
+>>  		output_fmts[i++] =3D MEDIA_BUS_FMT_YUV8_1X24;
+>>    	/* Default 8bit RGB fallback */
+>=20
+> Please do the same for all other cases and change the patch subject to =
+something more accurate like:
+> "drm/bridge: dw-hdmi: take display info bpc in account for bus formats =
+negociation"
 
-Thanks,
-Aleksa
+thank you very much for this analysis.
+
+In fact my fix was also not correctly doing the right comparisons. The =
+rules should have the
+same structure as for all cases before, i.e. check for >=3D 8 and then =
+handle both color formats.
+I have fixed and tested on my CI20 board and updated the description and =
+Fixes: tags.
+
+v16 will come now (as part of the jz4780 hdmi series).
+
+BR and thanks,
+Nikolaus
+
