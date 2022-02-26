@@ -2,106 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 04:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BAC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 04:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbiBZEUe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 23:20:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54182 "EHLO
+        id S229708AbiBZE0N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 23:26:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229917AbiBZEUU (ORCPT
+        with ESMTP id S229700AbiBZE0L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 23:20:20 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940E222011A;
-        Fri, 25 Feb 2022 20:19:46 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id u16so6389049pfg.12;
-        Fri, 25 Feb 2022 20:19:46 -0800 (PST)
+        Fri, 25 Feb 2022 23:26:11 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321D1D21D7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 20:25:38 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id a5so5570141pfv.9
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 20:25:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=E0+eJj0NPmwxnSMx1LXVXrNLUrIv19z+ZDO3nRYWhjc=;
-        b=oI1ZrcyJTTa6Nsp+GTnXBkoaItgt5KmP8JGfnhwj1ltlFXvp+0b+ADel2Sz5KmTRpO
-         6D8+HH7LlBoivftVgjHlA+7cyUE866z/MiQ0lF3NpbslKh0olBH54i0ZNaJBxCdQcCGm
-         jHjrLn5vrrUyBsg6nMBQnq+q7y84nyCq/daaTKXkqRO8mNxuEeGF83MXPtnWveWM1+E6
-         62R6cr3hJ5VMX2tiN27mw7nUbhVQkPdFeQIOvtozo1KdRfMbucLrjcfTfqozV1o+R4WI
-         04tOAr0I/3q125ARozgG01uRLZES7u/0+ViwWhV6GWiLPrqkjbX+yfQz1dWJeBhd+mrl
-         ibKQ==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=Fp8tS9Tv9uCsWH6vrg9RydV37obfExfUsNqz1M7URQw=;
+        b=gAwNByTQb9WAk7MPfXqU6n8mq0gTMsBg0s07UhnpFy7iVZ7BGyO+fcZMiq1ckGgeST
+         SPtN9ABVZSGJUMpwJiBgmjb+llU2FOqn0orQ/CM2hYu0upRAEc2AskxGiAkuDR4dueZ6
+         GJuPYwt12mV9VHyCAbc8ZEANweruJ4SFj+zHNZm9O4vugdXzlJxPh4sr/NbtEfZ7P33y
+         T7VPH9en9aAAkmXGot0rJkeLIZVA+jiz6x6dR5mZG8Vp0iPTcO01F70AHcHv1i3H8x2w
+         Ht6uKu3tQ3anzoNnJ4B7D+yHxVA7G6VItDpJ+RYNo81rSW6HsGDolLaQIgap2L21yttM
+         qy/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=E0+eJj0NPmwxnSMx1LXVXrNLUrIv19z+ZDO3nRYWhjc=;
-        b=HdWV9i9y8uGEqrFgiIG4qbAPlMIezYpKCO9gJSNI4DbuLHftC3Xp/nkgkaC7EEjeNl
-         sYbDtvAQ+Dn1BRDNpj4XaWVA3Kon8eVmb04cGs/n+0dLKxnGrzad2bP7gMgdC1dp+mqL
-         Y072aXLGpRzHCED6EmhMph5+02OSqhPHzHgz6f31UzWySULnWZtbf3MHvHF/369myUyu
-         uHaFmtVMVWAuHeD00KaddN2XjF1fNBmQeN4wG6J+xv0uuqAiPbgEiiyiePkV0/ld3ElM
-         kKy4eJ99N3MGMOntYxPmDRdgwk3cSW7jM4coCONiZc27kDddY9yRVRFj/1liDw1ueIin
-         Cigg==
-X-Gm-Message-State: AOAM5336GS6oMaR+qMi8uUWqDNaOSt4n/wh9yOthJgUBuJTZmmA1c7yV
-        N68N7pIqlKsisI1HgD3Rp8s=
-X-Google-Smtp-Source: ABdhPJwuBBwQtLfdsMQxH7b6WoLbDmCiZjOVW9m3/Tik/YGwbxhMycXlzRIpTusE4+vqx0W+vGdWnQ==
-X-Received: by 2002:a63:e01:0:b0:374:2525:7690 with SMTP id d1-20020a630e01000000b0037425257690mr8838609pgl.37.1645849186064;
-        Fri, 25 Feb 2022 20:19:46 -0800 (PST)
-Received: from localhost.localdomain ([203.205.141.112])
-        by smtp.gmail.com with ESMTPSA id k22-20020aa788d6000000b004f1335c8889sm4896193pff.7.2022.02.25.20.19.41
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=Fp8tS9Tv9uCsWH6vrg9RydV37obfExfUsNqz1M7URQw=;
+        b=fsp9eBzO91N9BG0L2gsKUTNJhxx1uPPqUB/NjfNIWs3gzaWryc4qsTTdtngzzp/5zb
+         kx6Fco8jG9nbdA1B9lA34HYwzmSNwTc5ZHPWCIngcK17RCSCiX4lgnNytAHk+EOcXI3P
+         /Pqmj40Xo/tTVHznEQ2a63u6XZ4tnHmYAEf4PMqz7cl8KkFQ1duVuRo+fzQdaCKdNkDB
+         jmS+82RIv/d+RcuzzGx28vzwhJUzIKP482dUGLGIM1+1NrMxKkzI+FqP9yaOURw8VPpH
+         XUOlPDaelpF8CnIuVirYTe32bBTtNwh6TWr7G6DYT4g1zjUI/p2PPpdVXMoFVeLUUXyX
+         ZKqw==
+X-Gm-Message-State: AOAM533eHvbO5ZuVQrQuCwjWlgWQFPRrLNgUyINqnN30j820+vsfv+2J
+        7I4iK7GF2WAAZ1P6cPE3kvPQl3/Qv7wXMBm1
+X-Google-Smtp-Source: ABdhPJzHQLmT4p//evrcfBLw6x6Xobkv89wYpaBw12Jpf3R4cHoxj+UYFlNw9jxJJ4iXYg8goHDYUA==
+X-Received: by 2002:a63:2d05:0:b0:34b:3f1d:2fa8 with SMTP id t5-20020a632d05000000b0034b3f1d2fa8mr8844216pgt.447.1645849537593;
+        Fri, 25 Feb 2022 20:25:37 -0800 (PST)
+Received: from mail.google.com (122-58-164-114-fibre.sparkbb.co.nz. [122.58.164.114])
+        by smtp.gmail.com with ESMTPSA id z8-20020aa79588000000b004e1dc67ead3sm4783050pfj.126.2022.02.25.20.25.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Feb 2022 20:19:45 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     dsahern@kernel.org
-Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, imagedong@tencent.com,
-        edumazet@google.com, alobakin@pm.me, cong.wang@bytedance.com,
-        paulb@nvidia.com, talalahmad@google.com, keescook@chromium.org,
-        ilias.apalodimas@linaro.org, memxor@gmail.com,
-        flyingpeng@tencent.com, mengensun@tencent.com,
-        daniel@iogearbox.net, yajun.deng@linux.dev, roopa@nvidia.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 3/3] net: neigh: add skb drop reasons to arp_error_report()
-Date:   Sat, 26 Feb 2022 12:18:31 +0800
-Message-Id: <20220226041831.2058437-4-imagedong@tencent.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220226041831.2058437-1-imagedong@tencent.com>
-References: <20220226041831.2058437-1-imagedong@tencent.com>
+        Fri, 25 Feb 2022 20:25:37 -0800 (PST)
+Date:   Sat, 26 Feb 2022 17:25:31 +1300
+From:   Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
+To:     gregkh@linuxfoundation.org, paulo.miguel.almeida.rodenas@gmail.com,
+        realwakka@gmail.com
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: pi433: prevent uninitialized data from being
+ printed out
+Message-ID: <Yhmruyr2BUn0+3O3@mail.google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+local_buffer is not initialised before data is passed to
+spi_sync_transfer. In case spi* function fails then the dev_dbg
+statement after that can potentially print out uninitialised data
 
-When neighbour become invalid or destroyed, neigh_invalidate() will be
-called. neigh->ops->error_report() will be called if the neighbour's
-state is NUD_FAILED, and seems here is the only use of error_report().
-So we can tell that the reason of skb drops in arp_error_report() is
-SKB_DROP_REASON_NEIGH_FAILED.
+this patch initialises local_buffer array.
 
-Replace kfree_skb() used in arp_error_report() with kfree_skb_reason().
-
-Reviewed-by: Mengen Sun <mengensun@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
 ---
- net/ipv4/arp.c | 2 +-
+Meta-comments:
+
+- this change was requested by Dan Carpenter in a different thread:
+https://lore.kernel.org/lkml/20220207100601.GF1951@kadam/
+
+Patch dependency:
+
+- this patch depends on the following patch to be applied first as
+both of them change the same file:
+https://lore.kernel.org/lkml/Yhla4a1Clpguoo2h@mail.google.com/
+---
+ drivers/staging/pi433/rf69.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
-index 4db0325f6e1a..8e4ca4738c43 100644
---- a/net/ipv4/arp.c
-+++ b/net/ipv4/arp.c
-@@ -293,7 +293,7 @@ static int arp_constructor(struct neighbour *neigh)
- static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb)
+diff --git a/drivers/staging/pi433/rf69.c b/drivers/staging/pi433/rf69.c
+index e5b23ab39c69..3028018f0b45 100644
+--- a/drivers/staging/pi433/rf69.c
++++ b/drivers/staging/pi433/rf69.c
+@@ -782,7 +782,7 @@ int rf69_read_fifo(struct spi_device *spi, u8 *buffer, unsigned int size)
  {
- 	dst_link_failure(skb);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
- }
+ 	int i;
+ 	struct spi_transfer transfer;
+-	u8 local_buffer[FIFO_SIZE + 1];
++	u8 local_buffer[FIFO_SIZE + 1] = {};
+ 	int retval;
  
- /* Create and send an arp packet. */
+ 	if (size > FIFO_SIZE) {
 -- 
-2.35.1
+2.34.1
 
