@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0857C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235340AbiBZARg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 19:17:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50784 "EHLO
+        id S240461AbiBZARm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 19:17:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240663AbiBZARC (ORCPT
+        with ESMTP id S240323AbiBZAQz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 19:17:02 -0500
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F0722559D
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:21 -0800 (PST)
-Received: by mail-pg1-x549.google.com with SMTP id d192-20020a6336c9000000b00372eb4c4bf4so3477406pga.8
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:21 -0800 (PST)
+        Fri, 25 Feb 2022 19:16:55 -0500
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024542261E4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:18 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id t68-20020a635f47000000b003732348b971so3493527pgb.7
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=ENO0x4uKs4rqsjN1xB0qFJMoRAxQ1GMRSi+kdo7qAvw=;
-        b=lhfMZMr/HcUZRGRAalYnJGHqVZsOjXMz94FZ2392zvT3nXG8ZEgYlnAfpVuqMVoG4s
-         vQnfMTJMlL4JHX/+6hN/2my3McSMWbIfCGT6gZ8CcdMU2jt55aPfoOq+mJ537gXev2b/
-         VzD9jYFmAZzINuPpAeNPRZTzzRu2CyVxgpdgd29mOXSqrGSYjtxI21NR5V1R1UsOcg++
-         L8W60IWSB0jZ/uevf/LPKOAKmxPlXBOWyTJ8JdcedPlKLPqlnjMs3IXhYm/wKnASI0P0
-         ML2/OiOmwfAyxlR4JPds616MmFjqFn7uhffuWzWSo0pMZRWbtdME4x5w/8KPEc16P4vE
-         hNdA==
+        bh=Lu5Zb5K5z9Ao4faecJWogQLcUl62itC1pDHyKWB4Szo=;
+        b=rAH+CawAA7QAlMyJN3NdqP1kqf3643HSBwkEoDU38fZX3HhmSZHXCjwkA6eTZF9zeM
+         h8uoj6K3E+4qSYaXDmhoZPe3RDLUrIVTd6CuVu4fLZgkqYqHd6GXX9i6aaRrZ4hkmOhX
+         X6xr9MHYI9covtPmNWnB5Acxyd6uc03ZbiMN3JIduDeI9A0To20OtTKKlgERreCy45Hv
+         6+f9s6fhKfE7Ds/+l8W8wMtjwKTZEqLSTNU6Phr9jtqjAi2jTIJV4bEymOSZyhh1HixD
+         X5dPTEYpbbpdSN9TH+JMi227hrXI6mQpe2OPvmLz4NEv3v/nwi8wX3DUqKhh7fQi89FD
+         JYcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=ENO0x4uKs4rqsjN1xB0qFJMoRAxQ1GMRSi+kdo7qAvw=;
-        b=ArZ++U9qiExCtbcv4X0wDU0n/8vz2+ixIXgtLVSzX7ehQVnRXEPCS0RCAwjOwJhHbR
-         qQim1lf903mQgQEIKgXfkH3QpDn/rMAFbmgwJEQq8sBht7/UVv2uQMf0h+eGHQjhSZws
-         DGabwrL/AF7MmHAkVuaNHXwfDbnxp+SadYnW5/QfBZBH6YkgbGPPOu24OqaLDWw9+4dY
-         cVM3eS2A0XlnqO7HTxr5n//gbDrbbmoTZ/tzwYQVcqooqSnbhKtGpZC94KtVpFaCoEO/
-         WtrQzrt6kUxSHXKYfMsu+GyrZrVLvCb9FTd0DyYd9R3W0PF/b0SRqN82sb8Fz4mi2wCI
-         cvrg==
-X-Gm-Message-State: AOAM532kJuikOwJ8+cemO42SIkYTaIO7kymvyAsgM4lqTXfhpYXOvxDP
-        g9jZEboWCNzSIoMoudpJcIBm6eJJ5as=
-X-Google-Smtp-Source: ABdhPJzrbxQn7NgpNV/g9aLZwydofMo3rhOO2xpfsf/UPmMpU4CrBDA6znpW6k2RNcYcQVgoM9BmqlkXkHA=
+        bh=Lu5Zb5K5z9Ao4faecJWogQLcUl62itC1pDHyKWB4Szo=;
+        b=HtTij8xNpQo+yeJU++tLoXNjrBGhf8XCVPG6FxRTh4lpLfPCgtmLkZlgsOhXNdaT/+
+         7VKQqXF/vxvcnj4mlexrMHkDDOrTGUqrdbTcRRDwbbn+bTrOdXT5OfTIuO2rpkiRyqE6
+         4VKR63fBrJvNqF6I2jyRZcBowa+kNetZkxaa/J3yZQy1H6BDXemeaomZQWu5Tgq7U8Wz
+         vg8nRAD5FlXWPLfc4BsEqeVUEyb1uO1FShCgsvmhhW0kiBU1bJLC0cOAPIGtt0IeGSfn
+         EMxddLuiueWEg18ulrLhHqorermPtbIx/KHvZrtkkfeSul2OTpqoXcjkJs+OnW0vEEDN
+         ji+A==
+X-Gm-Message-State: AOAM530xR0VchJVN4vI5OucS0vG8z+qNfQTTduFBEAMiY71lNDahvhLJ
+        9OBPmVkQR9fj24VLMGFe8oz5QG3JO/k=
+X-Google-Smtp-Source: ABdhPJz14fr8CmwWpHoBUZQ5h7RoKy3te0//NmcR2dmx3Olc8psLMchJrSZrtQlTY0WAg1eKXW9jY43YI/8=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90a:f02:b0:1bd:ab6:42ec with SMTP id
- 2-20020a17090a0f0200b001bd0ab642ecmr2190693pjy.18.1645834581467; Fri, 25 Feb
- 2022 16:16:21 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a62:7554:0:b0:4e1:5898:4fbb with SMTP id
+ q81-20020a627554000000b004e158984fbbmr10185233pfc.2.1645834578388; Fri, 25
+ Feb 2022 16:16:18 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 26 Feb 2022 00:15:30 +0000
+Date:   Sat, 26 Feb 2022 00:15:28 +0000
 In-Reply-To: <20220226001546.360188-1-seanjc@google.com>
-Message-Id: <20220226001546.360188-13-seanjc@google.com>
+Message-Id: <20220226001546.360188-11-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220226001546.360188-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH v3 12/28] KVM: x86/mmu: Refactor low-level TDP MMU set SPTE
- helper to take raw vals
+Subject: [PATCH v3 10/28] KVM: x86/mmu: Add helpers to read/write TDP MMU
+ SPTEs and document RCU
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Christian Borntraeger <borntraeger@linux.ibm.com>,
@@ -74,116 +74,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor __tdp_mmu_set_spte() to work with raw values instead of a
-tdp_iter objects so that a future patch can modify SPTEs without doing a
-walk, and without having to synthesize a tdp_iter.
+Add helpers to read and write TDP MMU SPTEs instead of open coding
+rcu_dereference() all over the place, and to provide a convenient
+location to document why KVM doesn't exempt holding mmu_lock for write
+from having to hold RCU (and any future changes to the rules).
 
 No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Ben Gardon <bgardon@google.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 51 +++++++++++++++++++++++---------------
- 1 file changed, 31 insertions(+), 20 deletions(-)
+ arch/x86/kvm/mmu/tdp_iter.c |  6 +++---
+ arch/x86/kvm/mmu/tdp_iter.h | 16 ++++++++++++++++
+ arch/x86/kvm/mmu/tdp_mmu.c  |  6 +++---
+ 3 files changed, 22 insertions(+), 6 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 1dcdf1a4fcc1..9e8ba6f12ebf 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -617,9 +617,13 @@ static inline int tdp_mmu_zap_spte_atomic(struct kvm *kvm,
- 
- /*
-  * __tdp_mmu_set_spte - Set a TDP MMU SPTE and handle the associated bookkeeping
-- * @kvm: kvm instance
-- * @iter: a tdp_iter instance currently on the SPTE that should be set
-- * @new_spte: The value the SPTE should be set to
-+ * @kvm:	      KVM instance
-+ * @as_id:	      Address space ID, i.e. regular vs. SMM
-+ * @sptep:	      Pointer to the SPTE
-+ * @old_spte:	      The current value of the SPTE
-+ * @new_spte:	      The new value that will be set for the SPTE
-+ * @gfn:	      The base GFN that was (or will be) mapped by the SPTE
-+ * @level:	      The level _containing_ the SPTE (its parent PT's level)
-  * @record_acc_track: Notify the MM subsystem of changes to the accessed state
-  *		      of the page. Should be set unless handling an MMU
-  *		      notifier for access tracking. Leaving record_acc_track
-@@ -631,12 +635,10 @@ static inline int tdp_mmu_zap_spte_atomic(struct kvm *kvm,
-  *		      Leaving record_dirty_log unset in that case prevents page
-  *		      writes from being double counted.
-  */
--static inline void __tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
--				      u64 new_spte, bool record_acc_track,
--				      bool record_dirty_log)
-+static void __tdp_mmu_set_spte(struct kvm *kvm, int as_id, tdp_ptep_t sptep,
-+			       u64 old_spte, u64 new_spte, gfn_t gfn, int level,
-+			       bool record_acc_track, bool record_dirty_log)
+diff --git a/arch/x86/kvm/mmu/tdp_iter.c b/arch/x86/kvm/mmu/tdp_iter.c
+index be3f096db2eb..6d3b3e5a5533 100644
+--- a/arch/x86/kvm/mmu/tdp_iter.c
++++ b/arch/x86/kvm/mmu/tdp_iter.c
+@@ -12,7 +12,7 @@ static void tdp_iter_refresh_sptep(struct tdp_iter *iter)
  {
--	WARN_ON_ONCE(iter->yielded);
--
- 	lockdep_assert_held_write(&kvm->mmu_lock);
+ 	iter->sptep = iter->pt_path[iter->level - 1] +
+ 		SHADOW_PT_INDEX(iter->gfn << PAGE_SHIFT, iter->level);
+-	iter->old_spte = READ_ONCE(*rcu_dereference(iter->sptep));
++	iter->old_spte = kvm_tdp_mmu_read_spte(iter->sptep);
+ }
  
- 	/*
-@@ -646,39 +648,48 @@ static inline void __tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
- 	 * should be used. If operating under the MMU lock in write mode, the
- 	 * use of the removed SPTE should not be necessary.
+ static gfn_t round_gfn_for_level(gfn_t gfn, int level)
+@@ -89,7 +89,7 @@ static bool try_step_down(struct tdp_iter *iter)
+ 	 * Reread the SPTE before stepping down to avoid traversing into page
+ 	 * tables that are no longer linked from this entry.
  	 */
--	WARN_ON(is_removed_spte(iter->old_spte) || is_removed_spte(new_spte));
-+	WARN_ON(is_removed_spte(old_spte) || is_removed_spte(new_spte));
+-	iter->old_spte = READ_ONCE(*rcu_dereference(iter->sptep));
++	iter->old_spte = kvm_tdp_mmu_read_spte(iter->sptep);
  
--	kvm_tdp_mmu_write_spte(iter->sptep, new_spte);
-+	kvm_tdp_mmu_write_spte(sptep, new_spte);
-+
-+	__handle_changed_spte(kvm, as_id, gfn, old_spte, new_spte, level, false);
+ 	child_pt = spte_to_child_pt(iter->old_spte, iter->level);
+ 	if (!child_pt)
+@@ -123,7 +123,7 @@ static bool try_step_side(struct tdp_iter *iter)
+ 	iter->gfn += KVM_PAGES_PER_HPAGE(iter->level);
+ 	iter->next_last_level_gfn = iter->gfn;
+ 	iter->sptep++;
+-	iter->old_spte = READ_ONCE(*rcu_dereference(iter->sptep));
++	iter->old_spte = kvm_tdp_mmu_read_spte(iter->sptep);
  
--	__handle_changed_spte(kvm, iter->as_id, iter->gfn, iter->old_spte,
--			      new_spte, iter->level, false);
- 	if (record_acc_track)
--		handle_changed_spte_acc_track(iter->old_spte, new_spte,
--					      iter->level);
-+		handle_changed_spte_acc_track(old_spte, new_spte, level);
- 	if (record_dirty_log)
--		handle_changed_spte_dirty_log(kvm, iter->as_id, iter->gfn,
--					      iter->old_spte, new_spte,
--					      iter->level);
-+		handle_changed_spte_dirty_log(kvm, as_id, gfn, old_spte,
-+					      new_spte, level);
+ 	return true;
+ }
+diff --git a/arch/x86/kvm/mmu/tdp_iter.h b/arch/x86/kvm/mmu/tdp_iter.h
+index 216ebbe76ddd..bb9b581f1ee4 100644
+--- a/arch/x86/kvm/mmu/tdp_iter.h
++++ b/arch/x86/kvm/mmu/tdp_iter.h
+@@ -9,6 +9,22 @@
+ 
+ typedef u64 __rcu *tdp_ptep_t;
+ 
++/*
++ * TDP MMU SPTEs are RCU protected to allow paging structures (non-leaf SPTEs)
++ * to be zapped while holding mmu_lock for read.  Holding RCU isn't required for
++ * correctness if mmu_lock is held for write, but plumbing "struct kvm" down to
++ * the lower depths of the TDP MMU just to make lockdep happy is a nightmare, so
++ * all accesses to SPTEs are done under RCU protection.
++ */
++static inline u64 kvm_tdp_mmu_read_spte(tdp_ptep_t sptep)
++{
++	return READ_ONCE(*rcu_dereference(sptep));
++}
++static inline void kvm_tdp_mmu_write_spte(tdp_ptep_t sptep, u64 val)
++{
++	WRITE_ONCE(*rcu_dereference(sptep), val);
 +}
 +
-+static inline void _tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
-+				     u64 new_spte, bool record_acc_track,
-+				     bool record_dirty_log)
-+{
-+	WARN_ON_ONCE(iter->yielded);
-+
-+	__tdp_mmu_set_spte(kvm, iter->as_id, iter->sptep, iter->old_spte,
-+			   new_spte, iter->gfn, iter->level,
-+			   record_acc_track, record_dirty_log);
- }
+ /*
+  * A TDP iterator performs a pre-order walk over a TDP paging structure.
+  */
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index 4f460782a848..8fbf3364f116 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -609,7 +609,7 @@ static inline int tdp_mmu_zap_spte_atomic(struct kvm *kvm,
+ 	 * here since the SPTE is going from non-present
+ 	 * to non-present.
+ 	 */
+-	WRITE_ONCE(*rcu_dereference(iter->sptep), 0);
++	kvm_tdp_mmu_write_spte(iter->sptep, 0);
  
- static inline void tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
- 				    u64 new_spte)
- {
--	__tdp_mmu_set_spte(kvm, iter, new_spte, true, true);
-+	_tdp_mmu_set_spte(kvm, iter, new_spte, true, true);
+ 	return 0;
  }
+@@ -648,7 +648,7 @@ static inline void __tdp_mmu_set_spte(struct kvm *kvm, struct tdp_iter *iter,
+ 	 */
+ 	WARN_ON(is_removed_spte(iter->old_spte));
  
- static inline void tdp_mmu_set_spte_no_acc_track(struct kvm *kvm,
- 						 struct tdp_iter *iter,
- 						 u64 new_spte)
- {
--	__tdp_mmu_set_spte(kvm, iter, new_spte, false, true);
-+	_tdp_mmu_set_spte(kvm, iter, new_spte, false, true);
- }
+-	WRITE_ONCE(*rcu_dereference(iter->sptep), new_spte);
++	kvm_tdp_mmu_write_spte(iter->sptep, new_spte);
  
- static inline void tdp_mmu_set_spte_no_dirty_log(struct kvm *kvm,
- 						 struct tdp_iter *iter,
- 						 u64 new_spte)
- {
--	__tdp_mmu_set_spte(kvm, iter, new_spte, true, false);
-+	_tdp_mmu_set_spte(kvm, iter, new_spte, true, false);
- }
+ 	__handle_changed_spte(kvm, iter->as_id, iter->gfn, iter->old_spte,
+ 			      new_spte, iter->level, false);
+@@ -1046,7 +1046,7 @@ int kvm_tdp_mmu_map(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
+ 			 * because the new value informs the !present
+ 			 * path below.
+ 			 */
+-			iter.old_spte = READ_ONCE(*rcu_dereference(iter.sptep));
++			iter.old_spte = kvm_tdp_mmu_read_spte(iter.sptep);
+ 		}
  
- #define tdp_root_for_each_pte(_iter, _root, _start, _end) \
+ 		if (!is_shadow_present_pte(iter.old_spte)) {
 -- 
 2.35.1.574.g5d30c73bfb-goog
 
