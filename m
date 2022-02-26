@@ -2,114 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9292DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 16:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D31C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 16:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232336AbiBZQcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 11:32:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41872 "EHLO
+        id S232351AbiBZQcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 11:32:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbiBZQcq (ORCPT
+        with ESMTP id S232339AbiBZQcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 11:32:46 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5AE24DECC;
-        Sat, 26 Feb 2022 08:32:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=6OjByrZL/8WN1XwAV8cA5zlopGQjph2v70guM/ZhHrY=; b=wrgqqkrMVWZpQ2F7HPiyR4Y6fI
-        jrY2BXk+vHM6o0e/2+zlEqqbQFiuLORisxaZ93IZR0FbdSwPh7NNw3Sw9XFGyLIAIm7uVlYGBv4my
-        lDCMT36GIPLX3bRN/5uDLl5cQ7cNFGKFw9WtACxzWZJkX6gaL7/N6zQF4zHCFJe1YiyhJyiINBndc
-        tFyYQHpK11SSsMxUUy/MncvXEsBElh5droIeDW5E/sp9LdUZd5ArYXCDIUTWGkORVj2JdqYW/6llu
-        Ssi9uUy+FXpaTxOlh+kjZ8Y0zXKkD6VQZ56dXpu1mT7M/62HOeRUVw5tyAT+m97pI/FSAdtsC4vdu
-        xR2BqFKg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57524)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nNzzF-0006m6-6I; Sat, 26 Feb 2022 16:32:01 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nNzzB-0004G5-Sk; Sat, 26 Feb 2022 16:31:57 +0000
-Date:   Sat, 26 Feb 2022 16:31:57 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Raag Jadav <raagjadav@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Steen Hegelund <steen.hegelund@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: phy: mscc: enable MAC SerDes autonegotiation
-Message-ID: <YhpV/Q8Pnv+OZ3Fr@shell.armlinux.org.uk>
-References: <1644043492-31307-1-git-send-email-raagjadav@gmail.com>
- <YhdimdT1qLdGqPAW@shell.armlinux.org.uk>
- <20220226072327.GA6830@localhost>
+        Sat, 26 Feb 2022 11:32:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF3C824DEE5;
+        Sat, 26 Feb 2022 08:32:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C55A60BBD;
+        Sat, 26 Feb 2022 16:32:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC156C340E8;
+        Sat, 26 Feb 2022 16:32:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645893135;
+        bh=JIVnVPR5itRuwZnH80P4NOCj7Kr4fqQ4kQyZO3sUUcI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Nf1uZWprEJ7KLB82ozSwEVAxVikYZ3hxO98I0/viiUNo8+zbh0YSiBehdDNvj1F3S
+         tgducp9CeMSRoLxc/RK+0XV1yOdzMNkBGaJ0/+NWSTCB10ttlGBLYJbk8AjWnGTrMv
+         lbfsl6Bg3Q0Xiu2ISOoM0THdR4RtDluE81HwVd51iJTan1fmR+uyqgl1G2ZkMED6BV
+         IJ782tiOPHHMWN/D9tTAPRP4TIbjqIswWjtfe4h/bcDSPgL1fNK29+u6kS/cMj9QuC
+         pydIbNg1LPLFwQItVlrxp3K4E2R+wWDGvDObYIRdS+87R6Xtaqk8nf894ubmhuKBHW
+         5ra+dBGO2YnQw==
+Date:   Sat, 26 Feb 2022 16:39:16 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Rosin <peda@axentia.se>
+Subject: Re: [PATCH v2 1/1] iio: multiplexer: Make use of device properties
+Message-ID: <20220226163916.39b9421f@jic23-huawei>
+In-Reply-To: <Yf7COufm4GG7VkJu@smile.fi.intel.com>
+References: <20220202204427.57506-1-andriy.shevchenko@linux.intel.com>
+        <20220205173854.14a7aca0@jic23-huawei>
+        <Yf7COufm4GG7VkJu@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220226072327.GA6830@localhost>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 12:53:27PM +0530, Raag Jadav wrote:
-> On Thu, Feb 24, 2022 at 10:48:57AM +0000, Russell King (Oracle) wrote:
-> > Sorry for the late comment on this patch.
-> > 
-> > On Sat, Feb 05, 2022 at 12:14:52PM +0530, Raag Jadav wrote:
-> > > +static int vsc85xx_config_inband_aneg(struct phy_device *phydev, bool enabled)
-> > > +{
-> > > +	int rc;
-> > > +	u16 reg_val = 0;
-> > > +
-> > > +	if (enabled)
-> > > +		reg_val = MSCC_PHY_SERDES_ANEG;
-> > > +
-> > > +	mutex_lock(&phydev->lock);
-> > > +
-> > > +	rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_3,
-> > > +			      MSCC_PHY_SERDES_PCS_CTRL, MSCC_PHY_SERDES_ANEG,
-> > > +			      reg_val);
-> > > +
-> > > +	mutex_unlock(&phydev->lock);
-> > 
-> > What is the reason for the locking here?
-> > 
-> > phy_modify_paged() itself is safe due to the MDIO bus lock, so you
-> > shouldn't need locking around it.
-> > 
+On Sat, 5 Feb 2022 20:30:18 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> On Sat, Feb 05, 2022 at 05:38:54PM +0000, Jonathan Cameron wrote:
+> > On Wed,  2 Feb 2022 22:44:27 +0200
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> >   
+> > > Convert the module to be property provider agnostic and allow
+> > > it to be used on non-OF platforms.
+> > > 
+> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>  
+> > Looks good to me, but as it's complex I'd like Peter + anyone else interested
+> > to have a bit more time to take a look before I apply this one.  
 > 
-> True.
+> Sure, I would love to see more eyes and hear comments!
 > 
-> My initial thought was to have serialized access at PHY level,
-> as we have multiple ports to work with.
-> But I guess MDIO bus lock could do the job as well.
 
-The MDIO bus lock is the only lock that will guarantee that no other
-users can nip onto the bus and possibly access your PHY in the middle
-of an operation that requires more than one access to complete. Adding
-local locking at PHY driver level does not give you those guarantees.
-This is exactly why phy_modify() etc was added - because phy_read()..
-phy_write() does not give that guarantee.
+Peter, do you have time to take a look at this one?
+No problem if you are too busy, I'll just take another look myself and apply
+it if I think it looks fine.
 
-As an example of something that could interfere - the userspace MII
-ioctls.
+Thanks,
 
-> I've gone through Vladimir's patches and they look more promising
-> than this approach.
-> Let me know if I could be of any help.
-
-I haven't seen them - so up to you.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Jonathan
