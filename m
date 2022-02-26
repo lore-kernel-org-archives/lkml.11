@@ -2,91 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5560C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 17:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A119C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 18:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232496AbiBZSAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 13:00:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
+        id S232511AbiBZSCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 13:02:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiBZSAX (ORCPT
+        with ESMTP id S230391AbiBZSCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 13:00:23 -0500
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50345F267
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 09:59:48 -0800 (PST)
-Received: from martin by viti.kaiser.cx with local (Exim 4.89)
-        (envelope-from <martin@viti.kaiser.cx>)
-        id 1nO1M5-00011E-S8; Sat, 26 Feb 2022 18:59:41 +0100
-Date:   Sat, 26 Feb 2022 18:59:41 +0100
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Pavel Skripkin <paskripkin@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/6] staging: r8188eu: cnt is set but not used
-Message-ID: <20220226175941.jsizwogfd5wxjm2p@viti.kaiser.cx>
-References: <20220226144843.1118951-1-martin@kaiser.cx>
- <20220226144843.1118951-4-martin@kaiser.cx>
- <1c44c931-5b90-03d8-94bd-5e68682c4787@gmail.com>
+        Sat, 26 Feb 2022 13:02:09 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83AC151C55;
+        Sat, 26 Feb 2022 10:01:34 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 54872CE02C8;
+        Sat, 26 Feb 2022 18:01:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43379C340E8;
+        Sat, 26 Feb 2022 18:01:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645898491;
+        bh=TDyKTB/CFLnyzEPr8uvusnVgxqT3Ocd+xmt5byyq/N0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nO7QQ84KGvXRmqcRcVjz7s47qz+CigW7ouQQxrQ2O0qhffJXqL0FnUtTxJc+MpgfE
+         J2ph2kqQTMC8vQc+y2h5MaVLLX/+nt96X1av+tICSLHrfnHE5nxA2jyI5iTCoBsbru
+         8wpVgExsqhmX4GX72IuqdHbTncu8y/myz3DspwRkSHjLqVdL2VY98U07jx2lFVXHqQ
+         dnSNqFYIHBs5clmyX/GVMUbv5qeE8RnuIuf7RKEu+h5EK/TpzgZ5FRu4hI+qhxqea7
+         RZuhEAyeRTP5R+8dGXpW3FMer9r55IaTxEcsb2kJ1RFICG0/KK1Dlz7i8QkBj0VGnN
+         t075xzYYjqCTw==
+Date:   Sat, 26 Feb 2022 18:08:32 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Tanislav, Cosmin" <Cosmin.Tanislav@analog.com>
+Cc:     Yang Yingliang <yangyingliang@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH -next] iio:accel:adxl367: fix missing unlock on error in
+ adxl367_buffer_predisable()
+Message-ID: <20220226180832.77cf4fd5@jic23-huawei>
+In-Reply-To: <c2a836f26c3246dc93c8ccadb85c5a02@analog.com>
+References: <20220224020302.2177607-1-yangyingliang@huawei.com>
+        <c2a836f26c3246dc93c8ccadb85c5a02@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1c44c931-5b90-03d8-94bd-5e68682c4787@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-Sender: Martin Kaiser <martin@viti.kaiser.cx>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Pavel,
+On Thu, 24 Feb 2022 09:38:06 +0000
+"Tanislav, Cosmin" <Cosmin.Tanislav@analog.com> wrote:
 
-Thus wrote Pavel Skripkin (paskripkin@gmail.com):
+> Reviewed-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+Sorry. I normally try to pick up the earliest fix when I get
+multiple fixes for the same thing but I failed to notice
+yours before applying the one Dan sent out!
 
-> Hi Martin,
+As a result I've already picked that one up
 
-> On 2/26/22 17:48, Martin Kaiser wrote:
-> > In function recv_func, the cnt variable is set but not used.
-> > It can be removed.
+Thanks for the patch though and I'll check more carefully next
+time!
 
-> > Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Jonathan
+
+> 
+> > -----Original Message-----
+> > From: Yang Yingliang <yangyingliang@huawei.com>
+> > Sent: Thursday, February 24, 2022 4:03 AM
+> > To: linux-kernel@vger.kernel.org; linux-iio@vger.kernel.org
+> > Cc: jic23@kernel.org; Tanislav, Cosmin <Cosmin.Tanislav@analog.com>
+> > Subject: [PATCH -next] iio:accel:adxl367: fix missing unlock on error in
+> > adxl367_buffer_predisable()
+> > 
+> > [External]
+> > 
+> > Add the missing unlock before return from function
+> > adxl367_buffer_predisable()
+> > in the error handling case.
+> > 
+> > Fixes: cbab791c5e2a ("iio: accel: add ADXL367 driver")
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > > ---
-> >   drivers/staging/r8188eu/core/rtw_recv.c | 2 --
-> >   1 file changed, 2 deletions(-)
+> >  drivers/iio/accel/adxl367.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/accel/adxl367.c b/drivers/iio/accel/adxl367.c
+> > index b452d74b1d4d..bdc95409abed 100644
+> > --- a/drivers/iio/accel/adxl367.c
+> > +++ b/drivers/iio/accel/adxl367.c
+> > @@ -1359,7 +1359,7 @@ static int adxl367_buffer_predisable(struct iio_dev
+> > *indio_dev)
+> > 
+> >  	ret = adxl367_set_measure_en(st, true);
+> >  	if (ret)
+> > -		return ret;
+> > +		goto out;
+> > 
+> >  	ret = adxl367_set_temp_adc_mask_en(st, indio_dev-  
+> > >active_scan_mask,  
+> >  					   false);
+> > --
+> > 2.25.1  
+> 
 
-> > diff --git a/drivers/staging/r8188eu/core/rtw_recv.c b/drivers/staging/r8188eu/core/rtw_recv.c
-> > index 0144c4642911..9a2e2bc2e294 100644
-> > --- a/drivers/staging/r8188eu/core/rtw_recv.c
-> > +++ b/drivers/staging/r8188eu/core/rtw_recv.c
-> > @@ -1798,11 +1798,9 @@ static int recv_func(struct adapter *padapter, struct recv_frame *rframe)
-> >   	if (check_fwstate(mlmepriv, WIFI_STATION_STATE) &&
-> >   	    psecuritypriv->busetkipkey) {
-> >   		struct recv_frame *pending_frame;
-> > -		int cnt = 0;
-> >   		pending_frame = rtw_alloc_recvframe(&padapter->recvpriv.uc_swdec_pending_queue);
-> >   		while (pending_frame) {
-
-> Just out of curiosity: is this thing infinity loop?
-
-yes it is. And the issue has been present since the driver was first
-merged. Let's fix this before removing cnt so that the fix can be
-backported to stable. I'll send out v2 shortly.
-
-Thanks,
-Martin
-
-> > -			cnt++;
-> >   			recv_func_posthandle(padapter, pending_frame);
-> >   		}
-
-> Nit: bracers can be removed
-
-> >   	}
-
-
-
-
-> With regards,
-> Pavel Skripkin
