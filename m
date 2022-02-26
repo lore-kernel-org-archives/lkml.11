@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22052C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 13:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7864CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 13:53:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232130AbiBZNyQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 08:54:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
+        id S232190AbiBZNyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 08:54:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232098AbiBZNxn (ORCPT
+        with ESMTP id S232002AbiBZNxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 08:53:43 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C4CE128DFD;
-        Sat, 26 Feb 2022 05:52:56 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id a23so16118743eju.3;
-        Sat, 26 Feb 2022 05:52:56 -0800 (PST)
+        Sat, 26 Feb 2022 08:53:31 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C83CE339E;
+        Sat, 26 Feb 2022 05:52:53 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id g20so11119264edw.6;
+        Sat, 26 Feb 2022 05:52:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xUinUfzWAn8Shwd3VIGBacyRnb4H1vz5iJqyyM2Q3P4=;
-        b=p8RTQeNZz1hfw1KjP5ls0ncg4N57Ftc+oj1NFm71i/qPklPnEbWCWzgqcL/Qp0kD3G
-         8mFqXiF3Bo41G3bFP5wwVdDEy7c6p78kQeSRHxeYj29miIKRvLuy24cjBHLOW6fdjuh4
-         9YFONQajWL69JrKzBZBhApjbpaPZAZzE+oGDsA6AWLiUatCbgpoLozsaiQn9y47q9sNI
-         iKYVAwtRlIjrEsRfOGnsA9+dSPuPKKLx030s6XwUvHwwKhUXnHby7/xRIJaX6Ex6VWkN
-         +ZyaWqH6469J5Z+sT9NhZNxOE24WOmhQv6uHRPugdvgipnrj/GTVs7AYPHybzRmKRkET
-         mfbQ==
+        bh=C+K2lBtTnUG/zOR0yeLMU3tKfbWOdMbyUCThXXICUks=;
+        b=ZH/NeeGyrl+gF39Lx/VmrDRoqZpKMdNXWFI/+VVJdHFtDBOYbcjrofEYs+xr1BZ3xP
+         5YWcf86yIld614xbD+i7UKYsy+gT6HSyYNu+w/bRwR0zj2FG34tCin1jQ0qdg5uUaKLv
+         ETA1W5Dq5Z7JDsmQfxl/e3uhxxT9VJI1DKzwZWu7ZOqag8zkJn1jdeyuoejS4EzX1fpe
+         wVmhGPsdqogeYs3uhuVzzo2bzNiLF2Mat0ZSZqSboMpfRopAl7K9g68TkRQoQtr29Wqu
+         Rrde7DaSDOnBXOOi5yzi/se26wpoM5XlD0NQgRcVgMQAW51zwx2xIMYOI3tW+xPWjeiU
+         XXgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xUinUfzWAn8Shwd3VIGBacyRnb4H1vz5iJqyyM2Q3P4=;
-        b=xK6JiHfwyHMqsaBRc7yLdElROMqYgrzsZzAwiKDrqKrooLnFx3jSZoQcPqFsm+pE7L
-         SJZWPxSa6n35/NlgbekfC5BQc/pF0Gy7yPsqS4uB3Aox4VBhyys/UnsdJTj5TiI5GZXF
-         HJ1WtVxD/mtX/Z/tfxz+6HY/9MRFuk6b1KtRCaRiUpumJgbcOMxihENDQjhPSQ/l25Xx
-         Cg6DNSoeMjr1Db1r1flwWESfE5MG61fYxvYqrsv5UfqSwSo3GCVAV2hYKPhQc92DP7s+
-         l8w+8gz5W/qlFKMlQhAWEVrLsOOjt9s3VL4QrGn1OmUGmpAzeaMt6a14yOif2Td7FUJE
-         i66g==
-X-Gm-Message-State: AOAM5329PnQhEvS1k4udLIJWyQdwHzz8kEm15b8CBWp/PLxYFRASykR8
-        Vy4KQh5Z5NMyAvzi0R08DoI=
-X-Google-Smtp-Source: ABdhPJwnv39lt7d2a0hLTVpubhDaMNeW4yi2QpgcBEi7n/izQNoo9iQj4+TZEnI40olp1dx8693yVQ==
-X-Received: by 2002:a17:907:b590:b0:6cf:48a4:9a4c with SMTP id qx16-20020a170907b59000b006cf48a49a4cmr9424990ejc.6.1645883574494;
-        Sat, 26 Feb 2022 05:52:54 -0800 (PST)
+        bh=C+K2lBtTnUG/zOR0yeLMU3tKfbWOdMbyUCThXXICUks=;
+        b=uNUo5mR45oY3Q49l51V36ZsGxCXiUYV74bf0NzS94LzAc0AfojNViNUVF50KVXljk1
+         VziViqM7rX+B4o0cuU31qsaC2Lx2m3p5wFIs+BWTQz43ZKQB+PcNDRmAVLWKH4ITwl5G
+         GImXEphsRAySM8Xo6gtvP4Z2AoXgkSP4Ecwo98Pg8H2BGZJR+h1WIVUa1hivSSKpYFO4
+         zqZAyYEIOG4PR6+JUzT4ENCYR3YB+Ciq7uciwH8JnVfAnWcLKoV/2OvpEb/j55FD4qV8
+         pSqYg5OC8Fkh5rDXYGAeZ8m8o3GHxDbIxgVXY66qSMzBT45wdk6yijMOfH0fByN0/ENF
+         70AQ==
+X-Gm-Message-State: AOAM5313u6o/4tpjTWiDqI28S9OZ2SWxy/nc65yqSVLUDfGPLUG9Kedl
+        7hCRjQh1GV58SvC0GaykdCQ=
+X-Google-Smtp-Source: ABdhPJxts0nnN1Yijd+7WkTy3jxB08A6ahPe3xyIQ56OIEgbAgfx7eOtXFiwBQrROStv1NZZoai1Vg==
+X-Received: by 2002:aa7:d7d3:0:b0:410:d23b:6746 with SMTP id e19-20020aa7d7d3000000b00410d23b6746mr11729660eds.453.1645883571817;
+        Sat, 26 Feb 2022 05:52:51 -0800 (PST)
 Received: from Ansuel-xps.localdomain (host-95-251-226-220.retail.telecomitalia.it. [95.251.226.220])
-        by smtp.googlemail.com with ESMTPSA id j21-20020aa7c415000000b004127ac9ddc3sm2836369edq.50.2022.02.26.05.52.53
+        by smtp.googlemail.com with ESMTPSA id j21-20020aa7c415000000b004127ac9ddc3sm2836369edq.50.2022.02.26.05.52.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Feb 2022 05:52:54 -0800 (PST)
+        Sat, 26 Feb 2022 05:52:51 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -60,9 +60,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Rob Herring <robh@kernel.org>
-Subject: [PATCH v6 13/15] dt-bindings: reset: add ipq8064 ce5 resets
-Date:   Sat, 26 Feb 2022 14:52:33 +0100
-Message-Id: <20220226135235.10051-14-ansuelsmth@gmail.com>
+Subject: [PATCH v6 11/15] dt-bindings: clock: add ipq8064 ce5 clk define
+Date:   Sat, 26 Feb 2022 14:52:31 +0100
+Message-Id: <20220226135235.10051-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220226135235.10051-1-ansuelsmth@gmail.com>
 References: <20220226135235.10051-1-ansuelsmth@gmail.com>
@@ -72,30 +72,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ipq8064 ce5 resets needed for CryptoEngine gcc driver.
+Add ipq8064 ce5 clk define needed for CryptoEngine in gcc driver.
+Define CE5_SRC is not used so it's OK to change and we align it to
+the QSDK naming.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de>
 Acked-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Stephen Boyd <sboyd@kernel.org>
 ---
- include/dt-bindings/reset/qcom,gcc-ipq806x.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ include/dt-bindings/clock/qcom,gcc-ipq806x.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/dt-bindings/reset/qcom,gcc-ipq806x.h b/include/dt-bindings/reset/qcom,gcc-ipq806x.h
-index 26b6f9200620..020c9cf18751 100644
---- a/include/dt-bindings/reset/qcom,gcc-ipq806x.h
-+++ b/include/dt-bindings/reset/qcom,gcc-ipq806x.h
-@@ -163,5 +163,10 @@
- #define NSS_CAL_PRBS_RST_N_RESET			154
- #define NSS_LCKDT_RST_N_RESET				155
- #define NSS_SRDS_N_RESET				156
-+#define CRYPTO_ENG1_RESET				157
-+#define CRYPTO_ENG2_RESET				158
-+#define CRYPTO_ENG3_RESET				159
-+#define CRYPTO_ENG4_RESET				160
-+#define CRYPTO_AHB_RESET				161
+diff --git a/include/dt-bindings/clock/qcom,gcc-ipq806x.h b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
+index 7deec14a6dee..02262d2ac899 100644
+--- a/include/dt-bindings/clock/qcom,gcc-ipq806x.h
++++ b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
+@@ -240,7 +240,7 @@
+ #define PLL14					232
+ #define PLL14_VOTE				233
+ #define PLL18					234
+-#define CE5_SRC					235
++#define CE5_A_CLK				235
+ #define CE5_H_CLK				236
+ #define CE5_CORE_CLK				237
+ #define CE3_SLEEP_CLK				238
+@@ -283,5 +283,8 @@
+ #define EBI2_AON_CLK				281
+ #define NSSTCM_CLK_SRC				282
+ #define NSSTCM_CLK				283
++#define CE5_A_CLK_SRC				285
++#define CE5_H_CLK_SRC				286
++#define CE5_CORE_CLK_SRC			287
  
  #endif
 -- 
