@@ -2,109 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7864CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 13:53:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F1D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 13:57:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232190AbiBZNyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 08:54:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40152 "EHLO
+        id S231147AbiBZN6X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 08:58:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232002AbiBZNxb (ORCPT
+        with ESMTP id S229878AbiBZN6V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 08:53:31 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C83CE339E;
-        Sat, 26 Feb 2022 05:52:53 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id g20so11119264edw.6;
-        Sat, 26 Feb 2022 05:52:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=C+K2lBtTnUG/zOR0yeLMU3tKfbWOdMbyUCThXXICUks=;
-        b=ZH/NeeGyrl+gF39Lx/VmrDRoqZpKMdNXWFI/+VVJdHFtDBOYbcjrofEYs+xr1BZ3xP
-         5YWcf86yIld614xbD+i7UKYsy+gT6HSyYNu+w/bRwR0zj2FG34tCin1jQ0qdg5uUaKLv
-         ETA1W5Dq5Z7JDsmQfxl/e3uhxxT9VJI1DKzwZWu7ZOqag8zkJn1jdeyuoejS4EzX1fpe
-         wVmhGPsdqogeYs3uhuVzzo2bzNiLF2Mat0ZSZqSboMpfRopAl7K9g68TkRQoQtr29Wqu
-         Rrde7DaSDOnBXOOi5yzi/se26wpoM5XlD0NQgRcVgMQAW51zwx2xIMYOI3tW+xPWjeiU
-         XXgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=C+K2lBtTnUG/zOR0yeLMU3tKfbWOdMbyUCThXXICUks=;
-        b=uNUo5mR45oY3Q49l51V36ZsGxCXiUYV74bf0NzS94LzAc0AfojNViNUVF50KVXljk1
-         VziViqM7rX+B4o0cuU31qsaC2Lx2m3p5wFIs+BWTQz43ZKQB+PcNDRmAVLWKH4ITwl5G
-         GImXEphsRAySM8Xo6gtvP4Z2AoXgkSP4Ecwo98Pg8H2BGZJR+h1WIVUa1hivSSKpYFO4
-         zqZAyYEIOG4PR6+JUzT4ENCYR3YB+Ciq7uciwH8JnVfAnWcLKoV/2OvpEb/j55FD4qV8
-         pSqYg5OC8Fkh5rDXYGAeZ8m8o3GHxDbIxgVXY66qSMzBT45wdk6yijMOfH0fByN0/ENF
-         70AQ==
-X-Gm-Message-State: AOAM5313u6o/4tpjTWiDqI28S9OZ2SWxy/nc65yqSVLUDfGPLUG9Kedl
-        7hCRjQh1GV58SvC0GaykdCQ=
-X-Google-Smtp-Source: ABdhPJxts0nnN1Yijd+7WkTy3jxB08A6ahPe3xyIQ56OIEgbAgfx7eOtXFiwBQrROStv1NZZoai1Vg==
-X-Received: by 2002:aa7:d7d3:0:b0:410:d23b:6746 with SMTP id e19-20020aa7d7d3000000b00410d23b6746mr11729660eds.453.1645883571817;
-        Sat, 26 Feb 2022 05:52:51 -0800 (PST)
-Received: from Ansuel-xps.localdomain (host-95-251-226-220.retail.telecomitalia.it. [95.251.226.220])
-        by smtp.googlemail.com with ESMTPSA id j21-20020aa7c415000000b004127ac9ddc3sm2836369edq.50.2022.02.26.05.52.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Feb 2022 05:52:51 -0800 (PST)
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        Sat, 26 Feb 2022 08:58:21 -0500
+Received: from mxout1.routing.net (mxout1.routing.net [IPv6:2a03:2900:1:a::a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9995F8F5;
+        Sat, 26 Feb 2022 05:57:43 -0800 (PST)
+Received: from mxbox4.masterlogin.de (unknown [192.168.10.79])
+        by mxout1.routing.net (Postfix) with ESMTP id 85F8E3FC87;
+        Sat, 26 Feb 2022 13:57:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1645883861;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=bVy4jm/0n6LtIGvvpekwTvwzXdFxC3XUkQ0plnn+i6c=;
+        b=YCr2TYbKjg67OIHcCrrw8dQnGhePpz/gnforAMYtmCV0AekiZz9HcGlwdNbFuIavVBpHR2
+        qTkRpo8WaIpB+7RhUiV94eibXH6EbmlZLYcLUsj/6pXSaSdTxdc7zLXrg+zNo3HCE1yWIP
+        5jVD+HhUIZbVGVClBT73kTX55blDlzw=
+Received: from localhost.localdomain (fttx-pool-80.245.79.12.bambit.de [80.245.79.12])
+        by mxbox4.masterlogin.de (Postfix) with ESMTPSA id A6C008059A;
+        Sat, 26 Feb 2022 13:57:40 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     linux-rockchip@lists.infradead.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
         Rob Herring <robh+dt@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Taniya Das <tdas@codeaurora.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rob Herring <robh@kernel.org>
-Subject: [PATCH v6 11/15] dt-bindings: clock: add ipq8064 ce5 clk define
-Date:   Sat, 26 Feb 2022 14:52:31 +0100
-Message-Id: <20220226135235.10051-12-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220226135235.10051-1-ansuelsmth@gmail.com>
-References: <20220226135235.10051-1-ansuelsmth@gmail.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1] arm64: dts: rockchip: Add sata2 node to rk356x
+Date:   Sat, 26 Feb 2022 14:57:24 +0100
+Message-Id: <20220226135724.61516-1-linux@fw-web.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Mail-ID: 83e05a4e-de96-4b8f-a355-cdcf1bc5b4d7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ipq8064 ce5 clk define needed for CryptoEngine in gcc driver.
-Define CE5_SRC is not used so it's OK to change and we align it to
-the QSDK naming.
+From: Frank Wunderlich <frank-w@public-files.de>
 
-Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+RK356x supports up to 3 sata controllers which were compatible with the
+existing snps,dwc-ahci binding.
+
+My board has only sata2 connected to combphy2 so only add this one.
+
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
 ---
- include/dt-bindings/clock/qcom,gcc-ipq806x.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/rockchip/rk356x.dtsi | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/include/dt-bindings/clock/qcom,gcc-ipq806x.h b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
-index 7deec14a6dee..02262d2ac899 100644
---- a/include/dt-bindings/clock/qcom,gcc-ipq806x.h
-+++ b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
-@@ -240,7 +240,7 @@
- #define PLL14					232
- #define PLL14_VOTE				233
- #define PLL18					234
--#define CE5_SRC					235
-+#define CE5_A_CLK				235
- #define CE5_H_CLK				236
- #define CE5_CORE_CLK				237
- #define CE3_SLEEP_CLK				238
-@@ -283,5 +283,8 @@
- #define EBI2_AON_CLK				281
- #define NSSTCM_CLK_SRC				282
- #define NSSTCM_CLK				283
-+#define CE5_A_CLK_SRC				285
-+#define CE5_H_CLK_SRC				286
-+#define CE5_CORE_CLK_SRC			287
+diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+index 7cdef800cb3c..7b6c8a0c8b84 100644
+--- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+@@ -230,6 +230,21 @@ scmi_shmem: sram@0 {
+ 		};
+ 	};
  
- #endif
++	sata2: sata@fc800000 {
++		compatible = "snps,dwc-ahci";
++		reg = <0 0xfc800000 0 0x1000>;
++		clocks = <&cru ACLK_SATA2>, <&cru CLK_SATA2_PMALIVE>,
++			 <&cru CLK_SATA2_RXOOB>;
++		clock-names = "sata", "pmalive", "rxoob";
++		interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-names = "hostc";
++		phys = <&combphy2 PHY_TYPE_SATA>;
++		phy-names = "sata-phy";
++		ports-implemented = <0x1>;
++		power-domains = <&power RK3568_PD_PIPE>;
++		status = "disabled";
++	};
++
+ 	gic: interrupt-controller@fd400000 {
+ 		compatible = "arm,gic-v3";
+ 		reg = <0x0 0xfd400000 0 0x10000>, /* GICD */
 -- 
-2.34.1
+2.25.1
 
