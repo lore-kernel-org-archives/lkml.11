@@ -2,191 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D61C5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:16:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239643AbiBZARM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 19:17:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
+        id S240597AbiBZART (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 19:17:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240382AbiBZAQw (ORCPT
+        with ESMTP id S240463AbiBZAQy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 19:16:52 -0500
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0419225591
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:14 -0800 (PST)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21Q0G8eL060315;
-        Fri, 25 Feb 2022 18:16:08 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1645834568;
-        bh=pBw395L0AUcASRYS2i9hrKEYCApz4CFHb/+TgP651cs=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=tEr177f4BrpptmxG8YZOj0yhtBjccpWEyYiO/+USDUeHVXfvyiwmRu1eq02D9jnEo
-         kQ5sNQ8SGNrxqVyXFZqeswtOOoLMkbAq5LN845c+CNQt1oaVoFhMzq3um9EHLmSO0K
-         C7lxQevcdFNM7MIlCjqmZwiFQEQYnFD79ujEUJt0=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21Q0G87f012350
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 25 Feb 2022 18:16:08 -0600
-Received: from DFLE101.ent.ti.com (10.64.6.22) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 25
- Feb 2022 18:16:08 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE101.ent.ti.com
- (10.64.6.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 25 Feb 2022 18:16:08 -0600
-Received: from [10.249.33.2] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21Q0G854109058;
-        Fri, 25 Feb 2022 18:16:08 -0600
-Message-ID: <073d7213-bd3a-5adb-8187-f0a83478fd76@ti.com>
-Date:   Fri, 25 Feb 2022 18:16:07 -0600
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 1/2] mailbox: ti-msgmgr: Refactor message read during
- interrupt handler
-Content-Language: en-US
-To:     Dave Gerlach <d-gerlach@ti.com>,
-        Jassi Brar <jassisinghbrar@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-References: <20220210041631.26767-1-d-gerlach@ti.com>
- <20220210041631.26767-2-d-gerlach@ti.com>
-From:   Suman Anna <s-anna@ti.com>
-In-Reply-To: <20220210041631.26767-2-d-gerlach@ti.com>
+        Fri, 25 Feb 2022 19:16:54 -0500
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB972255BF
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:15 -0800 (PST)
+Received: by mail-pg1-x54a.google.com with SMTP id g31-20020a63521f000000b003783582a261so1439648pgb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=reply-to:date:in-reply-to:message-id:mime-version:references
+         :subject:from:to:cc;
+        bh=G398P7RcaSAEnVDGuXyKG1MtPaHrsCLmNhGjwb/vYpg=;
+        b=R8L3GXb2iyMDkg0JQmqrX2X7ARQEO+Z7DOJsS5/5XHBLGcLkRCgSn+ANc7wRoFYg99
+         ziYt2seRoQuDB2HvG+EaZ9MHLF2GdsHB4o6qqxE6aBd5DNyFAXDZVzz1EYDnRcxhC2r4
+         S2geRnlh62kLBJUVLBy6yVJwLY3RQyPv7AMJNmGocuZKnW1uRQsNZwh94q4Q4XbXlmKL
+         foeaFq/xbag68suV0gOwJO0JXHPCBFEy+Mo35Qyr75jDB+S25pbbpHqdxicOZ+5rd6Op
+         QPt3fLxyXF2hsSO7/EYM6J+XV840P5D+ooewjyfq+2Hyw3hak7qvX8oJmmD6hR5m0xAC
+         2U/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
+         :mime-version:references:subject:from:to:cc;
+        bh=G398P7RcaSAEnVDGuXyKG1MtPaHrsCLmNhGjwb/vYpg=;
+        b=0RcgO3YIiVSG0Me6rBvnTFfZp2LnWR3kMcd87rMrZ9YGNu1LAIq/tvN0MUujwM4lSL
+         gWZxGyLuEwYeCSCpzhU7Ngq1s0Hgxb6cy65ZmEM+DtPWH/ATNI6ux//VHsov4EIJPGKf
+         jZzv80c/74GVXqQNr4zfQ6tKOR3i67RO/PEie6hJuNoH9m76v6UQ1Etu8gHkXCUtLWTI
+         KkuiJ+IJ0qzK/bHHBNeqSEGIEGctkGmGwtT9uRXeiK90Qih2qcp06SY8K/P33mKaavHb
+         hmm7KfKApXw7lT9GQBeFiYnTocf3B4V/khCEUqhAOB84ph8SRQHrkQwmDCZtIgt9Bwht
+         Ew3A==
+X-Gm-Message-State: AOAM530XHMQDH8+XSKNRTQddJOAcnfitRr3tuJgs0zSYktQoyAYlX1Zj
+        mejX3de7+egyDOxCJrKW2p56Kr7JNNE=
+X-Google-Smtp-Source: ABdhPJy7lHJWDyxwAWHN4q2rpPYcO/QcoMfFh0Asba4foDlLtm+DAdHJ17610fWaI/B/snIanvtPDxy+PBc=
+X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
+ (user=seanjc job=sendgmr) by 2002:a17:90b:4b52:b0:1bc:b208:dc5c with SMTP id
+ mi18-20020a17090b4b5200b001bcb208dc5cmr761907pjb.1.1645834574884; Fri, 25 Feb
+ 2022 16:16:14 -0800 (PST)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date:   Sat, 26 Feb 2022 00:15:26 +0000
+In-Reply-To: <20220226001546.360188-1-seanjc@google.com>
+Message-Id: <20220226001546.360188-9-seanjc@google.com>
+Mime-Version: 1.0
+References: <20220226001546.360188-1-seanjc@google.com>
+X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
+Subject: [PATCH v3 08/28] KVM: x86/mmu: Batch TLB flushes from TDP MMU for MMU
+ notifier change_spte
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
+        Ben Gardon <bgardon@google.com>,
+        Mingwei Zhang <mizhang@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/9/22 22:16, Dave Gerlach wrote:
-> Refactor the portion of code that actually reads received messages from
-> a queue into its own function, ti_msgmgr_queue_rx_data, that is called
-> by the interrupt handler instead of reading directly from the handler.
-> 
-> Signed-off-by: Dave Gerlach <d-gerlach@ti.com>
+Batch TLB flushes (with other MMUs) when handling ->change_spte()
+notifications in the TDP MMU.  The MMU notifier path in question doesn't
+allow yielding and correcty flushes before dropping mmu_lock.
 
-Acked-by: Suman Anna <s-anna@ti.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Ben Gardon <bgardon@google.com>
+---
+ arch/x86/kvm/mmu/tdp_mmu.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-> ---
->  drivers/mailbox/ti-msgmgr.c | 88 +++++++++++++++++++++----------------
->  1 file changed, 49 insertions(+), 39 deletions(-)
-> 
-> diff --git a/drivers/mailbox/ti-msgmgr.c b/drivers/mailbox/ti-msgmgr.c
-> index efb43b038596..f860cd0c907a 100644
-> --- a/drivers/mailbox/ti-msgmgr.c
-> +++ b/drivers/mailbox/ti-msgmgr.c
-> @@ -190,6 +190,53 @@ static inline bool ti_msgmgr_queue_is_error(const struct ti_msgmgr_desc *d,
->  	return val ? true : false;
->  }
->  
-> +static int ti_msgmgr_queue_rx_data(struct mbox_chan *chan, struct ti_queue_inst *qinst,
-> +				   const struct ti_msgmgr_desc *desc)
-> +{
-> +	int num_words;
-> +	struct ti_msgmgr_message message;
-> +	void __iomem *data_reg;
-> +	u32 *word_data;
-> +
-> +	/*
-> +	 * I have no idea about the protocol being used to communicate with the
-> +	 * remote producer - 0 could be valid data, so I wont make a judgement
-> +	 * of how many bytes I should be reading. Let the client figure this
-> +	 * out.. I just read the full message and pass it on..
-> +	 */
-> +	message.len = desc->max_message_size;
-> +	message.buf = (u8 *)qinst->rx_buff;
-> +
-> +	/*
-> +	 * NOTE about register access involved here:
-> +	 * the hardware block is implemented with 32bit access operations and no
-> +	 * support for data splitting.  We don't want the hardware to misbehave
-> +	 * with sub 32bit access - For example: if the last register read is
-> +	 * split into byte wise access, it can result in the queue getting
-> +	 * stuck or indeterminate behavior. An out of order read operation may
-> +	 * result in weird data results as well.
-> +	 * Hence, we do not use memcpy_fromio or __ioread32_copy here, instead
-> +	 * we depend on readl for the purpose.
-> +	 *
-> +	 * Also note that the final register read automatically marks the
-> +	 * queue message as read.
-> +	 */
-> +	for (data_reg = qinst->queue_buff_start, word_data = qinst->rx_buff,
-> +	     num_words = (desc->max_message_size / sizeof(u32));
-> +	     num_words; num_words--, data_reg += sizeof(u32), word_data++)
-> +		*word_data = readl(data_reg);
-> +
-> +	/*
-> +	 * Last register read automatically clears the IRQ if only 1 message
-> +	 * is pending - so send the data up the stack..
-> +	 * NOTE: Client is expected to be as optimal as possible, since
-> +	 * we invoke the handler in IRQ context.
-> +	 */
-> +	mbox_chan_received_data(chan, (void *)&message);
-> +
-> +	return 0;
-> +}
-> +
->  /**
->   * ti_msgmgr_queue_rx_interrupt() - Interrupt handler for receive Queue
->   * @irq:	Interrupt number
-> @@ -206,10 +253,7 @@ static irqreturn_t ti_msgmgr_queue_rx_interrupt(int irq, void *p)
->  	struct ti_msgmgr_inst *inst = dev_get_drvdata(dev);
->  	struct ti_queue_inst *qinst = chan->con_priv;
->  	const struct ti_msgmgr_desc *desc;
-> -	int msg_count, num_words;
-> -	struct ti_msgmgr_message message;
-> -	void __iomem *data_reg;
-> -	u32 *word_data;
-> +	int msg_count;
->  
->  	if (WARN_ON(!inst)) {
->  		dev_err(dev, "no platform drv data??\n");
-> @@ -237,41 +281,7 @@ static irqreturn_t ti_msgmgr_queue_rx_interrupt(int irq, void *p)
->  		return IRQ_NONE;
->  	}
->  
-> -	/*
-> -	 * I have no idea about the protocol being used to communicate with the
-> -	 * remote producer - 0 could be valid data, so I won't make a judgement
-> -	 * of how many bytes I should be reading. Let the client figure this
-> -	 * out.. I just read the full message and pass it on..
-> -	 */
-> -	message.len = desc->max_message_size;
-> -	message.buf = (u8 *)qinst->rx_buff;
-> -
-> -	/*
-> -	 * NOTE about register access involved here:
-> -	 * the hardware block is implemented with 32bit access operations and no
-> -	 * support for data splitting.  We don't want the hardware to misbehave
-> -	 * with sub 32bit access - For example: if the last register read is
-> -	 * split into byte wise access, it can result in the queue getting
-> -	 * stuck or indeterminate behavior. An out of order read operation may
-> -	 * result in weird data results as well.
-> -	 * Hence, we do not use memcpy_fromio or __ioread32_copy here, instead
-> -	 * we depend on readl for the purpose.
-> -	 *
-> -	 * Also note that the final register read automatically marks the
-> -	 * queue message as read.
-> -	 */
-> -	for (data_reg = qinst->queue_buff_start, word_data = qinst->rx_buff,
-> -	     num_words = (desc->max_message_size / sizeof(u32));
-> -	     num_words; num_words--, data_reg += sizeof(u32), word_data++)
-> -		*word_data = readl(data_reg);
-> -
-> -	/*
-> -	 * Last register read automatically clears the IRQ if only 1 message
-> -	 * is pending - so send the data up the stack..
-> -	 * NOTE: Client is expected to be as optimal as possible, since
-> -	 * we invoke the handler in IRQ context.
-> -	 */
-> -	mbox_chan_received_data(chan, (void *)&message);
-> +	ti_msgmgr_queue_rx_data(chan, qinst, desc);
->  
->  	return IRQ_HANDLED;
->  }
+diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
+index 848448b65703..634a2838e117 100644
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1203,13 +1203,12 @@ static bool set_spte_gfn(struct kvm *kvm, struct tdp_iter *iter,
+  */
+ bool kvm_tdp_mmu_set_spte_gfn(struct kvm *kvm, struct kvm_gfn_range *range)
+ {
+-	bool flush = kvm_tdp_mmu_handle_gfn(kvm, range, set_spte_gfn);
+-
+-	/* FIXME: return 'flush' instead of flushing here. */
+-	if (flush)
+-		kvm_flush_remote_tlbs_with_address(kvm, range->start, 1);
+-
+-	return false;
++	/*
++	 * No need to handle the remote TLB flush under RCU protection, the
++	 * target SPTE _must_ be a leaf SPTE, i.e. cannot result in freeing a
++	 * shadow page.  See the WARN on pfn_changed in __handle_changed_spte().
++	 */
++	return kvm_tdp_mmu_handle_gfn(kvm, range, set_spte_gfn);
+ }
+ 
+ /*
+-- 
+2.35.1.574.g5d30c73bfb-goog
 
