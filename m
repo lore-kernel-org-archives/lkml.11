@@ -2,75 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ABFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 02:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90046C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 02:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbiBZCNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 21:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57010 "EHLO
+        id S229587AbiBZCVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 21:21:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiBZCNL (ORCPT
+        with ESMTP id S229447AbiBZCVh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 21:13:11 -0500
-Received: from mail-vk1-xa32.google.com (mail-vk1-xa32.google.com [IPv6:2607:f8b0:4864:20::a32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C29179265;
-        Fri, 25 Feb 2022 18:12:38 -0800 (PST)
-Received: by mail-vk1-xa32.google.com with SMTP id j12so2502209vkr.0;
-        Fri, 25 Feb 2022 18:12:38 -0800 (PST)
+        Fri, 25 Feb 2022 21:21:37 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBABC46143
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 18:21:03 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id j10-20020a17090a94ca00b001bc2a9596f6so6439328pjw.5
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 18:21:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lDWpy2NuIsQN7E/0B1NasChFwKSZ7ta4TFaRo3f/J1c=;
-        b=RRvEInhRxEBzutgK0TBld7VqkdgO2eExoA/SoRpxe/FJJ0U3LL31c1DPAVhHdIazw+
-         riRIH3qQo6YW79G0JeW4MO3oAmr///O+zV2uOJzW4dwjqhLSS/a25Y9iibdTseuz7VXX
-         LfK38vfc0uld1ZG+YldAS1ZsQURnnZuLFN0AnE0f950yiaFDjnNAFZqlN4o5Q1jAH32E
-         R69V7NIBYDmTxrtLFYvc3pNY2rZhy1UDw0IyEuml6cgH3JKhfqsovSK0N+GXdBxdyj/m
-         Ja8yq5rw5xqYlJbl2f2GNPx+pBW8T0DjIvsZ2dJXADPS9usSYVcD+Rf1Ql1UggKZ7vUs
-         L/Vg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LVx2Sgx3Uey6cinUD9sMnwcdDXIpFfi7NKSddzh5F5A=;
+        b=MgkfcBYC2hgXx9X2CcsC3AnyJCiXla5DlZjhJPNL9EIkNyKPSAhhMO0be+kj/jDlG5
+         Uh+b7nKBtrpyJb59vWf5PDdHVIi9+pd0LyF9WFzXz/yNLyRnxMPaSl2SX2I58gReEoXB
+         ix+qsN35XrbmzMQQykYmvkSRqynUto0im0Gy8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lDWpy2NuIsQN7E/0B1NasChFwKSZ7ta4TFaRo3f/J1c=;
-        b=BkMtMBl7qpZRP7TMLtXCvrFvs6gnmyUGjSmt4kAqSr4urBRIuofIXzGVgemMd4lhM0
-         kD6Eq4f4xXPodjIbbw2vwLd6CXQfkDrNymZ2YhSMGnA1C0hBfdlHiMJFldSPmjK0BwPb
-         HiaqG43uvq5vEnRhJyM1SIvfrJ9wIrvoPAKOjtSbRGQOphPGUsNn6hP4Y9ioW5843JNN
-         vZcWLiFzNxjsM6MpaEIomp4kjgIGJjkk03GtmjdNFcf3GQYbm5VKp3E+agmbdWn/r3a5
-         NDeIH8sbDOr4iK1lPa3BAfDtnvFXtzJMfcbkMuwDD5bDy3p+GTlT4A7RObtVZm5jxqzm
-         cFdg==
-X-Gm-Message-State: AOAM531Ff3r8Nn33D84I8QXA3+0g4dWOCactgoszFj/V0tOllYwC2BSH
-        84c9sZUpZZleL8cHVrtxnQUJl8jKrByYLyrwtlw=
-X-Google-Smtp-Source: ABdhPJzsUE+TqICcXLNuL+ZS/uvjE53/+EGUyjFKuVTi339MEgMzrXx6N86iaeg/mC2K5UwwLFGYsT3W6YgRtSbD0mM=
-X-Received: by 2002:a05:6122:d0f:b0:330:c206:d46e with SMTP id
- az15-20020a0561220d0f00b00330c206d46emr4846192vkb.41.1645841557409; Fri, 25
- Feb 2022 18:12:37 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LVx2Sgx3Uey6cinUD9sMnwcdDXIpFfi7NKSddzh5F5A=;
+        b=0Gwf8dm//YtyBkS6hNGGLGLDV0kG/dtUZT3x2W9LFhTIUgyAm1Bq/YjiPThlxLDVv1
+         3/8tb4W9sz2SndnlY0yp+O4OIV7sd5DTx3RQ56WT3nLhjxnrLhnpeUPZkWIhSP6OVWqy
+         DkjgkQtIZrGtAYyXUe6FTrSqY021dQFKStuNZGiX7TxS3CG5TKZfuvns+jo+O0tUP/iJ
+         c5EqHgHpbF3kkufyzl2qV8k4D26Cmah7f7T4Yd4l86ZAzbUV1Dw3gR9aG8jVNDmxkeVN
+         k3zDjWsVRCDtKwFUuZlM5wTH6RW4dobZf5wmu74itlzBZWfNnvP9iNf9Vkp1x+33ZnR/
+         WrtQ==
+X-Gm-Message-State: AOAM532dKPWD61VvJ093km4xs3qPlhuOWyQr/1HplxD75Rc3pGyRvURP
+        NjHd4i4QVphhNPpqN9hncqWmdQ==
+X-Google-Smtp-Source: ABdhPJyF4RqZNQp4GPg1I0kpGz0bHVs34UC/ZUUqPWUBsLge+VOm1OgGtIr+4udOKYD8KP4OBhHyiQ==
+X-Received: by 2002:a17:902:694c:b0:14f:bb61:e7bf with SMTP id k12-20020a170902694c00b0014fbb61e7bfmr9733187plt.159.1645842063293;
+        Fri, 25 Feb 2022 18:21:03 -0800 (PST)
+Received: from google.com ([240f:75:7537:3187:d7ef:f0a2:708b:c03e])
+        by smtp.gmail.com with ESMTPSA id w17-20020a056a0014d100b004f1063290basm4776269pfu.15.2022.02.25.18.20.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Feb 2022 18:21:02 -0800 (PST)
+Date:   Sat, 26 Feb 2022 02:20:57 +0000
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wander Lairson Costa <wander@redhat.com>,
+        Willy Tarreau <w@1wt.eu>,
+        David Laight <David.Laight@aculab.com>
+Subject: Re: Strange output on the console
+Message-ID: <YhmOifZcbbxVHPr9@google.com>
+References: <20220224230035.36547137@gandalf.local.home>
+ <Yhhh730RX1HpdXp2@google.com>
+ <Yhhj9MLZTrhjSWUE@google.com>
+ <20220225083209.24bafe2c@gandalf.local.home>
+ <20220225084256.071dcf82@gandalf.local.home>
 MIME-Version: 1.0
-References: <CAJoG2+9Tp4ZW4tqTVSgp7wukduEFKHiqOXJO-Yn17OwTvn+a+w@mail.gmail.com>
- <20220225182004.GA369816@bhelgaas>
-In-Reply-To: <20220225182004.GA369816@bhelgaas>
-From:   Yusuf Khan <yusisamerican@gmail.com>
-Date:   Fri, 25 Feb 2022 18:12:26 -0800
-Message-ID: <CAJoG2+9p4jC1aSybosd_+pkEzGDv=44D_VshrJzbgpk++Nr8Ng@mail.gmail.com>
-Subject: Re: [PATCH] Removed some usages of the deprecated "pci-dma-compat.h" KPI
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        tiwai@suse.com, perex@perex.cz, alex.bou9@gmail.com,
-        mporter@kernel.crashing.org, logang@deltatee.com,
-        kurt.schwemmer@microsemi.com, Bjorn Helgaas <bhelgaas@google.com>,
-        kw@linux.com, robh@kernel.org, lorenzo.pieralisi@arm.com,
-        jonathan.derrick@linux.dev, nirmal.patel@linux.intel.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220225084256.071dcf82@gandalf.local.home>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sorry....
+On (22/02/25 08:42), Steven Rostedt wrote:
+> On Fri, 25 Feb 2022 08:32:09 -0500
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+> 
+> > On Fri, 25 Feb 2022 14:07:00 +0900
+> > Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
+> > 
+> > > > Steven, did you notice this recently?
+> > > > May I perhaps suggest git bisect? (sorry)    
+> > > 
+> > > On the off chance - do you have this revert in your kernel?
+> > > 
+> > > commit 6a7b9f002eca6788d346c16a6ff0c218b41f8d1d
+> > > Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Date:   Wed Jan 26 14:33:58 2022 +0100
+> > > 
+> > >     Revert "tty: serial: Use fifo in 8250 console driver"
+> > > 
+> > >     This reverts commit 5021d709b31b8a14317998a33cbc78be0de9ab30.
+> > > 
+> > >     The patch is still a bit buggy, and this breaks some other hardware
+> > >     types.  It needs to be resubmitted in a non-buggy way, and make sure the
+> > >     other hardware types also continue to work properly.  
+> > 
+> > My tree does not have this.
+> > 
+> > I just applied it and I'm building now. I'll let you know if this fixes the
+> > issue or not.
+> 
+> Mystery solved. Thanks Sergey!
 
-On Fri, Feb 25, 2022 at 10:20 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> On Wed, Feb 23, 2022 at 01:54:54AM -0800, Yusuf Khan wrote:
-> > See https://lkml.org/lkml/2022/2/23/11 Before you think of this commit!
->
-> Use links to https://lore.kernel.org/r/ whenever you can, instead of
-> lkml.org, etc.
+Awesome!
