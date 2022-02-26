@@ -2,214 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C694AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240742AbiBZAT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 19:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
+        id S241768AbiBZAZL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 19:25:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241106AbiBZARu (ORCPT
+        with ESMTP id S241068AbiBZAZI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 19:17:50 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53C3722D650
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:44 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id w1-20020a05690204e100b006244315a721so5032851ybs.0
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:44 -0800 (PST)
+        Fri, 25 Feb 2022 19:25:08 -0500
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAEAA199D78
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:24:34 -0800 (PST)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-2d07ae11464so46581207b3.14
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:24:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=8vGylyelB/7s2Iu/cezFfDz4H+G0SXAJDoFtwhKJJ28=;
-        b=dlXNILOL0RcgYaj/SOWVb/B+cFvaL+/RGu/bd2ecjAYaKJn1zHuPEJbHsfwU502SK2
-         +FPPiaiOVMxsUIrbOJ+sFuFZQplYzNHew/+TexiqluBvFAtJm5BOdpx6Dyf6PLamreU+
-         hNU6CzIJO6mRakhEXLnBbgxZvH297CHWiYPQxLFgrjRHVwdn3KMGXQbJE9fY5v2rlaPS
-         xCQ3NSaXqx4Lj0B3QRVeXDEfNXLnUlDVvWk7kzFqOVIAbjhdCXNeMCJrNwKFT6My9RFG
-         v+b9azLwXSHba017DB8cTjbwtzh12saWyoLZoBJXmekNmr6CKoNAi8Z/xXgdovpR015D
-         alzw==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=c5XxepI0RiJzH9nImzDTpadEG2SO2IU4ZT8K2Wm0fgw=;
+        b=iwU9nbdapI4QDtZoaxiJdFfKk1Aeelgfe69uZJ/lOO24OOX3A5QLJPiH4qboOUz+2t
+         zQ09GP9qcVBfCxpp8LeUQrCciTFqyr3ZfNXtHmQcDdshuU8oBAZQYGNMMsLvF1rrJSy0
+         xgl5ybIbuKPpkxSdP4WL+dvjKkd+mHI6inkn2YcaLxC09Mz1DhKHMnY5GFhO+SCythBy
+         J5KTKZYcptRIR/A8cB0AHU+KBOeaXdbwJSaeFWuzemzTsZh9FW8r2PUqyNenl0z+4moK
+         scvXa+QlOZ7lJ9J3duby8Kr1w1z/3ERSbJTInf29y1U66/ojmBs2Psy+xnZMhY6dGx+E
+         5nFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=8vGylyelB/7s2Iu/cezFfDz4H+G0SXAJDoFtwhKJJ28=;
-        b=CD9h5TVM0cKR0hHWYomCIdxwFFE/L0oVBwayPb8MSbDrtnz1PJQMgjU2iMBE04IYrE
-         KETdzL0Z4fKRAokSoJ/0r08IrsaU2WvYtOLOtmVOBhXocJPfrSEliYZPfb88Tfzuc0Rg
-         VQbiFKammr+SErK1jXmLm4QMVUqVIugDUVyaxicUuU4tM1DvB1SYx6XTTgKiWurANad6
-         DxYkm9xC92ojVgYRF3tcVFC2Dcgh4gz3Mevp2Bv25lP+dWMNkob6HrGBtJANJQQa3HNe
-         bYBlj2gz7wKgnMPJ0QKUvDY8vOl94cb/3vEoCy/63/IGVToW8epn1IDud/K5Q1LfWXa8
-         WJYQ==
-X-Gm-Message-State: AOAM531vvRroqS8BJPPhD3ut4ptFF6JD1KMPFoYnFvuw39ypvFMk4v28
-        vQ55/zIsGJ7ZUP1Yvq1ici4WNq7zzBY=
-X-Google-Smtp-Source: ABdhPJwwopT5Z1DLLtP8f3p7Bz63Hhro6EnAkKtt/I4Q68E+irs1imu/xJTXCCS7diEoreI04+8r4bs7KM4=
-X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a25:e014:0:b0:619:a368:c3b5 with SMTP id
- x20-20020a25e014000000b00619a368c3b5mr9542866ybg.383.1645834596968; Fri, 25
- Feb 2022 16:16:36 -0800 (PST)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 26 Feb 2022 00:15:39 +0000
-In-Reply-To: <20220226001546.360188-1-seanjc@google.com>
-Message-Id: <20220226001546.360188-22-seanjc@google.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=c5XxepI0RiJzH9nImzDTpadEG2SO2IU4ZT8K2Wm0fgw=;
+        b=x9k3W9mezHr8nc5nx5SrrGt65qnJnv2xkD6+82ik8HXkqn1SF/HQv24f9C2BE1HeYr
+         qJEF2vpgM+BWvF1tMaJtVU07ZUm6tzdYwwwnjiVdfd4Li4f/o42SBtbpJywhUojF2SHG
+         37+GyaMUIwSeJ8ExH9NbHjNafgIzvGQRoLm6vDFWMbLvYQlpmddltNC/UhbsqoRLDZES
+         NOTqFNQgXotgv56p/4ySbVPyos4aN1yLwoT8ySnJdZpklNBBETobQpAgXXnlHAd6k9Ce
+         mzsl+A6bnremFHsDD8PzzjRkHNOGgh2AMIFAjAqf++PNO0O69FBcqrT9M/ai/M2O+NBW
+         wVBA==
+X-Gm-Message-State: AOAM530Wi6yu85M6Px/yQvUCgtGxTPbZcL2r1Gv8epMEEL9T9jVbQu7n
+        kKccqEFxMlS+rBBUQ+laUnL+gCiCDExDLQ==
+X-Google-Smtp-Source: ABdhPJzqsLR7y0lfbkwTXvPkY6+2FHJWcDSoxXSS/X5D8//dIU/36RB8yXNtw/F6Ve7tENac2apQuJ7ROS38pQ==
+X-Received: from shakeelb.svl.corp.google.com ([2620:15c:2cd:202:1a3e:f375:915f:ad7e])
+ (user=shakeelb job=sendgmr) by 2002:a25:2b0a:0:b0:624:a898:3e2f with SMTP id
+ r10-20020a252b0a000000b00624a8983e2fmr9753491ybr.643.1645835074125; Fri, 25
+ Feb 2022 16:24:34 -0800 (PST)
+Date:   Fri, 25 Feb 2022 16:24:12 -0800
+Message-Id: <20220226002412.113819-1-shakeelb@google.com>
 Mime-Version: 1.0
-References: <20220226001546.360188-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH v3 21/28] KVM: x86/mmu: Zap roots in two passes to avoid
- inducing RCU stalls
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Mingwei Zhang <mizhang@google.com>
+Subject: [PATCH] memcg: async flush memcg stats from perf sensitive codepaths
+From:   Shakeel Butt <shakeelb@google.com>
+To:     "=?UTF-8?q?Michal=20Koutn=C3=BD?=" <mkoutny@suse.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Ivan Babrou <ivan@cloudflare.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Shakeel Butt <shakeelb@google.com>,
+        Daniel Dao <dqminh@cloudflare.com>, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When zapping a TDP MMU root, perform the zap in two passes to avoid
-zapping an entire top-level SPTE while holding RCU, which can induce RCU
-stalls.  In the first pass, zap SPTEs at PG_LEVEL_1G, and then
-zap top-level entries in the second pass.
+Daniel Dao has reported [1] a regression on workloads that may trigger
+a lot of refaults (anon and file). The underlying issue is that flushing
+rstat is expensive. Although rstat flush are batched with (nr_cpus *
+MEMCG_BATCH) stat updates, it seems like there are workloads which
+genuinely do stat updates larger than batch value within short amount of
+time. Since the rstat flush can happen in the performance critical
+codepaths like page faults, such workload can suffer greatly.
 
-With 4-level paging, zapping a PGD that is fully populated with 4kb leaf
-SPTEs take up to ~7 or so seconds (time varies based on kernel config,
-number of (v)CPUs, etc...).  With 5-level paging, that time can balloon
-well into hundreds of seconds.
+The easiest fix for now is for performance critical codepaths trigger
+the rstat flush asynchronously. This patch converts the refault codepath
+to use async rstat flush. In addition, this patch has premptively
+converted mem_cgroup_wb_stats and shrink_node to also use the async
+rstat flush as they may also similar performance regressions.
 
-Before remote TLB flushes were omitted, the problem was even worse as
-waiting for all active vCPUs to respond to the IPI introduced significant
-overhead for VMs with large numbers of vCPUs.
-
-By zapping 1gb SPTEs (both shadow pages and hugepages) in the first pass,
-the amount of work that is done without dropping RCU protection is
-strictly bounded, with the worst case latency for a single operation
-being less than 100ms.
-
-Zapping at 1gb in the first pass is not arbitrary.  First and foremost,
-KVM relies on being able to zap 1gb shadow pages in a single shot when
-when repacing a shadow page with a hugepage.  Zapping a 1gb shadow page
-that is fully populated with 4kb dirty SPTEs also triggers the worst case
-latency due writing back the struct page accessed/dirty bits for each 4kb
-page, i.e. the two-pass approach is guaranteed to work so long as KVM can
-cleany zap a 1gb shadow page.
-
-  rcu: INFO: rcu_sched self-detected stall on CPU
-  rcu:     52-....: (20999 ticks this GP) idle=7be/1/0x4000000000000000
-                                          softirq=15759/15759 fqs=5058
-   (t=21016 jiffies g=66453 q=238577)
-  NMI backtrace for cpu 52
-  Call Trace:
-   ...
-   mark_page_accessed+0x266/0x2f0
-   kvm_set_pfn_accessed+0x31/0x40
-   handle_removed_tdp_mmu_page+0x259/0x2e0
-   __handle_changed_spte+0x223/0x2c0
-   handle_removed_tdp_mmu_page+0x1c1/0x2e0
-   __handle_changed_spte+0x223/0x2c0
-   handle_removed_tdp_mmu_page+0x1c1/0x2e0
-   __handle_changed_spte+0x223/0x2c0
-   zap_gfn_range+0x141/0x3b0
-   kvm_tdp_mmu_zap_invalidated_roots+0xc8/0x130
-   kvm_mmu_zap_all_fast+0x121/0x190
-   kvm_mmu_invalidate_zap_pages_in_memslot+0xe/0x10
-   kvm_page_track_flush_slot+0x5c/0x80
-   kvm_arch_flush_shadow_memslot+0xe/0x10
-   kvm_set_memslot+0x172/0x4e0
-   __kvm_set_memory_region+0x337/0x590
-   kvm_vm_ioctl+0x49c/0xf80
-
-Reported-by: David Matlack <dmatlack@google.com>
-Cc: Ben Gardon <bgardon@google.com>
-Cc: Mingwei Zhang <mizhang@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Link: https://lore.kernel.org/all/CA+wXwBSyO87ZX5PVwdHm-=dBjZYECGmfnydUicUyrQqndgX2MQ@mail.gmail.com [1]
+Fixes: 1f828223b799 ("memcg: flush lruvec stats in the refault")
+Reported-by: Daniel Dao <dqminh@cloudflare.com>
+Signed-off-by: Shakeel Butt <shakeelb@google.com>
+Cc: <stable@vger.kernel.org>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 51 +++++++++++++++++++++++++-------------
- 1 file changed, 34 insertions(+), 17 deletions(-)
+ include/linux/memcontrol.h |  1 +
+ mm/memcontrol.c            | 10 +++++++++-
+ mm/vmscan.c                |  2 +-
+ mm/workingset.c            |  2 +-
+ 4 files changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index b838cfa984ad..ec28a88c6376 100644
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -802,14 +802,36 @@ static inline gfn_t tdp_mmu_max_gfn_host(void)
- 	return 1ULL << (shadow_phys_bits - PAGE_SHIFT);
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index ef4b445392a9..bfdd48be60ff 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -998,6 +998,7 @@ static inline unsigned long lruvec_page_state_local(struct lruvec *lruvec,
  }
  
--static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
--			     bool shared)
-+static void __tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
-+			       bool shared, int zap_level)
- {
- 	struct tdp_iter iter;
+ void mem_cgroup_flush_stats(void);
++void mem_cgroup_flush_stats_async(void);
  
- 	gfn_t end = tdp_mmu_max_gfn_host();
- 	gfn_t start = 0;
+ void __mod_memcg_lruvec_state(struct lruvec *lruvec, enum node_stat_item idx,
+ 			      int val);
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index c695608c521c..4338e8d779b2 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -690,6 +690,14 @@ void mem_cgroup_flush_stats(void)
+ 		__mem_cgroup_flush_stats();
+ }
  
-+	for_each_tdp_pte_min_level(iter, root, zap_level, start, end) {
-+retry:
-+		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, shared))
-+			continue;
-+
-+		if (!is_shadow_present_pte(iter.old_spte))
-+			continue;
-+
-+		if (iter.level > zap_level)
-+			continue;
-+
-+		if (!shared)
-+			tdp_mmu_set_spte(kvm, &iter, 0);
-+		else if (tdp_mmu_set_spte_atomic(kvm, &iter, 0))
-+			goto retry;
++void mem_cgroup_flush_stats_async(void)
++{
++	if (atomic_read(&stats_flush_threshold) > num_online_cpus()) {
++		atomic_set(&stats_flush_threshold, 0);
++		mod_delayed_work(system_unbound_wq, &stats_flush_dwork, 0);
 +	}
 +}
 +
-+static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
-+			     bool shared)
-+{
-+
- 	/*
- 	 * The root must have an elevated refcount so that it's reachable via
- 	 * mmu_notifier callbacks, which allows this path to yield and drop
-@@ -827,22 +849,17 @@ static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
- 	rcu_read_lock();
+ static void flush_memcg_stats_dwork(struct work_struct *w)
+ {
+ 	__mem_cgroup_flush_stats();
+@@ -4522,7 +4530,7 @@ void mem_cgroup_wb_stats(struct bdi_writeback *wb, unsigned long *pfilepages,
+ 	struct mem_cgroup *memcg = mem_cgroup_from_css(wb->memcg_css);
+ 	struct mem_cgroup *parent;
  
- 	/*
--	 * No need to try to step down in the iterator when zapping an entire
--	 * root, zapping an upper-level SPTE will recurse on its children.
-+	 * To avoid RCU stalls due to recursively removing huge swaths of SPs,
-+	 * split the zap into two passes.  On the first pass, zap at the 1gb
-+	 * level, and then zap top-level SPs on the second pass.  "1gb" is not
-+	 * arbitrary, as KVM must be able to zap a 1gb shadow page without
-+	 * inducing a stall to allow in-place replacement with a 1gb hugepage.
-+	 *
-+	 * Because zapping a SP recurses on its children, stepping down to
-+	 * PG_LEVEL_4K in the iterator itself is unnecessary.
+-	mem_cgroup_flush_stats();
++	mem_cgroup_flush_stats_async();
+ 
+ 	*pdirty = memcg_page_state(memcg, NR_FILE_DIRTY);
+ 	*pwriteback = memcg_page_state(memcg, NR_WRITEBACK);
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index c6f77e3e6d59..b6c6b165c1ef 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -3188,7 +3188,7 @@ static void shrink_node(pg_data_t *pgdat, struct scan_control *sc)
+ 	 * Flush the memory cgroup stats, so that we read accurate per-memcg
+ 	 * lruvec stats for heuristics.
  	 */
--	for_each_tdp_pte_min_level(iter, root, root->role.level, start, end) {
--retry:
--		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, shared))
--			continue;
--
--		if (!is_shadow_present_pte(iter.old_spte))
--			continue;
--
--		if (!shared)
--			tdp_mmu_set_spte(kvm, &iter, 0);
--		else if (tdp_mmu_set_spte_atomic(kvm, &iter, 0))
--			goto retry;
--	}
-+	__tdp_mmu_zap_root(kvm, root, shared, PG_LEVEL_1G);
-+	__tdp_mmu_zap_root(kvm, root, shared, root->role.level);
+-	mem_cgroup_flush_stats();
++	mem_cgroup_flush_stats_async();
  
- 	rcu_read_unlock();
- }
+ 	memset(&sc->nr, 0, sizeof(sc->nr));
+ 
+diff --git a/mm/workingset.c b/mm/workingset.c
+index b717eae4e0dd..a4f2b1aa5bcc 100644
+--- a/mm/workingset.c
++++ b/mm/workingset.c
+@@ -355,7 +355,7 @@ void workingset_refault(struct folio *folio, void *shadow)
+ 
+ 	mod_lruvec_state(lruvec, WORKINGSET_REFAULT_BASE + file, nr);
+ 
+-	mem_cgroup_flush_stats();
++	mem_cgroup_flush_stats_async();
+ 	/*
+ 	 * Compare the distance to the existing workingset size. We
+ 	 * don't activate pages that couldn't stay resident even if
 -- 
 2.35.1.574.g5d30c73bfb-goog
 
