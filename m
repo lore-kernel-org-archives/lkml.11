@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240597AbiBZART (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 19:17:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50292 "EHLO
+        id S240662AbiBZARW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 19:17:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240463AbiBZAQy (ORCPT
+        with ESMTP id S240153AbiBZAQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 19:16:54 -0500
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB972255BF
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:15 -0800 (PST)
-Received: by mail-pg1-x54a.google.com with SMTP id g31-20020a63521f000000b003783582a261so1439648pgb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:15 -0800 (PST)
+        Fri, 25 Feb 2022 19:16:52 -0500
+Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 039AA22559E
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:12 -0800 (PST)
+Received: by mail-pf1-x44a.google.com with SMTP id z28-20020aa79f9c000000b004e10449d919so3967795pfr.4
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=G398P7RcaSAEnVDGuXyKG1MtPaHrsCLmNhGjwb/vYpg=;
-        b=R8L3GXb2iyMDkg0JQmqrX2X7ARQEO+Z7DOJsS5/5XHBLGcLkRCgSn+ANc7wRoFYg99
-         ziYt2seRoQuDB2HvG+EaZ9MHLF2GdsHB4o6qqxE6aBd5DNyFAXDZVzz1EYDnRcxhC2r4
-         S2geRnlh62kLBJUVLBy6yVJwLY3RQyPv7AMJNmGocuZKnW1uRQsNZwh94q4Q4XbXlmKL
-         foeaFq/xbag68suV0gOwJO0JXHPCBFEy+Mo35Qyr75jDB+S25pbbpHqdxicOZ+5rd6Op
-         QPt3fLxyXF2hsSO7/EYM6J+XV840P5D+ooewjyfq+2Hyw3hak7qvX8oJmmD6hR5m0xAC
-         2U/w==
+        bh=CkcWm9TOTaG84AakiNdIByFyddSdpVR6qJn4me3qHQU=;
+        b=SrM/ryVBa/JLHQKNP3iNMNNVSSk4v5Ddwyv7M6e0IUPaBHea0ca2RgWivk1Shp4eg2
+         uCxS3N6bsurRUuP3f6of53M5aE0Jm8DfWQ3bPnNp6v5bLxJsYaGsyYLDKohJUWq1UyCH
+         JJ//QzYD/LPHCpuq81wIXJGyR1pBt4umkqf11JnylOtcmv7VoMh3zMdnchl1KxnFIcb+
+         vjymo1seRffIdQdUjCrQvKvayjF6qiIX9HCWLbg7pSoUGiQsraZ61xX2TmydRLJuzAjp
+         qLjkn1imbV0HaXP3mdWyAQqCZmRXh2kHITNGLlxhsmWGarGmArbPXKQHFezRF/B587wE
+         zz6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=G398P7RcaSAEnVDGuXyKG1MtPaHrsCLmNhGjwb/vYpg=;
-        b=0RcgO3YIiVSG0Me6rBvnTFfZp2LnWR3kMcd87rMrZ9YGNu1LAIq/tvN0MUujwM4lSL
-         gWZxGyLuEwYeCSCpzhU7Ngq1s0Hgxb6cy65ZmEM+DtPWH/ATNI6ux//VHsov4EIJPGKf
-         jZzv80c/74GVXqQNr4zfQ6tKOR3i67RO/PEie6hJuNoH9m76v6UQ1Etu8gHkXCUtLWTI
-         KkuiJ+IJ0qzK/bHHBNeqSEGIEGctkGmGwtT9uRXeiK90Qih2qcp06SY8K/P33mKaavHb
-         hmm7KfKApXw7lT9GQBeFiYnTocf3B4V/khCEUqhAOB84ph8SRQHrkQwmDCZtIgt9Bwht
-         Ew3A==
-X-Gm-Message-State: AOAM530XHMQDH8+XSKNRTQddJOAcnfitRr3tuJgs0zSYktQoyAYlX1Zj
-        mejX3de7+egyDOxCJrKW2p56Kr7JNNE=
-X-Google-Smtp-Source: ABdhPJy7lHJWDyxwAWHN4q2rpPYcO/QcoMfFh0Asba4foDlLtm+DAdHJ17610fWaI/B/snIanvtPDxy+PBc=
+        bh=CkcWm9TOTaG84AakiNdIByFyddSdpVR6qJn4me3qHQU=;
+        b=mhKRE8LOxAJlpmoNUJK/cmDqbFCqUaf9xFVuYs1Lj+DGa4bQ97zCUD2skylYMhmKri
+         KlbcuSFZsanesNqi+0bWq8wsAabrJsJ02pxnin03MZRA4bonY+9xl68IRV1NvZzQqfTr
+         B4c+ZCohJGR70dQIa4Brhu8qw2jwt50MUrtfQPZO+lxbjJX6WgtYvLNObfUnJfbSPb/8
+         tfxKoUmCDgTW+fzBlq80+8MZxdmxiJvEBCBNwR5useNTdnACLvWsFsSAawGbC4KsYSpy
+         Akn2z11TyhpsYedWTbN9iFI7kebxUeY7jaPGobfImdTSctqZmbmC29CKiVgWIZ2CBHql
+         Xj7Q==
+X-Gm-Message-State: AOAM533B5fPhWbXp7FwCVusADh/iXxiRhUdU17LBECNZ1aqapTPqCPrb
+        C7PKrZ0WH6UtNO7sZbQ5p2mzGSfBHpc=
+X-Google-Smtp-Source: ABdhPJwDFDIV7OblSikTqfHjNLInNVnmlGYEWyoM69GLtFDl5Kxsr2oAbsXo65Axu1YJx3fSWE3oLmQMlEc=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:90b:4b52:b0:1bc:b208:dc5c with SMTP id
- mi18-20020a17090b4b5200b001bcb208dc5cmr761907pjb.1.1645834574884; Fri, 25 Feb
- 2022 16:16:14 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:902:a404:b0:14b:1100:aebc with SMTP id
+ p4-20020a170902a40400b0014b1100aebcmr9483781plq.133.1645834571470; Fri, 25
+ Feb 2022 16:16:11 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 26 Feb 2022 00:15:26 +0000
+Date:   Sat, 26 Feb 2022 00:15:24 +0000
 In-Reply-To: <20220226001546.360188-1-seanjc@google.com>
-Message-Id: <20220226001546.360188-9-seanjc@google.com>
+Message-Id: <20220226001546.360188-7-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220226001546.360188-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH v3 08/28] KVM: x86/mmu: Batch TLB flushes from TDP MMU for MMU
- notifier change_spte
+Subject: [PATCH v3 06/28] KVM: x86/mmu: Require mmu_lock be held for write in
+ unyielding root iter
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Christian Borntraeger <borntraeger@linux.ibm.com>,
@@ -74,40 +74,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Batch TLB flushes (with other MMUs) when handling ->change_spte()
-notifications in the TDP MMU.  The MMU notifier path in question doesn't
-allow yielding and correcty flushes before dropping mmu_lock.
+Assert that mmu_lock is held for write by users of the yield-unfriendly
+TDP iterator.  The nature of a shared walk means that the caller needs to
+play nice with other tasks modifying the page tables, which is more or
+less the same thing as playing nice with yielding.  Theoretically, KVM
+could gain a flow where it could legitimately take mmu_lock for read in
+a non-preemptible context, but that's highly unlikely and any such case
+should be viewed with a fair amount of scrutiny.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Ben Gardon <bgardon@google.com>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
 
 diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index 848448b65703..634a2838e117 100644
+index 5994db5d5226..189f21e71c36 100644
 --- a/arch/x86/kvm/mmu/tdp_mmu.c
 +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1203,13 +1203,12 @@ static bool set_spte_gfn(struct kvm *kvm, struct tdp_iter *iter,
-  */
- bool kvm_tdp_mmu_set_spte_gfn(struct kvm *kvm, struct kvm_gfn_range *range)
- {
--	bool flush = kvm_tdp_mmu_handle_gfn(kvm, range, set_spte_gfn);
--
--	/* FIXME: return 'flush' instead of flushing here. */
--	if (flush)
--		kvm_flush_remote_tlbs_with_address(kvm, range->start, 1);
--
--	return false;
-+	/*
-+	 * No need to handle the remote TLB flush under RCU protection, the
-+	 * target SPTE _must_ be a leaf SPTE, i.e. cannot result in freeing a
-+	 * shadow page.  See the WARN on pfn_changed in __handle_changed_spte().
-+	 */
-+	return kvm_tdp_mmu_handle_gfn(kvm, range, set_spte_gfn);
+@@ -29,13 +29,16 @@ bool kvm_mmu_init_tdp_mmu(struct kvm *kvm)
+ 	return true;
  }
  
- /*
+-static __always_inline void kvm_lockdep_assert_mmu_lock_held(struct kvm *kvm,
++/* Arbitrarily returns true so that this may be used in if statements. */
++static __always_inline bool kvm_lockdep_assert_mmu_lock_held(struct kvm *kvm,
+ 							     bool shared)
+ {
+ 	if (shared)
+ 		lockdep_assert_held_read(&kvm->mmu_lock);
+ 	else
+ 		lockdep_assert_held_write(&kvm->mmu_lock);
++
++	return true;
+ }
+ 
+ void kvm_mmu_uninit_tdp_mmu(struct kvm *kvm)
+@@ -187,11 +190,17 @@ static struct kvm_mmu_page *tdp_mmu_next_root(struct kvm *kvm,
+ #define for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared)		\
+ 	__for_each_tdp_mmu_root_yield_safe(_kvm, _root, _as_id, _shared, ALL_ROOTS)
+ 
+-#define for_each_tdp_mmu_root(_kvm, _root, _as_id)				\
+-	list_for_each_entry_rcu(_root, &_kvm->arch.tdp_mmu_roots, link,		\
+-				lockdep_is_held_type(&kvm->mmu_lock, 0) ||	\
+-				lockdep_is_held(&kvm->arch.tdp_mmu_pages_lock))	\
+-		if (kvm_mmu_page_as_id(_root) != _as_id) {		\
++/*
++ * Iterate over all TDP MMU roots.  Requires that mmu_lock be held for write,
++ * the implication being that any flow that holds mmu_lock for read is
++ * inherently yield-friendly and should use the yielf-safe variant above.
++ * Holding mmu_lock for write obviates the need for RCU protection as the list
++ * is guaranteed to be stable.
++ */
++#define for_each_tdp_mmu_root(_kvm, _root, _as_id)			\
++	list_for_each_entry(_root, &_kvm->arch.tdp_mmu_roots, link)	\
++		if (kvm_lockdep_assert_mmu_lock_held(_kvm, false) &&	\
++		    kvm_mmu_page_as_id(_root) != _as_id) {		\
+ 		} else
+ 
+ static struct kvm_mmu_page *tdp_mmu_alloc_sp(struct kvm_vcpu *vcpu)
 -- 
 2.35.1.574.g5d30c73bfb-goog
 
