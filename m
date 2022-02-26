@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A11C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E041BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 00:19:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239046AbiBZATI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 25 Feb 2022 19:19:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
+        id S240373AbiBZATy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 25 Feb 2022 19:19:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241262AbiBZARw (ORCPT
+        with ESMTP id S240652AbiBZARs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 25 Feb 2022 19:17:52 -0500
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC68022D672
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:47 -0800 (PST)
-Received: by mail-pj1-x1049.google.com with SMTP id t7-20020a17090a3b4700b001bc366c58faso6469966pjf.4
-        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:47 -0800 (PST)
+        Fri, 25 Feb 2022 19:17:48 -0500
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933FE22BE92
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:42 -0800 (PST)
+Received: by mail-pl1-x64a.google.com with SMTP id e13-20020a17090301cd00b00150145346f9so3345070plh.23
+        for <linux-kernel@vger.kernel.org>; Fri, 25 Feb 2022 16:16:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=MilK8zUZX7tWJl2GgjJY8oNeKvoyoiy4aBCti+o2Dno=;
-        b=azOeWuW+lWy8w8HIL49LW9KhszQbW+YNWD8IHPgIc79FX9F9n3TXODYKi2HAmjESdo
-         HOXPis4YQybgWPgSa31snGdX4dlIAVkB9Yva2qwEEiqK/z6DI1r5iw8PVKGyV8sZFp26
-         NKY9hJKEKL7NHbwOIm4FOe+6io3nDecTa17lwWjUGSyRR08BEvTKr9V1c2u071oaOFZD
-         bC+F2p0SAaU18Xfrju7A1ThpQzKfyc7V0pHszBilaXsXz+TjfNJ1ZPCi7/KX24B4qLX4
-         v6o/Zqfmx6jE5Ve7LSoUfC4V2CUgRoY05MqIfyWwuNZzJn1fAx39O7gmmUpXmE+sUR+h
-         8GNA==
+        bh=MtFjInkw6IfHM8qigYcwgTznLrkAOMo13iKHQwnE+RY=;
+        b=UHd0RZGwQM9tLWquYv40cKi4O+zpI8kl9GYujD7+NRNRf/rOM3orWVXz6hbm9DPwqn
+         G2yVyOwRj8r0I91Balg/eUXT4Vssf1yySR+LnqtVeDfsOK0TqyPJCjVD1j7UZIrzS+H2
+         XgafyuCMW1zFpaDC/BuznK+9/sIINwetRnZ6GDAARzpqzz1Wmev0MYlL/J7X1SGHQ9gq
+         fWeUYpGUxw7peSaIWNxspqeegQQGcW/VpMyL37FCggG6jWhj013Elqk9ugfloYEND583
+         mFH+M+fy7wvJNgIP3EYqRpLSf3NGs7L6UDxtkyGjqKhdHEu0xqBoQqN6c8SmQU0sBMaR
+         s6Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=MilK8zUZX7tWJl2GgjJY8oNeKvoyoiy4aBCti+o2Dno=;
-        b=Xvies2fbQp5tAR+H8oUIg4sXGLwgcGYws7FWmu6b2+HhbnfQQa2JJ+ZQqdwidvzeTR
-         g+/FhQwBs51docH/G99/SbOq0iSgW8HFMd0y3yQEiOB0AZDGqdrVCLx5MIb5/dj+Cbv6
-         NayV7b5sdzOLgx25MCvqSYjbazuoZp63/+OtSBKcAJMGUnUXUIBdzqLr8JLUubtm9zL4
-         rQ6y2BGX9SwBwOkHiSzMSy0lvjitZisQUGbQ1pz6Rpqk1YhObx8LUt6sqXxR34uNVXlR
-         zYezMGjVMibdIeqAX9Srngi10uGd3kLFNEDG7S5/E3PH787Dcqj0nzowPw49XZ1FKqkh
-         f5sA==
-X-Gm-Message-State: AOAM53078Mh/BijqyLL5S3Ie0PoR1lrnjASibyMa91FROMhRzGsH8QHB
-        NDKIlhJNFowIT8xubzPl35fipeFsVDI=
-X-Google-Smtp-Source: ABdhPJwQC0seS+f5AjDyQB4suBW4N+vPljL91EEY6uoAI/tRdabfBdxDkAHZXw+1PFBpgG1HwP5YTKG451I=
+        bh=MtFjInkw6IfHM8qigYcwgTznLrkAOMo13iKHQwnE+RY=;
+        b=Ve7AoIzs0gJ/965QdoKIg3UG9/O+kHxZy5DjwNpcAHMizMXCvDRhIlKIZZTM0I8kNO
+         ZUK/w3ImwdJxiBJfO/kGPQmtugL5y7w0t8tkeseybmC+6j/JWmlrVfgDyccLw5yV5wUe
+         bXkJMolROTwRcSnxBuH+iHCg+mE9Z6cLVMHmK9q75G8B0rZik4FJ2tLGu2uUQ3HDmClc
+         D8XzpykKLxaPyK5uf0zWgeNGbRW4ejcpIupTmvhRHCHo4+lD1e4RzaDd97v48oa6yLUR
+         OXOO2lK/UlKfqFFBR1fP0VpoKLOOVVW5vKG9STe9ZZfXxPR6wsGxNdZwS+dCIUh6GvMh
+         WmcQ==
+X-Gm-Message-State: AOAM5334jiTSozfFt8gIPQ3EmUHrf+BaWsWR+l0jJJBt90QbfVUye8mb
+        kOVYaS3SYQbHqbb8SAZJWyp39XGP89I=
+X-Google-Smtp-Source: ABdhPJyBaElSz5P3eL5Msmfyo8Q6hiVLJEgTjKZw7rh4UamsOV8nO7GCL/BZGus/ptWCadyPC/4cDm/RtOs=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a65:5bcc:0:b0:378:4b73:4fe9 with SMTP id
- o12-20020a655bcc000000b003784b734fe9mr2939194pgr.533.1645834598449; Fri, 25
- Feb 2022 16:16:38 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:244f:b0:4df:82ad:447 with SMTP id
+ d15-20020a056a00244f00b004df82ad0447mr10149467pfj.49.1645834595122; Fri, 25
+ Feb 2022 16:16:35 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 26 Feb 2022 00:15:40 +0000
+Date:   Sat, 26 Feb 2022 00:15:38 +0000
 In-Reply-To: <20220226001546.360188-1-seanjc@google.com>
-Message-Id: <20220226001546.360188-23-seanjc@google.com>
+Message-Id: <20220226001546.360188-21-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220226001546.360188-1-seanjc@google.com>
 X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
-Subject: [PATCH v3 22/28] KVM: x86/mmu: Zap defunct roots via asynchronous worker
+Subject: [PATCH v3 20/28] KVM: x86/mmu: Allow yielding when zapping GFNs for
+ defunct TDP MMU root
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>,
         Christian Borntraeger <borntraeger@linux.ibm.com>,
@@ -73,137 +74,234 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Zap defunct roots, a.k.a. roots that have been invalidated after their
-last reference was initially dropped, asynchronously via the system work
-queue instead of forcing the work upon the unfortunate task that happened
-to drop the last reference.
+Allow yielding when zapping SPTEs after the last reference to a valid
+root is put.  Because KVM must drop all SPTEs in response to relevant
+mmu_notifier events, mark defunct roots invalid and reset their refcount
+prior to zapping the root.  Keeping the refcount elevated while the zap
+is in-progress ensures the root is reachable via mmu_notifier until the
+zap completes and the last reference to the invalid, defunct root is put.
 
-If a vCPU task drops the last reference, the vCPU is effectively blocked
-by the host for the entire duration of the zap.  If the root being zapped
-happens be fully populated with 4kb leaf SPTEs, e.g. due to dirty logging
-being active, the zap can take several hundred seconds.  Unsurprisingly,
-most guests are unhappy if a vCPU disappears for hundreds of seconds.
+Allowing kvm_tdp_mmu_put_root() to yield fixes soft lockup issues if the
+root in being put has a massive paging structure, e.g. zapping a root
+that is backed entirely by 4kb pages for a guest with 32tb of memory can
+take hundreds of seconds to complete.
 
-E.g. running a synthetic selftest that triggers a vCPU root zap with
-~64tb of guest memory and 4kb SPTEs blocks the vCPU for 900+ seconds.
-Offloading the zap to a worker drops the block time to <100ms.
+  watchdog: BUG: soft lockup - CPU#49 stuck for 485s! [max_guest_memor:52368]
+  RIP: 0010:kvm_set_pfn_dirty+0x30/0x50 [kvm]
+   __handle_changed_spte+0x1b2/0x2f0 [kvm]
+   handle_removed_tdp_mmu_page+0x1a7/0x2b8 [kvm]
+   __handle_changed_spte+0x1f4/0x2f0 [kvm]
+   handle_removed_tdp_mmu_page+0x1a7/0x2b8 [kvm]
+   __handle_changed_spte+0x1f4/0x2f0 [kvm]
+   tdp_mmu_zap_root+0x307/0x4d0 [kvm]
+   kvm_tdp_mmu_put_root+0x7c/0xc0 [kvm]
+   kvm_mmu_free_roots+0x22d/0x350 [kvm]
+   kvm_mmu_reset_context+0x20/0x60 [kvm]
+   kvm_arch_vcpu_ioctl_set_sregs+0x5a/0xc0 [kvm]
+   kvm_vcpu_ioctl+0x5bd/0x710 [kvm]
+   __se_sys_ioctl+0x77/0xc0
+   __x64_sys_ioctl+0x1d/0x20
+   do_syscall_64+0x44/0xa0
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+KVM currently doesn't put a root from a non-preemptible context, so other
+than the mmu_notifier wrinkle, yielding when putting a root is safe.
+
+Yield-unfriendly iteration uses for_each_tdp_mmu_root(), which doesn't
+take a reference to each root (it requires mmu_lock be held for the
+entire duration of the walk).
+
+tdp_mmu_next_root() is used only by the yield-friendly iterator.
+
+kvm_tdp_mmu_zap_invalidated_roots() is explicitly yield friendly.
+
+kvm_mmu_free_roots() => mmu_free_root_page() is a much bigger fan-out,
+but is still yield-friendly in all call sites, as all callers can be
+traced back to some combination of vcpu_run(), kvm_destroy_vm(), and/or
+kvm_create_vm().
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/mmu/mmu_internal.h |  8 +++-
- arch/x86/kvm/mmu/tdp_mmu.c      | 65 ++++++++++++++++++++++++++++-----
- 2 files changed, 63 insertions(+), 10 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c | 122 ++++++++++++++++++++++++-------------
+ 1 file changed, 81 insertions(+), 41 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu/mmu_internal.h b/arch/x86/kvm/mmu/mmu_internal.h
-index be063b6c91b7..1bff453f7cbe 100644
---- a/arch/x86/kvm/mmu/mmu_internal.h
-+++ b/arch/x86/kvm/mmu/mmu_internal.h
-@@ -65,7 +65,13 @@ struct kvm_mmu_page {
- 		struct kvm_rmap_head parent_ptes; /* rmap pointers to parent sptes */
- 		tdp_ptep_t ptep;
- 	};
--	DECLARE_BITMAP(unsync_child_bitmap, 512);
-+	union {
-+		DECLARE_BITMAP(unsync_child_bitmap, 512);
-+		struct {
-+			struct work_struct tdp_mmu_async_work;
-+			void *tdp_mmu_async_data;
-+		};
-+	};
- 
- 	struct list_head lpage_disallowed_link;
- #ifdef CONFIG_X86_32
 diff --git a/arch/x86/kvm/mmu/tdp_mmu.c b/arch/x86/kvm/mmu/tdp_mmu.c
-index ec28a88c6376..4151e61245a7 100644
+index 3031b42c27a6..b838cfa984ad 100644
 --- a/arch/x86/kvm/mmu/tdp_mmu.c
 +++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -81,6 +81,38 @@ static void tdp_mmu_free_sp_rcu_callback(struct rcu_head *head)
- static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
- 			     bool shared);
+@@ -91,21 +91,66 @@ void kvm_tdp_mmu_put_root(struct kvm *kvm, struct kvm_mmu_page *root,
  
-+static void tdp_mmu_zap_root_async(struct work_struct *work)
-+{
-+	struct kvm_mmu_page *root = container_of(work, struct kvm_mmu_page,
-+						 tdp_mmu_async_work);
-+	struct kvm *kvm = root->tdp_mmu_async_data;
-+
-+	read_lock(&kvm->mmu_lock);
+ 	WARN_ON(!root->tdp_mmu_page);
+ 
+-	spin_lock(&kvm->arch.tdp_mmu_pages_lock);
+-	list_del_rcu(&root->link);
+-	spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
++	/*
++	 * Ensure root->role.invalid is read after the refcount reaches zero to
++	 * avoid zapping the root multiple times, e.g. if a different task
++	 * acquires a reference (after the root was marked invalid) and puts
++	 * the last reference, all while holding mmu_lock for read.  Pairs
++	 * with the smp_mb__before_atomic() below.
++	 */
++	smp_mb__after_atomic();
 +
 +	/*
-+	 * A TLB flush is not necessary as KVM performs a local TLB flush when
-+	 * allocating a new root (see kvm_mmu_load()), and when migrating vCPU
-+	 * to a different pCPU.  Note, the local TLB flush on reuse also
-+	 * invalidates any paging-structure-cache entries, i.e. TLB entries for
-+	 * intermediate paging structures, that may be zapped, as such entries
-+	 * are associated with the ASID on both VMX and SVM.
++	 * Free the root if it's already invalid.  Invalid roots must be zapped
++	 * before their last reference is put, i.e. there's no work to be done,
++	 * and all roots must be invalidated (see below) before they're freed.
++	 * Re-zapping invalid roots would put KVM into an infinite loop (again,
++	 * see below).
 +	 */
-+	tdp_mmu_zap_root(kvm, root, true);
++	if (root->role.invalid) {
++		spin_lock(&kvm->arch.tdp_mmu_pages_lock);
++		list_del_rcu(&root->link);
++		spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
++
++		call_rcu(&root->rcu_head, tdp_mmu_free_sp_rcu_callback);
++		return;
++	}
 +
 +	/*
-+	 * Drop the refcount using kvm_tdp_mmu_put_root() to test its logic for
-+	 * avoiding an infinite loop.  By design, the root is reachable while
-+	 * it's being asynchronously zapped, thus a different task can put its
-+	 * last reference, i.e. flowing through kvm_tdp_mmu_put_root() for an
-+	 * asynchronously zapped root is unavoidable.
++	 * Invalidate the root to prevent it from being reused by a vCPU, and
++	 * so that KVM doesn't re-zap the root when its last reference is put
++	 * again (see above).
 +	 */
-+	kvm_tdp_mmu_put_root(kvm, root, true);
++	root->role.invalid = true;
 +
-+	read_unlock(&kvm->mmu_lock);
++	/*
++	 * Ensure role.invalid is visible if a concurrent reader acquires a
++	 * reference after the root's refcount is reset.  Pairs with the
++	 * smp_mb__after_atomic() above.
++	 */
++	smp_mb__before_atomic();
 +
-+	kvm_put_kvm(kvm);
-+}
-+
- void kvm_tdp_mmu_put_root(struct kvm *kvm, struct kvm_mmu_page *root,
- 			  bool shared)
- {
-@@ -142,15 +174,26 @@ void kvm_tdp_mmu_put_root(struct kvm *kvm, struct kvm_mmu_page *root,
- 	refcount_set(&root->tdp_mmu_root_count, 1);
++	/*
++	 * Note, if mmu_lock is held for read this can race with other readers,
++	 * e.g. they may acquire a reference without seeing the root as invalid,
++	 * and the refcount may be reset after the root is skipped.  Both races
++	 * are benign, as flows that must visit all roots, e.g. need to zap
++	 * SPTEs for correctness, must take mmu_lock for write to block page
++	 * faults, and the only flow that must not consume an invalid root is
++	 * allocating a new root for a vCPU, which also takes mmu_lock for write.
++	 */
++	refcount_set(&root->tdp_mmu_root_count, 1);
  
  	/*
--	 * Zap the root, then put the refcount "acquired" above.   Recursively
--	 * call kvm_tdp_mmu_put_root() to test the above logic for avoiding an
--	 * infinite loop by freeing invalid roots.  By design, the root is
--	 * reachable while it's being zapped, thus a different task can put its
--	 * last reference, i.e. flowing through kvm_tdp_mmu_put_root() for a
--	 * defunct root is unavoidable.
-+	 * Attempt to acquire a reference to KVM itself.  If KVM is alive, then
-+	 * zap the root asynchronously in a worker, otherwise it must be zapped
-+	 * directly here.  Wait to do this check until after the refcount is
-+	 * reset so that tdp_mmu_zap_root() can safely yield.
-+	 *
-+	 * In both flows, zap the root, then put the refcount "acquired" above.
-+	 * When putting the reference, use kvm_tdp_mmu_put_root() to test the
-+	 * above logic for avoiding an infinite loop by freeing invalid roots.
-+	 * By design, the root is reachable while it's being zapped, thus a
-+	 * different task can put its last reference, i.e. flowing through
-+	 * kvm_tdp_mmu_put_root() for a defunct root is unavoidable.
+-	 * A TLB flush is not necessary as KVM performs a local TLB flush when
+-	 * allocating a new root (see kvm_mmu_load()), and when migrating vCPU
+-	 * to a different pCPU.  Note, the local TLB flush on reuse also
+-	 * invalidates any paging-structure-cache entries, i.e. TLB entries for
+-	 * intermediate paging structures, that may be zapped, as such entries
+-	 * are associated with the ASID on both VMX and SVM.
++	 * Zap the root, then put the refcount "acquired" above.   Recursively
++	 * call kvm_tdp_mmu_put_root() to test the above logic for avoiding an
++	 * infinite loop by freeing invalid roots.  By design, the root is
++	 * reachable while it's being zapped, thus a different task can put its
++	 * last reference, i.e. flowing through kvm_tdp_mmu_put_root() for a
++	 * defunct root is unavoidable.
  	 */
--	tdp_mmu_zap_root(kvm, root, shared);
--	kvm_tdp_mmu_put_root(kvm, root, shared);
-+	if (kvm_get_kvm_safe(kvm)) {
-+		root->tdp_mmu_async_data = kvm;
-+		INIT_WORK(&root->tdp_mmu_async_work, tdp_mmu_zap_root_async);
-+		schedule_work(&root->tdp_mmu_async_work);
-+	} else {
-+		tdp_mmu_zap_root(kvm, root, shared);
-+		kvm_tdp_mmu_put_root(kvm, root, shared);
-+	}
+ 	tdp_mmu_zap_root(kvm, root, shared);
+-
+-	call_rcu(&root->rcu_head, tdp_mmu_free_sp_rcu_callback);
++	kvm_tdp_mmu_put_root(kvm, root, shared);
  }
  
  enum tdp_mmu_roots_iter_type {
-@@ -954,7 +997,11 @@ void kvm_tdp_mmu_zap_all(struct kvm *kvm)
+@@ -760,12 +805,23 @@ static inline gfn_t tdp_mmu_max_gfn_host(void)
+ static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
+ 			     bool shared)
+ {
+-	bool root_is_unreachable = !refcount_read(&root->tdp_mmu_root_count);
+ 	struct tdp_iter iter;
+ 
+ 	gfn_t end = tdp_mmu_max_gfn_host();
+ 	gfn_t start = 0;
+ 
++	/*
++	 * The root must have an elevated refcount so that it's reachable via
++	 * mmu_notifier callbacks, which allows this path to yield and drop
++	 * mmu_lock.  When handling an unmap/release mmu_notifier command, KVM
++	 * must drop all references to relevant pages prior to completing the
++	 * callback.  Dropping mmu_lock with an unreachable root would result
++	 * in zapping SPTEs after a relevant mmu_notifier callback completes
++	 * and lead to use-after-free as zapping a SPTE triggers "writeback" of
++	 * dirty accessed bits to the SPTE's associated struct page.
++	 */
++	WARN_ON_ONCE(!refcount_read(&root->tdp_mmu_root_count));
++
+ 	kvm_lockdep_assert_mmu_lock_held(kvm, shared);
+ 
+ 	rcu_read_lock();
+@@ -776,42 +832,16 @@ static void tdp_mmu_zap_root(struct kvm *kvm, struct kvm_mmu_page *root,
+ 	 */
+ 	for_each_tdp_pte_min_level(iter, root, root->role.level, start, end) {
+ retry:
+-		/*
+-		 * Yielding isn't allowed when zapping an unreachable root as
+-		 * the root won't be processed by mmu_notifier callbacks.  When
+-		 * handling an unmap/release mmu_notifier command, KVM must
+-		 * drop all references to relevant pages prior to completing
+-		 * the callback.  Dropping mmu_lock can result in zapping SPTEs
+-		 * for an unreachable root after a relevant callback completes,
+-		 * which leads to use-after-free as zapping a SPTE triggers
+-		 * "writeback" of dirty/accessed bits to the SPTE's associated
+-		 * struct page.
+-		 */
+-		if (!root_is_unreachable &&
+-		    tdp_mmu_iter_cond_resched(kvm, &iter, false, shared))
++		if (tdp_mmu_iter_cond_resched(kvm, &iter, false, shared))
+ 			continue;
+ 
+ 		if (!is_shadow_present_pte(iter.old_spte))
+ 			continue;
+ 
+-		if (!shared) {
++		if (!shared)
+ 			tdp_mmu_set_spte(kvm, &iter, 0);
+-		} else if (tdp_mmu_set_spte_atomic(kvm, &iter, 0)) {
+-			/*
+-			 * cmpxchg() shouldn't fail if the root is unreachable.
+-			 * Retry so as not to leak the page and its children.
+-			 */
+-			WARN_ONCE(root_is_unreachable,
+-				  "Contended TDP MMU SPTE in unreachable root.");
++		else if (tdp_mmu_set_spte_atomic(kvm, &iter, 0))
+ 			goto retry;
+-		}
+-
+-		/*
+-		 * WARN if the root is invalid and is unreachable, all SPTEs
+-		 * should've been zapped by kvm_tdp_mmu_zap_invalidated_roots(),
+-		 * and inserting new SPTEs under an invalid root is a KVM bug.
+-		 */
+-		WARN_ON_ONCE(root_is_unreachable && root->role.invalid);
+ 	}
+ 
+ 	rcu_read_unlock();
+@@ -906,6 +936,9 @@ void kvm_tdp_mmu_zap_all(struct kvm *kvm)
+ 	int i;
  
  	/*
- 	 * Zap all roots, including invalid roots, as all SPTEs must be dropped
--	 * before returning to the caller.
-+	 * before returning to the caller.  Zap directly even if the root is
-+	 * also being zapped by a worker.  Walking zapped top-level SPTEs isn't
-+	 * all that expensive and mmu_lock is already held, which means the
-+	 * worker has yielded, i.e. flushing the work instead of zapping here
-+	 * isn't guaranteed to be any faster.
- 	 *
++	 * Zap all roots, including invalid roots, as all SPTEs must be dropped
++	 * before returning to the caller.
++	 *
  	 * A TLB flush is unnecessary, KVM zaps everything if and only the VM
  	 * is being destroyed or the userspace VMM has exited.  In both cases,
+ 	 * KVM_RUN is unreachable, i.e. no vCPUs will ever service the request.
+@@ -931,6 +964,13 @@ void kvm_tdp_mmu_zap_invalidated_roots(struct kvm *kvm)
+ 
+ 	for_each_invalid_tdp_mmu_root_yield_safe(kvm, root) {
+ 		/*
++		 * Zap the root regardless of what marked it invalid, e.g. even
++		 * if the root was marked invalid by kvm_tdp_mmu_put_root() due
++		 * to its last reference being put.  All SPTEs must be dropped
++		 * before returning to the caller, e.g. if a memslot is deleted
++		 * or moved, the memslot's associated SPTEs are unreachable via
++		 * the mmu_notifier once the memslot update completes.
++		 *
+ 		 * A TLB flush is unnecessary, invalidated roots are guaranteed
+ 		 * to be unreachable by the guest (see kvm_tdp_mmu_put_root()
+ 		 * for more details), and unlike the legacy MMU, no vCPU kick
 -- 
 2.35.1.574.g5d30c73bfb-goog
 
