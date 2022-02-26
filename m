@@ -2,149 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE58C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 12:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE377C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 12:49:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231707AbiBZMtU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 07:49:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45652 "EHLO
+        id S231710AbiBZMtr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 07:49:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230311AbiBZMtN (ORCPT
+        with ESMTP id S231136AbiBZMto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 07:49:13 -0500
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0BAB21E5012;
-        Sat, 26 Feb 2022 04:48:38 -0800 (PST)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21QCgprv028224;
-        Sat, 26 Feb 2022 06:42:51 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21QCgnST028222;
-        Sat, 26 Feb 2022 06:42:49 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Sat, 26 Feb 2022 06:42:49 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Jakob <jakobkoschel@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator after the loop
-Message-ID: <20220226124249.GU614@gate.crashing.org>
-References: <20220217184829.1991035-1-jakobkoschel@gmail.com> <20220217184829.1991035-4-jakobkoschel@gmail.com> <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com> <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com> <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+        Sat, 26 Feb 2022 07:49:44 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D981EC9B5
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 04:49:10 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id p9so8311527wra.12
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 04:49:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HKu7Nq9ada9Q0GKmhF6FBkxxAo4IU+EPX6BvNCYFox8=;
+        b=6x5jrcANK5bD433NpXdRCtV2c9jgfqOJGU64yg75fTDWaDeT/J8OqFELBHUX9vT1Se
+         oK42PtAp4iyPsW1+RThNiQceWnDxFQocHUI1YQNNpacxdjF0NeFt7XnYroEuh7qhCYKL
+         XA7xgflUsxVRJdDBtLzeDqiOnTf/JiY+lkAwam377yZwG9iFHu7hNyXIHWvdNBU4VAsU
+         iEmgA3dKOh7X7T6iMGC/wkno8gU5rOnUK+ay+Cthnj8xrqr5tbwQF+drdgMdj5aWqLRm
+         LPWx8+QuuDiXMBSSkBEcmKsWsWcKXr42pXfjS0E96N1QdZ2DGd6Ws75zyf7h4EXCySEx
+         gcrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HKu7Nq9ada9Q0GKmhF6FBkxxAo4IU+EPX6BvNCYFox8=;
+        b=ZMFeQ5KOsFwtbY72EENhYhAF5oPSaqu9NiGhFpIrUU8Yd+HxzqD0ll7SEt/VdY+6Lj
+         bFO+Y4B5LWSif/pAcVDTQHx9aY63AOzVSAjDqGcah2hrBIvpWQd+SX9ude+aNYGJwnfm
+         WZAfzdBiO7dKn9SjTD45xm2zFD/Ng9HKKo+egaSpBr8gr+XIXAzL/S1YfI9lN7sTYp41
+         5jRZ7B1QUsugt68ObRholMEcHi0OHHF8l0fO3J5S9qdoS3Do+xMl6RZtBRndZk5P6pVg
+         p/stgwRPHOgHeKcYqBduHci5ZdU6bENK/AdIlM3jQCMe0rpo1uJJ/CUt9023Z0k/3FWC
+         dhGw==
+X-Gm-Message-State: AOAM531xvU3fwfPxjSxhg/OG+LtIbg83X6/JaYTtBsMF0g9QF22m7n26
+        r7EyKJlrXcNwniQaFnMDRV5GAw7VYYceNTqCjlW+Xw==
+X-Google-Smtp-Source: ABdhPJxM8vLs9v8y3p3R9aQurSHHEe5oH3GDF05PcnuiNTk/vV5hbRaFoSBOSeClmdHZ3ck3kCKnoA==
+X-Received: by 2002:adf:9f0f:0:b0:1ed:c016:dfe5 with SMTP id l15-20020adf9f0f000000b001edc016dfe5mr9200390wrf.675.1645879748687;
+        Sat, 26 Feb 2022 04:49:08 -0800 (PST)
+Received: from spud.. ([109.76.226.172])
+        by smtp.gmail.com with ESMTPSA id p4-20020a1c7404000000b0038140136ff6sm5027696wmc.5.2022.02.26.04.49.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Feb 2022 04:49:08 -0800 (PST)
+From:   Conor Dooley <mail@conchuod.ie>
+To:     conor.dooley@microchip.com, nicolas.ferre@microchip.com
+Cc:     arnd@arndb.de, olof@lixom.net, linux-riscv@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>,
+        Conor Dooley <mail@conchuod.ie>
+Subject: [PATCH] soc: microchip: make mpfs_sys_controller_put static
+Date:   Sat, 26 Feb 2022 12:48:27 +0000
+Message-Id: <20220226124826.1564871-1-mail@conchuod.ie>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 11:23:39AM -0800, Linus Torvalds wrote:
-> On Wed, Feb 23, 2022 at 10:47 AM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> >
-> > Arnd - remind me, please.. Was there some other problem than just gcc-4.9?
-> 
-> Hmm. Interesting. I decided to just try it and see for the compiler I
-> have, and changing the gnu89 to gnu99 I get new warnings
-> (-Werror=shift-negative-value).
-> 
-> Very annoying.  Especially since negative values are in many contexts
-> actually *safer* than positive ones when used as a mask, because as
-> long as the top bit is set in 'int', if the end result is then
-> expanded to some wider type, the top bit stays set.
-> 
-> Example:
-> 
->   unsigned long mask(unsigned long x)
->   { return x & (~0 << 5); }
-> 
->   unsigned long badmask(unsigned long x)
->   { return x & (~0u << 5); }
-> 
-> One does it properly, the other is buggy.
+From: Conor Dooley <conor.dooley@microchip.com>
 
-You won't get this confusion if you write -1 instead.  Not that that
-helps your problem here.
+dsafsdfd0054 ("soc: add microchip polarfire soc system controller")
+incorrectly exported mpfs_sys_controller_put. Remove the export and make
+the function static instead. This fixes the "no previous prototype
+for 'mpfs_sys_controller_put'" warning spotted by the kernel test robot.
 
-The GCC documentation says (at
-<https://gcc.gnu.org/onlinedocs/gcc/Integers-implementation.html>):
+Fixes: dsafsdfd0054 ("soc: add microchip polarfire soc system
+controller")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Conor Dooley <mail@conchuod.ie>
+---
+ drivers/soc/microchip/mpfs-sys-controller.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-  - The results of some bitwise operations on signed integers (C90 6.3,
-    C99 and C11 6.5).
+diff --git a/drivers/soc/microchip/mpfs-sys-controller.c b/drivers/soc/microchip/mpfs-sys-controller.c
+index 2f4535929762..31f3f29fc1ae 100644
+--- a/drivers/soc/microchip/mpfs-sys-controller.c
++++ b/drivers/soc/microchip/mpfs-sys-controller.c
+@@ -73,13 +73,12 @@ static void mpfs_sys_controller_delete(struct kref *kref)
+ 	kfree(sys_controller);
+ }
+ 
+-void mpfs_sys_controller_put(void *data)
++static void mpfs_sys_controller_put(void *data)
+ {
+ 	struct mpfs_sys_controller *sys_controller = data;
+ 
+ 	kref_put(&sys_controller->consumers, mpfs_sys_controller_delete);
+ }
+-EXPORT_SYMBOL(mpfs_sys_controller_put);
+ 
+ static struct platform_device subdevs[] = {
+ 	{
+-- 
+2.32.0
 
-    Bitwise operators act on the representation of the value including
-    both the sign and value bits, where the sign bit is considered
-    immediately above the highest-value value bit. Signed ‘>>’ acts on
-    negative numbers by sign extension.
-
-    As an extension to the C language, GCC does not use the latitude
-    given in C99 and C11 only to treat certain aspects of signed ‘<<’ as
-    undefined. However, -fsanitize=shift (and -fsanitize=undefined) will
-    diagnose such cases. They are also diagnosed where constant
-    expressions are required.
-
-But in fact they are diagnosed more often:
-===
-unsigned int n;
-int f0(int x) { return x & (~0 << 5); }
-int f1(int x) { return x & (-1 << 5); }
-int f2(int x) { return x & (~0 << n); }
-int f3(int x) { return x & (-1 << n); }
-===
-gets a warning on every line:
-===
-shifty.c: In function 'f0':
-shifty.c:2:32: warning: left shift of negative value [-Wshift-negative-value]
-    2 | int f0(int x) { return x & (~0 << 5); }
-      |                                ^~
-shifty.c: In function 'f1':
-shifty.c:3:32: warning: left shift of negative value [-Wshift-negative-value]
-    3 | int f1(int x) { return x & (-1 << 5); }
-      |                                ^~
-shifty.c: In function 'f2':
-shifty.c:4:32: warning: left shift of negative value [-Wshift-negative-value]
-    4 | int f2(int x) { return x & (~0 << n); }
-      |                                ^~
-shifty.c: In function 'f3':
-shifty.c:5:32: warning: left shift of negative value [-Wshift-negative-value]
-    5 | int f3(int x) { return x & (-1 << n); }
-      |                                ^~
-===
-(with -O2 -Wall -W, nothing more).  No constant expression is required
-in any of those cases, and in f2 and f3 the shift is not a constant
-expression even.
-
-> So this Werror=shift-negative-value warning seems to be actively
-> detrimental, and I'm not seeing the reason for it. Can somebody
-> explain the thinking for that stupid warning?
-
--Werror=*anything* is detrimental, *always*.  Warnings are warnings
-and errors are errors.  Warnings have false positives: if not, they
-should be errors instead!
-
-> That said, we seem to only have two cases of it in the kernel, at
-> least by a x86-64 allmodconfig build. So we could examine the types
-> there, or we could just add '-Wno-shift-negative-value".
-
-Yes.
-
-The only reason the warning exists is because it is undefined behaviour
-(not implementation-defined or anything).  The reason it is that in the
-standard is that it is hard to implement and even describe for machines
-that are not two's complement.  However relevant that is today :-)
-
-
-Segher
