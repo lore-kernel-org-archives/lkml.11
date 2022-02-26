@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 320B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 17:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFECEC4321E
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 17:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232411AbiBZRNa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 12:13:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42554 "EHLO
+        id S232431AbiBZRN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 12:13:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiBZRN2 (ORCPT
+        with ESMTP id S232415AbiBZRNw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 12:13:28 -0500
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BEFBD7CC;
-        Sat, 26 Feb 2022 09:12:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1645895556;
+        Sat, 26 Feb 2022 12:13:52 -0500
+Received: from mo4-p03-ob.smtp.rzone.de (mo4-p03-ob.smtp.rzone.de [85.215.255.102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3AEE106C91;
+        Sat, 26 Feb 2022 09:13:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1645895585;
     s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=rAYy4Z35sSvRmW3KU/N66fatHaFpRvigK4dz2yH4zPQ=;
-    b=RqqY8R83HtnL0jTR22tpkHKb0et4BaXXkFDbAnYqGNqqnpFOX9QewquRUQJaZa3rSW
-    BG/4dxSRpQFuQuMZ2+VUJ+bCkZRBHbDVopudOmBGnxDS/WZhnCKgqDUy6dEuYESKatQb
-    CUUThk3ThvCcrps0vfp4qr5HIamaMGW9KyP5wxhRsu3+kT85dNTBcFv0Cs4dmD/07ISv
-    7MS7g/W6qrEhi1nHziGAHNhVLGpxroWY4BT9OMlXNiPgQyuo5N3F2PfAqZXevz4upvoI
-    jhBSkOG7tCzQmA7a3dD7JjXmof7qoARDyYeVmz1CW+w/t0FstTI69LCo1X08z2VYjWP6
-    6wTg==
+    bh=i8pTmnLmwlb11chyD0dSM2jAOpH2BALjlZjdfMA39JQ=;
+    b=B6v6ihOk/9KDlEIMLQ3sGfeLNWDkgzXpBaLFw9o30/Lq2yLulEEykANLH4DLyhJ6LL
+    73fZMby+nqN6dvgGeGuM0qZJMcTQ5WpQ4MEk55JV50jpsJC6n+MoEnDOIsjVZA3pleHY
+    1phexMxXcHm7bXoX8U7WfTsMYxsFp+6IOkAwtKpo+KdxZtqE2apbMF+ahpVcfSTdUKrm
+    p60xO/Y37ULd0UTLQ18Kw81SqOulTOhNCNNPUrJb2g5x4FJCVya/bvZhQRzLbWMu0dW9
+    Q+GSJDmSVpiF27cleVVm7bLLwUTSIpYs9XultGrs/B4MUag/q4y61ENaXhjcb/IYQHWb
+    1O6g==
 Authentication-Results: strato.com;
     dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj4Qpw9iZeHWElw43sTrQ="
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o12DNOsPj0lByOdcK1D0"
 X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
+Received: from iMac.fritz.box
     by smtp.strato.de (RZmta 47.40.1 SBL|AUTH)
-    with ESMTPSA id V41e6fy1QHCYE1v
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
+    with ESMTPSA id V41e6fy1QHD4E1z
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Sat, 26 Feb 2022 18:12:34 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [PATCH v15 4/7] drm/bridge: dw-hdmi: repair interworking with
- hdmi-connector for jz4780
+    Sat, 26 Feb 2022 18:13:04 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <9c6f5c0b-5879-736f-344f-dfa12a0d7937@baylibre.com>
-Date:   Sat, 26 Feb 2022 18:12:34 +0100
-Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+To:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Robert Foss <robert.foss@linaro.org>,
         Paul Boddie <paul@boddie.org.uk>,
         Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
@@ -53,90 +47,82 @@ Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         Paul Cercueil <paul@crapouillou.net>,
         Maxime Ripard <maxime@cerno.tech>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        letux-kernel@openphoenux.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Jonas Karlman <jonas@kwiboo.se>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <3F01AD9B-EA49-4A34-A421-43E9E6268311@goldelico.com>
-References: <cover.1644681054.git.hns@goldelico.com>
- <d4d08582c49ec089095dd0ede4cdf2752f9d1eb8.1644681054.git.hns@goldelico.com>
- <9c6f5c0b-5879-736f-344f-dfa12a0d7937@baylibre.com>
-To:     Neil Armstrong <narmstrong@baylibre.com>
-X-Mailer: Apple Mail (2.3445.104.21)
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Cc:     Jonas Karlman <jonas@kwiboo.se>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-mips@vger.kernel.org,
+        letux-kernel@openphoenux.org
+Subject: [PATCH v16 3/4] drm/bridge: display-connector: add ddc-en gpio support
+Date:   Sat, 26 Feb 2022 18:13:01 +0100
+Message-Id: <31045a729978327615a50d4d17b47e6034095192.1645895582.git.hns@goldelico.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <cover.1645895582.git.hns@goldelico.com>
+References: <cover.1645895582.git.hns@goldelico.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Neil,
+"hdmi-connector.yaml" bindings defines an optional property
+"ddc-en-gpios" for a single gpio to enable DDC operation.
 
-> Am 21.02.2022 um 09:11 schrieb Neil Armstrong =
-<narmstrong@baylibre.com>:
->=20
-> Hi,
->=20
-> On 12/02/2022 16:50, H. Nikolaus Schaller wrote:
->> Commit 7cd70656d1285b ("drm/bridge: display-connector: implement bus =
-fmts callbacks")
->> introduced a new mechanism to negotiate bus formats between hdmi =
-connector
->> and the synopsys hdmi driver inside the jz4780.
->> By this, the dw-hdmi is no longer the only bridge and sets up a list
->> of formats in dw_hdmi_bridge_atomic_get_output_bus_fmts().
->> This includes MEDIA_BUS_FMT_UYVY8_1X16 which is chosen for the jz4780 =
-but only
->> produces a black screen.
->> This fix is based on the observation that max_bpc =3D 0 when running =
-this
->> function while info->bpc =3D 8. Since the formats checks before this =
-always test
->> for max_bpc >=3D info->pbc indirectly my assumption is that we must =
-check it
->> here as well.
->> Adding the proposed patch makes the CI20/jz4780 panel work again in
->> MEDIA_BUS_FMT_RGB888_1X24 mode.
->> Fixes: 7cd70656d1285b ("drm/bridge: display-connector: implement bus =
-fmts callbacks")
->> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
->> ---
->>  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c =
-b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
->> index b0d8110dd412c..826a055a7a273 100644
->> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
->> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
->> @@ -2620,10 +2620,10 @@ static u32 =
-*dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
->>  		output_fmts[i++] =3D MEDIA_BUS_FMT_RGB101010_1X30;
->>  	}
->>  -	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR422)
->> +	if (max_bpc >=3D info->bpc && info->color_formats & =
-DRM_COLOR_FORMAT_YCBCR422)
->>  		output_fmts[i++] =3D MEDIA_BUS_FMT_UYVY8_1X16;
->>  -	if (info->color_formats & DRM_COLOR_FORMAT_YCBCR444)
->> +	if (max_bpc >=3D info->bpc && info->color_formats & =
-DRM_COLOR_FORMAT_YCBCR444)
->>  		output_fmts[i++] =3D MEDIA_BUS_FMT_YUV8_1X24;
->>    	/* Default 8bit RGB fallback */
->=20
-> Please do the same for all other cases and change the patch subject to =
-something more accurate like:
-> "drm/bridge: dw-hdmi: take display info bpc in account for bus formats =
-negociation"
+Usually this controls +5V power on the HDMI connector.
+This +5V may also be needed for HPD.
 
-thank you very much for this analysis.
+This was not reflected in code.
 
-In fact my fix was also not correctly doing the right comparisons. The =
-rules should have the
-same structure as for all cases before, i.e. check for >=3D 8 and then =
-handle both color formats.
-I have fixed and tested on my CI20 board and updated the description and =
-Fixes: tags.
+Now, the driver activates the ddc gpio after probe and
+deactivates after remove so it is "almost on".
 
-v16 will come now (as part of the jz4780 hdmi series).
+But only if this driver is loaded (and not e.g. blacklisted
+as module).
 
-BR and thanks,
-Nikolaus
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+---
+ drivers/gpu/drm/bridge/display-connector.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/gpu/drm/bridge/display-connector.c b/drivers/gpu/drm/bridge/display-connector.c
+index d24f5b90feabf..e4d52a7e31b71 100644
+--- a/drivers/gpu/drm/bridge/display-connector.c
++++ b/drivers/gpu/drm/bridge/display-connector.c
+@@ -24,6 +24,7 @@ struct display_connector {
+ 	int			hpd_irq;
+ 
+ 	struct regulator	*dp_pwr;
++	struct gpio_desc	*ddc_en;
+ };
+ 
+ static inline struct display_connector *
+@@ -345,6 +346,17 @@ static int display_connector_probe(struct platform_device *pdev)
+ 		}
+ 	}
+ 
++	/* enable DDC */
++	if (type == DRM_MODE_CONNECTOR_HDMIA) {
++		conn->ddc_en = devm_gpiod_get_optional(&pdev->dev, "ddc-en",
++						       GPIOD_OUT_HIGH);
++
++		if (IS_ERR(conn->ddc_en)) {
++			dev_err(&pdev->dev, "Couldn't get ddc-en gpio\n");
++			return PTR_ERR(conn->ddc_en);
++		}
++	}
++
+ 	conn->bridge.funcs = &display_connector_bridge_funcs;
+ 	conn->bridge.of_node = pdev->dev.of_node;
+ 
+@@ -373,6 +385,9 @@ static int display_connector_remove(struct platform_device *pdev)
+ {
+ 	struct display_connector *conn = platform_get_drvdata(pdev);
+ 
++	if (conn->ddc_en)
++		gpiod_set_value(conn->ddc_en, 0);
++
+ 	if (conn->dp_pwr)
+ 		regulator_disable(conn->dp_pwr);
+ 
+-- 
+2.33.0
 
