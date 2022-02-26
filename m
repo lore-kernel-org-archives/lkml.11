@@ -2,146 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3C8C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 23:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECCDC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 23:47:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229453AbiBZXjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 18:39:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
+        id S229502AbiBZXsW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 18:48:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiBZXi7 (ORCPT
+        with ESMTP id S229480AbiBZXsU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 18:38:59 -0500
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A80923EC61
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 15:38:24 -0800 (PST)
-Received: by mail-lj1-x230.google.com with SMTP id v28so12330984ljv.9
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 15:38:24 -0800 (PST)
+        Sat, 26 Feb 2022 18:48:20 -0500
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B2DB871;
+        Sat, 26 Feb 2022 15:47:45 -0800 (PST)
+Received: by mail-ot1-x336.google.com with SMTP id a7-20020a9d5c87000000b005ad1467cb59so6568498oti.5;
+        Sat, 26 Feb 2022 15:47:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=L77jjy3Pjb6haSmnZfnNmFgIofaBblWDltlBIh2LtP8=;
-        b=ksCenEYJQP77iJl3VqiJjoJeFeq1I9QMUm9fBePnf75SO+2P4R5mUgZ2dv3tKUFnuu
-         gar7ZtWVt828sugg+VnjuYXnlA7qzZVyxJ/2Fc+Wjuq4KHtxJ0pKzrAByvjmsM6JlnqZ
-         o3WODvJDdShjW1l2b8nEOAU6Jfe/fzCXXKDuCF6N6sA1IHoRNmPLjt+RqDAg2H5bf3tY
-         LCjY63dHcBz2Zl5OxOMr0PeQmKwW2ry49C2tXCnEXCRwy7A7FgqnlQ8YOxCxkHfhq120
-         2UqBGKjlKA8KKmGeZBCTcW2qvmwr3Heq5LdFUYauq5193lbCmssb9S8fYYA5VgSjT+Lu
-         bCcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=L77jjy3Pjb6haSmnZfnNmFgIofaBblWDltlBIh2LtP8=;
-        b=snpnpZqbNzir9OtOyfvtX1iNYVQDQABssRMzpnOqVCM//pmKWXRrZsY5blVuepD4KZ
-         5OCjvrvEFsPw6U+ZoUj8+Y35YnVBxj7ZGRSc2YcuLVKI24QaNnWCTCuXq/qm7FutZ/aQ
-         0bSvITJ5WrpY82Kms54TKphyXTMMbcPYGmBCEjPkDIa96SKpjqwPaeZSED647neik/2v
-         jcCzpF4ATeFMNO70Wz90/k6FkPO/vp0xmihLsRK4XioPM8adOGT0V6McySAhPPwugYT4
-         UHH4QDuGdafqskzdUYlosoRGDKHPKOZD+B9cqZWG28+B/DuuY3AtnfV8Q9Z5uZ2fq56C
-         7STg==
-X-Gm-Message-State: AOAM532lrix/MFASQuV/Xk/6f8TUE0IhOlbRWeU71w0f0TPFWUWPgdP1
-        l34ach0VRDaqvHTw1PIfCtxU0w==
-X-Google-Smtp-Source: ABdhPJzI6jlwWxLLswkwolfMTDkejgzveyClOap+Ur9bxPwPT/5fOg85P4oWWg1y+wDGzOu5nl5a9A==
-X-Received: by 2002:a2e:7007:0:b0:246:2b76:31a with SMTP id l7-20020a2e7007000000b002462b76031amr9992267ljc.397.1645918702617;
-        Sat, 26 Feb 2022 15:38:22 -0800 (PST)
-Received: from [192.168.1.211] ([37.153.55.125])
-        by smtp.gmail.com with ESMTPSA id b3-20020ac25623000000b004435fb1f5basm550208lff.78.2022.02.26.15.38.21
+        bh=lklS8hWPQMBku0PWHRMXbokjyRLH7QCGBTWpr2u9luU=;
+        b=K0271KQ9SxeofBRQWOOpVZoDMe7yd0zsp+CQfg/w1fS+eQHgjUiyFOYPpYyC2PAwNn
+         N5LnbxQDXEXUnh3WjbKbMvdl+2DXQXpNOydABPGsjCjKHkk8pRuGtuB+QDTdjRpgbcIZ
+         Jkm5gFVH/GUy2XkJw+cwktNRhNKPvBm2KzpIpgjptjXvkCPVvhe9Nc7zcbuxJWXMdlnh
+         0VXMfTsFiKYnspFTx8WDjlgKSuPUW8EBtTViMsf3DKc5oL83ooNtHnQxLDH8mqf7q2g9
+         K6hNog2zD99c/zkWfHCI8mRKHZt8OO2a4xoeSRQu40yip5Yt+odb+XzZeJOCGcrAGXuH
+         +ckg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lklS8hWPQMBku0PWHRMXbokjyRLH7QCGBTWpr2u9luU=;
+        b=L9y/QqYdWkrL8mLVU4wquVYIh7+DLu4DNIII8uSL8xTqRjpAU61cC2HWaJ+iABQQVh
+         Ohczekvg6JDzszEBoITD6B07stIJEe2uuTPMEk1nN98dS1eq1/xW9JBOPb9klpTuDK9L
+         S8dfv0mIgI0SPpYRbe51wa9BPYCtFOETIQOnV0iDGuLlZ9l044tVa9+hsIvcpkr9p8ei
+         pl/wRox7u87zm9gZivix93RV3l1NQI2ox7rzlcenKoclvap61Ldp4VYvbAejyWRta5Tr
+         KmdaHXgkbQ8JFr01QSlZuEkZ6/ZJZrdTMJYYty4SiWLZccfZ884o7oh6Mu8qzL29Mpyl
+         /jIA==
+X-Gm-Message-State: AOAM5336YEQb9iS7QXhbY/3Zu2mTs8ZrF9oqcMIAJeWVvydZvR2Ippf/
+        eKpL61FH6iD3YyZi/iYMLig=
+X-Google-Smtp-Source: ABdhPJxvSCM1F1JEeqrcKRBQbtiqxZ806zLrgk4TPi4KlRI6PCsHqDIpj834STxTXkqBMMwA/gqYLw==
+X-Received: by 2002:a05:6830:2f1:b0:5af:494:1481 with SMTP id r17-20020a05683002f100b005af04941481mr6005479ote.83.1645919264372;
+        Sat, 26 Feb 2022 15:47:44 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id x60-20020a9d20c2000000b005acf97a030csm2908773ota.9.2022.02.26.15.47.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 26 Feb 2022 15:38:22 -0800 (PST)
-Message-ID: <a6d28a2e-69fc-9bdf-da0d-28be35d9bfc2@linaro.org>
-Date:   Sun, 27 Feb 2022 02:38:21 +0300
+        Sat, 26 Feb 2022 15:47:43 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <fcfe0d87-6755-a9e0-6237-fae889fbf2c7@roeck-us.net>
+Date:   Sat, 26 Feb 2022 15:47:41 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.0
-Subject: Re: [PATCH 1/2] dt-bindings: phy: qcom,qmp: Mark '#clock-cells' as a
- 'optional' property
-Content-Language: en-GB
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     linux-arm-msm@vger.kernel.org, bhupesh.linux@gmail.com,
-        agross@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-phy@lists.infradead.org,
-        robh+dt@kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>
-References: <20220224123248.67073-1-bhupesh.sharma@linaro.org>
- <CAA8EJprRgsZRSXBQumveAn029j+w6xO8K2kZUO4rzZaefuYe7Q@mail.gmail.com>
- <CAH=2NtxQBS=c0W0cpX5EdNi12PrqiKEuzyvEtF8WrVE6nsU_rg@mail.gmail.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-In-Reply-To: <CAH=2NtxQBS=c0W0cpX5EdNi12PrqiKEuzyvEtF8WrVE6nsU_rg@mail.gmail.com>
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1 1/1] drivers/hwmon/pmbus: Add mutex to regulator ops
+Content-Language: en-US
+To:     Zev Weiss <zweiss@equinix.com>,
+        Marcello Sylvester Bauer <sylv@sylv.io>
+Cc:     Jean Delvare <jdelvare@suse.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hwmon@vger.kernel.org" <linux-hwmon@vger.kernel.org>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>
+References: <b991506bcbf665f7af185945f70bf9d5cf04637c.1645804976.git.sylv@sylv.io>
+ <20220226234220.GV5754@packtop>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220226234220.GV5754@packtop>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/02/2022 12:16, Bhupesh Sharma wrote:
-> Hi Dmitry,
-> 
-> Thanks for your review comments.
-> 
-> On Thu, 24 Feb 2022 at 20:22, Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
+On 2/26/22 15:42, Zev Weiss wrote:
+> On Fri, Feb 25, 2022 at 08:06:09AM PST, Marcello Sylvester Bauer wrote:
+>> From: Patrick Rudolph <patrick.rudolph@9elements.com>
 >>
->> On Thu, 24 Feb 2022 at 15:33, Bhupesh Sharma <bhupesh.sharma@linaro.org> wrote:
->>>
->>> Since '#clock-cells' is not a required property for several
->>> QCoM boards supporting qmp-phy(s) (for e.g. sm8150, sm8250 or sm8350 SoC
->>> based boards), mark it as an optional property instead.
+>> On PMBUS devices with multiple pages, the regulator ops need to be
+>> protected with the update mutex. This prevents accidentally changing
+>> the page in a separate thread while operating on the PMBUS_OPERATION
+>> register.
 >>
->> I believe the description is not correct. the clock-cells should not
->> be used at all, so it should be removed from the root node.
-> 
-> Hmm.. 'clock-cells' is still used for describing qmp phy pcie nodes for certain
-> devices like 'msm8996.dtsi'. I am not sure if removing it would impact existing
-> dts files. But let me try cleaning them up in v2.
-
-Checked. Unless I'm mistaken, msm8996.dtsi doesn't use #clock-cells in 
-root QMP PHY nodes.
-
-> 
->> Also we should describe phy@ properties.
-> 
-> Sure, I will add them in v2.
-> 
-> Regards,
-> Bhupesh
-> 
->>>
->>> This fixes the following '$ make dtbs_check' warning(s):
->>>
->>> sm8350-microsoft-surface-duo2.dt.yaml: phy@1d87000:
->>>    '#clock-cells' is a required property
->>>
->>> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
->>> Cc: Vinod Koul <vkoul@kernel.org>
->>> Cc: Rob Herring <robh+dt@kernel.org>
->>> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
->>> ---
->>>   Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 1 -
->>>   1 file changed, 1 deletion(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
->>> index 9e0f60e682c4..746a929c63bb 100644
->>> --- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
->>> +++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
->>> @@ -115,7 +115,6 @@ patternProperties:
->>>   required:
->>>     - compatible
->>>     - reg
->>> -  - "#clock-cells"
->>>     - "#address-cells"
->>>     - "#size-cells"
->>>     - ranges
->>> --
->>> 2.35.1
->>>
+>> Tested on Infineon xdpe11280 while a separate thread polls for sensor
+>> data.
+>>
+>> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
+>> Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+>> ---
+>> drivers/hwmon/pmbus/pmbus_core.c | 16 +++++++++++++---
+>> 1 file changed, 13 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
+>> index 776ee2237be2..f79930162256 100644
+>> --- a/drivers/hwmon/pmbus/pmbus_core.c
+>> +++ b/drivers/hwmon/pmbus/pmbus_core.c
+>> @@ -2386,10 +2386,14 @@ static int pmbus_regulator_is_enabled(struct regulator_dev *rdev)
+>> {
+>> 	struct device *dev = rdev_get_dev(rdev);
+>> 	struct i2c_client *client = to_i2c_client(dev->parent);
+>> +	struct pmbus_data *data = i2c_get_clientdata(client);
+>> 	u8 page = rdev_get_id(rdev);
+>> 	int ret;
+>>
+>> +	mutex_lock(&data->update_lock);
+>> 	ret = pmbus_read_byte_data(client, page, PMBUS_OPERATION);
+>> +	mutex_unlock(&data->update_lock);
+>> +
+>> 	if (ret < 0)
+>> 		return ret;
+>>
+>> @@ -2400,11 +2404,17 @@ static int _pmbus_regulator_on_off(struct regulator_dev *rdev, bool enable)
+>> {
+>> 	struct device *dev = rdev_get_dev(rdev);
+>> 	struct i2c_client *client = to_i2c_client(dev->parent);
+>> +	struct pmbus_data *data = i2c_get_clientdata(client);
+>> 	u8 page = rdev_get_id(rdev);
+>> +	int ret;
+>>
+>> -	return pmbus_update_byte_data(client, page, PMBUS_OPERATION,
+>> -				      PB_OPERATION_CONTROL_ON,
+>> -				      enable ? PB_OPERATION_CONTROL_ON : 0);
+>> +	mutex_lock(&data->update_lock);
+>> +	ret = pmbus_update_byte_data(client, page, PMBUS_OPERATION,
+>> +				     PB_OPERATION_CONTROL_ON,
+>> +				     enable ? PB_OPERATION_CONTROL_ON : 0);
+>> +	mutex_unlock(&data->update_lock);
+>> +
+>> +	return ret;
+>> }
+>>
+>> static int pmbus_regulator_enable(struct regulator_dev *rdev)
+>> -- 
+>> 2.35.1
 >>
 >>
->> --
->> With best wishes
->> Dmitry
+> 
+> Looks like this doesn't cover pmbus_regulator_get_error_flags(), which
+> was added recently -- perhaps rebase onto hwmon-next?
+> 
 
+This is a bug fix which needs to be applied to stable releases, or am I
+missing something ?
 
--- 
-With best wishes
-Dmitry
+Guenter
