@@ -2,75 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74713C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 08:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C861C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 08:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230256AbiBZIHq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 03:07:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
+        id S229455AbiBZIIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 03:08:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiBZIHo (ORCPT
+        with ESMTP id S229978AbiBZIIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 03:07:44 -0500
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0990E267CE8;
-        Sat, 26 Feb 2022 00:07:11 -0800 (PST)
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.94)
-          with esmtps (TLS1.2)
-          tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1nNs6c-001ujp-9m; Sat, 26 Feb 2022 09:07:06 +0100
-Received: from dynamic-089-014-140-217.89.14.pool.telefonica.de ([89.14.140.217] helo=[192.168.1.9])
-          by inpost2.zedat.fu-berlin.de (Exim 4.94)
-          with esmtpsa (TLS1.2)
-          tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1nNs6b-000md8-Sp; Sat, 26 Feb 2022 09:07:06 +0100
-Message-ID: <c7d6d986-f6b4-3200-f2c5-761ac39b9c87@physik.fu-berlin.de>
-Date:   Sat, 26 Feb 2022 09:07:04 +0100
+        Sat, 26 Feb 2022 03:08:01 -0500
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D61963C2;
+        Sat, 26 Feb 2022 00:07:22 -0800 (PST)
+X-UUID: c8a4257f3d23460d8d237fed17394a60-20220226
+X-UUID: c8a4257f3d23460d8d237fed17394a60-20220226
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <lina.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 16057302; Sat, 26 Feb 2022 16:07:15 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sat, 26 Feb 2022 16:07:14 +0800
+Received: from mbjsdccf07.mediatek.inc (10.15.20.246) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 26 Feb 2022 16:07:13 +0800
+From:   Lina Wang <lina.wang@mediatek.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Lina Wang <lina.wang@mediatek.com>
+Subject: Re: [PATCH v2] xfrm: fix tunnel model fragmentation behavior
+Date:   Sat, 26 Feb 2022 16:00:51 +0800
+Message-ID: <20220226080050.16818-1-lina.wang@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220224102309.GN1223722@gauss3.secunet.de>
+References: <20220224102309.GN1223722@gauss3.secunet.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] sh: avoid using IRQ0 on SH3/4
-Content-Language: en-US
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>, Rich Felker <dalias@libc.org>,
-        linux-sh@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>
-References: <2f419ed2-66b8-4098-7cd3-0fe698d341c9@omp.ru>
- <63f06bf0-fc7b-3c5c-8af9-5adfd7628354@omp.ru>
- <dde846f0-1324-7fde-ef92-eb72d4200b50@physik.fu-berlin.de>
- <e4c1aec0-e8a0-4577-d12b-8e4efedbf7e6@omp.ru>
- <9671b75b-d0c4-7967-a543-5eebdf942b35@omp.ru>
-From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-In-Reply-To: <9671b75b-d0c4-7967-a543-5eebdf942b35@omp.ru>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-Originating-IP: 89.14.140.217
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sergey!
-
-On 2/25/22 20:28, Sergey Shtylyov wrote:
->>> I can test your revised patch next week on my SH7785LCR.
->>
->>    Please do, although testing on the AP-SH4A* bords would be a bit more
->> interesting, as they actually use IRQ0 for the SMSC911x chip...
+On Thu, 2022-02-24 at 11:23 +0100, Steffen Klassert wrote:
+> On Thu, Feb 24, 2022 at 02:09:31PM +0800, Lina Wang wrote:
+> > In tunnel mode, if outer interface(ipv4) is less, it is easily to
+> Your patch does not apply, it is not in plain text format.
 > 
->    So, were you finally able to test it?
+Do u mean I used base64 encoding? I already updated v3 as 8bit.
+>
+> While at it, this is not an ESP speciffic function. Please rename to
+> xfrm_noneed_fragment.
+>
+Yes, change it to xfrm6_noneed_fragment
 
-Not yet, sorry. Machine is currently offline due to a power outage and I cannot
-turn it back on remotely, I'm not home until tomorrow. I will be able to test
-it tomorrow, however.
-
-Adrian
-
--- 
- .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer - glaubitz@debian.org
-`. `'   Freie Universitaet Berlin - glaubitz@physik.fu-berlin.de
-  `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+Thanks!
 
