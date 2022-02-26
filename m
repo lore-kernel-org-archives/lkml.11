@@ -2,192 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 06:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 081A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 26 Feb 2022 06:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229922AbiBZGMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 01:12:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46810 "EHLO
+        id S229928AbiBZGRG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 01:17:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiBZGMV (ORCPT
+        with ESMTP id S229501AbiBZGRF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 01:12:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB45C2BAF3B;
-        Fri, 25 Feb 2022 22:11:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 81A6E60B72;
-        Sat, 26 Feb 2022 06:11:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E63F8C340F2;
-        Sat, 26 Feb 2022 06:11:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645855906;
-        bh=r5rev/UqgjHZwz5Xbpbd5gQP1ldjs9PDROFwrCAHB2o=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=A0kmdkd3V1RXqL92ioBP0M1/TaJAbJfnb7K0HJs2ooPXBc3KgR1RFNilgRw0N+X9W
-         GATsVcZ8UrQg78pNo/idi21OvFRaJRU/1oplUelXUkfQxW5oyhVZlE2rUek+gNx4VL
-         FoEkw4sglocdXhfyQjaGiWt3npszBx83aHyp9PZxjUdVKOCpOATOiwVUGKxn/Dx6MJ
-         QKrpvSRd5ZfR2hJ/cE/biUuu79H2yzXMoazx7PMmVqd+NmCgLJ/vK64imwsZXPdmw9
-         7W/bEBLjgDWlhBqcJ5pKe8aZexCR++rU7UCVdFPHpSg3UcscMxQydR4bugsWn92pAZ
-         2tE1OZV05CubQ==
-Received: by mail-yb1-f176.google.com with SMTP id c6so9978896ybk.3;
-        Fri, 25 Feb 2022 22:11:46 -0800 (PST)
-X-Gm-Message-State: AOAM5325OoYc9pTBMRKM4qNv1uHUazB1iQJ6JrwKBrJ0IlT/e0w91fM1
-        1Bn8puUuuOxU+9Oxg3/hCQQ2iKAeUjP2FyQBTOc=
-X-Google-Smtp-Source: ABdhPJw/1j0Jl6aqyekJ/DyjUClCR0sairiCd+k8gMLmylyvGRy7eWMKUy/d954CE8hilUHcIfQdB71C5m7QZQ+X/f4=
-X-Received: by 2002:a25:8546:0:b0:61e:1d34:ec71 with SMTP id
- f6-20020a258546000000b0061e1d34ec71mr10248523ybn.259.1645855905985; Fri, 25
- Feb 2022 22:11:45 -0800 (PST)
+        Sat, 26 Feb 2022 01:17:05 -0500
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB3918A780;
+        Fri, 25 Feb 2022 22:16:30 -0800 (PST)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4K5GWF4L55z1FDTd;
+        Sat, 26 Feb 2022 14:11:53 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
+ (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 26 Feb
+ 2022 14:16:27 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <stable@vger.kernel.org>,
+        <oliver.sang@intel.com>, <beibei.si@intel.com>, <jannh@google.com>,
+        <mszeredi@redhat.com>, <torvalds@linux-foundation.org>,
+        <libaokun1@huawei.com>, <yukuai3@huawei.com>
+Subject: [PATCH 5.4] fget: clarify and improve __fget_files() implementation
+Date:   Sat, 26 Feb 2022 14:32:01 +0800
+Message-ID: <20220226063201.167183-1-libaokun1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220225152355.315204-1-stijn@linux-ipv6.be>
-In-Reply-To: <20220225152355.315204-1-stijn@linux-ipv6.be>
-From:   Song Liu <song@kernel.org>
-Date:   Fri, 25 Feb 2022 22:11:35 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5yA_zx7iyy-k+048S5a=1QiM=SBKDKhg=sGBVVUb0wvA@mail.gmail.com>
-Message-ID: <CAPhsuW5yA_zx7iyy-k+048S5a=1QiM=SBKDKhg=sGBVVUb0wvA@mail.gmail.com>
-Subject: Re: [PATCH v2] libbpf: fix BPF_MAP_TYPE_PERF_EVENT_ARRAY auto-pinning
-To:     Stijn Tintel <stijn@linux-ipv6.be>
-Cc:     bpf <bpf@vger.kernel.org>, Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        KP Singh <kpsingh@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 7:24 AM Stijn Tintel <stijn@linux-ipv6.be> wrote:
->
-> When a BPF map of type BPF_MAP_TYPE_PERF_EVENT_ARRAY doesn't have the
-> max_entries parameter set, the map will be created with max_entries set
-> to the number of available CPUs. When we try to reuse such a pinned map,
-> map_is_reuse_compat will return false, as max_entries in the map
-> definition differs from max_entries of the existing map, causing the
-> following error:
->
-> libbpf: couldn't reuse pinned map at '/sys/fs/bpf/m_logging': parameter mismatch
->
-> Fix this by overwriting max_entries in the map definition. For this to
-> work, we need to do this in bpf_object__create_maps, before calling
-> bpf_object__reuse_map.
->
-> Fixes: 57a00f41644f ("libbpf: Add auto-pinning of maps when loading BPF objects")
-> Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-Acked-by: Song Liu <songliubraving@fb.com>
+commit e386dfc56f837da66d00a078e5314bc8382fab83 upstream.
 
-> ---
-> v2: overwrite max_entries in the map definition instead of adding an
->     extra check in map_is_reuse_compat, and introduce a helper function
->     for this as suggested by Song.
-> ---
->  tools/lib/bpf/libbpf.c | 44 ++++++++++++++++++++++++------------------
->  1 file changed, 25 insertions(+), 19 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 7f10dd501a52..133462637b09 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -4854,7 +4854,6 @@ static int bpf_object__create_map(struct bpf_object *obj, struct bpf_map *map, b
->         LIBBPF_OPTS(bpf_map_create_opts, create_attr);
->         struct bpf_map_def *def = &map->def;
->         const char *map_name = NULL;
-> -       __u32 max_entries;
->         int err = 0;
->
->         if (kernel_supports(obj, FEAT_PROG_NAME))
-> @@ -4864,21 +4863,6 @@ static int bpf_object__create_map(struct bpf_object *obj, struct bpf_map *map, b
->         create_attr.numa_node = map->numa_node;
->         create_attr.map_extra = map->map_extra;
->
-> -       if (def->type == BPF_MAP_TYPE_PERF_EVENT_ARRAY && !def->max_entries) {
-> -               int nr_cpus;
-> -
-> -               nr_cpus = libbpf_num_possible_cpus();
-> -               if (nr_cpus < 0) {
-> -                       pr_warn("map '%s': failed to determine number of system CPUs: %d\n",
-> -                               map->name, nr_cpus);
-> -                       return nr_cpus;
-> -               }
-> -               pr_debug("map '%s': setting size to %d\n", map->name, nr_cpus);
-> -               max_entries = nr_cpus;
-> -       } else {
-> -               max_entries = def->max_entries;
-> -       }
-> -
->         if (bpf_map__is_struct_ops(map))
->                 create_attr.btf_vmlinux_value_type_id = map->btf_vmlinux_value_type_id;
->
-> @@ -4928,7 +4912,7 @@ static int bpf_object__create_map(struct bpf_object *obj, struct bpf_map *map, b
->
->         if (obj->gen_loader) {
->                 bpf_gen__map_create(obj->gen_loader, def->type, map_name,
-> -                                   def->key_size, def->value_size, max_entries,
-> +                                   def->key_size, def->value_size, def->max_entries,
->                                     &create_attr, is_inner ? -1 : map - obj->maps);
->                 /* Pretend to have valid FD to pass various fd >= 0 checks.
->                  * This fd == 0 will not be used with any syscall and will be reset to -1 eventually.
-> @@ -4937,7 +4921,7 @@ static int bpf_object__create_map(struct bpf_object *obj, struct bpf_map *map, b
->         } else {
->                 map->fd = bpf_map_create(def->type, map_name,
->                                          def->key_size, def->value_size,
-> -                                        max_entries, &create_attr);
-> +                                        def->max_entries, &create_attr);
->         }
->         if (map->fd < 0 && (create_attr.btf_key_type_id ||
->                             create_attr.btf_value_type_id)) {
-> @@ -4954,7 +4938,7 @@ static int bpf_object__create_map(struct bpf_object *obj, struct bpf_map *map, b
->                 map->btf_value_type_id = 0;
->                 map->fd = bpf_map_create(def->type, map_name,
->                                          def->key_size, def->value_size,
-> -                                        max_entries, &create_attr);
-> +                                        def->max_entries, &create_attr);
->         }
->
->         err = map->fd < 0 ? -errno : 0;
-> @@ -5058,6 +5042,24 @@ static int bpf_object_init_prog_arrays(struct bpf_object *obj)
->         return 0;
->  }
->
-> +static int map_set_def_max_entries(struct bpf_map *map)
-> +{
-> +       if (map->def.type == BPF_MAP_TYPE_PERF_EVENT_ARRAY && !map->def.max_entries) {
-> +               int nr_cpus;
-> +
-> +               nr_cpus = libbpf_num_possible_cpus();
-> +               if (nr_cpus < 0) {
-> +                       pr_warn("map '%s': failed to determine number of system CPUs: %d\n",
-> +                               map->name, nr_cpus);
-> +                       return nr_cpus;
-> +               }
-> +               pr_debug("map '%s': setting size to %d\n", map->name, nr_cpus);
-> +               map->def.max_entries = nr_cpus;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
->  static int
->  bpf_object__create_maps(struct bpf_object *obj)
->  {
-> @@ -5090,6 +5092,10 @@ bpf_object__create_maps(struct bpf_object *obj)
->                         continue;
->                 }
->
-> +               err = map_set_def_max_entries(map);
-> +               if (err)
-> +                       goto err_out;
-> +
->                 retried = false;
->  retry:
->                 if (map->pin_path) {
-> --
-> 2.34.1
->
+Commit 054aa8d439b9 ("fget: check that the fd still exists after getting
+a ref to it") fixed a race with getting a reference to a file just as it
+was being closed.  It was a fairly minimal patch, and I didn't think
+re-checking the file pointer lookup would be a measurable overhead,
+since it was all right there and cached.
+
+But I was wrong, as pointed out by the kernel test robot.
+
+The 'poll2' case of the will-it-scale.per_thread_ops benchmark regressed
+quite noticeably.  Admittedly it seems to be a very artificial test:
+doing "poll()" system calls on regular files in a very tight loop in
+multiple threads.
+
+That means that basically all the time is spent just looking up file
+descriptors without ever doing anything useful with them (not that doing
+'poll()' on a regular file is useful to begin with).  And as a result it
+shows the extra "re-check fd" cost as a sore thumb.
+
+Happily, the regression is fixable by just writing the code to loook up
+the fd to be better and clearer.  There's still a cost to verify the
+file pointer, but now it's basically in the noise even for that
+benchmark that does nothing else - and the code is more understandable
+and has better comments too.
+
+[ Side note: this patch is also a classic case of one that looks very
+  messy with the default greedy Myers diff - it's much more legible with
+  either the patience of histogram diff algorithm ]
+
+Link: https://lore.kernel.org/lkml/20211210053743.GA36420@xsang-OptiPlex-9020/
+Link: https://lore.kernel.org/lkml/20211213083154.GA20853@linux.intel.com/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Tested-by: Carel Si <beibei.si@intel.com>
+Cc: Jann Horn <jannh@google.com>
+Cc: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
+---
+ fs/file.c | 73 +++++++++++++++++++++++++++++++++++++++++++------------
+ 1 file changed, 57 insertions(+), 16 deletions(-)
+
+diff --git a/fs/file.c b/fs/file.c
+index 09cefc944f86..51f53a7dc221 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -706,28 +706,69 @@ void do_close_on_exec(struct files_struct *files)
+ 	spin_unlock(&files->file_lock);
+ }
+ 
+-static struct file *__fget(unsigned int fd, fmode_t mask, unsigned int refs)
++static inline struct file *__fget_files_rcu(struct files_struct *files,
++		unsigned int fd, fmode_t mask, unsigned int refs)
+ {
+-	struct files_struct *files = current->files;
+-	struct file *file;
++	for (;;) {
++		struct file *file;
++		struct fdtable *fdt = rcu_dereference_raw(files->fdt);
++		struct file __rcu **fdentry;
+ 
+-	rcu_read_lock();
+-loop:
+-	file = fcheck_files(files, fd);
+-	if (file) {
+-		/* File object ref couldn't be taken.
+-		 * dup2() atomicity guarantee is the reason
+-		 * we loop to catch the new file (or NULL pointer)
++		if (unlikely(fd >= fdt->max_fds))
++			return NULL;
++
++		fdentry = fdt->fd + array_index_nospec(fd, fdt->max_fds);
++		file = rcu_dereference_raw(*fdentry);
++		if (unlikely(!file))
++			return NULL;
++
++		if (unlikely(file->f_mode & mask))
++			return NULL;
++
++		/*
++		 * Ok, we have a file pointer. However, because we do
++		 * this all locklessly under RCU, we may be racing with
++		 * that file being closed.
++		 *
++		 * Such a race can take two forms:
++		 *
++		 *  (a) the file ref already went down to zero,
++		 *      and get_file_rcu_many() fails. Just try
++		 *      again:
++		 */
++		if (unlikely(!get_file_rcu_many(file, refs)))
++			continue;
++
++		/*
++		 *  (b) the file table entry has changed under us.
++		 *       Note that we don't need to re-check the 'fdt->fd'
++		 *       pointer having changed, because it always goes
++		 *       hand-in-hand with 'fdt'.
++		 *
++		 * If so, we need to put our refs and try again.
+ 		 */
+-		if (file->f_mode & mask)
+-			file = NULL;
+-		else if (!get_file_rcu_many(file, refs))
+-			goto loop;
+-		else if (__fcheck_files(files, fd) != file) {
++		if (unlikely(rcu_dereference_raw(files->fdt) != fdt) ||
++		    unlikely(rcu_dereference_raw(*fdentry) != file)) {
+ 			fput_many(file, refs);
+-			goto loop;
++			continue;
+ 		}
++
++		/*
++		 * Ok, we have a ref to the file, and checked that it
++		 * still exists.
++		 */
++		return file;
+ 	}
++}
++
++
++static struct file *__fget(unsigned int fd, fmode_t mask, unsigned int refs)
++{
++	struct files_struct *files = current->files;
++	struct file *file;
++
++	rcu_read_lock();
++	file = __fget_files_rcu(files, fd, mask, refs);
+ 	rcu_read_unlock();
+ 
+ 	return file;
+-- 
+2.31.1
+
