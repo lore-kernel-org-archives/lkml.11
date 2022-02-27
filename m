@@ -2,86 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1E5C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 22:49:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A85C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 22:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232117AbiB0Wti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 17:49:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50686 "EHLO
+        id S232127AbiB0Wt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 17:49:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231342AbiB0Wtg (ORCPT
+        with ESMTP id S232118AbiB0Wtz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 17:49:36 -0500
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDD66593AB;
-        Sun, 27 Feb 2022 14:48:58 -0800 (PST)
-X-IronPort-AV: E=Sophos;i="5.90,142,1643641200"; 
-   d="scan'208";a="111725986"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 28 Feb 2022 07:48:57 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id C590C4006DFA;
-        Mon, 28 Feb 2022 07:48:54 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sun, 27 Feb 2022 17:49:55 -0500
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6025B5A080;
+        Sun, 27 Feb 2022 14:49:17 -0800 (PST)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21RMhqmu022704;
+        Sun, 27 Feb 2022 16:43:53 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21RMhqks022703;
+        Sun, 27 Feb 2022 16:43:52 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Sun, 27 Feb 2022 16:43:52 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jakob <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Chris Brandt <chris.brandt@renesas.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] dt-bindings: timer: renesas: ostm: Document Renesas RZ/V2L OSTM
-Date:   Sun, 27 Feb 2022 22:48:44 +0000
-Message-Id: <20220227224845.27348-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator after the loop
+Message-ID: <20220227224352.GA614@gate.crashing.org>
+References: <20220217184829.1991035-1-jakobkoschel@gmail.com> <20220217184829.1991035-4-jakobkoschel@gmail.com> <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com> <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com> <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com> <20220226124249.GU614@gate.crashing.org> <CAK8P3a2Dd+ZMzn=gDnTzOW=S3RHQVmm1j3Gy=aKmFEbyD-q=rQ@mail.gmail.com> <20220227010956.GW614@gate.crashing.org> <CAK8P3a2bocgetbPQzy5xWhnW=mOdGynp_pWrPt6KeVTkEfEwKg@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a2bocgetbPQzy5xWhnW=mOdGynp_pWrPt6KeVTkEfEwKg@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the General Timer Module(a.k.a OSTM) found on the RZ/V2L SoC.
-OSTM module is identical to one found RZ/G2L SoC. No driver changes are
-required as generic compatible string "renesas,ostm" will be used as a
-fallback.
+On Sun, Feb 27, 2022 at 10:28:41PM +0100, Arnd Bergmann wrote:
+> On Sun, Feb 27, 2022 at 2:09 AM Segher Boessenkool
+> <segher@kernel.crashing.org> wrote:
+> >
+> > So imo we should just never do this by default, not just if the nasty
+> > -fwrapv or nastier -fno-strict-overflow is used, just like we suggest
+> > in our own documentation.  The only valid reason -Wshift-negative-value
+> > is in -Wextra is it warns for situations that always are undefined
+> > behaviour (even if not in GCC).
+> 
+> Ok, I just realized that this is specific to the i915 driver because
+> that, unlike
+> most of the kernel builds with -Wextra by default. -Wextra is enabled when
+> users ask for a 'make W=1' build in linux, and i915 is one of just three
+> drivers that enable an equivalent set of warnings, the other ones
+> being greybus and btrfs.
+> 
+> This means to work around the extra warnings, we also just need to disable
+> it in the W=1 part of scripts/Makefile.extrawarn, as well as the three drivers
+> that copy those options, but not the default warnings that don't include them.
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
----
-DTSI changes have been posted as part of series [0]
+Ah good, all of the workaround in one simple place, neat.
 
-[0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/
-20220227203744.18355-8-prabhakar.mahadev-lad.rj@bp.renesas.com/
----
- Documentation/devicetree/bindings/timer/renesas,ostm.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+> > Could you open a GCC PR for this?  The current situation is quite
+> > suboptimal, and what we document as our implementation choice is much
+> > more useful!
+> 
+> I hope I managed to capture the issue in
+> https://gcc.gnu.org/bugzilla/show_bug.cgi?id=104711
 
-diff --git a/Documentation/devicetree/bindings/timer/renesas,ostm.yaml b/Documentation/devicetree/bindings/timer/renesas,ostm.yaml
-index 7fa7f977b44c..c399a019dde7 100644
---- a/Documentation/devicetree/bindings/timer/renesas,ostm.yaml
-+++ b/Documentation/devicetree/bindings/timer/renesas,ostm.yaml
-@@ -24,6 +24,7 @@ properties:
-           - renesas,r7s72100-ostm  # RZ/A1H
-           - renesas,r7s9210-ostm   # RZ/A2M
-           - renesas,r9a07g044-ostm # RZ/G2{L,LC}
-+          - renesas,r9a07g054-ostm # RZ/V2L
-       - const: renesas,ostm        # Generic
- 
-   reg:
-@@ -54,6 +55,7 @@ if:
-       contains:
-         enum:
-           - renesas,r9a07g044-ostm
-+          - renesas,r9a07g054-ostm
- then:
-   required:
-     - resets
--- 
-2.17.1
+That looks fine.  Thank you!
 
+(I attached the testcase to the bug itself, we prefer it that way, maybe
+godbolt will go away some day, who knows.)
+
+
+Segher
