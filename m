@@ -2,147 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4BC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 11:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0989FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 11:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230292AbiB0Lvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 06:51:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51112 "EHLO
+        id S230308AbiB0L6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 06:58:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229919AbiB0Lvg (ORCPT
+        with ESMTP id S230294AbiB0L6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 06:51:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A7038DBF
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 03:50:59 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FA1660E83
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 11:50:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02E4DC340E9;
-        Sun, 27 Feb 2022 11:50:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645962658;
-        bh=1HJAIqgYBkb1uG2L18Qyd/mg7/n9jJfHv7Eg6fYejFU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bhGybBKSM7lzpqCD/79sVSJMZphP/475xWMRhfG+2+e0yXwsh7zywTNMASvNcwRzd
-         LAZMrfrsyFJuflXNeHV5Zye4w7iEL0QpWRZObecMz0KTIdOmcLGDgdxwfrtCfPk17s
-         y8NSshIbR+4Otj/xtZAXLb8M7ggpcgp5P7E4dIBvBcUU7PucsgaSPXa9QngoHtsZq9
-         xm7aM4XM5FBpql4BLnPdv0eGJ+S7fJEayGRJL32Cz72S8+HTfKdugB/Nejror0Ymtb
-         nr59YoAv47mIwZON5O9ojdb4eJc07QBboswHp3+fSepTExEg3htsxuBWwrgYv6OucA
-         pQpyLxwIpTg8Q==
-From:   Oded Gabbay <ogabbay@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Tomer Tayar <ttayar@habana.ai>
-Subject: [PATCH v2] habanalabs: add an option to delay a device reset
-Date:   Sun, 27 Feb 2022 13:50:53 +0200
-Message-Id: <20220227115053.1067361-1-ogabbay@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        Sun, 27 Feb 2022 06:58:36 -0500
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6F61B786;
+        Sun, 27 Feb 2022 03:57:58 -0800 (PST)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 313E03200DA8;
+        Sun, 27 Feb 2022 06:57:57 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 27 Feb 2022 06:57:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+         h=cc:cc:content-transfer-encoding:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; bh=LHnbTtvZh1F0Dh
+        tswLT8iTo1M9auO3PUzzd56DEi4/0=; b=RrXS5VRdvbBrnsrwu8P2ZJUjQ56j1p
+        L7u/Uz1rDrWawiUyjvdE8e+Z4YLYub5AoIcqvxfcMXMtw1OrgGhdgSpe+EYACb7d
+        CgCLBVvdlbFA4ZVX9JGBFwH1xI694kNhdWaW/UPz5bkVf2Rjt9m1nhpemPpQAKP0
+        5mym2CIQ2aq8QHRwX/xb/Asqc0GcO2QONJMr1HhTsV/qtACQPnjo4iu5d3S9VXGK
+        f/rLbLskbCXPZqnGoWXVz+4O14SS4a3Funpha+Guhk4OQk8YRH3PRJvFtHoJ5D0+
+        SnLLg69HH2LtgfqCXM4dOIPtB0J/22wsBjz+R5F9pEl4GmIsaYQxV1Sw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=LHnbTt
+        vZh1F0DhtswLT8iTo1M9auO3PUzzd56DEi4/0=; b=UuJXtkDYzzmDv3+PlvrF75
+        IMSF+7TIjjIQ2zGFSCAJDUBZQxFwofks4FSECuCpKl1vIEe5hdPtmTxC1/FoIaRj
+        NLRbj/CNsNtM1nVSPkaCvOCS/z0F/HbgeGRKm2JTkXoC7UapkSpECtJRVEH5RZOq
+        QPodUEULOaR8Td6jBH/BgqFQThktGkGbHX9hAOrqio36yQAWjU32pOcMfMpU9rJ1
+        AcvlQKlhPlU09mMtX4RlV4kry6GpExnibfiMCm6/jSDsUBesjydfsfcO772pj1Rp
+        2v4uS02Fjpw4+nHPdnadIHTeGyVtByvh/PF9hIX/uwiCx8r7cdQT67U2tOhv4iVw
+        ==
+X-ME-Sender: <xms:RGcbYhXthoKQia9AKkoSozz16sSA9n1xtgdbsp0R_5KH1ZzDm-CL_w>
+    <xme:RGcbYhnsxdnbdg_eaa8OEzqS187Es-FBZl-RALc_0006Zi0y3cgFDovX6glNqXoaQ
+    nh0oBpLL_dt9V_Pjb0>
+X-ME-Received: <xmr:RGcbYtZU0NcEOO3_FJ6lrex6s1wcKB7crA2HxjQvcyVzvZ6uzkXEJN7BKg56dlccqIM5FGQ07vtVGVQ1hD9CrLAZO1FdQG30llDbmy0gY0YbAA3CY7y61rFje7gr9QE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrleekgdeffecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufhvvghnucfr
+    vghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtthgvrh
+    hnpeetvdekteeluefffffhkeetteffgefggfevheeileeufedvtdeuffevveelhfefjeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnh
+    esshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:RGcbYkXPFx4eFBXiBqAxD4v2_H5_hPvQ0XnZtZ1bamPgLMuIKGjRIw>
+    <xmx:RGcbYrkCO1r19ScyiBj-roI26PzcOM6Sj20Ydt7zFchKiegAmkO8Eg>
+    <xmx:RGcbYhf7BOERXdmCMcTBrHKbhP0bWBq1brxGFf2-SW8PPHlr2HKe1g>
+    <xmx:RGcbYpWu1iRebcoDB5JBwZOBXh-gm4Z_cRQy0C4jCFhKA_w1Q2_Fjw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 27 Feb 2022 06:57:55 -0500 (EST)
+From:   Sven Peter <sven@svenpeter.dev>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] nvmem: Add Apple eFuse driver
+Date:   Sun, 27 Feb 2022 12:57:43 +0100
+Message-Id: <20220227115743.69059-2-sven@svenpeter.dev>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20220227115743.69059-1-sven@svenpeter.dev>
+References: <20220227115743.69059-1-sven@svenpeter.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tomer Tayar <ttayar@habana.ai>
+Apple SoCs contain eFuses used to store factory-programmed data such
+as calibration values for the PCIe or the Type-C PHY. They are organized
+as 32bit values exposed as MMIO.
 
-Several H/W events can be sent adjacently, even due to a single error.
-If a hard-reset is triggered as part of handling one of these events,
-the following events won't be handled.
-The debug info from these missed events is important, sometimes even
-more important than the one that was handled.
-
-To allow handling these close events, add an option to delay a device
-reset and use it when resetting due to H/W events.
-
-Signed-off-by: Tomer Tayar <ttayar@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
 ---
-Changes in v2:
- - fix bug of using logical &&. Replace to bit-wise &
+ MAINTAINERS                  |  1 +
+ drivers/nvmem/Kconfig        | 12 +++++++
+ drivers/nvmem/Makefile       |  2 ++
+ drivers/nvmem/apple-efuses.c | 67 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 82 insertions(+)
+ create mode 100644 drivers/nvmem/apple-efuses.c
 
- drivers/misc/habanalabs/common/device.c     | 8 +++++++-
- drivers/misc/habanalabs/common/habanalabs.h | 4 ++++
- drivers/misc/habanalabs/gaudi/gaudi.c       | 2 +-
- 3 files changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
-index d52381d1fbd2..dc9341a64541 100644
---- a/drivers/misc/habanalabs/common/device.c
-+++ b/drivers/misc/habanalabs/common/device.c
-@@ -13,6 +13,8 @@
- #include <linux/pci.h>
- #include <linux/hwmon.h>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1bc57af09c80..031198aec108 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1781,6 +1781,7 @@ F:	drivers/i2c/busses/i2c-pasemi-core.c
+ F:	drivers/i2c/busses/i2c-pasemi-platform.c
+ F:	drivers/irqchip/irq-apple-aic.c
+ F:	drivers/mailbox/apple-mailbox.c
++F:	drivers/nvmem/apple-efuses.c
+ F:	drivers/pinctrl/pinctrl-apple-gpio.c
+ F:	drivers/soc/apple/*
+ F:	drivers/watchdog/apple_wdt.c
+diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
+index da414617a54d..ef6a13c8a4d6 100644
+--- a/drivers/nvmem/Kconfig
++++ b/drivers/nvmem/Kconfig
+@@ -300,4 +300,16 @@ config NVMEM_BRCM_NVRAM
+ 	  This driver provides support for Broadcom's NVRAM that can be accessed
+ 	  using I/O mapping.
  
-+#define HL_RESET_DELAY_USEC		10000	/* 10ms */
++config NVMEM_APPLE_EFUSES
++	tristate "Apple eFuse support"
++	depends on ARCH_APPLE || COMPILE_TEST
++	default ARCH_APPLE
++	help
++	  Say y here to enabled support for reading eFuses on Apple SoCs
++	  such as the M1. These are e.g. used to store factory programmed
++	  calibration data required for the PCIe or the USB-C PHY.
 +
- enum hl_device_status hl_device_status(struct hl_device *hdev)
- {
- 	enum hl_device_status status;
-@@ -980,7 +982,7 @@ int hl_device_reset(struct hl_device *hdev, u32 flags)
- {
- 	bool hard_reset, from_hard_reset_thread, fw_reset, hard_instead_soft = false,
- 			reset_upon_device_release = false, schedule_hard_reset = false,
--			skip_wq_flush = false;
-+			skip_wq_flush, delay_reset;
- 	u64 idle_mask[HL_BUSY_ENGINES_MASK_EXT_SIZE] = {0};
- 	struct hl_ctx *ctx;
- 	int i, rc;
-@@ -994,6 +996,7 @@ int hl_device_reset(struct hl_device *hdev, u32 flags)
- 	from_hard_reset_thread = !!(flags & HL_DRV_RESET_FROM_RESET_THR);
- 	fw_reset = !!(flags & HL_DRV_RESET_BYPASS_REQ_TO_FW);
- 	skip_wq_flush = !!(flags & HL_DRV_RESET_DEV_RELEASE);
-+	delay_reset = !!(flags & HL_DRV_RESET_DELAY);
- 
- 	if (!hard_reset && !hdev->asic_prop.supports_soft_reset) {
- 		hard_instead_soft = true;
-@@ -1043,6 +1046,9 @@ int hl_device_reset(struct hl_device *hdev, u32 flags)
- 		hdev->reset_info.in_reset = 1;
- 		spin_unlock(&hdev->reset_info.lock);
- 
-+		if (delay_reset)
-+			usleep_range(HL_RESET_DELAY_USEC, HL_RESET_DELAY_USEC << 1);
++	  This driver can also be built as a module. If so, the module will
++	  be called nvmem-apple-efuses.
 +
- 		handle_reset_trigger(hdev, flags);
- 
- 		/* This still allows the completion of some KDMA ops */
-diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index cef4717d0916..1edaf6ab67bd 100644
---- a/drivers/misc/habanalabs/common/habanalabs.h
-+++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -142,6 +142,9 @@ enum hl_mmu_page_table_location {
-  *
-  * - HL_DRV_RESET_FW_FATAL_ERR
-  *       Set if reset is due to a fatal error from FW
+ endif
+diff --git a/drivers/nvmem/Makefile b/drivers/nvmem/Makefile
+index dcbbde35b6a8..1a8e54691d3e 100644
+--- a/drivers/nvmem/Makefile
++++ b/drivers/nvmem/Makefile
+@@ -61,3 +61,5 @@ obj-$(CONFIG_NVMEM_RMEM) 	+= nvmem-rmem.o
+ nvmem-rmem-y			:= rmem.o
+ obj-$(CONFIG_NVMEM_BRCM_NVRAM)	+= nvmem_brcm_nvram.o
+ nvmem_brcm_nvram-y		:= brcm_nvram.o
++obj-$(CONFIG_NVMEM_APPLE_EFUSES)	+= nvmem-apple-efuses.o
++nvmem-apple-efuses-y 		:= apple-efuses.o
+diff --git a/drivers/nvmem/apple-efuses.c b/drivers/nvmem/apple-efuses.c
+new file mode 100644
+index 000000000000..925fc0033b83
+--- /dev/null
++++ b/drivers/nvmem/apple-efuses.c
+@@ -0,0 +1,67 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Apple SoC eFuse driver
 + *
-+ * - HL_DRV_RESET_DELAY
-+ *       Set if a delay should be added before the reset
-  */
- 
- #define HL_DRV_RESET_HARD		(1 << 0)
-@@ -151,6 +154,7 @@ enum hl_mmu_page_table_location {
- #define HL_DRV_RESET_DEV_RELEASE	(1 << 4)
- #define HL_DRV_RESET_BYPASS_REQ_TO_FW	(1 << 5)
- #define HL_DRV_RESET_FW_FATAL_ERR	(1 << 6)
-+#define HL_DRV_RESET_DELAY		(1 << 7)
- 
- #define HL_MAX_SOBS_PER_MONITOR	8
- 
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index 0eed0efae040..21c2b678ff72 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -8199,7 +8199,7 @@ static void gaudi_handle_eqe(struct hl_device *hdev,
- 					| HL_DRV_RESET_BYPASS_REQ_TO_FW
- 					| fw_fatal_err_flag);
- 	else if (hdev->hard_reset_on_fw_events)
--		hl_device_reset(hdev, HL_DRV_RESET_HARD | fw_fatal_err_flag);
-+		hl_device_reset(hdev, HL_DRV_RESET_HARD | HL_DRV_RESET_DELAY | fw_fatal_err_flag);
- 	else
- 		hl_fw_unmask_irq(hdev, event_type);
- }
++ * Copyright (C) The Asahi Linux Contributors
++ */
++
++#include <linux/io.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/nvmem-provider.h>
++#include <linux/platform_device.h>
++
++static int apple_efuses_read(void *context, unsigned int offset, void *val,
++			     size_t bytes)
++{
++	void __iomem *fuses = context;
++	u32 *dst = val;
++
++	while (bytes >= sizeof(u32)) {
++		*dst++ = readl_relaxed(fuses + offset);
++		bytes -= sizeof(u32);
++		offset += sizeof(u32);
++	}
++
++	return 0;
++}
++
++static int apple_efuses_probe(struct platform_device *pdev)
++{
++	struct resource *res;
++	struct nvmem_config config = {
++		.dev = &pdev->dev,
++		.read_only = true,
++		.reg_read = apple_efuses_read,
++		.stride = sizeof(u32),
++		.word_size = sizeof(u32),
++		.name = "apple_efuses_nvmem",
++		.id = NVMEM_DEVID_AUTO,
++	};
++
++	config.priv = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
++	if (IS_ERR(config.priv))
++		return PTR_ERR(config.priv);
++
++	config.size = resource_size(res);
++
++	return PTR_ERR_OR_ZERO(devm_nvmem_register(config.dev, &config));
++}
++
++static const struct of_device_id apple_efuses_of_match[] = {
++	{ .compatible = "apple,efuses", },
++	{}
++};
++
++static struct platform_driver apple_efuses_driver = {
++	.driver = {
++		.name = "apple_efuses",
++		.of_match_table = apple_efuses_of_match,
++	},
++	.probe = apple_efuses_probe,
++};
++
++module_platform_driver(apple_efuses_driver);
++
++MODULE_AUTHOR("Sven Peter <sven@svenpeter.dev>");
++MODULE_LICENSE("GPL");
 -- 
 2.25.1
 
