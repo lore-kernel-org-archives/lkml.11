@@ -2,104 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 23:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 23:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231319AbiB0XUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 18:20:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48544 "EHLO
+        id S231150AbiB0X2I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 18:28:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229602AbiB0XUh (ORCPT
+        with ESMTP id S229486AbiB0X2D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 18:20:37 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F9C24F30
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 15:19:59 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id i11so15111131eda.9
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 15:19:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AJKFWkaNILgrND2ajpv99ahQRaE4hGQV9IUMvW6X5jc=;
-        b=COC/4g+XK0ncFFdjTFjbGI8kwJnazvpy+Y8Z5kBv2abHG/7OdfJl8XVUO/gQJQXrgU
-         7syJ6Bl4EH1rhevEXJDyJCzV6vXIrdiBYUsB99agtvA7QQFqI7pET+wt/bULnxpe/llB
-         DoHBp+DrTOur4By7IXXtsNs4+hSllcxUFM+zA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AJKFWkaNILgrND2ajpv99ahQRaE4hGQV9IUMvW6X5jc=;
-        b=HfgCQAVrZDuh5iyl2El51AS930i1RqEmPIM/QERqumN3g3nQnVS7t/KGPk2wXQ5izH
-         SHtKrnjLI0a8Cuo6Frt6QZUzfn8BdZJ1i2ALuBuErHdPHWE3QlAAwmBMClopr0tmUMpO
-         LXzMtj0O98EEWOAsSWOdCvsSWAYjIGqaKYcKG8k1M93ExJ2k2xy6E5g3VnyVtEhS2kKn
-         vFctZmsMQe55XGx9I06o6pZy23vsZiYapjJkUHQgndFZP/TAbq6qKxD2DUj2bVIqNJDL
-         uGrQKMY1Hzm/Kh6OjLCc5zdZ1uk1X4NBCGIp2ob0vkYWByXcO6ApvzCYeCQgpZlz15pa
-         V0sg==
-X-Gm-Message-State: AOAM531T+m2+amyBIBKKO4m4O6BMQaMX4hpjB8Iq59RMx49mbpdIWcnR
-        Ayyb1z8MUKG6TpNFF+yIX/OzuH5Ni2GI04UKNx0=
-X-Google-Smtp-Source: ABdhPJxyGNr5R/fLsMghLPyuHo+70fbPmywNsE1ibyzdbNpCcH8pHI0EIwc7A+VnCJco6DXu13JqQg==
-X-Received: by 2002:a05:6402:440d:b0:412:9e8a:5e51 with SMTP id y13-20020a056402440d00b004129e8a5e51mr16993947eda.362.1646003998264;
-        Sun, 27 Feb 2022 15:19:58 -0800 (PST)
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com. [209.85.208.45])
-        by smtp.gmail.com with ESMTPSA id u1-20020aa7d0c1000000b004132c0a9ee3sm5318155edo.84.2022.02.27.15.19.58
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Feb 2022 15:19:58 -0800 (PST)
-Received: by mail-ed1-f45.google.com with SMTP id ee12so455830edb.12
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 15:19:58 -0800 (PST)
-X-Received: by 2002:a2e:b8cc:0:b0:246:4767:7a29 with SMTP id
- s12-20020a2eb8cc000000b0024647677a29mr12717079ljp.152.1646003517979; Sun, 27
- Feb 2022 15:11:57 -0800 (PST)
+        Sun, 27 Feb 2022 18:28:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618F8638C;
+        Sun, 27 Feb 2022 15:27:25 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F39C4611CF;
+        Sun, 27 Feb 2022 23:27:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0601C340E9;
+        Sun, 27 Feb 2022 23:27:23 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="goL89XZS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1646004441;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cPJiLooKbNUohnU6yXN63L1h4yYqJ923mGb0t2sRAmM=;
+        b=goL89XZSsZPfaum9fcpaXArg1yGEVHqkD3gJbN6h+aFDXgFSk3FtmNY1XHGFlU+zie+ebw
+        fT4UAbs+ItDDw0QJuyMeed/Dghxx9UVojWm5f0rRImhNElq0sVfCIbyDdQBVbN+4oUuSwm
+        /NzJUKJdUYotOeOWxmz+2GkyXgatyeI=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 011a27c7 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sun, 27 Feb 2022 23:27:21 +0000 (UTC)
+Received: by mail-yb1-f171.google.com with SMTP id j12so17085495ybh.8;
+        Sun, 27 Feb 2022 15:27:21 -0800 (PST)
+X-Gm-Message-State: AOAM530u4qG1qaPgTNsEI8zmuELPSv8QaLeYFk3RqBgIWDTztXJuXTg7
+        eoLNjFbuBcp3KqBgpVWc01lH4257yLyiL3NoqvA=
+X-Google-Smtp-Source: ABdhPJzTL5Q+trTKPAkI1w13K2/b9LgEC7uevfTmCAsJfxl8vfz0K4RBpfa5PKF+e8kAToiRjhCjUiBMURVep4tNPNM=
+X-Received: by 2002:a25:238d:0:b0:619:3e19:b06b with SMTP id
+ j135-20020a25238d000000b006193e19b06bmr16106668ybj.382.1646004440064; Sun, 27
+ Feb 2022 15:27:20 -0800 (PST)
 MIME-Version: 1.0
-References: <20220227215408.3180023-1-arnd@kernel.org> <dd41c574-05b0-23bc-646c-0bd341e6e50b@linaro.org>
-In-Reply-To: <dd41c574-05b0-23bc-646c-0bd341e6e50b@linaro.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 27 Feb 2022 15:11:41 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wg_r01OASRuSFfbEk_YHjve2BsBbkDYiEiKTaX2jm=53g@mail.gmail.com>
-Message-ID: <CAHk-=wg_r01OASRuSFfbEk_YHjve2BsBbkDYiEiKTaX2jm=53g@mail.gmail.com>
-Subject: Re: [greybus-dev] [PATCH] Kbuild: remove -std=gnu89 from compiler arguments
-To:     Alex Elder <elder@linaro.org>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
-        Jonathan Corbet <corbet@lwn.net>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-btrfs <linux-btrfs@vger.kernel.org>
+References: <20220226220639.1173594-1-Jason@zx2c4.com> <20220226220639.1173594-3-Jason@zx2c4.com>
+ <0c73d29e-e558-efb9-d0d7-c612b2bb7e90@amazon.com> <YhtyBHUyFysmZ9bC@zx2c4.com>
+In-Reply-To: <YhtyBHUyFysmZ9bC@zx2c4.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 28 Feb 2022 00:27:09 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pocD1CoZbnF7p4k0ws7-R0Vc9H4i5TRJ_MCX-d3AZhFw@mail.gmail.com>
+Message-ID: <CAHmME9pocD1CoZbnF7p4k0ws7-R0Vc9H4i5TRJ_MCX-d3AZhFw@mail.gmail.com>
+Subject: Re: [PATCH v5 2/3] ACPI: allow longer device IDs
+To:     Alexander Graf <graf@amazon.com>
+Cc:     Len Brown <lenb@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 3:04 PM Alex Elder <elder@linaro.org> wrote:
+Hey again,
+
+On Sun, Feb 27, 2022 at 1:43 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
 >
-> Glancing at the Greybus code, I don't believe there's any
-> reason it needs to shift a negative value.  Such warnings
-> could be fixed by making certain variables unsigned, for
-> example.
+> Hi Alex,
+>
+> On Sun, Feb 27, 2022 at 12:42:03PM +0100, Alexander Graf wrote:
+> > > To allow device drivers to match identifiers that exceed the 9 byte
+> > > limit, this simply ups the length to 16, just like it was before the
+> > > aforementioned commit. Empirical testing indicates that this
+> >
+> >
+> > This is only true for 64bit systems where padding automatically bloated
+> > to 9 byte array to 16. I still believe the patch is fine as it is, but
+> > there will be minor .rodata overhead on 32bit targets which you may want
+> > to quantify in the patch description.
+>
+> Good point. So I just tried this out with a 32-bit i686 kernel and the
+> results are the same again for the size of vmlinux. I then ran `objdump
+> --headers` and looked at the size of the .rodata section, where it's
+> also the same. I'm not quite sure what to make of this, as it's not what
+> I was expecting, but I think I tested it right. So maybe we're lucky
+> here?
 
-As mentioned in the original thread, making things unsigned actually
-is likely to introduce bugs and make things worse.
+I tried a little harder to get _some_ difference on 32-bit, and
+managed to get one by doing i386_defconfig and then switching off
+modules to make all M into Y, and then compared sizes:
 
-The warning is simply bogus, and the fact that it was enabled by
--Wextra in gcc for std=gnu99 and up was a mistake that looks likely to
-be fixed in gcc.
+vmlinux: 25590780 -> 25598972, so a 0.032% increase.
+bzImage: 8698944 -> 8699424, so a 0.0055% increase.
 
-So don't try to "fix" the code to make any possible warnings go away.
-You may just make things worse.
+So it does increase, ever so slightly, but a) on 32-bit, and b) a
+super, super tiny amount.
 
-(That is often true in general for the more esoteric warnings, but in
-this case it's just painfully more obvious).
+In other words, I still think this patch is very much a-okay. But very
+eager to hear from Rafael on the approach.
 
-              Linus
+Jason
