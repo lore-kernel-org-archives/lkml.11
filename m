@@ -2,132 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB84C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 11:42:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 11:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230270AbiB0Lms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 06:42:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53158 "EHLO
+        id S230274AbiB0LnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 06:43:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbiB0Lmr (ORCPT
+        with ESMTP id S229812AbiB0LnW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 06:42:47 -0500
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF782610B;
-        Sun, 27 Feb 2022 03:42:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1645962131; x=1677498131;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=R4oQvTqm6F6vO+0nb8QAABXkVb+76E/oM8HPveUAZfM=;
-  b=AA+W0oH//n/3GqTDKayiIhvhKFX3Tp0VYDCtWHEKnOVes4M1QKU9E+rX
-   AUj66c9X3eWB1pOhZZVI0YKEdUfTSq+lYzBRhOIWMODbORgDv4DcHUqwD
-   OLYgGRUnfh3I4dRbN5kTGN5g2iJlYzY8gw/tJOlCzLDCyhh6L1Kp3/u1J
-   4=;
-X-IronPort-AV: E=Sophos;i="5.90,141,1643673600"; 
-   d="scan'208";a="178640669"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-9938edb1.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 27 Feb 2022 11:42:09 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-9938edb1.us-west-2.amazon.com (Postfix) with ESMTPS id 92B1881C0C;
-        Sun, 27 Feb 2022 11:42:08 +0000 (UTC)
-Received: from EX13D20UWC001.ant.amazon.com (10.43.162.244) by
- EX13MTAUWC001.ant.amazon.com (10.43.162.135) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Sun, 27 Feb 2022 11:42:07 +0000
-Received: from [0.0.0.0] (10.43.160.203) by EX13D20UWC001.ant.amazon.com
- (10.43.162.244) with Microsoft SMTP Server (TLS) id 15.0.1497.28; Sun, 27 Feb
- 2022 11:42:05 +0000
-Message-ID: <0c73d29e-e558-efb9-d0d7-c612b2bb7e90@amazon.com>
-Date:   Sun, 27 Feb 2022 12:42:03 +0100
+        Sun, 27 Feb 2022 06:43:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CB4811142;
+        Sun, 27 Feb 2022 03:42:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1578AB80881;
+        Sun, 27 Feb 2022 11:42:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC6BC340E9;
+        Sun, 27 Feb 2022 11:42:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645962162;
+        bh=2GZAa88jl8nwc/hfdhteF303XDxGjwubhEYfJOwbaqQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nMMzAIUGv35rsu8OipfLeJFxbKcKWV73XzPuf+i6arMdEuZmI7TKrmNekoDu4Hs44
+         377pGHtab86XXGGKsN0QqpbkH+GFOwWrwqpS9jX0JLVWw95AUxOXDBDZRe7QGnBJhE
+         t8kj9gNcjnJMu+HKIh43cYkWdcLSkZZe1AKgrO/0A4reL9QFXoGrGoYa91nr6IMPOt
+         QNWw9HCaB0TvGIIiz9sV7wy3tK6tFw2knx/KvVgnkA2hA329lpTM5d4ZQ5KD7Kr8es
+         IsTjOyRgjZqeHIjlfe0hIxoKhcijSpGAShcrAo97PIrKrJb12oM056MaO9pXqv5s7L
+         fIyd5oiXRTLnA==
+Date:   Sun, 27 Feb 2022 11:49:44 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     Billy Tsai <billy_tsai@aspeedtech.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Colin King <colin.king@canonical.com>,
+        linux-iio@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Konstantin Klubnichkin <kitsok@yandex-team.ru>
+Subject: Re: [PATCH v2] iio: adc: aspeed: Add divider flag to fix incorrect
+ voltage reading.
+Message-ID: <20220227114944.4706bea1@jic23-huawei>
+In-Reply-To: <CACPK8XdsRorJvMjUMNYGAYNLGLzhYJEZSQMTk1ZywwY+SyqDbQ@mail.gmail.com>
+References: <20220221012705.22008-1-billy_tsai@aspeedtech.com>
+        <CACPK8XdsRorJvMjUMNYGAYNLGLzhYJEZSQMTk1ZywwY+SyqDbQ@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.6.1
-Subject: Re: [PATCH v5 2/3] ACPI: allow longer device IDs
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Len Brown <lenb@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-CC:     <linux-crypto@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-References: <20220226220639.1173594-1-Jason@zx2c4.com>
- <20220226220639.1173594-3-Jason@zx2c4.com>
-From:   Alexander Graf <graf@amazon.com>
-In-Reply-To: <20220226220639.1173594-3-Jason@zx2c4.com>
-X-Originating-IP: [10.43.160.203]
-X-ClientProxiedBy: EX13D31UWA004.ant.amazon.com (10.43.160.217) To
- EX13D20UWC001.ant.amazon.com (10.43.162.244)
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ck9uIDI2LjAyLjIyIDIzOjA2LCBKYXNvbiBBLiBEb25lbmZlbGQgd3JvdGU6Cj4gRnJvbTogQWxl
-eGFuZGVyIEdyYWYgPGdyYWZAYW1hem9uLmNvbT4KPgo+IFdlIGNyZWF0ZSBhIGxpc3Qgb2YgQUNQ
-SSAiUE5QIiBJRHMgd2hpY2ggY29udGFpbnMgX0hJRCwgX0NJRCwgYW5kIENMUwo+IGVudHJpZXMg
-b2YgdGhlIHJlc3BlY3RpdmUgZGV2aWNlcy4gSG93ZXZlciwgd2Ugc3F1ZWV6ZSB0aGVtIGludG8g
-c3RydWN0Cj4gYWNwaV9kZXZpY2VfaWQsIHdoaWNoIG9ubHkgaGFzIDkgYnl0ZXMgc3BhY2UgdG8g
-c3RvcmUgdGhlIGlkZW50aWZpZXIuIEl0Cj4gb3JpZ2luYWxseSBoYWQgMTYgYnl0ZXMsIGJ1dCB3
-YXMgY2hhbmdlZCB0byBvbmx5IGhhdmUgOSBpbiA2NTQzYmVjZjI2ZmYKPiAoIm1vZC9maWxlMmFs
-aWFzOiBtYWtlIG1vZGFsaWFzIGdlbmVyYXRpb24gc2FmZSBmb3IgY3Jvc3MgY29tcGlsaW5nIiks
-Cj4gcHJlc3VtYWJseSBvbiB0aGUgdGhlb3J5IHRoYXQgaXQgd291bGQgbWF0Y2ggdGhlIEFDUEkg
-c3BlYyBzbyBpdCBkaWRuJ3QKPiBtYXR0ZXIuCj4KPiBVbmZvcnR1bmF0ZWx5LCB3aGlsZSBtb3N0
-IHBlb3BsZSBhZGhlcmUgdG8gdGhlIEFDUEkgc3BlY3MsIE1pY3Jvc29mdAo+IGRlY2lkZWQgdGhh
-dCBpdHMgVk0gR2VuZXJhdGlvbiBDb3VudGVyIGRldmljZSBbMV0gc2hvdWxkIG9ubHkgYmUKPiBp
-ZGVudGlmaWFibGUgYnkgX0NJRCB3aXRoIGEgdmFsdWUgb2YgIlZNX0dlbl9Db3VudGVyIiwgd2hp
-Y2ggaXMgbG9uZ2VyCj4gdGhhbiA5IGNoYXJhY3RlcnMuCj4KPiBUbyBhbGxvdyBkZXZpY2UgZHJp
-dmVycyB0byBtYXRjaCBpZGVudGlmaWVycyB0aGF0IGV4Y2VlZCB0aGUgOSBieXRlCj4gbGltaXQs
-IHRoaXMgc2ltcGx5IHVwcyB0aGUgbGVuZ3RoIHRvIDE2LCBqdXN0IGxpa2UgaXQgd2FzIGJlZm9y
-ZSB0aGUKPiBhZm9yZW1lbnRpb25lZCBjb21taXQuIEVtcGlyaWNhbCB0ZXN0aW5nIGluZGljYXRl
-cyB0aGF0IHRoaXMKCgpUaGlzIGlzIG9ubHkgdHJ1ZSBmb3IgNjRiaXQgc3lzdGVtcyB3aGVyZSBw
-YWRkaW5nIGF1dG9tYXRpY2FsbHkgYmxvYXRlZCAKdG8gOSBieXRlIGFycmF5IHRvIDE2LiBJIHN0
-aWxsIGJlbGlldmUgdGhlIHBhdGNoIGlzIGZpbmUgYXMgaXQgaXMsIGJ1dCAKdGhlcmUgd2lsbCBi
-ZSBtaW5vciAucm9kYXRhIG92ZXJoZWFkIG9uIDMyYml0IHRhcmdldHMgd2hpY2ggeW91IG1heSB3
-YW50IAp0byBxdWFudGlmeSBpbiB0aGUgcGF0Y2ggZGVzY3JpcHRpb24uCgoKVGhhbmtzIGEgbG90
-IGZvciBzZW5kaW5nIHRoaXMgb3V0ISBBbmQgbGV0J3MgaG9wZSB0aGF0IDE2IGJ5dGVzIGlzIApl
-bm91Z2ggZm9yIGV2ZXJ5b25lLgoKQWxleAoKCj4gZG9lc24ndCBhY3R1YWxseSBpbmNyZWFzZSB2
-bWxpbnV4IHNpemUsIGJlY2F1c2UgdGhlIHVsb25nIGluIHRoZSBzYW1lCj4gc3RydWN0IGNhdXNl
-ZCB0aGVyZSB0byBiZSA3IGJ5dGVzIG9mIHBhZGRpbmcgYW55d2F5Lgo+Cj4gVGhpcyBwYXRjaCBp
-cyBhIHByZXJlcXVpc2l0ZSB0byBhZGQgc3VwcG9ydCBmb3IgVk1HZW5JRCBpbiBMaW51eCwgdGhl
-Cj4gc3Vic2VxdWVudCBwYXRjaCBpbiB0aGlzIHNlcmllcy4gSXQgaGFzIGJlZW4gY29uZmlybWVk
-IHRvIGFsc28gd29yayBvbgo+IHRoZSB1ZGV2L21vZGFsaWFzIHNpZGUgaW4gdXNlcnNwYWNlLgo+
-Cj4gWzFdIGh0dHBzOi8vZG93bmxvYWQubWljcm9zb2Z0LmNvbS9kb3dubG9hZC8zLzEvQy8zMUNG
-QzMwNy05OENBLTRDQTUtOTE0Qy1EOTc3MjY5MUUyMTQvVmlydHVhbE1hY2hpbmVHZW5lcmF0aW9u
-SUQuZG9jeAo+Cj4gQ2M6IEFyZCBCaWVzaGV1dmVsIDxhcmRiQGtlcm5lbC5vcmc+Cj4gQ2M6IExl
-biBCcm93biA8bGVuYkBrZXJuZWwub3JnPgo+IENjOiBSYWZhZWwgSi4gV3lzb2NraSA8cmFmYWVs
-QGtlcm5lbC5vcmc+Cj4gQ2M6IEdyZWcgS3JvYWgtSGFydG1hbiA8Z3JlZ2toQGxpbnV4Zm91bmRh
-dGlvbi5vcmc+Cj4gQ28tYXV0aG9yZWQtYnk6IEphc29uIEEuIERvbmVuZmVsZCA8SmFzb25Aengy
-YzQuY29tPgo+IFNpZ25lZC1vZmYtYnk6IEFsZXhhbmRlciBHcmFmIDxncmFmQGFtYXpvbi5jb20+
-Cj4gU2lnbmVkLW9mZi1ieTogSmFzb24gQS4gRG9uZW5mZWxkIDxKYXNvbkB6eDJjNC5jb20+Cj4g
-LS0tCj4gSGkgUmFmYWVsICYgTGVuLAo+Cj4gVGhpcyBwYXRjaHNldCBpcyBkaXJlY3RlZCB0b3dh
-cmQgeW91IHR3byBzcGVjaWZpY2FsbHkuIFBhdGNoZXMgMS8zIGFuZAo+IDMvMyBoYXZlIGJlZW4g
-dGhyb3VnaCB0aGUgcmluZ2VyIG9mIHJldmlldyBhIGJpdCBhbHJlYWR5IGFuZCBkbyBub3QKPiBz
-cGVjaWZpY2FsbHkgcmVxdWlyZSB5b3VyIGF0dGVudGlvbiwgYnV0IGluIHY0IHdlIHdvdW5kIHVw
-IGdldHRpbmcgaHVuZwo+IHVwIG9uIGFuIEFDUEkgQVBJIGxpbWl0YXRpb24uIFRoaXMgdjUgZml4
-ZXMgdGhhdCBsaW1pdGF0aW9uIHdpdGggdGhpcwo+IDIvMyBwYXRjaCB0aGF0IHlvdSBzZWUgaGVy
-ZSwgd2l0aCBhIHRyaXZpYWwgb25lIGxpbmUgZml4LCB3aGljaCBkb2VzCj4gcmVxdWlyZSB5b3Vy
-IGF0dGVudGlvbi4KPgo+IFBhdGNoZXMgMS8zIGFuZCAzLzMgd2lsbCBnbyB0aHJvdWdoIG15IHJh
-bmRvbS5naXQgdHJlZS4gSG93ZXZlciwgMy8zCj4gYWN0dWFsbHkgZGVwZW5kcyBvbiB0aGlzIG9u
-ZSBoZXJlLCAyLzMsIGluIG9yZGVyIHRvIGNvbXBpbGUgd2l0aG91dAo+IHdhcm5pbmdzIChhbmQg
-YmUgZnVuY3Rpb25hbCBhdCBhbGwpLiBUaGVyZWZvcmUsIGl0IHdvdWxkIGJlIG5pY2UgaWYgeW91
-Cj4gd291bGQgcHJvdmlkZSBhbiAiQWNrZWQtYnkiIG9uIGl0IGFuZCBwZXJtaXQgbWUgdG8gL2Fs
-c28vIHRha2UgaXQKPiB0aHJvdWdoIG15IHJhbmRvbS5naXQgdHJlZSAoaWYgaXQgbG9va3MgbGlr
-ZSBhIGNvcnJlY3QgcGF0Y2ggdG8geW91LCBvZgo+IGNvdXJzZSkuIFRoaXMgd291bGQgbWFrZSB0
-aGUgbWVyZ2UgbG9naXN0aWNzIGEgbG90IGVhc2llci4gUGx1cyBpdCdzIGEKPiBzbWFsbCArMS8t
-MSBsaW5lIGNoYW5nZS4KPgo+IFBsZWFzZSBoYXZlIGEgbG9vayBhbmQgbGV0IG1lIGtub3cgd2hh
-dCB5b3UgdGhpbmsuCj4KPiBUaGFua3MsCj4gSmFzb24KPgo+ICAgaW5jbHVkZS9saW51eC9tb2Rf
-ZGV2aWNldGFibGUuaCB8IDIgKy0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwg
-MSBkZWxldGlvbigtKQo+Cj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvbW9kX2RldmljZXRh
-YmxlLmggYi9pbmNsdWRlL2xpbnV4L21vZF9kZXZpY2V0YWJsZS5oCj4gaW5kZXggNGJiNzE5Nzlh
-OGZkLi41ZGE1ZDk5MGZmNTggMTAwNjQ0Cj4gLS0tIGEvaW5jbHVkZS9saW51eC9tb2RfZGV2aWNl
-dGFibGUuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvbW9kX2RldmljZXRhYmxlLmgKPiBAQCAtMjEx
-LDcgKzIxMSw3IEBAIHN0cnVjdCBjc3NfZGV2aWNlX2lkIHsKPiAgICAgICAgICBrZXJuZWxfdWxv
-bmdfdCBkcml2ZXJfZGF0YTsKPiAgIH07Cj4KPiAtI2RlZmluZSBBQ1BJX0lEX0xFTiAgICA5Cj4g
-KyNkZWZpbmUgQUNQSV9JRF9MRU4gICAgMTYKPgo+ICAgc3RydWN0IGFjcGlfZGV2aWNlX2lkIHsK
-PiAgICAgICAgICBfX3U4IGlkW0FDUElfSURfTEVOXTsKPiAtLQo+IDIuMzUuMQo+CgoKCkFtYXpv
-biBEZXZlbG9wbWVudCBDZW50ZXIgR2VybWFueSBHbWJICktyYXVzZW5zdHIuIDM4CjEwMTE3IEJl
-cmxpbgpHZXNjaGFlZnRzZnVlaHJ1bmc6IENocmlzdGlhbiBTY2hsYWVnZXIsIEpvbmF0aGFuIFdl
-aXNzCkVpbmdldHJhZ2VuIGFtIEFtdHNnZXJpY2h0IENoYXJsb3R0ZW5idXJnIHVudGVyIEhSQiAx
-NDkxNzMgQgpTaXR6OiBCZXJsaW4KVXN0LUlEOiBERSAyODkgMjM3IDg3OQoKCg==
+On Mon, 21 Feb 2022 05:45:16 +0000
+Joel Stanley <joel@jms.id.au> wrote:
+
+> On Mon, 21 Feb 2022 at 01:26, Billy Tsai <billy_tsai@aspeedtech.com> wrote:
+> >
+> > The formula for the ADC sampling period in ast2400/ast2500 is:
+> > ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0])
+> > When ADC0C[9:0] is set to 0 the sampling voltage will be lower than
+> > expected, because the hardware may not have enough time to
+> > charge/discharge to a stable voltage. This patch use the flag
+> > CLK_DIVIDER_ONE_BASED which will use the raw value read from the
+> > register, with the value of zero considered invalid to conform to the
+> > corrected formula.  
+> 
+> (to answer my own question)
+> 
+> ..and this is okay on the 2600, because we do not set need_prescaler =
+> true on that platform.
+> 
+> Reviewed-by: Joel Stanley <joel@jms.id.au>
+
+Applied to the fixes-togreg branch of iio.git.
+
+Depending on how timing works out in the coming week I might just pull
+all the fixes in for the next merge window rather than doing a separate
+pull request.
+
+Thanks,
+
+Jonathan
+
+> 
+> >
+> > Fixes: 573803234e72 ("iio: Aspeed ADC")
+> > Reported-by: Konstantin Klubnichkin <kitsok@yandex-team.ru>
+> > Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+> > ---
+> >  drivers/iio/adc/aspeed_adc.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+> > index a957cad1bfab..ffae64f39221 100644
+> > --- a/drivers/iio/adc/aspeed_adc.c
+> > +++ b/drivers/iio/adc/aspeed_adc.c
+> > @@ -539,7 +539,9 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+> >         data->clk_scaler = devm_clk_hw_register_divider(
+> >                 &pdev->dev, clk_name, clk_parent_name, scaler_flags,
+> >                 data->base + ASPEED_REG_CLOCK_CONTROL, 0,
+> > -               data->model_data->scaler_bit_width, 0, &data->clk_lock);
+> > +               data->model_data->scaler_bit_width,
+> > +               data->model_data->need_prescaler ? CLK_DIVIDER_ONE_BASED : 0,
+> > +               &data->clk_lock);
+> >         if (IS_ERR(data->clk_scaler))
+> >                 return PTR_ERR(data->clk_scaler);
+> >
+> > --
+> > 2.25.1
+> >  
 
