@@ -2,91 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD74C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 19:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 19:51:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231485AbiB0T3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 14:29:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
+        id S231516AbiB0Tv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 14:51:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230444AbiB0T3C (ORCPT
+        with ESMTP id S230444AbiB0Tvz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 14:29:02 -0500
-X-Greylist: delayed 1205 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Feb 2022 11:28:24 PST
-Received: from 1.mo548.mail-out.ovh.net (1.mo548.mail-out.ovh.net [178.32.121.110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A315D18E
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 11:28:24 -0800 (PST)
-Received: from mxplan5.mail.ovh.net (unknown [10.109.138.238])
-        by mo548.mail-out.ovh.net (Postfix) with ESMTPS id 449B420F5D;
-        Sun, 27 Feb 2022 18:50:42 +0000 (UTC)
-Received: from kaod.org (37.59.142.95) by DAG4EX1.mxp5.local (172.16.2.31)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Sun, 27 Feb
- 2022 19:50:40 +0100
-Authentication-Results: garm.ovh; auth=pass (GARM-95G0019dbb524f-1c55-405d-97b9-25daac512930,
-                    949565DF20DEE76D4A77FF7731A75FE8B07B1F6B) smtp.auth=clg@kaod.org
-X-OVh-ClientIp: 82.64.250.170
-Message-ID: <688b7a65-d4b6-682b-494a-1d4178699dba@kaod.org>
-Date:   Sun, 27 Feb 2022 19:50:35 +0100
+        Sun, 27 Feb 2022 14:51:55 -0500
+Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6319525E85;
+        Sun, 27 Feb 2022 11:51:18 -0800 (PST)
+Received: by mail-qt1-x835.google.com with SMTP id s15so7273729qtk.10;
+        Sun, 27 Feb 2022 11:51:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=k2EuF7EN+Fkml/eiUNqv250J5RLQI66HbZW1fBZ0Bag=;
+        b=HEilvnpSVbD7b79NnA0LNVrttllaxxREfAbzbj3KIou3ZmlAbiYtJAfwNWHdxi9NIo
+         0h7LTGwffXnkz5uQfrVXpIYl2wpFnDGMzi2dzmseb+MO+gXeI9K0KAtS3uKxn3f0pz2P
+         9/exXWPwAQIrbfugZf60BDSKRGLC0tZrC03ActBYn0krcCf1p602NKiZioqEMiHXOsup
+         KEc/X4L2S9IuCqyioSUl/lg07TlnESkOZP6inG+iNwmOShsqa2VX3zBeGqRiCW4/vszy
+         yhdh2iR07YzWSFayEFsg6o+FoFFqECbata/08QtIktT5hVf53mvecL6SE5X1MA0i6rQr
+         unoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=k2EuF7EN+Fkml/eiUNqv250J5RLQI66HbZW1fBZ0Bag=;
+        b=DC6yHXzRmc0yrzc5312rQgoaWF4O1VClQ2GA2TiPU1FVvdWYQZOq8uQNotimlSuJSh
+         dXj165PifxXNntsgZzr6g4xTGpRd0G8cFw3qpljkEy0xTpk00zTa200TzGyrPibUeWzy
+         73KKcU8d+xHxvj5ay4tWONM1E0+i6pjkhWLzNXAr/g3weUw951FT/92Uiu4zzvArgK28
+         9Wc5GtUeXYqH2rhNtCw2On9HSKXsw/mBJWnNjTY96dkkJ3AL9Mnv8UaSOsHib0AWf4Su
+         1lNNOXHGRfH5Q9FWiitRMzhNYFgpv1wKAVCSK05zuEBWVRWd70ZLiCe8t74hmSfa+wX6
+         334w==
+X-Gm-Message-State: AOAM533Uw+ZBeIRk8wAk0JFiJf5v3MODiBOLcXmJevl8lcRtq5FsijCm
+        Y/PPM1YgV9Tz8cbhJf5nRx5902l1BOE=
+X-Google-Smtp-Source: ABdhPJwkgnFn94ubKkig7nOzlgkY0IbDLBmU6Zcfjt42QTMoRSQQchVuUd11vUnu57XOCiOY72uSKA==
+X-Received: by 2002:ac8:5fd1:0:b0:2d9:4547:9ddb with SMTP id k17-20020ac85fd1000000b002d945479ddbmr14024272qta.149.1645991477562;
+        Sun, 27 Feb 2022 11:51:17 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:ee9e:a12e:deed:13de])
+        by smtp.gmail.com with ESMTPSA id a8-20020a05622a064800b002dd4f1eccc3sm5728745qtb.35.2022.02.27.11.51.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Feb 2022 11:51:17 -0800 (PST)
+Date:   Sun, 27 Feb 2022 11:51:15 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Dmitry Safonov <dima@arista.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Mobashshera Rasool <mobash.rasool.linux@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net/ip6mr: Fix build with
+ !CONFIG_IPV6_PIMSM_V2
+Message-ID: <YhvWM2WruJVZJCDu@pop-os.localdomain>
+References: <20220225145206.561409-1-dima@arista.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 01/10] mtd: spi-nor: aspeed: Rename Kconfig option
-Content-Language: en-US
-To:     Pratyush Yadav <p.yadav@ti.com>
-CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
-        Mark Brown <broonie@kernel.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
-        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220214094231.3753686-1-clg@kaod.org>
- <20220214094231.3753686-2-clg@kaod.org>
- <20220225073155.f2cxfhm7surf34d4@ti.com>
-From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
-In-Reply-To: <20220225073155.f2cxfhm7surf34d4@ti.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [37.59.142.95]
-X-ClientProxiedBy: DAG1EX1.mxp5.local (172.16.2.1) To DAG4EX1.mxp5.local
- (172.16.2.31)
-X-Ovh-Tracer-GUID: bc842ac2-478e-418e-8a0a-cc8300debdda
-X-Ovh-Tracer-Id: 14411800285764684676
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrleekgdduudeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepieegvdffkeegfeetuddttddtveduiefhgeduffekiedtkeekteekhfffleevleelnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrdelheenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepmhigphhlrghnhedrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpegtlhhgsehkrghougdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrgh
+In-Reply-To: <20220225145206.561409-1-dima@arista.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/25/22 08:31, Pratyush Yadav wrote:
-> On 14/02/22 10:42AM, Cédric Le Goater wrote:
->> To prepare transition to the new Aspeed SMC SPI controller driver using
->> the spi-mem interface, change the kernel CONFIG option of the current
->> driver to reflect that the implementation uses the MTD SPI-NOR interface.
->> Once the new driver is sufficiently exposed, we should remove the old one.
+On Fri, Feb 25, 2022 at 02:52:06PM +0000, Dmitry Safonov wrote:
+> The following build-error on my config:
+> net/ipv6/ip6mr.c: In function ‘ip6_mroute_setsockopt’:
+> net/ipv6/ip6mr.c:1656:14: error: unused variable ‘do_wrmifwhole’ [-Werror=unused-variable]
+>  1656 |         bool do_wrmifwhole;
+>       |              ^
 > 
-> I don't quite understand the reasoning behind this. Why keep the old
-> driver around? Why not directly replace it with the new one? Does the
-> new one have any limitations that this one doesn't?
+> Cc: Mobashshera Rasool <mobash.rasool.linux@gmail.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Fixes: 4b340a5a726d
 
-No. The old one has more limitations than the new one. The old one in
-mainline is half baked since we could never merge the necessary bits
-for training. We have been keeping a full version on the OpenBMC tree.
+Documentation/process/submitting-patches.rst:
 
-Joel, could we simply drop the old driver in mainline and keep the old
-one in the OpenBMC tree until we feel comfortable ? I guess we need
-more testing.
+If your patch fixes a bug in a specific commit, e.g. you found an issue using
+``git bisect``, please use the 'Fixes:' tag with the first 12 characters of
+the SHA-1 ID, and the one line summary.  Do not split the tag across multiple
+lines, tags are exempt from the "wrap at 75 columns" rule in order to simplify
+parsing scripts.  For example::
 
-Thanks,
+        Fixes: 54a4f0239f2e ("KVM: MMU: make kvm_mmu_zap_page() return the number of pages it actually freed")
 
-C.
+The following ``git config`` settings can be used to add a pretty format for
+outputting the above style in the ``git log`` or ``git show`` commands::
 
-> 
+        [core]
+                abbrev = 12
+        [pretty]
+                fixes = Fixes: %h (\"%s\")
+
 
