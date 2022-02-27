@@ -2,122 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B73AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 01:12:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 613CCC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 01:16:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229616AbiB0BMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 20:12:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59788 "EHLO
+        id S229617AbiB0BRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 20:17:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiB0BMv (ORCPT
+        with ESMTP id S229501AbiB0BRI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 20:12:51 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB6DC2294A2
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 17:12:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645924335; x=1677460335;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=mm5Qq9zamCvFhlWle7oJy1zxnmYnJMIemHTTbkERl10=;
-  b=MgfiWnFQ279bUsyibKzkLj3+97/tCRUjKDhgx9rK5/PDbkCyLmpoa5Ir
-   R1Qof+J1KqzjVFohNvnErDJjSquG2N7vLkGYUQG7M+7aKH5Te0IkNnHAB
-   TifCaUFd2dZ++pU4WbabkSr2bFBhUfKGi/MWt1jzDbg/khL3uH2rwgyUz
-   xy1wJ0/4hNzbYPO866w+5TSk+wPj+k6TsKKrYQSAimoE0IWucYNljuVXo
-   IDOBXVdZLCNURngpQPBN9fcrvkC6CIN3WsNVswkyZKNSbdeQudWCFVD5S
-   D+VQaQ3LGXOD8OSRVjcpoQ56c353lQ9r8j7F5zoVigR0Y8U/+USLSnBDW
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10270"; a="251527584"
-X-IronPort-AV: E=Sophos;i="5.90,140,1643702400"; 
-   d="scan'208";a="251527584"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2022 17:12:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,140,1643702400"; 
-   d="scan'208";a="534014218"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 26 Feb 2022 17:12:13 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nO86f-000671-3T; Sun, 27 Feb 2022 01:12:13 +0000
-Date:   Sun, 27 Feb 2022 09:12:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Loic Poulain <loic.poulain@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: drivers/net/wwan/iosm/iosm_ipc_mux_codec.c:833:21: sparse: sparse:
- Using plain integer as NULL pointer
-Message-ID: <202202270909.D6JXGlhK-lkp@intel.com>
-MIME-Version: 1.0
+        Sat, 26 Feb 2022 20:17:08 -0500
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5434989CC1;
+        Sat, 26 Feb 2022 17:16:33 -0800 (PST)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21R19wb7032672;
+        Sat, 26 Feb 2022 19:09:58 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21R19uhE032669;
+        Sat, 26 Feb 2022 19:09:56 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Sat, 26 Feb 2022 19:09:56 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Jakob <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator after the loop
+Message-ID: <20220227010956.GW614@gate.crashing.org>
+References: <20220217184829.1991035-1-jakobkoschel@gmail.com> <20220217184829.1991035-4-jakobkoschel@gmail.com> <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com> <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com> <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com> <20220226124249.GU614@gate.crashing.org> <CAK8P3a2Dd+ZMzn=gDnTzOW=S3RHQVmm1j3Gy=aKmFEbyD-q=rQ@mail.gmail.com>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAK8P3a2Dd+ZMzn=gDnTzOW=S3RHQVmm1j3Gy=aKmFEbyD-q=rQ@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Loic,
+On Sat, Feb 26, 2022 at 11:14:15PM +0100, Arnd Bergmann wrote:
+> On Sat, Feb 26, 2022 at 1:42 PM Segher Boessenkool
+> <segher@kernel.crashing.org> wrote:
+> > On Wed, Feb 23, 2022 at 11:23:39AM -0800, Linus Torvalds wrote:
+> 
+> > > That said, we seem to only have two cases of it in the kernel, at
+> > > least by a x86-64 allmodconfig build. So we could examine the types
+> > > there, or we could just add '-Wno-shift-negative-value".
+> >
+> > Yes.
+> >
+> > The only reason the warning exists is because it is undefined behaviour
+> > (not implementation-defined or anything).  The reason it is that in the
+> > standard is that it is hard to implement and even describe for machines
+> > that are not two's complement.  However relevant that is today :-)
+> 
+> Could gcc follow the clang behavior then and skip the warning and
+> sanitizer for this case when -fno-strict-overflow or -fwrapv are used?
 
-First bad commit (maybe != root cause):
+As I said, we have this implementation choice documented as
+  As an extension to the C language, GCC does not use the latitude
+  given in C99 and C11 only to treat certain aspects of signed '<<'
+  as undefined.  However, '-fsanitize=shift' (and
+  '-fsanitize=undefined') will diagnose such cases.  They are also
+  diagnosed where constant expressions are required.
+but that is not at all what we implement currently, we warn much more
+often.  Constant expressions are required only in a few places (#if
+condition, bitfield length, (non-variable) array length, enumeration
+declarations, _Alignas, _Static_assert, case labels, most initialisers);
+not places you will see code like this problem normally.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   2293be58d6a18cab800e25e42081bacb75c05752
-commit: 89212e160b81e778f829b89743570665810e3b13 net: wwan: Fix WWAN config symbols
-date:   9 months ago
-config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220227/202202270909.D6JXGlhK-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=89212e160b81e778f829b89743570665810e3b13
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 89212e160b81e778f829b89743570665810e3b13
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/wireless/ath/ath6kl/ drivers/net/wireless/mediatek/mt76/mt7915/ drivers/net/wwan/iosm/ drivers/scsi/qedi/ drivers/staging/ sound/soc/intel/skylake/
+So imo we should just never do this by default, not just if the nasty
+-fwrapv or nastier -fno-strict-overflow is used, just like we suggest
+in our own documentation.  The only valid reason -Wshift-negative-value
+is in -Wextra is it warns for situations that always are undefined
+behaviour (even if not in GCC).
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Could you open a GCC PR for this?  The current situation is quite
+suboptimal, and what we document as our implementation choice is much
+more useful!
 
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/net/wwan/iosm/iosm_ipc_mux_codec.c:833:21: sparse: sparse: Using plain integer as NULL pointer
-
-vim +833 drivers/net/wwan/iosm/iosm_ipc_mux_codec.c
-
-9413491e20e1ab M Chetan Kumar 2021-06-13  814  
-9413491e20e1ab M Chetan Kumar 2021-06-13  815  void ipc_mux_ul_encoded_process(struct iosm_mux *ipc_mux, struct sk_buff *skb)
-9413491e20e1ab M Chetan Kumar 2021-06-13  816  {
-9413491e20e1ab M Chetan Kumar 2021-06-13  817  	struct mux_adgh *adgh;
-9413491e20e1ab M Chetan Kumar 2021-06-13  818  	u16 adgh_len;
-9413491e20e1ab M Chetan Kumar 2021-06-13  819  
-9413491e20e1ab M Chetan Kumar 2021-06-13  820  	adgh = (struct mux_adgh *)skb->data;
-9413491e20e1ab M Chetan Kumar 2021-06-13  821  	adgh_len = le16_to_cpu(adgh->length);
-9413491e20e1ab M Chetan Kumar 2021-06-13  822  
-9413491e20e1ab M Chetan Kumar 2021-06-13  823  	if (adgh->signature == cpu_to_le32(MUX_SIG_ADGH) &&
-9413491e20e1ab M Chetan Kumar 2021-06-13  824  	    ipc_mux->ul_flow == MUX_UL)
-9413491e20e1ab M Chetan Kumar 2021-06-13  825  		ipc_mux->ul_data_pend_bytes = ipc_mux->ul_data_pend_bytes -
-9413491e20e1ab M Chetan Kumar 2021-06-13  826  					      adgh_len;
-9413491e20e1ab M Chetan Kumar 2021-06-13  827  
-9413491e20e1ab M Chetan Kumar 2021-06-13  828  	if (ipc_mux->ul_flow == MUX_UL)
-9413491e20e1ab M Chetan Kumar 2021-06-13  829  		dev_dbg(ipc_mux->dev, "ul_data_pend_bytes: %lld",
-9413491e20e1ab M Chetan Kumar 2021-06-13  830  			ipc_mux->ul_data_pend_bytes);
-9413491e20e1ab M Chetan Kumar 2021-06-13  831  
-9413491e20e1ab M Chetan Kumar 2021-06-13  832  	/* Reset the skb settings. */
-9413491e20e1ab M Chetan Kumar 2021-06-13 @833  	skb->tail = 0;
-9413491e20e1ab M Chetan Kumar 2021-06-13  834  	skb->len = 0;
-9413491e20e1ab M Chetan Kumar 2021-06-13  835  
-9413491e20e1ab M Chetan Kumar 2021-06-13  836  	/* Add the consumed ADB to the free list. */
-9413491e20e1ab M Chetan Kumar 2021-06-13  837  	skb_queue_tail((&ipc_mux->ul_adb.free_list), skb);
-9413491e20e1ab M Chetan Kumar 2021-06-13  838  }
-9413491e20e1ab M Chetan Kumar 2021-06-13  839  
-
-:::::: The code at line 833 was first introduced by commit
-:::::: 9413491e20e1aba6e471d90c19cc43e523216a4d net: iosm: encode or decode datagram
-
-:::::: TO: M Chetan Kumar <m.chetan.kumar@intel.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Segher
