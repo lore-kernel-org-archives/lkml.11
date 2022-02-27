@@ -2,131 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14025C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D43B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231620AbiB0UWX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 15:22:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        id S231627AbiB0UX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 15:23:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229812AbiB0UWW (ORCPT
+        with ESMTP id S229812AbiB0UXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 15:22:22 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2D155BC9;
-        Sun, 27 Feb 2022 12:21:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645993305; x=1677529305;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+VN32GYTCkyxY4Igt2eulV9Tjn4RHjCmM6mPT/iF5BY=;
-  b=P5ydQUGWE6iCLb4UCS5NXDv1BUnK895aMtaC9oWG0FQQ3JQu7Dy/lDNx
-   YUWuMWpZ6iW+1W9BcJlRr0v2hS/v14ccVFLEtq81KoPQQGz0EKkAnAioG
-   WAKs+ab/YGQVPG13u/D9IPK1APZHl2lt2NxGfKv2/V4B/VJIcL4T/72pZ
-   W40ohWGes2ic/73tZoyd313OT9hwOs7xi/2IIu0Ld4IEgyrObcEyCJbQQ
-   SubT3WttmU1Og7c2URCh1QJgVAef4tbJ2imN9v21hWA83QZ9m1PBu2MfF
-   l4SslasHbIDv2IYLkGg02eMyCYgE9IDFxQ4HeutSpey5Xevnrh7UUbOUi
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="233381055"
-X-IronPort-AV: E=Sophos;i="5.90,141,1643702400"; 
-   d="scan'208";a="233381055"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 12:21:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,141,1643702400"; 
-   d="scan'208";a="492507154"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 27 Feb 2022 12:21:43 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOQ34-0006mn-7o; Sun, 27 Feb 2022 20:21:42 +0000
-Date:   Mon, 28 Feb 2022 04:21:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Olivier Langlois <olivier@trillion01.com>,
-        Jens Axboe <axboe@kernel.dk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Hao Xu <haoxu@linux.alibaba.com>,
-        io-uring <io-uring@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] io_uring: Add support for napi_busy_poll
-Message-ID: <202202280457.dz7FiDNh-lkp@intel.com>
-References: <53ae4884ede7faab1f409ec635f723a0745d3656.1645981935.git.olivier@trillion01.com>
-MIME-Version: 1.0
+        Sun, 27 Feb 2022 15:23:55 -0500
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CD4E83E0EC;
+        Sun, 27 Feb 2022 12:23:17 -0800 (PST)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21RKHPMx016218;
+        Sun, 27 Feb 2022 14:17:25 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21RKHOOd016217;
+        Sun, 27 Feb 2022 14:17:24 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Sun, 27 Feb 2022 14:17:24 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jakob <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator after the loop
+Message-ID: <20220227201724.GZ614@gate.crashing.org>
+References: <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com> <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com> <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com> <20220226124249.GU614@gate.crashing.org> <CAK8P3a2Dd+ZMzn=gDnTzOW=S3RHQVmm1j3Gy=aKmFEbyD-q=rQ@mail.gmail.com> <20220227010956.GW614@gate.crashing.org> <7abf3406919b4f0c828dacea6ce97ce8@AcuMS.aculab.com> <20220227113245.GY614@gate.crashing.org> <CANiq72m28WrjVHkcg5Y0LDa51Ur4OCpFbGdcq+v4gqiC0Wi6zg@mail.gmail.com>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <53ae4884ede7faab1f409ec635f723a0745d3656.1645981935.git.olivier@trillion01.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CANiq72m28WrjVHkcg5Y0LDa51Ur4OCpFbGdcq+v4gqiC0Wi6zg@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Olivier,
+On Sun, Feb 27, 2022 at 07:09:03PM +0100, Miguel Ojeda wrote:
+> On Sun, Feb 27, 2022 at 1:09 PM Segher Boessenkool
+> <segher@kernel.crashing.org> wrote:
+> >
+> > How will you define dividing by zero so that its behaviour is reasonable
+> > for every program, for example?
+> 
+> The solution is to let the developer specify what they need to happen.
+> That choice should include the unsafe possibility (i.e. unchecked),
+> because sometimes that is precisely what we need.
 
-Thank you for the patch! Perhaps something to improve:
+Requiring to annotate every place that has UB (or *can* have UB!) by the
+user is even less friendly than having so much UB is already :-(
 
-[auto build test WARNING on linus/master]
-[cannot apply to v5.17-rc5 next-20220225]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+I don't see how you will fit this into the C syntax, btw?
 
-url:    https://github.com/0day-ci/linux/commits/Olivier-Langlois/io_uring-Add-support-for-napi_busy_poll/20220228-012140
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 2293be58d6a18cab800e25e42081bacb75c05752
-config: mips-qi_lb60_defconfig (https://download.01.org/0day-ci/archive/20220228/202202280457.dz7FiDNh-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/0day-ci/linux/commit/65e72f78c66272f7cf0e87dfeef88f5b79de2d91
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Olivier-Langlois/io_uring-Add-support-for-napi_busy_poll/20220228-012140
-        git checkout 65e72f78c66272f7cf0e87dfeef88f5b79de2d91
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
+> > Invoking an error handler at runtime
+> > has most of the same unwanted effects, except is is never silent.  You
+> 
+> It may not be what it is needed in some cases (thus the necessity to
+> be able to choose), but at least one can predict what happens and
+> different compilers, versions, flags, inputs, etc. would agree.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+You need a VM like Java's to get even *close* to that.  This is not the
+C target: it is slower than wanted/expected, it is hosted instead of
+embedded, and it comes with a whole host of issues of its own.  One of
+the strengths of C is its tiny runtime, a few kB is a lot already!
 
-All warnings (new ones prefixed by >>):
+I completely agree that if you design a new "systems" language, you want
+to have much less undefined behaviour than C has.  But it is self-
+delusion to think you can eradicate all (or even most).
 
->> fs/io_uring.c:7840:3: warning: comparison of distinct pointer types ('typeof ((to)) *' (aka 'long long *') and 'uint64_t *' (aka 'unsigned long long *')) [-Wcompare-distinct-pointer-types]
-                   do_div(to, 1000);
-                   ^~~~~~~~~~~~~~~~
-   include/asm-generic/div64.h:222:28: note: expanded from macro 'do_div'
-           (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
-                  ~~~~~~~~~~~~~~~~~~ ^  ~~~~~~~~~~~~~~~
-   1 warning generated.
+And there are much bigger problems in any case!  If you think that if
+programmers could no longer write programs that invoke undefined
+behaviour they will write much better programs, programs with fewer
+serious functionality or security problems, even just a factor of two
+better, well...
 
 
-vim +7840 fs/io_uring.c
-
-  7826	
-  7827	#ifdef CONFIG_NET_RX_BUSY_POLL
-  7828	static void io_adjust_busy_loop_timeout(struct timespec64 *ts,
-  7829						struct io_wait_queue *iowq)
-  7830	{
-  7831		unsigned busy_poll_to = READ_ONCE(sysctl_net_busy_poll);
-  7832		struct timespec64 pollto = ns_to_timespec64(1000 * (s64)busy_poll_to);
-  7833	
-  7834		if (timespec64_compare(ts, &pollto) > 0) {
-  7835			*ts = timespec64_sub(*ts, pollto);
-  7836			iowq->busy_poll_to = busy_poll_to;
-  7837		} else {
-  7838			s64 to = timespec64_to_ns(ts);
-  7839	
-> 7840			do_div(to, 1000);
-  7841			iowq->busy_poll_to = to;
-  7842			ts->tv_sec = 0;
-  7843			ts->tv_nsec = 0;
-  7844		}
-  7845	}
-  7846	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Segher
