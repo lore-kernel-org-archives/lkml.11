@@ -2,75 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7228C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 15:34:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC413C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 15:37:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231409AbiB0PfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 10:35:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53348 "EHLO
+        id S231448AbiB0Pi0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 10:38:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230042AbiB0PfK (ORCPT
+        with ESMTP id S229541AbiB0PiX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 10:35:10 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A374706A
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 07:34:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=2jzM5G+jDFWNsvZXeWW9MAnYJtKTGI7nZmKfJNemupw=; b=XVqHlmRpyTgJXW0pExxOAMHaBv
-        nY9p22KH+nuicxSSG3LKf7nl7gogVZFJqRDI98OSkGlLavH/5bZIx89S1a/2xJwXmW9Zh5y0AQc1l
-        Pw/vbn6id/vSHHoiM01GBxlqS+exysWmERi6kl+M2U8d23sP4uRRoKpxkGsa8/SqIM5V5lXI6unX1
-        2P0qfTcRN+3LYBXv2K+4IaeO71fAe5+8GrclIGKiXbJpIB90BWT6HAwtM1CCJ2iYtXDvqmIUIGBPD
-        l/JZrZqJLBonLaNBLDHQnKCAtwd2Sag2q1KQJG9nNB6byN2CrBhdujMyqD93mGzMoeKDLuJZLiXcP
-        99TP52ZA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOLYN-00DaBz-Ud; Sun, 27 Feb 2022 15:33:44 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 40A8B986209; Sun, 27 Feb 2022 16:33:42 +0100 (CET)
-Date:   Sun, 27 Feb 2022 16:33:42 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Valentin Schneider <valentin.schneider@arm.com>,
-        linux-kernel@vger.kernel.org,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Alexey Gladkov <legion@kernel.org>,
-        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Ed Tsai <ed.tsai@mediatek.com>
-Subject: Re: [PATCH v3 0/2] sched/tracing: sched_switch prev_state reported
- as TASK_RUNNING when it's not
-Message-ID: <20220227153342.GD11184@worktop.programming.kicks-ass.net>
-References: <20220120162520.570782-1-valentin.schneider@arm.com>
- <20220121121558.618b98e7@gandalf.local.home>
+        Sun, 27 Feb 2022 10:38:23 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5371EC72;
+        Sun, 27 Feb 2022 07:37:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645976266; x=1677512266;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mqCX4AW2IZqk1TLXjEmwfMcxPfAOyzMgK8vuXtCajik=;
+  b=GMlH+0vJbhWW3msywEMzVxL12bO7VRk8rDgkjm5bYsRDxS51Bd9UXvXk
+   LGDWeE4n+H9y9URFDvVXZmOP2kQ6ZJpNGBaGkRWBsv52yPuXIMwnCOCtF
+   3Ve4xUxTHLwf0xIdvBtrUo6mTZj9iBtD0GMHm9VDOPkEMN8av46SWIXLX
+   isTZYHOh8W6uscJT8S4aj/39QMoVSlxPXwwOpvJZrlUtMk4LK397MrPJI
+   U70kXnGxuX9AZ2WFBGy/NKlgjh2vayIAH8WGfMmCjLcHXj9k4omNrQ3lb
+   VaWUJjmGuhTc/YUzzunnUtc6W/jCBYX/Eu5BhgH/6gOXZA3u3Ej5IyxZx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10270"; a="236249136"
+X-IronPort-AV: E=Sophos;i="5.90,141,1643702400"; 
+   d="scan'208";a="236249136"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 07:37:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,141,1643702400"; 
+   d="scan'208";a="507170607"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 27 Feb 2022 07:37:35 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOLc7-0006aE-7F; Sun, 27 Feb 2022 15:37:35 +0000
+Date:   Sun, 27 Feb 2022 23:36:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, djwong@kernel.org,
+        dan.j.williams@intel.com, david@fromorbit.com, hch@infradead.org,
+        jane.chu@oracle.com
+Subject: Re: [PATCH v11 7/8] xfs: Implement ->notify_failure() for XFS
+Message-ID: <202202272333.bhLvmuHF-lkp@intel.com>
+References: <20220227120747.711169-8-ruansy.fnst@fujitsu.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220121121558.618b98e7@gandalf.local.home>
+In-Reply-To: <20220227120747.711169-8-ruansy.fnst@fujitsu.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 12:15:58PM -0500, Steven Rostedt wrote:
-> 
-> This all looks fine to me:
-> 
-> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> 
-> Peter, want to take this through your tree?
+Hi Shiyang,
 
-Queued up now. Thanks!
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on xfs-linux/for-next]
+[also build test ERROR on linux/master]
+[cannot apply to hnaz-mm/master linus/master v5.17-rc5 next-20220225]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Shiyang-Ruan/fsdax-introduce-fs-query-to-support-reflink/20220227-200849
+base:   https://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git for-next
+config: hexagon-buildonly-randconfig-r005-20220227 (https://download.01.org/0day-ci/archive/20220227/202202272333.bhLvmuHF-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/9f4bfbd2bae60e9f172e0b7332b2af32aa5baa87
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Shiyang-Ruan/fsdax-introduce-fs-query-to-support-reflink/20220227-200849
+        git checkout 9f4bfbd2bae60e9f172e0b7332b2af32aa5baa87
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> ld.lld: error: undefined symbol: dax_unregister_holder
+   >>> referenced by xfs_buf.c
+   >>> xfs/xfs_buf.o:(xfs_free_buftarg) in archive fs/built-in.a
+   >>> referenced by xfs_buf.c
+   >>> xfs/xfs_buf.o:(xfs_free_buftarg) in archive fs/built-in.a
+--
+>> ld.lld: error: undefined symbol: dax_holder
+   >>> referenced by xfs_notify_failure.c
+   >>> xfs/xfs_notify_failure.o:(xfs_dax_notify_failure) in archive fs/built-in.a
+   >>> referenced by xfs_notify_failure.c
+   >>> xfs/xfs_notify_failure.o:(xfs_dax_notify_failure) in archive fs/built-in.a
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
