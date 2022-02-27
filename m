@@ -2,98 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D19C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 12:26:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A76C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 12:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230470AbiB0M0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 07:26:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36236 "EHLO
+        id S230114AbiB0MfO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 07:35:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230390AbiB0M0d (ORCPT
+        with ESMTP id S229446AbiB0MfM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 07:26:33 -0500
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37A765C878;
-        Sun, 27 Feb 2022 04:25:56 -0800 (PST)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0V5b5SAC_1645964751;
-Received: from localhost.localdomain(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0V5b5SAC_1645964751)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 27 Feb 2022 20:25:52 +0800
-From:   Shuai Xue <xueshuai@linux.alibaba.com>
-To:     helgaas@kernel.org, rafael@kernel.org, nathan@kernel.org
-Cc:     bp@alien8.de, tony.luck@intel.com, james.morse@arm.com,
-        lenb@kernel.org, rjw@rjwysocki.net, bhelgaas@google.com,
-        xueshuai@linux.alibaba.com, zhangliguang@linux.alibaba.com,
-        zhuo.song@linux.alibaba.com, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pci@vger.kernel.org
-Subject: [PATCH v8 2/2] ACPI: APEI: rename ghes_init with an "acpi_" prefix
-Date:   Sun, 27 Feb 2022 20:25:46 +0800
-Message-Id: <20220227122546.43307-2-xueshuai@linux.alibaba.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20211126070422.73234-1-xueshuai@linux.alibaba.com>
-References: <20211126070422.73234-1-xueshuai@linux.alibaba.com>
+        Sun, 27 Feb 2022 07:35:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E3F5F4FC;
+        Sun, 27 Feb 2022 04:34:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0D3ECB80C6D;
+        Sun, 27 Feb 2022 12:34:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8005AC340E9;
+        Sun, 27 Feb 2022 12:34:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645965273;
+        bh=vd9yXUJzbfAqJNvLQ36xEL06P/YDGwf4z5Bmi1SooMg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fL8puGmU5pIMV7kzPIjuWYDn/T+26sQczTlq67IceZ4vpjtB5+YeeucZsX5AjNQrz
+         BkZy5fem9/ie/TBF8tBhZgYSKKrMMvodYb2lnQsz9Fbl2xwuFBTRCxOJ+weh348vcu
+         OIIPVK10WK2OogrgeXlI7jJkfgJ6sbX35LA23/ztm9d/oyiwKApoJE24jUru9EJtwm
+         c9Whzi9QV6lqLKWEN9JdXk1siWDUIPyYO/WeNaVlxis/z5hNw4baqhaDCFwJUzoIVM
+         exmf8lGHu4nAlul0IwmpLB7abja8pDh3kSyFQUJj8sMMnNGj/WCccBj8R5QRj1rF0Q
+         PYftWF0JswJRg==
+Date:   Sun, 27 Feb 2022 12:41:34 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Puranjay Mohan <puranjay12@gmail.com>, gregkh@linuxfoundation.org,
+        rafael@kernel.org, heikki.krogerus@linux.intel.com,
+        kuba@kernel.org, saravanak@google.com,
+        linux-kernel@vger.kernel.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: accel: adxl355: use fwnode_irq_get_byname()
+Message-ID: <20220227124134.4d4e4644@jic23-huawei>
+In-Reply-To: <YflfEpKj0ilHnQQm@smile.fi.intel.com>
+References: <20211109200840.135019-1-puranjay12@gmail.com>
+        <20211109200840.135019-3-puranjay12@gmail.com>
+        <YflfEpKj0ilHnQQm@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ghes_init() sticks out in acpi_init() because it is the only functions
-without an "acpi_" prefix.
+On Tue, 1 Feb 2022 18:25:54 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Rename ghes_init with an "acpi_" prefix, then all looks fine.
+> On Wed, Nov 10, 2021 at 01:38:40AM +0530, Puranjay Mohan wrote:
+> > Use the generic fwnode_irq_get_byname() in place of of_irq_get_byname()
+> > to get the IRQ number from the interrupt pin.  
+> 
+> Heads up, the fwnode_irq_get_byname() is in I2C tree and if Jonathan wants to
+> apply this one, the PR [1] can be used.
+> 
+> [1]: https://lore.kernel.org/linux-i2c/YfRiGR3AT8tzyweG@shikoro/T/#u
+> 
 
-Signed-off-by: Shuai Xue <xueshuai@linux.alibaba.com>
----
- drivers/acpi/apei/ghes.c | 2 +-
- drivers/acpi/bus.c       | 2 +-
- include/acpi/apei.h      | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+Thanks Andy. 
 
-diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
-index aadc0a972f18..d91ad378c00d 100644
---- a/drivers/acpi/apei/ghes.c
-+++ b/drivers/acpi/apei/ghes.c
-@@ -1457,7 +1457,7 @@ static struct platform_driver ghes_platform_driver = {
- 	.remove		= ghes_remove,
- };
- 
--void __init ghes_init(void)
-+void __init acpi_ghes_init(void)
- {
- 	int rc;
- 
-diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-index 3f403db20f69..cd374210fb9f 100644
---- a/drivers/acpi/bus.c
-+++ b/drivers/acpi/bus.c
-@@ -1332,7 +1332,7 @@ static int __init acpi_init(void)
- 	pci_mmcfg_late_init();
- 	acpi_iort_init();
- 	acpi_hest_init();
--	ghes_init();
-+	acpi_ghes_init();
- 	acpi_scan_init();
- 	acpi_ec_init();
- 	acpi_debugfs_init();
-diff --git a/include/acpi/apei.h b/include/acpi/apei.h
-index 4e60dd73c3bb..afaca3a075e8 100644
---- a/include/acpi/apei.h
-+++ b/include/acpi/apei.h
-@@ -27,10 +27,10 @@ extern int hest_disable;
- extern int erst_disable;
- #ifdef CONFIG_ACPI_APEI_GHES
- extern bool ghes_disable;
--void __init ghes_init(void);
-+void __init acpi_ghes_init(void);
- #else
- #define ghes_disable 1
--static inline void ghes_init(void) { }
-+static inline void acpi_ghes_init(void) { }
- #endif
- 
- #ifdef CONFIG_ACPI_APEI
--- 
-2.20.1.12.g72788fdb
+I'm going to let this go the slow way and pick up this patch after the
+merge window when I can avoid pulling in that PR.
 
+Basically I'm feeling lazy today :)
+
+Jonathan
