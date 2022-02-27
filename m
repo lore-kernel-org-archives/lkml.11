@@ -2,84 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 23:15:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 23:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232182AbiB0XQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 18:16:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
+        id S231319AbiB0XUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 18:20:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiB0XQP (ORCPT
+        with ESMTP id S229602AbiB0XUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 18:16:15 -0500
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91D7122B19;
-        Sun, 27 Feb 2022 15:15:37 -0800 (PST)
-X-IronPort-AV: E=Sophos;i="5.90,142,1643641200"; 
-   d="scan'208";a="111727887"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 28 Feb 2022 08:15:36 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 8833241139A9;
-        Mon, 28 Feb 2022 08:15:34 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        linux-usb@vger.kernel.org
-Subject: [PATCH] dt-bindings: usb: renesas,usbhs: Document RZ/V2L bindings
-Date:   Sun, 27 Feb 2022 23:15:31 +0000
-Message-Id: <20220227231531.32279-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
+        Sun, 27 Feb 2022 18:20:37 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F9C24F30
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 15:19:59 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id i11so15111131eda.9
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 15:19:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AJKFWkaNILgrND2ajpv99ahQRaE4hGQV9IUMvW6X5jc=;
+        b=COC/4g+XK0ncFFdjTFjbGI8kwJnazvpy+Y8Z5kBv2abHG/7OdfJl8XVUO/gQJQXrgU
+         7syJ6Bl4EH1rhevEXJDyJCzV6vXIrdiBYUsB99agtvA7QQFqI7pET+wt/bULnxpe/llB
+         DoHBp+DrTOur4By7IXXtsNs4+hSllcxUFM+zA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AJKFWkaNILgrND2ajpv99ahQRaE4hGQV9IUMvW6X5jc=;
+        b=HfgCQAVrZDuh5iyl2El51AS930i1RqEmPIM/QERqumN3g3nQnVS7t/KGPk2wXQ5izH
+         SHtKrnjLI0a8Cuo6Frt6QZUzfn8BdZJ1i2ALuBuErHdPHWE3QlAAwmBMClopr0tmUMpO
+         LXzMtj0O98EEWOAsSWOdCvsSWAYjIGqaKYcKG8k1M93ExJ2k2xy6E5g3VnyVtEhS2kKn
+         vFctZmsMQe55XGx9I06o6pZy23vsZiYapjJkUHQgndFZP/TAbq6qKxD2DUj2bVIqNJDL
+         uGrQKMY1Hzm/Kh6OjLCc5zdZ1uk1X4NBCGIp2ob0vkYWByXcO6ApvzCYeCQgpZlz15pa
+         V0sg==
+X-Gm-Message-State: AOAM531T+m2+amyBIBKKO4m4O6BMQaMX4hpjB8Iq59RMx49mbpdIWcnR
+        Ayyb1z8MUKG6TpNFF+yIX/OzuH5Ni2GI04UKNx0=
+X-Google-Smtp-Source: ABdhPJxyGNr5R/fLsMghLPyuHo+70fbPmywNsE1ibyzdbNpCcH8pHI0EIwc7A+VnCJco6DXu13JqQg==
+X-Received: by 2002:a05:6402:440d:b0:412:9e8a:5e51 with SMTP id y13-20020a056402440d00b004129e8a5e51mr16993947eda.362.1646003998264;
+        Sun, 27 Feb 2022 15:19:58 -0800 (PST)
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com. [209.85.208.45])
+        by smtp.gmail.com with ESMTPSA id u1-20020aa7d0c1000000b004132c0a9ee3sm5318155edo.84.2022.02.27.15.19.58
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Feb 2022 15:19:58 -0800 (PST)
+Received: by mail-ed1-f45.google.com with SMTP id ee12so455830edb.12
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 15:19:58 -0800 (PST)
+X-Received: by 2002:a2e:b8cc:0:b0:246:4767:7a29 with SMTP id
+ s12-20020a2eb8cc000000b0024647677a29mr12717079ljp.152.1646003517979; Sun, 27
+ Feb 2022 15:11:57 -0800 (PST)
+MIME-Version: 1.0
+References: <20220227215408.3180023-1-arnd@kernel.org> <dd41c574-05b0-23bc-646c-0bd341e6e50b@linaro.org>
+In-Reply-To: <dd41c574-05b0-23bc-646c-0bd341e6e50b@linaro.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun, 27 Feb 2022 15:11:41 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wg_r01OASRuSFfbEk_YHjve2BsBbkDYiEiKTaX2jm=53g@mail.gmail.com>
+Message-ID: <CAHk-=wg_r01OASRuSFfbEk_YHjve2BsBbkDYiEiKTaX2jm=53g@mail.gmail.com>
+Subject: Re: [greybus-dev] [PATCH] Kbuild: remove -std=gnu89 from compiler arguments
+To:     Alex Elder <elder@linaro.org>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
+        Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-btrfs <linux-btrfs@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document RZ/V2L (R9A07G054) SoC bindings. USBHS block is identical to one
-found on RZ/A2 SoC. No driver changes are required as generic compatible
-string "renesas,rza2-usbhs" will be used as a fallback.
+On Sun, Feb 27, 2022 at 3:04 PM Alex Elder <elder@linaro.org> wrote:
+>
+> Glancing at the Greybus code, I don't believe there's any
+> reason it needs to shift a negative value.  Such warnings
+> could be fixed by making certain variables unsigned, for
+> example.
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
----
-DTSi changes have been posted as part of series [0].
+As mentioned in the original thread, making things unsigned actually
+is likely to introduce bugs and make things worse.
 
-[0] https://patchwork.kernel.org/project/linux-renesas-soc/
-cover/20220227203744.18355-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
----
- Documentation/devicetree/bindings/usb/renesas,usbhs.yaml | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+The warning is simply bogus, and the fact that it was enabled by
+-Wextra in gcc for std=gnu99 and up was a mistake that looks likely to
+be fixed in gcc.
 
-diff --git a/Documentation/devicetree/bindings/usb/renesas,usbhs.yaml b/Documentation/devicetree/bindings/usb/renesas,usbhs.yaml
-index 012fe80a7611..0bb841b28003 100644
---- a/Documentation/devicetree/bindings/usb/renesas,usbhs.yaml
-+++ b/Documentation/devicetree/bindings/usb/renesas,usbhs.yaml
-@@ -20,6 +20,7 @@ properties:
-           - enum:
-               - renesas,usbhs-r7s9210   # RZ/A2
-               - renesas,usbhs-r9a07g044 # RZ/G2{L,LC}
-+              - renesas,usbhs-r9a07g054 # RZ/V2L
-           - const: renesas,rza2-usbhs
- 
-       - items:
-@@ -116,7 +117,9 @@ allOf:
-       properties:
-         compatible:
-           contains:
--            const: renesas,usbhs-r9a07g044
-+            enum:
-+              - renesas,usbhs-r9a07g044
-+              - renesas,usbhs-r9a07g054
-     then:
-       properties:
-         interrupts:
--- 
-2.17.1
+So don't try to "fix" the code to make any possible warnings go away.
+You may just make things worse.
 
+(That is often true in general for the more esoteric warnings, but in
+this case it's just painfully more obvious).
+
+              Linus
