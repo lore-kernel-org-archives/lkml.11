@@ -2,93 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7BCC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 08:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B155CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 08:46:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbiB0IbH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 03:31:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35368 "EHLO
+        id S229958AbiB0Iqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 03:46:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230162AbiB0IbD (ORCPT
+        with ESMTP id S229742AbiB0Iqg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 03:31:03 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21DC04160F
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 00:30:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645950628; x=1677486628;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=RX7guhZRVsR1nIUxY5slKJ+duPcYqpYAj8ekDfSN8bc=;
-  b=awMT7kgjkZ/tcn1NcvwNRIe2XHtON7OiNNqBEFVeYiGMZAtkvALd7A2O
-   DDqCurHhNxgajeAIkF2b70VCLD2ISgw45r7QWTX2vha2HzaVrC9crEA29
-   v3D3ysxmmif6shCR8b4DrLo9pBvnUDX+QlvOVsll4IfR+eHI3LlCciA8W
-   5qdyRaCDyqnrROJNSaFKr/qLrRfsiniGNK4c+VLnRaGvVnjLuIeHbHNkx
-   I0HbQexi0Tj/7AOJ+fnxKAKWwTi1Ve9EUNnkZhccaINvySR4/sOi7yUUF
-   DU3I5WY5F5wrZry2Tx3Oy3e6S4pBUkwq3UnXsI5fhJjDRJcxW7CZJF/j/
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10270"; a="236221236"
-X-IronPort-AV: E=Sophos;i="5.90,140,1643702400"; 
-   d="scan'208";a="236221236"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 00:30:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,140,1643702400"; 
-   d="scan'208";a="799049999"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 27 Feb 2022 00:30:26 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOEwj-0006Na-AV; Sun, 27 Feb 2022 08:30:25 +0000
-Date:   Sun, 27 Feb 2022 16:29:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Feng Tang <feng.tang@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: {standard input}:2277: Error: pcrel offset for branch to .LS000B too
- far (0x3c)
-Message-ID: <202202271612.W32UJAj2-lkp@intel.com>
+        Sun, 27 Feb 2022 03:46:36 -0500
+Received: from smtpbg156.qq.com (smtpbg156.qq.com [15.184.82.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24E258E7E
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 00:45:55 -0800 (PST)
+X-QQ-mid: bizesmtp75t1645951549tnaiglpy
+Received: from localhost.localdomain (unknown [202.96.137.248])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sun, 27 Feb 2022 16:45:45 +0800 (CST)
+X-QQ-SSF: 01400000000000D0N000B00A0000000
+X-QQ-FEAT: F3yR32iATbhJMNxbc1/wHAQGmD/mIVH+L6iJric5H1HxFw0Rc/4TH6koD28EC
+        BZGDGp1ca3151OwASk12UNvw/9uLV/zZn1fXLgKOz8Cgi1WDVcEDOWFcdc8O7NCr4eZPME9
+        fnWuqrH2gRYU84H9ShkHAQFR/XiX1GEchO1oWWUX26vwzHqd81oN/zepy+IwvpvUtBZVcIw
+        bfwm8bsbiOYCiq2l48ydRXUE0jSjOHgy3SI8Tbpm97ZE/PefMOjYBhJKI3wYcYHyDXetPua
+        0QU17TPRHZvmXnwHPLbYlXff7UU6DFr2L9lkdMSclXgeTxh3Qpp9tckupRAL5buZAjVfFBj
+        EGfgHZa
+X-QQ-GoodBg: 2
+From:   Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
+Subject: [PATCH] mm/vmalloc.c: fix a comment
+Date:   Sun, 27 Feb 2022 16:45:44 +0800
+Message-Id: <20220227084544.4681-1-caoyixuan2019@email.szu.edu.cn>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:email.szu.edu.cn:qybgforeign:qybgforeign1
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   2293be58d6a18cab800e25e42081bacb75c05752
-commit: cf536e185869d4815d506e777bcca6edd9966a6e Makefile: extend 32B aligned debug option to 64B aligned
-date:   9 months ago
-config: csky-randconfig-r003-20220227 (https://download.01.org/0day-ci/archive/20220227/202202271612.W32UJAj2-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=cf536e185869d4815d506e777bcca6edd9966a6e
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout cf536e185869d4815d506e777bcca6edd9966a6e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
+Dear Sir/Madam,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The sentence
+"but the mempolcy want to alloc memory by interleaving"
+should be rephrased with
+"but the mempolicy wants to alloc memory by interleaving"
+where "mempolicy" is a struct name.
 
-All errors (new ones prefixed by >>):
+Thanks and best regards,
+Yixuan Cao
 
-   {standard input}: Assembler messages:
->> {standard input}:2277: Error: pcrel offset for branch to .LS000B too far (0x3c)
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for LOCKDEP
-   Depends on DEBUG_KERNEL && LOCK_DEBUGGING_SUPPORT && (FRAME_POINTER || MIPS || PPC || S390 || MICROBLAZE || ARM || ARC || X86)
-   Selected by
-   - PROVE_LOCKING && DEBUG_KERNEL && LOCK_DEBUGGING_SUPPORT
-   - LOCK_STAT && DEBUG_KERNEL && LOCK_DEBUGGING_SUPPORT
-   - DEBUG_LOCK_ALLOC && DEBUG_KERNEL && LOCK_DEBUGGING_SUPPORT
-
+Signed-off-by: Yixuan Cao <caoyixuan2019@email.szu.edu.cn>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ mm/vmalloc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index b454cf1a261f..89d48d8eb20c 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -2905,7 +2905,7 @@ vm_area_alloc_pages(gfp_t gfp, int nid,
+ 			/* memory allocation should consider mempolicy, we can't
+ 			 * wrongly use nearest node when nid == NUMA_NO_NODE,
+ 			 * otherwise memory may be allocated in only one node,
+-			 * but mempolcy want to alloc memory by interleaving.
++			 * but mempolicy want to alloc memory by interleaving.
+ 			 */
+ 			if (IS_ENABLED(CONFIG_NUMA) && nid == NUMA_NO_NODE)
+ 				nr = alloc_pages_bulk_array_mempolicy(bulk_gfp,
+-- 
+2.31.1
+
+
+
