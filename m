@@ -2,94 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D43B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39DB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:25:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231627AbiB0UX6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 15:23:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52928 "EHLO
+        id S231643AbiB0U0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 15:26:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229812AbiB0UXz (ORCPT
+        with ESMTP id S229812AbiB0UZ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 15:23:55 -0500
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CD4E83E0EC;
-        Sun, 27 Feb 2022 12:23:17 -0800 (PST)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21RKHPMx016218;
-        Sun, 27 Feb 2022 14:17:25 -0600
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21RKHOOd016217;
-        Sun, 27 Feb 2022 14:17:24 -0600
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Sun, 27 Feb 2022 14:17:24 -0600
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jakob <jakobkoschel@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator after the loop
-Message-ID: <20220227201724.GZ614@gate.crashing.org>
-References: <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com> <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com> <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com> <20220226124249.GU614@gate.crashing.org> <CAK8P3a2Dd+ZMzn=gDnTzOW=S3RHQVmm1j3Gy=aKmFEbyD-q=rQ@mail.gmail.com> <20220227010956.GW614@gate.crashing.org> <7abf3406919b4f0c828dacea6ce97ce8@AcuMS.aculab.com> <20220227113245.GY614@gate.crashing.org> <CANiq72m28WrjVHkcg5Y0LDa51Ur4OCpFbGdcq+v4gqiC0Wi6zg@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANiq72m28WrjVHkcg5Y0LDa51Ur4OCpFbGdcq+v4gqiC0Wi6zg@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+        Sun, 27 Feb 2022 15:25:58 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C70356C0D;
+        Sun, 27 Feb 2022 12:25:21 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id l25so11660616oic.13;
+        Sun, 27 Feb 2022 12:25:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3oGq/WbLwmz7KN3XbETWGjhz7d0eJO8ekg3r1g92xVY=;
+        b=UrEewe4onucaK+Jmd2kil3s4UgXpFqfBdMVPHI/zmBE2fvga0MW4AMTiAh9DIVwRUn
+         /1CTuW47xVeJqrODcoccJP7UmHU7OWM+IroE8fcI9a1khpa8VgZiIONvZepNwbHVOpop
+         eakmhnKZLYV7Zll+sFvcgme5wqAN6WG3cIm1eZ5yAa1IGUE0O9shtAjCwpuZez1g850K
+         WiHeFOAWjeINSfg465Hvd6N0bviOyaT4tGtpUxfAanpTTDn8y3YSlm+V0L3m1C24cWWq
+         IEvCyxwqtuU01y7A/PMFXu/wuQo4voEyUNv8HkrXRY8Qs1Gvvu9y/ecCeJE6GoUDCBtK
+         QPhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3oGq/WbLwmz7KN3XbETWGjhz7d0eJO8ekg3r1g92xVY=;
+        b=npm6qa9mOrh0sBPmtIuKYFD3SIC6++21UqLcSYX3FQBTK1HePZOjvsVMQ/ftumAnic
+         jYdRlGQjQAqb93q/wP31ZSjf9raU0KHXxvQw879xj5Xqsi5jmKqplrC3dw+cNsbAQq//
+         w9LBtpRJLS3rtfj9OaQswPkag8eTgu+Hr/yUcVuaxe4FKYLPsQj27g31jktlbFHnvDi+
+         +yju7HZgX37u+xW20SgU6A0eJV8+PRSLF4T1+dALF6x2bM5QXOs1c8EEW9Gskok1Ip1c
+         SRfRCjzuXoKydJWWAW/vCpOGKUkUAv/hZ5rE8ZsXWDrI6kAi64RA64DxSJOY22LTh0xn
+         9LJg==
+X-Gm-Message-State: AOAM531O7ZGpXArxCrbDJd4MaJKsYa0LAU349HyxAFx0OleRDWkv6ptm
+        IxV4Y4EP6hS5zkGuvl2YkB62C7UpRJE=
+X-Google-Smtp-Source: ABdhPJyQFTQUgKf61NsB+1VVQG3RALfP83rLJe5Ud+V8V03vU/HuGqFOK7XfGM7CXyUB8sWNVPvFlQ==
+X-Received: by 2002:a05:6808:114e:b0:2d5:4101:844e with SMTP id u14-20020a056808114e00b002d54101844emr8500979oiu.169.1645993520557;
+        Sun, 27 Feb 2022 12:25:20 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id a10-20020a056808120a00b002d404a71444sm4907333oil.35.2022.02.27.12.25.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Feb 2022 12:25:19 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <7d08c2e4-61f8-af0c-1653-fcd4cd494557@roeck-us.net>
+Date:   Sun, 27 Feb 2022 12:25:18 -0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] x86/boot: Wrap literal addresses in absolute_pointer()
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+References: <20220227195918.705219-1-keescook@chromium.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220227195918.705219-1-keescook@chromium.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 07:09:03PM +0100, Miguel Ojeda wrote:
-> On Sun, Feb 27, 2022 at 1:09 PM Segher Boessenkool
-> <segher@kernel.crashing.org> wrote:
-> >
-> > How will you define dividing by zero so that its behaviour is reasonable
-> > for every program, for example?
+On 2/27/22 11:59, Kees Cook wrote:
+> GCC 11 (incorrectly[1]) assumes that literal values cast to (void *)
+> should be treated like a NULL pointer with an offset, and raises
+> diagnostics when doing bounds checking under -Warray-bounds. GCC 12
+> got "smarter" about finding these:
 > 
-> The solution is to let the developer specify what they need to happen.
-> That choice should include the unsafe possibility (i.e. unchecked),
-> because sometimes that is precisely what we need.
-
-Requiring to annotate every place that has UB (or *can* have UB!) by the
-user is even less friendly than having so much UB is already :-(
-
-I don't see how you will fit this into the C syntax, btw?
-
-> > Invoking an error handler at runtime
-> > has most of the same unwanted effects, except is is never silent.  You
+> In function 'rdfs8',
+>      inlined from 'vga_recalc_vertical' at /srv/code/arch/x86/boot/video-mode.c:124:29,
+>      inlined from 'set_mode' at /srv/code/arch/x86/boot/video-mode.c:163:3:
+> /srv/code/arch/x86/boot/boot.h:114:9: warning: array subscript 0 is outside array bounds of 'u8[0]' {aka 'unsigned char[]'} [-Warray-bounds]
+>    114 |         asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
+>        |         ^~~
 > 
-> It may not be what it is needed in some cases (thus the necessity to
-> be able to choose), but at least one can predict what happens and
-> different compilers, versions, flags, inputs, etc. would agree.
+> This has been solved in other places[2] already by using the recently
+> added absolute_pointer() macro. Do the same here.
+> 
+> [1] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=99578
+> [2] https://lore.kernel.org/all/20210912160149.2227137-1-linux@roeck-us.net/
+> 
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: x86@kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 
-You need a VM like Java's to get even *close* to that.  This is not the
-C target: it is slower than wanted/expected, it is hosted instead of
-embedded, and it comes with a whole host of issues of its own.  One of
-the strengths of C is its tiny runtime, a few kB is a lot already!
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-I completely agree that if you design a new "systems" language, you want
-to have much less undefined behaviour than C has.  But it is self-
-delusion to think you can eradicate all (or even most).
+> ---
+>   arch/x86/boot/boot.h | 36 ++++++++++++++++++++++++------------
+>   arch/x86/boot/main.c |  2 +-
+>   2 files changed, 25 insertions(+), 13 deletions(-)
+> 
+> diff --git a/arch/x86/boot/boot.h b/arch/x86/boot/boot.h
+> index 34c9dbb6a47d..686a9d75a0e4 100644
+> --- a/arch/x86/boot/boot.h
+> +++ b/arch/x86/boot/boot.h
+> @@ -110,66 +110,78 @@ typedef unsigned int addr_t;
+>   
+>   static inline u8 rdfs8(addr_t addr)
+>   {
+> +	u8 *ptr = (u8 *)absolute_pointer(addr);
+>   	u8 v;
+> -	asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
+> +	asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*ptr));
+>   	return v;
+>   }
+>   static inline u16 rdfs16(addr_t addr)
+>   {
+> +	u16 *ptr = (u16 *)absolute_pointer(addr);
+>   	u16 v;
+> -	asm volatile("movw %%fs:%1,%0" : "=r" (v) : "m" (*(u16 *)addr));
+> +	asm volatile("movw %%fs:%1,%0" : "=r" (v) : "m" (*ptr));
+>   	return v;
+>   }
+>   static inline u32 rdfs32(addr_t addr)
+>   {
+> +	u32 *ptr = (u32 *)absolute_pointer(addr);
+>   	u32 v;
+> -	asm volatile("movl %%fs:%1,%0" : "=r" (v) : "m" (*(u32 *)addr));
+> +	asm volatile("movl %%fs:%1,%0" : "=r" (v) : "m" (*ptr));
+>   	return v;
+>   }
+>   
+>   static inline void wrfs8(u8 v, addr_t addr)
+>   {
+> -	asm volatile("movb %1,%%fs:%0" : "+m" (*(u8 *)addr) : "qi" (v));
+> +	u8 *ptr = (u8 *)absolute_pointer(addr);
+> +	asm volatile("movb %1,%%fs:%0" : "+m" (*ptr) : "qi" (v));
+>   }
+>   static inline void wrfs16(u16 v, addr_t addr)
+>   {
+> -	asm volatile("movw %1,%%fs:%0" : "+m" (*(u16 *)addr) : "ri" (v));
+> +	u16 *ptr = (u16 *)absolute_pointer(addr);
+> +	asm volatile("movw %1,%%fs:%0" : "+m" (*ptr) : "ri" (v));
+>   }
+>   static inline void wrfs32(u32 v, addr_t addr)
+>   {
+> -	asm volatile("movl %1,%%fs:%0" : "+m" (*(u32 *)addr) : "ri" (v));
+> +	u32 *ptr = (u32 *)absolute_pointer(addr);
+> +	asm volatile("movl %1,%%fs:%0" : "+m" (*ptr) : "ri" (v));
+>   }
+>   
+>   static inline u8 rdgs8(addr_t addr)
+>   {
+> +	u8 *ptr = (u8 *)absolute_pointer(addr);
+>   	u8 v;
+> -	asm volatile("movb %%gs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
+> +	asm volatile("movb %%gs:%1,%0" : "=q" (v) : "m" (*ptr));
+>   	return v;
+>   }
+>   static inline u16 rdgs16(addr_t addr)
+>   {
+> +	u16 *ptr = (u16 *)absolute_pointer(addr);
+>   	u16 v;
+> -	asm volatile("movw %%gs:%1,%0" : "=r" (v) : "m" (*(u16 *)addr));
+> +	asm volatile("movw %%gs:%1,%0" : "=r" (v) : "m" (*ptr));
+>   	return v;
+>   }
+>   static inline u32 rdgs32(addr_t addr)
+>   {
+> +	u32 *ptr = (u32 *)absolute_pointer(addr);
+>   	u32 v;
+> -	asm volatile("movl %%gs:%1,%0" : "=r" (v) : "m" (*(u32 *)addr));
+> +	asm volatile("movl %%gs:%1,%0" : "=r" (v) : "m" (*ptr));
+>   	return v;
+>   }
+>   
+>   static inline void wrgs8(u8 v, addr_t addr)
+>   {
+> -	asm volatile("movb %1,%%gs:%0" : "+m" (*(u8 *)addr) : "qi" (v));
+> +	u8 *ptr = (u8 *)absolute_pointer(addr);
+> +	asm volatile("movb %1,%%gs:%0" : "+m" (*ptr) : "qi" (v));
+>   }
+>   static inline void wrgs16(u16 v, addr_t addr)
+>   {
+> -	asm volatile("movw %1,%%gs:%0" : "+m" (*(u16 *)addr) : "ri" (v));
+> +	u16 *ptr = (u16 *)absolute_pointer(addr);
+> +	asm volatile("movw %1,%%gs:%0" : "+m" (*ptr) : "ri" (v));
+>   }
+>   static inline void wrgs32(u32 v, addr_t addr)
+>   {
+> -	asm volatile("movl %1,%%gs:%0" : "+m" (*(u32 *)addr) : "ri" (v));
+> +	u32 *ptr = (u32 *)absolute_pointer(addr);
+> +	asm volatile("movl %1,%%gs:%0" : "+m" (*ptr) : "ri" (v));
+>   }
+>   
+>   /* Note: these only return true/false, not a signed return value! */
+> diff --git a/arch/x86/boot/main.c b/arch/x86/boot/main.c
+> index e3add857c2c9..c421af5a3cdc 100644
+> --- a/arch/x86/boot/main.c
+> +++ b/arch/x86/boot/main.c
+> @@ -33,7 +33,7 @@ static void copy_boot_params(void)
+>   		u16 cl_offset;
+>   	};
+>   	const struct old_cmdline * const oldcmd =
+> -		(const struct old_cmdline *)OLD_CL_ADDRESS;
+> +		absolute_pointer(OLD_CL_ADDRESS);
+>   
+>   	BUILD_BUG_ON(sizeof(boot_params) != 4096);
+>   	memcpy(&boot_params.hdr, &hdr, sizeof(hdr));
 
-And there are much bigger problems in any case!  If you think that if
-programmers could no longer write programs that invoke undefined
-behaviour they will write much better programs, programs with fewer
-serious functionality or security problems, even just a factor of two
-better, well...
-
-
-Segher
