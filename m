@@ -2,333 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 369FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42BF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbiB0S3R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 13:29:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
+        id S230444AbiB0SaI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 13:30:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbiB0S3C (ORCPT
+        with ESMTP id S229436AbiB0SaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 13:29:02 -0500
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33296327;
-        Sun, 27 Feb 2022 10:28:23 -0800 (PST)
-Received: from mxbox1.masterlogin.de (unknown [192.168.10.88])
-        by mxout4.routing.net (Postfix) with ESMTP id 59BC410077C;
-        Sun, 27 Feb 2022 18:28:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1645986501;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MF0tLgmx2g6E4ZrnpnexpNhjlLSkSnH6Zfy8eS4SQV0=;
-        b=rF33pGDMIdsMH9Qqrsy73+ubpclC9z7Nau538CU2nynr3NrGavczFVv9L7snUhvian8xq4
-        rZejAAXMSkwQdn8gzttkLzT9iuluC7mVLDRA63mY1qmfVKgQ4kJ4z18kn/CIo9GPCGTxOh
-        Fyhi6o42o97qZPFxmMjuZrYZbyx7IuE=
-Received: from localhost.localdomain (fttx-pool-80.245.76.205.bambit.de [80.245.76.205])
-        by mxbox1.masterlogin.de (Postfix) with ESMTPSA id 9E924405AF;
-        Sun, 27 Feb 2022 18:28:20 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     "devicetree @ vger . kernel . org Damien Le Moal" 
-        <damien.lemoal@opensource.wdc.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>
-Subject: [PATCH v3 1/3] dt-bindings: Convert ahci-platform DT bindings to yaml
-Date:   Sun, 27 Feb 2022 19:27:58 +0100
-Message-Id: <20220227182800.275572-2-linux@fw-web.de>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220227182800.275572-1-linux@fw-web.de>
-References: <20220227182800.275572-1-linux@fw-web.de>
+        Sun, 27 Feb 2022 13:30:04 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A95668F8D;
+        Sun, 27 Feb 2022 10:29:27 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id s24so14533706edr.5;
+        Sun, 27 Feb 2022 10:29:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EbCkBCdIE/So60XSdai8/3JA7gbz1fMwINxsVfT5pA4=;
+        b=DNBg1V4TOyQp8GN8h+WKwujSdLsysm1fsLinl/su3on0HZFokoPCwuTulk+8Ztqa8K
+         itPwHUQDl5mOt/REz/FWclhFqG5ux74XNVcXFc0ZtMIUANSKPNQoQ/anoQvYgHAl+1J/
+         s7cScaP+Cy2cnbJ0rpwBdoUSsTtK5DqGWxI11ZjwZYaMbkiNj/vBvP6Wc8kzoXBFFUVW
+         WHh64HUbzQAz8IEVynt6Qd3Fm+AOjC+Y22xAPgWH9ai0/U7wAQTJ0jiFnZlg/0bRd9pC
+         965zBlEgCGFOb+b4EWke1vd6fqNjpfnRabA5HmDcYmzOnnc6Q/X29ZBKVjoiQel6j04l
+         kTUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EbCkBCdIE/So60XSdai8/3JA7gbz1fMwINxsVfT5pA4=;
+        b=ZhBq5ZKvlU9TEw9eh/NZMzL5ytyTnu1IcFfyL4lDZRfQHtKQodICdNX0oKfwVXhtlx
+         UiKVEdSnY3YvU+X2/QkLNTnhPghtzpRoGtPdDbclHZf9ypVRD2zeDGkVDy4cStwvMOtW
+         orEvINNJFG0GOYKR/MuXyVQilDvPasg/Wp8PvW9cr6PGAcOlkd8a4R8QJfJsPl0sifi7
+         jsPqRBYsmrQNpZ4ai/WHprMMLxl0Er5kMuHgOdpPwHWnpIG7GZ6wDW7pcbJ+Aq+4afXS
+         xm6hnhLojQhUv6wOJKVIRTZam2OEH4ju+idt4MaM6gYgNh6C0Fydz84I8n1FCjonGh5w
+         VBmg==
+X-Gm-Message-State: AOAM532c0KQ2rqcbHbEJB7EuNnnwUI3G0N8pnFZFnAxumQ7kYt4rlkv4
+        FC/zVVx6X9rdMZZxf+0evxLdVW4hdlteXQQ8dKBtp+y8Vn4=
+X-Google-Smtp-Source: ABdhPJy9udHj6nzu22pOqBLPnwZs66/GlQGhCbVmxWtnNB7X5ALYMdJueVzSTk3ss5KeCObWgERR3OdGIti15mvw84c=
+X-Received: by 2002:a05:6402:4415:b0:410:d28b:1e14 with SMTP id
+ y21-20020a056402441500b00410d28b1e14mr16138852eda.211.1645986566039; Sun, 27
+ Feb 2022 10:29:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Mail-ID: 8a7f4aef-73a8-4cc1-a58c-260611dd9f5c
+References: <cover.1645558375.git.riteshh@linux.ibm.com> <9a8c359270a6330ed384ea0a75441e367ecde924.1645558375.git.riteshh@linux.ibm.com>
+ <20220223095455.3nlxqkem5y7dsniq@quack3.lan>
+In-Reply-To: <20220223095455.3nlxqkem5y7dsniq@quack3.lan>
+From:   harshad shirwadkar <harshadshirwadkar@gmail.com>
+Date:   Sun, 27 Feb 2022 10:29:14 -0800
+Message-ID: <CAD+ocbxW_sRT4iDe6D0aTpiPxMY3xzZqr4NeiB4cqQ9j=2zbdw@mail.gmail.com>
+Subject: Re: [RFC 2/9] ext4: Fix ext4_fc_stats trace point
+To:     Jan Kara <jack@suse.cz>
+Cc:     Ritesh Harjani <riteshh@linux.ibm.com>,
+        Ext4 Developers List <linux-ext4@vger.kernel.org>,
+        "Theodore Ts'o" <tytso@mit.edu>, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+Thanks for reporting this Steven and thanks Ritesh for fixing this.
 
-Create a yaml file for dtbs_check from the old txt binding.
+Looks good.
 
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
----
-v3:
-  - add conversion to sata-series
-  - fix some errors in dt_binding_check and dtbs_check
-  - move to unevaluated properties = false
+Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
 
----
+- Harshad
 
-imho all errors should be fixed in the dts not in the yaml...
-
-errors about the subitem requirement that was defined in txt but not fixed some marvell dts
-
-some dts for Marvell SoC bring error
-'phys' is a required property
-'target-supply' is a required property
-
-problem is in arch/arm64/boot/dts/marvell/armada-cp11x.dtsi:331
-here the sata-port@0 is defined, but not overridden with phy/target-supply in any following dts
-
-====================================================================
-
-arch/arm64/boot/dts/broadcom/northstar2
-ns2-svk.dt.yaml:
-ns2-xmc.dt.yaml:
-  ahci@663f2000:
-    $nodename:0: 'ahci@663f2000' does not match '^sata(@.*)?$'
-
-    Unevaluated properties are not allowed
-    ('reg-names', '#address-cells', '#size-cells' were unexpected)
----
- .../devicetree/bindings/ata/ahci-platform.txt |  79 ----------
- .../bindings/ata/ahci-platform.yaml           | 140 ++++++++++++++++++
- 2 files changed, 140 insertions(+), 79 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/ata/ahci-platform.txt
- create mode 100644 Documentation/devicetree/bindings/ata/ahci-platform.yaml
-
-diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.txt b/Documentation/devicetree/bindings/ata/ahci-platform.txt
-deleted file mode 100644
-index 77091a277642..000000000000
---- a/Documentation/devicetree/bindings/ata/ahci-platform.txt
-+++ /dev/null
-@@ -1,79 +0,0 @@
--* AHCI SATA Controller
--
--SATA nodes are defined to describe on-chip Serial ATA controllers.
--Each SATA controller should have its own node.
--
--It is possible, but not required, to represent each port as a sub-node.
--It allows to enable each port independently when dealing with multiple
--PHYs.
--
--Required properties:
--- compatible        : compatible string, one of:
--  - "brcm,iproc-ahci"
--  - "hisilicon,hisi-ahci"
--  - "cavium,octeon-7130-ahci"
--  - "ibm,476gtr-ahci"
--  - "marvell,armada-380-ahci"
--  - "marvell,armada-3700-ahci"
--  - "snps,dwc-ahci"
--  - "snps,spear-ahci"
--  - "generic-ahci"
--- interrupts        : <interrupt mapping for SATA IRQ>
--- reg               : <registers mapping>
--
--Please note that when using "generic-ahci" you must also specify a SoC specific
--compatible:
--	compatible = "manufacturer,soc-model-ahci", "generic-ahci";
--
--Optional properties:
--- dma-coherent      : Present if dma operations are coherent
--- clocks            : a list of phandle + clock specifier pairs
--- resets            : a list of phandle + reset specifier pairs
--- target-supply     : regulator for SATA target power
--- phy-supply        : regulator for PHY power
--- phys              : reference to the SATA PHY node
--- phy-names         : must be "sata-phy"
--- ahci-supply       : regulator for AHCI controller
--- ports-implemented : Mask that indicates which ports that the HBA supports
--		      are available for software to use. Useful if PORTS_IMPL
--		      is not programmed by the BIOS, which is true with
--		      some embedded SOC's.
--
--Required properties when using sub-nodes:
--- #address-cells    : number of cells to encode an address
--- #size-cells       : number of cells representing the size of an address
--
--Sub-nodes required properties:
--- reg		    : the port number
--And at least one of the following properties:
--- phys		    : reference to the SATA PHY node
--- target-supply     : regulator for SATA target power
--
--Examples:
--        sata@ffe08000 {
--		compatible = "snps,spear-ahci";
--		reg = <0xffe08000 0x1000>;
--		interrupts = <115>;
--        };
--
--With sub-nodes:
--	sata@f7e90000 {
--		compatible = "marvell,berlin2q-achi", "generic-ahci";
--		reg = <0xe90000 0x1000>;
--		interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
--		clocks = <&chip CLKID_SATA>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		sata0: sata-port@0 {
--			reg = <0>;
--			phys = <&sata_phy 0>;
--			target-supply = <&reg_sata0>;
--		};
--
--		sata1: sata-port@1 {
--			reg = <1>;
--			phys = <&sata_phy 1>;
--			target-supply = <&reg_sata1>;;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.yaml b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-new file mode 100644
-index 000000000000..cc246b312c59
---- /dev/null
-+++ b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
-@@ -0,0 +1,140 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/ata/ahci-platform.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: AHCI SATA Controller
-+description:
-+  SATA nodes are defined to describe on-chip Serial ATA controllers.
-+  Each SATA controller should have its own node.
-+
-+  It is possible, but not required, to represent each port as a sub-node.
-+  It allows to enable each port independently when dealing with multiple
-+  PHYs.
-+
-+maintainers:
-+  - Hans de Goede <hdegoede@redhat.com>
-+  - Jens Axboe <axboe@kernel.dk>
-+
-+properties:
-+  compatible:
-+    contains:
-+      enum:
-+        - brcm,iproc-ahci
-+        - cavium,octeon-7130-ahci
-+        - generic-ahci
-+        - hisilicon,hisi-ahci
-+        - ibm,476gtr-ahci
-+        - marvell,armada-380-ahci
-+        - marvell,armada-3700-ahci
-+        - snps,dwc-ahci
-+        - snps,spear-ahci
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    minItems: 1
-+    maxItems: 3
-+
-+  interrupts:
-+    minItems: 1
-+
-+  ahci-supply:
-+    description:
-+      regulator for AHCI controller
-+
-+  dma-coherent:
-+    description:
-+      Present if dma operations are coherent
-+
-+  phy-supply:
-+    description:
-+      regulator for PHY power
-+
-+  phys:
-+    minItems: 1
-+
-+  phy-names:
-+    minItems: 1
-+
-+  ports-implemented:
-+    description:
-+      Mask that indicates which ports that the HBA supports
-+      are available for software to use. Useful if PORTS_IMPL
-+      is not programmed by the BIOS, which is true with
-+      some embedded SoCs.
-+    minItems: 1
-+
-+  resets:
-+    minItems: 1
-+
-+  target-supply:
-+    description:
-+      regulator for SATA target power
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+patternProperties:
-+  "^sata-port@[0-9]+$":
-+    type: object
-+    description:
-+      Subnode with configuration of the Ports.
-+
-+    properties:
-+      reg:
-+        maxItems: 1
-+
-+      phys:
-+        minItems: 1
-+
-+      target-supply:
-+        description:
-+          regulator for SATA target power
-+
-+    required:
-+      - reg
-+
-+    anyOf:
-+      - required: [ phys ]
-+      - required: [ target-supply ]
-+
-+allOf:
-+- $ref: "sata-common.yaml#"
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+        sata@ffe08000 {
-+               compatible = "snps,spear-ahci";
-+               reg = <0xffe08000 0x1000>;
-+               interrupts = <115>;
-+        };
-+  - |
-+        #include <dt-bindings/interrupt-controller/arm-gic.h>
-+        #include <dt-bindings/clock/berlin2q.h>
-+        sata@f7e90000 {
-+                compatible = "marvell,berlin2q-achi", "generic-ahci";
-+                reg = <0xe90000 0x1000>;
-+                interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>;
-+                clocks = <&chip CLKID_SATA>;
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                sata0: sata-port@0 {
-+                        reg = <0>;
-+                        phys = <&sata_phy 0>;
-+                        target-supply = <&reg_sata0>;
-+                };
-+
-+                sata1: sata-port@1 {
-+                        reg = <1>;
-+                        phys = <&sata_phy 1>;
-+                        target-supply = <&reg_sata1>;
-+                };
-+        };
--- 
-2.25.1
-
+On Wed, 23 Feb 2022 at 01:54, Jan Kara <jack@suse.cz> wrote:
+>
+> On Wed 23-02-22 02:04:10, Ritesh Harjani wrote:
+> > ftrace's __print_symbolic() requires that any enum values used in the
+> > symbol to string translation table be wrapped in a TRACE_DEFINE_ENUM
+> > so that the enum value can be encoded in the ftrace ring buffer.
+> >
+> > This patch also fixes few other problems found in this trace point.
+> > e.g. dereferencing structures in TP_printk which should not be done
+> > at any cost.
+> >
+> > Also to avoid checkpatch warnings, this patch removes those
+> > whitespaces/tab stops issues.
+> >
+> > Fixes: commit aa75f4d3daae ("ext4: main fast-commit commit path")
+> > Reported-by: Steven Rostedt <rostedt@goodmis.org>
+> > Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
+>
+> Looks good (modulo Steven's nit). Feel free to add:
+>
+> Reviewed-by: Jan Kara <jack@suse.cz>
+>
+>                                                                 Honza
+>
+>
+> > ---
+> >  include/trace/events/ext4.h | 76 +++++++++++++++++++++++--------------
+> >  1 file changed, 47 insertions(+), 29 deletions(-)
+> >
+> > diff --git a/include/trace/events/ext4.h b/include/trace/events/ext4.h
+> > index 19e957b7f941..17fb9c506e8a 100644
+> > --- a/include/trace/events/ext4.h
+> > +++ b/include/trace/events/ext4.h
+> > @@ -95,6 +95,16 @@ TRACE_DEFINE_ENUM(ES_REFERENCED_B);
+> >       { FALLOC_FL_COLLAPSE_RANGE,     "COLLAPSE_RANGE"},      \
+> >       { FALLOC_FL_ZERO_RANGE,         "ZERO_RANGE"})
+> >
+> > +TRACE_DEFINE_ENUM(EXT4_FC_REASON_XATTR);
+> > +TRACE_DEFINE_ENUM(EXT4_FC_REASON_CROSS_RENAME);
+> > +TRACE_DEFINE_ENUM(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE);
+> > +TRACE_DEFINE_ENUM(EXT4_FC_REASON_NOMEM);
+> > +TRACE_DEFINE_ENUM(EXT4_FC_REASON_SWAP_BOOT);
+> > +TRACE_DEFINE_ENUM(EXT4_FC_REASON_RESIZE);
+> > +TRACE_DEFINE_ENUM(EXT4_FC_REASON_RENAME_DIR);
+> > +TRACE_DEFINE_ENUM(EXT4_FC_REASON_FALLOC_RANGE);
+> > +TRACE_DEFINE_ENUM(EXT4_FC_REASON_INODE_JOURNAL_DATA);
+> > +
+> >  #define show_fc_reason(reason)                                               \
+> >       __print_symbolic(reason,                                        \
+> >               { EXT4_FC_REASON_XATTR,         "XATTR"},               \
+> > @@ -2723,41 +2733,49 @@ TRACE_EVENT(ext4_fc_commit_stop,
+> >
+> >  #define FC_REASON_NAME_STAT(reason)                                  \
+> >       show_fc_reason(reason),                                         \
+> > -     __entry->sbi->s_fc_stats.fc_ineligible_reason_count[reason]
+> > +     __entry->fc_ineligible_rc[reason]
+> >
+> >  TRACE_EVENT(ext4_fc_stats,
+> > -         TP_PROTO(struct super_block *sb),
+> > -
+> > -         TP_ARGS(sb),
+> > +     TP_PROTO(struct super_block *sb),
+> >
+> > -         TP_STRUCT__entry(
+> > -                 __field(dev_t, dev)
+> > -                 __field(struct ext4_sb_info *, sbi)
+> > -                 __field(int, count)
+> > -                 ),
+> > +     TP_ARGS(sb),
+> >
+> > -         TP_fast_assign(
+> > -                 __entry->dev = sb->s_dev;
+> > -                 __entry->sbi = EXT4_SB(sb);
+> > -                 ),
+> > +     TP_STRUCT__entry(
+> > +             __field(dev_t, dev)
+> > +             __array(unsigned int, fc_ineligible_rc, EXT4_FC_REASON_MAX)
+> > +             __field(unsigned long, fc_commits)
+> > +             __field(unsigned long, fc_ineligible_commits)
+> > +             __field(unsigned long, fc_numblks)
+> > +     ),
+> >
+> > -         TP_printk("dev %d:%d fc ineligible reasons:\n"
+> > -                   "%s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d, %s:%d; "
+> > -                   "num_commits:%ld, ineligible: %ld, numblks: %ld",
+> > -                   MAJOR(__entry->dev), MINOR(__entry->dev),
+> > -                   FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
+> > -                   FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
+> > -                   FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
+> > -                   FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
+> > -                   FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
+> > -                   FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
+> > -                   FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
+> > -                   FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
+> > -                   FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
+> > -                   __entry->sbi->s_fc_stats.fc_num_commits,
+> > -                   __entry->sbi->s_fc_stats.fc_ineligible_commits,
+> > -                   __entry->sbi->s_fc_stats.fc_numblks)
+> > +     TP_fast_assign(
+> > +             int i;
+> >
+> > +             __entry->dev = sb->s_dev;
+> > +             for (i = 0; i < EXT4_FC_REASON_MAX; i++)
+> > +                     __entry->fc_ineligible_rc[i] =
+> > +                     EXT4_SB(sb)->s_fc_stats.fc_ineligible_reason_count[i];
+> > +             __entry->fc_commits = EXT4_SB(sb)->s_fc_stats.fc_num_commits;
+> > +             __entry->fc_ineligible_commits =
+> > +                     EXT4_SB(sb)->s_fc_stats.fc_ineligible_commits;
+> > +             __entry->fc_numblks = EXT4_SB(sb)->s_fc_stats.fc_numblks;
+> > +     ),
+> > +
+> > +     TP_printk("dev %d,%d fc ineligible reasons:\n"
+> > +               "%s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u, %s:%u "
+> > +               "num_commits:%lu, ineligible: %lu, numblks: %lu",
+> > +               MAJOR(__entry->dev), MINOR(__entry->dev),
+> > +               FC_REASON_NAME_STAT(EXT4_FC_REASON_XATTR),
+> > +               FC_REASON_NAME_STAT(EXT4_FC_REASON_CROSS_RENAME),
+> > +               FC_REASON_NAME_STAT(EXT4_FC_REASON_JOURNAL_FLAG_CHANGE),
+> > +               FC_REASON_NAME_STAT(EXT4_FC_REASON_NOMEM),
+> > +               FC_REASON_NAME_STAT(EXT4_FC_REASON_SWAP_BOOT),
+> > +               FC_REASON_NAME_STAT(EXT4_FC_REASON_RESIZE),
+> > +               FC_REASON_NAME_STAT(EXT4_FC_REASON_RENAME_DIR),
+> > +               FC_REASON_NAME_STAT(EXT4_FC_REASON_FALLOC_RANGE),
+> > +               FC_REASON_NAME_STAT(EXT4_FC_REASON_INODE_JOURNAL_DATA),
+> > +               __entry->fc_commits, __entry->fc_ineligible_commits,
+> > +               __entry->fc_numblks)
+> >  );
+> >
+> >  #define DEFINE_TRACE_DENTRY_EVENT(__type)                            \
+> > --
+> > 2.31.1
+> >
+> --
+> Jan Kara <jack@suse.com>
+> SUSE Labs, CR
