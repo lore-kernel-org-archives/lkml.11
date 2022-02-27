@@ -2,170 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47CCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 15:30:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A8B9C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 15:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231527AbiB0PbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 10:31:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
+        id S231174AbiB0Pel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 10:34:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231515AbiB0PbF (ORCPT
+        with ESMTP id S229501AbiB0Pej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 10:31:05 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C203E40A00;
-        Sun, 27 Feb 2022 07:30:26 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id b13so8551545qkj.12;
-        Sun, 27 Feb 2022 07:30:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OHIHH7LBjO7n3w0TkyTvZ+CHhZPHMYRUZ96K/VbT0E0=;
-        b=dqo1I6grQ/gBiqH+YPs7rXzhBD+bYuTqGeeOaI1GieS/LuXuyYCOf4SDuoUihIgUKI
-         wmB98GeiOf2BtGiD47F0s2369fXjh0kq6UMFZp8ZioU4oEmdcbksndvsD8my0ClMng4H
-         KrtuQYss4Pw3Ltj2HJsJWXw6ykBZp1gHzox4ECvCsN13uy4xpInoE94UI9kGZyWBcA9Y
-         ogmnGkDDmzEInz6Um7XAIbKyAEnB3gfq+AAC4skkXDrTBS2bSNgEg2HXzP5AOPiJu1zF
-         dR1ElE9m03h4tuNnBDpHnqSfOR5pZ27Js4ThB+oodojxkhohDSCGnIGcqnokDnjVqPcR
-         I9Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OHIHH7LBjO7n3w0TkyTvZ+CHhZPHMYRUZ96K/VbT0E0=;
-        b=cSxjVGjx1XWeQbNZSNooOgiSDY26/nwT+wgVOtZKtjNHke+oTuoU8/j+OtecOleW0e
-         PX/1tuEQHsKxtE/aFRpvv1DGP5DZk5TIGUps/neQGhB2GOj9b3xGCnYG8mHH1gTmCxs3
-         rg+HaGLvaEvdCabiVKtPhmFj8rwriWV0wFg+ghnUqhCXUBV9/z0gZeCsvVnR0KTc3X6Q
-         ai+R3gjYALC8MemJ4xlgbPxxu/Ht7XgRobHufotFrFg2DhVNhxrnKrbpdJBjS8aeRfsn
-         PquNUjrF38/xEIs6st+texjeE21FZIwiXNtTUHaQwGo2lHuPfvNxuG5jQ2R1Bcm0GoyN
-         kDxQ==
-X-Gm-Message-State: AOAM531z8hltWvlECGQLsDT9M5iFPGZHH57xGY+fkB124k8/QpOD+drk
-        omJe7n4TnjBUy2sNb2Iu3wKDTPQ/xgh0jg==
-X-Google-Smtp-Source: ABdhPJxTAoe1idnBUg1yVcCCX5Wrzu4GMifkspHde49AFZZ3QzRabhGZqebkFr/DuC/6AhlQinm6+Q==
-X-Received: by 2002:a05:620a:13d1:b0:5f1:788d:cac9 with SMTP id g17-20020a05620a13d100b005f1788dcac9mr9478022qkl.608.1645975825899;
-        Sun, 27 Feb 2022 07:30:25 -0800 (PST)
-Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
-        by smtp.gmail.com with ESMTPSA id s10-20020a05620a080a00b0062ce6f3f5d7sm3845767qks.16.2022.02.27.07.30.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Feb 2022 07:30:25 -0800 (PST)
-From:   Peter Geis <pgwipeout@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-rockchip@lists.infradead.org, michael.riesch@wolfvision.net,
-        jbx6244@gmail.com, Sascha Hauer <s.hauer@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 7/7] arm64: dts: rockchip: add usb3 support to rk3568-evb1-v10
-Date:   Sun, 27 Feb 2022 10:30:16 -0500
-Message-Id: <20220227153016.950473-8-pgwipeout@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220227153016.950473-1-pgwipeout@gmail.com>
-References: <20220227153016.950473-1-pgwipeout@gmail.com>
+        Sun, 27 Feb 2022 10:34:39 -0500
+Received: from mail.marcansoft.com (marcansoft.com [212.63.210.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7588747065;
+        Sun, 27 Feb 2022 07:34:01 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id E09D3423CD;
+        Sun, 27 Feb 2022 15:33:56 +0000 (UTC)
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <mark.kettenis@xs4all.nl>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+References: <20220224130741.63924-1-marcan@marcan.st>
+ <20220224130741.63924-4-marcan@marcan.st> <87mtif2eoz.wl-maz@kernel.org>
+From:   Hector Martin <marcan@marcan.st>
+Subject: Re: [PATCH v2 3/7] irqchip/apple-aic: Add Fast IPI support
+Message-ID: <d0e2a08e-79d6-03e8-09a2-bb634fa3c23c@marcan.st>
+Date:   Mon, 28 Feb 2022 00:33:54 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
+In-Reply-To: <87mtif2eoz.wl-maz@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: es-ES
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Riesch <michael.riesch@wolfvision.net>
+On 25/02/2022 23.39, Marc Zyngier wrote:
+> On Thu, 24 Feb 2022 13:07:37 +0000,
+>>  		if (!(pending & irq_bit) &&
+>> -		    (atomic_read(per_cpu_ptr(&aic_vipi_enable, cpu)) & irq_bit))
+>> -			send |= AIC_IPI_SEND_CPU(cpu);
+>> +		    (atomic_read(per_cpu_ptr(&aic_vipi_enable, cpu)) & irq_bit)) {
+>> +			if (static_branch_likely(&use_fast_ipi))
+>> +				aic_ipi_send_fast(cpu);
+> 
+> OK, this is suffering from the same issue that GICv3 has, which is
+> that memory barriers don't provide order against sysregs. You need a
+> DSB for that, which is a pain. Something like this:
 
-The Rockchip RK3568 EVB1 features one USB 3.0 device-only
-(USB 2.0 OTG) port and one USB 3.0 host-only port.
-Activate the USB 3.0 controller nodes and phy nodes in the
-device tree.
+Doesn't the control flow here guarantee the ordering? atomic_read() must
+complete before the sysreg is written since there is a control flow
+dependency, and the prior atomic/barrier dance ensures that read is
+ordered properly with everything that comes before it.
 
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Signed-off-by: Michael Riesch <michael.riesch@wolfvision.net>
----
- .../boot/dts/rockchip/rk3568-evb1-v10.dts     | 46 +++++++++++++++++++
- 1 file changed, 46 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
-index a794a0ea5c70..622be8be9813 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dts
-@@ -103,6 +103,18 @@ vcc5v0_usb_host: vcc5v0-usb-host {
- 		vin-supply = <&vcc5v0_usb>;
- 	};
- 
-+	vcc5v0_usb_otg: vcc5v0-usb-otg {
-+		compatible = "regulator-fixed";
-+		enable-active-high;
-+		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&vcc5v0_usb_otg_en>;
-+		regulator-name = "vcc5v0_usb_otg";
-+		regulator-min-microvolt = <5000000>;
-+		regulator-max-microvolt = <5000000>;
-+		vin-supply = <&vcc5v0_usb>;
-+	};
-+
- 	vcc3v3_lcd0_n: vcc3v3-lcd0-n {
- 		compatible = "regulator-fixed";
- 		regulator-name = "vcc3v3_lcd0_n";
-@@ -136,6 +148,14 @@ regulator-state-mem {
- 	};
- };
- 
-+&combphy0 {
-+	status = "okay";
-+};
-+
-+&combphy1 {
-+	status = "okay";
-+};
-+
- &cpu0 {
- 	cpu-supply = <&vdd_cpu>;
- };
-@@ -507,6 +527,9 @@ usb {
- 		vcc5v0_usb_host_en: vcc5v0_usb_host_en {
- 			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
- 		};
-+		vcc5v0_usb_otg_en: vcc5v0_usb_otg_en {
-+			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_none>;
-+		};
- 	};
- };
- 
-@@ -568,6 +591,11 @@ &usb_host0_ohci {
- 	status = "okay";
- };
- 
-+&usb_host0_xhci {
-+	extcon = <&usb2phy0>;
-+	status = "okay";
-+};
-+
- &usb_host1_ehci {
- 	status = "okay";
- };
-@@ -576,6 +604,24 @@ &usb_host1_ohci {
- 	status = "okay";
- };
- 
-+&usb_host1_xhci {
-+	status = "okay";
-+};
-+
-+&usb2phy0 {
-+	status = "okay";
-+};
-+
-+&usb2phy0_host {
-+	phy-supply = <&vcc5v0_usb_host>;
-+	status = "okay";
-+};
-+
-+&usb2phy0_otg {
-+	vbus-supply = <&vcc5v0_usb_otg>;
-+	status = "okay";
-+};
-+
- &usb2phy1 {
- 	status = "okay";
- };
 -- 
-2.25.1
-
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
