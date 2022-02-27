@@ -2,183 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD2DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 21:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F3CC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 21:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230505AbiB0VGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 16:06:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56948 "EHLO
+        id S231293AbiB0VNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 16:13:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiB0VFr (ORCPT
+        with ESMTP id S229519AbiB0VNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 16:05:47 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D924B28E09
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 13:05:09 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id y24so18186519lfg.1
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 13:05:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eSHr3nTbnOhAHHvD9gcRuzb7Z+l/28mCvr6FBYKx3Jg=;
-        b=cz5eFf016k8zCL008IYZ3R+cQOb1ZLSrvaH9TuTcK33seJTFNea2L6f1v/f6Q3Jdy5
-         NFzHYU5pSElShwGf1W+/92sNTVXqYzefCxivdNt4eI+wHqItKzpbafgD6tz2sVbC8Sed
-         xc12WaBJOXbs9pLvKFyf1hV8Upui8mPhoKcY4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eSHr3nTbnOhAHHvD9gcRuzb7Z+l/28mCvr6FBYKx3Jg=;
-        b=XWZzMu1Zz8C+DfKW66cC6Zs7K/jgcf2nNJ+f+Nq20kMt0kPKjqiIczDxlRP+KzOd69
-         cAnuvLBk9FNeWyA1xrzNNkH2iLPnrlDGfq0xiV8qE/uiMrjoqwtfN8Uu9e5pBxvB9Mb8
-         j9o7wAsJfq7itZhJRjuWfK8pNMTSU9dbCheOVYVwG/prGi/y9wCSM2xTiYV8G6xvWQ+p
-         w2sdd+4dw8tKjDIVbTpqO9Ng/awgyhzE9WLJopht7ndX5mJQ58VZnDvg79ZQS8J75tH+
-         3vJfVwW9HZd/slT76h5aY1p2m7g8yzgzogis4gZY2Urh/lTNtDymv4Mscm3YTqQQulWj
-         2MNw==
-X-Gm-Message-State: AOAM530xGIgK7lnXW3olTqK4ySykirmNemLwTmuuOt6C3L6C3GNynjv7
-        XrIOWXdlue+tnHhQRhse2zfmga582ygK+6Dvbqs=
-X-Google-Smtp-Source: ABdhPJxOkKn6LOtdTdml1AFtir5oOKAeq6bvp3e0IhlAy6JDiWd0yExO0rSDC+wG7nfROK1f3/5Y8w==
-X-Received: by 2002:a05:6512:6d3:b0:440:c1d0:7fec with SMTP id u19-20020a05651206d300b00440c1d07fecmr11150955lff.674.1645995907638;
-        Sun, 27 Feb 2022 13:05:07 -0800 (PST)
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com. [209.85.208.177])
-        by smtp.gmail.com with ESMTPSA id n22-20020a195516000000b004433dd2a853sm733669lfe.294.2022.02.27.13.05.04
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Feb 2022 13:05:05 -0800 (PST)
-Received: by mail-lj1-f177.google.com with SMTP id p20so14865131ljo.0
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 13:05:04 -0800 (PST)
-X-Received: by 2002:a2e:924d:0:b0:246:370c:5618 with SMTP id
- v13-20020a2e924d000000b00246370c5618mr12174195ljg.358.1645995904456; Sun, 27
- Feb 2022 13:05:04 -0800 (PST)
+        Sun, 27 Feb 2022 16:13:50 -0500
+X-Greylist: delayed 383 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Feb 2022 13:13:12 PST
+Received: from 7.mo552.mail-out.ovh.net (7.mo552.mail-out.ovh.net [188.165.59.253])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C38A2251B;
+        Sun, 27 Feb 2022 13:13:11 -0800 (PST)
+Received: from mxplan5.mail.ovh.net (unknown [10.108.16.105])
+        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 44B8422DC0;
+        Sun, 27 Feb 2022 21:06:46 +0000 (UTC)
+Received: from kaod.org (37.59.142.96) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Sun, 27 Feb
+ 2022 22:06:45 +0100
+Authentication-Results: garm.ovh; auth=pass (GARM-96R00115e110f1-ecce-4d7f-bb2b-9bf0158c7309,
+                    3C1F276A0880C75D3AA0293DFE804433F7F83470) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <ceace047-6d07-1ca3-c1ae-7137456975c5@kaod.org>
+Date:   Sun, 27 Feb 2022 22:06:44 +0100
 MIME-Version: 1.0
-References: <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
- <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
- <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
- <20220226124249.GU614@gate.crashing.org> <CAK8P3a2Dd+ZMzn=gDnTzOW=S3RHQVmm1j3Gy=aKmFEbyD-q=rQ@mail.gmail.com>
- <20220227010956.GW614@gate.crashing.org> <7abf3406919b4f0c828dacea6ce97ce8@AcuMS.aculab.com>
- <20220227113245.GY614@gate.crashing.org> <CANiq72m28WrjVHkcg5Y0LDa51Ur4OCpFbGdcq+v4gqiC0Wi6zg@mail.gmail.com>
- <20220227201724.GZ614@gate.crashing.org>
-In-Reply-To: <20220227201724.GZ614@gate.crashing.org>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sun, 27 Feb 2022 13:04:48 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wijh=SQ_9_-H6O08HgmXrWz37_vcdm55oECo+31LUs2EQ@mail.gmail.com>
-Message-ID: <CAHk-=wijh=SQ_9_-H6O08HgmXrWz37_vcdm55oECo+31LUs2EQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-To:     Segher Boessenkool <segher@kernel.crashing.org>
-Cc:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-        David Laight <David.Laight@aculab.com>,
-        Arnd Bergmann <arnd@arndb.de>, Jakob <jakobkoschel@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 04/10] spi: aspeed: Add support for direct mapping
+Content-Language: en-US
+To:     Pratyush Yadav <p.yadav@ti.com>
+CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220214094231.3753686-1-clg@kaod.org>
+ <20220214094231.3753686-5-clg@kaod.org>
+ <20220225091219.bv62jm3nehg4e4z4@ti.com>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <20220225091219.bv62jm3nehg4e4z4@ti.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.96]
+X-ClientProxiedBy: DAG9EX2.mxp5.local (172.16.2.82) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: 0b4b9ae5-d348-4927-88b8-76128bb7f478
+X-Ovh-Tracer-Id: 16710043469378063236
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrleekgddugeefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepkeeljeefveejheeihfegleegleduudeluedvffetudeigedvgfetveefteekteefnecuffhomhgrihhnpegsuhhfrdhinhenucfkpheptddrtddrtddrtddpfeejrdehledrudegvddrleeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 12:22 PM Segher Boessenkool
-<segher@kernel.crashing.org> wrote:
->
-> Requiring to annotate every place that has UB (or *can* have UB!) by the
-> user is even less friendly than having so much UB is already :-(
+On 2/25/22 10:12, Pratyush Yadav wrote:
+> On 14/02/22 10:42AM, Cédric Le Goater wrote:
+>> Use direct mapping to read the flash device contents. This operation
+>> mode is called "Command mode" on Aspeed SoC SMC controllers. It uses a
+>> Control Register for the settings to apply when a memory operation is
+>> performed on the flash device mapping window.
+>>
+>> If the window is not big enough, fall back to the "User mode" to
+>> perform the read.
+>>
+>> Direct mapping for writes will come later when validated.
+>>
+>> Signed-off-by: Cédric Le Goater <clg@kaod.org>
+>> ---
+>>   drivers/spi/spi-aspeed-smc.c | 67 ++++++++++++++++++++++++++++++++++--
+>>   1 file changed, 65 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/spi/spi-aspeed-smc.c b/drivers/spi/spi-aspeed-smc.c
+>> index 0aeff6f468af..8d33fcb7736a 100644
+>> --- a/drivers/spi/spi-aspeed-smc.c
+>> +++ b/drivers/spi/spi-aspeed-smc.c
+>> @@ -345,8 +345,8 @@ static int do_aspeed_spi_exec_op(struct spi_mem *mem, const struct spi_mem_op *o
+>>   		if (!op->addr.nbytes)
+>>   			ret = aspeed_spi_read_reg(chip, op);
+>>   		else
+>> -			ret = aspeed_spi_read_user(chip, op, op->addr.val,
+>> -						   op->data.nbytes, op->data.buf.in);
+>> +			memcpy_fromio(op->data.buf.in, chip->ahb_base + op->addr.val,
+>> +				      op->data.nbytes);
+> 
+> Why change this? exec_op should be independent from dirmap APIs. And you
+> don't even do the ahb_window_size checks here.
 
-Yeah, I don't think that's the solution. In fact, I don't think that's
-even practically the _issue_.
+no indeed. Now that direct map is configured, all reads of flash contents
+should go through the direct map op. This is mostly for the RDSFDP command
+which has a different address space and uses 3B.
 
-Honestly, a lot of "undefined behavior" in C is quite often of the
-kind "the programmer knows what he wants".
+Theoretically, we should be able to use memcpy_fromio() and memcpy_toio()
+for all commands but not all controllers (6 of them) support this mode.
 
-Things like word size or byte order issues etc are classic "undefined
-behavior" in the sense that the C compiler really doesn't understand
-them. The C compiler won't silently fix any silly behavior you get
-from writing files in native byte order, and them not working on other
-platforms.
+Thanks,
 
-Same goes for things like memory allocators - they often need to do
-things that the standard doesn't really cover, and shouldn't even
-*try* to cover. It's very much a core example of where people do odd
-pointer arithmetic and change the type of pointers.
+C.
 
-The problem with the C model of "undefined behavior" is not that the
-behavior ends up being architecture-specific and depending on various
-in-memory (or in-register) representation of the data. No, those
-things are often very much intentional (even if in the case of byte
-order, the "intention" may be that the programmer simply does not
-care, and "knows" that all the world is little endian).
 
-If the C compiler just generates reliable code that can sanely be
-debugged - including very much using tools that look for "hey, this
-behavior can be surprising", ie all those "look for bad patterns at
-run-time", then that would be 100% FINE.
+> 
+>>   	} else {
+>>   		if (!op->addr.nbytes)
+>>   			ret = aspeed_spi_write_reg(chip, op);
+>> @@ -426,10 +426,73 @@ static int aspeed_spi_chip_set_default_window(struct aspeed_spi_chip *chip)
+>>   	return chip->ahb_window_size ? 0 : -1;
+>>   }
+>>   
+>> +static int aspeed_spi_dirmap_create(struct spi_mem_dirmap_desc *desc)
+>> +{
+>> +	struct aspeed_spi *aspi = spi_controller_get_devdata(desc->mem->spi->master);
+>> +	struct aspeed_spi_chip *chip = &aspi->chips[desc->mem->spi->chip_select];
+>> +	struct spi_mem_op *op = &desc->info.op_tmpl;
+>> +	u32 ctl_val;
+>> +	int ret = 0;
+>> +
+>> +	chip->clk_freq = desc->mem->spi->max_speed_hz;
+>> +
+>> +	/* Only for reads */
+>> +	if (op->data.dir != SPI_MEM_DATA_IN)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	if (desc->info.length > chip->ahb_window_size)
+>> +		dev_warn(aspi->dev, "CE%d window (%dMB) too small for mapping",
+>> +			 chip->cs, chip->ahb_window_size >> 20);
+>> +
+>> +	/* Define the default IO read settings */
+>> +	ctl_val = readl(chip->ctl) & ~CTRL_IO_CMD_MASK;
+>> +	ctl_val |= aspeed_spi_get_io_mode(op) |
+>> +		op->cmd.opcode << CTRL_COMMAND_SHIFT |
+>> +		CTRL_IO_DUMMY_SET(op->dummy.nbytes / op->dummy.buswidth) |
+>> +		CTRL_IO_MODE_READ;
+>> +
+>> +	/* Tune 4BYTE address mode */
+>> +	if (op->addr.nbytes) {
+>> +		u32 addr_mode = readl(aspi->regs + CE_CTRL_REG);
+>> +
+>> +		if (op->addr.nbytes == 4)
+>> +			addr_mode |= (0x11 << chip->cs);
+>> +		else
+>> +			addr_mode &= ~(0x11 << chip->cs);
+>> +		writel(addr_mode, aspi->regs + CE_CTRL_REG);
+>> +	}
+>> +
+>> +	/* READ mode is the controller default setting */
+>> +	chip->ctl_val[ASPEED_SPI_READ] = ctl_val;
+>> +	writel(chip->ctl_val[ASPEED_SPI_READ], chip->ctl);
+>> +
+>> +	dev_info(aspi->dev, "CE%d read buswidth:%d [0x%08x]\n",
+>> +		 chip->cs, op->data.buswidth, chip->ctl_val[ASPEED_SPI_READ]);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int aspeed_spi_dirmap_read(struct spi_mem_dirmap_desc *desc,
+>> +				  u64 offset, size_t len, void *buf)
+>> +{
+>> +	struct aspeed_spi *aspi = spi_controller_get_devdata(desc->mem->spi->master);
+>> +	struct aspeed_spi_chip *chip = &aspi->chips[desc->mem->spi->chip_select];
+>> +
+>> +	/* Switch to USER command mode if mapping window is too small */
+>> +	if (chip->ahb_window_size < offset + len)
+>> +		aspeed_spi_read_user(chip, &desc->info.op_tmpl, offset, len, buf);
+>> +	else
+>> +		memcpy_fromio(buf, chip->ahb_base + offset, len);
+>> +
+>> +	return len;
+>> +}
+>> +
+>>   static const struct spi_controller_mem_ops aspeed_spi_mem_ops = {
+>>   	.supports_op = aspeed_spi_supports_op,
+>>   	.exec_op = aspeed_spi_exec_op,
+>>   	.get_name = aspeed_spi_get_name,
+>> +	.dirmap_create = aspeed_spi_dirmap_create,
+>> +	.dirmap_read = aspeed_spi_dirmap_read,
+>>   };
+>>   
+>>   static void aspeed_spi_chip_set_type(struct aspeed_spi_chip *chip, int type)
+>> -- 
+>> 2.34.1
+>>
+> 
 
-But the problem with the C notion of undefined behavior is NOT that
-"results can depend on memory layout and other architecture issues
-that the compiler doesn't understand".
-
-No, the problem is that the C standards people - and compiler people -
-have then declared that "because this can be surprising, and the
-compiler doesn't understand what is going on, now the compiler can do
-something *else* entirely".
-
-THAT is the problem.
-
-The classic case - and my personal "beat a dead horse" - is the
-completely broken type-based aliasing rules. The standards people
-literally said "the compiler doesn't understand this, it can expose
-byte order dependencies that shouldn't be explained, SO THE COMPILER
-CAN NOW DO SOMETHING COMPLETELY INSANE INSTEAD".
-
-And compiler people? They rushed out to do completely broken garbage -
-at least some of them did.
-
-You can literally find compiler people who see code like this (very
-traditional, traditionally very valid and common, although):
-
-   // Return the least significant 16 bits of 'a' on LE machines
-  #define low_16_bits(x) (*(unsigned short *)&(x))
-
-and say "oh, because that's undefined, I can now decide to not do what
-the programmer told me to do AT ALL".
-
-Note that the above wasn't actually even badly defined originally. It
-was well-defined, it was used, and it was done by programmers that
-knew what they were doing.
-
-And then the C standards people decided that "because our job isn't to
-describe all the architectural issues you can hit, we'll call it
-undefined, and in the process let compiler people intentionally break
-it".
-
-THAT is a problem.
-
-Undefined results are are often intentional in system software - or
-they can be debugged using smart tools (including possibly very
-expensive run-time code generation) that actively look for them.
-
-But compilers that randomly do crazy things because the standard was
-bad? That's just broken.
-
-If compilers treated "undefined" as the same as
-"implementation-defined, but not explicitly documented", then that
-would be fine. But the C standards people - and a lot of compiler
-people - really don't seem to understand the problems they caused.
-
-And, btw, caused for no actual good reason. The HPC people who wanted
-Fortran-style aliasing could easily have had that with an extension.
-Yes, "restrict" is kind of a crappy one, but it could have been
-improved upon. Instead, people said "let's just break the language".
-
-Same exact thing goes for signed integer overflow.
-
-               Linus
