@@ -2,174 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DDAC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 13:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B360C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 13:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231373AbiB0Nyk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 08:54:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
+        id S229933AbiB0Nzg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 08:55:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231292AbiB0Ny2 (ORCPT
+        with ESMTP id S229648AbiB0Nzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 08:54:28 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4BE7193E9
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 05:53:51 -0800 (PST)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id E50A2407BE
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 13:53:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645970028;
-        bh=npGNvoQmcQXzOf9MUvG7bOfkjnwx60Xk35PbEgCfPxw=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=TuSSqqLER80YcA1/RpVOJ2K5WL+/AG4UvX1GCjPhRt8igN7+egU3VdFqP01lBdTto
-         bi/nxScJF30ylROyvEEDzmBsUOUKH6InN4ULr93fj2AJr3syOgPXbfaXz7M3/N9LIW
-         hCMJbtjL2yP1tFFrmDIQ6Bi4VXsbkm6FTvIw0GqWZwMiQR4GVHTXM0Ve2Am0Xm3l1g
-         6opBlecxSjQoQZNWNbwBvD0FQY727Z2YQhARzYOUQVp8cpRLjYiV0QW/DN35YpzwmE
-         GjrWXp3FtU8dOd1JGX00qfI4gOAsZqsOzTy9k27FjhYMmgfo+qL1uRfM4ltpZI6w58
-         WrGnFMGNOFueA==
-Received: by mail-ed1-f71.google.com with SMTP id y10-20020a056402358a00b00410deddea4cso4232363edc.16
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 05:53:48 -0800 (PST)
+        Sun, 27 Feb 2022 08:55:31 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F9D1BE88
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 05:54:55 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id l19so8783136pfu.2
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 05:54:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=R5/L3FvnnktNyA34E6kruOzfisqAyzhCs9ooPGmemyU=;
+        b=uuLL8S0E+zI20jKmcmApZ8T7BLy1ekrigcJchDezUrX58/hAEEwRWtQ8ixFg6WwbZF
+         9Vfe4zkxPKtl6nk75f0qx6s/j4iSpeEI1ioAlj894Gh9jhhSfIwSMw/nYiZz5FpK3mK8
+         yDqfKHXZuAV686mDbZNgIlvd2AaCcUgsyuwTbyPHLrRORL5h7yaCtg0M5cf+aon/8Yi2
+         Ho29Y3QLIBQMpe5QW2akghgcYyDEwaubjGYraXpVw+qH+UnYondbitbR0ltIkaAhlDHZ
+         6VwTPUxe15KRvxs+sPtwHLiGLBPLIMLxxe8indN6XxMJ8sYHw8ZA7HKBU57VUGRnQpso
+         0j+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=npGNvoQmcQXzOf9MUvG7bOfkjnwx60Xk35PbEgCfPxw=;
-        b=427dzMyVInPq2hVyZwG25BqoO8FV7AbzQdF7sESH8Hxhx/M48QXcKNhaM0TQexMA5/
-         W+AxRTyprl9wPk8wGiNbtMXXFhLvmB7d+q9lniuYcm5NoboYhppshxKbR2HBlqDCAf+Z
-         Vt6TbqW53DfOns+Ly0wqotJ6SIDTWJNNpLm1IzvrFrTC3Mtbs3ca6LgFw2qv+fxlIAEE
-         Xfcof1VicHIOdysxqRhibCzpeubMJkx+sv5xcTipLxBJZlm6hDVXUqdkDAM4nf3fUhqk
-         BKWX+T4v1BSs+nB6JoMRliYboHvxiyETo4NwIEBd5lqFXi7R2vrPzCrUrjzhloNQdxP2
-         iX/w==
-X-Gm-Message-State: AOAM530v/9IKwSpnJ/cD2z0QCm1QWvNSvNiiVxeegrkB7xopzFE2+gMo
-        PSCRZb38Wdevnm2dQRB6tT/4tRIKJAPPMpiBpfrBHB+ATwgYp3yHb4/ne1iRvAdpst94Zf+ZTqj
-        psu9Bjzu9bkNZ0TQrAC/iwgHBUYnlNmkAfI7E4rb8nQ==
-X-Received: by 2002:aa7:d49a:0:b0:410:875c:e21b with SMTP id b26-20020aa7d49a000000b00410875ce21bmr15261473edr.357.1645970017413;
-        Sun, 27 Feb 2022 05:53:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzicu7l4IEwzqhlq2xIFoxdFytokSeMFkgjaEtpJW9Dl/uL3ibJtEoSzuA4VDSoAwu8n3nm0A==
-X-Received: by 2002:aa7:d49a:0:b0:410:875c:e21b with SMTP id b26-20020aa7d49a000000b00410875ce21bmr15261460edr.357.1645970017251;
-        Sun, 27 Feb 2022 05:53:37 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id w11-20020a056402128b00b00412ec3f5f74sm4600760edv.62.2022.02.27.05.53.35
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=R5/L3FvnnktNyA34E6kruOzfisqAyzhCs9ooPGmemyU=;
+        b=z1BAQUx3ZaQ0FKk2DG+/yGypwNKG4g0mMItMtOLnES05y4KhM1PxTF88dTH72Qa4+P
+         Ds37n6B5qcKQEcx390CRw0TMZo1nsvx1NT0X4JrmCM2MWNWdl0RLt813bSwqFxK0jdX0
+         NV0iiw2q7LD2ou0AUpUF8PdYfDIgbuBrj9HltgTAVpfsjb+YXZ0VTRs1mBRQGHtCndlP
+         M2fgjVGkimPFTQskFd5EofIiKXu8FZ3e+2fBvb5bHahIGcUOAbVrKVY2d7gzsJWoB0kY
+         NCyL5/fnA86T0GV1+4gMLGh4uHQiGfySotur1VFjPC/LbPsgr/SB22gS4ykwWPR1IPje
+         Uy6g==
+X-Gm-Message-State: AOAM532RVIGh+uwXSNZU0eP8sAu7Qv9f050aJSSdMdsdnoyr27XIFvO+
+        biZjhK4uSCvbu2TC1Ir3zr9PMg==
+X-Google-Smtp-Source: ABdhPJw1trEejf2Gp3RfzHniQF58pqnIWCn0DG0TdWVAUuroABa8H5/f51okcOdZQvFbGHfkKnpNhw==
+X-Received: by 2002:a63:3111:0:b0:373:a1fa:8998 with SMTP id x17-20020a633111000000b00373a1fa8998mr13312669pgx.415.1645970094678;
+        Sun, 27 Feb 2022 05:54:54 -0800 (PST)
+Received: from leoy-ThinkPad-X240s ([204.124.180.219])
+        by smtp.gmail.com with ESMTPSA id v14-20020a056a00148e00b004e1cee6f6b4sm10221833pfu.47.2022.02.27.05.54.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Feb 2022 05:53:36 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andy Gross <agross@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH v3 08/11] vdpa: Use helper for safer setting of driver_override
-Date:   Sun, 27 Feb 2022 14:53:26 +0100
-Message-Id: <20220227135329.145862-2-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220227135214.145599-1-krzysztof.kozlowski@canonical.com>
-References: <20220227135214.145599-1-krzysztof.kozlowski@canonical.com>
+        Sun, 27 Feb 2022 05:54:54 -0800 (PST)
+Date:   Sun, 27 Feb 2022 21:54:44 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Ali Saidi <alisaidi@amazon.com>
+Cc:     german.gomez@arm.com, acme@kernel.org,
+        alexander.shishkin@linux.intel.com, andrew.kilroy@arm.com,
+        benh@kernel.crashing.org, james.clark@arm.com,
+        john.garry@huawei.com, jolsa@redhat.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org, mark.rutland@arm.com,
+        mathieu.poirier@linaro.org, mingo@redhat.com, namhyung@kernel.org,
+        peterz@infradead.org, will@kernel.org
+Subject: Re: [PATCH 2/2] perf arm-spe: Parse more SPE fields and store source
+Message-ID: <20220227135444.GB107053@leoy-ThinkPad-X240s>
+References: <9266bfb6-341c-1d9c-e96f-c9f856a5ffb6@arm.com>
+ <20220222192943.20137-1-alisaidi@amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220222192943.20137-1-alisaidi@amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use a helper for seting driver_override to reduce amount of duplicated
-code.
+On Tue, Feb 22, 2022 at 07:29:43PM +0000, Ali Saidi wrote:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- drivers/vdpa/vdpa.c  | 29 ++++-------------------------
- include/linux/vdpa.h |  4 +++-
- 2 files changed, 7 insertions(+), 26 deletions(-)
+[...]
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 9846c9de4bfa..2d924a89ce28 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -77,32 +77,11 @@ static ssize_t driver_override_store(struct device *dev,
- 				     const char *buf, size_t count)
- {
- 	struct vdpa_device *vdev = dev_to_vdpa(dev);
--	const char *driver_override, *old;
--	char *cp;
-+	int ret;
- 
--	/* We need to keep extra room for a newline */
--	if (count >= (PAGE_SIZE - 1))
--		return -EINVAL;
--
--	driver_override = kstrndup(buf, count, GFP_KERNEL);
--	if (!driver_override)
--		return -ENOMEM;
--
--	cp = strchr(driver_override, '\n');
--	if (cp)
--		*cp = '\0';
--
--	device_lock(dev);
--	old = vdev->driver_override;
--	if (strlen(driver_override)) {
--		vdev->driver_override = driver_override;
--	} else {
--		kfree(driver_override);
--		vdev->driver_override = NULL;
--	}
--	device_unlock(dev);
--
--	kfree(old);
-+	ret = driver_set_override(dev, &vdev->driver_override, buf, count);
-+	if (ret)
-+		return ret;
- 
- 	return count;
- }
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index 2de442ececae..89ec4e4d4cdc 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -64,7 +64,9 @@ struct vdpa_mgmt_dev;
-  * struct vdpa_device - representation of a vDPA device
-  * @dev: underlying device
-  * @dma_dev: the actual device that is performing DMA
-- * @driver_override: driver name to force a match
-+ * @driver_override: driver name to force a match; do not set directly,
-+ *                   because core frees it; use driver_set_override() to
-+ *                   set or clear it.
-  * @config: the configuration ops for this device.
-  * @cf_mutex: Protects get and set access to configuration layout.
-  * @index: device index
--- 
-2.32.0
+> >So I am just wandering if we can set the field
+> >sample::data_src::mem_lock for atomic operations, like:
+> >
+> >    data_src.mem_op   = PERF_MEM_OP_LOAD;
+> >    data_src.mem_lock = PERF_MEM_LOCK_ATOMIC;
+> >
+> >The field "mem_lock" is only two bits, we can consider to extend the
+> >structure with an extra filed "mem_lock_ext" if it cannot meet our
+> >requirement.
+> 
+> These are for the LOCK instruction on x86. I don't know that we want to
+> overload the meaning here. Minimally there is value in differentiating
+> exclusives vs atomics.
 
+Good point.  Can we consider to add new filed data_src.atomic with
+below types?
+
+    PERF_MEM_ATOMIC_INST  -> Atomic operations
+    PERF_MEM_ATOMIC_EXCL  -> Load-Exclusive/Store-Exclusive
+    PERF_MEM_ATOMIC_ACQUIRE_RELEASE  ->Load-Acquire/Store-Release
+
+Thanks,
+Leo
