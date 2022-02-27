@@ -2,107 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C99AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 10:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A830EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 10:53:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229785AbiB0Ksc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 05:48:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52882 "EHLO
+        id S229964AbiB0KyO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 05:54:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiB0Ksa (ORCPT
+        with ESMTP id S229614AbiB0KyM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 05:48:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B1BDF06;
-        Sun, 27 Feb 2022 02:47:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 27 Feb 2022 05:54:12 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D5D45075
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 02:53:36 -0800 (PST)
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD97560DF6;
-        Sun, 27 Feb 2022 10:47:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B266C340E9;
-        Sun, 27 Feb 2022 10:47:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645958871;
-        bh=JrHWJq89JDuxIYmnAtbEFGgKSH6szwmPhzsxmyxcnQs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=W727a7RzCiUJrXwPw3CKpLIDObN2aC9YtBvB3PvLp0tIAQGLC9mzFen5gXBU9lx8n
-         e0EJXI2YiChIafT9elxTaR2sjjx0kre11LP5p6aduuihB0uIKA/uZ1l43u8qg/ym91
-         n8KDJd04FfdHMwCNL7Kf89Ry/1ZuJjZlJFYFRG4EMvqLyxQIDjEZmfsDujG02umWvv
-         D87wMs863G+JH54UlM/pK/M4eAYRjJj4gtpET43DByb5n5EmkfbE9EBpsl3FNm5vxS
-         SYMLivDbW3qKLBPqYleD3pA48LuO68nmcbReNhWpAtcSQt38tamkjJx6Wm24G9tdck
-         GNaIciIecl3Gw==
-Received: by mail-yb1-f175.google.com with SMTP id p19so14816330ybc.6;
-        Sun, 27 Feb 2022 02:47:51 -0800 (PST)
-X-Gm-Message-State: AOAM53359t882v5ryV0hpbUyNs6rSnBNaozYa/N8g/uga2reRjcH75b8
-        TOM/+ida8bKlPZJK0+aphQkdGX5Vr9EK5Yeje8A=
-X-Google-Smtp-Source: ABdhPJzEZKppi44Pt6B7Hu8NOD6gq9Ewfe340HmuOXkpkf6KGcbLgM0ggYClfB6SynaBtKRmwD6nnypCZgE41692rJ4=
-X-Received: by 2002:a25:9d81:0:b0:622:7df3:ff6c with SMTP id
- v1-20020a259d81000000b006227df3ff6cmr14336869ybp.617.1645958870297; Sun, 27
- Feb 2022 02:47:50 -0800 (PST)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id F34183FCA5
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:53:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1645959213;
+        bh=DhT1dvPlzOUzKZgFedQirHd2ksfJlMM23UbjgmdtwlI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+         In-Reply-To:Content-Type;
+        b=jEwKsMocY4YUbYGANnNeGtexrKoVg4T43ZwmODgXkGpqJLigUp+lGTiOD3AjeZLMY
+         R79ixcXXHiArsmjzojluvKcHgM9Um05Cf5LGbBd0tyBmod+zPonsIr2TS8oDPxFbFs
+         8ZpEDWijmIw0AVyYcMVFAACRqNJyVvGoMokJnE3jY3atuXv20V/WjySNDneK14qNQ+
+         PFFIiE1w5N+SZEyEg7nWtpQ3jhj8GrqbC2I8Y/04C5vder+VtYiWKNQdbZxBcsvTu4
+         6txqC4e5jbq4W1c0v+Vzo40zTyqHJrJP0dtZrD8grpLYKfgYIa4VZHqSPFuFsiX3OF
+         3Qv5FNJD2Ug6A==
+Received: by mail-ed1-f72.google.com with SMTP id cm27-20020a0564020c9b00b004137effc24bso2257408edb.10
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 02:53:33 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DhT1dvPlzOUzKZgFedQirHd2ksfJlMM23UbjgmdtwlI=;
+        b=6HVUN5sptZIePhKAL3pY86tAwsWEAkf44sPrz7RYOEf6WkN1OJ0sZDGjiu4rkGl1AI
+         lYWEPJsxVtfx0AqIFddwOyyyhKoYVO1C1ZUaYxT7ztiB7A5a66bZzAli4ZtOx91w/NJ7
+         DomDXp1pwHlB2Desd/RZiFG+6KSo8b19c7+5mr40EqwHoWFbzTK+kFgirFV04Td4dvPJ
+         bXlEkspDA2jRrg3eOvBToQCrV6876qTsCOCNXoEemU35CBj4APlxk4uesuuriX7cRh8E
+         DlhV1d04xhd86pdz5Hm9Yo7mct+mfS0/aIILx4492PSzgjKw7SOmM6DxrO3NTDEVcPcm
+         wcsw==
+X-Gm-Message-State: AOAM530igWLtkUhKp85QVW9ZGqz1K4adY39Mwh3ohKvNEG+nZNiY4mGY
+        yE2DNqWIK4KH0aYX8RVfOgFbnjja8fzVnD2KB1ofExN/YPdiJ3/xhWjhYpPRrGOyjdpyE6pNCL4
+        f72EICJUocHcjlth3mNAOqqJpBXJ93G5zzqPU++K9sg==
+X-Received: by 2002:a05:6402:27cc:b0:412:eb0a:b687 with SMTP id c12-20020a05640227cc00b00412eb0ab687mr14957370ede.208.1645959213308;
+        Sun, 27 Feb 2022 02:53:33 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxyXd5YsGvKFpgDZHLeuTtX2dXv0kT6Q4No1zgTEWLt2DisZJNZw1Dd4prwoi128gF7+r0IXQ==
+X-Received: by 2002:a05:6402:27cc:b0:412:eb0a:b687 with SMTP id c12-20020a05640227cc00b00412eb0ab687mr14957353ede.208.1645959213096;
+        Sun, 27 Feb 2022 02:53:33 -0800 (PST)
+Received: from [192.168.0.133] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id w14-20020a509d8e000000b00412cf368b4csm4364026ede.53.2022.02.27.02.53.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Feb 2022 02:53:32 -0800 (PST)
+Message-ID: <aeb85444-e280-8c53-a0ba-f8d21f28975b@canonical.com>
+Date:   Sun, 27 Feb 2022 11:53:31 +0100
 MIME-Version: 1.0
-References: <20220226220639.1173594-1-Jason@zx2c4.com> <20220226220639.1173594-3-Jason@zx2c4.com>
- <CAMj1kXGRjdjbedQTU8ab+Q4jJPnN7nxc8_4QNiG3R7JE=zk-wA@mail.gmail.com>
- <CAHmME9rPd8Nu8Q0+R6B4Bz-caKpq5SSvLaiKdwXcyNHY8Ebfqg@mail.gmail.com> <CAMj1kXEwsyPcoTvK6PZyA5L3q9u_dd_wXUiyHw7TtPM5LecP7g@mail.gmail.com>
-In-Reply-To: <CAMj1kXEwsyPcoTvK6PZyA5L3q9u_dd_wXUiyHw7TtPM5LecP7g@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Sun, 27 Feb 2022 11:47:38 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXHAeqrPjMZi_VD6fYWXatV5UUy5N3ZbtZf=SaDpN3GPVQ@mail.gmail.com>
-Message-ID: <CAMj1kXHAeqrPjMZi_VD6fYWXatV5UUy5N3ZbtZf=SaDpN3GPVQ@mail.gmail.com>
-Subject: Re: [PATCH v5 2/3] ACPI: allow longer device IDs
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Len Brown <lenb@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexander Graf <graf@amazon.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2 2/2] dt-bindings: usb: Add bindings doc for Sunplus
+ EHCI driver
+Content-Language: en-US
+To:     Vincent Shih <vincent.sunplus@gmail.com>,
+        gregkh@linuxfoundation.org, stern@rowland.harvard.edu,
+        p.zabel@pengutronix.de, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, wells.lu@sunplus.com
+References: <1645955441-6496-1-git-send-email-vincent.sunplus@gmail.com>
+ <1645955441-6496-3-git-send-email-vincent.sunplus@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <1645955441-6496-3-git-send-email-vincent.sunplus@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Feb 2022 at 11:30, Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> On Sun, 27 Feb 2022 at 11:03, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> >
-> > On 2/27/22, Ard Biesheuvel <ardb@kernel.org> wrote:
-> > > On Sat, 26 Feb 2022 at 23:07, Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> > >>
-> > >> From: Alexander Graf <graf@amazon.com>
-> > >>
-> > >
-> > > Please don't invent patch authors like that. Alex's patch that started
-> > > this discussion was completely different.
-> >
-> > Considering the investigative side ("why won't the _CID match?") and
-> > most the commit message were Alex's, and that those things comprise
-> > 95% of what this patch is, and that the code change itself isn't even
-> > part of anything Turing complete, I most certainly did not feel
-> > comfortable stripping Alex's authorship. Instead I added myself as a
-> > co-author at the bottom. When in doubt, err on the side of crediting
-> > others. Alex also took a look at this patch, I am under the impression
-> > of at least, before it went out. Let's minimize the paperwork
-> > policing, okay? I think it'd make for a much more pleasant space here.
->
-...
->
-> Please stop with the ad hominems in response to criticism on factual
-> aspects of your code. Putting someone else's authorship on code they
-> did not write is not cool, and pointing that out is *not* what is
-> making this space unpleasant.
-> And 'paperwork policing' is sadly an important aspect of a high
-> profile open source project such as Linux.
->
+On 27/02/2022 10:50, Vincent Shih wrote:
+> Add bindings doc for Sunplus EHCI driver
+> 
+> Signed-off-by: Vincent Shih <vincent.sunplus@gmail.com>
+> ---
+>  .../bindings/usb/sunplus,sp7021-usb-ehci.yaml      | 97 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 98 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.yaml b/Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.yaml
+> new file mode 100644
+> index 0000000..e492f7a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.yaml
+> @@ -0,0 +1,97 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright (C) Sunplus Co., Ltd. 2021
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/usb/sunplus,sp7021-usb-ehci.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Sunplus SP7021 EHCI Device Tree bindings for ehci0/ehci1
+> +
+> +maintainers:
+> +  - Vincent Shih <vincent.sunplus@gmail.com>
+> +
+> +allOf:
+> +  - $ref: usb-hcd.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - sunplus,sp7021-usb-ehci0
+> +      - sunplus,sp7021-usb-ehci1
 
-I typed this before reading your message on IRC, which reads:
+How did you address Rob's comments about using one one compatible? You
+still have two.
 
-"Alex looked at that patch before i sent it out and did not object to
-me keeping his authorship. I wouldn't have sent it out otherwise."
+> +
+> +  clocks:
+> +    maxItems: 2
+> +
+> +  clock-names:
+> +    items:
+> +      - const: usbc_clk
+> +      - const: uphy_clk
+> +
+> +  resets:
+> +    maxItems: 2
+> +
+> +  reset-names:
+> +    items:
+> +      - const: usbc_rst
+> +      - const: uphy_rst
+> +
+> +  reg:
+> +    items:
+> +      - description: USBC register region
+> +      - description: UPHY register region
+> +      - description: MOON4 register region
+> +
+> +  reg-names:
+> +    items:
+> +      - const: usbc
+> +      - const: uphy
+> +      - const: moon4
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  nvmem-cell-names:
+> +    description: names corresponding to the nvmem cells of disconnect voltage
+> +    const: disc_vol
+> +
+> +  nvmem-cells:
+> +    description: nvmem cell address of disconnect voltage
+> +    maxItems: 1
+> +
+> +  port-num:
+> +    description:  identify ehci0 (port0) and ehci1 (port1)
 
-and so I stand corrected if this is true. But please, next time,
-please be more clear about these things.
+This still should be a dedicated PHY driver referenced here.
 
--- 
-Ard.
+
+Best regards,
+Krzysztof
