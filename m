@@ -2,110 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4145EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58AA5C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231966AbiB0Ujm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 15:39:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
+        id S230073AbiB0UmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 15:42:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231886AbiB0Ui6 (ORCPT
+        with ESMTP id S229482AbiB0UmW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 15:38:58 -0500
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A05BB6D1AB;
-        Sun, 27 Feb 2022 12:38:15 -0800 (PST)
-X-IronPort-AV: E=Sophos;i="5.90,141,1643641200"; 
-   d="scan'208";a="112525459"
-Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 28 Feb 2022 05:38:14 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 9A57A40E81B7;
-        Mon, 28 Feb 2022 05:38:12 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: [PATCH 08/12] arm64: dts: renesas: r9a07g054: Fillup the WDT{0,1,2} stub nodes
-Date:   Sun, 27 Feb 2022 20:37:40 +0000
-Message-Id: <20220227203744.18355-9-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220227203744.18355-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20220227203744.18355-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Sun, 27 Feb 2022 15:42:22 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440645D18D;
+        Sun, 27 Feb 2022 12:41:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645994505; x=1677530505;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lpf29+QUqst4fhOu/mjpWEpnEDzDujK3LoS/vcmfBFw=;
+  b=HThmEBTP15bV45+sofs6amCMTOH5Ao/Cqpca6CDTQvuqNaE1Yx8gLRXb
+   bRsG2bsrfywRAreiOHoq4owpUE94ICbkeObPDJR4oy3ZsGOXg2MMpdcmV
+   +KRH7FCa6ZSR694haT56M5ziG89yEN4JDO1qZgqlA07p7Z0XhFqv1VihH
+   pqh4pv/Xm7EZEE8PJ3k3LYPIXIy2Exu6+GqnXsrwVSWuNePS9cCYcvUCo
+   duPueXY0OLhTa1nR2/nwaYCVGuCChVxNd91qK/8ot4EpmOJ7w8/eCpKIO
+   10kZm8h8aHhhN99ukJ966XuvGkhw/J54J8/todZ/PLLujcNnJ/B0XvDcu
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="251595768"
+X-IronPort-AV: E=Sophos;i="5.90,141,1643702400"; 
+   d="scan'208";a="251595768"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 12:41:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,141,1643702400"; 
+   d="scan'208";a="593006858"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 27 Feb 2022 12:41:43 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOQMQ-0006nO-FE; Sun, 27 Feb 2022 20:41:42 +0000
+Date:   Mon, 28 Feb 2022 04:41:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Olivier Langlois <olivier@trillion01.com>,
+        Jens Axboe <axboe@kernel.dk>
+Cc:     kbuild-all@lists.01.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Hao Xu <haoxu@linux.alibaba.com>,
+        io-uring <io-uring@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] io_uring: Add support for napi_busy_poll
+Message-ID: <202202280400.HHUsYqhX-lkp@intel.com>
+References: <53ae4884ede7faab1f409ec635f723a0745d3656.1645981935.git.olivier@trillion01.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <53ae4884ede7faab1f409ec635f723a0745d3656.1645981935.git.olivier@trillion01.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fillup the WDT{0,1,2} stub nodes in RZ/V2L (R9A07G054) SoC DTSI.
+Hi Olivier,
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on linus/master]
+[cannot apply to v5.17-rc5 next-20220225]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Olivier-Langlois/io_uring-Add-support-for-napi_busy_poll/20220228-012140
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 2293be58d6a18cab800e25e42081bacb75c05752
+config: arc-randconfig-r043-20220227 (https://download.01.org/0day-ci/archive/20220228/202202280400.HHUsYqhX-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/65e72f78c66272f7cf0e87dfeef88f5b79de2d91
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Olivier-Langlois/io_uring-Add-support-for-napi_busy_poll/20220228-012140
+        git checkout 65e72f78c66272f7cf0e87dfeef88f5b79de2d91
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   fs/io_uring.c: In function '__io_submit_flush_completions':
+   fs/io_uring.c:2531:40: warning: variable 'prev' set but not used [-Wunused-but-set-variable]
+    2531 |         struct io_wq_work_node *node, *prev;
+         |                                        ^~~~
+   In file included from ./arch/arc/include/generated/asm/div64.h:1,
+                    from include/linux/math.h:5,
+                    from include/linux/kernel.h:25,
+                    from fs/io_uring.c:42:
+   fs/io_uring.c: In function 'io_adjust_busy_loop_timeout':
+>> include/asm-generic/div64.h:222:35: warning: comparison of distinct pointer types lacks a cast
+     222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
+         |                                   ^~
+   fs/io_uring.c:7840:17: note: in expansion of macro 'do_div'
+    7840 |                 do_div(to, 1000);
+         |                 ^~~~~~
+
+
+vim +222 include/asm-generic/div64.h
+
+^1da177e4c3f41 Linus Torvalds     2005-04-16  215  
+^1da177e4c3f41 Linus Torvalds     2005-04-16  216  /* The unnecessary pointer compare is there
+^1da177e4c3f41 Linus Torvalds     2005-04-16  217   * to check for type safety (n must be 64bit)
+^1da177e4c3f41 Linus Torvalds     2005-04-16  218   */
+^1da177e4c3f41 Linus Torvalds     2005-04-16  219  # define do_div(n,base) ({				\
+^1da177e4c3f41 Linus Torvalds     2005-04-16  220  	uint32_t __base = (base);			\
+^1da177e4c3f41 Linus Torvalds     2005-04-16  221  	uint32_t __rem;					\
+^1da177e4c3f41 Linus Torvalds     2005-04-16 @222  	(void)(((typeof((n)) *)0) == ((uint64_t *)0));	\
+911918aa7ef6f8 Nicolas Pitre      2015-11-02  223  	if (__builtin_constant_p(__base) &&		\
+911918aa7ef6f8 Nicolas Pitre      2015-11-02  224  	    is_power_of_2(__base)) {			\
+911918aa7ef6f8 Nicolas Pitre      2015-11-02  225  		__rem = (n) & (__base - 1);		\
+911918aa7ef6f8 Nicolas Pitre      2015-11-02  226  		(n) >>= ilog2(__base);			\
+c747ce4706190e Geert Uytterhoeven 2021-08-11  227  	} else if (__builtin_constant_p(__base) &&	\
+461a5e51060c93 Nicolas Pitre      2015-10-30  228  		   __base != 0) {			\
+461a5e51060c93 Nicolas Pitre      2015-10-30  229  		uint32_t __res_lo, __n_lo = (n);	\
+461a5e51060c93 Nicolas Pitre      2015-10-30  230  		(n) = __div64_const32(n, __base);	\
+461a5e51060c93 Nicolas Pitre      2015-10-30  231  		/* the remainder can be computed with 32-bit regs */ \
+461a5e51060c93 Nicolas Pitre      2015-10-30  232  		__res_lo = (n);				\
+461a5e51060c93 Nicolas Pitre      2015-10-30  233  		__rem = __n_lo - __res_lo * __base;	\
+911918aa7ef6f8 Nicolas Pitre      2015-11-02  234  	} else if (likely(((n) >> 32) == 0)) {		\
+^1da177e4c3f41 Linus Torvalds     2005-04-16  235  		__rem = (uint32_t)(n) % __base;		\
+^1da177e4c3f41 Linus Torvalds     2005-04-16  236  		(n) = (uint32_t)(n) / __base;		\
+c747ce4706190e Geert Uytterhoeven 2021-08-11  237  	} else {					\
+^1da177e4c3f41 Linus Torvalds     2005-04-16  238  		__rem = __div64_32(&(n), __base);	\
+c747ce4706190e Geert Uytterhoeven 2021-08-11  239  	}						\
+^1da177e4c3f41 Linus Torvalds     2005-04-16  240  	__rem;						\
+^1da177e4c3f41 Linus Torvalds     2005-04-16  241   })
+^1da177e4c3f41 Linus Torvalds     2005-04-16  242  
+
 ---
- arch/arm64/boot/dts/renesas/r9a07g054.dtsi | 36 ++++++++++++++++++++--
- 1 file changed, 33 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm64/boot/dts/renesas/r9a07g054.dtsi b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
-index 50cb2f0e6e73..a3623e70f02c 100644
---- a/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r9a07g054.dtsi
-@@ -614,18 +614,48 @@
- 		};
- 
- 		wdt0: watchdog@12800800 {
-+			compatible = "renesas,r9a07g054-wdt",
-+				     "renesas,rzg2l-wdt";
- 			reg = <0 0x12800800 0 0x400>;
--			/* place holder */
-+			clocks = <&cpg CPG_MOD R9A07G054_WDT0_PCLK>,
-+				 <&cpg CPG_MOD R9A07G054_WDT0_CLK>;
-+			clock-names = "pclk", "oscclk";
-+			interrupts = <GIC_SPI 49 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "wdt", "perrout";
-+			resets = <&cpg R9A07G054_WDT0_PRESETN>;
-+			power-domains = <&cpg>;
-+			status = "disabled";
- 		};
- 
- 		wdt1: watchdog@12800c00 {
-+			compatible = "renesas,r9a07g054-wdt",
-+				     "renesas,rzg2l-wdt";
- 			reg = <0 0x12800C00 0 0x400>;
--			/* place holder */
-+			clocks = <&cpg CPG_MOD R9A07G054_WDT1_PCLK>,
-+				 <&cpg CPG_MOD R9A07G054_WDT1_CLK>;
-+			clock-names = "pclk", "oscclk";
-+			interrupts = <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "wdt", "perrout";
-+			resets = <&cpg R9A07G054_WDT1_PRESETN>;
-+			power-domains = <&cpg>;
-+			status = "disabled";
- 		};
- 
- 		wdt2: watchdog@12800400 {
-+			compatible = "renesas,r9a07g054-wdt",
-+				     "renesas,rzg2l-wdt";
- 			reg = <0 0x12800400 0 0x400>;
--			/* place holder */
-+			clocks = <&cpg CPG_MOD R9A07G054_WDT2_PCLK>,
-+				 <&cpg CPG_MOD R9A07G054_WDT2_CLK>;
-+			clock-names = "pclk", "oscclk";
-+			interrupts = <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 54 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "wdt", "perrout";
-+			resets = <&cpg R9A07G054_WDT2_PRESETN>;
-+			power-domains = <&cpg>;
-+			status = "disabled";
- 		};
- 
- 		ostm0: timer@12801000 {
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
