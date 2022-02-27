@@ -2,90 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 177E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 12:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A0DC4321E
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 12:08:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbiB0MFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 07:05:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
+        id S230383AbiB0MIe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 07:08:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230308AbiB0MFq (ORCPT
+        with ESMTP id S230270AbiB0MIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 07:05:46 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAF44C7A4
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 04:05:08 -0800 (PST)
-Received: from mail-wr1-f43.google.com ([209.85.221.43]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MeC5x-1nxuZ20azn-00bGIA for <linux-kernel@vger.kernel.org>; Sun, 27 Feb
- 2022 13:05:07 +0100
-Received: by mail-wr1-f43.google.com with SMTP id v21so11271403wrv.5
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 04:05:07 -0800 (PST)
-X-Gm-Message-State: AOAM532O59Mphp7Q9dF47Gw/8lv5bXui8i3r+7SyGLOfZ5WK2aU7Pn9s
-        6NwFUbw6AGO9u0UCs/p9xEEhDSpB1OCX+vNTaIY=
-X-Google-Smtp-Source: ABdhPJzYjZbAaK84j1f8O9sOHhjBEhL+qXYDb7kn+XfkuZo4Lus2OZ/igr3bS4Ai5oywWEMDGq9BbqZ9+xxxeUYtCl8=
-X-Received: by 2002:adf:edc3:0:b0:1ec:5f11:5415 with SMTP id
- v3-20020adfedc3000000b001ec5f115415mr10535753wro.317.1645963506829; Sun, 27
- Feb 2022 04:05:06 -0800 (PST)
+        Sun, 27 Feb 2022 07:08:30 -0500
+Received: from heian.cn.fujitsu.com (mail.cn.fujitsu.com [183.91.158.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D942524584;
+        Sun, 27 Feb 2022 04:07:52 -0800 (PST)
+IronPort-Data: =?us-ascii?q?A9a23=3AFZDV6K/sIaRalZdNFs+tDrUD63+TJUtcMsCJ2f8?=
+ =?us-ascii?q?bfWQNrUojgTVRnWJOXjyBOfuCZWbwftx3ao7g804OsZ6EyYRjHldlrnsFo1Bi8?=
+ =?us-ascii?q?5ScXYvDRqvT04J+FuWaFQQ/qZx2huDodKjYdVeB4Ef9WlTdhSMkj/vQHOKlULe?=
+ =?us-ascii?q?s1h1ZHmeIdg9w0HqPpMZp2uaEsfDha++8kYuaT//3YTdJ6BYoWo4g0J9vnTs01?=
+ =?us-ascii?q?BjEVJz0iXRlDRxDlAe2e3D4l/vzL4npR5fzatE88uJX24/+IL+FEmPxp3/BC/u?=
+ =?us-ascii?q?ulPD1b08LXqXPewOJjxK6WYD72l4b+HN0if19aZLwam8O49mNt8pswdNWpNq+T?=
+ =?us-ascii?q?xw1FqPRmuUBSAQeGCZ7VUFD0OadeyDk7pLDlCUqdFOpmZ2CFnoeMYQG++pfD3t?=
+ =?us-ascii?q?J8PsCIjERKBuEgoqewLm7YuhqiN4qIMTiMMUYoH4I5T3QC7AkB4/CR6HL7NpD9?=
+ =?us-ascii?q?DY2ms1KW/3ZYqIxZThwaxLPSx5CIFEaDNQ5hujArn3+dSBI7VeQjakp6mPQigt?=
+ =?us-ascii?q?r39DFNsTZe9mPbcFUhVqD4GbH+XnpRB0XKrS3yzOD/zSnhvLnmjnyU4YfUra/8?=
+ =?us-ascii?q?5ZChFyV23xWBgYaWEW2pdGnhUOkHdFSMUoZ/mwpt6da3EiqSMTtGh61uniJujY?=
+ =?us-ascii?q?CVNdKVe438geAzuzT+QnxLmwFSCNRLcwor+coSjEwkFyEhdXkAXpoqrL9dJ433?=
+ =?us-ascii?q?t94thvrYW5MczBEPnRCEGM4DxDYiNlbpnryohxLTcZZVuHIJAw=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AQDDhVKs89yhQaqrvakNmYn8o7skDStV00zEX?=
+ =?us-ascii?q?/kB9WHVpm62j5qSTdZEguCMc5wx+ZJheo7q90cW7IE80lqQFhLX5X43SPzUO0V?=
+ =?us-ascii?q?HARO5fBODZsl/d8kPFltJ15ONJdqhSLJnKB0FmsMCS2mKFOudl7N6Z0K3Av4vj?=
+ =?us-ascii?q?80s=3D?=
+X-IronPort-AV: E=Sophos;i="5.88,333,1635177600"; 
+   d="scan'208";a="122037683"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 27 Feb 2022 20:07:51 +0800
+Received: from G08CNEXMBPEKD04.g08.fujitsu.local (unknown [10.167.33.201])
+        by cn.fujitsu.com (Postfix) with ESMTP id 837564D169F1;
+        Sun, 27 Feb 2022 20:07:49 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD04.g08.fujitsu.local (10.167.33.201) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Sun, 27 Feb 2022 20:07:51 +0800
+Received: from irides.mr.mr (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Sun, 27 Feb 2022 20:07:48 +0800
+From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
+        <nvdimm@lists.linux.dev>, <linux-mm@kvack.org>,
+        <linux-fsdevel@vger.kernel.org>
+CC:     <djwong@kernel.org>, <dan.j.williams@intel.com>,
+        <david@fromorbit.com>, <hch@infradead.org>, <jane.chu@oracle.com>
+Subject: [PATCH v11 1/8] dax: Introduce holder for dax_device
+Date:   Sun, 27 Feb 2022 20:07:40 +0800
+Message-ID: <20220227120747.711169-2-ruansy.fnst@fujitsu.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220227120747.711169-1-ruansy.fnst@fujitsu.com>
+References: <20220227120747.711169-1-ruansy.fnst@fujitsu.com>
 MIME-Version: 1.0
-References: <20220226222457.13668-1-rdunlap@infradead.org>
-In-Reply-To: <20220226222457.13668-1-rdunlap@infradead.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Sun, 27 Feb 2022 13:04:50 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a07PoFGC8jyRG5_CjfVPCc2T79c7Fs_WmHZEkuqtG+oPg@mail.gmail.com>
-Message-ID: <CAK8P3a07PoFGC8jyRG5_CjfVPCc2T79c7Fs_WmHZEkuqtG+oPg@mail.gmail.com>
-Subject: Re: [PATCH -next] misc: rtsx: fix build for CONFIG_PM not set
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wei WANG <wei_wang@realsil.com.cn>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:YWhlWybzj0laFtQGq0VMCggnFydyeR2tuEemTHNFxU7Jm56a9Ht
- OxMy3HeHp5fgNYbJfxrmTur23p1z/6hO373qA/o159Y+w20ViuHqMvJurbbH8OOoXgrQNKb
- +35IWTIIp8PGUn6bQF6v1VXpb8V+RDb4A3n6WzCBEeuESXk1BvJjfh0Q2AlZ4aBRaubJoN0
- gws3mz6PitLcckHqNMruw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:d58jILnMKIQ=:iPgL/7H/2pmB9bq0IzJUN/
- EB82Bsm4yF6DhQEsAVI0A8tM224Y2NoYaYw78egDTBqEE+yS1ozz1IfaZkFQX9HuC/pPrYb5/
- 1mqVS1whkkdd+TZBTZ06EJvp7jkxHRfJa0DmRYcCuGc4LLtUQ3vziy83K6KufbUPJMXOAcg8S
- ZQfUA8hDPmjmHPcMurH75StqhMTicm3u9+5IEDPvrhNqLr7VlOIrA3zgE5x8+QU8+jPr0NxHB
- YToZcHxT7no9Vp2ydgbpGy8Q+VUHxcG42cUPS0IHr862LzyXcnOa1leDZncPJ9ZtCT5+APAdN
- /ppJnEb2X7GewNGJkIgLjCF9lQcNAVgVe5N7eF7de7t4pjPxW9MqulBlDHtQYFPxiAX4Lk+5q
- V2tWrYMr2CTBjOwPttynKDAXMOPQLXPdgBkLsgBULleksA9WB6lCcxiPPxzlzMn1VfWbQs6ws
- 3OSx9CcOvzkrPgR20EMGxrMwG3eLp23xt8l1ezyq0s0b7+eF08ujtAehDbiDofJrVifxroGut
- CQAgLWPNN+3hYKzgKXCDsEaa9AqV/N2obZ94FBTGGEoHq+Mur0WLS7eo55Pj0Nv+eh5Xo/I+L
- VPoayJHdQPHFnq2gobWOdO8IKUv6vczsu1oiFQkrz7wQibKHfBW4dNkeL/rArbjHSciUxia1/
- XELSyf06Tl748kQ/RRRrioEtQfGo+zSkD2j6rZqx4aWxfvy+LPbN+iERr/Bd8L0lraXk=
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-yoursite-MailScanner-ID: 837564D169F1.A27BF
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 11:24 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+To easily track filesystem from a pmem device, we introduce a holder for
+dax_device structure, and also its operation.  This holder is used to
+remember who is using this dax_device:
+ - When it is the backend of a filesystem, the holder will be the
+   instance of this filesystem.
+ - When this pmem device is one of the targets in a mapped device, the
+   holder will be this mapped device.  In this case, the mapped device
+   has its own dax_device and it will follow the first rule.  So that we
+   can finally track to the filesystem we needed.
 
-> ---
->  drivers/misc/cardreader/rtsx_pcr.c |    2 ++
->  1 file changed, 2 insertions(+)
->
-> --- linux-next-20220225.orig/drivers/misc/cardreader/rtsx_pcr.c
-> +++ linux-next-20220225/drivers/misc/cardreader/rtsx_pcr.c
-> @@ -1054,6 +1054,7 @@ static int rtsx_pci_acquire_irq(struct r
->         return 0;
->  }
->
-> +#ifdef CONFIG_PM
->  static void rtsx_enable_aspm(struct rtsx_pcr *pcr)
->  {
->         if (pcr->ops->set_aspm)
-> @@ -1085,6 +1086,7 @@ static void rtsx_pm_power_saving(struct
->  {
->         rtsx_comm_pm_power_saving(pcr);
->  }
-> +#endif
+The holder and holder_ops will be set when filesystem is being mounted,
+or an target device is being activated.
 
-Now that we have DEFINE_SIMPLE_DEV_PM_OPS() etc, I think we should
-no longer add more __maybe_unused annotations or #ifdef CONFIG_PM checks
-but just use the new macros for any new files or whenever a warning like
-this shows up.
+Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+---
+ drivers/dax/super.c | 89 +++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/dax.h | 32 ++++++++++++++++
+ 2 files changed, 121 insertions(+)
 
-        Arnd
+diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+index e3029389d809..da5798e19d57 100644
+--- a/drivers/dax/super.c
++++ b/drivers/dax/super.c
+@@ -21,6 +21,9 @@
+  * @cdev: optional character interface for "device dax"
+  * @private: dax driver private data
+  * @flags: state and boolean properties
++ * @ops: operations for dax_device
++ * @holder_data: holder of a dax_device: could be filesystem or mapped device
++ * @holder_ops: operations for the inner holder
+  */
+ struct dax_device {
+ 	struct inode inode;
+@@ -28,6 +31,8 @@ struct dax_device {
+ 	void *private;
+ 	unsigned long flags;
+ 	const struct dax_operations *ops;
++	void *holder_data;
++	const struct dax_holder_operations *holder_ops;
+ };
+ 
+ static dev_t dax_devt;
+@@ -193,6 +198,29 @@ int dax_zero_page_range(struct dax_device *dax_dev, pgoff_t pgoff,
+ }
+ EXPORT_SYMBOL_GPL(dax_zero_page_range);
+ 
++int dax_holder_notify_failure(struct dax_device *dax_dev, u64 off,
++			      u64 len, int mf_flags)
++{
++	int rc, id;
++
++	id = dax_read_lock();
++	if (!dax_alive(dax_dev)) {
++		rc = -ENXIO;
++		goto out;
++	}
++
++	if (!dax_dev->holder_ops) {
++		rc = -EOPNOTSUPP;
++		goto out;
++	}
++
++	rc = dax_dev->holder_ops->notify_failure(dax_dev, off, len, mf_flags);
++out:
++	dax_read_unlock(id);
++	return rc;
++}
++EXPORT_SYMBOL_GPL(dax_holder_notify_failure);
++
+ #ifdef CONFIG_ARCH_HAS_PMEM_API
+ void arch_wb_cache_pmem(void *addr, size_t size);
+ void dax_flush(struct dax_device *dax_dev, void *addr, size_t size)
+@@ -268,6 +296,10 @@ void kill_dax(struct dax_device *dax_dev)
+ 
+ 	clear_bit(DAXDEV_ALIVE, &dax_dev->flags);
+ 	synchronize_srcu(&dax_srcu);
++
++	/* clear holder data */
++	dax_dev->holder_ops = NULL;
++	dax_dev->holder_data = NULL;
+ }
+ EXPORT_SYMBOL_GPL(kill_dax);
+ 
+@@ -409,6 +441,63 @@ void put_dax(struct dax_device *dax_dev)
+ }
+ EXPORT_SYMBOL_GPL(put_dax);
+ 
++/**
++ * dax_holder() - obtain the holder of a dax device
++ * @dax_dev: a dax_device instance
++
++ * Return: the holder's data which represents the holder if registered,
++ * otherwize NULL.
++ */
++void *dax_holder(struct dax_device *dax_dev)
++{
++	if (!dax_alive(dax_dev))
++		return NULL;
++
++	return dax_dev->holder_data;
++}
++EXPORT_SYMBOL_GPL(dax_holder);
++
++/**
++ * dax_register_holder() - register a holder to a dax device
++ * @dax_dev: a dax_device instance
++ * @holder: a pointer to a holder's data which represents the holder
++ * @ops: operations of this holder
++
++ * Return: negative errno if an error occurs, otherwise 0.
++ */
++int dax_register_holder(struct dax_device *dax_dev, void *holder,
++		const struct dax_holder_operations *ops)
++{
++	if (!dax_alive(dax_dev))
++		return -ENXIO;
++
++	if (cmpxchg(&dax_dev->holder_data, NULL, holder))
++		return -EBUSY;
++
++	dax_dev->holder_ops = ops;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(dax_register_holder);
++
++/**
++ * dax_unregister_holder() - unregister the holder for a dax device
++ * @dax_dev: a dax_device instance
++ * @holder: the holder to be unregistered
++ *
++ * Return: negative errno if an error occurs, otherwise 0.
++ */
++int dax_unregister_holder(struct dax_device *dax_dev, void *holder)
++{
++	if (!dax_alive(dax_dev))
++		return -ENXIO;
++
++	if (cmpxchg(&dax_dev->holder_data, holder, NULL) != holder)
++		return -EBUSY;
++	dax_dev->holder_ops = NULL;
++	return 0;
++}
++EXPORT_SYMBOL_GPL(dax_unregister_holder);
++
+ /**
+  * inode_dax: convert a public inode into its dax_dev
+  * @inode: An inode with i_cdev pointing to a dax_dev
+diff --git a/include/linux/dax.h b/include/linux/dax.h
+index 9fc5f99a0ae2..262d7bad131a 100644
+--- a/include/linux/dax.h
++++ b/include/linux/dax.h
+@@ -32,8 +32,24 @@ struct dax_operations {
+ 	int (*zero_page_range)(struct dax_device *, pgoff_t, size_t);
+ };
+ 
++struct dax_holder_operations {
++	/*
++	 * notify_failure - notify memory failure into inner holder device
++	 * @dax_dev: the dax device which contains the holder
++	 * @offset: offset on this dax device where memory failure occurs
++	 * @len: length of this memory failure event
++	 * @flags: action flags for memory failure handler
++	 */
++	int (*notify_failure)(struct dax_device *dax_dev, u64 offset,
++			u64 len, int mf_flags);
++};
++
+ #if IS_ENABLED(CONFIG_DAX)
+ struct dax_device *alloc_dax(void *private, const struct dax_operations *ops);
++int dax_register_holder(struct dax_device *dax_dev, void *holder,
++		const struct dax_holder_operations *ops);
++int dax_unregister_holder(struct dax_device *dax_dev, void *holder);
++void *dax_holder(struct dax_device *dax_dev);
+ void put_dax(struct dax_device *dax_dev);
+ void kill_dax(struct dax_device *dax_dev);
+ void dax_write_cache(struct dax_device *dax_dev, bool wc);
+@@ -53,6 +69,20 @@ static inline bool daxdev_mapping_supported(struct vm_area_struct *vma,
+ 	return dax_synchronous(dax_dev);
+ }
+ #else
++static inline int dax_register_holder(struct dax_device *dax_dev, void *holder,
++		const struct dax_holder_operations *ops)
++{
++	return 0;
++}
++static inline int dax_unregister_holder(struct dax_device *dax_dev,
++		void *holder)
++{
++	return 0;
++}
++static inline void *dax_holder(struct dax_device *dax_dev)
++{
++	return NULL;
++}
+ static inline struct dax_device *alloc_dax(void *private,
+ 		const struct dax_operations *ops)
+ {
+@@ -185,6 +215,8 @@ size_t dax_copy_to_iter(struct dax_device *dax_dev, pgoff_t pgoff, void *addr,
+ 		size_t bytes, struct iov_iter *i);
+ int dax_zero_page_range(struct dax_device *dax_dev, pgoff_t pgoff,
+ 			size_t nr_pages);
++int dax_holder_notify_failure(struct dax_device *dax_dev, u64 off, u64 len,
++		int mf_flags);
+ void dax_flush(struct dax_device *dax_dev, void *addr, size_t size);
+ 
+ ssize_t dax_iomap_rw(struct kiocb *iocb, struct iov_iter *iter,
+-- 
+2.35.1
+
+
+
