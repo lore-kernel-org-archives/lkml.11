@@ -2,140 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B58EC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 571B1C43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:45:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231250AbiB0SqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 13:46:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53340 "EHLO
+        id S229601AbiB0SqS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 13:46:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231210AbiB0SqI (ORCPT
+        with ESMTP id S231221AbiB0SqI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 27 Feb 2022 13:46:08 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9AAF28E36
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:45:22 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id l9so8467661pls.6
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:45:22 -0800 (PST)
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01E050453
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:45:23 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id bx5so9229424pjb.3
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:45:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lNerjKnrLq1mzg7meHtI9HSpdFqh8op60Xx8N1ZiLfw=;
-        b=Jr0yJeEZIKJLj1DUJnFBO3uvzL0weaiXKeajxm9pM8JoQNy2uegYOMvaJRLuJ8Uib7
-         Pv0U4bOC0mzJS889tXajsXuZEDCxHLF6/3dzjCPuLL7LYMNCxjD0nF6GdeWIPWR8H9Fm
-         clw/KWTuD8soQR8FJZpgXCYEHze59giMoUZ+Y=
+        bh=BMkktAsNfHIhPa1AJtPClUlYlr4FtiZE1a3GDbCXgk4=;
+        b=eH6EZmnqMckOS9O4oCCAOQ97Gk7PWZAVrFVwAHWRPKjSCasHblw8J3H51Cto/L4Oq/
+         7zqDwL6uGdZO25v6bmjZhS2MBNmqdSItLdQ8tnbuPyKYCvQsgJaqVAw1FtxJcVe83/LS
+         Zy2H2PJDdnwp3/ziVO/JJXQqpsFMARfT5Ychk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lNerjKnrLq1mzg7meHtI9HSpdFqh8op60Xx8N1ZiLfw=;
-        b=VJenAY/QUvk+ntsLT3Wgn/v7lODEKSZf2ODgT1NhnoOFCWe0GHpxgLxTE67/GrsMH0
-         nWTZrXmWdyf9ORhgmilqXwZESluxIpzF9uIljrxMprs9JXbH4wYY42i40/C0eux27E5R
-         lrTHof0DFrLTXpKDtGbzewSpW315Byn2VPCgvit7o2+OuZwJGUj+vHiwbgwLuYK6plUl
-         /b2qb1Z7OP4TCXsIvdYsePAI5bJYXSoNu/GaDIp7hK69szoGqoMeDVr3+zkxis9KDOqL
-         Wdtn/8I9W5QOucr/a+/h0263qQqzvnMCqfbr+QQ9Vg0ufQth1UxpHPI4yzrbXFpupMYk
-         Kqhg==
-X-Gm-Message-State: AOAM531sl12/k3P9Rm7qeoYw9sfDwN5wUGr38uumiCYssiQ+MwCgthwZ
-        uPvxMjMEIX+/XNQhbH+k+t4UuA8YeF4nnw==
-X-Google-Smtp-Source: ABdhPJwr3yU+S9CYU72TPvCVp/pkqfJFhYcfUElEnSnBBrukweZBCVubPSK86r4KINp53JP/mq3zxw==
-X-Received: by 2002:a17:90a:a78c:b0:1b8:b769:62d0 with SMTP id f12-20020a17090aa78c00b001b8b76962d0mr13075887pjq.227.1645987522189;
-        Sun, 27 Feb 2022 10:45:22 -0800 (PST)
+        bh=BMkktAsNfHIhPa1AJtPClUlYlr4FtiZE1a3GDbCXgk4=;
+        b=WrwG8tbDNTS6iNIxYhG1GAcUIFURRjTQ3BznLmXyETWbor0YMIx9yRteoxFAj3eq1W
+         IK44yslvnh9V434myUsX4S3JQg81VS8Jumy+Fe9GP3wbqDrJFZjhSN+eQhSQlsFD/uNe
+         ku/oTNEan9V5CckTvTLdYp1KGEGd7SG8PPc+3CyAzMSlCQ4+4GUfEir2DqjEaGPE/9CL
+         FxK0F7mgFZTY8qvrcK6FRsWzkUK8SmsZD7IovAtlqTqALCfifHGbm6ffGgf/4esW40hm
+         Ak2v5Kx9utln/Eqn3I9xrOXhy5nTk85csG7TXb/KlIpR5VMz8sdGn9uq3gn62++IiwNv
+         DfrQ==
+X-Gm-Message-State: AOAM5327k9mVQmI1Hg4KBSBYBLa6XQu7PtNzOC56tz/FJuMqatnJT7uk
+        FUl6ZiGr8DAxuW+Hsi9z98PmqA==
+X-Google-Smtp-Source: ABdhPJw84+Su+R84+skE0k1lOhQUbnaFmq9xBqLDdfjXiaJKJ64Oxb/qHpmbmqqlBln5RT3beTcbVA==
+X-Received: by 2002:a17:902:d705:b0:14e:e5a2:1b34 with SMTP id w5-20020a170902d70500b0014ee5a21b34mr16650742ply.88.1645987523283;
+        Sun, 27 Feb 2022 10:45:23 -0800 (PST)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id f6-20020a056a00238600b004e1906b3bb2sm10683826pfc.12.2022.02.27.10.45.21
+        by smtp.gmail.com with ESMTPSA id y12-20020a62ce0c000000b004ec4d8900d5sm10038318pfg.163.2022.02.27.10.45.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Feb 2022 10:45:21 -0800 (PST)
+        Sun, 27 Feb 2022 10:45:23 -0800 (PST)
 From:   Kees Cook <keescook@chromium.org>
 To:     Kees Cook <keescook@chromium.org>
-Cc:     David Gow <davidgow@google.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        David Gow <davidgow@google.com>, linux-um@lists.infradead.org,
+        linux-kbuild@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        kunit-dev@googlegroups.com, llvm@lists.linux.dev,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
         Rasmus Villemoes <linux@rasmusvillemoes.dk>,
         Vitor Massaru Iha <vitor@massaru.org>,
         Daniel Latypov <dlatypov@google.com>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Masahiro Yamada <masahiroy@kernel.org>,
         Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-kbuild@vger.kernel.org,
-        kunit-dev@googlegroups.com, llvm@lists.linux.dev, x86@kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH v3 3/7] um: Cleanup syscall_handler_t definition/cast, fix warning
-Date:   Sun, 27 Feb 2022 10:45:13 -0800
-Message-Id: <20220227184517.504931-4-keescook@chromium.org>
+        x86@kernel.org, linux-hardening@vger.kernel.org
+Subject: [PATCH v3 5/7] um: Allow builds with Clang
+Date:   Sun, 27 Feb 2022 10:45:15 -0800
+Message-Id: <20220227184517.504931-6-keescook@chromium.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220227184517.504931-1-keescook@chromium.org>
 References: <20220227184517.504931-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2860; i=keescook@chromium.org; h=from:subject; bh=x+dnSolAXYFL3BT0a5kvXMCMP6a5EsT3sg6+p2gJHGU=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiG8a7yUYgXa1FT6iIYRcyFYXJrB5R00YlXTwQ84Dl ly57u+qJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYhvGuwAKCRCJcvTf3G3AJizYEA CNb2bXcut1vDNHAoju2GPOc3OFs0G8V2WKCzzUKRK1IzqIDaSsvmZft2Zh01er3fyOo/fCw+N561JI dQ5RSNtSjGVoEb02yuUbZJRtB96/H1ByjVXwEzt3GmUh+YDqRCQh0516dzh2HKYejN2BpTZOdlSnoi HNT5GnI7w0PJW1CoarvIjIHPg8kQeXRS4LQIb0/xlPQRhr4wqrbQnmumuPRIhcdgCOeqYJYEmGJTWa XDrdOKdghbjEjNJQuwPrXMgxA0nbT5QV9kNPGe5ovoiT/MUw8jAyhmbAGfEffwgMCogtTMNQ31seeB VDr9NFJDVw/R/iIKpSmijT5XKvHnrbmYVscXr4YwhogN11OtdUBcWVcZ1oSkHmT8fnHVwHThhtlXQh r59GYhqhaWouBSz1pb/g/dcpu0530mr96aeOBz0o/ZADYRAPk59CVog0QBSVlILeLJuc2w63STCWPU HhGzGEYn9aWm+kE0jLdCpPi9VmLXZ6hRCtFkxhoujHW9W9YAAcdltYUcy1W1Hf5nSM6AdAvwsIM2cJ XiAk6mLRQydd2hnuKYvux1kouR/u+aqTKC6e384tsqmzrEh1eSZhFjgt3xgqkbOAu0j3EcRxMd6KWP p/0O+lB7e9hnEMcMyLksL0BlODvLslyBwJHpobDwFRAQPTrUdUvNGzIYIsjA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3536; h=from:subject; bh=9QnH+z+rCwCFrRsn/51gPTE+pPH8ccRFsd0v6DZGBGk=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBiG8a8dEBk1HwrxEO2kL1Oda4tIa5yb6JeGO7Q8F+W TXMu3eKJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYhvGvAAKCRCJcvTf3G3AJh5fD/ 9KuzRhMOYg8agcaXgdhk9bHElsujSJHIv4H/iYy4vhIm5y+K4au1niInCr8gbRxN8h9SSpzFeHVeOV A+xuZDPDYD0/lGfOoYtZpV2f9uQZVbCu2O4DEne9NwKDTvoIRjBem9qfJmbhHpG6gcFnEYy8IA3/oe YoJUrjDoIKakakFQ0EWS7Y3OF6mZutVETPOUUBQJJ6FTmaXehOi2JRWbE5M0Y6f1utAKkHM7GQObJl gp4Y6NzKu3MsgDQC/PitvlV7wxex2381qQKHfMjaBXLtUKLizYHyvbjWStV9XM2J6VbCt0BU/LV+yJ qDs59Ih223zt/j7TbKxTAjrwLIX+byh70A+0o9K4CJvWbyAJ9X5CnAccGvf1HCW28QwuyLrpTwSAy8 YiSKxd9UxcYUI4/CDSV+8r72iiUkt7nWG1Ygv1E416BjhxHrDuk2k7nFssdZEYfIlDIqQA8ey/QpWf d48v7LOCx1Cui2GUH/XGI/QqDM7TOISr58NfvoT02QrJ398Hk/EovB9Y1CzFA+hlUrdcmRLnfw+THt WQvvUo7T7/w80plD1UFpTjsxcPq6znVhO0NCDULvpyGKXfCqzxri43YBojcrgwA4vXNVIrRUeaC5RW nBl0txZW59SpCiVLjlI9W0bmg+VGOmyOQGYcXCJo4mdIvb2DjeBGm21cJnyA==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+Add SUBARCH target for Clang+um (which must go last, not alphabetically,
+so the other SUBARCHes are assigned). Remove open-coded "DEFINE"
+macro, instead using linux/kbuild.h's version which was updated to use
+Clang-friendly assembly in commit cf0c3e68aa81 ("kbuild: fix asm-offset
+generation to work with clang"). Redefine "DEFINE_LONGS" in terms of
+"COMMENT" and "DEFINE" so that the intended coment actually has useful
+content. Add a missed "break" to avoid implicit fall-through warnings.
 
-The syscall_handler_t type for x86_64 was defined as 'long (*)(void)',
-but always cast to 'long (*)(long, long, long, long, long, long)' before
-use. This now triggers a warning (see below).
+This lets me run KUnit tests with Clang:
 
-Define syscall_handler_t as the latter instead, and remove the cast.
-This simplifies the code, and fixes the warning.
+$ ./tools/testing/kunit/kunit.py run --make_options LLVM=1
+...
 
-Warning:
-In file included from ../arch/um/include/asm/processor-generic.h:13
-                 from ../arch/x86/um/asm/processor.h:41
-                 from ../include/linux/rcupdate.h:30
-                 from ../include/linux/rculist.h:11
-                 from ../include/linux/pid.h:5
-                 from ../include/linux/sched.h:14
-                 from ../include/linux/ptrace.h:6
-                 from ../arch/um/kernel/skas/syscall.c:7:
-../arch/um/kernel/skas/syscall.c: In function ‘handle_syscall’:
-../arch/x86/um/shared/sysdep/syscalls_64.h:18:11: warning: cast between incompatible function types from ‘long int (*)(void)’ to ‘long int (*)(long int,  long int,  long int,  long int,  long int,  long int)’ [
--Wcast-function-type]
-   18 |         (((long (*)(long, long, long, long, long, long)) \
-      |           ^
-../arch/x86/um/asm/ptrace.h:36:62: note: in definition of macro ‘PT_REGS_SET_SYSCALL_RETURN’
-   36 | #define PT_REGS_SET_SYSCALL_RETURN(r, res) (PT_REGS_AX(r) = (res))
-      |                                                              ^~~
-../arch/um/kernel/skas/syscall.c:46:33: note: in expansion of macro ‘EXECUTE_SYSCALL’
-   46 |                                 EXECUTE_SYSCALL(syscall, regs));
-      |                                 ^~~~~~~~~~~~~~~
-
-Signed-off-by: David Gow <davidgow@google.com>
+Cc: Jeff Dike <jdike@addtoit.com>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Cc: Masahiro Yamada <masahiroy@kernel.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: David Gow <davidgow@google.com>
+Cc: linux-um@lists.infradead.org
+Cc: linux-kbuild@vger.kernel.org
+Cc: linux-kselftest@vger.kernel.org
+Cc: kunit-dev@googlegroups.com
+Cc: llvm@lists.linux.dev
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/lkml/Yg2YubZxvYvx7%2Fnm@dev-arch.archlinux-ax161/
+Tested-by: David Gow <davidgow@google.com>
+Link: https://lore.kernel.org/lkml/CABVgOSk=oFxsbSbQE-v65VwR2+mXeGXDDjzq8t7FShwjJ3+kUg@mail.gmail.com/
 Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20220210034353.1065703-1-davidgow@google.com
 ---
-This is just a re-send of the above linked patch, collecting it into this series.
+v1: https://lore.kernel.org/lkml/20220217002843.2312603-1-keescook@chromium.org
+v2: https://lore.kernel.org/lkml/20220224055831.1854786-1-keescook@chromium.org
+v3:
+ - use kbuild.h to avoid duplication (Masahiro)
+ - fix intended comments (Masahiro)
+ - use SUBARCH (Nathan)
 ---
- arch/x86/um/shared/sysdep/syscalls_64.h | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ arch/um/os-Linux/execvp.c  | 1 +
+ arch/x86/um/user-offsets.c | 9 ++++-----
+ scripts/Makefile.clang     | 1 +
+ 3 files changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/um/shared/sysdep/syscalls_64.h b/arch/x86/um/shared/sysdep/syscalls_64.h
-index 48d6cd12f8a5..b6b997225841 100644
---- a/arch/x86/um/shared/sysdep/syscalls_64.h
-+++ b/arch/x86/um/shared/sysdep/syscalls_64.h
-@@ -10,13 +10,12 @@
- #include <linux/msg.h>
- #include <linux/shm.h>
+diff --git a/arch/um/os-Linux/execvp.c b/arch/um/os-Linux/execvp.c
+index 84a0777c2a45..c09a5fd5e225 100644
+--- a/arch/um/os-Linux/execvp.c
++++ b/arch/um/os-Linux/execvp.c
+@@ -93,6 +93,7 @@ int execvp_noalloc(char *buf, const char *file, char *const argv[])
+ 					   up finding no executable we can use, we want to diagnose
+ 					   that we did find one but were denied access.  */
+ 					got_eacces = 1;
++					break;
+ 				case ENOENT:
+ 				case ESTALE:
+ 				case ENOTDIR:
+diff --git a/arch/x86/um/user-offsets.c b/arch/x86/um/user-offsets.c
+index bae61554abcc..e54a9814ccf1 100644
+--- a/arch/x86/um/user-offsets.c
++++ b/arch/x86/um/user-offsets.c
+@@ -8,12 +8,11 @@
+ #define __FRAME_OFFSETS
+ #include <linux/ptrace.h>
+ #include <asm/types.h>
++#include <linux/kbuild.h>
  
--typedef long syscall_handler_t(void);
-+typedef long syscall_handler_t(long, long, long, long, long, long);
+-#define DEFINE(sym, val) \
+-	asm volatile("\n->" #sym " %0 " #val : : "i" (val))
+-
+-#define DEFINE_LONGS(sym, val) \
+-	asm volatile("\n->" #sym " %0 " #val : : "i" (val/sizeof(unsigned long)))
++#define DEFINE_LONGS(sym, val)	\
++	COMMENT(#val " / sizeof(unsigned long)");	\
++	DEFINE(sym, val / sizeof(unsigned long))
  
- extern syscall_handler_t *sys_call_table[];
+ void foo(void)
+ {
+diff --git a/scripts/Makefile.clang b/scripts/Makefile.clang
+index 51fc23e2e9e5..87285b76adb2 100644
+--- a/scripts/Makefile.clang
++++ b/scripts/Makefile.clang
+@@ -10,6 +10,7 @@ CLANG_TARGET_FLAGS_powerpc	:= powerpc64le-linux-gnu
+ CLANG_TARGET_FLAGS_riscv	:= riscv64-linux-gnu
+ CLANG_TARGET_FLAGS_s390		:= s390x-linux-gnu
+ CLANG_TARGET_FLAGS_x86		:= x86_64-linux-gnu
++CLANG_TARGET_FLAGS_um		:= $(CLANG_TARGET_FLAGS_$(SUBARCH))
+ CLANG_TARGET_FLAGS		:= $(CLANG_TARGET_FLAGS_$(SRCARCH))
  
- #define EXECUTE_SYSCALL(syscall, regs) \
--	(((long (*)(long, long, long, long, long, long)) \
--	  (*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
-+	(((*sys_call_table[syscall]))(UPT_SYSCALL_ARG1(&regs->regs), \
- 		 		      UPT_SYSCALL_ARG2(&regs->regs), \
- 				      UPT_SYSCALL_ARG3(&regs->regs), \
- 				      UPT_SYSCALL_ARG4(&regs->regs), \
+ ifeq ($(CROSS_COMPILE),)
 -- 
 2.32.0
 
