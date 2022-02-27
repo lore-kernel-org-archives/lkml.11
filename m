@@ -2,69 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3101C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E89C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:12:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbiB0SMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 13:12:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48088 "EHLO
+        id S230247AbiB0SNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 13:13:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229489AbiB0SMq (ORCPT
+        with ESMTP id S230201AbiB0SNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 13:12:46 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B4C5AA66
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:12:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=VA6kacKbPKbiivcIZRmKZi1KNf7ZiEsud7xUBH92hHs=; b=xoVbEInD64+Y2TUVFpYcyxSQ2d
-        HQ7q/UtZQ6eVgtNB/LbYL+/LUTO3meYnhi35iqza4tT1mr2Pc0JTsSaEl3rm9EL8bx77SdJb8ipdL
-        Zvw4Aymq72oYjH0u5fM68AEeGdSMD7mX8JOrcOmOIWbyuoFSmjkea2pG4su1pVByjxQMcFc3zvDQN
-        WegKyNcVDZbIlxNd8E8yFqdpmpF2DbUtOlTwvE4gWI5XHrMz05t4MfHSFapyHAd67680/LoKRxyb5
-        Wdf3oKAnZwBieF6ZQdI6f8nYwkrY4LDc0Dbf+kAqiJKYZ/yXgdbVSaqt3kiAetpdU+J4RFU726d1v
-        StFAcOeA==;
-Received: from 91-118-163-82.static.upcbusiness.at ([91.118.163.82] helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOO1e-009upo-4g; Sun, 27 Feb 2022 18:12:06 +0000
-Date:   Sun, 27 Feb 2022 19:12:02 +0100
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Halil Pasic <pasic@linux.ibm.com>, linux-kernel@vger.kernel.org,
-        iommu@lists.linux-foundation.org
-Subject: [GIT PULL] dma-mapping fix for Linux 5.17
-Message-ID: <Yhu+8trQqqmYLid3@infradead.org>
+        Sun, 27 Feb 2022 13:13:00 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61C7639F
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:12:22 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id q4so8451224ilt.0
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:12:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1ie9R3kn8UrFErPZNTabZX+bV5rPgBvbemFazR1ScXg=;
+        b=G85nEoEfvkSdaMqOwXlse+RXA7cNSbZR9kA8ylgZjHjkq3SGUzugLktvSJBAOcBC8v
+         PGHJBNtVRuup/vBLcdUDzESV9vi1n+Pe40mnZBmOYVcesNQf9jQrBnbI0GdjbedrN/rI
+         GlqwPah7aV/S5f8D+0tCPmEf3PMOHVSMjo+Wiong8t6PEcUxx/nKyOtyAMaTCQU2AuhL
+         +rtea4Da/29yBkeV9RwIdT43Np8OKn2S6RRmtUIo5kSnpk5cqlzwblRFWcOMDWwv9FIN
+         ns8k7J88cjRQmFtfdpZGF8Xq0+W6ZKL1ae61++9iYdVVK4NqRZgtIjzsn73IIb68PBpB
+         EcCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1ie9R3kn8UrFErPZNTabZX+bV5rPgBvbemFazR1ScXg=;
+        b=WrmYhXXSkOJK0p1618fu3a3UiaWti8sbHDN+5KlqIoTlFiLpsZmEVOYkS9pTOLupFH
+         7geOFLLv+DDMA8hlqELjs/su3CQM8UqFaEmMEoZ1rfhYVkU/aSqZmYU/6K5l7NdjJUpf
+         LqDkb3AVRqnLSLc2B/TgrwSUVXKy946sP/yW1oQPpmUB41Uhu5pxaSD72WJ5HYnNgFtJ
+         zgJ7m5EFz5PflyyHbt/ZyFWVW+QTGdLX9sM3yGWmYXXUOTq8r5e0MVOvt24QRl9txJ/y
+         YLQSBOA3akfkAYyARonVfLCiClPDn4OzXXm0gGnjXMs7STfzZr4rDFxRuSaTm/fivElI
+         dYEw==
+X-Gm-Message-State: AOAM533nklGa6Hv1OIc73BAnMnYjP26NYx164CT4k4OrEC5pkeUfxDiB
+        EVOPHgASp6yd5WrqwrcuEfrOd3l6w7yUMfYjJAg=
+X-Google-Smtp-Source: ABdhPJygC60EwppdVxqHwfKYlBSl2+UmLKH/aulN9osik+Vdl4alGmUpautlnYzNvkuG9pKts21LV0Kwh92xIECRnUs=
+X-Received: by 2002:a05:6e02:188b:b0:2c2:5444:afb9 with SMTP id
+ o11-20020a056e02188b00b002c25444afb9mr14970812ilu.237.1645985542219; Sun, 27
+ Feb 2022 10:12:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+References: <CAHk-=wjtZG_0zjgVt0_0JDZgq=xO4LHYAbH764HTQJsjHTq-oQ@mail.gmail.com>
+ <bd43bd47c8eaa4c22c1a1549cee66f7ef960b1fc.camel@med.uni-goettingen.de>
+ <CAHk-=whFMxks63sfMQ-0_YO1GsTmoLfsO4ciMtoiCHNgaG_+GA@mail.gmail.com> <979af7ae9b7e8baf080ef6f8d42d48d7f5d2c5b4.camel@tugraz.at>
+In-Reply-To: <979af7ae9b7e8baf080ef6f8d42d48d7f5d2c5b4.camel@tugraz.at>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Sun, 27 Feb 2022 19:12:11 +0100
+Message-ID: <CANiq72k_PUBPVL1Fx4HLm_WO66RuSsi0oSsKRhssCYRNGbY84Q@mail.gmail.com>
+Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
+ after the loop
+To:     Martin Uecker <uecker@tugraz.at>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 754e0b0e35608ed5206d6a67a791563c631cec07:
+On Sat, Feb 26, 2022 at 3:43 AM Martin Uecker <uecker@tugraz.at> wrote:
+>
+> Roughly the same group of people / companies that
+> write the compilers also control what goes into the
+> standard. They then like to point to the standard
 
-  Linux 5.17-rc4 (2022-02-13 12:13:30 -0800)
+Indeed, at least to a substantial degree.
 
-are available in the Git repository at:
+> For signed overflow, I am not entirely sure what the
+> right choice is.  Wrapping for signed overflow also seems
+> dangerous. I use UBsan to find such issues in my code, and
+> this would not really work if signed overflow was defined
+> to wrap.
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.17-1
+UBsan and similar tooling may still be used to find whatever behavior
+one wants, whether defined or not. UBSan already has non-UB checks.
 
-for you to fetch changes up to ddbd89deb7d32b1fbb879f48d68fda1a8ac58e8e:
-
-  swiotlb: fix info leak with DMA_FROM_DEVICE (2022-02-14 10:22:28 +0100)
-
-----------------------------------------------------------------
-dma-mapping fix for Linux 5.17
-
- - fix a swiotlb info leak (Halil Pasic)
-
-----------------------------------------------------------------
-Halil Pasic (1):
-      swiotlb: fix info leak with DMA_FROM_DEVICE
-
- Documentation/core-api/dma-attributes.rst | 8 ++++++++
- include/linux/dma-mapping.h               | 8 ++++++++
- kernel/dma/swiotlb.c                      | 3 ++-
- 3 files changed, 18 insertions(+), 1 deletion(-)
+Cheers,
+Miguel
