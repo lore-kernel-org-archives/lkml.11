@@ -2,105 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2A0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 17:01:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 983FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 17:01:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231497AbiB0RBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 12:01:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59760 "EHLO
+        id S231515AbiB0RCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 12:02:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbiB0RBl (ORCPT
+        with ESMTP id S229571AbiB0RCa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 12:01:41 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2705AA76
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 09:01:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=tVcUly9MNNZs5xnrDh1Mp0UP0hwNNuS5J6JOKFcCl+Y=; b=wAdwLax7mszasaSkceMgxdpbVz
-        JAo7dJ0os9zPLEQfI4krQ7iTtwoLK5bTmL93foElSXMyDE5ZPLD845NAG7mIigy4HT8Pj1/QwpEhF
-        +eeeribyuCQLNquQxfIjh1k6sBgcKq4d2GgBW5IGEaQwwN2BSfGI+wx6Mt8nNCOPGEcaboDRj/xMD
-        NhA89RVR0DF7H+hbVI/kp5ViVnvM3BtxP1Rok53Rocv1vLU0zmIGw6gx7ZVct4spb6/9HHqTLLsQC
-        TSlzZX840UYwmV6oO+N29m4yZjN8gA7ZpzcNHSwaTM9GHg3QRtE6SnP/jhIlAeEI8YQeLPAcUXYis
-        A9ayst3w==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOMut-009qkf-7r; Sun, 27 Feb 2022 17:01:03 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Wei WANG <wei_wang@realsil.com.cn>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH -next v2] misc: rtsx: fix build for CONFIG_PM not set
-Date:   Sun, 27 Feb 2022 09:01:02 -0800
-Message-Id: <20220227170102.6926-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+        Sun, 27 Feb 2022 12:02:30 -0500
+Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E375AA71
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 09:01:52 -0800 (PST)
+Received: from [192.168.1.18] ([90.126.236.122])
+        by smtp.orange.fr with ESMTPA
+        id OMvbnV3p641cbOMvbnynb3; Sun, 27 Feb 2022 18:01:50 +0100
+X-ME-Helo: [192.168.1.18]
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 27 Feb 2022 18:01:50 +0100
+X-ME-IP: 90.126.236.122
+Message-ID: <5477fb05-d72f-ccc0-1c07-8f2f40d9dde0@wanadoo.fr>
+Date:   Sun, 27 Feb 2022 18:01:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] iio: adc: mt6360: strengthen return check of
+ mt6360_adc_read_channel
+Content-Language: en-US
+To:     jic23@kernel.org, lars@metafoo.de, matthias.bgg@gmail.com,
+        nathan@kernel.org, ndesaulniers@google.com,
+        linus.walleij@linaro.org, ardeleanalex@gmail.com,
+        Tom Rix <trix@redhat.com>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
+References: <20220227164357.84742-1-trix@redhat.com>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20220227164357.84742-1-trix@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFG_WERROR=y and CONFIG_PM is not set, there are fatal build
-errors, so surround these functions in an #ifdef CONFIG_PM block.
+Le 27/02/2022 à 17:43, trix-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org a 
+écrit :
+> From: Tom Rix <trix-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> 
+> Clang static analysis reports this issue
+> mt6360-adc.c:277:20: warning: Assigned value is
+>    garbage or undefined
+>    data.values[i++] = val;
+>                     ^ ~~~
+> 
+> val is set by a successful call to m6360_adc_read_channel().
+> A negative return is checked but within m6360_adc_read_channel,
+> a non zero check is done.
+> Strengthen the check to non zero.
 
-../drivers/misc/cardreader/rtsx_pcr.c:1057:13: error: ‘rtsx_enable_aspm’ defined but not used [-Werror=unused-function]
- static void rtsx_enable_aspm(struct rtsx_pcr *pcr)
-miscread001.out:../drivers/misc/cardreader/rtsx_pcr.c:1065:13: error: ‘rtsx_comm_pm_power_saving’ defined but not used [-Werror=unused-function]
-miscread001.out: static void rtsx_comm_pm_power_saving(struct rtsx_pcr *pcr)
-../drivers/misc/cardreader/rtsx_pcr.c:1084:13: error: ‘rtsx_pm_power_saving’ defined but not used [-Werror=unused-function]
- static void rtsx_pm_power_saving(struct rtsx_pcr *pcr)
+Hi, my understanding of m6360_adc_read_channel() is that on success, it 
+returns IIO_VAL_INT (i.e. 1).
 
-Use DEFINE_RUNTIME_DEV_PM_OPS() to avoid the build errors.
-This eliminates the need for #ifdef CONFIG_PM/#endif blocks of code.
+So, I think that with your patch, we will now always fail because 'ret' 
+is never 0 at this point.
 
-Fixes: 597568e8df04 ("misc: rtsx: Rework runtime power management flow")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Wei WANG <wei_wang@realsil.com.cn>
-Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
----
-v2: use DEFINE_RUNTIME_DEV_PM_OPS instead of #ifdef CONFIG_PM blocks or
-    __maybe_unused
+CJ
 
- drivers/misc/cardreader/rtsx_pcr.c |   16 ++--------------
- 1 file changed, 2 insertions(+), 14 deletions(-)
+> 
+> Signed-off-by: Tom Rix <trix-H+wXaHxf7aLQT0dZR+AlfA@public.gmane.org>
+> ---
+>   drivers/iio/adc/mt6360-adc.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/mt6360-adc.c b/drivers/iio/adc/mt6360-adc.c
+> index 07c0e67683910..9fb6dc305a392 100644
+> --- a/drivers/iio/adc/mt6360-adc.c
+> +++ b/drivers/iio/adc/mt6360-adc.c
+> @@ -269,7 +269,7 @@ static irqreturn_t mt6360_adc_trigger_handler(int irq, void *p)
+>   	memset(&data, 0, sizeof(data));
+>   	for_each_set_bit(bit, indio_dev->active_scan_mask, indio_dev->masklength) {
+>   		ret = mt6360_adc_read_channel(mad, bit, &val);
+> -		if (ret < 0) {
+> +		if (ret) {
+>   			dev_warn(&indio_dev->dev, "Failed to get channel %d conversion val\n", bit);
+>   			goto out;
+>   		}
 
---- linux-next-20220225.orig/drivers/misc/cardreader/rtsx_pcr.c
-+++ linux-next-20220225/drivers/misc/cardreader/rtsx_pcr.c
-@@ -1699,8 +1699,6 @@ out:
- 	return ret;
- }
- 
--#ifdef CONFIG_PM
--
- static void rtsx_pci_shutdown(struct pci_dev *pcidev)
- {
- 	struct pcr_handle *handle = pci_get_drvdata(pcidev);
-@@ -1784,18 +1782,8 @@ static int rtsx_pci_runtime_resume(struc
- 	return 0;
- }
- 
--#else /* CONFIG_PM */
--
--#define rtsx_pci_shutdown NULL
--#define rtsx_pci_runtime_suspend NULL
--#define rtsx_pic_runtime_resume NULL
--
--#endif /* CONFIG_PM */
--
--static const struct dev_pm_ops rtsx_pci_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(rtsx_pci_suspend, rtsx_pci_resume)
--	SET_RUNTIME_PM_OPS(rtsx_pci_runtime_suspend, rtsx_pci_runtime_resume, rtsx_pci_runtime_idle)
--};
-+static DEFINE_RUNTIME_DEV_PM_OPS(rtsx_pci_pm_ops, rtsx_pci_runtime_suspend,
-+				rtsx_pci_runtime_resume, rtsx_pci_runtime_idle);
- 
- static struct pci_driver rtsx_pci_driver = {
- 	.name = DRV_NAME_RTSX_PCI,
