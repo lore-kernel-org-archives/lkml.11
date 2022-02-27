@@ -2,105 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8655EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 11:16:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 958CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 11:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230222AbiB0LRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 06:17:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47684 "EHLO
+        id S230230AbiB0LUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 06:20:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiB0LRB (ORCPT
+        with ESMTP id S229604AbiB0LUl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 06:17:01 -0500
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A70F5D19C
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 03:16:25 -0800 (PST)
-Received: by mail-qv1-xf34.google.com with SMTP id 8so10333195qvf.2
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 03:16:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kg1Y0OYIFweQQA42dgS1d9xF+KPKvGQpFgfdMWlumF0=;
-        b=Q3w/r3DkeyCryBTFfiYCO/Ii7BMHjgXcrWujB1PodX17e24OIRTZQ7kMYVEdl6gQ0s
-         IWYkzo4EkczUIvFybEgY6mu6medwdUSzMYw91P9rZv3kQLOni74REsAC5dNwzjZpwonc
-         s48IEq+kcx+9q81cLHHHddXQ+SVlv3M2PjRhtikyRtzAQGBRz52TO3OEalTyEoeiLGTl
-         gOSCwI9Vq0MtpSIMnzhoOwSEseYXe2cGVgZJqcNaJggr5m/+aCtSaoBzh1XbSQwFm1zA
-         YvUint3pB4SYHoIKUBdC8oIhdOKydYl89mD6Bf3wtWsTrIBYtlz0lvS0phEevYsBUmvc
-         ab3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kg1Y0OYIFweQQA42dgS1d9xF+KPKvGQpFgfdMWlumF0=;
-        b=lQAjKf8trK79Gu879vLjP9lsKDb22VCZUwubNTn79mvBj0UenRdk7Q9F5/SfFqzrd/
-         1o1yCQwasQEOmad5EeWjBJCISMPqxMoIYQWIuab1heflIPxuM9qAwk3x+ngY9jDDy4fe
-         uDgdW5TrA3lOJ76jKMCSvI4wNlCvgFrvjwBPM3efIe9YGMs3NHoSrT5hiEZ6z7XbLksl
-         19ph4ajUdDkFLysIQgqqxNJpNvBofIJWDrnB1TBLSCuTeVp0Hx4GkhcPGIkk5R8cj7jF
-         Jzhv70odtlzvqe5VKvRBKJQkNk3BEIVuaK/9nVGO0gcJQ8VywUDdzBYjhZPouhuFogR2
-         xJ9Q==
-X-Gm-Message-State: AOAM530YuDV0SNR/GhdxOsyPAaDJrk+ppLD/B9hv+kzKyzQy/1k+41Wn
-        vQp+pQnFoUbGLFiDWArUZL7P2V5yxaI=
-X-Google-Smtp-Source: ABdhPJzPYtQSjM7E1Am//z+Jg/d3uZz0tHdEud143+XMuYtndFhkpEEIGLw7NRvrz/p37F+mpFSCRw==
-X-Received: by 2002:ad4:5bee:0:b0:432:f52d:28b6 with SMTP id k14-20020ad45bee000000b00432f52d28b6mr2840554qvc.44.1645960584406;
-        Sun, 27 Feb 2022 03:16:24 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id bs11-20020a05620a470b00b004b2d02f8a92sm3587402qkb.126.2022.02.27.03.16.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Feb 2022 03:16:23 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     cgel.zte@gmail.com, ebiederm@xmission.com
-Cc:     akpm@linux-foundation.org, balbir@linux.vnet.ibm.com,
-        bsingharora@gmail.com, containers@lists.linux.dev,
-        deng.changcheng@zte.com.cn, linux-kernel@vger.kernel.org,
-        xu.xin16@zte.com.cn
-Subject: Re:Re: [PATCH resend] kernel: Make taskstats available via genetlink per namespace
-Date:   Sun, 27 Feb 2022 11:16:18 +0000
-Message-Id: <20220227111618.2043152-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220223045639.1932955-1-xu.xin16@zte.com.cn>
-References: <20220223045639.1932955-1-xu.xin16@zte.com.cn>
+        Sun, 27 Feb 2022 06:20:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E3D5D674;
+        Sun, 27 Feb 2022 03:20:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C998B80B64;
+        Sun, 27 Feb 2022 11:20:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B636C340F2;
+        Sun, 27 Feb 2022 11:19:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645960801;
+        bh=eYEYj3LCbRQgLsMnc9U2IzhepWtapdC044bPpW77J5Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=o0bKcIh9uKkUYadq6kTl8O4uwA4dOxE59TkV0SnBNlSvENdpZeaMTiBK9WR65SAYr
+         cMUv70YdDx9IXXAK9PdFvOEN9Q72a8NoI5Cz9ha0e0aBAUFZBPAqmcOEJVfEOhIOsd
+         yq+kpnZfYzrTUMoEfgdyS6GX/+TxdbMZAKXfW63kS3PbENpXHczEmb/stCM51aM2v/
+         wmsFLlHzPRC8FhVlrctXWIMtSnSigmuKqlIbp9Mg6VYiGKZW6QCEWN7WmhkmzxbvSn
+         p403DJ0J547oD+lFAgeimLVWCF5JzYlabHCa8XyN2Kfxiaj8dm7qe1V/nwGkl+p5xq
+         6ZqtxGG3oD/Zg==
+Date:   Sun, 27 Feb 2022 11:27:05 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Peter Rosin <peda@axentia.se>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v2 1/1] iio: multiplexer: Make use of device properties
+Message-ID: <20220227112705.3c2b2870@jic23-huawei>
+In-Reply-To: <6df069a3-939d-21be-ed17-bc9e9d20cffc@axentia.se>
+References: <20220202204427.57506-1-andriy.shevchenko@linux.intel.com>
+        <6df069a3-939d-21be-ed17-bc9e9d20cffc@axentia.se>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>> -sh-4.4# ./getdelays -d -p 186 -v
->>> print delayacct stats ON
->>> debug on
->>> Error getting family id, errno 0
->>>
->>> As more and more applications are deployed in containers like Docker,
->>> it is necessary to support getdelays to be used in net namespace.
->>> Taskstats is safe for use per namespace as genetlink checks the
->>> capability of namespace message by netlink_ns_capable().
->>>
->>> Make taskstats available via genetlink per namespace.
->>
->> Let me add a polite nack to this patch.
->
->> Taskstats is completely senseless in a network namespace.  There is no
->> translation of identifiers into the context of the receiver of the
->> message.
->
->The interface of taskstats is genetlink that is sensible in net namsespace.
->
->> To make this work requires updating the taskstats code to do something
->> sensible when in a pid namespace, as well as when in a network
->> namespace.
->
-> Yes. Taskstats already does convert the input process ID into the task in the
-> correspoding pid namsespace. Do you mean to add some check of current user's
-> capability like SYS_ADMIN or else?
+On Sun, 27 Feb 2022 03:28:15 +0100
+Peter Rosin <peda@axentia.se> wrote:
 
-Actually, here, I think it's meaningful to set the genl_family's netnsok of Taskstat
-as true. As you said, Taskstats itself is senseless in a network namespace. So, we
-don't have to limit it to the only init_net_ns, it is basically okay to make it
-available in all network namespace. Certainly, maybe taskstats itself also needs to
-updated, because it does seem to be missing something to just use CAP_NET_ADMIN as the
-acquisition restriction of taskstat.
+> Hi!
+> 
+> Sorry for the late reply.
+> 
+> On 2022-02-02 21:44, Andy Shevchenko wrote:
+> > Convert the module to be property provider agnostic and allow
+> > it to be used on non-OF platforms.
+> > 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > ---
+> > v2: dropped depends on OF
+> >  drivers/iio/multiplexer/Kconfig   |  1 -
+> >  drivers/iio/multiplexer/iio-mux.c | 48 ++++++++++++++-----------------
+> >  2 files changed, 22 insertions(+), 27 deletions(-)
+> > 
+> > diff --git a/drivers/iio/multiplexer/Kconfig b/drivers/iio/multiplexer/Kconfig
+> > index a1e1332d1206..928f424a1ed3 100644
+> > --- a/drivers/iio/multiplexer/Kconfig
+> > +++ b/drivers/iio/multiplexer/Kconfig
+> > @@ -9,7 +9,6 @@ menu "Multiplexers"
+> >  config IIO_MUX
+> >  	tristate "IIO multiplexer driver"
+> >  	select MULTIPLEXER
+> > -	depends on OF || COMPILE_TEST
+> >  	help
+> >  	  Say yes here to build support for the IIO multiplexer.
+> >  
+> > diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
+> > index f422d44377df..e6f0fef96494 100644
+> > --- a/drivers/iio/multiplexer/iio-mux.c
+> > +++ b/drivers/iio/multiplexer/iio-mux.c
+> > @@ -10,11 +10,12 @@
+> >  #include <linux/err.h>
+> >  #include <linux/iio/consumer.h>
+> >  #include <linux/iio/iio.h>
+> > +#include <linux/mod_devicetable.h>
+> >  #include <linux/module.h>
+> >  #include <linux/mutex.h>
+> >  #include <linux/mux/consumer.h>
+> > -#include <linux/of.h>
+> >  #include <linux/platform_device.h>
+> > +#include <linux/property.h>
+> >  
+> >  struct mux_ext_info_cache {
+> >  	char *data;
+> > @@ -324,37 +325,20 @@ static int mux_configure_channel(struct device *dev, struct mux *mux,
+> >  	return 0;
+> >  }
+> >  
+> > -/*
+> > - * Same as of_property_for_each_string(), but also keeps track of the
+> > - * index of each string.
+> > - */
+> > -#define of_property_for_each_string_index(np, propname, prop, s, i)	\
+> > -	for (prop = of_find_property(np, propname, NULL),		\
+> > -	     s = of_prop_next_string(prop, NULL),			\
+> > -	     i = 0;							\
+> > -	     s;								\
+> > -	     s = of_prop_next_string(prop, s),				\
+> > -	     i++)
+> > -
+> >  static int mux_probe(struct platform_device *pdev)
+> >  {
+> >  	struct device *dev = &pdev->dev;
+> > -	struct device_node *np = pdev->dev.of_node;
+> >  	struct iio_dev *indio_dev;
+> >  	struct iio_channel *parent;
+> >  	struct mux *mux;
+> > -	struct property *prop;
+> > -	const char *label;
+> > +	const char **labels;
+> >  	u32 state;
+> > +	int children, all_children;  
+> 
+> I dislike that the pattern with one declaration per line is broken here.
+> There are perhaps a few too many variables, but introducing one instance
+> of two declarations on one line is disturbing for me.
+> 
+> So, with that fixed,
+> 
+> Acked-by: Peter Rosin <peda@axentia.se>
+> 
+> >  	int sizeof_ext_info;
+> > -	int children;
+> >  	int sizeof_priv;
+> >  	int i;
+> >  	int ret;
+> >  
+> > -	if (!np)
+> > -		return -ENODEV;
+> > -
+> >  	parent = devm_iio_channel_get(dev, "parent");
+> >  	if (IS_ERR(parent))
+> >  		return dev_err_probe(dev, PTR_ERR(parent),
+> > @@ -366,9 +350,21 @@ static int mux_probe(struct platform_device *pdev)
+> >  		sizeof_ext_info *= sizeof(*mux->ext_info);
+> >  	}
+> >  
+> > +	all_children = device_property_count_string_array(dev, "channels");
+> > +	if (all_children < 0)
+> > +		return all_children;
+
+Function seems to be called device_property_string_array_count() so this will need
+a v3 anyway as it doesn't currently build.
 
 Thanks,
-xu xin 
+
+Jonathan
+
+
+
+> > +
+> > +	labels = devm_kmalloc_array(dev, all_children, sizeof(char *), GFP_KERNEL);  
+> 
+> I'm a bit sad to see the copy of the labels array. No big deal,
+> but it seems inelegant. But the of_property_for_each_string_index
+> macro was also misplaced and therefore inelegant. My guess is
+> that the device properties should be fairly static and that the
+> copy is a waste?
+> 
+> So, anyway, I'm just whining here, and the labels copy is ok.
+> 
+> Cheers,
+> Peter
+> 
+> > +	if (!labels)
+> > +		return -ENOMEM;
+> > +
+> > +	ret = device_property_read_string_array(dev, "channels", labels, all_children);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> >  	children = 0;
+> > -	of_property_for_each_string(np, "channels", prop, label) {
+> > -		if (*label)
+> > +	for (state = 0; state < all_children; state++) {
+> > +		if (*labels[state])
+> >  			children++;
+> >  	}
+> >  	if (children <= 0) {
+> > @@ -395,7 +391,7 @@ static int mux_probe(struct platform_device *pdev)
+> >  	mux->cached_state = -1;
+> >  
+> >  	mux->delay_us = 0;
+> > -	of_property_read_u32(np, "settle-time-us", &mux->delay_us);
+> > +	device_property_read_u32(dev, "settle-time-us", &mux->delay_us);
+> >  
+> >  	indio_dev->name = dev_name(dev);
+> >  	indio_dev->info = &mux_info;
+> > @@ -426,11 +422,11 @@ static int mux_probe(struct platform_device *pdev)
+> >  	}
+> >  
+> >  	i = 0;
+> > -	of_property_for_each_string_index(np, "channels", prop, label, state) {
+> > -		if (!*label)
+> > +	for (state = 0; state < all_children; state++) {
+> > +		if (!*labels[state])
+> >  			continue;
+> >  
+> > -		ret = mux_configure_channel(dev, mux, state, label, i++);
+> > +		ret = mux_configure_channel(dev, mux, state, labels[state], i++);
+> >  		if (ret < 0)
+> >  			return ret;
+> >  	}  
+
