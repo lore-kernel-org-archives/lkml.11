@@ -2,111 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB82C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3785CC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:20:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231562AbiB0UPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 15:15:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59822 "EHLO
+        id S231604AbiB0UV3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 15:21:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229848AbiB0UPL (ORCPT
+        with ESMTP id S229812AbiB0UV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 15:15:11 -0500
-Received: from mx.treblig.org (mx.treblig.org [46.43.15.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C4046B29
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 12:14:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
-        ; s=bytemarkmx; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
-        Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=5CxN1xUBMlFImqgSv+us7R4+dJ9oDkUUXsIOfadkE+0=; b=eEixWE+16EJiQsTKsfCvWXs22J
-        CvLcnDhIf4ORddm6vyM7SGNCwl7Q+QXYcyp70dxCTtmuBhqLN3623WC0P71wv1RYq+3L+WG1tCrc4
-        jDMRVEcJ4+BqemKYnd1MxTDsUbJdMtMl1PpPR9zjBXNE1RlIEwgvpYGP+Z88FFLDvxh8AQCPOpWdp
-        bufbWknGp+7mCyjro3sUpxwFFONJ2nF++zMt+k5+TbwupKTscFYUgeUo5U5X56cYVR7MkAg1O3MhM
-        ygSsIw94EUUCvpU9zR5oKaZQyHAmsLoP+09RAXftAInVEPHKtUDPiapzI61vI6gzArUG6rc3J6hzm
-        W1fiRYrg==;
-Received: from localhost ([127.0.0.1] helo=dalek.home.treblig.org)
-        by mx.treblig.org with esmtp (Exim 4.94.2)
-        (envelope-from <linux@treblig.org>)
-        id 1nOPvq-0007GG-Bg; Sun, 27 Feb 2022 20:14:13 +0000
-From:   "Dr. David Alan Gilbert" <linux@treblig.org>
-To:     dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
-        jeremy.fitzhardinge@citrix.com
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Dr. David Alan Gilbert" <linux@treblig.org>
-Subject: [PATCH] x86/mm: Use strtobool for noexec parsing
-Date:   Sun, 27 Feb 2022 20:13:56 +0000
-Message-Id: <20220227201356.241452-1-linux@treblig.org>
-X-Mailer: git-send-email 2.35.1
+        Sun, 27 Feb 2022 15:21:28 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D261955755;
+        Sun, 27 Feb 2022 12:20:49 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K6FJD30xyz4xcZ;
+        Mon, 28 Feb 2022 07:20:43 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1645993244;
+        bh=bj4kQe2ga8DdybKfRKNaqFOjWtocJLyBV0Y3f+6szJc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=fvDMSZE9l2gjzHY7ZxHfhbPz0tTliKc3uLxm7/3z1mmt7Ol0f2IHwMUxDsvUCq188
+         u+WpcvTtB2ciiE4PPwsUHUaTB6QOZwzq6tbxplKENWMtVoEzvSHbFPZMYm65pxdqxO
+         N4hNnnvoxvI0FY7w490vsfYDpwpDPW6MnP/UHKs9cm1ahsdOW5PSSlLX/pWTN13nOP
+         z2acZh3RweGxsovhQt9lnMJvl8FLB/z3JzT79ips2/bLMs4MMcarrelhp7hQcLcba7
+         FQlLnHcVl1vlyjgnV5WyIcyDgMS86Qxyu3ZOpjW4iVsrYmkEGRXOsuL41kKfIai45G
+         v9PzOsFEiLfDA==
+Date:   Mon, 28 Feb 2022 07:20:42 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Fixes tag needs some work in the net tree
+Message-ID: <20220228072042.5314e22b@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/C7ouye5q8627jOdzauxjfu7";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use strtobool to parse the 'noexec' parameter rather than open coding
-it.
-'disable_nx' is changed to a bool and flipped to 'enable_nx'
-so it's meaning follows the command line option.
+--Sig_/C7ouye5q8627jOdzauxjfu7
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-There's no change in behaviour for noexec=on/off.
-noexec=junk will now warn
-strtobool allows 0/1 and y/n (etc) as well as the on/off.
+Hi all,
 
-Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
----
- arch/x86/mm/setup_nx.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+In commit
 
-diff --git a/arch/x86/mm/setup_nx.c b/arch/x86/mm/setup_nx.c
-index ed5667f5169ff..77450b5889a0d 100644
---- a/arch/x86/mm/setup_nx.c
-+++ b/arch/x86/mm/setup_nx.c
-@@ -7,7 +7,7 @@
- #include <asm/proto.h>
- #include <asm/cpufeature.h>
- 
--static int disable_nx;
-+static bool enable_nx = true;
- 
- /*
-  * noexec = on|off
-@@ -19,21 +19,15 @@ static int disable_nx;
-  */
- static int __init noexec_setup(char *str)
- {
--	if (!str)
--		return -EINVAL;
--	if (!strncmp(str, "on", 2)) {
--		disable_nx = 0;
--	} else if (!strncmp(str, "off", 3)) {
--		disable_nx = 1;
--	}
-+	int ret = strtobool(str, &enable_nx);
- 	x86_configure_nx();
--	return 0;
-+	return ret;
- }
- early_param("noexec", noexec_setup);
- 
- void x86_configure_nx(void)
- {
--	if (boot_cpu_has(X86_FEATURE_NX) && !disable_nx)
-+	if (boot_cpu_has(X86_FEATURE_NX) && enable_nx)
- 		__supported_pte_mask |= _PAGE_NX;
- 	else
- 		__supported_pte_mask &= ~_PAGE_NX;
-@@ -46,7 +40,7 @@ void __init x86_report_nx(void)
- 		       "missing in CPU!\n");
- 	} else {
- #if defined(CONFIG_X86_64) || defined(CONFIG_X86_PAE)
--		if (disable_nx) {
-+		if (!enable_nx) {
- 			printk(KERN_INFO "NX (Execute Disable) protection: "
- 			       "disabled by kernel command line option\n");
- 		} else {
--- 
-2.35.1
+  765559b10ce5 ("ibmvnic: initialize rc before completing wait")
 
+Fixes tag
+
+  Fixes: 6b278c0cb378 ("ibmvnic delay complete()")
+
+has these problem(s):
+
+  - Subject does not match target commit subject
+    Just use
+	git log -1 --format=3D'Fixes: %h ("%s")'
+
+So
+
+Fixes: 6b278c0cb378 ("ibmvnic: delay complete()")
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/C7ouye5q8627jOdzauxjfu7
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIb3RoACgkQAVBC80lX
+0Gyfmgf+L3yqbcnI6avxhcU+ivOnkGKhZfuy0IzwqVG4WghKtXRvfhsYs9c+1Bml
+IVfT3OyeGRns/9du8i7mVJWdOS7p+ITgDjdQXl5OHG7nXkRgRx/WJUo/bja/VzfC
+EjgoZt5kc+Y1QM1tFbdG/t6xQPK2y/kIe37KBZyqXs22vliNgkSzOu+SDAoirsbV
+sgfovsasGl2Xn/+QsEhwb4/W66MIsq8l7rOUlThFcfZWO119hhysN5C2Vg6289ke
+OGIno95mxafmZtg6ByKWX8i0FYmbj6I/1PdAnquQHSUbIBQ74dS3EfJdNGkdn/qE
+qu6VdBKE4l7J/PolMp0jtO5d6L+OCw==
+=eBrp
+-----END PGP SIGNATURE-----
+
+--Sig_/C7ouye5q8627jOdzauxjfu7--
