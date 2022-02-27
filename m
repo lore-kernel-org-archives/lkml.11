@@ -2,185 +2,328 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57F5FC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 12:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F120C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 12:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230415AbiB0MrF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 07:47:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60550 "EHLO
+        id S231133AbiB0Mtj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 07:49:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiB0MrD (ORCPT
+        with ESMTP id S230115AbiB0Mtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 07:47:03 -0500
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A16DB6D388
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 04:46:26 -0800 (PST)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21RCCbQ3008597;
-        Sun, 27 Feb 2022 12:46:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=GVU2BLy85D6f0oy7jMhBRboP2rTrKP4Z/6QXLi2+Bo4=;
- b=SpvH/VlFGMAOFcf8so/KUqx1gTFyYK5LdUoZEaazSh35FRVaSpt8tSjCqmomq6URNBQ7
- +yc3XyoM5qKiItUfeJu16NWEc/3I8Yu+MmAnuQrn7UubfHekxJd5xfbNZ6QN7KRCWUxu
- I/dCjOAG5DnmmrIhtFKV3IuzEX4mHqACr02mZgJ3bd8pSBhyTIY+3Sj61kR71yLhwMxR
- wxakN42tsjPNlzrV8rsyqvngkA5C9q8ZVUmDpQM95wgXyARV8MYIht8v/K/nSpS0uJA8
- tngK21q31olt2lisTiwzN0PIp/+Yg+ajmYje/qEaaT4zeG3MGx5bsfEfr+ny8NfPBvED wg== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3eg93vgf28-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 27 Feb 2022 12:46:20 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21RCbc0c008419;
-        Sun, 27 Feb 2022 12:46:17 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma03ams.nl.ibm.com with ESMTP id 3efbu94qat-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 27 Feb 2022 12:46:17 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21RCkEua28967368
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 27 Feb 2022 12:46:14 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 66BB3AE053;
-        Sun, 27 Feb 2022 12:46:14 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1BD64AE045;
-        Sun, 27 Feb 2022 12:46:14 +0000 (GMT)
-Received: from localhost (unknown [9.171.27.131])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Sun, 27 Feb 2022 12:46:14 +0000 (GMT)
-Date:   Sun, 27 Feb 2022 13:46:12 +0100
-From:   Vasily Gorbik <gor@linux.ibm.com>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>
-Subject: Re: [PATCH v6 08/71] Maple Tree: Add new data structure
-Message-ID: <your-ad-here.call-01645965972-ext-7155@work.hours>
-References: <20220215143728.3810954-1-Liam.Howlett@oracle.com>
- <20220215144241.3812052-1-Liam.Howlett@oracle.com>
- <20220215144241.3812052-8-Liam.Howlett@oracle.com>
- <your-ad-here.call-01645924312-ext-0398@work.hours>
+        Sun, 27 Feb 2022 07:49:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA0C22BE1;
+        Sun, 27 Feb 2022 04:48:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 123BCB80B6F;
+        Sun, 27 Feb 2022 12:48:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 432E2C340E9;
+        Sun, 27 Feb 2022 12:48:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645966136;
+        bh=fOtalGurFO0Ty6CaPSM1YkNRaLC3Kf3S9w+JAyC3AEc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ogzXxTUjfvQjYWlSpYxIWXrTkwMrLpjOP6yc+aHzHud/oaPFaOlPxKocWODvaI/2T
+         cqzksM6aK5fqVxUYovKtznLTft9Z4FXPpeGXeCmILWLBdDVyG1Jq9ivY0u4vr6H7+C
+         zJBIynY/cOVToLb7CdcLga/xhdYp4XLpYIwlvnYOcAZ7tZKEvY1q1D0vZlcSyJuqET
+         HOaBcTzsQEuTSaS6P+qrGooYfIAyp373p1+zUKIXP0hRp8s6vLq7HlbzQOS6LeiOJZ
+         9Ah2NkdAI9wmMjSNViUL01UvzEbJHKTiCBXUlAYE/9Sk6xImqiUX5Cgk3noMrYaSjC
+         YS/s0pEgOJGwQ==
+Date:   Sun, 27 Feb 2022 12:55:59 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Liam Beguin <liambeguin@gmail.com>
+Cc:     peda@axentia.se, andy.shevchenko@gmail.com, lars@metafoo.de,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org
+Subject: Re: [PATCH v15 00/10] iio: afe: add temperature rescaling support
+Message-ID: <20220227125559.72d5d79a@jic23-huawei>
+In-Reply-To: <20220213025739.2561834-1-liambeguin@gmail.com>
+References: <20220213025739.2561834-1-liambeguin@gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <your-ad-here.call-01645924312-ext-0398@work.hours>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: EuiajMlsQV0lseD6uBvHahFHUD0vLPeQ
-X-Proofpoint-ORIG-GUID: EuiajMlsQV0lseD6uBvHahFHUD0vLPeQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-02-27_05,2022-02-26_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- adultscore=0 bulkscore=0 mlxlogscore=999 impostorscore=0 spamscore=0
- malwarescore=0 clxscore=1015 mlxscore=0 priorityscore=1501
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202270089
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 02:11:52AM +0100, Vasily Gorbik wrote:
-> Hi Liam,
+On Sat, 12 Feb 2022 21:57:29 -0500
+Liam Beguin <liambeguin@gmail.com> wrote:
+
+> Jonathan, Peter, Andy,
 > 
-> there is an endianness issue with maple_metadata. This is broken on
-> all big endian architectures. Tests are crashing. See potential fixup
-> below. Feel free to apply it or fix the issue in your own way. This does
-> not resolve all the issues with the patch series though.
+> This series focuses on adding temperature rescaling support to the IIO
+> Analog Front End (AFE) driver.
+> 
+> The main changes to the AFE driver include an initial Kunit test suite,
+> support for IIO_VAL_INT_PLUS_{NANO,MICRO} scales, and support for RTDs
+> and temperature transducer sensors.
+> 
+> Thanks for your time,
+> Liam
 
-Besides this obvious endianness issue there could be synchronization
-issue(s) which manifest on s390 with maple tree tests.
+Hi Liam,
 
-I've double checked that:
-- userspace-rcu 13.1 I'm using passes unit and regression tests
-- maple tree tests are also crashing with asan/ubsan disabled
+I was waiting for Andy to reply to this. Took a quick look back at
+what was outstanding and realised he had given a
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+for v13.
 
-If I disable check_rcu_simulated() then in most -Og/-O2 asan
-enabled/disabled combinations the rest of the tests happen pass for me now.
-But otherwise I see "random" crashes not specific to check_rcu_simulated().
+I'm assuming there wasn't a strong reason to drop that in the meantime
+and it's a simple omission / crossed emails issue.
 
-I'll try to find time to look into that and isolate issues further.
+As such, 
 
-E.g. with -O2:
-==441271==ERROR: AddressSanitizer: heap-use-after-free on address 0x61c00240fd24 at pc 0x000001003c62 bp 0x03ffb58fe8b0 sp 0x03ffb58fe8a8                                                                    [0/9325]
-READ of size 4 at 0x61c00240fd24 thread T1
-    #0 0x1003c61 in mas_dead_walk ../../../lib/maple_tree.c:5403
-    #1 0x101bbcb in mt_free_walk ../../../lib/maple_tree.c:5428
-    #2 0x3ffb9c841e5 in call_rcu_thread /userspace-rcu/src/urcu-call-rcu-impl.h:369
-    #3 0x3ffb919cf8b in start_thread pthread_create.c:435
-    #4 0x3ffb92164fd  (/lib64/libc.so.6+0x1164fd)
+Series applied to the togreg branch of iio.git and pushed out
+as testing to get some build coverage from 0-day.
 
-0x61c00240fd24 is located 1060 bytes inside of 1536-byte region [0x61c00240f900,0x61c00240ff00)
-freed by thread T1 here:
-    #0 0x3ffb9db005b in __interceptor_free ../../../../libsanitizer/asan/asan_malloc_linux.cpp:127
-    #1 0x10fa17f in kmem_cache_free /devel/src/kernel/tools/testing/radix-tree/linux.c:116
+Thanks,
 
-previously allocated by thread T0 here:
-    #0 0x3ffb9db0f59 in __interceptor_posix_memalign ../../../../libsanitizer/asan/asan_malloc_linux.cpp:226
-    #1 0x10faa21 in kmem_cache_alloc_bulk /devel/src/kernel/tools/testing/radix-tree/linux.c:162
-    #2 0x3fffdb7e6af  ([stack]+0xc36af)
+Jonathan
 
-Thread T1 created by T0 here:
-    #0 0x3ffb9d5a28f in __interceptor_pthread_create ../../../../libsanitizer/asan/asan_interceptors.cpp:216
-    #1 0x3ffb9c827d9 in call_rcu_data_init /userspace-rcu/src/urcu-call-rcu-impl.h:434
+> 
+> Changes since v14:
+> - Revert units.h changes in favor of "raw" values
+> 
+> Changes since v13:
+> - fix SI prefix in rescale_temp_sense_rtd_props()
+> - add comment explaining SI prefixes are sometimes used as mathematical
+>   multipliers with no particular physical meaning associated.
+> 
+> Changes since v12:
+> - rebase on latest testing branch
+> - fix copyright holder in newly created header file
+> - add myself as a copyright holder of the iio-rescale.c driver at
+>   Peter's suggestion
+> - fix undefined behavior on left-shift operation
+> 
+> Changes since v11:
+> - update commits with my personal email since all this work was done on
+>   my own time
+> - apply Peter's Reviewed-by to my local tree
+> - fix use of units.h
+> - make use of units.h more consistently in iio-rescale.c and in the
+>   tests
+> - fix #include ordering
+> - treat 04/16 as a fix. Move it, and add a Fixes: tag
+> - fix undefined behavior on left-shift operation
+> - add comment about fract_mult with iio_str_to_fixpoint()
+> - reword commit message for 14/16, based on Andy's comments
+> 
+> Changes since v10:
+> - apply Andy's suggestion for offset calculations
+> - make use of units.h more consistently
+> 
+> Changes since v9:
+> - make use of linux/units.h
+> - reorder commits, fix fract_log2 before merging fract
+> - keep fractional representation when not overflowing
+> 
+> Changes since v8:
+> - reword comment
+> - fix erroneous 64-bit division
+> - optimize and use 32-bit divisions when values are know to not overflow
+> - keep IIO_VAL_FRACTIONAL scale when possible, if not default to fixed
+>   point
+> - add test cases
+> - use nano precision in test cases
+> - simplify offset calculation in rtd_props()
+> 
+> Changes since v7:
+> - drop gcd() logic in rescale_process_scale()
+> - use div_s64() instead of do_div() for signed 64-bit divisions
+> - combine IIO_VAL_FRACTIONAL and IIO_VAL_FRACTIONAL_LOG2 scale cases
+> - switch to INT_PLUS_NANO when accuracy is lost with FRACTIONAL scales
+> - rework test logic to allow for small relative error
+> - rename test variables to align error output messages
+> 
+> Changes since v6:
+> - rework IIO_VAL_INT_PLUS_{NANO,MICRO} based on Peter's suggestion
+> - combine IIO_VAL_INT_PLUS_{NANO,MICRO} cases
+> - add test cases for negative IIO_VAL_INT_PLUS_{NANO,MICRO} corner cases
+> - force use of positive integers with gcd()
+> - reduce risk of integer overflow in IIO_VAL_FRACTIONAL_LOG2
+> - fix duplicate symbol build error
+> - apply Reviewed-by
+> 
+> Changes since v5:
+> - add include/linux/iio/afe/rescale.h
+> - expose functions use to process scale and offset
+> - add basic iio-rescale kunit test cases
+> - fix integer overflow case
+> - improve precision for IIO_VAL_FRACTIONAL_LOG2
+> 
+> Changes since v4:
+> - only use gcd() when necessary in overflow mitigation
+> - fix INT_PLUS_{MICRO,NANO} support
+> - apply Reviewed-by
+> - fix temperature-transducer bindings
+> 
+> Changes since v3:
+> - drop unnecessary fallthrough statements
+> - drop redundant local variables in some calculations
+> - fix s64 divisions on 32bit platforms by using do_div
+> - add comment describing iio-rescaler offset calculation
+> - drop unnecessary MAINTAINERS entry
+> 
+> Changes since v2:
+> - don't break implicit offset truncations
+> - make a best effort to get a valid value for fractional types
+> - drop return value change in iio_convert_raw_to_processed_unlocked()
+> - don't rely on processed value for offset calculation
+> - add INT_PLUS_{MICRO,NANO} support in iio-rescale
+> - revert generic implementation in favor of temperature-sense-rtd and
+>   temperature-transducer
+> - add separate section to MAINTAINERS file
+> 
+> Changes since v1:
+> - rebase on latest iio `testing` branch
+> - also apply consumer scale on integer channel scale types
+> - don't break implicit truncation in processed channel offset
+>   calculation
+> - drop temperature AFE flavors in favor of a simpler generic
+>   implementation
+> 
+> Liam Beguin (10):
+>   iio: afe: rescale: expose scale processing function
+>   iio: afe: rescale: add INT_PLUS_{MICRO,NANO} support
+>   iio: afe: rescale: add offset support
+>   iio: afe: rescale: fix accuracy for small fractional scales
+>   iio: afe: rescale: reduce risk of integer overflow
+>   iio: test: add basic tests for the iio-rescale driver
+>   iio: afe: rescale: add RTD temperature sensor support
+>   iio: afe: rescale: add temperature transducers
+>   dt-bindings: iio: afe: add bindings for temperature-sense-rtd
+>   dt-bindings: iio: afe: add bindings for temperature transducers
+> 
+>  .../iio/afe/temperature-sense-rtd.yaml        | 101 +++
+>  .../iio/afe/temperature-transducer.yaml       | 114 +++
+>  drivers/iio/afe/iio-rescale.c                 | 283 ++++++-
+>  drivers/iio/test/Kconfig                      |  10 +
+>  drivers/iio/test/Makefile                     |   1 +
+>  drivers/iio/test/iio-test-rescale.c           | 710 ++++++++++++++++++
+>  include/linux/iio/afe/rescale.h               |  36 +
+>  7 files changed, 1220 insertions(+), 35 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
+>  create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml
+>  create mode 100644 drivers/iio/test/iio-test-rescale.c
+>  create mode 100644 include/linux/iio/afe/rescale.h
+> 
+> Range-diff against v14:
+>  -:  ------------ >  1:  ee26b0eeac65 iio: afe: rescale: expose scale processing function
+>  1:  a510097c83f1 !  2:  78f9d37575a5 iio: afe: rescale: add INT_PLUS_{MICRO,NANO} support
+>     @@ Commit message
+>          Reviewed-by: Peter Rosin <peda@axentia.se>
+>      
+>       ## drivers/iio/afe/iio-rescale.c ##
+>     -@@
+>     - #include <linux/of_device.h>
+>     - #include <linux/platform_device.h>
+>     - #include <linux/property.h>
+>     -+#include <linux/units.h>
+>     - 
+>     - #include <linux/iio/afe/rescale.h>
+>     - #include <linux/iio/consumer.h>
+>      @@ drivers/iio/afe/iio-rescale.c: int rescale_process_scale(struct rescale *rescale, int scale_type,
+>       			  int *val, int *val2)
+>       {
+>     @@ drivers/iio/afe/iio-rescale.c: int rescale_process_scale(struct rescale *rescale
+>      +		return scale_type;
+>      +	case IIO_VAL_INT_PLUS_NANO:
+>      +	case IIO_VAL_INT_PLUS_MICRO:
+>     -+		mult = scale_type == IIO_VAL_INT_PLUS_NANO ? GIGA : MEGA;
+>     ++		mult = scale_type == IIO_VAL_INT_PLUS_NANO ? 1000000000L : 1000000L;
+>      +
+>      +		/*
+>      +		 * For IIO_VAL_INT_PLUS_{MICRO,NANO} scale types if either *val
+>  2:  8f2f2699a9b4 !  3:  5be82bd72453 iio: afe: rescale: add offset support
+>     @@ drivers/iio/afe/iio-rescale.c: int rescale_process_scale(struct rescale *rescale
+>      +		*val = div_s64(tmp, scale) + schan_off;
+>      +		return IIO_VAL_INT;
+>      +	case IIO_VAL_INT_PLUS_NANO:
+>     -+		tmp = (s64)rescale->offset * GIGA;
+>     -+		tmp2 = ((s64)scale * GIGA) + scale2;
+>     ++		tmp = (s64)rescale->offset * 1000000000LL;
+>     ++		tmp2 = ((s64)scale * 1000000000LL) + scale2;
+>      +		*val = div64_s64(tmp, tmp2) + schan_off;
+>      +		return IIO_VAL_INT;
+>      +	case IIO_VAL_INT_PLUS_MICRO:
+>     -+		tmp = (s64)rescale->offset * MEGA;
+>     -+		tmp2 = ((s64)scale * MEGA) + scale2;
+>     ++		tmp = (s64)rescale->offset * 1000000LL;
+>     ++		tmp2 = ((s64)scale * 1000000LL) + scale2;
+>      +		*val = div64_s64(tmp, tmp2) + schan_off;
+>      +		return IIO_VAL_INT;
+>      +	default:
+>  3:  2efa970bad26 !  4:  95ec184759f6 iio: afe: rescale: fix accuracy for small fractional scales
+>     @@ drivers/iio/afe/iio-rescale.c: int rescale_process_scale(struct rescale *rescale
+>      +		return IIO_VAL_INT_PLUS_NANO;
+>       	case IIO_VAL_INT_PLUS_NANO:
+>       	case IIO_VAL_INT_PLUS_MICRO:
+>     - 		mult = scale_type == IIO_VAL_INT_PLUS_NANO ? GIGA : MEGA;
+>     + 		mult = scale_type == IIO_VAL_INT_PLUS_NANO ? 1000000000L : 1000000L;
+>  4:  201037c0ead8 =  5:  2e1d41ef69d9 iio: afe: rescale: reduce risk of integer overflow
+>  5:  a0037cc3ee90 <  -:  ------------ iio: afe: rescale: make use of units.h
+>  6:  f8d47728f482 !  6:  0b6c029dea1d iio: test: add basic tests for the iio-rescale driver
+>     @@ drivers/iio/test/iio-test-rescale.c (new)
+>      +
+>      +#include <linux/gcd.h>
+>      +#include <linux/overflow.h>
+>     -+#include <linux/units.h>
+>      +
+>      +#include <linux/iio/afe/rescale.h>
+>      +#include <linux/iio/iio.h>
+>     @@ drivers/iio/test/iio-test-rescale.c (new)
+>      +	if (tmp < 0)
+>      +		tmp2 *= -1;
+>      +
+>     -+	*nano = (s64)tmp * GIGA + tmp2;
+>     ++	*nano = (s64)tmp * 1000000000UL + tmp2;
+>      +
+>      +	return ret;
+>      +}
+>     @@ drivers/iio/test/iio-test-rescale.c (new)
+>      +		return -EINVAL;
+>      +	}
+>      +
+>     -+	err = MEGA * abs(exp - real);
+>     ++	err = 1000000UL * abs(exp - real);
+>      +
+>      +	return (int)div64_u64(err, abs(exp));
+>      +}
+>  7:  a04685586340 !  7:  951ea44d0f5c iio: afe: rescale: add RTD temperature sensor support
+>     @@ drivers/iio/afe/iio-rescale.c: static int rescale_voltage_divider_props(struct d
+>      +		return ret;
+>      +	}
+>      +
+>     -+	tmp = r0 * iexc * alpha / MEGA;
+>     -+	factor = gcd(tmp, MEGA);
+>     -+	rescale->numerator = MEGA / factor;
+>     ++	tmp = r0 * iexc * alpha / 1000000;
+>     ++	factor = gcd(tmp, 1000000);
+>     ++	rescale->numerator = 1000000 / factor;
+>      +	rescale->denominator = tmp / factor;
+>      +
+>     -+	rescale->offset = -1 * ((r0 * iexc) / KILO);
+>     ++	rescale->offset = -1 * ((r0 * iexc) / 1000);
+>      +
+>      +	return 0;
+>      +}
+>  8:  e3b716aaee50 !  8:  56516fdc67bf iio: afe: rescale: add temperature transducers
+>     @@ drivers/iio/afe/iio-rescale.c: static int rescale_temp_sense_rtd_props(struct de
+>      +		return ret;
+>      +	}
+>      +
+>     -+	rescale->numerator = MEGA;
+>     ++	rescale->numerator = 1000000;
+>      +	rescale->denominator = alpha * sense;
+>      +
+>      +	rescale->offset = div_s64((s64)offset * rescale->denominator,
+>  9:  22ae1458eb8b =  9:  8c409050990b dt-bindings: iio: afe: add bindings for temperature-sense-rtd
+> 10:  33825ad452d6 = 10:  bb39296590f3 dt-bindings: iio: afe: add bindings for temperature transducers
+> 
+> base-commit: cd717ac6f69db4953ca701c6220c7cb58e17f35a
 
-SUMMARY: AddressSanitizer: heap-use-after-free ../../../lib/maple_tree.c:5403 in mas_dead_walk
-Shadow bytes around the buggy address:
-  0x100c3800481f50: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
-  0x100c3800481f60: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
-  0x100c3800481f70: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
-  0x100c3800481f80: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
-  0x100c3800481f90: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
-=>0x100c3800481fa0: fd fd fd fd[fd]fd fd fd fd fd fd fd fd fd fd fd
-  0x100c3800481fb0: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
-  0x100c3800481fc0: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
-  0x100c3800481fd0: fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd fd
-  0x100c3800481fe0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
-  0x100c3800481ff0: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
-Shadow byte legend (one shadow byte represents 8 application bytes):
-  Addressable:           00
-  Partially addressable: 01 02 03 04 05 06 07 
-  Heap left redzone:       fa
-  Freed heap region:       fd
-  Stack left redzone:      f1
-  Stack mid redzone:       f2
-  Stack right redzone:     f3
-  Stack after return:      f5
-  Stack use after scope:   f8
-  Global redzone:          f9
-  Global init order:       f6
-  Poisoned by user:        f7
-  Container overflow:      fc
-  Array cookie:            ac
-  Intra object redzone:    bb
-  ASan internal:           fe
-  Left alloca redzone:     ca
-  Right alloca redzone:    cb
-  Shadow gap:              cc
-==441271==ABORTING
-
-Or even stall on rcu_barrier() with default -Og:
-
-Thread 2 (Thread 0x3ffa5bff800 (LWP 439996) "maple"):
-#0  futex_wait (private=0, expected=2, futex_word=0x3ffa5bfea40) at ../sysdeps/nptl/futex-internal.h:146
-#1  __GI___lll_lock_wait (futex=futex@entry=0x3ffa5bfea40, private=<optimized out>) at lowlevellock.c:50
-#2  0x000003ffa94202e8 in lll_mutex_lock_optimized (mutex=0x3ffa5bfea40) at pthread_mutex_lock.c:49
-#3  ___pthread_mutex_lock (mutex=0x3ffa5bfea40) at pthread_mutex_lock.c:89
-#4  0x000000000102180e in mt_free_walk (head=0x61c00240e908) at ../../../lib/maple_tree.c:5425
-#5  0x000003ffa9f041e6 in call_rcu_thread (arg=0x60c000000040) at urcu-call-rcu-impl.h:369
-#6  0x000003ffa941cf8c in start_thread (arg=<optimized out>) at pthread_create.c:435
-#7  0x000003ffa94964fe in thread_start () at ../sysdeps/unix/sysv/linux/s390/s390-64/clone.S:67
-Thread 1 (Thread 0x3ffaaa6f980 (LWP 439995) "maple"):
-#0  syscall () at ../sysdeps/unix/sysv/linux/s390/s390-64/syscall.S:37
-#1  0x000003ffa9f03c0a in futex (val3=0, uaddr2=0x0, timeout=0x0, val=-1, op=0, uaddr=0x602000000554) at ../include/urcu/futex.h:72
-#2  futex_noasync (timeout=0x0, uaddr2=0x0, val3=0, val=-1, op=0, uaddr=0x602000000554) at ../include/urcu/futex.h:81
-#3  call_rcu_completion_wait (completion=0x602000000550) at urcu-call-rcu-impl.h:279
-#4  urcu_memb_barrier () at urcu-call-rcu-impl.h:895
-#5  urcu_memb_barrier () at urcu-call-rcu-impl.h:840
-#6  0x00000000010bfc0a in maple_tree_seed () at ../../../lib/test_maple_tree.c:37385
-#7  0x00000000010c0280 in maple_tree_tests () at maple.c:47
-#8  0x00000000010c02a0 in main () at maple.c:54
