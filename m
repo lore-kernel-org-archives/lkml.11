@@ -2,89 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F020C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 01:53:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B34C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 02:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbiB0Bx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 26 Feb 2022 20:53:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56418 "EHLO
+        id S229685AbiB0CZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 26 Feb 2022 21:25:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbiB0Bxv (ORCPT
+        with ESMTP id S229521AbiB0CZx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 26 Feb 2022 20:53:51 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C070252E36
-        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 17:53:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1645926796; x=1677462796;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=bE4VIKgBw3KUTe6gb/Ux3bw6tp20+o5UM0Bc15Qd8Dc=;
-  b=XflOipTbvKybnPKyyensjNbAJeYcqaH8RNd0RGvYQsdtKH90e1BSReho
-   Nl7Y5CWnHgAB3Cvowx3yEkju74GkyzoMW/PHzjLYlxQsoJM30GPZ8fXPB
-   pADX0ywVxZO62Qufrexk5Sp8VMo9Rm5f+KTzxp9FH/RZNCs1lV+ZbhSqq
-   MNuLUa3frSm9loPBq9okVryeTl8QAJT4kDoPDqa3NxqNn1+0lvXIW5vjb
-   9RrLofxBJTxyq40w4qst+YLbM7gTFMOx10AvKf/IMsjFGjblqSE1J2m26
-   UCqz4B3Zy8o+OWMP0nmX6Y/7svsKX3lMx+7Vo2x+Ug0+1IO9+bg1JCx/H
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10270"; a="236201816"
-X-IronPort-AV: E=Sophos;i="5.90,140,1643702400"; 
-   d="scan'208";a="236201816"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2022 17:53:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,140,1643702400"; 
-   d="scan'208";a="534021377"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 26 Feb 2022 17:53:14 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nO8kL-00068E-P8; Sun, 27 Feb 2022 01:53:13 +0000
-Date:   Sun, 27 Feb 2022 09:52:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Oscar Salvador <osalvador@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [ammarfaizi2-block:next/linux-next/master 210/370] mips64-linux-ld:
- undefined reference to `node_data'
-Message-ID: <202202270950.3wI5UHsb-lkp@intel.com>
+        Sat, 26 Feb 2022 21:25:53 -0500
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA086FA1D
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 18:25:18 -0800 (PST)
+Received: by mail-qv1-xf2b.google.com with SMTP id x3so9797036qvd.8
+        for <linux-kernel@vger.kernel.org>; Sat, 26 Feb 2022 18:25:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version;
+        bh=ZT/+q9dNBSLcgjlN3SJ5+1Yj8vgLHAugbOdQcBKIfxY=;
+        b=F4SnOsdsUpqy9Dh3XAGAdr4uySWlOmbJijjyaU/uVVo/tp0yVZFdz3tCn9oLpW4k5f
+         MQ3/Scu+VouIVui2NTyNvRlUu8Idq07xX0X2Fz8EgRA+bV+LiDHmvCW/iLH42AgjvvJF
+         8HhnID1Eq5lToU2rv9OaVlQ3dJVbgNXpLfrkfT6aGsLT+HUfxMIgZxn02FP9F1XzroBU
+         rWjOOqoTWByA6i/YltHquGR7l7tYgyDGeGAhQ5siUfRd2pCTEt1yoXpTgSX9GURmR+5C
+         pDjSo/DTcr1LHpXakUqQJpdGCOLVql52A0RT9jC0lvbTROVwpMGV7rocQtowIWljvjPB
+         htWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version;
+        bh=ZT/+q9dNBSLcgjlN3SJ5+1Yj8vgLHAugbOdQcBKIfxY=;
+        b=Tx6JSO9pQoUWzDbtJObxp7+EnYLbXK2gWqCMDQQu45+0vkt6Vmj4DSU9chKBoR+kux
+         KetMlGnPrQ3B7NhKUAZXMmDNaqMkfzyZEbXB1RuJwgkFtLo0vp4aCNzLaXhrypAjF8hR
+         IfIgaPjns0rkemNzvhvIZKf6Up9yeL1XWGPbRhLaqiooh1pJKY5sUOiIcDO01CQaYGVl
+         bmpZ8klvEcZfUznHx8FePxf17elWJkOLKucKOD++nQOtHUpFQfLtLvpOUEohvwcIkXIA
+         kcAoJDtk4KOc/CCyRl0tJGcBaFuQ6Mz6vxUc0nv2qM3ckbBy55zl14H82ed9Uvh0BS//
+         p2rg==
+X-Gm-Message-State: AOAM532nnGG58kLq3xzxyE3iWxP86+t+sjrc8mOZS71Ra7S/YvAhoNa5
+        A1Ctnt3HHX+/1S+JHfZeiFGjlA==
+X-Google-Smtp-Source: ABdhPJxfrEuPobOVaV23MJwxDp8JklmIfshf0IhpzBrIeactCe6Iqz89FhRU41LIRU5L/0nZB2MA0A==
+X-Received: by 2002:a05:6214:1947:b0:432:bb20:4b38 with SMTP id q7-20020a056214194700b00432bb204b38mr8513388qvk.96.1645928717019;
+        Sat, 26 Feb 2022 18:25:17 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id k125-20020a378883000000b006491db6dbb1sm3215102qkd.84.2022.02.26.18.25.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 26 Feb 2022 18:25:16 -0800 (PST)
+Date:   Sat, 26 Feb 2022 18:25:15 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Matthew Wilcox <willy@infradead.org>
+cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: [PATCH next] mm/migrate: fix remove_migration_pte() of hugetlb
+ entry
+Message-ID: <bd28ebcf-4d42-7184-8189-ffed6fe7d4dc@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block next/linux-next/master
-head:   06aeb1495c39c86ccfaf1adadc1d2200179f16eb
-commit: e2ad74daf436b686b3c8456ea277bfdc94188c8e [210/370] mm: handle uninitialized numa nodes gracefully
-config: mips-randconfig-r011-20220227 (https://download.01.org/0day-ci/archive/20220227/202202270950.3wI5UHsb-lkp@intel.com/config)
-compiler: mips64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/e2ad74daf436b686b3c8456ea277bfdc94188c8e
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block next/linux-next/master
-        git checkout e2ad74daf436b686b3c8456ea277bfdc94188c8e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash
+The foliation of remove_migration_pte() is currently wrong on hugetlb
+anon entries, causing LTP move_pages12 to crash on BUG_ON(!PageLocked)
+in hugepage_add_anon_rmap().
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   mips64-linux-ld: mm/page_alloc.o: in function `free_area_init':
-   (.init.text+0x1d94): undefined reference to `node_data'
->> mips64-linux-ld: (.init.text+0x1dac): undefined reference to `node_data'
-
+Fixes: b4010e88f071 ("mm/migrate: Convert remove_migration_ptes() to folios")
+Signed-off-by: Hugh Dickins <hughd@google.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Please just fold in if you agree.
+
+ mm/migrate.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+--- mmotm/mm/migrate.c
++++ linux/mm/migrate.c
+@@ -182,7 +182,8 @@ static bool remove_migration_pte(struct
+ 		struct page *new;
+ 		unsigned long idx = 0;
+ 
+-		if (!folio_test_ksm(folio))
++		/* Skip call in common case, plus .pgoff is invalid for KSM */
++		if (pvmw.nr_pages != 1 && !folio_test_hugetlb(folio))
+ 			idx = linear_page_index(vma, pvmw.address) - pvmw.pgoff;
+ 		new = folio_page(folio, idx);
+ 
