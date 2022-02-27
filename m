@@ -2,133 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2CD4C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 22:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE467C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 22:44:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232101AbiB0WoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 17:44:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33796 "EHLO
+        id S232111AbiB0WpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 17:45:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbiB0Wn6 (ORCPT
+        with ESMTP id S232100AbiB0WpI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 17:43:58 -0500
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A9A3EB9F;
-        Sun, 27 Feb 2022 14:43:21 -0800 (PST)
-Received: by mail-il1-x12c.google.com with SMTP id q4so8758400ilt.0;
-        Sun, 27 Feb 2022 14:43:21 -0800 (PST)
+        Sun, 27 Feb 2022 17:45:08 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3453A52E4A;
+        Sun, 27 Feb 2022 14:44:31 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id j12so16960671ybh.8;
+        Sun, 27 Feb 2022 14:44:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Z4bnNwe7U2Vh4XIKAHcu6wdoajMLlbGI9CQD4DbPubI=;
-        b=JIN504u2qQKThwiQ0dRzJl4Q1JGJc/rswp3AoRX7y2BC/ZNBM+/cn7UAXV99gtQ16s
-         bBgiUUvet/5oYcL8u0Hi8FS7T8KhouECYUL2WVPC82JuOoW76dUOKv8DpZGCwarRcdAs
-         YBoA0VY19lGkuUfWuBYiYK05rtybnWFusXwQO7BYx8juikiLo0cQZJqWugmOW9uEBZX8
-         OmtnKMihq4nmXhNnUt0dY147hFrkej9Ajnb7LSa126wnESmFZJmsoT+JikLlewrLrhoB
-         UIoRV/+8eGUCWoNst8NVdZ62gnltE4xDzI1dLXochfsNXL8g+ondEc5FoBV4alw6CBf1
-         3iJw==
+        bh=cZ9QMnKlNqSU27RKVmQdYv0oOCGNcDDfO8PVwoF5xyQ=;
+        b=mMmUILbThtIsXV6Pu18EK0OgQ0rPIotUagZulWrczHBjjJXOn6hFNCvbt8cct9W//5
+         mJ2xGwXRrFPc19EkvUTl7O1gDGJayclhyDgPQKBUrI5MAbCm04jC7KsP088ak61awBJH
+         o45gcDhw0QI7KPEkjpItrAoVjDtoA6XtPdFaR/NqO0EdcxevD1s5zgLhnYT9IOB4iHH5
+         tK1QsB9MLVGH4vsSeBF+e+/zEscon3hg+GBZ7BfpqTcV35U+AhKHgvTHmGLuod54nMFA
+         CbH3UZEUWGqvvaNDdyTwTit2RWICqFbh70bBLKcBsZfo+FFomxnhp/ozmA6wlEMj8WFW
+         4x/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Z4bnNwe7U2Vh4XIKAHcu6wdoajMLlbGI9CQD4DbPubI=;
-        b=6W1DmWmGvK27dlobVD8EK4kyxAkjhKz9rcllK0AKPFybHPE4uGfj/B0sYHWsforCaZ
-         KqQM8sVGV6+IeirjaMelSN4vmQewEZ6T3fT9DS4LatUkd8aWA+s7oMXS0vUQRMBeLtwg
-         Eo1Ds0GvnDrUIfOI+EWI9VKJ3y6As/uBlFlweMQoepE5XdpNTP+SDcQnSLdbcLbC5Fbj
-         VmDsb2nJxWX5KLiJTzPmVYW2tzt3pphN6wdAj1JYIfDhWa2rf8GVeedD/YxQU4O0ZmTB
-         yP76f9MEQdVIKT0IuDzfxLZrhJ4J0ODrcualT7b5kp5gzNyntDOhZK2jCCDCLTopwDzt
-         HppA==
-X-Gm-Message-State: AOAM533yuxNGDtKWAYJYuxlY4+l3nyJZgjwkw4RTCs7DVHSVtqErcFeD
-        FsgAoGJbsDpjE+sH/hVx6gI4vGAv9lca6CejHOE=
-X-Google-Smtp-Source: ABdhPJx+SeevTo5vtSZhGvvpVA1ddy2bLL8U09bLcO/C5jYWsYcKNU24IfCWMR7ECyUwpgphUUaEuawHmtZKNIZFiMg=
-X-Received: by 2002:a05:6e02:b24:b0:2be:88f8:c4ed with SMTP id
- e4-20020a056e020b2400b002be88f8c4edmr16277966ilu.72.1646001800972; Sun, 27
- Feb 2022 14:43:20 -0800 (PST)
+        bh=cZ9QMnKlNqSU27RKVmQdYv0oOCGNcDDfO8PVwoF5xyQ=;
+        b=vf+YOekn8SmsjeHtYkUx1alYrZJi7/GU5ZzjWGM3OMXSIjHs5O6W6/0HO6c2i5zg7y
+         q0w8zKcXcevuwtjvz8ON+b4w2fQKzpnSRXNCJkrIXGEFLoKgKgyOk/EoBkR7+lLqYffq
+         f69Y9qmZgltBvkkfqNwvDL5jKRCQ3Y54sLGHcqUMdwQDLMCacSp5G9nQg60/+a5adeiT
+         +W5yNCbBzsGotEa1dfrXfteQV50e1JCDf/TY0oofp9guJpi5nhDHyvsAFHdkZolPSG1X
+         R0zcO2dseiwI22PNVXhJTnfClkMxE0bmY/LpzTY8evJmFTs2LBVF395viNTblcjdURHn
+         /fLw==
+X-Gm-Message-State: AOAM5309G9wEsawU9A4SYYi6TeDavOj5/f+eNivA87RdqlFbbV10UDMY
+        q6oBozzzVW8LNrEXsP1+gAv4bg3NNW1kDDpfG3k=
+X-Google-Smtp-Source: ABdhPJzhlOIRO5vSQFoRiLQmWNZRekBnUtdAYNQh7vMp8HF8X0cB9llnkb2qXIzlh8MnZkoBHVGA2H0iguVtWPBBT5o=
+X-Received: by 2002:a25:5d0:0:b0:61d:932b:6fc0 with SMTP id
+ 199-20020a2505d0000000b0061d932b6fc0mr16650730ybf.585.1646001869946; Sun, 27
+ Feb 2022 14:44:29 -0800 (PST)
 MIME-Version: 1.0
-References: <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
- <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com> <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
- <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
- <20220226124249.GU614@gate.crashing.org> <CAK8P3a2Dd+ZMzn=gDnTzOW=S3RHQVmm1j3Gy=aKmFEbyD-q=rQ@mail.gmail.com>
- <20220227010956.GW614@gate.crashing.org> <7abf3406919b4f0c828dacea6ce97ce8@AcuMS.aculab.com>
- <20220227113245.GY614@gate.crashing.org> <CANiq72m28WrjVHkcg5Y0LDa51Ur4OCpFbGdcq+v4gqiC0Wi6zg@mail.gmail.com>
- <20220227201724.GZ614@gate.crashing.org>
-In-Reply-To: <20220227201724.GZ614@gate.crashing.org>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Sun, 27 Feb 2022 23:43:09 +0100
-Message-ID: <CANiq72nbLHvHX4Nk3oGutL=y3MghrFHs6HsmqN8HA8XwSv-4Ow@mail.gmail.com>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-To:     Segher Boessenkool <segher@kernel.crashing.org>
-Cc:     David Laight <David.Laight@aculab.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jakob <jakobkoschel@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>
+References: <20220227153016.950473-1-pgwipeout@gmail.com> <20220227153016.950473-6-pgwipeout@gmail.com>
+ <7b20fccd-4394-da3c-6556-4732d67cde3d@gmail.com>
+In-Reply-To: <7b20fccd-4394-da3c-6556-4732d67cde3d@gmail.com>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Sun, 27 Feb 2022 17:44:18 -0500
+Message-ID: <CAMdYzYp8x_mKffm1WkHD4D1Fx_tVJ8WdBc=u-j+j_zRbJmyaCQ@mail.gmail.com>
+Subject: Re: [PATCH v3 5/7] arm64: dts: rockchip: add rk356x dwc3 usb3 nodes
+To:     Johan Jonker <jbx6244@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 9:19 PM Segher Boessenkool
-<segher@kernel.crashing.org> wrote:
+On Sun, Feb 27, 2022 at 12:50 PM Johan Jonker <jbx6244@gmail.com> wrote:
 >
-> Requiring to annotate every place that has UB (or *can* have UB!) by the
-> user is even less friendly than having so much UB is already :-(
-
-Sure, but I did not suggest to annotate every place -- at least not in C.
-
-What I said is that in cases like your division by zero example, there
-is no one-fits-all solution. For instance, for integer arithmetic,
-leaving the choice (e.g. wrapping, saturating, unchecked...) to the
-user is a better approach.
-
-> You need a VM like Java's to get even *close* to that.  This is not the
-> C target: it is slower than wanted/expected, it is hosted instead of
-> embedded, and it comes with a whole host of issues of its own.  One of
-> the strengths of C is its tiny runtime, a few kB is a lot already!
 >
-> I completely agree that if you design a new "systems" language, you want
-> to have much less undefined behaviour than C has.  But it is self-
-> delusion to think you can eradicate all (or even most).
+>
+> On 2/27/22 16:30, Peter Geis wrote:
+> > Add the dwc3 device nodes to the rk356x device trees.
+> > The rk3566 has one usb2 capable dwc3 otg controller and one usb3 capable
+> > dwc3 host controller.
+> > The rk3568 has one usb3 capable dwc3 otg controller and one usb3 capable
+> > dwc3 host controller.
+> >
+> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> > ---
+> >  arch/arm64/boot/dts/rockchip/rk3566.dtsi | 11 ++++++++
+> >  arch/arm64/boot/dts/rockchip/rk3568.dtsi |  9 ++++++
+> >  arch/arm64/boot/dts/rockchip/rk356x.dtsi | 35 +++++++++++++++++++++++-
+> >  3 files changed, 54 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/arch/arm64/boot/dts/rockchip/rk3566.dtsi b/arch/arm64/boot/dts/rockchip/rk3566.dtsi
+> > index 3839eef5e4f7..0b957068ff89 100644
+> > --- a/arch/arm64/boot/dts/rockchip/rk3566.dtsi
+> > +++ b/arch/arm64/boot/dts/rockchip/rk3566.dtsi
+> > @@ -6,6 +6,10 @@ / {
+> >       compatible = "rockchip,rk3566";
+> >  };
+> >
+> > +&pipegrf {
+> > +     compatible = "rockchip,rk3566-pipe-grf", "syscon";
+> > +};
+> > +
+> >  &power {
+> >       power-domain@RK3568_PD_PIPE {
+> >               reg = <RK3568_PD_PIPE>;
+> > @@ -18,3 +22,10 @@ power-domain@RK3568_PD_PIPE {
+> >               #power-domain-cells = <0>;
+> >       };
+> >  };
+> > +
+> > +&usb_host0_xhci {
+> > +     phys = <&usb2phy0_otg>;
+> > +     phy-names = "usb2-phy";
+> > +     extcon = <&usb2phy0>;
+> > +     maximum-speed = "high-speed";
+> > +};
+> > diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+> > index 5b0f528d6818..8ba9334f9753 100644
+> > --- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+> > +++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+> > @@ -99,6 +99,10 @@ opp-1992000000 {
+> >       };
+> >  };
+> >
+> > +&pipegrf {
+> > +     compatible = "rockchip,rk3568-pipe-grf", "syscon";
+> > +};
+> > +
+> >  &power {
+> >       power-domain@RK3568_PD_PIPE {
+> >               reg = <RK3568_PD_PIPE>;
+> > @@ -114,3 +118,8 @@ power-domain@RK3568_PD_PIPE {
+> >               #power-domain-cells = <0>;
+> >       };
+> >  };
+> > +
+> > +&usb_host0_xhci {
+> > +     phys = <&usb2phy0_otg>, <&combphy0 PHY_TYPE_USB3>;
+> > +     phy-names = "usb2-phy", "usb3-phy";
+> > +};
+> > diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+> > index 7cdef800cb3c..072bb9080cd6 100644
+> > --- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+> > +++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
+> > @@ -230,6 +230,40 @@ scmi_shmem: sram@0 {
+> >               };
+> >       };
+> >
+> > +     usb_host0_xhci: usb@fcc00000 {
+>
+> > +             compatible = "snps,dwc3";
+>
+> compatible = "rockchip,rk3568-dwc3", "snps,dwc3";
+>
+> compatible strings must be SoC orientated.
+> Add binding like you did before.
 
-Nobody is suggesting to remove "all UB" in that sense or to use
-VM-supported languages.
+Okay, should this go in the core yaml, since it's not really handled
+by of-simple?
+Also, should I add in the compatible for rk3328 as well?
 
-However, you can """eradicate all UB""" in a sense: you can offer to
-write most code in a subset that does not allow any potential-UB
-operations. This can even be "all" code, depending on how you count
-(e.g. all application code).
-
-Obviously, you still need the unchecked operations to implement the
-safe APIs. This is why I mentioned them.
-
-> And there are much bigger problems in any case!  If you think that if
-> programmers could no longer write programs that invoke undefined
-> behaviour they will write much better programs, programs with fewer
-> serious functionality or security problems, even just a factor of two
-> better, well...
-
-Actually, according to several reports from Google, Microsoft, etc.,
-it _is_ the biggest problem (~70%) when talking about security bugs.
-
-So it is a good bet that it will translate into "better" programs, at
-least on that axis, unless it is showed that removing UB somehow
-increases the rate of other errors.
-
-As for functionality problems, there are several ways to improve upon
-C too, though it is harder to show data on that.
-
-Cheers,
-Miguel
+>
+> > +             reg = <0x0 0xfcc00000 0x0 0x400000>;
+> > +             interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH>;
+> > +             clocks = <&cru CLK_USB3OTG0_REF>, <&cru CLK_USB3OTG0_SUSPEND>,
+> > +                      <&cru ACLK_USB3OTG0>;
+> > +             clock-names = "ref_clk", "suspend_clk",
+> > +                           "bus_clk";
+> > +             dr_mode = "host";
+> > +             phy_type = "utmi_wide";
+> > +             power-domains = <&power RK3568_PD_PIPE>;
+> > +             resets = <&cru SRST_USB3OTG0>;
+> > +             snps,dis_u2_susphy_quirk;
+> > +             status = "disabled";
+> > +     };
+> > +
+> > +     usb_host1_xhci: usb@fd000000 {
+>
+> > +             compatible = "snps,dwc3";
+>
+> compatible = "rockchip,rk3568-dwc3", "snps,dwc3";
+>
+> > +             reg = <0x0 0xfd000000 0x0 0x400000>;
+> > +             interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
+> > +             clocks = <&cru CLK_USB3OTG1_REF>, <&cru CLK_USB3OTG1_SUSPEND>,
+> > +                      <&cru ACLK_USB3OTG1>;
+> > +             clock-names = "ref_clk", "suspend_clk",
+> > +                           "bus_clk";
+> > +             dr_mode = "host";
+> > +             phys = <&usb2phy0_host>, <&combphy1 PHY_TYPE_USB3>;
+> > +             phy-names = "usb2-phy", "usb3-phy";
+> > +             phy_type = "utmi_wide";
+> > +             power-domains = <&power RK3568_PD_PIPE>;
+> > +             resets = <&cru SRST_USB3OTG1>;
+> > +             snps,dis_u2_susphy_quirk;
+> > +             status = "disabled";
+> > +     };
+> > +
+> >       gic: interrupt-controller@fd400000 {
+> >               compatible = "arm,gic-v3";
+> >               reg = <0x0 0xfd400000 0 0x10000>, /* GICD */
+> > @@ -297,7 +331,6 @@ pmu_io_domains: io-domains {
+> >       };
+> >
+> >       pipegrf: syscon@fdc50000 {
+> > -             compatible = "rockchip,rk3568-pipe-grf", "syscon";
+> >               reg = <0x0 0xfdc50000 0x0 0x1000>;
+> >       };
+> >
