@@ -2,108 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F27BC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:28:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5171BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230343AbiB0S2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 13:28:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33652 "EHLO
+        id S230394AbiB0S3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 13:29:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229836AbiB0S2o (ORCPT
+        with ESMTP id S230356AbiB0S3C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 13:28:44 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5605A6319;
-        Sun, 27 Feb 2022 10:28:07 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id d10so20598335eje.10;
-        Sun, 27 Feb 2022 10:28:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=if4Fre52/w2KJvlhq2Fh0w9ZPnSn2eaHXlg8jB08NKE=;
-        b=LMjDPtWjqobgSKHRsOsUWPOvbU42FVKWl88Qz3dUU1cv7rDQSEg/b6TgcI0XLKHy18
-         EQP6iq/Z7XRXur9ijiYNWOOemFo+Tx71SCwEeGcz6jERwch7WCLAZ/FNn1UAS9QsQTqc
-         G1JAwC9TX7bkpA/3AQsrU2pyy5TZcGHNei57SvEBdpWMo+ECB18IWbh8bW6bBvR9ao6C
-         zCvn4FCmk8P9rOkzoXGJkInDSfgSMm6Tp5W/RYtLTVjkoQUn8CwE9deA7MDIZhvCvKTI
-         12qBGQ+esv1pqyVqlTFE/NkYwjzQAqJrvyiHpxOZ+eTMd2wgZcPtboQVqQjABNkSMM2P
-         1/Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=if4Fre52/w2KJvlhq2Fh0w9ZPnSn2eaHXlg8jB08NKE=;
-        b=1hN148s5pZ3tq7p29mg3GRdaN9r59zuNZrRkqc3rULDGoQq1V994c0Dens6ui0QP8s
-         cx9RmUjFTc1y2Gy2eVaUAFN0+xwFOT6mNzj0389jVG7khWRuhOQrsCpxWI0cw1YCGnen
-         ubGvQVIVv5L/mpSJgwp5FwC2usl/Hc0BULbA+egfebNI7anVNUjxqUIx2z3tEg3RE0VD
-         b6Xewv8uArS4HN05WNhEfXx6hmAnrKJTXYJ7vcNlqhIFSD6tVyyB7YFGVQALG3tj2/5t
-         w6SOmeGsp8ImF/GUjem7AngsHKmU+9xqNosUL0/OoipIi1UhhgmP41OQDLTSWlsJ7fpW
-         8Ykg==
-X-Gm-Message-State: AOAM533yV5AJ95oBORFVmmXx6dQigXDpR5whMqs1nX6uD8/lL4L3OBaP
-        7D8FLEGWjnMPIgv0OTCEF36cgeW2AYpxIR9qNE2SClL1
-X-Google-Smtp-Source: ABdhPJwbJgpJOI9EugajVR/mYoWiY1yIhqIr+QW5dep+mQNnvd6+haCVQXEJHZo4gUhuO6EzscGhGcJtD76Q5iUsa8s=
-X-Received: by 2002:a17:906:3650:b0:6ce:a6e0:3e97 with SMTP id
- r16-20020a170906365000b006cea6e03e97mr13357842ejb.15.1645986485655; Sun, 27
- Feb 2022 10:28:05 -0800 (PST)
+        Sun, 27 Feb 2022 13:29:02 -0500
+Received: from mxout3.routing.net (mxout3.routing.net [IPv6:2a03:2900:1:a::8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D431763CF;
+        Sun, 27 Feb 2022 10:28:23 -0800 (PST)
+Received: from mxbox1.masterlogin.de (unknown [192.168.10.88])
+        by mxout3.routing.net (Postfix) with ESMTP id 055AB604DF;
+        Sun, 27 Feb 2022 18:28:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
+        s=20200217; t=1645986502;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oIQHQqWpYDTR34+UZ2EQU8OCgFjoZwuBhLuDbXdN8Pw=;
+        b=NWQ6DYLTPInxte0uI9CJeESL+8IeAVbmDBvKvNpDqpewD3fJO8kj0Mbl+jzfMwovDc5hdz
+        DTo8yONJT88/IDSfnPyuGtnPp2RQb1OTsuElCixo3IRIA2HMmkFFc+fTlbbkNpcRn5uLjz
+        2I1mA53Je4Ozv81vfMb3zgE8o+g3Nd0=
+Received: from localhost.localdomain (fttx-pool-80.245.76.205.bambit.de [80.245.76.205])
+        by mxbox1.masterlogin.de (Postfix) with ESMTPSA id 546444054D;
+        Sun, 27 Feb 2022 18:28:21 +0000 (UTC)
+From:   Frank Wunderlich <linux@fw-web.de>
+To:     "devicetree @ vger . kernel . org Damien Le Moal" 
+        <damien.lemoal@opensource.wdc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>
+Subject: [PATCH v3 2/3] dt-bindings: Add power-domains property to ahci-platform
+Date:   Sun, 27 Feb 2022 19:27:59 +0100
+Message-Id: <20220227182800.275572-3-linux@fw-web.de>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220227182800.275572-1-linux@fw-web.de>
+References: <20220227182800.275572-1-linux@fw-web.de>
 MIME-Version: 1.0
-References: <cover.1645558375.git.riteshh@linux.ibm.com> <a1e9902e84595a2088bcf4882691a8330640246b.1645558375.git.riteshh@linux.ibm.com>
- <20220223093713.fw7c54xmllxrmmld@quack3.lan>
-In-Reply-To: <20220223093713.fw7c54xmllxrmmld@quack3.lan>
-From:   harshad shirwadkar <harshadshirwadkar@gmail.com>
-Date:   Sun, 27 Feb 2022 10:27:54 -0800
-Message-ID: <CAD+ocbwweF5vZh3AHRFnCQJCUC045KgoY+F2Z1aOHyxdrcxK5A@mail.gmail.com>
-Subject: Re: [RFC 1/9] ext4: Remove unused enum EXT4_FC_COMMIT_FAILED
-To:     Jan Kara <jack@suse.cz>
-Cc:     Ritesh Harjani <riteshh@linux.ibm.com>,
-        Ext4 Developers List <linux-ext4@vger.kernel.org>,
-        "Theodore Ts'o" <tytso@mit.edu>, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Mail-ID: f4cced9d-11f3-4d4c-a033-595f9377fcc2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good.
+From: Frank Wunderlich <frank-w@public-files.de>
 
-Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Some SoC using power-domains property so add it here
 
-- Harshad
+Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+---
+changes in v3:
+  - new patch
+---
+ Documentation/devicetree/bindings/ata/ahci-platform.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-On Wed, 23 Feb 2022 at 01:37, Jan Kara <jack@suse.cz> wrote:
->
-> On Wed 23-02-22 02:04:09, Ritesh Harjani wrote:
-> > Below commit removed all references of EXT4_FC_COMMIT_FAILED.
-> > commit 0915e464cb274 ("ext4: simplify updating of fast commit stats")
-> >
-> > Just remove it since it is not used anymore.
-> >
-> > Signed-off-by: Ritesh Harjani <riteshh@linux.ibm.com>
->
-> Sure. Feel free to add:
->
-> Reviewed-by: Jan Kara <jack@suse.cz>
->
->                                                                         Honza
->
-> > ---
-> >  fs/ext4/fast_commit.h | 1 -
-> >  1 file changed, 1 deletion(-)
-> >
-> > diff --git a/fs/ext4/fast_commit.h b/fs/ext4/fast_commit.h
-> > index 02afa52e8e41..80414dcba6e1 100644
-> > --- a/fs/ext4/fast_commit.h
-> > +++ b/fs/ext4/fast_commit.h
-> > @@ -93,7 +93,6 @@ enum {
-> >       EXT4_FC_REASON_RENAME_DIR,
-> >       EXT4_FC_REASON_FALLOC_RANGE,
-> >       EXT4_FC_REASON_INODE_JOURNAL_DATA,
-> > -     EXT4_FC_COMMIT_FAILED,
-> >       EXT4_FC_REASON_MAX
-> >  };
-> >
-> > --
-> > 2.31.1
-> >
-> --
-> Jan Kara <jack@suse.com>
-> SUSE Labs, CR
+diff --git a/Documentation/devicetree/bindings/ata/ahci-platform.yaml b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
+index cc246b312c59..cc3710fe4fd4 100644
+--- a/Documentation/devicetree/bindings/ata/ahci-platform.yaml
++++ b/Documentation/devicetree/bindings/ata/ahci-platform.yaml
+@@ -67,6 +67,9 @@ properties:
+       some embedded SoCs.
+     minItems: 1
+ 
++  power-domains:
++    maxItems: 1
++
+   resets:
+     minItems: 1
+ 
+-- 
+2.25.1
+
