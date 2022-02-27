@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAE6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 20:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231740AbiB0U5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 15:57:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58790 "EHLO
+        id S231800AbiB0U5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 15:57:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231447AbiB0U5E (ORCPT
+        with ESMTP id S231660AbiB0U5H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 15:57:04 -0500
+        Sun, 27 Feb 2022 15:57:07 -0500
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D5932FFE7
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 12:56:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5DBC5338A3
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 12:56:30 -0800 (PST)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DEEEF12FC;
-        Sun, 27 Feb 2022 12:56:26 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1AB611477;
+        Sun, 27 Feb 2022 12:56:30 -0800 (PST)
 Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8359E3F66F;
-        Sun, 27 Feb 2022 12:56:25 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B39573F66F;
+        Sun, 27 Feb 2022 12:56:28 -0800 (PST)
 From:   Cristian Marussi <cristian.marussi@arm.com>
 To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
         Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
         vincent.guittot@linaro.org, souvik.chakravarty@arm.com,
         peter.hilber@opensynergy.com, cristian.marussi@arm.com
-Subject: [RFC PATCH 03/16] firmware: arm_scmi: Add multiple protocols registration support
-Date:   Sun, 27 Feb 2022 20:55:55 +0000
-Message-Id: <20220227205608.30812-4-cristian.marussi@arm.com>
+Subject: [RFC PATCH 05/16] firmware: arm_scmi: Expose information on configured transport
+Date:   Sun, 27 Feb 2022 20:55:57 +0000
+Message-Id: <20220227205608.30812-6-cristian.marussi@arm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220227205608.30812-1-cristian.marussi@arm.com>
 References: <20220227205608.30812-1-cristian.marussi@arm.com>
@@ -37,113 +37,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the capability for one SCMI driver to register with the core SCMI stack
-to use multiple SCMI protocols: in such a case the SCMI driver probe
-function will end up being called once for each registered protocol which
-have been also found as implemented on the platform.
-
-This is especially useful in testing scenarios.
+Add a common descriptor to describe transport features and expose it via
+the SCMI instance handle.
 
 Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
 ---
- drivers/firmware/arm_scmi/bus.c    |  4 ++--
- drivers/firmware/arm_scmi/common.h |  4 ++--
- drivers/firmware/arm_scmi/driver.c | 24 ++++++++++++++++++++++--
- 3 files changed, 26 insertions(+), 6 deletions(-)
+ drivers/firmware/arm_scmi/driver.c | 12 ++++++++++++
+ include/linux/scmi_protocol.h      | 20 ++++++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
-diff --git a/drivers/firmware/arm_scmi/bus.c b/drivers/firmware/arm_scmi/bus.c
-index f6fe723ab869..e417e84249f2 100644
---- a/drivers/firmware/arm_scmi/bus.c
-+++ b/drivers/firmware/arm_scmi/bus.c
-@@ -135,7 +135,7 @@ int scmi_driver_register(struct scmi_driver *driver, struct module *owner,
- 	if (!driver->probe)
- 		return -EINVAL;
- 
--	retval = scmi_protocol_device_request(driver->id_table);
-+	retval = scmi_protocol_table_register(driver->id_table);
- 	if (retval)
- 		return retval;
- 
-@@ -155,7 +155,7 @@ EXPORT_SYMBOL_GPL(scmi_driver_register);
- void scmi_driver_unregister(struct scmi_driver *driver)
- {
- 	driver_unregister(&driver->driver);
--	scmi_protocol_device_unrequest(driver->id_table);
-+	scmi_protocol_table_unregister(driver->id_table);
- }
- EXPORT_SYMBOL_GPL(scmi_driver_unregister);
- 
-diff --git a/drivers/firmware/arm_scmi/common.h b/drivers/firmware/arm_scmi/common.h
-index 4fda84bfab42..ffaf74a36b30 100644
---- a/drivers/firmware/arm_scmi/common.h
-+++ b/drivers/firmware/arm_scmi/common.h
-@@ -388,8 +388,8 @@ struct scmi_transport_ops {
- 	bool (*poll_done)(struct scmi_chan_info *cinfo, struct scmi_xfer *xfer);
- };
- 
--int scmi_protocol_device_request(const struct scmi_device_id *id_table);
--void scmi_protocol_device_unrequest(const struct scmi_device_id *id_table);
-+int scmi_protocol_table_register(const struct scmi_device_id *id_table);
-+void scmi_protocol_table_unregister(const struct scmi_device_id *id_table);
- struct scmi_device *scmi_child_dev_find(struct device *parent,
- 					int prot_id, const char *name);
- 
 diff --git a/drivers/firmware/arm_scmi/driver.c b/drivers/firmware/arm_scmi/driver.c
-index 4cb9e0ad7af5..8d356d4da0bd 100644
+index 8d356d4da0bd..8c5429529946 100644
 --- a/drivers/firmware/arm_scmi/driver.c
 +++ b/drivers/firmware/arm_scmi/driver.c
-@@ -1771,7 +1771,7 @@ static void scmi_create_protocol_devices(struct device_node *np,
+@@ -1966,6 +1966,7 @@ static int scmi_probe(struct platform_device *pdev)
+ 	struct scmi_handle *handle;
+ 	const struct scmi_desc *desc;
+ 	struct scmi_info *info;
++	struct scmi_transport_info *trans;
+ 	struct device *dev = &pdev->dev;
+ 	struct device_node *child, *np = dev->of_node;
+ 
+@@ -2023,6 +2024,17 @@ static int scmi_probe(struct platform_device *pdev)
+ 		dev_err(dev,
+ 			"Transport is not polling capable. Atomic mode not supported.\n");
+ 
++	trans = devm_kzalloc(dev, sizeof(*trans), GFP_KERNEL);
++	if (!trans)
++		return -ENOMEM;
++
++	of_property_read_string(dev->of_node, "compatible", &trans->compatible);
++	trans->is_atomic =
++		handle->is_transport_atomic(handle,
++					    &trans->atomic_threshold_us);
++	trans->max_rx_timeout_ms = info->desc->max_rx_timeout_ms;
++	handle->transport = trans;
++
+ 	/*
+ 	 * Trigger SCMI Base protocol initialization.
+ 	 * It's mandatory and won't be ever released/deinit until the
+diff --git a/include/linux/scmi_protocol.h b/include/linux/scmi_protocol.h
+index c5881d15f7d9..0b024d23a9b3 100644
+--- a/include/linux/scmi_protocol.h
++++ b/include/linux/scmi_protocol.h
+@@ -40,6 +40,24 @@ struct scmi_revision_info {
+ 	char sub_vendor_id[SCMI_MAX_STR_SIZE];
+ };
+ 
++/**
++ * struct scmi_transport_info  - transport related information
++ *
++ * @compatible: Transport name picked from compatible string
++ * @is_atomic: True if the underlying transport can support atomic transactions
++ *	       and atomic mode is enabled.
++ * @atomic_threshold_us: Optional system wide DT-configured threshold, expressed
++ *			 in microseconds, for atomic operations.
++ * @max_rx_timeout_ms: configured maximum timeout in milliseconds for command
++ *		       replies.
++ */
++struct scmi_transport_info {
++	const char *compatible;
++	bool is_atomic;
++	unsigned int atomic_threshold_us;
++	unsigned int max_rx_timeout_ms;
++};
++
+ struct scmi_clock_info {
+ 	char name[SCMI_MAX_STR_SIZE];
+ 	unsigned int enable_latency;
+@@ -633,6 +651,7 @@ struct scmi_notify_ops {
   *
-  * Return: 0 on Success
-  */
--int scmi_protocol_device_request(const struct scmi_device_id *id_table)
-+static int scmi_protocol_device_request(const struct scmi_device_id *id_table)
- {
- 	int ret = 0;
- 	unsigned int id = 0;
-@@ -1882,6 +1882,17 @@ int scmi_protocol_device_request(const struct scmi_device_id *id_table)
- 	return ret;
- }
+  * @dev: pointer to the SCMI device
+  * @version: pointer to the structure containing SCMI version information
++ * @transport: pointer to the structure containing SCMI transport information
+  * @devm_protocol_get: devres managed method to acquire a protocol and get specific
+  *		       operations and a dedicated protocol handler
+  * @devm_protocol_put: devres managed method to release a protocol
+@@ -650,6 +669,7 @@ struct scmi_notify_ops {
+ struct scmi_handle {
+ 	struct device *dev;
+ 	struct scmi_revision_info *version;
++	struct scmi_transport_info *transport;
  
-+int scmi_protocol_table_register(const struct scmi_device_id *id_table)
-+{
-+	int ret = 0;
-+	const struct scmi_device_id *entry;
-+
-+	for (entry = id_table; entry->name && ret == 0; entry++)
-+		ret = scmi_protocol_device_request(entry);
-+
-+	return ret;
-+}
-+
- /**
-  * scmi_protocol_device_unrequest  - Helper to unrequest a device
-  *
-@@ -1896,7 +1907,8 @@ int scmi_protocol_device_request(const struct scmi_device_id *id_table)
-  * that cannot be safely destroyed till the whole SCMI stack is removed.
-  * (unless adding further burden of refcounting.)
-  */
--void scmi_protocol_device_unrequest(const struct scmi_device_id *id_table)
-+static void
-+scmi_protocol_device_unrequest(const struct scmi_device_id *id_table)
- {
- 	struct list_head *phead;
- 
-@@ -1925,6 +1937,14 @@ void scmi_protocol_device_unrequest(const struct scmi_device_id *id_table)
- 	mutex_unlock(&scmi_requested_devices_mtx);
- }
- 
-+void scmi_protocol_table_unregister(const struct scmi_device_id *id_table)
-+{
-+	const struct scmi_device_id *entry;
-+
-+	for (entry = id_table; entry->name; entry++)
-+		scmi_protocol_device_unrequest(entry);
-+}
-+
- static int scmi_cleanup_txrx_channels(struct scmi_info *info)
- {
- 	int ret;
+ 	const void __must_check *
+ 		(*devm_protocol_get)(struct scmi_device *sdev, u8 proto,
 -- 
 2.17.1
 
