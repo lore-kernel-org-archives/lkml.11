@@ -2,88 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E1E3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 11:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3ECBC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 11:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230203AbiB0LK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 06:10:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
+        id S230213AbiB0LP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 06:15:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiB0LKy (ORCPT
+        with ESMTP id S229604AbiB0LP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 06:10:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3028C5B3CA;
-        Sun, 27 Feb 2022 03:10:17 -0800 (PST)
+        Sun, 27 Feb 2022 06:15:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC195D19C;
+        Sun, 27 Feb 2022 03:15:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 717D0B80B98;
-        Sun, 27 Feb 2022 11:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 16AB8C340F2;
-        Sun, 27 Feb 2022 11:10:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21BF460DE0;
+        Sun, 27 Feb 2022 11:15:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58A7DC340F0;
+        Sun, 27 Feb 2022 11:15:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645960215;
-        bh=VDx1NMN5Fnle4AH471Xi19ig0epwy/svHVYRHa6+6Yc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=eGhS1nNeRe/x3rWpCOFSYmNaMa6lon8i/F+6LjkDLEriqdqxrPPtKop7DHWUhQVkT
-         mU9ncwzkibInpoBbXAZmjYH2IwMOpquV3x465TuMniWMvWM6ncaQxXbA6LO6RGk+ir
-         WQ28MR0R1mtQBQ1J5v1mGJw/eijbby9+AEXYdbqBqSllmE8s4FsbXVSkEZiB9MlU1M
-         b1VGSuXU/m6n6Mtuiaqqplgwaa6wPlhKOP1NxeS6+dA6RaDf3otvcSUv5C1e0KsdnB
-         cesAWl2Hk8P9yVBd7PQ76SGCi68WEyOyF3eCXJ2RgAgBWhErj5V4irOHG6fTCXczCa
-         OIEScvl0K4vdA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E99DFF03839;
-        Sun, 27 Feb 2022 11:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1645960518;
+        bh=so8qhTMGW64BedNr/biV8QL/q7GJ4vQHYbvANp3zXPQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TkNDe4unsiM+LocSd26kfNVuyiFkB4p+IPBXLIcl5cZxPwDaGF7cTIiaxerWDEvDF
+         ZwV/+UKgSy01TCRD3HXOXTnotVXfci85TMtrY++108Pv4PJDK/l5QGZajwsEnVmzC+
+         ZAdrNDAeYS8/Me2xKo/8ujjtCnA48b1A6f5shIXiwtYJcZ0acbhXX4RpuWV4aYujG7
+         TqsSbBDAovfjh4iRjotMlGeKHe6BbAhy4hFNXxxe9sMTU/vqPPwpiNPmfImTPPUmXU
+         /6636MyW3I/cvL7ABPF5H/dEWPNBRLrWhF1b0uTS+1yCeuMeagE+tqESWheICe+5Rh
+         C9asoVUm/FExQ==
+Date:   Sun, 27 Feb 2022 11:22:21 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>
+Subject: Re: [PATCH v2 4/8] iio: accel: adxl345: Make use of device
+ properties
+Message-ID: <20220227112221.0a03447d@jic23-huawei>
+In-Reply-To: <20220222090009.2060-4-andriy.shevchenko@linux.intel.com>
+References: <20220222090009.2060-1-andriy.shevchenko@linux.intel.com>
+        <20220222090009.2060-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v3 0/3] net: use kfree_skb_reason() for ip/neighbour
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164596021495.1414.14538654076309776973.git-patchwork-notify@kernel.org>
-Date:   Sun, 27 Feb 2022 11:10:14 +0000
-References: <20220226041831.2058437-1-imagedong@tencent.com>
-In-Reply-To: <20220226041831.2058437-1-imagedong@tencent.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     dsahern@kernel.org, rostedt@goodmis.org, mingo@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
-        imagedong@tencent.com, edumazet@google.com, alobakin@pm.me,
-        cong.wang@bytedance.com, paulb@nvidia.com, talalahmad@google.com,
-        keescook@chromium.org, ilias.apalodimas@linaro.org,
-        memxor@gmail.com, flyingpeng@tencent.com, mengensun@tencent.com,
-        daniel@iogearbox.net, yajun.deng@linux.dev, roopa@nvidia.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Tue, 22 Feb 2022 11:00:05 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sat, 26 Feb 2022 12:18:28 +0800 you wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+> Convert the module to be property provider agnostic and allow
+> it to be used on non-OF platforms.
 > 
-> In the series "net: use kfree_skb_reason() for ip/udp packet receive",
-> reasons for skb drops are added to the packet receive process of IP
-> layer. Link:
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+> v2: no changes
+>  drivers/iio/accel/adxl345.h      |  2 +-
+>  drivers/iio/accel/adxl345_core.c |  5 ++++-
+>  drivers/iio/accel/adxl345_i2c.c  | 11 ++++-------
+>  drivers/iio/accel/adxl345_spi.c  |  3 +--
+>  4 files changed, 10 insertions(+), 11 deletions(-)
 > 
-> https://lore.kernel.org/netdev/20220205074739.543606-1-imagedong@tencent.com/
-> 
-> [...]
+> diff --git a/drivers/iio/accel/adxl345.h b/drivers/iio/accel/adxl345.h
+> index 9b0d4f487c43..d7e67cb08538 100644
+> --- a/drivers/iio/accel/adxl345.h
+> +++ b/drivers/iio/accel/adxl345.h
+> @@ -13,6 +13,6 @@ enum adxl345_device_type {
+>  	ADXL375 = 2,
+>  };
+>  
+> -int adxl345_core_probe(struct device *dev, struct regmap *regmap, enum adxl345_device_type type);
+> +int adxl345_core_probe(struct device *dev, struct regmap *regmap);
+>  
+>  #endif /* _ADXL345_H_ */
+> diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+> index 0f34c349aa1e..315a408115b3 100644
+> --- a/drivers/iio/accel/adxl345_core.c
+> +++ b/drivers/iio/accel/adxl345_core.c
+> @@ -8,6 +8,7 @@
+>   */
+>  
+>  #include <linux/module.h>
+> +#include <linux/property.h>
+>  #include <linux/regmap.h>
+>  
+>  #include <linux/iio/iio.h>
+> @@ -213,14 +214,16 @@ static void adxl345_powerdown(void *regmap)
+>  	regmap_write(regmap, ADXL345_REG_POWER_CTL, ADXL345_POWER_CTL_STANDBY);
+>  }
+>  
+> -int adxl345_core_probe(struct device *dev, struct regmap *regmap, enum adxl345_device_type type)
+> +int adxl345_core_probe(struct device *dev, struct regmap *regmap)
+>  {
+> +	enum adxl345_device_type type;
+>  	struct adxl345_data *data;
+>  	struct iio_dev *indio_dev;
+>  	const char *name;
+>  	u32 regval;
+>  	int ret;
+>  
+> +	type = (uintptr_t)device_get_match_data(dev);
+>  	switch (type) {
+>  	case ADXL345:
+>  		name = "adxl345";
+> diff --git a/drivers/iio/accel/adxl345_i2c.c b/drivers/iio/accel/adxl345_i2c.c
+> index 1e42cf3a2991..861d8477d799 100644
+> --- a/drivers/iio/accel/adxl345_i2c.c
+> +++ b/drivers/iio/accel/adxl345_i2c.c
+> @@ -19,19 +19,16 @@ static const struct regmap_config adxl345_i2c_regmap_config = {
+>  	.val_bits = 8,
+>  };
+>  
+> -static int adxl345_i2c_probe(struct i2c_client *client,
+> -			     const struct i2c_device_id *id)
+> +static int adxl345_i2c_probe(struct i2c_client *client)
+>  {
+> +	enum adxl345_device_type type;
+Not used - (via a build warning)
 
-Here is the summary with links:
-  - [net-next,v3,1/3] net: ip: add skb drop reasons for ip egress path
-    https://git.kernel.org/netdev/net-next/c/5e187189ec32
-  - [net-next,v3,2/3] net: neigh: use kfree_skb_reason() for __neigh_event_send()
-    https://git.kernel.org/netdev/net-next/c/a5736edda10c
-  - [net-next,v3,3/3] net: neigh: add skb drop reasons to arp_error_report()
-    https://git.kernel.org/netdev/net-next/c/56d4b4e48ace
+Jonathan
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+>  	struct regmap *regmap;
+>  
+> -	if (!id)
+> -		return -ENODEV;
+> -
+>  	regmap = devm_regmap_init_i2c(client, &adxl345_i2c_regmap_config);
+>  	if (IS_ERR(regmap))
+>  		return dev_err_probe(&client->dev, PTR_ERR(regmap), "Error initializing regmap\n");
+>  
+> -	return adxl345_core_probe(&client->dev, regmap, id->driver_data);
+> +	return adxl345_core_probe(&client->dev, regmap);
+>  }
+>  
+>  static const struct i2c_device_id adxl345_i2c_id[] = {
+> @@ -55,7 +52,7 @@ static struct i2c_driver adxl345_i2c_driver = {
+>  		.name	= "adxl345_i2c",
+>  		.of_match_table = adxl345_of_match,
+>  	},
+> -	.probe		= adxl345_i2c_probe,
+> +	.probe_new	= adxl345_i2c_probe,
+>  	.id_table	= adxl345_i2c_id,
+>  };
+>  
+> diff --git a/drivers/iio/accel/adxl345_spi.c b/drivers/iio/accel/adxl345_spi.c
+> index 34b7001d519f..ee4c50c8a95b 100644
+> --- a/drivers/iio/accel/adxl345_spi.c
+> +++ b/drivers/iio/accel/adxl345_spi.c
+> @@ -22,7 +22,6 @@ static const struct regmap_config adxl345_spi_regmap_config = {
+>  
+>  static int adxl345_spi_probe(struct spi_device *spi)
+>  {
+> -	const struct spi_device_id *id = spi_get_device_id(spi);
+>  	struct regmap *regmap;
+>  
+>  	/* Bail out if max_speed_hz exceeds 5 MHz */
+> @@ -34,7 +33,7 @@ static int adxl345_spi_probe(struct spi_device *spi)
+>  	if (IS_ERR(regmap))
+>  		return dev_err_probe(&spi->dev, PTR_ERR(regmap), "Error initializing regmap\n");
+>  
+> -	return adxl345_core_probe(&spi->dev, regmap, id->driver_data);
+> +	return adxl345_core_probe(&spi->dev, regmap);
+>  }
+>  
+>  static const struct spi_device_id adxl345_spi_id[] = {
 
