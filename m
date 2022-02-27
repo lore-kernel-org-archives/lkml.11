@@ -2,92 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D30C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 12:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 177E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 12:05:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbiB0MES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 07:04:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
+        id S230375AbiB0MFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 07:05:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbiB0MEP (ORCPT
+        with ESMTP id S230308AbiB0MFq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 07:04:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F004504C;
-        Sun, 27 Feb 2022 04:03:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64EC4B80BA1;
-        Sun, 27 Feb 2022 12:03:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7D84C340E9;
-        Sun, 27 Feb 2022 12:03:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1645963413;
-        bh=oCxNGVyXFBEgGugPHKW0CLS6eePMvEzboypl9TTvBb8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IQJ+GVQ2MclK/3FPcpwO2XsPb8IHnhgaAuWky53FX/YwRThuLwPkb1KPcfobmMj0d
-         zz4pFiww2YBAHggtvie/WPeZZr9rWvPGBnnA5rFZHjQcXPS4ObQ931xSjCGBvpM6dZ
-         ek1g07bmn7BjOCZJbUGxqrLisX46FZrhLcYTBRFfliwFVc8GxIQnarGBJYLuwZZtTU
-         H/hsAeHHQEUMZSqX9C+G/2qCVYPGMI+3AI7x2/8C650pIaOZWx22WzWYq73fBZryzE
-         PRQxVsZ9reUP/ElForUcxlvVZn72c46Nf11roqpMTuiTMJ7rucmRw5Ws6zGdimf/JS
-         /AL71XeBKKUBw==
-Date:   Sun, 27 Feb 2022 12:10:35 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, robh+dt@kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH v6 1/3] dt-bindings: iio: amplifiers: add ada4250 doc
-Message-ID: <20220227121035.07a922a8@jic23-huawei>
-In-Reply-To: <Yhey1QmZa4RU0p50@robh.at.kernel.org>
-References: <20220223120112.8067-1-antoniu.miclaus@analog.com>
-        <Yhey1QmZa4RU0p50@robh.at.kernel.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 27 Feb 2022 07:05:46 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAF44C7A4
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 04:05:08 -0800 (PST)
+Received: from mail-wr1-f43.google.com ([209.85.221.43]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MeC5x-1nxuZ20azn-00bGIA for <linux-kernel@vger.kernel.org>; Sun, 27 Feb
+ 2022 13:05:07 +0100
+Received: by mail-wr1-f43.google.com with SMTP id v21so11271403wrv.5
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 04:05:07 -0800 (PST)
+X-Gm-Message-State: AOAM532O59Mphp7Q9dF47Gw/8lv5bXui8i3r+7SyGLOfZ5WK2aU7Pn9s
+        6NwFUbw6AGO9u0UCs/p9xEEhDSpB1OCX+vNTaIY=
+X-Google-Smtp-Source: ABdhPJzYjZbAaK84j1f8O9sOHhjBEhL+qXYDb7kn+XfkuZo4Lus2OZ/igr3bS4Ai5oywWEMDGq9BbqZ9+xxxeUYtCl8=
+X-Received: by 2002:adf:edc3:0:b0:1ec:5f11:5415 with SMTP id
+ v3-20020adfedc3000000b001ec5f115415mr10535753wro.317.1645963506829; Sun, 27
+ Feb 2022 04:05:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220226222457.13668-1-rdunlap@infradead.org>
+In-Reply-To: <20220226222457.13668-1-rdunlap@infradead.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sun, 27 Feb 2022 13:04:50 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a07PoFGC8jyRG5_CjfVPCc2T79c7Fs_WmHZEkuqtG+oPg@mail.gmail.com>
+Message-ID: <CAK8P3a07PoFGC8jyRG5_CjfVPCc2T79c7Fs_WmHZEkuqtG+oPg@mail.gmail.com>
+Subject: Re: [PATCH -next] misc: rtsx: fix build for CONFIG_PM not set
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Wei WANG <wei_wang@realsil.com.cn>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:YWhlWybzj0laFtQGq0VMCggnFydyeR2tuEemTHNFxU7Jm56a9Ht
+ OxMy3HeHp5fgNYbJfxrmTur23p1z/6hO373qA/o159Y+w20ViuHqMvJurbbH8OOoXgrQNKb
+ +35IWTIIp8PGUn6bQF6v1VXpb8V+RDb4A3n6WzCBEeuESXk1BvJjfh0Q2AlZ4aBRaubJoN0
+ gws3mz6PitLcckHqNMruw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:d58jILnMKIQ=:iPgL/7H/2pmB9bq0IzJUN/
+ EB82Bsm4yF6DhQEsAVI0A8tM224Y2NoYaYw78egDTBqEE+yS1ozz1IfaZkFQX9HuC/pPrYb5/
+ 1mqVS1whkkdd+TZBTZ06EJvp7jkxHRfJa0DmRYcCuGc4LLtUQ3vziy83K6KufbUPJMXOAcg8S
+ ZQfUA8hDPmjmHPcMurH75StqhMTicm3u9+5IEDPvrhNqLr7VlOIrA3zgE5x8+QU8+jPr0NxHB
+ YToZcHxT7no9Vp2ydgbpGy8Q+VUHxcG42cUPS0IHr862LzyXcnOa1leDZncPJ9ZtCT5+APAdN
+ /ppJnEb2X7GewNGJkIgLjCF9lQcNAVgVe5N7eF7de7t4pjPxW9MqulBlDHtQYFPxiAX4Lk+5q
+ V2tWrYMr2CTBjOwPttynKDAXMOPQLXPdgBkLsgBULleksA9WB6lCcxiPPxzlzMn1VfWbQs6ws
+ 3OSx9CcOvzkrPgR20EMGxrMwG3eLp23xt8l1ezyq0s0b7+eF08ujtAehDbiDofJrVifxroGut
+ CQAgLWPNN+3hYKzgKXCDsEaa9AqV/N2obZ94FBTGGEoHq+Mur0WLS7eo55Pj0Nv+eh5Xo/I+L
+ VPoayJHdQPHFnq2gobWOdO8IKUv6vczsu1oiFQkrz7wQibKHfBW4dNkeL/rArbjHSciUxia1/
+ XELSyf06Tl748kQ/RRRrioEtQfGo+zSkD2j6rZqx4aWxfvy+LPbN+iERr/Bd8L0lraXk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Feb 2022 10:31:17 -0600
-Rob Herring <robh@kernel.org> wrote:
+On Sat, Feb 26, 2022 at 11:24 PM Randy Dunlap <rdunlap@infradead.org> wrote:
 
-> On Wed, 23 Feb 2022 14:01:10 +0200, Antoniu Miclaus wrote:
-> > Add device tree bindings for the ADA4250 driver.
-> > 
-> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> > ---
-> > changes in v6:
-> >  - add space before `{` in the amplifier node example
-> >  .../bindings/iio/amplifiers/adi,ada4250.yaml  | 50 +++++++++++++++++++
-> >  1 file changed, 50 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-> >   
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  drivers/misc/cardreader/rtsx_pcr.c |    2 ++
+>  1 file changed, 2 insertions(+)
+>
+> --- linux-next-20220225.orig/drivers/misc/cardreader/rtsx_pcr.c
+> +++ linux-next-20220225/drivers/misc/cardreader/rtsx_pcr.c
+> @@ -1054,6 +1054,7 @@ static int rtsx_pci_acquire_irq(struct r
+>         return 0;
+>  }
+>
+> +#ifdef CONFIG_PM
+>  static void rtsx_enable_aspm(struct rtsx_pcr *pcr)
+>  {
+>         if (pcr->ops->set_aspm)
+> @@ -1085,6 +1086,7 @@ static void rtsx_pm_power_saving(struct
+>  {
+>         rtsx_comm_pm_power_saving(pcr);
+>  }
+> +#endif
 
-Series applied to the togreg branch of iio.git and pushed out as testing for
-0-day to take a quick look before I go making a mess of linux-next.
+Now that we have DEFINE_SIMPLE_DEV_PM_OPS() etc, I think we should
+no longer add more __maybe_unused annotations or #ifdef CONFIG_PM checks
+but just use the new macros for any new files or whenever a warning like
+this shows up.
 
-One side comment though - when there are lots of revisions in a short timescale
-and people haven't had time to get back to the intermediate ones, it is particularly
-helpful to give a multi version change log.
-
-i.e. tell us what happened in at least the last couple of revisions to save
-on having to go find the earlier threads to find out what changed in v5 and v4!
-
-Also, I always prefer a cover letter for a series even if brief. It give somewhere
-to reply to if there are discussions covering multiple patches, or if someone wants
-to give a tag for the whole series that I can trivially pick up with b4.
-Obviously no point for single patch series though!
-I don't normally moan about this, but I was moaning anyway so why not get
-everything off my chest! :)
-
-Thanks,
-
-Jonathan
-
+        Arnd
