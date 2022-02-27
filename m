@@ -2,83 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E89C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC1A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 18:27:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbiB0SNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 13:13:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
+        id S230274AbiB0S1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 13:27:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230201AbiB0SNA (ORCPT
+        with ESMTP id S230055AbiB0S1a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 13:13:00 -0500
-Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61C7639F
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:12:22 -0800 (PST)
-Received: by mail-il1-x133.google.com with SMTP id q4so8451224ilt.0
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:12:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1ie9R3kn8UrFErPZNTabZX+bV5rPgBvbemFazR1ScXg=;
-        b=G85nEoEfvkSdaMqOwXlse+RXA7cNSbZR9kA8ylgZjHjkq3SGUzugLktvSJBAOcBC8v
-         PGHJBNtVRuup/vBLcdUDzESV9vi1n+Pe40mnZBmOYVcesNQf9jQrBnbI0GdjbedrN/rI
-         GlqwPah7aV/S5f8D+0tCPmEf3PMOHVSMjo+Wiong8t6PEcUxx/nKyOtyAMaTCQU2AuhL
-         +rtea4Da/29yBkeV9RwIdT43Np8OKn2S6RRmtUIo5kSnpk5cqlzwblRFWcOMDWwv9FIN
-         ns8k7J88cjRQmFtfdpZGF8Xq0+W6ZKL1ae61++9iYdVVK4NqRZgtIjzsn73IIb68PBpB
-         EcCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1ie9R3kn8UrFErPZNTabZX+bV5rPgBvbemFazR1ScXg=;
-        b=WrmYhXXSkOJK0p1618fu3a3UiaWti8sbHDN+5KlqIoTlFiLpsZmEVOYkS9pTOLupFH
-         7geOFLLv+DDMA8hlqELjs/su3CQM8UqFaEmMEoZ1rfhYVkU/aSqZmYU/6K5l7NdjJUpf
-         LqDkb3AVRqnLSLc2B/TgrwSUVXKy946sP/yW1oQPpmUB41Uhu5pxaSD72WJ5HYnNgFtJ
-         zgJ7m5EFz5PflyyHbt/ZyFWVW+QTGdLX9sM3yGWmYXXUOTq8r5e0MVOvt24QRl9txJ/y
-         YLQSBOA3akfkAYyARonVfLCiClPDn4OzXXm0gGnjXMs7STfzZr4rDFxRuSaTm/fivElI
-         dYEw==
-X-Gm-Message-State: AOAM533nklGa6Hv1OIc73BAnMnYjP26NYx164CT4k4OrEC5pkeUfxDiB
-        EVOPHgASp6yd5WrqwrcuEfrOd3l6w7yUMfYjJAg=
-X-Google-Smtp-Source: ABdhPJygC60EwppdVxqHwfKYlBSl2+UmLKH/aulN9osik+Vdl4alGmUpautlnYzNvkuG9pKts21LV0Kwh92xIECRnUs=
-X-Received: by 2002:a05:6e02:188b:b0:2c2:5444:afb9 with SMTP id
- o11-20020a056e02188b00b002c25444afb9mr14970812ilu.237.1645985542219; Sun, 27
- Feb 2022 10:12:22 -0800 (PST)
+        Sun, 27 Feb 2022 13:27:30 -0500
+X-Greylist: delayed 944 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Feb 2022 10:26:52 PST
+Received: from mx.treblig.org (mx.treblig.org [46.43.15.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9075654A8
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 10:26:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
+        ; s=bytemarkmx; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
+        Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=D6fceNIjKpwnS1biMuEu0ownwYQK1blsQ+uEVVtQEQo=; b=P0E4Nr4DmqSsmCEHU5jqJRzO5T
+        wFVMmg3qXLKqDSiW5jEtJsG7ICRgDchzvZQr1M515LsQp3T7zajfHyexNCInWp+G0sv4g4iR9Egtq
+        SNessDhV10bUUkr1eZlF2JPcqWs3/PE6HgqUeaP2/Dz7lLyuptyKDbpvKdA5sBCixDpCbR+bKh9yy
+        zrBDho0XW9ntOcoYoY4yGxpIUexIiNCKXOH6RwezM7gq5k/vTYmcx0xUQZAUONkS0mzYQVLqCklaI
+        1Vswu/A5swVD3SDzXMo8mR01UBYr61DlsYG+gB2Olbe7FDkgEdcUXgPrKIb2W5QELoj761OIZTjD5
+        I/PW/yig==;
+Received: from localhost ([127.0.0.1] helo=dalek.home.treblig.org)
+        by mx.treblig.org with esmtp (Exim 4.94.2)
+        (envelope-from <linux@treblig.org>)
+        id 1nOO0f-0006o3-C9; Sun, 27 Feb 2022 18:11:04 +0000
+From:   "Dr. David Alan Gilbert" <linux@treblig.org>
+To:     akpm@linux-foundation.org, pasha.tatashin@soleen.com,
+        songmuchun@bytedance.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "Dr. David Alan Gilbert" <linux@treblig.org>
+Subject: [PATCH] mm: Use strtobool for param parsing
+Date:   Sun, 27 Feb 2022 18:10:39 +0000
+Message-Id: <20220227181038.126926-1-linux@treblig.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <CAHk-=wjtZG_0zjgVt0_0JDZgq=xO4LHYAbH764HTQJsjHTq-oQ@mail.gmail.com>
- <bd43bd47c8eaa4c22c1a1549cee66f7ef960b1fc.camel@med.uni-goettingen.de>
- <CAHk-=whFMxks63sfMQ-0_YO1GsTmoLfsO4ciMtoiCHNgaG_+GA@mail.gmail.com> <979af7ae9b7e8baf080ef6f8d42d48d7f5d2c5b4.camel@tugraz.at>
-In-Reply-To: <979af7ae9b7e8baf080ef6f8d42d48d7f5d2c5b4.camel@tugraz.at>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Sun, 27 Feb 2022 19:12:11 +0100
-Message-ID: <CANiq72k_PUBPVL1Fx4HLm_WO66RuSsi0oSsKRhssCYRNGbY84Q@mail.gmail.com>
-Subject: Re: [RFC PATCH 03/13] usb: remove the usage of the list iterator
- after the loop
-To:     Martin Uecker <uecker@tugraz.at>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 3:43 AM Martin Uecker <uecker@tugraz.at> wrote:
->
-> Roughly the same group of people / companies that
-> write the compilers also control what goes into the
-> standard. They then like to point to the standard
+Use strtobool rather than open coding "on" and "off" parsing in
+mm/hugetlb_vmemmap.c and mm/page_table_check.c.
 
-Indeed, at least to a substantial degree.
+Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
+---
+ mm/hugetlb_vmemmap.c  | 12 +-----------
+ mm/page_table_check.c | 10 +---------
+ 2 files changed, 2 insertions(+), 20 deletions(-)
 
-> For signed overflow, I am not entirely sure what the
-> right choice is.  Wrapping for signed overflow also seems
-> dangerous. I use UBsan to find such issues in my code, and
-> this would not really work if signed overflow was defined
-> to wrap.
+diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
+index c540c21e26f5b..919411386e547 100644
+--- a/mm/hugetlb_vmemmap.c
++++ b/mm/hugetlb_vmemmap.c
+@@ -192,17 +192,7 @@ static int __init early_hugetlb_free_vmemmap_param(char *buf)
+ 		return 0;
+ 	}
+ 
+-	if (!buf)
+-		return -EINVAL;
+-
+-	if (!strcmp(buf, "on"))
+-		hugetlb_free_vmemmap_enabled = true;
+-	else if (!strcmp(buf, "off"))
+-		hugetlb_free_vmemmap_enabled = false;
+-	else
+-		return -EINVAL;
+-
+-	return 0;
++	return strtobool(buf, &hugetlb_free_vmemmap_enabled);
+ }
+ early_param("hugetlb_free_vmemmap", early_hugetlb_free_vmemmap_param);
+ 
+diff --git a/mm/page_table_check.c b/mm/page_table_check.c
+index 3763bd077861a..2458281bff893 100644
+--- a/mm/page_table_check.c
++++ b/mm/page_table_check.c
+@@ -23,15 +23,7 @@ EXPORT_SYMBOL(page_table_check_disabled);
+ 
+ static int __init early_page_table_check_param(char *buf)
+ {
+-	if (!buf)
+-		return -EINVAL;
+-
+-	if (strcmp(buf, "on") == 0)
+-		__page_table_check_enabled = true;
+-	else if (strcmp(buf, "off") == 0)
+-		__page_table_check_enabled = false;
+-
+-	return 0;
++	return strtobool(buf, &__page_table_check_enabled);
+ }
+ 
+ early_param("page_table_check", early_page_table_check_param);
+-- 
+2.35.1
 
-UBsan and similar tooling may still be used to find whatever behavior
-one wants, whether defined or not. UBSan already has non-UB checks.
-
-Cheers,
-Miguel
