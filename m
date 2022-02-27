@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F6DC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 22:56:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95987C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 23:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232127AbiB0W5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 17:57:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42864 "EHLO
+        id S232139AbiB0XAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 18:00:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229714AbiB0W5T (ORCPT
+        with ESMTP id S229714AbiB0XAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 17:57:19 -0500
+        Sun, 27 Feb 2022 18:00:39 -0500
 Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24C4B6C96E;
-        Sun, 27 Feb 2022 14:56:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D99BF6D4C9;
+        Sun, 27 Feb 2022 15:00:01 -0800 (PST)
 X-IronPort-AV: E=Sophos;i="5.90,142,1643641200"; 
-   d="scan'208";a="111726256"
+   d="scan'208";a="111726405"
 Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 28 Feb 2022 07:56:41 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 28 Feb 2022 08:00:01 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 1E1B940062C3;
-        Mon, 28 Feb 2022 07:56:38 +0900 (JST)
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 1047F40062C3;
+        Mon, 28 Feb 2022 07:59:58 +0900 (JST)
 From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To:     Geert Uytterhoeven <geert+renesas@glider.be>,
         linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         linux-kernel@vger.kernel.org,
         Prabhakar <prabhakar.csengg@gmail.com>,
-        alsa-devel@alsa-project.org
-Subject: [PATCH] ASoC: dt-bindings: renesas,rz-ssi: Document RZ/V2L SoC
-Date:   Sun, 27 Feb 2022 22:56:32 +0000
-Message-Id: <20220227225633.28829-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        linux-spi@vger.kernel.org
+Subject: [PATCH] spi: dt-bindings: renesas,rspi: Document RZ/V2L SoC
+Date:   Sun, 27 Feb 2022 22:59:56 +0000
+Message-Id: <20220227225956.29570-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document RZ/V2L SSI bindings. RZ/V2L SSI is identical to one found
-on the RZ/G2L SoC. No driver changes are required as generic compatible
-string "renesas,rz-ssi" will be used as a fallback.
+Add RSPI binding documentation for Renesas RZ/V2L SoC.
+
+RSPI block is identical to one found on RZ/A, so no driver changes are
+required. The fallback compatible string "renesas,rspi-rz" will be used
+on RZ/V2L.
 
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
@@ -52,32 +53,31 @@ Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 DTSI changes have been posted as part of series [0].
 
 [0] https://patchwork.kernel.org/project/linux-renesas-soc/
-patch/20220227203744.18355-10-prabhakar.mahadev-lad.rj@bp.renesas.com/
+patch/20220227203744.18355-13-prabhakar.mahadev-lad.rj@bp.renesas.com/
 ---
- Documentation/devicetree/bindings/sound/renesas,rz-ssi.yaml | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/spi/renesas,rspi.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/sound/renesas,rz-ssi.yaml b/Documentation/devicetree/bindings/sound/renesas,rz-ssi.yaml
-index 414ff8035a4e..7e8d252f7bca 100644
---- a/Documentation/devicetree/bindings/sound/renesas,rz-ssi.yaml
-+++ b/Documentation/devicetree/bindings/sound/renesas,rz-ssi.yaml
-@@ -4,7 +4,7 @@
- $id: http://devicetree.org/schemas/sound/renesas,rz-ssi.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/Documentation/devicetree/bindings/spi/renesas,rspi.yaml b/Documentation/devicetree/bindings/spi/renesas,rspi.yaml
+index 76e6d9e52fc7..a902f0ca2198 100644
+--- a/Documentation/devicetree/bindings/spi/renesas,rspi.yaml
++++ b/Documentation/devicetree/bindings/spi/renesas,rspi.yaml
+@@ -22,6 +22,7 @@ properties:
+               - renesas,rspi-r7s72100  # RZ/A1H
+               - renesas,rspi-r7s9210   # RZ/A2
+               - renesas,r9a07g044-rspi # RZ/G2{L,LC}
++              - renesas,r9a07g054-rspi # RZ/V2L
+           - const: renesas,rspi-rz     # RZ/A and RZ/G2{L,LC}
  
--title: Renesas RZ/G2L ASoC Sound Serial Interface (SSIF-2)
-+title: Renesas RZ/{G2L,V2L} ASoC Sound Serial Interface (SSIF-2)
- 
- maintainers:
-   - Biju Das <biju.das.jz@bp.renesas.com>
-@@ -14,6 +14,7 @@ properties:
-     items:
-       - enum:
-           - renesas,r9a07g044-ssi  # RZ/G2{L,LC}
-+          - renesas,r9a07g054-ssi  # RZ/V2L
-       - const: renesas,rz-ssi
- 
-   reg:
+       - items:
+@@ -124,6 +125,7 @@ allOf:
+             enum:
+               - renesas,qspi
+               - renesas,r9a07g044-rspi
++              - renesas,r9a07g054-rspi
+     then:
+       required:
+         - resets
 -- 
 2.17.1
 
