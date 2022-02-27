@@ -2,105 +2,238 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8507DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 19:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D89C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 27 Feb 2022 19:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230444AbiB0TDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 14:03:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39766 "EHLO
+        id S231192AbiB0TDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 14:03:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiB0TDD (ORCPT
+        with ESMTP id S229794AbiB0TDr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 14:03:03 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C1A5FA3
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 11:02:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=YfQbssbJA1/QK0xiwfMG4SCzxBs35964gNoSR30NeXQ=; b=JczdytqmndjlTMd/bVQ5nSTOiP
-        OMAYQx++3w03oJLNvZNBZzFSJA6N7eDVuQa/nhfACbj0kZ9RcBChuBEVyudafsQv/BrzR8pfuATm5
-        iesHKo7YSe24ONtbh92AnSX7twu2JnuHk8LcyNK+1Yvnh+C97PNDnOdJiAdF5XzSnqvq8QyJN1UsN
-        eKHoBqfq9PkHtM2XhyesIGNiD4dzj9u52ASwHqzjLAfmJtMGUNjwiRD4g8oqXojJxDS59YcDJfr9E
-        55Du+wCSJHxDCR5h2Y/Uu4DxYHS5AGO5nktGCn0lSQFiDyav4ipKtvLEq2NKAY1Iox5mIWmyXcNYv
-        BRV84GwQ==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOOoK-00A1Mx-Bh; Sun, 27 Feb 2022 19:02:24 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Wei WANG <wei_wang@realsil.com.cn>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH -next v3] misc: rtsx: fix build for CONFIG_PM not set
-Date:   Sun, 27 Feb 2022 11:02:23 -0800
-Message-Id: <20220227190223.28789-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+        Sun, 27 Feb 2022 14:03:47 -0500
+Received: from 9.mo552.mail-out.ovh.net (9.mo552.mail-out.ovh.net [87.98.180.222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD81E12771
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 11:03:09 -0800 (PST)
+Received: from mxplan5.mail.ovh.net (unknown [10.109.138.17])
+        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id 8335022D92;
+        Sun, 27 Feb 2022 18:46:29 +0000 (UTC)
+Received: from kaod.org (37.59.142.106) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Sun, 27 Feb
+ 2022 19:46:28 +0100
+Authentication-Results: garm.ovh; auth=pass (GARM-106R006071d4dc3-1d39-46b8-9114-493c988cf54f,
+                    949565DF20DEE76D4A77FF7731A75FE8B07B1F6B) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <444bb236-b128-a429-c5d3-c28a73dd545a@kaod.org>
+Date:   Sun, 27 Feb 2022 19:46:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 03/10] spi: spi-mem: Add driver for Aspeed SMC controllers
+Content-Language: en-US
+To:     Pratyush Yadav <p.yadav@ti.com>
+CC:     <linux-spi@vger.kernel.org>, <linux-mtd@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-aspeed@lists.ozlabs.org>, Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220214094231.3753686-1-clg@kaod.org>
+ <20220214094231.3753686-4-clg@kaod.org>
+ <20220225075007.73xypamm3zbjnkg6@ti.com>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <20220225075007.73xypamm3zbjnkg6@ti.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.106]
+X-ClientProxiedBy: DAG4EX1.mxp5.local (172.16.2.31) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: 2da4bcfc-1220-4029-9fee-d80abcb9560f
+X-Ovh-Tracer-Id: 14340868590511819652
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrleekgdduudehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepieegvdffkeegfeetuddttddtveduiefhgeduffekiedtkeekteekhfffleevleelnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrddutdeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFG_WERROR=y and CONFIG_PM is not set, there are fatal build
-errors, so use appropriate macros for SYSTEM_SLEEP and RUNTIME_SLEEP
-PM_OPS to prevent these. The #ifdef CONFIG_PM / #endif blocks
-can also be removed since any dead code will be dropped by them.
+On 2/25/22 08:50, Pratyush Yadav wrote:
+> On 14/02/22 10:42AM, Cédric Le Goater wrote:
+>> This SPI driver adds support for the Aspeed static memory controllers
+>> of the AST2600, AST2500 and AST2400 SoCs using the spi-mem interface.
+>>
+>>   * AST2600 Firmware SPI Memory Controller (FMC)
+>>     . BMC firmware
+>>     . 3 chip select pins (CE0 ~ CE2)
+>>     . Only supports SPI type flash memory
+>>     . different segment register interface
+>>     . single, dual and quad mode.
+>>
+>>   * AST2600 SPI Flash Controller (SPI1 and SPI2)
+>>     . host firmware
+>>     . 2 chip select pins (CE0 ~ CE1)
+>>     . different segment register interface
+>>     . single, dual and quad mode.
+>>
+>>   * AST2500 Firmware SPI Memory Controller (FMC)
+>>     . BMC firmware
+>>     . 3 chip select pins (CE0 ~ CE2)
+>>     . supports SPI type flash memory (CE0-CE1)
+>>     . CE2 can be of NOR type flash but this is not supported by the driver
+>>     . single, dual mode.
+>>
+>>   * AST2500 SPI Flash Controller (SPI1 and SPI2)
+>>     . host firmware
+>>     . 2 chip select pins (CE0 ~ CE1)
+>>     . single, dual mode.
+>>
+>>   * AST2400 New Static Memory Controller (also referred as FMC)
+>>     . BMC firmware
+>>     . New register set
+>>     . 5 chip select pins (CE0 ∼ CE4)
+>>     . supports NOR flash, NAND flash and SPI flash memory.
+>>     . single, dual and quad mode.
+>>
+>> Each controller has a memory range on which flash devices contents are
+>> mapped. Each device is assigned a window that can be changed at bootime
+>> with the Segment Address Registers.
+>>
+>> Each SPI flash device can then be accessed in two modes: Command and
+>> User. When in User mode, SPI transfers are initiated with accesses to
+>> the memory segment of a device. When in Command mode, memory
+>> operations on the memory segment of a device generate SPI commands
+>> automatically using a Control Register for the settings.
+>>
+>> This initial patch adds support for User mode. Command mode needs a little
+>> more work to check that the memory window on the AHB bus fits the device
+>> size. It will come later when support for direct mapping is added.
+>>
+>> Single and dual mode RX transfers are supported. Other types than SPI
+>> are not supported.
+>>
+>> Signed-off-by: Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>
+>> Signed-off-by: Cédric Le Goater <clg@kaod.org>
+>> ---
+>>   drivers/spi/spi-aspeed-smc.c            | 766 ++++++++++++++++++++++++
+>>   drivers/mtd/spi-nor/controllers/Kconfig |   2 +-
+>>   drivers/spi/Kconfig                     |  11 +
+>>   drivers/spi/Makefile                    |   1 +
+>>   4 files changed, 779 insertions(+), 1 deletion(-)
+>>   create mode 100644 drivers/spi/spi-aspeed-smc.c
+>>
+> [...]
+>> +
+>> +/* support for 1-1-1, 1-1-2 or 1-1-4 */
+>> +static bool aspeed_spi_supports_op(struct spi_mem *mem, const struct spi_mem_op *op)
+>> +{
+>> +	if (op->cmd.buswidth > 1)
+>> +		return false;
+>> +
+>> +	if (op->addr.nbytes != 0) {
+>> +		if (op->addr.buswidth > 1 || op->addr.nbytes > 4)
+>> +			return false;
+>> +	}
+>> +
+>> +	if (op->dummy.nbytes != 0) {
+>> +		if (op->dummy.buswidth > 1 || op->dummy.nbytes > 7)
+>> +			return false;
+>> +	}
+>> +
+>> +	if (op->data.nbytes != 0 && op->data.buswidth > 4)
+>> +		return false;
+>> +
+>> +	if (!spi_mem_default_supports_op(mem, op))
+>> +		return false;
+>> +
+>> +	return true;
+> 
+> Nitpick: You can just do return spi_mem_default_supports_op(mem, op);
+> 
+>> +}
+>> +
+> [...]
+>> +
+>> +static int aspeed_spi_init_devices(struct platform_device *pdev, struct aspeed_spi *aspi)
+>> +{
+>> +	struct device_node *np;
+>> +	unsigned int cs;
+>> +	int ret;
+>> +
+>> +	for_each_available_child_of_node(aspi->dev->of_node, np) {
+>> +		struct aspeed_spi_chip *chip;
+>> +
+>> +		if (!of_device_is_compatible(np, "jedec,spi-nor"))
+>> +			continue;
+>> +
+>> +		ret = of_property_read_u32(np, "reg", &cs);
+>> +		if (ret) {
+>> +			dev_err(aspi->dev, "Couldn't not read chip select.\n");
+>> +			of_node_put(np);
+>> +			return ret;
+>> +		}
+>> +
+>> +		if (cs > aspi->data->max_cs) {
+>> +			dev_err(aspi->dev, "Chip select %d out of range.\n", cs);
+>> +			of_node_put(np);
+>> +			return -ERANGE;
+>> +		}
+>> +
+>> +		chip = &aspi->chips[cs];
+>> +		chip->aspi = aspi;
+>> +		chip->cs = cs;
+>> +
+>> +		ret = aspeed_spi_chip_init(chip);
+>> +		if (ret) {
+>> +			of_node_put(np);
+>> +			return ret;
+>> +		}
+>> +
+>> +		if (of_property_read_u32(np, "spi-max-frequency", &chip->clk_freq))
+>> +			chip->clk_freq = ASPEED_SPI_DEFAULT_FREQ;
+>> +
+>> +		aspi->num_cs++;
+>> +	}
+> 
+> SPI MEM already gives you all this information. Get it from there, don't
+> parse it yourself.
 
-../drivers/misc/cardreader/rtsx_pcr.c:1057:13: error: ‘rtsx_enable_aspm’ defined but not used [-Werror=unused-function]
- static void rtsx_enable_aspm(struct rtsx_pcr *pcr)
-miscread001.out:../drivers/misc/cardreader/rtsx_pcr.c:1065:13: error: ‘rtsx_comm_pm_power_saving’ defined but not used [-Werror=unused-function]
-miscread001.out: static void rtsx_comm_pm_power_saving(struct rtsx_pcr *pcr)
-../drivers/misc/cardreader/rtsx_pcr.c:1084:13: error: ‘rtsx_pm_power_saving’ defined but not used [-Werror=unused-function]
- static void rtsx_pm_power_saving(struct rtsx_pcr *pcr)
+I agree for spi-max-frequency". It's even redundant with the setting
+done in :
 
-Fixes: 597568e8df04 ("misc: rtsx: Rework runtime power management flow")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Wei WANG <wei_wang@realsil.com.cn>
-Cc: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
-Paul Cercueil <paul@crapouillou.net>
----
-v3: Use SYSTEM_SLEEP_PM_OPS() and RUNTIME_PM_OPS() to avoid the build
-    errors. This eliminates the need for #ifdef CONFIG_PM/#endif
-    blocks of code and of __maybe_unused.
+   [PATCH 04/10] spi: aspeed: Add support for direct mapping
 
- drivers/misc/cardreader/rtsx_pcr.c |   14 +++-----------
- 1 file changed, 3 insertions(+), 11 deletions(-)
+> You can get Chip Select via spi_mem->spi->chip_select.
 
---- linux-next-20220225.orig/drivers/misc/cardreader/rtsx_pcr.c
-+++ linux-next-20220225/drivers/misc/cardreader/rtsx_pcr.c
-@@ -1699,7 +1699,6 @@ out:
- 	return ret;
- }
- 
--#ifdef CONFIG_PM
- 
- static void rtsx_pci_shutdown(struct pci_dev *pcidev)
- {
-@@ -1784,17 +1783,10 @@ static int rtsx_pci_runtime_resume(struc
- 	return 0;
- }
- 
--#else /* CONFIG_PM */
--
--#define rtsx_pci_shutdown NULL
--#define rtsx_pci_runtime_suspend NULL
--#define rtsx_pic_runtime_resume NULL
--
--#endif /* CONFIG_PM */
--
- static const struct dev_pm_ops rtsx_pci_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(rtsx_pci_suspend, rtsx_pci_resume)
--	SET_RUNTIME_PM_OPS(rtsx_pci_runtime_suspend, rtsx_pci_runtime_resume, rtsx_pci_runtime_idle)
-+	SYSTEM_SLEEP_PM_OPS(rtsx_pci_suspend, rtsx_pci_resume)
-+	RUNTIME_PM_OPS(rtsx_pci_runtime_suspend, rtsx_pci_runtime_resume,
-+		       rtsx_pci_runtime_idle)
- };
- 
- static struct pci_driver rtsx_pci_driver = {
+yes but we are still in the probing sequence and some initial settings
+need to be done for each device before accessing them. See routine
+aspeed_spi_chip_init().
+
+I think a spi setup hook could do that. I will change in v2.
+
+> You can get clock frequency via spi_mem->spi->max_speed_hz.
+>
+> With these comments fixed,
+> 
+> Acked-by: Pratyush Yadav <p.yadav@ti.com>
+Please recheck v2.
+
+Thanks,
+
+C.
+
+
+> 
+>> +
+>> +	return 0;
+>> +}
+>> +
+> [...]
+> 
+
