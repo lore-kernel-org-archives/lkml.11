@@ -2,162 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AEC4C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:49:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234936AbiB1Ktm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:49:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
+        id S233592AbiB1Kt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:49:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234925AbiB1Ktb (ORCPT
+        with ESMTP id S234960AbiB1Ktj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:49:31 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6EAF75BD36;
-        Mon, 28 Feb 2022 02:48:52 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3BA101063;
-        Mon, 28 Feb 2022 02:48:52 -0800 (PST)
-Received: from p8cg001049571a15.arm.com (unknown [10.163.47.185])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 84F313F73D;
-        Mon, 28 Feb 2022 02:48:44 -0800 (PST)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, geert@linux-m68k.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-um@lists.infradead.org,
-        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-arch@vger.kernel.org
-Subject: [PATCH V3 01/30] mm/debug_vm_pgtable: Drop protection_map[] usage
-Date:   Mon, 28 Feb 2022 16:17:24 +0530
-Message-Id: <1646045273-9343-2-git-send-email-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
-References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
+        Mon, 28 Feb 2022 05:49:39 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3B15D1B5;
+        Mon, 28 Feb 2022 02:48:59 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 4376458027D;
+        Mon, 28 Feb 2022 05:48:59 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 28 Feb 2022 05:48:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; bh=1vVga+h9htbpuVX4XD8VlM10uiiq7ZO3+UmFQE
+        c01vQ=; b=G+ZJOtIyw2/WazvvDKJTEgXHqoMoF3VJv2oKOGq4HDeWkTpOd8WBaT
+        4rHcpBbDc+9Q40E3VRnQZVyZ/TnAHgiMv+n0jHOCoqgKJb3y5c2rfx6jE89SIb6V
+        wuJl+VrQBakHz1bRaiUzukCY3YwHyArUCT2bEJjwBw4fBaNLxo87f39svsg6rW4M
+        FrMUpwRPrVgJt2SgGfjXyh4rTUGiwuracGqh9pypGThpKvggMHATxHjho+kSf+Pw
+        heMa0F3/JUt9L4e2D7WaaUrptrbQLO8XFLDibfMwypC1vdK9qeVxb0NoqswZmsY8
+        Z8Mrhat28uTSDyacKEGujZRc9zr/khHA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=1vVga+h9htbpuVX4X
+        D8VlM10uiiq7ZO3+UmFQEc01vQ=; b=Nh+yscHoWuHDO/JIgKuLzs9zoLl0tZ1mY
+        ytVar5473XvqOezOvfLch4dZ8miNo2Z2FCrbhGra/iXZZdTGj82hJZ68h7V5YRmO
+        qktlxsL8Cx7Lvz3+2nygzNzE9AHjwGj87qTX5C+amkmj2In5kCJolrxtOIDvYkTY
+        Tbue0a8O+ceonP7NqFL1vPkI3KRKftK+bVsX/cJM7Lr7z8vJZIBiSrvH46HxZ7Ra
+        lJGmWt7sv13cPZClOiB/gFeqAjLI33HUDPddiy2dFm1uZyNwtg3B/aQgCLLlC4PB
+        A1DMifsXZpaLTCmKf/PeqVXgw6O28YXpIKL45K2B4I2vA+2RFg9IA==
+X-ME-Sender: <xms:m6gcYpgoaOlXM9gadUBqEGIAviqtLOe-Nbf7EFYWzlYEpnLZERGT7A>
+    <xme:m6gcYuD053lZfrxnnUQtlFblUFSPo_WOMfaqeXe9XLBvJjrhtJz_Lx2q8W_-Pv2RD
+    uGpitA8Be-iJw>
+X-ME-Received: <xmr:m6gcYpHbpEOohqqrGSPr4j0Eli8Xd9nAJL7TGNVlr2KLUHVHL91HzCLHWwCMO9LUARfDg-L3EYLU869VfSBzFb25Y3o>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddttddgudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:m6gcYuQuBVdHYfmN6Kvl3QfdijgiNSdtGgbI1hwtxnedBylDivM-Pw>
+    <xmx:m6gcYmyTyePgk8ZBswPOe7HUw3YRsapruwGegxM362ndjbrUM4N_ZQ>
+    <xmx:m6gcYk5pvScL-ey9GzG6KyC7NFnr5xGHbFmsISqoiWWB8gRNSWUiqg>
+    <xmx:m6gcYrrYq0YcPQnLfgZ3tW_Y0OF1eHNO5snpJM6jCnDUonnH4CWn_Q>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 28 Feb 2022 05:48:58 -0500 (EST)
+Date:   Mon, 28 Feb 2022 11:48:56 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        Li-hao Kuo <lhjeff911@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the tty tree with the spi tree
+Message-ID: <YhyomKViVd3iPYDE@kroah.com>
+References: <20220228191316.411f1475@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228191316.411f1475@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Although protection_map[] contains the platform defined page protection map
-for a given vm_flags combination, vm_get_page_prot() is the right interface
-to use. This will also reduce dependency on protection_map[] which is going
-to be dropped off completely later on.
+On Mon, Feb 28, 2022 at 07:13:16PM +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the tty tree got a conflict in:
+> 
+>   MAINTAINERS
+> 
+> between commit:
+> 
+>   f62ca4e2a863 ("spi: Add spi driver for Sunplus SP7021")
+> 
+> from the spi tree and commits:
+> 
+>   b48b9f6deacf ("dt-bindings: serial: Add bindings doc for Sunplus SoC UART Driver")
+>   9e8d5470325f ("serial: sunplus-uart: Add Sunplus SoC UART Driver")
+> 
+> from the tty tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+> 
+> -- 
+> Cheers,
+> Stephen Rothwell
+> 
+> diff --cc MAINTAINERS
+> index e6b3e94de842,4a30001f6d7b..000000000000
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@@ -18635,13 -18549,12 +18642,19 @@@ S:	Maintaine
+>   F:	Documentation/devicetree/bindings/rtc/sunplus,sp7021-rtc.yaml
+>   F:	drivers/rtc/rtc-sunplus.c
+>   
+>  +SUNPLUS SPI CONTROLLER INTERFACE DRIVER
+>  +M:	Li-hao Kuo <lhjeff911@gmail.com>
+>  +L:	linux-spi@vger.kernel.org
+>  +S:	Maintained
+>  +F:	Documentation/devicetree/bindings/spi/spi-sunplus-sp7021.yaml
+>  +F:	drivers/spi/spi-sunplus-sp7021.c
+>  +
+> + SUNPLUS UART DRIVER
+> + M:	Hammer Hsieh <hammerh0314@gmail.com>
+> + S:	Maintained
+> + F:	Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+> + F:	drivers/tty/serial/sunplus-uart.c
+> + 
+>   SUPERH
+>   M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+>   M:	Rich Felker <dalias@libc.org>
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- mm/debug_vm_pgtable.c | 31 +++++++++++++++++++------------
- 1 file changed, 19 insertions(+), 12 deletions(-)
+Looks correct, thanks!
 
-diff --git a/mm/debug_vm_pgtable.c b/mm/debug_vm_pgtable.c
-index db2abd9e415b..30fd11a2ed32 100644
---- a/mm/debug_vm_pgtable.c
-+++ b/mm/debug_vm_pgtable.c
-@@ -93,7 +93,7 @@ struct pgtable_debug_args {
- 
- static void __init pte_basic_tests(struct pgtable_debug_args *args, int idx)
- {
--	pgprot_t prot = protection_map[idx];
-+	pgprot_t prot = vm_get_page_prot(idx);
- 	pte_t pte = pfn_pte(args->fixed_pte_pfn, prot);
- 	unsigned long val = idx, *ptr = &val;
- 
-@@ -101,7 +101,7 @@ static void __init pte_basic_tests(struct pgtable_debug_args *args, int idx)
- 
- 	/*
- 	 * This test needs to be executed after the given page table entry
--	 * is created with pfn_pte() to make sure that protection_map[idx]
-+	 * is created with pfn_pte() to make sure that vm_get_page_prot(idx)
- 	 * does not have the dirty bit enabled from the beginning. This is
- 	 * important for platforms like arm64 where (!PTE_RDONLY) indicate
- 	 * dirty bit being set.
-@@ -190,7 +190,7 @@ static void __init pte_savedwrite_tests(struct pgtable_debug_args *args)
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- static void __init pmd_basic_tests(struct pgtable_debug_args *args, int idx)
- {
--	pgprot_t prot = protection_map[idx];
-+	pgprot_t prot = vm_get_page_prot(idx);
- 	unsigned long val = idx, *ptr = &val;
- 	pmd_t pmd;
- 
-@@ -202,7 +202,7 @@ static void __init pmd_basic_tests(struct pgtable_debug_args *args, int idx)
- 
- 	/*
- 	 * This test needs to be executed after the given page table entry
--	 * is created with pfn_pmd() to make sure that protection_map[idx]
-+	 * is created with pfn_pmd() to make sure that vm_get_page_prot(idx)
- 	 * does not have the dirty bit enabled from the beginning. This is
- 	 * important for platforms like arm64 where (!PTE_RDONLY) indicate
- 	 * dirty bit being set.
-@@ -325,7 +325,7 @@ static void __init pmd_savedwrite_tests(struct pgtable_debug_args *args)
- #ifdef CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
- static void __init pud_basic_tests(struct pgtable_debug_args *args, int idx)
- {
--	pgprot_t prot = protection_map[idx];
-+	pgprot_t prot = vm_get_page_prot(idx);
- 	unsigned long val = idx, *ptr = &val;
- 	pud_t pud;
- 
-@@ -337,7 +337,7 @@ static void __init pud_basic_tests(struct pgtable_debug_args *args, int idx)
- 
- 	/*
- 	 * This test needs to be executed after the given page table entry
--	 * is created with pfn_pud() to make sure that protection_map[idx]
-+	 * is created with pfn_pud() to make sure that vm_get_page_prot(idx)
- 	 * does not have the dirty bit enabled from the beginning. This is
- 	 * important for platforms like arm64 where (!PTE_RDONLY) indicate
- 	 * dirty bit being set.
-@@ -1106,14 +1106,14 @@ static int __init init_args(struct pgtable_debug_args *args)
- 	/*
- 	 * Initialize the debugging data.
- 	 *
--	 * protection_map[0] (or even protection_map[8]) will help create
--	 * page table entries with PROT_NONE permission as required for
--	 * pxx_protnone_tests().
-+	 * vm_get_page_prot(VM_NONE) or vm_get_page_prot(VM_SHARED|VM_NONE)
-+	 * will help create page table entries with PROT_NONE permission as
-+	 * required for pxx_protnone_tests().
- 	 */
- 	memset(args, 0, sizeof(*args));
- 	args->vaddr              = get_random_vaddr();
- 	args->page_prot          = vm_get_page_prot(VMFLAGS);
--	args->page_prot_none     = protection_map[0];
-+	args->page_prot_none     = vm_get_page_prot(VM_NONE);
- 	args->is_contiguous_page = false;
- 	args->pud_pfn            = ULONG_MAX;
- 	args->pmd_pfn            = ULONG_MAX;
-@@ -1248,12 +1248,19 @@ static int __init debug_vm_pgtable(void)
- 		return ret;
- 
- 	/*
--	 * Iterate over the protection_map[] to make sure that all
-+	 * Iterate over each possible vm_flags to make sure that all
- 	 * the basic page table transformation validations just hold
- 	 * true irrespective of the starting protection value for a
- 	 * given page table entry.
-+	 *
-+	 * Protection based vm_flags combinatins are always linear
-+	 * and increasing i.e starting from VM_NONE and going upto
-+	 * (VM_SHARED | READ | WRITE | EXEC).
- 	 */
--	for (idx = 0; idx < ARRAY_SIZE(protection_map); idx++) {
-+#define VM_FLAGS_START	(VM_NONE)
-+#define VM_FLAGS_END	(VM_SHARED | VM_EXEC | VM_WRITE | VM_READ)
-+
-+	for (idx = VM_FLAGS_START; idx <= VM_FLAGS_END; idx++) {
- 		pte_basic_tests(&args, idx);
- 		pmd_basic_tests(&args, idx);
- 		pud_basic_tests(&args, idx);
--- 
-2.25.1
-
+greg k-h
