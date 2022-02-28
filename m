@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D47C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED38AC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236518AbiB1Mbh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:31:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49090 "EHLO
+        id S236478AbiB1Mbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:31:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236446AbiB1Mbd (ORCPT
+        with ESMTP id S236511AbiB1Mbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:31:33 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671DF7561E
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:30:50 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id d187so11002637pfa.10
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:30:50 -0800 (PST)
+        Mon, 28 Feb 2022 07:31:38 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D574474DD9
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:30:59 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id u16so10991514pfg.12
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:30:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=bdFGPaHLF7q33XjdHVVzEQl+cyICplAt+e9SLu2DgQs=;
-        b=gUhPwRnq9XhVBQx3qfYtwLHnwuC1oGeZOyn1dJzPmvpgvDSoAU0UOOH9HRRf5UYaZl
-         GGc1+3ndA+22UVupxmLiU4RcERkwzikYpcUvlTB+PE9juyCIVf9FbaxHFdl3Cig3dhwR
-         8QjLr0XpRYthcfjgDH7TposIL/q6LJGvSlvYqLo8KvmZf+ZNjXc9Bly1xBSv9qd31wMW
-         Ial6oxWTd8tvNChIYtc67Ou855rKIqqMyqIteumY5PM/8hA+ELlAY5QH7kTsci06tXLy
-         r8GaFA/UpH+b8XBQuob07RtiWzti5FybcmlnNHyrArEJe3tg3TkDGdUh6kiir91IT8EF
-         t/Kw==
+        bh=a/XNuiNwtu02wRy/TRgkyFviYDIYxqmuWsetEjULcyA=;
+        b=UQNYW2DOhP2WdiWZJWQx2ANfdBvGIp1SDU1WVliAYBh528aOBZFG7XtI+3d7+pWVFL
+         JfzUAJesEKOi+QYCPLoXHM7iStlS+JgLcrif0UZlgK9qfbD6m3H9wvz51VIbBpXGrHPn
+         P0ubW216hkIT0rtVPHMavwdWCRi2j8W6O8Ei3ojdEtQnWV/oTfXigkHd65oONNykU91I
+         /vkzz/a1ejmF4P7zYOBNTrh++xznalszt/kEJmrTN0/PS+Jdy1f6TB71Qhst7gaOkpzk
+         Ld935w5Suo/Gz1Q3Qeg5NcZL2NEWoWAXTc2a2b33wQH8HCOQPlTrQvBzD4hPcWHoee9B
+         VoRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=bdFGPaHLF7q33XjdHVVzEQl+cyICplAt+e9SLu2DgQs=;
-        b=7ioYmuBk5rR/Gs7l91a+z9z4kx2MAx6CGwdcm4nA+zYEA35QzsG5aUUG0KlhAJdCMx
-         K/R5aUM/Nx3P1XwNbwv60maPSbDGaaDBSSkkarOnogY1+QI8R03n48Gk/kDmVJHAIJfs
-         Kx6dnifs+9VkzCfRxfHYoFTNctL6jozcW28sXSTkDHdUtukNUzxuKWvL9OiAp8wPzzyq
-         xQKrznS2sK5QWvbfSezge8QHnUXiDDgOXK55h1hj0Tg64SqoGuBp1lGARaoUtfVzQexN
-         2nvqdxbDVNCJ6sScmCG9jrgxnyhbouSs2Ez1mjFvotZ/AgsGBfq6+ES+fnfcC1nbQe/6
-         7Sfw==
-X-Gm-Message-State: AOAM531nE/vPmvufR/RlOW/DzrKl5dM/2gMxDXxXDijPnuzZ6sn3kkuP
-        ASvk5HQ504ffR5NmyBgEq5rcsA==
-X-Google-Smtp-Source: ABdhPJyVtSk4jTW5oYYXrdUlcKwpX55KSnC6bOeagoJLOg6Nd4/T2dIu/uH6Umd/slf4L2TkDJ8cyg==
-X-Received: by 2002:a05:6a00:1152:b0:4be:ab79:fcfa with SMTP id b18-20020a056a00115200b004beab79fcfamr21150362pfm.3.1646051449819;
-        Mon, 28 Feb 2022 04:30:49 -0800 (PST)
+        bh=a/XNuiNwtu02wRy/TRgkyFviYDIYxqmuWsetEjULcyA=;
+        b=e6eX14yrQGZH2FqIHsDHGNdfICyMRfM7Jjb/uKhGqWNfGjaYEZCxp+tZeMOIl6XgSo
+         1kUXW0r/lEXlzam/HgwTSS5JgFyXukQe3s8bBk+zeNBuVhLGVCT/wlc7xhGJtNhDbR6u
+         s94YEJE0SKfCxwUPTChmlKkFKy4SYbq54JWkN/hEmL8ceBB2zpKCNlM6iUdGgUbvBFj2
+         vEUfgKo46uvWP4l2z6FtzTHCTCvLG+cPu+/Du9hIjKj8JSYwQj88JooFKM7cevPBMJnD
+         QV2JgymO1v5t9tAQIXs44PI/mQGU51wBKVoWHKxOiH/IlLQ0Ufvzsz3GlZgpSKE1nVZn
+         nlZQ==
+X-Gm-Message-State: AOAM532/oy/Im3zjCX/9BbK3SULbe/ygJV+boDZ7PzYDaDvw4YtamHSe
+        5a1F9xUw5Lpd7X0uxQaJwtS62iEhRQyLzw==
+X-Google-Smtp-Source: ABdhPJw4ud5qguWt5MFUYQI9Ef4BnXs5p1195d0g+KmVLDjkH8eapfKBg2CmtI+UYIARcs9MLqHvfQ==
+X-Received: by 2002:a05:6a00:d4c:b0:4e0:27dd:37c1 with SMTP id n12-20020a056a000d4c00b004e027dd37c1mr21536386pfv.86.1646051459367;
+        Mon, 28 Feb 2022 04:30:59 -0800 (PST)
 Received: from localhost.localdomain ([223.179.136.225])
-        by smtp.gmail.com with ESMTPSA id f7-20020a056a0022c700b004f0e9d686dcsm13790001pfj.137.2022.02.28.04.30.45
+        by smtp.gmail.com with ESMTPSA id f7-20020a056a0022c700b004f0e9d686dcsm13790001pfj.137.2022.02.28.04.30.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 04:30:49 -0800 (PST)
+        Mon, 28 Feb 2022 04:30:59 -0800 (PST)
 From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
 To:     linux-arm-msm@vger.kernel.org
 Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
@@ -56,9 +56,9 @@ Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
         linux-phy@lists.infradead.org, robh+dt@kernel.org,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 4/8] arm64: dts: qcom: sc7280: Fix qmp phy node (use phy@ instead of lanes@)
-Date:   Mon, 28 Feb 2022 18:00:15 +0530
-Message-Id: <20220228123019.382037-5-bhupesh.sharma@linaro.org>
+Subject: [PATCH v2 6/8] arm64: dts: qcom: ipq6018: Fix qmp usb3 phy node
+Date:   Mon, 28 Feb 2022 18:00:17 +0530
+Message-Id: <20220228123019.382037-7-bhupesh.sharma@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228123019.382037-1-bhupesh.sharma@linaro.org>
 References: <20220228123019.382037-1-bhupesh.sharma@linaro.org>
@@ -68,31 +68,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the 'make dtbs_check' warning:
+Fix the following 'make dtbs_check' warning(s) by
+using phy@ instead of lanes@ and by moving '#clock-names' to
+sub-node:
 
-arch/arm64/boot/dts/qcom/sc7280-idp.dt.yaml: phy@1c0e000:
-  'lanes@1c0e200' does not match any of the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
+arch/arm64/boot/dts/qcom/ipq6018-cp01-c1.dt.yaml: ssphy@78000:
+ 'lane@78200' does not match any of the regexes: '^phy@[0-9a-f]+$', 'pinctrl-[0-9]+'
 
 Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
 Cc: Rob Herring <robh@kernel.org>
 Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 937c2e0e93eb..575f1f00f602 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -1669,7 +1669,7 @@ pcie1_phy: phy@1c0e000 {
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 66ec5615651d..ad7914e49532 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -674,7 +674,6 @@ ssphy_0: ssphy@78000 {
+ 			reg = <0x0 0x78000 0x0 0x1C4>;
+ 			#address-cells = <2>;
+ 			#size-cells = <2>;
+-			#clock-cells = <1>;
+ 			ranges;
  
+ 			clocks = <&gcc GCC_USB0_AUX_CLK>,
+@@ -686,12 +685,13 @@ ssphy_0: ssphy@78000 {
+ 			reset-names = "phy","common";
  			status = "disabled";
  
--			pcie1_lane: lanes@1c0e200 {
-+			pcie1_lane: phy@1c0e200 {
- 				reg = <0 0x01c0e200 0 0x170>,
- 				      <0 0x01c0e400 0 0x200>,
- 				      <0 0x01c0ea00 0 0x1f0>,
+-			usb0_ssphy: lane@78200 {
++			usb0_ssphy: phy@78200 {
+ 				reg = <0x0 0x00078200 0x0 0x130>, /* Tx */
+ 				      <0x0 0x00078400 0x0 0x200>, /* Rx */
+ 				      <0x0 0x00078800 0x0 0x1F8>, /* PCS */
+ 				      <0x0 0x00078600 0x0 0x044>; /* PCS misc */
+ 				#phy-cells = <0>;
++				#clock-cells = <1>;
+ 				clocks = <&gcc GCC_USB0_PIPE_CLK>;
+ 				clock-names = "pipe0";
+ 				clock-output-names = "gcc_usb0_pipe_clk_src";
 -- 
 2.35.1
 
