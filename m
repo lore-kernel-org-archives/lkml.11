@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD2EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF5DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239193AbiB1R4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:56:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
+        id S239447AbiB1R4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:56:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239459AbiB1RxF (ORCPT
+        with ESMTP id S239485AbiB1RxG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:05 -0500
+        Mon, 28 Feb 2022 12:53:06 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB30BA995D;
-        Mon, 28 Feb 2022 09:40:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3723BA9978;
+        Mon, 28 Feb 2022 09:40:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3F59614C9;
-        Mon, 28 Feb 2022 17:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AED4C340E7;
-        Mon, 28 Feb 2022 17:40:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B818061543;
+        Mon, 28 Feb 2022 17:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C831FC340E7;
+        Mon, 28 Feb 2022 17:40:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070011;
-        bh=yGsnh7E9L/fH8YmBeB2NY1p2xZReP1YIkd/qtKneqIE=;
+        s=korg; t=1646070014;
+        bh=KCalSnuWuzSfa+L8A6ehOYwa/W3kEiG0HRBRIYFecX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oidQGhYNPvPjgdU0n9VA6/Si9wrEYhV4LoLHMijN2PstqUDN1OJwRzBGQbJVSPqiv
-         W2jc9ciwUTQGzdDOYXhKWTZ4TkkNlW3cu5HZYyVnvcl72UHS4EKhGSPvUFE4LEU4+q
-         kChJdwJEAVlDzsXAelm7cLAOmh8pKl5d5zIpCHrU=
+        b=0tKl54OVVQQ+I+hm4rlOJ1MMebA1p+iMwtN5H9UbhS+P4pNKWFDo8mBycLb/U9Bly
+         kY2XahJoKBc+DjIXp6Opb8z7f9kQO7YISG6vE5ywWUYSLxDbAYjB3Dlp8fDtUuaz+l
+         FRt138ozvY15dIBpVT8+wOS9cD8ZKCJZLufh0Q4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Zanussi <zanussi@kernel.org>,
+        stable@vger.kernel.org,
         Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>,
         "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.15 094/139] tracing: Dump stacktrace trigger to the corresponding instance
-Date:   Mon, 28 Feb 2022 18:24:28 +0100
-Message-Id: <20220228172357.480441182@linuxfoundation.org>
+Subject: [PATCH 5.15 095/139] tracing: Have traceon and traceoff trigger honor the instance
+Date:   Mon, 28 Feb 2022 18:24:29 +0100
+Message-Id: <20220228172357.590999187@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,45 +50,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit ce33c845b030c9cf768370c951bc699470b09fa7 upstream.
+commit 302e9edd54985f584cfc180098f3554774126969 upstream.
 
-The stacktrace event trigger is not dumping the stacktrace to the instance
-where it was enabled, but to the global "instance."
+If a trigger is set on an event to disable or enable tracing within an
+instance, then tracing should be disabled or enabled in the instance and
+not at the top level, which is confusing to users.
 
-Use the private_data, pointing to the trigger file, to figure out the
-corresponding trace instance, and use it in the trigger action, like
-snapshot_trigger does.
-
-Link: https://lkml.kernel.org/r/afbb0b4f18ba92c276865bc97204d438473f4ebc.1645396236.git.bristot@kernel.org
+Link: https://lkml.kernel.org/r/20220223223837.14f94ec3@rorschach.local.home
 
 Cc: stable@vger.kernel.org
 Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
+Tested-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-Tested-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_trigger.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ kernel/trace/trace_events_trigger.c |   52 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 46 insertions(+), 6 deletions(-)
 
 --- a/kernel/trace/trace_events_trigger.c
 +++ b/kernel/trace/trace_events_trigger.c
-@@ -1200,7 +1200,12 @@ stacktrace_trigger(struct event_trigger_
- 		   struct trace_buffer *buffer,  void *rec,
- 		   struct ring_buffer_event *event)
+@@ -955,6 +955,16 @@ traceon_trigger(struct event_trigger_dat
+ 		struct trace_buffer *buffer, void *rec,
+ 		struct ring_buffer_event *event)
  {
--	trace_dump_stack(STACK_SKIP);
 +	struct trace_event_file *file = data->private_data;
 +
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_on(file->tr);
++		return;
++	}
++
+ 	if (tracing_is_on())
+ 		return;
+ 
+@@ -966,8 +976,15 @@ traceon_count_trigger(struct event_trigg
+ 		      struct trace_buffer *buffer, void *rec,
+ 		      struct ring_buffer_event *event)
+ {
+-	if (tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (tracing_is_on())
++			return;
++	}
+ 
+ 	if (!data->count)
+ 		return;
+@@ -975,7 +992,10 @@ traceon_count_trigger(struct event_trigg
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_on();
 +	if (file)
-+		__trace_stack(file->tr, tracing_gen_ctx(), STACK_SKIP);
++		tracer_tracing_on(file->tr);
 +	else
-+		trace_dump_stack(STACK_SKIP);
++		tracing_on();
  }
  
  static void
+@@ -983,6 +1003,16 @@ traceoff_trigger(struct event_trigger_da
+ 		 struct trace_buffer *buffer, void *rec,
+ 		 struct ring_buffer_event *event)
+ {
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_off(file->tr);
++		return;
++	}
++
+ 	if (!tracing_is_on())
+ 		return;
+ 
+@@ -994,8 +1024,15 @@ traceoff_count_trigger(struct event_trig
+ 		       struct trace_buffer *buffer, void *rec,
+ 		       struct ring_buffer_event *event)
+ {
+-	if (!tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (!tracing_is_on())
++			return;
++	}
+ 
+ 	if (!data->count)
+ 		return;
+@@ -1003,7 +1040,10 @@ traceoff_count_trigger(struct event_trig
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_off();
++	if (file)
++		tracer_tracing_off(file->tr);
++	else
++		tracing_off();
+ }
+ 
+ static int
 
 
