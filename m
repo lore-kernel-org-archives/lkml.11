@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 995AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDD2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239411AbiB1R5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:57:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
+        id S239494AbiB1R54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:57:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240286AbiB1RyK (ORCPT
+        with ESMTP id S240287AbiB1RyK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90751986F3;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23685B0EA3;
         Mon, 28 Feb 2022 09:41:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1F14F6153C;
-        Mon, 28 Feb 2022 17:41:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FE8EC340E7;
-        Mon, 28 Feb 2022 17:41:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24F13B815B3;
+        Mon, 28 Feb 2022 17:41:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C705C340F3;
+        Mon, 28 Feb 2022 17:41:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070110;
-        bh=XF1c6l+ZV+WORH4b/vACdr35+2Do/8pE/ilyF5icJuo=;
+        s=korg; t=1646070115;
+        bh=6tDy2ua6iB4fOAElIvkDCYv79PsnJOR5zcUKUqVEqz8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pqZ4YwfmtkbaZ4f7xNtKJxBgn3CE1sZbKgoySFy6CMt9VDyYjJJAQaQgoqtVwjeVt
-         oQdHx8NxICu9OiKdQt5BimzNoXFeCkJ7pFQoCSrQRnAK2z4DW5R/qjmSERmbbEusQt
-         vxrURP2WMDkZQxv6Gq7ydbMsmU1VDt3ESwQpMh2I=
+        b=p0iZXQarOW/D5nAQPUiTAXbOsayYXLidV+12XP/rzeFSnWVmay0q201JApxQW+sGE
+         OETNGIdAN10bj61ojB1YMm01vX+cqi6Zs4VNn+5JyzGddwaISJeIZRpgwjrUl91WUe
+         ZUCGdQbqck5vlCAqGNYyaRuqFw6Qps/maC9gyy2s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Md Haris Iqbal <haris.iqbal@ionos.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 090/139] RDMA/rtrs-clt: Move free_permit from free_clt to rtrs_clt_close
-Date:   Mon, 28 Feb 2022 18:24:24 +0100
-Message-Id: <20220228172357.092149071@linuxfoundation.org>
+        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Laibin Qiu <qiulaibin@huawei.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 092/139] configfs: fix a race in configfs_{,un}register_subsystem()
+Date:   Mon, 28 Feb 2022 18:24:26 +0100
+Message-Id: <20220228172357.276924748@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -50,47 +49,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Md Haris Iqbal <haris.iqbal@ionos.com>
+From: ChenXiaoSong <chenxiaosong2@huawei.com>
 
-[ Upstream commit c46fa8911b17e3f808679061a8af8bee219f4602 ]
+[ Upstream commit 84ec758fb2daa236026506868c8796b0500c047d ]
 
-Error path of rtrs_clt_open() calls free_clt(), where free_permit is
-called.  This is wrong since error path of rtrs_clt_open() does not need
-to call free_permit().
+When configfs_register_subsystem() or configfs_unregister_subsystem()
+is executing link_group() or unlink_group(),
+it is possible that two processes add or delete list concurrently.
+Some unfortunate interleavings of them can cause kernel panic.
 
-Also, moving free_permits() call to rtrs_clt_close(), makes it more
-aligned with the call to alloc_permit() in rtrs_clt_open().
+One of cases is:
+A --> B --> C --> D
+A <-- B <-- C <-- D
 
-Fixes: 6a98d71daea1 ("RDMA/rtrs: client: main functionality")
-Link: https://lore.kernel.org/r/20220217030929.323849-2-haris.iqbal@ionos.com
-Signed-off-by: Md Haris Iqbal <haris.iqbal@ionos.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+     delete list_head *B        |      delete list_head *C
+--------------------------------|-----------------------------------
+configfs_unregister_subsystem   |   configfs_unregister_subsystem
+  unlink_group                  |     unlink_group
+    unlink_obj                  |       unlink_obj
+      list_del_init             |         list_del_init
+        __list_del_entry        |           __list_del_entry
+          __list_del            |             __list_del
+            // next == C        |
+            next->prev = prev   |
+                                |               next->prev = prev
+            prev->next = next   |
+                                |                 // prev == B
+                                |                 prev->next = next
+
+Fix this by adding mutex when calling link_group() or unlink_group(),
+but parent configfs_subsystem is NULL when config_item is root.
+So I create a mutex configfs_subsystem_mutex.
+
+Fixes: 7063fbf22611 ("[PATCH] configfs: User-driven configuration filesystem")
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/ulp/rtrs/rtrs-clt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/configfs/dir.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-index 3272514f05405..a23438bacf12c 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-@@ -2753,7 +2753,6 @@ static struct rtrs_clt *alloc_clt(const char *sessname, size_t paths_num,
+diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
+index d3cd2a94d1e8c..d1f9d26322027 100644
+--- a/fs/configfs/dir.c
++++ b/fs/configfs/dir.c
+@@ -34,6 +34,14 @@
+  */
+ DEFINE_SPINLOCK(configfs_dirent_lock);
  
- static void free_clt(struct rtrs_clt *clt)
++/*
++ * All of link_obj/unlink_obj/link_group/unlink_group require that
++ * subsys->su_mutex is held.
++ * But parent configfs_subsystem is NULL when config_item is root.
++ * Use this mutex when config_item is root.
++ */
++static DEFINE_MUTEX(configfs_subsystem_mutex);
++
+ static void configfs_d_iput(struct dentry * dentry,
+ 			    struct inode * inode)
  {
--	free_permits(clt);
- 	free_percpu(clt->pcpu_path);
+@@ -1859,7 +1867,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
+ 		group->cg_item.ci_name = group->cg_item.ci_namebuf;
  
- 	/*
-@@ -2869,6 +2868,7 @@ void rtrs_clt_close(struct rtrs_clt *clt)
- 		rtrs_clt_destroy_sess_files(sess, NULL);
- 		kobject_put(&sess->kobj);
+ 	sd = root->d_fsdata;
++	mutex_lock(&configfs_subsystem_mutex);
+ 	link_group(to_config_group(sd->s_element), group);
++	mutex_unlock(&configfs_subsystem_mutex);
+ 
+ 	inode_lock_nested(d_inode(root), I_MUTEX_PARENT);
+ 
+@@ -1884,7 +1894,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
+ 	inode_unlock(d_inode(root));
+ 
+ 	if (err) {
++		mutex_lock(&configfs_subsystem_mutex);
+ 		unlink_group(group);
++		mutex_unlock(&configfs_subsystem_mutex);
+ 		configfs_release_fs();
  	}
-+	free_permits(clt);
- 	free_clt(clt);
+ 	put_fragment(frag);
+@@ -1931,7 +1943,9 @@ void configfs_unregister_subsystem(struct configfs_subsystem *subsys)
+ 
+ 	dput(dentry);
+ 
++	mutex_lock(&configfs_subsystem_mutex);
+ 	unlink_group(group);
++	mutex_unlock(&configfs_subsystem_mutex);
+ 	configfs_release_fs();
  }
- EXPORT_SYMBOL(rtrs_clt_close);
+ 
 -- 
 2.34.1
 
