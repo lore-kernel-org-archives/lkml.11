@@ -2,161 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26950C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233846AbiB1KzA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:55:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50866 "EHLO
+        id S235361AbiB1KzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:55:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbiB1Kyh (ORCPT
+        with ESMTP id S235211AbiB1Kyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:54:37 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A88666E545;
-        Mon, 28 Feb 2022 02:52:01 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 76811106F;
-        Mon, 28 Feb 2022 02:52:01 -0800 (PST)
-Received: from p8cg001049571a15.arm.com (unknown [10.163.47.185])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id D85293F73D;
-        Mon, 28 Feb 2022 02:51:53 -0800 (PST)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, geert@linux-m68k.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-um@lists.infradead.org,
-        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-arch@vger.kernel.org, Jeff Dike <jdike@addtoit.com>
-Subject: [PATCH V3 23/30] um/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Date:   Mon, 28 Feb 2022 16:17:46 +0530
-Message-Id: <1646045273-9343-24-git-send-email-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
-References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
+        Mon, 28 Feb 2022 05:54:40 -0500
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24D46E79C;
+        Mon, 28 Feb 2022 02:52:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
+  t=1646045529; x=1677581529;
+  h=date:from:to:cc:message-id:references:mime-version:
+   in-reply-to:subject;
+  bh=GYZ36Tn4ZR/Fb48Zxcj7jLlzc/ynK1FlIUH6hyDN1O0=;
+  b=DfHzcu1cS7XzLWzhivBznGNo6hS/okLs7cI5N57EgBhGxex5Zw9nMjf3
+   tHoteIHy6Jy7fvfE2mAdwaW+WQj6ng1Ad5vi18qpe47w7GaT8sAsmiDLV
+   A3GeMIiSV9C1x00ngWCTzrIFx0CMxcCsGjHTura+U4qCUI/jqIu4g5LOf
+   M=;
+X-IronPort-AV: E=Sophos;i="5.90,142,1643673600"; 
+   d="scan'208";a="66672745"
+Subject: Re: [PATCH 0/4] KVM: x86: hyper-v: XMM fast hypercalls fixes
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 28 Feb 2022 10:52:08 +0000
+Received: from EX13D28EUC003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com (Postfix) with ESMTPS id 8C9B38728E;
+        Mon, 28 Feb 2022 10:52:07 +0000 (UTC)
+Received: from 147dda3edfb6.ant.amazon.com (10.43.160.6) by
+ EX13D28EUC003.ant.amazon.com (10.43.164.43) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Mon, 28 Feb 2022 10:52:04 +0000
+Date:   Mon, 28 Feb 2022 11:52:00 +0100
+From:   Siddharth Chandrasekaran <sidcha@amazon.de>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+CC:     Vitaly Kuznetsov <vkuznets@redhat.com>, <kvm@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        <linux-kernel@vger.kernel.org>
+Message-ID: <YhypT9pGu600wRLf@147dda3edfb6.ant.amazon.com>
+References: <20220222154642.684285-1-vkuznets@redhat.com>
+ <b466b80c-21d1-f298-b4cd-a4b58988f767@redhat.com>
+ <871qzrdr6x.fsf@redhat.com>
+ <f398b5de-c867-98a4-a716-b18939cfd0ef@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <f398b5de-c867-98a4-a716-b18939cfd0ef@redhat.com>
+X-Originating-IP: [10.43.160.6]
+X-ClientProxiedBy: EX13D46UWC004.ant.amazon.com (10.43.162.173) To
+ EX13D28EUC003.ant.amazon.com (10.43.164.43)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This defines and exports a platform specific custom vm_get_page_prot() via
-subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
-macros can be dropped which are no longer needed.
+On Fri, Feb 25, 2022 at 02:17:04PM +0100, Paolo Bonzini wrote:
+> On 2/25/22 14:13, Vitaly Kuznetsov wrote:
+> > Let's say we have 1 half of XMM0 consumed. Now:
+> > 
+> >   i = 0;
+> >   j = 1;
+> >   if (1)
+> >       sparse_banks[0] = sse128_lo(hc->xmm[0]);
+> > 
+> >   This doesn't look right as we need to get the upper half of XMM0.
+> > 
+> >   I guess it should be reversed,
+> > 
+> >       if (j % 2)
+> >           sparse_banks[i] = sse128_hi(hc->xmm[j / 2]);
+> >       else
+> >           sparse_banks[i] = sse128_lo(hc->xmm[j / 2]);
 
-Cc: Jeff Dike <jdike@addtoit.com>
-Cc: linux-um@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- arch/um/Kconfig               |  1 +
- arch/um/include/asm/pgtable.h | 17 -----------------
- arch/um/kernel/mem.c          | 35 +++++++++++++++++++++++++++++++++++
- arch/x86/um/mem_32.c          |  2 +-
- 4 files changed, 37 insertions(+), 18 deletions(-)
+Maybe I am missing parts of this series.. I dont see this change in any
+of the 4 patches Vitaly sent. Yes, they look swapped to me too.
 
-diff --git a/arch/um/Kconfig b/arch/um/Kconfig
-index 4d398b80aea8..5836296868a8 100644
---- a/arch/um/Kconfig
-+++ b/arch/um/Kconfig
-@@ -9,6 +9,7 @@ config UML
- 	select ARCH_HAS_KCOV
- 	select ARCH_HAS_STRNCPY_FROM_USER
- 	select ARCH_HAS_STRNLEN_USER
-+	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_NO_PREEMPT
- 	select HAVE_ARCH_AUDITSYSCALL
- 	select HAVE_ARCH_SECCOMP_FILTER
-diff --git a/arch/um/include/asm/pgtable.h b/arch/um/include/asm/pgtable.h
-index b9e20bbe2f75..d982622c0708 100644
---- a/arch/um/include/asm/pgtable.h
-+++ b/arch/um/include/asm/pgtable.h
-@@ -68,23 +68,6 @@ extern unsigned long end_iomem;
-  * Also, write permissions imply read permissions. This is the closest we can
-  * get..
-  */
--#define __P000	PAGE_NONE
--#define __P001	PAGE_READONLY
--#define __P010	PAGE_COPY
--#define __P011	PAGE_COPY
--#define __P100	PAGE_READONLY
--#define __P101	PAGE_READONLY
--#define __P110	PAGE_COPY
--#define __P111	PAGE_COPY
--
--#define __S000	PAGE_NONE
--#define __S001	PAGE_READONLY
--#define __S010	PAGE_SHARED
--#define __S011	PAGE_SHARED
--#define __S100	PAGE_READONLY
--#define __S101	PAGE_READONLY
--#define __S110	PAGE_SHARED
--#define __S111	PAGE_SHARED
- 
- /*
-  * ZERO_PAGE is a global shared page that is always zero: used
-diff --git a/arch/um/kernel/mem.c b/arch/um/kernel/mem.c
-index 15295c3237a0..37c6c7b9dadc 100644
---- a/arch/um/kernel/mem.c
-+++ b/arch/um/kernel/mem.c
-@@ -197,3 +197,38 @@ void *uml_kmalloc(int size, int flags)
- {
- 	return kmalloc(size, flags);
- }
-+
-+pgprot_t vm_get_page_prot(unsigned long vm_flags)
-+{
-+	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
-+	case VM_NONE:
-+		return PAGE_NONE;
-+	case VM_READ:
-+		return PAGE_READONLY;
-+	case VM_WRITE:
-+	case VM_WRITE | VM_READ:
-+		return PAGE_COPY;
-+	case VM_EXEC:
-+	case VM_EXEC | VM_READ:
-+		return PAGE_READONLY;
-+	case VM_EXEC | VM_WRITE:
-+	case VM_EXEC | VM_WRITE | VM_READ:
-+		return PAGE_COPY;
-+	case VM_SHARED:
-+		return PAGE_NONE;
-+	case VM_SHARED | VM_READ:
-+		return PAGE_READONLY;
-+	case VM_SHARED | VM_WRITE:
-+	case VM_SHARED | VM_WRITE | VM_READ:
-+		return PAGE_SHARED;
-+	case VM_SHARED | VM_EXEC:
-+	case VM_SHARED | VM_EXEC | VM_READ:
-+		return PAGE_READONLY;
-+	case VM_SHARED | VM_EXEC | VM_WRITE:
-+	case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
-+		return PAGE_SHARED;
-+	default:
-+		BUILD_BUG();
-+	}
-+}
-+EXPORT_SYMBOL(vm_get_page_prot);
-diff --git a/arch/x86/um/mem_32.c b/arch/x86/um/mem_32.c
-index 19c5dbd46770..cafd01f730da 100644
---- a/arch/x86/um/mem_32.c
-+++ b/arch/x86/um/mem_32.c
-@@ -17,7 +17,7 @@ static int __init gate_vma_init(void)
- 	gate_vma.vm_start = FIXADDR_USER_START;
- 	gate_vma.vm_end = FIXADDR_USER_END;
- 	gate_vma.vm_flags = VM_READ | VM_MAYREAD | VM_EXEC | VM_MAYEXEC;
--	gate_vma.vm_page_prot = __P101;
-+	gate_vma.vm_page_prot = PAGE_READONLY;
- 
- 	return 0;
- }
--- 
-2.25.1
+~ Sid.
+
+
+
+Amazon Development Center Germany GmbH
+Krausenstr. 38
+10117 Berlin
+Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
+Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
+Sitz: Berlin
+Ust-ID: DE 289 237 879
+
+
 
