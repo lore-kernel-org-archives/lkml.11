@@ -2,296 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 23:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC45C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 23:26:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229795AbiB1X03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 18:26:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42662 "EHLO
+        id S229815AbiB1X0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 18:26:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiB1X02 (ORCPT
+        with ESMTP id S229529AbiB1X0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 18:26:28 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A7AC3311
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 15:25:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=fCfuRH4s50AAt2MwUz3kzZenb4+CLJUMfZe9pE/B82w=; b=N545VQlozc98xk9T4Q5E0pyMm0
-        BQcqTY9UVW5NUE8VxaW4ogSd4Yn1X2nqQqopTxs/lJlm1G0hDebmGPb08nlH/mHfFOwegLmWJhzeN
-        t3wfF59eEXaBT439ypD5Nm9GExWLcTpO91yNjHr/93IRWsPyv2XoDFEr7+7QNa+4j0qkTLAd/2kOJ
-        WbjxF2QSDROvWfCMLJ6lD2gkJ5Ks8xjmubX142CPs7do+lKmw+YRPAKr5zZEP1nGRvzstE34Q6kzp
-        J9mOa3xaO+ZYymb7V4HLrZ9enNu6Ikq5lTyDFufyAZ6lnoSnHKthJfhOM6r5GJnhY2rFmB+1bLpHa
-        wwCLrLpQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOpOF-0090aY-Fj; Mon, 28 Feb 2022 23:25:15 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id ACFAA986271; Tue,  1 Mar 2022 00:25:13 +0100 (CET)
-Date:   Tue, 1 Mar 2022 00:25:13 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com, mbenes@suse.cz,
-        rostedt@goodmis.org, alexei.starovoitov@gmail.com,
-        naveen.n.rao@linux.vnet.ibm.com
-Subject: Re: [PATCH v2 15/39] x86/ibt,kprobes: Fix more +0 assumptions
-Message-ID: <20220228232513.GH11184@worktop.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151322.892372059@infradead.org>
- <20220228150705.aab2d654b973109bab070ffe@kernel.org>
+        Mon, 28 Feb 2022 18:26:51 -0500
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4019C626D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 15:26:11 -0800 (PST)
+Received: by mail-vs1-xe42.google.com with SMTP id t22so14740616vsa.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 15:26:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=678bsp2ErC3AUHByI563pP4zj6fiQdpPo5vEOV1fue0=;
+        b=ozH4CPp2zu7LhcVv6S/q7oub5q1+cZ9nyOOxAMKT0uJ9FRpMSi13MW5tFZtzsa/NwO
+         40/Sh6X4AmgitON88oEeersWw75CzIQur3pLWkl0n9zYTBBrjUlWVctrJrNQCXCFi+XL
+         4fyM/m2U0U1FE8ekyt4aDheSe88K8/xkWgs/zKi5ZxknbHM5u/WeVPeLcfvJwXKjHnyu
+         NLf8aSlQCa/dLBwWelqR0TLmoX5ltWj+5mhgRUenrG10+P4R8nXdZLbslyYgwtuGDQGE
+         spnZjFMx3kPnns/TPTIrlTR5lCLi3BADefbabo6jj8TOXUc8AEEtM1YdpxA13wIifiZN
+         0A7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=678bsp2ErC3AUHByI563pP4zj6fiQdpPo5vEOV1fue0=;
+        b=gGNzDZXIE6pe43Sfm1RQ9uwIaCTwbUb7NHDz5V0WeY7kWXSXGOPXxqvlx9uv8AZHKx
+         hTyCDyZJMp4j8cJFaGa6a+ZT3jyDrKAYMFzm4pcCycS1kg6XlLVEZEvFhDm/0RcHCZEc
+         f/tSj5IqnIPBg0OfdSFrw6eRp3Uc117hY/TUFpj1+lbt6vnhjiOUvRBbweVLjGxhFpMk
+         Zn1j5cvIAiRAceJfaBrOmkFiY51/pimepaqDhLUz7MKMDQJiZhaEY0NRLOZkfLQohkDH
+         OoT1G8XRjsQy6UMyH9kN4ML79EmMYlDHQ/DGttf+G7LR2A4pVBlSgeJtJ1HRkRkljgVG
+         TbIQ==
+X-Gm-Message-State: AOAM531D85phLWuoHW3RtbuY5E8pDNdeoU9s6+vVQyorULFPaOhsN1UZ
+        mvrczgATssLdLXCh30dw3P8=
+X-Google-Smtp-Source: ABdhPJzFW+ebkA33fyzZOlIhybeZny+OBqFcDo8O1cUgrJSuSOoNTuzXQSuYpfpz1FOAgljyzbWoRA==
+X-Received: by 2002:a67:e187:0:b0:30f:ec53:be70 with SMTP id e7-20020a67e187000000b0030fec53be70mr10055671vsl.15.1646090770993;
+        Mon, 28 Feb 2022 15:26:10 -0800 (PST)
+Received: from ishi (072-189-064-222.res.spectrum.com. [72.189.64.222])
+        by smtp.gmail.com with ESMTPSA id a25-20020a056102025900b0031c34d0f8d5sm1555132vsq.3.2022.02.28.15.26.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 15:26:10 -0800 (PST)
+Date:   Mon, 28 Feb 2022 18:26:08 -0500
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Mateusz =?utf-8?Q?Jo=C5=84czyk?= <mat.jonczyk@o2.pl>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH 10/10] x86/Kconfig: remove CONFIG_ISA_BUS
+Message-ID: <Yh1aEGwekig1hG9G@ishi>
+References: <20220228212826.27080-1-mat.jonczyk@o2.pl>
+ <20220228212826.27080-11-mat.jonczyk@o2.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220228150705.aab2d654b973109bab070ffe@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220228212826.27080-11-mat.jonczyk@o2.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 03:07:05PM +0900, Masami Hiramatsu wrote:
-> Hi Peter,
+On Mon, Feb 28, 2022 at 10:28:26PM +0100, Mateusz Jończyk wrote:
+> CONFIG_ISA_BUS was used only as a dependency for a single Industrial IO
+> driver: CONFIG_CIO_DAC ("Measurement Computing CIO-DAC IIO driver"). At
+> least grepping the kernel source for "ISA_BUS" did not find any other
+> meaningful results.
 > 
-> So, instead of this change, can you try below?
-> This introduce the arch_adjust_kprobe_addr() and use it in the kprobe_addr()
-> so that it can handle the case that user passed the probe address in 
-> _text+OFFSET format.
+> There are more configuration options that select CONFIG_ISA_BUS_API, but
+> did not depend on CONFIG_ISA_BUS. Most of these are for Industrial IO and
+> GPIO drivers.
+> 
+> Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: x86@kernel.org
+> Cc: "H. Peter Anvin" <hpa@zytor.com>
+> Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
 
-It works a little... at the very least it still needs
-arch_kprobe_on_func_entry() allowing offset 4.
+For context, the Measurement Computing CIO-DAC device comes in two
+form factors: PC104 and ISA. The PC104 bus is typically aimed at
+embedded systems and not commonly used by general users, so the
+CONFIG_PC104 Kconfig option was introduced to filter out these devices
+for most users who would generally not be interested in them. Because
+the CIO-DAC device is also available in an ISA form factor, I needed a
+way to have the CONFIG_CIO_DAC Kconfig available even on non-PC104
+systems; that's how the CONFIG_ISA_BUS Kconfig option came about.
 
-But looking at this, we've got:
+The purpose of the CONFIG_ISA_BUS Kconfig option is filter out ISA bus
+devices because few users will have an ISA bus. I suppose it does no
+harm to remove that filter because users can still select CONFIG_CIO_DAC
+if they want it, so I'm all right with this patch.
 
-kprobe_on_func_entry(addr, sym, offset)
-  _kprobe_addr(addr, sym, offset)
-    if (sym)
-      addr = kprobe_lookup_name()
-           = kallsyms_lookup_name()
-    arch_adjust_kprobe_addr(addr+offset)
-      skip_endbr()
-        kallsyms_loopup_size_offset(addr, ...)
-  kallsyms_lookup_size_offset(addr, NULL, &offset)
-  arch_kprobe_on_func_entry(offset)
+Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 
-Which is _3_ kallsyms lookups and 3 weak/arch hooks.
-
-Surely we can make this a little more streamlined? The below seems to
-work.
-
-I think with a little care and testing it should be possible to fold all
-the magic of PowerPC's kprobe_lookup_name() into this one hook as well,
-meaning we can get rid of kprobe_lookup_name() entirely.  Naveen?
-
-This then gets us down to a 1 kallsyms call and 1 arch hook. Hmm?
-
----
- arch/powerpc/kernel/kprobes.c  |   34 +++++++++++++++---------
- arch/x86/kernel/kprobes/core.c |   17 ++++++++++++
- include/linux/kprobes.h        |    3 +-
- kernel/kprobes.c               |   56 ++++++++++++++++++++++++++++++++++-------
- 4 files changed, 87 insertions(+), 23 deletions(-)
-
---- a/arch/powerpc/kernel/kprobes.c
-+++ b/arch/powerpc/kernel/kprobes.c
-@@ -105,6 +105,27 @@ kprobe_opcode_t *kprobe_lookup_name(cons
- 	return addr;
- }
- 
-+static bool arch_kprobe_on_func_entry(unsigned long offset)
-+{
-+#ifdef PPC64_ELF_ABI_v2
-+#ifdef CONFIG_KPROBES_ON_FTRACE
-+	return offset <= 16;
-+#else
-+	return offset <= 8;
-+#endif
-+#else
-+	return !offset;
-+#endif
-+}
-+
-+/* XXX try and fold the magic of kprobe_lookup_name() in this */
-+kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned long offset,
-+					 bool *on_func_entry)
-+{
-+	*on_func_entry = arch_kprobe_on_func_entry(offset);
-+	return (kprobe_opcode_t *)(addr + offset);
-+}
-+
- void *alloc_insn_page(void)
- {
- 	void *page;
-@@ -218,19 +239,6 @@ static nokprobe_inline void set_current_
- 	kcb->kprobe_saved_msr = regs->msr;
- }
- 
--bool arch_kprobe_on_func_entry(unsigned long offset)
--{
--#ifdef PPC64_ELF_ABI_v2
--#ifdef CONFIG_KPROBES_ON_FTRACE
--	return offset <= 16;
--#else
--	return offset <= 8;
--#endif
--#else
--	return !offset;
--#endif
--}
--
- void arch_prepare_kretprobe(struct kretprobe_instance *ri, struct pt_regs *regs)
- {
- 	ri->ret_addr = (kprobe_opcode_t *)regs->link;
---- a/arch/x86/kernel/kprobes/core.c
-+++ b/arch/x86/kernel/kprobes/core.c
-@@ -52,6 +52,7 @@
- #include <asm/insn.h>
- #include <asm/debugreg.h>
- #include <asm/set_memory.h>
-+#include <asm/ibt.h>
- 
- #include "common.h"
- 
-@@ -301,6 +302,22 @@ static int can_probe(unsigned long paddr
- 	return (addr == paddr);
- }
- 
-+/* If the x86 support IBT (ENDBR) it must be skipped. */
-+kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned long offset,
-+					 bool *on_func_entry)
-+{
-+	if (is_endbr(*(u32 *)addr)) {
-+		*on_func_entry = !offset || offset == 4;
-+		if (*on_func_entry)
-+			offset = 4;
-+
-+	} else {
-+		*on_func_entry = !offset;
-+	}
-+
-+	return (kprobe_opcode_t *)(addr + offset);
-+}
-+
- /*
-  * Copy an instruction with recovering modified instruction by kprobes
-  * and adjust the displacement if the instruction uses the %rip-relative
---- a/include/linux/kprobes.h
-+++ b/include/linux/kprobes.h
-@@ -265,7 +265,6 @@ extern int arch_init_kprobes(void);
- extern void kprobes_inc_nmissed_count(struct kprobe *p);
- extern bool arch_within_kprobe_blacklist(unsigned long addr);
- extern int arch_populate_kprobe_blacklist(void);
--extern bool arch_kprobe_on_func_entry(unsigned long offset);
- extern int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, unsigned long offset);
- 
- extern bool within_kprobe_blacklist(unsigned long addr);
-@@ -384,6 +383,8 @@ static inline struct kprobe_ctlblk *get_
- }
- 
- kprobe_opcode_t *kprobe_lookup_name(const char *name, unsigned int offset);
-+kprobe_opcode_t *arch_adjust_kprobe_addr(unsigned long addr, unsigned long offset, bool *on_func_entry);
-+
- int register_kprobe(struct kprobe *p);
- void unregister_kprobe(struct kprobe *p);
- int register_kprobes(struct kprobe **kps, int num);
---- a/kernel/kprobes.c
-+++ b/kernel/kprobes.c
-@@ -1489,24 +1489,63 @@ bool within_kprobe_blacklist(unsigned lo
- }
- 
- /*
-+ * arch_adjust_kprobe_addr - adjust the address
-+ * @addr: symbol base address
-+ * @offset: offset within the symbol
-+ * @on_func_entry: was this @addr+@offset on the function entry
-+ *
-+ * Typically returns @addr + @offset, except for special cases where the
-+ * function might be prefixed by a CFI landing pad, in that case any offset
-+ * inside the landing pad is mapped to the first 'real' instruction of the
-+ * symbol.
-+ *
-+ * Specifically, for things like IBT/BTI, skip the resp. ENDBR/BTI.C
-+ * instruction at +0.
-+ */
-+kprobe_opcode_t *__weak arch_adjust_kprobe_addr(unsigned long addr,
-+						unsigned long offset,
-+						bool *on_func_entry)
-+{
-+	*on_func_entry = !offset;
-+	return (kprobe_opcode_t *)(addr + offset);
-+}
-+
-+/*
-  * If 'symbol_name' is specified, look it up and add the 'offset'
-  * to it. This way, we can specify a relative address to a symbol.
-  * This returns encoded errors if it fails to look up symbol or invalid
-  * combination of parameters.
-  */
--static kprobe_opcode_t *_kprobe_addr(kprobe_opcode_t *addr,
--			const char *symbol_name, unsigned int offset)
-+static kprobe_opcode_t *
-+_kprobe_addr(kprobe_opcode_t *addr, const char *symbol_name,
-+	     unsigned long offset, bool *on_func_entry)
- {
- 	if ((symbol_name && addr) || (!symbol_name && !addr))
- 		goto invalid;
- 
- 	if (symbol_name) {
-+		/*
-+		 * Input: @sym + @offset
-+		 * Output: @addr + @offset
-+		 *
-+		 * NOTE: kprobe_lookup_name() does *NOT* fold the offset
-+		 *       argument into it's output!
-+		 */
- 		addr = kprobe_lookup_name(symbol_name, offset);
- 		if (!addr)
- 			return ERR_PTR(-ENOENT);
-+	} else {
-+		/*
-+		 * Input: @addr + @offset
-+		 * Output: @addr' + @offset'
-+		 */
-+		if (!kallsyms_lookup_size_offset((unsigned long)addr + offset,
-+						 NULL, &offset))
-+			return ERR_PTR(-ENOENT);
-+		addr = (kprobe_opcode_t *)((unsigned long)addr - offset);
- 	}
- 
--	addr = (kprobe_opcode_t *)(((char *)addr) + offset);
-+	addr = arch_adjust_kprobe_addr((unsigned long)addr, offset, on_func_entry);
- 	if (addr)
- 		return addr;
- 
-@@ -1516,7 +1555,8 @@ static kprobe_opcode_t *_kprobe_addr(kpr
- 
- static kprobe_opcode_t *kprobe_addr(struct kprobe *p)
- {
--	return _kprobe_addr(p->addr, p->symbol_name, p->offset);
-+	bool on_func_entry;
-+	return _kprobe_addr(p->addr, p->symbol_name, p->offset, &on_func_entry);
- }
- 
- /*
-@@ -2067,15 +2107,13 @@ bool __weak arch_kprobe_on_func_entry(un
-  */
- int kprobe_on_func_entry(kprobe_opcode_t *addr, const char *sym, unsigned long offset)
- {
--	kprobe_opcode_t *kp_addr = _kprobe_addr(addr, sym, offset);
-+	bool on_func_entry;
-+	kprobe_opcode_t *kp_addr = _kprobe_addr(addr, sym, offset, &on_func_entry);
- 
- 	if (IS_ERR(kp_addr))
- 		return PTR_ERR(kp_addr);
- 
--	if (!kallsyms_lookup_size_offset((unsigned long)kp_addr, NULL, &offset))
--		return -ENOENT;
--
--	if (!arch_kprobe_on_func_entry(offset))
-+	if (!on_func_entry)
- 		return -EINVAL;
- 
- 	return 0;
+> ---
+>  arch/x86/Kconfig        | 11 -----------
+>  drivers/iio/dac/Kconfig |  2 +-
+>  2 files changed, 1 insertion(+), 12 deletions(-)
+> 
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 19acc5954083..2de46adfbde2 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -2692,17 +2692,6 @@ config PCI_CNB20LE_QUIRK
+>  
+>  	  You should say N unless you know you need this.
+>  
+> -config ISA_BUS
+> -	bool "ISA bus support on modern systems" if EXPERT
+> -	help
+> -	  Expose ISA bus device drivers and options available for selection and
+> -	  configuration. Enable this option if your target machine has an ISA
+> -	  bus. ISA is an older system, displaced by PCI and newer bus
+> -	  architectures -- if your target machine is modern, it probably does
+> -	  not have an ISA bus.
+> -
+> -	  If unsure, say N.
+> -
+>  # x86_64 have no ISA slots, but can have ISA-style DMA.
+>  config ISA_DMA_API
+>  	bool "ISA-style DMA support" if (X86_64 && EXPERT)
+> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> index bfcf7568de32..fe0f2a93055d 100644
+> --- a/drivers/iio/dac/Kconfig
+> +++ b/drivers/iio/dac/Kconfig
+> @@ -264,7 +264,7 @@ config AD8801
+>  
+>  config CIO_DAC
+>  	tristate "Measurement Computing CIO-DAC IIO driver"
+> -	depends on X86 && (ISA_BUS || PC104)
+> +	depends on X86
+>  	select ISA_BUS_API
+>  	help
+>  	  Say yes here to build support for the Measurement Computing CIO-DAC
+> -- 
+> 2.25.1
+> 
