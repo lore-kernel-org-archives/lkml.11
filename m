@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D246DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D84C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:28:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234588AbiB1R3Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:29:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        id S232269AbiB1R3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:29:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235836AbiB1R1v (ORCPT
+        with ESMTP id S237120AbiB1R2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:27:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE3889CCB;
-        Mon, 28 Feb 2022 09:26:57 -0800 (PST)
+        Mon, 28 Feb 2022 12:28:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2061E5B;
+        Mon, 28 Feb 2022 09:27:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3945AB815B4;
-        Mon, 28 Feb 2022 17:26:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93E9CC340E7;
-        Mon, 28 Feb 2022 17:26:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E2BAB815B3;
+        Mon, 28 Feb 2022 17:27:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D79C340F1;
+        Mon, 28 Feb 2022 17:27:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069214;
-        bh=KcD0VeXis5K6pfFfjojtXd9veRqSBEP7ZPOuwSBvwoU=;
+        s=korg; t=1646069239;
+        bh=CidzmvAFVi43hMNxzqnk5tG9HKIHJRZgVsRGz6ocuw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qq+ZBdj5rE+RSShgBsXzS6UYzE6JSwhBAzJLjnkngNym/bW7TwbcTORviIfa5lMwO
-         LGYAis/fQXQM4Gdv6t6aXpyJ2mHKm4q2YiLJXBUZ6EKVzchwSy3Km73+g+nUPTGQN9
-         5m0Lw5NekWo5SWBSRpumwXi3fEYy+1d5SgF1/aAo=
+        b=Co6JB92vrzGgpBSnV/1W1F6NLD+e+lQPiDQ0i2PiD4cN2gYs0elC1jxyHkY+jUPJu
+         0ySLr5b+7R/kbW4R1MB6n+y2Oqxw5FTvXkVD7raeE8END+fHulVyXl2ZHowfUXpqhB
+         3OC+DwqpAlr8jHG5QijfcI54Vl6LpQPmIVcNuN9Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.9 27/29] tty: n_gsm: fix proper link termination after failed open
-Date:   Mon, 28 Feb 2022 18:23:54 +0100
-Message-Id: <20220228172144.391709007@linuxfoundation.org>
+        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Laibin Qiu <qiulaibin@huawei.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 14/31] configfs: fix a race in configfs_{,un}register_subsystem()
+Date:   Mon, 28 Feb 2022 18:24:10 +0100
+Message-Id: <20220228172201.258455438@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172141.744228435@linuxfoundation.org>
-References: <20220228172141.744228435@linuxfoundation.org>
+In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
+References: <20220228172159.515152296@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,38 +49,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+From: ChenXiaoSong <chenxiaosong2@huawei.com>
 
-commit e3b7468f082d106459e86e8dc6fb9bdd65553433 upstream.
+[ Upstream commit 84ec758fb2daa236026506868c8796b0500c047d ]
 
-Trying to open a DLCI by sending a SABM frame may fail with a timeout.
-The link is closed on the initiator side without informing the responder
-about this event. The responder assumes the link is open after sending a
-UA frame to answer the SABM frame. The link gets stuck in a half open
-state.
+When configfs_register_subsystem() or configfs_unregister_subsystem()
+is executing link_group() or unlink_group(),
+it is possible that two processes add or delete list concurrently.
+Some unfortunate interleavings of them can cause kernel panic.
 
-This patch fixes this by initiating the proper link termination procedure
-after link setup timeout instead of silently closing it down.
+One of cases is:
+A --> B --> C --> D
+A <-- B <-- C <-- D
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220218073123.2121-3-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+     delete list_head *B        |      delete list_head *C
+--------------------------------|-----------------------------------
+configfs_unregister_subsystem   |   configfs_unregister_subsystem
+  unlink_group                  |     unlink_group
+    unlink_obj                  |       unlink_obj
+      list_del_init             |         list_del_init
+        __list_del_entry        |           __list_del_entry
+          __list_del            |             __list_del
+            // next == C        |
+            next->prev = prev   |
+                                |               next->prev = prev
+            prev->next = next   |
+                                |                 // prev == B
+                                |                 prev->next = next
+
+Fix this by adding mutex when calling link_group() or unlink_group(),
+but parent configfs_subsystem is NULL when config_item is root.
+So I create a mutex configfs_subsystem_mutex.
+
+Fixes: 7063fbf22611 ("[PATCH] configfs: User-driven configuration filesystem")
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/configfs/dir.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1506,7 +1506,7 @@ static void gsm_dlci_t1(unsigned long da
- 			dlci->mode = DLCI_MODE_ADM;
- 			gsm_dlci_open(dlci);
- 		} else {
--			gsm_dlci_close(dlci);
-+			gsm_dlci_begin_close(dlci); /* prevent half open link */
- 		}
+diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
+index c875f246cb0e9..ccb49caed502c 100644
+--- a/fs/configfs/dir.c
++++ b/fs/configfs/dir.c
+@@ -50,6 +50,14 @@ DECLARE_RWSEM(configfs_rename_sem);
+  */
+ DEFINE_SPINLOCK(configfs_dirent_lock);
  
- 		break;
++/*
++ * All of link_obj/unlink_obj/link_group/unlink_group require that
++ * subsys->su_mutex is held.
++ * But parent configfs_subsystem is NULL when config_item is root.
++ * Use this mutex when config_item is root.
++ */
++static DEFINE_MUTEX(configfs_subsystem_mutex);
++
+ static void configfs_d_iput(struct dentry * dentry,
+ 			    struct inode * inode)
+ {
+@@ -1937,7 +1945,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
+ 		group->cg_item.ci_name = group->cg_item.ci_namebuf;
+ 
+ 	sd = root->d_fsdata;
++	mutex_lock(&configfs_subsystem_mutex);
+ 	link_group(to_config_group(sd->s_element), group);
++	mutex_unlock(&configfs_subsystem_mutex);
+ 
+ 	inode_lock_nested(d_inode(root), I_MUTEX_PARENT);
+ 
+@@ -1962,7 +1972,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
+ 	inode_unlock(d_inode(root));
+ 
+ 	if (err) {
++		mutex_lock(&configfs_subsystem_mutex);
+ 		unlink_group(group);
++		mutex_unlock(&configfs_subsystem_mutex);
+ 		configfs_release_fs();
+ 	}
+ 	put_fragment(frag);
+@@ -2008,7 +2020,9 @@ void configfs_unregister_subsystem(struct configfs_subsystem *subsys)
+ 
+ 	dput(dentry);
+ 
++	mutex_lock(&configfs_subsystem_mutex);
+ 	unlink_group(group);
++	mutex_unlock(&configfs_subsystem_mutex);
+ 	configfs_release_fs();
+ }
+ 
+-- 
+2.34.1
+
 
 
