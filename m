@@ -2,130 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99178C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B876C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:40:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234750AbiB1Skl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:40:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38090 "EHLO
+        id S240771AbiB1SlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:41:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240782AbiB1Sjv (ORCPT
+        with ESMTP id S240651AbiB1Skz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:39:51 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFED45040
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:28:56 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id z2so11472968plg.8
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:28:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=953U8rJ4XL9BO0MAZAoSvNfxJjSMk/eYFo8dV60tgFc=;
-        b=FpK1ngedQX3i3ivR3W3a6s9CDUpEcLJ7+K72A8HWuIj+TG9fFxdNTS8IxACdRptz5O
-         VJNsv0VTwQYiTNicWanwklaKPytRcWWcHmq0OX9OJRvN6X7P2PKdM58VR1MdzviHqS6h
-         NnRbxHH8agrt2Ew2iEAOGcbFr3lrxgtJSG0lw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=953U8rJ4XL9BO0MAZAoSvNfxJjSMk/eYFo8dV60tgFc=;
-        b=J44Ay6FoEz9ZxzAmxnBsDN1e5whg3+L9telj51FxmVBithMny+jOr306p7T/i29MhN
-         TUOK6FjKXS8jHn5FlfXWXLzxtKVNCrYtsITVfa6+cdvQAHEEpfrs+LTnuIswLZuqmYDX
-         SxeXkxt1HDmuZa6nSTd/87e7utTMl5ZCUyu+nmHShkQNUfJwYBcuV9f9oz9uac+AqUV1
-         trOJWQCUtpbErgx8CJqZEj7AgDfemarNkFVGsSCX+jWmg01zti5MNeEJZR77O/H315b2
-         roeGaK1jcXObgXgFSjIij++k9TmdxQKDo8thpky9EM2LrdmSpvvVn1Usm+klDwShEt80
-         HErw==
-X-Gm-Message-State: AOAM531Nt9YFsyuuLdtWqDAbgv+rgtiW7yj7SCmuyjMnTlrCcnn+kPba
-        LaQxtNlFxY+f/6iiRl4kTcZC3w==
-X-Google-Smtp-Source: ABdhPJwK4X9UEdRlczlObVA8zipBl9vNEDhwutWp0ODiei04VVcvgZUDYK9KSHSJekx+YOkQqo2U/g==
-X-Received: by 2002:a17:903:2041:b0:14f:b0a6:18f5 with SMTP id q1-20020a170903204100b0014fb0a618f5mr22231706pla.50.1646072936309;
-        Mon, 28 Feb 2022 10:28:56 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:f16d:303:27ee:ee6a])
-        by smtp.gmail.com with UTF8SMTPSA id a8-20020a17090a740800b001bc691c79fcsm64964pjg.49.2022.02.28.10.28.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 10:28:55 -0800 (PST)
-Date:   Mon, 28 Feb 2022 10:28:53 -0800
-From:   "mka@chromium.org" <mka@chromium.org>
-To:     "Linyu Yuan (QUIC)" <quic_linyyuan@quicinc.com>
-Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "Tao Wang (Consultant) (QUIC)" <quic_wat@quicinc.com>,
-        "balbi@kernel.org" <balbi@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "dianders@chromium.org" <dianders@chromium.org>,
-        "frowand.list@gmail.com" <frowand.list@gmail.com>,
-        "hadess@hadess.net" <hadess@hadess.net>,
-        "krzk@kernel.org" <krzk@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "mathias.nyman@intel.com" <mathias.nyman@intel.com>,
-        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
-        "peter.chen@kernel.org" <peter.chen@kernel.org>,
-        "ravisadineni@chromium.org" <ravisadineni@chromium.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "rogerq@kernel.org" <rogerq@kernel.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "swboyd@chromium.org" <swboyd@chromium.org>
-Subject: Re: =?utf-8?B?5Zue5aSNOiDlm57lpI0=?= =?utf-8?Q?=3A?= Re: [PATCH v20
- 3/5] usb: misc: Add onboard_usb_hub driver
-Message-ID: <Yh0UZUU9/9Hd6Pc1@google.com>
-References: <SA1PR02MB86067ACF0C96F18B7306D208903A9@SA1PR02MB8606.namprd02.prod.outlook.com>
- <SA1PR02MB860660B6F33011E5A97F7930903A9@SA1PR02MB8606.namprd02.prod.outlook.com>
- <YhURQAksLKVuzU36@google.com>
- <SA1PR02MB860602E0AC4D9BD0BC4245B5903C9@SA1PR02MB8606.namprd02.prod.outlook.com>
- <YhXolQDwIMbTi/O2@kroah.com>
- <DM8PR02MB81988555CA6B66BB3FD5E488E3019@DM8PR02MB8198.namprd02.prod.outlook.com>
+        Mon, 28 Feb 2022 13:40:55 -0500
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A065B45511;
+        Mon, 28 Feb 2022 10:34:18 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=haoxu@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V5oMHbb_1646073255;
+Received: from 192.168.31.208(mailfrom:haoxu@linux.alibaba.com fp:SMTPD_---0V5oMHbb_1646073255)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 01 Mar 2022 02:34:16 +0800
+Message-ID: <9954b806-c4a0-2448-1eac-c8fc5cf2ca2c@linux.alibaba.com>
+Date:   Tue, 1 Mar 2022 02:34:15 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v1] io_uring: Add support for napi_busy_poll
+Content-Language: en-US
+To:     Olivier Langlois <olivier@trillion01.com>,
+        Jens Axboe <axboe@kernel.dk>
+Cc:     Pavel Begunkov <asml.silence@gmail.com>,
+        io-uring <io-uring@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <d11e31bd59c75b2cce994dd90a07e769d4e039db.1645257310.git.olivier@trillion01.com>
+ <aee0e905-7af4-332c-57bc-ece0bca63ce2@linux.alibaba.com>
+ <f84f59e3edd9b4973ea2013b2893d4394a7bdb61.camel@trillion01.com>
+ <2cedc9f21a1c89aa9fe1fa4dffc2ebeabeb761f5.camel@trillion01.com>
+From:   Hao Xu <haoxu@linux.alibaba.com>
+In-Reply-To: <2cedc9f21a1c89aa9fe1fa4dffc2ebeabeb761f5.camel@trillion01.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <DM8PR02MB81988555CA6B66BB3FD5E488E3019@DM8PR02MB8198.namprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 03:08:34AM +0000, Linyu Yuan (QUIC) wrote:
-> > From: gregkh@linuxfoundation.org <gregkh@linuxfoundation.org>
-> > Sent: Wednesday, February 23, 2022 3:56 PM
-> > To: Tao Wang (Consultant) (QUIC) <quic_wat@quicinc.com>
-> > Cc: mka@chromium.org; balbi@kernel.org; devicetree@vger.kernel.org;
-> > dianders@chromium.org; frowand.list@gmail.com; hadess@hadess.net;
-> > krzk@kernel.org; linux-kernel@vger.kernel.org; linux-usb@vger.kernel.org;
-> > mathias.nyman@intel.com; michal.simek@xilinx.com;
-> > peter.chen@kernel.org; ravisadineni@chromium.org; robh+dt@kernel.org;
-> > rogerq@kernel.org; stern@rowland.harvard.edu; swboyd@chromium.org;
-> > Linyu Yuan (QUIC) <quic_linyyuan@quicinc.com>
-> > Subject: Re: 回复: 回复: Re: [PATCH v20 3/5] usb: misc: Add
-> > onboard_usb_hub driver
-> > 
-> > On Wed, Feb 23, 2022 at 07:40:31AM +0000, Tao Wang (Consultant) (QUIC)
-> > wrote:
-> > > Ok, thanks your reply.
-> > >
-> > > Here is my question, we must modify the driver "onboard_usb_hub.c" if
-> > we want to use it. But it's hard to complete because it's an opensource code.
-> > 
-> > I do not understand.  We do not deal with code that is not in the kernel
-> > source tree, as we have no idea what is out there.  Please just submit
-> > your changes to be merged into the tree and all will be fine.
-> 
-> Hi Greg and mka,
-> 
-> Let's make it clear that we are talking about once this driver is approved into usb tree,
-> If we use different USB HUB which have VID/PID not defined in this driver,
-> We need to update this driver.
-> 
-> But if we defined VID/PID in device tree(for a specific board, manufacture should know VID/PID from HUB it used),
-> dynamic parsed by the driver,  then we don't need to change this driver (increase VID/PID table).
 
-As per my earlier reply, the kernel/USB core uses the VID:PID reported
-by the USB device, the compatible string in the device tree is purely
-informational. That's not something that could be changed by this
-driver.
+On 2/25/22 23:32, Olivier Langlois wrote:
+> On Fri, 2022-02-25 at 00:32 -0500, Olivier Langlois wrote:
+>>>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>>>> +static void io_adjust_busy_loop_timeout(struct timespec64 *ts,
+>>>> +                                       struct io_wait_queue
+>>>> *iowq)
+>>>> +{
+>>>> +       unsigned busy_poll_to = READ_ONCE(sysctl_net_busy_poll);
+>>>> +       struct timespec64 pollto = ns_to_timespec64(1000 *
+>>>> (s64)busy_poll_to);
+>>>> +
+>>>> +       if (timespec64_compare(ts, &pollto) > 0) {
+>>>> +               *ts = timespec64_sub(*ts, pollto);
+>>>> +               iowq->busy_poll_to = busy_poll_to;
+>>>> +       } else {
+>>>> +               iowq->busy_poll_to = timespec64_to_ns(ts) / 1000;
+>>> How about timespec64_tons(ts) >> 10, since we don't need accurate
+>>> number.
+>> Fantastic suggestion! The kernel test robot did also detect an issue
+>> with that statement. I did discover do_div() in the meantime but what
+>> you suggest is better, IMHO...
+> After having seen Jens patch (io_uring: don't convert to jiffies for
+> waiting on timeouts), I think that I'll stick with do_div().
+>
+> I have a hard time considering removing timing accuracy when effort is
+> made to make the same function more accurate...
 
-And even if the VID:PID from the device tree was used: how is the
-kernel supposed to know that the onboard_hub driver should be
-probed for a given VID:PID from the device tree, without listing
-the VID:PID (or compatible string) in the driver (which is what
-you seem to seek to avoid)?
+
+I think they are different things. Jens' patch is to resolve the problem
+
+that jiffies possibly can not stand for time < 1ms (when HZ is 1000).
+
+For example, a user assigns 10us, turn out to be 1ms, it's big difference.
+
+But divided by 1000 or 1024 is not that quite different in this case.
+
+>>
+>>>> +                !io_busy_loop_end(iowq, start_time));
+>>>> +}
+>>>> +#endif /* CONFIG_NET_RX_BUSY_POLL */
+>>>> +
+>>>>    /*
+>>>>     * Wait until events become available, if we don't already have
+>>>> some. The
+>>>>     * application must reap them itself, as they reside on the
+>>>> shared cq ring.
+>>>> @@ -7729,12 +7906,20 @@ static int io_cqring_wait(struct
+>>>> io_ring_ctx *ctx, int min_events,
+>>>>                  if (!io_run_task_work())
+>>>>                          break;
+>>>>          } while (1);
+>>>> -
+>>>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>>>> +       iowq.busy_poll_to = 0;
+>>>> +#endif
+>>>>          if (uts) {
+>>>>                  struct timespec64 ts;
+>>>>    
+>>>>                  if (get_timespec64(&ts, uts))
+>>>>                          return -EFAULT;
+>>>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>>>> +               if (!(ctx->flags & IORING_SETUP_SQPOLL) &&
+>>>> +                   !list_empty(&ctx->napi_list)) {
+>>>> +                       io_adjust_busy_loop_timeout(&ts, &iowq);
+>>>> +               }
+>>>> +#endif
+>>>>                  timeout = timespec64_to_jiffies(&ts);
+>>>>          }
+>>>>    
+>>>> @@ -7759,6 +7944,10 @@ static int io_cqring_wait(struct
+>>>> io_ring_ctx
+>>>> *ctx, int min_events,
+>>>>          iowq.cq_tail = READ_ONCE(ctx->rings->cq.head) +
+>>>> min_events;
+>>>>    
+>>>>          trace_io_uring_cqring_wait(ctx, min_events);
+>>>> +#ifdef CONFIG_NET_RX_BUSY_POLL
+>>>> +       if (iowq.busy_poll_to)
+>>>> +               io_blocking_napi_busy_loop(ctx, &iowq);
+>>> We may not need locks for the napi_list, the reason is we don't
+>>> need
+>>> to
+>>> poll an accurate list, the busy polling/NAPI itself is kind of
+>>> speculation. So the deletion is not an emergency.
+>>> To say the least, we can probably delay the deletion to some safe
+>>> place
+>>> like the original task's task work though this may cause other
+>>> problems...
+>> There are 2 concerns here.
+>>
+>> 1. Iterating a list while another thread modify it is not thread-safe
+>> unless you use a lock.
+>>
+>> If we offer napi_busy_poll() without sqpoll with the modification in
+>> io_cqring_wait(), this is a real possibility. A thread could call
+>> io_uring_enter(IORING_ENTER_GETEVENTS) while another thread calls
+>> io_uring_enter() to submit new sqes that could trigger a call to
+>> io_add_napi().
+>>
+>> If napi_busy_poll() is only offered through sqpoll thread, this
+>> becomes
+>> a non-issue since the only thread accessing/modifying the napi_list
+>> field is the sqpoll thread.
+>>
+>> Providing the patch benchmark result with v2 could help deciding what
+>> to do with this choice.
+>>
+>> 2. You are correct when you say that deletion is not an emergency.
+>>
+>> However, the design guideline that I did follow when writing the
+>> patch
+>> is that napi_busy_poll support should not impact users not using this
+>> feature. Doing the deletion where that patch is doing it fullfill
+>> this
+>> goal.
+>>
+>> Comparing a timeout value with the jiffies variable is very cheap and
+>> will only be performed when napi_busy_poll is used.
+>>
+>> The other option would be to add a refcount to each napi_entry and
+>> decrement it if needed everytime a request is discarded. Doing that
+>> that check for every requests that io_uring discards on completion, I
+>> am very confident that this would negatively impact various
+>> performance
+>> benchmarks that Jens routinely perform...
+>>
+> Another fact to consider, it is that I expect the content of napi_list
+> to be extremely stable. Regular entry deletion should not be a thing.
+>
+> postponing the deletion using task work is not an option too. How would
+> io_busy_loop_end() discern between a pending list entry deletion and
+> any other task work making the busy looping stop?
