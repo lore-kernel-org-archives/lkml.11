@@ -2,127 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4036C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D798BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231856AbiB1Mzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:55:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41762 "EHLO
+        id S232145AbiB1M5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:57:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbiB1Mzl (ORCPT
+        with ESMTP id S229903AbiB1M5e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:55:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B82E76E0C;
-        Mon, 28 Feb 2022 04:55:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A96D2B8112D;
-        Mon, 28 Feb 2022 12:55:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B76CDC340EE;
-        Mon, 28 Feb 2022 12:54:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646052900;
-        bh=Xmuf1eL68pU4DmpFVDTtZDXTAA5H0aTtLv3dpQ/Q6N4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=StUkJjrXr26DVsItWgn+XwP8DKEhpOHwTd22e7zZm7HJx8KRf1mG8XcsqDMzQvV9v
-         hpGKgxewowjUALw+9kA5U/+r6+rrKZUVQVuTgFzheHXOv8Yu9o3iNhT3UE5TMO0Y5m
-         YflI+/5m5HDC2NAXdW9NcO03CaxpuIEWOLMVELxfoQBBmE4QSThuIvIgf9fR0wL3rO
-         HlW0yIqNMasJ8Ltf84xuhikoElEjrOMc+C2Xm+04cdWvfsLNkZkahVz2BoZ9fqy6QU
-         xZE4HJXjYDa+OjgU33DtxNXFsvWXlJbbAHMKZt8e+14eErpTPwtOUTFI25AODju+mF
-         oFveaCER83GJg==
-Date:   Mon, 28 Feb 2022 13:55:39 +0100
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     linux-sgx@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4] x86/sgx: Free backing memory after faulting the
- enclave page
-Message-ID: <YhzGS+x0eNoc3gyN@iki.fi>
-References: <20220222120342.5277-1-jarkko@kernel.org>
- <33646f1e-da44-503a-c454-02658d512926@intel.com>
+        Mon, 28 Feb 2022 07:57:34 -0500
+X-Greylist: delayed 2322 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 04:56:52 PST
+Received: from mx.treblig.org (mx.treblig.org [46.43.15.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B536271CAE
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:56:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
+        ; s=bytemarkmx; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID
+        :Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=KXZFUJH9IMivzQ4dLa//v1ZDi0JJT/uywv36ICj5Y9g=; b=lcX1dXwH45zc5S/ujByc+8polV
+        2wVY1WEVAM2fPfI4zPWRCs2Xv0uZumsu7N5e7KnSWfgaLVA7HUMJV3J8evpYuZVzJS+rDwjuTwxNz
+        2RSb1peVyJmmxy3b6dTCsEzAMnmxfu3eT8ZUQQZH7qIFsCbx6DTS3joA1nDnjeHZ1JqTtuNcMv+oz
+        9F2TKAhFqfn2BVdhMbLiRJjPLutAMK6EkL0GdO1e30om1Z7XfLNighHUghScv6EZq9h5i2lgDxfsD
+        SnC0r1vzkPDMe4wT/KjMRwmAj1bAHmsqyUrJ+SQ9wV+vYLEd2sbpIaLrhrZr2Pll90EOmHv6hu21x
+        3K56qZmQ==;
+Received: from dg by mx.treblig.org with local (Exim 4.94.2)
+        (envelope-from <dg@treblig.org>)
+        id 1nOeyc-000qHH-Di; Mon, 28 Feb 2022 12:18:06 +0000
+Date:   Mon, 28 Feb 2022 12:18:06 +0000
+From:   "Dr. David Alan Gilbert" <linux@treblig.org>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     pasha.tatashin@soleen.com, songmuchun@bytedance.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm: Use strtobool for param parsing
+Message-ID: <Yhy9fsyLyY9TU1Yp@gallifrey>
+References: <20220227181038.126926-1-linux@treblig.org>
+ <20220227135128.3f5aabca43c7a33acea91cc8@linux-foundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <33646f1e-da44-503a-c454-02658d512926@intel.com>
+In-Reply-To: <20220227135128.3f5aabca43c7a33acea91cc8@linux-foundation.org>
+X-Chocolate: 70 percent or better cocoa solids preferably
+X-Operating-System: Linux/5.10.0-9-amd64 (x86_64)
+X-Uptime: 12:17:30 up 112 days, 21:50,  1 user,  load average: 0.06, 0.01,
+ 0.00
+User-Agent: Mutt/2.0.5 (2021-01-21)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 09:14:05AM -0800, Dave Hansen wrote:
-> On 2/22/22 04:03, Jarkko Sakkinen wrote:
-> > +	if (pcmd_page_empty) {
-> > +		pgoff_t pcmd_off = encl->size + PAGE_SIZE /* SECS */ +
-> > +				   page_index * sizeof(struct sgx_pcmd);
-> > +
-> > +		sgx_encl_truncate_backing_page(encl, PFN_DOWN(pcmd_off));
-> > +	}
-> > +
-> >  	return ret;
-> >  }
+* Andrew Morton (akpm@linux-foundation.org) wrote:
+> On Sun, 27 Feb 2022 18:10:39 +0000 "Dr. David Alan Gilbert" <linux@treblig.org> wrote:
+> 
+> > Use strtobool rather than open coding "on" and "off" parsing in
+> > mm/hugetlb_vmemmap.c and mm/page_table_check.c.
+> > 
+> > Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
+> > ---
+> >  mm/hugetlb_vmemmap.c  | 12 +-----------
+> >  mm/page_table_check.c | 10 +---------
+> >  2 files changed, 2 insertions(+), 20 deletions(-)
+> > 
+> > diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
+> > index c540c21e26f5b..919411386e547 100644
+> > --- a/mm/hugetlb_vmemmap.c
+> > +++ b/mm/hugetlb_vmemmap.c
+> > @@ -192,17 +192,7 @@ static int __init early_hugetlb_free_vmemmap_param(char *buf)
+> >  		return 0;
+> >  	}
 > >  
-> > @@ -583,7 +613,7 @@ static struct page *sgx_encl_get_backing_page(struct sgx_encl *encl,
-> >  static int sgx_encl_get_backing(struct sgx_encl *encl, unsigned long page_index,
-> >  				struct sgx_backing *backing)
+> > -	if (!buf)
+> > -		return -EINVAL;
+> > -
+> > -	if (!strcmp(buf, "on"))
+> > -		hugetlb_free_vmemmap_enabled = true;
+> > -	else if (!strcmp(buf, "off"))
+> > -		hugetlb_free_vmemmap_enabled = false;
+> > -	else
+> > -		return -EINVAL;
+> > -
+> > -	return 0;
+> > +	return strtobool(buf, &hugetlb_free_vmemmap_enabled);
+> >  }
+> >  early_param("hugetlb_free_vmemmap", early_hugetlb_free_vmemmap_param);
+> 
+> This part falls afoul of the changes in
+> https://lkml.kernel.org/r/20211101031651.75851-3-songmuchun@bytedance.com
+
+Hmm, yes that's quite different.
+
+> > diff --git a/mm/page_table_check.c b/mm/page_table_check.c
+> > index 3763bd077861a..2458281bff893 100644
+> > --- a/mm/page_table_check.c
+> > +++ b/mm/page_table_check.c
+> > @@ -23,15 +23,7 @@ EXPORT_SYMBOL(page_table_check_disabled);
+> >  
+> >  static int __init early_page_table_check_param(char *buf)
 > >  {
-> > -	pgoff_t pcmd_index = PFN_DOWN(encl->size) + 1 + (page_index >> 5);
-> > +	pgoff_t pcmd_off = encl->size + PAGE_SIZE /* SECS */ + page_index * sizeof(struct sgx_pcmd);
+> > -	if (!buf)
+> > -		return -EINVAL;
+> > -
+> > -	if (strcmp(buf, "on") == 0)
+> > -		__page_table_check_enabled = true;
+> > -	else if (strcmp(buf, "off") == 0)
+> > -		__page_table_check_enabled = false;
+> > -
+> > -	return 0;
+> > +	return strtobool(buf, &__page_table_check_enabled);
+> >  }
 > 
-> Jarkko, I really don't like how this looks.  The '/* SECS */' thing is
-> pretty ugly and the comment in the middle of an arithmetic operation is
-> just really hard to read.
-> 
-> Then, there's the fact that this gem is copied-and-pasted.  Oh, and it
-> looks a wee bit over 80 columns.
+> But this works OK.
 
-Today you can have 100.
+Thanks for taking it.
 
-> 
-> I went to the trouble of writing a nice, fully-fleshed-out helper
-> function for this with a comment included:
-> 
-> > https://lore.kernel.org/all/8afec431-4dfc-d8df-152b-76cca0e17ccb@intel.com/
+Dave
 
-Keeping full byte offset up until parts of it are required for something
-makes the formula just a simple equation of additions and multiplications,
-e.g. nothing like "/ sizeof(struct sgx_pcmd)" is required.
-
-Then you get the PCMD page index will be just PFN_DOWN(pcmd_off) and offset
-inside that page is pcmd_off & PAGE_MASK. At least fro me this is more 
-intuitive way to do the calculations.
- 
-I thought that the formula is so simple that it does not matter if it is
-just in two sites open coded but I can wrap it too, if required, e.g.
-
-/* 
- * Calculate byte offset of a PCMD struct associated to an enclave page.
- * PCMD's follow right after the EPC data in the backing storage. In
- * addition to the visible enclave pages, there's one extra page slot
- * for SECS, before PCMD data.
- */
-static pgoff_t *sgx_encl_page_index_to_pcmd_offset(struct sgx_encl *encl, unsigned long page_index)
-{
-        return encl->size + PAGE_SIZE + page_index * sizeof(struct sgx_pcmd);
-}
-
-> 
-> Was there a problem using that?  The change from the last version is:
-> 
-> * Sanitized the offset calculations.
-> 
-> Given that there have been multiple different calculations over the four
-> versions so far, which version was right?  v3 or v4?
-
-This one has correct and tested calculations but for peer test probably
-Reinette should verify that. I tested this with my laptop in bare metal.
-
-BR, Jarkko
+-- 
+ -----Open up your eyes, open up your mind, open up your code -------   
+/ Dr. David Alan Gilbert    |       Running GNU/Linux       | Happy  \ 
+\        dave @ treblig.org |                               | In Hex /
+ \ _________________________|_____ http://www.treblig.org   |_______/
