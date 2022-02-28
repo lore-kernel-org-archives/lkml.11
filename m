@@ -2,277 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C8FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 00:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 435BFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 00:38:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229870AbiB1AUP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 19:20:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33944 "EHLO
+        id S231303AbiB1Agd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 19:36:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbiB1AUO (ORCPT
+        with ESMTP id S229662AbiB1Agb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 19:20:14 -0500
-X-Greylist: delayed 317 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Feb 2022 16:19:35 PST
-Received: from mail.stoffel.org (li1843-175.members.linode.com [172.104.24.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 978DB6B08B;
-        Sun, 27 Feb 2022 16:19:35 -0800 (PST)
-Received: from quad.stoffel.org (068-116-170-226.res.spectrum.com [68.116.170.226])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.stoffel.org (Postfix) with ESMTPSA id 989E32708E;
-        Sun, 27 Feb 2022 19:14:17 -0500 (EST)
-Received: by quad.stoffel.org (Postfix, from userid 1000)
-        id DBCDDA7992; Sun, 27 Feb 2022 19:14:16 -0500 (EST)
-Date:   Sun, 27 Feb 2022 19:14:16 -0500
-From:   John Stoffel <john@quad.stoffel.home>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
-        Jonathan Corbet <corbet@lwn.net>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-btrfs@vger.kernel.org
-Subject: Re: [PATCH] Kbuild: remove -std=gnu89 from compiler arguments
-Message-ID: <YhwT2Gw8vsQHPxAB@quad.stoffel.home>
-References: <20220227215408.3180023-1-arnd@kernel.org>
+        Sun, 27 Feb 2022 19:36:31 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 342EE33898
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 16:35:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646008553; x=1677544553;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ju/ahSvh3V63osNQufDEa/Zwmy86Fj+p0AVW8P94SfY=;
+  b=Vckf1RwNxkV5cz2egR1VQG+PC3b8j6rEsjmlXTUpPdUOSSZ+pF9KQExC
+   DUn5NcYaWSQWsK2Q4WuCu44+3jUzW22CMUdorkcBWdK5Yyj0jQh1O+rxQ
+   Hy+pLfy7LV5+GruhOql3HDB2C558Esn1Hb9LGpZhLv7aX6JIENwFpjysN
+   6OQtNeGFnUAZcJdN6lBWxFo6l07NQWirWRHzU2XlXUhS1EtgUk8o9u/yq
+   BRPU7ihjXM0naN6ghmYl+XmhwUs7fpC0Href7lYF8cI+pth/VFinp5R7e
+   IM/WHdd9iDwXhafyhG+Z6babW7Dtw8l5gt3gbtcH7LI072x8cF3GvQmiG
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="252698950"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="252698950"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 16:35:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="640715463"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 27 Feb 2022 16:35:45 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOU0v-0006tS-2Z; Mon, 28 Feb 2022 00:35:45 +0000
+Date:   Mon, 28 Feb 2022 08:34:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [arm-de:wip/uclamp_util_cap 1/2] kernel/sched/fair.c:8262:19: error:
+ too few arguments to function 'update_cfs_rq_load_avg'
+Message-ID: <202202280821.7AOCORMK-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220227215408.3180023-1-arnd@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 10:52:43PM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> During a patch discussion, Linus brought up the option of changing
-> the C standard version from gnu89 to gnu99, which allows using variable
-> declaration inside of a for() loop. While the C99, C11 and later standards
-> introduce many other features, most of these are already available in
-> gnu89 as GNU extensions as well.
-> 
-> An earlier attempt to do this when gcc-5 started defaulting to
-> -std=gnu11 failed because at the time that caused warnings about
-> designated initializers with older compilers. Now that gcc-5.1 is the
-> minimum compiler version used for building kernels, that is no longer a
-> concern. Similarly, the behavior of 'inline' functions changes between
-> gnu89 and gnu89, but this was taken care of by defining 'inline' to
+tree:   https://git.gitlab.arm.com/linux-arm/linux-de.git wip/uclamp_util_cap
+head:   df7ef1cab37eca401198f547fd206c7c180fdac5
+commit: adad7d47ad753ee91ed6c61c55a3a078031d99c3 [1/2] sched/fair, pelt: Force rng se/cfs_rq to !rng if se's util_avg>=uclamp_max for tasks
+config: arc-defconfig (https://download.01.org/0day-ci/archive/20220228/202202280821.7AOCORMK-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add arm-de https://git.gitlab.arm.com/linux-arm/linux-de.git
+        git fetch --no-tags arm-de wip/uclamp_util_cap
+        git checkout adad7d47ad753ee91ed6c61c55a3a078031d99c3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash
 
-Typo here?  Second one should be gnu99 right?
-     
-> include __attribute__((gnu_inline)) in order to allow building with
-> clang a while ago.
-> 
-> One minor issue that remains is an added gcc warning for shifts of
-> negative integers when building with -Werror, which happens with the
-> 'make W=1' option, as well as for three drivers in the kernel that always
-> enable -Werror, but it was only observed with the i915 driver so far.
-> 
-> Nathan Chancellor reported an additional -Wdeclaration-after-statement
-> warning that appears in a system header on arm, this still needs a
-> workaround.
-> 
-> Since the differences between gnu99, gnu11 and gnu17 are fairly minimal
-> and mainly impact warnings at the -Wpedantic level that the kernel
-> never enables, the easiest way is to just leave out the -std=gnu89
-> argument entirely, and rely on the compiler default language setting,
-> which is gnu11 for gcc-5, and gnu1x/gnu17 for all other supported
-> versions of gcc or clang.
-> 
-> Link: https://lore.kernel.org/lkml/CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com/
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1603
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
-> Cc: linux-kbuild@vger.kernel.org
-> Cc: llvm@lists.linux.dev
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> I put the suggestion into patch form, based on what we discussed
-> in the thread.  I only gave it minimal testing, but it would
-> be good to have it in linux-next if we want to do this in the
-> merge window.
-> ---
->  Documentation/process/programming-language.rst             | 4 ++--
->  .../translations/it_IT/process/programming-language.rst    | 4 ++--
->  .../translations/zh_CN/process/programming-language.rst    | 4 ++--
->  .../translations/zh_TW/process/programming-language.rst    | 4 ++--
->  Makefile                                                   | 7 +++----
->  arch/arm64/kernel/vdso32/Makefile                          | 3 +--
->  drivers/gpu/drm/i915/Makefile                              | 1 +
->  drivers/staging/greybus/tools/Makefile                     | 3 ++-
->  fs/btrfs/Makefile                                          | 1 +
->  scripts/Makefile.extrawarn                                 | 1 +
->  10 files changed, 17 insertions(+), 15 deletions(-)
-> 
-> diff --git a/Documentation/process/programming-language.rst b/Documentation/process/programming-language.rst
-> index ec474a70a02f..894f2a6eb9db 100644
-> --- a/Documentation/process/programming-language.rst
-> +++ b/Documentation/process/programming-language.rst
-> @@ -5,8 +5,8 @@ Programming Language
->  
->  The kernel is written in the C programming language [c-language]_.
->  More precisely, the kernel is typically compiled with ``gcc`` [gcc]_
-> -under ``-std=gnu89`` [gcc-c-dialect-options]_: the GNU dialect of ISO C90
-> -(including some C99 features). ``clang`` [clang]_ is also supported, see
-> +under ``-std=gnu11`` [gcc-c-dialect-options]_: the GNU dialect of ISO C11
-> +(including some C17 features). ``clang`` [clang]_ is also supported, see
->  docs on :ref:`Building Linux with Clang/LLVM <kbuild_llvm>`.
->  
->  This dialect contains many extensions to the language [gnu-extensions]_,
-> diff --git a/Documentation/translations/it_IT/process/programming-language.rst b/Documentation/translations/it_IT/process/programming-language.rst
-> index 41db2598ce11..aa21097737ae 100644
-> --- a/Documentation/translations/it_IT/process/programming-language.rst
-> +++ b/Documentation/translations/it_IT/process/programming-language.rst
-> @@ -10,8 +10,8 @@ Linguaggio di programmazione
->  
->  Il kernel è scritto nel linguaggio di programmazione C [it-c-language]_.
->  Più precisamente, il kernel viene compilato con ``gcc`` [it-gcc]_ usando
-> -l'opzione ``-std=gnu89`` [it-gcc-c-dialect-options]_: il dialetto GNU
-> -dello standard ISO C90 (con l'aggiunta di alcune funzionalità da C99).
-> +l'opzione ``-std=gnu11`` [it-gcc-c-dialect-options]_: il dialetto GNU
-> +dello standard ISO C11 (con l'aggiunta di alcune funzionalità da C17).
->  Linux supporta anche ``clang`` [it-clang]_, leggete la documentazione
->  :ref:`Building Linux with Clang/LLVM <kbuild_llvm>`.
->  
-> diff --git a/Documentation/translations/zh_CN/process/programming-language.rst b/Documentation/translations/zh_CN/process/programming-language.rst
-> index 2a47a1d2ec20..58d2b3bd2d85 100644
-> --- a/Documentation/translations/zh_CN/process/programming-language.rst
-> +++ b/Documentation/translations/zh_CN/process/programming-language.rst
-> @@ -9,8 +9,8 @@
->  ============
->  
->  内核是用C语言 :ref:`c-language <cn_c-language>` 编写的。更准确地说，内核通常是用 :ref:`gcc <cn_gcc>`
-> -在 ``-std=gnu89`` :ref:`gcc-c-dialect-options <cn_gcc-c-dialect-options>` 下编译的：ISO C90的 GNU 方言（
-> -包括一些C99特性）
-> +在 ``-std=gnu11`` :ref:`gcc-c-dialect-options <cn_gcc-c-dialect-options>` 下编译的：ISO C11的 GNU 方言（
-> +包括一些C17特性）
->  
->  这种方言包含对语言 :ref:`gnu-extensions <cn_gnu-extensions>` 的许多扩展，当然，它们许多都在内核中使用。
->  
-> diff --git a/Documentation/translations/zh_TW/process/programming-language.rst b/Documentation/translations/zh_TW/process/programming-language.rst
-> index 54e3699eadf8..235de05f7e2c 100644
-> --- a/Documentation/translations/zh_TW/process/programming-language.rst
-> +++ b/Documentation/translations/zh_TW/process/programming-language.rst
-> @@ -12,8 +12,8 @@
->  ============
->  
->  內核是用C語言 :ref:`c-language <tw_c-language>` 編寫的。更準確地說，內核通常是用 :ref:`gcc <tw_gcc>`
-> -在 ``-std=gnu89`` :ref:`gcc-c-dialect-options <tw_gcc-c-dialect-options>` 下編譯的：ISO C90的 GNU 方言（
-> -包括一些C99特性）
-> +在 ``-std=gnu11`` :ref:`gcc-c-dialect-options <tw_gcc-c-dialect-options>` 下編譯的：ISO C11的 GNU 方言（
-> +包括一些C17特性）
->  
->  這種方言包含對語言 :ref:`gnu-extensions <tw_gnu-extensions>` 的許多擴展，當然，它們許多都在內核中使用。
->  
-> diff --git a/Makefile b/Makefile
-> index 289ce2be8032..3ff6ba766f02 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -432,7 +432,7 @@ HOSTCXX	= g++
->  endif
->  
->  export KBUILD_USERCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
-> -			      -O2 -fomit-frame-pointer -std=gnu89
-> +			      -O2 -fomit-frame-pointer
->  export KBUILD_USERLDFLAGS :=
->  
->  KBUILD_HOSTCFLAGS   := $(KBUILD_USERCFLAGS) $(HOST_LFS_CFLAGS) $(HOSTCFLAGS)
-> @@ -514,8 +514,7 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__ -fno-PIE
->  KBUILD_CFLAGS   := -Wall -Wundef -Werror=strict-prototypes -Wno-trigraphs \
->  		   -fno-strict-aliasing -fno-common -fshort-wchar -fno-PIE \
->  		   -Werror=implicit-function-declaration -Werror=implicit-int \
-> -		   -Werror=return-type -Wno-format-security \
-> -		   -std=gnu89
-> +		   -Werror=return-type -Wno-format-security
->  KBUILD_CPPFLAGS := -D__KERNEL__
->  KBUILD_AFLAGS_KERNEL :=
->  KBUILD_CFLAGS_KERNEL :=
-> @@ -782,7 +781,7 @@ KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
->  
->  ifdef CONFIG_CC_IS_CLANG
->  KBUILD_CPPFLAGS += -Qunused-arguments
-> -# The kernel builds with '-std=gnu89' so use of GNU extensions is acceptable.
-> +# The kernel builds with '-std=gnu11' so use of GNU extensions is acceptable.
->  KBUILD_CFLAGS += -Wno-gnu
->  # CLANG uses a _MergedGlobals as optimization, but this breaks modpost, as the
->  # source of a reference will be _MergedGlobals and not on of the whitelisted names.
-> diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32/Makefile
-> index 6c01b63ff56d..3250d0e25782 100644
-> --- a/arch/arm64/kernel/vdso32/Makefile
-> +++ b/arch/arm64/kernel/vdso32/Makefile
-> @@ -67,8 +67,7 @@ VDSO_CFLAGS += -DENABLE_COMPAT_VDSO=1
->  VDSO_CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
->                 -fno-strict-aliasing -fno-common \
->                 -Werror-implicit-function-declaration \
-> -               -Wno-format-security \
-> -               -std=gnu89
-> +               -Wno-format-security
->  VDSO_CFLAGS  += -O2
->  # Some useful compiler-dependent flags from top-level Makefile
->  VDSO_CFLAGS += $(call cc32-option,-Wdeclaration-after-statement,)
-> diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefile
-> index 1b62b9f65196..1618a6e0af4e 100644
-> --- a/drivers/gpu/drm/i915/Makefile
-> +++ b/drivers/gpu/drm/i915/Makefile
-> @@ -17,6 +17,7 @@ subdir-ccflags-y += -Wno-unused-parameter
->  subdir-ccflags-y += -Wno-type-limits
->  subdir-ccflags-y += -Wno-missing-field-initializers
->  subdir-ccflags-y += -Wno-sign-compare
-> +subdir-ccflags-y += -Wno-shift-negative-value
->  subdir-ccflags-y += $(call cc-disable-warning, unused-but-set-variable)
->  subdir-ccflags-y += $(call cc-disable-warning, frame-address)
->  subdir-ccflags-$(CONFIG_DRM_I915_WERROR) += -Werror
-> diff --git a/drivers/staging/greybus/tools/Makefile b/drivers/staging/greybus/tools/Makefile
-> index ad0ae8053b79..a3bbd73171f2 100644
-> --- a/drivers/staging/greybus/tools/Makefile
-> +++ b/drivers/staging/greybus/tools/Makefile
-> @@ -12,7 +12,8 @@ CFLAGS	+= -std=gnu99 -Wall -Wextra -g \
->  	    -Wredundant-decls \
->  	    -Wcast-align \
->  	    -Wsign-compare \
-> -	    -Wno-missing-field-initializers
-> +	    -Wno-missing-field-initializers \
-> +	    -Wno-shift-negative-value
->  
->  CC	:= $(CROSS_COMPILE)gcc
->  
-> diff --git a/fs/btrfs/Makefile b/fs/btrfs/Makefile
-> index 4188ba3fd8c3..99f9995670ea 100644
-> --- a/fs/btrfs/Makefile
-> +++ b/fs/btrfs/Makefile
-> @@ -17,6 +17,7 @@ subdir-ccflags-y += $(condflags)
->  subdir-ccflags-y += -Wno-missing-field-initializers
->  subdir-ccflags-y += -Wno-sign-compare
->  subdir-ccflags-y += -Wno-type-limits
-> +subdir-ccflags-y += -Wno-shift-negative-value
->  
->  obj-$(CONFIG_BTRFS_FS) := btrfs.o
->  
-> diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-> index 8be892887d71..650d0b8ceec3 100644
-> --- a/scripts/Makefile.extrawarn
-> +++ b/scripts/Makefile.extrawarn
-> @@ -36,6 +36,7 @@ KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
->  KBUILD_CFLAGS += -Wno-missing-field-initializers
->  KBUILD_CFLAGS += -Wno-sign-compare
->  KBUILD_CFLAGS += -Wno-type-limits
-> +KBUILD_CFLAGS += -Wno-shift-negative-value
->  
->  KBUILD_CPPFLAGS += -DKBUILD_EXTRA_WARN1
->  
-> -- 
-> 2.29.2
-> 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
--- 
+All errors (new ones prefixed by >>):
+
+   kernel/sched/fair.c:5514:6: warning: no previous prototype for 'init_cfs_bandwidth' [-Wmissing-prototypes]
+    5514 | void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b) {}
+         |      ^~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c: In function '__update_blocked_fair':
+>> kernel/sched/fair.c:8262:19: error: too few arguments to function 'update_cfs_rq_load_avg'
+    8262 |         decayed = update_cfs_rq_load_avg(cfs_rq_clock_pelt(cfs_rq), cfs_rq);
+         |                   ^~~~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c:3698:1: note: declared here
+    3698 | update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq, int running)
+         | ^~~~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c: At top level:
+   kernel/sched/fair.c:11742:6: warning: no previous prototype for 'free_fair_sched_group' [-Wmissing-prototypes]
+   11742 | void free_fair_sched_group(struct task_group *tg) { }
+         |      ^~~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c:11744:5: warning: no previous prototype for 'alloc_fair_sched_group' [-Wmissing-prototypes]
+   11744 | int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c:11749:6: warning: no previous prototype for 'online_fair_sched_group' [-Wmissing-prototypes]
+   11749 | void online_fair_sched_group(struct task_group *tg) { }
+         |      ^~~~~~~~~~~~~~~~~~~~~~~
+   kernel/sched/fair.c:11751:6: warning: no previous prototype for 'unregister_fair_sched_group' [-Wmissing-prototypes]
+   11751 | void unregister_fair_sched_group(struct task_group *tg) { }
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/update_cfs_rq_load_avg +8262 kernel/sched/fair.c
+
+9763b67fb9f305 kernel/sched_fair.c Peter Zijlstra   2011-07-13  8247  
+367456c756a6b8 kernel/sched/fair.c Peter Zijlstra   2012-02-20  8248  static unsigned long task_h_load(struct task_struct *p)
+230059de77a4e0 kernel/sched_fair.c Peter Zijlstra   2009-12-17  8249  {
+367456c756a6b8 kernel/sched/fair.c Peter Zijlstra   2012-02-20  8250  	struct cfs_rq *cfs_rq = task_cfs_rq(p);
+230059de77a4e0 kernel/sched_fair.c Peter Zijlstra   2009-12-17  8251  
+685207963be973 kernel/sched/fair.c Vladimir Davydov 2013-07-15  8252  	update_cfs_rq_h_load(cfs_rq);
+9d89c257dfb9c5 kernel/sched/fair.c Yuyang Du        2015-07-15  8253  	return div64_ul(p->se.avg.load_avg * cfs_rq->h_load,
+7ea241afbf4924 kernel/sched/fair.c Yuyang Du        2015-07-15  8254  			cfs_rq_load_avg(cfs_rq) + 1);
+230059de77a4e0 kernel/sched_fair.c Peter Zijlstra   2009-12-17  8255  }
+230059de77a4e0 kernel/sched_fair.c Peter Zijlstra   2009-12-17  8256  #else
+bef69dd87828ef kernel/sched/fair.c Vincent Guittot  2019-11-18  8257  static bool __update_blocked_fair(struct rq *rq, bool *done)
+9e3081ca61147b kernel/sched_fair.c Peter Zijlstra   2010-11-15  8258  {
+6c1d47c0827304 kernel/sched/fair.c Vincent Guittot  2015-07-15  8259  	struct cfs_rq *cfs_rq = &rq->cfs;
+bef69dd87828ef kernel/sched/fair.c Vincent Guittot  2019-11-18  8260  	bool decayed;
+b90f7c9d2198d7 kernel/sched/fair.c Vincent Guittot  2019-10-30  8261  
+bef69dd87828ef kernel/sched/fair.c Vincent Guittot  2019-11-18 @8262  	decayed = update_cfs_rq_load_avg(cfs_rq_clock_pelt(cfs_rq), cfs_rq);
+bef69dd87828ef kernel/sched/fair.c Vincent Guittot  2019-11-18  8263  	if (cfs_rq_has_blocked(cfs_rq))
+bef69dd87828ef kernel/sched/fair.c Vincent Guittot  2019-11-18  8264  		*done = false;
+b90f7c9d2198d7 kernel/sched/fair.c Vincent Guittot  2019-10-30  8265  
+bef69dd87828ef kernel/sched/fair.c Vincent Guittot  2019-11-18  8266  	return decayed;
+9e3081ca61147b kernel/sched_fair.c Peter Zijlstra   2010-11-15  8267  }
+9e3081ca61147b kernel/sched_fair.c Peter Zijlstra   2010-11-15  8268  
+
+:::::: The code at line 8262 was first introduced by commit
+:::::: bef69dd87828ef5d8ecdab8d857cd3a33cf98675 sched/cpufreq: Move the cfs_rq_util_change() call to cpufreq_update_util()
+
+:::::: TO: Vincent Guittot <vincent.guittot@linaro.org>
+:::::: CC: Ingo Molnar <mingo@kernel.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
