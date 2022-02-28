@@ -2,126 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A650C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236625AbiB1Rbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:31:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47378 "EHLO
+        id S235513AbiB1Rbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:31:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234712AbiB1RaH (ORCPT
+        with ESMTP id S236825AbiB1RaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:30:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9E452B2C;
-        Mon, 28 Feb 2022 09:28:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B282561358;
-        Mon, 28 Feb 2022 17:28:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF028C340E7;
-        Mon, 28 Feb 2022 17:28:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069299;
-        bh=BxCuIGi7ZJPatYBs5BVdEEY0J5pI9k4Ffs5MQyrDOnc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k3A8P1Q5yrml+8i1Mhse7Wbl1amPwnfjNS3HqYg2UBikLkOJGUt3s3MWvr6OczGjY
-         XYYENZpQHjdQhtEp2mhrSfq47dJMUB/qBtTJvNaXNjsL9CNPASd99qsMkJ9ptkAyb6
-         pUcub4gwZM6+0sNiWkwg0Ck9XOM4TmD+Pc0VNeRU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        Ross Maynard <bids.7405@bigpond.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 06/31] USB: zaurus: support another broken Zaurus
-Date:   Mon, 28 Feb 2022 18:24:02 +0100
-Message-Id: <20220228172200.465592997@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
-References: <20220228172159.515152296@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 28 Feb 2022 12:30:06 -0500
+Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAABC39141;
+        Mon, 28 Feb 2022 09:28:16 -0800 (PST)
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21SFwZIi005113;
+        Mon, 28 Feb 2022 11:28:00 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=hJyMgu10+wDVVVmx3Uz2z1AZCqWoyXyWQeA8jODxgcU=;
+ b=NWo0/pFmdBE5l35It4SLiVOMW9FocenTW9+5OPtfww8JmLcwKzYOcBAn/3/McZMoam3b
+ gZ3ErTzwRqClezgiRYhZsmcxRZenjBClcpnu7ZEyEumMGnbcrnbP3q/q1/h7CUuW321N
+ 9cmIxGkJizYUliXOI8rVHJIm5HTL7S8KwnGljUGsd4tSrWUkYofKPFQikGFod6mdpLeO
+ Xt4Nfxx/l7vXkogCGkbdwdnVFEjz44E7fiqN9pBbsrT6zOPE2nfuXS+af5+RWPti8m61
+ 5xaM3ehjXN59dq7ERyRF+m6Esanmb2bl1NirhCOXq2eOJ5LmPeFihZFD3tqHSxca0yIk GQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3efjg5thq9-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 28 Feb 2022 11:28:00 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 28 Feb
+ 2022 17:27:58 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Mon, 28 Feb 2022 17:27:58 +0000
+Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.64.213])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id D0E3B11D1;
+        Mon, 28 Feb 2022 17:27:57 +0000 (UTC)
+From:   Richard Fitzgerald <rf@opensource.cirrus.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <kuninori.morimoto.gx@renesas.com>
+CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>
+Subject: [PATCH V3 1/2] ASoC: dt-bindings: audio-graph-port: Add dai-tdm-slot-width-map
+Date:   Mon, 28 Feb 2022 17:27:53 +0000
+Message-ID: <20220228172754.453783-2-rf@opensource.cirrus.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220228172754.453783-1-rf@opensource.cirrus.com>
+References: <20220228172754.453783-1-rf@opensource.cirrus.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: gjOhI31-cuws5YeiF9dweQtsVHZUV4Wf
+X-Proofpoint-ORIG-GUID: gjOhI31-cuws5YeiF9dweQtsVHZUV4Wf
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+Some audio hardware cannot support a fixed slot width for all sample
+widths, or a slot width equal to the sample width for all sample widths.
+This is usually due either to limitations of the audio serial port or
+system clocking restrictions.
 
-commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c upstream.
+This property allows setting a mapping of sample widths and the
+corresponding tdm slot widths. The slot count is also provided for
+each slot width - although this would almost always be the same for
+all slot widths this allows for possibly adding extra padding slots
+to maintain a fixed bitclock frequency.
 
-This SL-6000 says Direct Line, not Ethernet
-
-v2: added Reporter and Link
-
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reported-by: Ross Maynard <bids.7405@bigpond.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
 ---
- drivers/net/usb/cdc_ether.c |   12 ++++++++++++
- drivers/net/usb/zaurus.c    |   12 ++++++++++++
- 2 files changed, 24 insertions(+)
+ .../bindings/sound/audio-graph-port.yaml      | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
---- a/drivers/net/usb/cdc_ether.c
-+++ b/drivers/net/usb/cdc_ether.c
-@@ -584,6 +584,11 @@ static const struct usb_device_id	produc
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+diff --git a/Documentation/devicetree/bindings/sound/audio-graph-port.yaml b/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
+index 476dcb49ece6..5c368674d11a 100644
+--- a/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
++++ b/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
+@@ -71,4 +71,24 @@ patternProperties:
+         description: CPU to Codec rate channels.
+         $ref: /schemas/types.yaml#/definitions/uint32
  
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++      dai-tdm-slot-width-map:
++        description: Mapping of sample widths to slot widths. For hardware
++          that cannot support a fixed slot width or a slot width always
++          equal to sample width. A matrix of one or more 3-tuples.
++        $ref: /schemas/types.yaml#/definitions/uint32-matrix
++        items:
++          items:
++            -
++              description: Sample width in bits
++              minimum: 8
++              maximum: 64
++            -
++              description: Slot width in bits
++              minimum: 8
++              maximum: 256
++            -
++              description: Slot count
++              minimum: 1
++              maximum: 64
 +
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
-  * wire-incompatible with true CDC Ethernet implementations.
-  * (And, it seems, needlessly so...)
-@@ -639,6 +644,13 @@ static const struct usb_device_id	produc
- 	.driver_info		= 0,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+		 | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor               = 0x04DD,
-+	.idProduct              = 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info		= 0,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
- 	.idVendor               = 0x04DD,
- 	/* reported with some C860 units */
---- a/drivers/net/usb/zaurus.c
-+++ b/drivers/net/usb/zaurus.c
-@@ -268,6 +268,11 @@ static const struct usb_device_id	produc
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
- 
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
-+
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
- {
- 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
-@@ -327,6 +332,13 @@ static const struct usb_device_id	produc
- 	.driver_info = ZAURUS_PXA_INFO,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+			    | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor		= 0x04DD,
-+	.idProduct		= 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info = (unsigned long)&bogus_mdlm_info,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
- 	.idVendor               = 0x04DD,
- 	/* reported with some C860 units */
-
+ additionalProperties: true
+-- 
+2.30.2
 
