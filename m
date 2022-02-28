@@ -2,118 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 22:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C00A5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 22:42:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231614AbiB1Wk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 17:40:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45230 "EHLO
+        id S230371AbiB1WnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 17:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231526AbiB1WkI (ORCPT
+        with ESMTP id S229551AbiB1WnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 17:40:08 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 609C6125C84;
-        Mon, 28 Feb 2022 14:39:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646087969; x=1677623969;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=gs5S60D5Gva7TQIgAcoMKq8XEKYr+M9gys943f6RNt8=;
-  b=lzBM+l3suF2ilW8kMY/iVGgnaBdlqsDUaq0wpzejCGPlgnTkPScGnDrJ
-   C/WfV+JAL0PJ4l11WFly/Zn6aH9yUlPgjDWomZkJso366kFU6WSxIMWn2
-   TAD70otaFG1f6u39p1jY0xUjfAvRMp2ocfvK/WvlJos4/gxvmh3zR8qDB
-   RcO+5psQJzS3NU/lXvTSejPL1yJBBV7nfGhJDQg+nITLt0kWXlyX1TXDD
-   N2dXLoR55guVngRL5qOz2BStoSM4w7WPaLLZtr2o60jut8RvKCgkkl4qB
-   jdX488GjD5fLH21ruRpg+RPIAUL9JAvmu232AVtfc7RdIJaEt0pnM82Sh
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="316219519"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="316219519"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 14:39:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="639150677"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 28 Feb 2022 14:39:27 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3D08A24C; Tue,  1 Mar 2022 00:39:42 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>
-Subject: [PATCH v1 6/7] ACPI: enumeration: Unify Package () for properties
-Date:   Tue,  1 Mar 2022 00:39:35 +0200
-Message-Id: <20220228223936.54310-6-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220228223936.54310-1-andriy.shevchenko@linux.intel.com>
-References: <20220228223936.54310-1-andriy.shevchenko@linux.intel.com>
+        Mon, 28 Feb 2022 17:43:05 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359275F92
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 14:42:26 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id y24so452675ljh.11
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 14:42:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=izAQUggyP+5/oVhiuZDs8c+/hcOxRl41iBfO6/Va0lE=;
+        b=gdhZ7E6qyVixQYbKXVG63vM2xxb0swnRwsBzKeIqWG+fvd2iqhAyhIGljd7cmjcZk+
+         VR0ScDUTHEHFo886kC5m1yLaFtBCSaxGF8GxeWo+jc9QYY+zeoG6JzMqgBDKYVLOvOLh
+         RDcjCrs31LKoUs+2CZ4lKeaBV+t9lou9IkWaXm01N/ieXDUWpXKj1+GKvYSSTn/ucwiQ
+         xOQy2ZQ4KfSJOuJq6Dwvy59kumfzDJGCNtAzV9eaVqcqkKkDbvvh9EzYgF2XkstDB/44
+         6af2uolk/7inaQ8fKQLIbomP/hHrh1kyhBCozZUGBlNhuQrEEX4Z8CusUwLIcUxSxIzt
+         6ppg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=izAQUggyP+5/oVhiuZDs8c+/hcOxRl41iBfO6/Va0lE=;
+        b=1FvBynG2A5hTvYeSCCKnAkRa9+ggyCChJyxJCOpweP+oMyvssjbFBcgKOvSpYBdeOM
+         1IDe1IPXwi2uWcqgFWaORE+KHvWLuBQTgsNksPqfMa1rkHReoRLag55D7jC0JVd+1z27
+         vADkqemgMXOrzrNFaDnfCNIzB/+etBOii5LGqCRUjIjIj+QFIjDgSV261WhA3iw1gncC
+         d97GTN9SAvaQiLvqGB/VpMmXQX5qUQrtYNcz6O5ye2rjtv9cB2FJGFGLm/UkCXGc1EvM
+         Wxd7KiE4DwYx6Wj4h70fxRM22/oGrOJAcAoWNjq2vHTqIsIT2ciyMTub42QUT/28gy9D
+         fLxw==
+X-Gm-Message-State: AOAM533rjElsSyrq4jUFnUH3UNgeMilxbA+uzzWF/BXIDwcNCvOZumsr
+        IwbcpeLJwAWTLCXIJHGuZxeqHEWZ98zovydz4axIWA==
+X-Google-Smtp-Source: ABdhPJzvQ1kr0rlRYJB1BEesLr5I7VO9esTcIjTZCi65uc18521AsP4dIy+Ihsbg2tS+cZ/NY2TvWS6w4S+ZilQ+PiA=
+X-Received: by 2002:a2e:bf24:0:b0:246:801e:39d3 with SMTP id
+ c36-20020a2ebf24000000b00246801e39d3mr8704495ljr.472.1646088144327; Mon, 28
+ Feb 2022 14:42:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220225221625.3531852-1-keescook@chromium.org>
+In-Reply-To: <20220225221625.3531852-1-keescook@chromium.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 28 Feb 2022 14:42:12 -0800
+Message-ID: <CAKwvOdm5pRtyf8W2c4q_xt353Kp+BSsC7qo5OE6VOEfOLCOJZQ@mail.gmail.com>
+Subject: Re: [PATCH] mm: Handle ksize() vs __alloc_size by forgetting size
+To:     Kees Cook <keescook@chromium.org>
+Cc:     llvm@lists.linux.dev, Marco Elver <elver@google.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
+        stable@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Christoph Lameter <cl@linux.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Daniel Micay <danielmicay@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unify Package () representation for properties:
- - make them one line where it's possible
- - add spaces between parentheses and curly braces
- - drop the explicit size of package
+On Fri, Feb 25, 2022 at 2:16 PM Kees Cook <keescook@chromium.org> wrote:
+>
+> diff --git a/include/linux/slab.h b/include/linux/slab.h
+> index 37bde99b74af..a14f3bfa2f44 100644
+> --- a/include/linux/slab.h
+> +++ b/include/linux/slab.h
+> @@ -182,8 +182,32 @@ int kmem_cache_shrink(struct kmem_cache *s);
+>  void * __must_check krealloc(const void *objp, size_t new_size, gfp_t flags) __alloc_size(2);
+>  void kfree(const void *objp);
+>  void kfree_sensitive(const void *objp);
+> +
+> +/**
+> + * ksize - get the actual amount of memory allocated for a given object
+> + * @objp: Pointer to the object
+> + *
+> + * kmalloc may internally round up allocations and return more memory
+> + * than requested. ksize() can be used to determine the actual amount of
+> + * memory allocated. The caller may use this additional memory, even though
+> + * a smaller amount of memory was initially specified with the kmalloc call.
+> + * The caller must guarantee that objp points to a valid object previously
+> + * allocated with either kmalloc() or kmem_cache_alloc(). The object
+> + * must not be freed during the duration of the call.
+> + *
+> + * Return: size of the actual memory used by @objp in bytes
+> + */
+> +#define ksize(objp) ({                                                 \
+> +       /*                                                              \
+> +        * Getting the actual allocation size means the __alloc_size    \
+> +        * hints are no longer valid, and the compiler needs to         \
+> +        * forget about them.                                           \
+> +        */                                                             \
+> +       OPTIMIZER_HIDE_VAR(objp);                                       \
+> +       _ksize(objp);                                                   \
+> +})
+>  size_t __ksize(const void *objp);
+> -size_t ksize(const void *objp);
+> +size_t _ksize(const void *objp);
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- Documentation/firmware-guide/acpi/enumeration.rst | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
-
-diff --git a/Documentation/firmware-guide/acpi/enumeration.rst b/Documentation/firmware-guide/acpi/enumeration.rst
-index 93fdc04de9c3..2e0cffb88d67 100644
---- a/Documentation/firmware-guide/acpi/enumeration.rst
-+++ b/Documentation/firmware-guide/acpi/enumeration.rst
-@@ -167,8 +167,7 @@ The table below shows an example of its usage::
-         Name (_DSD, Package () {
-             ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-             Package () {
--                Package () {"interrupt-names",
--                Package (2) {"default", "alert"}},
-+                Package () { "interrupt-names", Package () { "default", "alert" } },
-             }
-         ...
-         })
-@@ -193,7 +192,7 @@ Here is what the ACPI namespace for a SPI slave might look like::
- 	Device (EEP0)
- 	{
- 		Name (_ADR, 1)
--		Name (_CID, Package() {
-+		Name (_CID, Package () {
- 			"ATML0025",
- 			"AT25",
- 		})
-@@ -365,8 +364,8 @@ For example::
- 			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
- 			Package ()
- 			{
--				Package () {"power-gpios", Package() {^DEV, 0, 0, 0 }},
--				Package () {"irq-gpios", Package() {^DEV, 1, 0, 0 }},
-+				Package () { "power-gpios", Package () { ^DEV, 0, 0, 0 } },
-+				Package () { "irq-gpios", Package () { ^DEV, 1, 0, 0 } },
- 			}
- 		})
- 		...
-@@ -488,10 +487,10 @@ namespace link::
- 	Device (TMP0)
- 	{
- 		Name (_HID, "PRP0001")
--		Name (_DSD, Package() {
-+		Name (_DSD, Package () {
- 			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
- 			Package () {
--				Package (2) { "compatible", "ti,tmp75" },
-+				Package () { "compatible", "ti,tmp75" },
- 			}
- 		})
- 		Method (_CRS, 0, Serialized)
+If you wanted to discourage others from calling _ksize, you could hide
+its declaration within the scope of statement expression within ksize:
+https://godbolt.org/z/e4sd4nE6q
 -- 
-2.34.1
-
+Thanks,
+~Nick Desaulniers
