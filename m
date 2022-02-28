@@ -2,185 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E0FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBA57C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:07:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235139AbiB1MHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:07:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57614 "EHLO
+        id S233888AbiB1MHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:07:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiB1MHM (ORCPT
+        with ESMTP id S229519AbiB1MHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:07:12 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A126517A;
-        Mon, 28 Feb 2022 04:06:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646049993; x=1677585993;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=UuAla6m/V0nIds1h63OYuJUqlKC4Nbr7PiBMOfpW4x8=;
-  b=jPQZeZG1dsVTfZWgsHod9odxTpBdBqz6O9VHekiv25zvOT8VgVa13iej
-   koKmTZiMc83mZJHQfdGMUAqeoc91KaPghy9MryeFOwDkLVM9CbdHBynIu
-   yXsRK4kmSSgEnd25DccoXSp05nVLDv15Re5yflra5VvlXtIHKLGZ9r3Jp
-   ImcSpXZHP5t5dixXyMykxDoSs4NCL2LEYC+WYxJ/b30Hz6HbfZv8BZ0Gz
-   eu26Tb4ZHDhGSn3/NJ7yAerOtCOJdWK0HeF/5pvjmImxhF4IAOBWbqtvQ
-   AdQsu5Xvy4eCA2R9wmIW5tEyzxPV6Zv6hZlDjGjbrceVzz5dmvq7ZctQb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="313584614"
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="313584614"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 04:06:33 -0800
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="608431456"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 04:06:29 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nOekU-009IH6-OV;
-        Mon, 28 Feb 2022 14:03:30 +0200
-Date:   Mon, 28 Feb 2022 14:03:30 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Maninder Singh <maninder1.s@samsung.com>
-Cc:     mcgrof@kernel.org, pmladek@suse.com, rostedt@goodmis.org,
-        senozhatsky@chromium.org, linux@rasmusvillemoes.dk,
-        akpm@linux-foundation.org, wangkefeng.wang@huawei.com,
-        v.narang@samsung.com, swboyd@chromium.org, ojeda@kernel.or,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        avimalin@gmail.com, atomlin@redhat.com
-Subject: Re: [PATCH 1/1] kallsyms: enhance %pS/s/b printing when KALLSYSMS is
- disabled
-Message-ID: <Yhy6EtP/Yr03bHTl@smile.fi.intel.com>
-References: <CGME20220228053457epcas5p1dac3fced39d1594f8fdfc5e64e23ac73@epcas5p1.samsung.com>
- <20220228053447.1584704-1-maninder1.s@samsung.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228053447.1584704-1-maninder1.s@samsung.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        Mon, 28 Feb 2022 07:07:41 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0329366634;
+        Mon, 28 Feb 2022 04:07:02 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id vz16so24389202ejb.0;
+        Mon, 28 Feb 2022 04:07:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=mpq6EOSgaJN9TDHyutZ1vk7Ts/tQX7VWZG2tuQLEVnE=;
+        b=P6Qm9QV+tKwfj02RvG70Y6RM578oBE7xk1h9xLRDl0Phoeno/cOg2X5jGG320h7a80
+         51RqQzzCwbkind1CCh/PsD+YJ2xLuw3nTu9DY+Zris5SVOV1FI+8DsU52Jy5KlVydcNu
+         G0XxThLJxiMxymk0pHTiYIUYA6Uj3RhvFK2FvOkFF3qdetV9R5zYggWzNl+ojj1OXKZf
+         MkNjwD1Q29EHNb+3aSEEQSq9r3HlkkV49QyRIpbAEX1BAYg/I0l3VyVoctyp9PVfLMdm
+         3mwm8jDaSc7WWe042oo4mIB/QOs4nHzHS6+i8MWcrLd/SBvvylJKxoeMQwrp3MTt3slq
+         2wxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=mpq6EOSgaJN9TDHyutZ1vk7Ts/tQX7VWZG2tuQLEVnE=;
+        b=24WWfqqnsD/NG+QE4WdFpI8Hjrqa5CE2WU/U8ebn0q1mJAegySmQ/ZWnYEZZ8D71w2
+         k+tVwfwWIjHS1b9ZBn5zNVXe8ukYyQM7UpogSuFXiMXdthhAiWrzTvuFgTpZNIrr7nbu
+         TLeFEtLJa7QjePoVd8+i5agQ3eyZt/cGtxKSY896LNVu+n7mo0pMFf6sIJuLBg5ZadY7
+         leHLoMK/fqR74aYKgCQ/sHc7aGch5nlaYvLouPr+fo8llkAc72YG/FjB0e2Ab3ccX5XE
+         MVAstfebV4dpbQkfVCAy2rT319DRYfRzM25fn+f+0rD7b68x5KvyloysC6ogE54LTVo6
+         XFDw==
+X-Gm-Message-State: AOAM532LmVJI0aV4Gyf3rxAPyMs86oCeWnUhGH+HHNnO7IG4of6kuNTI
+        Sm4XOqSCnAQ6qQN519a5CTg=
+X-Google-Smtp-Source: ABdhPJw3Wj1NaKaNlFGnSPXqnbDgppea1F4wGZoXZbWDfwDJgXssQhrPLcI1GM9ROPIg4DuPtt07Tg==
+X-Received: by 2002:a17:907:248a:b0:6ce:e03c:e1df with SMTP id zg10-20020a170907248a00b006cee03ce1dfmr14689906ejb.258.1646050020495;
+        Mon, 28 Feb 2022 04:07:00 -0800 (PST)
+Received: from smtpclient.apple ([2a02:8109:9d80:3f6c:957a:1d13:c949:d1f3])
+        by smtp.gmail.com with ESMTPSA id d23-20020a1709067a1700b006d0ebe4af89sm4282959ejo.20.2022.02.28.04.06.58
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 28 Feb 2022 04:07:00 -0800 (PST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.60.0.1.1\))
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
+ as a ptr
+From:   Jakob Koschel <jakobkoschel@gmail.com>
+In-Reply-To: <Yhyv42ONIxTj04mg@kroah.com>
+Date:   Mon, 28 Feb 2022 13:06:57 +0100
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergman <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-sgx@vger.kernel.org,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-crypto@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-rdma@vger.kernel.org, linux-media@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        bcm-kernel-feedback-list@broadcom.com, linux-tegra@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, kvm@vger.kernel.org,
+        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        v9fs-developer@lists.sourceforge.net,
+        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <79FCD5F4-0EBA-4E3F-8B3F-D450BBA10367@gmail.com>
+References: <20220228110822.491923-1-jakobkoschel@gmail.com>
+ <20220228110822.491923-3-jakobkoschel@gmail.com> <Yhyv42ONIxTj04mg@kroah.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3693.60.0.1.1)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 11:04:47AM +0530, Maninder Singh wrote:
-> with commit '82b37e632513 ("kallsyms: print module name in %ps/S
-> case when KALLSYMS is disabled"), module name printing was enhanced.
+
+
+> On 28. Feb 2022, at 12:20, Greg KH <gregkh@linuxfoundation.org> wrote:
 > 
-> As per suggestion from Petr Mladek <pmladek@suse.com>, covering
-> other flavours also to print build id also.
+> On Mon, Feb 28, 2022 at 12:08:18PM +0100, Jakob Koschel wrote:
+>> If the list does not contain the expected element, the value of
+>> list_for_each_entry() iterator will not point to a valid structure.
+>> To avoid type confusion in such case, the list iterator
+>> scope will be limited to list_for_each_entry() loop.
+>> 
+>> In preparation to limiting scope of a list iterator to the list traversal
+>> loop, use a dedicated pointer to point to the found element.
+>> Determining if an element was found is then simply checking if
+>> the pointer is != NULL.
+>> 
+>> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
+>> ---
+>> arch/x86/kernel/cpu/sgx/encl.c       |  6 +++--
+>> drivers/scsi/scsi_transport_sas.c    | 17 ++++++++-----
+>> drivers/thermal/thermal_core.c       | 38 ++++++++++++++++++----------
+>> drivers/usb/gadget/configfs.c        | 22 ++++++++++------
+>> drivers/usb/gadget/udc/max3420_udc.c | 11 +++++---
+>> drivers/usb/gadget/udc/tegra-xudc.c  | 11 +++++---
+>> drivers/usb/mtu3/mtu3_gadget.c       | 11 +++++---
+>> drivers/usb/musb/musb_gadget.c       | 11 +++++---
+>> drivers/vfio/mdev/mdev_core.c        | 11 +++++---
+>> 9 files changed, 88 insertions(+), 50 deletions(-)
 > 
-> for %pB no change as it needs to know symbol name to adjust address
-> value which can't be done without KALLSYMS.
+> The drivers/usb/ portion of this patch should be in patch 1/X, right?
+
+I kept them separate since it's a slightly different case.
+Using 'ptr' instead of '&ptr->other_member'. Regardless, I'll split
+this commit up as you mentioned.
+
 > 
-> original output with KALLSYMS:
-> [8.842129] ps function_1 [crash]
-> [8.842735] pS function_1+0x4/0x2c [crash]
-> [8.842890] pSb function_1+0x4/0x2c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
-> [8.843175] pB function_1+0x4/0x2c [crash]
-> [8.843362] pBb function_1+0x4/0x2c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
+> Also, you will have to split these up per-subsystem so that the
+> different subsystem maintainers can take these in their trees.
+
+Thanks for the feedback.
+To clarify I understand you correctly:
+I should do one patch set per-subsystem with every instance/(file?)
+fixed as a separate commit?
+
+If I understand correctly, I'll repost accordingly.
+
 > 
-> original output without KALLSYMS:
-> [12.487424] ps 0xffff800000eb008c
-> [12.487598] pS 0xffff800000eb008c
-> [12.487723] pSb 0xffff800000eb008c
-> [12.487850] pB 0xffff800000eb008c
-> [12.487967] pBb 0xffff800000eb008c
+> thanks,
 > 
-> With patched kernel without KALLSYMS:
-> [9.205207] ps 0xffff800000eb008c [crash]
-> [9.205564] pS 0xffff800000eb0000+0x8c [crash]
-> [9.205757] pSb 0xffff800000eb0000+0x8c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
-> [9.206066] pB 0xffff800000eb0000+0x8c [crash]
-> [9.206257] pBb 0xffff800000eb0000+0x8c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
+> greg k-h
 
-...
-
-> +static int sprint_module_info(char *buf, char *end, unsigned long value,
-> +			     const char *fmt)
-> +{
-> +	struct module *mod;
-> +	unsigned long offset = 1;
-> +	unsigned long base;
-
-> +	int ret = 0;
-
-This is hard to find if it's not close to the first use.
-Since you are using positive numbers...
-
-> +	const char *modname;
-> +	int modbuildid = 0;
-> +	int len;
-> +#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
-> +	const unsigned char *buildid = NULL;
-> +#endif
-> +
-> +	if (is_ksym_addr(value))
-> +		return 0;
-
-> +	if (*fmt == 'B' && fmt[1] == 'b')
-> +		modbuildid = 1;
-> +	else if (*fmt == 'S' && (fmt[1] == 'b' || (fmt[1] == 'R' && fmt[2] == 'b')))
-
-Why not to split to two conditionals? Would be easier to get,
-
-> +		modbuildid = 1;
-> +	else if (*fmt != 's') {
-
-These all are inconsistent, please switch to fmt[0].
-
-> +		/*
-> +		 * do nothing.
-> +		 */
-> +	} else
-> +		offset = 0;
-> +
-> +	preempt_disable();
-> +	mod = __module_address(value);
-> +	if (mod) {
-> +		ret = 1;
-> +		modname = mod->name;
-> +#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
-> +		if (modbuildid)
-> +			buildid = mod->build_id;
-> +#endif
-> +		if (offset) {
-> +			base = (unsigned long)mod->core_layout.base;
-> +			offset = value - base;
-> +		}
-> +	}
-> +
-> +	preempt_enable();
-
-> +	if (!ret)
-
-This looks a bit strange, but okay, I'm not familiar with the function of this
-code.
-
-> +		return 0;
-> +
-> +	/* address belongs to module */
-> +	if (offset)
-> +		len = sprintf(buf, "0x%lx+0x%lx", base, offset);
-> +	else
-> +		len = sprintf(buf, "0x%lx", value);
-> +
-> +	len += sprintf(buf + len, " [%s", modname);
-> +#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
-> +	if (modbuildid && buildid) {
-> +		/* build ID should match length of sprintf */
-> +		static_assert(sizeof(typeof_member(struct module, build_id)) == 20);
-> +		len += sprintf(buf + len, " %20phN", buildid);
-> +	}
-> +#endif
-> +	len += sprintf(buf + len, "]");
-> +
-> +	return len;
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+thanks,
+Jakob Koschel
 
