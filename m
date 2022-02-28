@@ -2,104 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 067CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 06:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E13EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 06:40:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233316AbiB1Gkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 01:40:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43496 "EHLO
+        id S233328AbiB1Gky convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 01:40:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231852AbiB1Gkm (ORCPT
+        with ESMTP id S233319AbiB1Gks (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 01:40:42 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C721F3CFFA;
-        Sun, 27 Feb 2022 22:40:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646030405; x=1677566405;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=MIQ0jRc3eidSxdXj4UM9qKOYDXlEiP1IY97X2/KWB5I=;
-  b=LYGjQJtW0BUYcanMv98oDkIrhQer9Zklyw/HprOTPC1xzu2CEr0Q9MOw
-   SvTC96J5FMm5YQePuDiDNf5h76et9UXjpFAJozuLG9rTSUK/dGP9X3oMw
-   LK51/jDT8Tf6e5xdroPvJrrrTLfBR4K3F7ch5KgQPX7Y9iKorFIhM2DED
-   U=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 27 Feb 2022 22:40:04 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 22:40:03 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Sun, 27 Feb 2022 22:40:03 -0800
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Sun, 27 Feb 2022 22:39:56 -0800
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        <yung-chuan.liao@linux.intel.com>,
-        <pierre-louis.bossart@linux.intel.com>, <sanyog.r.kale@intel.com>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH v5 1/2] soundwire: qcom: Add compatible name for v1.6.0
-Date:   Mon, 28 Feb 2022 12:09:36 +0530
-Message-ID: <1646030377-12092-2-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646030377-12092-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1646030377-12092-1-git-send-email-quic_srivasam@quicinc.com>
+        Mon, 28 Feb 2022 01:40:48 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D0E03D1D6
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 22:40:09 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-127-ln2z8qc2NY6O0etIBpyffg-1; Mon, 28 Feb 2022 06:40:07 +0000
+X-MC-Unique: ln2z8qc2NY6O0etIBpyffg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Mon, 28 Feb 2022 06:40:04 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Mon, 28 Feb 2022 06:40:04 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'guoren@kernel.org'" <guoren@kernel.org>,
+        "palmer@dabbelt.com" <palmer@dabbelt.com>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "anup@brainfault.org" <anup@brainfault.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "liush@allwinnertech.com" <liush@allwinnertech.com>,
+        "wefu@redhat.com" <wefu@redhat.com>,
+        "drew@beagleboard.org" <drew@beagleboard.org>,
+        "wangjunqiang@iscas.ac.cn" <wangjunqiang@iscas.ac.cn>,
+        "hch@lst.de" <hch@lst.de>
+CC:     "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+        "linux-csky@vger.kernel.org" <linux-csky@vger.kernel.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "x86@kernel.org" <x86@kernel.org>
+Subject: RE: [PATCH V7 03/20] compat: consolidate the compat_flock{,64}
+ definition
+Thread-Topic: [PATCH V7 03/20] compat: consolidate the compat_flock{,64}
+ definition
+Thread-Index: AQHYK/ctkLOBFN5NzkqkonsQCyvC26yogbZg
+Date:   Mon, 28 Feb 2022 06:40:04 +0000
+Message-ID: <b8e765910e274c0fb574ff23f88b881c@AcuMS.aculab.com>
+References: <20220227162831.674483-1-guoren@kernel.org>
+ <20220227162831.674483-4-guoren@kernel.org>
+In-Reply-To: <20220227162831.674483-4-guoren@kernel.org>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update compatible string and master data information in soundwire driver
-to support v1.6.0 in lpass sc7280 based platform.
+From: guoren@kernel.org
+> Sent: 27 February 2022 16:28
+> 
+> From: Christoph Hellwig <hch@lst.de>
+> 
+> Provide a single common definition for the compat_flock and
+> compat_flock64 structures using the same tricks as for the native
+> variants.  Another extra define is added for the packing required on
+> x86.
+...
+> diff --git a/arch/x86/include/asm/compat.h b/arch/x86/include/asm/compat.h
+...
+>  /*
+> - * IA32 uses 4 byte alignment for 64 bit quantities,
+> - * so we need to pack this structure.
+> + * IA32 uses 4 byte alignment for 64 bit quantities, so we need to pack the
+> + * compat flock64 structure.
+>   */
+...
+> +#define __ARCH_NEED_COMPAT_FLOCK64_PACKED
+> 
+>  struct compat_statfs {
+>  	int		f_type;
+> diff --git a/include/linux/compat.h b/include/linux/compat.h
+> index 1c758b0e0359..a0481fe6c5d5 100644
+> --- a/include/linux/compat.h
+> +++ b/include/linux/compat.h
+> @@ -258,6 +258,37 @@ struct compat_rlimit {
+>  	compat_ulong_t	rlim_max;
+>  };
+> 
+> +#ifdef __ARCH_NEED_COMPAT_FLOCK64_PACKED
+> +#define __ARCH_COMPAT_FLOCK64_PACK	__attribute__((packed))
+> +#else
+> +#define __ARCH_COMPAT_FLOCK64_PACK
+> +#endif
+...
+> +struct compat_flock64 {
+> +	short		l_type;
+> +	short		l_whence;
+> +	compat_loff_t	l_start;
+> +	compat_loff_t	l_len;
+> +	compat_pid_t	l_pid;
+> +#ifdef __ARCH_COMPAT_FLOCK64_PAD
+> +	__ARCH_COMPAT_FLOCK64_PAD
+> +#endif
+> +} __ARCH_COMPAT_FLOCK64_PACK;
+> +
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
- drivers/soundwire/qcom.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+Provided compat_loff_t are correctly defined with __aligned__(4)
+marking the structure packed isn't needed.
+I believe compat_u64 and compat_s64 both have aligned(4).
+It is also wrong, consider:
 
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index 9eb31ba..fb183bd 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -175,6 +175,11 @@ static struct qcom_swrm_data swrm_v1_5_data = {
- 	.default_cols = 16,
- };
- 
-+static struct qcom_swrm_data swrm_v1_6_data = {
-+	.default_rows = 50,
-+	.default_cols = 16,
-+};
-+
- #define to_qcom_sdw(b)	container_of(b, struct qcom_swrm_ctrl, bus)
- 
- static int qcom_swrm_ahb_reg_read(struct qcom_swrm_ctrl *ctrl, int reg,
-@@ -1343,6 +1348,7 @@ static int qcom_swrm_remove(struct platform_device *pdev)
- static const struct of_device_id qcom_swrm_of_match[] = {
- 	{ .compatible = "qcom,soundwire-v1.3.0", .data = &swrm_v1_3_data },
- 	{ .compatible = "qcom,soundwire-v1.5.1", .data = &swrm_v1_5_data },
-+	{ .compatible = "qcom,soundwire-v1.6.0", .data = &swrm_v1_6_data },
- 	{/* sentinel */},
- };
- 
--- 
-2.7.4
+struct foo {
+	char x;
+	struct compat_flock64 fl64;
+};
+
+There should be 3 bytes of padding after 'x'.
+But you've removed it.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
