@@ -2,92 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 375E4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AEC4C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234929AbiB1Ktb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:49:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43328 "EHLO
+        id S234936AbiB1Ktm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:49:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234907AbiB1KtY (ORCPT
+        with ESMTP id S234925AbiB1Ktb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:49:24 -0500
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B894DF7B;
-        Mon, 28 Feb 2022 02:48:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
-  t=1646045327; x=1677581327;
-  h=date:from:to:cc:message-id:references:mime-version:
-   in-reply-to:subject;
-  bh=wtlDx4jEE4jGyIxehaIcjYydOOp8V9gGqhKFY2pAxek=;
-  b=lmL4Ao9d38OqN10++Ib0UXf3kdMmNoqbjsuluw2oVu3tHXIvYLaUfibB
-   IN4HN4RzlUON9BAsTufdAkmAydE4rjHJ/7D3bXWQ9qqqWsJLD3XhNq/uo
-   v9EweWB5T07szzF4GFFgGyveMxUMRbdb0SklTouSGDor41wh9xdsBB09X
-   U=;
-X-IronPort-AV: E=Sophos;i="5.90,142,1643673600"; 
-   d="scan'208";a="181712404"
-Subject: Re: [PATCH 4/4] KVM: x86: hyper-v: HVCALL_SEND_IPI_EX is an XMM fast
- hypercall
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 28 Feb 2022 10:48:36 +0000
-Received: from EX13D28EUC003.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com (Postfix) with ESMTPS id 0220F829DD;
-        Mon, 28 Feb 2022 10:48:34 +0000 (UTC)
-Received: from 147dda3edfb6.ant.amazon.com (10.43.160.103) by
- EX13D28EUC003.ant.amazon.com (10.43.164.43) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Mon, 28 Feb 2022 10:48:30 +0000
-Date:   Mon, 28 Feb 2022 11:48:26 +0100
-From:   Siddharth Chandrasekaran <sidcha@amazon.de>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>
-CC:     <kvm@vger.kernel.org>, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        <linux-kernel@vger.kernel.org>
-Message-ID: <YhyoevsjEhNfcwWY@147dda3edfb6.ant.amazon.com>
-References: <20220222154642.684285-1-vkuznets@redhat.com>
- <20220222154642.684285-5-vkuznets@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220222154642.684285-5-vkuznets@redhat.com>
-X-Originating-IP: [10.43.160.103]
-X-ClientProxiedBy: EX13D34UWA003.ant.amazon.com (10.43.160.69) To
- EX13D28EUC003.ant.amazon.com (10.43.164.43)
+        Mon, 28 Feb 2022 05:49:31 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6EAF75BD36;
+        Mon, 28 Feb 2022 02:48:52 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3BA101063;
+        Mon, 28 Feb 2022 02:48:52 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.47.185])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 84F313F73D;
+        Mon, 28 Feb 2022 02:48:44 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, geert@linux-m68k.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org,
+        openrisc@lists.librecores.org, linux-um@lists.infradead.org,
+        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-arch@vger.kernel.org
+Subject: [PATCH V3 01/30] mm/debug_vm_pgtable: Drop protection_map[] usage
+Date:   Mon, 28 Feb 2022 16:17:24 +0530
+Message-Id: <1646045273-9343-2-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
+References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 22, 2022 at 04:46:42PM +0100, Vitaly Kuznetsov wrote:
-> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> 
-> 
-> 
-> It has been proven on practice that at least Windows Server 2019 tries
-> using HVCALL_SEND_IPI_EX in 'XMM fast' mode when it has more than 64 vCPUs
-> and it needs to send an IPI to a vCPU > 63. Similarly to other XMM Fast
-> hypercalls (HVCALL_FLUSH_VIRTUAL_ADDRESS_{LIST,SPACE}{,_EX}), this
-> information is missing in TLFS as of 6.0b. Currently, KVM returns an error
-> (HV_STATUS_INVALID_HYPERCALL_INPUT) and Windows crashes.
-> 
-> Note, HVCALL_SEND_IPI is a 'standard' fast hypercall (not 'XMM fast') as
-> all its parameters fit into RDX:R8 and this is handled by KVM correctly.
-> 
-> Fixes: d8f5537a8816 ("KVM: hyper-v: Advertise support for fast XMM hypercalls")
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Although protection_map[] contains the platform defined page protection map
+for a given vm_flags combination, vm_get_page_prot() is the right interface
+to use. This will also reduce dependency on protection_map[] which is going
+to be dropped off completely later on.
 
-Reviewed-by: Siddharth Chandrasekaran <sidcha@amazon.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ mm/debug_vm_pgtable.c | 31 +++++++++++++++++++------------
+ 1 file changed, 19 insertions(+), 12 deletions(-)
 
-
-
-Amazon Development Center Germany GmbH
-Krausenstr. 38
-10117 Berlin
-Geschaeftsfuehrung: Christian Schlaeger, Jonathan Weiss
-Eingetragen am Amtsgericht Charlottenburg unter HRB 149173 B
-Sitz: Berlin
-Ust-ID: DE 289 237 879
-
-
+diff --git a/mm/debug_vm_pgtable.c b/mm/debug_vm_pgtable.c
+index db2abd9e415b..30fd11a2ed32 100644
+--- a/mm/debug_vm_pgtable.c
++++ b/mm/debug_vm_pgtable.c
+@@ -93,7 +93,7 @@ struct pgtable_debug_args {
+ 
+ static void __init pte_basic_tests(struct pgtable_debug_args *args, int idx)
+ {
+-	pgprot_t prot = protection_map[idx];
++	pgprot_t prot = vm_get_page_prot(idx);
+ 	pte_t pte = pfn_pte(args->fixed_pte_pfn, prot);
+ 	unsigned long val = idx, *ptr = &val;
+ 
+@@ -101,7 +101,7 @@ static void __init pte_basic_tests(struct pgtable_debug_args *args, int idx)
+ 
+ 	/*
+ 	 * This test needs to be executed after the given page table entry
+-	 * is created with pfn_pte() to make sure that protection_map[idx]
++	 * is created with pfn_pte() to make sure that vm_get_page_prot(idx)
+ 	 * does not have the dirty bit enabled from the beginning. This is
+ 	 * important for platforms like arm64 where (!PTE_RDONLY) indicate
+ 	 * dirty bit being set.
+@@ -190,7 +190,7 @@ static void __init pte_savedwrite_tests(struct pgtable_debug_args *args)
+ #ifdef CONFIG_TRANSPARENT_HUGEPAGE
+ static void __init pmd_basic_tests(struct pgtable_debug_args *args, int idx)
+ {
+-	pgprot_t prot = protection_map[idx];
++	pgprot_t prot = vm_get_page_prot(idx);
+ 	unsigned long val = idx, *ptr = &val;
+ 	pmd_t pmd;
+ 
+@@ -202,7 +202,7 @@ static void __init pmd_basic_tests(struct pgtable_debug_args *args, int idx)
+ 
+ 	/*
+ 	 * This test needs to be executed after the given page table entry
+-	 * is created with pfn_pmd() to make sure that protection_map[idx]
++	 * is created with pfn_pmd() to make sure that vm_get_page_prot(idx)
+ 	 * does not have the dirty bit enabled from the beginning. This is
+ 	 * important for platforms like arm64 where (!PTE_RDONLY) indicate
+ 	 * dirty bit being set.
+@@ -325,7 +325,7 @@ static void __init pmd_savedwrite_tests(struct pgtable_debug_args *args)
+ #ifdef CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
+ static void __init pud_basic_tests(struct pgtable_debug_args *args, int idx)
+ {
+-	pgprot_t prot = protection_map[idx];
++	pgprot_t prot = vm_get_page_prot(idx);
+ 	unsigned long val = idx, *ptr = &val;
+ 	pud_t pud;
+ 
+@@ -337,7 +337,7 @@ static void __init pud_basic_tests(struct pgtable_debug_args *args, int idx)
+ 
+ 	/*
+ 	 * This test needs to be executed after the given page table entry
+-	 * is created with pfn_pud() to make sure that protection_map[idx]
++	 * is created with pfn_pud() to make sure that vm_get_page_prot(idx)
+ 	 * does not have the dirty bit enabled from the beginning. This is
+ 	 * important for platforms like arm64 where (!PTE_RDONLY) indicate
+ 	 * dirty bit being set.
+@@ -1106,14 +1106,14 @@ static int __init init_args(struct pgtable_debug_args *args)
+ 	/*
+ 	 * Initialize the debugging data.
+ 	 *
+-	 * protection_map[0] (or even protection_map[8]) will help create
+-	 * page table entries with PROT_NONE permission as required for
+-	 * pxx_protnone_tests().
++	 * vm_get_page_prot(VM_NONE) or vm_get_page_prot(VM_SHARED|VM_NONE)
++	 * will help create page table entries with PROT_NONE permission as
++	 * required for pxx_protnone_tests().
+ 	 */
+ 	memset(args, 0, sizeof(*args));
+ 	args->vaddr              = get_random_vaddr();
+ 	args->page_prot          = vm_get_page_prot(VMFLAGS);
+-	args->page_prot_none     = protection_map[0];
++	args->page_prot_none     = vm_get_page_prot(VM_NONE);
+ 	args->is_contiguous_page = false;
+ 	args->pud_pfn            = ULONG_MAX;
+ 	args->pmd_pfn            = ULONG_MAX;
+@@ -1248,12 +1248,19 @@ static int __init debug_vm_pgtable(void)
+ 		return ret;
+ 
+ 	/*
+-	 * Iterate over the protection_map[] to make sure that all
++	 * Iterate over each possible vm_flags to make sure that all
+ 	 * the basic page table transformation validations just hold
+ 	 * true irrespective of the starting protection value for a
+ 	 * given page table entry.
++	 *
++	 * Protection based vm_flags combinatins are always linear
++	 * and increasing i.e starting from VM_NONE and going upto
++	 * (VM_SHARED | READ | WRITE | EXEC).
+ 	 */
+-	for (idx = 0; idx < ARRAY_SIZE(protection_map); idx++) {
++#define VM_FLAGS_START	(VM_NONE)
++#define VM_FLAGS_END	(VM_SHARED | VM_EXEC | VM_WRITE | VM_READ)
++
++	for (idx = VM_FLAGS_START; idx <= VM_FLAGS_END; idx++) {
+ 		pte_basic_tests(&args, idx);
+ 		pmd_basic_tests(&args, idx);
+ 		pud_basic_tests(&args, idx);
+-- 
+2.25.1
 
