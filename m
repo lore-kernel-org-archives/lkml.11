@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D395C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:33:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB77C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237487AbiB1Reg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:34:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
+        id S236287AbiB1Rel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:34:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238137AbiB1Rcy (ORCPT
+        with ESMTP id S238191AbiB1RdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:32:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087B48CD8E;
-        Mon, 28 Feb 2022 09:29:30 -0800 (PST)
+        Mon, 28 Feb 2022 12:33:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513B08E1AF;
+        Mon, 28 Feb 2022 09:29:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A1FD61464;
-        Mon, 28 Feb 2022 17:29:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BF39C340E7;
-        Mon, 28 Feb 2022 17:29:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3C4DB815AE;
+        Mon, 28 Feb 2022 17:29:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ACF4C340E7;
+        Mon, 28 Feb 2022 17:29:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069361;
-        bh=917T7g5NADCLUB+jfAC4t5c2Tgf/uZE24UZy1cRKwXg=;
+        s=korg; t=1646069372;
+        bh=N00vm0L4ilung4QJcP5OHC6ymM1vxVbrdIB7XLVIid8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SDOIvfw9I+TKnJKiHY0zBYpjsihrlWaqFTZrk+a5pQLV8DhbEV/nwqTyxnNHnyLMe
-         AQ9uDuQYO3YfnyqOgGpzGBQZ2K883DkXqFZkzvdELRlT6q7jZ9nV2n1nFfpRup2Frg
-         4xeystAAwqfQeGkvAYkzl/mI6bSSfTJL7Fmd2zJI=
+        b=Wu1ctiUw7GEOyI7C7Y6wPWRRxBD370g+qWvTQz4jEZx7D6QTvVzhRpy7SlB5EpvtL
+         eWeFpJ5D0ApCb5xF5gQDvaYm/+dV7J8txA8xfyEYwg3FEAiZpqD/cGDsMdTTaDmfhp
+         03EE1CCOKDtFp1aJSSa2YcjYwXJfr81pnD24D9SM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 4.19 27/34] tracefs: Set the group ownership in apply_options() not parse_options()
-Date:   Mon, 28 Feb 2022 18:24:33 +0100
-Message-Id: <20220228172210.660509352@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 4.19 31/34] usb: dwc3: gadget: Let the interrupt handler disable bottom halves.
+Date:   Mon, 28 Feb 2022 18:24:37 +0100
+Message-Id: <20220228172211.007858832@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172207.090703467@linuxfoundation.org>
 References: <20220228172207.090703467@linuxfoundation.org>
@@ -48,50 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-commit 851e99ebeec3f4a672bb5010cf1ece095acee447 upstream.
+commit 84918a89d6efaff075de570b55642b6f4ceeac6d upstream.
 
-Al Viro brought it to my attention that the dentries may not be filled
-when the parse_options() is called, causing the call to set_gid() to
-possibly crash. It should only be called if parse_options() succeeds
-totally anyway.
+The interrupt service routine registered for the gadget is a primary
+handler which mask the interrupt source and a threaded handler which
+handles the source of the interrupt. Since the threaded handler is
+voluntary threaded, the IRQ-core does not disable bottom halves before
+invoke the handler like it does for the forced-threaded handler.
 
-He suggested the logical place to do the update is in apply_options().
+Due to changes in networking it became visible that a network gadget's
+completions handler may schedule a softirq which remains unprocessed.
+The gadget's completion handler is usually invoked either in hard-IRQ or
+soft-IRQ context. In this context it is enough to just raise the softirq
+because the softirq itself will be handled once that context is left.
+In the case of the voluntary threaded handler, there is nothing that
+will process pending softirqs. Which means it remain queued until
+another random interrupt (on this CPU) fires and handles it on its exit
+path or another thread locks and unlocks a lock with the bh suffix.
+Worst case is that the CPU goes idle and the NOHZ complains about
+unhandled softirqs.
 
-Link: https://lore.kernel.org/all/20220225165219.737025658@goodmis.org/
-Link: https://lkml.kernel.org/r/20220225153426.1c4cab6b@gandalf.local.home
+Disable bottom halves before acquiring the lock (and disabling
+interrupts) and enable them after dropping the lock. This ensures that
+any pending softirqs will handled right away.
 
-Cc: stable@vger.kernel.org
-Acked-by: Al Viro <viro@zeniv.linux.org.uk>
-Reported-by: Al Viro <viro@zeniv.linux.org.uk>
-Fixes: 48b27b6b5191 ("tracefs: Set all files to the same group ownership as the mount option")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Link: https://lkml.kernel.org/r/c2a64979-73d1-2c22-e048-c275c9f81558@samsung.com
+Fixes: e5f68b4a3e7b0 ("Revert "usb: dwc3: gadget: remove unnecessary _irqsave()"")
+Cc: stable <stable@kernel.org>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lore.kernel.org/r/Yg/YPejVQH3KkRVd@linutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/tracefs/inode.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/usb/dwc3/gadget.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/tracefs/inode.c
-+++ b/fs/tracefs/inode.c
-@@ -265,7 +265,6 @@ static int tracefs_parse_options(char *d
- 			if (!gid_valid(gid))
- 				return -EINVAL;
- 			opts->gid = gid;
--			set_gid(tracefs_mount->mnt_root, gid);
- 			break;
- 		case Opt_mode:
- 			if (match_octal(&args[0], &option))
-@@ -292,7 +291,9 @@ static int tracefs_apply_options(struct
- 	inode->i_mode |= opts->mode;
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -3181,9 +3181,11 @@ static irqreturn_t dwc3_thread_interrupt
+ 	unsigned long flags;
+ 	irqreturn_t ret = IRQ_NONE;
  
- 	inode->i_uid = opts->uid;
--	inode->i_gid = opts->gid;
-+
-+	/* Set all the group ids to the mount option */
-+	set_gid(sb->s_root, opts->gid);
++	local_bh_disable();
+ 	spin_lock_irqsave(&dwc->lock, flags);
+ 	ret = dwc3_process_event_buf(evt);
+ 	spin_unlock_irqrestore(&dwc->lock, flags);
++	local_bh_enable();
  
- 	return 0;
+ 	return ret;
  }
 
 
