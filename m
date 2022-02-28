@@ -2,89 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C54EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:49:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238718AbiB1Rtz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:49:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
+        id S238911AbiB1RuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:50:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239073AbiB1Rnm (ORCPT
+        with ESMTP id S238876AbiB1RnZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:43:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B629AE62;
-        Mon, 28 Feb 2022 09:35:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58852614B9;
-        Mon, 28 Feb 2022 17:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E3AFC340E7;
-        Mon, 28 Feb 2022 17:35:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069734;
-        bh=v5QaB1hFhjLaOCClqrmwreuVmYnWVQQ3HcouUHL0f/E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QR4Uv8UgwKGBO4Xwy6U4hUW4SO4zZFgmG3ngkAYtUdW9u3qpmSlvQT4YJZd+ko8BE
-         v32CIfPOxYW9PO9v6c+05JoBSl3jgzT5XOs5FX4rGBGRH5vLQkTVjoQgsBk1Gi5k/p
-         bbQCaocqa0fI3cmeqMeuwlPleWNxEpY4ntlKqcTk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 74/80] tty: n_gsm: fix encoding of control signal octet bit DV
-Date:   Mon, 28 Feb 2022 18:24:55 +0100
-Message-Id: <20220228172320.674874690@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
-References: <20220228172311.789892158@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 28 Feb 2022 12:43:25 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D476599EDA;
+        Mon, 28 Feb 2022 09:35:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646069717; x=1677605717;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=aMYtjEOpxF59nZtGs1ODxKpgRksNDTdLFEt+1j+s4FA=;
+  b=WP45q+JfRG3lHLZwqzBJhCGWGR9H4bbjdXq039X3LBcgrAaxtxUb/mDz
+   szYmWH13mnne7r55OSbXV4sDPiXuWeqVLKQ/G1x1MAIwSGVOlAjcG1LB5
+   fFHfzycEG3pAgTHe/qpdnIVtp8q5Ic1eWIUbKNLr1Z4QP+mVkTNcqdpIf
+   aZMolZTNY15ejHS/PkSu+f53L1Mkd5SnT1DSnc4iS5Y3T8QmnzqEDK5bm
+   FNUilBM5nDNO9K7URxzvS7jCpPiszBbKzncyt1fnydveh+Lk3tiC3TszX
+   VDlSDlqyHbfHD6IiAv2x7coNy/1w6BvpONJnnv3r7s6yjoyVkTSCxruRl
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="339373860"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="339373860"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:35:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="685411831"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 28 Feb 2022 09:35:14 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOjvW-0007ZN-6I; Mon, 28 Feb 2022 17:35:14 +0000
+Date:   Tue, 1 Mar 2022 01:34:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Mike Rapoport <rppt@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] MIPS: Refactor early_parse_mem() to fix mem=
+ parameter
+Message-ID: <202202281751.WKuGplhT-lkp@intel.com>
+References: <1646029866-6692-2-git-send-email-yangtiezhu@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1646029866-6692-2-git-send-email-yangtiezhu@loongson.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+Hi Tiezhu,
 
-commit 737b0ef3be6b319d6c1fd64193d1603311969326 upstream.
+Thank you for the patch! Perhaps something to improve:
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.6.3.7 describes the encoding of the
-control signal octet used by the MSC (modem status command). The same
-encoding is also used in convergence layer type 2 as described in chapter
-5.5.2. Table 7 and 24 both require the DV (data valid) bit to be set 1 for
-outgoing control signal octets sent by the DTE (data terminal equipment),
-i.e. for the initiator side.
-Currently, the DV bit is only set if CD (carrier detect) is on, regardless
-of the side.
+[auto build test WARNING on hnaz-mm/master]
+[also build test WARNING on linus/master v5.17-rc6 next-20220225]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-This patch fixes this behavior by setting the DV bit on the initiator side
-unconditionally.
+url:    https://github.com/0day-ci/linux/commits/Tiezhu-Yang/MIPS-Modify-mem-and-memmap-parameter/20220228-143251
+base:   https://github.com/hnaz/linux-mm master
+config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220228/202202281751.WKuGplhT-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/ed304f835ff384c8fe9b788e13d3ec4d93878416
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Tiezhu-Yang/MIPS-Modify-mem-and-memmap-parameter/20220228-143251
+        git checkout ed304f835ff384c8fe9b788e13d3ec4d93878416
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/kernel/
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220218073123.2121-1-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from include/asm-generic/bug.h:22,
+                    from arch/mips/include/asm/bug.h:42,
+                    from include/linux/bug.h:5,
+                    from include/linux/mmdebug.h:5,
+                    from include/linux/mm.h:6,
+                    from include/linux/memblock.h:12,
+                    from arch/mips/kernel/setup.c:17:
+   arch/mips/kernel/setup.c: In function 'early_parse_mem':
+>> include/linux/kern_levels.h:5:25: warning: format '%lld' expects argument of type 'long long int', but argument 2 has type 'phys_addr_t' {aka 'unsigned int'} [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:418:25: note: in definition of macro 'printk_index_wrap'
+     418 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:509:9: note: in expansion of macro 'printk'
+     509 |         printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~
+   include/linux/kern_levels.h:13:25: note: in expansion of macro 'KERN_SOH'
+      13 | #define KERN_NOTICE     KERN_SOH "5"    /* normal but significant condition */
+         |                         ^~~~~~~~
+   include/linux/printk.h:509:16: note: in expansion of macro 'KERN_NOTICE'
+     509 |         printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+         |                ^~~~~~~~~~~
+   arch/mips/kernel/setup.c:350:9: note: in expansion of macro 'pr_notice'
+     350 |         pr_notice("Memory limited to %lldMB\n", memory_limit >> 20);
+         |         ^~~~~~~~~
+
+
+vim +5 include/linux/kern_levels.h
+
+314ba3520e513a Joe Perches 2012-07-30  4  
+04d2c8c83d0e3a Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
+04d2c8c83d0e3a Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
+04d2c8c83d0e3a Joe Perches 2012-07-30  7  
+
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -434,7 +434,7 @@ static u8 gsm_encode_modem(const struct
- 		modembits |= MDM_RTR;
- 	if (dlci->modem_tx & TIOCM_RI)
- 		modembits |= MDM_IC;
--	if (dlci->modem_tx & TIOCM_CD)
-+	if (dlci->modem_tx & TIOCM_CD || dlci->gsm->initiator)
- 		modembits |= MDM_DV;
- 	return modembits;
- }
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
