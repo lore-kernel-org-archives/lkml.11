@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61295C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9704EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238909AbiB1Rz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:55:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51774 "EHLO
+        id S239320AbiB1Rzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:55:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239156AbiB1RwB (ORCPT
+        with ESMTP id S239186AbiB1Rwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:52:01 -0500
+        Mon, 28 Feb 2022 12:52:45 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F99291341;
-        Mon, 28 Feb 2022 09:39:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9629FA88AF;
+        Mon, 28 Feb 2022 09:39:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0CD1B815BB;
-        Mon, 28 Feb 2022 17:39:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1193EC340F0;
-        Mon, 28 Feb 2022 17:39:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7897B815A6;
+        Mon, 28 Feb 2022 17:39:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2399BC340E7;
+        Mon, 28 Feb 2022 17:39:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069970;
-        bh=CddVVUFIMUYm1CX/7EsfuhiY7pLEr+i9IuKyrRICjow=;
+        s=korg; t=1646069989;
+        bh=FROV+zPqYpPQOdFvQIVrfIS9k5Y0q6tyv8NMkTAUAbQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ysxo7U4FQCGGD0Pt29KwH8CikcfINepXVdsoY1HXCLvfLYmpU2EksXLLhmU29nRri
-         gEiVOdPQLLQ+30mTfcQBIj9yopSwp/uLF+YfEgYfzTNF+M88ZAbzgCg0WUZv8axagu
-         phdwlvYhOTGoyyOMlyqfFg/e56Rj5qdZYkq3s/eg=
+        b=NQP4Z+XlfNqPOTiqs19pTZlTZOOiniXclGL75yKuJwO0fHi+PDPL2jCeO2us2ftcR
+         HSXXqoiu/nJ2P2De6RsPelx3CHq6vDONMLq1t3LNAVlxSR+XT5mMVHMXV8qsqFqq2D
+         XM4pff59VXPujU767IJErHNKOp1aloQBXKsaJ39w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cris Forno <cforno12@outlook.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 077/139] ibmvnic: schedule failover only if vioctl fails
-Date:   Mon, 28 Feb 2022 18:24:11 +0100
-Message-Id: <20220228172355.825625607@linuxfoundation.org>
+        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.15 083/139] net/mlx5e: kTLS, Use CHECKSUM_UNNECESSARY for device-offloaded packets
+Date:   Mon, 28 Feb 2022 18:24:17 +0100
+Message-Id: <20220228172356.403347463@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -50,42 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-commit 277f2bb14361790a70e4b3c649e794b75a91a597 upstream.
+commit 7eaf1f37b8817c608c4e959d69986ef459d345cd upstream.
 
-If client is unable to initiate a failover reset via H_VIOCTL hcall, then
-it should schedule a failover reset as a last resort. Otherwise, there is
-no need to do a last resort.
+For RX TLS device-offloaded packets, the HW spec guarantees checksum
+validation for the offloaded packets, but does not define whether the
+CQE.checksum field matches the original packet (ciphertext) or
+the decrypted one (plaintext). This latitude allows architetctural
+improvements between generations of chips, resulting in different decisions
+regarding the value type of CQE.checksum.
 
-Fixes: 334c42414729 ("ibmvnic: improve failover sysfs entry")
-Reported-by: Cris Forno <cforno12@outlook.com>
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220221210545.115283-1-drt@linux.ibm.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Hence, for these packets, the device driver should not make use of this CQE
+field. Here we block CHECKSUM_COMPLETE usage for RX TLS device-offloaded
+packets, and use CHECKSUM_UNNECESSARY instead.
+
+Value of the packet's tcp_hdr.csum is not modified by the HW, and it always
+matches the original ciphertext.
+
+Fixes: 1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5733,10 +5733,14 @@ static ssize_t failover_store(struct dev
- 		   be64_to_cpu(session_token));
- 	rc = plpar_hcall_norets(H_VIOCTL, adapter->vdev->unit_address,
- 				H_SESSION_ERR_DETECTED, session_token, 0, 0);
--	if (rc)
-+	if (rc) {
- 		netdev_err(netdev,
- 			   "H_VIOCTL initiated failover failed, rc %ld\n",
- 			   rc);
-+		goto last_resort;
-+	}
-+
-+	return count;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -987,7 +987,8 @@ static inline void mlx5e_handle_csum(str
+ 	}
  
- last_resort:
- 	netdev_dbg(netdev, "Trying to send CRQ_CMD, the last resort\n");
+ 	/* True when explicitly set via priv flag, or XDP prog is loaded */
+-	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state))
++	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state) ||
++	    get_cqe_tls_offload(cqe))
+ 		goto csum_unnecessary;
+ 
+ 	/* CQE csum doesn't cover padding octets in short ethernet
 
 
