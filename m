@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D278C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234370AbiB1SNy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:13:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34376 "EHLO
+        id S236121AbiB1SN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:13:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241549AbiB1SKD (ORCPT
+        with ESMTP id S241575AbiB1SKF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:10:03 -0500
+        Mon, 28 Feb 2022 13:10:05 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4B1B8213;
-        Mon, 28 Feb 2022 09:50:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A22B45B3;
+        Mon, 28 Feb 2022 09:50:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A79BEB815C3;
-        Mon, 28 Feb 2022 17:50:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1BBCC340E7;
-        Mon, 28 Feb 2022 17:50:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58C4BB815C8;
+        Mon, 28 Feb 2022 17:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B98C1C340F4;
+        Mon, 28 Feb 2022 17:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070609;
-        bh=6UwCDOJqRhPGFGmGm2PxiDMylLrzjuY/whP3p9ohKBk=;
+        s=korg; t=1646070612;
+        bh=lL3lN0XuoIi6Bn5fJ/V8NmTYlqd1b+uQ+x3AeGeE/Wc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qaBCk5zrYB9zLrP+04pcdUKFg1E9xLrrW4EzoPscoGsFGiw3egCzVn/qejkDO6gYz
-         VENaCBty3YVQN6KRJP30ScJPM1XczIP1X7oTFaisI9CcLhF6bX2/htofLEyRK5zoO5
-         u+oWFJHILyBnJNaL/M/X1fL/qzavF4ZkeH0MDIcU=
+        b=1WOG46hZHGf+dpW3jokiWQWqpEJ5KB4NfwPtaZilQPbnN9eWbR8Cy7NX6Rg7EhhXu
+         nv6fIUJkxbe8zs5e+eGIwicWEIaQhBfCuL6zXt2/gmy+8MvlvDxKyyvCcjtjoYCsS7
+         jBGhm6bg1FvuDsEwSX4fUcbwGa5bCjiUitFx26WM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Changbin Du <changbin.du@gmail.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.16 151/164] riscv: fix oops caused by irqsoff latency tracer
-Date:   Mon, 28 Feb 2022 18:25:13 +0100
-Message-Id: <20220228172413.489437652@linuxfoundation.org>
+        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
+        Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 142/164] btrfs: defrag: allow defrag_one_cluster() to skip large extent which is not a target
+Date:   Mon, 28 Feb 2022 18:25:04 +0100
+Message-Id: <20220228172412.797687507@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,167 +49,226 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changbin Du <changbin.du@gmail.com>
+From: Qu Wenruo <wqu@suse.com>
 
-commit 22e2100b1b07d6f5acc71cc1acb53f680c677d77 upstream.
+commit 966d879bafaaf020c11a7cee9526f6dd823a4126 upstream.
 
-The trace_hardirqs_{on,off}() require the caller to setup frame pointer
-properly. This because these two functions use macro 'CALLER_ADDR1' (aka.
-__builtin_return_address(1)) to acquire caller info. If the $fp is used
-for other purpose, the code generated this macro (as below) could trigger
-memory access fault.
+In the rework of btrfs_defrag_file(), we always call
+defrag_one_cluster() and increase the offset by cluster size, which is
+only 256K.
 
-   0xffffffff8011510e <+80>:    ld      a1,-16(s0)
-   0xffffffff80115112 <+84>:    ld      s2,-8(a1)  # <-- paging fault here
+But there are cases where we have a large extent (e.g. 128M) which
+doesn't need to be defragged at all.
 
-The oops message during booting if compiled with 'irqoff' tracer enabled:
-[    0.039615][    T0] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000f8
-[    0.041925][    T0] Oops [#1]
-[    0.042063][    T0] Modules linked in:
-[    0.042864][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1-00233-g9a20c48d1ed2 #29
-[    0.043568][    T0] Hardware name: riscv-virtio,qemu (DT)
-[    0.044343][    T0] epc : trace_hardirqs_on+0x56/0xe2
-[    0.044601][    T0]  ra : restore_all+0x12/0x6e
-[    0.044721][    T0] epc : ffffffff80126a5c ra : ffffffff80003b94 sp : ffffffff81403db0
-[    0.044801][    T0]  gp : ffffffff8163acd8 tp : ffffffff81414880 t0 : 0000000000000020
-[    0.044882][    T0]  t1 : 0098968000000000 t2 : 0000000000000000 s0 : ffffffff81403de0
-[    0.044967][    T0]  s1 : 0000000000000000 a0 : 0000000000000001 a1 : 0000000000000100
-[    0.045046][    T0]  a2 : 0000000000000000 a3 : 0000000000000000 a4 : 0000000000000000
-[    0.045124][    T0]  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000054494d45
-[    0.045210][    T0]  s2 : ffffffff80003b94 s3 : ffffffff81a8f1b0 s4 : ffffffff80e27b50
-[    0.045289][    T0]  s5 : ffffffff81414880 s6 : ffffffff8160fa00 s7 : 00000000800120e8
-[    0.045389][    T0]  s8 : 0000000080013100 s9 : 000000000000007f s10: 0000000000000000
-[    0.045474][    T0]  s11: 0000000000000000 t3 : 7fffffffffffffff t4 : 0000000000000000
-[    0.045548][    T0]  t5 : 0000000000000000 t6 : ffffffff814aa368
-[    0.045620][    T0] status: 0000000200000100 badaddr: 00000000000000f8 cause: 000000000000000d
-[    0.046402][    T0] [<ffffffff80003b94>] restore_all+0x12/0x6e
+Before the refactor, we can directly skip the range, but now we have to
+scan that extent map again and again until the cluster moves after the
+non-target extent.
 
-This because the $fp(aka. $s0) register is not used as frame pointer in the
-assembly entry code.
+Fix the problem by allow defrag_one_cluster() to increase
+btrfs_defrag_ctrl::last_scanned to the end of an extent, if and only if
+the last extent of the cluster is not a target.
 
-	resume_kernel:
-		REG_L s0, TASK_TI_PREEMPT_COUNT(tp)
-		bnez s0, restore_all
-		REG_L s0, TASK_TI_FLAGS(tp)
-                andi s0, s0, _TIF_NEED_RESCHED
-                beqz s0, restore_all
-                call preempt_schedule_irq
-                j restore_all
+The test script looks like this:
 
-To fix above issue, here we add one extra level wrapper for function
-trace_hardirqs_{on,off}() so they can be safely called by low level entry
-code.
+	mkfs.btrfs -f $dev > /dev/null
 
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
-Fixes: 3c4697982982 ("riscv: Enable LOCKDEP_SUPPORT & fixup TRACE_IRQFLAGS_SUPPORT")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+	mount $dev $mnt
+
+	# As btrfs ioctl uses 32M as extent_threshold
+	xfs_io -f -c "pwrite 0 64M" $mnt/file1
+	sync
+	# Some fragemented range to defrag
+	xfs_io -s -c "pwrite 65548k 4k" \
+		  -c "pwrite 65544k 4k" \
+		  -c "pwrite 65540k 4k" \
+		  -c "pwrite 65536k 4k" \
+		  $mnt/file1
+	sync
+
+	echo "=== before ==="
+	xfs_io -c "fiemap -v" $mnt/file1
+	echo "=== after ==="
+	btrfs fi defrag $mnt/file1
+	sync
+	xfs_io -c "fiemap -v" $mnt/file1
+	umount $mnt
+
+With extra ftrace put into defrag_one_cluster(), before the patch it
+would result tons of loops:
+
+(As defrag_one_cluster() is inlined, the function name is its caller)
+
+  btrfs-126062  [005] .....  4682.816026: btrfs_defrag_file: r/i=5/257 start=0 len=262144
+  btrfs-126062  [005] .....  4682.816027: btrfs_defrag_file: r/i=5/257 start=262144 len=262144
+  btrfs-126062  [005] .....  4682.816028: btrfs_defrag_file: r/i=5/257 start=524288 len=262144
+  btrfs-126062  [005] .....  4682.816028: btrfs_defrag_file: r/i=5/257 start=786432 len=262144
+  btrfs-126062  [005] .....  4682.816028: btrfs_defrag_file: r/i=5/257 start=1048576 len=262144
+  ...
+  btrfs-126062  [005] .....  4682.816043: btrfs_defrag_file: r/i=5/257 start=67108864 len=262144
+
+But with this patch there will be just one loop, then directly to the
+end of the extent:
+
+  btrfs-130471  [014] .....  5434.029558: defrag_one_cluster: r/i=5/257 start=0 len=262144
+  btrfs-130471  [014] .....  5434.029559: defrag_one_cluster: r/i=5/257 start=67108864 len=16384
+
+CC: stable@vger.kernel.org # 5.16
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/Makefile    |    2 ++
- arch/riscv/kernel/entry.S     |   10 +++++-----
- arch/riscv/kernel/trace_irq.c |   27 +++++++++++++++++++++++++++
- arch/riscv/kernel/trace_irq.h |   11 +++++++++++
- 4 files changed, 45 insertions(+), 5 deletions(-)
- create mode 100644 arch/riscv/kernel/trace_irq.c
- create mode 100644 arch/riscv/kernel/trace_irq.h
+ fs/btrfs/ioctl.c |   48 +++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 39 insertions(+), 9 deletions(-)
 
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@ -50,6 +50,8 @@ obj-$(CONFIG_MODULE_SECTIONS)	+= module-
- obj-$(CONFIG_FUNCTION_TRACER)	+= mcount.o ftrace.o
- obj-$(CONFIG_DYNAMIC_FTRACE)	+= mcount-dyn.o
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1174,8 +1174,10 @@ struct defrag_target_range {
+ static int defrag_collect_targets(struct btrfs_inode *inode,
+ 				  u64 start, u64 len, u32 extent_thresh,
+ 				  u64 newer_than, bool do_compress,
+-				  bool locked, struct list_head *target_list)
++				  bool locked, struct list_head *target_list,
++				  u64 *last_scanned_ret)
+ {
++	bool last_is_target = false;
+ 	u64 cur = start;
+ 	int ret = 0;
  
-+obj-$(CONFIG_TRACE_IRQFLAGS)	+= trace_irq.o
-+
- obj-$(CONFIG_RISCV_BASE_PMU)	+= perf_event.o
- obj-$(CONFIG_PERF_EVENTS)	+= perf_callchain.o
- obj-$(CONFIG_HAVE_PERF_REGS)	+= perf_regs.o
---- a/arch/riscv/kernel/entry.S
-+++ b/arch/riscv/kernel/entry.S
-@@ -108,7 +108,7 @@ _save_context:
- .option pop
+@@ -1185,6 +1187,7 @@ static int defrag_collect_targets(struct
+ 		bool next_mergeable = true;
+ 		u64 range_len;
  
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- #endif
++		last_is_target = false;
+ 		em = defrag_lookup_extent(&inode->vfs_inode, cur, locked);
+ 		if (!em)
+ 			break;
+@@ -1267,6 +1270,7 @@ static int defrag_collect_targets(struct
+ 		}
  
- #ifdef CONFIG_CONTEXT_TRACKING
-@@ -143,7 +143,7 @@ skip_context_tracking:
- 	li t0, EXC_BREAKPOINT
- 	beq s4, t0, 1f
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_on
-+	call __trace_hardirqs_on
- #endif
- 	csrs CSR_STATUS, SR_IE
+ add:
++		last_is_target = true;
+ 		range_len = min(extent_map_end(em), start + len) - cur;
+ 		/*
+ 		 * This one is a good target, check if it can be merged into
+@@ -1310,6 +1314,17 @@ next:
+ 			kfree(entry);
+ 		}
+ 	}
++	if (!ret && last_scanned_ret) {
++		/*
++		 * If the last extent is not a target, the caller can skip to
++		 * the end of that extent.
++		 * Otherwise, we can only go the end of the specified range.
++		 */
++		if (!last_is_target)
++			*last_scanned_ret = max(cur, *last_scanned_ret);
++		else
++			*last_scanned_ret = max(start + len, *last_scanned_ret);
++	}
+ 	return ret;
+ }
  
-@@ -234,7 +234,7 @@ ret_from_exception:
- 	REG_L s0, PT_STATUS(sp)
- 	csrc CSR_STATUS, SR_IE
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- #endif
- #ifdef CONFIG_RISCV_M_MODE
- 	/* the MPP value is too large to be used as an immediate arg for addi */
-@@ -270,10 +270,10 @@ restore_all:
- 	REG_L s1, PT_STATUS(sp)
- 	andi t0, s1, SR_PIE
- 	beqz t0, 1f
--	call trace_hardirqs_on
-+	call __trace_hardirqs_on
- 	j 2f
- 1:
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- 2:
- #endif
- 	REG_L a0, PT_STATUS(sp)
---- /dev/null
-+++ b/arch/riscv/kernel/trace_irq.c
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-+ */
+@@ -1368,7 +1383,8 @@ static int defrag_one_locked_target(stru
+ }
+ 
+ static int defrag_one_range(struct btrfs_inode *inode, u64 start, u32 len,
+-			    u32 extent_thresh, u64 newer_than, bool do_compress)
++			    u32 extent_thresh, u64 newer_than, bool do_compress,
++			    u64 *last_scanned_ret)
+ {
+ 	struct extent_state *cached_state = NULL;
+ 	struct defrag_target_range *entry;
+@@ -1414,7 +1430,7 @@ static int defrag_one_range(struct btrfs
+ 	 */
+ 	ret = defrag_collect_targets(inode, start, len, extent_thresh,
+ 				     newer_than, do_compress, true,
+-				     &target_list);
++				     &target_list, last_scanned_ret);
+ 	if (ret < 0)
+ 		goto unlock_extent;
+ 
+@@ -1449,7 +1465,8 @@ static int defrag_one_cluster(struct btr
+ 			      u64 start, u32 len, u32 extent_thresh,
+ 			      u64 newer_than, bool do_compress,
+ 			      unsigned long *sectors_defragged,
+-			      unsigned long max_sectors)
++			      unsigned long max_sectors,
++			      u64 *last_scanned_ret)
+ {
+ 	const u32 sectorsize = inode->root->fs_info->sectorsize;
+ 	struct defrag_target_range *entry;
+@@ -1460,7 +1477,7 @@ static int defrag_one_cluster(struct btr
+ 	BUILD_BUG_ON(!IS_ALIGNED(CLUSTER_SIZE, PAGE_SIZE));
+ 	ret = defrag_collect_targets(inode, start, len, extent_thresh,
+ 				     newer_than, do_compress, false,
+-				     &target_list);
++				     &target_list, NULL);
+ 	if (ret < 0)
+ 		goto out;
+ 
+@@ -1477,6 +1494,15 @@ static int defrag_one_cluster(struct btr
+ 			range_len = min_t(u32, range_len,
+ 				(max_sectors - *sectors_defragged) * sectorsize);
+ 
++		/*
++		 * If defrag_one_range() has updated last_scanned_ret,
++		 * our range may already be invalid (e.g. hole punched).
++		 * Skip if our range is before last_scanned_ret, as there is
++		 * no need to defrag the range anymore.
++		 */
++		if (entry->start + range_len <= *last_scanned_ret)
++			continue;
 +
-+#include <linux/irqflags.h>
-+#include <linux/kprobes.h>
-+#include "trace_irq.h"
-+
-+/*
-+ * trace_hardirqs_on/off require the caller to setup frame pointer properly.
-+ * Otherwise, CALLER_ADDR1 might trigger an pagging exception in kernel.
-+ * Here we add one extra level so they can be safely called by low
-+ * level entry code which $fp is used for other purpose.
-+ */
-+
-+void __trace_hardirqs_on(void)
-+{
-+	trace_hardirqs_on();
-+}
-+NOKPROBE_SYMBOL(__trace_hardirqs_on);
-+
-+void __trace_hardirqs_off(void)
-+{
-+	trace_hardirqs_off();
-+}
-+NOKPROBE_SYMBOL(__trace_hardirqs_off);
---- /dev/null
-+++ b/arch/riscv/kernel/trace_irq.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-+ */
-+#ifndef __TRACE_IRQ_H
-+#define __TRACE_IRQ_H
-+
-+void __trace_hardirqs_on(void);
-+void __trace_hardirqs_off(void);
-+
-+#endif /* __TRACE_IRQ_H */
+ 		if (ra)
+ 			page_cache_sync_readahead(inode->vfs_inode.i_mapping,
+ 				ra, NULL, entry->start >> PAGE_SHIFT,
+@@ -1489,7 +1515,8 @@ static int defrag_one_cluster(struct btr
+ 		 * accounting.
+ 		 */
+ 		ret = defrag_one_range(inode, entry->start, range_len,
+-				       extent_thresh, newer_than, do_compress);
++				       extent_thresh, newer_than, do_compress,
++				       last_scanned_ret);
+ 		if (ret < 0)
+ 			break;
+ 		*sectors_defragged += range_len >>
+@@ -1500,6 +1527,8 @@ out:
+ 		list_del_init(&entry->list);
+ 		kfree(entry);
+ 	}
++	if (ret >= 0)
++		*last_scanned_ret = max(*last_scanned_ret, start + len);
+ 	return ret;
+ }
+ 
+@@ -1585,6 +1614,7 @@ int btrfs_defrag_file(struct inode *inod
+ 
+ 	while (cur < last_byte) {
+ 		const unsigned long prev_sectors_defragged = sectors_defragged;
++		u64 last_scanned = cur;
+ 		u64 cluster_end;
+ 
+ 		/* The cluster size 256K should always be page aligned */
+@@ -1614,8 +1644,8 @@ int btrfs_defrag_file(struct inode *inod
+ 			BTRFS_I(inode)->defrag_compress = compress_type;
+ 		ret = defrag_one_cluster(BTRFS_I(inode), ra, cur,
+ 				cluster_end + 1 - cur, extent_thresh,
+-				newer_than, do_compress,
+-				&sectors_defragged, max_to_defrag);
++				newer_than, do_compress, &sectors_defragged,
++				max_to_defrag, &last_scanned);
+ 
+ 		if (sectors_defragged > prev_sectors_defragged)
+ 			balance_dirty_pages_ratelimited(inode->i_mapping);
+@@ -1623,7 +1653,7 @@ int btrfs_defrag_file(struct inode *inod
+ 		btrfs_inode_unlock(inode, 0);
+ 		if (ret < 0)
+ 			break;
+-		cur = cluster_end + 1;
++		cur = max(cluster_end + 1, last_scanned);
+ 		if (ret > 0) {
+ 			ret = 0;
+ 			break;
 
 
