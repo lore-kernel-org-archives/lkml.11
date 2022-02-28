@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFCCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE77C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239682AbiB1SHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:07:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
+        id S239982AbiB1SHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240103AbiB1SDA (ORCPT
+        with ESMTP id S240117AbiB1SDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 13:03:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0257A9EB86;
-        Mon, 28 Feb 2022 09:46:35 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C4A9EB9E;
+        Mon, 28 Feb 2022 09:46:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3018EB815C6;
-        Mon, 28 Feb 2022 17:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 841A1C340E7;
-        Mon, 28 Feb 2022 17:46:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE1F26098A;
+        Mon, 28 Feb 2022 17:46:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D19F4C340E7;
+        Mon, 28 Feb 2022 17:46:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070390;
-        bh=4/K4hcJ50ZxrCiXgGYxIfW5rgGGr5TwgGlun6hSng1U=;
+        s=korg; t=1646070369;
+        bh=x3Ks4l3oF8qlXekP7bV+zF2mkX7O9rC2XCw9cam+juA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ihs7RvjSyep93ekE2+DBYzu3vmbiPyYqWRPrSxruaen5DOB08xf/jWr7oltJAQxcW
-         FiVVUyG1gZ2qNpaCV5SQaAIFmRYX4akjfmrG/UUY2/PurQsQtCilVjNY9og20F9eof
-         QtZ+jI/iKhd7V6RsF9t66rgM5qPadR9korbPbB7w=
+        b=u/Ng2NZuM5++r29GcUXuXTWta2c1kyucUBt15F2yz9dqJFO0Xy3L2PmhDKF8r5H/3
+         cQwYuG4/4gpqP2topTdI72XcjIM/VvwaUCO5Tr1xmxsrIa+E9pUBfRQI7skd8Qj8yC
+         kFKEK2ujhUGcsxcHqlCNYRUTHIWYsNi0isBlzuoM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 090/164] net/mlx5: DR, Dont allow match on IP w/o matching on full ethertype/ip_version
-Date:   Mon, 28 Feb 2022 18:24:12 +0100
-Message-Id: <20220228172408.008341104@linuxfoundation.org>
+        stable@vger.kernel.org, Baruch Siach <baruch.siach@siklu.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 083/164] net: mdio-ipq4019: add delay after clock enable
+Date:   Mon, 28 Feb 2022 18:24:05 +0100
+Message-Id: <20220228172407.471992966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,145 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: Baruch Siach <baruch.siach@siklu.com>
 
-commit ffb0753b954763d94f52c901adfe58ed0d4005e6 upstream.
+commit b6ad6261d27708567b309fdb3102b12c42a070cc upstream.
 
-Currently SMFS allows adding rule with matching on src/dst IP w/o matching
-on full ethertype or ip_version, which is not supported by HW.
-This patch fixes this issue and adds the check as it is done in DMFS.
+Experimentation shows that PHY detect might fail when the code attempts
+MDIO bus read immediately after clock enable. Add delay to stabilize the
+clock before bus access.
 
-Fixes: 26d688e33f88 ("net/mlx5: DR, Add Steering entry (STE) utilities")
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Reviewed-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+PHY detect failure started to show after commit 7590fc6f80ac ("net:
+mdio: Demote probed message to debug print") that removed coincidental
+delay between clock enable and bus access.
+
+10ms is meant to match the time it take to send the probed message over
+UART at 115200 bps. This might be a far overshoot.
+
+Fixes: 23a890d493e3 ("net: mdio: Add the reset function for IPQ MDIO driver")
+Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c |   20 +-----
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c     |   32 +++++++++-
- drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h   |   10 +++
- 3 files changed, 45 insertions(+), 17 deletions(-)
+ drivers/net/mdio/mdio-ipq4019.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-@@ -13,18 +13,6 @@ static bool dr_mask_is_dmac_set(struct m
- 	return (spec->dmac_47_16 || spec->dmac_15_0);
+--- a/drivers/net/mdio/mdio-ipq4019.c
++++ b/drivers/net/mdio/mdio-ipq4019.c
+@@ -200,7 +200,11 @@ static int ipq_mdio_reset(struct mii_bus
+ 	if (ret)
+ 		return ret;
+ 
+-	return clk_prepare_enable(priv->mdio_clk);
++	ret = clk_prepare_enable(priv->mdio_clk);
++	if (ret == 0)
++		mdelay(10);
++
++	return ret;
  }
  
--static bool dr_mask_is_src_addr_set(struct mlx5dr_match_spec *spec)
--{
--	return (spec->src_ip_127_96 || spec->src_ip_95_64 ||
--		spec->src_ip_63_32 || spec->src_ip_31_0);
--}
--
--static bool dr_mask_is_dst_addr_set(struct mlx5dr_match_spec *spec)
--{
--	return (spec->dst_ip_127_96 || spec->dst_ip_95_64 ||
--		spec->dst_ip_63_32 || spec->dst_ip_31_0);
--}
--
- static bool dr_mask_is_l3_base_set(struct mlx5dr_match_spec *spec)
- {
- 	return (spec->ip_protocol || spec->frag || spec->tcp_flags ||
-@@ -480,11 +468,11 @@ static int dr_matcher_set_ste_builders(s
- 						    &mask, inner, rx);
- 
- 		if (outer_ipv == DR_RULE_IPV6) {
--			if (dr_mask_is_dst_addr_set(&mask.outer))
-+			if (DR_MASK_IS_DST_IP_SET(&mask.outer))
- 				mlx5dr_ste_build_eth_l3_ipv6_dst(ste_ctx, &sb[idx++],
- 								 &mask, inner, rx);
- 
--			if (dr_mask_is_src_addr_set(&mask.outer))
-+			if (DR_MASK_IS_SRC_IP_SET(&mask.outer))
- 				mlx5dr_ste_build_eth_l3_ipv6_src(ste_ctx, &sb[idx++],
- 								 &mask, inner, rx);
- 
-@@ -580,11 +568,11 @@ static int dr_matcher_set_ste_builders(s
- 						    &mask, inner, rx);
- 
- 		if (inner_ipv == DR_RULE_IPV6) {
--			if (dr_mask_is_dst_addr_set(&mask.inner))
-+			if (DR_MASK_IS_DST_IP_SET(&mask.inner))
- 				mlx5dr_ste_build_eth_l3_ipv6_dst(ste_ctx, &sb[idx++],
- 								 &mask, inner, rx);
- 
--			if (dr_mask_is_src_addr_set(&mask.inner))
-+			if (DR_MASK_IS_SRC_IP_SET(&mask.inner))
- 				mlx5dr_ste_build_eth_l3_ipv6_src(ste_ctx, &sb[idx++],
- 								 &mask, inner, rx);
- 
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
-@@ -602,12 +602,34 @@ int mlx5dr_ste_set_action_decap_l3_list(
- 						 used_hw_action_num);
- }
- 
-+static int dr_ste_build_pre_check_spec(struct mlx5dr_domain *dmn,
-+				       struct mlx5dr_match_spec *spec)
-+{
-+	if (spec->ip_version) {
-+		if (spec->ip_version != 0xf) {
-+			mlx5dr_err(dmn,
-+				   "Partial ip_version mask with src/dst IP is not supported\n");
-+			return -EINVAL;
-+		}
-+	} else if (spec->ethertype != 0xffff &&
-+		   (DR_MASK_IS_SRC_IP_SET(spec) || DR_MASK_IS_DST_IP_SET(spec))) {
-+		mlx5dr_err(dmn,
-+			   "Partial/no ethertype mask with src/dst IP is not supported\n");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- int mlx5dr_ste_build_pre_check(struct mlx5dr_domain *dmn,
- 			       u8 match_criteria,
- 			       struct mlx5dr_match_param *mask,
- 			       struct mlx5dr_match_param *value)
- {
--	if (!value && (match_criteria & DR_MATCHER_CRITERIA_MISC)) {
-+	if (value)
-+		return 0;
-+
-+	if (match_criteria & DR_MATCHER_CRITERIA_MISC) {
- 		if (mask->misc.source_port && mask->misc.source_port != 0xffff) {
- 			mlx5dr_err(dmn,
- 				   "Partial mask source_port is not supported\n");
-@@ -621,6 +643,14 @@ int mlx5dr_ste_build_pre_check(struct ml
- 		}
- 	}
- 
-+	if ((match_criteria & DR_MATCHER_CRITERIA_OUTER) &&
-+	    dr_ste_build_pre_check_spec(dmn, &mask->outer))
-+		return -EINVAL;
-+
-+	if ((match_criteria & DR_MATCHER_CRITERIA_INNER) &&
-+	    dr_ste_build_pre_check_spec(dmn, &mask->inner))
-+		return -EINVAL;
-+
- 	return 0;
- }
- 
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
-@@ -739,6 +739,16 @@ struct mlx5dr_match_param {
- 				       (_misc3)->icmpv4_code || \
- 				       (_misc3)->icmpv4_header_data)
- 
-+#define DR_MASK_IS_SRC_IP_SET(_spec) ((_spec)->src_ip_127_96 || \
-+				      (_spec)->src_ip_95_64  || \
-+				      (_spec)->src_ip_63_32  || \
-+				      (_spec)->src_ip_31_0)
-+
-+#define DR_MASK_IS_DST_IP_SET(_spec) ((_spec)->dst_ip_127_96 || \
-+				      (_spec)->dst_ip_95_64  || \
-+				      (_spec)->dst_ip_63_32  || \
-+				      (_spec)->dst_ip_31_0)
-+
- struct mlx5dr_esw_caps {
- 	u64 drop_icm_address_rx;
- 	u64 drop_icm_address_tx;
+ static int ipq4019_mdio_probe(struct platform_device *pdev)
 
 
