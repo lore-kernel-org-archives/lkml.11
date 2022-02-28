@@ -2,104 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08BB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238707AbiB1RtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:49:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37496 "EHLO
+        id S238884AbiB1RtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:49:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238862AbiB1RnT (ORCPT
+        with ESMTP id S238948AbiB1Rnd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:43:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094F19A4E5;
-        Mon, 28 Feb 2022 09:35:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1414B61375;
-        Mon, 28 Feb 2022 17:35:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18F12C340E7;
-        Mon, 28 Feb 2022 17:35:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069715;
-        bh=KpiCJSOCMTZiDWqLlKadY57iMfFkeIoGxU63WBrxqjU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qMWxNYJlj5Z+NOjQ7RPc9XhatS7IzX7Tm5PN8AN12D1rXfIyZIyUEpI8WBpnC+hMA
-         YNZUziD6/sBq0Yeov+1phCtZn9TFRpuRV8DMD5/bbW7tEkfulY3aBAaP82feSWFUTl
-         rS9DOf/jWxmUMn+9WjAj8TwWswg/JEX/9VnijVlw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 5.10 67/80] usb: dwc3: gadget: Let the interrupt handler disable bottom halves.
-Date:   Mon, 28 Feb 2022 18:24:48 +0100
-Message-Id: <20220228172319.855409031@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
-References: <20220228172311.789892158@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 28 Feb 2022 12:43:33 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E709D7D03F;
+        Mon, 28 Feb 2022 09:35:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646069725; x=1677605725;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rL/LDGX5IsDnQdPbHkRMVK6CvzA1sOWyScOPv1bJ4b0=;
+  b=dDmyROAHI4NL7nBBSYLrOi7fMIQLN2NRJebbCBIZKl5PX0yX/hzIpsiB
+   xh1lLfM+T7oBIjkF58OC0nxi315w1mt2k6tuD6N+hgAWAxlBmK3ZHTbzG
+   NvW0I2deYZHHwzsKHNZNH8hLnrquoElaVUhew+F6A+TMwhtwa4bDSUcBj
+   mKOjSUZn/PpwUEO7UK4o9hJlzLl3QQ0tw1xruI2AYUDJ7Kj9HTyM5fUsM
+   sd4iW7jeR33QmsswMeYGbKZL08/KB+TiowggsqnCDfLCUgUztnt7To5UQ
+   6H0/E+xF5/XySC/a2i/EDq4ZSmbeAsy9x8sFo26YxHXag4hh1ghxrnTG/
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="339373867"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="339373867"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:35:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="510174103"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 28 Feb 2022 09:35:14 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOjvW-0007ZQ-6k; Mon, 28 Feb 2022 17:35:14 +0000
+Date:   Tue, 1 Mar 2022 01:35:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Maninder Singh <maninder1.s@samsung.com>, mcgrof@kernel.org,
+        pmladek@suse.com, rostedt@goodmis.org, senozhatsky@chromium.org,
+        andriy.shevchenko@linux.intel.com, linux@rasmusvillemoes.dk,
+        akpm@linux-foundation.org, wangkefeng.wang@huawei.com
+Cc:     kbuild-all@lists.01.org, v.narang@samsung.com, swboyd@chromium.org,
+        ojeda@kernel.or, linux-kernel@vger.kernel.org,
+        linux-modules@vger.kernel.org, avimalin@gmail.com,
+        atomlin@redhat.com, Maninder Singh <maninder1.s@samsung.com>
+Subject: Re: [PATCH 1/1] kallsyms: enhance %pS/s/b printing when KALLSYSMS is
+ disabled
+Message-ID: <202202281853.EofvQRmv-lkp@intel.com>
+References: <20220228053447.1584704-1-maninder1.s@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228053447.1584704-1-maninder1.s@samsung.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Hi Maninder,
 
-commit 84918a89d6efaff075de570b55642b6f4ceeac6d upstream.
+Thank you for the patch! Perhaps something to improve:
 
-The interrupt service routine registered for the gadget is a primary
-handler which mask the interrupt source and a threaded handler which
-handles the source of the interrupt. Since the threaded handler is
-voluntary threaded, the IRQ-core does not disable bottom halves before
-invoke the handler like it does for the forced-threaded handler.
+[auto build test WARNING on hnaz-mm/master]
+[also build test WARNING on next-20220225]
+[cannot apply to mcgrof/modules-next linus/master v5.17-rc6]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Due to changes in networking it became visible that a network gadget's
-completions handler may schedule a softirq which remains unprocessed.
-The gadget's completion handler is usually invoked either in hard-IRQ or
-soft-IRQ context. In this context it is enough to just raise the softirq
-because the softirq itself will be handled once that context is left.
-In the case of the voluntary threaded handler, there is nothing that
-will process pending softirqs. Which means it remain queued until
-another random interrupt (on this CPU) fires and handles it on its exit
-path or another thread locks and unlocks a lock with the bh suffix.
-Worst case is that the CPU goes idle and the NOHZ complains about
-unhandled softirqs.
+url:    https://github.com/0day-ci/linux/commits/Maninder-Singh/kallsyms-enhance-pS-s-b-printing-when-KALLSYSMS-is-disabled/20220228-140105
+base:   https://github.com/hnaz/linux-mm master
+config: alpha-randconfig-r032-20220227 (https://download.01.org/0day-ci/archive/20220228/202202281853.EofvQRmv-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/fbad94837350bb7c5b1b0c33648f8b20eff0150a
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Maninder-Singh/kallsyms-enhance-pS-s-b-printing-when-KALLSYSMS-is-disabled/20220228-140105
+        git checkout fbad94837350bb7c5b1b0c33648f8b20eff0150a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash
 
-Disable bottom halves before acquiring the lock (and disabling
-interrupts) and enable them after dropping the lock. This ensures that
-any pending softirqs will handled right away.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Link: https://lkml.kernel.org/r/c2a64979-73d1-2c22-e048-c275c9f81558@samsung.com
-Fixes: e5f68b4a3e7b0 ("Revert "usb: dwc3: gadget: remove unnecessary _irqsave()"")
-Cc: stable <stable@kernel.org>
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Link: https://lore.kernel.org/r/Yg/YPejVQH3KkRVd@linutronix.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+All warnings (new ones prefixed by >>):
+
+   lib/vsprintf.c: In function 'sprint_module_info':
+>> lib/vsprintf.c:993:13: warning: variable 'modbuildid' set but not used [-Wunused-but-set-variable]
+     993 |         int modbuildid = 0;
+         |             ^~~~~~~~~~
+   lib/vsprintf.c: In function 'va_format':
+   lib/vsprintf.c:1761:9: warning: function 'va_format' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
+    1761 |         buf += vsnprintf(buf, end > buf ? end - buf : 0, va_fmt->fmt, va);
+         |         ^~~
+
+
+vim +/modbuildid +993 lib/vsprintf.c
+
+   983	
+   984	#if !defined(CONFIG_KALLSYMS) && defined(CONFIG_MODULES)
+   985	static int sprint_module_info(char *buf, char *end, unsigned long value,
+   986				     const char *fmt)
+   987	{
+   988		struct module *mod;
+   989		unsigned long offset = 1;
+   990		unsigned long base;
+   991		int ret = 0;
+   992		const char *modname;
+ > 993		int modbuildid = 0;
+   994		int len;
+   995	#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
+   996		const unsigned char *buildid = NULL;
+   997	#endif
+   998	
+   999		if (is_ksym_addr(value))
+  1000			return 0;
+  1001	
+  1002		if (*fmt == 'B' && fmt[1] == 'b')
+  1003			modbuildid = 1;
+  1004		else if (*fmt == 'S' && (fmt[1] == 'b' || (fmt[1] == 'R' && fmt[2] == 'b')))
+  1005			modbuildid = 1;
+  1006		else if (*fmt != 's') {
+  1007			/*
+  1008			 * do nothing.
+  1009			 */
+  1010		} else
+  1011			offset = 0;
+  1012	
+  1013		preempt_disable();
+  1014		mod = __module_address(value);
+  1015		if (mod) {
+  1016			ret = 1;
+  1017			modname = mod->name;
+  1018	#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
+  1019			if (modbuildid)
+  1020				buildid = mod->build_id;
+  1021	#endif
+  1022			if (offset) {
+  1023				base = (unsigned long)mod->core_layout.base;
+  1024				offset = value - base;
+  1025			}
+  1026		}
+  1027	
+  1028		preempt_enable();
+  1029		if (!ret)
+  1030			return 0;
+  1031	
+  1032		/* address belongs to module */
+  1033		if (offset)
+  1034			len = sprintf(buf, "0x%lx+0x%lx", base, offset);
+  1035		else
+  1036			len = sprintf(buf, "0x%lx", value);
+  1037	
+  1038		len += sprintf(buf + len, " [%s", modname);
+  1039	#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
+  1040		if (modbuildid && buildid) {
+  1041			/* build ID should match length of sprintf */
+  1042			static_assert(sizeof(typeof_member(struct module, build_id)) == 20);
+  1043			len += sprintf(buf + len, " %20phN", buildid);
+  1044		}
+  1045	#endif
+  1046		len += sprintf(buf + len, "]");
+  1047	
+  1048		return len;
+  1049	}
+  1050	#else
+  1051	static inline int sprint_module_info(char *buf, char *end, unsigned long value,
+  1052				     const char *fmt)
+  1053	{
+  1054		return 0;
+  1055	}
+  1056	#endif
+  1057	
+
 ---
- drivers/usb/dwc3/gadget.c |    2 ++
- 1 file changed, 2 insertions(+)
-
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -3775,9 +3775,11 @@ static irqreturn_t dwc3_thread_interrupt
- 	unsigned long flags;
- 	irqreturn_t ret = IRQ_NONE;
- 
-+	local_bh_disable();
- 	spin_lock_irqsave(&dwc->lock, flags);
- 	ret = dwc3_process_event_buf(evt);
- 	spin_unlock_irqrestore(&dwc->lock, flags);
-+	local_bh_enable();
- 
- 	return ret;
- }
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
