@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B026AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:35:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A78B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238178AbiB1RgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:36:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
+        id S238213AbiB1RgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:36:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238660AbiB1Rdn (ORCPT
+        with ESMTP id S238736AbiB1Rds (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:33:43 -0500
+        Mon, 28 Feb 2022 12:33:48 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C33292851;
-        Mon, 28 Feb 2022 09:30:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8F492D14;
+        Mon, 28 Feb 2022 09:30:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFD36B815B8;
-        Mon, 28 Feb 2022 17:30:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B24AC340E7;
-        Mon, 28 Feb 2022 17:30:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02D42B815A6;
+        Mon, 28 Feb 2022 17:30:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54B97C340E7;
+        Mon, 28 Feb 2022 17:30:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069426;
-        bh=ACLnAZQIR5psZ8uhJCL76WGjXIdm6NzshqJBZPCBeCU=;
+        s=korg; t=1646069429;
+        bh=RMBC6hs6l1n266HoDM4V7/z0N4puqLKn/zyTHSm1gxU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BUA5lYkLWFOE6AtZc7OXFmSDOig08O9wBLKP/0O0tQyZ8jBws5/A9/Pwc//yPts72
-         cpzw+hssUqv9vVv0w5lhtrCUrujbnueoHSog1mzVaR0gwCxoU3YbbX2EqwGBiWEFKf
-         SdG5M6jqYM6VFWmRwCNW7CtnQB3fxGOZrTspKir4=
+        b=l72Mw3/GNXXb7lkqdcwoqilDptdH3bDhD0B21IepQvGggcl3p++bGZi09pTFhgsGK
+         HiN/3G3cft3ZKBdVqEebBYH7RbQTuCd0R1f9S+Ge29c0dHTkvRGzpYryp/aeVCH7YR
+         +kBzzfTHggpzndJLJ7Uxfq1a6AjsXhEuNCyJwlSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH 5.4 16/53] bpf: Do not try bpf_msg_push_data with len 0
-Date:   Mon, 28 Feb 2022 18:24:14 +0100
-Message-Id: <20220228172249.525088925@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 17/53] net: __pskb_pull_tail() & pskb_carve_frag_list() drop_monitor friends
+Date:   Mon, 28 Feb 2022 18:24:15 +0100
+Message-Id: <20220228172249.581172789@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -50,43 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Maurer <fmaurer@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 4a11678f683814df82fca9018d964771e02d7e6d upstream.
+commit ef527f968ae05c6717c39f49c8709a7e2c19183a upstream.
 
-If bpf_msg_push_data() is called with len 0 (as it happens during
-selftests/bpf/test_sockmap), we do not need to do anything and can
-return early.
+Whenever one of these functions pull all data from an skb in a frag_list,
+use consume_skb() instead of kfree_skb() to avoid polluting drop
+monitoring.
 
-Calling bpf_msg_push_data() with len 0 previously lead to a wrong ENOMEM
-error: we later called get_order(copy + len); if len was 0, copy + len
-was also often 0 and get_order() returned some undefined value (at the
-moment 52). alloc_pages() caught that and failed, but then bpf_msg_push_data()
-returned ENOMEM. This was wrong because we are most probably not out of
-memory and actually do not need any additional memory.
-
-Fixes: 6fff607e2f14b ("bpf: sk_msg program helper bpf_msg_push_data")
-Signed-off-by: Felix Maurer <fmaurer@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Yonghong Song <yhs@fb.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/df69012695c7094ccb1943ca02b4920db3537466.1644421921.git.fmaurer@redhat.com
+Fixes: 6fa01ccd8830 ("skbuff: Add pskb_extract() helper function")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220220154052.1308469-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/filter.c |    3 +++
- 1 file changed, 3 insertions(+)
+ net/core/skbuff.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2516,6 +2516,9 @@ BPF_CALL_4(bpf_msg_pop_data, struct sk_m
- 	if (unlikely(flags))
- 		return -EINVAL;
- 
-+	if (unlikely(len == 0))
-+		return 0;
-+
- 	/* First find the starting scatterlist element */
- 	i = msg->sg.start;
- 	do {
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -2139,7 +2139,7 @@ void *__pskb_pull_tail(struct sk_buff *s
+ 		/* Free pulled out fragments. */
+ 		while ((list = skb_shinfo(skb)->frag_list) != insp) {
+ 			skb_shinfo(skb)->frag_list = list->next;
+-			kfree_skb(list);
++			consume_skb(list);
+ 		}
+ 		/* And insert new clone at head. */
+ 		if (clone) {
+@@ -5846,7 +5846,7 @@ static int pskb_carve_frag_list(struct s
+ 	/* Free pulled out fragments. */
+ 	while ((list = shinfo->frag_list) != insp) {
+ 		shinfo->frag_list = list->next;
+-		kfree_skb(list);
++		consume_skb(list);
+ 	}
+ 	/* And insert new clone at head. */
+ 	if (clone) {
 
 
