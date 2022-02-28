@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2FAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CEE2C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237837AbiB1Rzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:55:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46286 "EHLO
+        id S239397AbiB1Rzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:55:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239296AbiB1Rww (ORCPT
+        with ESMTP id S239325AbiB1Rwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:52:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 007A393982;
-        Mon, 28 Feb 2022 09:39:59 -0800 (PST)
+        Mon, 28 Feb 2022 12:52:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B86A8EEF;
+        Mon, 28 Feb 2022 09:40:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CBF2614CC;
-        Mon, 28 Feb 2022 17:39:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85433C340E7;
-        Mon, 28 Feb 2022 17:39:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9DBEEB815A2;
+        Mon, 28 Feb 2022 17:40:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E66EAC340F1;
+        Mon, 28 Feb 2022 17:39:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069994;
-        bh=p9ckdDtQYt8cam5k/4hyLTvHsay93JN2BiHA02yx+Ow=;
+        s=korg; t=1646070000;
+        bh=XSLKRkij1uXAIPZeU+vR3idzKH3jAVHBKW7vVMbPZpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dnFV9hrv6mbx6/QC50gX8SxcNqqqxMfZ+ek0o3TrIZT8SI9JD1wYj0x7ccp7rHvqK
-         tXK2rPaRqPcKUIYV5VoEwjSNyjppE+/NuegOtOt0fFwVyOPcGVeXFBmkq7QaVsJzPX
-         PXjrfUBOBNnHye3uR0ZCQ8x3XBfsEHd4yXGdP8to=
+        b=GXceBZQ/lJt1Ay90Uk8dgdkxoOlJWmUsa0xoyxloTZePakJkH5LGlLWTviUAGXBIJ
+         6Sh4BLICK0G4MYXuf8rjbRFZCMGH9a4Px3QZqm8UbwUDcJCLw1nWB5n89Xtub1vmhX
+         QZ1gxRGIKWNHgX1ax8DwSM4vP1xmnswlSEy+Ea7E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meir Lichtinger <meirl@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.15 049/139] net/mlx5: Update the list of the PCI supported devices
-Date:   Mon, 28 Feb 2022 18:23:43 +0100
-Message-Id: <20220228172352.849780237@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH 5.15 051/139] bpf: Do not try bpf_msg_push_data with len 0
+Date:   Mon, 28 Feb 2022 18:23:45 +0100
+Message-Id: <20220228172353.067173515@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -50,36 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meir Lichtinger <meirl@nvidia.com>
+From: Felix Maurer <fmaurer@redhat.com>
 
-commit f908a35b22180c4da64cf2647e4f5f0cd3054da7 upstream.
+commit 4a11678f683814df82fca9018d964771e02d7e6d upstream.
 
-Add the upcoming BlueField-4 and ConnectX-8 device IDs.
+If bpf_msg_push_data() is called with len 0 (as it happens during
+selftests/bpf/test_sockmap), we do not need to do anything and can
+return early.
 
-Fixes: 2e9d3e83ab82 ("net/mlx5: Update the list of the PCI supported devices")
-Signed-off-by: Meir Lichtinger <meirl@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Calling bpf_msg_push_data() with len 0 previously lead to a wrong ENOMEM
+error: we later called get_order(copy + len); if len was 0, copy + len
+was also often 0 and get_order() returned some undefined value (at the
+moment 52). alloc_pages() caught that and failed, but then bpf_msg_push_data()
+returned ENOMEM. This was wrong because we are most probably not out of
+memory and actually do not need any additional memory.
+
+Fixes: 6fff607e2f14b ("bpf: sk_msg program helper bpf_msg_push_data")
+Signed-off-by: Felix Maurer <fmaurer@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Yonghong Song <yhs@fb.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/df69012695c7094ccb1943ca02b4920db3537466.1644421921.git.fmaurer@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/main.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/core/filter.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1762,10 +1762,12 @@ static const struct pci_device_id mlx5_c
- 	{ PCI_VDEVICE(MELLANOX, 0x101e), MLX5_PCI_DEV_IS_VF},	/* ConnectX Family mlx5Gen Virtual Function */
- 	{ PCI_VDEVICE(MELLANOX, 0x101f) },			/* ConnectX-6 LX */
- 	{ PCI_VDEVICE(MELLANOX, 0x1021) },			/* ConnectX-7 */
-+	{ PCI_VDEVICE(MELLANOX, 0x1023) },			/* ConnectX-8 */
- 	{ PCI_VDEVICE(MELLANOX, 0xa2d2) },			/* BlueField integrated ConnectX-5 network controller */
- 	{ PCI_VDEVICE(MELLANOX, 0xa2d3), MLX5_PCI_DEV_IS_VF},	/* BlueField integrated ConnectX-5 network controller VF */
- 	{ PCI_VDEVICE(MELLANOX, 0xa2d6) },			/* BlueField-2 integrated ConnectX-6 Dx network controller */
- 	{ PCI_VDEVICE(MELLANOX, 0xa2dc) },			/* BlueField-3 integrated ConnectX-7 network controller */
-+	{ PCI_VDEVICE(MELLANOX, 0xa2df) },			/* BlueField-4 integrated ConnectX-8 network controller */
- 	{ 0, }
- };
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2711,6 +2711,9 @@ BPF_CALL_4(bpf_msg_push_data, struct sk_
+ 	if (unlikely(flags))
+ 		return -EINVAL;
  
++	if (unlikely(len == 0))
++		return 0;
++
+ 	/* First find the starting scatterlist element */
+ 	i = msg->sg.start;
+ 	do {
 
 
