@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9588C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB63C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239380AbiB1R7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:59:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
+        id S237281AbiB1R7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:59:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240386AbiB1RyQ (ORCPT
+        with ESMTP id S240418AbiB1RyR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:16 -0500
+        Mon, 28 Feb 2022 12:54:17 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48403B1895;
-        Mon, 28 Feb 2022 09:42:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116F2B18AD;
+        Mon, 28 Feb 2022 09:42:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6526EB815C2;
-        Mon, 28 Feb 2022 17:42:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C08B2C340E7;
-        Mon, 28 Feb 2022 17:42:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33F2BB815C6;
+        Mon, 28 Feb 2022 17:42:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EE0CC340E7;
+        Mon, 28 Feb 2022 17:42:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070124;
-        bh=/BUH6X6Lf9OT0xsbSheMjAlZZE59F3xBuVRrMWxHapc=;
+        s=korg; t=1646070126;
+        bh=OW5+OUNm89gARk4f1MrpkJRAi39Z9FkxXGUPPWLts+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NygE5+wR2DOfpbuxC7/NKUMy/5VPuIC7uU+uDntCeT35NTYSyQqgz1q5e0qYZ2T0G
-         jl226GUxiZEhedc8lqsPCwdz0Xz8o3XBELrBj8MnV37NEepKPBReaay9+pVhbOOBnD
-         3Q1Pxc2KWdmyQivMzCGFJDZCvw+SG21dJrgsoye4=
+        b=TBv6zwDtCjBpflS3vgYV3y4RhESyqbka3vLhfz07x+NXrXj+V25dGC+J1k3cGE7K4
+         5sdBJfvElkXwxAKCbce48bQuQEo2FetPAZg5IVmClDFT/jDApCVz2yigBDl6ZGNRVw
+         ecgoWH7V4uY56OCL0J2LV4mVjNWjF14NPi4aXAW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Changbin Du <changbin.du@gmail.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 127/139] riscv: fix oops caused by irqsoff latency tracer
-Date:   Mon, 28 Feb 2022 18:25:01 +0100
-Message-Id: <20220228172401.024088700@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Thierry Reding <treding@nvidia.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH 5.15 136/139] gpio: tegra186: Fix chip_data type confusion
+Date:   Mon, 28 Feb 2022 18:25:10 +0100
+Message-Id: <20220228172402.013192656@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,167 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changbin Du <changbin.du@gmail.com>
+From: Marc Zyngier <maz@kernel.org>
 
-commit 22e2100b1b07d6f5acc71cc1acb53f680c677d77 upstream.
+commit d1e972ace42390de739cde87d96043dcbe502286 upstream.
 
-The trace_hardirqs_{on,off}() require the caller to setup frame pointer
-properly. This because these two functions use macro 'CALLER_ADDR1' (aka.
-__builtin_return_address(1)) to acquire caller info. If the $fp is used
-for other purpose, the code generated this macro (as below) could trigger
-memory access fault.
+The tegra186 GPIO driver makes the assumption that the pointer
+returned by irq_data_get_irq_chip_data() is a pointer to a
+tegra_gpio structure. Unfortunately, it is actually a pointer
+to the inner gpio_chip structure, as mandated by the gpiolib
+infrastructure. Nice try.
 
-   0xffffffff8011510e <+80>:    ld      a1,-16(s0)
-   0xffffffff80115112 <+84>:    ld      s2,-8(a1)  # <-- paging fault here
+The saving grace is that the gpio_chip is the first member of
+tegra_gpio, so the bug has gone undetected since... forever.
 
-The oops message during booting if compiled with 'irqoff' tracer enabled:
-[    0.039615][    T0] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000f8
-[    0.041925][    T0] Oops [#1]
-[    0.042063][    T0] Modules linked in:
-[    0.042864][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1-00233-g9a20c48d1ed2 #29
-[    0.043568][    T0] Hardware name: riscv-virtio,qemu (DT)
-[    0.044343][    T0] epc : trace_hardirqs_on+0x56/0xe2
-[    0.044601][    T0]  ra : restore_all+0x12/0x6e
-[    0.044721][    T0] epc : ffffffff80126a5c ra : ffffffff80003b94 sp : ffffffff81403db0
-[    0.044801][    T0]  gp : ffffffff8163acd8 tp : ffffffff81414880 t0 : 0000000000000020
-[    0.044882][    T0]  t1 : 0098968000000000 t2 : 0000000000000000 s0 : ffffffff81403de0
-[    0.044967][    T0]  s1 : 0000000000000000 a0 : 0000000000000001 a1 : 0000000000000100
-[    0.045046][    T0]  a2 : 0000000000000000 a3 : 0000000000000000 a4 : 0000000000000000
-[    0.045124][    T0]  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000054494d45
-[    0.045210][    T0]  s2 : ffffffff80003b94 s3 : ffffffff81a8f1b0 s4 : ffffffff80e27b50
-[    0.045289][    T0]  s5 : ffffffff81414880 s6 : ffffffff8160fa00 s7 : 00000000800120e8
-[    0.045389][    T0]  s8 : 0000000080013100 s9 : 000000000000007f s10: 0000000000000000
-[    0.045474][    T0]  s11: 0000000000000000 t3 : 7fffffffffffffff t4 : 0000000000000000
-[    0.045548][    T0]  t5 : 0000000000000000 t6 : ffffffff814aa368
-[    0.045620][    T0] status: 0000000200000100 badaddr: 00000000000000f8 cause: 000000000000000d
-[    0.046402][    T0] [<ffffffff80003b94>] restore_all+0x12/0x6e
+Fix it by performing a container_of() on the pointer. This results
+in no additional code, and makes it possible to understand how
+the whole thing works.
 
-This because the $fp(aka. $s0) register is not used as frame pointer in the
-assembly entry code.
-
-	resume_kernel:
-		REG_L s0, TASK_TI_PREEMPT_COUNT(tp)
-		bnez s0, restore_all
-		REG_L s0, TASK_TI_FLAGS(tp)
-                andi s0, s0, _TIF_NEED_RESCHED
-                beqz s0, restore_all
-                call preempt_schedule_irq
-                j restore_all
-
-To fix above issue, here we add one extra level wrapper for function
-trace_hardirqs_{on,off}() so they can be safely called by low level entry
-code.
-
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
-Fixes: 3c4697982982 ("riscv: Enable LOCKDEP_SUPPORT & fixup TRACE_IRQFLAGS_SUPPORT")
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fixes: 5b2b135a87fc ("gpio: Add Tegra186 support")
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: Thierry Reding <treding@nvidia.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Link: https://lore.kernel.org/r/20220211093904.1112679-1-maz@kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/Makefile    |    2 ++
- arch/riscv/kernel/entry.S     |   10 +++++-----
- arch/riscv/kernel/trace_irq.c |   27 +++++++++++++++++++++++++++
- arch/riscv/kernel/trace_irq.h |   11 +++++++++++
- 4 files changed, 45 insertions(+), 5 deletions(-)
- create mode 100644 arch/riscv/kernel/trace_irq.c
- create mode 100644 arch/riscv/kernel/trace_irq.h
+ drivers/gpio/gpio-tegra186.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@ -50,6 +50,8 @@ obj-$(CONFIG_MODULE_SECTIONS)	+= module-
- obj-$(CONFIG_FUNCTION_TRACER)	+= mcount.o ftrace.o
- obj-$(CONFIG_DYNAMIC_FTRACE)	+= mcount-dyn.o
+--- a/drivers/gpio/gpio-tegra186.c
++++ b/drivers/gpio/gpio-tegra186.c
+@@ -337,9 +337,12 @@ static int tegra186_gpio_of_xlate(struct
+ 	return offset + pin;
+ }
  
-+obj-$(CONFIG_TRACE_IRQFLAGS)	+= trace_irq.o
++#define to_tegra_gpio(x) container_of((x), struct tegra_gpio, gpio)
 +
- obj-$(CONFIG_RISCV_BASE_PMU)	+= perf_event.o
- obj-$(CONFIG_PERF_EVENTS)	+= perf_callchain.o
- obj-$(CONFIG_HAVE_PERF_REGS)	+= perf_regs.o
---- a/arch/riscv/kernel/entry.S
-+++ b/arch/riscv/kernel/entry.S
-@@ -108,7 +108,7 @@ _save_context:
- .option pop
+ static void tegra186_irq_ack(struct irq_data *data)
+ {
+-	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct tegra_gpio *gpio = to_tegra_gpio(gc);
+ 	void __iomem *base;
  
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- #endif
+ 	base = tegra186_gpio_get_base(gpio, data->hwirq);
+@@ -351,7 +354,8 @@ static void tegra186_irq_ack(struct irq_
  
- #ifdef CONFIG_CONTEXT_TRACKING
-@@ -144,7 +144,7 @@ skip_context_tracking:
- 	li t0, EXC_BREAKPOINT
- 	beq s4, t0, 1f
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_on
-+	call __trace_hardirqs_on
- #endif
- 	csrs CSR_STATUS, SR_IE
+ static void tegra186_irq_mask(struct irq_data *data)
+ {
+-	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct tegra_gpio *gpio = to_tegra_gpio(gc);
+ 	void __iomem *base;
+ 	u32 value;
  
-@@ -235,7 +235,7 @@ ret_from_exception:
- 	REG_L s0, PT_STATUS(sp)
- 	csrc CSR_STATUS, SR_IE
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- #endif
- #ifdef CONFIG_RISCV_M_MODE
- 	/* the MPP value is too large to be used as an immediate arg for addi */
-@@ -271,10 +271,10 @@ restore_all:
- 	REG_L s1, PT_STATUS(sp)
- 	andi t0, s1, SR_PIE
- 	beqz t0, 1f
--	call trace_hardirqs_on
-+	call __trace_hardirqs_on
- 	j 2f
- 1:
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- 2:
- #endif
- 	REG_L a0, PT_STATUS(sp)
---- /dev/null
-+++ b/arch/riscv/kernel/trace_irq.c
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-+ */
-+
-+#include <linux/irqflags.h>
-+#include <linux/kprobes.h>
-+#include "trace_irq.h"
-+
-+/*
-+ * trace_hardirqs_on/off require the caller to setup frame pointer properly.
-+ * Otherwise, CALLER_ADDR1 might trigger an pagging exception in kernel.
-+ * Here we add one extra level so they can be safely called by low
-+ * level entry code which $fp is used for other purpose.
-+ */
-+
-+void __trace_hardirqs_on(void)
-+{
-+	trace_hardirqs_on();
-+}
-+NOKPROBE_SYMBOL(__trace_hardirqs_on);
-+
-+void __trace_hardirqs_off(void)
-+{
-+	trace_hardirqs_off();
-+}
-+NOKPROBE_SYMBOL(__trace_hardirqs_off);
---- /dev/null
-+++ b/arch/riscv/kernel/trace_irq.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-+ */
-+#ifndef __TRACE_IRQ_H
-+#define __TRACE_IRQ_H
-+
-+void __trace_hardirqs_on(void);
-+void __trace_hardirqs_off(void);
-+
-+#endif /* __TRACE_IRQ_H */
+@@ -366,7 +370,8 @@ static void tegra186_irq_mask(struct irq
+ 
+ static void tegra186_irq_unmask(struct irq_data *data)
+ {
+-	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct tegra_gpio *gpio = to_tegra_gpio(gc);
+ 	void __iomem *base;
+ 	u32 value;
+ 
+@@ -381,7 +386,8 @@ static void tegra186_irq_unmask(struct i
+ 
+ static int tegra186_irq_set_type(struct irq_data *data, unsigned int type)
+ {
+-	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct tegra_gpio *gpio = to_tegra_gpio(gc);
+ 	void __iomem *base;
+ 	u32 value;
+ 
 
 
