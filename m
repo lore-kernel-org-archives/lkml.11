@@ -2,132 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9BBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2684CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238591AbiB1Rsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:48:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
+        id S236617AbiB1Rs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:48:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239871AbiB1Rop (ORCPT
+        with ESMTP id S239897AbiB1Rov (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:44:45 -0500
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105A613F97;
-        Mon, 28 Feb 2022 09:37:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646069839; x=1677605839;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EUN0iBxb6qJUpWGGlQLJZRyk0KG5mMjx/0wyD9IfUo0=;
-  b=VFnCmoMu6b3TtjKDzKXYOwwFvvU5U8/jHghoV+cvzItxR+HXlPiAlxux
-   FgUnuuoHL0UXvjyC4MN5GK17dzTgq/XIkpfoPVyIJWIxHDLZOHIBlffWu
-   +NmES0AkDODUPCuWo6I8PEE90MK/1BaVHU61B+NkaV0TKm9tUEuPVs+1t
-   nrmE1QLPIUArzFIDCl8nVvtQyH2oiwLqQ3fX7h/+iBTeEiVgY16jyxDKY
-   HF7kcYaHDZYtyjyMCu7rIo3F/mHbbezdcXd3YamrL+9wBZff8dIY2GZi2
-   mw0wOdZQyCzgjVcoCMSWLbwh1RMiivy/3wy4ISgF4apj/bAEf0hFrs7l4
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="252669861"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="252669861"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:37:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="492791347"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 28 Feb 2022 09:37:15 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOjxS-0007c7-GK; Mon, 28 Feb 2022 17:37:14 +0000
-Date:   Tue, 1 Mar 2022 01:36:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Mike Rapoport <rppt@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/4] MIPS: Refactor early_parse_mem() to fix mem=
- parameter
-Message-ID: <202202282330.uO0sH1Bk-lkp@intel.com>
-References: <1646054617-16799-2-git-send-email-yangtiezhu@loongson.cn>
+        Mon, 28 Feb 2022 12:44:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3C15F9A;
+        Mon, 28 Feb 2022 09:37:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D62FB815AB;
+        Mon, 28 Feb 2022 17:37:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A253C340E7;
+        Mon, 28 Feb 2022 17:37:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069836;
+        bh=hOcuQEIH6qE59QXpAlehuUVeFbLd8rnQk55x86ePhjg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vUxc6tZy4RC2hYMHiOq09B3l9Mwql/cCUZaWJr0w09MOJjL9e73Dku0Z0P4rEXsLl
+         ROkhkU600ASLbLkb80sgizuEXLV24QG7o4uKCW+MkpzKkrfXz/sUhu9JArwI3QLe/q
+         jdweDLbQaHjFLziQHK8rUtedSyapSyjriJvyfYSU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Nick Gregory <Nick.Gregory@Sophos.com>
+Subject: [PATCH 5.15 029/139] netfilter: nf_tables_offload: incorrect flow offload action array size
+Date:   Mon, 28 Feb 2022 18:23:23 +0100
+Message-Id: <20220228172350.829426722@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1646054617-16799-2-git-send-email-yangtiezhu@loongson.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tiezhu,
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-Thank you for the patch! Perhaps something to improve:
+commit b1a5983f56e371046dcf164f90bfaf704d2b89f6 upstream.
 
-[auto build test WARNING on hnaz-mm/master]
-[also build test WARNING on linus/master v5.17-rc6 next-20220225]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+immediate verdict expression needs to allocate one slot in the flow offload
+action array, however, immediate data expression does not need to do so.
 
-url:    https://github.com/0day-ci/linux/commits/Tiezhu-Yang/MIPS-Modify-mem-and-memmap-parameter/20220228-212554
-base:   https://github.com/hnaz/linux-mm master
-config: mips-randconfig-r025-20220228 (https://download.01.org/0day-ci/archive/20220228/202202282330.uO0sH1Bk-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/0day-ci/linux/commit/8e3bd7f4c0a4003c328ef2d816454dd50810b974
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Tiezhu-Yang/MIPS-Modify-mem-and-memmap-parameter/20220228-212554
-        git checkout 8e3bd7f4c0a4003c328ef2d816454dd50810b974
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/kernel/
+fwd and dup expression need to allocate one slot, this is missing.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Add a new offload_action interface to report if this expression needs to
+allocate one slot in the flow offload action array.
 
-All warnings (new ones prefixed by >>):
-
->> arch/mips/kernel/setup.c:350:42: warning: format specifies type 'long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
-           pr_notice("Memory limited to %lldMB\n", memory_limit >> 20);
-                                        ~~~~       ^~~~~~~~~~~~~~~~~~
-                                        %u
-   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
-           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-                                     ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   1 warning generated.
-
-
-vim +350 arch/mips/kernel/setup.c
-
-   343	
-   344	static int __init early_parse_mem(char *p)
-   345	{
-   346		if (!p)
-   347			return 1;
-   348	
-   349		memory_limit = memparse(p, &p) & PAGE_MASK;
- > 350		pr_notice("Memory limited to %lldMB\n", memory_limit >> 20);
-   351	
-   352		return 0;
-   353	}
-   354	early_param("mem", early_parse_mem);
-   355	
-
+Fixes: be2861dc36d7 ("netfilter: nft_{fwd,dup}_netdev: add offload support")
+Reported-and-tested-by: Nick Gregory <Nick.Gregory@Sophos.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ include/net/netfilter/nf_tables.h         |    2 +-
+ include/net/netfilter/nf_tables_offload.h |    2 --
+ net/netfilter/nf_tables_offload.c         |    3 ++-
+ net/netfilter/nft_dup_netdev.c            |    6 ++++++
+ net/netfilter/nft_fwd_netdev.c            |    6 ++++++
+ net/netfilter/nft_immediate.c             |   12 +++++++++++-
+ 6 files changed, 26 insertions(+), 5 deletions(-)
+
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -883,9 +883,9 @@ struct nft_expr_ops {
+ 	int				(*offload)(struct nft_offload_ctx *ctx,
+ 						   struct nft_flow_rule *flow,
+ 						   const struct nft_expr *expr);
++	bool				(*offload_action)(const struct nft_expr *expr);
+ 	void				(*offload_stats)(struct nft_expr *expr,
+ 							 const struct flow_stats *stats);
+-	u32				offload_flags;
+ 	const struct nft_expr_type	*type;
+ 	void				*data;
+ };
+--- a/include/net/netfilter/nf_tables_offload.h
++++ b/include/net/netfilter/nf_tables_offload.h
+@@ -67,8 +67,6 @@ struct nft_flow_rule {
+ 	struct flow_rule	*rule;
+ };
+ 
+-#define NFT_OFFLOAD_F_ACTION	(1 << 0)
+-
+ void nft_flow_rule_set_addr_type(struct nft_flow_rule *flow,
+ 				 enum flow_dissector_key_id addr_type);
+ 
+--- a/net/netfilter/nf_tables_offload.c
++++ b/net/netfilter/nf_tables_offload.c
+@@ -94,7 +94,8 @@ struct nft_flow_rule *nft_flow_rule_crea
+ 
+ 	expr = nft_expr_first(rule);
+ 	while (nft_expr_more(rule, expr)) {
+-		if (expr->ops->offload_flags & NFT_OFFLOAD_F_ACTION)
++		if (expr->ops->offload_action &&
++		    expr->ops->offload_action(expr))
+ 			num_actions++;
+ 
+ 		expr = nft_expr_next(expr);
+--- a/net/netfilter/nft_dup_netdev.c
++++ b/net/netfilter/nft_dup_netdev.c
+@@ -67,6 +67,11 @@ static int nft_dup_netdev_offload(struct
+ 	return nft_fwd_dup_netdev_offload(ctx, flow, FLOW_ACTION_MIRRED, oif);
+ }
+ 
++static bool nft_dup_netdev_offload_action(const struct nft_expr *expr)
++{
++	return true;
++}
++
+ static struct nft_expr_type nft_dup_netdev_type;
+ static const struct nft_expr_ops nft_dup_netdev_ops = {
+ 	.type		= &nft_dup_netdev_type,
+@@ -75,6 +80,7 @@ static const struct nft_expr_ops nft_dup
+ 	.init		= nft_dup_netdev_init,
+ 	.dump		= nft_dup_netdev_dump,
+ 	.offload	= nft_dup_netdev_offload,
++	.offload_action	= nft_dup_netdev_offload_action,
+ };
+ 
+ static struct nft_expr_type nft_dup_netdev_type __read_mostly = {
+--- a/net/netfilter/nft_fwd_netdev.c
++++ b/net/netfilter/nft_fwd_netdev.c
+@@ -77,6 +77,11 @@ static int nft_fwd_netdev_offload(struct
+ 	return nft_fwd_dup_netdev_offload(ctx, flow, FLOW_ACTION_REDIRECT, oif);
+ }
+ 
++static bool nft_fwd_netdev_offload_action(const struct nft_expr *expr)
++{
++	return true;
++}
++
+ struct nft_fwd_neigh {
+ 	u8			sreg_dev;
+ 	u8			sreg_addr;
+@@ -219,6 +224,7 @@ static const struct nft_expr_ops nft_fwd
+ 	.dump		= nft_fwd_netdev_dump,
+ 	.validate	= nft_fwd_validate,
+ 	.offload	= nft_fwd_netdev_offload,
++	.offload_action	= nft_fwd_netdev_offload_action,
+ };
+ 
+ static const struct nft_expr_ops *
+--- a/net/netfilter/nft_immediate.c
++++ b/net/netfilter/nft_immediate.c
+@@ -213,6 +213,16 @@ static int nft_immediate_offload(struct
+ 	return 0;
+ }
+ 
++static bool nft_immediate_offload_action(const struct nft_expr *expr)
++{
++	const struct nft_immediate_expr *priv = nft_expr_priv(expr);
++
++	if (priv->dreg == NFT_REG_VERDICT)
++		return true;
++
++	return false;
++}
++
+ static const struct nft_expr_ops nft_imm_ops = {
+ 	.type		= &nft_imm_type,
+ 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_immediate_expr)),
+@@ -224,7 +234,7 @@ static const struct nft_expr_ops nft_imm
+ 	.dump		= nft_immediate_dump,
+ 	.validate	= nft_immediate_validate,
+ 	.offload	= nft_immediate_offload,
+-	.offload_flags	= NFT_OFFLOAD_F_ACTION,
++	.offload_action	= nft_immediate_offload_action,
+ };
+ 
+ struct nft_expr_type nft_imm_type __read_mostly = {
+
+
