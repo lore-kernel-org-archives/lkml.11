@@ -2,109 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19940C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4668C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229968AbiB1UGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:06:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33028 "EHLO
+        id S230063AbiB1UHx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:07:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229823AbiB1UGt (ORCPT
+        with ESMTP id S230032AbiB1UHs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:06:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D33DEDE;
-        Mon, 28 Feb 2022 12:06:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27383B81642;
-        Mon, 28 Feb 2022 20:06:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85E29C340F1;
-        Mon, 28 Feb 2022 20:06:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646078767;
-        bh=uSavGpk0ExFlsWEKDVZVzJWcPdfAeGmRGCCGsNDGZJI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Qb3B2kQ3+f9XzXe4nmDRsU8fezmZ+/v8PAEwfxslUlmRBgDPXTSFx61nrA8w3HnnB
-         jiO48/wBjY9ATJ1CiCs8pQbzqi+CPyMUD7VJzynEdGC7iEhWqi2wiMxXsSWYiUDIQt
-         A3kKL2pQXkopi7jn30+fSIP85KMOScBqm+z9JZHWR2G9Pnhp71ylIv9Hk7UHqh5TFW
-         vROrJiyF+MkB5CSUYjMTwfvPtGA4K1mbCgJkjG4HhaTUDUqd2aSATsYWThH1CNVAP/
-         Q0tdc6VQmrdT+I+jgvtFLagljNriJV7jZByMhdj/HNW8K7kIBTiLovJvYIp5rkp81v
-         RPoj3hmNJbrCA==
-Date:   Mon, 28 Feb 2022 14:06:06 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Abel Vesa <abel.vesa@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Andy Gross <agross@kernel.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org, linux-hyperv@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-spi@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH v3 05/11] PCI: Use driver_set_override() instead of
- open-coding
-Message-ID: <20220228200606.GA516338@bhelgaas>
+        Mon, 28 Feb 2022 15:07:48 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E334F454
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:07:08 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id q5so14277492oij.6
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:07:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+3/hnEGttHw+ykEYwuEW4fvQITLLLeGWeScAdvHl/KA=;
+        b=gma3fcbTcxZs3ntTjPMhGnHZHMQhmpr/uq9NeQaA/FpHt4PaWcWXyyH8LNzrSfx0a6
+         hWWWhBwmCCtiQdtL9EGlRtEH8eX0XZkWrQPYviWFPnRfcZ58Bo9uYvkT9gadQpsFyn4l
+         OGvWJt25QD5DNWSKVbQC9N8mNXyRpjj5T5esY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+3/hnEGttHw+ykEYwuEW4fvQITLLLeGWeScAdvHl/KA=;
+        b=ECIBdhIx6G5ckwIUjEF+X127dWFZIXiig1eeWxxM6+uZ0QsttnT115jLOWQQWrm8sa
+         GUyATT5iKq4o4Q5BQsAFC7jhV8nSnm/vYm1ZkIygb23lr9zV6ft7BWko0UcS2tL8DBOq
+         u0cf9PmmYmeWQgUjk/xu8n+NGmpCtXGYLwTBUhEoPEHapZ+NXRf84dMrHsNTLZVSfRuo
+         B0xLY90asJOgkoqQk3/N06XGV8ZPPJQTHMOh9PE1oubJ/6GB2eVxZTu87abJLLxDX75Z
+         HH2e3bTgueZffu28opc8HuAp/QDw7UMPITpofVH5PWXCc5hbbhfA5p2uFEgf+t7j5MLt
+         n9cg==
+X-Gm-Message-State: AOAM5308XN7U+knopbkUYPbOqErfY5roKMbS9lI76o94kYY1vluFBA8x
+        P2pcW23abPkNs1HBNWr/quIV12qiON0GXw==
+X-Google-Smtp-Source: ABdhPJzDYsNn48unXYH4O3iS+uiYeYCxWy4BO4tIycIPT7ENVeXV7f7vgfTsFpMEqN3tEDZd18vWdw==
+X-Received: by 2002:a05:6808:f93:b0:2d4:f855:aadd with SMTP id o19-20020a0568080f9300b002d4f855aaddmr9989240oiw.21.1646078827617;
+        Mon, 28 Feb 2022 12:07:07 -0800 (PST)
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com. [209.85.161.47])
+        by smtp.gmail.com with ESMTPSA id u15-20020a056870700f00b000d180722f8dsm4839242oae.36.2022.02.28.12.07.07
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 12:07:07 -0800 (PST)
+Received: by mail-oo1-f47.google.com with SMTP id x6-20020a4a4106000000b003193022319cso20085058ooa.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:07:07 -0800 (PST)
+X-Received: by 2002:aca:5e86:0:b0:2ce:de77:5256 with SMTP id
+ s128-20020aca5e86000000b002cede775256mr12030360oib.117.1646078402626; Mon, 28
+ Feb 2022 12:00:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220227135214.145599-6-krzysztof.kozlowski@canonical.com>
+References: <20220215235420.1284208-1-briannorris@chromium.org>
+ <20220215155417.2.Ic15a2ef69c540aee8732703103e2cff51fb9c399@changeid> <6344d1828760d4d8625a87243fcc5f5b1096b9d4.camel@oss.nxp.com>
+In-Reply-To: <6344d1828760d4d8625a87243fcc5f5b1096b9d4.camel@oss.nxp.com>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Mon, 28 Feb 2022 11:59:51 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXOFcmLO_UBfzZ37NmQ3i3n_=5XPcHa_7=OLFvg6xg=YHg@mail.gmail.com>
+Message-ID: <CA+ASDXOFcmLO_UBfzZ37NmQ3i3n_=5XPcHa_7=OLFvg6xg=YHg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] drm/atomic: Force bridge self-refresh-exit on CRTC switch
+To:     Liu Ying <victor.liu@oss.nxp.com>
+Cc:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        stable <stable@vger.kernel.org>, Sean Paul <sean@poorly.run>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 02:52:08PM +0100, Krzysztof Kozlowski wrote:
-> Use a helper for seting driver_override to reduce amount of duplicated
-> code. Make the driver_override field const char, because it is not
-> modified by the core and it matches other subsystems.
+Hi Liu,
 
-s/seting/setting/
-or even better, s/for seting/to set/
+On Mon, Feb 28, 2022 at 1:02 AM Liu Ying <victor.liu@oss.nxp.com> wrote:
+> On Tue, 2022-02-15 at 15:54 -0800, Brian Norris wrote:
+> > --- a/drivers/gpu/drm/drm_atomic_helper.c
+> > +++ b/drivers/gpu/drm/drm_atomic_helper.c
+> > @@ -1011,9 +1011,19 @@ crtc_needs_disable(struct drm_crtc_state *old_state,
+> >               return drm_atomic_crtc_effectively_active(old_state);
+> >
+> >       /*
+> > -      * We need to run through the crtc_funcs->disable() function if the CRTC
+> > -      * is currently on, if it's transitioning to self refresh mode, or if
+> > -      * it's in self refresh mode and needs to be fully disabled.
+> > +      * We need to disable bridge(s) and CRTC if we're transitioning out of
+> > +      * self-refresh and changing CRTCs at the same time, because the
+> > +      * bridge tracks self-refresh status via CRTC state.
+> > +      */
+> > +     if (old_state->self_refresh_active && new_state->enable &&
+> > +         old_state->crtc != new_state->crtc)
+> > +             return true;
+>
+> I think 'new_state->enable' should be changed to 'new_state->active',
+> because 'active' is the one to enable/disable the CRTC while 'enable'
+> reflects whether a mode blob is set to CRTC state.  The overall logic
+> added above is ok to me. Let's see if others have any comments.
 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Thanks for the review, and good catch. This actually shows that most
+of my development was before commit 69e630016ef4 ("drm/atomic: Check
+new_crtc_state->active to determine if CRTC needs disable in self
+refresh mode"). In fact, the "state->enable" condition was included
+here mostly as a complement to the "!state->enable" condition that was
+present previously, and I didn't adapt it properly upon rebase.
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+In practice, this portion of the condition is not needed at all; we
+really want to exit PSR on CRTC-switch regardless of the new-CRTC
+state. So rather than change "enable" to "active", I plan to remove it
+entirely.
 
-> -	char		*driver_override; /* Driver name to force a match */
-> +	/*
-> +	 * Driver name to force a match.
-> +	 * Do not set directly, because core frees it.
-> +	 * Use driver_set_override() to set or clear it.
+I'll give it some local tests and send v2 eventually.
 
-Wrap this comment to fill 78 columns or so.
-
-> +	 */
-> +	const char	*driver_override;
->  
->  	unsigned long	priv_flags;	/* Private flags for the PCI driver */
->  
-> -- 
-> 2.32.0
-> 
+Thanks,
+Brian
