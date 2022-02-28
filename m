@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A26C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFCCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238766AbiB1SHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:07:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
+        id S239682AbiB1SHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239953AbiB1SCz (ORCPT
+        with ESMTP id S240103AbiB1SDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:02:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4299E544;
-        Mon, 28 Feb 2022 09:46:23 -0800 (PST)
+        Mon, 28 Feb 2022 13:03:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0257A9EB86;
+        Mon, 28 Feb 2022 09:46:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8FC960915;
-        Mon, 28 Feb 2022 17:45:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF02C340F1;
-        Mon, 28 Feb 2022 17:45:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3018EB815C6;
+        Mon, 28 Feb 2022 17:46:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 841A1C340E7;
+        Mon, 28 Feb 2022 17:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070358;
-        bh=DiWxa7CRxLNnk/Q2GSybc+1limzUwZwODUflL+oC7Q8=;
+        s=korg; t=1646070390;
+        bh=4/K4hcJ50ZxrCiXgGYxIfW5rgGGr5TwgGlun6hSng1U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DAcjc2UCVXUHz5T6OiRu582ViHU2cWG4bPzRx/iGBz6jaguqkucqTNiqdb+B7BY1d
-         e7fqBkUTrU2q5mrWViP5YfIujvkXNG2WH98NKoBPwx8jrL8dOoEoPgqCldSpackYO5
-         R2DDNhyZ9WUgb72R4molkd3otxXNGRL7Z4L31Cb8=
+        b=Ihs7RvjSyep93ekE2+DBYzu3vmbiPyYqWRPrSxruaen5DOB08xf/jWr7oltJAQxcW
+         FiVVUyG1gZ2qNpaCV5SQaAIFmRYX4akjfmrG/UUY2/PurQsQtCilVjNY9og20F9eof
+         QtZ+jI/iKhd7V6RsF9t66rgM5qPadR9korbPbB7w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 079/164] net: Force inlining of checksum functions in net/checksum.h
-Date:   Mon, 28 Feb 2022 18:24:01 +0100
-Message-Id: <20220228172407.166733618@linuxfoundation.org>
+        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.16 090/164] net/mlx5: DR, Dont allow match on IP w/o matching on full ethertype/ip_version
+Date:   Mon, 28 Feb 2022 18:24:12 +0100
+Message-Id: <20220228172408.008341104@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -52,248 +49,145 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-commit 5486f5bf790b5c664913076c3194b8f916a5c7ad upstream.
+commit ffb0753b954763d94f52c901adfe58ed0d4005e6 upstream.
 
-All functions defined as static inline in net/checksum.h are
-meant to be inlined for performance reason.
+Currently SMFS allows adding rule with matching on src/dst IP w/o matching
+on full ethertype or ip_version, which is not supported by HW.
+This patch fixes this issue and adds the check as it is done in DMFS.
 
-But since commit ac7c3e4ff401 ("compiler: enable
-CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
-uninline functions when it wants.
-
-Fair enough in the general case, but for tiny performance critical
-checksum helpers that's counter-productive.
-
-The problem mainly arises when selecting CONFIG_CC_OPTIMISE_FOR_SIZE,
-Those helpers being 'static inline' in header files you suddenly find
-them duplicated many times in the resulting vmlinux.
-
-Here is a typical exemple when building powerpc pmac32_defconfig
-with CONFIG_CC_OPTIMISE_FOR_SIZE. csum_sub() appears 4 times:
-
-	c04a23cc <csum_sub>:
-	c04a23cc:	7c 84 20 f8 	not     r4,r4
-	c04a23d0:	7c 63 20 14 	addc    r3,r3,r4
-	c04a23d4:	7c 63 01 94 	addze   r3,r3
-	c04a23d8:	4e 80 00 20 	blr
-		...
-	c04a2ce8:	4b ff f6 e5 	bl      c04a23cc <csum_sub>
-		...
-	c04a2d2c:	4b ff f6 a1 	bl      c04a23cc <csum_sub>
-		...
-	c04a2d54:	4b ff f6 79 	bl      c04a23cc <csum_sub>
-		...
-	c04a754c <csum_sub>:
-	c04a754c:	7c 84 20 f8 	not     r4,r4
-	c04a7550:	7c 63 20 14 	addc    r3,r3,r4
-	c04a7554:	7c 63 01 94 	addze   r3,r3
-	c04a7558:	4e 80 00 20 	blr
-		...
-	c04ac930:	4b ff ac 1d 	bl      c04a754c <csum_sub>
-		...
-	c04ad264:	4b ff a2 e9 	bl      c04a754c <csum_sub>
-		...
-	c04e3b08 <csum_sub>:
-	c04e3b08:	7c 84 20 f8 	not     r4,r4
-	c04e3b0c:	7c 63 20 14 	addc    r3,r3,r4
-	c04e3b10:	7c 63 01 94 	addze   r3,r3
-	c04e3b14:	4e 80 00 20 	blr
-		...
-	c04e5788:	4b ff e3 81 	bl      c04e3b08 <csum_sub>
-		...
-	c04e65c8:	4b ff d5 41 	bl      c04e3b08 <csum_sub>
-		...
-	c0512d34 <csum_sub>:
-	c0512d34:	7c 84 20 f8 	not     r4,r4
-	c0512d38:	7c 63 20 14 	addc    r3,r3,r4
-	c0512d3c:	7c 63 01 94 	addze   r3,r3
-	c0512d40:	4e 80 00 20 	blr
-		...
-	c0512dfc:	4b ff ff 39 	bl      c0512d34 <csum_sub>
-		...
-	c05138bc:	4b ff f4 79 	bl      c0512d34 <csum_sub>
-		...
-
-Restore the expected behaviour by using __always_inline for all
-functions defined in net/checksum.h
-
-vmlinux size is even reduced by 256 bytes with this patch:
-
-	   text	   data	    bss	    dec	    hex	filename
-	6980022	2515362	 194384	9689768	 93daa8	vmlinux.before
-	6979862	2515266	 194384	9689512	 93d9a8	vmlinux.now
-
-Fixes: ac7c3e4ff401 ("compiler: enable CONFIG_OPTIMIZE_INLINING forcibly")
-Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 26d688e33f88 ("net/mlx5: DR, Add Steering entry (STE) utilities")
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reviewed-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/checksum.h |   45 +++++++++++++++++++++++----------------------
- 1 file changed, 23 insertions(+), 22 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c |   20 +-----
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c     |   32 +++++++++-
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h   |   10 +++
+ 3 files changed, 45 insertions(+), 17 deletions(-)
 
---- a/include/net/checksum.h
-+++ b/include/net/checksum.h
-@@ -22,7 +22,7 @@
- #include <asm/checksum.h>
- 
- #ifndef _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
--static inline
-+static __always_inline
- __wsum csum_and_copy_from_user (const void __user *src, void *dst,
- 				      int len)
- {
-@@ -33,7 +33,7 @@ __wsum csum_and_copy_from_user (const vo
- #endif
- 
- #ifndef HAVE_CSUM_COPY_USER
--static __inline__ __wsum csum_and_copy_to_user
-+static __always_inline __wsum csum_and_copy_to_user
- (const void *src, void __user *dst, int len)
- {
- 	__wsum sum = csum_partial(src, len, ~0U);
-@@ -45,7 +45,7 @@ static __inline__ __wsum csum_and_copy_t
- #endif
- 
- #ifndef _HAVE_ARCH_CSUM_AND_COPY
--static inline __wsum
-+static __always_inline __wsum
- csum_partial_copy_nocheck(const void *src, void *dst, int len)
- {
- 	memcpy(dst, src, len);
-@@ -54,7 +54,7 @@ csum_partial_copy_nocheck(const void *sr
- #endif
- 
- #ifndef HAVE_ARCH_CSUM_ADD
--static inline __wsum csum_add(__wsum csum, __wsum addend)
-+static __always_inline __wsum csum_add(__wsum csum, __wsum addend)
- {
- 	u32 res = (__force u32)csum;
- 	res += (__force u32)addend;
-@@ -62,12 +62,12 @@ static inline __wsum csum_add(__wsum csu
- }
- #endif
- 
--static inline __wsum csum_sub(__wsum csum, __wsum addend)
-+static __always_inline __wsum csum_sub(__wsum csum, __wsum addend)
- {
- 	return csum_add(csum, ~addend);
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
+@@ -13,18 +13,6 @@ static bool dr_mask_is_dmac_set(struct m
+ 	return (spec->dmac_47_16 || spec->dmac_15_0);
  }
  
--static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
-+static __always_inline __sum16 csum16_add(__sum16 csum, __be16 addend)
+-static bool dr_mask_is_src_addr_set(struct mlx5dr_match_spec *spec)
+-{
+-	return (spec->src_ip_127_96 || spec->src_ip_95_64 ||
+-		spec->src_ip_63_32 || spec->src_ip_31_0);
+-}
+-
+-static bool dr_mask_is_dst_addr_set(struct mlx5dr_match_spec *spec)
+-{
+-	return (spec->dst_ip_127_96 || spec->dst_ip_95_64 ||
+-		spec->dst_ip_63_32 || spec->dst_ip_31_0);
+-}
+-
+ static bool dr_mask_is_l3_base_set(struct mlx5dr_match_spec *spec)
  {
- 	u16 res = (__force u16)csum;
+ 	return (spec->ip_protocol || spec->frag || spec->tcp_flags ||
+@@ -480,11 +468,11 @@ static int dr_matcher_set_ste_builders(s
+ 						    &mask, inner, rx);
  
-@@ -75,12 +75,12 @@ static inline __sum16 csum16_add(__sum16
- 	return (__force __sum16)(res + (res < (__force u16)addend));
+ 		if (outer_ipv == DR_RULE_IPV6) {
+-			if (dr_mask_is_dst_addr_set(&mask.outer))
++			if (DR_MASK_IS_DST_IP_SET(&mask.outer))
+ 				mlx5dr_ste_build_eth_l3_ipv6_dst(ste_ctx, &sb[idx++],
+ 								 &mask, inner, rx);
+ 
+-			if (dr_mask_is_src_addr_set(&mask.outer))
++			if (DR_MASK_IS_SRC_IP_SET(&mask.outer))
+ 				mlx5dr_ste_build_eth_l3_ipv6_src(ste_ctx, &sb[idx++],
+ 								 &mask, inner, rx);
+ 
+@@ -580,11 +568,11 @@ static int dr_matcher_set_ste_builders(s
+ 						    &mask, inner, rx);
+ 
+ 		if (inner_ipv == DR_RULE_IPV6) {
+-			if (dr_mask_is_dst_addr_set(&mask.inner))
++			if (DR_MASK_IS_DST_IP_SET(&mask.inner))
+ 				mlx5dr_ste_build_eth_l3_ipv6_dst(ste_ctx, &sb[idx++],
+ 								 &mask, inner, rx);
+ 
+-			if (dr_mask_is_src_addr_set(&mask.inner))
++			if (DR_MASK_IS_SRC_IP_SET(&mask.inner))
+ 				mlx5dr_ste_build_eth_l3_ipv6_src(ste_ctx, &sb[idx++],
+ 								 &mask, inner, rx);
+ 
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_ste.c
+@@ -602,12 +602,34 @@ int mlx5dr_ste_set_action_decap_l3_list(
+ 						 used_hw_action_num);
  }
  
--static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
-+static __always_inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
++static int dr_ste_build_pre_check_spec(struct mlx5dr_domain *dmn,
++				       struct mlx5dr_match_spec *spec)
++{
++	if (spec->ip_version) {
++		if (spec->ip_version != 0xf) {
++			mlx5dr_err(dmn,
++				   "Partial ip_version mask with src/dst IP is not supported\n");
++			return -EINVAL;
++		}
++	} else if (spec->ethertype != 0xffff &&
++		   (DR_MASK_IS_SRC_IP_SET(spec) || DR_MASK_IS_DST_IP_SET(spec))) {
++		mlx5dr_err(dmn,
++			   "Partial/no ethertype mask with src/dst IP is not supported\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
+ int mlx5dr_ste_build_pre_check(struct mlx5dr_domain *dmn,
+ 			       u8 match_criteria,
+ 			       struct mlx5dr_match_param *mask,
+ 			       struct mlx5dr_match_param *value)
  {
- 	return csum16_add(csum, ~addend);
+-	if (!value && (match_criteria & DR_MATCHER_CRITERIA_MISC)) {
++	if (value)
++		return 0;
++
++	if (match_criteria & DR_MATCHER_CRITERIA_MISC) {
+ 		if (mask->misc.source_port && mask->misc.source_port != 0xffff) {
+ 			mlx5dr_err(dmn,
+ 				   "Partial mask source_port is not supported\n");
+@@ -621,6 +643,14 @@ int mlx5dr_ste_build_pre_check(struct ml
+ 		}
+ 	}
+ 
++	if ((match_criteria & DR_MATCHER_CRITERIA_OUTER) &&
++	    dr_ste_build_pre_check_spec(dmn, &mask->outer))
++		return -EINVAL;
++
++	if ((match_criteria & DR_MATCHER_CRITERIA_INNER) &&
++	    dr_ste_build_pre_check_spec(dmn, &mask->inner))
++		return -EINVAL;
++
+ 	return 0;
  }
  
--static inline __wsum csum_shift(__wsum sum, int offset)
-+static __always_inline __wsum csum_shift(__wsum sum, int offset)
- {
- 	/* rotate sum to align it with a 16b boundary */
- 	if (offset & 1)
-@@ -88,42 +88,43 @@ static inline __wsum csum_shift(__wsum s
- 	return sum;
- }
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_types.h
+@@ -739,6 +739,16 @@ struct mlx5dr_match_param {
+ 				       (_misc3)->icmpv4_code || \
+ 				       (_misc3)->icmpv4_header_data)
  
--static inline __wsum
-+static __always_inline __wsum
- csum_block_add(__wsum csum, __wsum csum2, int offset)
- {
- 	return csum_add(csum, csum_shift(csum2, offset));
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_add_ext(__wsum csum, __wsum csum2, int offset, int len)
- {
- 	return csum_block_add(csum, csum2, offset);
- }
- 
--static inline __wsum
-+static __always_inline __wsum
- csum_block_sub(__wsum csum, __wsum csum2, int offset)
- {
- 	return csum_block_add(csum, ~csum2, offset);
- }
- 
--static inline __wsum csum_unfold(__sum16 n)
-+static __always_inline __wsum csum_unfold(__sum16 n)
- {
- 	return (__force __wsum)n;
- }
- 
--static inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
-+static __always_inline
-+__wsum csum_partial_ext(const void *buff, int len, __wsum sum)
- {
- 	return csum_partial(buff, len, sum);
- }
- 
- #define CSUM_MANGLED_0 ((__force __sum16)0xffff)
- 
--static inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
-+static __always_inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
- {
- 	*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
- }
- 
--static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
-+static __always_inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
- {
- 	__wsum tmp = csum_sub(~csum_unfold(*sum), (__force __wsum)from);
- 
-@@ -136,7 +137,7 @@ static inline void csum_replace4(__sum16
-  *  m : old value of a 16bit field
-  *  m' : new value of a 16bit field
-  */
--static inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
-+static __always_inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
- {
- 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
- }
-@@ -155,16 +156,16 @@ void inet_proto_csum_replace16(__sum16 *
- void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
- 				     __wsum diff, bool pseudohdr);
- 
--static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
--					    __be16 from, __be16 to,
--					    bool pseudohdr)
-+static __always_inline
-+void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
-+			      __be16 from, __be16 to, bool pseudohdr)
- {
- 	inet_proto_csum_replace4(sum, skb, (__force __be32)from,
- 				 (__force __be32)to, pseudohdr);
- }
- 
--static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
--				    int start, int offset)
-+static __always_inline __wsum remcsum_adjust(void *ptr, __wsum csum,
-+					     int start, int offset)
- {
- 	__sum16 *psum = (__sum16 *)(ptr + offset);
- 	__wsum delta;
-@@ -180,7 +181,7 @@ static inline __wsum remcsum_adjust(void
- 	return delta;
- }
- 
--static inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
-+static __always_inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
- {
- 	*psum = csum_fold(csum_sub(delta, (__force __wsum)*psum));
- }
++#define DR_MASK_IS_SRC_IP_SET(_spec) ((_spec)->src_ip_127_96 || \
++				      (_spec)->src_ip_95_64  || \
++				      (_spec)->src_ip_63_32  || \
++				      (_spec)->src_ip_31_0)
++
++#define DR_MASK_IS_DST_IP_SET(_spec) ((_spec)->dst_ip_127_96 || \
++				      (_spec)->dst_ip_95_64  || \
++				      (_spec)->dst_ip_63_32  || \
++				      (_spec)->dst_ip_31_0)
++
+ struct mlx5dr_esw_caps {
+ 	u64 drop_icm_address_rx;
+ 	u64 drop_icm_address_tx;
 
 
