@@ -2,41 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3651C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3256BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239146AbiB1SCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:02:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
+        id S239361AbiB1SCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:02:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240797AbiB1Ryp (ORCPT
+        with ESMTP id S235015AbiB1Ryq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:45 -0500
+        Mon, 28 Feb 2022 12:54:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603AA5371F;
-        Mon, 28 Feb 2022 09:43:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BC653737;
+        Mon, 28 Feb 2022 09:44:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFA20608D5;
-        Mon, 28 Feb 2022 17:43:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0169BC340F1;
-        Mon, 28 Feb 2022 17:43:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DECA060909;
+        Mon, 28 Feb 2022 17:44:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C740BC340F0;
+        Mon, 28 Feb 2022 17:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070229;
-        bh=6dmsWtF2WF6CEy7yiT59gPr76gbVM+Z8NfW08yZAGbI=;
+        s=korg; t=1646070240;
+        bh=P9+8LyoE7wfKYtVa8BQKxcGYP08SrbQhU1GkxwKfPiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yUXTwfcXnEdrTRsRU6DikCqruPKEQIuMHjeObtVU6H1VazOsWGppreuKA6nfHsxTp
-         PgIHzHnTQnw/7aMn8DXbTEfU29+8UgA+Xrgmknkc5ptVsI3Bmkzlirwa/6viivmRy0
-         fU4p6QYbnEF49eETpV3BIB0++X1VFbiy4tCMeEA0=
+        b=JJRGdrPhRoFS8GEpztxEKrs4n34xkC6lHf7dxJITfOcfKuVvBligwA+2WITt+Gk/1
+         zlw5TWaDQgV5L7r376dHfkUEHYUSbl8IoLyKF1UlIwnNT8k6Na+4LY8PkocV78Vmaq
+         457PwjX3SY1lKgtIZm9MEheHhIE1BMXcznC7wO1I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>
-Subject: [PATCH 5.16 033/164] ping: remove pr_err from ping_lookup
-Date:   Mon, 28 Feb 2022 18:23:15 +0100
-Message-Id: <20220228172403.242099098@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexei Budankov <abudankov@huawei.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.16 037/164] perf data: Fix double free in perf_session__delete()
+Date:   Mon, 28 Feb 2022 18:23:19 +0100
+Message-Id: <20220228172403.639757603@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,33 +58,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+From: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
 
-commit cd33bdcbead882c2e58fdb4a54a7bd75b610a452 upstream.
+commit 69560e366fc4d5fca7bebb0e44edbfafc8bcaf05 upstream.
 
-As Jakub noticed, prints should be avoided on the datapath.
-Also, as packets would never come to the else branch in
-ping_lookup(), remove pr_err() from ping_lookup().
+When perf_data__create_dir() fails, it calls close_dir(), but
+perf_session__delete() also calls close_dir() and since dir.version and
+dir.nr were initialized by perf_data__create_dir(), a double free occurs.
 
-Fixes: 35a79e64de29 ("ping: fix the dif and sdif check in ping_lookup")
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Link: https://lore.kernel.org/r/1ef3f2fcd31bd681a193b1fcf235eee1603819bd.1645674068.git.lucien.xin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This patch moves the initialization of dir.version and dir.nr after
+successful initialization of dir.files, that prevents double freeing.
+This behavior is already implemented in perf_data__open_dir().
+
+Fixes: 145520631130bd64 ("perf data: Add perf_data__(create_dir|close_dir) functions")
+Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Antonov <alexander.antonov@linux.intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Alexei Budankov <abudankov@huawei.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220218152341.5197-2-alexey.v.bayduraev@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ping.c |    1 -
- 1 file changed, 1 deletion(-)
+ tools/perf/util/data.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -187,7 +187,6 @@ static struct sock *ping_lookup(struct n
- 			 (int)ident, &ipv6_hdr(skb)->daddr, dif);
- #endif
- 	} else {
--		pr_err("ping: protocol(%x) is not supported\n", ntohs(skb->protocol));
- 		return NULL;
+--- a/tools/perf/util/data.c
++++ b/tools/perf/util/data.c
+@@ -44,10 +44,6 @@ int perf_data__create_dir(struct perf_da
+ 	if (!files)
+ 		return -ENOMEM;
+ 
+-	data->dir.version = PERF_DIR_VERSION;
+-	data->dir.files   = files;
+-	data->dir.nr      = nr;
+-
+ 	for (i = 0; i < nr; i++) {
+ 		struct perf_data_file *file = &files[i];
+ 
+@@ -62,6 +58,9 @@ int perf_data__create_dir(struct perf_da
+ 		file->fd = ret;
  	}
  
++	data->dir.version = PERF_DIR_VERSION;
++	data->dir.files   = files;
++	data->dir.nr      = nr;
+ 	return 0;
+ 
+ out_err:
 
 
