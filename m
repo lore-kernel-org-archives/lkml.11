@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC9EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D642CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236349AbiB1RjZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:39:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
+        id S237801AbiB1Rj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:39:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238316AbiB1RhO (ORCPT
+        with ESMTP id S238331AbiB1RhZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:37:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F4D8A6CE;
-        Mon, 28 Feb 2022 09:32:10 -0800 (PST)
+        Mon, 28 Feb 2022 12:37:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D956369;
+        Mon, 28 Feb 2022 09:32:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70C26B815AC;
-        Mon, 28 Feb 2022 17:31:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B601DC340E7;
-        Mon, 28 Feb 2022 17:31:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77418B815AE;
+        Mon, 28 Feb 2022 17:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7179C340E7;
+        Mon, 28 Feb 2022 17:32:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069517;
-        bh=DOUNBwYA9JP+Lq4UjXFlsFmonEHF0xINmyozSDtOuas=;
+        s=korg; t=1646069539;
+        bh=9Q2zckVU2MjYx6EoLKZDAOT6Znqr42HIt8j8+BfBou4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yfi03rQYY0Sr8BYFX2AS5gYwvr8QnRkJTiHigYO0TlfTp5DFqg23QZw/rn773DquS
-         +xYctaiizD+DB4FIBQqbeM6zHwMpWdvk9nc7nB+26+OU5xHDre1UQY1mNe9N+TbKVf
-         BkQMEu7oUoM8WDuHQCJnCvLx31ZK4icLeKKvO7k8=
+        b=g17zj+6ClA/PVEKXfQaQISI7Lou15MCQT8IFwJ2xvnnM9bqyo5vjWJpTc2qRUybcy
+         r7GW9zHYxj4kWAFrBeaoePTjqBItQR8LJXZTL1sf/mkCrn5eIKNmVLtOC5WaLg3e6Y
+         lWvCxJlo6mTK918r9/Gn57LUmDAts+XAvQ29dCv8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.4 48/53] tty: n_gsm: fix proper link termination after failed open
-Date:   Mon, 28 Feb 2022 18:24:46 +0100
-Message-Id: <20220228172251.762472170@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+831661966588c802aae9@syzkaller.appspotmail.com,
+        Bart Van Assche <bvanassche@acm.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 31/53] RDMA/ib_srp: Fix a deadlock
+Date:   Mon, 28 Feb 2022 18:24:29 +0100
+Message-Id: <20220228172250.528772715@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -47,38 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-commit e3b7468f082d106459e86e8dc6fb9bdd65553433 upstream.
+[ Upstream commit 081bdc9fe05bb23248f5effb6f811da3da4b8252 ]
 
-Trying to open a DLCI by sending a SABM frame may fail with a timeout.
-The link is closed on the initiator side without informing the responder
-about this event. The responder assumes the link is open after sending a
-UA frame to answer the SABM frame. The link gets stuck in a half open
-state.
+Remove the flush_workqueue(system_long_wq) call since flushing
+system_long_wq is deadlock-prone and since that call is redundant with a
+preceding cancel_work_sync()
 
-This patch fixes this by initiating the proper link termination procedure
-after link setup timeout instead of silently closing it down.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220218073123.2121-3-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220215210511.28303-3-bvanassche@acm.org
+Fixes: ef6c49d87c34 ("IB/srp: Eliminate state SRP_TARGET_DEAD")
+Reported-by: syzbot+831661966588c802aae9@syzkaller.appspotmail.com
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/infiniband/ulp/srp/ib_srp.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1490,7 +1490,7 @@ static void gsm_dlci_t1(struct timer_lis
- 			dlci->mode = DLCI_MODE_ADM;
- 			gsm_dlci_open(dlci);
- 		} else {
--			gsm_dlci_close(dlci);
-+			gsm_dlci_begin_close(dlci); /* prevent half open link */
- 		}
+diff --git a/drivers/infiniband/ulp/srp/ib_srp.c b/drivers/infiniband/ulp/srp/ib_srp.c
+index 8708ed5477e99..dac806b715afa 100644
+--- a/drivers/infiniband/ulp/srp/ib_srp.c
++++ b/drivers/infiniband/ulp/srp/ib_srp.c
+@@ -4222,9 +4222,11 @@ static void srp_remove_one(struct ib_device *device, void *client_data)
+ 		spin_unlock(&host->target_lock);
  
- 		break;
+ 		/*
+-		 * Wait for tl_err and target port removal tasks.
++		 * srp_queue_remove_work() queues a call to
++		 * srp_remove_target(). The latter function cancels
++		 * target->tl_err_work so waiting for the remove works to
++		 * finish is sufficient.
+ 		 */
+-		flush_workqueue(system_long_wq);
+ 		flush_workqueue(srp_remove_wq);
+ 
+ 		kfree(host);
+-- 
+2.34.1
+
 
 
