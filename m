@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF182C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DB7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233629AbiB1Rjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:39:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
+        id S238526AbiB1Rh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:37:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238453AbiB1Rhx (ORCPT
+        with ESMTP id S238207AbiB1RfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:37:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463202A26F;
-        Mon, 28 Feb 2022 09:32:36 -0800 (PST)
+        Mon, 28 Feb 2022 12:35:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7679688798;
+        Mon, 28 Feb 2022 09:31:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 105D56135F;
-        Mon, 28 Feb 2022 17:32:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FCC1C340E7;
-        Mon, 28 Feb 2022 17:32:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18D7361357;
+        Mon, 28 Feb 2022 17:31:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22CB0C340E7;
+        Mon, 28 Feb 2022 17:31:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069555;
-        bh=hB1FCymVo+iKu6qvqLsvVFV56s88lMs8Vo0RdBY0W/M=;
+        s=korg; t=1646069478;
+        bh=epMXXlbGNSFUVnUKm1TddebGD0G60b9EZdMjrNxAv0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g7X5rHOK255RLPKh1Llv2JZqSrDmEpMUN5GgwTzHOnyiKjwLIiU7JlXbvArXzB9qd
-         XUwBVXgUOZTbhkyRd9gNUOpP+hWfho7TFkoVyJUyPegxwKUxSq5cr6H3NMFp6cqiQe
-         LuK6zi5DdCDAcY/CXmgeE1DD2ypu4I/TRygo1Gl8=
+        b=buag19bilsKR2bMb+hwsM4X7vlJ1XfBkgJJWd6Uj9ntGc39++DL/ZbfCgtpsYUyKG
+         LM09qR31Vi2v//61xrcW3hx/EvDe8jnBQr6LAURw+ijWEJw0W+BY20oynoBlOVfUgm
+         BGGjn11e2hOIaHJRNLE+o24qt5tNKmwuQMDvFrrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhao Gongyi <zhaogongyi@huawei.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>,
-        Waiman Long <longman@redhat.com>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.10 01/80] cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug
-Date:   Mon, 28 Feb 2022 18:23:42 +0100
-Message-Id: <20220228172311.956462417@linuxfoundation.org>
+        stable@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
+        Mark Bloch <mbloch@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.4 27/53] net/mlx5: Fix possible deadlock on rule deletion
+Date:   Mon, 28 Feb 2022 18:24:25 +0100
+Message-Id: <20220228172250.254197486@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
-References: <20220228172311.789892158@linuxfoundation.org>
+In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
+References: <20220228172248.232273337@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,59 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Qiao <zhangqiao22@huawei.com>
+From: Maor Gottlieb <maorg@nvidia.com>
 
-commit 05c7b7a92cc87ff8d7fde189d0fade250697573c upstream.
+commit b645e57debca846f51b3209907546ea857ddd3f5 upstream.
 
-As previously discussed(https://lkml.org/lkml/2022/1/20/51),
-cpuset_attach() is affected with similar cpu hotplug race,
-as follow scenario:
+Add missing call to up_write_ref_node() which releases the semaphore
+in case the FTE doesn't have destinations, such in drop rule case.
 
-     cpuset_attach()				cpu hotplug
-    ---------------------------            ----------------------
-    down_write(cpuset_rwsem)
-    guarantee_online_cpus() // (load cpus_attach)
-					sched_cpu_deactivate
-					  set_cpu_active()
-					  // will change cpu_active_mask
-    set_cpus_allowed_ptr(cpus_attach)
-      __set_cpus_allowed_ptr_locked()
-       // (if the intersection of cpus_attach and
-         cpu_active_mask is empty, will return -EINVAL)
-    up_write(cpuset_rwsem)
-
-To avoid races such as described above, protect cpuset_attach() call
-with cpu_hotplug_lock.
-
-Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
-Cc: stable@vger.kernel.org # v2.6.32+
-Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
-Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
-Acked-by: Waiman Long <longman@redhat.com>
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Fixes: 465e7baab6d9 ("net/mlx5: Fix deletion of duplicate rules")
+Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |    2 ++
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c |    2 ++
  1 file changed, 2 insertions(+)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -2212,6 +2212,7 @@ static void cpuset_attach(struct cgroup_
- 	cgroup_taskset_first(tset, &css);
- 	cs = css_cs(css);
- 
-+	cpus_read_lock();
- 	percpu_down_write(&cpuset_rwsem);
- 
- 	/* prepare for attach */
-@@ -2267,6 +2268,7 @@ static void cpuset_attach(struct cgroup_
- 		wake_up(&cpuset_attach_wq);
- 
- 	percpu_up_write(&cpuset_rwsem);
-+	cpus_read_unlock();
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
+@@ -1947,6 +1947,8 @@ void mlx5_del_flow_rules(struct mlx5_flo
+ 		fte->node.del_hw_func = NULL;
+ 		up_write_ref_node(&fte->node, false);
+ 		tree_put_node(&fte->node, false);
++	} else {
++		up_write_ref_node(&fte->node, false);
+ 	}
+ 	kfree(handle);
  }
- 
- /* The various types of files and directories in a cpuset file system */
 
 
