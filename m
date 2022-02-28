@@ -2,116 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6052DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76344C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:19:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235597AbiB1LTk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:19:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55084 "EHLO
+        id S234841AbiB1LUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:20:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235316AbiB1LTR (ORCPT
+        with ESMTP id S229633AbiB1LUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:19:17 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C77735DC1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:18:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646047116; x=1677583116;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=DN+94+J4jdsioJx8FJjTB5GVluUzTVOxlq0TAtH+lSY=;
-  b=pq0QSH9zQkVEQ65LVLGYt7yeEOYWjq1Stg+ZXMxgypXtKATtqFc7ko64
-   h91mHYpxr9vn7mIjpOcfe+3caPaVQQxJZB9+mI3MWOsEWAlNLRRXflv8R
-   NQ4wk8Cqq6a510aNzMNl/phycPDD1BLMul913rUc/g6a//TLwci3JMvMe
-   242PLylE0+X/vf2l7iI29UBVLGrKXkTvNBeMtSVSKdeZC4j5JOW2ncm/4
-   zpdV9dV266U3q+VOjPRUSCCu4eQRp2Bv95E8BIDSPtJ50WxafxbTKyatL
-   kSWGVEBz0CIMss9VDpxfPXWdVuaNZARfwIqyAwtNY8OkzNWxx+OvuQLn6
-   A==;
-X-IronPort-AV: E=Sophos;i="5.90,142,1643698800"; 
-   d="scan'208";a="163859419"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Feb 2022 04:18:35 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 28 Feb 2022 04:18:35 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 28 Feb 2022 04:18:33 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 7/7] clocksource/drivers/timer-microchip-pit64b: use mchp_pit64b_{suspend, resume}
-Date:   Mon, 28 Feb 2022 13:19:23 +0200
-Message-ID: <20220228111923.1400049-8-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220228111923.1400049-1-claudiu.beznea@microchip.com>
-References: <20220228111923.1400049-1-claudiu.beznea@microchip.com>
+        Mon, 28 Feb 2022 06:20:17 -0500
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCB43703F;
+        Mon, 28 Feb 2022 03:19:38 -0800 (PST)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21SBJVPT053399;
+        Mon, 28 Feb 2022 05:19:31 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1646047171;
+        bh=QCmddZWSanoPPYfkGjSgwbt7t+tI8AZNUu186MCaM9I=;
+        h=Date:Subject:From:To:CC:References:In-Reply-To;
+        b=FRPTlS5yT2nTpvVB77gjWT60uFSqJhHbO+iIO/aGN2EPpp6Ld5PFeLOFhQZvK3flE
+         lXDGzfdDxH+RzvCPjKt0CtBC3QACt2p/AVyanJ2lueGsWK6n+ncwguofoa6tdbcNJb
+         YhKT+aFBpkJRXPU+qaLKTkVS4srZcjSIqriXohns=
+Received: from DLEE107.ent.ti.com (dlee107.ent.ti.com [157.170.170.37])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21SBJVqw112029
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 28 Feb 2022 05:19:31 -0600
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE107.ent.ti.com
+ (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 28
+ Feb 2022 05:19:31 -0600
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 28 Feb 2022 05:19:31 -0600
+Received: from [10.250.233.1] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21SBJSDS000953;
+        Mon, 28 Feb 2022 05:19:28 -0600
+Message-ID: <bfd85a56-5d78-695a-8687-ae05832a32c9@ti.com>
+Date:   Mon, 28 Feb 2022 16:48:58 +0530
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] dmaengine: ti: k3-udma: Avoid false error msg on chan
+ teardown
+Content-Language: en-US
+From:   Vignesh Raghavendra <vigneshr@ti.com>
+To:     =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>,
+        Vinod Koul <vkoul@kernel.org>
+CC:     <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Jayesh Choudhary <j-choudhary@ti.com>
+References: <20220215044112.161634-1-vigneshr@ti.com>
+ <58fe0934-4853-714c-600d-9a2d86df5bc8@gmail.com>
+ <35276e1e-e37c-f8e7-c452-799f8e778465@ti.com>
+In-Reply-To: <35276e1e-e37c-f8e7-c452-799f8e778465@ti.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use mchp_pit64b_suspend() and mchp_pit64b_resume() to disable or
-enable timers clocks on init and remove specific
-clk_prepare_{disable, enable} calls. This is ok also for clockevent timer
-as proper clock enable, disable is done on .set_state_oneshot,
-.set_state_periodic, .set_state_shutdown calls.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- drivers/clocksource/timer-microchip-pit64b.c | 17 ++++-------------
- 1 file changed, 4 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
-index dd1661604966..0f0d8160660c 100644
---- a/drivers/clocksource/timer-microchip-pit64b.c
-+++ b/drivers/clocksource/timer-microchip-pit64b.c
-@@ -352,6 +352,7 @@ static int __init mchp_pit64b_init_clksrc(struct mchp_pit64b_timer *timer,
- 	if (!cs)
- 		return -ENOMEM;
- 
-+	mchp_pit64b_resume(timer);
- 	mchp_pit64b_reset(timer, ULLONG_MAX, MCHP_PIT64B_MR_CONT, 0);
- 
- 	mchp_pit64b_cs_base = timer->base;
-@@ -373,8 +374,7 @@ static int __init mchp_pit64b_init_clksrc(struct mchp_pit64b_timer *timer,
- 		pr_debug("clksrc: Failed to register PIT64B clocksource!\n");
- 
- 		/* Stop timer. */
--		writel_relaxed(MCHP_PIT64B_CR_SWRST,
--			       timer->base + MCHP_PIT64B_CR);
-+		mchp_pit64b_suspend(timer);
- 		kfree(cs);
- 
- 		return ret;
-@@ -462,19 +462,10 @@ static int __init mchp_pit64b_dt_init_timer(struct device_node *node,
- 	if (ret)
- 		goto irq_unmap;
- 
--	ret = clk_prepare_enable(timer.pclk);
--	if (ret)
--		goto irq_unmap;
--
--	if (timer.mode & MCHP_PIT64B_MR_SGCLK) {
--		ret = clk_prepare_enable(timer.gclk);
--		if (ret)
--			goto pclk_unprepare;
--
-+	if (timer.mode & MCHP_PIT64B_MR_SGCLK)
- 		clk_rate = clk_get_rate(timer.gclk);
--	} else {
-+	else
- 		clk_rate = clk_get_rate(timer.pclk);
--	}
- 	clk_rate = clk_rate / (MCHP_PIT64B_MODE_TO_PRES(timer.mode) + 1);
- 
- 	if (clkevt)
--- 
-2.32.0
+On 28/02/22 2:52 pm, Vignesh Raghavendra wrote:
+> Hi Peter,
+> 
+> On 21/02/22 1:42 am, Péter Ujfalusi wrote:
+>> Hi Vignesh,
+>>
+>> On 15/02/2022 06:41, Vignesh Raghavendra wrote:
+>>> In cyclic mode, there is no additional descriptor pushed to collect
+>>> outstanding data on channel teardown. Therefore no need to wait for this
+>>> descriptor to come back.
+>>>
+>>> Without this terminating aplay cmd outputs false error msg like:
+>>> [  116.402800] ti-bcdma 485c0100.dma-controller: chan1 teardown timeout!
+>>
+>> are you sure it is aplay? It is MEM_TO_DEV, we only use the flush
+>> descriptor for DEV_TO_MEM. MEM_TO_DEV can 'disconnect' from the
+>> peripheral to flush out the FIFO.
+>>
+> 
+> Yes, this is with aplay. You are right that MEM_TO_DEV should have
+> worked w/o this patch.
+> 
+> 
+>> I have not seen this on am654, j721e. I can not recall seeing this on
+>> the capture side either.
+>>
+> 
+> I dont see it either
+> 
+>> The cyclic TR should be able to drain the DEV_TO_MEM by itself and the
+>> TR should terminate.
+>>
+> 
+> You are right. There seems to be a trobule with McASP + BCDMA on AM62
+> which needs more investigation. I see
+> 
+>  RT c0000000 peer RT 90000000
+>  BCNT 5dc00, peer BCNT 46400
+> 
+> So there is some data stuck in pipe which prevents channel from
+> disabling and TDCM being signaled. My guess is McASP is no longer
+> requesting more data from PDMA. Any way to look at McASP FIFO state/ DMA
+> req enable state? Wondering what else can prevent draining of data.
+> 
+> One difference is that AM62 has ti,tlv320aic3106 codec (codec is the
+> master) where J7 uses PCM.
+> 
 
+I see couple of issues with DMA usage by McASP/sound:
+
+McASP TX FIFO events are disabled first and then DMA channel is stopped.
+This does not work for K3 SoCs as some data remains stuck in DMA pipe
+and channel never goes to disable state.
+
+I see .stop_dma_first flag in snd_soc_dai_link to force DMA to be
+stopped first, but I am not quite familiar on where to set this flag?
+Even so, snd_dmaengine_pcm_trigger() calls dmaengine_terminate_async()
+and does not call dmaengine_synchronize() before disabling McASP TX, so
+channel teardown would still be unsuccessful.
+
+Alternately, we could reduce dev_warn() in udma_synchronize() to
+dev_dbg() as channel is still recoverable via  udma_reset_chan() which
+is done immediately after.
+There is a further dev_warn() message to indicate if channel refused to
+stop even after a reset?
+
+Regards
+Vignesh
+
+> Regards
+> Vignesh
+> 
+> 
+>>
+>>> Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+>>> ---
+>>>  drivers/dma/ti/k3-udma.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
+>>> index 9abb08d353ca0..c9a1b2f312603 100644
+>>> --- a/drivers/dma/ti/k3-udma.c
+>>> +++ b/drivers/dma/ti/k3-udma.c
+>>> @@ -3924,7 +3924,7 @@ static void udma_synchronize(struct dma_chan *chan)
+>>>  
+>>>  	vchan_synchronize(&uc->vc);
+>>>  
+>>> -	if (uc->state == UDMA_CHAN_IS_TERMINATING) {
+>>> +	if (uc->state == UDMA_CHAN_IS_TERMINATING && !uc->cyclic) {
+>>>  		timeout = wait_for_completion_timeout(&uc->teardown_completed,
+>>>  						      timeout);
+>>>  		if (!timeout) {
+>>
