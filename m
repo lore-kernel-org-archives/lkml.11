@@ -2,114 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0515BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F970C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233516AbiB1SQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:16:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41548 "EHLO
+        id S240467AbiB1STg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:19:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240156AbiB1SH6 (ORCPT
+        with ESMTP id S240819AbiB1SSO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:07:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45BD5D662;
-        Mon, 28 Feb 2022 09:48:29 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 874C860180;
-        Mon, 28 Feb 2022 17:48:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C0DEC340E7;
-        Mon, 28 Feb 2022 17:48:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070508;
-        bh=6ttKOQ9m0Pb17Q3CVH254bmmxO+Df4LgDPnSSCUWaO4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FoSUAOxPLhHtpSAo9iSj4DxfujtpoE4FRP7VcDmTnQSH4bkKdjElUuLwF/mCXeJW+
-         xF2wMrk3LkdDBqy+0YbVLr4IzsZUC6pWDaWwPGB6stioy90kG8rTtkzYCJCsGr4nPT
-         p5WZsHZQSlBt50kSLZXudiXN7zCaYepCWtiFdSSQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Puma Hsu <pumahsu@google.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.16 133/164] xhci: re-initialize the HC during resume if HCE was set
-Date:   Mon, 28 Feb 2022 18:24:55 +0100
-Message-Id: <20220228172412.110335743@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
-References: <20220228172359.567256961@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 28 Feb 2022 13:18:14 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3D3AC050
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:54:53 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id p14so26378842ejf.11
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:54:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rKyFAXCmKAYNuarZ8yzonNl7KAxrf0Qm9q5cbYgdEIY=;
+        b=JDy8fgGUxf0IGJHfk/O0WyiqfUorrv0vNRQq82dCqBFpjXsWqco4CzrVWvadRg1/0t
+         n+RDd3ztRNk5y4or+DUO9bjKQaeqkhnkPAXva+M2qMDwMS9w1ybbP4a+pECwFE+qimRA
+         Uk39Oshxgwz/pp7FehPY5V1w9jkfkplrbf25w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rKyFAXCmKAYNuarZ8yzonNl7KAxrf0Qm9q5cbYgdEIY=;
+        b=mQzE5CuL74draORiucHV96UhDK+DIQ+kHPzSDE5Eh9UBkLQlloFHyFEUcn0PObQbph
+         Xc3s054DBDf6Ui/GRhes99rCEwJG7gAPesKGztMy/ROqoTj+8IxBK457ILbXvgyZ8i5M
+         1S4bJq3UFT5rLJFmTcsB1Um5RGSo5Hw+UPU4w4pKn8zgZs9EjSthSUaeDYgIVcWz53Z5
+         v0P9ZCT1hfpy0VK48aT/tAx8+0SG5fYmXtFlVOC2hy4Ft6uoFHittXjBYUGwtFIW8Dt5
+         h+ZVXb3FrKp8w6tpwxRpspm+biljLieSwx7udZ+IGQLThsh0AzAEfK8VllLfunJKOhQH
+         eAOQ==
+X-Gm-Message-State: AOAM530LOAf3W5Opq3zX4+i9M7R08neY1WSv8GGHl7mb57XiJMYzPEKo
+        jzAqaO+scRiQ9WPOQS/0TPPEW2tkk0c10w==
+X-Google-Smtp-Source: ABdhPJwx+OlBimZvHKZi4UYPcNaywTvZFFyIJLMncMm4n0aMyV4bB4shzMKBR4A/gx2Xc/5MPxghTw==
+X-Received: by 2002:a17:907:9691:b0:6d1:711d:9050 with SMTP id hd17-20020a170907969100b006d1711d9050mr16625508ejc.755.1646070891585;
+        Mon, 28 Feb 2022 09:54:51 -0800 (PST)
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
+        by smtp.gmail.com with ESMTPSA id n24-20020a509358000000b00410bedd9eb4sm6463795eda.88.2022.02.28.09.54.49
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 09:54:50 -0800 (PST)
+Received: by mail-wr1-f44.google.com with SMTP id j17so16776712wrc.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:54:49 -0800 (PST)
+X-Received: by 2002:a5d:6543:0:b0:1ef:7194:3efc with SMTP id
+ z3-20020a5d6543000000b001ef71943efcmr12481297wrv.422.1646070889301; Mon, 28
+ Feb 2022 09:54:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220222141838.1.If784ba19e875e8ded4ec4931601ce6d255845245@changeid>
+ <CACRpkdbQ9U22afR74YiZs95qCm7dnLb2k4_nT3Le__hJPpDGUw@mail.gmail.com>
+ <YhXBIxbx63IXBU7L@pendragon.ideasonboard.com> <CAD=FV=UV+3PNF=O8Zv4UJK50gvDx=WHbamLLhH5ANZUBeCxjdQ@mail.gmail.com>
+ <YhZY+FLTlv7V5BIB@pendragon.ideasonboard.com>
+In-Reply-To: <YhZY+FLTlv7V5BIB@pendragon.ideasonboard.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 28 Feb 2022 09:54:36 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=Ux9aPqNnbs4vj1EO49smW7f6VVm4VyGTy246QjGUfqHg@mail.gmail.com>
+Message-ID: <CAD=FV=Ux9aPqNnbs4vj1EO49smW7f6VVm4VyGTy246QjGUfqHg@mail.gmail.com>
+Subject: Re: [PATCH] drm/bridge: ti-sn65dsi86: Properly undo autosuspend
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Puma Hsu <pumahsu@google.com>
+Hi,
 
-commit 8b328f8002bcf29ef517ee4bf234e09aabec4d2e upstream.
+On Wed, Feb 23, 2022 at 7:55 AM Laurent Pinchart
+<laurent.pinchart@ideasonboard.com> wrote:
+>
+> Hi Doug,
+>
+> On Wed, Feb 23, 2022 at 07:43:27AM -0800, Doug Anderson wrote:
+> > On Tue, Feb 22, 2022 at 9:08 PM Laurent Pinchart wrote:
+> > > On Tue, Feb 22, 2022 at 11:44:54PM +0100, Linus Walleij wrote:
+> > > > On Tue, Feb 22, 2022 at 11:19 PM Douglas Anderson wrote:
+> > > > >
+> > > > > The PM Runtime docs say:
+> > > > >   Drivers in ->remove() callback should undo the runtime PM changes done
+> > > > >   in ->probe(). Usually this means calling pm_runtime_disable(),
+> > > > >   pm_runtime_dont_use_autosuspend() etc.
+> > > > >
+> > > > > We weren't doing that for autosuspend. Let's do it.
+> > > > >
+> > > > > Fixes: 9bede63127c6 ("drm/bridge: ti-sn65dsi86: Use pm_runtime autosuspend")
+> > > > > Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> > > >
+> > > > Hm. I know a few places in drivers where I don't do this :/
+> > >
+> > > It seems to be a very common problem indeed, I haven't seen any driver
+> > > yet that uses pm_runtime_dont_use_autosuspend(). We could play a game of
+> > > whack-a-mole, but we'll never win. Could this be solved in the runtime
+> > > PM framework instead ? pm_runtime_disable() could disable auto-suspend.
+> > > If there are legitimate use cases for disabling runtime PM temporarily
+> > > without disabling auto-suspend, then a new function designed
+> > > specifically for remove() that would take care of cleaning everything up
+> > > could be another option.
+> >
+> > Yeah, it would be good. It's probably not a yak I have time to shave
+> > right now, though. :(
+>
+> I don't insist on shaving that yak right now :-) This patch is fine.
 
-When HCE(Host Controller Error) is set, it means an internal
-error condition has been detected. Software needs to re-initialize
-the HC, so add this check in xhci resume.
+Landed in drm-misc-fixes:
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Puma Hsu <pumahsu@google.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220215123320.1253947-2-mathias.nyman@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/usb/host/xhci.c |   19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+26d347434829 drm/bridge: ti-sn65dsi86: Properly undo autosuspend
 
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1091,6 +1091,7 @@ int xhci_resume(struct xhci_hcd *xhci, b
- 	int			retval = 0;
- 	bool			comp_timer_running = false;
- 	bool			pending_portevent = false;
-+	bool			reinit_xhc = false;
- 
- 	if (!hcd->state)
- 		return 0;
-@@ -1107,10 +1108,11 @@ int xhci_resume(struct xhci_hcd *xhci, b
- 	set_bit(HCD_FLAG_HW_ACCESSIBLE, &xhci->shared_hcd->flags);
- 
- 	spin_lock_irq(&xhci->lock);
--	if ((xhci->quirks & XHCI_RESET_ON_RESUME) || xhci->broken_suspend)
--		hibernated = true;
- 
--	if (!hibernated) {
-+	if (hibernated || xhci->quirks & XHCI_RESET_ON_RESUME || xhci->broken_suspend)
-+		reinit_xhc = true;
-+
-+	if (!reinit_xhc) {
- 		/*
- 		 * Some controllers might lose power during suspend, so wait
- 		 * for controller not ready bit to clear, just as in xHC init.
-@@ -1143,12 +1145,17 @@ int xhci_resume(struct xhci_hcd *xhci, b
- 			spin_unlock_irq(&xhci->lock);
- 			return -ETIMEDOUT;
- 		}
--		temp = readl(&xhci->op_regs->status);
- 	}
- 
--	/* If restore operation fails, re-initialize the HC during resume */
--	if ((temp & STS_SRE) || hibernated) {
-+	temp = readl(&xhci->op_regs->status);
-+
-+	/* re-initialize the HC on Restore Error, or Host Controller Error */
-+	if (temp & (STS_SRE | STS_HCE)) {
-+		reinit_xhc = true;
-+		xhci_warn(xhci, "xHC error in resume, USBSTS 0x%x, Reinit\n", temp);
-+	}
- 
-+	if (reinit_xhc) {
- 		if ((xhci->quirks & XHCI_COMP_MODE_QUIRK) &&
- 				!(xhci_all_ports_seen_u0(xhci))) {
- 			del_timer_sync(&xhci->comp_mode_recovery_timer);
-
-
+-Doug
