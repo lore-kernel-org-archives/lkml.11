@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D95C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:37:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBCFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233173AbiB1Rhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:37:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
+        id S238421AbiB1Rhw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:37:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232930AbiB1Rex (ORCPT
+        with ESMTP id S238203AbiB1RfR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:34:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A0F7DE3E;
-        Mon, 28 Feb 2022 09:31:14 -0800 (PST)
+        Mon, 28 Feb 2022 12:35:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4C488793;
+        Mon, 28 Feb 2022 09:31:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89590B815A6;
-        Mon, 28 Feb 2022 17:31:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F43C340E7;
-        Mon, 28 Feb 2022 17:31:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF84DB815B4;
+        Mon, 28 Feb 2022 17:31:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 567FAC340F0;
+        Mon, 28 Feb 2022 17:31:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069470;
-        bh=hlaVVHROS+1+1hqghdgDQ6aqQYuXHJ1E37LvManwwR8=;
+        s=korg; t=1646069464;
+        bh=YZuggJDY3P6J7A+3vXvf6+XrhLmtPaUAkcNgWg3zZdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fHWh6dg6Qu6o2FfaoTOdarJ6bBie16xcWg3UpESXTNODOysJOYfh2A3q2w++oFhWM
-         xSiYQvbIIEHOYQUE2B2rLkKDmgpBKGdqxpJLzLg/OBDiYQ9BZ3O1ZklYjp4204Cd9A
-         tCXyxoXVCcj8yU0qHs/54reO4iOxjMyp3Wd6o1jo=
+        b=1mQhl8nLOqU1haIwBzjLloEdTqrDClpLNt9R4vr37ffKmGC8b/jhm1ib0m+wsir10
+         KLHEtVtCN2N7CeFjsvveJYH1lsxKftzsoaPSmWVnwJFoa5x5ENtGC1w/Dw7tv7y/k0
+         JQ3lvSqcI+5EjezKYMENtOqwTS2wFeMVr8Oqn8D4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        Ross Maynard <bids.7405@bigpond.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 08/53] USB: zaurus: support another broken Zaurus
-Date:   Mon, 28 Feb 2022 18:24:06 +0100
-Message-Id: <20220228172248.917252022@linuxfoundation.org>
+        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.4 06/53] drm/amdgpu: disable MMHUB PG for Picasso
+Date:   Mon, 28 Feb 2022 18:24:04 +0100
+Message-Id: <20220228172248.781814311@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -49,79 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Evan Quan <evan.quan@amd.com>
 
-commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c upstream.
+commit f626dd0ff05043e5a7154770cc7cda66acee33a3 upstream.
 
-This SL-6000 says Direct Line, not Ethernet
+MMHUB PG needs to be disabled for Picasso for stability reasons.
 
-v2: added Reporter and Link
-
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reported-by: Ross Maynard <bids.7405@bigpond.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/cdc_ether.c |   12 ++++++++++++
- drivers/net/usb/zaurus.c    |   12 ++++++++++++
- 2 files changed, 24 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/soc15.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/usb/cdc_ether.c
-+++ b/drivers/net/usb/cdc_ether.c
-@@ -571,6 +571,11 @@ static const struct usb_device_id	produc
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+--- a/drivers/gpu/drm/amd/amdgpu/soc15.c
++++ b/drivers/gpu/drm/amd/amdgpu/soc15.c
+@@ -1143,8 +1143,11 @@ static int soc15_common_early_init(void
+ 				AMD_CG_SUPPORT_SDMA_MGCG |
+ 				AMD_CG_SUPPORT_SDMA_LS;
  
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
-+
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
-  * wire-incompatible with true CDC Ethernet implementations.
-  * (And, it seems, needlessly so...)
-@@ -626,6 +631,13 @@ static const struct usb_device_id	produc
- 	.driver_info		= 0,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+		 | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor               = 0x04DD,
-+	.idProduct              = 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info		= 0,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
- 	.idVendor               = 0x04DD,
- 	/* reported with some C860 units */
---- a/drivers/net/usb/zaurus.c
-+++ b/drivers/net/usb/zaurus.c
-@@ -256,6 +256,11 @@ static const struct usb_device_id	produc
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
- 
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
-+
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
- {
- 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
-@@ -315,6 +320,13 @@ static const struct usb_device_id	produc
- 	.driver_info = ZAURUS_PXA_INFO,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+			    | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor		= 0x04DD,
-+	.idProduct		= 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info = (unsigned long)&bogus_mdlm_info,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
- 	.idVendor               = 0x04DD,
- 	/* reported with some C860 units */
++			/*
++			 * MMHUB PG needs to be disabled for Picasso for
++			 * stability reasons.
++			 */
+ 			adev->pg_flags = AMD_PG_SUPPORT_SDMA |
+-				AMD_PG_SUPPORT_MMHUB |
+ 				AMD_PG_SUPPORT_VCN;
+ 		} else {
+ 			adev->cg_flags = AMD_CG_SUPPORT_GFX_MGCG |
 
 
