@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1729FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45703C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236158AbiB1Rm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:42:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34756 "EHLO
+        id S234234AbiB1Rmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:42:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238234AbiB1Rhk (ORCPT
+        with ESMTP id S238407AbiB1Rhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:37:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2FD25C58;
-        Mon, 28 Feb 2022 09:32:28 -0800 (PST)
+        Mon, 28 Feb 2022 12:37:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D503A13F16;
+        Mon, 28 Feb 2022 09:32:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD20661365;
-        Mon, 28 Feb 2022 17:32:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0DBCC340E7;
-        Mon, 28 Feb 2022 17:32:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4631261358;
+        Mon, 28 Feb 2022 17:32:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B616C340E7;
+        Mon, 28 Feb 2022 17:32:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069547;
-        bh=YapyDaCD7iBiLBcrtI8n+txzlNjyNo+E6ZIxHkcKEO8=;
+        s=korg; t=1646069552;
+        bh=0t215VCzkJe0beIi2ijWkcI79VmhD3hbKqHuLFKXKd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s8jcS2mzloaOUU9WiZ9GttLmmlP/yACDHmvHZAI9K5CESntp6kWKEGfH90msz0G/B
-         lQgSmSbu/UAl7zKH/B90AXzNLOkUykpFp+TI4eOTXmkL2cDJ7h4KEl9KsseqznEkyy
-         KJg6zjXEub09Y7l0NijhYmiAmLxYVqitDtos97EY=
+        b=wdOkIMKx4A5v3aZbmDe6ZvqZdPm7tIpzccm7YvuOe+c7sW5X2xLyAnRzQGVGJnqmN
+         U8hN/ObWohNdpZkFKS9MfhyfIZPByriglLsikHd5AWBc8D9fY6FlLFfxWrwYbR8RBH
+         MYQZpGlPIzcfU7E/dkq2QW3T6ZAv+30k2lRSIplo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.4 34/53] iio: adc: ad7124: fix mask used for setting AIN_BUFP & AIN_BUFM bits
-Date:   Mon, 28 Feb 2022 18:24:32 +0100
-Message-Id: <20220228172250.747090700@linuxfoundation.org>
+        Fernando Fernandez Mancera <ffmancera@riseup.net>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.4 26/53] netfilter: nf_tables: fix memory leak during stateful obj update
+Date:   Mon, 28 Feb 2022 18:24:24 +0100
+Message-Id: <20220228172250.179632246@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -50,37 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cosmin Tanislav <demonsingur@gmail.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit 0e33d15f1dce9e3a80a970ea7f0b27837168aeca upstream.
+commit dad3bdeef45f81a6e90204bcc85360bb76eccec7 upstream.
 
-According to page 90 of the datasheet [1], AIN_BUFP is bit 6 and
-AIN_BUFM is bit 5 of the CONFIG_0 -> CONFIG_7 registers.
+stateful objects can be updated from the control plane.
+The transaction logic allocates a temporary object for this purpose.
 
-Fix the mask used for setting these bits.
+The ->init function was called for this object, so plain kfree() leaks
+resources. We must call ->destroy function of the object.
 
-[1]: https://www.analog.com/media/en/technical-documentation/data-sheets/ad7124-8.pdf
+nft_obj_destroy does this, but it also decrements the module refcount,
+but the update path doesn't increment it.
 
-Fixes: 0eaecea6e487 ("iio: adc: ad7124: Add buffered input support")
-Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Link: https://lore.kernel.org/r/20220112200036.694490-1-cosmin.tanislav@analog.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To avoid special-casing the update object release, do module_get for
+the update case too and release it via nft_obj_destroy().
+
+Fixes: d62d0ba97b58 ("netfilter: nf_tables: Introduce stateful object update operation")
+Cc: Fernando Fernandez Mancera <ffmancera@riseup.net>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/ad7124.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/netfilter/nf_tables_api.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
---- a/drivers/iio/adc/ad7124.c
-+++ b/drivers/iio/adc/ad7124.c
-@@ -63,7 +63,7 @@
- #define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
- #define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
- #define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
--#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(7, 6)
-+#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(6, 5)
- #define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5184,12 +5184,15 @@ static int nf_tables_updobj(const struct
+ {
+ 	struct nft_object *newobj;
+ 	struct nft_trans *trans;
+-	int err;
++	int err = -ENOMEM;
++
++	if (!try_module_get(type->owner))
++		return -ENOENT;
  
- /* AD7124_FILTER_X */
+ 	trans = nft_trans_alloc(ctx, NFT_MSG_NEWOBJ,
+ 				sizeof(struct nft_trans_obj));
+ 	if (!trans)
+-		return -ENOMEM;
++		goto err_trans;
+ 
+ 	newobj = nft_obj_init(ctx, type, attr);
+ 	if (IS_ERR(newobj)) {
+@@ -5206,6 +5209,8 @@ static int nf_tables_updobj(const struct
+ 
+ err_free_trans:
+ 	kfree(trans);
++err_trans:
++	module_put(type->owner);
+ 	return err;
+ }
+ 
+@@ -6544,7 +6549,7 @@ static void nft_obj_commit_update(struct
+ 	if (obj->ops->update)
+ 		obj->ops->update(obj, newobj);
+ 
+-	kfree(newobj);
++	nft_obj_destroy(&trans->ctx, newobj);
+ }
+ 
+ static void nft_commit_release(struct nft_trans *trans)
+@@ -7109,7 +7114,7 @@ static int __nf_tables_abort(struct net
+ 			break;
+ 		case NFT_MSG_NEWOBJ:
+ 			if (nft_trans_obj_update(trans)) {
+-				kfree(nft_trans_obj_newobj(trans));
++				nft_obj_destroy(&trans->ctx, nft_trans_obj_newobj(trans));
+ 				nft_trans_destroy(trans);
+ 			} else {
+ 				trans->ctx.table->use--;
 
 
