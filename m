@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDA7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:49:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B62C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238755AbiB1Rtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:49:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
+        id S238886AbiB1Rrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:47:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239095AbiB1Rnn (ORCPT
+        with ESMTP id S239501AbiB1RoR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:43:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59279BAE7;
-        Mon, 28 Feb 2022 09:35:41 -0800 (PST)
+        Mon, 28 Feb 2022 12:44:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4FE9E555;
+        Mon, 28 Feb 2022 09:36:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5888614C9;
-        Mon, 28 Feb 2022 17:35:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8349C340E7;
-        Mon, 28 Feb 2022 17:35:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 734AEB815A6;
+        Mon, 28 Feb 2022 17:36:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB446C340F1;
+        Mon, 28 Feb 2022 17:36:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069740;
-        bh=ZiqWtC7lTeskoDYpo8BmFDZ0NEqc4zUEXVUcbwg7D5w=;
+        s=korg; t=1646069787;
+        bh=aFHtDzRn92/ckV1DUQ1KrTVMJyNLtr7vHJdG9loj84Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sHOlbHomJvs22oxNK0fWL0TQe0RifXHnF+YJ4nYpVars/UIxdxYB8f2mJVMWRgISC
-         8pn//+AM1Zz6Y72Lw4NczWMyMBRYia3iPCHQHsXl36+Nr007qH3VIC3GtCQ4mtdx3s
-         snzBbqi1iU9wf0UN1RzuIfG09To6gDZBleq50OM8=
+        b=uCniyjDjAnsW5OjA/w3PHgaL80t6i0nSiq0aSxqg7pGtxLtY/R6EqbQqJLgZ0uclH
+         rXsc/RLSUtZWhh9zMoGE/hlsHkCyvVtGGmy2AOrwRddFrLnKL/lAYKOoUSy2yXTufr
+         clewWo37NY5Rrp7f/PIxcmPi/wgPAGGzQW2a7ijI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 75/80] tty: n_gsm: fix proper link termination after failed open
-Date:   Mon, 28 Feb 2022 18:24:56 +0100
-Message-Id: <20220228172320.800541582@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Lu=C3=ADs=20Ferreira?= <contact@lsferreira.net>,
+        Andy Lutomirski <luto@kernel.org>, Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 004/139] x86/ptrace: Fix xfpregs_set()s incorrect xmm clearing
+Date:   Mon, 28 Feb 2022 18:22:58 +0100
+Message-Id: <20220228172348.039335712@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
-References: <20220228172311.789892158@linuxfoundation.org>
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,38 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+From: Andy Lutomirski <luto@kernel.org>
 
-commit e3b7468f082d106459e86e8dc6fb9bdd65553433 upstream.
+commit 44cad52cc14ae10062f142ec16ede489bccf4469 upstream.
 
-Trying to open a DLCI by sending a SABM frame may fail with a timeout.
-The link is closed on the initiator side without informing the responder
-about this event. The responder assumes the link is open after sending a
-UA frame to answer the SABM frame. The link gets stuck in a half open
-state.
+xfpregs_set() handles 32-bit REGSET_XFP and 64-bit REGSET_FP. The actual
+code treats these regsets as modern FX state (i.e. the beginning part of
+XSTATE). The declarations of the regsets thought they were the legacy
+i387 format. The code thought they were the 32-bit (no xmm8..15) variant
+of XSTATE and, for good measure, made the high bits disappear by zeroing
+the wrong part of the buffer. The latter broke ptrace, and everything
+else confused anyone trying to understand the code. In particular, the
+nonsense definitions of the regsets confused me when I wrote this code.
 
-This patch fixes this by initiating the proper link termination procedure
-after link setup timeout instead of silently closing it down.
+Clean this all up. Change the declarations to match reality (which
+shouldn't change the generated code, let alone the ABI) and fix
+xfpregs_set() to clear the correct bits and to only do so for 32-bit
+callers.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220218073123.2121-3-daniel.starke@siemens.com
+Fixes: 6164331d15f7 ("x86/fpu: Rewrite xfpregs_set()")
+Reported-by: Luís Ferreira <contact@lsferreira.net>
+Signed-off-by: Andy Lutomirski <luto@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215524
+Link: https://lore.kernel.org/r/YgpFnZpF01WwR8wU@zn.tnic
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/fpu/regset.c |    9 ++++-----
+ arch/x86/kernel/ptrace.c     |    4 ++--
+ 2 files changed, 6 insertions(+), 7 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1485,7 +1485,7 @@ static void gsm_dlci_t1(struct timer_lis
- 			dlci->mode = DLCI_MODE_ADM;
- 			gsm_dlci_open(dlci);
- 		} else {
--			gsm_dlci_close(dlci);
-+			gsm_dlci_begin_close(dlci); /* prevent half open link */
- 		}
+--- a/arch/x86/kernel/fpu/regset.c
++++ b/arch/x86/kernel/fpu/regset.c
+@@ -87,11 +87,9 @@ int xfpregs_set(struct task_struct *targ
+ 		const void *kbuf, const void __user *ubuf)
+ {
+ 	struct fpu *fpu = &target->thread.fpu;
+-	struct user32_fxsr_struct newstate;
++	struct fxregs_state newstate;
+ 	int ret;
  
- 		break;
+-	BUILD_BUG_ON(sizeof(newstate) != sizeof(struct fxregs_state));
+-
+ 	if (!cpu_feature_enabled(X86_FEATURE_FXSR))
+ 		return -ENODEV;
+ 
+@@ -112,9 +110,10 @@ int xfpregs_set(struct task_struct *targ
+ 	/* Copy the state  */
+ 	memcpy(&fpu->state.fxsave, &newstate, sizeof(newstate));
+ 
+-	/* Clear xmm8..15 */
++	/* Clear xmm8..15 for 32-bit callers */
+ 	BUILD_BUG_ON(sizeof(fpu->state.fxsave.xmm_space) != 16 * 16);
+-	memset(&fpu->state.fxsave.xmm_space[8], 0, 8 * 16);
++	if (in_ia32_syscall())
++		memset(&fpu->state.fxsave.xmm_space[8*4], 0, 8 * 16);
+ 
+ 	/* Mark FP and SSE as in use when XSAVE is enabled */
+ 	if (use_xsave())
+--- a/arch/x86/kernel/ptrace.c
++++ b/arch/x86/kernel/ptrace.c
+@@ -1224,7 +1224,7 @@ static struct user_regset x86_64_regsets
+ 	},
+ 	[REGSET_FP] = {
+ 		.core_note_type = NT_PRFPREG,
+-		.n = sizeof(struct user_i387_struct) / sizeof(long),
++		.n = sizeof(struct fxregs_state) / sizeof(long),
+ 		.size = sizeof(long), .align = sizeof(long),
+ 		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
+ 	},
+@@ -1271,7 +1271,7 @@ static struct user_regset x86_32_regsets
+ 	},
+ 	[REGSET_XFP] = {
+ 		.core_note_type = NT_PRXFPREG,
+-		.n = sizeof(struct user32_fxsr_struct) / sizeof(u32),
++		.n = sizeof(struct fxregs_state) / sizeof(u32),
+ 		.size = sizeof(u32), .align = sizeof(u32),
+ 		.active = regset_xregset_fpregs_active, .regset_get = xfpregs_get, .set = xfpregs_set
+ 	},
 
 
