@@ -2,105 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24258C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:23:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 923F5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:23:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236370AbiB1MX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:23:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
+        id S236376AbiB1MYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:24:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236331AbiB1MXj (ORCPT
+        with ESMTP id S236294AbiB1MXo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:23:39 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C888574DD9
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:22:58 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id g21so4673179pfj.11
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:22:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7RQGHmSpLUsBWZUQYPpcdOjVs87EIcOAL9fVyXOtIRQ=;
-        b=8OKYvg3uY+0MhQo9Sqp4PHlfDHE8n5JHFkh0d4IPnyiTC0hPfVIt2xxcAbqCQqdjsw
-         92pF22xqGKb/Zrti0Hx41FWRNgFKxWIH8k7lmpuJTDWGL2jtVtg0hG5Bo1e26N00+Pdi
-         Oqc524Bk6FBDUhr6GhV9xxi5TqJ13Igp/dPXx2cSS1lREZebqOGdvplA9VRbeohCo44V
-         YUS5ig1qtXpGqzkxqWdrFWV0UhIkmcderji7aXysd68MOjjHiT4F/keQdesOWTeHVtRY
-         HAO9FL0jJcoSvj/VubwpRqOyoeA/VkFZ3Ltb6A6wxOW19eajDaa8a3cedjQw620HUJ/i
-         hbKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7RQGHmSpLUsBWZUQYPpcdOjVs87EIcOAL9fVyXOtIRQ=;
-        b=AB+i7TRVwN0ST6m1mwJCJZRdIBZpUUTakqGrovLH2NMlpjSFl49e2heLgcDsGLawpg
-         wW23ZLJ3UmgEgsVOcspHr+Yw11Y0CtVzxb7BauTjb0e7CTO9nb4ua35OwC4SasIaC693
-         BU0eRCDll17NRscea66R7FWS55mqexHx6Fnf64YzeIH2M6e/a+22Ypo8KqywKKgb7ALs
-         lHObDGXKlilH7OL68wD5DGcvS21zPJRHKT5/Ext61jgHYaxudeE3uO2aiaxxLf8MZ/0a
-         KJEG7qZFWGNajZI4nqVcf1StHNoBe3rDmSTGFiE0oGdNSiDdA+AqffAiEwZW9FQ/iKLr
-         XNKg==
-X-Gm-Message-State: AOAM530nwtiErr7ko9Z7z27H5zi4nplBZU+lLr6VNgqGuW7XEQAiSP4f
-        GeHlDiWbH4aku4XuzqA51bTZUA==
-X-Google-Smtp-Source: ABdhPJzgAE0yHpfYS+vzCxbO7K/OSkp2rCJIamxAE5RBODPYQ4mTFqO8oVK9gFGTCNJgkd0+YSRxHA==
-X-Received: by 2002:a05:6a00:278d:b0:4e1:4534:8801 with SMTP id bd13-20020a056a00278d00b004e145348801mr21153306pfb.78.1646050978317;
-        Mon, 28 Feb 2022 04:22:58 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
-        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.22.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 04:22:58 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
-        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
-        richard.weiyang@gmail.com, david@fromorbit.com,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
-        vbabka@suse.cz
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
-        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
-        fam.zheng@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v6 05/16] f2fs: allocate inode by using alloc_inode_sb()
-Date:   Mon, 28 Feb 2022 20:21:15 +0800
-Message-Id: <20220228122126.37293-6-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
-References: <20220228122126.37293-1-songmuchun@bytedance.com>
+        Mon, 28 Feb 2022 07:23:44 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BB91163;
+        Mon, 28 Feb 2022 04:23:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1646050985; x=1677586985;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KoTey0W8zWvjOFwkoy6mMXu9NuJCfWBfIG0o3q2AE/c=;
+  b=04budhYJPA/npJhGUDB+4Xitb8sA611Fq55DbmgIYaWjpu0z4o909JA4
+   Du8kB1E99RFhoJVsSWRPTBBSwG53a/Pv31yEyXQI1je6NGeKMu1WVh+P5
+   hOmVoG9l9xt7hDBQj4jqIon+4RuPKi8GF1fskzMVbZ5tjbBM8qYoaKyyc
+   OMre40xXj6PMCAWHzZyHkKrYfse0NtGRB9R/8ZICCdvf/oY0cqdwNNJWd
+   Hvq+5oRNbxl1NnrsQAf+clcg6JvKyWQDur8JxlcdxK84Gefjux5HFB5l4
+   a5W6FVwJcPdgKuSo2ydrjtnbyPzd/vMweiyjMxe+PPoWoTepvd+XJ+Id4
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,142,1643698800"; 
+   d="scan'208";a="155104953"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Feb 2022 05:23:04 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 28 Feb 2022 05:23:04 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 28 Feb 2022 05:23:01 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <ludovic.desroches@microchip.com>
+CC:     <robh+dt@kernel.org>, <linux@armlinux.org.uk>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 0/2] ARM: at91: enable eic
+Date:   Mon, 28 Feb 2022 14:23:24 +0200
+Message-ID: <20220228122326.1400954-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The inode allocation is supposed to use alloc_inode_sb(), so convert
-kmem_cache_alloc() to alloc_inode_sb().
+Hi,
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
----
- fs/f2fs/super.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+The following 2 patches enable EIC support available on SAMA7G5.
 
-diff --git a/fs/f2fs/super.c b/fs/f2fs/super.c
-index baefd398ec1a..9cc753a3944d 100644
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -1345,8 +1345,12 @@ static struct inode *f2fs_alloc_inode(struct super_block *sb)
- {
- 	struct f2fs_inode_info *fi;
- 
--	fi = f2fs_kmem_cache_alloc(f2fs_inode_cachep,
--				GFP_F2FS_ZERO, false, F2FS_SB(sb));
-+	if (time_to_inject(F2FS_SB(sb), FAULT_SLAB_ALLOC)) {
-+		f2fs_show_injection_info(F2FS_SB(sb), FAULT_SLAB_ALLOC);
-+		return NULL;
-+	}
-+
-+	fi = alloc_inode_sb(sb, f2fs_inode_cachep, GFP_F2FS_ZERO);
- 	if (!fi)
- 		return NULL;
- 
+Thank you,
+Claudiu Beznea
+
+Claudiu Beznea (2):
+  ARM: dts: at91: sama7g5: add eic node
+  ARM: configs: at91: add eic
+
+ arch/arm/boot/dts/sama7g5.dtsi   | 13 +++++++++++++
+ arch/arm/configs/sama7_defconfig |  1 +
+ 2 files changed, 14 insertions(+)
+
 -- 
-2.11.0
+2.32.0
 
