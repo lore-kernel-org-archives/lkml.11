@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 938F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234374AbiB1R1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:27:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
+        id S234786AbiB1R1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:27:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234339AbiB1R0v (ORCPT
+        with ESMTP id S234375AbiB1R0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:26:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF33887B5;
-        Mon, 28 Feb 2022 09:26:05 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F5AC887BA;
+        Mon, 28 Feb 2022 09:26:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DB52B815AB;
-        Mon, 28 Feb 2022 17:26:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA250C340E7;
-        Mon, 28 Feb 2022 17:26:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EE3B61365;
+        Mon, 28 Feb 2022 17:26:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8792CC340E7;
+        Mon, 28 Feb 2022 17:26:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069163;
-        bh=zJosyq7oCq/myyxojvwiAwIeuLpNezuOpFJg2ObthN0=;
+        s=korg; t=1646069165;
+        bh=Vj7+RV1mSAdxwWoIV35hkfTUgm01kukRlhS/2oE8/tA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zbyk8FTWE+y0OL/gZnP8r/p92b2qWGr8mgV1fsiMUSIngyeXyP9noK9ODfa9d0fRB
-         PZ+kfsyUsCUj/S5OlROPdFzwI8GdUqu5A4CAW0UhkK7RAtAUk8OEEQwUBHbkRuo0Xo
-         u+UZRY/om6RVtIwm5VFJ2aaGlOZavAJr0Ac0xc1w=
+        b=cR0SL9GdMqO9/5hGKMCB0r/zjCCM2nTBRJVJZowH8u/Hvij3ZJDOLFdgBoh/vMPvU
+         fdbIvhCJ+H4wvuu/QMqb3VbUuspQFruBtPgiS5DTHiU/WJ0S7Ht7sIjvJ/Z8VhE5IY
+         gpIu9cxEJzNo6WhhPjEkq1npFH9UY9l4Hb3HzOv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 4.9 16/29] iio: adc: men_z188_adc: Fix a resource leak in an error handling path
-Date:   Mon, 28 Feb 2022 18:23:43 +0100
-Message-Id: <20220228172143.444738755@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 4.9 17/29] ata: pata_hpt37x: disable primary channel on HPT371
+Date:   Mon, 28 Feb 2022 18:23:44 +0100
+Message-Id: <20220228172143.558883748@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172141.744228435@linuxfoundation.org>
 References: <20220228172141.744228435@linuxfoundation.org>
@@ -50,50 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit e0a2e37f303828d030a83f33ffe14b36cb88d563 upstream.
+commit 8d093e02e898b24c58788b0289e3202317a96d2a upstream.
 
-If iio_device_register() fails, a previous ioremap() is left unbalanced.
+The HPT371 chip physically has only one channel, the secondary one,
+however the primary channel registers do exist! Thus we have to
+manually disable the non-existing channel if the BIOS hasn't done this
+already. Similarly to the pata_hpt3x2n driver, always disable the
+primary channel.
 
-Update the error handling path and add the missing iounmap() call, as
-already done in the remove function.
-
-Fixes: 74aeac4da66f ("iio: adc: Add MEN 16z188 ADC driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/320fc777863880247c2aff4a9d1a54ba69abf080.1643445149.git.christophe.jaillet@wanadoo.fr
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 669a5db411d8 ("[libata] Add a bunch of PATA drivers.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/men_z188_adc.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/ata/pata_hpt37x.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/iio/adc/men_z188_adc.c
-+++ b/drivers/iio/adc/men_z188_adc.c
-@@ -107,6 +107,7 @@ static int men_z188_probe(struct mcb_dev
- 	struct z188_adc *adc;
- 	struct iio_dev *indio_dev;
- 	struct resource *mem;
-+	int ret;
+--- a/drivers/ata/pata_hpt37x.c
++++ b/drivers/ata/pata_hpt37x.c
+@@ -920,6 +920,20 @@ static int hpt37x_init_one(struct pci_de
+ 	pci_write_config_byte(dev, 0x5a, irqmask);
  
- 	indio_dev = devm_iio_device_alloc(&dev->dev, sizeof(struct z188_adc));
- 	if (!indio_dev)
-@@ -133,8 +134,14 @@ static int men_z188_probe(struct mcb_dev
- 	adc->mem = mem;
- 	mcb_set_drvdata(dev, indio_dev);
- 
--	return iio_device_register(indio_dev);
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto err_unmap;
- 
-+	return 0;
+ 	/*
++	 * HPT371 chips physically have only one channel, the secondary one,
++	 * but the primary channel registers do exist!  Go figure...
++	 * So,  we manually disable the non-existing channel here
++	 * (if the BIOS hasn't done this already).
++	 */
++	if (dev->device == PCI_DEVICE_ID_TTI_HPT371) {
++		u8 mcr1;
 +
-+err_unmap:
-+	iounmap(adc->base);
- err:
- 	mcb_release_mem(mem);
- 	return -ENXIO;
++		pci_read_config_byte(dev, 0x50, &mcr1);
++		mcr1 &= ~0x04;
++		pci_write_config_byte(dev, 0x50, mcr1);
++	}
++
++	/*
+ 	 * default to pci clock. make sure MA15/16 are set to output
+ 	 * to prevent drives having problems with 40-pin cables. Needed
+ 	 * for some drives such as IBM-DTLA which will not enter ready
 
 
