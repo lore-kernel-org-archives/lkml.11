@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45703C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 935B5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234234AbiB1Rmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:42:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34698 "EHLO
+        id S238513AbiB1Rmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:42:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238407AbiB1Rhv (ORCPT
+        with ESMTP id S238493AbiB1Rh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:37:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D503A13F16;
-        Mon, 28 Feb 2022 09:32:33 -0800 (PST)
+        Mon, 28 Feb 2022 12:37:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 042B945ADD;
+        Mon, 28 Feb 2022 09:32:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4631261358;
-        Mon, 28 Feb 2022 17:32:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B616C340E7;
-        Mon, 28 Feb 2022 17:32:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D63C561359;
+        Mon, 28 Feb 2022 17:32:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC8ACC340E7;
+        Mon, 28 Feb 2022 17:32:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069552;
-        bh=0t215VCzkJe0beIi2ijWkcI79VmhD3hbKqHuLFKXKd0=;
+        s=korg; t=1646069566;
+        bh=TP4BwGbN624ZpZnVOC+khdGnLxAgv8yriN6zeGOsyyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wdOkIMKx4A5v3aZbmDe6ZvqZdPm7tIpzccm7YvuOe+c7sW5X2xLyAnRzQGVGJnqmN
-         U8hN/ObWohNdpZkFKS9MfhyfIZPByriglLsikHd5AWBc8D9fY6FlLFfxWrwYbR8RBH
-         MYQZpGlPIzcfU7E/dkq2QW3T6ZAv+30k2lRSIplo=
+        b=h7fZ6gQ+7Y7/uPdxtdy8aM8Y1dWAKqoT6rU3n2iXmKqdJfWTctoBae+QZogURjsDe
+         viS5LFtiTgr2RafLwkTckbwtdz4bwursiGCV3Ysg92QoQ6R/Hcw1gpIGzoQfGqToWS
+         RMlfY0DNYyGfD1M1Du1m1r/bZ/krlHfXFXGo2jT4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Fernando Fernandez Mancera <ffmancera@riseup.net>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.4 26/53] netfilter: nf_tables: fix memory leak during stateful obj update
-Date:   Mon, 28 Feb 2022 18:24:24 +0100
-Message-Id: <20220228172250.179632246@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
+        Ross Maynard <bids.7405@bigpond.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 13/80] USB: zaurus: support another broken Zaurus
+Date:   Mon, 28 Feb 2022 18:23:54 +0100
+Message-Id: <20220228172313.217510281@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
-References: <20220228172248.232273337@linuxfoundation.org>
+In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
+References: <20220228172311.789892158@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,77 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit dad3bdeef45f81a6e90204bcc85360bb76eccec7 upstream.
+commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c upstream.
 
-stateful objects can be updated from the control plane.
-The transaction logic allocates a temporary object for this purpose.
+This SL-6000 says Direct Line, not Ethernet
 
-The ->init function was called for this object, so plain kfree() leaks
-resources. We must call ->destroy function of the object.
+v2: added Reporter and Link
 
-nft_obj_destroy does this, but it also decrements the module refcount,
-but the update path doesn't increment it.
-
-To avoid special-casing the update object release, do module_get for
-the update case too and release it via nft_obj_destroy().
-
-Fixes: d62d0ba97b58 ("netfilter: nf_tables: Introduce stateful object update operation")
-Cc: Fernando Fernandez Mancera <ffmancera@riseup.net>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: Ross Maynard <bids.7405@bigpond.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |   13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/usb/cdc_ether.c |   12 ++++++++++++
+ drivers/net/usb/zaurus.c    |   12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5184,12 +5184,15 @@ static int nf_tables_updobj(const struct
- {
- 	struct nft_object *newobj;
- 	struct nft_trans *trans;
--	int err;
-+	int err = -ENOMEM;
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -570,6 +570,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+ 
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
 +
-+	if (!try_module_get(type->owner))
-+		return -ENOENT;
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -625,6 +630,13 @@ static const struct usb_device_id	produc
+ 	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -256,6 +256,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
- 	trans = nft_trans_alloc(ctx, NFT_MSG_NEWOBJ,
- 				sizeof(struct nft_trans_obj));
- 	if (!trans)
--		return -ENOMEM;
-+		goto err_trans;
- 
- 	newobj = nft_obj_init(ctx, type, attr);
- 	if (IS_ERR(newobj)) {
-@@ -5206,6 +5209,8 @@ static int nf_tables_updobj(const struct
- 
- err_free_trans:
- 	kfree(trans);
-+err_trans:
-+	module_put(type->owner);
- 	return err;
- }
- 
-@@ -6544,7 +6549,7 @@ static void nft_obj_commit_update(struct
- 	if (obj->ops->update)
- 		obj->ops->update(obj, newobj);
- 
--	kfree(newobj);
-+	nft_obj_destroy(&trans->ctx, newobj);
- }
- 
- static void nft_commit_release(struct nft_trans *trans)
-@@ -7109,7 +7114,7 @@ static int __nf_tables_abort(struct net
- 			break;
- 		case NFT_MSG_NEWOBJ:
- 			if (nft_trans_obj_update(trans)) {
--				kfree(nft_trans_obj_newobj(trans));
-+				nft_obj_destroy(&trans->ctx, nft_trans_obj_newobj(trans));
- 				nft_trans_destroy(trans);
- 			} else {
- 				trans->ctx.table->use--;
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+ {
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -315,6 +320,13 @@ static const struct usb_device_id	produc
+ 	.driver_info = ZAURUS_PXA_INFO,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++			    | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor		= 0x04DD,
++	.idProduct		= 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info = (unsigned long)&bogus_mdlm_info,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
 
 
