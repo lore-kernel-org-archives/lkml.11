@@ -2,348 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 559C9C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5A7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236768AbiB1Mtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:49:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50982 "EHLO
+        id S236896AbiB1Mrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:47:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236376AbiB1Mtn (ORCPT
+        with ESMTP id S236780AbiB1MrV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:49:43 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4518B53729;
-        Mon, 28 Feb 2022 04:49:04 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id d62so14454812iog.13;
-        Mon, 28 Feb 2022 04:49:04 -0800 (PST)
+        Mon, 28 Feb 2022 07:47:21 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3C5D77A98
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:46:26 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id h17-20020a17090acf1100b001bc68ecce4aso14665808pju.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:46:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=mOwbZLEZAA7CbHC+ZGRfJecP9SUyALH4CUgSrWMoe2Y=;
-        b=MoRqzkxl3y5bj6ZSvrlCkhi2eyhrKfbhvB8EI57ZXGiPyLp+PHJZj+m6chb0C6fDg+
-         djOViiwLzv9MFpsrxG2ocg2vE77iNztXu6hIk49ZVn01C9/E7TzhSRsZrkAmglSsv1P0
-         O8r143/OuUhcoCPa0Miggp3nc1mD8UveBAxgUHM43Jaabl7pWw5GUu6iPUMhTTDdTm58
-         OCefXbhIQ+lMMN0Zz6j3r6ZdLH+YJA+kaDIscqG3S4AdZbKqUa4EyRU1DI+O2tsiAtLa
-         oDS98C0nK6Ll/C9g+hmM3g/Q+gJZoZjbPTjAeNV3AtyrmbCyt9gsn12+nKbe4Q65iE0m
-         C1DQ==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=QFXLiL0cwfTscTFGdegC8jG7wPHkkmACZCaIlJcMC4g=;
+        b=uzElxq1Co02OjZSETgAp4AlzySZjyNblnTFSlL6ekEy2Jd+SYgQjYwySYZULAQ7q2x
+         8ZiFV6Cy+0OSBZnvRjTjOKqS7pEykVqaaj4UyeRYCEsn38pCIU/up2IWhy7HVzLPiPn3
+         EPCp/22b8zYfInCnTEp8RFODkrUhClj3vhG0XN73OSdiYlKYdjbZlTljavaUez3WwyQa
+         WIb4pfGWNRgOU23cpCL5KI6wV94q1UvV98RP7k2QkvvYRlWDxa3KmvXFCUU3/l3U4ALX
+         EPZJGDY4CVabi3WzRpEopru76oAs5ypeAU/527dDy0DnyXcJh/YlCZNHEiLtDGOR2Fbn
+         oSNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=mOwbZLEZAA7CbHC+ZGRfJecP9SUyALH4CUgSrWMoe2Y=;
-        b=VvL35ime4Aq3Y4haqxzAXVBncHzY8TwwTqBOQ03IV5Z3pX4q2yCS0v8wTS3/2jGSZh
-         0PXOvk/nD4uMi8pWICeAmfuTqbJdcU9zpBrmQEbsOgllOUN3WvIFYuVjaY21l6Y4H9S2
-         RFHQbNhnfkKkq1rJgJINgbxZKrxhl6917bO1FcFvFjn3D6Z9x3BdPmxSewqQYBFtFRMj
-         iGLUaFA9W1LGdWZBw3mLW2aYCbNUtrGngOLRkScaMYD/2E7jBPjSbHWP+wyHgp51dEK8
-         kWNKxLmIgFe4Au/DPhV81V5zWIWPiVo2BAyNb4ZEe8mkiZkvVt9adIQn7ixYyUpvdBak
-         oemg==
-X-Gm-Message-State: AOAM532QwAsMDyRRXj0QzuTe3iTYGJDCVV29mMjUeIh+hlKW1eEl+pI3
-        QIpsH9YDA1uo7ZRtk5ayh0sZAyIvEyCzVnfsjrw=
-X-Google-Smtp-Source: ABdhPJz3q8cRMHd/oy9ZoQDTB815Cb8Pu3kGKWD99P8CNfxxFeh2KSEcEd4cG9pFBH7WrrbY5kthiPuHNKK+V71otSM=
-X-Received: by 2002:a02:c6c1:0:b0:314:b699:b8bd with SMTP id
- r1-20020a02c6c1000000b00314b699b8bdmr17570856jan.40.1646052543613; Mon, 28
- Feb 2022 04:49:03 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=QFXLiL0cwfTscTFGdegC8jG7wPHkkmACZCaIlJcMC4g=;
+        b=agruv5yv532nygqYY6f0qUwFhmSo3v1UwumDxKJIWxIBnexgjQ7XDbHJfInFp5xfAa
+         Ju/pFYpm48W2DOlBSUBug4VrowkHi0SDFfkaufPwuYD5TawqKJatyLG0sAd/VhjOM+Dt
+         AcH6+tMZxi4a8zs1jBwv2vRwjLYTjywqvUSDuMbP44A8Qv0A7w9w/0oOdxl4DZl/KVtO
+         Vm0zGf/Dunsi+lDIJ809x9e86BQ/wGaAELuVdSSrI70RAO92JXU7bRNgf1MEX4sTZ8jD
+         nAiMPku6N3oDis+ejAu+2TD8Q0CftC7t9QTqSmQVzLaQu+/Dhd2J0yzivQYiaGeYGryN
+         txOw==
+X-Gm-Message-State: AOAM533U76FNzOivfDvsXclRcvVc8n0jL93Pya6ZnNQX0xgOJtG0rLgF
+        5Nxa6iNnlHjSuBBuwLTNaUpU
+X-Google-Smtp-Source: ABdhPJz/l4Rjc3SB1CTovpEU0dkPgKs8YNHZfoD96r0SBLyth0Gw6PheAT7YlRKYUk769a7WkNkUSQ==
+X-Received: by 2002:a17:90a:241:b0:1bc:1def:a8c5 with SMTP id t1-20020a17090a024100b001bc1defa8c5mr16469088pje.105.1646052382269;
+        Mon, 28 Feb 2022 04:46:22 -0800 (PST)
+Received: from localhost.localdomain ([117.207.25.37])
+        by smtp.gmail.com with ESMTPSA id y12-20020a056a00190c00b004f39e28fb87sm14256737pfi.98.2022.02.28.04.46.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 04:46:21 -0800 (PST)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     mhi@lists.linux.dev
+Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
+        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
+        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
+        quic_vbadigan@quicinc.com, quic_cang@quicinc.com,
+        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, elder@linaro.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v4 27/27] bus: mhi: ep: Add uevent support for module autoloading
+Date:   Mon, 28 Feb 2022 18:13:44 +0530
+Message-Id: <20220228124344.77359-28-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
+References: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-References: <20220228103142.3301082-1-arnd@kernel.org>
-In-Reply-To: <20220228103142.3301082-1-arnd@kernel.org>
-From:   Alex Shi <seakeel@gmail.com>
-Date:   Mon, 28 Feb 2022 20:48:27 +0800
-Message-ID: <CAJy-AmkX+3qFLUvSkWK6bBjMF_pQ5mEFWUBaO0H6D0mxmhj5Lg@mail.gmail.com>
-Subject: Re: [PATCH] [v2] Kbuild: move to -std=gnu11
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
-        Jonathan Corbet <corbet@lwn.net>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-btrfs@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 6:32 PM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> During a patch discussion, Linus brought up the option of changing
-> the C standard version from gnu89 to gnu99, which allows using variable
-> declaration inside of a for() loop. While the C99, C11 and later standard=
-s
-> introduce many other features, most of these are already available in
-> gnu89 as GNU extensions as well.
->
-> An earlier attempt to do this when gcc-5 started defaulting to
-> -std=3Dgnu11 failed because at the time that caused warnings about
-> designated initializers with older compilers. Now that gcc-5.1 is the
-> minimum compiler version used for building kernels, that is no longer a
-> concern. Similarly, the behavior of 'inline' functions changes between
-> gnu89 and gnu11, but this was taken care of by defining 'inline' to
-> include __attribute__((gnu_inline)) in order to allow building with
-> clang a while ago.
->
-> One minor issue that remains is an added gcc warning for shifts of
-> negative integers when building with -Werror, which happens with the
-> 'make W=3D1' option, as well as for three drivers in the kernel that alwa=
-ys
-> enable -Werror, but it was only observed with the i915 driver so far.
-> To be on the safe side, add -Wno-shift-negative-value to any -Wextra
-> in a Makefile.
->
-> Nathan Chancellor reported an additional -Wdeclaration-after-statement
-> warning that appears in a system header on arm, this still needs a
-> workaround.
->
-> The differences between gnu99, gnu11, gnu1x and gnu17 are fairly
-> minimal and mainly impact warnings at the -Wpedantic level that the
-> kernel never enables. Between these, gnu11 is the newest version
-> that is supported by all supported compiler versions, though it is
-> only the default on gcc-5, while all other supported versions of
-> gcc or clang default to gnu1x/gnu17.
->
-> Link: https://lore.kernel.org/lkml/CAHk-=3DwiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdK=
-pcovt8fYbVFW3TA@mail.gmail.com/
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1603
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
-> Cc: linux-kbuild@vger.kernel.org
-> Cc: llvm@lists.linux.dev
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Add uevent support to MHI endpoint bus so that the client drivers can be
+autoloaded by udev when the MHI endpoint devices gets created. The client
+drivers are expected to provide MODULE_DEVICE_TABLE with the MHI id_table
+struct so that the alias can be exported.
 
-For document part,
-Reviewed-by: Alex Shi <alexs@kernel.org>
+The MHI endpoint reused the mhi_device_id structure of the MHI bus.
 
-> ---
-> [v2]
->  - added -std=3Dgnu11 back, rather than just relying on the default
->  - minor changes to changelog text
-> ---
->  Documentation/process/programming-language.rst              | 4 ++--
->  .../translations/it_IT/process/programming-language.rst     | 4 ++--
->  .../translations/zh_CN/process/programming-language.rst     | 4 ++--
->  .../translations/zh_TW/process/programming-language.rst     | 4 ++--
->  Makefile                                                    | 6 +++---
->  arch/arm64/kernel/vdso32/Makefile                           | 2 +-
->  drivers/gpu/drm/i915/Makefile                               | 1 +
->  drivers/staging/greybus/tools/Makefile                      | 3 ++-
->  fs/btrfs/Makefile                                           | 1 +
->  scripts/Makefile.extrawarn                                  | 1 +
->  10 files changed, 17 insertions(+), 13 deletions(-)
->
-> diff --git a/Documentation/process/programming-language.rst b/Documentati=
-on/process/programming-language.rst
-> index ec474a70a02f..894f2a6eb9db 100644
-> --- a/Documentation/process/programming-language.rst
-> +++ b/Documentation/process/programming-language.rst
-> @@ -5,8 +5,8 @@ Programming Language
->
->  The kernel is written in the C programming language [c-language]_.
->  More precisely, the kernel is typically compiled with ``gcc`` [gcc]_
-> -under ``-std=3Dgnu89`` [gcc-c-dialect-options]_: the GNU dialect of ISO =
-C90
-> -(including some C99 features). ``clang`` [clang]_ is also supported, see
-> +under ``-std=3Dgnu11`` [gcc-c-dialect-options]_: the GNU dialect of ISO =
-C11
-> +(including some C17 features). ``clang`` [clang]_ is also supported, see
->  docs on :ref:`Building Linux with Clang/LLVM <kbuild_llvm>`.
->
->  This dialect contains many extensions to the language [gnu-extensions]_,
-> diff --git a/Documentation/translations/it_IT/process/programming-languag=
-e.rst b/Documentation/translations/it_IT/process/programming-language.rst
-> index 41db2598ce11..aa21097737ae 100644
-> --- a/Documentation/translations/it_IT/process/programming-language.rst
-> +++ b/Documentation/translations/it_IT/process/programming-language.rst
-> @@ -10,8 +10,8 @@ Linguaggio di programmazione
->
->  Il kernel =C3=A8 scritto nel linguaggio di programmazione C [it-c-langua=
-ge]_.
->  Pi=C3=B9 precisamente, il kernel viene compilato con ``gcc`` [it-gcc]_ u=
-sando
-> -l'opzione ``-std=3Dgnu89`` [it-gcc-c-dialect-options]_: il dialetto GNU
-> -dello standard ISO C90 (con l'aggiunta di alcune funzionalit=C3=A0 da C9=
-9).
-> +l'opzione ``-std=3Dgnu11`` [it-gcc-c-dialect-options]_: il dialetto GNU
-> +dello standard ISO C11 (con l'aggiunta di alcune funzionalit=C3=A0 da C1=
-7).
->  Linux supporta anche ``clang`` [it-clang]_, leggete la documentazione
->  :ref:`Building Linux with Clang/LLVM <kbuild_llvm>`.
->
-> diff --git a/Documentation/translations/zh_CN/process/programming-languag=
-e.rst b/Documentation/translations/zh_CN/process/programming-language.rst
-> index 2a47a1d2ec20..58d2b3bd2d85 100644
-> --- a/Documentation/translations/zh_CN/process/programming-language.rst
-> +++ b/Documentation/translations/zh_CN/process/programming-language.rst
-> @@ -9,8 +9,8 @@
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->
->  =E5=86=85=E6=A0=B8=E6=98=AF=E7=94=A8C=E8=AF=AD=E8=A8=80 :ref:`c-language=
- <cn_c-language>` =E7=BC=96=E5=86=99=E7=9A=84=E3=80=82=E6=9B=B4=E5=87=86=E7=
-=A1=AE=E5=9C=B0=E8=AF=B4=EF=BC=8C=E5=86=85=E6=A0=B8=E9=80=9A=E5=B8=B8=E6=98=
-=AF=E7=94=A8 :ref:`gcc <cn_gcc>`
-> -=E5=9C=A8 ``-std=3Dgnu89`` :ref:`gcc-c-dialect-options <cn_gcc-c-dialect=
--options>` =E4=B8=8B=E7=BC=96=E8=AF=91=E7=9A=84=EF=BC=9AISO C90=E7=9A=84 GN=
-U =E6=96=B9=E8=A8=80=EF=BC=88
-> -=E5=8C=85=E6=8B=AC=E4=B8=80=E4=BA=9BC99=E7=89=B9=E6=80=A7=EF=BC=89
-> +=E5=9C=A8 ``-std=3Dgnu11`` :ref:`gcc-c-dialect-options <cn_gcc-c-dialect=
--options>` =E4=B8=8B=E7=BC=96=E8=AF=91=E7=9A=84=EF=BC=9AISO C11=E7=9A=84 GN=
-U =E6=96=B9=E8=A8=80=EF=BC=88
-> +=E5=8C=85=E6=8B=AC=E4=B8=80=E4=BA=9BC17=E7=89=B9=E6=80=A7=EF=BC=89
->
->  =E8=BF=99=E7=A7=8D=E6=96=B9=E8=A8=80=E5=8C=85=E5=90=AB=E5=AF=B9=E8=AF=AD=
-=E8=A8=80 :ref:`gnu-extensions <cn_gnu-extensions>` =E7=9A=84=E8=AE=B8=E5=
-=A4=9A=E6=89=A9=E5=B1=95=EF=BC=8C=E5=BD=93=E7=84=B6=EF=BC=8C=E5=AE=83=E4=BB=
-=AC=E8=AE=B8=E5=A4=9A=E9=83=BD=E5=9C=A8=E5=86=85=E6=A0=B8=E4=B8=AD=E4=BD=BF=
-=E7=94=A8=E3=80=82
->
-> diff --git a/Documentation/translations/zh_TW/process/programming-languag=
-e.rst b/Documentation/translations/zh_TW/process/programming-language.rst
-> index 54e3699eadf8..235de05f7e2c 100644
-> --- a/Documentation/translations/zh_TW/process/programming-language.rst
-> +++ b/Documentation/translations/zh_TW/process/programming-language.rst
-> @@ -12,8 +12,8 @@
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->
->  =E5=85=A7=E6=A0=B8=E6=98=AF=E7=94=A8C=E8=AA=9E=E8=A8=80 :ref:`c-language=
- <tw_c-language>` =E7=B7=A8=E5=AF=AB=E7=9A=84=E3=80=82=E6=9B=B4=E6=BA=96=E7=
-=A2=BA=E5=9C=B0=E8=AA=AA=EF=BC=8C=E5=85=A7=E6=A0=B8=E9=80=9A=E5=B8=B8=E6=98=
-=AF=E7=94=A8 :ref:`gcc <tw_gcc>`
-> -=E5=9C=A8 ``-std=3Dgnu89`` :ref:`gcc-c-dialect-options <tw_gcc-c-dialect=
--options>` =E4=B8=8B=E7=B7=A8=E8=AD=AF=E7=9A=84=EF=BC=9AISO C90=E7=9A=84 GN=
-U =E6=96=B9=E8=A8=80=EF=BC=88
-> -=E5=8C=85=E6=8B=AC=E4=B8=80=E4=BA=9BC99=E7=89=B9=E6=80=A7=EF=BC=89
-> +=E5=9C=A8 ``-std=3Dgnu11`` :ref:`gcc-c-dialect-options <tw_gcc-c-dialect=
--options>` =E4=B8=8B=E7=B7=A8=E8=AD=AF=E7=9A=84=EF=BC=9AISO C11=E7=9A=84 GN=
-U =E6=96=B9=E8=A8=80=EF=BC=88
-> +=E5=8C=85=E6=8B=AC=E4=B8=80=E4=BA=9BC17=E7=89=B9=E6=80=A7=EF=BC=89
->
->  =E9=80=99=E7=A8=AE=E6=96=B9=E8=A8=80=E5=8C=85=E5=90=AB=E5=B0=8D=E8=AA=9E=
-=E8=A8=80 :ref:`gnu-extensions <tw_gnu-extensions>` =E7=9A=84=E8=A8=B1=E5=
-=A4=9A=E6=93=B4=E5=B1=95=EF=BC=8C=E7=95=B6=E7=84=B6=EF=BC=8C=E5=AE=83=E5=80=
-=91=E8=A8=B1=E5=A4=9A=E9=83=BD=E5=9C=A8=E5=85=A7=E6=A0=B8=E4=B8=AD=E4=BD=BF=
-=E7=94=A8=E3=80=82
->
-> diff --git a/Makefile b/Makefile
-> index 289ce2be8032..66496eaeb9ec 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -432,7 +432,7 @@ HOSTCXX     =3D g++
->  endif
->
->  export KBUILD_USERCFLAGS :=3D -Wall -Wmissing-prototypes -Wstrict-protot=
-ypes \
-> -                             -O2 -fomit-frame-pointer -std=3Dgnu89
-> +                             -O2 -fomit-frame-pointer -std=3Dgnu11
->  export KBUILD_USERLDFLAGS :=3D
->
->  KBUILD_HOSTCFLAGS   :=3D $(KBUILD_USERCFLAGS) $(HOST_LFS_CFLAGS) $(HOSTC=
-FLAGS)
-> @@ -515,7 +515,7 @@ KBUILD_CFLAGS   :=3D -Wall -Wundef -Werror=3Dstrict-p=
-rototypes -Wno-trigraphs \
->                    -fno-strict-aliasing -fno-common -fshort-wchar -fno-PI=
-E \
->                    -Werror=3Dimplicit-function-declaration -Werror=3Dimpl=
-icit-int \
->                    -Werror=3Dreturn-type -Wno-format-security \
-> -                  -std=3Dgnu89
-> +                  -std=3Dgnu11
->  KBUILD_CPPFLAGS :=3D -D__KERNEL__
->  KBUILD_AFLAGS_KERNEL :=3D
->  KBUILD_CFLAGS_KERNEL :=3D
-> @@ -782,7 +782,7 @@ KBUILD_CFLAGS +=3D $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMP=
-LICIT_FALLTHROUGH)
->
->  ifdef CONFIG_CC_IS_CLANG
->  KBUILD_CPPFLAGS +=3D -Qunused-arguments
-> -# The kernel builds with '-std=3Dgnu89' so use of GNU extensions is acce=
-ptable.
-> +# The kernel builds with '-std=3Dgnu11' so use of GNU extensions is acce=
-ptable.
->  KBUILD_CFLAGS +=3D -Wno-gnu
->  # CLANG uses a _MergedGlobals as optimization, but this breaks modpost, =
-as the
->  # source of a reference will be _MergedGlobals and not on of the whiteli=
-sted names.
-> diff --git a/arch/arm64/kernel/vdso32/Makefile b/arch/arm64/kernel/vdso32=
-/Makefile
-> index 6c01b63ff56d..9378ea055bf2 100644
-> --- a/arch/arm64/kernel/vdso32/Makefile
-> +++ b/arch/arm64/kernel/vdso32/Makefile
-> @@ -68,7 +68,7 @@ VDSO_CFLAGS +=3D -Wall -Wundef -Wstrict-prototypes -Wno=
--trigraphs \
->                 -fno-strict-aliasing -fno-common \
->                 -Werror-implicit-function-declaration \
->                 -Wno-format-security \
-> -               -std=3Dgnu89
-> +               -std=3Dgnu11
->  VDSO_CFLAGS  +=3D -O2
->  # Some useful compiler-dependent flags from top-level Makefile
->  VDSO_CFLAGS +=3D $(call cc32-option,-Wdeclaration-after-statement,)
-> diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefil=
-e
-> index 1b62b9f65196..1618a6e0af4e 100644
-> --- a/drivers/gpu/drm/i915/Makefile
-> +++ b/drivers/gpu/drm/i915/Makefile
-> @@ -17,6 +17,7 @@ subdir-ccflags-y +=3D -Wno-unused-parameter
->  subdir-ccflags-y +=3D -Wno-type-limits
->  subdir-ccflags-y +=3D -Wno-missing-field-initializers
->  subdir-ccflags-y +=3D -Wno-sign-compare
-> +subdir-ccflags-y +=3D -Wno-shift-negative-value
->  subdir-ccflags-y +=3D $(call cc-disable-warning, unused-but-set-variable=
-)
->  subdir-ccflags-y +=3D $(call cc-disable-warning, frame-address)
->  subdir-ccflags-$(CONFIG_DRM_I915_WERROR) +=3D -Werror
-> diff --git a/drivers/staging/greybus/tools/Makefile b/drivers/staging/gre=
-ybus/tools/Makefile
-> index ad0ae8053b79..a3bbd73171f2 100644
-> --- a/drivers/staging/greybus/tools/Makefile
-> +++ b/drivers/staging/greybus/tools/Makefile
-> @@ -12,7 +12,8 @@ CFLAGS        +=3D -std=3Dgnu99 -Wall -Wextra -g \
->             -Wredundant-decls \
->             -Wcast-align \
->             -Wsign-compare \
-> -           -Wno-missing-field-initializers
-> +           -Wno-missing-field-initializers \
-> +           -Wno-shift-negative-value
->
->  CC     :=3D $(CROSS_COMPILE)gcc
->
-> diff --git a/fs/btrfs/Makefile b/fs/btrfs/Makefile
-> index 4188ba3fd8c3..99f9995670ea 100644
-> --- a/fs/btrfs/Makefile
-> +++ b/fs/btrfs/Makefile
-> @@ -17,6 +17,7 @@ subdir-ccflags-y +=3D $(condflags)
->  subdir-ccflags-y +=3D -Wno-missing-field-initializers
->  subdir-ccflags-y +=3D -Wno-sign-compare
->  subdir-ccflags-y +=3D -Wno-type-limits
-> +subdir-ccflags-y +=3D -Wno-shift-negative-value
->
->  obj-$(CONFIG_BTRFS_FS) :=3D btrfs.o
->
-> diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-> index 8be892887d71..650d0b8ceec3 100644
-> --- a/scripts/Makefile.extrawarn
-> +++ b/scripts/Makefile.extrawarn
-> @@ -36,6 +36,7 @@ KBUILD_CFLAGS +=3D $(call cc-option, -Wstringop-truncat=
-ion)
->  KBUILD_CFLAGS +=3D -Wno-missing-field-initializers
->  KBUILD_CFLAGS +=3D -Wno-sign-compare
->  KBUILD_CFLAGS +=3D -Wno-type-limits
-> +KBUILD_CFLAGS +=3D -Wno-shift-negative-value
->
->  KBUILD_CPPFLAGS +=3D -DKBUILD_EXTRA_WARN1
->
-> --
-> 2.29.2
->
+Reviewed-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ drivers/bus/mhi/ep/main.c       |  9 +++++++++
+ include/linux/mod_devicetable.h |  2 ++
+ scripts/mod/file2alias.c        | 10 ++++++++++
+ 3 files changed, 21 insertions(+)
+
+diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+index 3efdbf924076..ce59f38b59a7 100644
+--- a/drivers/bus/mhi/ep/main.c
++++ b/drivers/bus/mhi/ep/main.c
+@@ -1568,6 +1568,14 @@ void mhi_ep_driver_unregister(struct mhi_ep_driver *mhi_drv)
+ }
+ EXPORT_SYMBOL_GPL(mhi_ep_driver_unregister);
+ 
++static int mhi_ep_uevent(struct device *dev, struct kobj_uevent_env *env)
++{
++	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
++
++	return add_uevent_var(env, "MODALIAS=" MHI_EP_DEVICE_MODALIAS_FMT,
++					mhi_dev->name);
++}
++
+ static int mhi_ep_match(struct device *dev, struct device_driver *drv)
+ {
+ 	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
+@@ -1594,6 +1602,7 @@ struct bus_type mhi_ep_bus_type = {
+ 	.name = "mhi_ep",
+ 	.dev_name = "mhi_ep",
+ 	.match = mhi_ep_match,
++	.uevent = mhi_ep_uevent,
+ };
+ 
+ static int __init mhi_ep_init(void)
+diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+index 4bb71979a8fd..0cff19bd72bf 100644
+--- a/include/linux/mod_devicetable.h
++++ b/include/linux/mod_devicetable.h
+@@ -835,6 +835,8 @@ struct wmi_device_id {
+ #define MHI_DEVICE_MODALIAS_FMT "mhi:%s"
+ #define MHI_NAME_SIZE 32
+ 
++#define MHI_EP_DEVICE_MODALIAS_FMT "mhi_ep:%s"
++
+ /**
+  * struct mhi_device_id - MHI device identification
+  * @chan: MHI channel name
+diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
+index 5258247d78ac..d9d6a31446ea 100644
+--- a/scripts/mod/file2alias.c
++++ b/scripts/mod/file2alias.c
+@@ -1391,6 +1391,15 @@ static int do_mhi_entry(const char *filename, void *symval, char *alias)
+ 	return 1;
+ }
+ 
++/* Looks like: mhi_ep:S */
++static int do_mhi_ep_entry(const char *filename, void *symval, char *alias)
++{
++	DEF_FIELD_ADDR(symval, mhi_device_id, chan);
++	sprintf(alias, MHI_EP_DEVICE_MODALIAS_FMT, *chan);
++
++	return 1;
++}
++
+ /* Looks like: ishtp:{guid} */
+ static int do_ishtp_entry(const char *filename, void *symval, char *alias)
+ {
+@@ -1519,6 +1528,7 @@ static const struct devtable devtable[] = {
+ 	{"tee", SIZE_tee_client_device_id, do_tee_entry},
+ 	{"wmi", SIZE_wmi_device_id, do_wmi_entry},
+ 	{"mhi", SIZE_mhi_device_id, do_mhi_entry},
++	{"mhi_ep", SIZE_mhi_device_id, do_mhi_ep_entry},
+ 	{"auxiliary", SIZE_auxiliary_device_id, do_auxiliary_entry},
+ 	{"ssam", SIZE_ssam_device_id, do_ssam_entry},
+ 	{"dfl", SIZE_dfl_device_id, do_dfl_entry},
+-- 
+2.25.1
+
