@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44179C3527E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0709BC3527B
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239709AbiB1RxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:53:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51578 "EHLO
+        id S240639AbiB1Ry1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:54:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239116AbiB1RsF (ORCPT
+        with ESMTP id S239091AbiB1RvW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:48:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F2AA1468;
-        Mon, 28 Feb 2022 09:38:38 -0800 (PST)
+        Mon, 28 Feb 2022 12:51:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ABEA647B;
+        Mon, 28 Feb 2022 09:39:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B2E0B815A2;
-        Mon, 28 Feb 2022 17:38:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F0BC340F0;
-        Mon, 28 Feb 2022 17:38:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D896C61545;
+        Mon, 28 Feb 2022 17:39:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE057C340E7;
+        Mon, 28 Feb 2022 17:39:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069916;
-        bh=3B5j5QUX5u08xk4aMJYKkON1UIdDY6Rc2wo7wVIuseg=;
+        s=korg; t=1646069962;
+        bh=CHBTQVhMAnW3Sp0x6Fd7Ta9G5gSlr9kt0uqjKa04OJI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=czGPzOH1yYs/ZOtA1w/BSvm/vqMBz2CWXn+08ozggtzcwPw2wlEgMe1K7lXX++axB
-         9Xe7nwGUUcet/Mu0J6GwZbpdNYEXuKPA1Xj8ibCYR27qmxhThWj7FXy6k/BTRyEi2b
-         46CD4V4LdwsUdsMk4CIMEvaURC+rdhaOyRL7npKc=
+        b=TlUUMSYbaczW9syMrOqsqU6TnBZHtsRpR2J7Z8yQfGHsE3NQ7VgZBb2OPiq974aMb
+         9Wt2D5W8LaKSPq/MhXh+/9gSggujQVp9lgMZCQnCZzQoBBPTmkRx/AYd+CYS5QnZWM
+         tMi7/s5+xQN5AFvKS6+zzydiUOHdP8YAgA3T7d6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tao Liu <thomas.liu@ucloud.cn>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 059/139] gso: do not skip outer ip header in case of ipip and net_failover
-Date:   Mon, 28 Feb 2022 18:23:53 +0100
-Message-Id: <20220228172353.905687989@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.15 074/139] surface: surface3_power: Fix battery readings on batteries without a serial number
+Date:   Mon, 28 Feb 2022 18:24:08 +0100
+Message-Id: <20220228172355.508600289@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,103 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tao Liu <thomas.liu@ucloud.cn>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit cc20cced0598d9a5ff91ae4ab147b3b5e99ee819 upstream.
+commit 21d90aaee8d5c2a097ef41f1430d97661233ecc6 upstream.
 
-We encounter a tcp drop issue in our cloud environment. Packet GROed in
-host forwards to a VM virtio_net nic with net_failover enabled. VM acts
-as a IPVS LB with ipip encapsulation. The full path like:
-host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
- -> ipip encap -> net_failover tx -> virtio_net tx
+The battery on the 2nd hand Surface 3 which I recently bought appears to
+not have a serial number programmed in. This results in any I2C reads from
+the registers containing the serial number failing with an I2C NACK.
 
-When net_failover transmits a ipip pkt (gso_type = 0x0103, which means
-SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4), there is no gso
-did because it supports TSO and GSO_IPXIP4. But network_header points to
-inner ip header.
+This was causing mshw0011_bix() to fail causing the battery readings to
+not work at all.
 
-Call Trace:
- tcp4_gso_segment        ------> return NULL
- inet_gso_segment        ------> inner iph, network_header points to
- ipip_gso_segment
- inet_gso_segment        ------> outer iph
- skb_mac_gso_segment
+Ignore EREMOTEIO (I2C NACK) errors when retrieving the serial number and
+continue with an empty serial number to fix this.
 
-Afterwards virtio_net transmits the pkt, only inner ip header is modified.
-And the outer one just keeps unchanged. The pkt will be dropped in remote
-host.
-
-Call Trace:
- inet_gso_segment        ------> inner iph, outer iph is skipped
- skb_mac_gso_segment
- __skb_gso_segment
- validate_xmit_skb
- validate_xmit_skb_list
- sch_direct_xmit
- __qdisc_run
- __dev_queue_xmit        ------> virtio_net
- dev_hard_start_xmit
- __dev_queue_xmit        ------> net_failover
- ip_finish_output2
- ip_output
- iptunnel_xmit
- ip_tunnel_xmit
- ipip_tunnel_xmit        ------> ipip
- dev_hard_start_xmit
- __dev_queue_xmit
- ip_finish_output2
- ip_output
- ip_forward
- ip_rcv
- __netif_receive_skb_one_core
- netif_receive_skb_internal
- napi_gro_receive
- receive_buf
- virtnet_poll
- net_rx_action
-
-The root cause of this issue is specific with the rare combination of
-SKB_GSO_DODGY and a tunnel device that adds an SKB_GSO_ tunnel option.
-SKB_GSO_DODGY is set from external virtio_net. We need to reset network
-header when callbacks.gso_segment() returns NULL.
-
-This patch also includes ipv6_gso_segment(), considering SIT, etc.
-
-Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
-Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: b1f81b496b0d ("platform/x86: surface3_power: MSHW0011 rev-eng implementation")
+BugLink: https://github.com/linux-surface/linux-surface/issues/608
+Reviewed-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Reviewed-by: Maximilian Luz <luzmaximilian@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220224101848.7219-1-hdegoede@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/af_inet.c     |    5 ++++-
- net/ipv6/ip6_offload.c |    2 ++
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/platform/surface/surface3_power.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1380,8 +1380,11 @@ struct sk_buff *inet_gso_segment(struct
+--- a/drivers/platform/surface/surface3_power.c
++++ b/drivers/platform/surface/surface3_power.c
+@@ -233,14 +233,21 @@ static int mshw0011_bix(struct mshw0011_
  	}
+ 	bix->last_full_charg_capacity = ret;
  
- 	ops = rcu_dereference(inet_offloads[proto]);
--	if (likely(ops && ops->callbacks.gso_segment))
-+	if (likely(ops && ops->callbacks.gso_segment)) {
- 		segs = ops->callbacks.gso_segment(skb, features);
-+		if (!segs)
-+			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
-+	}
- 
- 	if (IS_ERR_OR_NULL(segs))
- 		goto out;
---- a/net/ipv6/ip6_offload.c
-+++ b/net/ipv6/ip6_offload.c
-@@ -114,6 +114,8 @@ static struct sk_buff *ipv6_gso_segment(
- 	if (likely(ops && ops->callbacks.gso_segment)) {
- 		skb_reset_transport_header(skb);
- 		segs = ops->callbacks.gso_segment(skb, features);
-+		if (!segs)
-+			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
+-	/* get serial number */
++	/*
++	 * Get serial number, on some devices (with unofficial replacement
++	 * battery?) reading any of the serial number range addresses gets
++	 * nacked in this case just leave the serial number empty.
++	 */
+ 	ret = i2c_smbus_read_i2c_block_data(client, MSHW0011_BAT0_REG_SERIAL_NO,
+ 					    sizeof(buf), buf);
+-	if (ret != sizeof(buf)) {
++	if (ret == -EREMOTEIO) {
++		/* no serial number available */
++	} else if (ret != sizeof(buf)) {
+ 		dev_err(&client->dev, "Error reading serial no: %d\n", ret);
+ 		return ret;
++	} else {
++		snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
  	}
+-	snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
  
- 	if (IS_ERR_OR_NULL(segs))
+ 	/* get cycle count */
+ 	ret = i2c_smbus_read_word_data(client, MSHW0011_BAT0_REG_CYCLE_CNT);
 
 
