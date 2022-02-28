@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 369B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:12:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9957C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234780AbiB1SMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:12:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
+        id S236006AbiB1SMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:12:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240158AbiB1SH6 (ORCPT
+        with ESMTP id S240518AbiB1SJB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:07:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FE55D64D;
-        Mon, 28 Feb 2022 09:48:29 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36BB5E140;
+        Mon, 28 Feb 2022 09:48:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E44DB810DB;
-        Mon, 28 Feb 2022 17:48:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CFBCC340E7;
-        Mon, 28 Feb 2022 17:48:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5011E60748;
+        Mon, 28 Feb 2022 17:48:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59532C340E7;
+        Mon, 28 Feb 2022 17:48:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070499;
-        bh=E6574w75kqATyqu0nXYHqLTZcMPRkRFDJ7mSeoReHQw=;
+        s=korg; t=1646070510;
+        bh=+6N8+7VcYRDuliUP9Kw7HwRQhd1SqB77Fx6ru+a3Wmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WX8q+6y/tsZMd+q58+AvtwIXgBpahy89seoavjQbnBy/L5spJWuw5VmJg9m0JSU8s
-         pyPcmzbIqqfrNnmZp2nWIfRfVP8qGG9KMnetelHiK8OLh0Z1YebfgJz6nd9nUnT5Xh
-         VP9sS+jmk2QyU2D9zxOKOpjAm+asyCBI9LiSbNuo=
+        b=YTAxgC1uMMBZZ2M0p/w9CNhMsnPIxH235p93TBp8GQl4dcR/qXA+TO07rb9zUdXAF
+         Byu9iXT8WZOEUDsJENRcbnuOO15/d3BQlYxfkFbQUaV2gw9ko/UTw4chCR1Ms0qWll
+         Js6RnEn66KEbYy+HFmy7WZoDBXewle9srWu3mnU4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.16 130/164] usb: dwc3: pci: Add "snps,dis_u2_susphy_quirk" for Intel Bay Trail
-Date:   Mon, 28 Feb 2022 18:24:52 +0100
-Message-Id: <20220228172411.881459435@linuxfoundation.org>
+        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.16 134/164] xhci: Prevent futile URB re-submissions due to incorrect return value.
+Date:   Mon, 28 Feb 2022 18:24:56 +0100
+Message-Id: <20220228172412.183961892@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,73 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Hongyu Xie <xiehongyu1@kylinos.cn>
 
-commit d7c93a903f33ff35aa0e6b5a8032eb9755b00826 upstream.
+commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
 
-Commit e0082698b689 ("usb: dwc3: ulpi: conditionally resume ULPI PHY")
-fixed an issue where ULPI transfers would timeout if any requests where
-send to the phy sometime after init, giving it enough time to auto-suspend.
+The -ENODEV return value from xhci_check_args() is incorrectly changed
+to -EINVAL in a couple places before propagated further.
 
-Commit e5f4ca3fce90 ("usb: dwc3: ulpi: Fix USB2.0 HS/FS/LS PHY suspend
-regression") changed the behavior to instead of clearing the
-DWC3_GUSB2PHYCFG_SUSPHY bit, add an extra sleep when it is set.
+xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+the return value of xhci_check_args <= 0.
+This causes problems for example r8152_submit_rx, calling usb_submit_urb
+in drivers/net/usb/r8152.c.
+r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
+is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
 
-But on Bay Trail devices, when phy_set_mode() gets called during init,
-this leads to errors like these:
-[   28.451522] tusb1210 dwc3.ulpi: error -110 writing val 0x01 to reg 0x0a
-[   28.464089] tusb1210 dwc3.ulpi: error -110 writing val 0x01 to reg 0x0a
+[commit message and header edit -Mathias]
 
-Add "snps,dis_u2_susphy_quirk" to the settings for Bay Trail devices to
-fix this. This restores the old behavior for Bay Trail devices, since
-previously the DWC3_GUSB2PHYCFG_SUSPHY bit would get cleared on the first
-ulpi_read/_write() and then was never set again.
-
-Fixes: e5f4ca3fce90 ("usb: dwc3: ulpi: Fix USB2.0 HS/FS/LS PHY suspend regression")
-Cc: stable@kernel.org
-Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220213130524.18748-2-hdegoede@redhat.com
+Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/usb/host/xhci.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -119,6 +119,13 @@ static const struct property_entry dwc3_
- 	{}
- };
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -1611,9 +1611,12 @@ static int xhci_urb_enqueue(struct usb_h
+ 	struct urb_priv	*urb_priv;
+ 	int num_tds;
  
-+static const struct property_entry dwc3_pci_intel_byt_properties[] = {
-+	PROPERTY_ENTRY_STRING("dr_mode", "peripheral"),
-+	PROPERTY_ENTRY_BOOL("snps,dis_u2_susphy_quirk"),
-+	PROPERTY_ENTRY_BOOL("linux,sysdev_is_parent"),
-+	{}
-+};
-+
- static const struct property_entry dwc3_pci_mrfld_properties[] = {
- 	PROPERTY_ENTRY_STRING("dr_mode", "otg"),
- 	PROPERTY_ENTRY_STRING("linux,extcon-name", "mrfld_bcove_pwrsrc"),
-@@ -161,6 +168,10 @@ static const struct software_node dwc3_p
- 	.properties = dwc3_pci_intel_properties,
- };
+-	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
+-					true, true, __func__) <= 0)
++	if (!urb)
+ 		return -EINVAL;
++	ret = xhci_check_args(hcd, urb->dev, urb->ep,
++					true, true, __func__);
++	if (ret <= 0)
++		return ret ? ret : -EINVAL;
  
-+static const struct software_node dwc3_pci_intel_byt_swnode = {
-+	.properties = dwc3_pci_intel_byt_properties,
-+};
-+
- static const struct software_node dwc3_pci_intel_mrfld_swnode = {
- 	.properties = dwc3_pci_mrfld_properties,
- };
-@@ -344,7 +355,7 @@ static const struct pci_device_id dwc3_p
- 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
- 
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_BYT),
--	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
-+	  (kernel_ulong_t) &dwc3_pci_intel_byt_swnode, },
- 
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MRFLD),
- 	  (kernel_ulong_t) &dwc3_pci_intel_mrfld_swnode, },
+ 	slot_id = urb->dev->slot_id;
+ 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
+@@ -3330,7 +3333,7 @@ static int xhci_check_streams_endpoint(s
+ 		return -EINVAL;
+ 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
+ 	if (ret <= 0)
+-		return -EINVAL;
++		return ret ? ret : -EINVAL;
+ 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
+ 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
+ 				" descriptor for ep 0x%x does not support streams\n",
 
 
