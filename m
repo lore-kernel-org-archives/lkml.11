@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30362C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB6CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236359AbiB1Rai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:30:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47572 "EHLO
+        id S231557AbiB1Ran (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234856AbiB1R2k (ORCPT
+        with ESMTP id S236211AbiB1R2z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:28:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15170BC0A;
-        Mon, 28 Feb 2022 09:27:44 -0800 (PST)
+        Mon, 28 Feb 2022 12:28:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3C117E3D;
+        Mon, 28 Feb 2022 09:27:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B743CB815B1;
-        Mon, 28 Feb 2022 17:27:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2151CC340E7;
-        Mon, 28 Feb 2022 17:27:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84CA061362;
+        Mon, 28 Feb 2022 17:27:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF1DC340E7;
+        Mon, 28 Feb 2022 17:27:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069261;
-        bh=917T7g5NADCLUB+jfAC4t5c2Tgf/uZE24UZy1cRKwXg=;
+        s=korg; t=1646069274;
+        bh=/qxJZRIDq9NYVZooC34vVb1sF2Rt52/aik8Fo/ZPXsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kmbvwY00k3UnKt3VypvttQblpINafLUjc4hggCD38JXjLhl/+bLxpKj5kyGiFh9of
-         7PFWZxdoPQvb8AY8Tmi1GiFsiPNNaEr02vTWHIScXqnOD2Ttv0C3QfBGvskCbB4oGU
-         v7coOtsmS+wvD1pPzTAJcO6eDtG/ePXKBHSDdoQg=
+        b=aln1y1hLYDY2kxCVQtydNSLYWA8IVIaReYq4b4kERDqid1og3wRswdCgnWt4jjDol
+         +xLdbIW6uJWbd0kRLBdAlsMTk45I9a8k1tHY37ApMoFrT2MQ0CM+qJCd9MzGUPHa6o
+         975tjmfbGyChWkEzt5VJOuoD6g+K8+DpG18a9XgQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 4.14 21/31] tracefs: Set the group ownership in apply_options() not parse_options()
-Date:   Mon, 28 Feb 2022 18:24:17 +0100
-Message-Id: <20220228172201.786955916@linuxfoundation.org>
+        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 4.14 26/31] xhci: Prevent futile URB re-submissions due to incorrect return value.
+Date:   Mon, 28 Feb 2022 18:24:22 +0100
+Message-Id: <20220228172202.357336349@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
 References: <20220228172159.515152296@linuxfoundation.org>
@@ -48,50 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Hongyu Xie <xiehongyu1@kylinos.cn>
 
-commit 851e99ebeec3f4a672bb5010cf1ece095acee447 upstream.
+commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
 
-Al Viro brought it to my attention that the dentries may not be filled
-when the parse_options() is called, causing the call to set_gid() to
-possibly crash. It should only be called if parse_options() succeeds
-totally anyway.
+The -ENODEV return value from xhci_check_args() is incorrectly changed
+to -EINVAL in a couple places before propagated further.
 
-He suggested the logical place to do the update is in apply_options().
+xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+the return value of xhci_check_args <= 0.
+This causes problems for example r8152_submit_rx, calling usb_submit_urb
+in drivers/net/usb/r8152.c.
+r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
+is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
 
-Link: https://lore.kernel.org/all/20220225165219.737025658@goodmis.org/
-Link: https://lkml.kernel.org/r/20220225153426.1c4cab6b@gandalf.local.home
+[commit message and header edit -Mathias]
 
+Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
 Cc: stable@vger.kernel.org
-Acked-by: Al Viro <viro@zeniv.linux.org.uk>
-Reported-by: Al Viro <viro@zeniv.linux.org.uk>
-Fixes: 48b27b6b5191 ("tracefs: Set all files to the same group ownership as the mount option")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/tracefs/inode.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/usb/host/xhci.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/fs/tracefs/inode.c
-+++ b/fs/tracefs/inode.c
-@@ -265,7 +265,6 @@ static int tracefs_parse_options(char *d
- 			if (!gid_valid(gid))
- 				return -EINVAL;
- 			opts->gid = gid;
--			set_gid(tracefs_mount->mnt_root, gid);
- 			break;
- 		case Opt_mode:
- 			if (match_octal(&args[0], &option))
-@@ -292,7 +291,9 @@ static int tracefs_apply_options(struct
- 	inode->i_mode |= opts->mode;
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -1397,9 +1397,12 @@ static int xhci_urb_enqueue(struct usb_h
+ 	struct urb_priv	*urb_priv;
+ 	int num_tds;
  
- 	inode->i_uid = opts->uid;
--	inode->i_gid = opts->gid;
-+
-+	/* Set all the group ids to the mount option */
-+	set_gid(sb->s_root, opts->gid);
+-	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
+-					true, true, __func__) <= 0)
++	if (!urb)
+ 		return -EINVAL;
++	ret = xhci_check_args(hcd, urb->dev, urb->ep,
++					true, true, __func__);
++	if (ret <= 0)
++		return ret ? ret : -EINVAL;
  
- 	return 0;
- }
+ 	slot_id = urb->dev->slot_id;
+ 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
+@@ -3026,7 +3029,7 @@ static int xhci_check_streams_endpoint(s
+ 		return -EINVAL;
+ 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
+ 	if (ret <= 0)
+-		return -EINVAL;
++		return ret ? ret : -EINVAL;
+ 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
+ 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
+ 				" descriptor for ep 0x%x does not support streams\n",
 
 
