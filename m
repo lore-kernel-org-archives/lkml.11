@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76E6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6248BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235870AbiB1R2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:28:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
+        id S235193AbiB1R2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:28:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236825AbiB1R2B (ORCPT
+        with ESMTP id S236688AbiB1R16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:28:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5ABF86E3E;
-        Mon, 28 Feb 2022 09:27:13 -0800 (PST)
+        Mon, 28 Feb 2022 12:27:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FB73888E6;
+        Mon, 28 Feb 2022 09:27:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FFCAB815BB;
-        Mon, 28 Feb 2022 17:27:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAFA7C340E7;
-        Mon, 28 Feb 2022 17:27:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 149C8B815AE;
+        Mon, 28 Feb 2022 17:27:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66230C340E7;
+        Mon, 28 Feb 2022 17:27:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069231;
-        bh=+T/YXPwgw5ffKQIQs/foiY43ygCWgrI5iQJB/aSZfQM=;
+        s=korg; t=1646069225;
+        bh=dM3YbWc+hniMJG+idj343cewE1ilHNBcVeEZfFdS7jg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ge6bP0qcY7Hs60Ju3VwE5teffuHdlmn1ge6OxfBth+0n3PdFAcbNORVRZEH2a/YHy
-         St+sAQQjudSM2z1femjBV3sYw7PpmIvQqkrOQO+lezQU+TrFZMEd24b98h5QOZwdDm
-         umYKF32H+VsKv29FX6/Rw+CZ6f8CPwSOdiwllOvk=
+        b=mXJroHeDJiuMNAAE8/TzmfSDqkUz2sIjxgmPdqHZCPdECJ1GvX6zoBaiJoB9eGI7s
+         jKZSdDaWijI8LkQxTS7Z+NAsXUwfx6+fFkfWMK1EpQ2QiCGGkqUXfLCAaOLliWkmWE
+         NXmaV/Qhvl/GQYFsZiUq5v0rz6VWF6ehirgFAUxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 11/31] openvswitch: Fix setting ipv6 fields causing hw csum failure
-Date:   Mon, 28 Feb 2022 18:24:07 +0100
-Message-Id: <20220228172200.990550703@linuxfoundation.org>
+        stable@vger.kernel.org, Zhao Gongyi <zhaogongyi@huawei.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Waiman Long <longman@redhat.com>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 4.14 01/31] cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug
+Date:   Mon, 28 Feb 2022 18:23:57 +0100
+Message-Id: <20220228172159.925162848@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
 References: <20220228172159.515152296@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,149 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Blakey <paulb@nvidia.com>
+From: Zhang Qiao <zhangqiao22@huawei.com>
 
-commit d9b5ae5c1b241b91480aa30408be12fe91af834a upstream.
+commit 05c7b7a92cc87ff8d7fde189d0fade250697573c upstream.
 
-Ipv6 ttl, label and tos fields are modified without first
-pulling/pushing the ipv6 header, which would have updated
-the hw csum (if available). This might cause csum validation
-when sending the packet to the stack, as can be seen in
-the trace below.
+As previously discussed(https://lkml.org/lkml/2022/1/20/51),
+cpuset_attach() is affected with similar cpu hotplug race,
+as follow scenario:
 
-Fix this by updating skb->csum if available.
+     cpuset_attach()				cpu hotplug
+    ---------------------------            ----------------------
+    down_write(cpuset_rwsem)
+    guarantee_online_cpus() // (load cpus_attach)
+					sched_cpu_deactivate
+					  set_cpu_active()
+					  // will change cpu_active_mask
+    set_cpus_allowed_ptr(cpus_attach)
+      __set_cpus_allowed_ptr_locked()
+       // (if the intersection of cpus_attach and
+         cpu_active_mask is empty, will return -EINVAL)
+    up_write(cpuset_rwsem)
 
-Trace resulted by ipv6 ttl dec and then sending packet
-to conntrack [actions: set(ipv6(hlimit=63)),ct(zone=99)]:
-[295241.900063] s_pf0vf2: hw csum failure
-[295241.923191] Call Trace:
-[295241.925728]  <IRQ>
-[295241.927836]  dump_stack+0x5c/0x80
-[295241.931240]  __skb_checksum_complete+0xac/0xc0
-[295241.935778]  nf_conntrack_tcp_packet+0x398/0xba0 [nf_conntrack]
-[295241.953030]  nf_conntrack_in+0x498/0x5e0 [nf_conntrack]
-[295241.958344]  __ovs_ct_lookup+0xac/0x860 [openvswitch]
-[295241.968532]  ovs_ct_execute+0x4a7/0x7c0 [openvswitch]
-[295241.979167]  do_execute_actions+0x54a/0xaa0 [openvswitch]
-[295242.001482]  ovs_execute_actions+0x48/0x100 [openvswitch]
-[295242.006966]  ovs_dp_process_packet+0x96/0x1d0 [openvswitch]
-[295242.012626]  ovs_vport_receive+0x6c/0xc0 [openvswitch]
-[295242.028763]  netdev_frame_hook+0xc0/0x180 [openvswitch]
-[295242.034074]  __netif_receive_skb_core+0x2ca/0xcb0
-[295242.047498]  netif_receive_skb_internal+0x3e/0xc0
-[295242.052291]  napi_gro_receive+0xba/0xe0
-[295242.056231]  mlx5e_handle_rx_cqe_mpwrq_rep+0x12b/0x250 [mlx5_core]
-[295242.062513]  mlx5e_poll_rx_cq+0xa0f/0xa30 [mlx5_core]
-[295242.067669]  mlx5e_napi_poll+0xe1/0x6b0 [mlx5_core]
-[295242.077958]  net_rx_action+0x149/0x3b0
-[295242.086762]  __do_softirq+0xd7/0x2d6
-[295242.090427]  irq_exit+0xf7/0x100
-[295242.093748]  do_IRQ+0x7f/0xd0
-[295242.096806]  common_interrupt+0xf/0xf
-[295242.100559]  </IRQ>
-[295242.102750] RIP: 0033:0x7f9022e88cbd
-[295242.125246] RSP: 002b:00007f9022282b20 EFLAGS: 00000246 ORIG_RAX: ffffffffffffffda
-[295242.132900] RAX: 0000000000000005 RBX: 0000000000000010 RCX: 0000000000000000
-[295242.140120] RDX: 00007f9022282ba8 RSI: 00007f9022282a30 RDI: 00007f9014005c30
-[295242.147337] RBP: 00007f9014014d60 R08: 0000000000000020 R09: 00007f90254a8340
-[295242.154557] R10: 00007f9022282a28 R11: 0000000000000246 R12: 0000000000000000
-[295242.161775] R13: 00007f902308c000 R14: 000000000000002b R15: 00007f9022b71f40
+To avoid races such as described above, protect cpuset_attach() call
+with cpu_hotplug_lock.
 
-Fixes: 3fdbd1ce11e5 ("openvswitch: add ipv6 'set' action")
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
-Link: https://lore.kernel.org/r/20220223163416.24096-1-paulb@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
+Cc: stable@vger.kernel.org # v2.6.32+
+Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
+Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
+Acked-by: Waiman Long <longman@redhat.com>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/checksum.h    |    5 +++++
- net/openvswitch/actions.c |   46 ++++++++++++++++++++++++++++++++++++++--------
- 2 files changed, 43 insertions(+), 8 deletions(-)
+ kernel/cgroup/cpuset.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/include/net/checksum.h
-+++ b/include/net/checksum.h
-@@ -143,6 +143,11 @@ static inline void csum_replace2(__sum16
- 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -1532,6 +1532,7 @@ static void cpuset_attach(struct cgroup_
+ 	cgroup_taskset_first(tset, &css);
+ 	cs = css_cs(css);
+ 
++	cpus_read_lock();
+ 	mutex_lock(&cpuset_mutex);
+ 
+ 	/* prepare for attach */
+@@ -1587,6 +1588,7 @@ static void cpuset_attach(struct cgroup_
+ 		wake_up(&cpuset_attach_wq);
+ 
+ 	mutex_unlock(&cpuset_mutex);
++	cpus_read_unlock();
  }
  
-+static inline void csum_replace(__wsum *csum, __wsum old, __wsum new)
-+{
-+	*csum = csum_add(csum_sub(*csum, old), new);
-+}
-+
- struct sk_buff;
- void inet_proto_csum_replace4(__sum16 *sum, struct sk_buff *skb,
- 			      __be32 from, __be32 to, bool pseudohdr);
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -460,12 +460,43 @@ static void set_ipv6_addr(struct sk_buff
- 	memcpy(addr, new_addr, sizeof(__be32[4]));
- }
- 
--static void set_ipv6_fl(struct ipv6hdr *nh, u32 fl, u32 mask)
-+static void set_ipv6_dsfield(struct sk_buff *skb, struct ipv6hdr *nh, u8 ipv6_tclass, u8 mask)
- {
-+	u8 old_ipv6_tclass = ipv6_get_dsfield(nh);
-+
-+	ipv6_tclass = OVS_MASKED(old_ipv6_tclass, ipv6_tclass, mask);
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE)
-+		csum_replace(&skb->csum, (__force __wsum)(old_ipv6_tclass << 12),
-+			     (__force __wsum)(ipv6_tclass << 12));
-+
-+	ipv6_change_dsfield(nh, ~mask, ipv6_tclass);
-+}
-+
-+static void set_ipv6_fl(struct sk_buff *skb, struct ipv6hdr *nh, u32 fl, u32 mask)
-+{
-+	u32 ofl;
-+
-+	ofl = nh->flow_lbl[0] << 16 |  nh->flow_lbl[1] << 8 |  nh->flow_lbl[2];
-+	fl = OVS_MASKED(ofl, fl, mask);
-+
- 	/* Bits 21-24 are always unmasked, so this retains their values. */
--	OVS_SET_MASKED(nh->flow_lbl[0], (u8)(fl >> 16), (u8)(mask >> 16));
--	OVS_SET_MASKED(nh->flow_lbl[1], (u8)(fl >> 8), (u8)(mask >> 8));
--	OVS_SET_MASKED(nh->flow_lbl[2], (u8)fl, (u8)mask);
-+	nh->flow_lbl[0] = (u8)(fl >> 16);
-+	nh->flow_lbl[1] = (u8)(fl >> 8);
-+	nh->flow_lbl[2] = (u8)fl;
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE)
-+		csum_replace(&skb->csum, (__force __wsum)htonl(ofl), (__force __wsum)htonl(fl));
-+}
-+
-+static void set_ipv6_ttl(struct sk_buff *skb, struct ipv6hdr *nh, u8 new_ttl, u8 mask)
-+{
-+	new_ttl = OVS_MASKED(nh->hop_limit, new_ttl, mask);
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE)
-+		csum_replace(&skb->csum, (__force __wsum)(nh->hop_limit << 8),
-+			     (__force __wsum)(new_ttl << 8));
-+	nh->hop_limit = new_ttl;
- }
- 
- static void set_ip_ttl(struct sk_buff *skb, struct iphdr *nh, u8 new_ttl,
-@@ -583,18 +614,17 @@ static int set_ipv6(struct sk_buff *skb,
- 		}
- 	}
- 	if (mask->ipv6_tclass) {
--		ipv6_change_dsfield(nh, ~mask->ipv6_tclass, key->ipv6_tclass);
-+		set_ipv6_dsfield(skb, nh, key->ipv6_tclass, mask->ipv6_tclass);
- 		flow_key->ip.tos = ipv6_get_dsfield(nh);
- 	}
- 	if (mask->ipv6_label) {
--		set_ipv6_fl(nh, ntohl(key->ipv6_label),
-+		set_ipv6_fl(skb, nh, ntohl(key->ipv6_label),
- 			    ntohl(mask->ipv6_label));
- 		flow_key->ipv6.label =
- 		    *(__be32 *)nh & htonl(IPV6_FLOWINFO_FLOWLABEL);
- 	}
- 	if (mask->ipv6_hlimit) {
--		OVS_SET_MASKED(nh->hop_limit, key->ipv6_hlimit,
--			       mask->ipv6_hlimit);
-+		set_ipv6_ttl(skb, nh, key->ipv6_hlimit, mask->ipv6_hlimit);
- 		flow_key->ip.ttl = nh->hop_limit;
- 	}
- 	return 0;
+ /* The various types of files and directories in a cpuset file system */
 
 
