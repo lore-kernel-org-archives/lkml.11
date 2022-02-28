@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE72C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C85FC3525B
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240000AbiB1Rxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:53:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
+        id S240199AbiB1RyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:54:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238726AbiB1Rqj (ORCPT
+        with ESMTP id S238931AbiB1Rtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:46:39 -0500
+        Mon, 28 Feb 2022 12:49:36 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DF7D710DA;
-        Mon, 28 Feb 2022 09:38:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7451A2524;
+        Mon, 28 Feb 2022 09:39:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF7ACB815B3;
-        Mon, 28 Feb 2022 17:38:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40FBDC340E7;
-        Mon, 28 Feb 2022 17:38:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47E3AB815A2;
+        Mon, 28 Feb 2022 17:38:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5735C340E7;
+        Mon, 28 Feb 2022 17:38:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069880;
-        bh=0kLHFsDZCk0ZTM/V8Kf2IsrIaPAGMGwqKe7xccMH9p4=;
+        s=korg; t=1646069938;
+        bh=31Dd8Zqdd0+cNLUrvIB6lJEInN/erFEQgBfxHSJ/ybk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nqcJ6otzl9pc2nqLJVsDuz7djmaWlMSqdbxwhEU1iUuhifKabVm6mPLmVZiwM2Px7
-         cqLJ4hLsFZu7q8hhNWmmhuOyefM4rB9UUtWrMGVaQHcPjPQX/cZlB436+o8YZzjjD9
-         Cf2QM2hsWsGU2ez+5GV/4VEr6VYK/Iy/OUHN6w0Y=
+        b=dD+h1DeyvL2mobo5GgBcmo/qfrMPjbSXNgf3tMAVmtW7BrLA7VcOa4hpcHwTg3VU6
+         gB8LeZqqI9U98E5WL8GA615fsIZHCMgboalOvlpP1ohWPVyyyxtsAhlGbx7wBKxzaj
+         IdXaTJTN6sXC/fPq5Kvl8mUXA31gM+L6oiuhvHso=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.15 012/139] parisc/unaligned: Fix fldd and fstd unaligned handlers on 32-bit kernel
-Date:   Mon, 28 Feb 2022 18:23:06 +0100
-Message-Id: <20220228172348.958394394@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 066/139] net/sched: act_ct: Fix flow table lookup after ct clear or switching zones
+Date:   Mon, 28 Feb 2022 18:24:00 +0100
+Message-Id: <20220228172354.639959124@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -47,80 +49,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Paul Blakey <paulb@nvidia.com>
 
-commit dd2288f4a020d693360e3e8d72f8b9d9c25f5ef6 upstream.
+commit 2f131de361f6d0eaff17db26efdb844c178432f8 upstream.
 
-Usually the kernel provides fixup routines to emulate the fldd and fstd
-floating-point instructions if they load or store 8-byte from/to a not
-natuarally aligned memory location.
+Flow table lookup is skipped if packet either went through ct clear
+action (which set the IP_CT_UNTRACKED flag on the packet), or while
+switching zones and there is already a connection associated with
+the packet. This will result in no SW offload of the connection,
+and the and connection not being removed from flow table with
+TCP teardown (fin/rst packet).
 
-On a 32-bit kernel I noticed that those unaligned handlers didn't worked and
-instead the application got a SEGV.
-While checking the code I found two problems:
+To fix the above, remove these unneccary checks in flow
+table lookup.
 
-First, the OPCODE_FLDD_L and OPCODE_FSTD_L cases were ifdef'ed out by the
-CONFIG_PA20 option, and as such those weren't built on a pure 32-bit kernel.
-This is now fixed by moving the CONFIG_PA20 #ifdef to prevent the compilation
-of OPCODE_LDD_L and OPCODE_FSTD_L only, and handling the fldd and fstd
-instructions.
-
-The second problem are two bugs in the 32-bit inline assembly code, where the
-wrong registers where used. The calculation of the natural alignment used %2
-(vall) instead of %3 (ior), and the first word was stored back to address %1
-(valh) instead of %3 (ior).
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org
+Fixes: 46475bb20f4b ("net/sched: act_ct: Software offload of established flows")
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/unaligned.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/sched/act_ct.c |    5 -----
+ 1 file changed, 5 deletions(-)
 
---- a/arch/parisc/kernel/unaligned.c
-+++ b/arch/parisc/kernel/unaligned.c
-@@ -397,7 +397,7 @@ static int emulate_std(struct pt_regs *r
- 	__asm__ __volatile__ (
- "	mtsp	%4, %%sr1\n"
- "	zdep	%2, 29, 2, %%r19\n"
--"	dep	%%r0, 31, 2, %2\n"
-+"	dep	%%r0, 31, 2, %3\n"
- "	mtsar	%%r19\n"
- "	zvdepi	-2, 32, %%r19\n"
- "1:	ldw	0(%%sr1,%3),%%r20\n"
-@@ -409,7 +409,7 @@ static int emulate_std(struct pt_regs *r
- "	andcm	%%r21, %%r19, %%r21\n"
- "	or	%1, %%r20, %1\n"
- "	or	%2, %%r21, %2\n"
--"3:	stw	%1,0(%%sr1,%1)\n"
-+"3:	stw	%1,0(%%sr1,%3)\n"
- "4:	stw	%%r1,4(%%sr1,%3)\n"
- "5:	stw	%2,8(%%sr1,%3)\n"
- "	copy	%%r0, %0\n"
-@@ -596,7 +596,6 @@ void handle_unaligned(struct pt_regs *re
- 		ret = ERR_NOTHANDLED;	/* "undefined", but lets kill them. */
- 		break;
- 	}
--#ifdef CONFIG_PA20
- 	switch (regs->iir & OPCODE2_MASK)
- 	{
- 	case OPCODE_FLDD_L:
-@@ -607,14 +606,15 @@ void handle_unaligned(struct pt_regs *re
- 		flop=1;
- 		ret = emulate_std(regs, R2(regs->iir),1);
- 		break;
-+#ifdef CONFIG_PA20
- 	case OPCODE_LDD_L:
- 		ret = emulate_ldd(regs, R2(regs->iir),0);
- 		break;
- 	case OPCODE_STD_L:
- 		ret = emulate_std(regs, R2(regs->iir),0);
- 		break;
--	}
- #endif
-+	}
- 	switch (regs->iir & OPCODE3_MASK)
- 	{
- 	case OPCODE_FLDW_L:
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -516,11 +516,6 @@ static bool tcf_ct_flow_table_lookup(str
+ 	struct nf_conn *ct;
+ 	u8 dir;
+ 
+-	/* Previously seen or loopback */
+-	ct = nf_ct_get(skb, &ctinfo);
+-	if ((ct && !nf_ct_is_template(ct)) || ctinfo == IP_CT_UNTRACKED)
+-		return false;
+-
+ 	switch (family) {
+ 	case NFPROTO_IPV4:
+ 		if (!tcf_ct_flow_table_fill_tuple_ipv4(skb, &tuple, &tcph))
 
 
