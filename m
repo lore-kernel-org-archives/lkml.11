@@ -2,120 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BDA2C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:55:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234619AbiB1Kz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:55:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
+        id S235404AbiB1Kzp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:55:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235214AbiB1Kyk (ORCPT
+        with ESMTP id S235280AbiB1Kyr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:54:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5AE5D6E8C3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 02:52:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646045529;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IVYeDVfzq28sn8+/lq8Z6rjLomlALnQoJ59O71VHfzQ=;
-        b=QL485AYazn+KPuyyAY7M4ADSJfxaeGCWnHWj6fA2wm8KPplDiIBL6PSuw3MWz5d0Ouns63
-        FVkW/jjqibyRuC42b0dxJzSMBqZcMGjKIG+Nh43Z/I7n30HhKkwIPPGO/Pp36uDdtqYPTH
-        0om93BBoyyBfawgdaZqgDmWwS7FgpPQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-92-q7kWgGG-NKuf4SMC_VkNLg-1; Mon, 28 Feb 2022 05:52:01 -0500
-X-MC-Unique: q7kWgGG-NKuf4SMC_VkNLg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 499E651E0;
-        Mon, 28 Feb 2022 10:52:00 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.171])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9241182E57;
-        Mon, 28 Feb 2022 10:51:57 +0000 (UTC)
-Date:   Mon, 28 Feb 2022 10:51:56 +0000
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Akihiko Odaki <akihiko.odaki@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Jens Axboe <axboe@kernel.dk>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] virtio-blk: Assign discard_granularity
-Message-ID: <YhypTNtWpcgh3gb2@stefanha-x1.localdomain>
-References: <20220224093802.11348-1-akihiko.odaki@gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="o6KFt0EAQYlUHcer"
-Content-Disposition: inline
-In-Reply-To: <20220224093802.11348-1-akihiko.odaki@gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+        Mon, 28 Feb 2022 05:54:47 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74A712BCA;
+        Mon, 28 Feb 2022 02:52:35 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 43542106F;
+        Mon, 28 Feb 2022 02:52:35 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.47.185])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 28EEB3F73D;
+        Mon, 28 Feb 2022 02:52:26 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, geert@linux-m68k.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org,
+        openrisc@lists.librecores.org, linux-um@lists.infradead.org,
+        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-arch@vger.kernel.org, Nick Hu <nickhu@andestech.com>
+Subject: [PATCH V3 27/30] nds32/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date:   Mon, 28 Feb 2022 16:17:50 +0530
+Message-Id: <1646045273-9343-28-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
+References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This defines and exports a platform specific custom vm_get_page_prot() via
+subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+macros can be dropped which are no longer needed.
 
---o6KFt0EAQYlUHcer
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cc: Nick Hu <nickhu@andestech.com>
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ arch/nds32/Kconfig               |  1 +
+ arch/nds32/include/asm/pgtable.h | 17 ---------------
+ arch/nds32/mm/mmap.c             | 37 ++++++++++++++++++++++++++++++++
+ 3 files changed, 38 insertions(+), 17 deletions(-)
 
-On Thu, Feb 24, 2022 at 06:38:02PM +0900, Akihiko Odaki wrote:
-> Virtual I/O Device (VIRTIO) Version 1.1
-> https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd0=
-1.html
-> > discard_sector_alignment can be used by OS when splitting a request
-> > based on alignment.
->=20
-> According to Documentation/ABI/stable/sysfs-block, the corresponding
-> field in the kernel is, confusingly, discard_granularity, not
-> discard_alignment.
-
-Good catch, struct virtio_blk_config->discard_sector_alignment is Linux
-q->limits.discard_granularity.
-
->=20
-> Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
-> ---
->  drivers/block/virtio_blk.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->=20
-> diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-> index c443cd64fc9b..1fb3c89900e3 100644
-> --- a/drivers/block/virtio_blk.c
-> +++ b/drivers/block/virtio_blk.c
-> @@ -913,11 +913,9 @@ static int virtblk_probe(struct virtio_device *vdev)
->  		blk_queue_io_opt(q, blk_size * opt_io_size);
-> =20
->  	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
-> -		q->limits.discard_granularity =3D blk_size;
-> -
->  		virtio_cread(vdev, struct virtio_blk_config,
->  			     discard_sector_alignment, &v);
-> -		q->limits.discard_alignment =3D v ? v << SECTOR_SHIFT : 0;
-
-Should we use struct virtio_blk_config->topology.alignment_offset
-("offset of first aligned logical block" and used for Linux
-blk_queue_alignment_offset()) for q->limits.discard_alignment?
-
---o6KFt0EAQYlUHcer
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmIcqUsACgkQnKSrs4Gr
-c8gvvgf8CUBI66KzLI88mzNHI2Vrynk7iPeOE+nt95l0+w7br24PncTRvUQCHPko
-u1d/0UZcCsOAG9cW5CSwRRQedrVbCrhNaJm6KywnghK/41SCcMHDJEAwQNyX9GCy
-FvmYghT9oHxhkucTD91oVuD0Sk714G2ikPNleZmijh/+kn224gCy1eP/3/S/KWGr
-/edZF24TIDpujQNdR9emr+UF7eLoWBC3n/ldoDVU+fmgXaCIT2DjZXbsqiu6Cjir
-ytI7KakJsyjFuWMXTSEIg9RKV0GRJTj/YYLspFMNEDZGv2ikaMatl/MNxDNpDvln
-+bylNvU54z5CWo7wObRdwWmybWOTzw==
-=Ldv1
------END PGP SIGNATURE-----
-
---o6KFt0EAQYlUHcer--
+diff --git a/arch/nds32/Kconfig b/arch/nds32/Kconfig
+index 4d1421b18734..576e05479925 100644
+--- a/arch/nds32/Kconfig
++++ b/arch/nds32/Kconfig
+@@ -10,6 +10,7 @@ config NDS32
+ 	select ARCH_HAS_DMA_PREP_COHERENT
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
++	select ARCH_HAS_VM_GET_PAGE_PROT
+ 	select ARCH_WANT_FRAME_POINTERS if FTRACE
+ 	select CLKSRC_MMIO
+ 	select CLONE_BACKWARDS
+diff --git a/arch/nds32/include/asm/pgtable.h b/arch/nds32/include/asm/pgtable.h
+index 419f984eef70..79f64ed734cb 100644
+--- a/arch/nds32/include/asm/pgtable.h
++++ b/arch/nds32/include/asm/pgtable.h
+@@ -152,23 +152,6 @@ extern void __pgd_error(const char *file, int line, unsigned long val);
+ #endif /* __ASSEMBLY__ */
+ 
+ /*         xwr */
+-#define __P000  (PAGE_NONE | _PAGE_CACHE_SHRD)
+-#define __P001  (PAGE_READ | _PAGE_CACHE_SHRD)
+-#define __P010  (PAGE_COPY | _PAGE_CACHE_SHRD)
+-#define __P011  (PAGE_COPY | _PAGE_CACHE_SHRD)
+-#define __P100  (PAGE_EXEC | _PAGE_CACHE_SHRD)
+-#define __P101  (PAGE_READ | _PAGE_E | _PAGE_CACHE_SHRD)
+-#define __P110  (PAGE_COPY | _PAGE_E | _PAGE_CACHE_SHRD)
+-#define __P111  (PAGE_COPY | _PAGE_E | _PAGE_CACHE_SHRD)
+-
+-#define __S000  (PAGE_NONE | _PAGE_CACHE_SHRD)
+-#define __S001  (PAGE_READ | _PAGE_CACHE_SHRD)
+-#define __S010  (PAGE_RDWR | _PAGE_CACHE_SHRD)
+-#define __S011  (PAGE_RDWR | _PAGE_CACHE_SHRD)
+-#define __S100  (PAGE_EXEC | _PAGE_CACHE_SHRD)
+-#define __S101  (PAGE_READ | _PAGE_E | _PAGE_CACHE_SHRD)
+-#define __S110  (PAGE_RDWR | _PAGE_E | _PAGE_CACHE_SHRD)
+-#define __S111  (PAGE_RDWR | _PAGE_E | _PAGE_CACHE_SHRD)
+ 
+ #ifndef __ASSEMBLY__
+ /*
+diff --git a/arch/nds32/mm/mmap.c b/arch/nds32/mm/mmap.c
+index 1bdf5e7d1b43..0399b928948d 100644
+--- a/arch/nds32/mm/mmap.c
++++ b/arch/nds32/mm/mmap.c
+@@ -71,3 +71,40 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
+ 	info.align_offset = pgoff << PAGE_SHIFT;
+ 	return vm_unmapped_area(&info);
+ }
++
++pgprot_t vm_get_page_prot(unsigned long vm_flags)
++{
++	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
++	case VM_NONE:
++		return (PAGE_NONE | _PAGE_CACHE_SHRD);
++	case VM_READ:
++		return (PAGE_READ | _PAGE_CACHE_SHRD);
++	case VM_WRITE:
++	case VM_WRITE | VM_READ:
++		return (PAGE_COPY | _PAGE_CACHE_SHRD);
++	case VM_EXEC:
++		return (PAGE_EXEC | _PAGE_CACHE_SHRD);
++	case VM_EXEC | VM_READ:
++		return (PAGE_READ | _PAGE_E | _PAGE_CACHE_SHRD);
++	case VM_EXEC | VM_WRITE:
++	case VM_EXEC | VM_WRITE | VM_READ:
++		return (PAGE_COPY | _PAGE_E | _PAGE_CACHE_SHRD);
++	case VM_SHARED:
++		return (PAGE_NONE | _PAGE_CACHE_SHRD);
++	case VM_SHARED | VM_READ:
++		return (PAGE_READ | _PAGE_CACHE_SHRD);
++	case VM_SHARED | VM_WRITE:
++	case VM_SHARED | VM_WRITE | VM_READ:
++		return (PAGE_RDWR | _PAGE_CACHE_SHRD);
++	case VM_SHARED | VM_EXEC:
++		return (PAGE_EXEC | _PAGE_CACHE_SHRD);
++	case VM_SHARED | VM_EXEC | VM_READ:
++		return (PAGE_READ | _PAGE_E | _PAGE_CACHE_SHRD);
++	case VM_SHARED | VM_EXEC | VM_WRITE:
++	case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
++		return (PAGE_RDWR | _PAGE_E | _PAGE_CACHE_SHRD);
++	default:
++		BUILD_BUG();
++	}
++}
++EXPORT_SYMBOL(vm_get_page_prot);
+-- 
+2.25.1
 
