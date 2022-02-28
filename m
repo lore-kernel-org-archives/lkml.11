@@ -2,211 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 182A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD67C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238035AbiB1QwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 11:52:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58204 "EHLO
+        id S238043AbiB1Qwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 11:52:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238030AbiB1QwV (ORCPT
+        with ESMTP id S238030AbiB1Qwm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 11:52:21 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4893385BFB
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:51:42 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id c14so10459638ilm.4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:51:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/bqp6/Y5E+6C6uxZOlWzzrVva8/H/F52MQlVhPx5vwc=;
-        b=HBn7i/YYpsZX/wNCJnrPjD2O8Xmo5l2miL6iOcqOsIqLLghx14BXGlCABXIjiFzQHK
-         vigb37Jjd4IxUUA8OGomc6Q+rPMUxX51QHkjDDA1qCkTsHvMGzBHs0+RFJugzFvlCcYQ
-         K6mm+0iKnBRm8Xcwp8cmF81IP7IcKE0l5rSRlzTCLO1WM7+cs2E0aQVTaBHncce0DzS8
-         JH7CHqDETujp+vRf7Wgzsz917aGgXDGSOF+ymwIWcaIbzMlv/BECDc36WwgIie8IIppY
-         6iQXxIAhwN48dFD5eJ++1VFCvhPQ+YrJYsWtW6y56RofbB5PZZ4RT4bK4jxLFjR52nTC
-         graA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/bqp6/Y5E+6C6uxZOlWzzrVva8/H/F52MQlVhPx5vwc=;
-        b=qjkOp+R9IOy0ZnLSh7bgk9Hw+28OwjyqBcc/UmFPPwKsSwix2ynt7JjdIQnlr7vjVC
-         7bV92B+zp+9J5S8n9iHXgJkDkzKJyQ5aPROKYP8XXbq5Sqg4fi7cUwwj0w27vfkDAbJA
-         l0zUs8D/b5MQdKDFtH7LX6KqdmDKCLw2K2SYNLAHC9LxI8j85DBvVjyQKsKUN2tS3VUR
-         8750FV8nybAobQ7yMCbyyT0F4L/Nnhy9ViT5DqVcmDUqTnBSHZrVoSrbbEiALxl3xOqP
-         n6o+YIVKDrefBfY2FX6PtK+w+fZMtWbM9LEehQtdv2ac9JXfG+Rql9/odJd3SaDqk4br
-         oNGA==
-X-Gm-Message-State: AOAM532VZgNdI8zW78VmRM43SGTgodqWo6ft/2cbnTm2Y65z7YudGqxE
-        NP3q6SmDwuQMKtEHcikeTxqTMw==
-X-Google-Smtp-Source: ABdhPJzA6KBRxUY54trdttvAnTbELspEPLPtKc7uMUdQexvEucvC6Zek9BCgXVfF5iW2ibbZ+CcYyg==
-X-Received: by 2002:a92:c691:0:b0:2be:8eab:9f7d with SMTP id o17-20020a92c691000000b002be8eab9f7dmr19702513ilg.26.1646067101657;
-        Mon, 28 Feb 2022 08:51:41 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id 6-20020a056e0211a600b002c2494a5479sm6545385ilj.2.2022.02.28.08.51.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 08:51:41 -0800 (PST)
-Message-ID: <1f301669-3d4c-dc79-a35b-7faf2c6045e9@linaro.org>
-Date:   Mon, 28 Feb 2022 10:51:39 -0600
+        Mon, 28 Feb 2022 11:52:42 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C493185BFB;
+        Mon, 28 Feb 2022 08:52:02 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 79765219AE;
+        Mon, 28 Feb 2022 16:52:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646067121;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XocCnGjm2EQXZ0laNpIeMqRP6VR8fqTUlbHXocSsTtc=;
+        b=OSD1g+gnDTctBNt0JAVhfwCEE0FfzGz72nb14G7Z6yegCoTGabziegffuhYyGT4LqIrAjJ
+        m2xtgmr29J1fw0zlRQFySRNlWteNXVDP4WyBHVdWwqrPD3x+4/mXjJxn3QqIs/qUyrL9NQ
+        tV1qC/WkiR8wZ/nTsd8YUlDtha3baLg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646067121;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XocCnGjm2EQXZ0laNpIeMqRP6VR8fqTUlbHXocSsTtc=;
+        b=CUMJ0mU9zPQqboqou/A2n4GfErSVQkqKd36wRxosoZL4GjTDrhCLxEjmIzRNsLXXuBwAjN
+        Du2iJBUgvk0/CcBA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 6D5B6A3B87;
+        Mon, 28 Feb 2022 16:52:01 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 43D88DA823; Mon, 28 Feb 2022 17:48:10 +0100 (CET)
+Date:   Mon, 28 Feb 2022 17:48:10 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Cc:     dsterba@suse.cz, Chris Mason <clm@fb.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v4] btrfs: add fs state details to error messages.
+Message-ID: <20220228164810.GI12643@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-team@fb.com
+References: <a059920460fe13f773fd9a2e870ceb9a8e3a105a.1645644489.git.sweettea-kernel@dorminy.me>
+ <20220224132210.GS12643@twin.jikos.cz>
+ <284ccc08-8de7-9188-19d8-20f4eda56cb4@dorminy.me>
+ <20220224184231.GZ12643@twin.jikos.cz>
+ <20f14d85-6a07-e66d-4711-c16c6930c2a3@dorminy.me>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 25/27] bus: mhi: ep: Add support for queueing SKBs to
- the host
-Content-Language: en-US
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        quic_vbadigan@quicinc.com, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
- <20220228124344.77359-26-manivannan.sadhasivam@linaro.org>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <20220228124344.77359-26-manivannan.sadhasivam@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20f14d85-6a07-e66d-4711-c16c6930c2a3@dorminy.me>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/28/22 6:43 AM, Manivannan Sadhasivam wrote:
-> Add support for queueing SKBs to the host over the transfer ring of the
-> relevant channel. The mhi_ep_queue_skb() API will be used by the client
-> networking drivers to queue the SKBs to the host over MHI bus.
+On Thu, Feb 24, 2022 at 03:09:08PM -0500, Sweet Tea Dorminy wrote:
+> >> All the other interactions with info->fs_state are test/set/clear_bit,
+> >> which treat the argument as volatile and are therefore safe to do from
+> >> multiple threads. Without the READ_ONCE (reading it as a volatile),
+> >> the compiler or cpu could turn the reads of info->fs_state in
+> >> for_each_set_bit() into writes of random stuff into info->fs_state,
+> >> potentially clearing the state bits or filling them with garbage.
+> > I'm not sure I'm missing something, but I find the above hard to
+> > believe. Concurrent access to a variable from multiple threads may not
+> > produce consistent results, but random writes should not happen when
+> > we're just reading.
 > 
-> The host will add ring elements to the transfer ring periodically for
-> the device and the device will write SKBs to the ring elements. If a
-> single SKB doesn't fit in a ring element (TRE), it will be placed in
-> multiple ring elements and the overflow event will be sent for all ring
-> elements except the last one. For the last ring element, the EOT event
-> will be sent indicating the packet boundary.
+> Maybe I've been reading too many articles about the things compilers are 
+> technically allowed to do. But as per the following link, the C standard 
+> does permit compilers inventing writes except to atomics and volatiles: 
+> https://lwn.net/Articles/793253/#Invented%20Stores
+
+There's a difference between technically allowed to do and actually
+doing it. The article sections says that no such compiler is known with
+some exception of an old one that got fixed. Also as I read the example
+of the invented write, it's very specific and I don't se how it applies
+here at all.
+
+> >> Even if this is right, it'd be rare, but it would be exceeding weird
+> >> for a message to be logged listing an error and then future messages
+> >> be logged without any such state, or with a random collection of
+> >> garbage states.
+> > How would that happen? The volatile keyword is only a compiler hint not
+> > to do optimizations on the variable, what actually happens on the CPU
+> > level depends if the instruction is locked or not, so different threads
+> > may read different bits.
+> > You seem to imply that once a variable is not used with volatile
+> > semantics, even just for read, the result could lead to random writes
+> > because it's otherwise undefined.
 > 
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> Pretty much; once a variable is read without READ_ONCE, it's unsafe to 
+> write a new value on another thread that depends on the old value. 
 
-Looks good.
+You're giving 'volatile' too much credit for guaranteeing safety for
+interprocess operation, it's just a compiler hint to avoid
+optimizations, it's not a synchronization primitive. In some cases
+lockless reads are safe, as long as there are no updates or potential
+reloads between reads that could be changed by another thread. We use
+READ_ONCE in many cases, compiler in most cases generates the same
+instructions as without it and it's merely an annotation and a way of
+syntactic comment to denote special handling.
 
-Reviewed-by: Alex Elder <elder@linaro.org>
-
-> ---
->   drivers/bus/mhi/ep/main.c | 82 +++++++++++++++++++++++++++++++++++++++
->   include/linux/mhi_ep.h    |  9 +++++
->   2 files changed, 91 insertions(+)
+> Imagine a compiler which invents stores; then if you are both reading 
+> and setting a variable 'a' on different threads, the following could happen:
 > 
-> diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-> index 63e14d55aa06..25d34cf26fd7 100644
-> --- a/drivers/bus/mhi/ep/main.c
-> +++ b/drivers/bus/mhi/ep/main.c
-> @@ -471,6 +471,88 @@ int mhi_ep_process_ch_ring(struct mhi_ep_ring *ring, struct mhi_ring_element *el
->   	return 0;
->   }
->   
-> +/* TODO: Handle partially formed TDs */
-> +int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, struct sk_buff *skb)
-> +{
-> +	struct mhi_ep_cntrl *mhi_cntrl = mhi_dev->mhi_cntrl;
-> +	struct mhi_ep_chan *mhi_chan = mhi_dev->dl_chan;
-> +	struct device *dev = &mhi_chan->mhi_dev->dev;
-> +	struct mhi_ring_element *el;
-> +	u32 buf_left, read_offset;
-> +	struct mhi_ep_ring *ring;
-> +	enum mhi_ev_ccs code;
-> +	void *read_addr;
-> +	u64 write_addr;
-> +	size_t tr_len;
-> +	u32 tre_len;
-> +	int ret;
-> +
-> +	buf_left = skb->len;
-> +	ring = &mhi_cntrl->mhi_chan[mhi_chan->chan].ring;
-> +
-> +	mutex_lock(&mhi_chan->lock);
-> +
-> +	do {
-> +		/* Don't process the transfer ring if the channel is not in RUNNING state */
-> +		if (mhi_chan->state != MHI_CH_STATE_RUNNING) {
-> +			dev_err(dev, "Channel not available\n");
-> +			ret = -ENODEV;
-> +			goto err_exit;
-> +		}
-> +
-> +		if (mhi_ep_queue_is_empty(mhi_dev, DMA_FROM_DEVICE)) {
-> +			dev_err(dev, "TRE not available!\n");
-> +			ret = -ENOSPC;
-> +			goto err_exit;
-> +		}
-> +
-> +		el = &ring->ring_cache[ring->rd_offset];
-> +		tre_len = MHI_TRE_DATA_GET_LEN(el);
-> +
-> +		tr_len = min(buf_left, tre_len);
-> +		read_offset = skb->len - buf_left;
-> +		read_addr = skb->data + read_offset;
-> +		write_addr = MHI_TRE_DATA_GET_PTR(el);
-> +
-> +		dev_dbg(dev, "Writing %zd bytes to channel (%u)\n", tr_len, ring->ch_id);
-> +		ret = mhi_cntrl->write_to_host(mhi_cntrl, read_addr, write_addr, tr_len);
-> +		if (ret < 0) {
-> +			dev_err(dev, "Error writing to the channel\n");
-> +			goto err_exit;
-> +		}
-> +
-> +		buf_left -= tr_len;
-> +		/*
-> +		 * For all TREs queued by the host for DL channel, only the EOT flag will be set.
-> +		 * If the packet doesn't fit into a single TRE, send the OVERFLOW event to
-> +		 * the host so that the host can adjust the packet boundary to next TREs. Else send
-> +		 * the EOT event to the host indicating the packet boundary.
-> +		 */
-> +		if (buf_left)
-> +			code = MHI_EV_CC_OVERFLOW;
-> +		else
-> +			code = MHI_EV_CC_EOT;
-> +
-> +		ret = mhi_ep_send_completion_event(mhi_cntrl, ring, el, tr_len, code);
-> +		if (ret) {
-> +			dev_err(dev, "Error sending transfer completion event\n");
-> +			goto err_exit;
-> +		}
-> +
-> +		mhi_ep_ring_inc_index(ring);
-> +	} while (buf_left);
-> +
-> +	mutex_unlock(&mhi_chan->lock);
-> +
-> +	return 0;
-> +
-> +err_exit:
-> +	mutex_unlock(&mhi_chan->lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(mhi_ep_queue_skb);
-> +
->   static int mhi_ep_cache_host_cfg(struct mhi_ep_cntrl *mhi_cntrl)
->   {
->   	size_t cmd_ctx_host_size, ch_ctx_host_size, ev_ctx_host_size;
-> diff --git a/include/linux/mhi_ep.h b/include/linux/mhi_ep.h
-> index 74170dad09f6..bd3ffde01f04 100644
-> --- a/include/linux/mhi_ep.h
-> +++ b/include/linux/mhi_ep.h
-> @@ -272,4 +272,13 @@ void mhi_ep_power_down(struct mhi_ep_cntrl *mhi_cntrl);
->    */
->   bool mhi_ep_queue_is_empty(struct mhi_ep_device *mhi_dev, enum dma_data_direction dir);
->   
-> +/**
-> + * mhi_ep_queue_skb - Send SKBs to host over MHI Endpoint
-> + * @mhi_dev: Device associated with the DL channel
-> + * @skb: SKBs to be queued
-> + *
-> + * Return: 0 if the SKBs has been sent successfully, a negative error code otherwise.
-> + */
-> +int mhi_ep_queue_skb(struct mhi_ep_device *mhi_dev, struct sk_buff *skb);
-> +
->   #endif
+> thread 1 (reads)       thread 2 (modifies)
+> 
+> reads a into tmp
+> 
+> stores junk into a
+> 
+>                                  reads junk from a
+> 
+> stores tmp into a
+> 
+>                                  writes junk | 2 to a
+> 
+> 
+> Now a contains junk indefinitely.
 
+But we're only reading here, that why I don't see any real risk. We read
+a variable, potentially changed from other thread, and actually changed
+by atomic bit operations. Where are the invented writes going to come
+from, can't we rely on the bit handling primitives?
+
+If you're example above would be real, we'd either lack proper locking
+or there's a serious problem with compiler that would blow up in many
+places (like inventing newly set bits in flags or random values
+appearing in regular variables).
+
+> But if it's too theoretical, I'm happy to drop it and amend my paranoia 
+> level.
+
+I think it's highly theoretical but the READ_ONCE should be there as a
+matter of clean code practice, so I've updated the code.
