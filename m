@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C718C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6641C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233818AbiB1Rjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:39:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
+        id S232354AbiB1Rjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:39:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238454AbiB1Rhx (ORCPT
+        with ESMTP id S238490AbiB1Rhz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:37:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED942DD53;
-        Mon, 28 Feb 2022 09:32:39 -0800 (PST)
+        Mon, 28 Feb 2022 12:37:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D507543AEE;
+        Mon, 28 Feb 2022 09:32:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C042961365;
-        Mon, 28 Feb 2022 17:32:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4C97C340E7;
-        Mon, 28 Feb 2022 17:32:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 470FCB815AC;
+        Mon, 28 Feb 2022 17:32:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB6EC340E7;
+        Mon, 28 Feb 2022 17:32:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069558;
-        bh=BrSgRq3SdVWbYi1p7gAqEbYKLkAs4kDps2u2XRj4XnE=;
+        s=korg; t=1646069561;
+        bh=KwnSvAIvypkgAY4He7R23xQE0ck3L9g5jFxUpjd0lPM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QZ19c7kxxJMHC1ZYELX1tR343hCnG5fdR0Rtj/V0JYYp2AUKNIumFYBMlJd/dcBrN
-         aEN7dM0lNh6BpqXUIEOiFWd++ftPkGnBzn0udlA4OWoNDsc78b4+WxxVc807YA3EF2
-         uUjOr1uzt+HBxwA/lFvVrqLd3ivSLTHlLifxn+Ak=
+        b=LHjTpN5nJsuPnfL/fxAhcvhJ6Z4xw5l9+X5klu/LMt8oZhXB6BYjwDUS5vgeePR81
+         BCyTcDRVfp//p62PkkqHdn2RCoh3k2G9e2FDbnZnyPlQ9jcHif761S4sRB/qwlNY4O
+         5w5PrLc2cl7kNMTjQQvH+mDlRg1G0IGvUogW7Es8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Qiang Yu <qiang.yu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.10 10/80] drm/amdgpu: check vm ready by amdgpu_vm->evicting flag
-Date:   Mon, 28 Feb 2022 18:23:51 +0100
-Message-Id: <20220228172312.712322810@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.10 11/80] drm/i915: Correctly populate use_sagv_wm for all pipes
+Date:   Mon, 28 Feb 2022 18:23:52 +0100
+Message-Id: <20220228172312.814623524@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -50,75 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qiang Yu <qiang.yu@amd.com>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit c1a66c3bc425ff93774fb2f6eefa67b83170dd7e upstream.
+commit afc189df6bcc6be65961deb54e15ec60e7f85337 upstream.
 
-Workstation application ANSA/META v21.1.4 get this error dmesg when
-running CI test suite provided by ANSA/META:
-[drm:amdgpu_gem_va_ioctl [amdgpu]] *ERROR* Couldn't update BO_VA (-16)
+When changing between SAGV vs. no SAGV on tgl+ we have to
+update the use_sagv_wm flag for all the crtcs or else
+an active pipe not already in the state will end up using
+the wrong watermarks. That is especially bad when we end up
+with the tighter non-SAGV watermarks with SAGV enabled.
+Usually ends up in underruns.
 
-This is caused by:
-1. create a 256MB buffer in invisible VRAM
-2. CPU map the buffer and access it causes vm_fault and try to move
-   it to visible VRAM
-3. force visible VRAM space and traverse all VRAM bos to check if
-   evicting this bo is valuable
-4. when checking a VM bo (in invisible VRAM), amdgpu_vm_evictable()
-   will set amdgpu_vm->evicting, but latter due to not in visible
-   VRAM, won't really evict it so not add it to amdgpu_vm->evicted
-5. before next CS to clear the amdgpu_vm->evicting, user VM ops
-   ioctl will pass amdgpu_vm_ready() (check amdgpu_vm->evicted)
-   but fail in amdgpu_vm_bo_update_mapping() (check
-   amdgpu_vm->evicting) and get this error log
-
-This error won't affect functionality as next CS will finish the
-waiting VM ops. But we'd better clear the error log by checking
-the amdgpu_vm->evicting flag in amdgpu_vm_ready() to stop calling
-amdgpu_vm_bo_update_mapping() later.
-
-Another reason is amdgpu_vm->evicted list holds all BOs (both
-user buffer and page table), but only page table BOs' eviction
-prevent VM ops. amdgpu_vm->evicting flag is set only for page
-table BOs, so we should use evicting flag instead of evicted list
-in amdgpu_vm_ready().
-
-The side effect of this change is: previously blocked VM op (user
-buffer in "evicted" list but no page table in it) gets done
-immediately.
-
-v2: update commit comments.
-
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Qiang Yu <qiang.yu@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
+Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
+Fixes: 7241c57d3140 ("drm/i915: Add TGL+ SAGV support")
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220218064039.12834-2-ville.syrjala@linux.intel.com
+(cherry picked from commit 8dd8ffb824ca7b897ce9f2082ffa7e64831c22dc)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c |    9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/intel_pm.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-@@ -715,11 +715,16 @@ int amdgpu_vm_validate_pt_bos(struct amd
-  * Check if all VM PDs/PTs are ready for updates
-  *
-  * Returns:
-- * True if eviction list is empty.
-+ * True if VM is not evicting.
-  */
- bool amdgpu_vm_ready(struct amdgpu_vm *vm)
- {
--	return list_empty(&vm->evicted);
-+	bool ret;
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -3996,6 +3996,17 @@ static int intel_compute_sagv_mask(struc
+ 			return ret;
+ 	}
+ 
++	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
++	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
++		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
++		if (ret)
++			return ret;
++	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
++		ret = intel_atomic_lock_global_state(&new_bw_state->base);
++		if (ret)
++			return ret;
++	}
 +
-+	amdgpu_vm_eviction_lock(vm);
-+	ret = !vm->evicting;
-+	amdgpu_vm_eviction_unlock(vm);
-+	return ret;
+ 	for_each_new_intel_crtc_in_state(state, crtc,
+ 					 new_crtc_state, i) {
+ 		struct skl_pipe_wm *pipe_wm = &new_crtc_state->wm.skl.optimal;
+@@ -4010,17 +4021,6 @@ static int intel_compute_sagv_mask(struc
+ 				       intel_can_enable_sagv(dev_priv, new_bw_state);
+ 	}
+ 
+-	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
+-	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
+-		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
+-		if (ret)
+-			return ret;
+-	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
+-		ret = intel_atomic_lock_global_state(&new_bw_state->base);
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	return 0;
  }
  
- /**
 
 
