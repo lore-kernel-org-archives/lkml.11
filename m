@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A85C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C913DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238292AbiB1Rgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:36:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38026 "EHLO
+        id S238172AbiB1Rgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:36:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238525AbiB1Rde (ORCPT
+        with ESMTP id S238571AbiB1Rdi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:33:34 -0500
+        Mon, 28 Feb 2022 12:33:38 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED2C90FF8;
-        Mon, 28 Feb 2022 09:30:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5419134B;
+        Mon, 28 Feb 2022 09:30:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F21C3B815B8;
-        Mon, 28 Feb 2022 17:30:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E4B3C340E7;
-        Mon, 28 Feb 2022 17:30:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7978CB815A6;
+        Mon, 28 Feb 2022 17:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D641DC340E7;
+        Mon, 28 Feb 2022 17:30:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069407;
-        bh=KkzO5SfNgv6pefqurUmAIt4FKijkSthd8pPmqIR/5/M=;
+        s=korg; t=1646069413;
+        bh=qrgm1kzt2di1ONuE+6wLgytVgwd7igoW8PBsESMIvNk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n6Y6cTnqE4qkNvQkRmzk6AztpWZ7BML3toqaRHz7Ys3eUKw5BlPcaUfqZVPd0qHo5
-         VvUn7f6yH2CsP/R4ZRX3g8kDIssSS5WPlNhW4+6gn9DsSUu5hKgLww7Fr2yW54erU1
-         SKE60jHFWWWUsktmUdCVdC+Eqz9V4gXwbsKwxtds=
+        b=CJyBm8lJ8wBMksBhTSMVdN0/x8lOhdIq9JFfWQWAeZQ87ByjQD33YAqvuKK3pEaGN
+         oCgiclX5hNEGMC4dbCYgwBAcUoWd5gkYBWnITU9QAm9drdFJBsnMIShzLd0OFPjC1+
+         EwdXNHojKMU/BvmW8DVSnzPdIJVEK3YxgvtXp+ys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhao Gongyi <zhaogongyi@huawei.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>,
-        Waiman Long <longman@redhat.com>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.4 01/53] cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug
-Date:   Mon, 28 Feb 2022 18:23:59 +0100
-Message-Id: <20220228172248.327750002@linuxfoundation.org>
+        stable@vger.kernel.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>
+Subject: [PATCH 5.4 11/53] tee: export teedev_open() and teedev_close_context()
+Date:   Mon, 28 Feb 2022 18:24:09 +0100
+Message-Id: <20220228172249.155940685@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,59 +48,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Qiao <zhangqiao22@huawei.com>
+From: Jens Wiklander <jens.wiklander@linaro.org>
 
-commit 05c7b7a92cc87ff8d7fde189d0fade250697573c upstream.
+commit 1e2c3ef0496e72ba9001da5fd1b7ed56ccb30597 upstream.
 
-As previously discussed(https://lkml.org/lkml/2022/1/20/51),
-cpuset_attach() is affected with similar cpu hotplug race,
-as follow scenario:
+Exports the two functions teedev_open() and teedev_close_context() in
+order to make it easier to create a driver internal struct tee_context.
 
-     cpuset_attach()				cpu hotplug
-    ---------------------------            ----------------------
-    down_write(cpuset_rwsem)
-    guarantee_online_cpus() // (load cpus_attach)
-					sched_cpu_deactivate
-					  set_cpu_active()
-					  // will change cpu_active_mask
-    set_cpus_allowed_ptr(cpus_attach)
-      __set_cpus_allowed_ptr_locked()
-       // (if the intersection of cpus_attach and
-         cpu_active_mask is empty, will return -EINVAL)
-    up_write(cpuset_rwsem)
-
-To avoid races such as described above, protect cpuset_attach() call
-with cpu_hotplug_lock.
-
-Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
-Cc: stable@vger.kernel.org # v2.6.32+
-Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
-Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
-Acked-by: Waiman Long <longman@redhat.com>
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/tee/tee_core.c  |    6 ++++--
+ include/linux/tee_drv.h |   14 ++++++++++++++
+ 2 files changed, 18 insertions(+), 2 deletions(-)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -2204,6 +2204,7 @@ static void cpuset_attach(struct cgroup_
- 	cgroup_taskset_first(tset, &css);
- 	cs = css_cs(css);
+--- a/drivers/tee/tee_core.c
++++ b/drivers/tee/tee_core.c
+@@ -28,7 +28,7 @@ static DEFINE_SPINLOCK(driver_lock);
+ static struct class *tee_class;
+ static dev_t tee_devt;
  
-+	cpus_read_lock();
- 	percpu_down_write(&cpuset_rwsem);
+-static struct tee_context *teedev_open(struct tee_device *teedev)
++struct tee_context *teedev_open(struct tee_device *teedev)
+ {
+ 	int rc;
+ 	struct tee_context *ctx;
+@@ -56,6 +56,7 @@ err:
+ 	return ERR_PTR(rc);
  
- 	/* prepare for attach */
-@@ -2259,6 +2260,7 @@ static void cpuset_attach(struct cgroup_
- 		wake_up(&cpuset_attach_wq);
+ }
++EXPORT_SYMBOL_GPL(teedev_open);
  
- 	percpu_up_write(&cpuset_rwsem);
-+	cpus_read_unlock();
+ void teedev_ctx_get(struct tee_context *ctx)
+ {
+@@ -82,13 +83,14 @@ void teedev_ctx_put(struct tee_context *
+ 	kref_put(&ctx->refcount, teedev_ctx_release);
  }
  
- /* The various types of files and directories in a cpuset file system */
+-static void teedev_close_context(struct tee_context *ctx)
++void teedev_close_context(struct tee_context *ctx)
+ {
+ 	struct tee_device *teedev = ctx->teedev;
+ 
+ 	teedev_ctx_put(ctx);
+ 	tee_device_put(teedev);
+ }
++EXPORT_SYMBOL_GPL(teedev_close_context);
+ 
+ static int tee_open(struct inode *inode, struct file *filp)
+ {
+--- a/include/linux/tee_drv.h
++++ b/include/linux/tee_drv.h
+@@ -579,4 +579,18 @@ struct tee_client_driver {
+ #define to_tee_client_driver(d) \
+ 		container_of(d, struct tee_client_driver, driver)
+ 
++/**
++ * teedev_open() - Open a struct tee_device
++ * @teedev:	Device to open
++ *
++ * @return a pointer to struct tee_context on success or an ERR_PTR on failure.
++ */
++struct tee_context *teedev_open(struct tee_device *teedev);
++
++/**
++ * teedev_close_context() - closes a struct tee_context
++ * @ctx:	The struct tee_context to close
++ */
++void teedev_close_context(struct tee_context *ctx);
++
+ #endif /*__TEE_DRV_H*/
 
 
