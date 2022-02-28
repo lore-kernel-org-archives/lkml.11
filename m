@@ -2,113 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 431A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237349AbiB1PcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 10:32:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
+        id S237556AbiB1Pcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 10:32:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237200AbiB1PcL (ORCPT
+        with ESMTP id S236783AbiB1Pcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 10:32:11 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8705982D11
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:31:31 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id y5so5926228wmi.0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:31:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2gH1VCXMJOCAQZMMdwA8NKZMdwDagt75ou8aHbyIUz0=;
-        b=ut095mw9H1t6WgZsq59Kx6N6Whm5l58tD/csnQyzg3sRwVkNtPbOH2gIYZjAuTVxAC
-         Ce2d7THpNHlx6j19dQe43RctF+aIsxdP0i5oSb2/LWutEn86m1FUcLDgyQX2BjStHyMB
-         EIP+HSGqPNF1ba/Ro8mPiVGGLedsrF4z9I0vpxLZRLk35Kr4RD6ckAxQG1AAUK81KCmS
-         sBua87VSFTbs7gPuCbUSj/jLl/KeTqu/ugVmvnni49k1SqL8FeOi84ucN/MvOplUnBQl
-         ag9y6SNSGeacwbh9fKaddv5Rzrriyli1zWir8LaDgeJu8MS9pNVvVTYLOW25huWzgyyj
-         Tvrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2gH1VCXMJOCAQZMMdwA8NKZMdwDagt75ou8aHbyIUz0=;
-        b=fCMwxEERNUVj19x3kNLyvn3TbEoaRfBkUOoafJhLN5YEcmJgFz0bYfeFiyXNCVfHZC
-         Tn8CmncDgSI/rXL/GgBweS3thPiCi2b3ud+zVXq4KhkMyE+6xKoMatRPJZWMQTqxn4Oc
-         B0LZqe8TOyz02/w7Toa9HTFK8ueojSABoi1+zoL8I5Md1Ss2XdWZcFKTLg/51BdX8XPN
-         8VMELQ3yAC+nlYjR1A41Ef58CZibYjKx2Inv4q/gBnkUwMfB4GE765qgPdU6ZUWeWo5C
-         HFNx8a+jfA89NG8OUsupLVYwn6yQ4Chpkr4Ucks53n+J7EdC6CgkRIwrZX8/e8a0q6JR
-         5Ylw==
-X-Gm-Message-State: AOAM531AxRKTdZ5thLc+n9a8ppaZz0Yov4PPSsVYlDkQDRC+ZdIrZHvG
-        1GSbpOHKKodg//w+xAlPY0HmGQ==
-X-Google-Smtp-Source: ABdhPJwZs3W4atkmlIldxtmVDitUoNs7+KJXCw3zlG03aFYebo+mCuYCi1jBc6bDQT5J1LiMod30iQ==
-X-Received: by 2002:a1c:f705:0:b0:37d:f2e5:d8ec with SMTP id v5-20020a1cf705000000b0037df2e5d8ecmr13878273wmh.21.1646062290040;
-        Mon, 28 Feb 2022 07:31:30 -0800 (PST)
-Received: from [10.205.160.53] ([95.83.233.50])
-        by smtp.gmail.com with ESMTPSA id j6-20020a05600c190600b0037c3659a12fsm18783669wmq.6.2022.02.28.07.31.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 07:31:29 -0800 (PST)
-Message-ID: <b8eb2e55-b5a8-4a39-86cb-93cadbd67922@conchuod.ie>
-Date:   Mon, 28 Feb 2022 15:35:03 +0000
+        Mon, 28 Feb 2022 10:32:47 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8B882D15;
+        Mon, 28 Feb 2022 07:32:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646062328; x=1677598328;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=A3kdMGKBPJg68rq8VDU9FNscngH3Bv2jiEeKZ84eaOw=;
+  b=biKhEqbL/4pJO/5Z/e5X+uftMwbynO0DNV0e5RfST5Ug7eMNSItTrvG2
+   uUUsxblvF6UytWbQ/wltoVNiP1ib+LBmS8ZGAdOBHBapabnVgg393H1p6
+   EeaCQ1ijGYATYDcJJ5RwG07mgB8Qlfbx6xf4PNU4gILnHg6DtN5T0yvXv
+   YJvfrnIf0ge6c1JmwUQyUJwfeR0zUTx0fpNO9Teb38VSi0+bmHK3/9gqm
+   9hO7L2Wz8HXMilMSKJwxmJM1yxwa1E54+exHGFE1DEtM6pMgjwqdzDzxc
+   qeEfL5PpE3eSDs/ZhB+qGGcpp2vmsqcNot2XTF19UIsS7VTmp2hZi6bKt
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="236412845"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="236412845"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 07:32:08 -0800
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="550281259"
+Received: from eliasbro-mobl.amr.corp.intel.com (HELO [10.212.174.65]) ([10.212.174.65])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 07:32:07 -0800
+Message-ID: <0e06910b-9313-94ae-11e3-10a2b14645f2@intel.com>
+Date:   Mon, 28 Feb 2022 07:32:02 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] SoC: polarfire: fix build warning
 Content-Language: en-US
-To:     Arnd Bergmann <arnd@kernel.org>,
-        Lewis Hanly <lewis.hanly@microchip.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Conor Dooley <conor.dooley@microchip.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-References: <20220228152658.3367506-1-arnd@kernel.org>
-From:   Conor Dooley <mail@conchuod.ie>
-In-Reply-To: <20220228152658.3367506-1-arnd@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     linux-sgx@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Jethro Beekman <jethro@fortanix.com>,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>
+References: <20220222120342.5277-1-jarkko@kernel.org>
+ <33646f1e-da44-503a-c454-02658d512926@intel.com> <YhzGS+x0eNoc3gyN@iki.fi>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH v4] x86/sgx: Free backing memory after faulting the
+ enclave page
+In-Reply-To: <YhzGS+x0eNoc3gyN@iki.fi>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I had sent a fix for the build warning on saturday morning - but I guess 
-you missed it.
+On 2/28/22 04:55, Jarkko Sakkinen wrote:
+> I thought that the formula is so simple that it does not matter if it is
+> just in two sites open coded but I can wrap it too, if required, e.g.
+> 
+> /* 
+>  * Calculate byte offset of a PCMD struct associated to an enclave page.
+>  * PCMD's follow right after the EPC data in the backing storage. In
+>  * addition to the visible enclave pages, there's one extra page slot
+>  * for SECS, before PCMD data.
+>  */
+> static pgoff_t *sgx_encl_page_index_to_pcmd_offset(struct sgx_encl *encl, unsigned long page_index)
+> {
+>         return encl->size + PAGE_SIZE + page_index * sizeof(struct sgx_pcmd);
+> }
 
-Thanks for fixing it anyway :)
-Conor.
+Yes, it's required.  Please wrap it.
 
-On 28/02/2022 15:26, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> The newly added driver causes a build warning because of a missing
-> prototype:
-> 
-> drivers/soc/microchip/mpfs-sys-controller.c:76:6: warning: no previous prototype for function 'mpfs_sys_controller_put' [-Wmissing-prototypes]
-> 
-> Link: https://lore.kernel.org/llvm/202202260947.F5T1YNao-lkp@intel.com/
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: d0054a470c33 ("soc: add microchip polarfire soc system controller")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> I've applied this to the arm/drivers branch as a fixup
-> 
->   include/soc/microchip/mpfs.h | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/include/soc/microchip/mpfs.h b/include/soc/microchip/mpfs.h
-> index 6466515262bd..969b5239521e 100644
-> --- a/include/soc/microchip/mpfs.h
-> +++ b/include/soc/microchip/mpfs.h
-> @@ -38,6 +38,8 @@ int mpfs_blocking_transaction(struct mpfs_sys_controller *mpfs_client, struct mp
->   
->   struct mpfs_sys_controller *mpfs_sys_controller_get(struct device *dev);
->   
-> +void mpfs_sys_controller_put(void *data);
-> +
->   #endif /* if IS_ENABLED(CONFIG_POLARFIRE_SOC_SYS_CTRL) */
->   
->   #endif /* __SOC_MPFS_H__ */
+There's also nothing wrong with spreading that calculation across
+several lines.  It may be arithmetically simple, but it's combining
+three or four logical steps.  There's no shame in separating and
+commenting some of those separately.
