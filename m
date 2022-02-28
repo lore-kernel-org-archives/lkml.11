@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32FD5C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B42C3525B
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240373AbiB1SD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:03:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
+        id S240794AbiB1SEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:04:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239864AbiB1Rxg (ORCPT
+        with ESMTP id S239468AbiB1RxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:36 -0500
+        Mon, 28 Feb 2022 12:53:05 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0211BAD125;
-        Mon, 28 Feb 2022 09:41:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB8DA996B;
+        Mon, 28 Feb 2022 09:40:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A197F61540;
-        Mon, 28 Feb 2022 17:41:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA557C340E7;
-        Mon, 28 Feb 2022 17:41:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FFB26154F;
+        Mon, 28 Feb 2022 17:40:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 187C8C340E7;
+        Mon, 28 Feb 2022 17:40:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070064;
-        bh=E6574w75kqATyqu0nXYHqLTZcMPRkRFDJ7mSeoReHQw=;
+        s=korg; t=1646070022;
+        bh=kcKxsW8Q8xpBHWLZSMDqe7m3Do9CkKyNlANTKWSkuSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p08fgbR42osb8HT1UboHmXbtmdjNiCUHULG+r+xyijKCoclSil+eboGv0VdTZk+vL
-         EmIeKH3vhmPkKOVMTVJylN++MKIb1rfhV+ql5QUyWXqYWUBomBEDx2Y8PSxLD8Bo/5
-         KAp0Vsbmk62LNOCR857aYg8MqLSgLQbhmlOfk0IA=
+        b=vEKpcRkYJWsIklHQxRVDeHOXXg0DlbIAmkQ6e30SFDHEm9d5tpTwCWOnglEBkaVRw
+         IGnxbLYNFONushT/QUGQ9f7wssKQCFjrZhc59+S2q7xAtgNWZZc/mob8lstb6w8P8V
+         lEA8xKr2vqDBbeAebEaQ5Q9OeTHEJhByaO2EXrwM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable@kernel.org,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.15 112/139] usb: dwc3: pci: Add "snps,dis_u2_susphy_quirk" for Intel Bay Trail
-Date:   Mon, 28 Feb 2022 18:24:46 +0100
-Message-Id: <20220228172359.409814981@linuxfoundation.org>
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.15 098/139] iio: adc: tsc2046: fix memory corruption by preventing array overflow
+Date:   Mon, 28 Feb 2022 18:24:32 +0100
+Message-Id: <20220228172357.946505749@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,73 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-commit d7c93a903f33ff35aa0e6b5a8032eb9755b00826 upstream.
+commit b7a78a8adaa8849c02f174d707aead0f85dca0da upstream.
 
-Commit e0082698b689 ("usb: dwc3: ulpi: conditionally resume ULPI PHY")
-fixed an issue where ULPI transfers would timeout if any requests where
-send to the phy sometime after init, giving it enough time to auto-suspend.
+On one side we have indio_dev->num_channels includes all physical channels +
+timestamp channel. On other side we have an array allocated only for
+physical channels. So, fix memory corruption by ARRAY_SIZE() instead of
+num_channels variable.
 
-Commit e5f4ca3fce90 ("usb: dwc3: ulpi: Fix USB2.0 HS/FS/LS PHY suspend
-regression") changed the behavior to instead of clearing the
-DWC3_GUSB2PHYCFG_SUSPHY bit, add an extra sleep when it is set.
+Note the first case is a cleanup rather than a fix as the software
+timestamp channel bit in active_scanmask is never set by the IIO core.
 
-But on Bay Trail devices, when phy_set_mode() gets called during init,
-this leads to errors like these:
-[   28.451522] tusb1210 dwc3.ulpi: error -110 writing val 0x01 to reg 0x0a
-[   28.464089] tusb1210 dwc3.ulpi: error -110 writing val 0x01 to reg 0x0a
-
-Add "snps,dis_u2_susphy_quirk" to the settings for Bay Trail devices to
-fix this. This restores the old behavior for Bay Trail devices, since
-previously the DWC3_GUSB2PHYCFG_SUSPHY bit would get cleared on the first
-ulpi_read/_write() and then was never set again.
-
-Fixes: e5f4ca3fce90 ("usb: dwc3: ulpi: Fix USB2.0 HS/FS/LS PHY suspend regression")
-Cc: stable@kernel.org
-Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220213130524.18748-2-hdegoede@redhat.com
+Fixes: 9374e8f5a38d ("iio: adc: add ADC driver for the TI TSC2046 controller")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220107081401.2816357-1-o.rempel@pengutronix.de
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ti-tsc2046.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -119,6 +119,13 @@ static const struct property_entry dwc3_
- 	{}
- };
+diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
+index d84ae6b008c1..e8fc4d01f30b 100644
+--- a/drivers/iio/adc/ti-tsc2046.c
++++ b/drivers/iio/adc/ti-tsc2046.c
+@@ -388,7 +388,7 @@ static int tsc2046_adc_update_scan_mode(struct iio_dev *indio_dev,
+ 	mutex_lock(&priv->slock);
  
-+static const struct property_entry dwc3_pci_intel_byt_properties[] = {
-+	PROPERTY_ENTRY_STRING("dr_mode", "peripheral"),
-+	PROPERTY_ENTRY_BOOL("snps,dis_u2_susphy_quirk"),
-+	PROPERTY_ENTRY_BOOL("linux,sysdev_is_parent"),
-+	{}
-+};
-+
- static const struct property_entry dwc3_pci_mrfld_properties[] = {
- 	PROPERTY_ENTRY_STRING("dr_mode", "otg"),
- 	PROPERTY_ENTRY_STRING("linux,extcon-name", "mrfld_bcove_pwrsrc"),
-@@ -161,6 +168,10 @@ static const struct software_node dwc3_p
- 	.properties = dwc3_pci_intel_properties,
- };
+ 	size = 0;
+-	for_each_set_bit(ch_idx, active_scan_mask, indio_dev->num_channels) {
++	for_each_set_bit(ch_idx, active_scan_mask, ARRAY_SIZE(priv->l)) {
+ 		size += tsc2046_adc_group_set_layout(priv, group, ch_idx);
+ 		tsc2046_adc_group_set_cmd(priv, group, ch_idx);
+ 		group++;
+@@ -548,7 +548,7 @@ static int tsc2046_adc_setup_spi_msg(struct tsc2046_adc_priv *priv)
+ 	 * enabled.
+ 	 */
+ 	size = 0;
+-	for (ch_idx = 0; ch_idx < priv->dcfg->num_channels; ch_idx++)
++	for (ch_idx = 0; ch_idx < ARRAY_SIZE(priv->l); ch_idx++)
+ 		size += tsc2046_adc_group_set_layout(priv, ch_idx, ch_idx);
  
-+static const struct software_node dwc3_pci_intel_byt_swnode = {
-+	.properties = dwc3_pci_intel_byt_properties,
-+};
-+
- static const struct software_node dwc3_pci_intel_mrfld_swnode = {
- 	.properties = dwc3_pci_mrfld_properties,
- };
-@@ -344,7 +355,7 @@ static const struct pci_device_id dwc3_p
- 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
- 
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_BYT),
--	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
-+	  (kernel_ulong_t) &dwc3_pci_intel_byt_swnode, },
- 
- 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MRFLD),
- 	  (kernel_ulong_t) &dwc3_pci_intel_mrfld_swnode, },
+ 	priv->tx = devm_kzalloc(&priv->spi->dev, size, GFP_KERNEL);
+-- 
+2.35.1
+
 
 
