@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20511C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3651C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239469AbiB1SB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:01:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
+        id S239146AbiB1SCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:02:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240757AbiB1Rye (ORCPT
+        with ESMTP id S240797AbiB1Ryp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88BE50072;
-        Mon, 28 Feb 2022 09:42:59 -0800 (PST)
+        Mon, 28 Feb 2022 12:54:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603AA5371F;
+        Mon, 28 Feb 2022 09:43:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A4326066C;
-        Mon, 28 Feb 2022 17:42:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 501C2C340E7;
-        Mon, 28 Feb 2022 17:42:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFA20608D5;
+        Mon, 28 Feb 2022 17:43:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0169BC340F1;
+        Mon, 28 Feb 2022 17:43:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070178;
-        bh=ACZ/mF0AOC6mrgyh/xkDP9r2lrB+sF7VRAOiOBErrLo=;
+        s=korg; t=1646070229;
+        bh=6dmsWtF2WF6CEy7yiT59gPr76gbVM+Z8NfW08yZAGbI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vGbL3W8/4hWn88wJ0lfPMZXz0Gv7sM3Xp/b3b3PN/l754/L+7XixQBlykLi76CqD2
-         wwCKBEe/857e6exax22MmXk0Vw59z37jQuZuVh8x/xDBR7iB92mtJMP5vdGoS9B9og
-         sXzYX72sj7zyhuDZekKwcrUCHJV96JNsFWfDSrgk=
+        b=yUXTwfcXnEdrTRsRU6DikCqruPKEQIuMHjeObtVU6H1VazOsWGppreuKA6nfHsxTp
+         PgIHzHnTQnw/7aMn8DXbTEfU29+8UgA+Xrgmknkc5ptVsI3Bmkzlirwa/6viivmRy0
+         fU4p6QYbnEF49eETpV3BIB0++X1VFbiy4tCMeEA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 015/164] KVM: x86: nSVM: disallow userspace setting of MSR_AMD64_TSC_RATIO to non default value when tsc scaling disabled
-Date:   Mon, 28 Feb 2022 18:22:57 +0100
-Message-Id: <20220228172401.290195192@linuxfoundation.org>
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>
+Subject: [PATCH 5.16 033/164] ping: remove pr_err from ping_lookup
+Date:   Mon, 28 Feb 2022 18:23:15 +0100
+Message-Id: <20220228172403.242099098@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,55 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Levitsky <mlevitsk@redhat.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-commit e910a53fb4f20aa012e46371ffb4c32c8da259b4 upstream.
+commit cd33bdcbead882c2e58fdb4a54a7bd75b610a452 upstream.
 
-If nested tsc scaling is disabled, MSR_AMD64_TSC_RATIO should
-never have non default value.
+As Jakub noticed, prints should be avoided on the datapath.
+Also, as packets would never come to the else branch in
+ping_lookup(), remove pr_err() from ping_lookup().
 
-Due to way nested tsc scaling support was implmented in qemu,
-it would set this msr to 0 when nested tsc scaling was disabled.
-Ignore that value for now, as it causes no harm.
-
-Fixes: 5228eb96a487 ("KVM: x86: nSVM: implement nested TSC scaling")
-Cc: stable@vger.kernel.org
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Message-Id: <20220223115649.319134-1-mlevitsk@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 35a79e64de29 ("ping: fix the dif and sdif check in ping_lookup")
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Link: https://lore.kernel.org/r/1ef3f2fcd31bd681a193b1fcf235eee1603819bd.1645674068.git.lucien.xin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/svm/svm.c |   19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ net/ipv4/ping.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -2903,8 +2903,23 @@ static int svm_set_msr(struct kvm_vcpu *
- 	u64 data = msr->data;
- 	switch (ecx) {
- 	case MSR_AMD64_TSC_RATIO:
--		if (!msr->host_initiated && !svm->tsc_scaling_enabled)
--			return 1;
-+
-+		if (!svm->tsc_scaling_enabled) {
-+
-+			if (!msr->host_initiated)
-+				return 1;
-+			/*
-+			 * In case TSC scaling is not enabled, always
-+			 * leave this MSR at the default value.
-+			 *
-+			 * Due to bug in qemu 6.2.0, it would try to set
-+			 * this msr to 0 if tsc scaling is not enabled.
-+			 * Ignore this value as well.
-+			 */
-+			if (data != 0 && data != svm->tsc_ratio_msr)
-+				return 1;
-+			break;
-+		}
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -187,7 +187,6 @@ static struct sock *ping_lookup(struct n
+ 			 (int)ident, &ipv6_hdr(skb)->daddr, dif);
+ #endif
+ 	} else {
+-		pr_err("ping: protocol(%x) is not supported\n", ntohs(skb->protocol));
+ 		return NULL;
+ 	}
  
- 		if (data & TSC_RATIO_RSVD)
- 			return 1;
 
 
