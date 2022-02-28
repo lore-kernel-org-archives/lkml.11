@@ -2,201 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 982C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC4DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236433AbiB1MY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:24:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
+        id S236343AbiB1MYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:24:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236282AbiB1MYH (ORCPT
+        with ESMTP id S236315AbiB1MXq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:24:07 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E3C75218
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:23:25 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id 12so11261924pgd.0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:23:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+Fd7li1iOMpK7jvkCUIxllzXaVUUg0Vj1c4/CWRZnB0=;
-        b=OmTVqBVEoCQsCJh5cQrW3YGi2ivgre7SGfWjAQT5JfZdvx7QYprKZ4R5EBpIxBheXj
-         pW2QdcSq7+hCU4EsfxTF0uLKINSLfyDEj0ttE6P2mZ0IJwUfVQmxb8lE94HF1rWAMQit
-         Wi/KaoKx5S+S/k6QX39c56uWjPQiadjRv/cdAFU/XkHBxtjMjicPztddBQaokGYfegQk
-         zPRCgiAo8KCReehGB4RxMRc2/S2PrTwF7z4y37Lii2hFaOQ5G8A9+/zKxWmSO0CrIChq
-         +NJoPkyZ5VvL5jqjUTLg5+s/rh0xqe8am/ASAjV1zkHmrbwLs/st+bfqrOXh/I03TEig
-         48sA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+Fd7li1iOMpK7jvkCUIxllzXaVUUg0Vj1c4/CWRZnB0=;
-        b=kx8PHV3xwsED97G/G+UJyxMT+PeyneWl891zKjTBanM9SaQMh7Z2qTj7gSCSa0xkLb
-         UsyY+cU8nOE8DsmexXVsAIoezq7ks/4xDNjTbYdyIcDMpulV3bTDWsFMIAZCXF44lqb9
-         IeCz9JKT1/CWzkjqVLTX+xNIdpSxBGdEKshZ6vMDcKwI3Pyt5l9WXpLEJ+2fgSb4YkYu
-         StSi1FLRuVPl/KsxC++7/JXwIn7PBqSif9dCnGzAQEqoNChMgN8vQGK7EwiANwTufk/z
-         bNBZjn2eTpEZ00epuOAp4/4c816G+r/6yhuALJCxZFAIgHMQswN0GBoMDDiXGGu4DrzS
-         LYBg==
-X-Gm-Message-State: AOAM531HLv34jIyur6jKvl0jcYiUp6jKxNtQnc20w3zz9v1PesmRP5xZ
-        R7Ef1CodBXSVTAzlUEIsqM4kBA==
-X-Google-Smtp-Source: ABdhPJyTtLogBLlA8TUxa8YlltGEoXIBGc16lzGJxC0sfwr8X6oVevbD/+aMp2kL+7EUsF9EGu9vLw==
-X-Received: by 2002:a05:6a00:1706:b0:4df:7fe0:841a with SMTP id h6-20020a056a00170600b004df7fe0841amr21287409pfc.64.1646051004721;
-        Mon, 28 Feb 2022 04:23:24 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
-        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.23.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 04:23:24 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
-        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
-        richard.weiyang@gmail.com, david@fromorbit.com,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
-        vbabka@suse.cz
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
-        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
-        fam.zheng@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v6 08/16] xarray: use kmem_cache_alloc_lru to allocate xa_node
-Date:   Mon, 28 Feb 2022 20:21:18 +0800
-Message-Id: <20220228122126.37293-9-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
-References: <20220228122126.37293-1-songmuchun@bytedance.com>
+        Mon, 28 Feb 2022 07:23:46 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E10470336;
+        Mon, 28 Feb 2022 04:23:06 -0800 (PST)
+Date:   Mon, 28 Feb 2022 13:23:02 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1646050984;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=a/Gjv/OGZldokMkNnypLm+ugx/pyxGjoMpJLTQ9iw6A=;
+        b=MQcsEhVZsLP/sJSz3T/JzOXlqqQyKENsAVUsisZbwcnTaOQFwh6lybBhbnAWdtiWor19mv
+        DrtcF62iWDP5chPiqZoV3KQ6thA+dPOfGUcwEcnNZsI70IQLM/9rneH0HT5zDTWZoWS+v7
+        0r+tHJAKMTBtm4w44Cp4S3vBPiZ60kE=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Richard Leitner <richard.leitner@linux.dev>
+To:     Pavel Machek <pavel@denx.de>
+Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Tommaso Merciai <tomm.merciai@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        richard.leitner@skidata.com, linux-usb@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.10 04/23] usb: usb251xb: add boost-up property
+ support
+Message-ID: <Yhy+pvprwSx4zdCG@ltleri2>
+References: <20220215152957.581303-1-sashal@kernel.org>
+ <20220215152957.581303-4-sashal@kernel.org>
+ <20220220101256.GC7321@amd>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220220101256.GC7321@amd>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The workingset will add the xa_node to the shadow_nodes list. So the
-allocation of xa_node should be done by kmem_cache_alloc_lru(). Using
-xas_set_lru() to pass the list_lru which we want to insert xa_node
-into to set up the xa_node reclaim context correctly.
+Hi,
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
----
- include/linux/swap.h   |  5 ++++-
- include/linux/xarray.h |  9 ++++++++-
- lib/xarray.c           | 10 +++++-----
- mm/workingset.c        |  2 +-
- 4 files changed, 18 insertions(+), 8 deletions(-)
+On Sun, Feb 20, 2022 at 11:12:57AM +0100, Pavel Machek wrote:
+> Hi!
+> 
+> > From: Tommaso Merciai <tomm.merciai@gmail.com>
+> > 
+> > [ Upstream commit 5c2b9c61ae5d8ad0a196d33b66ce44543be22281 ]
+> > 
+> > Add support for boost-up register of usb251xb hub.
+> > boost-up property control USB electrical drive strength
+> > This register can be set:
+> > 
+> >  - Normal mode -> 0x00
+> >  - Low         -> 0x01
+> >  - Medium      -> 0x10
+> >  - High        -> 0x11
+> > 
+> > (Normal Default)
+> > 
+> > References:
+> >  - http://www.mouser.com/catalog/specsheets/2514.pdf p29
+> 
+> Should the boost-up property be documented somewhere in the kernel
+> tree? We normally do that for device tree properties. And we normally
+> have properties used somewhere in the device tree. What is going on here?
 
-diff --git a/include/linux/swap.h b/include/linux/swap.h
-index 1d38d9475c4d..3db431276d82 100644
---- a/include/linux/swap.h
-+++ b/include/linux/swap.h
-@@ -334,9 +334,12 @@ void workingset_activation(struct folio *folio);
- 
- /* Only track the nodes of mappings with shadow entries */
- void workingset_update_node(struct xa_node *node);
-+extern struct list_lru shadow_nodes;
- #define mapping_set_update(xas, mapping) do {				\
--	if (!dax_mapping(mapping) && !shmem_mapping(mapping))		\
-+	if (!dax_mapping(mapping) && !shmem_mapping(mapping)) {		\
- 		xas_set_update(xas, workingset_update_node);		\
-+		xas_set_lru(xas, &shadow_nodes);			\
-+	}								\
- } while (0)
- 
- /* linux/mm/page_alloc.c */
-diff --git a/include/linux/xarray.h b/include/linux/xarray.h
-index d6d5da6ed735..bb52b786be1b 100644
---- a/include/linux/xarray.h
-+++ b/include/linux/xarray.h
-@@ -1317,6 +1317,7 @@ struct xa_state {
- 	struct xa_node *xa_node;
- 	struct xa_node *xa_alloc;
- 	xa_update_node_t xa_update;
-+	struct list_lru *xa_lru;
- };
- 
- /*
-@@ -1336,7 +1337,8 @@ struct xa_state {
- 	.xa_pad = 0,					\
- 	.xa_node = XAS_RESTART,				\
- 	.xa_alloc = NULL,				\
--	.xa_update = NULL				\
-+	.xa_update = NULL,				\
-+	.xa_lru = NULL,					\
- }
- 
- /**
-@@ -1631,6 +1633,11 @@ static inline void xas_set_update(struct xa_state *xas, xa_update_node_t update)
- 	xas->xa_update = update;
- }
- 
-+static inline void xas_set_lru(struct xa_state *xas, struct list_lru *lru)
-+{
-+	xas->xa_lru = lru;
-+}
-+
- /**
-  * xas_next_entry() - Advance iterator to next present entry.
-  * @xas: XArray operation state.
-diff --git a/lib/xarray.c b/lib/xarray.c
-index 6f47f6375808..b95e92598b9c 100644
---- a/lib/xarray.c
-+++ b/lib/xarray.c
-@@ -302,7 +302,7 @@ bool xas_nomem(struct xa_state *xas, gfp_t gfp)
- 	}
- 	if (xas->xa->xa_flags & XA_FLAGS_ACCOUNT)
- 		gfp |= __GFP_ACCOUNT;
--	xas->xa_alloc = kmem_cache_alloc(radix_tree_node_cachep, gfp);
-+	xas->xa_alloc = kmem_cache_alloc_lru(radix_tree_node_cachep, xas->xa_lru, gfp);
- 	if (!xas->xa_alloc)
- 		return false;
- 	xas->xa_alloc->parent = NULL;
-@@ -334,10 +334,10 @@ static bool __xas_nomem(struct xa_state *xas, gfp_t gfp)
- 		gfp |= __GFP_ACCOUNT;
- 	if (gfpflags_allow_blocking(gfp)) {
- 		xas_unlock_type(xas, lock_type);
--		xas->xa_alloc = kmem_cache_alloc(radix_tree_node_cachep, gfp);
-+		xas->xa_alloc = kmem_cache_alloc_lru(radix_tree_node_cachep, xas->xa_lru, gfp);
- 		xas_lock_type(xas, lock_type);
- 	} else {
--		xas->xa_alloc = kmem_cache_alloc(radix_tree_node_cachep, gfp);
-+		xas->xa_alloc = kmem_cache_alloc_lru(radix_tree_node_cachep, xas->xa_lru, gfp);
- 	}
- 	if (!xas->xa_alloc)
- 		return false;
-@@ -371,7 +371,7 @@ static void *xas_alloc(struct xa_state *xas, unsigned int shift)
- 		if (xas->xa->xa_flags & XA_FLAGS_ACCOUNT)
- 			gfp |= __GFP_ACCOUNT;
- 
--		node = kmem_cache_alloc(radix_tree_node_cachep, gfp);
-+		node = kmem_cache_alloc_lru(radix_tree_node_cachep, xas->xa_lru, gfp);
- 		if (!node) {
- 			xas_set_err(xas, -ENOMEM);
- 			return NULL;
-@@ -1014,7 +1014,7 @@ void xas_split_alloc(struct xa_state *xas, void *entry, unsigned int order,
- 		void *sibling = NULL;
- 		struct xa_node *node;
- 
--		node = kmem_cache_alloc(radix_tree_node_cachep, gfp);
-+		node = kmem_cache_alloc_lru(radix_tree_node_cachep, xas->xa_lru, gfp);
- 		if (!node)
- 			goto nomem;
- 		node->array = xas->xa;
-diff --git a/mm/workingset.c b/mm/workingset.c
-index 8c03afe1d67c..979c7130c266 100644
---- a/mm/workingset.c
-+++ b/mm/workingset.c
-@@ -429,7 +429,7 @@ void workingset_activation(struct folio *folio)
-  * point where they would still be useful.
-  */
- 
--static struct list_lru shadow_nodes;
-+struct list_lru shadow_nodes;
- 
- void workingset_update_node(struct xa_node *node)
- {
--- 
-2.11.0
+AFAIK this patch was dropped for all stable releases, so this specific
+AUTOSEL message/thread is obsolete.
 
+Nonetheless the DT documentation is also missing on master. Therefore
+I guess it should be provided asap 😉
+
+Tommaso, can you provide a patch?
+
+regards;rl
+
+> 
+> Best regards,
+> 							Pavel
