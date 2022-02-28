@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD46C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA0BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239358AbiB1R5W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:57:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        id S237349AbiB1R52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:57:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240045AbiB1Rxw (ORCPT
+        with ESMTP id S240064AbiB1Rxx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ACDDB0C5B;
-        Mon, 28 Feb 2022 09:41:27 -0800 (PST)
+        Mon, 28 Feb 2022 12:53:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49CEB0C7C;
+        Mon, 28 Feb 2022 09:41:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82164B815B4;
-        Mon, 28 Feb 2022 17:41:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA9BEC340E7;
-        Mon, 28 Feb 2022 17:41:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9280161590;
+        Mon, 28 Feb 2022 17:41:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6E2AC340F0;
+        Mon, 28 Feb 2022 17:41:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070086;
-        bh=jmCHv4Pcr66fmoJD8G80iizX87HKTRbZ0Vbs/HTggEE=;
+        s=korg; t=1646070089;
+        bh=7lSeKmtAk7TmkQrY5ZdGX1u07q8whDThD0ZzKg+6csA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pEi887tyzoGO8rNXrq5FZV1BWlvOU8nnricHOHe6HCToyDqcRbIKpIuqOgl3DBcBG
-         Z63KS0Y8Mqk9v1e3bGNC9XUxHaM95n/VPlDXbInGGqL9wf4+2VZ7fVh0nPNlwPNcYn
-         lI8jC0wh/vzdzkSnCay/KTZqjjarZCG895lvoVrA=
+        b=GQc6bnvIhBSzhgjmvGEexWZAsFoBnL80UgRKp8tEfzb54JFO/gn25qBFJ2d0KQF1x
+         vsWG661i0Vn3scrxmg5yuGgqsK9G9yHxx6zL/neYdbgUr/kJj6auPRKr7XBD/C8poa
+         spmH6BCYLViznw+rqDte7TCBq02lLKBjeEiVPDN4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
-Subject: [PATCH 5.15 119/139] driver core: Free DMA range map when device is released
-Date:   Mon, 28 Feb 2022 18:24:53 +0100
-Message-Id: <20220228172400.116772332@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 120/139] btrfs: prevent copying too big compressed lzo segment
+Date:   Mon, 28 Feb 2022 18:24:54 +0100
+Message-Id: <20220228172400.226471387@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,91 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mårten Lindahl <marten.lindahl@axis.com>
+From: Dāvis Mosāns <davispuh@gmail.com>
 
-commit d8f7a5484f2188e9af2d9e4e587587d724501b12 upstream.
+commit 741b23a970a79d5d3a1db2d64fa2c7b375a4febb upstream.
 
-When unbinding/binding a driver with DMA mapped memory, the DMA map is
-not freed before the driver is reloaded. This leads to a memory leak
-when the DMA map is overwritten when reprobing the driver.
+Compressed length can be corrupted to be a lot larger than memory
+we have allocated for buffer.
+This will cause memcpy in copy_compressed_segment to write outside
+of allocated memory.
 
-This can be reproduced with a platform driver having a dma-range:
+This mostly results in stuck read syscall but sometimes when using
+btrfs send can get #GP
 
-dummy {
-	...
-	#address-cells = <0x2>;
-	#size-cells = <0x2>;
-	ranges;
-	dma-ranges = <...>;
-	...
-};
+  kernel: general protection fault, probably for non-canonical address 0x841551d5c1000: 0000 [#1] PREEMPT SMP NOPTI
+  kernel: CPU: 17 PID: 264 Comm: kworker/u256:7 Tainted: P           OE     5.17.0-rc2-1 #12
+  kernel: Workqueue: btrfs-endio btrfs_work_helper [btrfs]
+  kernel: RIP: 0010:lzo_decompress_bio (./include/linux/fortify-string.h:225 fs/btrfs/lzo.c:322 fs/btrfs/lzo.c:394) btrfs
+  Code starting with the faulting instruction
+  ===========================================
+     0:*  48 8b 06                mov    (%rsi),%rax              <-- trapping instruction
+     3:   48 8d 79 08             lea    0x8(%rcx),%rdi
+     7:   48 83 e7 f8             and    $0xfffffffffffffff8,%rdi
+     b:   48 89 01                mov    %rax,(%rcx)
+     e:   44 89 f0                mov    %r14d,%eax
+    11:   48 8b 54 06 f8          mov    -0x8(%rsi,%rax,1),%rdx
+  kernel: RSP: 0018:ffffb110812efd50 EFLAGS: 00010212
+  kernel: RAX: 0000000000001000 RBX: 000000009ca264c8 RCX: ffff98996e6d8ff8
+  kernel: RDX: 0000000000000064 RSI: 000841551d5c1000 RDI: ffffffff9500435d
+  kernel: RBP: ffff989a3be856c0 R08: 0000000000000000 R09: 0000000000000000
+  kernel: R10: 0000000000000000 R11: 0000000000001000 R12: ffff98996e6d8000
+  kernel: R13: 0000000000000008 R14: 0000000000001000 R15: 000841551d5c1000
+  kernel: FS:  0000000000000000(0000) GS:ffff98a09d640000(0000) knlGS:0000000000000000
+  kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  kernel: CR2: 00001e9f984d9ea8 CR3: 000000014971a000 CR4: 00000000003506e0
+  kernel: Call Trace:
+  kernel:  <TASK>
+  kernel: end_compressed_bio_read (fs/btrfs/compression.c:104 fs/btrfs/compression.c:1363 fs/btrfs/compression.c:323) btrfs
+  kernel: end_workqueue_fn (fs/btrfs/disk-io.c:1923) btrfs
+  kernel: btrfs_work_helper (fs/btrfs/async-thread.c:326) btrfs
+  kernel: process_one_work (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:212 ./include/trace/events/workqueue.h:108 kernel/workqueue.c:2312)
+  kernel: worker_thread (./include/linux/list.h:292 kernel/workqueue.c:2455)
+  kernel: ? process_one_work (kernel/workqueue.c:2397)
+  kernel: kthread (kernel/kthread.c:377)
+  kernel: ? kthread_complete_and_exit (kernel/kthread.c:332)
+  kernel: ret_from_fork (arch/x86/entry/entry_64.S:301)
+  kernel:  </TASK>
 
-and then unbinding/binding it:
-
-~# echo soc:dummy >/sys/bus/platform/drivers/<driver>/unbind
-
-DMA map object 0xffffff800b0ae540 still being held by &pdev->dev
-
-~# echo soc:dummy >/sys/bus/platform/drivers/<driver>/bind
-~# echo scan > /sys/kernel/debug/kmemleak
-~# cat /sys/kernel/debug/kmemleak
-unreferenced object 0xffffff800b0ae540 (size 64):
-  comm "sh", pid 833, jiffies 4295174550 (age 2535.352s)
-  hex dump (first 32 bytes):
-    00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 80 00 00 00 00 00 00 00 80 00 00 00 00  ................
-  backtrace:
-    [<ffffffefd1694708>] create_object.isra.0+0x108/0x344
-    [<ffffffefd1d1a850>] kmemleak_alloc+0x8c/0xd0
-    [<ffffffefd167e2d0>] __kmalloc+0x440/0x6f0
-    [<ffffffefd1a960a4>] of_dma_get_range+0x124/0x220
-    [<ffffffefd1a8ce90>] of_dma_configure_id+0x40/0x2d0
-    [<ffffffefd198b68c>] platform_dma_configure+0x5c/0xa4
-    [<ffffffefd198846c>] really_probe+0x8c/0x514
-    [<ffffffefd1988990>] __driver_probe_device+0x9c/0x19c
-    [<ffffffefd1988cd8>] device_driver_attach+0x54/0xbc
-    [<ffffffefd1986634>] bind_store+0xc4/0x120
-    [<ffffffefd19856e0>] drv_attr_store+0x30/0x44
-    [<ffffffefd173c9b0>] sysfs_kf_write+0x50/0x60
-    [<ffffffefd173c1c4>] kernfs_fop_write_iter+0x124/0x1b4
-    [<ffffffefd16a013c>] new_sync_write+0xdc/0x160
-    [<ffffffefd16a256c>] vfs_write+0x23c/0x2a0
-    [<ffffffefd16a2758>] ksys_write+0x64/0xec
-
-To prevent this we should free the dma_range_map when the device is
-released.
-
-Fixes: e0d072782c73 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset")
-Cc: stable <stable@vger.kernel.org>
-Suggested-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
-Link: https://lore.kernel.org/r/20220216094128.4025861-1-marten.lindahl@axis.com
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/dd.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ fs/btrfs/lzo.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -629,6 +629,9 @@ re_probe:
- 			drv->remove(dev);
+--- a/fs/btrfs/lzo.c
++++ b/fs/btrfs/lzo.c
+@@ -363,6 +363,17 @@ int lzo_decompress_bio(struct list_head
+ 		kunmap(cur_page);
+ 		cur_in += LZO_LEN;
  
- 		devres_release_all(dev);
-+		arch_teardown_dma_ops(dev);
-+		kfree(dev->dma_range_map);
-+		dev->dma_range_map = NULL;
- 		driver_sysfs_remove(dev);
- 		dev->driver = NULL;
- 		dev_set_drvdata(dev, NULL);
-@@ -1208,6 +1211,8 @@ static void __device_release_driver(stru
++		if (seg_len > lzo1x_worst_compress(PAGE_SIZE)) {
++			/*
++			 * seg_len shouldn't be larger than we have allocated
++			 * for workspace->cbuf
++			 */
++			btrfs_err(fs_info, "unexpectedly large lzo segment len %u",
++					seg_len);
++			ret = -EIO;
++			goto out;
++		}
++
+ 		/* Copy the compressed segment payload into workspace */
+ 		copy_compressed_segment(cb, workspace->cbuf, seg_len, &cur_in);
  
- 		devres_release_all(dev);
- 		arch_teardown_dma_ops(dev);
-+		kfree(dev->dma_range_map);
-+		dev->dma_range_map = NULL;
- 		dev->driver = NULL;
- 		dev_set_drvdata(dev, NULL);
- 		if (dev->pm_domain && dev->pm_domain->dismiss)
 
 
