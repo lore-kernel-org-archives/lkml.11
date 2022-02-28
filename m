@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD68C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20511C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239437AbiB1SBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:01:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51118 "EHLO
+        id S239469AbiB1SB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:01:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240760AbiB1Rye (ORCPT
+        with ESMTP id S240757AbiB1Rye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF32B517FB;
-        Mon, 28 Feb 2022 09:43:07 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88BE50072;
+        Mon, 28 Feb 2022 09:42:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A2986066C;
-        Mon, 28 Feb 2022 17:43:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FB0CC340E7;
-        Mon, 28 Feb 2022 17:43:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A4326066C;
+        Mon, 28 Feb 2022 17:42:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 501C2C340E7;
+        Mon, 28 Feb 2022 17:42:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070186;
-        bh=zDYCCP6XlbqDA7HQmF4fkp/z4EVHh+jJNhPF7P1qHN8=;
+        s=korg; t=1646070178;
+        bh=ACZ/mF0AOC6mrgyh/xkDP9r2lrB+sF7VRAOiOBErrLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t8eYZc5DU+bZEjcysKDPGbmft1VKcLf3lSj3fj0xhLiIHka4syx3g/eEFYUIQqBDr
-         LPpK++uNheyi5ETcE3RWLgmZsoN9iVWLHo8ZlnbaWW3LwbdadRYMKAgI7scP/V1vxJ
-         DUNVF5JpqnVgwKCjQ6yKPRK1ID/UHcbEk/vgSIR8=
+        b=vGbL3W8/4hWn88wJ0lfPMZXz0Gv7sM3Xp/b3b3PN/l754/L+7XixQBlykLi76CqD2
+         wwCKBEe/857e6exax22MmXk0Vw59z37jQuZuVh8x/xDBR7iB92mtJMP5vdGoS9B9og
+         sXzYX72sj7zyhuDZekKwcrUCHJV96JNsFWfDSrgk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhao Gongyi <zhaogongyi@huawei.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>,
-        Waiman Long <longman@redhat.com>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.16 002/164] cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug
-Date:   Mon, 28 Feb 2022 18:22:44 +0100
-Message-Id: <20220228172359.834952202@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 015/164] KVM: x86: nSVM: disallow userspace setting of MSR_AMD64_TSC_RATIO to non default value when tsc scaling disabled
+Date:   Mon, 28 Feb 2022 18:22:57 +0100
+Message-Id: <20220228172401.290195192@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -51,59 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Qiao <zhangqiao22@huawei.com>
+From: Maxim Levitsky <mlevitsk@redhat.com>
 
-commit 05c7b7a92cc87ff8d7fde189d0fade250697573c upstream.
+commit e910a53fb4f20aa012e46371ffb4c32c8da259b4 upstream.
 
-As previously discussed(https://lkml.org/lkml/2022/1/20/51),
-cpuset_attach() is affected with similar cpu hotplug race,
-as follow scenario:
+If nested tsc scaling is disabled, MSR_AMD64_TSC_RATIO should
+never have non default value.
 
-     cpuset_attach()				cpu hotplug
-    ---------------------------            ----------------------
-    down_write(cpuset_rwsem)
-    guarantee_online_cpus() // (load cpus_attach)
-					sched_cpu_deactivate
-					  set_cpu_active()
-					  // will change cpu_active_mask
-    set_cpus_allowed_ptr(cpus_attach)
-      __set_cpus_allowed_ptr_locked()
-       // (if the intersection of cpus_attach and
-         cpu_active_mask is empty, will return -EINVAL)
-    up_write(cpuset_rwsem)
+Due to way nested tsc scaling support was implmented in qemu,
+it would set this msr to 0 when nested tsc scaling was disabled.
+Ignore that value for now, as it causes no harm.
 
-To avoid races such as described above, protect cpuset_attach() call
-with cpu_hotplug_lock.
+Fixes: 5228eb96a487 ("KVM: x86: nSVM: implement nested TSC scaling")
+Cc: stable@vger.kernel.org
 
-Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
-Cc: stable@vger.kernel.org # v2.6.32+
-Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
-Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
-Acked-by: Waiman Long <longman@redhat.com>
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Message-Id: <20220223115649.319134-1-mlevitsk@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |    2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/kvm/svm/svm.c |   19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -2269,6 +2269,7 @@ static void cpuset_attach(struct cgroup_
- 	cgroup_taskset_first(tset, &css);
- 	cs = css_cs(css);
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -2903,8 +2903,23 @@ static int svm_set_msr(struct kvm_vcpu *
+ 	u64 data = msr->data;
+ 	switch (ecx) {
+ 	case MSR_AMD64_TSC_RATIO:
+-		if (!msr->host_initiated && !svm->tsc_scaling_enabled)
+-			return 1;
++
++		if (!svm->tsc_scaling_enabled) {
++
++			if (!msr->host_initiated)
++				return 1;
++			/*
++			 * In case TSC scaling is not enabled, always
++			 * leave this MSR at the default value.
++			 *
++			 * Due to bug in qemu 6.2.0, it would try to set
++			 * this msr to 0 if tsc scaling is not enabled.
++			 * Ignore this value as well.
++			 */
++			if (data != 0 && data != svm->tsc_ratio_msr)
++				return 1;
++			break;
++		}
  
-+	cpus_read_lock();
- 	percpu_down_write(&cpuset_rwsem);
- 
- 	guarantee_online_mems(cs, &cpuset_attach_nodemask_to);
-@@ -2322,6 +2323,7 @@ static void cpuset_attach(struct cgroup_
- 		wake_up(&cpuset_attach_wq);
- 
- 	percpu_up_write(&cpuset_rwsem);
-+	cpus_read_unlock();
- }
- 
- /* The various types of files and directories in a cpuset file system */
+ 		if (data & TSC_RATIO_RSVD)
+ 			return 1;
 
 
