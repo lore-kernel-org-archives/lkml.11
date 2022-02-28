@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83144C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F681C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239318AbiB1SGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:06:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
+        id S239307AbiB1SGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:06:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239753AbiB1SCe (ORCPT
+        with ESMTP id S239773AbiB1SCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:02:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958A8522C7;
-        Mon, 28 Feb 2022 09:46:02 -0800 (PST)
+        Mon, 28 Feb 2022 13:02:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9FA9D06C;
+        Mon, 28 Feb 2022 09:46:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 379ABB815C6;
-        Mon, 28 Feb 2022 17:46:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C4FC340F1;
-        Mon, 28 Feb 2022 17:46:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7281B81187;
+        Mon, 28 Feb 2022 17:45:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 302FDC340F3;
+        Mon, 28 Feb 2022 17:45:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070360;
-        bh=0leDAzX86teA78GwaoD+ubeZaW6X+jtdR+Zlfk2BI4o=;
+        s=korg; t=1646070344;
+        bh=/msaSY+WqBTLpnAYFKfOlGUPi776Si31St0tFMJTiVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sDAzfhw/AC0fu+Q5uB11KcSgDDuCZ7gwNQ7IaOwU0QxbC0mjyFa9srHJ2wznDsEtK
-         95mTjB7xuoEBkubSJF+x5iT+SqOFDtlFK8wug+OMSE1B1clObcUKrUToPWQtIIFT2D
-         +US7P8B1fvlcoK2ihgS6w3XivrMFaSLrsxj2B/lk=
+        b=TB7Ara9qYqwy1M05bPZ0fzeCIDrS9gFJ+8/3hs42/ypRwQ0Djj5HYfB569MjOd1b5
+         nNnkfPbBIZL0rC4kMrnVx6p1KPDKr26A/JhWsI3aF7VtGqLt5Lef4CBfAOclxpa5Cn
+         FQ1h5BGfANuElnHQ79NMNWaRykcsg88GwrpDpd9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+e918523f77e62790d6d9@syzkaller.appspotmail.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.16 080/164] netfilter: nf_tables: unregister flowtable hooks on netns exit
-Date:   Mon, 28 Feb 2022 18:24:02 +0100
-Message-Id: <20220228172407.246282127@linuxfoundation.org>
+        stable@vger.kernel.org, Matt Roper <matthew.d.roper@intel.com>,
+        Swathi Dhanavanthri <swathi.dhanavanthri@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.16 075/164] drm/i915/dg2: Print PHY name properly on calibration error
+Date:   Mon, 28 Feb 2022 18:23:57 +0100
+Message-Id: <20220228172406.853274007@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,69 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Matt Roper <matthew.d.roper@intel.com>
 
-commit 6069da443bf65f513bb507bb21e2f87cfb1ad0b6 upstream.
+commit 28adef861233c6fce47372ebd2070b55eaa8e899 upstream.
 
-Unregister flowtable hooks before they are releases via
-nf_tables_flowtable_destroy() otherwise hook core reports UAF.
+We need to use phy_name() to convert the PHY value into a human-readable
+character in the error message.
 
-BUG: KASAN: use-after-free in nf_hook_entries_grow+0x5a7/0x700 net/netfilter/core.c:142 net/netfilter/core.c:142
-Read of size 4 at addr ffff8880736f7438 by task syz-executor579/3666
-
-CPU: 0 PID: 3666 Comm: syz-executor579 Not tainted 5.16.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- __dump_stack lib/dump_stack.c:88 [inline] lib/dump_stack.c:106
- dump_stack_lvl+0x1dc/0x2d8 lib/dump_stack.c:106 lib/dump_stack.c:106
- print_address_description+0x65/0x380 mm/kasan/report.c:247 mm/kasan/report.c:247
- __kasan_report mm/kasan/report.c:433 [inline]
- __kasan_report mm/kasan/report.c:433 [inline] mm/kasan/report.c:450
- kasan_report+0x19a/0x1f0 mm/kasan/report.c:450 mm/kasan/report.c:450
- nf_hook_entries_grow+0x5a7/0x700 net/netfilter/core.c:142 net/netfilter/core.c:142
- __nf_register_net_hook+0x27e/0x8d0 net/netfilter/core.c:429 net/netfilter/core.c:429
- nf_register_net_hook+0xaa/0x180 net/netfilter/core.c:571 net/netfilter/core.c:571
- nft_register_flowtable_net_hooks+0x3c5/0x730 net/netfilter/nf_tables_api.c:7232 net/netfilter/nf_tables_api.c:7232
- nf_tables_newflowtable+0x2022/0x2cf0 net/netfilter/nf_tables_api.c:7430 net/netfilter/nf_tables_api.c:7430
- nfnetlink_rcv_batch net/netfilter/nfnetlink.c:513 [inline]
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
- nfnetlink_rcv_batch net/netfilter/nfnetlink.c:513 [inline] net/netfilter/nfnetlink.c:652
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline] net/netfilter/nfnetlink.c:652
- nfnetlink_rcv+0x10e6/0x2550 net/netfilter/nfnetlink.c:652 net/netfilter/nfnetlink.c:652
-
-__nft_release_hook() calls nft_unregister_flowtable_net_hooks() which
-only unregisters the hooks, then after RCU grace period, it is
-guaranteed that no packets add new entries to the flowtable (no flow
-offload rules and flowtable hooks are reachable from packet path), so it
-is safe to call nf_flow_table_free() which cleans up the remaining
-entries from the flowtable (both software and hardware) and it unbinds
-the flow_block.
-
-Fixes: ff4bf2f42a40 ("netfilter: nf_tables: add nft_unregister_flowtable_hook()")
-Reported-by: syzbot+e918523f77e62790d6d9@syzkaller.appspotmail.com
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: a6a128116e55 ("drm/i915/dg2: Wait for SNPS PHY calibration during display init")
+Signed-off-by: Matt Roper <matthew.d.roper@intel.com>
+Reviewed-by: Swathi Dhanavanthri <swathi.dhanavanthri@intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220215163545.2175730-1-matthew.d.roper@intel.com
+(cherry picked from commit 84073e568eec7b586b2f6fd5fb2fb08f59edec54)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/i915/display/intel_snps_phy.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -9574,10 +9574,13 @@ EXPORT_SYMBOL_GPL(__nft_release_basechai
- 
- static void __nft_release_hook(struct net *net, struct nft_table *table)
- {
-+	struct nft_flowtable *flowtable;
- 	struct nft_chain *chain;
- 
- 	list_for_each_entry(chain, &table->chains, list)
- 		nf_tables_unregister_hook(net, table, chain);
-+	list_for_each_entry(flowtable, &table->flowtables, list)
-+		nft_unregister_flowtable_net_hooks(net, &flowtable->hook_list);
+--- a/drivers/gpu/drm/i915/display/intel_snps_phy.c
++++ b/drivers/gpu/drm/i915/display/intel_snps_phy.c
+@@ -34,7 +34,7 @@ void intel_snps_phy_wait_for_calibration
+ 		if (intel_de_wait_for_clear(dev_priv, ICL_PHY_MISC(phy),
+ 					    DG2_PHY_DP_TX_ACK_MASK, 25))
+ 			DRM_ERROR("SNPS PHY %c failed to calibrate after 25ms.\n",
+-				  phy);
++				  phy_name(phy));
+ 	}
  }
  
- static void __nft_release_hooks(struct net *net)
 
 
