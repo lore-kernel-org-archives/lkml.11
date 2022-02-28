@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FCFDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:46:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C28EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:46:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229530AbiB1Tq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 14:46:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38606 "EHLO
+        id S229519AbiB1TrS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 14:47:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiB1Tqz (ORCPT
+        with ESMTP id S229470AbiB1TrQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 14:46:55 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC5691FE56F
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:45:40 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id r10so6317586wma.2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:45:40 -0800 (PST)
+        Mon, 28 Feb 2022 14:47:16 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D03E61DE
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:45:38 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id p184-20020a1c29c1000000b0037f76d8b484so74940wmp.5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:45:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5/nH1g76OJr2xP0kEzxoO9d69o0mEYaKTMfwjCEna4k=;
-        b=lt29u8pA79bzdXmxogX9j0y1J3zKgZTrImKzycoIIB4zcvWL7KntFgwCPueGEvs9Bp
-         9E65irN8rtJH1t3f0r1ZVlV0RBu0tw0dEs3x3HqZsQowRPjvExKePG2UBpGTT/WnIAaG
-         iVCLgavxjr89XfmgbY/htd1noYLNS6evA6wc8LN6aL2fVpN9EMgtbf/7MBwvrwNaoy3H
-         ksHGwHdfZxTdTDO+dQo7I/DQy0cAstQraeiJRo10sgGA2ahFqb5USsFjm4WAq6yGgB5T
-         HAZ9bLQEAExlKuSBB78+Ek6eqpF2YgH2JywRAvhxFmZjiZNIH4IhDrmvklCLuSHeb27N
-         M89A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Jtav+ye5zt0JLObFlHB/P1ii2kpmM4YgE+fQMwFycY=;
+        b=CNNLF4MgGchbX1I+o+yz78iK3EtrZSEGilx7b+5yATKdv5i5cZER41P0/dGoVDR8mQ
+         fTe3qip40qKi7OwttqXMqJ7Cp5Sgu/sYYHARdf7AgJzA1hCAADBkMYFnmzHo1qO0mikl
+         vyj2eERIXqi7TP4cE+FvV06xleJBlcz4yVJWPYE1qCJDDtR9tSTsy1XT1iNNQ7hD4RI/
+         VAp1cpltliP6jmAkFxfDrVbVt2TyQ8hXwDDdkXI1x+WYrsEfabJTNtJp3HjVmUiZwz2f
+         rO3Z9sJar52q22MXGp1BCeV/pMGqAb7kb7Yv9KgN+6gtbN1ZjdR2nGNy83cuwYgkwCEP
+         hoGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5/nH1g76OJr2xP0kEzxoO9d69o0mEYaKTMfwjCEna4k=;
-        b=FFzDPUyhqZKz/VZs57x/tK22azwvQe4hCNUv135J5fcvcqaARbeiIAIKpqbxYT28d3
-         fxtu5jKcBdimFeYnQi6daExSXYAoO5cVQlDRvuuC4Jh5CYlxu7dC37xCV5w4unYSKwr2
-         SivCrUxqHOuwqYYRx7SJY4q/jmQTXRM0QjwiZinMR9mLQm2sU0AB48x5K1O6f/Nv9yZH
-         1gp/Ol+uJ6zx4N4o7s1iTvgnD8XFaV35MsEcJ6FDohe78ZjHdhiIiewgsAYrmPgJHmIS
-         UljOCtzUTubzF5GrUA1pduo/VL/cFxyzWBcmb9SmBDQItY5WZv+7yNfy/7oon4XoBkAE
-         5Kmw==
-X-Gm-Message-State: AOAM532z02XcnNCcsFucYdJYgBDHiXJZU2aaOCQQWHFUW7SvVAJMF6NA
-        IF2QNMu9kbRnuDCultlczaY4xQ==
-X-Google-Smtp-Source: ABdhPJwMhluv9tSJB0/NwPrF0eIHTbzYvQsVlCyHUE3sYp/hLMc7v1GhFAU7XtKYLdVdTEfjOryeQw==
-X-Received: by 2002:a05:600c:1da9:b0:381:7fdc:ef7 with SMTP id p41-20020a05600c1da900b003817fdc0ef7mr2669444wms.128.1646077245165;
-        Mon, 28 Feb 2022 11:40:45 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Jtav+ye5zt0JLObFlHB/P1ii2kpmM4YgE+fQMwFycY=;
+        b=Y9d24JAveiPI+S9LXW++OuttTiz3J8PSvwM2UPzY0qVvdWPEt9mMIx211bPjoS7dM1
+         lUarGLRLAHoTae6GDHMiRN2RLV79d+rebfp1FtvwGQA7uBzLgRkX2YdjInryCt44EHWN
+         2tDEglVYbne5tEPK2TeiwsAGCLOg9ROh7pHUcoJ88h3gyrOuZNBen0flRWNFX1nJVQVn
+         S2/eniPZljia6KAzLbRYiJ9JLE2LLMJRURvnXonsIGQuvopCHrivF3sfVdtjS+JnyeZy
+         fbTnR3SysR0BSwNz7otz03RKWfxx4GuRC99kEszNET/oKM7FZIP+W7zqnL/mrGpyGKMF
+         LNAA==
+X-Gm-Message-State: AOAM531AvOxsgKoQcrkzb20WC98WWbgxGhM8I64IfDHygTO4Tn29iBMD
+        jlwcGdGhnpAJqIN9kkS5PhZmHFQCrtmjSA==
+X-Google-Smtp-Source: ABdhPJwyJWqzDklkz7cVxk89jp/moqyfQCBYnpDhUWCT5StXL++rHv+NFwmzQLD2FTRIqS2G8tWanA==
+X-Received: by 2002:a1c:f003:0:b0:381:17f5:21b8 with SMTP id a3-20020a1cf003000000b0038117f521b8mr14441311wmb.158.1646077243764;
+        Mon, 28 Feb 2022 11:40:43 -0800 (PST)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id v25-20020a05600c215900b0038117f41728sm274143wml.43.2022.02.28.11.40.44
+        by smtp.googlemail.com with ESMTPSA id v25-20020a05600c215900b0038117f41728sm274143wml.43.2022.02.28.11.40.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 11:40:44 -0800 (PST)
+        Mon, 28 Feb 2022 11:40:43 -0800 (PST)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     heiko@sntech.de, herbert@gondor.apana.org.au,
         krzysztof.kozlowski@canonical.com, robh+dt@kernel.org
@@ -55,38 +55,54 @@ Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-rockchip@lists.infradead.org,
         Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH 02/16] crypto: rockchip: do not use uninit variable
-Date:   Mon, 28 Feb 2022 19:40:23 +0000
-Message-Id: <20220228194037.1600509-3-clabbe@baylibre.com>
+Subject: [PATCH 00/16] crypto: rockchip: permit to pass self-tests
+Date:   Mon, 28 Feb 2022 19:40:21 +0000
+Message-Id: <20220228194037.1600509-1-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220228194037.1600509-1-clabbe@baylibre.com>
-References: <20220228194037.1600509-1-clabbe@baylibre.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-crypto_info->dev is not yet set, so use pdev-dev instead.
+Hello
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- drivers/crypto/rockchip/rk3288_crypto.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The rockchip crypto driver is broken and do not pass self-tests.
+This serie's goal is to permit to become usable and pass self-tests.
 
-diff --git a/drivers/crypto/rockchip/rk3288_crypto.c b/drivers/crypto/rockchip/rk3288_crypto.c
-index 45cc5f766788..21d3f1458584 100644
---- a/drivers/crypto/rockchip/rk3288_crypto.c
-+++ b/drivers/crypto/rockchip/rk3288_crypto.c
-@@ -381,7 +381,7 @@ static int rk_crypto_probe(struct platform_device *pdev)
- 			       "rk-crypto", pdev);
- 
- 	if (err) {
--		dev_err(crypto_info->dev, "irq request failed.\n");
-+		dev_err(&pdev->dev, "irq request failed.\n");
- 		goto err_crypto;
- 	}
- 
+This whole serie is tested on a rk3328-rock64 with selftests (with
+CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y)
+
+Regards
+
+Corentin Labbe (16):
+  crypto: rockchip: use dev_err for error message about interrupt
+  crypto: rockchip: do not use uninit variable
+  crypto: rockchip: do not do custom power management
+  crypto: rockchip: fix privete/private typo
+  crypto: rockchip: do not store mode globally
+  crypto: rockchip: add fallback for cipher
+  crypto: rockchip: add fallback for ahash
+  crypto: rockchip: better handle cipher key
+  crypto: rockchip: remove non-aligned handling
+  crypto: rockchip: rework by using crypto_engine
+  crypto: rockhip: do not handle dma clock
+  ARM: dts: rk3288: crypto do not need dma clock
+  crypto: rockchip: rewrite type
+  crypto: rockchip: add debugfs
+  arm64: dts: rockchip: add rk3328 crypto node
+  crypto: rockchip: add myself as maintainer
+
+ MAINTAINERS                                   |   6 +
+ arch/arm/boot/dts/rk3288.dtsi                 |   4 +-
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi      |  12 +
+ drivers/crypto/Kconfig                        |  10 +
+ drivers/crypto/rockchip/rk3288_crypto.c       | 283 +++--------
+ drivers/crypto/rockchip/rk3288_crypto.h       |  68 ++-
+ drivers/crypto/rockchip/rk3288_crypto_ahash.c | 214 +++++----
+ .../crypto/rockchip/rk3288_crypto_skcipher.c  | 449 +++++++++++-------
+ 8 files changed, 533 insertions(+), 513 deletions(-)
+
 -- 
 2.34.1
 
