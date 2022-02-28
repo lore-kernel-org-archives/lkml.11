@@ -2,191 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57428C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229504AbiB1UQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:16:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41274 "EHLO
+        id S229695AbiB1URC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:17:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiB1UQk (ORCPT
+        with ESMTP id S229552AbiB1URA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:16:40 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F403EF38
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:16:01 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id p14so27112828ejf.11
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:16:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LeZ8UzRXrDw4d1M4BG6ctt9COK0EF5j9qtOsLWtMfJg=;
-        b=Jhdls+DdmLi+4DWS7o2GehQ/Yg8vWPth9HxY0ymuDsFhiEF5hlRLzgd1PV4wJ4dLVJ
-         JdRWd6PhVxu3cPtesSY0XREEgjw/sVhI1zgx2ECNJUHRlykk7MmbqhfMtkifVM/LmgYS
-         6chNfwYqW0eu75y5MSRY9nnHOEZnFkvhMXNYc=
+        Mon, 28 Feb 2022 15:17:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA74F3EF38
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:16:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646079378;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=G1qwirYd+erEvHJ95lOtyR0Vo6sDtD7Al1rwYNacQIM=;
+        b=afuzBMKSE50cOh4PzglSTcvyPL0Tdvt/UFGXTgjMODkbzDxLUEvEa7VK2VkRfr45bHu1y/
+        ZjEIOXDNV550fI1RUTvZURIDoR+3iSsblSFESJIxLyw7i47UYCFQAA8VWQrpEP1IRF7EYn
+        RLeLDkW2rm5hUy1EDsPqyIDO9mSku0M=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-517-liO6UjXYPsmJD0NWp8QwQQ-1; Mon, 28 Feb 2022 15:16:17 -0500
+X-MC-Unique: liO6UjXYPsmJD0NWp8QwQQ-1
+Received: by mail-oi1-f199.google.com with SMTP id w21-20020a056808091500b002d724f37efeso6112265oih.13
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:16:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LeZ8UzRXrDw4d1M4BG6ctt9COK0EF5j9qtOsLWtMfJg=;
-        b=Ql6iar4TPvo6WZgYjplNq2MSL358qqAKgZtJnkCHNFBklyGhf0Hg/GBLqQYCCGpPrQ
-         LF4onmW3bB2PZ6YUiSzIJ//RNfJb6QtpQvnpk3vlF/bLNah+BpgbgV0tXMZoWD/Sbmin
-         IGezMkN3OOV5/mNVxCGQHY1xaP8VrViwfUTqXUk6pvq0bcidL1w1ykY8Y9jpP9ygGcER
-         7O+UlkkoxAbtpEPDHvquiRcSevoXO0xYxf1L1VUL9pTGywLx7wCaruN9RPGCv6hRG0YI
-         ob558uStHmtlbe+tCCFFMt48R9nOCANSKS+GAIrlI4kRa2J6IhtX15+IoGIySARTp49K
-         CCAw==
-X-Gm-Message-State: AOAM532uq/DqsGONc+BEbZq3+evBLotUkmuy+kSvyfYl8MuqVRCTxAWL
-        VQ60lwS0DEzHIt20yNA4n7hZnZq4nFdLtnnZAXk=
-X-Google-Smtp-Source: ABdhPJxtxgAATIWOzb6kEb4Ru9w5wjyZbPgbY4E4v37ZirF7UlubvO0+Hn5eb+UWHZ3uKqkVe9AAVQ==
-X-Received: by 2002:a17:906:3cf1:b0:6cf:86c6:8a12 with SMTP id d17-20020a1709063cf100b006cf86c68a12mr16163822ejh.202.1646079359608;
-        Mon, 28 Feb 2022 12:15:59 -0800 (PST)
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com. [209.85.218.43])
-        by smtp.gmail.com with ESMTPSA id m19-20020a1709062ad300b006d1289becc7sm4603057eje.167.2022.02.28.12.15.59
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 12:15:59 -0800 (PST)
-Received: by mail-ej1-f43.google.com with SMTP id bg10so27186021ejb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:15:59 -0800 (PST)
-X-Received: by 2002:ac2:4d91:0:b0:443:127b:558a with SMTP id
- g17-20020ac24d91000000b00443127b558amr14027806lfe.542.1646079041191; Mon, 28
- Feb 2022 12:10:41 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=G1qwirYd+erEvHJ95lOtyR0Vo6sDtD7Al1rwYNacQIM=;
+        b=XYAWkes21380V7llQRGGOwjhZh9Oa1AQnLAZXX2AVpydRcWcLgM3fLB+6LaohvWv+x
+         N3c7pW4DdT51Pb0D8V2sIH7mCxvxugnl1HOxUOhQ6KD6gHZU4Mgn6mHwcKwYYUlBhU8U
+         5onKBP+lzIO8/S32vVAQsB118URIZQnUi1+YP65Lo3bEUUGu6yxyM8qoO9t2gZ+beKxy
+         lHLFa5cNSdb0yxWXHiFpFgMhnw+H+XBMsPpz2Tz2g5homSRI0D44h/PXPs2HZDfyFCrf
+         iG5wMMNilJha0c1JVerxB4nzZLoq+Giu27NjhEzv30zaIdrqMqmkHnpSSWTbggvInDlD
+         ZNOg==
+X-Gm-Message-State: AOAM532awRhWbOHUio3TpafxqaC3iir6zKG7MuP72R2k7LflKrxl+gZn
+        6cdqNHsBIwsOGS1EAFO0vhbiE2QcKMB8m2l0Bbw7R7OfOpZrZVLdZtMBNL93kpoC6jxBToJ0ikq
+        zcFEkZxYT0CL5vDu3xp7F1DSA
+X-Received: by 2002:a05:6808:2022:b0:2d4:752b:dfb5 with SMTP id q34-20020a056808202200b002d4752bdfb5mr10313221oiw.174.1646079376575;
+        Mon, 28 Feb 2022 12:16:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwATX/TctczNS/gHsk9mEtkZD5TmnQxZgG63VALy5wIcqHFt0Pz7L2VnwImfYiFNYQ8F3+yVw==
+X-Received: by 2002:a05:6808:2022:b0:2d4:752b:dfb5 with SMTP id q34-20020a056808202200b002d4752bdfb5mr10313198oiw.174.1646079376357;
+        Mon, 28 Feb 2022 12:16:16 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id a12-20020a056870d60c00b000d6d215bf88sm4908975oaq.37.2022.02.28.12.16.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 12:16:15 -0800 (PST)
+Date:   Mon, 28 Feb 2022 13:16:14 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "cohuck@redhat.com" <cohuck@redhat.com>,
+        "mgurtovoy@nvidia.com" <mgurtovoy@nvidia.com>,
+        "yishaih@nvidia.com" <yishaih@nvidia.com>,
+        Linuxarm <linuxarm@huawei.com>,
+        liulongfang <liulongfang@huawei.com>,
+        "Zengtao (B)" <prime.zeng@hisilicon.com>,
+        Jonathan Cameron <jonathan.cameron@huawei.com>,
+        "Wangzhou (B)" <wangzhou1@hisilicon.com>
+Subject: Re: [PATCH v6 09/10] hisi_acc_vfio_pci: Add support for VFIO live
+ migration
+Message-ID: <20220228131614.27ad37dc.alex.williamson@redhat.com>
+In-Reply-To: <20220228180520.GO219866@nvidia.com>
+References: <20220228090121.1903-1-shameerali.kolothum.thodi@huawei.com>
+        <20220228090121.1903-10-shameerali.kolothum.thodi@huawei.com>
+        <20220228145731.GH219866@nvidia.com>
+        <58fa5572e8e44c91a77bd293b2ec6e33@huawei.com>
+        <20220228180520.GO219866@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
- <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com> <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
-In-Reply-To: <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 28 Feb 2022 12:10:24 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
-Message-ID: <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
- as a ptr
-To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
-        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        samba-technical@lists.samba.org,
-        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
-        linux-arch <linux-arch@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        intel-wired-lan@lists.osuosl.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        v9fs-developer@lists.sourceforge.net,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-sgx@vger.kernel.org,
-        linux-block <linux-block@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        tipc-discussion@lists.sourceforge.net,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Mike Rapoport <rppt@kernel.org>
-Content-Type: multipart/mixed; boundary="0000000000008601b205d919a4ad"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000008601b205d919a4ad
-Content-Type: text/plain; charset="UTF-8"
+On Mon, 28 Feb 2022 14:05:20 -0400
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-On Mon, Feb 28, 2022 at 12:03 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Side note: we do need *some* way to do it.
+> On Mon, Feb 28, 2022 at 06:01:44PM +0000, Shameerali Kolothum Thodi wrote:
+> 
+> > +static long hisi_acc_vf_save_unl_ioctl(struct file *filp,
+> > +                                      unsigned int cmd, unsigned long arg)
+> > +{
+> > +       struct hisi_acc_vf_migration_file *migf = filp->private_data;
+> > +       loff_t *pos = &filp->f_pos;
+> > +       struct vfio_device_mig_precopy precopy;
+> > +       unsigned long minsz;
+> > +
+> > +       if (cmd != VFIO_DEVICE_MIG_PRECOPY)
+> > +               return -EINVAL;  
+> 
+> ENOTTY
+> 
+> > +
+> > +       minsz = offsetofend(struct vfio_device_mig_precopy, dirty_bytes);
+> > +
+> > +       if (copy_from_user(&precopy, (void __user *)arg, minsz))
+> > +               return -EFAULT;
+> > +       if (precopy.argsz < minsz)
+> > +               return -EINVAL;
+> > +
+> > +       mutex_lock(&migf->lock);
+> > +       if (*pos > migf->total_length) {
+> > +               mutex_unlock(&migf->lock);
+> > +               return -EINVAL;
+> > +       }
+> > +
+> > +       precopy.dirty_bytes = 0;
+> > +       precopy.initial_bytes = migf->total_length - *pos;
+> > +       mutex_unlock(&migf->lock);
+> > +       return copy_to_user((void __user *)arg, &precopy, minsz) ? -EFAULT : 0;
+> > +}  
+> 
+> Yes
+> 
+> And I noticed this didn't include the ENOMSG handling, read() should
+> return ENOMSG when it reaches EOS for the pre-copy:
+> 
+> + * During pre-copy the migration data FD has a temporary "end of stream" that is
+> + * reached when both initial_bytes and dirty_byte are zero. For instance, this
+> + * may indicate that the device is idle and not currently dirtying any internal
+> + * state. When read() is done on this temporary end of stream the kernel driver
+> + * should return ENOMSG from read(). Userspace can wait for more data (which may
+> + * never come) by using poll.
 
-Ooh.
+I'm confused by your previous reply that the use of curr_state should
+be eliminated, isn't this ioctl only valid while the device is in the
+PRE_COPY or PRE_COPY_P2P states?  Otherwise the STOP_COPY state would
+have some expectation to be able to use this ioctl for devices
+supporting PRE_COPY.  I'd like to see the uapi clarify exactly what
+states allow this ioctl and define the behavior of the ioctl when
+transitioning out of those states with an open data_fd, ie. is it
+defined to return an -errno once in STOP_COPY?  Thanks,
 
-This patch is a work of art.
+Alex
 
-And I mean that in the worst possible way.
-
-We can do
-
-        typeof(pos) pos
-
-in the 'for ()' loop, and never use __iter at all.
-
-That means that inside the for-loop, we use a _different_ 'pos' than outside.
-
-And then the compiler will not see some "might be uninitialized", but
-the outer 'pos' *will* be uninitialized.
-
-Unless, of course, the outer 'pos' had that pointless explicit initializer.
-
-Here - can somebody poke holes in this "work of art" patch?
-
-                     Linus
-
---0000000000008601b205d919a4ad
-Content-Type: text/x-patch; charset="US-ASCII"; name="patch.diff"
-Content-Disposition: attachment; filename="patch.diff"
-Content-Transfer-Encoding: base64
-Content-ID: <f_l074y7ca0>
-X-Attachment-Id: f_l074y7ca0
-
-IE1ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICB8IDIgKy0KIGFyY2gveDg2L2tlcm5lbC9j
-cHUvc2d4L2VuY2wuYyB8IDIgKy0KIGluY2x1ZGUvbGludXgvbGlzdC5oICAgICAgICAgICB8IDYg
-KysrLS0tCiAzIGZpbGVzIGNoYW5nZWQsIDUgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkK
-CmRpZmYgLS1naXQgYS9NYWtlZmlsZSBiL01ha2VmaWxlCmluZGV4IGRhZWI1Yzg4YjUwYi4uY2M0
-YjBhMjY2YWYwIDEwMDY0NAotLS0gYS9NYWtlZmlsZQorKysgYi9NYWtlZmlsZQpAQCAtNTE1LDcg
-KzUxNSw3IEBAIEtCVUlMRF9DRkxBR1MgICA6PSAtV2FsbCAtV3VuZGVmIC1XZXJyb3I9c3RyaWN0
-LXByb3RvdHlwZXMgLVduby10cmlncmFwaHMgXAogCQkgICAtZm5vLXN0cmljdC1hbGlhc2luZyAt
-Zm5vLWNvbW1vbiAtZnNob3J0LXdjaGFyIC1mbm8tUElFIFwKIAkJICAgLVdlcnJvcj1pbXBsaWNp
-dC1mdW5jdGlvbi1kZWNsYXJhdGlvbiAtV2Vycm9yPWltcGxpY2l0LWludCBcCiAJCSAgIC1XZXJy
-b3I9cmV0dXJuLXR5cGUgLVduby1mb3JtYXQtc2VjdXJpdHkgXAotCQkgICAtc3RkPWdudTg5CisJ
-CSAgIC1zdGQ9Z251MTEKIEtCVUlMRF9DUFBGTEFHUyA6PSAtRF9fS0VSTkVMX18KIEtCVUlMRF9B
-RkxBR1NfS0VSTkVMIDo9CiBLQlVJTERfQ0ZMQUdTX0tFUk5FTCA6PQpkaWZmIC0tZ2l0IGEvYXJj
-aC94ODYva2VybmVsL2NwdS9zZ3gvZW5jbC5jIGIvYXJjaC94ODYva2VybmVsL2NwdS9zZ3gvZW5j
-bC5jCmluZGV4IDQ4YWZlOTZhZTBmMC4uODdkYjJmMzkzNmIwIDEwMDY0NAotLS0gYS9hcmNoL3g4
-Ni9rZXJuZWwvY3B1L3NneC9lbmNsLmMKKysrIGIvYXJjaC94ODYva2VybmVsL2NwdS9zZ3gvZW5j
-bC5jCkBAIC00NTAsNyArNDUwLDcgQEAgc3RhdGljIHZvaWQgc2d4X21tdV9ub3RpZmllcl9yZWxl
-YXNlKHN0cnVjdCBtbXVfbm90aWZpZXIgKm1uLAogCQkJCSAgICAgc3RydWN0IG1tX3N0cnVjdCAq
-bW0pCiB7CiAJc3RydWN0IHNneF9lbmNsX21tICplbmNsX21tID0gY29udGFpbmVyX29mKG1uLCBz
-dHJ1Y3Qgc2d4X2VuY2xfbW0sIG1tdV9ub3RpZmllcik7Ci0Jc3RydWN0IHNneF9lbmNsX21tICp0
-bXAgPSBOVUxMOworCXN0cnVjdCBzZ3hfZW5jbF9tbSAqdG1wOwogCiAJLyoKIAkgKiBUaGUgZW5j
-bGF2ZSBpdHNlbGYgY2FuIHJlbW92ZSBlbmNsX21tLiAgTm90ZSwgb2JqZWN0cyBjYW4ndCBiZSBt
-b3ZlZApkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9saXN0LmggYi9pbmNsdWRlL2xpbnV4L2xp
-c3QuaAppbmRleCBkZDZjMjA0MWQwOWMuLjcwODA3OGIyZjI0ZCAxMDA2NDQKLS0tIGEvaW5jbHVk
-ZS9saW51eC9saXN0LmgKKysrIGIvaW5jbHVkZS9saW51eC9saXN0LmgKQEAgLTYzNCw5ICs2MzQs
-OSBAQCBzdGF0aWMgaW5saW5lIHZvaWQgbGlzdF9zcGxpY2VfdGFpbF9pbml0KHN0cnVjdCBsaXN0
-X2hlYWQgKmxpc3QsCiAgKiBAaGVhZDoJdGhlIGhlYWQgZm9yIHlvdXIgbGlzdC4KICAqIEBtZW1i
-ZXI6CXRoZSBuYW1lIG9mIHRoZSBsaXN0X2hlYWQgd2l0aGluIHRoZSBzdHJ1Y3QuCiAgKi8KLSNk
-ZWZpbmUgbGlzdF9mb3JfZWFjaF9lbnRyeShwb3MsIGhlYWQsIG1lbWJlcikJCQkJXAotCWZvciAo
-cG9zID0gbGlzdF9maXJzdF9lbnRyeShoZWFkLCB0eXBlb2YoKnBvcyksIG1lbWJlcik7CVwKLQkg
-ICAgICFsaXN0X2VudHJ5X2lzX2hlYWQocG9zLCBoZWFkLCBtZW1iZXIpOwkJCVwKKyNkZWZpbmUg
-bGlzdF9mb3JfZWFjaF9lbnRyeShwb3MsIGhlYWQsIG1lbWJlcikJCQkJCVwKKwlmb3IgKHR5cGVv
-Zihwb3MpIHBvcyA9IGxpc3RfZmlyc3RfZW50cnkoaGVhZCwgdHlwZW9mKCpwb3MpLCBtZW1iZXIp
-OwlcCisJICAgICAhbGlzdF9lbnRyeV9pc19oZWFkKHBvcywgaGVhZCwgbWVtYmVyKTsJXAogCSAg
-ICAgcG9zID0gbGlzdF9uZXh0X2VudHJ5KHBvcywgbWVtYmVyKSkKIAogLyoqCg==
---0000000000008601b205d919a4ad--
