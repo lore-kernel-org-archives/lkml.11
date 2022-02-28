@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C761C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBC0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236201AbiB1R4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:56:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
+        id S239448AbiB1R4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:56:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239611AbiB1RxO (ORCPT
+        with ESMTP id S239578AbiB1RxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED6DAA012;
-        Mon, 28 Feb 2022 09:40:39 -0800 (PST)
+        Mon, 28 Feb 2022 12:53:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFB2A9E33;
+        Mon, 28 Feb 2022 09:40:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 411BBB815BA;
-        Mon, 28 Feb 2022 17:40:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CC9DC340E7;
-        Mon, 28 Feb 2022 17:40:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D50B61540;
+        Mon, 28 Feb 2022 17:40:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56567C340E7;
+        Mon, 28 Feb 2022 17:40:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070036;
-        bh=5uF6y4pkw02E5d5b+6ZDIAcWCGP3fx5/Fm1OO0TLlEc=;
+        s=korg; t=1646070025;
+        bh=0fw9T+tZAvMBuO779pLSBg40CJqtPfcQQrG7q6rLaZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LITZ/A7vTYp45O5NF4E5SixxUsumwBvJ6/4DmyDWpxspTrDq+/D7kbYNfzmAx2i6n
-         zUPO+kKBzUcNUQInDuCfNJ1e0MQ71U2MvRjpwESlCP5SruYFb6NzfsG0AhYQE1YHxd
-         1XNO35fRfDyHW+rpXyImPR9tERj/q50+A+Ul5c0I=
+        b=sY2R920us4u1icyWrJMY2GeuAy0kY63MbA2HZs6NLptwewN4zLpITf5YSZCa/n3u5
+         tfolpw/Sznyto55UJ+8sJOaOj7VKH0KXWB5FTOTBk1mGDZ6fQ/bUZU+5iBOwFp1UEy
+         of5xboglOBaaslhIfmZAq20oUf/uo7RbXPouHx5E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>
-Subject: [PATCH 5.15 103/139] sc16is7xx: Fix for incorrect data being transmitted
-Date:   Mon, 28 Feb 2022 18:24:37 +0100
-Message-Id: <20220228172358.504935085@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.15 099/139] iio: adc: ad7124: fix mask used for setting AIN_BUFP & AIN_BUFM bits
+Date:   Mon, 28 Feb 2022 18:24:33 +0100
+Message-Id: <20220228172358.063554283@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -47,55 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Cosmin Tanislav <demonsingur@gmail.com>
 
-commit eebb0f4e894f1e9577a56b337693d1051dd6ebfd upstream.
+commit 0e33d15f1dce9e3a80a970ea7f0b27837168aeca upstream.
 
-UART drivers are meant to use the port spinlock within certain
-methods, to protect against reentrancy. The sc16is7xx driver does
-very little locking, presumably because when added it triggers
-"scheduling while atomic" errors. This is due to the use of mutexes
-within the regmap abstraction layer, and the mutex implementation's
-habit of sleeping the current thread while waiting for access.
-Unfortunately this lack of interlocking can lead to corruption of
-outbound data, which occurs when the buffer used for I2C transmission
-is used simultaneously by two threads - a work queue thread running
-sc16is7xx_tx_proc, and an IRQ thread in sc16is7xx_port_irq, both
-of which can call sc16is7xx_handle_tx.
+According to page 90 of the datasheet [1], AIN_BUFP is bit 6 and
+AIN_BUFM is bit 5 of the CONFIG_0 -> CONFIG_7 registers.
 
-An earlier patch added efr_lock, a mutex that controls access to the
-EFR register. This mutex is already claimed in the IRQ handler, and
-all that is required is to claim the same mutex in sc16is7xx_tx_proc.
+Fix the mask used for setting these bits.
 
-See: https://github.com/raspberrypi/linux/issues/4885
+[1]: https://www.analog.com/media/en/technical-documentation/data-sheets/ad7124-8.pdf
 
-Fixes: 6393ff1c4435 ("sc16is7xx: Use threaded IRQ")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220216160802.1026013-1-phil@raspberrypi.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0eaecea6e487 ("iio: adc: ad7124: Add buffered input support")
+Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+Link: https://lore.kernel.org/r/20220112200036.694490-1-cosmin.tanislav@analog.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/sc16is7xx.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/adc/ad7124.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -734,12 +734,15 @@ static irqreturn_t sc16is7xx_irq(int irq
- static void sc16is7xx_tx_proc(struct kthread_work *ws)
- {
- 	struct uart_port *port = &(to_sc16is7xx_one(ws, tx_work)->port);
-+	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -76,7 +76,7 @@
+ #define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
+ #define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
+ #define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
+-#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(7, 6)
++#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(6, 5)
+ #define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
  
- 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
- 	    (port->rs485.delay_rts_before_send > 0))
- 		msleep(port->rs485.delay_rts_before_send);
- 
-+	mutex_lock(&s->efr_lock);
- 	sc16is7xx_handle_tx(port);
-+	mutex_unlock(&s->efr_lock);
- }
- 
- static void sc16is7xx_reconf_rs485(struct uart_port *port)
+ /* AD7124_FILTER_X */
 
 
