@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E01C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82740C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238635AbiB1Rmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:42:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37724 "EHLO
+        id S238836AbiB1RnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:43:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233680AbiB1Rjx (ORCPT
+        with ESMTP id S238011AbiB1Rjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:39:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2715392857;
-        Mon, 28 Feb 2022 09:34:15 -0800 (PST)
+        Mon, 28 Feb 2022 12:39:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC05A91341;
+        Mon, 28 Feb 2022 09:34:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B170CB815B4;
-        Mon, 28 Feb 2022 17:34:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C84C340E7;
-        Mon, 28 Feb 2022 17:34:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38A20B815B8;
+        Mon, 28 Feb 2022 17:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 924E3C340E7;
+        Mon, 28 Feb 2022 17:34:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069652;
-        bh=QO6fTW2VcelMu6EAiAhXnvwL+tqQreU8tzQFXXvOUVg=;
+        s=korg; t=1646069646;
+        bh=+l3jU0nvv1HAdt1l7oH7jBuox343EAywraz1n02pq30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g/bLjDb48qbJ1MBrDveAwlZ/L+AZOF5+gtPcRe0cb/f6PlPgeR2rMPyX4pq15q8d7
-         KYU0UiTpJ7mGmGL9oVR3J9ozy32Mte3H5rGLDG0DSxK53jPRlQQP2rybiIpl3yRVSH
-         vDa7PtqwkBz1hObV91ATPylE7BAR6j4n24yG8zus=
+        b=Ntvs8eFVBoMNXhP6oGQ3QWz7uHVUVDtt6CniZRzKh2E9HSHIvnasC89O0Tg/qA/rj
+         Jk19Ycx9Er5SXx00CWmtNL+PrCGG6DSiv2WJiWvYKRl8cHXkp6IrxFcYcuDX8tpV7n
+         nC2VWhD6y8wftdrfN/OG12J2Fw8fGnT9SfhoaAyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ariel Levkovich <lariel@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.10 43/80] net/mlx5: Fix wrong limitation of metadata match on ecpf
-Date:   Mon, 28 Feb 2022 18:24:24 +0100
-Message-Id: <20220228172316.750087654@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 41/80] udp_tunnel: Fix end of loop test in udp_tunnel_nic_unregister()
+Date:   Mon, 28 Feb 2022 18:24:22 +0100
+Message-Id: <20220228172316.511306586@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -49,36 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ariel Levkovich <lariel@nvidia.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 07666c75ad17d7389b18ac0235c8cf41e1504ea8 upstream.
+commit de7b2efacf4e83954aed3f029d347dfc0b7a4f49 upstream.
 
-Match metadata support check returns false for ecpf device.
-However, this support does exist for ecpf and therefore this
-limitation should be removed to allow feature such as stacked
-devices and internal port offloaded to be supported.
+This test is checking if we exited the list via break or not.  However
+if it did not exit via a break then "node" does not point to a valid
+udp_tunnel_nic_shared_node struct.  It will work because of the way
+the structs are laid out it's the equivalent of
+"if (info->shared->udp_tunnel_nic_info != dev)" which will always be
+true, but it's not the right way to test.
 
-Fixes: 92ab1eb392c6 ("net/mlx5: E-Switch, Enable vport metadata matching if firmware supports it")
-Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 74cc6d182d03 ("udp_tunnel: add the ability to share port tables")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c |    4 ----
- 1 file changed, 4 deletions(-)
+ net/ipv4/udp_tunnel_nic.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2037,10 +2037,6 @@ esw_check_vport_match_metadata_supported
- 	if (!MLX5_CAP_ESW_FLOWTABLE(esw->dev, flow_source))
- 		return false;
+--- a/net/ipv4/udp_tunnel_nic.c
++++ b/net/ipv4/udp_tunnel_nic.c
+@@ -846,7 +846,7 @@ udp_tunnel_nic_unregister(struct net_dev
+ 		list_for_each_entry(node, &info->shared->devices, list)
+ 			if (node->dev == dev)
+ 				break;
+-		if (node->dev != dev)
++		if (list_entry_is_head(node, &info->shared->devices, list))
+ 			return;
  
--	if (mlx5_core_is_ecpf_esw_manager(esw->dev) ||
--	    mlx5_ecpf_vport_exists(esw->dev))
--		return false;
--
- 	return true;
- }
- 
+ 		list_del(&node->list);
 
 
