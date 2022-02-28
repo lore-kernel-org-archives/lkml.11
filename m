@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A20BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3274FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238445AbiB1RmD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:42:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33682 "EHLO
+        id S238452AbiB1RmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:42:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238334AbiB1Rh0 (ORCPT
+        with ESMTP id S238305AbiB1Rh0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:37:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561033BFB5;
-        Mon, 28 Feb 2022 09:32:24 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2801FA78;
+        Mon, 28 Feb 2022 09:32:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBD3DB815BD;
-        Mon, 28 Feb 2022 17:32:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35967C340F1;
-        Mon, 28 Feb 2022 17:32:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30E70609EE;
+        Mon, 28 Feb 2022 17:32:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 471E4C340E7;
+        Mon, 28 Feb 2022 17:32:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069522;
-        bh=lOKstslbYrY+nxQARpLVOyEJ89Vqe2153PAdOHBhjNs=;
+        s=korg; t=1646069544;
+        bh=m3D1UtU+qGhEenIw23BRw2gMcv27uFHzZlSA1vb5nuI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cJ6D3YChNfw9YsdogXnZRwoT2y3U+8pK9a9nV5dD7nnWP0i6X1hoZs7p18C0LuC1h
-         +mq4BTzgnqcTyvcf4qt5rtAGkg40DlPhjX+mD21RLLWT9jUSXYsoCr490cvddmCAHu
-         IoBvEoP4ifVNT3hFbopAh5WLyJ+pc3oawEm9bSqw=
+        b=pLdgsf1X9hXOopK6lNVWvaWqAckKn+JLF4jOkEcPfMVICvdQNwA0dRWaFCc1WDwax
+         IdPFB/3epfN4/tv6XUkkxgLUj+B0lxMsGxZXeaXf/c2o3mKeqfzIcFKNn8arFiJ/Hu
+         099P0pTclThqJNRcSMiAKA4Psi/NkqGjhXZAg3Nc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Thierry Reding <treding@nvidia.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH 5.4 50/53] gpio: tegra186: Fix chip_data type confusion
-Date:   Mon, 28 Feb 2022 18:24:48 +0100
-Message-Id: <20220228172251.915821058@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.4 33/53] iio: adc: men_z188_adc: Fix a resource leak in an error handling path
+Date:   Mon, 28 Feb 2022 18:24:31 +0100
+Message-Id: <20220228172250.668376063@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -50,80 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit d1e972ace42390de739cde87d96043dcbe502286 upstream.
+commit e0a2e37f303828d030a83f33ffe14b36cb88d563 upstream.
 
-The tegra186 GPIO driver makes the assumption that the pointer
-returned by irq_data_get_irq_chip_data() is a pointer to a
-tegra_gpio structure. Unfortunately, it is actually a pointer
-to the inner gpio_chip structure, as mandated by the gpiolib
-infrastructure. Nice try.
+If iio_device_register() fails, a previous ioremap() is left unbalanced.
 
-The saving grace is that the gpio_chip is the first member of
-tegra_gpio, so the bug has gone undetected since... forever.
+Update the error handling path and add the missing iounmap() call, as
+already done in the remove function.
 
-Fix it by performing a container_of() on the pointer. This results
-in no additional code, and makes it possible to understand how
-the whole thing works.
-
-Fixes: 5b2b135a87fc ("gpio: Add Tegra186 support")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: Thierry Reding <treding@nvidia.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Link: https://lore.kernel.org/r/20220211093904.1112679-1-maz@kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 74aeac4da66f ("iio: adc: Add MEN 16z188 ADC driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/320fc777863880247c2aff4a9d1a54ba69abf080.1643445149.git.christophe.jaillet@wanadoo.fr
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-tegra186.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/iio/adc/men_z188_adc.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/gpio/gpio-tegra186.c
-+++ b/drivers/gpio/gpio-tegra186.c
-@@ -234,9 +234,12 @@ static int tegra186_gpio_of_xlate(struct
- 	return offset + pin;
- }
+--- a/drivers/iio/adc/men_z188_adc.c
++++ b/drivers/iio/adc/men_z188_adc.c
+@@ -103,6 +103,7 @@ static int men_z188_probe(struct mcb_dev
+ 	struct z188_adc *adc;
+ 	struct iio_dev *indio_dev;
+ 	struct resource *mem;
++	int ret;
  
-+#define to_tegra_gpio(x) container_of((x), struct tegra_gpio, gpio)
+ 	indio_dev = devm_iio_device_alloc(&dev->dev, sizeof(struct z188_adc));
+ 	if (!indio_dev)
+@@ -129,8 +130,14 @@ static int men_z188_probe(struct mcb_dev
+ 	adc->mem = mem;
+ 	mcb_set_drvdata(dev, indio_dev);
+ 
+-	return iio_device_register(indio_dev);
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto err_unmap;
+ 
++	return 0;
 +
- static void tegra186_irq_ack(struct irq_data *data)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 
- 	base = tegra186_gpio_get_base(gpio, data->hwirq);
-@@ -248,7 +251,8 @@ static void tegra186_irq_ack(struct irq_
- 
- static void tegra186_irq_mask(struct irq_data *data)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 	u32 value;
- 
-@@ -263,7 +267,8 @@ static void tegra186_irq_mask(struct irq
- 
- static void tegra186_irq_unmask(struct irq_data *data)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 	u32 value;
- 
-@@ -278,7 +283,8 @@ static void tegra186_irq_unmask(struct i
- 
- static int tegra186_irq_set_type(struct irq_data *data, unsigned int type)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 	u32 value;
- 
++err_unmap:
++	iounmap(adc->base);
+ err:
+ 	mcb_release_mem(mem);
+ 	return -ENXIO;
 
 
