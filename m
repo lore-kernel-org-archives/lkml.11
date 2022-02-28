@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F74C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4926FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240464AbiB1SNp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:13:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33644 "EHLO
+        id S232268AbiB1SNu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:13:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241506AbiB1SKB (ORCPT
+        with ESMTP id S241509AbiB1SKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 13:10:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660FAB65E6;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2364B65FB;
         Mon, 28 Feb 2022 09:50:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66FB160748;
-        Mon, 28 Feb 2022 17:49:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA59C36AE7;
-        Mon, 28 Feb 2022 17:49:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73BCB608D5;
+        Mon, 28 Feb 2022 17:50:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C608C36AF8;
+        Mon, 28 Feb 2022 17:50:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070573;
-        bh=Sufz76spNJVF7VI3y7kXmqzztncnszC5AqCLywGOenM=;
+        s=korg; t=1646070603;
+        bh=ZQSl1PHtTbpi0tBEr5HZNu19R3TkoKzvDwABG6xiSFs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m+ucDDs9c7UB/ZNW9rK38EhIu5BfyyOi+ywMu1Bc9vGOruYMUCZ9rU6sbkhMZ+1oP
-         Iubzvu7bKWRfQkNF9S+bGZZgqVmd/ljPLkrVIDu9f8mz5wdakj2uG4ZfSiA9Om1Ik2
-         1/gyrJGet7p2yxx0kZB4UVqbvbUPn81gdTjoZ4b0=
+        b=Y4I31MxtyIY5/tDMTzgEGy3eRwjHt/0aI8weeVd5Ppx7EqYFFvkvHz7P6UTRbP9zD
+         IYbQkUyYXJ2+rtszRVdt3LpJtu3FWnEzqW6IldA7H3W7YngPa7GwN29e4GLMn0if3a
+         Jw1lTp43X3GaTgU9E01tbMBvlwomhIe1rKXbto4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.16 159/164] tty: n_gsm: fix wrong modem processing in convergence layer type 2
-Date:   Mon, 28 Feb 2022 18:25:21 +0100
-Message-Id: <20220228172414.101525266@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.16 149/164] IB/qib: Fix duplicate sysfs directory name
+Date:   Mon, 28 Feb 2022 18:25:11 +0100
+Message-Id: <20220228172413.335064838@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -47,115 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+From: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
 
-commit 687f9ad43c52501f46164758e908a5dd181a87fc upstream.
+commit 32f57cb1b2c8d6f20aefec7052b1bfeb7e3b69d4 upstream.
 
-The function gsm_process_modem() exists to handle modem status bits of
-incoming frames. This includes incoming MSC (modem status command) frames
-and convergence layer type 2 data frames. The function, however, was only
-designed to handle MSC frames as it expects the command length. Within
-gsm_dlci_data() it is wrongly assumed that this is the same as the data
-frame length. This is only true if the data frame contains only 1 byte of
-payload.
+The qib driver load has been failing with the following message:
 
-This patch names the length parameter of gsm_process_modem() in a generic
-manner to reflect its association. It also corrects all calls to the
-function to handle the variable number of modem status octets correctly in
-both cases.
+  sysfs: cannot create duplicate filename '/devices/pci0000:80/0000:80:02.0/0000:81:00.0/infiniband/qib0/ports/1/linkcontrol'
 
-Fixes: 7263287af93d ("tty: n_gsm: Fixed logic to decode break signal from modem status")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220218073123.2121-6-daniel.starke@siemens.com
+The patch below has two "linkcontrol" names causing the duplication.
+
+Fix by using the correct "diag_counters" name on the second instance.
+
+Fixes: 4a7aaf88c89f ("RDMA/qib: Use attributes for the port sysfs")
+Link: https://lore.kernel.org/r/1645106372-23004-1-git-send-email-mike.marciniszyn@cornelisnetworks.com
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Signed-off-by: Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |   23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ drivers/infiniband/hw/qib/qib_sysfs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1021,25 +1021,25 @@ static void gsm_control_reply(struct gsm
-  *	@tty: virtual tty bound to the DLCI
-  *	@dlci: DLCI to affect
-  *	@modem: modem bits (full EA)
-- *	@clen: command length
-+ *	@slen: number of signal octets
-  *
-  *	Used when a modem control message or line state inline in adaption
-  *	layer 2 is processed. Sort out the local modem state and throttles
-  */
+--- a/drivers/infiniband/hw/qib/qib_sysfs.c
++++ b/drivers/infiniband/hw/qib/qib_sysfs.c
+@@ -541,7 +541,7 @@ static struct attribute *port_diagc_attr
+ };
  
- static void gsm_process_modem(struct tty_struct *tty, struct gsm_dlci *dlci,
--							u32 modem, int clen)
-+							u32 modem, int slen)
- {
- 	int  mlines = 0;
- 	u8 brk = 0;
- 	int fc;
+ static const struct attribute_group port_diagc_group = {
+-	.name = "linkcontrol",
++	.name = "diag_counters",
+ 	.attrs = port_diagc_attributes,
+ };
  
--	/* The modem status command can either contain one octet (v.24 signals)
--	   or two octets (v.24 signals + break signals). The length field will
--	   either be 2 or 3 respectively. This is specified in section
--	   5.4.6.3.7 of the  27.010 mux spec. */
-+	/* The modem status command can either contain one octet (V.24 signals)
-+	 * or two octets (V.24 signals + break signals). This is specified in
-+	 * section 5.4.6.3.7 of the 07.10 mux spec.
-+	 */
- 
--	if (clen == 2)
-+	if (slen == 1)
- 		modem = modem & 0x7f;
- 	else {
- 		brk = modem & 0x7f;
-@@ -1096,6 +1096,7 @@ static void gsm_control_modem(struct gsm
- 	unsigned int brk = 0;
- 	struct gsm_dlci *dlci;
- 	int len = clen;
-+	int slen;
- 	const u8 *dp = data;
- 	struct tty_struct *tty;
- 
-@@ -1115,6 +1116,7 @@ static void gsm_control_modem(struct gsm
- 		return;
- 	dlci = gsm->dlci[addr];
- 
-+	slen = len;
- 	while (gsm_read_ea(&modem, *dp++) == 0) {
- 		len--;
- 		if (len == 0)
-@@ -1131,7 +1133,7 @@ static void gsm_control_modem(struct gsm
- 		modem |= (brk & 0x7f);
- 	}
- 	tty = tty_port_tty_get(&dlci->port);
--	gsm_process_modem(tty, dlci, modem, clen);
-+	gsm_process_modem(tty, dlci, modem, slen);
- 	if (tty) {
- 		tty_wakeup(tty);
- 		tty_kref_put(tty);
-@@ -1597,6 +1599,7 @@ static void gsm_dlci_data(struct gsm_dlc
- 	struct tty_struct *tty;
- 	unsigned int modem = 0;
- 	int len = clen;
-+	int slen = 0;
- 
- 	if (debug & 16)
- 		pr_debug("%d bytes for tty\n", len);
-@@ -1609,12 +1612,14 @@ static void gsm_dlci_data(struct gsm_dlc
- 	case 2:		/* Asynchronous serial with line state in each frame */
- 		while (gsm_read_ea(&modem, *data++) == 0) {
- 			len--;
-+			slen++;
- 			if (len == 0)
- 				return;
- 		}
-+		slen++;
- 		tty = tty_port_tty_get(port);
- 		if (tty) {
--			gsm_process_modem(tty, dlci, modem, clen);
-+			gsm_process_modem(tty, dlci, modem, slen);
- 			tty_kref_put(tty);
- 		}
- 		fallthrough;
 
 
