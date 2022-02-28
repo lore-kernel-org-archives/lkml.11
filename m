@@ -2,155 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD86C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 22:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F36C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 22:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230168AbiB1WPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 17:15:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33868 "EHLO
+        id S231402AbiB1WQg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 17:16:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231360AbiB1WPt (ORCPT
+        with ESMTP id S231214AbiB1WQf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 17:15:49 -0500
-Received: from matoro.tk (unknown [IPv6:2600:1700:4b10:9d80::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B0EE1B74;
-        Mon, 28 Feb 2022 14:14:46 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; bh=CMg65jXpaFZltUQYgNoVUODmgfV4a5Gt/jgOwLpN2Vk=;
- c=relaxed/relaxed; d=matoro.tk;
- h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
- i=@matoro.tk; s=20220111215046; t=1646086466; v=1; x=1646518466;
- b=liCwhzLM5gcBk9AbRejqNqqD03KZZjvsbftjT52rBX+PyrAJWiCo0hlshB3hxd8NANeQVI4A
- KsG/n++GPEZcsWueUArKoi6tgLgbTt/G+1dlldQkow2gkTIetZjX6dYInMravLdk5Kqg5uQjCHo
- y2wQLkaLEqLYxr4q0h1IG1RVwOmRV/Psn0BnJQekN8/VUILqebObj32oAMawLxij3MDZdh07jA7
- 7+EQ7Roj3ZNECHml9j8VErF+h0Ns/v//HiUoGn3GRQu/GVGPVxdt4o7jeodJjQ/LKFZWIgeb/4y
- q+I98cGOqpJa0ZOZT8w1zTU2o2SWft3lxpNUhmWFkzgQ4GcFN0OrDc+KW8OTZD48lnC+1GZyD0n
- z0zjonAnVjmxiychDM41eK5O1awo4cilKOosIrPUiZafcJDZAjPRVkmj0fbgcPx6dsM/0/iZIyj
- z3y7twdwch0hg73Gh7ZkXBIIYhq+vaV0X7/qsQSVywp3ZWiPYsJ5r18p+TbEkOq/CHjnnepoPux
- Fp7PfuqEE9RKIIN510H0kPblNbd7aAXfDB3NvqqL1EQC5ipfWpAXdJ+T5jhtZYcxrjGWl4v1EKO
- nrDF/NGjXsM7QANPbbDxYAf70VhbgY8AhE9ch0LuKvXTQ54M9Rgbogx6wFw0X6HR6QGm96WdjHP
- Bu2xll2bPis=
-Received: by matoro.tk (envelope-sender
- <matoro_mailinglist_kernel@matoro.tk>) with ESMTPS id 516b5765; Mon, 28 Feb
- 2022 17:14:26 -0500
+        Mon, 28 Feb 2022 17:16:35 -0500
+Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6366AE1B74;
+        Mon, 28 Feb 2022 14:15:55 -0800 (PST)
+Received: by mail-oo1-f42.google.com with SMTP id i10-20020a4aab0a000000b002fccf890d5fso20406279oon.5;
+        Mon, 28 Feb 2022 14:15:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OEmvWFYcUlvLI2qOQZZbyye8qQFK9MgvtHyOAXPOp8U=;
+        b=McxFFoHj1F6birwbR/G2gJwMs0PBaVuXV4Or9FFpGHcFpVX5nMgUU/lKRpidfCALrc
+         jNDnSnjHShUodESImjwyrG6ceUEHhPKW+lEgJEC9wbozS4ZOc6KV9ASke925ljnPIHLV
+         Ft22CVrP1+Yer0ZAUhz6O2UjpC9Be+QMT9heKyjzbCeMbisk7Npnr9kDlbth4xUt7PHk
+         nRzpzFGCyivVliZ+RV20oM3qfCLNi0sfgmWsFY9stRSLKc0/dUyXM7cKilhclXCjefhm
+         laJRJu2Zs8AOtW/JHpUiW3jlzpNNJFcsv7WqIp0Ciw4b2I5ufhGAroNSeZ7WoYy07RdU
+         8R2Q==
+X-Gm-Message-State: AOAM531naWdDGpfUzE9ldGgU1jtA7imrpYygxkay/wMZn0kxof9d+CrA
+        b8YtKK7xR4Umtphg44Qj3w==
+X-Google-Smtp-Source: ABdhPJz03WhL44Cw8TDPnrAAhE5YNR7G6nXVzt9q331dU3Co2p6qYpvGwJfUqyb2mMaeRoSteXVOaw==
+X-Received: by 2002:a4a:db95:0:b0:31c:23c8:554d with SMTP id s21-20020a4adb95000000b0031c23c8554dmr10094963oou.64.1646086554672;
+        Mon, 28 Feb 2022 14:15:54 -0800 (PST)
+Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.googlemail.com with ESMTPSA id t1-20020a05687044c100b000cd7b642bedsm5027977oai.14.2022.02.28.14.15.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 14:15:54 -0800 (PST)
+From:   Rob Herring <robh@kernel.org>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH] dt-bindings: Add compatibles for undocumented trivial syscons
+Date:   Mon, 28 Feb 2022 16:15:37 -0600
+Message-Id: <20220228221537.1700071-1-robh@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Date:   Mon, 28 Feb 2022 17:14:26 -0500
-From:   matoro <matoro_mailinglist_kernel@matoro.tk>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Biederman <ebiederm@xmission.com>,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        stable@vger.kernel.org,
-        =?UTF-8?Q?Magnus_Gro=C3=9F?= <magnus.gross@rwth-aachen.de>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Anthony Yznaga <anthony.yznaga@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        regressions@lists.linux.dev, linux-ia64@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH 5.16 v2] binfmt_elf: Avoid total_mapping_size for ET_EXEC
-In-Reply-To: <20220228205518.1265798-1-keescook@chromium.org>
-References: <20220228205518.1265798-1-keescook@chromium.org>
-Message-ID: <ce8af9c13bcea9230c7689f3c1e0e2cd@matoro.tk>
-X-Sender: matoro_mailinglist_kernel@matoro.tk
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-28 15:55, Kees Cook wrote:
-> Partially revert commit 5f501d555653 ("binfmt_elf: reintroduce using
-> MAP_FIXED_NOREPLACE").
-> 
-> At least ia64 has ET_EXEC PT_LOAD segments that are not virtual-address
-> contiguous (but _are_ file-offset contiguous). This would result in
-> giant mapping attempts to cover the entire span, including the virtual
-> address range hole. Disable total_mapping_size for ET_EXEC, which
-> reduces the MAP_FIXED_NOREPLACE coverage to only the first PT_LOAD:
-> 
-> $ readelf -lW /usr/bin/gcc
-> ...
-> Program Headers:
->   Type Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   
-> ...
-> ...
->   LOAD 0x000000 0x4000000000000000 0x4000000000000000 0x00b5a0 0x00b5a0 
-> ...
->   LOAD 0x00b5a0 0x600000000000b5a0 0x600000000000b5a0 0x0005ac 0x000710 
-> ...
-> ...
->        ^^^^^^^^ ^^^^^^^^^^^^^^^^^^                    ^^^^^^^^ ^^^^^^^^
-> 
-> File offset range     : 0x000000-0x00bb4c
-> 			0x00bb4c bytes
-> 
-> Virtual address range : 0x4000000000000000-0x600000000000bcb0
-> 			0x200000000000bcb0 bytes
-> 
-> Ironically, this is the reverse of the problem that originally caused
-> problems with ET_EXEC and MAP_FIXED_NOREPLACE: overlaps. This problem 
-> is
-> with holes. Future work could restore full coverage if 
-> load_elf_binary()
-> were to perform mappings in a separate phase from the loading (where
-> it could resolve both overlaps and holes).
-> 
-> Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-> Cc: Eric Biederman <ebiederm@xmission.com>
-> Cc: linux-fsdevel@vger.kernel.org
-> Cc: linux-mm@kvack.org
-> Reported-by: matoro <matoro_mailinglist_kernel@matoro.tk>
-> Reported-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-> Fixes: 5f501d555653 ("binfmt_elf: reintroduce using 
-> MAP_FIXED_NOREPLACE")
-> Link:
-> https://lore.kernel.org/r/a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
-> Here's the v5.16 backport.
-> ---
->  fs/binfmt_elf.c | 25 ++++++++++++++++++-------
->  1 file changed, 18 insertions(+), 7 deletions(-)
-> 
-> diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-> index f8c7f26f1fbb..911a9e7044f4 100644
-> --- a/fs/binfmt_elf.c
-> +++ b/fs/binfmt_elf.c
-> @@ -1135,14 +1135,25 @@ static int load_elf_binary(struct linux_binprm 
-> *bprm)
->  			 * is then page aligned.
->  			 */
->  			load_bias = ELF_PAGESTART(load_bias - vaddr);
-> -		}
-> 
-> -		/*
-> -		 * Calculate the entire size of the ELF mapping (total_size).
-> -		 * (Note that load_addr_set is set to true later once the
-> -		 * initial mapping is performed.)
-> -		 */
-> -		if (!load_addr_set) {
-> +			/*
-> +			 * Calculate the entire size of the ELF mapping
-> +			 * (total_size), used for the initial mapping,
-> +			 * due to first_pt_load which is set to false later
-> +			 * once the initial mapping is performed.
-> +			 *
-> +			 * Note that this is only sensible when the LOAD
-> +			 * segments are contiguous (or overlapping). If
-> +			 * used for LOADs that are far apart, this would
-> +			 * cause the holes between LOADs to be mapped,
-> +			 * running the risk of having the mapping fail,
-> +			 * as it would be larger than the ELF file itself.
-> +			 *
-> +			 * As a result, only ET_DYN does this, since
-> +			 * some ET_EXEC (e.g. ia64) may have virtual
-> +			 * memory holes between LOADs.
-> +			 *
-> +			 */
->  			total_size = total_mapping_size(elf_phdata,
->  							elf_ex->e_phnum);
->  			if (!total_size) {
+'intel,lgm-syscon', 'marvell,armada-3700-usb2-host-misc',
+'mediatek,mt8135-pctl-a-syscfg', and 'mediatek,mt8135-pctl-b-syscfg' are
+all used in DT binding examples and/or dts files, but are not
+documented. Add them to syscon.yaml as they are all trivial cases.
 
-This does the trick!  Thank you so much!!
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/mfd/syscon.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/mfd/syscon.yaml b/Documentation/devicetree/bindings/mfd/syscon.yaml
+index eeac1cbc5a17..29d4a97f7108 100644
+--- a/Documentation/devicetree/bindings/mfd/syscon.yaml
++++ b/Documentation/devicetree/bindings/mfd/syscon.yaml
+@@ -44,6 +44,10 @@ properties:
+               - hisilicon,hi6220-sramctrl
+               - hisilicon,pcie-sas-subctrl
+               - hisilicon,peri-subctrl
++              - intel,lgm-syscon
++              - marvell,armada-3700-usb2-host-misc
++              - mediatek,mt8135-pctl-a-syscfg
++              - mediatek,mt8135-pctl-b-syscfg
+               - microchip,sparx5-cpu-syscon
+               - mstar,msc313-pmsleep
+               - rockchip,px30-qos
+-- 
+2.32.0
+
