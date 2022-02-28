@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAAB8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 321F3C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234061AbiB1Ri4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:38:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41628 "EHLO
+        id S237773AbiB1RjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:39:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238315AbiB1Rgs (ORCPT
+        with ESMTP id S238273AbiB1Rgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:36:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF7997BBF;
-        Mon, 28 Feb 2022 09:31:53 -0800 (PST)
+        Mon, 28 Feb 2022 12:36:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071D488792;
+        Mon, 28 Feb 2022 09:31:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8895761359;
-        Mon, 28 Feb 2022 17:31:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CBDFC340E7;
-        Mon, 28 Feb 2022 17:31:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3342B815A6;
+        Mon, 28 Feb 2022 17:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 527E2C340E7;
+        Mon, 28 Feb 2022 17:31:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069509;
-        bh=s0zOtC35QEyG/6RmIPaCTT90hzhX03S1G3ch4pgXpg0=;
+        s=korg; t=1646069511;
+        bh=/IPjo5Im5eTlmflgA6jvO3M2vFnLOiss2A90CD++VY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=17dX1JtpAuqna+2XOkUrQFpJ489z2VtdrivMSraLVU1grPEeuQYsUDhEHilrTN0De
-         D1NMwYeWWsDWqgxJ5tf+TD8I51EJlZZGsk5yPao/iipLlvOCpajEJFS1+lCRmsp3zn
-         82dStSsh0A9elUeBLY4PYVztsE0OLgA/0uB1HsDI=
+        b=Bq+3kQpO4S5b/FUiYEB44i2VNzEh69+P8syu2k1RM0U1ne9p0TQ94S6iUwuoqEEJa
+         4+N8rIMHaexHh06lntda2UrpIRzTOcsWwSfler1C2bThCkOsqCthYdmrWxA/RGdUHh
+         4NMX+mT1hGDbMxhoAla2WWw+1xrQGTMd3NIdPVpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ariel Levkovich <lariel@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.4 28/53] net/mlx5: Fix wrong limitation of metadata match on ecpf
-Date:   Mon, 28 Feb 2022 18:24:26 +0100
-Message-Id: <20220228172250.336083429@linuxfoundation.org>
+        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.4 46/53] xhci: Prevent futile URB re-submissions due to incorrect return value.
+Date:   Mon, 28 Feb 2022 18:24:44 +0100
+Message-Id: <20220228172251.616249061@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -49,36 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ariel Levkovich <lariel@nvidia.com>
+From: Hongyu Xie <xiehongyu1@kylinos.cn>
 
-commit 07666c75ad17d7389b18ac0235c8cf41e1504ea8 upstream.
+commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
 
-Match metadata support check returns false for ecpf device.
-However, this support does exist for ecpf and therefore this
-limitation should be removed to allow feature such as stacked
-devices and internal port offloaded to be supported.
+The -ENODEV return value from xhci_check_args() is incorrectly changed
+to -EINVAL in a couple places before propagated further.
 
-Fixes: 92ab1eb392c6 ("net/mlx5: E-Switch, Enable vport metadata matching if firmware supports it")
-Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+the return value of xhci_check_args <= 0.
+This causes problems for example r8152_submit_rx, calling usb_submit_urb
+in drivers/net/usb/r8152.c.
+r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
+is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
+
+[commit message and header edit -Mathias]
+
+Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c |    4 ----
- 1 file changed, 4 deletions(-)
+ drivers/usb/host/xhci.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -1977,10 +1977,6 @@ esw_check_vport_match_metadata_supported
- 	if (!MLX5_CAP_ESW_FLOWTABLE(esw->dev, flow_source))
- 		return false;
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -1487,9 +1487,12 @@ static int xhci_urb_enqueue(struct usb_h
+ 	struct urb_priv	*urb_priv;
+ 	int num_tds;
  
--	if (mlx5_core_is_ecpf_esw_manager(esw->dev) ||
--	    mlx5_ecpf_vport_exists(esw->dev))
--		return false;
--
- 	return true;
- }
+-	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
+-					true, true, __func__) <= 0)
++	if (!urb)
+ 		return -EINVAL;
++	ret = xhci_check_args(hcd, urb->dev, urb->ep,
++					true, true, __func__);
++	if (ret <= 0)
++		return ret ? ret : -EINVAL;
  
+ 	slot_id = urb->dev->slot_id;
+ 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
+@@ -3289,7 +3292,7 @@ static int xhci_check_streams_endpoint(s
+ 		return -EINVAL;
+ 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
+ 	if (ret <= 0)
+-		return -EINVAL;
++		return ret ? ret : -EINVAL;
+ 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
+ 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
+ 				" descriptor for ep 0x%x does not support streams\n",
 
 
