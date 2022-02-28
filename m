@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F43EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 122C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:11:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239643AbiB1SLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:11:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
+        id S239744AbiB1SLm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:11:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236408AbiB1SEq (ORCPT
+        with ESMTP id S239702AbiB1SFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:04:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C96641605;
-        Mon, 28 Feb 2022 09:47:57 -0800 (PST)
+        Mon, 28 Feb 2022 13:05:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE9E5418A;
+        Mon, 28 Feb 2022 09:48:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 158AA60DE5;
-        Mon, 28 Feb 2022 17:47:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B119C340F0;
-        Mon, 28 Feb 2022 17:47:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 636BAB81187;
+        Mon, 28 Feb 2022 17:47:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3577C340E7;
+        Mon, 28 Feb 2022 17:47:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070472;
-        bh=5uF6y4pkw02E5d5b+6ZDIAcWCGP3fx5/Fm1OO0TLlEc=;
+        s=korg; t=1646070467;
+        bh=HtR2CxzOO8ZDLXGj1j6x+l8s1x2I1wdNHqufAAZ25hU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VxubcB25CKhPpdxK+F1X+gMEz0gYWfXxqVyNAerr/IUS76mJXSoKF9vLll7dy9qWT
-         pLLOXSLjrqAnawusPnM+hUzBFtAnsqsMgkiwiBfPE/UoWwQlUaCZEaqB/OVQFbBpT9
-         /A8KXM1M5IYMGVNxjwvFQBPMLlRvmXrGA8SgqFrs=
+        b=08p+Cdcp+OWd1eI5caZe/6Oh8b2mR10xv9BZgc6dc8jGWUC7CIGbcDVivar5oKa4Z
+         VRG0gFdRNKBDpxVGqCnRKumA24xbhTolhwl3og+QwMF0mOxGwg8e09A+T5FixIQJ51
+         d1EYF16CEhtL5KzAU7S61Qa9NczWwH6bvaOI45Qc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>
-Subject: [PATCH 5.16 121/164] sc16is7xx: Fix for incorrect data being transmitted
-Date:   Mon, 28 Feb 2022 18:24:43 +0100
-Message-Id: <20220228172411.212269000@linuxfoundation.org>
+        stable@vger.kernel.org, Mario Tesi <mario.tesi@st.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.16 119/164] iio: imu: st_lsm6dsx: wait for settling time in st_lsm6dsx_read_oneshot
+Date:   Mon, 28 Feb 2022 18:24:41 +0100
+Message-Id: <20220228172411.078345606@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -47,55 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-commit eebb0f4e894f1e9577a56b337693d1051dd6ebfd upstream.
+commit ea85bf906466191b58532bb19f4fbb4591f0a77e upstream.
 
-UART drivers are meant to use the port spinlock within certain
-methods, to protect against reentrancy. The sc16is7xx driver does
-very little locking, presumably because when added it triggers
-"scheduling while atomic" errors. This is due to the use of mutexes
-within the regmap abstraction layer, and the mutex implementation's
-habit of sleeping the current thread while waiting for access.
-Unfortunately this lack of interlocking can lead to corruption of
-outbound data, which occurs when the buffer used for I2C transmission
-is used simultaneously by two threads - a work queue thread running
-sc16is7xx_tx_proc, and an IRQ thread in sc16is7xx_port_irq, both
-of which can call sc16is7xx_handle_tx.
+We need to wait for sensor settling time (~ 3/ODR) before reading data
+in st_lsm6dsx_read_oneshot routine in order to avoid corrupted samples.
 
-An earlier patch added efr_lock, a mutex that controls access to the
-EFR register. This mutex is already claimed in the IRQ handler, and
-all that is required is to claim the same mutex in sc16is7xx_tx_proc.
-
-See: https://github.com/raspberrypi/linux/issues/4885
-
-Fixes: 6393ff1c4435 ("sc16is7xx: Use threaded IRQ")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Link: https://lore.kernel.org/r/20220216160802.1026013-1-phil@raspberrypi.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 290a6ce11d93 ("iio: imu: add support to lsm6dsx driver")
+Reported-by: Mario Tesi <mario.tesi@st.com>
+Tested-by: Mario Tesi <mario.tesi@st.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Link: https://lore.kernel.org/r/b41ebda5535895298716c76d939f9f165fcd2d13.1644098120.git.lorenzo@kernel.org
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/sc16is7xx.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/tty/serial/sc16is7xx.c
-+++ b/drivers/tty/serial/sc16is7xx.c
-@@ -734,12 +734,15 @@ static irqreturn_t sc16is7xx_irq(int irq
- static void sc16is7xx_tx_proc(struct kthread_work *ws)
- {
- 	struct uart_port *port = &(to_sc16is7xx_one(ws, tx_work)->port);
-+	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -1374,8 +1374,12 @@ static int st_lsm6dsx_read_oneshot(struc
+ 	if (err < 0)
+ 		return err;
  
- 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
- 	    (port->rs485.delay_rts_before_send > 0))
- 		msleep(port->rs485.delay_rts_before_send);
++	/*
++	 * we need to wait for sensor settling time before
++	 * reading data in order to avoid corrupted samples
++	 */
+ 	delay = 1000000000 / sensor->odr;
+-	usleep_range(delay, 2 * delay);
++	usleep_range(3 * delay, 4 * delay);
  
-+	mutex_lock(&s->efr_lock);
- 	sc16is7xx_handle_tx(port);
-+	mutex_unlock(&s->efr_lock);
- }
- 
- static void sc16is7xx_reconf_rs485(struct uart_port *port)
+ 	err = st_lsm6dsx_read_locked(hw, addr, &data, sizeof(data));
+ 	if (err < 0)
 
 
