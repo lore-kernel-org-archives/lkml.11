@@ -2,111 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 133DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B07C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240772AbiB1SEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:04:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
+        id S240852AbiB1SEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:04:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239663AbiB1RxR (ORCPT
+        with ESMTP id S239393AbiB1RxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:17 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB202AA2C2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:40:44 -0800 (PST)
-Date:   Mon, 28 Feb 2022 17:40:39 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646070040;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6MRA8mvPWezaGuoP0ZtY9X0QAiWbcqEgiJIfoBnk4/I=;
-        b=ixF59cL0uVn5r7KIGX5Ma8BIXtvpT/PsLamSKoFiCz7JAr7+lP/cRSZ1kAPoPCIlEf3Rzb
-        7trqFYoVCFDCfdLcCF3DY9hISsaBIeDiKgPwP2aN1cyt5q7schjfmWRNiO+VGpRreIjja+
-        MgU87u6JjMpEhuDVDtWCsmSwXYG2KsJ2I4dJtj70WPka3tCnReZoaiWHCZS3iKrERMPOk7
-        0Q0XSC4GMtn5oRCmrvj9/UYzJw0OFRNGsbj05vR8kswd3HOOoCq3OwZQHf0Ok24IyVTrtF
-        Xn40uXS/k5GV4ywWe1D3T0XOpwH1pdhm6CjHVAounVY4AT4+wOb5xbIUxr3rsA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646070040;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6MRA8mvPWezaGuoP0ZtY9X0QAiWbcqEgiJIfoBnk4/I=;
-        b=Wyuyb+dOvS3uVvLRgy2FAJ5pnnlh0wloK6XrURAppDtaK+UPY2bchm+gVvoAU5ywePo9GW
-        9ZTfFxkHDXlYNZAA==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
+        Mon, 28 Feb 2022 12:53:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D34BA94F9;
+        Mon, 28 Feb 2022 09:40:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0DE2B815B4;
+        Mon, 28 Feb 2022 17:40:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B136C340E7;
+        Mon, 28 Feb 2022 17:40:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646070008;
+        bh=QoV7j+7VjawEmBbE7tClEvzEIsDXiNYm9A4p/HtvrVQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=z6n7kPVdaBJJTE6Efyzzp6xC2liVaazEx1W/sq2UwQKeI5wB1f0GTkbpW7/YO/YSP
+         c/XRRL+8EyoK0LxtKRj0oQk1oAxBZtY8H7AihaEbrtwHsA8RjO8po70KjtLJFB207L
+         aOu6D1+OXiJM4ugJd3KvTzBeKJCTUnPekMBXelOA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/qcom-pdc: Fix broken locking
-Cc:     Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220224101226.88373-5-maz@kernel.org>
-References: <20220224101226.88373-5-maz@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 085/139] spi: spi-zynq-qspi: Fix a NULL pointer dereference in zynq_qspi_exec_mem_op()
+Date:   Mon, 28 Feb 2022 18:24:19 +0100
+Message-Id: <20220228172356.608452171@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164607003952.16921.11921713857633233436.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-Commit-ID:     bd9fce2e5ea12ee82821dbc725fa4f97f9094ba1
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/bd9fce2e5ea12ee82821dbc725fa4f97f9094ba1
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Thu, 24 Feb 2022 10:12:25 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Mon, 28 Feb 2022 17:32:26 
+[ Upstream commit ab3824427b848da10e9fe2727f035bbeecae6ff4 ]
 
-irqchip/qcom-pdc: Fix broken locking
+In zynq_qspi_exec_mem_op(), kzalloc() is directly used in memset(),
+which could lead to a NULL pointer dereference on failure of
+kzalloc().
 
-pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
-and has a raw spinlock for mutual exclusion, which is uses with
-interruptible primitives.
+Fix this bug by adding a check of tmpbuf.
 
-This means that this critical section can itself be interrupted.
-Should the interrupt also be a PDC interrupt, and the endpoint driver
-perform an irq_disable() on that interrupt, we end-up in a deadlock.
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
 
-Fix this by using the irqsave/irqrestore variants of the locking
-primitives.
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220224101226.88373-5-maz@kernel.org
+Builds with CONFIG_SPI_ZYNQ_QSPI=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 67dca5e580f1 ("spi: spi-mem: Add support for Zynq QSPI controller")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Link: https://lore.kernel.org/r/20211130172253.203700-1-zhou1615@umn.edu
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/qcom-pdc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/spi/spi-zynq-qspi.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 837ca69..0cd20dd 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -55,17 +55,18 @@ static u32 pdc_reg_read(int reg, u32 i)
- static void pdc_enable_intr(struct irq_data *d, bool on)
- {
- 	int pin_out = d->hwirq;
-+	unsigned long flags;
- 	u32 index, mask;
- 	u32 enable;
+diff --git a/drivers/spi/spi-zynq-qspi.c b/drivers/spi/spi-zynq-qspi.c
+index cfa222c9bd5e7..78f31b61a2aac 100644
+--- a/drivers/spi/spi-zynq-qspi.c
++++ b/drivers/spi/spi-zynq-qspi.c
+@@ -570,6 +570,9 @@ static int zynq_qspi_exec_mem_op(struct spi_mem *mem,
  
- 	index = pin_out / 32;
- 	mask = pin_out % 32;
- 
--	raw_spin_lock(&pdc_lock);
-+	raw_spin_lock_irqsave(&pdc_lock, flags);
- 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
- 	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
- 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
--	raw_spin_unlock(&pdc_lock);
-+	raw_spin_unlock_irqrestore(&pdc_lock, flags);
- }
- 
- static void qcom_pdc_gic_disable(struct irq_data *d)
+ 	if (op->dummy.nbytes) {
+ 		tmpbuf = kzalloc(op->dummy.nbytes, GFP_KERNEL);
++		if (!tmpbuf)
++			return -ENOMEM;
++
+ 		memset(tmpbuf, 0xff, op->dummy.nbytes);
+ 		reinit_completion(&xqspi->data_completion);
+ 		xqspi->txbuf = tmpbuf;
+-- 
+2.34.1
+
+
+
