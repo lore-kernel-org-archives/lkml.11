@@ -2,141 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8544CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96BB1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230126AbiB1UL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:11:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54884 "EHLO
+        id S230145AbiB1UNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:13:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbiB1ULy (ORCPT
+        with ESMTP id S230150AbiB1UNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:11:54 -0500
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C7A8B6D7;
-        Mon, 28 Feb 2022 12:11:14 -0800 (PST)
-Received: by mail-oi1-f178.google.com with SMTP id i5so14297950oih.1;
-        Mon, 28 Feb 2022 12:11:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6hMIoo9EljswHM/Y7Z+xyqfRgvaIQ0mLlekBXdfWYK8=;
-        b=0ZQrm0NVTc46h+wYZCnVXhWLZOIJ0oM9EPMwiBIOQL0bBGgBxQ4pip1W+2xLr33lE9
-         NNb9qRugsj956C1Q62Eq1HAbgUi8cs+BuxiPTzWzt875T7UfMVVMIRJR4sbXlGB/UzGw
-         WrKAGKo7wS5+pePdn2ze1WxRxCAqva6kO290kqlkBiZPBgsGDJSGGibTSxgTjS6shEr4
-         Ky1EiSCvnAhbJzz2qpkHZYm6pg1THGg5QoPU9rWQU/m3deoSxs+IwwgY52AgOUz2TTWI
-         FU7QCt4QafUYDeOSmee03SvMSp/VzWMECJceCr72RNZ9i0OBie3YZCE++s/AvVPNSj5t
-         OBmg==
-X-Gm-Message-State: AOAM532aUeoJZTb9UnlLRYGINiVs8HSXTi6TQNBKssT3cm15SKbevJX9
-        lV7Z0PvQYgnVfuywkXMiLA==
-X-Google-Smtp-Source: ABdhPJyDqdqLvu0ZD17elBE69Slnp7CCuMCIe8QXgSkJOli0RqA3pVoc9sRRlW0MC0BrSfqg1fDy8A==
-X-Received: by 2002:a05:6808:23cf:b0:2d7:1fca:4792 with SMTP id bq15-20020a05680823cf00b002d71fca4792mr10125707oib.5.1646079074027;
-        Mon, 28 Feb 2022 12:11:14 -0800 (PST)
-Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.googlemail.com with ESMTPSA id fq14-20020a0568710b0e00b000d4492531a2sm5115384oab.17.2022.02.28.12.11.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 12:11:13 -0800 (PST)
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: kbuild: Support partial matches with DT_SCHEMA_FILES
-Date:   Mon, 28 Feb 2022 14:10:05 -0600
-Message-Id: <20220228201006.1484903-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        Mon, 28 Feb 2022 15:13:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7908B39815;
+        Mon, 28 Feb 2022 12:13:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ECC660B2A;
+        Mon, 28 Feb 2022 20:13:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36FD6C340F2;
+        Mon, 28 Feb 2022 20:13:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646079181;
+        bh=7itQ1YN7sWBEvhZSZBZDP5YIBB1m6b0J0BY8JZ3d9tI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=LpSSl4Pvrp8HCxpc3HNz9Ev+ThT8eVsPR878QUgqSRGMZ6Kfxt92/qs79ay0u6Fwm
+         IJZUnbV+zWmWE6LwHWIwNAWw91+3X75H1sW48deIlX+ujjZusHvla4eqBS1VJEvGq1
+         qW+p5UYEQcqM6pNM34qZawV9YxnUpq4dTIWH/KhbYbutUY5Jza4qKTqZFmonor4ryU
+         qgPw82VLMmhmybka/6ojUhBzUyHwUvK6P2FSEXpMN5Vx1qiv7GDRWB6Ig+Wza4Ji9l
+         ebGGxve2VH++Vefu1VxQ5mEwFeuxVzCsLO6q5OxEzq0o5h7QkbcPmUvyu9nsTxaYy2
+         Yb+I2zEcH8WqA==
+Date:   Mon, 28 Feb 2022 14:12:59 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, jgg@nvidia.com, cohuck@redhat.com,
+        mgurtovoy@nvidia.com, yishaih@nvidia.com, linuxarm@huawei.com,
+        liulongfang@huawei.com, prime.zeng@hisilicon.com,
+        jonathan.cameron@huawei.com, wangzhou1@hisilicon.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org
+Subject: Re: [PATCH v6 03/10] hisi_acc_qm: Move PCI device IDs to common
+ header
+Message-ID: <20220228201259.GA516607@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228103338.76da0b3b.alex.williamson@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DT_SCHEMA_FILES is currently restricted to a list of exact files with
-the full source tree path (i.e. Documentation/devicetree/bindings/...).
-Loosen this requirement and let DT_SCHEMA_FILES be a partial match.
+On Mon, Feb 28, 2022 at 10:33:38AM -0700, Alex Williamson wrote:
+> [Cc+ Bjorn, linux-pci]
+> 
+> On Mon, 28 Feb 2022 09:01:14 +0000
+> Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
+> 
+> > Move the PCI Device IDs of HiSilicon ACC devices to
+> > a common header and use a uniform naming convention.
 
-With this, checking all schema files in a directory is possible:
+> > --- a/include/linux/pci_ids.h
+> > +++ b/include/linux/pci_ids.h
+> > @@ -2529,6 +2529,12 @@
+> >  #define PCI_DEVICE_ID_KORENIX_JETCARDF3	0x17ff
+> >  
+> >  #define PCI_VENDOR_ID_HUAWEI		0x19e5
+> > +#define PCI_DEVICE_ID_HUAWEI_ZIP_PF	0xa250
+> > +#define PCI_DEVICE_ID_HUAWEI_ZIP_VF	0xa251
+> > +#define PCI_DEVICE_ID_HUAWEI_SEC_PF	0xa255
+> > +#define PCI_DEVICE_ID_HUAWEI_SEC_VF	0xa256
+> > +#define PCI_DEVICE_ID_HUAWEI_HPRE_PF	0xa258
+> > +#define PCI_DEVICE_ID_HUAWEI_HPRE_VF	0xa259
 
-$ make DT_SCHEMA_FILES=/gpio/ dt_binding_check
+We usually don't add things to pci_ids.h unless they're used in more
+than one place (see the comment at the top of the file).  AFAICT,
+these device IDs are only used in one file, so you can leave the
+#defines in the file that uses them or use bare hex values.
 
-Or all schema files with 'qcom' in the path or filename:
+These device IDs are all in https://pci-ids.ucw.cz/read/PC/19e5
+already, thanks for that!
 
-$ make DT_SCHEMA_FILES=qcom dt_binding_check
-
-Cc: Masahiro Yamada <masahiroy@kernel.org>
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/Makefile        | 15 +++++----------
- .../devicetree/bindings/writing-schema.rst        |  9 +++++----
- 2 files changed, 10 insertions(+), 14 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/Makefile b/Documentation/devicetree/bindings/Makefile
-index 41c555181b6f..5138d10e0601 100644
---- a/Documentation/devicetree/bindings/Makefile
-+++ b/Documentation/devicetree/bindings/Makefile
-@@ -31,11 +31,8 @@ find_all_cmd = find $(srctree)/$(src) \( -name '*.yaml' ! \
- 		-name 'processed-schema*' ! \
- 		-name '*.example.dt.yaml' \)
- 
--ifeq ($(DT_SCHEMA_FILES),)
--find_cmd = $(find_all_cmd)
--else
--find_cmd = echo $(addprefix $(srctree)/, $(DT_SCHEMA_FILES))
--endif
-+find_cmd = $(find_all_cmd) | grep -F "$(DT_SCHEMA_FILES)"
-+CHK_DT_DOCS := $(shell $(find_cmd))
- 
- quiet_cmd_yamllint = LINT    $(src)
-       cmd_yamllint = ($(find_cmd) | \
-@@ -83,22 +80,20 @@ ifeq ($(DT_SCHEMA_FILES),)
- $(obj)/processed-schema.json: $(obj)/processed-schema-examples.json FORCE
- 	$(call if_changed,copy)
- 
--DT_SCHEMA_FILES = $(DT_DOCS)
--
- else
- 
- # If DT_SCHEMA_FILES is specified, use it for processed-schema.json
- 
- $(obj)/processed-schema.json: DT_MK_SCHEMA_FLAGS := -u
--$(obj)/processed-schema.json: $(DT_SCHEMA_FILES) check_dtschema_version FORCE
-+$(obj)/processed-schema.json: $(CHK_DT_DOCS) check_dtschema_version FORCE
- 	$(call if_changed,mk_schema)
- 
- endif
- 
- always-$(CHECK_DT_BINDING) += processed-schema-examples.json
- always-$(CHECK_DTBS)       += processed-schema.json
--always-$(CHECK_DT_BINDING) += $(patsubst $(src)/%.yaml,%.example.dts, $(DT_SCHEMA_FILES))
--always-$(CHECK_DT_BINDING) += $(patsubst $(src)/%.yaml,%.example.dt.yaml, $(DT_SCHEMA_FILES))
-+always-$(CHECK_DT_BINDING) += $(patsubst $(srctree)/$(src)/%.yaml,%.example.dts, $(CHK_DT_DOCS))
-+always-$(CHECK_DT_BINDING) += $(patsubst $(srctree)/$(src)/%.yaml,%.example.dt.yaml, $(CHK_DT_DOCS))
- 
- # Hack: avoid 'Argument list too long' error for 'make clean'. Remove most of
- # build artifacts here before they are processed by scripts/Makefile.clean
-diff --git a/Documentation/devicetree/bindings/writing-schema.rst b/Documentation/devicetree/bindings/writing-schema.rst
-index 4004dd9209a6..3b00fe981494 100644
---- a/Documentation/devicetree/bindings/writing-schema.rst
-+++ b/Documentation/devicetree/bindings/writing-schema.rst
-@@ -157,13 +157,14 @@ It is possible to run both in a single command::
- 
-     make dt_binding_check dtbs_check
- 
--It is also possible to run checks with a single schema file by setting the
--``DT_SCHEMA_FILES`` variable to a specific schema file.
-+It is also possible to run checks with a subset of matching schema files by
-+setting the ``DT_SCHEMA_FILES`` variable to a specific schema file or pattern.
- 
- ::
- 
--    make dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/trivial-devices.yaml
--    make dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/trivial-devices.yaml
-+    make dt_binding_check DT_SCHEMA_FILES=trivial-devices.yaml
-+    make dt_binding_check DT_SCHEMA_FILES=/gpio/
-+    make dtbs_check DT_SCHEMA_FILES=trivial-devices.yaml
- 
- 
- json-schema Resources
--- 
-2.32.0
-
+> >  #define PCI_VENDOR_ID_NETRONOME		0x19ee
+> >  #define PCI_DEVICE_ID_NETRONOME_NFP4000	0x4000
+> 
