@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E03EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E17C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239849AbiB1SFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:05:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
+        id S234953AbiB1SGD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:06:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239286AbiB1R70 (ORCPT
+        with ESMTP id S239314AbiB1R71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:59:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD8C88B18;
+        Mon, 28 Feb 2022 12:59:27 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7052D88B16;
         Mon, 28 Feb 2022 09:45:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F9EB6090B;
-        Mon, 28 Feb 2022 17:45:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A5CAC340F0;
-        Mon, 28 Feb 2022 17:45:19 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4B955CE17D8;
+        Mon, 28 Feb 2022 17:45:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2961DC340E7;
+        Mon, 28 Feb 2022 17:45:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070319;
-        bh=FeXWa6P1qRtmPfj0mdtYpxdTQB265wDqpUFzlISXYoI=;
+        s=korg; t=1646070311;
+        bh=TCc4XpVKrrwrvqe8z+8VZ37YD+Mdl9sfJq6e6QUpPwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0swlm84EcX+OLTLmihWlMGIbj7hmFVxxeC9Zj+2AifmqPg1u42h5V4Tn3j/VV41BD
-         O54n9wv2WY+G8U0FfAKcK6rom4SjJmD1c1pLwjeTxPZpq+DOuUQCLmyNyJXa51XMRc
-         ZwifHfLXRCF80ABLX+Z/y4SUO0dVeW8sXET/KW6U=
+        b=QsDkrRvEgR1QD4dgkCXNpYphBvQcdWJgt2JeyCfR0QFcyzEl/7PJELfBs5PT/Jjgw
+         yUEwiAJ2h/586itxpQFFylcdMXXK32xMZ3ARdw8C91Nx5LkxQWG2qOo2DhBSxMpFCt
+         03C2hL0IVrwTN7N7bMpRlqiprfEf8wIo60l1RJwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH 5.16 058/164] selftests: bpf: Check bpf_msg_push_data return value
-Date:   Mon, 28 Feb 2022 18:23:40 +0100
-Message-Id: <20220228172405.416279934@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
+        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
+Subject: [PATCH 5.16 026/164] drm/i915: Fix bw atomic check when switching between SAGV vs. no SAGV
+Date:   Mon, 28 Feb 2022 18:23:08 +0100
+Message-Id: <20220228172402.504294614@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,97 +51,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Maurer <fmaurer@redhat.com>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit 61d06f01f9710b327a53492e5add9f972eb909b3 upstream.
+commit ec663bca9128f13eada25cd0446e7fcb5fcdc088 upstream.
 
-bpf_msg_push_data may return a non-zero value to indicate an error. The
-return value should be checked to prevent undetected errors.
+If the only thing that is changing is SAGV vs. no SAGV but
+the number of active planes and the total data rates end up
+unchanged we currently bail out of intel_bw_atomic_check()
+early and forget to actually compute the new WGV point
+mask and thus won't actually enable/disable SAGV as requested.
+This ends up poorly if we end up running with SAGV enabled
+when we shouldn't. Usually ends up in underruns.
 
-To indicate an error, the BPF programs now perform a different action
-than their intended one to make the userspace test program notice the
-error, i.e., the programs supposed to pass/redirect drop, the program
-supposed to drop passes.
+To fix this let's go through the QGV point mask computation
+if either the data rates/number of planes, or the state
+of SAGV is changing.
 
-Fixes: 84fbfe026acaa ("bpf: test_sockmap add options to use msg_push_data")
-Signed-off-by: Felix Maurer <fmaurer@redhat.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/89f767bb44005d6b4dd1f42038c438f76b3ebfad.1644601294.git.fmaurer@redhat.com
+v2: Check more carefully if things are changing to avoid
+    the extra calculations/debugs from introducing unwanted
+    overhead
+
+Cc: stable@vger.kernel.org
+Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com> #v1
+Fixes: 20f505f22531 ("drm/i915: Restrict qgv points which don't have enough bandwidth.")
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220218064039.12834-3-ville.syrjala@linux.intel.com
+(cherry picked from commit 6b728595ffa51c087343c716bccbfc260f120e72)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/bpf/progs/test_sockmap_kern.h |   26 ++++++++++++------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/i915/display/intel_bw.c |   18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
---- a/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
-+++ b/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
-@@ -235,7 +235,7 @@ SEC("sk_msg1")
- int bpf_prog4(struct sk_msg_md *msg)
- {
- 	int *bytes, zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5;
--	int *start, *end, *start_push, *end_push, *start_pop, *pop;
-+	int *start, *end, *start_push, *end_push, *start_pop, *pop, err = 0;
+--- a/drivers/gpu/drm/i915/display/intel_bw.c
++++ b/drivers/gpu/drm/i915/display/intel_bw.c
+@@ -681,6 +681,7 @@ int intel_bw_atomic_check(struct intel_a
+ 	unsigned int max_bw_point = 0, max_bw = 0;
+ 	unsigned int num_qgv_points = dev_priv->max_bw[0].num_qgv_points;
+ 	unsigned int num_psf_gv_points = dev_priv->max_bw[0].num_psf_gv_points;
++	bool changed = false;
+ 	u32 mask = 0;
  
- 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
- 	if (bytes)
-@@ -249,8 +249,11 @@ int bpf_prog4(struct sk_msg_md *msg)
- 		bpf_msg_pull_data(msg, *start, *end, 0);
- 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
- 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
--	if (start_push && end_push)
--		bpf_msg_push_data(msg, *start_push, *end_push, 0);
-+	if (start_push && end_push) {
-+		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
-+		if (err)
-+			return SK_DROP;
-+	}
- 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
- 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
- 	if (start_pop && pop)
-@@ -263,6 +266,7 @@ int bpf_prog6(struct sk_msg_md *msg)
- {
- 	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, key = 0;
- 	int *bytes, *start, *end, *start_push, *end_push, *start_pop, *pop, *f;
-+	int err = 0;
- 	__u64 flags = 0;
+ 	/* FIXME earlier gens need some checks too */
+@@ -724,6 +725,8 @@ int intel_bw_atomic_check(struct intel_a
+ 		new_bw_state->data_rate[crtc->pipe] = new_data_rate;
+ 		new_bw_state->num_active_planes[crtc->pipe] = new_active_planes;
  
- 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
-@@ -279,8 +283,11 @@ int bpf_prog6(struct sk_msg_md *msg)
++		changed = true;
++
+ 		drm_dbg_kms(&dev_priv->drm,
+ 			    "pipe %c data rate %u num active planes %u\n",
+ 			    pipe_name(crtc->pipe),
+@@ -731,7 +734,19 @@ int intel_bw_atomic_check(struct intel_a
+ 			    new_bw_state->num_active_planes[crtc->pipe]);
+ 	}
  
- 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
- 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
--	if (start_push && end_push)
--		bpf_msg_push_data(msg, *start_push, *end_push, 0);
-+	if (start_push && end_push) {
-+		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
-+		if (err)
-+			return SK_DROP;
-+	}
+-	if (!new_bw_state)
++	old_bw_state = intel_atomic_get_old_bw_state(state);
++	new_bw_state = intel_atomic_get_new_bw_state(state);
++
++	if (new_bw_state &&
++	    intel_can_enable_sagv(dev_priv, old_bw_state) !=
++	    intel_can_enable_sagv(dev_priv, new_bw_state))
++		changed = true;
++
++	/*
++	 * If none of our inputs (data rates, number of active
++	 * planes, SAGV yes/no) changed then nothing to do here.
++	 */
++	if (!changed)
+ 		return 0;
  
- 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
- 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
-@@ -338,7 +345,7 @@ SEC("sk_msg5")
- int bpf_prog10(struct sk_msg_md *msg)
- {
- 	int *bytes, *start, *end, *start_push, *end_push, *start_pop, *pop;
--	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5;
-+	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, err = 0;
+ 	ret = intel_atomic_lock_global_state(&new_bw_state->base);
+@@ -814,7 +829,6 @@ int intel_bw_atomic_check(struct intel_a
+ 	 */
+ 	new_bw_state->qgv_points_mask = ~allowed_points & mask;
  
- 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
- 	if (bytes)
-@@ -352,8 +359,11 @@ int bpf_prog10(struct sk_msg_md *msg)
- 		bpf_msg_pull_data(msg, *start, *end, 0);
- 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
- 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
--	if (start_push && end_push)
--		bpf_msg_push_data(msg, *start_push, *end_push, 0);
-+	if (start_push && end_push) {
-+		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
-+		if (err)
-+			return SK_PASS;
-+	}
- 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
- 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
- 	if (start_pop && pop)
+-	old_bw_state = intel_atomic_get_old_bw_state(state);
+ 	/*
+ 	 * If the actual mask had changed we need to make sure that
+ 	 * the commits are serialized(in case this is a nomodeset, nonblocking)
 
 
