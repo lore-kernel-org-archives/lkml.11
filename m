@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E974C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 992B2C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239253AbiB1R7W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:59:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
+        id S239275AbiB1R7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:59:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239532AbiB1RxI (ORCPT
+        with ESMTP id S239923AbiB1Rxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:08 -0500
+        Mon, 28 Feb 2022 12:53:41 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EADC0A9A7F;
-        Mon, 28 Feb 2022 09:40:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AA6AEF35;
+        Mon, 28 Feb 2022 09:41:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A4A261357;
-        Mon, 28 Feb 2022 17:40:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CE79C340F0;
-        Mon, 28 Feb 2022 17:40:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D472A61359;
+        Mon, 28 Feb 2022 17:41:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E97E2C340E7;
+        Mon, 28 Feb 2022 17:41:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070028;
-        bh=bUKPGIpJ7ZYzCycp1TO2WYIdsvUB9qr2ExzLIK6T5T8=;
+        s=korg; t=1646070072;
+        bh=bHavJjo8Tb1+1QO5Z8TYuLDXUUuT+DNd/J37Wc1hUSk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gHFffzAMFgubxv4Oe5Fw+uOgM8CHe95nQX+vlgi5nXYuLAKEnPs6TreJN17dgGdvp
-         fJ3Nw3WpTaq7016qlJ4Te8kslB6kPkDH5mttUbGTp8iNYBvfHjCFhZDYtSBURq5BeH
-         fOaJLuZggXxA2dHblQ6pxmp4IVHV6yMnClSxFPFs=
+        b=nziR4MMazegqpLE+TRJ+XGgdjawc8WjjRCza4S+0M+PM0bQ7fM4OH5aWPKYtQNIzS
+         Qjg18Drxb9weJHseUPOHyYHtHv1epS+BB/oCH8gLOEj6zIl0iju3cKhzv9hIlXG3uH
+         8QXdojxeWqwClIbX7HSgFeVnuZipICZLkR5pf+u8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Nyekjaer <sean@geanix.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 100/139] iio: accel: fxls8962af: add padding to regmap for SPI
-Date:   Mon, 28 Feb 2022 18:24:34 +0100
-Message-Id: <20220228172358.181897599@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 5.15 114/139] usb: dwc3: gadget: Let the interrupt handler disable bottom halves.
+Date:   Mon, 28 Feb 2022 18:24:48 +0100
+Message-Id: <20220228172359.598530420@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,83 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Nyekjaer <sean@geanix.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-commit ccbed9d8d2a5351d8238f2d3f0741c9a3176f752 upstream.
+commit 84918a89d6efaff075de570b55642b6f4ceeac6d upstream.
 
-Add missing don't care padding between address and
-data for SPI transfers
+The interrupt service routine registered for the gadget is a primary
+handler which mask the interrupt source and a threaded handler which
+handles the source of the interrupt. Since the threaded handler is
+voluntary threaded, the IRQ-core does not disable bottom halves before
+invoke the handler like it does for the forced-threaded handler.
 
-Fixes: a3e0b51884ee ("iio: accel: add support for FXLS8962AF/FXLS8964AF accelerometers")
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
-Link: https://lore.kernel.org/r/20211220125144.3630539-1-sean@geanix.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Due to changes in networking it became visible that a network gadget's
+completions handler may schedule a softirq which remains unprocessed.
+The gadget's completion handler is usually invoked either in hard-IRQ or
+soft-IRQ context. In this context it is enough to just raise the softirq
+because the softirq itself will be handled once that context is left.
+In the case of the voluntary threaded handler, there is nothing that
+will process pending softirqs. Which means it remain queued until
+another random interrupt (on this CPU) fires and handles it on its exit
+path or another thread locks and unlocks a lock with the bh suffix.
+Worst case is that the CPU goes idle and the NOHZ complains about
+unhandled softirqs.
+
+Disable bottom halves before acquiring the lock (and disabling
+interrupts) and enable them after dropping the lock. This ensures that
+any pending softirqs will handled right away.
+
+Link: https://lkml.kernel.org/r/c2a64979-73d1-2c22-e048-c275c9f81558@samsung.com
+Fixes: e5f68b4a3e7b0 ("Revert "usb: dwc3: gadget: remove unnecessary _irqsave()"")
+Cc: stable <stable@kernel.org>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lore.kernel.org/r/Yg/YPejVQH3KkRVd@linutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/accel/fxls8962af-core.c |   12 ++++++++++--
- drivers/iio/accel/fxls8962af-i2c.c  |    2 +-
- drivers/iio/accel/fxls8962af-spi.c  |    2 +-
- drivers/iio/accel/fxls8962af.h      |    3 ++-
- 4 files changed, 14 insertions(+), 5 deletions(-)
+ drivers/usb/dwc3/gadget.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/iio/accel/fxls8962af-core.c
-+++ b/drivers/iio/accel/fxls8962af-core.c
-@@ -154,12 +154,20 @@ struct fxls8962af_data {
- 	u8 watermark;
- };
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -4131,9 +4131,11 @@ static irqreturn_t dwc3_thread_interrupt
+ 	unsigned long flags;
+ 	irqreturn_t ret = IRQ_NONE;
  
--const struct regmap_config fxls8962af_regmap_conf = {
-+const struct regmap_config fxls8962af_i2c_regmap_conf = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
- 	.max_register = FXLS8962AF_MAX_REG,
- };
--EXPORT_SYMBOL_GPL(fxls8962af_regmap_conf);
-+EXPORT_SYMBOL_GPL(fxls8962af_i2c_regmap_conf);
-+
-+const struct regmap_config fxls8962af_spi_regmap_conf = {
-+	.reg_bits = 8,
-+	.pad_bits = 8,
-+	.val_bits = 8,
-+	.max_register = FXLS8962AF_MAX_REG,
-+};
-+EXPORT_SYMBOL_GPL(fxls8962af_spi_regmap_conf);
++	local_bh_disable();
+ 	spin_lock_irqsave(&dwc->lock, flags);
+ 	ret = dwc3_process_event_buf(evt);
+ 	spin_unlock_irqrestore(&dwc->lock, flags);
++	local_bh_enable();
  
- enum {
- 	fxls8962af_idx_x,
---- a/drivers/iio/accel/fxls8962af-i2c.c
-+++ b/drivers/iio/accel/fxls8962af-i2c.c
-@@ -18,7 +18,7 @@ static int fxls8962af_probe(struct i2c_c
- {
- 	struct regmap *regmap;
- 
--	regmap = devm_regmap_init_i2c(client, &fxls8962af_regmap_conf);
-+	regmap = devm_regmap_init_i2c(client, &fxls8962af_i2c_regmap_conf);
- 	if (IS_ERR(regmap)) {
- 		dev_err(&client->dev, "Failed to initialize i2c regmap\n");
- 		return PTR_ERR(regmap);
---- a/drivers/iio/accel/fxls8962af-spi.c
-+++ b/drivers/iio/accel/fxls8962af-spi.c
-@@ -18,7 +18,7 @@ static int fxls8962af_probe(struct spi_d
- {
- 	struct regmap *regmap;
- 
--	regmap = devm_regmap_init_spi(spi, &fxls8962af_regmap_conf);
-+	regmap = devm_regmap_init_spi(spi, &fxls8962af_spi_regmap_conf);
- 	if (IS_ERR(regmap)) {
- 		dev_err(&spi->dev, "Failed to initialize spi regmap\n");
- 		return PTR_ERR(regmap);
---- a/drivers/iio/accel/fxls8962af.h
-+++ b/drivers/iio/accel/fxls8962af.h
-@@ -17,6 +17,7 @@ int fxls8962af_core_probe(struct device
- int fxls8962af_core_remove(struct device *dev);
- 
- extern const struct dev_pm_ops fxls8962af_pm_ops;
--extern const struct regmap_config fxls8962af_regmap_conf;
-+extern const struct regmap_config fxls8962af_i2c_regmap_conf;
-+extern const struct regmap_config fxls8962af_spi_regmap_conf;
- 
- #endif				/* _FXLS8962AF_H_ */
+ 	return ret;
+ }
 
 
