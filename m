@@ -2,119 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A721C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:55:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9FCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:55:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235326AbiB1K4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:56:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47806 "EHLO
+        id S235330AbiB1K4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:56:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235075AbiB1Kyz (ORCPT
+        with ESMTP id S235308AbiB1Kyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:54:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B1D5E193ED
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 02:53:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646045597;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=4T8Uvp57TFU5Petlm3lZYbx4MZCWOM5rrxCxQpNIp9Y=;
-        b=hrKuSolpZ3zT8uPOcbaUnnHb9TdWuhCIzxR+qEKZ4PFKthill8+6pjPb6vpUNDwO7DtDfU
-        4HGzQcijz8RXOlOXhJJiqWrvpsRixX/uxryAT3enBTuFRCPq8ikeU71JI+de2KAedSG6kk
-        vM19gh4AA9prZBUSLttE5JvtU1uK1Dc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-170-i5atVmE0PVmVTs2N7rir6Q-1; Mon, 28 Feb 2022 05:53:14 -0500
-X-MC-Unique: i5atVmE0PVmVTs2N7rir6Q-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 66E2F8031E1;
-        Mon, 28 Feb 2022 10:53:12 +0000 (UTC)
-Received: from x1.localdomain.com (unknown [10.39.193.120])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3D8506C92C;
-        Mon, 28 Feb 2022 10:53:07 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        =?UTF-8?q?Benoit=20Gr=C3=A9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/1] x86/PCI: Disable exclusion of E820 reserved addressed in some cases
-Date:   Mon, 28 Feb 2022 11:52:58 +0100
-Message-Id: <20220228105259.230903-1-hdegoede@redhat.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+        Mon, 28 Feb 2022 05:54:49 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1580712601;
+        Mon, 28 Feb 2022 02:52:52 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CD662106F;
+        Mon, 28 Feb 2022 02:52:51 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.47.185])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A59CF3F73D;
+        Mon, 28 Feb 2022 02:52:44 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, geert@linux-m68k.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org,
+        openrisc@lists.librecores.org, linux-um@lists.infradead.org,
+        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-arch@vger.kernel.org
+Subject: [PATCH V3 29/30] mm/mmap: Drop generic vm_get_page_prot()
+Date:   Mon, 28 Feb 2022 16:17:52 +0530
+Message-Id: <1646045273-9343-30-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
+References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+All available platforms export their own vm_get_page_prot() implementation
+via ARCH_HAS_VM_GET_PAGE_PROT. Hence a generic implementation is no longer
+needed.
 
-Here is v2 of my patch to address the exclusion of E820 reserved
-addresses from PCI bridge windows causing issues on some systems.
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ mm/mmap.c | 40 ----------------------------------------
+ 1 file changed, 40 deletions(-)
 
-This fixes a couple of issues found by the kernel test robot:
-
-- Add a couple of missing includes to arch/x86/include/asm/pci_x86.h
-  to fix i386 build errors Reported-by: kernel test robot <lkp@intel.com>
-- Do not call resource_is_efi_mmio_region() on resource-list entries which
-  have just been destroyed because they match resource_is_pcicfg_ioport()
-  Reported-by: kernel test robot <oliver.sang@intel.com>
-- Add (res->flags & IORESOURCE_MEM) check to resource_is_efi_mmio_region()
-
-Sorry about not catching these during my own testing.
-
-For reference here is the v1 cover-letter:
-
-Since the previous attempt at fixing this (commit 7f7b4236f204 ("x86/PCI:
-Ignore E820 reservations for bridge windows on newer systems")) we have
-learned that excluding E820 reserved addresses from PCI bridge windows
-helps to workaround issues where the ACPI _CRS advertised window for
-the bridge overlaps with some mem addresses which we should not touch,
-so just disabling it on most new systems turns out to not be a good idea.
-
-This new patch instead takes a very narrow approach. On all the systems
-where we end up having issues to allocate PCI BARs this is caused by there
-being a MMIO EFI memmap entry which covers the entire ACPI _CRS advertised
-window for the PCI bridge.  This new patch makes use of this by making
-pci_acpi_root_prepare_resources() check for those specific set of
-conditions and when these exact conditions are met, then disable the
-exclusion of E820 reserved addresses from PCI bridge windows, to fix
-the PCI BAR allocation failures.
-
-This has been successfully tested on one of the laptops where we were
-seeing PCI BAR allocation failures, see:
-https://bugzilla.redhat.com/show_bug.cgi?id=1868899
-
-I've also tested this on a X1C8 and the new "host bridge window %pR is
-marked by EFI as MMIO" message does not show up there as expected.
-
-Regards,
-
-Hans
-
-
-Hans de Goede (1):
-  x86/PCI: Disable exclusion of E820 reserved addressed in some cases
-
- arch/x86/include/asm/pci_x86.h | 10 +++++
- arch/x86/kernel/resource.c     |  4 ++
- arch/x86/pci/acpi.c            | 68 +++++++++++++++++++++++++++++++++-
- 3 files changed, 81 insertions(+), 1 deletion(-)
-
+diff --git a/mm/mmap.c b/mm/mmap.c
+index c13dd9c37866..ff343f76a825 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -102,46 +102,6 @@ static void unmap_region(struct mm_struct *mm,
+  *								w: (no) no
+  *								x: (yes) yes
+  */
+-pgprot_t vm_get_page_prot(unsigned long vm_flags)
+-{
+-	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
+-	case VM_NONE:
+-		return __P000;
+-	case VM_READ:
+-		return __P001;
+-	case VM_WRITE:
+-		return __P010;
+-	case VM_READ | VM_WRITE:
+-		return __P011;
+-	case VM_EXEC:
+-		return __P100;
+-	case VM_EXEC | VM_READ:
+-		return __P101;
+-	case VM_EXEC | VM_WRITE:
+-		return __P110;
+-	case VM_EXEC | VM_READ | VM_WRITE:
+-		return __P111;
+-	case VM_SHARED:
+-		return __S000;
+-	case VM_SHARED | VM_READ:
+-		return __S001;
+-	case VM_SHARED | VM_WRITE:
+-		return __S010;
+-	case VM_SHARED | VM_READ | VM_WRITE:
+-		return __S011;
+-	case VM_SHARED | VM_EXEC:
+-		return __S100;
+-	case VM_SHARED | VM_EXEC | VM_READ:
+-		return __S101;
+-	case VM_SHARED | VM_EXEC | VM_WRITE:
+-		return __S110;
+-	case VM_SHARED | VM_EXEC | VM_READ | VM_WRITE:
+-		return __S111;
+-	default:
+-		BUILD_BUG();
+-	}
+-}
+-EXPORT_SYMBOL(vm_get_page_prot);
+ #endif	/* CONFIG_ARCH_HAS_VM_GET_PAGE_PROT */
+ 
+ static pgprot_t vm_pgprot_modify(pgprot_t oldprot, unsigned long vm_flags)
 -- 
-2.35.1
+2.25.1
 
