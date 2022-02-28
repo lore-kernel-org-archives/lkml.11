@@ -2,45 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B958C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F74C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240374AbiB1SNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:13:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60678 "EHLO
+        id S240464AbiB1SNp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:13:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241390AbiB1SJv (ORCPT
+        with ESMTP id S241506AbiB1SKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFB1B3E5E;
-        Mon, 28 Feb 2022 09:49:59 -0800 (PST)
+        Mon, 28 Feb 2022 13:10:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660FAB65E6;
+        Mon, 28 Feb 2022 09:50:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A8BE60F8F;
-        Mon, 28 Feb 2022 17:49:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EEBCC340F9;
-        Mon, 28 Feb 2022 17:49:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66FB160748;
+        Mon, 28 Feb 2022 17:49:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA59C36AE7;
+        Mon, 28 Feb 2022 17:49:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070554;
-        bh=OY596WIL6683eNLWVDikS943L4hwUNIJ4UVKz0FbyRI=;
+        s=korg; t=1646070573;
+        bh=Sufz76spNJVF7VI3y7kXmqzztncnszC5AqCLywGOenM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jF2LFTlfkc6i1N/+LjlIWCxkYOixsxtY+Jv061jFFFEueNYYtAaW5tR6h+2IAdIfM
-         mRriXxSyM+Jxskgp4zf57NkJWkQ431WblABXv9mJ7dEKkCm/3SJrdbZSkFJwGqPPtX
-         ox5QUh/eDkJrJIa9Opadp41Y7KahwesKx0wtNzd8=
+        b=m+ucDDs9c7UB/ZNW9rK38EhIu5BfyyOi+ywMu1Bc9vGOruYMUCZ9rU6sbkhMZ+1oP
+         Iubzvu7bKWRfQkNF9S+bGZZgqVmd/ljPLkrVIDu9f8mz5wdakj2uG4ZfSiA9Om1Ik2
+         1/gyrJGet7p2yxx0kZB4UVqbvbUPn81gdTjoZ4b0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 152/164] mm/hugetlb: fix kernel crash with hugetlb mremap
-Date:   Mon, 28 Feb 2022 18:25:14 +0100
-Message-Id: <20220228172413.566529308@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.16 159/164] tty: n_gsm: fix wrong modem processing in convergence layer type 2
+Date:   Mon, 28 Feb 2022 18:25:21 +0100
+Message-Id: <20220228172414.101525266@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -52,80 +47,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+From: daniel.starke@siemens.com <daniel.starke@siemens.com>
 
-commit db110a99d3367936058727ff4798e3a39c707969 upstream.
+commit 687f9ad43c52501f46164758e908a5dd181a87fc upstream.
 
-This fixes the below crash:
+The function gsm_process_modem() exists to handle modem status bits of
+incoming frames. This includes incoming MSC (modem status command) frames
+and convergence layer type 2 data frames. The function, however, was only
+designed to handle MSC frames as it expects the command length. Within
+gsm_dlci_data() it is wrongly assumed that this is the same as the data
+frame length. This is only true if the data frame contains only 1 byte of
+payload.
 
-  kernel BUG at include/linux/mm.h:2373!
-  cpu 0x5d: Vector: 700 (Program Check) at [c00000003c6e76e0]
-      pc: c000000000581a54: pmd_to_page+0x54/0x80
-      lr: c00000000058d184: move_hugetlb_page_tables+0x4e4/0x5b0
-      sp: c00000003c6e7980
-     msr: 9000000000029033
-    current = 0xc00000003bd8d980
-    paca    = 0xc000200fff610100   irqmask: 0x03   irq_happened: 0x01
-      pid   = 9349, comm = hugepage-mremap
-  kernel BUG at include/linux/mm.h:2373!
-    move_hugetlb_page_tables+0x4e4/0x5b0 (link register)
-    move_hugetlb_page_tables+0x22c/0x5b0 (unreliable)
-    move_page_tables+0xdbc/0x1010
-    move_vma+0x254/0x5f0
-    sys_mremap+0x7c0/0x900
-    system_call_exception+0x160/0x2c0
+This patch names the length parameter of gsm_process_modem() in a generic
+manner to reflect its association. It also corrects all calls to the
+function to handle the variable number of modem status octets correctly in
+both cases.
 
-the kernel can't use huge_pte_offset before it set the pte entry because
-a page table lookup check for huge PTE bit in the page table to
-differentiate between a huge pte entry and a pointer to pte page.  A
-huge_pte_alloc won't mark the page table entry huge and hence kernel
-should not use huge_pte_offset after a huge_pte_alloc.
-
-Link: https://lkml.kernel.org/r/20220211063221.99293-1-aneesh.kumar@linux.ibm.com
-Fixes: 550a7d60bd5e ("mm, hugepages: add mremap() support for hugepage backed vma")
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
-Reviewed-by: Mina Almasry <almasrymina@google.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 7263287af93d ("tty: n_gsm: Fixed logic to decode break signal from modem status")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220218073123.2121-6-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/hugetlb.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/tty/n_gsm.c |   23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 61895cc01d09..e57650a9404f 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -4851,14 +4851,13 @@ int copy_hugetlb_page_range(struct mm_struct *dst, struct mm_struct *src,
- }
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1021,25 +1021,25 @@ static void gsm_control_reply(struct gsm
+  *	@tty: virtual tty bound to the DLCI
+  *	@dlci: DLCI to affect
+  *	@modem: modem bits (full EA)
+- *	@clen: command length
++ *	@slen: number of signal octets
+  *
+  *	Used when a modem control message or line state inline in adaption
+  *	layer 2 is processed. Sort out the local modem state and throttles
+  */
  
- static void move_huge_pte(struct vm_area_struct *vma, unsigned long old_addr,
--			  unsigned long new_addr, pte_t *src_pte)
-+			  unsigned long new_addr, pte_t *src_pte, pte_t *dst_pte)
+ static void gsm_process_modem(struct tty_struct *tty, struct gsm_dlci *dlci,
+-							u32 modem, int clen)
++							u32 modem, int slen)
  {
- 	struct hstate *h = hstate_vma(vma);
- 	struct mm_struct *mm = vma->vm_mm;
--	pte_t *dst_pte, pte;
- 	spinlock_t *src_ptl, *dst_ptl;
-+	pte_t pte;
+ 	int  mlines = 0;
+ 	u8 brk = 0;
+ 	int fc;
  
--	dst_pte = huge_pte_offset(mm, new_addr, huge_page_size(h));
- 	dst_ptl = huge_pte_lock(h, mm, dst_pte);
- 	src_ptl = huge_pte_lockptr(h, mm, src_pte);
+-	/* The modem status command can either contain one octet (v.24 signals)
+-	   or two octets (v.24 signals + break signals). The length field will
+-	   either be 2 or 3 respectively. This is specified in section
+-	   5.4.6.3.7 of the  27.010 mux spec. */
++	/* The modem status command can either contain one octet (V.24 signals)
++	 * or two octets (V.24 signals + break signals). This is specified in
++	 * section 5.4.6.3.7 of the 07.10 mux spec.
++	 */
  
-@@ -4917,7 +4916,7 @@ int move_hugetlb_page_tables(struct vm_area_struct *vma,
- 		if (!dst_pte)
- 			break;
+-	if (clen == 2)
++	if (slen == 1)
+ 		modem = modem & 0x7f;
+ 	else {
+ 		brk = modem & 0x7f;
+@@ -1096,6 +1096,7 @@ static void gsm_control_modem(struct gsm
+ 	unsigned int brk = 0;
+ 	struct gsm_dlci *dlci;
+ 	int len = clen;
++	int slen;
+ 	const u8 *dp = data;
+ 	struct tty_struct *tty;
  
--		move_huge_pte(vma, old_addr, new_addr, src_pte);
-+		move_huge_pte(vma, old_addr, new_addr, src_pte, dst_pte);
+@@ -1115,6 +1116,7 @@ static void gsm_control_modem(struct gsm
+ 		return;
+ 	dlci = gsm->dlci[addr];
+ 
++	slen = len;
+ 	while (gsm_read_ea(&modem, *dp++) == 0) {
+ 		len--;
+ 		if (len == 0)
+@@ -1131,7 +1133,7 @@ static void gsm_control_modem(struct gsm
+ 		modem |= (brk & 0x7f);
  	}
- 	flush_tlb_range(vma, old_end - len, old_end);
- 	mmu_notifier_invalidate_range_end(&range);
--- 
-2.35.1
-
+ 	tty = tty_port_tty_get(&dlci->port);
+-	gsm_process_modem(tty, dlci, modem, clen);
++	gsm_process_modem(tty, dlci, modem, slen);
+ 	if (tty) {
+ 		tty_wakeup(tty);
+ 		tty_kref_put(tty);
+@@ -1597,6 +1599,7 @@ static void gsm_dlci_data(struct gsm_dlc
+ 	struct tty_struct *tty;
+ 	unsigned int modem = 0;
+ 	int len = clen;
++	int slen = 0;
+ 
+ 	if (debug & 16)
+ 		pr_debug("%d bytes for tty\n", len);
+@@ -1609,12 +1612,14 @@ static void gsm_dlci_data(struct gsm_dlc
+ 	case 2:		/* Asynchronous serial with line state in each frame */
+ 		while (gsm_read_ea(&modem, *data++) == 0) {
+ 			len--;
++			slen++;
+ 			if (len == 0)
+ 				return;
+ 		}
++		slen++;
+ 		tty = tty_port_tty_get(port);
+ 		if (tty) {
+-			gsm_process_modem(tty, dlci, modem, clen);
++			gsm_process_modem(tty, dlci, modem, slen);
+ 			tty_kref_put(tty);
+ 		}
+ 		fallthrough;
 
 
