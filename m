@@ -2,533 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C091CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E6AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:22:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236264AbiB1MXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:23:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43604 "EHLO
+        id S236278AbiB1MXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236249AbiB1MXB (ORCPT
+        with ESMTP id S236265AbiB1MXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:23:01 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF87F73074
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:22:22 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id a5so10151661pfv.9
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:22:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=19HOHREB3NEbsy4dM9jVcuvJDaSZuxg6+0rHeJjgl+I=;
-        b=o+jT2XLIR7Y7UVKvY8JafceKomqSpgXrMRhIUcYJEMeon2pgAq7w7Uuq6AU2Sz6mcz
-         N0ockYvnCBlCZCqiFw2JXLUem3Zky3vbq36reHdc0d4In6703th6HilA6xP9AiTN7n26
-         Bn80c4iFAd4JUYBDniNKWxraNAivV0PDCX8gauhtZ3p+IbtPR6Jeetw2at8WknPas5MP
-         dg5TX1SLraM+pGz8sxmn34po3dlRur/2Rdeb3Lmv5eexUZdv2hsZfjVUAo9HQtX5i8By
-         +HmHL1kWTAFRlHbDPah2ymV0bPFfwq+yYJxfpuwRhLf1XpHB05DxgvW1NOiu517gGrCa
-         +UaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=19HOHREB3NEbsy4dM9jVcuvJDaSZuxg6+0rHeJjgl+I=;
-        b=tgrp54yb2eK5V55MZqq/EQHxifE6KYp5ioT24zJhlkTi+62j6C9b09UlDceDooh3F7
-         TT+6WZQNTMRsBxBwajDY1J651xk9TQ3xn4JfbmrO80IaKIa+4FGFBcOb8gsNtrJ/noZy
-         BmGkvWFPN4c/MPMEz9KqLShde1AohyUn1A8LEghIGPQ3mXmxaDI80C0xbv/VxCdJSuFC
-         A8qnhZ4a8c3ra6uUGY+uxhM3oPKGhDMWwsJm+JywK6q66zqpw0/X1THt3B7nkMMXzQaS
-         hgoAU4e9oCXtNknZ8RTK3VnPqWkVHcfjnlAvVMvL+iJwAJVVrP9rK45CNUbgFrfFLK4l
-         TCEQ==
-X-Gm-Message-State: AOAM5303oLluKW/ZmVOkpWH/DtnUxwOpPXqgW0sEt2b0R21SpZg6MJWa
-        PsEqIsiE5+Y/5vaAF7TQXDV/tA==
-X-Google-Smtp-Source: ABdhPJzIC8BNlybGIkNHzucmSZt/c2J6UPZC8cp/U77QOEXiYl5AUGQs6/Cq/PkNCHbZpwqYr/hwAg==
-X-Received: by 2002:a05:6a00:1c47:b0:4e1:2c3a:ac3d with SMTP id s7-20020a056a001c4700b004e12c3aac3dmr21147863pfw.15.1646050942145;
-        Mon, 28 Feb 2022 04:22:22 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
-        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.22.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 04:22:21 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
-        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
-        richard.weiyang@gmail.com, david@fromorbit.com,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
-        vbabka@suse.cz
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
-        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
-        fam.zheng@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v6 01/16] mm: list_lru: transpose the array of per-node per-memcg lru lists
-Date:   Mon, 28 Feb 2022 20:21:11 +0800
-Message-Id: <20220228122126.37293-2-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
-References: <20220228122126.37293-1-songmuchun@bytedance.com>
+        Mon, 28 Feb 2022 07:23:06 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD99074622
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:22:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=xpRzNym3LsY5nRIvzwNRw6/4XtU7jP5KpqP7Ea6YLTg=; b=eNyDByh6x+wTCv1YMV7eZKFGmp
+        Ys9ClGvGIGVBZQ1cG37XqyXPQFqP5VApuetxl7RPlc2rDvDeEnNIHc9W03bSQoilInoWRmaG9DSYF
+        /xVO0UdVykk269zwwmAccjLO2SvfY+U5IpXwtABFmX77e0g3IelSu6ON4juiHSZP0URdPH0FPgFhP
+        G/eyNDcvz2XpuXnCt8Cjqe9H+QXly5Uqpg+/7q9xnzgUAR/h/a/fvKwC9NgOJuaxtUqaT9vPtgboB
+        +Mgih1OAKjjihsH3Fkv3DcR2DekTfqFFIYCfOiZt4mF9VhQ0izWqryO6Clunyv2lJSkpnM+CAjCKM
+        5rxGxHoA==;
+Received: from [2.53.163.181] (helo=localhost)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOf2j-00C9v3-N5; Mon, 28 Feb 2022 12:22:22 +0000
+From:   Christoph Hellwig <hch@lst.de>
+To:     iommu@lists.linux-foundation.org
+Cc:     robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] dma-mapping: remove CONFIG_DMA_REMAP
+Date:   Mon, 28 Feb 2022 14:22:18 +0200
+Message-Id: <20220228122218.853094-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current scheme of maintaining per-node per-memcg lru lists looks like:
-  struct list_lru {
-    struct list_lru_node *node;           (for each node)
-      struct list_lru_memcg *memcg_lrus;
-        struct list_lru_one *lru[];       (for each memcg)
-  }
+CONFIG_DMA_REMAP is used to build a few helpers around the core
+vmalloc code, and to use them in case there is a highmem page in
+dma-direct, and to make dma coherent allocations be able to use
+non-contiguous pages allocations for DMA allocations in the dma-iommu
+layer.
 
-By effectively transposing the two-dimension array of list_lru_one's structures
-(per-node per-memcg => per-memcg per-node) it's possible to save some memory
-and simplify alloc/dealloc paths. The new scheme looks like:
-  struct list_lru {
-    struct list_lru_memcg *mlrus;
-      struct list_lru_per_memcg *mlru[];  (for each memcg)
-        struct list_lru_one node[0];      (for each node)
-  }
+Right now it needs to be explicitly selected by architectures, and
+is only done so by architectures that require remapping to deal
+with devices that are not DMA coherent.  Make it unconditional for
+builds with CONFIG_MMU as it is very little extra code, but makes
+it much more likely that large DMA allocations succeed on x86.
 
-Memory savings are coming from not only 'struct rcu_head' but also some
-pointer arrays used to store the pointer to 'struct list_lru_one'.  The
-array is per node and its size is 8 (a pointer) * num_memcgs. So the total
-size of the arrays is  8 * num_nodes * memcg_nr_cache_ids. After this patch,
-the size becomes 8 * memcg_nr_cache_ids.
+This fixes hot plugging a NVMe thunderbolt SSD for me, which tries
+to allocate a 1MB buffer that is otherwise hard to obtain due to
+memory fragmentation on a heavily used laptop.
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 ---
- include/linux/list_lru.h |  17 ++--
- mm/list_lru.c            | 206 +++++++++++++++++------------------------------
- 2 files changed, 86 insertions(+), 137 deletions(-)
 
-diff --git a/include/linux/list_lru.h b/include/linux/list_lru.h
-index 1b5fceb565df..729a27b6ff53 100644
---- a/include/linux/list_lru.h
-+++ b/include/linux/list_lru.h
-@@ -31,10 +31,15 @@ struct list_lru_one {
- 	long			nr_items;
- };
+Changes since v1:
+ - drop a not required CONFIG_MMU check
+
+ arch/arm/Kconfig          |  2 +-
+ arch/xtensa/Kconfig       |  2 +-
+ drivers/iommu/dma-iommu.c | 14 +++++---------
+ kernel/dma/Kconfig        |  7 +------
+ kernel/dma/Makefile       |  2 +-
+ kernel/dma/direct.c       | 18 +++++++-----------
+ 6 files changed, 16 insertions(+), 29 deletions(-)
+
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index 4c97cb40eebb6..83fb277e50759 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -47,7 +47,7 @@ config ARM
+ 	select DMA_DECLARE_COHERENT
+ 	select DMA_GLOBAL_POOL if !MMU
+ 	select DMA_OPS
+-	select DMA_REMAP if MMU
++	select DMA_NONCOHERENT_MMAP if MMU
+ 	select EDAC_SUPPORT
+ 	select EDAC_ATOMIC_SCRUB
+ 	select GENERIC_ALLOCATOR
+diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
+index 8ac599aa6d994..76438ee313d16 100644
+--- a/arch/xtensa/Kconfig
++++ b/arch/xtensa/Kconfig
+@@ -17,7 +17,7 @@ config XTENSA
+ 	select BUILDTIME_TABLE_SORT
+ 	select CLONE_BACKWARDS
+ 	select COMMON_CLK
+-	select DMA_REMAP if MMU
++	select DMA_NONCOHERENT_MMAP if MMU
+ 	select GENERIC_ATOMIC64
+ 	select GENERIC_IRQ_SHOW
+ 	select GENERIC_PCI_IOMAP
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index d85d54f2b5496..cebced7ddf390 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -852,7 +852,6 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
+ 	return NULL;
+ }
  
-+struct list_lru_per_memcg {
-+	/* array of per cgroup per node lists, indexed by node id */
-+	struct list_lru_one	node[0];
-+};
-+
- struct list_lru_memcg {
--	struct rcu_head		rcu;
-+	struct rcu_head			rcu;
- 	/* array of per cgroup lists, indexed by memcg_cache_id */
--	struct list_lru_one	*lru[];
-+	struct list_lru_per_memcg	*mlru[];
- };
+-#ifdef CONFIG_DMA_REMAP
+ static struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev,
+ 		size_t size, enum dma_data_direction dir, gfp_t gfp,
+ 		unsigned long attrs)
+@@ -882,7 +881,6 @@ static void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
+ 	sg_free_table(&sh->sgt);
+ 	kfree(sh);
+ }
+-#endif /* CONFIG_DMA_REMAP */
  
- struct list_lru_node {
-@@ -42,11 +47,7 @@ struct list_lru_node {
- 	spinlock_t		lock;
- 	/* global list, used for the root cgroup in cgroup aware lrus */
- 	struct list_lru_one	lru;
--#ifdef CONFIG_MEMCG_KMEM
--	/* for cgroup aware lrus points to per cgroup lists, otherwise NULL */
--	struct list_lru_memcg	__rcu *memcg_lrus;
+ static void iommu_dma_sync_single_for_cpu(struct device *dev,
+ 		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+@@ -1276,7 +1274,7 @@ static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
+ 	    dma_free_from_pool(dev, cpu_addr, alloc_size))
+ 		return;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
++	if (is_vmalloc_addr(cpu_addr)) {
+ 		/*
+ 		 * If it the address is remapped, then it's either non-coherent
+ 		 * or highmem CMA, or an iommu_dma_alloc_remap() construction.
+@@ -1318,7 +1316,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
+ 	if (!page)
+ 		return NULL;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && (!coherent || PageHighMem(page))) {
++	if (!coherent || PageHighMem(page)) {
+ 		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
+ 
+ 		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
+@@ -1350,7 +1348,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 
+ 	gfp |= __GFP_ZERO;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && gfpflags_allow_blocking(gfp) &&
++	if (gfpflags_allow_blocking(gfp) &&
+ 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS)) {
+ 		return iommu_dma_alloc_remap(dev, size, handle, gfp,
+ 				dma_pgprot(dev, PAGE_KERNEL, attrs), attrs);
+@@ -1391,7 +1389,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
+ 		return -ENXIO;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
++	if (is_vmalloc_addr(cpu_addr)) {
+ 		struct page **pages = dma_common_find_pages(cpu_addr);
+ 
+ 		if (pages)
+@@ -1413,7 +1411,7 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
+ 	struct page *page;
+ 	int ret;
+ 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
++	if (is_vmalloc_addr(cpu_addr)) {
+ 		struct page **pages = dma_common_find_pages(cpu_addr);
+ 
+ 		if (pages) {
+@@ -1445,10 +1443,8 @@ static const struct dma_map_ops iommu_dma_ops = {
+ 	.free			= iommu_dma_free,
+ 	.alloc_pages		= dma_common_alloc_pages,
+ 	.free_pages		= dma_common_free_pages,
+-#ifdef CONFIG_DMA_REMAP
+ 	.alloc_noncontiguous	= iommu_dma_alloc_noncontiguous,
+ 	.free_noncontiguous	= iommu_dma_free_noncontiguous,
 -#endif
--	long nr_items;
-+	long			nr_items;
- } ____cacheline_aligned_in_smp;
+ 	.mmap			= iommu_dma_mmap,
+ 	.get_sgtable		= iommu_dma_get_sgtable,
+ 	.map_page		= iommu_dma_map_page,
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 1b02179758cbc..56866aaa2ae1a 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -110,15 +110,10 @@ config DMA_GLOBAL_POOL
+ 	select DMA_DECLARE_COHERENT
+ 	bool
  
- struct list_lru {
-@@ -55,6 +56,8 @@ struct list_lru {
- 	struct list_head	list;
- 	int			shrinker_id;
- 	bool			memcg_aware;
-+	/* for cgroup aware lrus points to per cgroup lists, otherwise NULL */
-+	struct list_lru_memcg	__rcu *mlrus;
- #endif
- };
+-config DMA_REMAP
+-	bool
+-	depends on MMU
+-	select DMA_NONCOHERENT_MMAP
+-
+ config DMA_DIRECT_REMAP
+ 	bool
+-	select DMA_REMAP
+ 	select DMA_COHERENT_POOL
++	select DMA_NONCOHERENT_MMAP
  
-diff --git a/mm/list_lru.c b/mm/list_lru.c
-index 0cd5e89ca063..7d1356241aa8 100644
---- a/mm/list_lru.c
-+++ b/mm/list_lru.c
-@@ -49,35 +49,37 @@ static int lru_shrinker_id(struct list_lru *lru)
- }
- 
- static inline struct list_lru_one *
--list_lru_from_memcg_idx(struct list_lru_node *nlru, int idx)
-+list_lru_from_memcg_idx(struct list_lru *lru, int nid, int idx)
- {
--	struct list_lru_memcg *memcg_lrus;
-+	struct list_lru_memcg *mlrus;
-+	struct list_lru_node *nlru = &lru->node[nid];
+ config DMA_CMA
+ 	bool "DMA Contiguous Memory Allocator"
+diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
+index 0dd65ec1d234b..21926e46ef4fb 100644
+--- a/kernel/dma/Makefile
++++ b/kernel/dma/Makefile
+@@ -8,5 +8,5 @@ obj-$(CONFIG_DMA_DECLARE_COHERENT)	+= coherent.o
+ obj-$(CONFIG_DMA_API_DEBUG)		+= debug.o
+ obj-$(CONFIG_SWIOTLB)			+= swiotlb.o
+ obj-$(CONFIG_DMA_COHERENT_POOL)		+= pool.o
+-obj-$(CONFIG_DMA_REMAP)			+= remap.o
++obj-$(CONFIG_MMU)			+= remap.o
+ obj-$(CONFIG_DMA_MAP_BENCHMARK)		+= map_benchmark.o
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 50f48e9e45987..35a1d29d6a2e9 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -265,17 +265,13 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
+ 	if (!page)
+ 		return NULL;
 +
- 	/*
- 	 * Either lock or RCU protects the array of per cgroup lists
--	 * from relocation (see memcg_update_list_lru_node).
-+	 * from relocation (see memcg_update_list_lru).
- 	 */
--	memcg_lrus = rcu_dereference_check(nlru->memcg_lrus,
--					   lockdep_is_held(&nlru->lock));
--	if (memcg_lrus && idx >= 0)
--		return memcg_lrus->lru[idx];
-+	mlrus = rcu_dereference_check(lru->mlrus, lockdep_is_held(&nlru->lock));
-+	if (mlrus && idx >= 0)
-+		return &mlrus->mlru[idx]->node[nid];
- 	return &nlru->lru;
- }
- 
- static inline struct list_lru_one *
--list_lru_from_kmem(struct list_lru_node *nlru, void *ptr,
-+list_lru_from_kmem(struct list_lru *lru, int nid, void *ptr,
- 		   struct mem_cgroup **memcg_ptr)
- {
-+	struct list_lru_node *nlru = &lru->node[nid];
- 	struct list_lru_one *l = &nlru->lru;
- 	struct mem_cgroup *memcg = NULL;
- 
--	if (!nlru->memcg_lrus)
-+	if (!lru->mlrus)
- 		goto out;
- 
- 	memcg = mem_cgroup_from_obj(ptr);
- 	if (!memcg)
- 		goto out;
- 
--	l = list_lru_from_memcg_idx(nlru, memcg_cache_id(memcg));
-+	l = list_lru_from_memcg_idx(lru, nid, memcg_cache_id(memcg));
- out:
- 	if (memcg_ptr)
- 		*memcg_ptr = memcg;
-@@ -103,18 +105,18 @@ static inline bool list_lru_memcg_aware(struct list_lru *lru)
- }
- 
- static inline struct list_lru_one *
--list_lru_from_memcg_idx(struct list_lru_node *nlru, int idx)
-+list_lru_from_memcg_idx(struct list_lru *lru, int nid, int idx)
- {
--	return &nlru->lru;
-+	return &lru->node[nid].lru;
- }
- 
- static inline struct list_lru_one *
--list_lru_from_kmem(struct list_lru_node *nlru, void *ptr,
-+list_lru_from_kmem(struct list_lru *lru, int nid, void *ptr,
- 		   struct mem_cgroup **memcg_ptr)
- {
- 	if (memcg_ptr)
- 		*memcg_ptr = NULL;
--	return &nlru->lru;
-+	return &lru->node[nid].lru;
- }
- #endif /* CONFIG_MEMCG_KMEM */
- 
-@@ -127,7 +129,7 @@ bool list_lru_add(struct list_lru *lru, struct list_head *item)
- 
- 	spin_lock(&nlru->lock);
- 	if (list_empty(item)) {
--		l = list_lru_from_kmem(nlru, item, &memcg);
-+		l = list_lru_from_kmem(lru, nid, item, &memcg);
- 		list_add_tail(item, &l->list);
- 		/* Set shrinker bit if the first element was added */
- 		if (!l->nr_items++)
-@@ -150,7 +152,7 @@ bool list_lru_del(struct list_lru *lru, struct list_head *item)
- 
- 	spin_lock(&nlru->lock);
- 	if (!list_empty(item)) {
--		l = list_lru_from_kmem(nlru, item, NULL);
-+		l = list_lru_from_kmem(lru, nid, item, NULL);
- 		list_del_init(item);
- 		l->nr_items--;
- 		nlru->nr_items--;
-@@ -180,12 +182,11 @@ EXPORT_SYMBOL_GPL(list_lru_isolate_move);
- unsigned long list_lru_count_one(struct list_lru *lru,
- 				 int nid, struct mem_cgroup *memcg)
- {
--	struct list_lru_node *nlru = &lru->node[nid];
- 	struct list_lru_one *l;
- 	long count;
- 
- 	rcu_read_lock();
--	l = list_lru_from_memcg_idx(nlru, memcg_cache_id(memcg));
-+	l = list_lru_from_memcg_idx(lru, nid, memcg_cache_id(memcg));
- 	count = READ_ONCE(l->nr_items);
- 	rcu_read_unlock();
- 
-@@ -206,16 +207,16 @@ unsigned long list_lru_count_node(struct list_lru *lru, int nid)
- EXPORT_SYMBOL_GPL(list_lru_count_node);
- 
- static unsigned long
--__list_lru_walk_one(struct list_lru_node *nlru, int memcg_idx,
-+__list_lru_walk_one(struct list_lru *lru, int nid, int memcg_idx,
- 		    list_lru_walk_cb isolate, void *cb_arg,
- 		    unsigned long *nr_to_walk)
- {
--
-+	struct list_lru_node *nlru = &lru->node[nid];
- 	struct list_lru_one *l;
- 	struct list_head *item, *n;
- 	unsigned long isolated = 0;
- 
--	l = list_lru_from_memcg_idx(nlru, memcg_idx);
-+	l = list_lru_from_memcg_idx(lru, nid, memcg_idx);
- restart:
- 	list_for_each_safe(item, n, &l->list) {
- 		enum lru_status ret;
-@@ -272,8 +273,8 @@ list_lru_walk_one(struct list_lru *lru, int nid, struct mem_cgroup *memcg,
- 	unsigned long ret;
- 
- 	spin_lock(&nlru->lock);
--	ret = __list_lru_walk_one(nlru, memcg_cache_id(memcg), isolate, cb_arg,
--				  nr_to_walk);
-+	ret = __list_lru_walk_one(lru, nid, memcg_cache_id(memcg), isolate,
-+				  cb_arg, nr_to_walk);
- 	spin_unlock(&nlru->lock);
- 	return ret;
- }
-@@ -288,8 +289,8 @@ list_lru_walk_one_irq(struct list_lru *lru, int nid, struct mem_cgroup *memcg,
- 	unsigned long ret;
- 
- 	spin_lock_irq(&nlru->lock);
--	ret = __list_lru_walk_one(nlru, memcg_cache_id(memcg), isolate, cb_arg,
--				  nr_to_walk);
-+	ret = __list_lru_walk_one(lru, nid, memcg_cache_id(memcg), isolate,
-+				  cb_arg, nr_to_walk);
- 	spin_unlock_irq(&nlru->lock);
- 	return ret;
- }
-@@ -308,7 +309,7 @@ unsigned long list_lru_walk_node(struct list_lru *lru, int nid,
- 			struct list_lru_node *nlru = &lru->node[nid];
- 
- 			spin_lock(&nlru->lock);
--			isolated += __list_lru_walk_one(nlru, memcg_idx,
-+			isolated += __list_lru_walk_one(lru, nid, memcg_idx,
- 							isolate, cb_arg,
- 							nr_to_walk);
- 			spin_unlock(&nlru->lock);
-@@ -328,166 +329,111 @@ static void init_one_lru(struct list_lru_one *l)
- }
- 
- #ifdef CONFIG_MEMCG_KMEM
--static void __memcg_destroy_list_lru_node(struct list_lru_memcg *memcg_lrus,
--					  int begin, int end)
-+static void memcg_destroy_list_lru_range(struct list_lru_memcg *mlrus,
-+					 int begin, int end)
- {
- 	int i;
- 
- 	for (i = begin; i < end; i++)
--		kfree(memcg_lrus->lru[i]);
-+		kfree(mlrus->mlru[i]);
- }
- 
--static int __memcg_init_list_lru_node(struct list_lru_memcg *memcg_lrus,
--				      int begin, int end)
-+static int memcg_init_list_lru_range(struct list_lru_memcg *mlrus,
-+				     int begin, int end)
- {
- 	int i;
- 
- 	for (i = begin; i < end; i++) {
--		struct list_lru_one *l;
-+		int nid;
-+		struct list_lru_per_memcg *mlru;
- 
--		l = kmalloc(sizeof(struct list_lru_one), GFP_KERNEL);
--		if (!l)
-+		mlru = kmalloc(struct_size(mlru, node, nr_node_ids), GFP_KERNEL);
-+		if (!mlru)
- 			goto fail;
- 
--		init_one_lru(l);
--		memcg_lrus->lru[i] = l;
-+		for_each_node(nid)
-+			init_one_lru(&mlru->node[nid]);
-+		mlrus->mlru[i] = mlru;
- 	}
- 	return 0;
- fail:
--	__memcg_destroy_list_lru_node(memcg_lrus, begin, i);
-+	memcg_destroy_list_lru_range(mlrus, begin, i);
- 	return -ENOMEM;
- }
- 
--static int memcg_init_list_lru_node(struct list_lru_node *nlru)
-+static int memcg_init_list_lru(struct list_lru *lru, bool memcg_aware)
- {
--	struct list_lru_memcg *memcg_lrus;
-+	struct list_lru_memcg *mlrus;
- 	int size = memcg_nr_cache_ids;
- 
--	memcg_lrus = kvmalloc(struct_size(memcg_lrus, lru, size), GFP_KERNEL);
--	if (!memcg_lrus)
-+	lru->memcg_aware = memcg_aware;
-+	if (!memcg_aware)
-+		return 0;
-+
-+	mlrus = kvmalloc(struct_size(mlrus, mlru, size), GFP_KERNEL);
-+	if (!mlrus)
- 		return -ENOMEM;
- 
--	if (__memcg_init_list_lru_node(memcg_lrus, 0, size)) {
--		kvfree(memcg_lrus);
-+	if (memcg_init_list_lru_range(mlrus, 0, size)) {
-+		kvfree(mlrus);
- 		return -ENOMEM;
- 	}
--	RCU_INIT_POINTER(nlru->memcg_lrus, memcg_lrus);
-+	RCU_INIT_POINTER(lru->mlrus, mlrus);
- 
- 	return 0;
- }
- 
--static void memcg_destroy_list_lru_node(struct list_lru_node *nlru)
-+static void memcg_destroy_list_lru(struct list_lru *lru)
- {
--	struct list_lru_memcg *memcg_lrus;
-+	struct list_lru_memcg *mlrus;
-+
-+	if (!list_lru_memcg_aware(lru))
-+		return;
-+
- 	/*
- 	 * This is called when shrinker has already been unregistered,
- 	 * and nobody can use it. So, there is no need to use kvfree_rcu().
- 	 */
--	memcg_lrus = rcu_dereference_protected(nlru->memcg_lrus, true);
--	__memcg_destroy_list_lru_node(memcg_lrus, 0, memcg_nr_cache_ids);
--	kvfree(memcg_lrus);
-+	mlrus = rcu_dereference_protected(lru->mlrus, true);
-+	memcg_destroy_list_lru_range(mlrus, 0, memcg_nr_cache_ids);
-+	kvfree(mlrus);
- }
- 
--static int memcg_update_list_lru_node(struct list_lru_node *nlru,
--				      int old_size, int new_size)
-+static int memcg_update_list_lru(struct list_lru *lru, int old_size, int new_size)
- {
- 	struct list_lru_memcg *old, *new;
- 
- 	BUG_ON(old_size > new_size);
- 
--	old = rcu_dereference_protected(nlru->memcg_lrus,
-+	old = rcu_dereference_protected(lru->mlrus,
- 					lockdep_is_held(&list_lrus_mutex));
--	new = kvmalloc(struct_size(new, lru, new_size), GFP_KERNEL);
-+	new = kvmalloc(struct_size(new, mlru, new_size), GFP_KERNEL);
- 	if (!new)
- 		return -ENOMEM;
- 
--	if (__memcg_init_list_lru_node(new, old_size, new_size)) {
-+	if (memcg_init_list_lru_range(new, old_size, new_size)) {
- 		kvfree(new);
- 		return -ENOMEM;
- 	}
- 
--	memcpy(&new->lru, &old->lru, flex_array_size(new, lru, old_size));
--	rcu_assign_pointer(nlru->memcg_lrus, new);
-+	memcpy(&new->mlru, &old->mlru, flex_array_size(new, mlru, old_size));
-+	rcu_assign_pointer(lru->mlrus, new);
- 	kvfree_rcu(old, rcu);
- 	return 0;
- }
- 
--static void memcg_cancel_update_list_lru_node(struct list_lru_node *nlru,
--					      int old_size, int new_size)
--{
--	struct list_lru_memcg *memcg_lrus;
--
--	memcg_lrus = rcu_dereference_protected(nlru->memcg_lrus,
--					       lockdep_is_held(&list_lrus_mutex));
--	/* do not bother shrinking the array back to the old size, because we
--	 * cannot handle allocation failures here */
--	__memcg_destroy_list_lru_node(memcg_lrus, old_size, new_size);
--}
--
--static int memcg_init_list_lru(struct list_lru *lru, bool memcg_aware)
--{
--	int i;
--
--	lru->memcg_aware = memcg_aware;
--
--	if (!memcg_aware)
--		return 0;
--
--	for_each_node(i) {
--		if (memcg_init_list_lru_node(&lru->node[i]))
--			goto fail;
--	}
--	return 0;
--fail:
--	for (i = i - 1; i >= 0; i--) {
--		if (!lru->node[i].memcg_lrus)
--			continue;
--		memcg_destroy_list_lru_node(&lru->node[i]);
--	}
--	return -ENOMEM;
--}
--
--static void memcg_destroy_list_lru(struct list_lru *lru)
--{
--	int i;
--
--	if (!list_lru_memcg_aware(lru))
--		return;
--
--	for_each_node(i)
--		memcg_destroy_list_lru_node(&lru->node[i]);
--}
--
--static int memcg_update_list_lru(struct list_lru *lru,
--				 int old_size, int new_size)
--{
--	int i;
--
--	for_each_node(i) {
--		if (memcg_update_list_lru_node(&lru->node[i],
--					       old_size, new_size))
--			goto fail;
--	}
--	return 0;
--fail:
--	for (i = i - 1; i >= 0; i--) {
--		if (!lru->node[i].memcg_lrus)
--			continue;
--
--		memcg_cancel_update_list_lru_node(&lru->node[i],
--						  old_size, new_size);
--	}
--	return -ENOMEM;
--}
--
- static void memcg_cancel_update_list_lru(struct list_lru *lru,
- 					 int old_size, int new_size)
- {
--	int i;
-+	struct list_lru_memcg *mlrus;
- 
--	for_each_node(i)
--		memcg_cancel_update_list_lru_node(&lru->node[i],
--						  old_size, new_size);
-+	mlrus = rcu_dereference_protected(lru->mlrus,
-+					  lockdep_is_held(&list_lrus_mutex));
 +	/*
-+	 * Do not bother shrinking the array back to the old size, because we
-+	 * cannot handle allocation failures here.
++	 * dma_alloc_contiguous can return highmem pages depending on a
++	 * combination the cma= arguments and per-arch setup.  These need to be
++	 * remapped to return a kernel virtual address.
 +	 */
-+	memcg_destroy_list_lru_range(mlrus, old_size, new_size);
- }
+ 	if (PageHighMem(page)) {
+-		/*
+-		 * Depending on the cma= arguments and per-arch setup,
+-		 * dma_alloc_contiguous could return highmem pages.
+-		 * Without remapping there is no way to return them here, so
+-		 * log an error and fail.
+-		 */
+-		if (!IS_ENABLED(CONFIG_DMA_REMAP)) {
+-			dev_info(dev, "Rejecting highmem page from CMA.\n");
+-			goto out_free_pages;
+-		}
+ 		remap = true;
+ 		set_uncached = false;
+ 	}
+@@ -349,7 +345,7 @@ void dma_direct_free(struct device *dev, size_t size,
+ 	    dma_free_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
+ 		return;
  
- int memcg_update_all_list_lrus(int new_size)
-@@ -524,8 +470,8 @@ static void memcg_drain_list_lru_node(struct list_lru *lru, int nid,
- 	 */
- 	spin_lock_irq(&nlru->lock);
- 
--	src = list_lru_from_memcg_idx(nlru, src_idx);
--	dst = list_lru_from_memcg_idx(nlru, dst_idx);
-+	src = list_lru_from_memcg_idx(lru, nid, src_idx);
-+	dst = list_lru_from_memcg_idx(lru, nid, dst_idx);
- 
- 	list_splice_init(&src->list, &dst->list);
- 
+-	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
++	if (is_vmalloc_addr(cpu_addr)) {
+ 		vunmap(cpu_addr);
+ 	} else {
+ 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
 -- 
-2.11.0
+2.30.2
 
