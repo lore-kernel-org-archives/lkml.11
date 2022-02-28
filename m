@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95A92C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6128BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239289AbiB1SFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:05:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50800 "EHLO
+        id S239485AbiB1SFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:05:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239345AbiB1R4u (ORCPT
+        with ESMTP id S235414AbiB1R5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:56:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4233556408;
-        Mon, 28 Feb 2022 09:44:50 -0800 (PST)
+        Mon, 28 Feb 2022 12:57:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C45A2DD50;
+        Mon, 28 Feb 2022 09:44:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3C9060919;
-        Mon, 28 Feb 2022 17:44:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6059C340E7;
-        Mon, 28 Feb 2022 17:44:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EF43B81187;
+        Mon, 28 Feb 2022 17:44:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99A64C340E7;
+        Mon, 28 Feb 2022 17:44:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070289;
-        bh=gR1Khe48yhq652cwdqx1YEL7CXXU2N/upzAcP42hFCk=;
+        s=korg; t=1646070291;
+        bh=+3NWXV/ij98gyzbua8DxAV20vrwUsHuHwyrxkfxw58Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BBKqOi7eaX4nu0tQWJA9C+Kkwl/I+NaW4xAOzfVBTgCaqeJHMyn0nKAgJvvrIBrvN
-         Fz3da1zwonL9JPNm8E2yzlPhSIWxxQvkcgQdTCgROCCYETfXzj4Z3xMtf+Nb48l1cA
-         MBxMpaDjm0FnaEkAFjEkpGaxac0JjAijSNajZfMM=
+        b=Yqa+MX/1X5PWrsFf0tHp6cGyzRTDhPgC47JlZpleaM6N304VMq2QIZ1v38Vb0kF24
+         Kf662XIb/mqleDdYO0ScJ9f2sTMbqAS7QWxOay06Za4sXcn+vb2isDeQG06ezggthM
+         6yYmyAgrZIGBz80x3aVR6u4yKet56Kcmdg77xPsk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH 5.16 053/164] ice: check the return of ice_ptp_gettimex64
-Date:   Mon, 28 Feb 2022 18:23:35 +0100
-Message-Id: <20220228172404.972654706@linuxfoundation.org>
+Subject: [PATCH 5.16 054/164] ice: initialize local variable tlv
+Date:   Mon, 28 Feb 2022 18:23:36 +0100
+Message-Id: <20220228172405.047717439@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -51,42 +51,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Tom Rix <trix@redhat.com>
 
-commit ed22d9c8d128293fc7b0b086c7d3654bcb99a8dd upstream.
+commit 5950bdc88dd1d158f2845fdff8fb1de86476806c upstream.
 
-Clang static analysis reports this issue
-time64.h:69:50: warning: The left operand of '+'
-  is a garbage value
-  set_normalized_timespec64(&ts_delta, lhs.tv_sec + rhs.tv_sec,
-                                       ~~~~~~~~~~ ^
-In ice_ptp_adjtime_nonatomic(), the timespec64 variable 'now'
-is set by ice_ptp_gettimex64().  This function can fail
-with -EBUSY, so 'now' can have a gargbage value.
-So check the return.
+Clang static analysis reports this issues
+ice_common.c:5008:21: warning: The left expression of the compound
+  assignment is an uninitialized value. The computed value will
+  also be garbage
+  ldo->phy_type_low |= ((u64)buf << (i * 16));
+  ~~~~~~~~~~~~~~~~~ ^
 
-Fixes: 06c16d89d2cb ("ice: register 1588 PTP clock device object for E810 devices")
+When called from ice_cfg_phy_fec() ldo is the uninitialized local
+variable tlv.  So initialize.
+
+Fixes: ea78ce4dab05 ("ice: add link lenient and default override support")
 Signed-off-by: Tom Rix <trix@redhat.com>
 Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_ptp.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/ice/ice_common.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -1121,9 +1121,12 @@ exit:
- static int ice_ptp_adjtime_nonatomic(struct ptp_clock_info *info, s64 delta)
- {
- 	struct timespec64 now, then;
-+	int ret;
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -3319,7 +3319,7 @@ ice_cfg_phy_fec(struct ice_port_info *pi
  
- 	then = ns_to_timespec64(delta);
--	ice_ptp_gettimex64(info, &now, NULL);
-+	ret = ice_ptp_gettimex64(info, &now, NULL);
-+	if (ret)
-+		return ret;
- 	now = timespec64_add(now, then);
+ 	if (fec == ICE_FEC_AUTO && ice_fw_supports_link_override(hw) &&
+ 	    !ice_fw_supports_report_dflt_cfg(hw)) {
+-		struct ice_link_default_override_tlv tlv;
++		struct ice_link_default_override_tlv tlv = { 0 };
  
- 	return ice_ptp_settime64(info, (const struct timespec64 *)&now);
+ 		status = ice_get_link_default_override(&tlv, pi);
+ 		if (status)
 
 
