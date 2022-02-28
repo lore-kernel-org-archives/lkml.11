@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D2AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236980AbiB1RbC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:31:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47696 "EHLO
+        id S236994AbiB1RbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:31:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236541AbiB1R24 (ORCPT
+        with ESMTP id S236550AbiB1R24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:28:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB5B140D3;
-        Mon, 28 Feb 2022 09:28:02 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E540A54BC3;
+        Mon, 28 Feb 2022 09:28:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C12DB815B1;
-        Mon, 28 Feb 2022 17:28:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8A99C340E7;
-        Mon, 28 Feb 2022 17:27:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82345612FA;
+        Mon, 28 Feb 2022 17:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E4E4C340E7;
+        Mon, 28 Feb 2022 17:28:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069280;
-        bh=UUSB0fcitbJUnZJILpqrANM4mq/FO2YpnPJG5ciRrl4=;
+        s=korg; t=1646069283;
+        bh=oh/sasvbWZ6S2kcQyCU00pN818bGxsywW0dhY8vbDRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ibLLyTqS8h10wZQ6+REj7UC29wCCjF3IHGvP5o6NEHaSO7zTSttSXX/L+fQrF9HHj
-         LfKSfuIO39KxrD4+QiR1JT41CZJzva78lBsxqknRRKQ1VHxnII5gwAopwCiQKqlPXk
-         9e7KnbwTjhIptn883M+nxNwE+7nnKR6N9qizULxI=
+        b=kI1oXybS8qdZngdR5+hU9j5ocPOqHL/2YvaGwzocXZOGEhdW2kWhSIbkBiMDX3KMS
+         Y9ge5WFyatF7ux5BGBLkV97cY6e7ZTXBcxjEqDHAfOcXZTV3j9gyJ9lmd+luRx6eaj
+         5TAMZDjJu/ZivqVo22hO5fB3EEMtPibX56FLRjL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 4.14 28/31] tty: n_gsm: fix proper link termination after failed open
-Date:   Mon, 28 Feb 2022 18:24:24 +0100
-Message-Id: <20220228172202.495094449@linuxfoundation.org>
+        Ben Skeggs <bskeggs@redhat.com>, Lyude Paul <lyude@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 4.14 29/31] Revert "drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR"
+Date:   Mon, 28 Feb 2022 18:24:25 +0100
+Message-Id: <20220228172202.563726636@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
 References: <20220228172159.515152296@linuxfoundation.org>
@@ -47,38 +48,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+From: Karol Herbst <kherbst@redhat.com>
 
-commit e3b7468f082d106459e86e8dc6fb9bdd65553433 upstream.
+This reverts commit c9ec3d85c0eef7c71cdc68db758e0f0e378132c0.
 
-Trying to open a DLCI by sending a SABM frame may fail with a timeout.
-The link is closed on the initiator side without informing the responder
-about this event. The responder assumes the link is open after sending a
-UA frame to answer the SABM frame. The link gets stuck in a half open
-state.
+This commit causes a regression if 4cdd2450bf739bada353e82d27b00db9af8c3001
+is not applied as well. This was fixed for 5.16, 5.15 and 5.10.
 
-This patch fixes this by initiating the proper link termination procedure
-after link setup timeout instead of silently closing it down.
+On older stable branches backporting this commit is complicated as relevant
+code changed quite a bit. Furthermore most of the affected hardware barely
+works on those and users would want to use the newer kernels anyway.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220218073123.2121-3-daniel.starke@siemens.com
+Cc: stable@vger.kernel.org # 5.4 4.19 and 4.14
+Cc: Ben Skeggs <bskeggs@redhat.com>
+Cc: Lyude Paul <lyude@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/issues/149
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c |   37 ++++++++++---------------
+ 1 file changed, 16 insertions(+), 21 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1502,7 +1502,7 @@ static void gsm_dlci_t1(unsigned long da
- 			dlci->mode = DLCI_MODE_ADM;
- 			gsm_dlci_open(dlci);
- 		} else {
--			gsm_dlci_close(dlci);
-+			gsm_dlci_begin_close(dlci); /* prevent half open link */
- 		}
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+@@ -70,13 +70,20 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev
+ 	return 0;
+ }
  
- 		break;
+-static void
++static int
+ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ {
+ 	struct nvkm_device *device = pmu->subdev.device;
+ 
+ 	if (!pmu->func->enabled(pmu))
+-		return;
++		return 0;
++
++	/* Inhibit interrupts, and wait for idle. */
++	nvkm_wr32(device, 0x10a014, 0x0000ffff);
++	nvkm_msec(device, 2000,
++		if (!nvkm_rd32(device, 0x10a04c))
++			break;
++	);
+ 
+ 	/* Reset. */
+ 	if (pmu->func->reset)
+@@ -87,37 +94,25 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
+ 			break;
+ 	);
++
++	return 0;
+ }
+ 
+ static int
+ nvkm_pmu_preinit(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	nvkm_pmu_reset(pmu);
+-	return 0;
++	return nvkm_pmu_reset(pmu);
+ }
+ 
+ static int
+ nvkm_pmu_init(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	struct nvkm_device *device = pmu->subdev.device;
+-
+-	if (!pmu->func->init)
+-		return 0;
+-
+-	if (pmu->func->enabled(pmu)) {
+-		/* Inhibit interrupts, and wait for idle. */
+-		nvkm_wr32(device, 0x10a014, 0x0000ffff);
+-		nvkm_msec(device, 2000,
+-			if (!nvkm_rd32(device, 0x10a04c))
+-				break;
+-		);
+-
+-		nvkm_pmu_reset(pmu);
+-	}
+-
+-	return pmu->func->init(pmu);
++	int ret = nvkm_pmu_reset(pmu);
++	if (ret == 0 && pmu->func->init)
++		ret = pmu->func->init(pmu);
++	return ret;
+ }
+ 
+ static int
 
 
