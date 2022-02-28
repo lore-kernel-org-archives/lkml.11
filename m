@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B1FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C718C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238688AbiB1RiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:38:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
+        id S233818AbiB1Rjq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:39:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238161AbiB1RgC (ORCPT
+        with ESMTP id S238454AbiB1Rhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:36:02 -0500
+        Mon, 28 Feb 2022 12:37:53 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3BE788B31;
-        Mon, 28 Feb 2022 09:31:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ED942DD53;
+        Mon, 28 Feb 2022 09:32:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4F3A612FA;
-        Mon, 28 Feb 2022 17:31:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE381C340F0;
-        Mon, 28 Feb 2022 17:31:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C042961365;
+        Mon, 28 Feb 2022 17:32:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4C97C340E7;
+        Mon, 28 Feb 2022 17:32:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069495;
-        bh=DzwcJXbODgTKFsEgFpXDiJ68s9xoeQXLilc34DuJJns=;
+        s=korg; t=1646069558;
+        bh=BrSgRq3SdVWbYi1p7gAqEbYKLkAs4kDps2u2XRj4XnE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1G3gMM28yS5QCX8dKME1mV+e0v1AscktHqxpueIZxafCaGsLuaYRO5ZJic6TokEk
-         W2jDyW9Cr6/Q2Lpd4tNLyI0kOJVCZg08lDaJ6BaK5WxzjqKF4vttw2gHT2c0Zbse7p
-         VWjUN/DGJXGr+CYYEB+DBz7YthgWo5QegBSOUN8A=
+        b=QZ19c7kxxJMHC1ZYELX1tR343hCnG5fdR0Rtj/V0JYYp2AUKNIumFYBMlJd/dcBrN
+         aEN7dM0lNh6BpqXUIEOiFWd++ftPkGnBzn0udlA4OWoNDsc78b4+WxxVc807YA3EF2
+         uUjOr1uzt+HBxwA/lFvVrqLd3ivSLTHlLifxn+Ak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.4 41/53] USB: serial: option: add support for DW5829e
-Date:   Mon, 28 Feb 2022 18:24:39 +0100
-Message-Id: <20220228172251.276023966@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Qiang Yu <qiang.yu@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.10 10/80] drm/amdgpu: check vm ready by amdgpu_vm->evicting flag
+Date:   Mon, 28 Feb 2022 18:23:51 +0100
+Message-Id: <20220228172312.712322810@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
-References: <20220228172248.232273337@linuxfoundation.org>
+In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
+References: <20220228172311.789892158@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,114 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slark Xiao <slark_xiao@163.com>
+From: Qiang Yu <qiang.yu@amd.com>
 
-commit 6ecb3f0b18b320320460a42e40d6fb603f6ded96 upstream.
+commit c1a66c3bc425ff93774fb2f6eefa67b83170dd7e upstream.
 
-Dell DW5829e same as DW5821e except CAT level.
-DW5821e supports CAT16 but DW5829e supports CAT9.
-There are 2 types product of DW5829e: normal and eSIM.
-So we will add 2 PID for DW5829e.
-And for each PID, it support MBIM or RMNET.
-Let's see test evidence as below:
+Workstation application ANSA/META v21.1.4 get this error dmesg when
+running CI test suite provided by ANSA/META:
+[drm:amdgpu_gem_va_ioctl [amdgpu]] *ERROR* Couldn't update BO_VA (-16)
 
-DW5829e MBIM mode:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  4 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
-P:  Vendor=413c ProdID=81e6 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+This is caused by:
+1. create a 256MB buffer in invisible VRAM
+2. CPU map the buffer and access it causes vm_fault and try to move
+   it to visible VRAM
+3. force visible VRAM space and traverse all VRAM bos to check if
+   evicting this bo is valuable
+4. when checking a VM bo (in invisible VRAM), amdgpu_vm_evictable()
+   will set amdgpu_vm->evicting, but latter due to not in visible
+   VRAM, won't really evict it so not add it to amdgpu_vm->evicted
+5. before next CS to clear the amdgpu_vm->evicting, user VM ops
+   ioctl will pass amdgpu_vm_ready() (check amdgpu_vm->evicted)
+   but fail in amdgpu_vm_bo_update_mapping() (check
+   amdgpu_vm->evicting) and get this error log
 
-DW5829e RMNET mode:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e6 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+This error won't affect functionality as next CS will finish the
+waiting VM ops. But we'd better clear the error log by checking
+the amdgpu_vm->evicting flag in amdgpu_vm_ready() to stop calling
+amdgpu_vm_bo_update_mapping() later.
 
-DW5829e-eSIM MBIM mode:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  6 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
-P:  Vendor=413c ProdID=81e4 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e-eSIM Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+Another reason is amdgpu_vm->evicted list holds all BOs (both
+user buffer and page table), but only page table BOs' eviction
+prevent VM ops. amdgpu_vm->evicting flag is set only for page
+table BOs, so we should use evicting flag instead of evicted list
+in amdgpu_vm_ready().
 
-DW5829e-eSIM RMNET mode:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e4 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e-eSIM Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+The side effect of this change is: previously blocked VM op (user
+buffer in "evicted" list but no page table in it) gets done
+immediately.
 
-BTW, the interface 0x6 of MBIM mode is GNSS port, which not same as NMEA
-port. So it's banned from serial option driver.
-The remaining interfaces 0x2-0x5 are: MODEM, MODEM, NMEA, DIAG.
+v2: update commit comments.
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Link: https://lore.kernel.org/r/20220214021401.6264-1-slark_xiao@163.com
-[ johan: drop unnecessary reservation of interface 1 ]
+Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Qiang Yu <qiang.yu@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -198,6 +198,8 @@ static void option_instat_callback(struc
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+@@ -715,11 +715,16 @@ int amdgpu_vm_validate_pt_bos(struct amd
+  * Check if all VM PDs/PTs are ready for updates
+  *
+  * Returns:
+- * True if eviction list is empty.
++ * True if VM is not evicting.
+  */
+ bool amdgpu_vm_ready(struct amdgpu_vm *vm)
+ {
+-	return list_empty(&vm->evicted);
++	bool ret;
++
++	amdgpu_vm_eviction_lock(vm);
++	ret = !vm->evicting;
++	amdgpu_vm_eviction_unlock(vm);
++	return ret;
+ }
  
- #define DELL_PRODUCT_5821E			0x81d7
- #define DELL_PRODUCT_5821E_ESIM			0x81e0
-+#define DELL_PRODUCT_5829E_ESIM			0x81e4
-+#define DELL_PRODUCT_5829E			0x81e6
- 
- #define KYOCERA_VENDOR_ID			0x0c88
- #define KYOCERA_PRODUCT_KPC650			0x17da
-@@ -1063,6 +1065,10 @@ static const struct usb_device_id option
- 	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
- 	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5821E_ESIM),
- 	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
-+	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E),
-+	  .driver_info = RSVD(0) | RSVD(6) },
-+	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E_ESIM),
-+	  .driver_info = RSVD(0) | RSVD(6) },
- 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_E100A) },	/* ADU-E100, ADU-310 */
- 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_500A) },
- 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_620UW) },
+ /**
 
 
