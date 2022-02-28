@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C68C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3884C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238959AbiB1Rnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:43:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37768 "EHLO
+        id S239054AbiB1Rnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:43:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232457AbiB1RkL (ORCPT
+        with ESMTP id S238268AbiB1RkQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:40:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05750939A2;
-        Mon, 28 Feb 2022 09:34:27 -0800 (PST)
+        Mon, 28 Feb 2022 12:40:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43892986C7;
+        Mon, 28 Feb 2022 09:34:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92FA2614BF;
-        Mon, 28 Feb 2022 17:34:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A97EC340F1;
-        Mon, 28 Feb 2022 17:34:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D704FB815A6;
+        Mon, 28 Feb 2022 17:34:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F08C340E7;
+        Mon, 28 Feb 2022 17:34:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069666;
-        bh=PWwrxyeosz7l+auz8ADjZ6EBf7VCWUWVcJbBrZQCDts=;
+        s=korg; t=1646069671;
+        bh=/TC6U4bhgC1qLOu19zfPJeKQe7FGvbvv3H7xnnBIuCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RliMiRJnJDktl1NRydHIbO+HdvHp8xMis5KXviGuCYpMskW5shOtIXjm3dZVc44lK
-         f4BhiNt1a7ig/Q/U09rWx+Cf7BBpk3ObN2oNm77aeUDs1URKISfwib0Yd0d8DOr0aT
-         zNtAJh2Jsx7AqsTshq0Txl8BO4ZJGxqYugyAznJA=
+        b=uErlsgpPhFHGJScBWxdya2ARdDl9/o2V11y51UkZs7g/FPbxx7NBKnkGzQyh8IMrG
+         QXcvQK768fAWoqDIYfP+6OyGV++KHFxkqC0MSgbeIILDw3F5ca6I6Zq7CLxZMYgUQx
+         chpPYHjHGLmI5XpnkGQfN1wF+MVsxVFRPUTXC0TA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Md Haris Iqbal <haris.iqbal@ionos.com>,
+        stable@vger.kernel.org, Md Haris Iqbal <haris.iqbal@ionos.com>,
         Jack Wang <jinpu.wang@ionos.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 47/80] RDMA/rtrs-clt: Fix possible double free in error case
-Date:   Mon, 28 Feb 2022 18:24:28 +0100
-Message-Id: <20220228172317.357284660@linuxfoundation.org>
+Subject: [PATCH 5.10 49/80] RDMA/rtrs-clt: Move free_permit from free_clt to rtrs_clt_close
+Date:   Mon, 28 Feb 2022 18:24:30 +0100
+Message-Id: <20220228172317.581029281@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -53,121 +52,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Md Haris Iqbal <haris.iqbal@ionos.com>
 
-[ Upstream commit 8700af2cc18c919b2a83e74e0479038fd113c15d ]
+[ Upstream commit c46fa8911b17e3f808679061a8af8bee219f4602 ]
 
-Callback function rtrs_clt_dev_release() for put_device() calls kfree(clt)
-to free memory. We shouldn't call kfree(clt) again, and we can't use the
-clt after kfree too.
+Error path of rtrs_clt_open() calls free_clt(), where free_permit is
+called.  This is wrong since error path of rtrs_clt_open() does not need
+to call free_permit().
 
-Replace device_register() with device_initialize() and device_add() so that
-dev_set_name can() be used appropriately.
+Also, moving free_permits() call to rtrs_clt_close(), makes it more
+aligned with the call to alloc_permit() in rtrs_clt_open().
 
-Move mutex_destroy() to the release function so it can be called in
-the alloc_clt err path.
-
-Fixes: eab098246625 ("RDMA/rtrs-clt: Refactor the failure cases in alloc_clt")
-Link: https://lore.kernel.org/r/20220217030929.323849-1-haris.iqbal@ionos.com
-Reported-by: Miaoqian Lin <linmq006@gmail.com>
+Fixes: 6a98d71daea1 ("RDMA/rtrs: client: main functionality")
+Link: https://lore.kernel.org/r/20220217030929.323849-2-haris.iqbal@ionos.com
 Signed-off-by: Md Haris Iqbal <haris.iqbal@ionos.com>
 Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/ulp/rtrs/rtrs-clt.c | 37 ++++++++++++++------------
- 1 file changed, 20 insertions(+), 17 deletions(-)
+ drivers/infiniband/ulp/rtrs/rtrs-clt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-index 46fad202a380e..8937530a42d3d 100644
+index 5a3c11b0b3102..13634eda833de 100644
 --- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
 +++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-@@ -2540,6 +2540,8 @@ static void rtrs_clt_dev_release(struct device *dev)
+@@ -2638,7 +2638,6 @@ static struct rtrs_clt *alloc_clt(const char *sessname, size_t paths_num,
+ 
+ static void free_clt(struct rtrs_clt *clt)
  {
- 	struct rtrs_clt *clt = container_of(dev, struct rtrs_clt, dev);
+-	free_permits(clt);
+ 	free_percpu(clt->pcpu_path);
  
-+	mutex_destroy(&clt->paths_ev_mutex);
-+	mutex_destroy(&clt->paths_mutex);
- 	kfree(clt);
- }
- 
-@@ -2571,6 +2573,8 @@ static struct rtrs_clt *alloc_clt(const char *sessname, size_t paths_num,
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
-+	clt->dev.class = rtrs_clt_dev_class;
-+	clt->dev.release = rtrs_clt_dev_release;
- 	uuid_gen(&clt->paths_uuid);
- 	INIT_LIST_HEAD_RCU(&clt->paths_list);
- 	clt->paths_num = paths_num;
-@@ -2588,43 +2592,41 @@ static struct rtrs_clt *alloc_clt(const char *sessname, size_t paths_num,
- 	init_waitqueue_head(&clt->permits_wait);
- 	mutex_init(&clt->paths_ev_mutex);
- 	mutex_init(&clt->paths_mutex);
-+	device_initialize(&clt->dev);
- 
--	clt->dev.class = rtrs_clt_dev_class;
--	clt->dev.release = rtrs_clt_dev_release;
- 	err = dev_set_name(&clt->dev, "%s", sessname);
- 	if (err)
--		goto err;
-+		goto err_put;
-+
  	/*
- 	 * Suppress user space notification until
- 	 * sysfs files are created
- 	 */
- 	dev_set_uevent_suppress(&clt->dev, true);
--	err = device_register(&clt->dev);
--	if (err) {
--		put_device(&clt->dev);
--		goto err;
--	}
-+	err = device_add(&clt->dev);
-+	if (err)
-+		goto err_put;
- 
- 	clt->kobj_paths = kobject_create_and_add("paths", &clt->dev.kobj);
- 	if (!clt->kobj_paths) {
- 		err = -ENOMEM;
--		goto err_dev;
-+		goto err_del;
+@@ -2759,6 +2758,7 @@ void rtrs_clt_close(struct rtrs_clt *clt)
+ 		rtrs_clt_destroy_sess_files(sess, NULL);
+ 		kobject_put(&sess->kobj);
  	}
- 	err = rtrs_clt_create_sysfs_root_files(clt);
- 	if (err) {
- 		kobject_del(clt->kobj_paths);
- 		kobject_put(clt->kobj_paths);
--		goto err_dev;
-+		goto err_del;
- 	}
- 	dev_set_uevent_suppress(&clt->dev, false);
- 	kobject_uevent(&clt->dev.kobj, KOBJ_ADD);
- 
- 	return clt;
--err_dev:
--	device_unregister(&clt->dev);
--err:
-+err_del:
-+	device_del(&clt->dev);
-+err_put:
- 	free_percpu(clt->pcpu_path);
--	kfree(clt);
-+	put_device(&clt->dev);
- 	return ERR_PTR(err);
++	free_permits(clt);
+ 	free_clt(clt);
  }
- 
-@@ -2643,9 +2645,10 @@ static void free_clt(struct rtrs_clt *clt)
- 	wait_for_inflight_permits(clt);
- 	free_permits(clt);
- 	free_percpu(clt->pcpu_path);
--	mutex_destroy(&clt->paths_ev_mutex);
--	mutex_destroy(&clt->paths_mutex);
--	/* release callback will free clt in last put */
-+
-+	/*
-+	 * release callback will free clt and destroy mutexes in last put
-+	 */
- 	device_unregister(&clt->dev);
- }
- 
+ EXPORT_SYMBOL(rtrs_clt_close);
 -- 
 2.34.1
 
