@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBCAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B12B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238181AbiB1Rfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:35:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
+        id S238033AbiB1Rff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:35:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238558AbiB1Rdg (ORCPT
+        with ESMTP id S238584AbiB1Rdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:33:36 -0500
+        Mon, 28 Feb 2022 12:33:39 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA08891349;
-        Mon, 28 Feb 2022 09:30:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4944591371;
+        Mon, 28 Feb 2022 09:30:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93D9961359;
-        Mon, 28 Feb 2022 17:30:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A605CC340E7;
-        Mon, 28 Feb 2022 17:30:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A45D61467;
+        Mon, 28 Feb 2022 17:30:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35A7AC340E7;
+        Mon, 28 Feb 2022 17:30:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069405;
-        bh=Kwqwa0spbtutmTtZrFv1L75lDRULltN9+2J0izZBtww=;
+        s=korg; t=1646069418;
+        bh=Qx3WmNxbLHcmR/rJ6GxsuLHqpy+dv54vnH8mcMpNWYU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0PwtDMS3SchX11Kc+0D4GZUxlPGH9CcgSbdR4wMH9vCEzqylEZmRGkKHdE3BDe6vU
-         aBDztpUED3Aa+W8/06pSdAVTSKHfaErKNu2rOonrTa2fUTZROhYbpXOrpV+lKhd8yN
-         p1NdyBKuHhyvJLyp8Flqw2TPkBvkcxngM9jDGEdk=
+        b=oy/PeUgKYE9OwRBCHbmhL9CoDxpC90m2lOCNxBTBQCJ89U76aIBmjUrvNO8BbSNND
+         EBIDgzXxs+5OsbVQ32eU3aFQNmohgVtmue2PaM54PT1U0QiTRDnkueirxVP8uJtW9B
+         pZdKkAyrx70HYGIQubsAuEU7PecJlDtU1FNLSxVI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Laibin Qiu <qiulaibin@huawei.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 14/34] configfs: fix a race in configfs_{,un}register_subsystem()
-Date:   Mon, 28 Feb 2022 18:24:20 +0100
-Message-Id: <20220228172209.596557623@linuxfoundation.org>
+        stable@vger.kernel.org, Alessandro B Maurici <abmaurici@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        dann frazier <dann.frazier@canonical.com>
+Subject: [PATCH 5.4 13/53] lan743x: fix deadlock in lan743x_phy_link_status_change()
+Date:   Mon, 28 Feb 2022 18:24:11 +0100
+Message-Id: <20220228172249.292224321@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172207.090703467@linuxfoundation.org>
-References: <20220228172207.090703467@linuxfoundation.org>
+In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
+References: <20220228172248.232273337@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,98 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit 84ec758fb2daa236026506868c8796b0500c047d ]
+commit ddb826c2c92d461f290a7bab89e7c28696191875 upstream.
 
-When configfs_register_subsystem() or configfs_unregister_subsystem()
-is executing link_group() or unlink_group(),
-it is possible that two processes add or delete list concurrently.
-Some unfortunate interleavings of them can cause kernel panic.
+Usage of phy_ethtool_get_link_ksettings() in the link status change
+handler isn't needed, and in combination with the referenced change
+it results in a deadlock. Simply remove the call and replace it with
+direct access to phydev->speed. The duplex argument of
+lan743x_phy_update_flowcontrol() isn't used and can be removed.
 
-One of cases is:
-A --> B --> C --> D
-A <-- B <-- C <-- D
-
-     delete list_head *B        |      delete list_head *C
---------------------------------|-----------------------------------
-configfs_unregister_subsystem   |   configfs_unregister_subsystem
-  unlink_group                  |     unlink_group
-    unlink_obj                  |       unlink_obj
-      list_del_init             |         list_del_init
-        __list_del_entry        |           __list_del_entry
-          __list_del            |             __list_del
-            // next == C        |
-            next->prev = prev   |
-                                |               next->prev = prev
-            prev->next = next   |
-                                |                 // prev == B
-                                |                 prev->next = next
-
-Fix this by adding mutex when calling link_group() or unlink_group(),
-but parent configfs_subsystem is NULL when config_item is root.
-So I create a mutex configfs_subsystem_mutex.
-
-Fixes: 7063fbf22611 ("[PATCH] configfs: User-driven configuration filesystem")
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: c10a485c3de5 ("phy: phy_ethtool_ksettings_get: Lock the phy for consistency")
+Reported-by: Alessandro B Maurici <abmaurici@gmail.com>
+Tested-by: Alessandro B Maurici <abmaurici@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/40e27f76-0ba3-dcef-ee32-a78b9df38b0f@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[dannf: adjust context]
+Signed-off-by: dann frazier <dann.frazier@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/configfs/dir.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
 
-diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
-index f9628fc20fec0..796a6cd5f302f 100644
---- a/fs/configfs/dir.c
-+++ b/fs/configfs/dir.c
-@@ -50,6 +50,14 @@ DECLARE_RWSEM(configfs_rename_sem);
-  */
- DEFINE_SPINLOCK(configfs_dirent_lock);
- 
-+/*
-+ * All of link_obj/unlink_obj/link_group/unlink_group require that
-+ * subsys->su_mutex is held.
-+ * But parent configfs_subsystem is NULL when config_item is root.
-+ * Use this mutex when config_item is root.
-+ */
-+static DEFINE_MUTEX(configfs_subsystem_mutex);
-+
- static void configfs_d_iput(struct dentry * dentry,
- 			    struct inode * inode)
- {
-@@ -1937,7 +1945,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
- 		group->cg_item.ci_name = group->cg_item.ci_namebuf;
- 
- 	sd = root->d_fsdata;
-+	mutex_lock(&configfs_subsystem_mutex);
- 	link_group(to_config_group(sd->s_element), group);
-+	mutex_unlock(&configfs_subsystem_mutex);
- 
- 	inode_lock_nested(d_inode(root), I_MUTEX_PARENT);
- 
-@@ -1962,7 +1972,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
- 	inode_unlock(d_inode(root));
- 
- 	if (err) {
-+		mutex_lock(&configfs_subsystem_mutex);
- 		unlink_group(group);
-+		mutex_unlock(&configfs_subsystem_mutex);
- 		configfs_release_fs();
- 	}
- 	put_fragment(frag);
-@@ -2008,7 +2020,9 @@ void configfs_unregister_subsystem(struct configfs_subsystem *subsys)
- 
- 	dput(dentry);
- 
-+	mutex_lock(&configfs_subsystem_mutex);
- 	unlink_group(group);
-+	mutex_unlock(&configfs_subsystem_mutex);
- 	configfs_release_fs();
+---
+ drivers/net/ethernet/microchip/lan743x_main.c |   12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
+
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -916,8 +916,7 @@ static int lan743x_phy_reset(struct lan7
  }
  
--- 
-2.34.1
-
+ static void lan743x_phy_update_flowcontrol(struct lan743x_adapter *adapter,
+-					   u8 duplex, u16 local_adv,
+-					   u16 remote_adv)
++					   u16 local_adv, u16 remote_adv)
+ {
+ 	struct lan743x_phy *phy = &adapter->phy;
+ 	u8 cap;
+@@ -944,22 +943,17 @@ static void lan743x_phy_link_status_chan
+ 
+ 	phy_print_status(phydev);
+ 	if (phydev->state == PHY_RUNNING) {
+-		struct ethtool_link_ksettings ksettings;
+ 		int remote_advertisement = 0;
+ 		int local_advertisement = 0;
+ 
+-		memset(&ksettings, 0, sizeof(ksettings));
+-		phy_ethtool_get_link_ksettings(netdev, &ksettings);
+ 		local_advertisement =
+ 			linkmode_adv_to_mii_adv_t(phydev->advertising);
+ 		remote_advertisement =
+ 			linkmode_adv_to_mii_adv_t(phydev->lp_advertising);
+ 
+-		lan743x_phy_update_flowcontrol(adapter,
+-					       ksettings.base.duplex,
+-					       local_advertisement,
++		lan743x_phy_update_flowcontrol(adapter, local_advertisement,
+ 					       remote_advertisement);
+-		lan743x_ptp_update_latency(adapter, ksettings.base.speed);
++		lan743x_ptp_update_latency(adapter, phydev->speed);
+ 	}
+ }
+ 
 
 
