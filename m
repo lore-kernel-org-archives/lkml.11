@@ -2,96 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40AB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 08:12:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 08:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiB1IMi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 03:12:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
+        id S233870AbiB1IOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 03:14:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiB1IMg (ORCPT
+        with ESMTP id S229664AbiB1IN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 03:12:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EA7F692B9;
-        Mon, 28 Feb 2022 00:11:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 28 Feb 2022 03:13:59 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F37381B7;
+        Mon, 28 Feb 2022 00:13:19 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8239B80D85;
-        Mon, 28 Feb 2022 08:11:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7019AC36AE5;
-        Mon, 28 Feb 2022 08:11:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646035915;
-        bh=zMDLEB8toWf2EIp4Gbj5PSCBFzWdzLn4mVbcpqFSMxs=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=G5/HKt1YcKrybKD+1q8UgQW8r6UniPBg+HgJCRHDiawTCCJy2G9uMVmVMIrAH+MIY
-         uUZuQAmqf+UgQqG4LSwOUKjuA8mlT2hPXWXAetE6/wffM3OsZ6cQuw+SmzDdC9fizY
-         tnKAD3prEcX2CmRCAP5e0Sp4+MmIaoIy7bEgoECFMmrlcDv1M29iegogMcMJXx4EzC
-         Ww6E2vE2Ei6Ccl+33CFLA3ixlnEAH6a8FHRWu+p6u8hOq0ib6UliPV2J7DZbNT/orL
-         Z5vh8VINzIAjIFdahYuMGIJkpIkpdyHyDhOYN0mcWcjSY+6pRXFj43dgIYPqjgmCqP
-         vBf0o1GuFv9eA==
-Received: by mail-wm1-f48.google.com with SMTP id v2-20020a7bcb42000000b0037b9d960079so5259530wmj.0;
-        Mon, 28 Feb 2022 00:11:55 -0800 (PST)
-X-Gm-Message-State: AOAM531vIwOqzB7n19giBDQ2Mka5Xl1OBa0v+8AFaIgUS11TY9Kc5faf
-        ZgUtx62VXAQzxHr12XG1VP+JoKC13ooidjHVDj0=
-X-Google-Smtp-Source: ABdhPJx0yttNosgz0Dhhih9aIMEkkBewvoulgcXNOZok4rXBWTX7Xo99SrIvGnmvPy9Xsi9me/xpLhkH8sj6MYMy+yQ=
-X-Received: by 2002:a05:600c:4802:b0:381:3b27:89b7 with SMTP id
- i2-20020a05600c480200b003813b2789b7mr11349875wmo.173.1646035913752; Mon, 28
- Feb 2022 00:11:53 -0800 (PST)
-MIME-Version: 1.0
-References: <20220227215408.3180023-1-arnd@kernel.org> <YhwT2Gw8vsQHPxAB@quad.stoffel.home>
-In-Reply-To: <YhwT2Gw8vsQHPxAB@quad.stoffel.home>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Mon, 28 Feb 2022 09:11:37 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1A8Y3F93FzbWum9U=_Mc8zR9T5p=tTkQK90ARan41EbA@mail.gmail.com>
-Message-ID: <CAK8P3a1A8Y3F93FzbWum9U=_Mc8zR9T5p=tTkQK90ARan41EbA@mail.gmail.com>
-Subject: Re: [PATCH] Kbuild: remove -std=gnu89 from compiler arguments
-To:     john@quad.stoffel.home
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
-        Jonathan Corbet <corbet@lwn.net>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K6Y6P6QHMz4xcd;
+        Mon, 28 Feb 2022 19:13:17 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646035998;
+        bh=rVU/stliaEs+/Qz+lJRU+5I4Zqzz1PASdacjJ3qbeb4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=C8v8KRwk0R3UHmxztpOrKAmyflMvgaWxfCf0Ftfq+lQ7caMigUH3QbhWnC+kgSxit
+         ExKLK8ilqjWmRaAzbDSlTZTygS+Hzaad09vjbc5vXrQSKYVKMl5JSeyZahhQbGYHVB
+         x6w6F3/QfZ1UoT7S8BK9sVIpS/qGlBmS2Jh75mrWvc0mROL6546tlIq3YfGsk1ehk+
+         qyzrcsC2o4dbiPJIsOT/4wdKnQPATG+z0Gec8+uKDBL0rQe7KLkc+0+hhhBusrDcP5
+         Im7xj3vnvVvUEjw6CB+VZaF/W7Wg6bx82VttG5bT4lt6UfC91kmSGw7ExQWYLU1UcJ
+         4mOTeoK3DBB5w==
+Date:   Mon, 28 Feb 2022 19:13:16 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Greg KH <greg@kroah.com>, Mark Brown <broonie@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        Li-hao Kuo <lhjeff911@gmail.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-btrfs <linux-btrfs@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the tty tree with the spi tree
+Message-ID: <20220228191316.411f1475@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/XtCa2FAP8W+ER=Wm7QCOYG5";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 1:14 AM John Stoffel <john@quad.stoffel.home> wrote:
->
-> On Sun, Feb 27, 2022 at 10:52:43PM +0100, Arnd Bergmann wrote:
-> > From: Arnd Bergmann <arnd@arndb.de>
-> >
-> > During a patch discussion, Linus brought up the option of changing
-> > the C standard version from gnu89 to gnu99, which allows using variable
-> > declaration inside of a for() loop. While the C99, C11 and later standards
-> > introduce many other features, most of these are already available in
-> > gnu89 as GNU extensions as well.
-> >
-> > An earlier attempt to do this when gcc-5 started defaulting to
-> > -std=gnu11 failed because at the time that caused warnings about
-> > designated initializers with older compilers. Now that gcc-5.1 is the
-> > minimum compiler version used for building kernels, that is no longer a
-> > concern. Similarly, the behavior of 'inline' functions changes between
-> > gnu89 and gnu89, but this was taken care of by defining 'inline' to
->
-> Typo here?  Second one should be gnu99 right?
+--Sig_/XtCa2FAP8W+ER=Wm7QCOYG5
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-Fixed, thanks!
+Today's linux-next merge of the tty tree got a conflict in:
 
-        Arnd
+  MAINTAINERS
+
+between commit:
+
+  f62ca4e2a863 ("spi: Add spi driver for Sunplus SP7021")
+
+from the spi tree and commits:
+
+  b48b9f6deacf ("dt-bindings: serial: Add bindings doc for Sunplus SoC UART=
+ Driver")
+  9e8d5470325f ("serial: sunplus-uart: Add Sunplus SoC UART Driver")
+
+from the tty tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc MAINTAINERS
+index e6b3e94de842,4a30001f6d7b..000000000000
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@@ -18635,13 -18549,12 +18642,19 @@@ S:	Maintaine
+  F:	Documentation/devicetree/bindings/rtc/sunplus,sp7021-rtc.yaml
+  F:	drivers/rtc/rtc-sunplus.c
+ =20
+ +SUNPLUS SPI CONTROLLER INTERFACE DRIVER
+ +M:	Li-hao Kuo <lhjeff911@gmail.com>
+ +L:	linux-spi@vger.kernel.org
+ +S:	Maintained
+ +F:	Documentation/devicetree/bindings/spi/spi-sunplus-sp7021.yaml
+ +F:	drivers/spi/spi-sunplus-sp7021.c
+ +
++ SUNPLUS UART DRIVER
++ M:	Hammer Hsieh <hammerh0314@gmail.com>
++ S:	Maintained
++ F:	Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
++ F:	drivers/tty/serial/sunplus-uart.c
++=20
+  SUPERH
+  M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+  M:	Rich Felker <dalias@libc.org>
+
+--Sig_/XtCa2FAP8W+ER=Wm7QCOYG5
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIchBwACgkQAVBC80lX
+0GwEDwf6A0oRhiKUJHcFl9jqkchDt4xT/xxHFSLY8UadKG2q5UEnXZYG1Rq4qtaQ
+qtz7Z7c/ZhIyJaXKWsGiiTG9kWU7pIYUpl8nqSnnUDuC7jcw1bKGeM/C5uwZrqDl
+dLZpZDxj9Uq+J5XwHEcB10etKdgKP2Tn4ve0qvrJhlTgdgkhKj60FVO9Sj++A5Nx
+s5V5CJjdzKngVNcWWZZ/AGd2nD81kkX9azh98InWQkPll/2sSOmn+4yLaUAxKXkA
+fCid/84Aeirk5MxjO6LTrwYZ8WBZxEdbfYyz+bzvuWjfbF+YObcr2Zjihyy6UX9+
+zpmFYw21JuLPzvlXfGV6HyXFqnivzA==
+=FWvl
+-----END PGP SIGNATURE-----
+
+--Sig_/XtCa2FAP8W+ER=Wm7QCOYG5--
