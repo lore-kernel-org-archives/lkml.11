@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51688C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:45:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84408C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238588AbiB1Rph (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:45:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
+        id S238620AbiB1Rpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:45:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238634AbiB1Rmx (ORCPT
+        with ESMTP id S238683AbiB1Rmz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:42:53 -0500
+        Mon, 28 Feb 2022 12:42:55 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8299969B;
-        Mon, 28 Feb 2022 09:34:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 839C199ECB;
+        Mon, 28 Feb 2022 09:35:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BAB10614B9;
-        Mon, 28 Feb 2022 17:34:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD159C340F1;
-        Mon, 28 Feb 2022 17:34:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20609614AC;
+        Mon, 28 Feb 2022 17:35:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A17C340E7;
+        Mon, 28 Feb 2022 17:35:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069696;
-        bh=etOvP7NoP4v2nHmtWiP7+UhZSaqYO7n/CO0EwG2H8EM=;
+        s=korg; t=1646069701;
+        bh=4ssv4qucDRLkoQOkBmUQ+RTT/LFAQquKHJQzOIfWk9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i/rR29b7bGbZU4wLq8N1ECywapktFuQpEI4r/fJIJgU1n9zjyhs0Y2nLGgVz33CnO
-         NHvWg46JPId2m3rMq2/hcb5a+OpNHnf/hkc/yIZIZqa9FvYYRrmu3UY9zmlMf2eYb8
-         JoFi4Les7x89jxdKXMYbRMAcdgN6bX2sUIgvvk2I=
+        b=xIsoUkxz70HQnQO5JbaLpn+aK7Dr3Ry4pvLnetopKhT3Wlp9RdMxrWiIRKPu+Qa+c
+         DuTzqwwYPVp7Uai8A1pVnymaF3xGFoGKJ7SYa+EK7cDTbYYVmxJDO4hXaE12AbHMDc
+         wyrnBYNupdb9FoR012GUzlmvK2fKzLjy2Z+whM94=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH 5.10 24/80] bpf: Do not try bpf_msg_push_data with len 0
-Date:   Mon, 28 Feb 2022 18:24:05 +0100
-Message-Id: <20220228172314.510618848@linuxfoundation.org>
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Brian Vazquez <brianvv@google.com>
+Subject: [PATCH 5.10 26/80] bpf: Add schedule points in batch ops
+Date:   Mon, 28 Feb 2022 18:24:07 +0100
+Message-Id: <20220228172314.737638550@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -50,43 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Maurer <fmaurer@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 4a11678f683814df82fca9018d964771e02d7e6d upstream.
+commit 75134f16e7dd0007aa474b281935c5f42e79f2c8 upstream.
 
-If bpf_msg_push_data() is called with len 0 (as it happens during
-selftests/bpf/test_sockmap), we do not need to do anything and can
-return early.
+syzbot reported various soft lockups caused by bpf batch operations.
 
-Calling bpf_msg_push_data() with len 0 previously lead to a wrong ENOMEM
-error: we later called get_order(copy + len); if len was 0, copy + len
-was also often 0 and get_order() returned some undefined value (at the
-moment 52). alloc_pages() caught that and failed, but then bpf_msg_push_data()
-returned ENOMEM. This was wrong because we are most probably not out of
-memory and actually do not need any additional memory.
+ INFO: task kworker/1:1:27 blocked for more than 140 seconds.
+ INFO: task hung in rcu_barrier
 
-Fixes: 6fff607e2f14b ("bpf: sk_msg program helper bpf_msg_push_data")
-Signed-off-by: Felix Maurer <fmaurer@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Yonghong Song <yhs@fb.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/df69012695c7094ccb1943ca02b4920db3537466.1644421921.git.fmaurer@redhat.com
+Nothing prevents batch ops to process huge amount of data,
+we need to add schedule points in them.
+
+Note that maybe_wait_bpf_programs(map) calls from
+generic_map_delete_batch() can be factorized by moving
+the call after the loop.
+
+This will be done later in -next tree once we get this fix merged,
+unless there is strong opinion doing this optimization sooner.
+
+Fixes: aa2e93b8e58e ("bpf: Add generic support for update and delete batch ops")
+Fixes: cb4d03ab499d ("bpf: Add generic support for lookup batch op")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
+Acked-by: Brian Vazquez <brianvv@google.com>
+Link: https://lore.kernel.org/bpf/20220217181902.808742-1-eric.dumazet@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/filter.c |    3 +++
+ kernel/bpf/syscall.c |    3 +++
  1 file changed, 3 insertions(+)
 
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2730,6 +2730,9 @@ BPF_CALL_4(bpf_msg_push_data, struct sk_
- 	if (unlikely(flags))
- 		return -EINVAL;
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1308,6 +1308,7 @@ int generic_map_delete_batch(struct bpf_
+ 		maybe_wait_bpf_programs(map);
+ 		if (err)
+ 			break;
++		cond_resched();
+ 	}
+ 	if (copy_to_user(&uattr->batch.count, &cp, sizeof(cp)))
+ 		err = -EFAULT;
+@@ -1365,6 +1366,7 @@ int generic_map_update_batch(struct bpf_
  
-+	if (unlikely(len == 0))
-+		return 0;
-+
- 	/* First find the starting scatterlist element */
- 	i = msg->sg.start;
- 	do {
+ 		if (err)
+ 			break;
++		cond_resched();
+ 	}
+ 
+ 	if (copy_to_user(&uattr->batch.count, &cp, sizeof(cp)))
+@@ -1462,6 +1464,7 @@ int generic_map_lookup_batch(struct bpf_
+ 		swap(prev_key, key);
+ 		retry = MAP_LOOKUP_RETRIES;
+ 		cp++;
++		cond_resched();
+ 	}
+ 
+ 	if (err == -EFAULT)
 
 
