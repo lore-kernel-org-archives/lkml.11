@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED162C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F70EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237537AbiB1SPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:15:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
+        id S238997AbiB1SPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:15:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240642AbiB1SJG (ORCPT
+        with ESMTP id S240615AbiB1SJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 13:09:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5343B5E76B;
-        Mon, 28 Feb 2022 09:48:52 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421035E745;
+        Mon, 28 Feb 2022 09:48:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A73860909;
-        Mon, 28 Feb 2022 17:48:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30B00C340E7;
-        Mon, 28 Feb 2022 17:48:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA037B81085;
+        Mon, 28 Feb 2022 17:48:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 252F1C340F0;
+        Mon, 28 Feb 2022 17:48:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070527;
-        bh=Ld3mo65E0/KE6WkoUpUGYPKrTJ2wuyv9AoP0+dIK3uc=;
+        s=korg; t=1646070513;
+        bh=Mctlrf3HdcCTbx63QSjhn56D0LeSP5fiFh6Za9eOODA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kgMIFp0kd/C9EHZyMqDnv/UGSujzmye9vKg2DGryvxJhA6kO45qy4fwDsgY0XrBF1
-         JNGUCmYJckv4sAzDWI5ryCB+3OqN/0a7y5kwL1rKK2gOpBh9K01un81IGEMEY1J7MF
-         xlIT/FGBRJzG3MwkI+KiNENV5+DljzL7DSs6oRG4=
+        b=N03bRiF7bf0sXFFa90cp86UofG7lpR/IuKkbDUL14Tlcxy3cLq7wLPgw6boan/1jJ
+         lE2duhLDUlzOKg+eh/8Pf384N7l+o7z79CTudyPWh8mL0bjOz1n25rgtbBIQQ78iKj
+         N+aQ64C+Xhq96p2kDUas8Ytys6qhAzFV02HxsRjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 139/164] btrfs: defrag: dont defrag extents which are already at max capacity
-Date:   Mon, 28 Feb 2022 18:25:01 +0100
-Message-Id: <20220228172412.565652216@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH 5.16 135/164] nvmem: core: Fix a conflict between MTD and NVMEM on wp-gpios property
+Date:   Mon, 28 Feb 2022 18:24:57 +0100
+Message-Id: <20220228172412.262480435@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,113 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Christophe Kerello <christophe.kerello@foss.st.com>
 
-commit 979b25c300dbcbcb750e88715018e04e854de6c6 upstream.
+commit f6c052afe6f802d87c74153b7a57c43b2e9faf07 upstream.
 
-[BUG]
-For compressed extents, defrag ioctl will always try to defrag any
-compressed extents, wasting not only IO but also CPU time to
-compress/decompress:
+Wp-gpios property can be used on NVMEM nodes and the same property can
+be also used on MTD NAND nodes. In case of the wp-gpios property is
+defined at NAND level node, the GPIO management is done at NAND driver
+level. Write protect is disabled when the driver is probed or resumed
+and is enabled when the driver is released or suspended.
 
-   mkfs.btrfs -f $DEV
-   mount -o compress $DEV $MNT
-   xfs_io -f -c "pwrite -S 0xab 0 128K" $MNT/foobar
-   sync
-   xfs_io -f -c "pwrite -S 0xcd 128K 128K" $MNT/foobar
-   sync
-   echo "=== before ==="
-   xfs_io -c "fiemap -v" $MNT/foobar
-   btrfs filesystem defrag $MNT/foobar
-   sync
-   echo "=== after ==="
-   xfs_io -c "fiemap -v" $MNT/foobar
+When no partitions are defined in the NAND DT node, then the NAND DT node
+will be passed to NVMEM framework. If wp-gpios property is defined in
+this node, the GPIO resource is taken twice and the NAND controller
+driver fails to probe.
 
-Then it shows the 2 128K extents just get COW for no extra benefit, with
-extra IO/CPU spent:
+It would be possible to set config->wp_gpio at MTD level before calling
+nvmem_register function but NVMEM framework will toggle this GPIO on
+each write when this GPIO should only be controlled at NAND level driver
+to ensure that the Write Protect has not been enabled.
 
-    === before ===
-    /mnt/btrfs/file1:
-     EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-       0: [0..255]:        26624..26879       256   0x8
-       1: [256..511]:      26632..26887       256   0x9
-    === after ===
-    /mnt/btrfs/file1:
-     EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
-       0: [0..255]:        26640..26895       256   0x8
-       1: [256..511]:      26648..26903       256   0x9
+A way to fix this conflict is to add a new boolean flag in nvmem_config
+named ignore_wp. In case ignore_wp is set, the GPIO resource will
+be managed by the provider.
 
-This affects not only v5.16 (after the defrag rework), but also v5.15
-(before the defrag rework).
-
-[CAUSE]
->From the very beginning, btrfs defrag never checks if one extent is
-already at its max capacity (128K for compressed extents, 128M
-otherwise).
-
-And the default extent size threshold is 256K, which is already beyond
-the compressed extent max size.
-
-This means, by default btrfs defrag ioctl will mark all compressed
-extent which is not adjacent to a hole/preallocated range for defrag.
-
-[FIX]
-Introduce a helper to grab the maximum extent size, and then in
-defrag_collect_targets() and defrag_check_next_extent(), reject extents
-which are already at their max capacity.
-
-Reported-by: Filipe Manana <fdmanana@suse.com>
-CC: stable@vger.kernel.org # 5.16
-Reviewed-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 2a127da461a9 ("nvmem: add support for the write-protect pin")
+Cc: stable@vger.kernel.org
+Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220220151432.16605-2-srinivas.kandagatla@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/ioctl.c |   20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ drivers/nvmem/core.c           |    2 +-
+ include/linux/nvmem-provider.h |    4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -1020,6 +1020,13 @@ static struct extent_map *defrag_lookup_
- 	return em;
- }
+--- a/drivers/nvmem/core.c
++++ b/drivers/nvmem/core.c
+@@ -771,7 +771,7 @@ struct nvmem_device *nvmem_register(cons
  
-+static u32 get_extent_max_capacity(const struct extent_map *em)
-+{
-+	if (test_bit(EXTENT_FLAG_COMPRESSED, &em->flags))
-+		return BTRFS_MAX_COMPRESSED;
-+	return BTRFS_MAX_EXTENT_SIZE;
-+}
-+
- static bool defrag_check_next_extent(struct inode *inode, struct extent_map *em,
- 				     bool locked)
- {
-@@ -1036,6 +1043,12 @@ static bool defrag_check_next_extent(str
- 		goto out;
- 	if (test_bit(EXTENT_FLAG_PREALLOC, &next->flags))
- 		goto out;
-+	/*
-+	 * If the next extent is at its max capacity, defragging current extent
-+	 * makes no sense, as the total number of extents won't change.
-+	 */
-+	if (next->len >= get_extent_max_capacity(em))
-+		goto out;
- 	/* Physically adjacent and large enough */
- 	if ((em->block_start + em->block_len == next->block_start) &&
- 	    (em->block_len > SZ_128K && next->block_len > SZ_128K))
-@@ -1233,6 +1246,13 @@ static int defrag_collect_targets(struct
- 		if (range_len >= extent_thresh)
- 			goto next;
- 
-+		/*
-+		 * Skip extents already at its max capacity, this is mostly for
-+		 * compressed extents, which max cap is only 128K.
-+		 */
-+		if (em->len >= get_extent_max_capacity(em))
-+			goto next;
-+
- 		next_mergeable = defrag_check_next_extent(&inode->vfs_inode, em,
- 							  locked);
- 		if (!next_mergeable) {
+ 	if (config->wp_gpio)
+ 		nvmem->wp_gpio = config->wp_gpio;
+-	else
++	else if (!config->ignore_wp)
+ 		nvmem->wp_gpio = gpiod_get_optional(config->dev, "wp",
+ 						    GPIOD_OUT_HIGH);
+ 	if (IS_ERR(nvmem->wp_gpio)) {
+--- a/include/linux/nvmem-provider.h
++++ b/include/linux/nvmem-provider.h
+@@ -70,7 +70,8 @@ struct nvmem_keepout {
+  * @word_size:	Minimum read/write access granularity.
+  * @stride:	Minimum read/write access stride.
+  * @priv:	User context passed to read/write callbacks.
+- * @wp-gpio:   Write protect pin
++ * @wp-gpio:	Write protect pin
++ * @ignore_wp:  Write Protect pin is managed by the provider.
+  *
+  * Note: A default "nvmem<id>" name will be assigned to the device if
+  * no name is specified in its configuration. In such case "<id>" is
+@@ -92,6 +93,7 @@ struct nvmem_config {
+ 	enum nvmem_type		type;
+ 	bool			read_only;
+ 	bool			root_only;
++	bool			ignore_wp;
+ 	struct device_node	*of_node;
+ 	bool			no_of_node;
+ 	nvmem_reg_read_t	reg_read;
 
 
