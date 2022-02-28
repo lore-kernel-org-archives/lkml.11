@@ -2,207 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB09EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238759AbiB1SoG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:44:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39878 "EHLO
+        id S240874AbiB1So5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241009AbiB1Sm6 (ORCPT
+        with ESMTP id S240864AbiB1Soa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:42:58 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7BC33896;
-        Mon, 28 Feb 2022 10:39:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646073567; x=1677609567;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cLNm/VUYWKW7XICeFUo0QNpQOnVWM5sHuOgBRbXTVlY=;
-  b=Rpu9Jzvo8iVWLHOXH3qPvJbbYNH+2WsModpTKUu+b/xWSx3rrxpte/ya
-   I5gfvp+o9tVX1Nfx5vWW+Q6enbDPo058mlm+QxMn7c4OApi58ZSpaMjkd
-   uNe2fUyHZsL1Yk//QcHlyHXbSZcZogVJrHP59/xP/XZ3PqURFDziFnp6T
-   2CVZyNcUZfKXRyLILweaCz73lU4PJ1oOFI4aLBD3QhOJsvd7dXUXEk7ZU
-   dItuwORxhVOjIq+MIheLtBFF/ClBusOoDvU9JGe1MNU1E3jwD7tdWLsG+
-   mHd0W8lBa/HzJ39w6VbdUrgnME3SwCiPQM3IPYKWEB7J4gIeiObGlw1a6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253147895"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="253147895"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 10:39:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="640981128"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 28 Feb 2022 10:39:16 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOkvU-0007gx-3w; Mon, 28 Feb 2022 18:39:16 +0000
-Date:   Tue, 1 Mar 2022 02:38:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Pratyush Yadav <p.yadav@ti.com>
-Cc:     kbuild-all@lists.01.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] spi: fsl-spi: Implement trailing bits
-Message-ID: <202203010220.Yzk53fCj-lkp@intel.com>
-References: <fe4a3946a66ede73f6d6871700f2aaf0171372a1.1646060734.git.christophe.leroy@csgroup.eu>
+        Mon, 28 Feb 2022 13:44:30 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A07FB63
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:42:36 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id bx9-20020a17090af48900b001bc64ee7d3cso12097219pjb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:42:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wxrH6KzaeaBEDEh4qmMyftFti+mIlwQaNwQ6NwWTZ4A=;
+        b=TxXrbMTMd6jCS9SU+C6biZ3U82+A0ZzyMEQOKLZ4OAIXCgnxixdGhQxyciBbu4t+hZ
+         Ez6FMN5Ta1l6/NMHEH2rEzUwovfp8JOTUJy8RjVZwAvxuf778JssaPZIabWihQGTaXWu
+         h732bzFtcD4VN1j2oHwHV++zXc8cTUAfxe//J/qM05iVC/HGqj7q7eRpei7zE0LF8g5E
+         TQMK7eUjFj6jyrLZafIuG48eFbWPjtxnG1V/uwjyRE2Qypo4tXywZJ+iTYTFSYAViA9N
+         tdFnxLo031V03cKhptQIqEB43gWUZtGEUmRuW1O27E/ZygFeoERI2aF2Ny19AJJ8+WO9
+         G18A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=wxrH6KzaeaBEDEh4qmMyftFti+mIlwQaNwQ6NwWTZ4A=;
+        b=dHRLvaHCa5II7xFGvl47TWts1DBXyfJxvDvHX3jeDZYzSkjviKGqDmVNWmIMDO5pYM
+         SisFKzD9jMQBCBzi/4U+Azzpd4VxoQbP9UTO4ETNH+cl36bsv19yJ5d6xLTbRzGIcpCI
+         oC5yJC/6X+9rQkb67xbAOjF2B/PBxaI4MY/4Wp8mahfJfQRA3IR8T5yHZYDuaIJBfYHE
+         oGwOGrRKTT0OIS24UC4JW4eJdrJNB7ztZoVrNiHOuwoNLMXdENd7agkFQOoxbcDNRwKj
+         FoqgljRz0YJoRDPAUPpybBpVbyzLUx2RPMKZFbmlnmJ6yRTkNeoXzsQ7Q1TcVZqgReG+
+         +uOw==
+X-Gm-Message-State: AOAM531AXPrwuUe51b2VDNPQfozbnq4Pns3nENKIjTJaXJ4wnEj5qKuW
+        RQzhLk66nDPiZOt+lSz6o1k=
+X-Google-Smtp-Source: ABdhPJyJeDth5vK1D0r18B+GG0r8Z7C8dPa9EQUR0yxfkpM8i6X1Zbnz02oJIxGKvLWmzj5vj477bg==
+X-Received: by 2002:a17:90a:ea83:b0:1bc:2cb6:78e0 with SMTP id h3-20020a17090aea8300b001bc2cb678e0mr18273672pjz.20.1646073755517;
+        Mon, 28 Feb 2022 10:42:35 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id my6-20020a17090b4c8600b001bc2cb011dasm94592pjb.4.2022.02.28.10.42.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 10:42:35 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 28 Feb 2022 08:42:33 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     0day robot <lkp@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+        lkp@lists.01.org, kernel test robot <oliver.sang@intel.com>
+Subject: Re: [PATCH v3] workqueue: Warn flushing of kernel-global workqueues
+Message-ID: <Yh0XmUtuuyaO9j8j@slm.duckdns.org>
+References: <20220221083358.GC835@xsang-OptiPlex-9020>
+ <3a20c799-c18e-dd3a-3161-fee6bca1491e@I-love.SAKURA.ne.jp>
+ <YhUdjip4VSWe4zDO@slm.duckdns.org>
+ <16a33a65-3c67-ef66-ccc8-9c4fffb0ae5a@I-love.SAKURA.ne.jp>
+ <YhaoDiJ8MUOhRmp6@slm.duckdns.org>
+ <9a883d72-ea7d-1936-93e6-5c2a290509d4@I-love.SAKURA.ne.jp>
+ <Yha1LeX4OK3cLCV5@slm.duckdns.org>
+ <4165db50-1365-549a-eb77-6122c78d4814@I-love.SAKURA.ne.jp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <fe4a3946a66ede73f6d6871700f2aaf0171372a1.1646060734.git.christophe.leroy@csgroup.eu>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <4165db50-1365-549a-eb77-6122c78d4814@I-love.SAKURA.ne.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+On Mon, Feb 28, 2022 at 11:03:47PM +0900, Tetsuo Handa wrote:
+> Then, what about this?
+> If this looks OK, I'll test this patch using linux-next via my tree.
 
-I love your patch! Perhaps something to improve:
+Yeah, looks good to me. Can you boot test and fix the obvious ones before
+the pushing it to linux-next? It probably would be best if this is kept in a
+separate branch together with all the fix-up patches. Once things settle
+enough, we should be able to route the patches through the wq tree to Linus.
 
-[auto build test WARNING on v5.17-rc6]
-[cannot apply to broonie-spi/for-next next-20220228]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Thank you so much for doing this.
 
-url:    https://github.com/0day-ci/linux/commits/Christophe-Leroy/Add-support-for-components-requiring-trailing-clock-after-transfer/20220228-231740
-base:    7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
-config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220301/202203010220.Yzk53fCj-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/7eb07c4d26401389204fcc6cf685c18c89b64ef8
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Christophe-Leroy/Add-support-for-components-requiring-trailing-clock-after-transfer/20220228-231740
-        git checkout 7eb07c4d26401389204fcc6cf685c18c89b64ef8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash drivers/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/spi/spi-fsl-spi.c: In function 'fsl_spi_do_one_msg':
->> drivers/spi/spi-fsl-spi.c:435:35: warning: initialization of 'const void *' from 'long unsigned int' makes pointer from integer without a cast [-Wint-conversion]
-     435 |                         .tx_buf = empty_zero_page,
-         |                                   ^~~~~~~~~~~~~~~
-   drivers/spi/spi-fsl-spi.c:435:35: note: (near initialization for 't.tx_buf')
-
-
-vim +435 drivers/spi/spi-fsl-spi.c
-
-   356	
-   357	static int fsl_spi_do_one_msg(struct spi_master *master,
-   358				      struct spi_message *m)
-   359	{
-   360		struct mpc8xxx_spi *mpc8xxx_spi = spi_master_get_devdata(master);
-   361		struct spi_device *spi = m->spi;
-   362		struct spi_transfer *t, *first;
-   363		unsigned int cs_change;
-   364		const int nsecs = 50;
-   365		int status, last_bpw;
-   366	
-   367		/*
-   368		 * In CPU mode, optimize large byte transfers to use larger
-   369		 * bits_per_word values to reduce number of interrupts taken.
-   370		 */
-   371		if (!(mpc8xxx_spi->flags & SPI_CPM_MODE)) {
-   372			list_for_each_entry(t, &m->transfers, transfer_list) {
-   373				if (t->len < 256 || t->bits_per_word != 8)
-   374					continue;
-   375				if ((t->len & 3) == 0)
-   376					t->bits_per_word = 32;
-   377				else if ((t->len & 1) == 0)
-   378					t->bits_per_word = 16;
-   379			}
-   380		}
-   381	
-   382		/* Don't allow changes if CS is active */
-   383		cs_change = 1;
-   384		list_for_each_entry(t, &m->transfers, transfer_list) {
-   385			if (cs_change)
-   386				first = t;
-   387			cs_change = t->cs_change;
-   388			if (first->speed_hz != t->speed_hz) {
-   389				dev_err(&spi->dev,
-   390					"speed_hz cannot change while CS is active\n");
-   391				return -EINVAL;
-   392			}
-   393		}
-   394	
-   395		last_bpw = -1;
-   396		cs_change = 1;
-   397		status = -EINVAL;
-   398		list_for_each_entry(t, &m->transfers, transfer_list) {
-   399			if (cs_change || last_bpw != t->bits_per_word)
-   400				status = fsl_spi_setup_transfer(spi, t);
-   401			if (status < 0)
-   402				break;
-   403			last_bpw = t->bits_per_word;
-   404	
-   405			if (cs_change) {
-   406				fsl_spi_chipselect(spi, BITBANG_CS_ACTIVE);
-   407				ndelay(nsecs);
-   408			}
-   409			cs_change = t->cs_change;
-   410			if (t->len)
-   411				status = fsl_spi_bufs(spi, t, m->is_dma_mapped);
-   412			if (status) {
-   413				status = -EMSGSIZE;
-   414				break;
-   415			}
-   416			m->actual_length += t->len;
-   417	
-   418			spi_transfer_delay_exec(t);
-   419	
-   420			if (cs_change) {
-   421				ndelay(nsecs);
-   422				fsl_spi_chipselect(spi, BITBANG_CS_INACTIVE);
-   423				ndelay(nsecs);
-   424			}
-   425		}
-   426	
-   427		if (status || !cs_change) {
-   428			ndelay(nsecs);
-   429			fsl_spi_chipselect(spi, BITBANG_CS_INACTIVE);
-   430		}
-   431	
-   432		if (!status && spi->trailing_bits) {
-   433			struct spi_transfer t = {
-   434				.len = 1,
- > 435				.tx_buf = empty_zero_page,
-   436			};
-   437	
-   438			if (spi->trailing_bits < 4)
-   439				t.bits_per_word = 4;
-   440			else if (spi->trailing_bits > 8)
-   441				t.bits_per_word = 16;
-   442			else
-   443				t.bits_per_word = spi->trailing_bits;
-   444	
-   445			status = fsl_spi_setup_transfer(spi, &t);
-   446			if (!status)
-   447				status = fsl_spi_bufs(spi, &t, 0);
-   448		}
-   449		m->status = status;
-   450	
-   451		fsl_spi_setup_transfer(spi, NULL);
-   452		spi_finalize_current_message(master);
-   453		return 0;
-   454	}
-   455	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+tejun
