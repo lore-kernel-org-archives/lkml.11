@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD0EC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 858FAC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240394AbiB1SIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:08:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
+        id S240372AbiB1SIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:08:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240751AbiB1SD7 (ORCPT
+        with ESMTP id S239837AbiB1SCv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BF5D25C5F;
-        Mon, 28 Feb 2022 09:47:43 -0800 (PST)
+        Mon, 28 Feb 2022 13:02:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F7F9D0ED;
+        Mon, 28 Feb 2022 09:46:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 486A360B2A;
-        Mon, 28 Feb 2022 17:47:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D8EFC340E7;
-        Mon, 28 Feb 2022 17:47:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57D51B815CE;
+        Mon, 28 Feb 2022 17:45:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81F26C36AF6;
+        Mon, 28 Feb 2022 17:45:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070461;
-        bh=iX4GGGUBYLtFhqsSgufxOPti62s98X8cKQqYQbImluM=;
+        s=korg; t=1646070350;
+        bh=Y0buiqhGATpeWfTeTQqEm7d8nnRXUVLoevG30zJT4+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VvIpaYl6ZtTD0M9VB9AVERnieC2It2yRMqEAapM+WEuqH4G9S6VAo6JQEwg6FkUKn
-         jZanpYYCYzgIjXTGJcrUljD2eOMX7ZOfUUF69kNYVXyjohSP2eK/aQpuhrGNkv3fkd
-         kdwoJGw+jrPIVWaF5u3EwpXa6b8Fa8WqgvGHHtfY=
+        b=jkkAeevZPq7e2c6rwpmv+fQ36mAC0k9I7KxqRJJlfrYOf/cJ0yPuPQYcvuJwKU1Oq
+         X2JlKSCHqi2E6zBDiEyaBM166N5kgi14SaP9O65KfhO58mhF0YJDQffadY/VUdvcbZ
+         AhjI6ch+9n+LSrxxg64PM/ZmzqASFLINsbP7S/xs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Nyekjaer <sean@geanix.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.16 118/164] iio: accel: fxls8962af: add padding to regmap for SPI
-Date:   Mon, 28 Feb 2022 18:24:40 +0100
-Message-Id: <20220228172411.013872277@linuxfoundation.org>
+        stable@vger.kernel.org, Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.16 059/164] bpf: Fix a bpf_timer initialization issue
+Date:   Mon, 28 Feb 2022 18:23:41 +0100
+Message-Id: <20220228172405.514703207@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,83 +48,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Nyekjaer <sean@geanix.com>
+From: Yonghong Song <yhs@fb.com>
 
-commit ccbed9d8d2a5351d8238f2d3f0741c9a3176f752 upstream.
+commit 5eaed6eedbe9612f642ad2b880f961d1c6c8ec2b upstream.
 
-Add missing don't care padding between address and
-data for SPI transfers
+The patch in [1] intends to fix a bpf_timer related issue,
+but the fix caused existing 'timer' selftest to fail with
+hang or some random errors. After some debug, I found
+an issue with check_and_init_map_value() in the hashtab.c.
+More specifically, in hashtab.c, we have code
+  l_new = bpf_map_kmalloc_node(&htab->map, ...)
+  check_and_init_map_value(&htab->map, l_new...)
+Note that bpf_map_kmalloc_node() does not do initialization
+so l_new contains random value.
 
-Fixes: a3e0b51884ee ("iio: accel: add support for FXLS8962AF/FXLS8964AF accelerometers")
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
-Link: https://lore.kernel.org/r/20211220125144.3630539-1-sean@geanix.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+The function check_and_init_map_value() intends to zero the
+bpf_spin_lock and bpf_timer if they exist in the map.
+But I found bpf_spin_lock is zero'ed but bpf_timer is not zero'ed.
+With [1], later copy_map_value() skips copying of
+bpf_spin_lock and bpf_timer. The non-zero bpf_timer caused
+random failures for 'timer' selftest.
+Without [1], for both bpf_spin_lock and bpf_timer case,
+bpf_timer will be zero'ed, so 'timer' self test is okay.
+
+For check_and_init_map_value(), why bpf_spin_lock is zero'ed
+properly while bpf_timer not. In bpf uapi header, we have
+  struct bpf_spin_lock {
+        __u32   val;
+  };
+  struct bpf_timer {
+        __u64 :64;
+        __u64 :64;
+  } __attribute__((aligned(8)));
+
+The initialization code:
+  *(struct bpf_spin_lock *)(dst + map->spin_lock_off) =
+      (struct bpf_spin_lock){};
+  *(struct bpf_timer *)(dst + map->timer_off) =
+      (struct bpf_timer){};
+It appears the compiler has no obligation to initialize anonymous fields.
+For example, let us use clang with bpf target as below:
+  $ cat t.c
+  struct bpf_timer {
+        unsigned long long :64;
+  };
+  struct bpf_timer2 {
+        unsigned long long a;
+  };
+
+  void test(struct bpf_timer *t) {
+    *t = (struct bpf_timer){};
+  }
+  void test2(struct bpf_timer2 *t) {
+    *t = (struct bpf_timer2){};
+  }
+  $ clang -target bpf -O2 -c -g t.c
+  $ llvm-objdump -d t.o
+   ...
+   0000000000000000 <test>:
+       0:       95 00 00 00 00 00 00 00 exit
+   0000000000000008 <test2>:
+       1:       b7 02 00 00 00 00 00 00 r2 = 0
+       2:       7b 21 00 00 00 00 00 00 *(u64 *)(r1 + 0) = r2
+       3:       95 00 00 00 00 00 00 00 exit
+
+gcc11.2 does not have the above issue. But from
+  INTERNATIONAL STANDARD ©ISO/IEC ISO/IEC 9899:201x
+  Programming languages — C
+  http://www.open-std.org/Jtc1/sc22/wg14/www/docs/n1547.pdf
+  page 157:
+  Except where explicitly stated otherwise, for the purposes of
+  this subclause unnamed members of objects of structure and union
+  type do not participate in initialization. Unnamed members of
+  structure objects have indeterminate value even after initialization.
+
+To fix the problem, let use memset for bpf_timer case in
+check_and_init_map_value(). For consistency, memset is also
+used for bpf_spin_lock case.
+
+  [1] https://lore.kernel.org/bpf/20220209070324.1093182-2-memxor@gmail.com/
+
+Fixes: 68134668c17f3 ("bpf: Add map side support for bpf timers.")
+Signed-off-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20220211194953.3142152-1-yhs@fb.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/accel/fxls8962af-core.c |   12 ++++++++++--
- drivers/iio/accel/fxls8962af-i2c.c  |    2 +-
- drivers/iio/accel/fxls8962af-spi.c  |    2 +-
- drivers/iio/accel/fxls8962af.h      |    3 ++-
- 4 files changed, 14 insertions(+), 5 deletions(-)
+ include/linux/bpf.h |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/iio/accel/fxls8962af-core.c
-+++ b/drivers/iio/accel/fxls8962af-core.c
-@@ -173,12 +173,20 @@ struct fxls8962af_data {
- 	u16 upper_thres;
- };
- 
--const struct regmap_config fxls8962af_regmap_conf = {
-+const struct regmap_config fxls8962af_i2c_regmap_conf = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
- 	.max_register = FXLS8962AF_MAX_REG,
- };
--EXPORT_SYMBOL_GPL(fxls8962af_regmap_conf);
-+EXPORT_SYMBOL_GPL(fxls8962af_i2c_regmap_conf);
-+
-+const struct regmap_config fxls8962af_spi_regmap_conf = {
-+	.reg_bits = 8,
-+	.pad_bits = 8,
-+	.val_bits = 8,
-+	.max_register = FXLS8962AF_MAX_REG,
-+};
-+EXPORT_SYMBOL_GPL(fxls8962af_spi_regmap_conf);
- 
- enum {
- 	fxls8962af_idx_x,
---- a/drivers/iio/accel/fxls8962af-i2c.c
-+++ b/drivers/iio/accel/fxls8962af-i2c.c
-@@ -18,7 +18,7 @@ static int fxls8962af_probe(struct i2c_c
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -209,11 +209,9 @@ static inline bool map_value_has_timer(c
+ static inline void check_and_init_map_value(struct bpf_map *map, void *dst)
  {
- 	struct regmap *regmap;
+ 	if (unlikely(map_value_has_spin_lock(map)))
+-		*(struct bpf_spin_lock *)(dst + map->spin_lock_off) =
+-			(struct bpf_spin_lock){};
++		memset(dst + map->spin_lock_off, 0, sizeof(struct bpf_spin_lock));
+ 	if (unlikely(map_value_has_timer(map)))
+-		*(struct bpf_timer *)(dst + map->timer_off) =
+-			(struct bpf_timer){};
++		memset(dst + map->timer_off, 0, sizeof(struct bpf_timer));
+ }
  
--	regmap = devm_regmap_init_i2c(client, &fxls8962af_regmap_conf);
-+	regmap = devm_regmap_init_i2c(client, &fxls8962af_i2c_regmap_conf);
- 	if (IS_ERR(regmap)) {
- 		dev_err(&client->dev, "Failed to initialize i2c regmap\n");
- 		return PTR_ERR(regmap);
---- a/drivers/iio/accel/fxls8962af-spi.c
-+++ b/drivers/iio/accel/fxls8962af-spi.c
-@@ -18,7 +18,7 @@ static int fxls8962af_probe(struct spi_d
- {
- 	struct regmap *regmap;
- 
--	regmap = devm_regmap_init_spi(spi, &fxls8962af_regmap_conf);
-+	regmap = devm_regmap_init_spi(spi, &fxls8962af_spi_regmap_conf);
- 	if (IS_ERR(regmap)) {
- 		dev_err(&spi->dev, "Failed to initialize spi regmap\n");
- 		return PTR_ERR(regmap);
---- a/drivers/iio/accel/fxls8962af.h
-+++ b/drivers/iio/accel/fxls8962af.h
-@@ -17,6 +17,7 @@ int fxls8962af_core_probe(struct device
- int fxls8962af_core_remove(struct device *dev);
- 
- extern const struct dev_pm_ops fxls8962af_pm_ops;
--extern const struct regmap_config fxls8962af_regmap_conf;
-+extern const struct regmap_config fxls8962af_i2c_regmap_conf;
-+extern const struct regmap_config fxls8962af_spi_regmap_conf;
- 
- #endif				/* _FXLS8962AF_H_ */
+ /* copy everything but bpf_spin_lock and bpf_timer. There could be one of each. */
 
 
