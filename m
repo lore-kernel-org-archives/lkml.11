@@ -2,94 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B158FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:49:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FFDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:49:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229744AbiB1Ttj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 14:49:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41392 "EHLO
+        id S229649AbiB1Tts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 14:49:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229652AbiB1TtU (ORCPT
+        with ESMTP id S229759AbiB1Ttc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 14:49:20 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39803F65F2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:48:15 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id i20so6316567wmc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:48:15 -0800 (PST)
+        Mon, 28 Feb 2022 14:49:32 -0500
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244BBF1E9F;
+        Mon, 28 Feb 2022 11:48:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=n0XDEkVzi02ucM2UrKM/vf81RC1FXZtbtWIn7AE/m+k=;
-        b=Dg/YhTchN/dzit9dPs906M4E2c8W9YbYDdJDkUr+sgVevUcFyxD1MKfKC4NCejyEV3
-         4uooanL4NNVwCzcV0SMou47PR33uiMQn0iqzquGP8ILqcc/7MU0lAHcAl7U1qkAr9qpJ
-         SlqOFUJLzEBZ9XD28j/6CndjNKuVW422jLD3SbyONOO4fQafuu7NYo9xNXGz/R9HjWmO
-         RIEGNQVlAfpbMe8Ak/5lZAMLzj0ddUiKlni1mDB8z6/yvOPsBSuoB+6udugXRuGDm1R3
-         kpL7K1PNtOpgxJvF/8DJ4aq7Gkg5MU6NmxkxgaI6OnnZ7TeMU5jFkn7Un7SyZRFwhbSo
-         68Lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=n0XDEkVzi02ucM2UrKM/vf81RC1FXZtbtWIn7AE/m+k=;
-        b=OJZVzt8B4RtjmRQALgIF6DBZFqqFNngsH4hvX3//IB8MmI7Kofh+/psv2voVP74FMY
-         uUhboiBvLUIxQbgabs0XTcl3VRZMLpwN83IiplpC+o29++LXbMsZQjVsFPXdoI2XA4Vt
-         RNCjvTrCUURhqJnOT00QJmV5EHcIxTuZwvoH0kMwEMcAvvbCcMV1XsV7T1K7lhzx7e8G
-         c/Zm4Mat9ArLVod15e8CaPqJrgCsx1vLya2dUATtaoeQGJUWAUgsdxeOodHeHsHH888l
-         F/cBuEE0N9cgYEkObbhnZ6X12UoceFHdlEUrbvU4uQpj3xWIqYmPprwpe7sV6buYZaUK
-         GWzg==
-X-Gm-Message-State: AOAM532/JpRJriO6a6SLHxjzwZ0M1zT6ydbeolEYt7OYJzf5hlyh6lXW
-        d5mZjgmR7oLzVzfXNBp5ZUgLlHCcNR5Ibw==
-X-Google-Smtp-Source: ABdhPJwkZpmQZMj24miJa4rIAkZ9zDJCidU+xH/RIv5ZF56eOWbqUySS6AbKxsXIgvWROOl6Z6N/1A==
-X-Received: by 2002:a05:600c:198f:b0:380:fa8f:be22 with SMTP id t15-20020a05600c198f00b00380fa8fbe22mr14268130wmq.43.1646077252461;
-        Mon, 28 Feb 2022 11:40:52 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id v25-20020a05600c215900b0038117f41728sm274143wml.43.2022.02.28.11.40.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 11:40:52 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     heiko@sntech.de, herbert@gondor.apana.org.au,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH 12/16] ARM: dts: rk3288: crypto do not need dma clock
-Date:   Mon, 28 Feb 2022 19:40:33 +0000
-Message-Id: <20220228194037.1600509-13-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220228194037.1600509-1-clabbe@baylibre.com>
-References: <20220228194037.1600509-1-clabbe@baylibre.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646077690; x=1677613690;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=MInk9txStQDqT+0IPo/C/sjXdjYc5+CFroTNrH0V6BI=;
+  b=ydzR1TwaaQIqaXTEGN6WpLmf5rX9s1q5hmlw0p1An+DzJ+7l3Y4dlRdM
+   Mta1h7lB0Kutkk/0WbiZvHINgzser+AbcoadE6rAovWG2L9C9oNhzbL/p
+   V0iEZxATR0RWDSXa2e8ITW8dJMElHbcN2YfBX2Z9+sNmI6Dz/ZOdnhM/p
+   c=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 28 Feb 2022 11:31:03 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 11:31:03 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 28 Feb 2022 11:31:02 -0800
+Received: from [10.216.31.79] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Mon, 28 Feb
+ 2022 11:30:59 -0800
+Message-ID: <323c2a02-2552-ac49-8557-2a6da82b29ed@quicinc.com>
+Date:   Tue, 1 Mar 2022 01:00:56 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 4/5] irqchip/qcom-pdc: Fix broken locking
+To:     Marc Zyngier <maz@kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        <linux-arm-msm@vger.kernel.org>
+References: <20220224101226.88373-1-maz@kernel.org>
+ <20220224101226.88373-5-maz@kernel.org>
+From:   "Maulik Shah (mkshah)" <quic_mkshah@quicinc.com>
+In-Reply-To: <20220224101226.88373-5-maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DMA clock is already enabled by DMA and so crypto does not need to
-handle it.
+Hi,
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
----
- arch/arm/boot/dts/rk3288.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 2/24/2022 3:42 PM, Marc Zyngier wrote:
+> pdc_enable_intr() serves as a primitive to qcom_pdc_gic_{en,dis}able,
+> and has a raw spinlock for mutual exclusion, which is uses with
+> interruptible primitives.
+>
+> This means that this critical section can itself be interrupted.
+> Should the interrupt also be a PDC interrupt, and the endpoint driver
+> perform an irq_disable() on that interrupt, we end-up in a deadlock.
+>
+> Fix this by using the irqsave/irqrestore variants of the locking
+> primitives.
+>
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
+Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
 
-diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
-index 26b9bbe310af..64be7d4a2d39 100644
---- a/arch/arm/boot/dts/rk3288.dtsi
-+++ b/arch/arm/boot/dts/rk3288.dtsi
-@@ -976,8 +976,8 @@ crypto: crypto@ff8a0000 {
- 		reg = <0x0 0xff8a0000 0x0 0x4000>;
- 		interrupts = <GIC_SPI 48 IRQ_TYPE_LEVEL_HIGH>;
- 		clocks = <&cru ACLK_CRYPTO>, <&cru HCLK_CRYPTO>,
--			 <&cru SCLK_CRYPTO>, <&cru ACLK_DMAC1>;
--		clock-names = "aclk", "hclk", "sclk", "apb_pclk";
-+			 <&cru SCLK_CRYPTO>;
-+		clock-names = "aclk", "hclk", "sclk";
- 		resets = <&cru SRST_CRYPTO>;
- 		reset-names = "crypto-rst";
- 	};
--- 
-2.34.1
-
+Thanks,
+Maulik
+> ---
+>   drivers/irqchip/qcom-pdc.c | 5 +++--
+>   1 file changed, 3 insertions(+), 2 deletions(-)
+>
+>
