@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B8D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231208AbiB1RwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:52:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
+        id S238947AbiB1RwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:52:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240032AbiB1RpA (ORCPT
+        with ESMTP id S238502AbiB1Rpd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:45:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04F73205B;
-        Mon, 28 Feb 2022 09:37:37 -0800 (PST)
+        Mon, 28 Feb 2022 12:45:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A68A4BBAE;
+        Mon, 28 Feb 2022 09:37:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 808B8B815BA;
-        Mon, 28 Feb 2022 17:37:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AADC8C340E7;
-        Mon, 28 Feb 2022 17:37:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A11A61542;
+        Mon, 28 Feb 2022 17:37:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2431FC36AF5;
+        Mon, 28 Feb 2022 17:37:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069856;
-        bh=P9+8LyoE7wfKYtVa8BQKxcGYP08SrbQhU1GkxwKfPiQ=;
+        s=korg; t=1646069872;
+        bh=Lx0IS8Gmlt0ON9JS9/mUQFsYYSB2G4HV4Wd3sTPvW9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ouqpCh6Ax4pSSRx1sdaeBbj1DzDBTQEw1XQgrEMD1ykP20g68CeC+hrVYRO0T+o+u
-         bKJ7cJ71FT7oh3sdORXxRpsBOi44tjBrQ4cmGHOzWIispPwKOpR3AUZkjaCo8FlydM
-         5CCF2rSN8Rj5hlwwgxujj42o2qcs83jEw3ETKFzc=
+        b=Bwj+ObP4BaX4+eUeFeUw7cxdk9Uf+vKENq4elmQ8lq8bNE0J4rd32mS4AUHNf9qkI
+         6GALJNDNEZWg4ByAqiUGstlGFHsotudPK0zeKDouIZdzjAAr53JeYdSbysuryaAG9v
+         m6avz5HnstP1pSqdkBCj8jo+qha/qvF1TFf1fbis=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexei Budankov <abudankov@huawei.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.15 036/139] perf data: Fix double free in perf_session__delete()
-Date:   Mon, 28 Feb 2022 18:23:30 +0100
-Message-Id: <20220228172351.564181974@linuxfoundation.org>
+        stable@vger.kernel.org, Manish Chopra <manishc@marvell.com>,
+        Alok Prasad <palok@marvell.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 041/139] bnx2x: fix driver load from initrd
+Date:   Mon, 28 Feb 2022 18:23:35 +0100
+Message-Id: <20220228172352.042622104@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -58,58 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+From: Manish Chopra <manishc@marvell.com>
 
-commit 69560e366fc4d5fca7bebb0e44edbfafc8bcaf05 upstream.
+commit e13ad1443684f7afaff24cf207e85e97885256bd upstream.
 
-When perf_data__create_dir() fails, it calls close_dir(), but
-perf_session__delete() also calls close_dir() and since dir.version and
-dir.nr were initialized by perf_data__create_dir(), a double free occurs.
+Commit b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0") added
+new firmware support in the driver with maintaining older firmware
+compatibility. However, older firmware was not added in MODULE_FIRMWARE()
+which caused missing firmware files in initrd image leading to driver load
+failure from initrd. This patch adds MODULE_FIRMWARE() for older firmware
+version to have firmware files included in initrd.
 
-This patch moves the initialization of dir.version and dir.nr after
-successful initialization of dir.files, that prevents double freeing.
-This behavior is already implemented in perf_data__open_dir().
-
-Fixes: 145520631130bd64 ("perf data: Add perf_data__(create_dir|close_dir) functions")
-Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Antonov <alexander.antonov@linux.intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexei Budankov <abudankov@huawei.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220218152341.5197-2-alexey.v.bayduraev@linux.intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215627
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Alok Prasad <palok@marvell.com>
+Signed-off-by: Ariel Elior <aelior@marvell.com>
+Link: https://lore.kernel.org/r/20220223085720.12021-1-manishc@marvell.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/data.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/tools/perf/util/data.c
-+++ b/tools/perf/util/data.c
-@@ -44,10 +44,6 @@ int perf_data__create_dir(struct perf_da
- 	if (!files)
- 		return -ENOMEM;
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
+@@ -100,6 +100,9 @@ MODULE_LICENSE("GPL");
+ MODULE_FIRMWARE(FW_FILE_NAME_E1);
+ MODULE_FIRMWARE(FW_FILE_NAME_E1H);
+ MODULE_FIRMWARE(FW_FILE_NAME_E2);
++MODULE_FIRMWARE(FW_FILE_NAME_E1_V15);
++MODULE_FIRMWARE(FW_FILE_NAME_E1H_V15);
++MODULE_FIRMWARE(FW_FILE_NAME_E2_V15);
  
--	data->dir.version = PERF_DIR_VERSION;
--	data->dir.files   = files;
--	data->dir.nr      = nr;
--
- 	for (i = 0; i < nr; i++) {
- 		struct perf_data_file *file = &files[i];
- 
-@@ -62,6 +58,9 @@ int perf_data__create_dir(struct perf_da
- 		file->fd = ret;
- 	}
- 
-+	data->dir.version = PERF_DIR_VERSION;
-+	data->dir.files   = files;
-+	data->dir.nr      = nr;
- 	return 0;
- 
- out_err:
+ int bnx2x_num_queues;
+ module_param_named(num_queues, bnx2x_num_queues, int, 0444);
 
 
