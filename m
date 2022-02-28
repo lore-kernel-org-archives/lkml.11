@@ -2,52 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9757CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD22C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238650AbiB1Rri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:47:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
+        id S238784AbiB1Rrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:47:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239412AbiB1RoI (ORCPT
+        with ESMTP id S239462AbiB1RoM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:44:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 450FB9D0F4;
-        Mon, 28 Feb 2022 09:36:20 -0800 (PST)
+        Mon, 28 Feb 2022 12:44:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 886DB9D4ED;
+        Mon, 28 Feb 2022 09:36:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85B65614CC;
-        Mon, 28 Feb 2022 17:36:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E666C340F4;
-        Mon, 28 Feb 2022 17:36:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22A01614C9;
+        Mon, 28 Feb 2022 17:36:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3970BC340FB;
+        Mon, 28 Feb 2022 17:36:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069779;
-        bh=X9Sr+rdd3b35f9HJB8DUKe1EYqkMTwI/FJ63jaiHMT0=;
+        s=korg; t=1646069784;
+        bh=B67488vlLg8wvpE4eeP01HLsZ1yBWp4dAWwWJBaCMPM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MlgezriOp73C5zpIO9FqTzurqrYGZ0x7A3oRueHaiAXTMGWWE+V4oPX6oX5KzzTT1
-         Nx5Z45nzMiDoPRDKlnLGnFpQ5n0WvvycawNSd8b27X/y7kGITLltsINLiH82DB/l/K
-         fH6bjiVOWcZ0n2rJ9Bq4cmCB1T/RIe/g79lEInJQ=
+        b=qHvtsqAOe0b8Yzie5EvE72lXXl9TjO2Sx1gzkRljp65ryrf1wx5dveA55P2CBZ9ih
+         0QoEh8JuEQ8JyOI+FXZav6EHrjPssYNoxHns79JX1Ev9acrWAK8v1eCdqrRDFG7/PI
+         1MQzex9YTR969wMRvkeOvAnNn3/+sSQdyc4LILZU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org,
-        "stable@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kirill.shutemov@linux.intel.com, Song Liu" 
-        <songliubraving@fb.com>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Adam Majer <amajer@suse.com>, Dirk Mueller <dmueller@suse.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 001/139] mm/filemap: Fix handling of THPs in generic_file_buffered_read()
-Date:   Mon, 28 Feb 2022 18:22:55 +0100
-Message-Id: <20220228172347.742815203@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        "Masami Ichikawa(CIP)" <masami.ichikawa@cybertrust.co.jp>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.15 003/139] cgroup-v1: Correct privileges check in release_agent writes
+Date:   Mon, 28 Feb 2022 18:22:57 +0100
+Message-Id: <20220228172347.935048104@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -55,52 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+From: Michal Koutný <mkoutny@suse.com>
 
-When a THP is present in the page cache, we can return it several times,
-leading to userspace seeing the same data repeatedly if doing a read()
-that crosses a 64-page boundary.  This is probably not a security issue
-(since the data all comes from the same file), but it can be interpreted
-as a transient data corruption issue.  Fortunately, it is very rare as
-it can only occur when CONFIG_READ_ONLY_THP_FOR_FS is enabled, and it can
-only happen to executables.  We don't often call read() on executables.
+commit 467a726b754f474936980da793b4ff2ec3e382a7 upstream.
 
-This bug is fixed differently in v5.17 by commit 6b24ca4a1a8d
-("mm: Use multi-index entries in the page cache").  That commit is
-unsuitable for backporting, so fix this in the clearest way.  It
-sacrifices a little performance for clarity, but this should never
-be a performance path in these kernel versions.
+The idea is to check: a) the owning user_ns of cgroup_ns, b)
+capabilities in init_user_ns.
 
-Fixes: cbd59c48ae2b ("mm/filemap: use head pages in generic_file_buffered_read")
-Cc: stable@vger.kernel.org # v5.15, v5.16
-Link: https://lore.kernel.org/r/df3b5d1c-a36b-2c73-3e27-99e74983de3a@suse.cz/
-Analyzed-by: Adam Majer <amajer@suse.com>
-Analyzed-by: Dirk Mueller <dmueller@suse.com>
-Bisected-by: Takashi Iwai <tiwai@suse.de>
-Reported-by: Vlastimil Babka <vbabka@suse.cz>
-Tested-by: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+The commit 24f600856418 ("cgroup-v1: Require capabilities to set
+release_agent") got this wrong in the write handler of release_agent
+since it checked user_ns of the opener (may be different from the owning
+user_ns of cgroup_ns).
+Secondly, to avoid possibly confused deputy, the capability of the
+opener must be checked.
+
+Fixes: 24f600856418 ("cgroup-v1: Require capabilities to set release_agent")
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/stable/20220216121142.GB30035@blackbody.suse.cz/
+Signed-off-by: Michal Koutný <mkoutny@suse.com>
+Reviewed-by: Masami Ichikawa(CIP) <masami.ichikawa@cybertrust.co.jp>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/filemap.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ kernel/cgroup/cgroup-v1.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2354,8 +2354,12 @@ static void filemap_get_read_batch(struc
- 			break;
- 		if (PageReadahead(head))
- 			break;
--		xas.xa_index = head->index + thp_nr_pages(head) - 1;
--		xas.xa_offset = (xas.xa_index >> xas.xa_shift) & XA_CHUNK_MASK;
-+		if (PageHead(head)) {
-+			xas_set(&xas, head->index + thp_nr_pages(head));
-+			/* Handle wrap correctly */
-+			if (xas.xa_index - 1 >= max)
-+				break;
-+		}
- 		continue;
- put_page:
- 		put_page(head);
+--- a/kernel/cgroup/cgroup-v1.c
++++ b/kernel/cgroup/cgroup-v1.c
+@@ -549,6 +549,7 @@ static ssize_t cgroup_release_agent_writ
+ 					  char *buf, size_t nbytes, loff_t off)
+ {
+ 	struct cgroup *cgrp;
++	struct cgroup_file_ctx *ctx;
+ 
+ 	BUILD_BUG_ON(sizeof(cgrp->root->release_agent_path) < PATH_MAX);
+ 
+@@ -556,8 +557,9 @@ static ssize_t cgroup_release_agent_writ
+ 	 * Release agent gets called with all capabilities,
+ 	 * require capabilities to set release agent.
+ 	 */
+-	if ((of->file->f_cred->user_ns != &init_user_ns) ||
+-	    !capable(CAP_SYS_ADMIN))
++	ctx = of->priv;
++	if ((ctx->ns->user_ns != &init_user_ns) ||
++	    !file_ns_capable(of->file, &init_user_ns, CAP_SYS_ADMIN))
+ 		return -EPERM;
+ 
+ 	cgrp = cgroup_kn_lock_live(of->kn, false);
 
 
