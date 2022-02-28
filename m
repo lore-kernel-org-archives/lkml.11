@@ -2,145 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB92C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237183AbiB1PbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 10:31:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
+        id S237349AbiB1PcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 10:32:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236106AbiB1PbJ (ORCPT
+        with ESMTP id S237200AbiB1PcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 10:31:09 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71587EB04
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:30:29 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id j5so10257588ila.2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:30:29 -0800 (PST)
+        Mon, 28 Feb 2022 10:32:11 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8705982D11
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:31:31 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id y5so5926228wmi.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:31:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
+        d=conchuod-ie.20210112.gappssmtp.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7xuq/jHgOUriIm1O/BV7S1L7sNlV9+5iBX6aT2AWV0s=;
-        b=Ckmgyi0L1ORPLOIs0I59pJKj3U54sFM9eXt7zVW3L8Zz3vVWcUMuDhm4H5a0vH4P0r
-         dMwwxS0/KGseXwyf0kqph5aogznMPR27U5WJtAkF1tTLkwgui7KkoFSBuNke67NYvHBn
-         zo4bt5FdK9LoYJx8RqwfwmVSextkRSxiTUfjgQUMI9y2NzVE8v6DcZBQfMygp4HF3c3/
-         K5PTTu5KC2uqpcwucSwCDYMzKUpA6YfJVXHgHqiEmkBagcqLNDZvufFiD6k4WPgOiNkq
-         vJu3UipP5TDqjLSQGIhc0SdYb16UTannauH9vGQH08ptV/XB1MlfgAQrD7j0WeyrBVEg
-         SBBw==
+        bh=2gH1VCXMJOCAQZMMdwA8NKZMdwDagt75ou8aHbyIUz0=;
+        b=ut095mw9H1t6WgZsq59Kx6N6Whm5l58tD/csnQyzg3sRwVkNtPbOH2gIYZjAuTVxAC
+         Ce2d7THpNHlx6j19dQe43RctF+aIsxdP0i5oSb2/LWutEn86m1FUcLDgyQX2BjStHyMB
+         EIP+HSGqPNF1ba/Ro8mPiVGGLedsrF4z9I0vpxLZRLk35Kr4RD6ckAxQG1AAUK81KCmS
+         sBua87VSFTbs7gPuCbUSj/jLl/KeTqu/ugVmvnni49k1SqL8FeOi84ucN/MvOplUnBQl
+         ag9y6SNSGeacwbh9fKaddv5Rzrriyli1zWir8LaDgeJu8MS9pNVvVTYLOW25huWzgyyj
+         Tvrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=7xuq/jHgOUriIm1O/BV7S1L7sNlV9+5iBX6aT2AWV0s=;
-        b=QoCMhVD5Z7ElOenoGdXhlZRwBHVbaiLsEqacDVfd1vZJH+MGQCpjoj9QOlvxD5iONA
-         sFL0LEqMRps6oE6fiqi9yYrd5FZajY1pJBFiFDADbENO8ZLJIY0SHAYJllHi7HHrg6OY
-         STgbC924J8etcsA2asBxWAVObOcYAFSS9rpmlARxQgaCDk4S2hy6bz+twrQ53lodbAy7
-         IoV3I0VUZkc8XP1/dpGQUJ8zdY7SY6QxvpzyUZnG8pjNddFDc09ReOLw3cyKuXQmbbGe
-         Zfo0bQe4qBzILqO5wBg4QCHFMyvuT4zD7+Et6HnL94FgMQXXV1lkohOtTJqBnToywkOb
-         8Iqg==
-X-Gm-Message-State: AOAM531DrtZEWK8IFqP7dnBKHpAiR1fmBEVLs321SWHxdaDa56DrFFky
-        AvtzGRcmSIewMi1FWCa4KJ3fdw==
-X-Google-Smtp-Source: ABdhPJzwxFhKVHGQFdEn09+VOKy0nPF9+3HOs0WuXGTDKn+rgLpe2qPij7SospjNJcbvkVBrxkUuow==
-X-Received: by 2002:a05:6e02:1587:b0:2c2:5c48:a695 with SMTP id m7-20020a056e02158700b002c25c48a695mr19306744ilu.169.1646062229191;
-        Mon, 28 Feb 2022 07:30:29 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id u17-20020a056e02111100b002c2a943034esm5952850ilk.5.2022.02.28.07.30.27
+        bh=2gH1VCXMJOCAQZMMdwA8NKZMdwDagt75ou8aHbyIUz0=;
+        b=fCMwxEERNUVj19x3kNLyvn3TbEoaRfBkUOoafJhLN5YEcmJgFz0bYfeFiyXNCVfHZC
+         Tn8CmncDgSI/rXL/GgBweS3thPiCi2b3ud+zVXq4KhkMyE+6xKoMatRPJZWMQTqxn4Oc
+         B0LZqe8TOyz02/w7Toa9HTFK8ueojSABoi1+zoL8I5Md1Ss2XdWZcFKTLg/51BdX8XPN
+         8VMELQ3yAC+nlYjR1A41Ef58CZibYjKx2Inv4q/gBnkUwMfB4GE765qgPdU6ZUWeWo5C
+         HFNx8a+jfA89NG8OUsupLVYwn6yQ4Chpkr4Ucks53n+J7EdC6CgkRIwrZX8/e8a0q6JR
+         5Ylw==
+X-Gm-Message-State: AOAM531AxRKTdZ5thLc+n9a8ppaZz0Yov4PPSsVYlDkQDRC+ZdIrZHvG
+        1GSbpOHKKodg//w+xAlPY0HmGQ==
+X-Google-Smtp-Source: ABdhPJwZs3W4atkmlIldxtmVDitUoNs7+KJXCw3zlG03aFYebo+mCuYCi1jBc6bDQT5J1LiMod30iQ==
+X-Received: by 2002:a1c:f705:0:b0:37d:f2e5:d8ec with SMTP id v5-20020a1cf705000000b0037df2e5d8ecmr13878273wmh.21.1646062290040;
+        Mon, 28 Feb 2022 07:31:30 -0800 (PST)
+Received: from [10.205.160.53] ([95.83.233.50])
+        by smtp.gmail.com with ESMTPSA id j6-20020a05600c190600b0037c3659a12fsm18783669wmq.6.2022.02.28.07.31.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 07:30:28 -0800 (PST)
-Message-ID: <6fc89860-9eea-630c-f193-272bf436ad81@linaro.org>
-Date:   Mon, 28 Feb 2022 09:30:26 -0600
+        Mon, 28 Feb 2022 07:31:29 -0800 (PST)
+Message-ID: <b8eb2e55-b5a8-4a39-86cb-93cadbd67922@conchuod.ie>
+Date:   Mon, 28 Feb 2022 15:35:03 +0000
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v4 01/27] bus: mhi: Fix pm_state conversion to string
+Subject: Re: [PATCH] SoC: polarfire: fix build warning
 Content-Language: en-US
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        quic_vbadigan@quicinc.com, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Paul Davey <paul.davey@alliedtelesis.co.nz>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Hemant Kumar <hemantk@codeaurora.org>, stable@vger.kernel.org
-References: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
- <20220228124344.77359-2-manivannan.sadhasivam@linaro.org>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <20220228124344.77359-2-manivannan.sadhasivam@linaro.org>
+To:     Arnd Bergmann <arnd@kernel.org>,
+        Lewis Hanly <lewis.hanly@microchip.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Conor Dooley <conor.dooley@microchip.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, kernel test robot <lkp@intel.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+References: <20220228152658.3367506-1-arnd@kernel.org>
+From:   Conor Dooley <mail@conchuod.ie>
+In-Reply-To: <20220228152658.3367506-1-arnd@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/28/22 6:43 AM, Manivannan Sadhasivam wrote:
-> From: Paul Davey <paul.davey@alliedtelesis.co.nz>
-> 
-> On big endian architectures the mhi debugfs files which report pm state
-> give "Invalid State" for all states.  This is caused by using
-> find_last_bit which takes an unsigned long* while the state is passed in
-> as an enum mhi_pm_state which will be of int size.
-> 
-> Fix by using __fls to pass the value of state instead of find_last_bit.
-> 
-> Also the current API expects "mhi_pm_state" enumerator as the function
-> argument but the function only works with bitmasks. So as Alex suggested,
-> let's change the argument to u32 to avoid confusion.
+I had sent a fix for the build warning on saturday morning - but I guess 
+you missed it.
 
-(Grumble grumble too much static data in header file.)
+Thanks for fixing it anyway :)
+Conor.
 
-Reviewed-by: Alex Elder <elder@linaro.org>
-
-> Fixes: a6e2e3522f29 ("bus: mhi: core: Add support for PM state transitions")
-> Signed-off-by: Paul Davey <paul.davey@alliedtelesis.co.nz>
-> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-> Reviewed-by: Hemant Kumar <hemantk@codeaurora.org>
-> Cc: stable@vger.kernel.org
-> [mani: changed the function argument to u32]
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+On 28/02/2022 15:26, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The newly added driver causes a build warning because of a missing
+> prototype:
+> 
+> drivers/soc/microchip/mpfs-sys-controller.c:76:6: warning: no previous prototype for function 'mpfs_sys_controller_put' [-Wmissing-prototypes]
+> 
+> Link: https://lore.kernel.org/llvm/202202260947.F5T1YNao-lkp@intel.com/
+> Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: d0054a470c33 ("soc: add microchip polarfire soc system controller")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->   drivers/bus/mhi/core/init.c     | 10 ++++++----
->   drivers/bus/mhi/core/internal.h |  2 +-
->   2 files changed, 7 insertions(+), 5 deletions(-)
+> I've applied this to the arm/drivers branch as a fixup
 > 
-> diff --git a/drivers/bus/mhi/core/init.c b/drivers/bus/mhi/core/init.c
-> index 046f407dc5d6..09394a1c29ec 100644
-> --- a/drivers/bus/mhi/core/init.c
-> +++ b/drivers/bus/mhi/core/init.c
-> @@ -77,12 +77,14 @@ static const char * const mhi_pm_state_str[] = {
->   	[MHI_PM_STATE_LD_ERR_FATAL_DETECT] = "Linkdown or Error Fatal Detect",
->   };
+>   include/soc/microchip/mpfs.h | 2 ++
+>   1 file changed, 2 insertions(+)
+> 
+> diff --git a/include/soc/microchip/mpfs.h b/include/soc/microchip/mpfs.h
+> index 6466515262bd..969b5239521e 100644
+> --- a/include/soc/microchip/mpfs.h
+> +++ b/include/soc/microchip/mpfs.h
+> @@ -38,6 +38,8 @@ int mpfs_blocking_transaction(struct mpfs_sys_controller *mpfs_client, struct mp
 >   
-> -const char *to_mhi_pm_state_str(enum mhi_pm_state state)
-> +const char *to_mhi_pm_state_str(u32 state)
->   {
-> -	unsigned long pm_state = state;
-> -	int index = find_last_bit(&pm_state, 32);
-> +	int index;
+>   struct mpfs_sys_controller *mpfs_sys_controller_get(struct device *dev);
 >   
-> -	if (index >= ARRAY_SIZE(mhi_pm_state_str))
-> +	if (state)
-> +		index = __fls(state);
+> +void mpfs_sys_controller_put(void *data);
 > +
-> +	if (!state || index >= ARRAY_SIZE(mhi_pm_state_str))
->   		return "Invalid State";
+>   #endif /* if IS_ENABLED(CONFIG_POLARFIRE_SOC_SYS_CTRL) */
 >   
->   	return mhi_pm_state_str[index];
-> diff --git a/drivers/bus/mhi/core/internal.h b/drivers/bus/mhi/core/internal.h
-> index e2e10474a9d9..3508cbbf555d 100644
-> --- a/drivers/bus/mhi/core/internal.h
-> +++ b/drivers/bus/mhi/core/internal.h
-> @@ -622,7 +622,7 @@ void mhi_free_bhie_table(struct mhi_controller *mhi_cntrl,
->   enum mhi_pm_state __must_check mhi_tryset_pm_state(
->   					struct mhi_controller *mhi_cntrl,
->   					enum mhi_pm_state state);
-> -const char *to_mhi_pm_state_str(enum mhi_pm_state state);
-> +const char *to_mhi_pm_state_str(u32 state);
->   int mhi_queue_state_transition(struct mhi_controller *mhi_cntrl,
->   			       enum dev_st_transition state);
->   void mhi_pm_st_worker(struct work_struct *work);
-
+>   #endif /* __SOC_MPFS_H__ */
