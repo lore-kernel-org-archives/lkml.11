@@ -2,142 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 971DCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:30:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 224A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:32:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232524AbiB1CbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:31:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52628 "EHLO
+        id S229519AbiB1Cd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 21:33:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiB1CbT (ORCPT
+        with ESMTP id S231653AbiB1Cd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 21:31:19 -0500
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2130.outbound.protection.outlook.com [40.107.215.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76EF5C64C;
-        Sun, 27 Feb 2022 18:30:41 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LzJYiONssilTCdYIIcQyIFSiXxiilmEuA1QtTtM82DjkfEC0RE3GfvISydwtlbNVFc4oxfvpnCxAV4XDoNWaya06X05b2/nabFB5tWjr+eOLh0KJBM6lmSHIoeuKiOdCcXqoyaMLaIvXMJxzsY+oHUzFiFS8txYzxd5uqkN35cTFs4bMKQLr/+BKxEDx0sL9g9flCtmpGENlNJy7Ip2B0OkYhGjhzrzr8s0yQvak2GO4poEOZwpPhCBRMSL3jQkCNgQCcsBVPbtiPl/RESPvLZW37viQsnRtIr2UGGySd8SywknHlRQpFyF8H7eaSm3UaRoGqrYnHeIcoBsUoUo9cA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tKv0U6Acy0aI46kXOkHsZfrVXxABM8qkyTHVkvKkjpA=;
- b=a7yEQi5vEjAxnkscVkYMtK/AwoYZ5JbLX9AqwwjaVr1n8WF9k2Mrw00INyKUZOe5psOPiuIkqTlFxwsn7e8F8PnxI3jsnWdEF9bQ2tCdS9gzsjRkvqldoB3J81vtAuyRyzPCmRQqpEVCaq76U/gJsDgo5iIedLVEk5V5HB9vnQ+Qf1mpzUoCzfy9+4/tJbIDjvM288sI8wYnw1te0cb/WWIej87lj2I/tuYOgg1ANGUBOvdoa7Av2KMUKD9a4PcnSSRRfBy0alTLuIA/Pccgptn6kQwZ2a0JiqN5gPmPvElLbPhx5sQybK+qKBAj2MWVXW04krBrUFOQeLsuhA4q/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tKv0U6Acy0aI46kXOkHsZfrVXxABM8qkyTHVkvKkjpA=;
- b=OJ1Yy5D2D3JDoErH+joeO0qriywkPdxiFYrnvNO1rOap/i3KCkzNbYxPl8Urz7g0ozd8ay469vWca7V5ZF3V7VMVi8ac544ARAH7ayPzNrMseUkpsEnDAPDJSwbZEte3pi59Ru5Md745auCksCcnYHgYWDaisZ9PvJ0stJYjE4E=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
- PSAPR06MB4007.apcprd06.prod.outlook.com (2603:1096:301:3d::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5017.24; Mon, 28 Feb 2022 02:30:37 +0000
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::9d3f:ff3b:1948:d732]) by SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::9d3f:ff3b:1948:d732%4]) with mapi id 15.20.5017.026; Mon, 28 Feb 2022
- 02:30:36 +0000
-From:   Wan Jiabing <wanjiabing@vivo.com>
-To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     jiabing.wan@qq.com, Wan Jiabing <wanjiabing@vivo.com>
-Subject: [PATCH] docs: fix 'make htmldocs' error in vgaarbiter.rst
-Date:   Mon, 28 Feb 2022 10:30:02 +0800
-Message-Id: <20220228023003.1653402-1-wanjiabing@vivo.com>
-X-Mailer: git-send-email 2.35.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR06CA0239.apcprd06.prod.outlook.com
- (2603:1096:4:ac::23) To SG2PR06MB3367.apcprd06.prod.outlook.com
- (2603:1096:4:78::19)
+        Sun, 27 Feb 2022 21:33:26 -0500
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCA538DB3;
+        Sun, 27 Feb 2022 18:32:46 -0800 (PST)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K6PTN3yk6z9sMq;
+        Mon, 28 Feb 2022 10:29:12 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
+ (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 28 Feb
+ 2022 10:32:43 +0800
+From:   Ye Bin <yebin10@huawei.com>
+To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
+        <linux-ext4@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
+        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
+Subject: [PATCH v3] ext4:fix file system corrupted when rmdir non empty directory with IO error
+Date:   Mon, 28 Feb 2022 10:48:15 +0800
+Message-ID: <20220228024815.3952506-1-yebin10@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4b21057c-585a-431a-236a-08d9fa624ce3
-X-MS-TrafficTypeDiagnostic: PSAPR06MB4007:EE_
-X-Microsoft-Antispam-PRVS: <PSAPR06MB4007894BF1E93C4AE5A8C0D0AB019@PSAPR06MB4007.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: g/HAw0HeoLtYuLIiZZpUlgdUWmggmRc9jYrZ1x3ocvZ0sYFUBI5HRqta0rwhPdhiKosmBL5Yojy6TJV0lNL7HOLBjHJDMrryMUrBXXIqcKajm9+EdQW0GtzAE4pnpk1Gl0uWOil5IAAuzc9Xtn5yn9CkFBCQDCs2d9eg+ftHfMaoHciBDZfn5rienlol0sJjTBRI4Gl1eOzjitalM98bXY/M8BYPFfYvVQXRI5vFfPaY2iKuIbqHXjW2ckPhRPkU3mJxQNwsnFkKQyR/rl0A0ThVS10gdo4fJiXqXQtevtgBKaliyY5DEOJqDt0SnnJJ/ZzXYt8ThcN2BjXBhdmx2wAU/YQfjgbaqAPyLUcBU1I87GI5fbdDI9RrUAlWVJYLx0zDPGQDTpNjBTmooES24xwqiEc+1CKokgL3+dPcSo/ies7hIyMLUSZwgCbaDDjnKGfwYuFGsfClzLo3kOb85Bk09mg6Vqi3ihHYzI3vSYU3PKJ2Kv2GBDsJszXFihB7R7eVTbcY8wnlf6GKdXKlqxzW/oCtIw1nOfLUYAiX0CaZ6/AKIdgxxJe8mtpSevhNKno1A55aBrKGO635ITNvN+KyiEnXfLqhsHEetkggX4ckl3X1AE6vDjSRIA7IIw/zKcO737JxtdJ/P9TvHW6M0zqxVgNqng/ikBOgb7l+7nOHojueuOqRcRiFvZGjMuo063MUAzvKXZsaCTxWWGhUSw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(921005)(6486002)(66556008)(110136005)(83380400001)(66476007)(2616005)(26005)(1076003)(36756003)(186003)(86362001)(5660300002)(107886003)(66946007)(316002)(38100700002)(52116002)(38350700002)(6506007)(8676002)(4326008)(6512007)(8936002)(6666004)(2906002)(4744005)(7416002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4+hzXsqKDOWTw1vO2aGoZphkHoI9Q3dhO2Wat08U1UOis5JeZOxoQzSy2mIO?=
- =?us-ascii?Q?MTxXtDau3GDW82hAvaY/3iHMIMod7ufnEgWupAZ0ZD8+EtDMfBlUhCa5cuP7?=
- =?us-ascii?Q?lOjXMAeXC4AihNsUdxZGK3MKtX615EKT+80J6fRG0XrvR0yDpn1KqXIc4sWz?=
- =?us-ascii?Q?hAwZZViD527T64U6ubyypjTy4HkRoXSordzoyUD3cobxyQvznU9H6ZJI8mvv?=
- =?us-ascii?Q?mxaBN83fNyZ3mMizoWvr9Ia/XBaybEDodxdwxWCPUHj9XruXlO/5l1FVRTDX?=
- =?us-ascii?Q?yq4K7GoMA8BaHisZNyuRHkg7QQXTixHAcKIdCzSactozdlRWvRLdArmJhSr0?=
- =?us-ascii?Q?E1MW34umVTHwHMWYIq0pgymNvkJmF5AW1c29oLDll+700wnsuy5IPYu+42Mr?=
- =?us-ascii?Q?2xO6rhQRK0hMA42BQmiaWwV9WMtAkVt/P++yqAfYgaMqQgNWgeZcA8mf12bu?=
- =?us-ascii?Q?g1ahvNEZ3Gj/XweCFoFzowYGOPlfJFgDChFHBOL/qruWBGKFld27wkrfYMqD?=
- =?us-ascii?Q?y+TfWE2Muo0AwmEcxhECYfyZh54d4D415Gc+6fFErEhnxj1N3J9mCVkOxjfX?=
- =?us-ascii?Q?QEKFaPbVLT6VAsy4wOgoBF2wTNjZ51yBUgd1t9koEC85hGgp48bdgpWDus6y?=
- =?us-ascii?Q?Wf3UDOCPw211qnoLiLf2no1c48Qk8feyEpctFiTWEnt5ZtSNgbWIcwRT7fek?=
- =?us-ascii?Q?j9lpj9vvZUZX1vkmIkdQ0xH//Obv50lCPWpcxq3xnqHZ10eyTr81uLcpIDuO?=
- =?us-ascii?Q?gH2Un7lEptF+8cyD0G96xyHqDXb6cjd+OAXpGwPq6eE6D6t6Ff9zT3Zw0C8y?=
- =?us-ascii?Q?2qjLomknvj+L+Ds9PlloDqco1jtamze3yntDyud/UTHs2sYKdM3tgm6qajk8?=
- =?us-ascii?Q?hn2xFWlQmdU1dGp2g7hQBchAVWLuJBS/zjnWh8hllHZ2Y28P9mS5BEBd+cN+?=
- =?us-ascii?Q?MTLsgUHEL0rNpzGtZ3TF7+G3Fu7LeSvZKXrIcIYbkeihj8T3Erw0CzAIN1qd?=
- =?us-ascii?Q?pAMC/pe2ZijKSjWTv4rzWOxuC9zRwmiSaGTYVfnfdqsAX3U9lYpj5Bfvhm6i?=
- =?us-ascii?Q?Qx57vtPt0QSv5ZAwHPKNo5Nv3IfxXelARI/DJF6R+va9Ur1zPc/Zoz1DTTGF?=
- =?us-ascii?Q?5xfg6/aPZMAyOS2nmyi+lRqRH27oz449wComU8SXSgg7CeccDb+SPkJjNqgW?=
- =?us-ascii?Q?PIED4Xnv+6wEFTGs5AsF7ZXwx1Lakbd7Q9Y39Lb4SLO4ys1Prey8TCHDhNmD?=
- =?us-ascii?Q?/kBWQbZHcPOm6kkK6MbCKKAcLtpjuSjFHb3AH/kCR2W99S8nRtb9aDVVGpdw?=
- =?us-ascii?Q?6stirez7EMiraK3B/EBk9BTCY57JO42tBVX+a5dMS4cMdqfQ5R/XhiL7qmVm?=
- =?us-ascii?Q?OuWSPVx8plHoh8Oa3VEdAFQ3OYC/1fH9UbeAfLhJBg0W41WsFgN1hfZjLVyd?=
- =?us-ascii?Q?wxEKcPhBRlu/Ly1hryEq32kH1UzA388sbMmIvzrN+nJzxQjzFIxm3H9UxfiO?=
- =?us-ascii?Q?BA7kJnGJAqoPEe6vCvAhqk8A4x3HmNM6fLsp5Pzt7BNZ4t295q5dnQeLmLGJ?=
- =?us-ascii?Q?KC6NdZt7HJ4uopFd4Ngew2cojwSCVia488m1HhXERSSQimBiVEQBWAGk+DI7?=
- =?us-ascii?Q?Lx8qvQsZzXdmUUTyEQ1w9NY=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4b21057c-585a-431a-236a-08d9fa624ce3
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2022 02:30:36.0984
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Niz6xBj2MNXXbiPobxKYbkoxwe1vLDzHSqZqtFeiDatqC4fkBAAi5i/WIS4f1P+wt4Q1JZo5OTwXIrsENnNUcA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PSAPR06MB4007
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix following 'make htmldocs' error:
-Error: Cannot open file ./drivers/gpu/vga/vgaarb.c
-Error: Cannot open file ./drivers/gpu/vga/vgaarb.c
-WARNING: kernel-doc './scripts/kernel-doc -rst -enable-lineno -sphinx-version
-2.4.4 -export ./drivers/gpu/vga/vgaarb.c' failed with return code 2
+We inject IO error when rmdir non empty direcory, then got issue as follows:
+step1: mkfs.ext4 -F /dev/sda
+step2: mount /dev/sda  test
+step3: cd test
+step4: mkdir -p 1/2
+step5: rmdir 1
+	[  110.920551] ext4_empty_dir: inject fault
+	[  110.921926] EXT4-fs warning (device sda): ext4_rmdir:3113: inode #12:
+	comm rmdir: empty directory '1' has too many links (3)
+step6: cd ..
+step7: umount test
+step8: fsck.ext4 -f /dev/sda
+	e2fsck 1.42.9 (28-Dec-2013)
+	Pass 1: Checking inodes, blocks, and sizes
+	Pass 2: Checking directory structure
+	Entry '..' in .../??? (13) has deleted/unused inode 12.  Clear<y>? yes
+	Pass 3: Checking directory connectivity
+	Unconnected directory inode 13 (...)
+	Connect to /lost+found<y>? yes
+	Pass 4: Checking reference counts
+	Inode 13 ref count is 3, should be 2.  Fix<y>? yes
+	Pass 5: Checking group summary information
 
-Fixes: d6e1898bfa5b ("PCI/VGA: Move vgaarb to drivers/pci")
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+	/dev/sda: ***** FILE SYSTEM WAS MODIFIED *****
+	/dev/sda: 12/131072 files (0.0% non-contiguous), 26157/524288 blocks
+
+ext4_rmdir
+	if (!ext4_empty_dir(inode))
+		goto end_rmdir;
+ext4_empty_dir
+	bh = ext4_read_dirblock(inode, 0, DIRENT_HTREE);
+	if (IS_ERR(bh))
+		return true;
+Now if read directory block failed, 'ext4_empty_dir' will return true, assume
+directory is empty. Obviously, it will lead to above issue.
+To solve this issue, if read directory block failed 'ext4_empty_dir' just
+return false. To avoid making things worse when file system is already
+corrupted, 'ext4_empty_dir' also return false.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
 ---
- Documentation/gpu/vgaarbiter.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/inline.c |  9 ++++-----
+ fs/ext4/namei.c  | 10 +++++-----
+ 2 files changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/gpu/vgaarbiter.rst b/Documentation/gpu/vgaarbiter.rst
-index 339ed5fecd2e..bde3c0afb059 100644
---- a/Documentation/gpu/vgaarbiter.rst
-+++ b/Documentation/gpu/vgaarbiter.rst
-@@ -100,7 +100,7 @@ In-kernel interface
- .. kernel-doc:: include/linux/vgaarb.h
-    :internal:
+diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
+index e42941803605..9c076262770d 100644
+--- a/fs/ext4/inline.c
++++ b/fs/ext4/inline.c
+@@ -1783,19 +1783,20 @@ bool empty_inline_dir(struct inode *dir, int *has_inline_data)
+ 	void *inline_pos;
+ 	unsigned int offset;
+ 	struct ext4_dir_entry_2 *de;
+-	bool ret = true;
++	bool ret = false;
  
--.. kernel-doc:: drivers/gpu/vga/vgaarb.c
-+.. kernel-doc:: drivers/pci/vgaarb.c
-    :export:
+ 	err = ext4_get_inode_loc(dir, &iloc);
+ 	if (err) {
+ 		EXT4_ERROR_INODE_ERR(dir, -err,
+ 				     "error %d getting inode %lu block",
+ 				     err, dir->i_ino);
+-		return true;
++		return false;
+ 	}
  
- libpciaccess
+ 	down_read(&EXT4_I(dir)->xattr_sem);
+ 	if (!ext4_has_inline_data(dir)) {
+ 		*has_inline_data = 0;
++		ret = true;
+ 		goto out;
+ 	}
+ 
+@@ -1804,7 +1805,6 @@ bool empty_inline_dir(struct inode *dir, int *has_inline_data)
+ 		ext4_warning(dir->i_sb,
+ 			     "bad inline directory (dir #%lu) - no `..'",
+ 			     dir->i_ino);
+-		ret = true;
+ 		goto out;
+ 	}
+ 
+@@ -1823,16 +1823,15 @@ bool empty_inline_dir(struct inode *dir, int *has_inline_data)
+ 				     dir->i_ino, le32_to_cpu(de->inode),
+ 				     le16_to_cpu(de->rec_len), de->name_len,
+ 				     inline_size);
+-			ret = true;
+ 			goto out;
+ 		}
+ 		if (le32_to_cpu(de->inode)) {
+-			ret = false;
+ 			goto out;
+ 		}
+ 		offset += ext4_rec_len_from_disk(de->rec_len, inline_size);
+ 	}
+ 
++	ret = true;
+ out:
+ 	up_read(&EXT4_I(dir)->xattr_sem);
+ 	brelse(iloc.bh);
+diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
+index 8cf0a924a49b..39e223f7bf64 100644
+--- a/fs/ext4/namei.c
++++ b/fs/ext4/namei.c
+@@ -2997,14 +2997,14 @@ bool ext4_empty_dir(struct inode *inode)
+ 	if (inode->i_size < ext4_dir_rec_len(1, NULL) +
+ 					ext4_dir_rec_len(2, NULL)) {
+ 		EXT4_ERROR_INODE(inode, "invalid size");
+-		return true;
++		return false;
+ 	}
+ 	/* The first directory block must not be a hole,
+ 	 * so treat it as DIRENT_HTREE
+ 	 */
+ 	bh = ext4_read_dirblock(inode, 0, DIRENT_HTREE);
+ 	if (IS_ERR(bh))
+-		return true;
++		return false;
+ 
+ 	de = (struct ext4_dir_entry_2 *) bh->b_data;
+ 	if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data, bh->b_size,
+@@ -3012,7 +3012,7 @@ bool ext4_empty_dir(struct inode *inode)
+ 	    le32_to_cpu(de->inode) != inode->i_ino || strcmp(".", de->name)) {
+ 		ext4_warning_inode(inode, "directory missing '.'");
+ 		brelse(bh);
+-		return true;
++		return false;
+ 	}
+ 	offset = ext4_rec_len_from_disk(de->rec_len, sb->s_blocksize);
+ 	de = ext4_next_entry(de, sb->s_blocksize);
+@@ -3021,7 +3021,7 @@ bool ext4_empty_dir(struct inode *inode)
+ 	    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
+ 		ext4_warning_inode(inode, "directory missing '..'");
+ 		brelse(bh);
+-		return true;
++		return false;
+ 	}
+ 	offset += ext4_rec_len_from_disk(de->rec_len, sb->s_blocksize);
+ 	while (offset < inode->i_size) {
+@@ -3035,7 +3035,7 @@ bool ext4_empty_dir(struct inode *inode)
+ 				continue;
+ 			}
+ 			if (IS_ERR(bh))
+-				return true;
++				return false;
+ 		}
+ 		de = (struct ext4_dir_entry_2 *) (bh->b_data +
+ 					(offset & (sb->s_blocksize - 1)));
 -- 
-2.35.1
+2.31.1
 
