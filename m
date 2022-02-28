@@ -2,278 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB941C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:14:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16303C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:15:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235634AbiB1LPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:15:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53160 "EHLO
+        id S234055AbiB1LPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:15:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235600AbiB1LOl (ORCPT
+        with ESMTP id S234895AbiB1LPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:14:41 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9585A7092E;
-        Mon, 28 Feb 2022 03:11:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646046680; x=1677582680;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Cg8xKK7zm1Ts8KpDM6zDiOcGeAYQRj1YbTg/ImUKtNM=;
-  b=BJQsuvRPU34EefSpiC2kTGuvAEXL3SqIFR06zaq7WvWngXTuYpTYEYWe
-   ++XACKjjbHjHdilua43DcowC4mvTaxqUeNbtjYbs0hRbWdKGRvvK9Mz1r
-   GOvN8mMHHB18vwrc/gfBGf12/JBffYznvQPYL/j4b4i6b8LebJgQPtnZm
-   RSnOACAm+2EcXHXELnjJPzawABst5e5SqoZMYLYYjGp0VWr+ZMUB8k0CQ
-   FACoyIi09aoYJyGxBStUZtcosV2i+rYMGwEDuDmIazkAPMdnlfYN9IGcg
-   7pN/ZqDHZ6f0+h5tEkIFEuLv5GxAtvjIGYAnmmHpHMc9iPTHds4zfEqML
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="251692406"
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="251692406"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 03:10:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="507389034"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga002.jf.intel.com with ESMTP; 28 Feb 2022 03:10:01 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Feb 2022 03:10:00 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21 via Frontend Transport; Mon, 28 Feb 2022 03:10:00 -0800
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.105)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Mon, 28 Feb 2022 03:10:00 -0800
+        Mon, 28 Feb 2022 06:15:43 -0500
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2111.outbound.protection.outlook.com [40.107.236.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD0170330;
+        Mon, 28 Feb 2022 03:14:07 -0800 (PST)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B37YG1yW2pM9JTSLvytxOLAkAv5jPxMxyPp6SYwYaKL4WZGQy4m0MspL3ffNOzsK7opbFaYlhYW6ooX44U9bhyu1t4CvsUjenjb74FqR+kFmN5I8sA3PbiuPtgKMAknF8M+LRN5I6ePO+y4Y9feW32McLZOucZXB4liYhWLz8VIqWNzaNc+TqkE9nFf8LZkcJJDm6PoWVr3QCIHEbQ3HDcW/sdsERT/8iiR2ya4fijKpbLIANpdwbJbbERM5sPIs/HOPHBCY/e/cCc4vFa3r8I35ErUge7bxQpNEenMfIYrw3Yip/klw3R3d6UEVbnXyNxr1fIVvGtl3UmyqDvCsTA==
+ b=XOtKYS6YNhdhnZkQu8C8mckOMaWTcnfA8Eb0i7yrQySru/gDbpjUR9ZpqJ5JxYS+OPH128vpvdGwNSakln8UptJd6diNVlWEDzfXuS6QWOH6Ou4zpifd0hvk2yCw3eMNOU0+mRh4354b3Wj1uot1Qnezo8UCe+4pKEtS1PNnhK7+c6O1IjSIxhkmqG0oG2MNp+RlW9kBbi5GfNcKIRJQopxuRpWwwGtm7X5GAoG2rIkmOUJDEZzwLb73f6W/lFw+2zVaZhUgXG51JsoTjLUQ85rWqNIF4GEVpl7gJgP8dam78XnTk/Z9qAnN/ZSupsHZDsq83fyGp3L4jSNad7S7UA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oqch6jRUxYiV0U9yfxLVpvzSnujRTV0NGvx7tTBM5Xg=;
- b=mzMWuPeXud50V0R9+Yg9NT4pRACT1Fq2oKkj95BOhicpO7dkuvkqTJa9qi6xGF7arFXsJckuaWps204hnGxGtomAkOr1zULIlri+YioTB3D7MRTQg7SehnV46KAWZ4czgsEd3GU60qClZVRbcfp4KL5zIB/Xq3j3gNo+5/zbQp9Kw5VQ/aDnByi0ONqC3XRoQoYjuBnTU2MVyC1GjIyG5pr83MjvC4Bq1MIMUWh9SaCJDf+EnMvzpOnSAdTc4Lzdr+de+15FfN5c8bO12Glv3Q/PQMS0uYxawCmPBNProo+kwfn5vA5rk79X0URWey4ZDOncCaPKEgBcDhaOp3e7FA==
+ bh=RU4PHkyZcD2KUky0PpeUNVUHTAMp4NsTgdg57ZV2FgE=;
+ b=neXoG0ZXyuv6xHCDv1fSOzvGJe1qIBqtGdhp4cyfwiaSCxfTOmwPIE51r842D6zqKpG6660qWxpprqCLxKArUqJaVM2Up5NmBjAbmJ7hz9Bc0A4CjkyTA0A0BmFaoisdf45nL37ZuF4eNN3s1G160oyVF+z+31LSpZZfkwOOOyErVbYrYlpCO+JOXtzyI9Ai/qiU5Hfe8f6+8AMhotIHZ8zlM7CeQXUDwKILDdHKMkiAGtGIbD3I0pwGl9YlgitWDAM9t0DMhNGf2/V4OV/NIMwHIkai/gPJKrCBtyWicZI76LqwS5wG6RRKgqmALzm4kEjH4RLIwkRWrKb2Cj9LsA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM6PR11MB3819.namprd11.prod.outlook.com (2603:10b6:5:13f::31)
- by CO1PR11MB4884.namprd11.prod.outlook.com (2603:10b6:303:6c::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.21; Mon, 28 Feb
- 2022 11:09:58 +0000
-Received: from DM6PR11MB3819.namprd11.prod.outlook.com
- ([fe80::e1a9:e3c3:d61d:dd1d]) by DM6PR11MB3819.namprd11.prod.outlook.com
- ([fe80::e1a9:e3c3:d61d:dd1d%3]) with mapi id 15.20.5017.026; Mon, 28 Feb 2022
- 11:09:58 +0000
-From:   "Wu, Hao" <hao.wu@intel.com>
-To:     "Zhang, Tianfei" <tianfei.zhang@intel.com>,
-        "trix@redhat.com" <trix@redhat.com>,
-        "mdf@kernel.org" <mdf@kernel.org>,
-        "Xu, Yilun" <yilun.xu@intel.com>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     "corbet@lwn.net" <corbet@lwn.net>
-Subject: RE: [PATCH v1] fpga: dfl: check feature type before parse irq info
-Thread-Topic: [PATCH v1] fpga: dfl: check feature type before parse irq info
-Thread-Index: AQHYKWCM9LLv46vm40url05b1bO9gKyo0a6A
-Date:   Mon, 28 Feb 2022 11:09:58 +0000
-Message-ID: <DM6PR11MB381942D6F18C6518FE3556B585019@DM6PR11MB3819.namprd11.prod.outlook.com>
-References: <20220224092242.127081-1-tianfei.zhang@intel.com>
-In-Reply-To: <20220224092242.127081-1-tianfei.zhang@intel.com>
-Accept-Language: en-US
+ smtp.mailfrom=os.amperecomputing.com; dmarc=pass action=none
+ header.from=os.amperecomputing.com; dkim=pass
+ header.d=os.amperecomputing.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=os.amperecomputing.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RU4PHkyZcD2KUky0PpeUNVUHTAMp4NsTgdg57ZV2FgE=;
+ b=ipj6EAUH7nMxOJfcHRrG0wa1ZGToAvCK0oZ75ml/Ydq3xy2+9sKYOdLWOrBCZU1YbJzT/pDubjxkhJrOEq6LDpQiAGWuNL/blEXtypT+MvGzxyubgBit940dCB7sqeKSCxgmYj9EavbpVromP+YnVOMxFVmXbQkEIGrB6JpIlGE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=os.amperecomputing.com;
+Received: from SJ0PR01MB7282.prod.exchangelabs.com (2603:10b6:a03:3f2::24) by
+ CH2PR01MB5864.prod.exchangelabs.com (2603:10b6:610:41::29) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5017.25; Mon, 28 Feb 2022 11:14:04 +0000
+Received: from SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::d9a2:2761:a4c0:1e1c]) by SJ0PR01MB7282.prod.exchangelabs.com
+ ([fe80::d9a2:2761:a4c0:1e1c%4]) with mapi id 15.20.5017.026; Mon, 28 Feb 2022
+ 11:14:03 +0000
+Message-ID: <83d4e9d2-fc45-83d7-aedc-e5e14ff3c8ef@os.amperecomputing.com>
+Date:   Mon, 28 Feb 2022 18:13:46 +0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.6.1
+Subject: Re: [PATCH v1 0/5] Enable second flash, update gpios pin and merge
+ adc channels
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.401.20
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 753442f3-74c4-488d-9b4e-08d9faaadbc1
-x-ms-traffictypediagnostic: CO1PR11MB4884:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <CO1PR11MB4884F924F69210520F76F12E85019@CO1PR11MB4884.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: FbElCaCQ+OPPRNb6IHyHfdyyYuNqP7H+UNIqyC4aKKcWsWyawZpUKPtejRaYHsg06S1HfVFRpwleWdS84+/nAQaLINEa2rD6JJ13ZSTKHuP/ngyPa7sRrecs/b6JEbTyeG0zw6BcRvmc4ZURbi8b9TR/HLR9uFXfJbqyX2bjvAKuI5cOVoNa7Bj6ykQIV6xd7Cge2t/oDKUp9Uw1xpA/sOGc9rjVkRT3/jk+KYTs/PFGqc9T/76sMLUXNNguBdpjhqoo/QFmVLQiaEYFnU+aIYqE44+tmm/rpOwPW33tS3YfCkkf4YcoiRyvLI2fIHFcze77rQE0+HZ6/6ExBhXiRJgAvmUl5ebCGTRCocO98iTRshIi1NtubaNa194v4BPX0/wjuMdvjwdinzc5yIIowvM0YkUe6S/x+5Chedy23NTYbPx3SD3LT+fJ5WR62bse7jltFx1ScjYa3DZepQv3lDt9rHnc8sMDzo1bkV3eOyXQ5YLlFT7Zb3OxJsncFuKe2zyAbkcNx+ZONm18euneXTL4e02/bw5prS0en3VGXVjSvzNiQvb2cozNlTGBNQSetAwZKH3vfRbBavM4nJvZhLP2k6lA8z8Tp6otNO+0wcMNowqejyV8X/rggpXhO6n7OCijMN3hX7IfDfEJif18PpnD9V21llc2bC464HnZp7UgE2sn0tyYoGYTXMg7yFju2IYrXFxJMMIz/Ka5+fZu75ELJGeC2M+UGCT6hxVhGUCZd72acdvp/VcjuwPVQxs2ymNviYupF4MvUrsYY54ZqkKlMLh3ATZYM3jKmHfC76DuK4ZtAu4e5ChwIREnWn3Zj0BSfGj9LCPSSVp/xopGRQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3819.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(71200400001)(508600001)(966005)(110136005)(8676002)(76116006)(45080400002)(9686003)(66476007)(66946007)(6506007)(66446008)(66556008)(7696005)(64756008)(8936002)(52536014)(5660300002)(83380400001)(2906002)(82960400001)(38070700005)(122000001)(38100700002)(186003)(26005)(86362001)(4326008)(316002)(55016003)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?oSBU40jJXt0xM9AFY8a+RxmPzJzeIB5sr++I7b6aRP8gVLgP4YkJLe9LXsem?=
- =?us-ascii?Q?WZpsoBeuub9WC//gEs+L04rB7ESYUOTa8ZODrArZsQXSGLSKqtYGaZFL8p/x?=
- =?us-ascii?Q?RIKLy9cRLAOZWEdi8jQB32vRCPCxVp0LDAfxISDZkxa8TG6v7UF/QCEZph3a?=
- =?us-ascii?Q?70tmlQ0DmPNPuzHl2dk9srZ0pODHiq97Y8xll0gfKWKeMu1QSDZ58xYk+xKm?=
- =?us-ascii?Q?ANiFrnegnEQWeqkgRVNlFz3pq6TgPYdSSxECFrm8D3WUisLwcVHNNKD20SYy?=
- =?us-ascii?Q?ixfFWbaZQRRq7xoPIOIaZMSDa1pbf3FzWg2FCDneBZPASJuyLbl529xH5WMi?=
- =?us-ascii?Q?SKNqdP2pdWQwdiLQNj9Obks0BHMY7qED2diD7Kt/oy6CpUmDuUxirGvPWZtv?=
- =?us-ascii?Q?EaXHfNq4sb+lGfywMzIcDLYTiRnE/qgYvH3Ce/xUGKO6Q8lm2bFDuGaRAKTC?=
- =?us-ascii?Q?7CRYoO4Ypdnx65Ng0qQ/OtTmby84r6Tc8+agVtNmw1PkVwh3EVIWBwm8NTS3?=
- =?us-ascii?Q?Izu/9JDuqB0O/RPxlcmSy4PuKiyES+HtnrWhIlKUbLk94F6o0XV07eKStaDJ?=
- =?us-ascii?Q?7e6zaarxPHj6Ydq4JHhYiOYedmLXkdpxh4u2952Wuhh5mHHBj3Hok6PFsrYy?=
- =?us-ascii?Q?S48NabZM1y0jnI1N3Kv4pIO7kmMHKQSHnr08GJ6C2VIyjIJiWsti5BnPSctb?=
- =?us-ascii?Q?9iDgCx1m59Sdo2HtW/I6jXMIzDIiTUoX5IiCQquZpg1yC9TpS8UOax+1Z8/p?=
- =?us-ascii?Q?P2vU5x35s8Lq+2e4mgBmTX42Tm6krRpXUPkRQZPHdwIvCd5vUElHX2GY8Cdw?=
- =?us-ascii?Q?XUl9kTwnTIhwa/EE+HcD9rfZ2WpOal+BDTTvrs5aDmfBBKovn2efE310O/nn?=
- =?us-ascii?Q?OtOdUzQjUKWUXFwwNDQaRIvVg+DJpAYNtd0wBAgmcabiU4Zn7T1WlVBvnObw?=
- =?us-ascii?Q?TrL6i5p87PI9lrZaiRZwBg8kO2zyLQ4JRGU7r/l8qh1Dosy2rbhk1fHKfeGG?=
- =?us-ascii?Q?O0khptyyn2OGnZjii+AAv/gHJjhUnvdEcPNyvoKz3f9gnK732VOdesfdUf7S?=
- =?us-ascii?Q?Tg1m21KdcLUOusR8/IarPhmmaOv53F6vDRGzOUUlhOe3yiXewKmvUbtcBRh9?=
- =?us-ascii?Q?MZZ+KJfZvxywwAjZaw0dIoL1h9ZZR9NAsOH8glBmEYApHjJDxrHM7/kO4ZtM?=
- =?us-ascii?Q?3INVbGN8EO/yADbIirSg0IOtfvAlNPfBT/An448aX87IjMqsIDIH7+TLYwoA?=
- =?us-ascii?Q?f7vECVOpyEDbcRi8aeGrm7xELaKQT3DaIK7rmFvkj8IRHqCWt9hnvp2sLSwO?=
- =?us-ascii?Q?grluKZ/4NVVSmlF7QuzUrZNjTwhI3JVhdEbRwbX9wT3lFKWYkpb29azJvtUX?=
- =?us-ascii?Q?D3LH3gk1erdLz2yDHLpmuuBOFRhn5fa+ywlF85jtxb4RChkudlM1e1a+4tkc?=
- =?us-ascii?Q?nmBrCO8C1/FC7j6JUoBFSwEAYbnNoQueZvSj/o4DrYbjx9eukOeFThKPBGKm?=
- =?us-ascii?Q?WEOjqdMijsdzihzK8stCrEpwxi+tA7NdNCGd+D1CwoIpoatVg6RsjKwU7DwX?=
- =?us-ascii?Q?AR+RrQMymr7LgARSwCvbqJJpfbLTQ9j30f275geaOyiNHpL0ABdzmTNkG2Hv?=
- =?us-ascii?Q?Jw=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+To:     Joel Stanley <joel@jms.id.au>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Open Source Submission <patches@amperecomputing.com>,
+        Phong Vo <phong@os.amperecomputing.com>,
+        "Thang Q . Nguyen" <thang@os.amperecomputing.com>
+References: <20220228000242.1884-1-quan@os.amperecomputing.com>
+ <CACPK8XfCskh7KPhXJqOR9ZLnoBdd64SL9D1z5HoDC+_VVs4LCg@mail.gmail.com>
+From:   Quan Nguyen <quan@os.amperecomputing.com>
+In-Reply-To: <CACPK8XfCskh7KPhXJqOR9ZLnoBdd64SL9D1z5HoDC+_VVs4LCg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: HK2PR04CA0059.apcprd04.prod.outlook.com
+ (2603:1096:202:14::27) To SJ0PR01MB7282.prod.exchangelabs.com
+ (2603:10b6:a03:3f2::24)
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 17ba813b-1a6f-4746-c70c-08d9faab6d89
+X-MS-TrafficTypeDiagnostic: CH2PR01MB5864:EE_
+X-Microsoft-Antispam-PRVS: <CH2PR01MB58647CF954C0DEF9008F9EF7F2019@CH2PR01MB5864.prod.exchangelabs.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mvc/2FpAjvGl9Ym8iLcD2FxdYjYfg8ssqtpRyd9R46iiKntXbM8PShrCTM6HB8I7YSqcEigdcjjLBbNLE/DVX0l/5u0x+gxOSwAQmj7dC6Kr0JipXp6UIIyG3+niglxbK/eCVeZ1nl5Txs+4yTY3Y2ngdg5ccNYQRUH3z1sRTwo2lJ2zK4Cl7ypkCnNgUlCA7/iCP1uHYL4qQoHW+lcesAm6YfQQZw91U7LoIQQq9UaiyfFN/i4WK5n+K/8kYwJlw6KSgSRzT5CJQu4G3l8zjlUuTu/s3CfUzJc2Vpmm32ueMocpoAhlP4ROL99pL20fsOcWyRlM4b585+ztAp8THzavwMvCr5BpiEtYjvuVPHGqY6fjrol4rTfKslCUwm4W4eUYsbKAM9CjbQgRFBhXM4EFV2DAneo6Xn3eRsm1H8LG+hRDdvwhrAGCSgYXN08nyJokRHxuk5fHHNPkznMRv6oihtKHWCDUDvJS389k31APU1qShN5TH5wnVL0KipZbmUaioe19itPwRn5cdPXXs+mJCu6Rt8+27B4lli1TOi4kQLJC7DSdpRpWxz2njiL9pHc2zngu9xyO4WlDvE/AGBd5sULfvgsXqFgA2fUaTuaq0RpwD1spgEVrPYO9llVmrqVCMeftF32XQa8t9ccDkwde701pWbWnu4fyHZ3YsPIf0lN+wqqsNDRPxyUQSfxQH7dyQMbLz9ERMpH8jEOaGGM4Avha5mkZmRqJJi+8vy/MXkCyz5aDfbM9GLFWqSKUXGBNoddqO7D4Hn9R70gTMafJ+hNKLaVF/mw7qgDXcGQPF/CDJ+t4ldIfjZIDgJ88qZ29Oug/NAbgCHwC5hFVLA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR01MB7282.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(54906003)(6916009)(26005)(66476007)(31696002)(186003)(66946007)(8676002)(6666004)(4744005)(508600001)(4326008)(5660300002)(107886003)(2616005)(38350700002)(38100700002)(6486002)(66556008)(53546011)(6506007)(52116002)(316002)(8936002)(31686004)(2906002)(15650500001)(6512007)(83380400001)(86362001)(449214003)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YXRsV2tRVE9UNjlvQUl3Qm0xNk8zVjlFUkF2ZExGelpoRnlOcTUrQmliQU44?=
+ =?utf-8?B?REJpdWlQSUxoaUZ2eitFbjB6VzRRRHFqekRiVHNRVnB4STFibE03N0x5UCtH?=
+ =?utf-8?B?enRqSUFwSG1BL3diTkNWV0pZeWJDOVc3MnNQa0NvVVhTUTRsRUNOdmd0VU5B?=
+ =?utf-8?B?L2Q4Y0NISEo4UUExV3FKUm9ZMTdZRHViV09RZE50NEI2bExNU0swU3ZRNlhS?=
+ =?utf-8?B?My85OHczdTg2V2RidVVYd1I0MmVtOUkydjZldHhESCtLZnU5eXd0R1BWamxo?=
+ =?utf-8?B?WG5TK2dlSkU5Mnd1Wm1FMkpZNncrUythd09TV29BbC9naml5NEhsYmVQeGVs?=
+ =?utf-8?B?bnozNVY2VjBPKzBmdUVVSWZ0R0ErS3cxa0kvWFVKTmI0SjlJbEtWS2tGbGxr?=
+ =?utf-8?B?b29LSi9BOEU4Mmkza0U4VWhEL0lLRGpWL3pNOWZsMmRCMUZSeW0yVk5NWkxo?=
+ =?utf-8?B?RWY0d2ZmNElEY2xIemFreVNycGtyZk1FaWV6cVlVajkzNHgvTnA4SVV1SXlM?=
+ =?utf-8?B?UWZzQUhwNHZ3OWFFTzFYNDMydktpNDRaaGg2Z0lzNTgzaVRrVUlpRkxHZkxY?=
+ =?utf-8?B?aTBaTHNYQ2pLNEx5QW1acEc3K0diak1lTW5nN2QwS0lLNEhGMGxUbVZ3bGlC?=
+ =?utf-8?B?L1Q0cGxONlQ2dGJJRzhVU0JPeGxkREdPTnBkbEJ3cXlTNkl3OVVQU3FVTUZF?=
+ =?utf-8?B?Z3RaZ2QwVWU0M0NtYi9jSWQ2b2xVcW5hQXMvVU1meVlhTVR0YnUwLzNPNTFi?=
+ =?utf-8?B?N3ovc0lpSjBPc2w3ZVJWa2wwUGNFTnkvdmFKYmZndzVHOWtkREVYQkpaQmc5?=
+ =?utf-8?B?aTFtdXJTZWZJL3V6NkFqWHFmL3VicTVJTTM0ZFhpQjhEaGZHUzFYdFd6ZkUr?=
+ =?utf-8?B?dzNNYTAwVllvVUZ3MWREd2ZSdDkzVlJwY0g3UVQ5TmJrVjkzVG8rc0VYTzEy?=
+ =?utf-8?B?UFV3V3pLNTBRUTVTN09saURGOE11dUhZdzZaVFpFTCtEZ09EVTZIOFd6aXhQ?=
+ =?utf-8?B?eldvTEM5OXlQVXJ6OTk4ZWN3U2xYRTR4VEpCb0FuazB6Q2gyT2RKS0tFS1h1?=
+ =?utf-8?B?YTliMHo1bjdYOGlFeUVmRWszdGg4VGkvM0dsRUIyNWFSZU1uMU1ZVW4zWGFW?=
+ =?utf-8?B?NzE3QUxsMEMycE4wYStuQ1BnZ3NwVkdaYkhobkNDaGo1bUtTNjFCMUpMR3Bz?=
+ =?utf-8?B?ckRxRnJEL25Ic1cyalpYZndoQmJpUGlFVG5pc3JsakxPTXdlNkVlVnNhRkdw?=
+ =?utf-8?B?a3lCVEtBaytsUkRoQ0hweSt6T3dmNXFXRDUxOUwxU0NnMUc0ek9aYlhrbjJn?=
+ =?utf-8?B?QmxjUk1PRzc3SFYrM3JmaDB3WVp1Wkk1RUpnb1BITlhBWkxnb1VFaVpDV2Yx?=
+ =?utf-8?B?OXcrTFpmSk9WQ3JqWVZoa1grc1lHdE12azhxeXZnV3FkUWpzY290bmlVMER6?=
+ =?utf-8?B?cWRNUnRocU1NQmlHc1JDaUVuTDZxZ2g3WnZiemhlKzFqMm1tR1NHb252dDZM?=
+ =?utf-8?B?TUFMTGRKWG9WRHJCSzdWbWRMOGJ0ZkdqUTVrYjYrVmtkY0pac055UEhacXR1?=
+ =?utf-8?B?VzdVb0ZwUm9sUnA1TXNIa3NtL2VpZHpyNDhubW1jd3dRTys4bzVIZkw2S2VZ?=
+ =?utf-8?B?bm56WVZYTnlJcjY5b01WOThyejRyZkNRT2lNelgxQ1kyQTZiSFFUUkJxaWNW?=
+ =?utf-8?B?Y0NacVRBalRlOCtxUGVIUTFKaDNZaUxIeXQ5WStJY2hiZGw4VDZiaisweUVl?=
+ =?utf-8?B?TVlTTzQxMjFhTHJnVlhoN0xFUm5iODBvTU9mWlFRRVVkYktaZy9tdXl3bmdK?=
+ =?utf-8?B?cEpsVU5qUU9rc3ZIMGF4Z0VvMnhkRjFrc09aR2pkUXJNZ294Y3RwUkFaRzdG?=
+ =?utf-8?B?RiszN0VLeDQ2UHo0bENwMTdVbEM2VGczU1JOMTEyblVzMU5JVHZMUDRRVW5W?=
+ =?utf-8?B?bDBBMHhQMWsvdFhpRytCQjVkbTVoY0krdVoyMTRvWURSZ2Y4TUZJMklyMnBG?=
+ =?utf-8?B?bmYrakNXUXg2citNbmd3N0UveC9qYkRuN1ZhSGN6Nko5Q1ZtdE1rbkZjSDRF?=
+ =?utf-8?B?djJQUU1yQUVHL082UVhyaEFLVHc0bkRLMTVEU2dhQVVDc1ZVRUJvcHlyUFpa?=
+ =?utf-8?B?TklOUjBzbVRRbkdCQndLQjZSVnE2aGdkeDcxZ1l5SitKUTRMeXllMFYwQVRq?=
+ =?utf-8?B?eURic1dPOThlS0IydlcxNmloeDJFS3UzbzNNUnRjREh5SU9RWW1IN2hhYWpR?=
+ =?utf-8?B?dS9jaGE1RnduSStKOUk3c1czbU53PT0=?=
+X-OriginatorOrg: os.amperecomputing.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 17ba813b-1a6f-4746-c70c-08d9faab6d89
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR01MB7282.prod.exchangelabs.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3819.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 753442f3-74c4-488d-9b4e-08d9faaadbc1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Feb 2022 11:09:58.6668
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2022 11:14:03.9357
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JZlpxdn03vvJViZyYk33zw4dvhSb8OahTLI5Kx6PW7fPHWDYBPRA5e6/wiI+LhZaUV2r78TH5OiTWLoM4dUF2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4884
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3bc2b170-fd94-476d-b0ce-4229bdc904a7
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4Rpw6o2noCS0WuiXLCBkG4bBKCtatoXCAqsbj+k/zRruKIetx7zZDfei6V6x3btzMK5XkkKTFH4NZ9EiN9oQCz1lZNKYZAGf0Rsf3jJjFEg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR01MB5864
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Subject: [PATCH v1] fpga: dfl: check feature type before parse irq info
->=20
-> From: Tianfei Zhang <tianfei.zhang@intel.com>
->=20
-> The feature ID of "Port User Interrupt" and the
-> "PMCI Subsystem" are identical, 0x12, but one is for FME,
-> other is for Port. It should check the feature type While
-> parsing the irq info in parse_feature_irqs().
->=20
-> Fixes: 8d021039cbb5 ("fpga: dfl: parse interrupt info for feature devices=
- on
-> enumeration")
-
-Actually this is not a real bug, as in original design, there is no overlap=
- for FME and
-Port features. This is why you see features for Port doesn't start from 0. =
-But anyway
-I am good with such extension.
-
-> Link: https://lore.kernel.org/linux-
-> fpga/BN9PR11MB54833D7636348D62F931526CE33A9@BN9PR11MB5483.nam
-> prd11.prod.outlook.com/
->=20
-> Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
-> ---
->  Documentation/fpga/dfl.rst |  5 +++++
->  drivers/fpga/dfl.c         | 38 ++++++++++++++++++++++----------------
->  2 files changed, 27 insertions(+), 16 deletions(-)
->=20
-> diff --git a/Documentation/fpga/dfl.rst b/Documentation/fpga/dfl.rst
-> index ef9eec71f6f3..9ce418da1876 100644
-> --- a/Documentation/fpga/dfl.rst
-> +++ b/Documentation/fpga/dfl.rst
-> @@ -502,6 +502,11 @@ Developer only needs to provide a sub feature driver
-> with matched feature id.
->  FME Partial Reconfiguration Sub Feature driver (see drivers/fpga/dfl-fme=
--pr.c)
->  could be a reference.
->=20
-> +Individual DFL drivers are bound DFL devices based on Feature Type and
-> Feature ID.
-> +The definition of Feature Type and Feature ID can be found:
-> +
-> +https://github.com/OPAE/linux-dfl-feature-id/blob/master/dfl-feature-ids=
-.rst
-
-Thanks for tracking ID allocations. could we also add some description that=
- if
-user want to implement a new private feature, then they need to submit new
-ID application to https://github.com/OPAE/linux-dfl-feature-id, and add som=
-e
-README file to guide people for the application process?
-
-Thanks
-Hao
-
-> +
->  Location of DFLs on a PCI Device
->  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D
->  The original method for finding a DFL on a PCI device assumed the start =
-of the
-> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-> index 599bb21d86af..6bff39ff21a0 100644
-> --- a/drivers/fpga/dfl.c
-> +++ b/drivers/fpga/dfl.c
-> @@ -940,9 +940,12 @@ static int parse_feature_irqs(struct
-> build_feature_devs_info *binfo,
->  {
->  	void __iomem *base =3D binfo->ioaddr + ofst;
->  	unsigned int i, ibase, inr =3D 0;
-> +	enum dfl_id_type type;
->  	int virq;
->  	u64 v;
->=20
-> +	type =3D feature_dev_id_type(binfo->feature_dev);
-> +
->  	/*
->  	 * Ideally DFL framework should only read info from DFL header, but
->  	 * current version DFL only provides mmio resources information for
-> @@ -957,22 +960,25 @@ static int parse_feature_irqs(struct
-> build_feature_devs_info *binfo,
->  	 * code will be added. But in order to be compatible to old version
->  	 * DFL, the driver may still fall back to these quirks.
->  	 */
-> -	switch (fid) {
-> -	case PORT_FEATURE_ID_UINT:
-> -		v =3D readq(base + PORT_UINT_CAP);
-> -		ibase =3D FIELD_GET(PORT_UINT_CAP_FST_VECT, v);
-> -		inr =3D FIELD_GET(PORT_UINT_CAP_INT_NUM, v);
-> -		break;
-> -	case PORT_FEATURE_ID_ERROR:
-> -		v =3D readq(base + PORT_ERROR_CAP);
-> -		ibase =3D FIELD_GET(PORT_ERROR_CAP_INT_VECT, v);
-> -		inr =3D FIELD_GET(PORT_ERROR_CAP_SUPP_INT, v);
-> -		break;
-> -	case FME_FEATURE_ID_GLOBAL_ERR:
-> -		v =3D readq(base + FME_ERROR_CAP);
-> -		ibase =3D FIELD_GET(FME_ERROR_CAP_INT_VECT, v);
-> -		inr =3D FIELD_GET(FME_ERROR_CAP_SUPP_INT, v);
-> -		break;
-> +	if (type =3D=3D PORT_ID) {
-> +		switch (fid) {
-> +		case PORT_FEATURE_ID_UINT:
-> +			v =3D readq(base + PORT_UINT_CAP);
-> +			ibase =3D FIELD_GET(PORT_UINT_CAP_FST_VECT, v);
-> +			inr =3D FIELD_GET(PORT_UINT_CAP_INT_NUM, v);
-> +			break;
-> +		case PORT_FEATURE_ID_ERROR:
-> +			v =3D readq(base + PORT_ERROR_CAP);
-> +			ibase =3D FIELD_GET(PORT_ERROR_CAP_INT_VECT, v);
-> +			inr =3D FIELD_GET(PORT_ERROR_CAP_SUPP_INT, v);
-> +			break;
-> +		}
-> +	} else if (type =3D=3D FME_ID) {
-> +		if (fid =3D=3D FME_FEATURE_ID_GLOBAL_ERR) {
-> +			v =3D readq(base + FME_ERROR_CAP);
-> +			ibase =3D FIELD_GET(FME_ERROR_CAP_INT_VECT, v);
-> +			inr =3D FIELD_GET(FME_ERROR_CAP_SUPP_INT, v);
-> +		}
->  	}
->=20
->  	if (!inr) {
-> --
-> 2.26.2
-
+On 28/02/2022 11:21, Joel Stanley wrote:
+> On Mon, 28 Feb 2022 at 00:03, Quan Nguyen <quan@os.amperecomputing.com> wrote:
+>>
+>> This patchset adds the second flash support, merge all ADC channels to
+>> single iio-hwmon node and update various gpios pin name.
+>>
+>> Link:https://github.com/openbmc/docs/blob/master/designs/device-tree-gpio-naming.md
+>>
+>> Quan Nguyen (5):
+>>    ARM: dts: aspeed: mtjade: Enable secondary flash
+>>    ARM: dts: aspeed: mtjade: Update rtc-battery-voltage-read-enable pin
+>>    ARM: dts: aspeed: mtjade: Update host0-ready pin
+>>    ARM: dts: aspeed: mtjade: Rename GPIO hog nodes to match schema.
+>>    ARM: dts: aspeed: mtjade: Move all adc sensors into iio-hwmon node
+> 
+> These look good.
+> 
+> Reviewed-by: Joel Stanley <joel@jms.id.au>
+> 
+> I'll apply them for v5.18.
+> 
+Thank you, Joel
+-Quan
