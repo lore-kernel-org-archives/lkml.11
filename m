@@ -2,118 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79469C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:27:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69298C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234419AbiB1K20 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:28:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37964 "EHLO
+        id S234583AbiB1Kbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:31:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231840AbiB1K2X (ORCPT
+        with ESMTP id S231721AbiB1Kbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:28:23 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31EA27FE1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 02:27:43 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id d3so14659178wrf.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 02:27:43 -0800 (PST)
+        Mon, 28 Feb 2022 05:31:35 -0500
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3E855743;
+        Mon, 28 Feb 2022 02:30:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=uCr16OVWDuSEsQKxJNsm24ttfbU9MwffSycejs9RTnk=;
-        b=ZUbe634WUdwhywJ4GsoAKl6hduEOQlgM8D4X1TOTsVJvb6+GZ9EMTRfhcBDrpp06UA
-         6hgyt6qOaCIWMfaC4BjthYAtieiqtKpIRA7vsRxDcLPkVrHUQoni9ZjcPVJMK6oDJxkx
-         UBmIixpJLH0kiZ6iLMG8XMjYBSzgjK+IbZNQC9wErZGjhY3GlnYfKjwzQOICDNSidlb1
-         VAdTwLQe61Ci/zAqkCzlw68QDExhMWz/Nbl4LZ1BpDlWQ3Hp/857BytJ3ZRm81o8T2wN
-         8tIO4BQOLGc3f5qvTEzl3IZSmgNQZt7yDYEUg0L6LGS2uygvBc/8DT/jIsf7fXyeR9Nz
-         6aYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=uCr16OVWDuSEsQKxJNsm24ttfbU9MwffSycejs9RTnk=;
-        b=OmJcrPUUUMBHPm//mzY/mYYWlWMwviMiC36otkaVKVHv/2me2r8XhNmUsL0KAS3uch
-         7y+ObAPnvamKwwcy3dY8iNbXhlCYOuO1H/Pnd3ip5qMXEG9QYS7vcZokFbl/r94Un+g+
-         IsD81HOe4BCy1NPtKSFzBqV03J5c5rgcpR3iqd+gDm6v/7ltFIleeus9fN7jgGxqbWBU
-         6EWd9lSfv+sVvP4ghOW+LwXQoSaWwy8N8wzJQiRjZ9iBSA7uPtCmsoHuMCA7yWQWQm9p
-         hyU6kZdVp8vnLog0e/5jAPSCn22iD6/RPYau971w4zCorUmr2Pixs08vJFqtCw/uXWST
-         Tb1w==
-X-Gm-Message-State: AOAM533eH5n92pNjUeM8v3PHrEIiqXaRkPHTQ54mxu4/z70UHzK9jelP
-        ygJvfNyWGDRWeKrIIxlu0mfE4A==
-X-Google-Smtp-Source: ABdhPJwYCZzz6bNvTctYj1kOHNVO07F8Rb+DN7QVIJZSBzrbPRTFp96IFJpu9Efpf8Vrl0tgM9L5jg==
-X-Received: by 2002:a5d:53c5:0:b0:1ed:bf1b:be44 with SMTP id a5-20020a5d53c5000000b001edbf1bbe44mr15621470wrw.285.1646044062158;
-        Mon, 28 Feb 2022 02:27:42 -0800 (PST)
-Received: from ?IPV6:2a01:e34:ed2f:f020:7f2b:6650:2756:a131? ([2a01:e34:ed2f:f020:7f2b:6650:2756:a131])
-        by smtp.googlemail.com with ESMTPSA id g5-20020a5d5545000000b001ed9d3f521csm10058972wrw.113.2022.02.28.02.27.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 02:27:41 -0800 (PST)
-Message-ID: <2e56d310-65a9-e910-98e0-c7c51b88b7f6@linaro.org>
-Date:   Mon, 28 Feb 2022 11:27:40 +0100
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1646044255; x=1677580255;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=b+78FRAJXZYzl+Y9IyY17fr3tqSyDnu1Vfd2nwZsqI4=;
+  b=ADHAmz5ZoHE4x2wPgvnFItq7N5tW8vmmTmAXdMxem277LYxBwUvpzplo
+   wNUdSGKueLy6Fg6wf5BS8LeT9r8inxmzOugmsFblazO8nzlHnlCYSxSAi
+   WGszyq+xYxooDaz4DLtaTB7JxTyRF57icnVYWf0GC45YNk4VIii6NU/HS
+   WrIERi1u7nhZ4MXqYfUJvAuxtHcHM6hZIIVoEv343Mo2SgTwliWDQoGRL
+   jil5jGL9bEfLAQ8Tp8ydP6PgaKC6N5n8dOBjc8qm+iWyegA5kSjMP1O7b
+   1WO0RNf0zhIGIoRUutAof4sX25Y8vznNmdPJUBOOTP6Qn0wCyGDi6TDmP
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,142,1643670000"; 
+   d="scan'208";a="22347755"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 28 Feb 2022 11:30:52 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 28 Feb 2022 11:30:53 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 28 Feb 2022 11:30:53 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1646044253; x=1677580253;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=b+78FRAJXZYzl+Y9IyY17fr3tqSyDnu1Vfd2nwZsqI4=;
+  b=drl60c3M2hZ1JsyApj7b/J3NNsuyJx2l7VmECVLQS/Tf/QjBKp2M9Ifw
+   /i/OIfQfR9ADcRPleNljFyW9yUWvnoptEHSGSSVOIjZum9/e3RB4+VYVX
+   ePlD92B2152XpAoBPYlrecr4XnywkkqK984/I3seSZaukFrIlWm1XG27I
+   2Tpkxsq1GSAUaLbiSqU6YDc2q1EOQ2YF/Unsu8Y3u/N9RceqITRQxJuIz
+   lklF1nnsCeMwiE1kuj51yntelt7kh1BeIuvEE/VPqeDRvfA/GiHSKxk3q
+   L+snH9cH/3oVI5iiGXCZka975PPARx9b+41uiT0wbXLa1ge2QRxq8goNo
+   g==;
+X-IronPort-AV: E=Sophos;i="5.90,142,1643670000"; 
+   d="scan'208";a="22347754"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 28 Feb 2022 11:30:52 +0100
+Received: from schifferm-ubuntu (SCHIFFERM-M2.tq-net.de [10.121.201.138])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id A7F5E280074;
+        Mon, 28 Feb 2022 11:30:52 +0100 (CET)
+Message-ID: <1356e93cd5b101c3d896e35250c66959ed631544.camel@ew.tq-group.com>
+Subject: Re: [PATCH v2 1/2] arm64: dts: ti: k3-am65: disable optional
+ peripherals by default
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Tony Lindgren <tony@atomide.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Olof Johansson <olof@lixom.net>, soc@kernel.org,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Tero Kristo <kristo@kernel.org>, jan.kiszka@siemens.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Nishanth Menon <nm@ti.com>
+Date:   Mon, 28 Feb 2022 11:30:50 +0100
+In-Reply-To: <YgJZbdOlazrde7O/@atomide.com>
+References: <20220203140240.973690-1-matthias.schiffer@ew.tq-group.com>
+         <20220204143108.653qk2ihnlhsr5aa@prior> <YgDCLaBHA3DDQAUd@atomide.com>
+         <5944ba0ce568eaf507917799b1dfd89a3d0ca492.camel@ew.tq-group.com>
+         <YgEBml9HvFzSl289@atomide.com>
+         <9923df6525212389b86cb635624bcfb5c27a8bc5.camel@ew.tq-group.com>
+         <YgJZbdOlazrde7O/@atomide.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v14 4/5] clocksource/drivers: Add a goldfish-timer
- clocksource
-Content-Language: en-US
-To:     Laurent Vivier <laurent@vivier.eu>
-Cc:     Arnd Bergmann <arnd@arndb.de>, linux-rtc@vger.kernel.org,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        linux-m68k@lists.linux-m68k.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org
-References: <20220130143333.552646-1-laurent@vivier.eu>
- <20220130143333.552646-5-laurent@vivier.eu>
- <1a0f23f2-361a-25d1-b371-7a229758d248@vivier.eu>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <1a0f23f2-361a-25d1-b371-7a229758d248@vivier.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16/02/2022 15:31, Laurent Vivier wrote:
-> Daniel,
+On Tue, 2022-02-08 at 13:52 +0200, Tony Lindgren wrote:
+> * Matthias Schiffer <matthias.schiffer@ew.tq-group.com> [220208
+> 10:53]:
+> > On Mon, 2022-02-07 at 13:25 +0200, Tony Lindgren wrote:
+> > > * Matthias Schiffer <matthias.schiffer@ew.tq-group.com> [220207
+> > > 08:45]:
+> > > > Generally I think that it's a bootloader's responsiblity to
+> > > > disable
+> > > > unneeded devices - the kernel may not even have a driver for
+> > > > some
+> > > > peripherals, leading to the same behaviour as a "disabled"
+> > > > status.
+> > > > For
+> > > > this reason I believe that it should always be okay to set
+> > > > unneeded
+> > > > devices to "disabled", and it should be considered a safe
+> > > > default.
+> > > 
+> > > Not possible, think kexec for example :) How would the previous
+> > > kernel
+> > > even know what to disable if Linux has no idea about the devices?
+> > 
+> > Well, optimally, bootloader and all kernels would agree on the
+> > devices
+> > that are actually available, but I get your point.
+> > 
+> > > If there are issues you're seeing, it's likely a bug in some of
+> > > the
+> > > device drivers for not checking for the necessary resources like
+> > > pinctrl for i2c lines.
+> > 
+> > I don't think it's common for individual drivers to care about
+> > pinctrl
+> > unless switching between different pin settings is required at
+> > runtime.
+> > Many drivers can be used on different hardware, some of which may
+> > require pinmuxing, while others don't.
 > 
-> as you reviewed the v12, could you review this version to see if I have 
-> addressed your comments?
+> Yeah that's true, some configurations only do pin muxing in the
+> bootloader. So pins are not a good criteria for devicetree status
+> enabled
+> for when the device is operational.
+> 
+> Probably a better criteria for devicetree "operational" status is the
+> device can be clocked and configured or idled. Some devices like GPUs
+> can render to memory with no external pin configuration for example.
+> 
 
-[ ... ]
+I don't think any properties currently exist that could or should be
+used to decide whether a device is operational. Clocks etc. are usually
+internal to the SoC and thus already set in the SoC DTSI. Pins and
+power supplies may be specific to a mainboard, but can also be
+optional. Whether an I2C bus can be operational may solely depend on
+whether external pullups are connected to the pins or not.
 
-> Le 30/01/2022 à 15:33, Laurent Vivier a écrit :
->> Add a clocksource based on the goldfish-rtc device.
->>
->> Move the timer register definition to <clocksource/timer-goldfish.h>
->>
->> This kernel implementation is based on the QEMU upstream implementation:
->>
->>     https://git.qemu.org/?p=qemu.git;a=blob_plain;f=hw/rtc/goldfish_rtc.c
->>
->> Details related to Goldfish devices can be found in:
->>
->>    
->> https://android.googlesource.com/platform/external/qemu/+/master/docs/GOLDFISH-VIRTUAL-HARDWARE.TXT 
->>
-Please do not add pointer in the changelog as this one will stay forever 
-but no guarantee for the url.
-
-A description of the timer is enough:
-
-eg.
-commit 625022a5f1606
-commit a7ad38b0dd3c1
+The idea of an "incomplete" status like you mention below sounds better
+to me. I also thought about adding something like a "probe_disabled()"
+that is called instead of probe() for "disabled" devices, but I assume
+that would cause a boot time penalty on systems that have many
+"disabled" devices and don't actually need this...
 
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+> Following Linux running on a PC analogy.. If ACPI has some device
+> that
+> causes driver warnings on Linux boot, do we patch the ACPI table and
+> pretend the device does not exist? Or do we patch the device driver
+> to
+> deal with the random buggy bootloader state for the device? :)
+> 
+> > Also, what is the expected behavior of a driver that is probed for
+> > an
+> > unusable device? Wouldn't this require some as-of-yet nonexisting
+> > status between "okay" and "disabled" that conveys something like
+> > "probe
+> > this device, initialize (and disable) PM, but don't register
+> > anything",
+> > so no unusable devices become visible to userspace (and possibly
+> > other
+> > kernel drivers)?
+> 
+> I did some experimental patches several years ago to add devicetree
+> status for incomplete, but eventually came to the conclusion that it
+> was not really needed. Feel free to revisit that if you have the
+> spare cycles :)
+> 
+> Having the drivers check for the resources like clocks and then just
+> idle the device after probe solved the issues I was seeing for
+> warnings
+> and kexec. In some cases the device may need to be reset or at least
+> properly reconfigured in the probe as the state can be unknown from
+> the
+> bootloader. That's about all there is to it. Sure you could save some
+> memory with less instances for some devices, so maybe the status =
+> "incomplete" could be used to do the trick for that.
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+I don't really care about memory usage. What I do care about is that
+incorrect userspace usage doesn't cause ugly kernel warnings (for
+example timeouts for i2cdetect on unmuxed bus) when we can avoid it,
+because such issues always lead to support requests.
+
+Not being able to hide non-operational devices from userspace feels
+like a regression from older hardware.
+
+> 
+> > > > I'm not sure what the consensus on these issues is. I'm more
+> > > > familiar
+> > > > with NXP's i.MX and Layerscape SoCs, where it's common to have
+> > > > all
+> > > > muxable peripherals set to "disabled" in the base DTSI, and a
+> > > > quick
+> > > > grep through a few dts directories gives me the impression that
+> > > > this is
+> > > > the case for most other vendors as well.
+> > > 
+> > > This approach only works for SoCs that don't need the kernel to
+> > > idle
+> > > devices for runtime PM.
+> > 
+> > I'm pretty sure that most modern SoCs I looked at have runtime PM,
+> > and
+> > it is simply expected that unusable devices are never enabled in
+> > the
+> > first place, so there is no need for the kernel to know about them.
+> 
+> Yeah well that assumption is the difference in getting runtime PM to
+> work in a sane way across multiple SoCs and devices :)
+> 
+> Devices tagged with status = "disabled" are completely ignored by the
+> kernel. Interconnect and bus related code may not know the details on
+> how to reset and idle the child devices. Relying on firmware to do
+> the
+> reset and idle of unused devices may be too generic, can be buggy,
+> and
+> probably depends on the firmware revision.
+
+Well, so far it seems like the `status = "disabled"` is just being
+pushed from the SoC DTSIs to the board DTSs on TI hardware. For the
+AM64 platform (which is fairly similar to the AM65), both mainboards
+that currently exist disable unused UARTs, I2C/SPI busses, PWMs, ...
+(Some of these might be disabled to make them usable from the R5/M4
+cores, but I don't think that the case for all of them - "reserved"
+would be more appropriate than "disabled" in these cases anyways)
+
+AFAICT, disabling non-operatational devices in the board DTS instead of
+the SoC DTSI is worse than the alternatives in every way:
+
+- Verbose board DTS: You have to think about all the devices that exist
+in the SoC, not just the ones you want to use
+- Adding new nodes without `status = "disabled" to SoC DTSI can
+potentially cause issues on dependent boards
+- It doesn't solve the issues that not having `status = "disabled"` in
+the DTSI is supposed to solve
+
+Regards,
+Matthias
+
+
+> 
+> Regards,
+> 
+> Tony
+
