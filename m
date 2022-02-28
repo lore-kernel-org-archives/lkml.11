@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB9FC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA6DDC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240277AbiB1SI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:08:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
+        id S240413AbiB1SIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:08:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240592AbiB1SDl (ORCPT
+        with ESMTP id S240753AbiB1SD7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:41 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B17DC7;
-        Mon, 28 Feb 2022 09:47:31 -0800 (PST)
+        Mon, 28 Feb 2022 13:03:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA86286EB;
+        Mon, 28 Feb 2022 09:47:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D2CE4CE17C8;
-        Mon, 28 Feb 2022 17:47:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDF24C340E7;
-        Mon, 28 Feb 2022 17:47:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74E4060748;
+        Mon, 28 Feb 2022 17:47:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C765C340E7;
+        Mon, 28 Feb 2022 17:47:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070429;
-        bh=KpnAx70+VULJuJK9jcH447lr7FsAjRGaGUsvhQiGB3w=;
+        s=korg; t=1646070450;
+        bh=6Bs3KRMBEnBHVY5wgZ6eTF3ehTlTDXNCkx6jttAQhII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zxQMwa+HbJ31UyvNJilmEua6Set9PxuX7UPnLPxEtJ/7k3rqsVtJfeHJ+zex0Lh+6
-         aC0F9l1JZoORVVCrtqsajYVUnR60fCD/al6PUg4ogYWlsVay1yBDqGIvWGMDDd6YV7
-         6Dbal9ouO3QH+MCk0/rk+QXZgC6QQAkdfivZC2xo=
+        b=KE/ongn3/EKvL94wJNutZP23/r9GoWqvXSIjZyYkxYLd1Gs78eG9KjZNFau0lxIsf
+         /8gPR2xoMW8Z6dkYtN/T49STwbc5iC9Snktas0znQ9/eKke0bFzsiRlSVwMCF+sCoW
+         ZnITRDpB4/o94INiLzq1B4hv8VF8NkORxL3AlTLU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tao Liu <thomas.liu@ucloud.cn>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 066/164] gso: do not skip outer ip header in case of ipip and net_failover
-Date:   Mon, 28 Feb 2022 18:23:48 +0100
-Message-Id: <20220228172406.148708610@linuxfoundation.org>
+        stable@vger.kernel.org, Julia Pineda <julia.pineda@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.16 114/164] iio:imu:adis16480: fix buffering for devices with no burst mode
+Date:   Mon, 28 Feb 2022 18:24:36 +0100
+Message-Id: <20220228172410.775930203@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,103 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tao Liu <thomas.liu@ucloud.cn>
+From: Nuno Sá <nuno.sa@analog.com>
 
-commit cc20cced0598d9a5ff91ae4ab147b3b5e99ee819 upstream.
+commit b0e85f95e30d4d2dc22ea123a30dba36406879a1 upstream.
 
-We encounter a tcp drop issue in our cloud environment. Packet GROed in
-host forwards to a VM virtio_net nic with net_failover enabled. VM acts
-as a IPVS LB with ipip encapsulation. The full path like:
-host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
- -> ipip encap -> net_failover tx -> virtio_net tx
+The trigger handler defined in the driver assumes that burst mode is
+being used. Hence, for devices that do not support it, we have to use
+the adis library default trigger implementation.
 
-When net_failover transmits a ipip pkt (gso_type = 0x0103, which means
-SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4), there is no gso
-did because it supports TSO and GSO_IPXIP4. But network_header points to
-inner ip header.
-
-Call Trace:
- tcp4_gso_segment        ------> return NULL
- inet_gso_segment        ------> inner iph, network_header points to
- ipip_gso_segment
- inet_gso_segment        ------> outer iph
- skb_mac_gso_segment
-
-Afterwards virtio_net transmits the pkt, only inner ip header is modified.
-And the outer one just keeps unchanged. The pkt will be dropped in remote
-host.
-
-Call Trace:
- inet_gso_segment        ------> inner iph, outer iph is skipped
- skb_mac_gso_segment
- __skb_gso_segment
- validate_xmit_skb
- validate_xmit_skb_list
- sch_direct_xmit
- __qdisc_run
- __dev_queue_xmit        ------> virtio_net
- dev_hard_start_xmit
- __dev_queue_xmit        ------> net_failover
- ip_finish_output2
- ip_output
- iptunnel_xmit
- ip_tunnel_xmit
- ipip_tunnel_xmit        ------> ipip
- dev_hard_start_xmit
- __dev_queue_xmit
- ip_finish_output2
- ip_output
- ip_forward
- ip_rcv
- __netif_receive_skb_one_core
- netif_receive_skb_internal
- napi_gro_receive
- receive_buf
- virtnet_poll
- net_rx_action
-
-The root cause of this issue is specific with the rare combination of
-SKB_GSO_DODGY and a tunnel device that adds an SKB_GSO_ tunnel option.
-SKB_GSO_DODGY is set from external virtio_net. We need to reset network
-header when callbacks.gso_segment() returns NULL.
-
-This patch also includes ipv6_gso_segment(), considering SIT, etc.
-
-Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
-Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Tested-by: Julia Pineda <julia.pineda@analog.com>
+Fixes: 941f130881fa9 ("iio: adis16480: support burst read function")
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Link: https://lore.kernel.org/r/20220114132608.241-1-nuno.sa@analog.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/af_inet.c     |    5 ++++-
- net/ipv6/ip6_offload.c |    2 ++
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/iio/imu/adis16480.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1376,8 +1376,11 @@ struct sk_buff *inet_gso_segment(struct
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -1403,6 +1403,7 @@ static int adis16480_probe(struct spi_de
+ {
+ 	const struct spi_device_id *id = spi_get_device_id(spi);
+ 	const struct adis_data *adis16480_data;
++	irq_handler_t trigger_handler = NULL;
+ 	struct iio_dev *indio_dev;
+ 	struct adis16480 *st;
+ 	int ret;
+@@ -1474,8 +1475,12 @@ static int adis16480_probe(struct spi_de
+ 		st->clk_freq = st->chip_info->int_clk;
  	}
  
- 	ops = rcu_dereference(inet_offloads[proto]);
--	if (likely(ops && ops->callbacks.gso_segment))
-+	if (likely(ops && ops->callbacks.gso_segment)) {
- 		segs = ops->callbacks.gso_segment(skb, features);
-+		if (!segs)
-+			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
-+	}
++	/* Only use our trigger handler if burst mode is supported */
++	if (adis16480_data->burst_len)
++		trigger_handler = adis16480_trigger_handler;
++
+ 	ret = devm_adis_setup_buffer_and_trigger(&st->adis, indio_dev,
+-						 adis16480_trigger_handler);
++						 trigger_handler);
+ 	if (ret)
+ 		return ret;
  
- 	if (IS_ERR_OR_NULL(segs))
- 		goto out;
---- a/net/ipv6/ip6_offload.c
-+++ b/net/ipv6/ip6_offload.c
-@@ -114,6 +114,8 @@ static struct sk_buff *ipv6_gso_segment(
- 	if (likely(ops && ops->callbacks.gso_segment)) {
- 		skb_reset_transport_header(skb);
- 		segs = ops->callbacks.gso_segment(skb, features);
-+		if (!segs)
-+			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
- 	}
- 
- 	if (IS_ERR_OR_NULL(segs))
 
 
