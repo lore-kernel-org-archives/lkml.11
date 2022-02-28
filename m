@@ -2,148 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA544C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0902C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229556AbiB1UZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:25:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
+        id S229588AbiB1U0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:26:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiB1UZn (ORCPT
+        with ESMTP id S229487AbiB1U0d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:25:43 -0500
-X-Greylist: delayed 1345 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 12:25:03 PST
-Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.180.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16A256C15
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:25:03 -0800 (PST)
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 0E9D9B239
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 14:02:38 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id OmC6nxGp022u3OmC7nw2sw; Mon, 28 Feb 2022 14:00:33 -0600
-X-Authority-Reason: nr=8
-Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:40014 helo=[10.0.0.45])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1nOmC5-004Kdt-G2; Mon, 28 Feb 2022 14:00:29 -0600
-Message-ID: <137d3573-051f-5374-70d6-cc99b44d00da@kernel.org>
-Date:   Mon, 28 Feb 2022 21:00:26 +0100
+        Mon, 28 Feb 2022 15:26:33 -0500
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B3D580D1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:25:53 -0800 (PST)
+Received: by mail-pg1-x52a.google.com with SMTP id e6so11134581pgn.2
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:25:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IxkmaZ+57/7rrIIgKIMooVvVx5aXtgitFuA8j/9jgsk=;
+        b=cS0SmD0B0NxCV3Q45NQ/VtLDvLZelBQYVQZXYDdCRvvM6vXLNNFqwqPGdPiYhPUPvU
+         M53Jj8VCV6nBW7hnBsV94StTXTNlrFTUjkcfFJSBPaVfkqj/IOmjbfEduBsd/42j/YZm
+         VbX0WM5rJfZtErjnYmNmSWFG7M2e7KqSXzMBA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IxkmaZ+57/7rrIIgKIMooVvVx5aXtgitFuA8j/9jgsk=;
+        b=27I0vzgArGOv1qATObYHu/wmhIYKZkfLOYnTeH9/vOmac3ZW0isTYzqN3caxk6Kn7h
+         64Wy3t6Uj1QNfOtChKETk8m4W8vo18EdDDi43DVF028e8pO3th6m5Vr9wJU56FdZuJlz
+         vmgKNHCBmgBVqR2e9P5lEWlEDuyhJeieqO3UUxeaMQMc7YYmwGjQOX3L1pETxb3fY5V9
+         2ngQsN4aknci0l4wfKA28FW8NmUNGKfK+TLfaN5+7hPjf4f4qvK7+6LGhNOffxtKWw1X
+         YXedkSaUM34J8gIdQSQPurFrUOAFhuFjcs6bnG0FjNJahmLM5NEqVsVYK7Vn96mv1lzt
+         Rm3w==
+X-Gm-Message-State: AOAM530piPRCYpmu/EQc7xkYPVsxM4xd/9DG17hNj61SLBzK9292NusD
+        bXR+Ifr+A5nE8brlQb6YyTKODA==
+X-Google-Smtp-Source: ABdhPJyMN412BOJNazpnH1z9WFUw3+OvKDL665fOFaq4H6C9nRW3XoPfkwVDIBH+M2majOKSdGlnxA==
+X-Received: by 2002:a05:6a00:2313:b0:4e0:ffa7:bbe0 with SMTP id h19-20020a056a00231300b004e0ffa7bbe0mr23439387pfh.53.1646079953455;
+        Mon, 28 Feb 2022 12:25:53 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:ba66:7507:a6af:82f1])
+        by smtp.gmail.com with UTF8SMTPSA id c63-20020a624e42000000b004f414f0a391sm3567792pfb.79.2022.02.28.12.25.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 12:25:52 -0800 (PST)
+From:   Brian Norris <briannorris@chromium.org>
+To:     Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     dri-devel@lists.freedesktop.org, Sean Paul <seanpaul@chromium.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Sean Paul <sean@poorly.run>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Heiko Stuebner <heiko@sntech.de>, linux-kernel@vger.kernel.org,
+        Brian Norris <briannorris@chromium.org>,
+        Liu Ying <victor.liu@oss.nxp.com>
+Subject: [PATCH v2 0/2] drm/bridge: analogix_dp: Self-refresh state machine fixes
+Date:   Mon, 28 Feb 2022 12:25:30 -0800
+Message-Id: <20220228202532.869740-1-briannorris@chromium.org>
+X-Mailer: git-send-email 2.35.1.574.g5d30c73bfb-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
-Content-Language: en-US
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>, rostedt@goodmis.org,
-        paulmck@kernel.org
-Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org, mtosatti@redhat.com
-References: <20220228141423.259691-1-nsaenzju@redhat.com>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <20220228141423.259691-1-nsaenzju@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 95.232.30.176
-X-Source-L: No
-X-Exim-ID: 1nOmC5-004Kdt-G2
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:40014
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 2
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/28/22 15:14, Nicolas Saenz Julienne wrote:
-> At the moment running osnoise on an isolated CPU and a PREEMPT_RCU
-> kernel might have the side effect of extending grace periods too much.
-> This will eventually entice RCU to schedule a task on the isolated CPU
-> to end the overly extended grace period, adding unwarranted noise to the
-> CPU being traced in the process.
-> 
-> So, check if we're the only ones running on this isolated CPU and that
-> we're on a PREEMPT_RCU setup. If so, let's force quiescent states in
-> between measurements.
-> 
-> Non-PREEMPT_RCU setups don't need to worry about this as osnoise main
-> loop's cond_resched() will go though a quiescent state for them.
-> 
-> Note that this same exact problem is what extended quiescent states were
-> created for. But adapting them to this specific use-case isn't trivial
-> as it'll imply reworking entry/exit and dynticks/context tracking code.
-> 
-> Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-> ---
->  kernel/trace/trace_osnoise.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
-> 
-> diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-> index 870a08da5b48..4928358f6e88 100644
-> --- a/kernel/trace/trace_osnoise.c
-> +++ b/kernel/trace/trace_osnoise.c
-> @@ -21,7 +21,9 @@
->  #include <linux/uaccess.h>
->  #include <linux/cpumask.h>
->  #include <linux/delay.h>
-> +#include <linux/tick.h>
->  #include <linux/sched/clock.h>
-> +#include <linux/sched/isolation.h>
->  #include <uapi/linux/sched/types.h>
->  #include <linux/sched.h>
->  #include "trace.h"
-> @@ -1295,6 +1297,7 @@ static int run_osnoise(void)
->  	struct osnoise_sample s;
->  	unsigned int threshold;
->  	u64 runtime, stop_in;
-> +	unsigned long flags;
->  	u64 sum_noise = 0;
->  	int hw_count = 0;
->  	int ret = -1;
-> @@ -1386,6 +1389,22 @@ static int run_osnoise(void)
->  					osnoise_stop_tracing();
->  		}
->  
-> +		/*
-> +		 * Check if we're the only ones running on this nohz_full CPU
-> +		 * and that we're on a PREEMPT_RCU setup. If so, let's fake a
-> +		 * QS since there is no way for RCU to know we're not making
-> +		 * use of it.
-> +		 *
-> +		 * Otherwise it'll be done through cond_resched().
-> +		 */
-> +		if (IS_ENABLED(CONFIG_PREEMPT_RCU) &&
-> +		    !housekeeping_cpu(raw_smp_processor_id(), HK_FLAG_MISC) &&
+Hi,
 
-Does this restrict to only isolcpus cpus? what if this CPU was isolated via
-other methods?
+I've been investigating several eDP issues on a Rockchip RK3399 system
+and have two proposed bugfixes. RK3399 has two CRTCs, either of which
+can be used for eDP output. For both fixes, we have bugs due to the
+relationship between the generalized "self refresh helpers" and the
+analogix-dp bridge driver which controls much of the PSR mechanics.
+These bugs are most visible when switching between CRTCs.
 
-> +		    tick_nohz_tick_stopped()) {
-> +			local_irq_save(flags);
+I'm not a DRM expert, but I've been poking at a lot of Rockchip display
+drivers recently. I'd love some skeptical eyes, so feel free to ask
+questions if I haven't explained issues well, or the proposals look
+fishy.
 
-This code is always with interrupts enabled, so local_irq_disable()/enable()
-should be enough (and faster).
+Regards,
+Brian
 
-> +			rcu_momentary_dyntick_idle();
-> +			local_irq_restore(flags);
-> +		}
+Changes in v2:
+- Drop "->enable" condition in crtc_needs_disable(); this could possibly
+  be "->active" to reflect the intended hardware state, but it also is a
+  little over-specific. We want to make a transition through "disabled"
+  any time we're exiting PSR at the same time as a CRTC switch.
+  (Thanks Liu Ying)
 
-Question, if we set this once, we could avoid setting it on every loop unless we
-have a preemption from another thread, right?
+Brian Norris (2):
+  drm/bridge: analogix_dp: Support PSR-exit to disable transition
+  drm/atomic: Force bridge self-refresh-exit on CRTC switch
 
->  		/*
->  		 * For the non-preemptive kernel config: let threads runs, if
->  		 * they so wish.
+ .../drm/bridge/analogix/analogix_dp_core.c    | 42 +++++++++++++++++--
+ drivers/gpu/drm/drm_atomic_helper.c           | 16 +++++--
+ 2 files changed, 51 insertions(+), 7 deletions(-)
 
-/me keeps playing with this patch.
+-- 
+2.35.1.574.g5d30c73bfb-goog
 
--- Daniel
