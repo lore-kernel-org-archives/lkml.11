@@ -2,106 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E2EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01357C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235915AbiB1Lju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:39:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
+        id S235945AbiB1Lky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:40:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235901AbiB1Ljq (ORCPT
+        with ESMTP id S234460AbiB1Lkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:39:46 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353394FC71;
-        Mon, 28 Feb 2022 03:39:07 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id h15so17145415edv.7;
-        Mon, 28 Feb 2022 03:39:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0R1g/497q0dQleECorPMMse003Wri8L14vlThYCB5qU=;
-        b=fwIGkks5zR/CacLDWsAb6PLTwups60q6KGsyXa5lsUR2GGiprP5uD9R3hdGaLzOzqI
-         eDOTqnlOaMvFQyr5V+jq9ophH+EuxdLDVZDYqWzonNT21QTbBNLXnX2tbfxf+6QsLYwS
-         fl6z/DJg7o7ltAaXzjhI01/ls99OaaGuuEKD8/z6p+gZVrRz6Z+yc9Gh61SmqEtuAV9+
-         4bFH+vKk1aGSUQam3SCIY2FaS7kNocom3aZ5v9TfF51nNXTiPnGCWGFXQcFI341koJbB
-         tAIB74jbX0shWE2k31VBvpF/TDtVHSPrpTUxe9/9sfYCyzSVtf9aj/erLlan6tZTbT/8
-         XsDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0R1g/497q0dQleECorPMMse003Wri8L14vlThYCB5qU=;
-        b=o2LRdhqEDLz3703QULMg9ZpEuFn7i3IqA5edL8Gb6BokVSHtMN5jNXG0ZFbsltOfvp
-         nb8zC0bly7Wd6D52zerg95hEU9Xp0U5w1deWcHIplKKdnCrLCJvL8GmaKSom4MoJIyhe
-         x4h3hFlNGNMEiabWrh9OV0kRTq08OJZGras0NacHPTt+AR49dOSQ1A6TuoBFvPIQRTrt
-         +/JSEmE0r0zP0GvKd2WGRjQYUJA3si4pTuiD61KP66SEJxecp72oLgF+0646fEl2ewll
-         Q5aBCH28BbJnZ+S7K/DUxKf9cS7y2buatZ3PPCZU5Sn24KvnLzHEzAO22gI1iDJ26199
-         zCxQ==
-X-Gm-Message-State: AOAM531zR+/RwU7BSybGNGvWCmnwXmWTmOzG/kwKAsy8hBG4asMVQqud
-        5HDXLdvG1CYC5XPLJfiAW2JTMJfH7yYm91ro03U=
-X-Google-Smtp-Source: ABdhPJya+oa/C+KISol4o9GENLWFEr+pbVWx325TSmODYC6jgIQMrwtXWYjjzH7ps4fAFo48asTefPxEpyV/5+NduAc=
-X-Received: by 2002:a05:6402:17d4:b0:413:2f6b:23c1 with SMTP id
- s20-20020a05640217d400b004132f6b23c1mr18725886edy.377.1646048345646; Mon, 28
- Feb 2022 03:39:05 -0800 (PST)
+        Mon, 28 Feb 2022 06:40:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCE271C8B;
+        Mon, 28 Feb 2022 03:40:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC88C61011;
+        Mon, 28 Feb 2022 11:40:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0F70CC340F7;
+        Mon, 28 Feb 2022 11:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646048412;
+        bh=IzGbTcTkn5OvqXsg1RVWTdhXpQHp9xW7OhzybEz8rpU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=e1gFUPQUj5F8Ws2RJTAXFNXtmCaDhftLa229YVLX5lNSzPulcT08lXnFoqCrgH9IE
+         xXtc6XhB+IbXJWLSkyRCaia5XQL9UOaG23tH/ALexH2oqJgal7i3toSFxrEIJccWS8
+         NQ5dNPCTTHyf5/LZgsnkCuHzLf+nLdh5/OU5V6VY9UkJTVsnydCkNpY9ex2UqTtaQx
+         EFtvnO6sOT2JtCDIhSgkykHAKWzULvKmKfh1HXg97L0HlZmE9E/YhhY5ehnmmlxRir
+         cNDHsg7L+Lw5m8Nd9IDl1yCxqhZqQpfu9QjTUFBvtf2Ix91l774ww/54eFZ23iV2K4
+         01V9V8ID1840A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id ED73BE5D087;
+        Mon, 28 Feb 2022 11:40:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20211126083119.16570-1-kishon@ti.com> <20211126083119.16570-6-kishon@ti.com>
-In-Reply-To: <20211126083119.16570-6-kishon@ti.com>
-From:   Christian Gmeiner <christian.gmeiner@gmail.com>
-Date:   Mon, 28 Feb 2022 12:38:54 +0100
-Message-ID: <CAH9NwWd9K=JmsBQkt9rJShTY8zVpTashq7HGfsgc5k=ZcCyQSg@mail.gmail.com>
-Subject: Re: [PATCH v2 5/5] PCI: keystone: Set DMA mask and coherent DMA mask
-To:     Kishon Vijay Abraham I <kishon@ti.com>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v3 0/2] flow_offload: add tc police parameters
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164604841196.9255.14955309839209917682.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Feb 2022 11:40:11 +0000
+References: <20220224102908.5255-1-jianbol@nvidia.com>
+In-Reply-To: <20220224102908.5255-1-jianbol@nvidia.com>
+To:     Jianbo Liu <jianbol@nvidia.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, olteanv@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, rajur@chelsio.com,
+        claudiu.manoil@nxp.com, sgoutham@marvell.com, gakula@marvell.com,
+        sbhatta@marvell.com, hkelam@marvell.com, saeedm@nvidia.com,
+        leon@kernel.org, idosch@nvidia.com, petrm@nvidia.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        simon.horman@corigine.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        baowen.zheng@corigine.com, louis.peens@netronome.com,
+        peng.zhang@corigine.com, oss-drivers@corigine.com, roid@nvidia.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all.
+Hello:
 
-Am So., 28. Nov. 2021 um 18:12 Uhr schrieb Kishon Vijay Abraham I
-<kishon@ti.com>:
->
-> Set DMA mask and coherent DMA mask such to indicate the device
-> can address the entire address space (32-bit in the case of
-> K2G and 48-bit in the case of AM654).
->
-> Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-> ---
->  drivers/pci/controller/dwc/pci-keystone.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/pci/controller/dwc/pci-keystone.c b/drivers/pci/controller/dwc/pci-keystone.c
-> index 73e6626a0d8f..80dbab267f7b 100644
-> --- a/drivers/pci/controller/dwc/pci-keystone.c
-> +++ b/drivers/pci/controller/dwc/pci-keystone.c
-> @@ -1224,6 +1224,11 @@ static int __init ks_pcie_probe(struct platform_device *pdev)
->                 return ret;
->         }
->
-> +       if (dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(48))) {
-> +               dev_err(dev, "Cannot set DMA mask\n");
-> +               return -EINVAL;
-> +       }
-> +
->         ret = of_property_read_u32(np, "num-lanes", &num_lanes);
->         if (ret)
->                 num_lanes = 1;
-> --
-> 2.17.1
->
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Can this single patch (from the whole series) be merged?
+On Thu, 24 Feb 2022 10:29:06 +0000 you wrote:
+> As a preparation for more advanced police offload in mlx5 (e.g.,
+> jumping to another chain when bandwidth is not exceeded), extend the
+> flow offload API with more tc-police parameters. Adjust existing
+> drivers to reject unsupported configurations.
+> 
+> Changes since v2:
+>   * Rename index to extval in exceed and notexceed acts.
+>   * Add policer validate functions for all drivers.
+> 
+> [...]
 
+Here is the summary with links:
+  - [net-next,v3,1/2] net: flow_offload: add tc police action parameters
+    https://git.kernel.org/netdev/net-next/c/b8cd5831c61c
+  - [net-next,v3,2/2] flow_offload: reject offload for all drivers with invalid police parameters
+    (no matching commit)
+
+You are awesome, thank you!
 -- 
-greets
---
-Christian Gmeiner, MSc
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-https://christian-gmeiner.info/privacypolicy
+
