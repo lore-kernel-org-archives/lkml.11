@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 361C8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237973AbiB1RjK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
+        id S238063AbiB1RjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:39:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238227AbiB1Rgw (ORCPT
+        with ESMTP id S238291AbiB1RhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:36:52 -0500
+        Mon, 28 Feb 2022 12:37:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C87985B4;
-        Mon, 28 Feb 2022 09:31:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5772689CD9;
+        Mon, 28 Feb 2022 09:32:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAB1061365;
-        Mon, 28 Feb 2022 17:31:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C2B3C340F0;
-        Mon, 28 Feb 2022 17:31:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6604D61357;
+        Mon, 28 Feb 2022 17:32:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F897C340E7;
+        Mon, 28 Feb 2022 17:31:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069514;
-        bh=vEPAZ3lTc+fwgGKdNcNvLHd+Ln7uEJIIVY59/b1a6eI=;
+        s=korg; t=1646069519;
+        bh=y1SU/BTsz0Cz1b5TkDBk+IMdQX/XvpIL1a+b4XrJ5wg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sFxfHYtP1FaBxzz0FWPSLrv/YILh+AJlA4frdq02CfVh3sbT/mq8Z4eQ4BXvF34ZS
-         +R16UOZ4TblkUWhhZHYIn0aCnLnRZXOJlUZ0210L7W6HIemPnk0IPtuRKvzpKQVuAu
-         1dbakx0ExormJbBC/doCWYAdqLugIKV6SuYLLPwg=
+        b=SxHgYrObN4hJziQMHXTc395KP6rbVqTI7SNFW0N+fXqHZ4Z7+32nxdbY1rdPA5GPg
+         Z6vS6T8l1xlKTuZA/u8zhiW5WBygf+/cy6sy3nDveVba/pmoFFWpnIPAUEYZ2gnaH2
+         kTf1UjvPY9HqNz4zXJUV8SxYrV2Ds7Xf/GXLQvq4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.4 47/53] tty: n_gsm: fix encoding of control signal octet bit DV
-Date:   Mon, 28 Feb 2022 18:24:45 +0100
-Message-Id: <20220228172251.681315920@linuxfoundation.org>
+Subject: [PATCH 5.4 49/53] tty: n_gsm: fix NULL pointer access due to DLCI release
+Date:   Mon, 28 Feb 2022 18:24:47 +0100
+Message-Id: <20220228172251.843432793@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -49,42 +49,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: daniel.starke@siemens.com <daniel.starke@siemens.com>
 
-commit 737b0ef3be6b319d6c1fd64193d1603311969326 upstream.
+commit 96b169f05cdcc844b400695184d77e42071d14f2 upstream.
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.6.3.7 describes the encoding of the
-control signal octet used by the MSC (modem status command). The same
-encoding is also used in convergence layer type 2 as described in chapter
-5.5.2. Table 7 and 24 both require the DV (data valid) bit to be set 1 for
-outgoing control signal octets sent by the DTE (data terminal equipment),
-i.e. for the initiator side.
-Currently, the DV bit is only set if CD (carrier detect) is on, regardless
-of the side.
+The here fixed commit made the tty hangup asynchronous to avoid a circular
+locking warning. I could not reproduce this warning. Furthermore, due to
+the asynchronous hangup the function call now gets queued up while the
+underlying tty is being freed. Depending on the timing this results in a
+NULL pointer access in the global work queue scheduler. To be precise in
+process_one_work(). Therefore, the previous commit made the issue worse
+which it tried to fix.
 
-This patch fixes this behavior by setting the DV bit on the initiator side
-unconditionally.
+This patch fixes this by falling back to the old behavior which uses a
+blocking tty hangup call before freeing up the associated tty.
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Fixes: 7030082a7415 ("tty: n_gsm: avoid recursive locking with async port hangup")
 Cc: stable@vger.kernel.org
 Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220218073123.2121-1-daniel.starke@siemens.com
+Link: https://lore.kernel.org/r/20220218073123.2121-4-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/n_gsm.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 --- a/drivers/tty/n_gsm.c
 +++ b/drivers/tty/n_gsm.c
-@@ -428,7 +428,7 @@ static u8 gsm_encode_modem(const struct
- 		modembits |= MDM_RTR;
- 	if (dlci->modem_tx & TIOCM_RI)
- 		modembits |= MDM_IC;
--	if (dlci->modem_tx & TIOCM_CD)
-+	if (dlci->modem_tx & TIOCM_CD || dlci->gsm->initiator)
- 		modembits |= MDM_DV;
- 	return modembits;
- }
+@@ -1722,7 +1722,12 @@ static void gsm_dlci_release(struct gsm_
+ 		gsm_destroy_network(dlci);
+ 		mutex_unlock(&dlci->mutex);
+ 
+-		tty_hangup(tty);
++		/* We cannot use tty_hangup() because in tty_kref_put() the tty
++		 * driver assumes that the hangup queue is free and reuses it to
++		 * queue release_one_tty() -> NULL pointer panic in
++		 * process_one_work().
++		 */
++		tty_vhangup(tty);
+ 
+ 		tty_port_tty_set(&dlci->port, NULL);
+ 		tty_kref_put(tty);
 
 
