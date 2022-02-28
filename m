@@ -2,97 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C41CEC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 22:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 22:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231648AbiB1Wyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 17:54:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
+        id S231624AbiB1W4m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 17:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231611AbiB1Wyp (ORCPT
+        with ESMTP id S230056AbiB1W4j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 17:54:45 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F243D15A20;
-        Mon, 28 Feb 2022 14:54:03 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id a8so27854704ejc.8;
-        Mon, 28 Feb 2022 14:54:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GsxpUBdbWqhwvtlxJIKUlO0M2+Pr5nAVEC771c3QJ/k=;
-        b=qchEkZ+1MqfOevkqUl4bSWLuZ7qjRLt9ku6OqIaZEEvQ1Qk7/DLqfnsHlKbEjJ10us
-         LBhkjSIMZFSgCJvtojYCJpCHh8YzxsTVbhucBhA3VsJ7C2TAf3Lwqgr+BzzmjPD/0yBs
-         UPo3BEBR0JiOfO+4v6eAy2FQqGoH8T+gF8QsSywoL7HNpkTyUPBGPPXBrUD9j3OCBk+l
-         a5MnWFXFk1Dh2LVWDtF8lL7/kc1gLTmo5cRoTBoQVJ4CG+tmbr2WsDPYw2OiPBTnmV0t
-         /g37eAyk1nRwEr1HkAsix34OpgNgU2BJczZO3qlGo0gA8biAcALfGZ0VoP8EEnvquJUA
-         Nsjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GsxpUBdbWqhwvtlxJIKUlO0M2+Pr5nAVEC771c3QJ/k=;
-        b=5dLqgCPEbvaoyZBCbFSH2f0YwVrW5APitT35avcmRtd1cN3ad7pLsnSceia6NZgS+l
-         czASbRKUYb0NeYIs87BDoLdhgocXwel/2U15IWEgvlg6RR6SnkrstLu3p54WD2FthRKu
-         V7g6/FliUmqLXDjzTyfZJ+emOkLFiTSb/2jyXDstkJ66EMC8O/RrY7OhtkEDaVlcf3im
-         ln2CY7ZoWPK18BpFZbnFf3jS4i+om+a4LNQwVDVPCLLrwX3TEpabqP0S9Rk78aVXjVM1
-         nRZydnR9kfOw5lMBBt7gks/Hs6cC4lBjS55TOqoxO6FXWQ3bmgxp6JyFaOrhR1glU//N
-         e3Tg==
-X-Gm-Message-State: AOAM5329SM5X//iobKfIrm/ep+0jrLhgHTcWKUGksnOVsumCLL0W+PaG
-        NVJC6xeJysa4tELCUwMXeD4R/FwZfMpedA==
-X-Google-Smtp-Source: ABdhPJyur+cHELdmew+tmID4EL9f/bRsLWeA8a6eqRSDwNoW6BmeK9qZpctr7JW7zqp7OBQXQFCesA==
-X-Received: by 2002:a17:906:814f:b0:6a8:49fa:a3f5 with SMTP id z15-20020a170906814f00b006a849faa3f5mr7020486ejw.421.1646088842504;
-        Mon, 28 Feb 2022 14:54:02 -0800 (PST)
-Received: from nlaptop.localdomain (ptr-dtfv0poj8u7zblqwbt6.18120a2.ip6.access.telenet.be. [2a02:1811:cc83:eef0:f2b6:6987:9238:41ca])
-        by smtp.gmail.com with ESMTPSA id o14-20020a170906774e00b006d5b915f27dsm4736885ejn.169.2022.02.28.14.52.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 14:53:22 -0800 (PST)
-From:   Niels Dossche <dossche.niels@gmail.com>
-To:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Niels Dossche <dossche.niels@gmail.com>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Subject: [PATCH] btrfs: add lockdep_assert_held to need_preemptive_reclaim
-Date:   Mon, 28 Feb 2022 23:52:16 +0100
-Message-Id: <20220228225215.16552-1-dossche.niels@gmail.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 28 Feb 2022 17:56:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFCD38D68A;
+        Mon, 28 Feb 2022 14:55:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7BD09B816A6;
+        Mon, 28 Feb 2022 22:55:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 118EAC340EE;
+        Mon, 28 Feb 2022 22:55:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646088957;
+        bh=IrKyR4KsaGy6ILEoSjvY+Pfikinwp5UgDQ/3sdpyfQg=;
+        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
+        b=JTti+7gOLMySTeqWwRBxm9JF/LxEc36hF/DllbnINKGysrNoAZbJLJCN29tzVQpEC
+         OPBNdIDfbz1a4MXrk6S84RC/ZiOGeWwOxLpW2V9hRJc+e7F2oPRIOxlhmAfsR40EkZ
+         Q2pS4vFDlD+ecf+evWmIf7r7ooWXN3k3Pfc74WjAyCK5yndZ0W3PF081gZa2AVB1LT
+         qIfQUnlwqzaDII5e8dWe49KxurJ1CpD4xSdpKFvkS+qWBTA9snzhIQ6jB54mE10KcI
+         jijFO4uIy/i+6CAtuUZ+BqilyatRAWqJ7H624wNXOLvWOzS4C5e8sn1XGZbRzI/A4w
+         RX+lyfAqXFcag==
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailauth.nyi.internal (Postfix) with ESMTP id B3D1A27C0054;
+        Mon, 28 Feb 2022 17:55:53 -0500 (EST)
+Received: from imap48 ([10.202.2.98])
+  by compute5.internal (MEProxy); Mon, 28 Feb 2022 17:55:53 -0500
+X-ME-Sender: <xms:-FIdYsLIH8xSXNZkBj6DK83xIzUn_W9DsfVQwWcVMCVCOzeKk1MKzQ>
+    <xme:-FIdYsLitA72qcFv2KAsG4rt4hYfQ-yzQUiflwB2j5Gq_sovTK47ksE4Xj0VPodt9
+    vn1SyG-Tz7OMJvj2yU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddtuddgtddvucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdetnhgu
+    hicunfhuthhomhhirhhskhhifdcuoehluhhtoheskhgvrhhnvghlrdhorhhgqeenucggtf
+    frrghtthgvrhhnpedthfehtedtvdetvdetudfgueeuhfdtudegvdelveelfedvteelfffg
+    fedvkeegfeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpegrnhguhidomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqudduiedukeeh
+    ieefvddqvdeifeduieeitdekqdhluhhtoheppehkvghrnhgvlhdrohhrgheslhhinhhugi
+    drlhhuthhordhush
+X-ME-Proxy: <xmx:-FIdYssw9wS50EE9pmpETO-NcmotanHVlmsg84NE43g3fXEk307dsg>
+    <xmx:-FIdYpaUHX3OArm88Um26oVtVLfGpJZ6c4f2XxZPmdtCJEAqDNfk6Q>
+    <xmx:-FIdYjbMoiMfJTvRwgFi78iSWM11ZclQ9BUpPVva3-tJJlRFBp_zwg>
+    <xmx:-VIdYpuR9Y186Dyd0VlVgshdQ9Q02sP-GkUSmwD_NWUNx-bFblctiTHSWgI>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 2E51821E006E; Mon, 28 Feb 2022 17:55:52 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4778-g14fba9972e-fm-20220217.001-g14fba997
+Mime-Version: 1.0
+Message-Id: <05df964f-552e-402e-981c-a8bea11c555c@www.fastmail.com>
+In-Reply-To: <Yh0+9cFyAfnsXqxI@kernel.org>
+References: <YgDIIpCm3UITk896@lisas.de>
+ <8f96c2a6-9c03-f97a-df52-73ffc1d87957@intel.com>
+ <YgI1A0CtfmT7GMIp@kernel.org> <YgI37n+3JfLSNQCQ@grain>
+ <357664de-b089-4617-99d1-de5098953c80@www.fastmail.com>
+ <YgKiKEcsNt7mpMHN@grain>
+ <8e36f20723ca175db49ed3cc73e42e8aa28d2615.camel@intel.com>
+ <9d664c91-2116-42cc-ef8d-e6d236de43d0@kernel.org>
+ <Yh0wIMjFdDl8vaNM@kernel.org>
+ <5a792e77-0072-4ded-9f89-e7fcc7f7a1d6@www.fastmail.com>
+ <Yh0+9cFyAfnsXqxI@kernel.org>
+Date:   Mon, 28 Feb 2022 14:55:30 -0800
+From:   "Andy Lutomirski" <luto@kernel.org>
+To:     "Mike Rapoport" <rppt@kernel.org>
+Cc:     "Rick P Edgecombe" <rick.p.edgecombe@intel.com>,
+        "Cyrill Gorcunov" <gorcunov@gmail.com>,
+        "Balbir Singh" <bsingharora@gmail.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Eugene Syromiatnikov" <esyr@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        "Randy Dunlap" <rdunlap@infradead.org>,
+        "Kees Cook" <keescook@chromium.org>,
+        "Dmitry Safonov" <0x7f454c46@gmail.com>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Eranian, Stephane" <eranian@google.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "Adrian Reber" <adrian@lisas.de>,
+        "Florian Weimer" <fweimer@redhat.com>,
+        "Nadav Amit" <nadav.amit@gmail.com>,
+        "Jann Horn" <jannh@google.com>, "Andrei Vagin" <avagin@gmail.com>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "kcc@google.com" <kcc@google.com>,
+        "Borislav Petkov" <bp@alien8.de>,
+        "Oleg Nesterov" <oleg@redhat.com>, "H.J. Lu" <hjl.tools@gmail.com>,
+        "Pavel Machek" <pavel@ucw.cz>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "Arnd Bergmann" <arnd@arndb.de>,
+        "Moreira, Joao" <joao.moreira@intel.com>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "Mike Kravetz" <mike.kravetz@oracle.com>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        "Weijiang Yang" <weijiang.yang@intel.com>,
+        "Dave Martin" <Dave.Martin@arm.com>,
+        "john.allen@amd.com" <john.allen@amd.com>,
+        "Ingo Molnar" <mingo@redhat.com>,
+        "Dave Hansen" <dave.hansen@intel.com>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        "Linux API" <linux-api@vger.kernel.org>,
+        "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Subject: Re: [PATCH 00/35] Shadow stacks for userspace
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In a previous patch I extended the locking for member accesses of
-space_info. It was then suggested to also add a lockdep assertion for
-space_info->lock to need_preemptive_reclaim.
 
-Suggested-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
----
- fs/btrfs/space-info.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/space-info.c b/fs/btrfs/space-info.c
-index 294242c194d8..5464bd168d5b 100644
---- a/fs/btrfs/space-info.c
-+++ b/fs/btrfs/space-info.c
-@@ -734,9 +734,13 @@ static bool need_preemptive_reclaim(struct btrfs_fs_info *fs_info,
- {
- 	u64 global_rsv_size = fs_info->global_block_rsv.reserved;
- 	u64 ordered, delalloc;
--	u64 thresh = div_factor_fine(space_info->total_bytes, 90);
-+	u64 thresh;
- 	u64 used;
- 
-+	lockdep_assert_held(&space_info->lock);
-+
-+	thresh = div_factor_fine(space_info->total_bytes, 90);
-+
- 	/* If we're just plain full then async reclaim just slows us down. */
- 	if ((space_info->bytes_used + space_info->bytes_reserved +
- 	     global_rsv_size) >= thresh)
--- 
-2.35.1
+On Mon, Feb 28, 2022, at 1:30 PM, Mike Rapoport wrote:
+> On Mon, Feb 28, 2022 at 12:30:41PM -0800, Andy Lutomirski wrote:
+>> 
+>> 
+>> On Mon, Feb 28, 2022, at 12:27 PM, Mike Rapoport wrote:
+>> > On Wed, Feb 09, 2022 at 06:37:53PM -0800, Andy Lutomirski wrote:
+>> >> On 2/8/22 18:18, Edgecombe, Rick P wrote:
+>> >> > On Tue, 2022-02-08 at 20:02 +0300, Cyrill Gorcunov wrote:
+>> >> > 
+>> >
+>> > Even with the current shadow stack interface Rick proposed, CRIU can restore
+>> > the victim using ptrace without any additional knobs, but we loose an
+>> > important ability to "self-cure" the victim from the parasite in case
+>> > anything goes wrong with criu control process.
+>> >
+>> > Moreover, the issue with backward compatibility is not with ptrace but with
+>> > sigreturn and it seems that criu is not its only user.
+>> 
+>> So we need an ability for a tracer to cause the tracee to call a function
+>> and to return successfully.  Apparently a gdb branch can already do this
+>> with shstk, and my PTRACE_CALL_FUNCTION_SIGFRAME should also do the
+>> trick.  I don't see why we need a sigretur-but-dont-verify -- we just
+>> need this mechanism to create a frame such that sigreturn actually works.
+>
+> If I understand correctly, PTRACE_CALL_FUNCTION_SIGFRAME() injects a frame
+> into the tracee and makes the tracee call sigreturn.
+> I.e. the tracee is stopped and this is used pretty much as PTRACE_CONT or
+> PTRACE_SYSCALL.
+>
+> In such case this defeats the purpose of sigreturn in CRIU because it is
+> called asynchronously by the tracee when the tracer is about to detach or
+> even already detached.
 
+The intent of PTRACE_CALL_FUNCTION_SIGFRAME is push a signal frame onto the stack and call a function.  That function should then be able to call sigreturn just like any normal signal handler.  There should be no requirement that the tracer still be attached when this happens, although the code calling sigreturn still needs to be mapped.
+
+(Specifically, on modern arches, the user runtime is expected to provide a "restorer" that calls sigreturn.  A hypotheticall PTRACE_CALL_FUNCTION_SIGFRAME would either need to call sigreturn directly or provide a restorer.)
