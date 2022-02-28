@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E822C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F43EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237418AbiB1SLb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:11:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47326 "EHLO
+        id S239643AbiB1SLg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:11:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239430AbiB1SE1 (ORCPT
+        with ESMTP id S236408AbiB1SEq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:04:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A405396A7;
-        Mon, 28 Feb 2022 09:47:55 -0800 (PST)
+        Mon, 28 Feb 2022 13:04:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C96641605;
+        Mon, 28 Feb 2022 09:47:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C26D560180;
-        Mon, 28 Feb 2022 17:47:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5C22C340F0;
-        Mon, 28 Feb 2022 17:47:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 158AA60DE5;
+        Mon, 28 Feb 2022 17:47:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B119C340F0;
+        Mon, 28 Feb 2022 17:47:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070475;
-        bh=Vj7+RV1mSAdxwWoIV35hkfTUgm01kukRlhS/2oE8/tA=;
+        s=korg; t=1646070472;
+        bh=5uF6y4pkw02E5d5b+6ZDIAcWCGP3fx5/Fm1OO0TLlEc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VP5DhX6dkZ7d7Cd2ogclWbuE2hjePg81thJOqFrRh7IAQ0qyPnvUc5Jml6IarMw8j
-         w2Y5LZ7Gusho1mP5pZus5bXOfg7iDeWViy0aUGegBzVpjCEve5d7+l6/jj4WwNRRv6
-         RtaIUIwy9zD3MMQkq2iHb3sd1uZKFBXKM3x2b8ek=
+        b=VxubcB25CKhPpdxK+F1X+gMEz0gYWfXxqVyNAerr/IUS76mJXSoKF9vLll7dy9qWT
+         pLLOXSLjrqAnawusPnM+hUzBFtAnsqsMgkiwiBfPE/UoWwQlUaCZEaqB/OVQFbBpT9
+         /A8KXM1M5IYMGVNxjwvFQBPMLlRvmXrGA8SgqFrs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 5.16 122/164] ata: pata_hpt37x: disable primary channel on HPT371
-Date:   Mon, 28 Feb 2022 18:24:44 +0100
-Message-Id: <20220228172411.279780984@linuxfoundation.org>
+        stable@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>
+Subject: [PATCH 5.16 121/164] sc16is7xx: Fix for incorrect data being transmitted
+Date:   Mon, 28 Feb 2022 18:24:43 +0100
+Message-Id: <20220228172411.212269000@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,47 +47,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Phil Elwell <phil@raspberrypi.com>
 
-commit 8d093e02e898b24c58788b0289e3202317a96d2a upstream.
+commit eebb0f4e894f1e9577a56b337693d1051dd6ebfd upstream.
 
-The HPT371 chip physically has only one channel, the secondary one,
-however the primary channel registers do exist! Thus we have to
-manually disable the non-existing channel if the BIOS hasn't done this
-already. Similarly to the pata_hpt3x2n driver, always disable the
-primary channel.
+UART drivers are meant to use the port spinlock within certain
+methods, to protect against reentrancy. The sc16is7xx driver does
+very little locking, presumably because when added it triggers
+"scheduling while atomic" errors. This is due to the use of mutexes
+within the regmap abstraction layer, and the mutex implementation's
+habit of sleeping the current thread while waiting for access.
+Unfortunately this lack of interlocking can lead to corruption of
+outbound data, which occurs when the buffer used for I2C transmission
+is used simultaneously by two threads - a work queue thread running
+sc16is7xx_tx_proc, and an IRQ thread in sc16is7xx_port_irq, both
+of which can call sc16is7xx_handle_tx.
 
-Fixes: 669a5db411d8 ("[libata] Add a bunch of PATA drivers.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+An earlier patch added efr_lock, a mutex that controls access to the
+EFR register. This mutex is already claimed in the IRQ handler, and
+all that is required is to claim the same mutex in sc16is7xx_tx_proc.
+
+See: https://github.com/raspberrypi/linux/issues/4885
+
+Fixes: 6393ff1c4435 ("sc16is7xx: Use threaded IRQ")
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Link: https://lore.kernel.org/r/20220216160802.1026013-1-phil@raspberrypi.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ata/pata_hpt37x.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/tty/serial/sc16is7xx.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/ata/pata_hpt37x.c
-+++ b/drivers/ata/pata_hpt37x.c
-@@ -920,6 +920,20 @@ static int hpt37x_init_one(struct pci_de
- 	pci_write_config_byte(dev, 0x5a, irqmask);
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -734,12 +734,15 @@ static irqreturn_t sc16is7xx_irq(int irq
+ static void sc16is7xx_tx_proc(struct kthread_work *ws)
+ {
+ 	struct uart_port *port = &(to_sc16is7xx_one(ws, tx_work)->port);
++	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
  
- 	/*
-+	 * HPT371 chips physically have only one channel, the secondary one,
-+	 * but the primary channel registers do exist!  Go figure...
-+	 * So,  we manually disable the non-existing channel here
-+	 * (if the BIOS hasn't done this already).
-+	 */
-+	if (dev->device == PCI_DEVICE_ID_TTI_HPT371) {
-+		u8 mcr1;
-+
-+		pci_read_config_byte(dev, 0x50, &mcr1);
-+		mcr1 &= ~0x04;
-+		pci_write_config_byte(dev, 0x50, mcr1);
-+	}
-+
-+	/*
- 	 * default to pci clock. make sure MA15/16 are set to output
- 	 * to prevent drives having problems with 40-pin cables. Needed
- 	 * for some drives such as IBM-DTLA which will not enter ready
+ 	if ((port->rs485.flags & SER_RS485_ENABLED) &&
+ 	    (port->rs485.delay_rts_before_send > 0))
+ 		msleep(port->rs485.delay_rts_before_send);
+ 
++	mutex_lock(&s->efr_lock);
+ 	sc16is7xx_handle_tx(port);
++	mutex_unlock(&s->efr_lock);
+ }
+ 
+ static void sc16is7xx_reconf_rs485(struct uart_port *port)
 
 
