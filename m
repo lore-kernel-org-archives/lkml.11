@@ -2,97 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F599C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:44:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B683FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236278AbiB1Mou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:44:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58940 "EHLO
+        id S236621AbiB1Mo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:44:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236579AbiB1Moi (ORCPT
+        with ESMTP id S236599AbiB1Mom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:44:38 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256354755A;
-        Mon, 28 Feb 2022 04:44:00 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id e6so9866720pgn.2;
-        Mon, 28 Feb 2022 04:44:00 -0800 (PST)
+        Mon, 28 Feb 2022 07:44:42 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04AF847548
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:44:02 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id g1so11066455pfv.1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:44:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qP6HrvQPRvcyooG75RH7rCRDnFKMKhHlpTnOTmKWJ5E=;
-        b=TKQpbKejpJRp4QDPKI8yohmG5/EW4zPfAu2U/DpBuHKDZSxLIHAkqKLxAr+u4lWR4x
-         IMWlw2biisuqVqpmict5mhC7vd8xAtUurrB1EgIMmfVhLPDMymqDekJkytiIFz6cjyk4
-         xCSbLXVbgaU3vnM2FBJLZIfER7uDRbLnYoUdu8cAZeeeqrx44fSIvOWqC8AR4zht9nBN
-         eV27wl40nRq9lcd4TkDSv7tjMFodI7tSY8FMoAGdBe37vkoqR/kW5QZcnvLVSbjW4ALZ
-         PYp9kW6Ky5wTWYH8K8/NGb+w/PAMRaEG6mjNshefOq/kYBrCn9NaCktL05l8PMpo76Vw
-         uvnA==
+        bh=LWisg6Oh4GHR/KswpTeQPwr12khSI6Ztj7YPF2Wfszg=;
+        b=qDj++Gwu/eEmp4bsP/+3bcnFlobpxn6RDmubKL2qGHAOl6r/F2Pkd/2ynCN7nKVazW
+         UyKF2hUaVknYV8Y/e5JVOXyGgVnOa5+YwUu6qpLHuuuaHlQmo3701W9NuNMJbPoW+ojj
+         Wu8k/aJuc0HKP0C16YHrOFE9qsdBKXiEj+Jb1ihpYbI/+r9/bJE4ENH7O7p2yt8bkqNB
+         p38oINaJc6rqfFbqi2Ta4zAiZ7L8h6aNnqf6ra0kXVPAhsWVyJRJWj0h/1Aiv3ysi/4m
+         PtH03h9MOqq3BYmv0hiNGTWcGj3taADffjbJ+QUklZ90ClyyRzIVNPloYhRpTSA/Njkx
+         kSrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qP6HrvQPRvcyooG75RH7rCRDnFKMKhHlpTnOTmKWJ5E=;
-        b=btENuZn6I+1TSv5A/IPQkcaf9T0hI2dVXlSTrjSwOslvHqH4Dps5Twgg96e6HYpp1+
-         T9NCRpvqFFRiR/fUJ4Es+ay7hvP8XMCWijpKcetBCPNrs5WIPNYtMvp8XjpbtqMk4wEW
-         N4NVGa8zJzGnXm8ziuIzEyS/Hi4n1mKQYC5uO2gy6T92Ww6ZlfHrLZrVFFTAm002gJW3
-         2PV78sGslYnAmOnJv/liylyC36OOD37xfT0sNpx/oMzhtRCUpR3NupO4BVkNsKe06iW+
-         IIM9izstVDNyJsZbkDMGQ6JJN8thpRcJs0RHYcR8BgyHXLNZx0IJJi05TLyJsJBgjbSx
-         gAFQ==
-X-Gm-Message-State: AOAM530s+3woFz9qE3ay9UlsgmD6RpYyVcLRkXTpuqfuv8ZIOn/wTWiI
-        5G12Bss4f/O6IvenFxMbSUkjMmobUFoJ3A==
-X-Google-Smtp-Source: ABdhPJzp96y/zE/eVlnUwluVho7ei6LG8OeQKtPLlwooDFfhvzVyToNALwKYpnUo1Q/PPW0Czl58Yg==
-X-Received: by 2002:a62:3085:0:b0:4e0:1218:6d03 with SMTP id w127-20020a623085000000b004e012186d03mr21101080pfw.19.1646052239644;
-        Mon, 28 Feb 2022 04:43:59 -0800 (PST)
-Received: from localhost.localdomain ([122.161.51.77])
-        by smtp.gmail.com with ESMTPSA id z23-20020aa79597000000b004e1bf2f5818sm14129214pfj.87.2022.02.28.04.43.57
+        bh=LWisg6Oh4GHR/KswpTeQPwr12khSI6Ztj7YPF2Wfszg=;
+        b=cVFQiAP0BGcTz6hg4d0OTDR+VK4HSr2y2PsF8rIYS+gCNiVN/cwB/8Wpbdtami0r59
+         p0xps/F/W6jtN4EDwGn3STU9T7v5abyyie2oMZwVxCroIA0BYKNOjOyihpBfMv2BI1mD
+         qN/sfDjlXfZxbo4mV2HxAlfy4fJV2EldEBTiXwjtLT3OFHiJEEICDtsI2895NXpbKM0b
+         gv3WfkkcEqWBNeINeYvrKsqTq3OE/IDs1tmaI5vWKA3nvvlzP9UNYyDsTdtgqlTXA/9q
+         z9o6iJ3iU3flYCXbcArF0A8OWPXYXYmq86hosvwA72aFWDABGeBTUYkyzrnONVWGini/
+         TgQw==
+X-Gm-Message-State: AOAM533Fl2LL63zomm2PztqJHEPjikme+vEEp8Ct4AY2pedXSD+/5JRM
+        gJ6ufMVOCKlewuk1lO2xJsFr
+X-Google-Smtp-Source: ABdhPJzKALtNtDDKSCZIDUXyMPg2/CMPUVBFtex+Uxa8tG1IHypCujeOrqq3UuuIi/ORjx7A14s2jQ==
+X-Received: by 2002:a62:ab09:0:b0:4e0:d967:318f with SMTP id p9-20020a62ab09000000b004e0d967318fmr21755203pff.86.1646052242367;
+        Mon, 28 Feb 2022 04:44:02 -0800 (PST)
+Received: from localhost.localdomain ([117.207.25.37])
+        by smtp.gmail.com with ESMTPSA id y12-20020a056a00190c00b004f39e28fb87sm14256737pfi.98.2022.02.28.04.43.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 04:43:59 -0800 (PST)
-From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
-To:     Mark Brown <broonie@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 3/3] dt-bindings: spi: Add spiclk to clock-names property in pl022
-Date:   Mon, 28 Feb 2022 18:13:45 +0530
-Message-Id: <20220228124345.99474-4-singh.kuldeep87k@gmail.com>
+        Mon, 28 Feb 2022 04:44:02 -0800 (PST)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     mhi@lists.linux.dev
+Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
+        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
+        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
+        quic_vbadigan@quicinc.com, quic_cang@quicinc.com,
+        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, elder@linaro.org,
+        Paul Davey <paul.davey@alliedtelesis.co.nz>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Hemant Kumar <hemantk@codeaurora.org>, stable@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH v4 01/27] bus: mhi: Fix pm_state conversion to string
+Date:   Mon, 28 Feb 2022 18:13:18 +0530
+Message-Id: <20220228124344.77359-2-manivannan.sadhasivam@linaro.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220228124345.99474-1-singh.kuldeep87k@gmail.com>
-References: <20220228124345.99474-1-singh.kuldeep87k@gmail.com>
+In-Reply-To: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
+References: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix below dtc warning by making necessary addition of "spiclk" in
-clock-names property.
+From: Paul Davey <paul.davey@alliedtelesis.co.nz>
 
-arch/arm64/boot/dts/broadcom/stingray/bcm958742t.dt.yaml: spi@190000:
-clock-names:0: 'spiclk' is not one of ['SSPCLK', 'sspclk']
-    From schema: Documentation/devicetree/bindings/spi/spi-pl022.yaml
-arch/arm64/boot/dts/broadcom/northstar2/ns2-svk.dt.yaml: spi@66190000:
-clock-names:0: 'spiclk' is not one of ['SSPCLK', 'sspclk']
-    From schema: Documentation/devicetree/bindings/spi/spi-pl022.yaml
+On big endian architectures the mhi debugfs files which report pm state
+give "Invalid State" for all states.  This is caused by using
+find_last_bit which takes an unsigned long* while the state is passed in
+as an enum mhi_pm_state which will be of int size.
 
-Signed-off-by: Kuldeep Singh <singh.kuldeep87k@gmail.com>
+Fix by using __fls to pass the value of state instead of find_last_bit.
+
+Also the current API expects "mhi_pm_state" enumerator as the function
+argument but the function only works with bitmasks. So as Alex suggested,
+let's change the argument to u32 to avoid confusion.
+
+Fixes: a6e2e3522f29 ("bus: mhi: core: Add support for PM state transitions")
+Signed-off-by: Paul Davey <paul.davey@alliedtelesis.co.nz>
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Reviewed-by: Hemant Kumar <hemantk@codeaurora.org>
+Cc: stable@vger.kernel.org
+[mani: changed the function argument to u32]
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- Documentation/devicetree/bindings/spi/spi-pl022.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/bus/mhi/core/init.c     | 10 ++++++----
+ drivers/bus/mhi/core/internal.h |  2 +-
+ 2 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/spi/spi-pl022.yaml b/Documentation/devicetree/bindings/spi/spi-pl022.yaml
-index 5f6926a58b15..fb3075a0c7fd 100644
---- a/Documentation/devicetree/bindings/spi/spi-pl022.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-pl022.yaml
-@@ -45,6 +45,7 @@ properties:
-           - enum:
-               - sspclk
-               - SSPCLK
-+              - spiclk
-           - const: apb_pclk
+diff --git a/drivers/bus/mhi/core/init.c b/drivers/bus/mhi/core/init.c
+index 046f407dc5d6..09394a1c29ec 100644
+--- a/drivers/bus/mhi/core/init.c
++++ b/drivers/bus/mhi/core/init.c
+@@ -77,12 +77,14 @@ static const char * const mhi_pm_state_str[] = {
+ 	[MHI_PM_STATE_LD_ERR_FATAL_DETECT] = "Linkdown or Error Fatal Detect",
+ };
  
-   pl022,autosuspend-delay:
+-const char *to_mhi_pm_state_str(enum mhi_pm_state state)
++const char *to_mhi_pm_state_str(u32 state)
+ {
+-	unsigned long pm_state = state;
+-	int index = find_last_bit(&pm_state, 32);
++	int index;
+ 
+-	if (index >= ARRAY_SIZE(mhi_pm_state_str))
++	if (state)
++		index = __fls(state);
++
++	if (!state || index >= ARRAY_SIZE(mhi_pm_state_str))
+ 		return "Invalid State";
+ 
+ 	return mhi_pm_state_str[index];
+diff --git a/drivers/bus/mhi/core/internal.h b/drivers/bus/mhi/core/internal.h
+index e2e10474a9d9..3508cbbf555d 100644
+--- a/drivers/bus/mhi/core/internal.h
++++ b/drivers/bus/mhi/core/internal.h
+@@ -622,7 +622,7 @@ void mhi_free_bhie_table(struct mhi_controller *mhi_cntrl,
+ enum mhi_pm_state __must_check mhi_tryset_pm_state(
+ 					struct mhi_controller *mhi_cntrl,
+ 					enum mhi_pm_state state);
+-const char *to_mhi_pm_state_str(enum mhi_pm_state state);
++const char *to_mhi_pm_state_str(u32 state);
+ int mhi_queue_state_transition(struct mhi_controller *mhi_cntrl,
+ 			       enum dev_st_transition state);
+ void mhi_pm_st_worker(struct work_struct *work);
 -- 
 2.25.1
 
