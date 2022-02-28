@@ -2,96 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B434C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D912EC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:52:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbiB1TwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 14:52:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43568 "EHLO
+        id S229793AbiB1TxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 14:53:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229838AbiB1Tv6 (ORCPT
+        with ESMTP id S229705AbiB1Twv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 14:51:58 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE71113DB5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:50:31 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id r187-20020a1c2bc4000000b003810e6b192aso101694wmr.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:50:31 -0800 (PST)
+        Mon, 28 Feb 2022 14:52:51 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6ACACA0E3;
+        Mon, 28 Feb 2022 11:52:11 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id hw13so26994431ejc.9;
+        Mon, 28 Feb 2022 11:52:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Dt2TIAnb0hgPqs5E3ITetwBw03oi/KH3u9qpCDk2YIc=;
-        b=CzppBtYiraF7Cxt5R+XptC5OZH8T2dPKrJJAwATivyW9xyYv8ML0Zpo3RRuWvWj1b9
-         sbztzFqB0fhBZriWexQYXobqmEYn27dfo2mtBneBPeUY8xoGIm5tqPk0EKcATihU6sim
-         FI7j94CdJvpfOj8JJEXQR8FkJw1TSp1IDUdvLFNCsEhuWza8Wd9QGUfUDQwbkRAi9eFw
-         ZDv7gSrroAHp2d9LQewq1b5E1hnDwirl8RlAvKWjzMkPXLjN357U5NYIPdhRgypkXnLB
-         09LgnjK7rRLBbGsv0vqg02YaDnMI1uoGntf3wbcilLWtye4Fy9lrYqdXg9mkX1jalXpX
-         pVug==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SE97nUCoQgsjM3ZnUKhOWf6INqaQW1rfHmBLrrwwrnE=;
+        b=HjCUBuqd57irJYB8osf17Ko1A6qfRwi8TZH4nzCHMeW7yc05d9hfgRtHB3S3gS9wk5
+         OPtTvBLcwa5UaKspXnCnc5U3ZvqyNnfYnEXY4HSJ1ElNlmZgCb0c3Fjlnfrdvukd5XOU
+         0Y4PLIqCFYbOeCQzNk/4H7qWoNSQCBfCQJyer41Vlbhf9wV0D33qKuD05mbt6+zOPMRi
+         Db/MFx82xV9Ew622tCmuipMBM0HILAocjBluQeM5WDNc+sh6Nj+pvZKmfRbxIyCfXGFy
+         m5ltLsThnS+AJbSz6PODwSnxuUQ6Vo+snke2ES7nMJjtJaEMPNv1Ce01We0d6JeSaLKt
+         DlFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Dt2TIAnb0hgPqs5E3ITetwBw03oi/KH3u9qpCDk2YIc=;
-        b=k+yxjbtjR3Emsymj78v+jnr6UYMgdFVNyEsXgqmTVuWzChVNxR7BscfxieWB9GOs2x
-         GiNs6ZmPmkbDdfKVvlmPQ8xadQ4+5OVqJdaA5lykbz7Z8CFNhqwouJAYlQXG+QemymtV
-         8gRrYfbWuNemc8W/DS7hGyGVpA/F36DpljescIfnZ4JLSFwS5ectP+evutscRplVGazH
-         lR0LBPU4ZAHt5mZT+WdPrBu4+ty1SLsCAYXE8wfGn43B2Ohj44/U4L8+v//rJxik7Lan
-         mnzK8LWl1rmkI+CYXRQVh/i0tccbGUN341+5LD2M0lMlDPVZoolQ16oCPMals64tJ2ex
-         DkJQ==
-X-Gm-Message-State: AOAM531PkhJrw7Gemf76XYAC12LdtKJ1mE6kngdEaTTwX/QmEr7slkLW
-        9v1QY/8WefL5QNnKm7cKSiX6u780qSY0yQ==
-X-Google-Smtp-Source: ABdhPJwxapsCu4s5/opiNJQ1tveKgMBQM6nggLxpg5XCcMpIT8JTP2LSc/eToaPcGR8ftKaNzRfOoQ==
-X-Received: by 2002:a1c:1907:0:b0:380:f6ec:4daa with SMTP id 7-20020a1c1907000000b00380f6ec4daamr14950116wmz.50.1646077255350;
-        Mon, 28 Feb 2022 11:40:55 -0800 (PST)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id v25-20020a05600c215900b0038117f41728sm274143wml.43.2022.02.28.11.40.54
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SE97nUCoQgsjM3ZnUKhOWf6INqaQW1rfHmBLrrwwrnE=;
+        b=GTziDsGcuMhz8AeENixXFaodIFq3Gr0uGYmYqlcpoPl1EZ2HBz4GJsLoKWWfw0rjOu
+         kpPSEmLplL03TGnjiayUM+cMmHxzVdzHfKA800O1RtgIebZUmjSHbo9vBySs+K1nDOwM
+         tuV+rvRoLJPCkqkzGd2miE0x2YinhpRYjfRmorVq69u6xdfdbdOjZsk7DjbgBwrleCxr
+         //st6/ZhK75thZht2jUtYG7eA6BpYUkIDiJupvNfYSzV+QXMQWX9k26KrMqyEwT12z7g
+         vBvCUYplDOV+qsyZeis29Tcixy+w89EiVsbuxy5sC6mE5A1frNAyL1QAJFOEqNkZYUU/
+         doHQ==
+X-Gm-Message-State: AOAM533GBKgGf6XxQ6r4038khGumqVkxyTwmeYonIq8vwWaShLMMTZoM
+        7E58+RAU5JUyWuMs2UNTgek8EJUKo0MBcw==
+X-Google-Smtp-Source: ABdhPJxzPFSQY3wwuaOek4finnBmQcUszLpgbN1KZAXlgFCpWH9GaiCFNYAAt6rbgeWeHVPsQR7Wuw==
+X-Received: by 2002:a17:906:3e09:b0:6cf:cf2c:2c02 with SMTP id k9-20020a1709063e0900b006cfcf2c2c02mr16768199eji.291.1646077930253;
+        Mon, 28 Feb 2022 11:52:10 -0800 (PST)
+Received: from nlaptop.localdomain (ptr-dtfv0poj8u7zblqwbt6.18120a2.ip6.access.telenet.be. [2a02:1811:cc83:eef0:f2b6:6987:9238:41ca])
+        by smtp.gmail.com with ESMTPSA id z11-20020a170906814b00b006a6be1e0f86sm4607513ejw.132.2022.02.28.11.52.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 11:40:55 -0800 (PST)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     heiko@sntech.de, herbert@gondor.apana.org.au,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH 16/16] crypto: rockchip: add myself as maintainer
-Date:   Mon, 28 Feb 2022 19:40:37 +0000
-Message-Id: <20220228194037.1600509-17-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220228194037.1600509-1-clabbe@baylibre.com>
-References: <20220228194037.1600509-1-clabbe@baylibre.com>
+        Mon, 28 Feb 2022 11:52:09 -0800 (PST)
+From:   Niels Dossche <dossche.niels@gmail.com>
+To:     linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Niels Dossche <dossche.niels@gmail.com>
+Subject: [PATCH] IB/rdmavt: add missing locks in rvt_ruc_loopback
+Date:   Mon, 28 Feb 2022 20:51:44 +0100
+Message-Id: <20220228195144.71946-1-dossche.niels@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Nobody is set as maintainer of rockchip crypto, I propose to do it as I
-have already reworked lot of this code.
+The documentation of the function rvt_error_qp says both r_lock and
+s_lock need to be held when calling that function.
+It also asserts using lockdep that both of those locks are held.
+rvt_error_qp is called form rvt_send_cq, which is called from
+rvt_qp_complete_swqe, which is called from rvt_send_complete, which is
+called from rvt_ruc_loopback in two places. Both of these places do not
+hold r_lock. Fix this by acquiring a spin_lock of r_lock in both of
+these places.
+The r_lock acquiring cannot be added in rvt_qp_complete_swqe because
+some of its other callers already have r_lock acquired.
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
 ---
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index db8052bc1d26..b1b2303ac285 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16828,6 +16828,12 @@ F:	Documentation/ABI/*/sysfs-driver-hid-roccat*
- F:	drivers/hid/hid-roccat*
- F:	include/linux/hid-roccat*
+diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
+index ae50b56e8913..3bac4f90a6d6 100644
+--- a/drivers/infiniband/sw/rdmavt/qp.c
++++ b/drivers/infiniband/sw/rdmavt/qp.c
+@@ -2775,7 +2775,7 @@ void rvt_qp_iter(struct rvt_dev_info *rdi,
+ EXPORT_SYMBOL(rvt_qp_iter);
  
-+ROCKCHIP CRYPTO DRIVERS
-+M:	Corentin Labbe <clabbe@baylibre.com>
-+L:	linux-crypto@vger.kernel.org
-+S:	Maintained
-+F:	drivers/crypto/rockchip/
-+
- ROCKCHIP I2S TDM DRIVER
- M:	Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
- L:	linux-rockchip@lists.infradead.org
+ /*
+- * This should be called with s_lock held.
++ * This should be called with s_lock and r_lock held.
+  */
+ void rvt_send_complete(struct rvt_qp *qp, struct rvt_swqe *wqe,
+ 		       enum ib_wc_status status)
+@@ -3134,7 +3134,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
+ 	rvp->n_loop_pkts++;
+ flush_send:
+ 	sqp->s_rnr_retry = sqp->s_rnr_retry_cnt;
++	spin_lock(&sqp->r_lock);
+ 	rvt_send_complete(sqp, wqe, send_status);
++	spin_unlock(&sqp->r_lock);
+ 	if (local_ops) {
+ 		atomic_dec(&sqp->local_ops_pending);
+ 		local_ops = 0;
+@@ -3188,7 +3190,9 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
+ 	spin_unlock_irqrestore(&qp->r_lock, flags);
+ serr_no_r_lock:
+ 	spin_lock_irqsave(&sqp->s_lock, flags);
++	spin_lock(&sqp->r_lock);
+ 	rvt_send_complete(sqp, wqe, send_status);
++	spin_unlock(&sqp->r_lock);
+ 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
+ 		int lastwqe = rvt_error_qp(sqp, IB_WC_WR_FLUSH_ERR);
+ 
 -- 
-2.34.1
+2.35.1
 
