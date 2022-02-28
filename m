@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 727A8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5585C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229830AbiB1TQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 14:16:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40964 "EHLO
+        id S229816AbiB1TQi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 14:16:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229639AbiB1TQb (ORCPT
+        with ESMTP id S229808AbiB1TQd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 14:16:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45ECFE4498;
-        Mon, 28 Feb 2022 11:15:45 -0800 (PST)
+        Mon, 28 Feb 2022 14:16:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA7EE44A6
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:15:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7325B8162F;
-        Mon, 28 Feb 2022 19:15:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5070DC340F2;
-        Mon, 28 Feb 2022 19:15:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A44616153C
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 19:15:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB6FAC340F1;
+        Mon, 28 Feb 2022 19:15:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646075742;
-        bh=rKHN0tABQaAaxZGmbVUu6SNde2wmYhf2Ll+XbGWr9NE=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=shfwThSZNZuNKWBahhXUVqLxgnTEBvDCLAQzOUP7VoE3++J+qzsfTO3zIGbZ2gOqw
-         XVj73sMm7GIyEsO2+UniOaqzJawRCvIe9W8hKY4Gy30j6oBTFsMTSkc0ejSyuGp1nH
-         kzriIYWpT43tEQU2/bMWYKURtvz96CfwCPmdiiv99AexI2jL8KRHhB4W4eXh0uuyrw
-         g1HT35Q5KapaUD0LNz8by0H2QxxY/7NW5qmBwx9EDdZ2L3A1paO+f8L4pupnVAeI34
-         l3jC7dEDQGlrSqGxBVI9tIREPPTI7X4cKh30iwYcqhPbmiHJUP9snNnM5y3HmlnkaV
-         YYWvwb9aZWpwQ==
+        s=k20201202; t=1646075746;
+        bh=/qQOB++KvvZ7sRy/B6gKIR06AjcperUnwullcN+5JlA=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=hUK/V96q2sCL7N238gDDmPKfGcA9oUaxW37RccU/y8c69v2P5Cal68n2DWTu18X69
+         +SCh+y54u/f6lnN04cVFim7bItVQnVQGyW3t75zVw5v7HNaY6prgn/5K0X/z/CGjXM
+         V5PuBWCpq26n4lPG9pCKP0tCq5vLyT6P3EYmdxzORmrPgtNscxUqJQP9tvLYEldfez
+         gbnjdoia9Z4c4HAT3IdCRgQsMC4O5qO6KSIpe9wfPxcw2m24cvUy74pxYFpjWZC/1U
+         VgyeK+poVSr3+TCAbnWULb9lI1PfgSM1/ED6cwEVKbbpuQFaoVVeMN8DJc1Vlv5OvL
+         0mTYFl3Aqkkew==
 From:   Mark Brown <broonie@kernel.org>
-To:     linux-arm-msm@vger.kernel.org, perex@perex.cz,
-        linux-kernel@vger.kernel.org, bgoswami@codeaurora.org,
-        tiwai@suse.com, lgirdwood@gmail.com, swboyd@chromium.org,
-        agross@kernel.org, judyhsiao@chromium.org,
-        alsa-devel@alsa-project.org, bjorn.andersson@linaro.org,
-        srinivas.kandagatla@linaro.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org,
-        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        rohitkr@codeaurora.org, quic_plai@quicinc.com
-In-Reply-To: <1645786624-12311-1-git-send-email-quic_srivasam@quicinc.com>
-References: <1645786624-12311-1-git-send-email-quic_srivasam@quicinc.com>
-Subject: Re: [PATCH v4 0/2] Add power domains support for digital macro codecs
-Message-Id: <164607573904.3538791.16540077443386812939.b4-ty@kernel.org>
-Date:   Mon, 28 Feb 2022 19:15:39 +0000
+To:     perex@perex.cz, tiwai@suse.com, peter.ujfalusi@gmail.com,
+        lgirdwood@gmail.com, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220228031540.3571959-1-jiasheng@iscas.ac.cn>
+References: <20220228031540.3571959-1-jiasheng@iscas.ac.cn>
+Subject: Re: [PATCH] ASoC: ti: davinci-i2s: Add check for clk_enable()
+Message-Id: <164607574441.3538791.1957643459988205698.b4-ty@kernel.org>
+Date:   Mon, 28 Feb 2022 19:15:44 +0000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -54,21 +48,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 25 Feb 2022 16:27:02 +0530, Srinivasa Rao Mandadapu wrote:
-> This patch set is to add power domains support for RX, TX and VA macros.
+On Mon, 28 Feb 2022 11:15:40 +0800, Jiasheng Jiang wrote:
+> As the potential failure of the clk_enable(),
+> it should be better to check it and return error
+> if fails.
 > 
-> Changes since v3:
->     -- Add dt-bindings support.
-> Changes since v2:
->     -- Remove redundant local variable.
->     -- Update pds error handling sequence.
->     -- Update module description.
->     -- Clean up pds init function.
->     -- Remove redundant arguments.
-> Changes since v1:
->     -- Add missing macros in Kconfig.
 > 
-> [...]
 
 Applied to
 
@@ -76,10 +61,8 @@ Applied to
 
 Thanks!
 
-[1/2] ASoC: codecs: Add power domains support in digital macro codecs
-      commit: 9e3d83c52844f955aa2975f78cee48bf9f72f5e1
-[2/2] ASoC: qcom: dt-bindings: Add bindings for power domains in lpass digital codecs
-      commit: 6619c7d4379aca716a90f7581be2853071c086f6
+[1/1] ASoC: ti: davinci-i2s: Add check for clk_enable()
+      commit: ed7c9fef11931fc5d32a83d68017ff390bf5c280
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
