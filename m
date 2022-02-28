@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57AC7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD55C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235293AbiB1LTV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:19:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53448 "EHLO
+        id S235598AbiB1LTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:19:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234927AbiB1LTC (ORCPT
+        with ESMTP id S235133AbiB1LTG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:19:02 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B235215A20
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:18:22 -0800 (PST)
+        Mon, 28 Feb 2022 06:19:06 -0500
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B96A340C3
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:18:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646047102; x=1677583102;
+  t=1646047108; x=1677583108;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kVbe5kyjR6LZvsZoGI+3OLtGGwUKh9RENE9A7JuYgqA=;
-  b=u61hG4CXXcNVI7/IQIeo4/BlX/5vc01xMPhfrCejL9gOLb+5td6vsaF/
-   75mlhNX3r2bdGsVYSPFKsGz/p/gdg2bbk1k9RFVeHNEoUTiioqk3LcvG0
-   NmGE7+FRudgEgPYbqWtixTKIZjANqDGdOUC25vkTH80pKhGhwyGGmXH4u
-   bMI29TRO0JxguUL3HbH3+WlJVOvg985KU7zzcdcua7JdKj9OcV4ciI4/u
-   Apc9j2GCHgUzqqYUV+b0z69FrlOtgp5kw0L+O3rh0OTnjCuY2bQ1SVMB/
-   yh6yNgyjuC6BYZqANcpaGwSSGieSnooFRAcRvr/At8tSAv4czYZng3a2j
-   g==;
+  bh=Jti6Lf93/pkshsUoxGsmUk/NZEDKA40Cet1PtYYdvz4=;
+  b=Z1Gw/aHOSX4Yg9a+N9uyO1jWt5i2YZcznv35G8r33Q5zlDJZaoHcS0Bk
+   +7K3kKZrfeDmkVatvwOPg82lWGVgu1QYvaFGeF3s5jQJuklvby4bGqYyG
+   sW2INQTI+dO2RtB1SoWX23VX8mP0vDZ3WztilvB46gC2Rz9jAWHrjiffl
+   N/Rg7cOPiQ8wegB9C14VtyvGC4qGUgRsrNzIkZ4COYd7hUt9UoH0xfxRp
+   CwEuVg4VPrCr8cnpfEV9qgxKv83z2Vmonlb9NGuz4pr8d3z3/Dx1nt4Nl
+   K/OfJKDdM/ZeAwZH4mLOH7YNTuAIbPM/17eEEaWFjiRs5tqVYKD2uA8+G
+   w==;
 X-IronPort-AV: E=Sophos;i="5.90,142,1643698800"; 
-   d="scan'208";a="150223344"
+   d="scan'208";a="155099455"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Feb 2022 04:18:22 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Feb 2022 04:18:27 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 28 Feb 2022 04:18:21 -0700
+ 15.1.2375.17; Mon, 28 Feb 2022 04:18:27 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 28 Feb 2022 04:18:19 -0700
+ 15.1.2375.17 via Frontend Transport; Mon, 28 Feb 2022 04:18:25 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <daniel.lezcano@linaro.org>, <tglx@linutronix.de>
 CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 2/7] clocksource/drivers/timer-microchip-pit64b: remove timer-of dependency
-Date:   Mon, 28 Feb 2022 13:19:18 +0200
-Message-ID: <20220228111923.1400049-3-claudiu.beznea@microchip.com>
+Subject: [PATCH 4/7] clocksource/drivers/timer-microchip-pit64b: use 5MHz for clockevent
+Date:   Mon, 28 Feb 2022 13:19:20 +0200
+Message-ID: <20220228111923.1400049-5-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220228111923.1400049-1-claudiu.beznea@microchip.com>
 References: <20220228111923.1400049-1-claudiu.beznea@microchip.com>
@@ -57,25 +57,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PIT64B driver doesn't use timer-of APIs. Thus, remove the selection.
+Use 5MHz clock for clockevent timers. This increases timer's
+resolution.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/clocksource/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/clocksource/timer-microchip-pit64b.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index 1ea556e75494..3aee0ffad1fe 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -713,7 +713,6 @@ config INGENIC_OST
- config MICROCHIP_PIT64B
- 	bool "Microchip PIT64B support"
- 	depends on OF || COMPILE_TEST
--	select TIMER_OF
- 	help
- 	  This option enables Microchip PIT64B timer for Atmel
- 	  based system. It supports the oneshot, the periodic
+diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
+index 790d2c9b42a7..abce83d2f00b 100644
+--- a/drivers/clocksource/timer-microchip-pit64b.c
++++ b/drivers/clocksource/timer-microchip-pit64b.c
+@@ -42,8 +42,7 @@
+ #define MCHP_PIT64B_LSBMASK		GENMASK_ULL(31, 0)
+ #define MCHP_PIT64B_PRES_TO_MODE(p)	(MCHP_PIT64B_MR_PRES & ((p) << 8))
+ #define MCHP_PIT64B_MODE_TO_PRES(m)	((MCHP_PIT64B_MR_PRES & (m)) >> 8)
+-#define MCHP_PIT64B_DEF_CS_FREQ		5000000UL	/* 5 MHz */
+-#define MCHP_PIT64B_DEF_CE_FREQ		32768		/* 32 KHz */
++#define MCHP_PIT64B_DEF_FREQ		5000000UL	/* 5 MHz */
+ 
+ #define MCHP_PIT64B_NAME		"pit64b"
+ 
+@@ -418,7 +417,6 @@ static int __init mchp_pit64b_init_clkevt(struct mchp_pit64b_timer *timer,
+ static int __init mchp_pit64b_dt_init_timer(struct device_node *node,
+ 					    bool clkevt)
+ {
+-	u32 freq = clkevt ? MCHP_PIT64B_DEF_CE_FREQ : MCHP_PIT64B_DEF_CS_FREQ;
+ 	struct mchp_pit64b_timer timer;
+ 	unsigned long clk_rate;
+ 	u32 irq = 0;
+@@ -446,7 +444,7 @@ static int __init mchp_pit64b_dt_init_timer(struct device_node *node,
+ 	}
+ 
+ 	/* Initialize mode (prescaler + SGCK bit). To be used at runtime. */
+-	ret = mchp_pit64b_init_mode(&timer, freq);
++	ret = mchp_pit64b_init_mode(&timer, MCHP_PIT64B_DEF_FREQ);
+ 	if (ret)
+ 		goto irq_unmap;
+ 
 -- 
 2.32.0
 
