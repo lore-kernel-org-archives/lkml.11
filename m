@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFF05C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:05:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0484FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:05:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239863AbiB1SGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:06:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
+        id S235149AbiB1SGK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:06:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239394AbiB1R7u (ORCPT
+        with ESMTP id S237444AbiB1R7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:59:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20AA08A6CA;
-        Mon, 28 Feb 2022 09:45:26 -0800 (PST)
+        Mon, 28 Feb 2022 12:59:52 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEA995A25;
+        Mon, 28 Feb 2022 09:45:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48967B81187;
-        Mon, 28 Feb 2022 17:45:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C004C340E7;
-        Mon, 28 Feb 2022 17:45:16 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E341DCE17C5;
+        Mon, 28 Feb 2022 17:45:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7113C36AE3;
+        Mon, 28 Feb 2022 17:45:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070316;
-        bh=H4bCPBLG7fxRFwWOWxzj2fIKxJazT6R4qsz8GJmb+dM=;
+        s=korg; t=1646070328;
+        bh=pX6mQoUYemg9uBUd2vqfxSDecwitSZVxqUQPyeLDs/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lb4sSgQUePDMlFCeBIgJo7eujLZPo0ig1hLaL9U/CdzxKi/4OB5Z3K+4so5WmOs1D
-         er6qbYKGEXJfKrmGxg9OxOvqabdixP6Kc2p71ETOx5/QDyeMZchZwL+CeoRy2NL5KL
-         2yRrd1i21yQLI4ynsee4fUwPGX65QNhtaAkJ2Wxg=
+        b=dIrbS+IYJHHSlc+42RDjpnWQlWqHobCZIxM0Cv8P5wCqFnyissvx1wp9dAsf8jumH
+         iXsVs8oxQk5zskbz6tCguZC4yrl2vzMQo5Tx0fDKmePP2y4FsLEhaHJG04FKGXrtbv
+         ilNxDU6RO25UiAZUJwcg04vBI1gBWlsjDwXSyc38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 018/164] drm/amd/pm: fix some OEM SKU specific stability issues
-Date:   Mon, 28 Feb 2022 18:23:00 +0100
-Message-Id: <20220228172401.592173123@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Matthias Reichl <hias@horus.com>,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [PATCH 5.16 069/164] drm/edid: Always set RGB444
+Date:   Mon, 28 Feb 2022 18:23:51 +0100
+Message-Id: <20220228172406.380654985@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,69 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-commit e3f3824874da78db5775a5cb9c0970cd1c6978bc upstream.
+commit ecbd4912a693b862e25cba0a6990a8c95b00721e upstream.
 
-Add a quirk in sienna_cichlid_ppt.c to fix some OEM SKU
-specific stability issues.
+In order to fill the drm_display_info structure each time an EDID is
+read, the code currently will call drm_add_display_info with the parsed
+EDID.
 
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+drm_add_display_info will then call drm_reset_display_info to reset all
+the fields to 0, and then set them to the proper value depending on the
+EDID.
+
+In the color_formats case, we will thus report that we don't support any
+color format, and then fill it back with RGB444 plus the additional
+formats described in the EDID Feature Support byte.
+
+However, since that byte only contains format-related bits since the 1.4
+specification, this doesn't happen if the EDID is following an earlier
+specification. In turn, it means that for one of these EDID, we end up
+with color_formats set to 0.
+
+The EDID 1.3 specification never really specifies what it means by RGB
+exactly, but since both HDMI and DVI will use RGB444, it's fairly safe
+to assume it's supposed to be RGB444.
+
+Let's move the addition of RGB444 to color_formats earlier in
+drm_add_display_info() so that it's always set for a digital display.
+
+Fixes: da05a5a71ad8 ("drm: parse color format support for digital displays")
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Reported-by: Matthias Reichl <hias@horus.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220203115416.1137308-1-maxime@cerno.tech
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c |   32 +++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/drm_edid.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-@@ -418,6 +418,36 @@ static int sienna_cichlid_store_powerpla
- 	return 0;
- }
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -5345,6 +5345,7 @@ u32 drm_add_display_info(struct drm_conn
+ 	if (!(edid->input & DRM_EDID_INPUT_DIGITAL))
+ 		return quirks;
  
-+static int sienna_cichlid_patch_pptable_quirk(struct smu_context *smu)
-+{
-+	struct amdgpu_device *adev = smu->adev;
-+	uint32_t *board_reserved;
-+	uint16_t *freq_table_gfx;
-+	uint32_t i;
-+
-+	/* Fix some OEM SKU specific stability issues */
-+	GET_PPTABLE_MEMBER(BoardReserved, &board_reserved);
-+	if ((adev->pdev->device == 0x73DF) &&
-+	    (adev->pdev->revision == 0XC3) &&
-+	    (adev->pdev->subsystem_device == 0x16C2) &&
-+	    (adev->pdev->subsystem_vendor == 0x1043))
-+		board_reserved[0] = 1387;
-+
-+	GET_PPTABLE_MEMBER(FreqTableGfx, &freq_table_gfx);
-+	if ((adev->pdev->device == 0x73DF) &&
-+	    (adev->pdev->revision == 0XC3) &&
-+	    ((adev->pdev->subsystem_device == 0x16C2) ||
-+	    (adev->pdev->subsystem_device == 0x133C)) &&
-+	    (adev->pdev->subsystem_vendor == 0x1043)) {
-+		for (i = 0; i < NUM_GFXCLK_DPM_LEVELS; i++) {
-+			if (freq_table_gfx[i] > 2500)
-+				freq_table_gfx[i] = 2500;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- static int sienna_cichlid_setup_pptable(struct smu_context *smu)
- {
- 	int ret = 0;
-@@ -438,7 +468,7 @@ static int sienna_cichlid_setup_pptable(
- 	if (ret)
- 		return ret;
++	info->color_formats |= DRM_COLOR_FORMAT_RGB444;
+ 	drm_parse_cea_ext(connector, edid);
  
--	return ret;
-+	return sienna_cichlid_patch_pptable_quirk(smu);
- }
+ 	/*
+@@ -5393,7 +5394,6 @@ u32 drm_add_display_info(struct drm_conn
+ 	DRM_DEBUG("%s: Assigning EDID-1.4 digital sink color depth as %d bpc.\n",
+ 			  connector->name, info->bpc);
  
- static int sienna_cichlid_tables_init(struct smu_context *smu)
+-	info->color_formats |= DRM_COLOR_FORMAT_RGB444;
+ 	if (edid->features & DRM_EDID_FEATURE_RGB_YCRCB444)
+ 		info->color_formats |= DRM_COLOR_FORMAT_YCRCB444;
+ 	if (edid->features & DRM_EDID_FEATURE_RGB_YCRCB422)
 
 
