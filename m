@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D56C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235844AbiB1RfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:35:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38844 "EHLO
+        id S238162AbiB1RfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:35:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238281AbiB1RdL (ORCPT
+        with ESMTP id S238308AbiB1RdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:33:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E48F8F62E;
-        Mon, 28 Feb 2022 09:29:44 -0800 (PST)
+        Mon, 28 Feb 2022 12:33:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F078F983;
+        Mon, 28 Feb 2022 09:29:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F08DE61357;
-        Mon, 28 Feb 2022 17:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13BCAC340E7;
-        Mon, 28 Feb 2022 17:29:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEFB76145C;
+        Mon, 28 Feb 2022 17:29:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97CBC340F0;
+        Mon, 28 Feb 2022 17:29:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069375;
-        bh=jrevI2wUOcNqKkewXA85Iooudq2LITR6Is9Rtg9RFdM=;
+        s=korg; t=1646069386;
+        bh=vU/qhmC0dR0bSizI4ccziVaAU5ZeYpReprMKNESwoZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d/8xEPia5XMaoQfzuJ1/+v59hMWg0jwOZzxQ1eFm7J05KyidhlcunhVFqKqZ4DZrk
-         VSCs5NWjM4SBRM1NweMAIF6OAxQuHVVn8OfKY8zOUAtK0ranp7cthXZbk4AsYUvwOT
-         nAiZEMeZA8Oqqreny4Ln2CWR/ZCo0gbxmWHfBqY4=
+        b=LpeIn1x9h1mQqQtoXTTRc/EAZvQEn+zHsSLmV9+B7SypScJGkN9nZs6W3XyQPtibr
+         NfunRS+Ulol95mr61Rz1yjYZtcoavTmQG305IkmPoUEODeqx9AAB1ggk75dcrzQvin
+         0Li4u2q/4gNPnQqzMh65oatp9cTXS4fCFxKMfjhQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Puma Hsu <pumahsu@google.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 4.19 32/34] xhci: re-initialize the HC during resume if HCE was set
-Date:   Mon, 28 Feb 2022 18:24:38 +0100
-Message-Id: <20220228172211.092582378@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+        Thierry Reding <treding@nvidia.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH 4.19 17/34] gpio: tegra186: Fix chip_data type confusion
+Date:   Mon, 28 Feb 2022 18:24:23 +0100
+Message-Id: <20220228172209.845156606@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172207.090703467@linuxfoundation.org>
 References: <20220228172207.090703467@linuxfoundation.org>
@@ -48,68 +50,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Puma Hsu <pumahsu@google.com>
+From: Marc Zyngier <maz@kernel.org>
 
-commit 8b328f8002bcf29ef517ee4bf234e09aabec4d2e upstream.
+commit d1e972ace42390de739cde87d96043dcbe502286 upstream.
 
-When HCE(Host Controller Error) is set, it means an internal
-error condition has been detected. Software needs to re-initialize
-the HC, so add this check in xhci resume.
+The tegra186 GPIO driver makes the assumption that the pointer
+returned by irq_data_get_irq_chip_data() is a pointer to a
+tegra_gpio structure. Unfortunately, it is actually a pointer
+to the inner gpio_chip structure, as mandated by the gpiolib
+infrastructure. Nice try.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Puma Hsu <pumahsu@google.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220215123320.1253947-2-mathias.nyman@linux.intel.com
+The saving grace is that the gpio_chip is the first member of
+tegra_gpio, so the bug has gone undetected since... forever.
+
+Fix it by performing a container_of() on the pointer. This results
+in no additional code, and makes it possible to understand how
+the whole thing works.
+
+Fixes: 5b2b135a87fc ("gpio: Add Tegra186 support")
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: Thierry Reding <treding@nvidia.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Link: https://lore.kernel.org/r/20220211093904.1112679-1-maz@kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci.c |   19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ drivers/gpio/gpio-tegra186.c |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1083,6 +1083,7 @@ int xhci_resume(struct xhci_hcd *xhci, b
- 	int			retval = 0;
- 	bool			comp_timer_running = false;
- 	bool			pending_portevent = false;
-+	bool			reinit_xhc = false;
+--- a/drivers/gpio/gpio-tegra186.c
++++ b/drivers/gpio/gpio-tegra186.c
+@@ -237,9 +237,12 @@ static int tegra186_gpio_of_xlate(struct
+ 	return offset + pin;
+ }
  
- 	if (!hcd->state)
- 		return 0;
-@@ -1099,10 +1100,11 @@ int xhci_resume(struct xhci_hcd *xhci, b
- 	set_bit(HCD_FLAG_HW_ACCESSIBLE, &xhci->shared_hcd->flags);
- 
- 	spin_lock_irq(&xhci->lock);
--	if ((xhci->quirks & XHCI_RESET_ON_RESUME) || xhci->broken_suspend)
--		hibernated = true;
- 
--	if (!hibernated) {
-+	if (hibernated || xhci->quirks & XHCI_RESET_ON_RESUME || xhci->broken_suspend)
-+		reinit_xhc = true;
++#define to_tegra_gpio(x) container_of((x), struct tegra_gpio, gpio)
 +
-+	if (!reinit_xhc) {
- 		/*
- 		 * Some controllers might lose power during suspend, so wait
- 		 * for controller not ready bit to clear, just as in xHC init.
-@@ -1135,12 +1137,17 @@ int xhci_resume(struct xhci_hcd *xhci, b
- 			spin_unlock_irq(&xhci->lock);
- 			return -ETIMEDOUT;
- 		}
--		temp = readl(&xhci->op_regs->status);
- 	}
+ static void tegra186_irq_ack(struct irq_data *data)
+ {
+-	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct tegra_gpio *gpio = to_tegra_gpio(gc);
+ 	void __iomem *base;
  
--	/* If restore operation fails, re-initialize the HC during resume */
--	if ((temp & STS_SRE) || hibernated) {
-+	temp = readl(&xhci->op_regs->status);
-+
-+	/* re-initialize the HC on Restore Error, or Host Controller Error */
-+	if (temp & (STS_SRE | STS_HCE)) {
-+		reinit_xhc = true;
-+		xhci_warn(xhci, "xHC error in resume, USBSTS 0x%x, Reinit\n", temp);
-+	}
+ 	base = tegra186_gpio_get_base(gpio, data->hwirq);
+@@ -251,7 +254,8 @@ static void tegra186_irq_ack(struct irq_
  
-+	if (reinit_xhc) {
- 		if ((xhci->quirks & XHCI_COMP_MODE_QUIRK) &&
- 				!(xhci_all_ports_seen_u0(xhci))) {
- 			del_timer_sync(&xhci->comp_mode_recovery_timer);
+ static void tegra186_irq_mask(struct irq_data *data)
+ {
+-	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct tegra_gpio *gpio = to_tegra_gpio(gc);
+ 	void __iomem *base;
+ 	u32 value;
+ 
+@@ -266,7 +270,8 @@ static void tegra186_irq_mask(struct irq
+ 
+ static void tegra186_irq_unmask(struct irq_data *data)
+ {
+-	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct tegra_gpio *gpio = to_tegra_gpio(gc);
+ 	void __iomem *base;
+ 	u32 value;
+ 
+@@ -281,7 +286,8 @@ static void tegra186_irq_unmask(struct i
+ 
+ static int tegra186_irq_set_type(struct irq_data *data, unsigned int flow)
+ {
+-	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
++	struct tegra_gpio *gpio = to_tegra_gpio(gc);
+ 	void __iomem *base;
+ 	u32 value;
+ 
 
 
