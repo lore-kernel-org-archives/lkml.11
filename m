@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8958EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD40C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235261AbiB1SBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:01:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
+        id S239613AbiB1SBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:01:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240758AbiB1Rye (ORCPT
+        with ESMTP id S240759AbiB1Rye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9515133A;
-        Mon, 28 Feb 2022 09:43:06 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184B850E36;
+        Mon, 28 Feb 2022 09:43:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 797DFB815AB;
-        Mon, 28 Feb 2022 17:43:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6F9BC340E7;
-        Mon, 28 Feb 2022 17:43:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD561B815B8;
+        Mon, 28 Feb 2022 17:43:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C601C340E7;
+        Mon, 28 Feb 2022 17:43:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070184;
-        bh=14EMimUpj5GZ9KgacRO25ktm5uKqvBSC3sszDYK6NcA=;
+        s=korg; t=1646070181;
+        bh=5dm7uLNDaDHkQMdjOmGzkqLJGVxRYhYtS1tosPEpBHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kdsQIiZtID+G9RdvBtEXDj30u5CcGNwv2GcHVcYuUxujdlMVCEsGVK7ajGohO96bc
-         4/vPEQ23MpjNoWTreJUQ07UbgslWC2bYEl+csW0snP3rV+2ISTh8c6Xh4Nbad+IlrW
-         kSoJnLE0cAvvkHhzAI9zA7sIYlN2gcs4voSOj39o=
+        b=h6Vxq0TXJzQC+FslWc2w4DVPa+kX+AnI9iav/P6dCFXNPgLaGkXCqYzJikpmyZP1n
+         NaYmSH8gRTyCixnaENnY8HToAB0LiUgk+mz1VfypujnFkXUWoGCbSQWAxcK3c4bI56
+         Wk9eiD4Rjx4qs0rn/yx1ITPYkWuSNZzAfNwo6vkY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        stable@vger.kernel.org, Jimmy Kizito <Jimmy.Kizito@amd.com>,
+        Jasdeep Dhillon <jdhillon@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
         Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 017/164] drm/amd/display: Protect update_bw_bounding_box FPU code.
-Date:   Mon, 28 Feb 2022 18:22:59 +0100
-Message-Id: <20220228172401.489267046@linuxfoundation.org>
+Subject: [PATCH 5.16 016/164] drm/amd/display: Fix stream->link_enc unassigned during stream removal
+Date:   Mon, 28 Feb 2022 18:22:58 +0100
+Message-Id: <20220228172401.393934941@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,53 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-commit 1432108d00e42ffa383240bcac8d58f89ae19104 upstream.
+commit 3743e7f6fcb938b7d8b7967e6a9442805e269b3d upstream.
 
-For DCN3/3.01/3.02 at least these use the fpu.
+[Why]
+Found when running igt@kms_atomic.
 
-v2: squash in build fix for when DCN is not enabled (Leo)
+Userspace attempts to do a TEST_COMMIT when 0 streams which calls
+dc_remove_stream_from_ctx. This in turn calls link_enc_unassign
+which ends up modifying stream->link = NULL directly, causing the
+global link_enc to be removed preventing further link activity
+and future link validation from passing.
 
-Signed-off-by: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+[How]
+We take care of link_enc unassignment at the start of
+link_enc_cfg_link_encs_assign so this call is no longer necessary.
+
+Fixes global state from being modified while unlocked.
+
+Reviewed-by: Jimmy Kizito <Jimmy.Kizito@amd.com>
+Acked-by: Jasdeep Dhillon <jdhillon@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
 Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/clk_mgr/dcn30/dcn30_clk_mgr.c |    2 ++
- drivers/gpu/drm/amd/display/dc/core/dc.c                     |    7 +++++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/core/dc_resource.c |    4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn30/dcn30_clk_mgr.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn30/dcn30_clk_mgr.c
-@@ -437,8 +437,10 @@ static void dcn3_get_memclk_states_from_
- 	clk_mgr_base->bw_params->clk_table.num_entries = num_levels ? num_levels : 1;
- 
- 	/* Refresh bounding box */
-+	DC_FP_START();
- 	clk_mgr_base->ctx->dc->res_pool->funcs->update_bw_bounding_box(
- 			clk_mgr->base.ctx->dc, clk_mgr_base->bw_params);
-+	DC_FP_END();
- }
- 
- static bool dcn3_is_smu_present(struct clk_mgr *clk_mgr_base)
---- a/drivers/gpu/drm/amd/display/dc/core/dc.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
-@@ -999,10 +999,13 @@ static bool dc_construct(struct dc *dc,
- 		goto fail;
- #ifdef CONFIG_DRM_AMD_DC_DCN
- 	dc->clk_mgr->force_smu_not_present = init_params->force_smu_not_present;
--#endif
- 
--	if (dc->res_pool->funcs->update_bw_bounding_box)
-+	if (dc->res_pool->funcs->update_bw_bounding_box) {
-+		DC_FP_START();
- 		dc->res_pool->funcs->update_bw_bounding_box(dc, dc->clk_mgr->bw_params);
-+		DC_FP_END();
-+	}
-+#endif
- 
- 	/* Creation of current_state must occur after dc->dml
- 	 * is initialized in dc_create_resource_pool because
+--- a/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc_resource.c
+@@ -1876,10 +1876,6 @@ enum dc_status dc_remove_stream_from_ctx
+ 				dc->res_pool,
+ 			del_pipe->stream_res.stream_enc,
+ 			false);
+-	/* Release link encoder from stream in new dc_state. */
+-	if (dc->res_pool->funcs->link_enc_unassign)
+-		dc->res_pool->funcs->link_enc_unassign(new_ctx, del_pipe->stream);
+-
+ #if defined(CONFIG_DRM_AMD_DC_DCN)
+ 	if (is_dp_128b_132b_signal(del_pipe)) {
+ 		update_hpo_dp_stream_engine_usage(
 
 
