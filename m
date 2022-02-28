@@ -2,43 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1CC1C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1CDDC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238855AbiB1RnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:43:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
+        id S238929AbiB1Rnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:43:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235998AbiB1RjY (ORCPT
+        with ESMTP id S238380AbiB1RkJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:39:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AA490CD2;
-        Mon, 28 Feb 2022 09:34:06 -0800 (PST)
+        Mon, 28 Feb 2022 12:40:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EEA093989;
+        Mon, 28 Feb 2022 09:34:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A1DAB815A6;
-        Mon, 28 Feb 2022 17:34:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD3C7C340E7;
-        Mon, 28 Feb 2022 17:34:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C5236614D0;
+        Mon, 28 Feb 2022 17:34:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4D08C340E7;
+        Mon, 28 Feb 2022 17:34:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069644;
-        bh=UetJ5oyp/PARJAuwEtlGVz+riQ4VPsAix6ryU2qb2oE=;
+        s=korg; t=1646069663;
+        bh=P9+8LyoE7wfKYtVa8BQKxcGYP08SrbQhU1GkxwKfPiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m4BKFHjXwJF2MEwlom7CGw7Es27Z1W41P9SQoYkVHm0eKrlttinX21j782q1PZ3jy
-         Mw6P0D/yzOO7sV49kjIeQPvQ82eurj/Q0qdcRgzDCMrG2jIEgKeZ9zP/NuxvYcVuYs
-         JTHJ9myZGBlcVONfz3ohS9k/X85x+Y7oohXDAa30=
+        b=R/cXiPaCEr/us3K8n8Tq4DENR2khWXoL9KrAWql3hwMo63nO68y4wPrpq6v+CJpV0
+         79dbZ449DRhfQwNb8li/nwT29bW/LF7HeGojUH+VVKCd7YBBn3YTbvfEIJD7nl5Acb
+         /0v4sIHc6OmdwCU9ICj0s5eCFaCuG2WfuhKi/O/w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.10 40/80] surface: surface3_power: Fix battery readings on batteries without a serial number
-Date:   Mon, 28 Feb 2022 18:24:21 +0100
-Message-Id: <20220228172316.417155470@linuxfoundation.org>
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexei Budankov <abudankov@huawei.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 20/80] perf data: Fix double free in perf_session__delete()
+Date:   Mon, 28 Feb 2022 18:24:01 +0100
+Message-Id: <20220228172314.124646966@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -50,57 +58,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
 
-commit 21d90aaee8d5c2a097ef41f1430d97661233ecc6 upstream.
+commit 69560e366fc4d5fca7bebb0e44edbfafc8bcaf05 upstream.
 
-The battery on the 2nd hand Surface 3 which I recently bought appears to
-not have a serial number programmed in. This results in any I2C reads from
-the registers containing the serial number failing with an I2C NACK.
+When perf_data__create_dir() fails, it calls close_dir(), but
+perf_session__delete() also calls close_dir() and since dir.version and
+dir.nr were initialized by perf_data__create_dir(), a double free occurs.
 
-This was causing mshw0011_bix() to fail causing the battery readings to
-not work at all.
+This patch moves the initialization of dir.version and dir.nr after
+successful initialization of dir.files, that prevents double freeing.
+This behavior is already implemented in perf_data__open_dir().
 
-Ignore EREMOTEIO (I2C NACK) errors when retrieving the serial number and
-continue with an empty serial number to fix this.
-
-Fixes: b1f81b496b0d ("platform/x86: surface3_power: MSHW0011 rev-eng implementation")
-BugLink: https://github.com/linux-surface/linux-surface/issues/608
-Reviewed-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Reviewed-by: Maximilian Luz <luzmaximilian@gmail.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220224101848.7219-1-hdegoede@redhat.com
+Fixes: 145520631130bd64 ("perf data: Add perf_data__(create_dir|close_dir) functions")
+Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Antonov <alexander.antonov@linux.intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Alexei Budankov <abudankov@huawei.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220218152341.5197-2-alexey.v.bayduraev@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/x86/surface3_power.c |   13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ tools/perf/util/data.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/drivers/platform/x86/surface3_power.c
-+++ b/drivers/platform/x86/surface3_power.c
-@@ -233,14 +233,21 @@ static int mshw0011_bix(struct mshw0011_
- 	}
- 	bix->last_full_charg_capacity = ret;
+--- a/tools/perf/util/data.c
++++ b/tools/perf/util/data.c
+@@ -44,10 +44,6 @@ int perf_data__create_dir(struct perf_da
+ 	if (!files)
+ 		return -ENOMEM;
  
--	/* get serial number */
-+	/*
-+	 * Get serial number, on some devices (with unofficial replacement
-+	 * battery?) reading any of the serial number range addresses gets
-+	 * nacked in this case just leave the serial number empty.
-+	 */
- 	ret = i2c_smbus_read_i2c_block_data(client, MSHW0011_BAT0_REG_SERIAL_NO,
- 					    sizeof(buf), buf);
--	if (ret != sizeof(buf)) {
-+	if (ret == -EREMOTEIO) {
-+		/* no serial number available */
-+	} else if (ret != sizeof(buf)) {
- 		dev_err(&client->dev, "Error reading serial no: %d\n", ret);
- 		return ret;
-+	} else {
-+		snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
- 	}
--	snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
+-	data->dir.version = PERF_DIR_VERSION;
+-	data->dir.files   = files;
+-	data->dir.nr      = nr;
+-
+ 	for (i = 0; i < nr; i++) {
+ 		struct perf_data_file *file = &files[i];
  
- 	/* get cycle count */
- 	ret = i2c_smbus_read_word_data(client, MSHW0011_BAT0_REG_CYCLE_CNT);
+@@ -62,6 +58,9 @@ int perf_data__create_dir(struct perf_da
+ 		file->fd = ret;
+ 	}
+ 
++	data->dir.version = PERF_DIR_VERSION;
++	data->dir.files   = files;
++	data->dir.nr      = nr;
+ 	return 0;
+ 
+ out_err:
 
 
