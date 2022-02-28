@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DADC3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 470D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:52:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239237AbiB1Rwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:52:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
+        id S239066AbiB1Rwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238871AbiB1Rrr (ORCPT
+        with ESMTP id S238966AbiB1Rr6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:47:47 -0500
+        Mon, 28 Feb 2022 12:47:58 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6CA9F6C9;
-        Mon, 28 Feb 2022 09:38:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD61E9F6E5;
+        Mon, 28 Feb 2022 09:38:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DB8F61548;
-        Mon, 28 Feb 2022 17:38:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EC4C340E7;
-        Mon, 28 Feb 2022 17:38:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55C7C61357;
+        Mon, 28 Feb 2022 17:38:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A9B8C340E7;
+        Mon, 28 Feb 2022 17:38:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069894;
-        bh=tZIKfWR+H3BlXKJ0ATaZf8/I7giSuWW2xGUyyzNSUi8=;
+        s=korg; t=1646069896;
+        bh=upPMdnElNNd20feAsnlnwpyu/K9IrRCwpUr5wKx0yfk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=chrfte3vZSHBzw1QB9cy4Ylzv+m5Izk2eUG0Jw6CNK9hk96yhGUz1eROHRMfPOSOH
-         amVFeZEfPTtkxUky+fKumlv62m/CDYX3LXdDJ2EPwnLB2l+UZEBicM5bbR5fz5u4St
-         cvN3Wh0f3nZ5kleKno5m1286WFC10S/9eyJDAsL4=
+        b=xq2lCxksGLNrZ+pYlSorC7P1l2WlytK9qpzHOVUX8lgnbBCP22eFdIh+TMFsBZ3O+
+         r3rg5VJaF6oF2tsyprfYrF9r4Iqn2moQ6BTeawpwAkAxa0woM4m2UFx29YwBvwZf1t
+         U/jitsWZox2//Qr/qFzjPMUNJKiCvyJxgHw+Pqqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Siarhei Volkau <lis8215@gmail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Stephen Boyd <sboyd@kernel.org>
-Subject: [PATCH 5.15 007/139] clk: jz4725b: fix mmc0 clock gating
-Date:   Mon, 28 Feb 2022 18:23:01 +0100
-Message-Id: <20220228172348.497204774@linuxfoundation.org>
+        stable@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 044/139] bnxt_en: Fix incorrect multicast rx mask setting when not requested
+Date:   Mon, 28 Feb 2022 18:23:38 +0100
+Message-Id: <20220228172352.343435696@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,43 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Siarhei Volkau <lis8215@gmail.com>
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-commit 2f0754f27a230fee6e6d753f07585cee03bedfe3 upstream.
+commit 8cdb15924252e27af16c4a8fe0fc606ce5fd04dc upstream.
 
-The mmc0 clock gate bit was mistakenly assigned to "i2s" clock.
-You can find that the same bit is assigned to "mmc0" too.
-It leads to mmc0 hang for a long time after any sound activity
-also it  prevented PM_SLEEP to work properly.
-I guess it was introduced by copy-paste from jz4740 driver
-where it is really controls I2S clock gate.
+We should setup multicast only when net_device flags explicitly
+has IFF_MULTICAST set. Otherwise we will incorrectly turn it on
+even when not asked.  Fix it by only passing the multicast table
+to the firmware if IFF_MULTICAST is set.
 
-Fixes: 226dfa4726eb ("clk: Add Ingenic jz4725b CGU driver")
-Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
-Tested-by: Siarhei Volkau <lis8215@gmail.com>
-Reviewed-by: Paul Cercueil <paul@crapouillou.net>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220205171849.687805-2-lis8215@gmail.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: 7d2837dd7a32 ("bnxt_en: Setup multicast properly after resetting device.")
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/ingenic/jz4725b-cgu.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/drivers/clk/ingenic/jz4725b-cgu.c
-+++ b/drivers/clk/ingenic/jz4725b-cgu.c
-@@ -139,11 +139,10 @@ static const struct ingenic_cgu_clk_info
- 	},
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -4757,8 +4757,10 @@ static int bnxt_hwrm_cfa_l2_set_rx_mask(
+ 		return rc;
  
- 	[JZ4725B_CLK_I2S] = {
--		"i2s", CGU_CLK_MUX | CGU_CLK_DIV | CGU_CLK_GATE,
-+		"i2s", CGU_CLK_MUX | CGU_CLK_DIV,
- 		.parents = { JZ4725B_CLK_EXT, JZ4725B_CLK_PLL_HALF, -1, -1 },
- 		.mux = { CGU_REG_CPCCR, 31, 1 },
- 		.div = { CGU_REG_I2SCDR, 0, 1, 9, -1, -1, -1 },
--		.gate = { CGU_REG_CLKGR, 6 },
- 	},
+ 	req->vnic_id = cpu_to_le32(vnic->fw_vnic_id);
+-	req->num_mc_entries = cpu_to_le32(vnic->mc_list_count);
+-	req->mc_tbl_addr = cpu_to_le64(vnic->mc_list_mapping);
++	if (vnic->rx_mask & CFA_L2_SET_RX_MASK_REQ_MASK_MCAST) {
++		req->num_mc_entries = cpu_to_le32(vnic->mc_list_count);
++		req->mc_tbl_addr = cpu_to_le64(vnic->mc_list_mapping);
++	}
+ 	req->mask = cpu_to_le32(vnic->rx_mask);
+ 	return hwrm_req_send_silent(bp, req);
+ }
+@@ -8624,7 +8626,7 @@ static int bnxt_init_chip(struct bnxt *b
+ 	if (bp->dev->flags & IFF_ALLMULTI) {
+ 		vnic->rx_mask |= CFA_L2_SET_RX_MASK_REQ_MASK_ALL_MCAST;
+ 		vnic->mc_list_count = 0;
+-	} else {
++	} else if (bp->dev->flags & IFF_MULTICAST) {
+ 		u32 mask = 0;
  
- 	[JZ4725B_CLK_SPI] = {
+ 		bnxt_mc_list_updated(bp, &mask);
+@@ -10737,7 +10739,7 @@ static void bnxt_set_rx_mode(struct net_
+ 	if (dev->flags & IFF_ALLMULTI) {
+ 		mask |= CFA_L2_SET_RX_MASK_REQ_MASK_ALL_MCAST;
+ 		vnic->mc_list_count = 0;
+-	} else {
++	} else if (dev->flags & IFF_MULTICAST) {
+ 		mc_update = bnxt_mc_list_updated(bp, &mask);
+ 	}
+ 
+@@ -10805,9 +10807,10 @@ skip_uc:
+ 	    !bnxt_promisc_ok(bp))
+ 		vnic->rx_mask &= ~CFA_L2_SET_RX_MASK_REQ_MASK_PROMISCUOUS;
+ 	rc = bnxt_hwrm_cfa_l2_set_rx_mask(bp, 0);
+-	if (rc && vnic->mc_list_count) {
++	if (rc && (vnic->rx_mask & CFA_L2_SET_RX_MASK_REQ_MASK_MCAST)) {
+ 		netdev_info(bp->dev, "Failed setting MC filters rc: %d, turning on ALL_MCAST mode\n",
+ 			    rc);
++		vnic->rx_mask &= ~CFA_L2_SET_RX_MASK_REQ_MASK_MCAST;
+ 		vnic->rx_mask |= CFA_L2_SET_RX_MASK_REQ_MASK_ALL_MCAST;
+ 		vnic->mc_list_count = 0;
+ 		rc = bnxt_hwrm_cfa_l2_set_rx_mask(bp, 0);
 
 
