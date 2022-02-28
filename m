@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60296C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 717FAC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239752AbiB1Rx1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:53:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33590 "EHLO
+        id S239860AbiB1Rxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:53:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239092AbiB1RsE (ORCPT
+        with ESMTP id S238709AbiB1Rs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:48:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639C8A1447;
-        Mon, 28 Feb 2022 09:38:34 -0800 (PST)
+        Mon, 28 Feb 2022 12:48:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB10DA1BFE;
+        Mon, 28 Feb 2022 09:38:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3BDF6153C;
-        Mon, 28 Feb 2022 17:38:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0526CC340F0;
-        Mon, 28 Feb 2022 17:38:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C22F614C9;
+        Mon, 28 Feb 2022 17:38:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B573C340E7;
+        Mon, 28 Feb 2022 17:38:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069913;
-        bh=vz++OT2NpQLcJoIMtjCiXJNuGLiWgx78RUDEY0UqYyc=;
+        s=korg; t=1646069929;
+        bh=WelrOcjhKJZUVYoCTXO2VZocUzNAmGqaCDG+LtKnRe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dG0+xQWCCQEUEWo+wlhC+50RH6/ff3KCgqB7i6/+QcZ/ak/QpaxZnfWu1Wf2Ex9dc
-         j2M61OeC3sBa/E7i6fdEauLHJCJ9rLGj/CpgaJywC2LBDIwigqehs2JHsscsQiAjUb
-         1SQBPE6Q1HtscKtSaJJSa9HdmGMCP4nwasC8A8IE=
+        b=SKH9YQuUSmsQB9OH2YP3jqArizWha2ccF6G1xNUy3KWq63/TSajShgy1qfRKQTave
+         7F5drD5eduiFBLkVh300A+oOnQpZlVc0fFMFbuQAUI0pqQnK/kD+1W/rOsvXKW5zD+
+         7B1yk0H8zbNUGak6VbX5I/iXZQGGRoCTriUAORHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 058/139] tipc: Fix end of loop tests for list_for_each_entry()
-Date:   Mon, 28 Feb 2022 18:23:52 +0100
-Message-Id: <20220228172353.805227174@linuxfoundation.org>
+        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.15 063/139] net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
+Date:   Mon, 28 Feb 2022 18:23:57 +0100
+Message-Id: <20220228172354.323181852@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,47 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Gal Pressman <gal@nvidia.com>
 
-commit a1f8fec4dac8bc7b172b2bdbd881e015261a6322 upstream.
+commit 0b89429722353d112f8b8b29ca397e95fa994d27 upstream.
 
-These tests are supposed to check if the loop exited via a break or not.
-However the tests are wrong because if we did not exit via a break then
-"p" is not a valid pointer.  In that case, it's the equivalent of
-"if (*(u32 *)sr == *last_key) {".  That's going to work most of the time,
-but there is a potential for those to be equal.
+The ioctl EEPROM query wrongly returns success on read failures, fix
+that by returning the appropriate error code.
 
-Fixes: 1593123a6a49 ("tipc: add name table dump to new netlink api")
-Fixes: 1a1a143daf84 ("tipc: add publication dump to new netlink api")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: bb64143eee8c ("net/mlx5e: Add ethtool support for dump module EEPROM")
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tipc/name_table.c |    2 +-
- net/tipc/socket.c     |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/tipc/name_table.c
-+++ b/net/tipc/name_table.c
-@@ -967,7 +967,7 @@ static int __tipc_nl_add_nametable_publ(
- 		list_for_each_entry(p, &sr->all_publ, all_publ)
- 			if (p->key == *last_key)
- 				break;
--		if (p->key != *last_key)
-+		if (list_entry_is_head(p, &sr->all_publ, all_publ))
- 			return -EPIPE;
- 	} else {
- 		p = list_first_entry(&sr->all_publ,
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -3749,7 +3749,7 @@ static int __tipc_nl_list_sk_publ(struct
- 			if (p->key == *last_publ)
- 				break;
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -1754,7 +1754,7 @@ static int mlx5e_get_module_eeprom(struc
+ 		if (size_read < 0) {
+ 			netdev_err(priv->netdev, "%s: mlx5_query_eeprom failed:0x%x\n",
+ 				   __func__, size_read);
+-			return 0;
++			return size_read;
  		}
--		if (p->key != *last_publ) {
-+		if (list_entry_is_head(p, &tsk->publications, binding_sock)) {
- 			/* We never set seq or call nl_dump_check_consistent()
- 			 * this means that setting prev_seq here will cause the
- 			 * consistence check to fail in the netlink callback
+ 
+ 		i += size_read;
 
 
