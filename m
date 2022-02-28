@@ -2,99 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A097EC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FD1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233215AbiB1MZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:25:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49650 "EHLO
+        id S235245AbiB1MZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:25:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236503AbiB1MZQ (ORCPT
+        with ESMTP id S236510AbiB1MZQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 07:25:16 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC8877523D
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:24:17 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id z11so2168165pla.7
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:24:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OoMgzdYapj8GOdfPEOkybEme/3XTyQ2VrTMps0q2PrA=;
-        b=MY4WDJ8X56A+gQ/cLVJur3SrDm3EQKN4EZJt5lZ+9Cjo6Qf9bggHRbRFFzT61hhveJ
-         6llCa/oKNMcsL76YUQw6b2d6O43L82wgPEiEHoU+ucBYNIVlHE3DWygEJoZi6YSvWJ67
-         /wPNjrpz1ZMRw0ww9cakaygssVdi8m5NyOgvH0cttq0NVGVWMiO+8SW6Ce6TYCW9DpUz
-         CCfNEsXaEm1bwlznl+crzJ8BZNp/0S/lJuMXy53yMDCRRI/6DVnvCVD+8L9n8BQ/0FsJ
-         0V/AkT/2mppxZSGo9WhzogNTJG6buGPwCZ8xc4qX9CCzzQd2534lOpSgMCU3uGRGYOUO
-         NpaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OoMgzdYapj8GOdfPEOkybEme/3XTyQ2VrTMps0q2PrA=;
-        b=vpjUPpy3ARMKmgx+/ubU21qS5zNZRBKeQgcyR73n64Mh0p6vA6GjqLcxceozA+ehB3
-         c0SfsiVrdJ+Zj7GPfJgWwuR+Z4Cl+fv8Fu7JlhGkBLjzq3t5awk3rn2wIH7ux1Gn32gS
-         SPNby9/P2qa65pRTmOxV2Ehy9BOa9OtmeDpysHcIWinWXwtgNKebqZ/4/RnA02gE4w7X
-         hSRCwQdDXfn7qVIulfGn0tuHFMpaQGntu+YuImIgIhNZTLtasDNS8Hj4tLnETF0tO7X6
-         Eqz04leIXtl0Zpstp2qdtrTNX4HY6VUASeu9vao3b39eMQdwbKy7lkcDd9jGgeU6ltTb
-         D4Mg==
-X-Gm-Message-State: AOAM532uf8kcspk9GZLFDpAfSymontYwePmGbGGxlWaj/MlJInmfDN/I
-        KKFVXLzfTEFAGqg5Fi1UPoByVw==
-X-Google-Smtp-Source: ABdhPJxledOS9MW9Pak+bHPtviUjpNtJQSZYmAT5JHc/iQf/jt1NmPdvAPkhddFMB/KNePUGkwRzZQ==
-X-Received: by 2002:a17:90a:d511:b0:1bc:50c9:8d8a with SMTP id t17-20020a17090ad51100b001bc50c98d8amr16432585pju.112.1646051057271;
-        Mon, 28 Feb 2022 04:24:17 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
-        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.24.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 04:24:17 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
-        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
-        richard.weiyang@gmail.com, david@fromorbit.com,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
-        vbabka@suse.cz
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
-        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
-        fam.zheng@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v6 14/16] mm: memcontrol: fix cannot alloc the maximum memcg ID
-Date:   Mon, 28 Feb 2022 20:21:24 +0800
-Message-Id: <20220228122126.37293-15-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
-References: <20220228122126.37293-1-songmuchun@bytedance.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B8C76E1E;
+        Mon, 28 Feb 2022 04:24:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1133061122;
+        Mon, 28 Feb 2022 12:24:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 661B0C340F5;
+        Mon, 28 Feb 2022 12:24:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646051059;
+        bh=oZOcgtYrh8yNZbOLHL9TFee3Kx3uN+kaijUMv7n/GjA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=i1ozI60qUTEXbDm9LxZvDcalgB+3gC1zwMOCspsbav5qRX79FLyCmF9dorUbugH1S
+         H8kD16eDTvFLzufdtzdgJQKaOH+iZPSZg83IyzL/PIFYf6gOYN6JjeMskxaQ/ie5LW
+         Gns9aq7Rlyb9TUAmQjRgdUj7LpM3IJApBa9anvphQEU95ATdA9DX5uiUlWf4GJidik
+         u0FLKj77hUGQm59BroDX9/hFklHGvrGtWXAUfsJJi4SRnfS1qLY+v/WShuE9Agm34V
+         TKXpUWdMF+PrCWmGyFHcPekbDBtFeP4VcRB4DiRof5rWvcf3mr8SvUFexxnczdLmwa
+         4WXzTjgcRS85Q==
+Date:   Mon, 28 Feb 2022 13:24:58 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>
+Cc:     "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "Zhang, Cathy" <cathy.zhang@intel.com>,
+        "Xing, Cedric" <cedric.xing@intel.com>,
+        "Huang, Haitao" <haitao.huang@intel.com>,
+        "Shanahan, Mark" <mark.shanahan@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
+ permissions
+Message-ID: <Yhy/GvJegnTqYdq6@iki.fi>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
+ <YhLhoMFPyOFZ2fsX@iki.fi>
+ <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The idr_alloc() does not include @max ID. So in the current implementation,
-the maximum memcg ID is 65534 instead of 65535. It seems a bug. So fix this.
+On Wed, Feb 23, 2022 at 07:21:50PM +0000, Dhanraj, Vijay wrote:
+> Hi All,
+> 
+> Regarding the recent update of splitting the page permissions change
+> request into two IOCTLS (RELAX and RESTRICT), can we combine them into
+> one? That is, revert to how it was done in the v1 version?
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- mm/memcontrol.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+They are logically separate complex functionalities:
 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 809dfa4b2abc..cbe6f9bb37bb 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -5029,8 +5029,7 @@ static struct mem_cgroup *mem_cgroup_alloc(void)
- 		return ERR_PTR(error);
- 
- 	memcg->id.id = idr_alloc(&mem_cgroup_idr, NULL,
--				 1, MEM_CGROUP_ID_MAX,
--				 GFP_KERNEL);
-+				 1, MEM_CGROUP_ID_MAX + 1, GFP_KERNEL);
- 	if (memcg->id.id < 0) {
- 		error = memcg->id.id;
- 		goto fail;
--- 
-2.11.0
+1. "restrict" calls EMODPR and requires EACCEPT
+2. "relax" increases permissions up to vetted ("EADD") and could be
+    combined with EMODPE called inside enclave.
 
+I don't think it is a good idea.
+
+BR, Jarkko
