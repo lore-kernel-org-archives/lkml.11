@@ -2,195 +2,271 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B722CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:40:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237235AbiB1Rkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:40:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42236 "EHLO
+        id S237329AbiB1Rky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:40:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238749AbiB1RiR (ORCPT
+        with ESMTP id S238799AbiB1RiX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:38:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD5575E67;
+        Mon, 28 Feb 2022 12:38:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 458DF793A9
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:33:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646069624;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EqPUjuDBqn5Lu6pDeJoTefOb/5PdohRN9v0ddUjXPvo=;
+        b=f3IwtuLYBs6Rs5PAjtfpa9eS6ip0Pbc98Tp7CXrqXJ9DZAvrIg2O8u5J1M9okEWA2PgA2w
+        CSgf4tE2RR47qI1EacQJad8IBSt7bYEtL/UiI+JwlQ9XZl4qTqs/Ep74uNzE6pbFLI1b3Y
+        e4vAmJ9rfvgxqfj3Zk+sGvueAbFVn24=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-463-Hhtlp1vcMmOmdwO3WxQhFQ-1; Mon, 28 Feb 2022 12:33:43 -0500
+X-MC-Unique: Hhtlp1vcMmOmdwO3WxQhFQ-1
+Received: by mail-ot1-f72.google.com with SMTP id c11-20020a056830348b00b005af30a0cee8so9598209otu.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:33:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=EqPUjuDBqn5Lu6pDeJoTefOb/5PdohRN9v0ddUjXPvo=;
+        b=hfQuBungL5E+B7LHsf0a/f1UdnywPSBJKyxWkEwtGDVFqQRMckCmR+Caey+3/2Xl2T
+         hne14hfenyfIYCx05ZQ67aiaxK8X3daaxnk7ld8NIUsOfQslpHObaeQVdosRnUDrzHmz
+         RiqzixFGIiMOG/XBkvNvjNoGRlSazWeWzpfiXs01dp6Qve3llcZwuMrLHBKVdywJtLqB
+         C9KCokn7lJ9R6+PGKhKE7qULXgm5F3qKvRiLPvPr3AL62UoZJV0f8oZT/Zp2ZW4OyBB8
+         srM+bTEZ6pnMrGYe0xUh3FHGGTWz16ViTbgqkle4BeGxpKp9oxxI037NHujWdphaAUFQ
+         3g1g==
+X-Gm-Message-State: AOAM532iwWNL43B7lH2/296XkM81OePnJFno6WeYRVIEJPSqqNyLKx+V
+        XOiAoKo0NKr+k6Myr+3J81Zp6LZzXrG0wNuPxk0ZuUzVBRVoFtTsUfnGKgoa/xRRIM+GbKM0/0Q
+        CYv9/Fi1sId9MXHmSZ4qTfxo0
+X-Received: by 2002:a9d:6445:0:b0:59a:ebae:155b with SMTP id m5-20020a9d6445000000b0059aebae155bmr9778554otl.270.1646069621989;
+        Mon, 28 Feb 2022 09:33:41 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyQPFJaAb0KvlwoTLjIGtuvXmo4QXpyccFci0Rpu++2G9KCLx2NXKpWsI0Q6uTyb2Aa6RRzxQ==
+X-Received: by 2002:a9d:6445:0:b0:59a:ebae:155b with SMTP id m5-20020a9d6445000000b0059aebae155bmr9778519otl.270.1646069621348;
+        Mon, 28 Feb 2022 09:33:41 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id l26-20020a05683004ba00b005af665739e0sm5256946otd.30.2022.02.28.09.33.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 28 Feb 2022 09:33:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88E1BB815B3;
-        Mon, 28 Feb 2022 17:33:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A31DC340E7;
-        Mon, 28 Feb 2022 17:33:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069617;
-        bh=nNMUWYZoTVLjwuNczjXsh38Fgsr2bcYrwAKn9EBa2vs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BK6qdzH3OjlBmn9Rx9Q1uL75ju/jsfs2Q/peD0ESsfMmwe4c1Ljdaxo0R7X76gkUl
-         tim9nqqb/4sgTHdSXSBqO8VekPSL7eXDbnCHIOBWVX0QGUjMDqKfxIdXpJk1RyP9U7
-         X/QvqNnnE7AVIYcASstF6hAFa6HuCiNwlFomBuYE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 31/80] openvswitch: Fix setting ipv6 fields causing hw csum failure
-Date:   Mon, 28 Feb 2022 18:24:12 +0100
-Message-Id: <20220228172315.332806257@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
-References: <20220228172311.789892158@linuxfoundation.org>
-User-Agent: quilt/0.66
+Date:   Mon, 28 Feb 2022 10:33:38 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-crypto@vger.kernel.org>, <jgg@nvidia.com>,
+        <cohuck@redhat.com>, <mgurtovoy@nvidia.com>, <yishaih@nvidia.com>,
+        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
+        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
+        <wangzhou1@hisilicon.com>, bhelgaas@google.com,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH v6 03/10] hisi_acc_qm: Move PCI device IDs to common
+ header
+Message-ID: <20220228103338.76da0b3b.alex.williamson@redhat.com>
+In-Reply-To: <20220228090121.1903-4-shameerali.kolothum.thodi@huawei.com>
+References: <20220228090121.1903-1-shameerali.kolothum.thodi@huawei.com>
+        <20220228090121.1903-4-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Blakey <paulb@nvidia.com>
+[Cc+ Bjorn, linux-pci]
 
-commit d9b5ae5c1b241b91480aa30408be12fe91af834a upstream.
+On Mon, 28 Feb 2022 09:01:14 +0000
+Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
 
-Ipv6 ttl, label and tos fields are modified without first
-pulling/pushing the ipv6 header, which would have updated
-the hw csum (if available). This might cause csum validation
-when sending the packet to the stack, as can be seen in
-the trace below.
-
-Fix this by updating skb->csum if available.
-
-Trace resulted by ipv6 ttl dec and then sending packet
-to conntrack [actions: set(ipv6(hlimit=63)),ct(zone=99)]:
-[295241.900063] s_pf0vf2: hw csum failure
-[295241.923191] Call Trace:
-[295241.925728]  <IRQ>
-[295241.927836]  dump_stack+0x5c/0x80
-[295241.931240]  __skb_checksum_complete+0xac/0xc0
-[295241.935778]  nf_conntrack_tcp_packet+0x398/0xba0 [nf_conntrack]
-[295241.953030]  nf_conntrack_in+0x498/0x5e0 [nf_conntrack]
-[295241.958344]  __ovs_ct_lookup+0xac/0x860 [openvswitch]
-[295241.968532]  ovs_ct_execute+0x4a7/0x7c0 [openvswitch]
-[295241.979167]  do_execute_actions+0x54a/0xaa0 [openvswitch]
-[295242.001482]  ovs_execute_actions+0x48/0x100 [openvswitch]
-[295242.006966]  ovs_dp_process_packet+0x96/0x1d0 [openvswitch]
-[295242.012626]  ovs_vport_receive+0x6c/0xc0 [openvswitch]
-[295242.028763]  netdev_frame_hook+0xc0/0x180 [openvswitch]
-[295242.034074]  __netif_receive_skb_core+0x2ca/0xcb0
-[295242.047498]  netif_receive_skb_internal+0x3e/0xc0
-[295242.052291]  napi_gro_receive+0xba/0xe0
-[295242.056231]  mlx5e_handle_rx_cqe_mpwrq_rep+0x12b/0x250 [mlx5_core]
-[295242.062513]  mlx5e_poll_rx_cq+0xa0f/0xa30 [mlx5_core]
-[295242.067669]  mlx5e_napi_poll+0xe1/0x6b0 [mlx5_core]
-[295242.077958]  net_rx_action+0x149/0x3b0
-[295242.086762]  __do_softirq+0xd7/0x2d6
-[295242.090427]  irq_exit+0xf7/0x100
-[295242.093748]  do_IRQ+0x7f/0xd0
-[295242.096806]  common_interrupt+0xf/0xf
-[295242.100559]  </IRQ>
-[295242.102750] RIP: 0033:0x7f9022e88cbd
-[295242.125246] RSP: 002b:00007f9022282b20 EFLAGS: 00000246 ORIG_RAX: ffffffffffffffda
-[295242.132900] RAX: 0000000000000005 RBX: 0000000000000010 RCX: 0000000000000000
-[295242.140120] RDX: 00007f9022282ba8 RSI: 00007f9022282a30 RDI: 00007f9014005c30
-[295242.147337] RBP: 00007f9014014d60 R08: 0000000000000020 R09: 00007f90254a8340
-[295242.154557] R10: 00007f9022282a28 R11: 0000000000000246 R12: 0000000000000000
-[295242.161775] R13: 00007f902308c000 R14: 000000000000002b R15: 00007f9022b71f40
-
-Fixes: 3fdbd1ce11e5 ("openvswitch: add ipv6 'set' action")
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
-Link: https://lore.kernel.org/r/20220223163416.24096-1-paulb@nvidia.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- include/net/checksum.h    |    5 +++++
- net/openvswitch/actions.c |   46 ++++++++++++++++++++++++++++++++++++++--------
- 2 files changed, 43 insertions(+), 8 deletions(-)
-
---- a/include/net/checksum.h
-+++ b/include/net/checksum.h
-@@ -139,6 +139,11 @@ static inline void csum_replace2(__sum16
- 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
- }
- 
-+static inline void csum_replace(__wsum *csum, __wsum old, __wsum new)
-+{
-+	*csum = csum_add(csum_sub(*csum, old), new);
-+}
-+
- struct sk_buff;
- void inet_proto_csum_replace4(__sum16 *sum, struct sk_buff *skb,
- 			      __be32 from, __be32 to, bool pseudohdr);
---- a/net/openvswitch/actions.c
-+++ b/net/openvswitch/actions.c
-@@ -422,12 +422,43 @@ static void set_ipv6_addr(struct sk_buff
- 	memcpy(addr, new_addr, sizeof(__be32[4]));
- }
- 
--static void set_ipv6_fl(struct ipv6hdr *nh, u32 fl, u32 mask)
-+static void set_ipv6_dsfield(struct sk_buff *skb, struct ipv6hdr *nh, u8 ipv6_tclass, u8 mask)
- {
-+	u8 old_ipv6_tclass = ipv6_get_dsfield(nh);
-+
-+	ipv6_tclass = OVS_MASKED(old_ipv6_tclass, ipv6_tclass, mask);
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE)
-+		csum_replace(&skb->csum, (__force __wsum)(old_ipv6_tclass << 12),
-+			     (__force __wsum)(ipv6_tclass << 12));
-+
-+	ipv6_change_dsfield(nh, ~mask, ipv6_tclass);
-+}
-+
-+static void set_ipv6_fl(struct sk_buff *skb, struct ipv6hdr *nh, u32 fl, u32 mask)
-+{
-+	u32 ofl;
-+
-+	ofl = nh->flow_lbl[0] << 16 |  nh->flow_lbl[1] << 8 |  nh->flow_lbl[2];
-+	fl = OVS_MASKED(ofl, fl, mask);
-+
- 	/* Bits 21-24 are always unmasked, so this retains their values. */
--	OVS_SET_MASKED(nh->flow_lbl[0], (u8)(fl >> 16), (u8)(mask >> 16));
--	OVS_SET_MASKED(nh->flow_lbl[1], (u8)(fl >> 8), (u8)(mask >> 8));
--	OVS_SET_MASKED(nh->flow_lbl[2], (u8)fl, (u8)mask);
-+	nh->flow_lbl[0] = (u8)(fl >> 16);
-+	nh->flow_lbl[1] = (u8)(fl >> 8);
-+	nh->flow_lbl[2] = (u8)fl;
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE)
-+		csum_replace(&skb->csum, (__force __wsum)htonl(ofl), (__force __wsum)htonl(fl));
-+}
-+
-+static void set_ipv6_ttl(struct sk_buff *skb, struct ipv6hdr *nh, u8 new_ttl, u8 mask)
-+{
-+	new_ttl = OVS_MASKED(nh->hop_limit, new_ttl, mask);
-+
-+	if (skb->ip_summed == CHECKSUM_COMPLETE)
-+		csum_replace(&skb->csum, (__force __wsum)(nh->hop_limit << 8),
-+			     (__force __wsum)(new_ttl << 8));
-+	nh->hop_limit = new_ttl;
- }
- 
- static void set_ip_ttl(struct sk_buff *skb, struct iphdr *nh, u8 new_ttl,
-@@ -545,18 +576,17 @@ static int set_ipv6(struct sk_buff *skb,
- 		}
- 	}
- 	if (mask->ipv6_tclass) {
--		ipv6_change_dsfield(nh, ~mask->ipv6_tclass, key->ipv6_tclass);
-+		set_ipv6_dsfield(skb, nh, key->ipv6_tclass, mask->ipv6_tclass);
- 		flow_key->ip.tos = ipv6_get_dsfield(nh);
- 	}
- 	if (mask->ipv6_label) {
--		set_ipv6_fl(nh, ntohl(key->ipv6_label),
-+		set_ipv6_fl(skb, nh, ntohl(key->ipv6_label),
- 			    ntohl(mask->ipv6_label));
- 		flow_key->ipv6.label =
- 		    *(__be32 *)nh & htonl(IPV6_FLOWINFO_FLOWLABEL);
- 	}
- 	if (mask->ipv6_hlimit) {
--		OVS_SET_MASKED(nh->hop_limit, key->ipv6_hlimit,
--			       mask->ipv6_hlimit);
-+		set_ipv6_ttl(skb, nh, key->ipv6_hlimit, mask->ipv6_hlimit);
- 		flow_key->ip.ttl = nh->hop_limit;
- 	}
- 	return 0;
-
+> Move the PCI Device IDs of HiSilicon ACC devices to
+> a common header and use a uniform naming convention.
+> 
+> This will be useful when we introduce the vfio PCI
+> HiSilicon ACC live migration driver in subsequent patches.
+> 
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/crypto/hisilicon/hpre/hpre_main.c | 12 +++++-------
+>  drivers/crypto/hisilicon/sec2/sec_main.c  | 14 ++++++--------
+>  drivers/crypto/hisilicon/zip/zip_main.c   | 11 ++++-------
+>  include/linux/pci_ids.h                   |  6 ++++++
+>  4 files changed, 21 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/crypto/hisilicon/hpre/hpre_main.c b/drivers/crypto/hisilicon/hpre/hpre_main.c
+> index ebfab3e14499..ba4043447e53 100644
+> --- a/drivers/crypto/hisilicon/hpre/hpre_main.c
+> +++ b/drivers/crypto/hisilicon/hpre/hpre_main.c
+> @@ -68,8 +68,6 @@
+>  #define HPRE_REG_RD_INTVRL_US		10
+>  #define HPRE_REG_RD_TMOUT_US		1000
+>  #define HPRE_DBGFS_VAL_MAX_LEN		20
+> -#define HPRE_PCI_DEVICE_ID		0xa258
+> -#define HPRE_PCI_VF_DEVICE_ID		0xa259
+>  #define HPRE_QM_USR_CFG_MASK		GENMASK(31, 1)
+>  #define HPRE_QM_AXI_CFG_MASK		GENMASK(15, 0)
+>  #define HPRE_QM_VFG_AX_MASK		GENMASK(7, 0)
+> @@ -111,8 +109,8 @@
+>  static const char hpre_name[] = "hisi_hpre";
+>  static struct dentry *hpre_debugfs_root;
+>  static const struct pci_device_id hpre_dev_ids[] = {
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, HPRE_PCI_DEVICE_ID) },
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, HPRE_PCI_VF_DEVICE_ID) },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_HPRE_PF) },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_HPRE_VF) },
+>  	{ 0, }
+>  };
+>  
+> @@ -242,7 +240,7 @@ MODULE_PARM_DESC(uacce_mode, UACCE_MODE_DESC);
+>  
+>  static int pf_q_num_set(const char *val, const struct kernel_param *kp)
+>  {
+> -	return q_num_set(val, kp, HPRE_PCI_DEVICE_ID);
+> +	return q_num_set(val, kp, PCI_DEVICE_ID_HUAWEI_HPRE_PF);
+>  }
+>  
+>  static const struct kernel_param_ops hpre_pf_q_num_ops = {
+> @@ -921,7 +919,7 @@ static int hpre_debugfs_init(struct hisi_qm *qm)
+>  	qm->debug.sqe_mask_len = HPRE_SQE_MASK_LEN;
+>  	hisi_qm_debug_init(qm);
+>  
+> -	if (qm->pdev->device == HPRE_PCI_DEVICE_ID) {
+> +	if (qm->pdev->device == PCI_DEVICE_ID_HUAWEI_HPRE_PF) {
+>  		ret = hpre_ctrl_debug_init(qm);
+>  		if (ret)
+>  			goto failed_to_create;
+> @@ -958,7 +956,7 @@ static int hpre_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
+>  	qm->sqe_size = HPRE_SQE_SIZE;
+>  	qm->dev_name = hpre_name;
+>  
+> -	qm->fun_type = (pdev->device == HPRE_PCI_DEVICE_ID) ?
+> +	qm->fun_type = (pdev->device == PCI_DEVICE_ID_HUAWEI_HPRE_PF) ?
+>  			QM_HW_PF : QM_HW_VF;
+>  	if (qm->fun_type == QM_HW_PF) {
+>  		qm->qp_base = HPRE_PF_DEF_Q_BASE;
+> diff --git a/drivers/crypto/hisilicon/sec2/sec_main.c b/drivers/crypto/hisilicon/sec2/sec_main.c
+> index 26d3ab1d308b..ab806fb481ac 100644
+> --- a/drivers/crypto/hisilicon/sec2/sec_main.c
+> +++ b/drivers/crypto/hisilicon/sec2/sec_main.c
+> @@ -20,8 +20,6 @@
+>  
+>  #define SEC_VF_NUM			63
+>  #define SEC_QUEUE_NUM_V1		4096
+> -#define SEC_PF_PCI_DEVICE_ID		0xa255
+> -#define SEC_VF_PCI_DEVICE_ID		0xa256
+>  
+>  #define SEC_BD_ERR_CHK_EN0		0xEFFFFFFF
+>  #define SEC_BD_ERR_CHK_EN1		0x7ffff7fd
+> @@ -225,7 +223,7 @@ static const struct debugfs_reg32 sec_dfx_regs[] = {
+>  
+>  static int sec_pf_q_num_set(const char *val, const struct kernel_param *kp)
+>  {
+> -	return q_num_set(val, kp, SEC_PF_PCI_DEVICE_ID);
+> +	return q_num_set(val, kp, PCI_DEVICE_ID_HUAWEI_SEC_PF);
+>  }
+>  
+>  static const struct kernel_param_ops sec_pf_q_num_ops = {
+> @@ -313,8 +311,8 @@ module_param_cb(uacce_mode, &sec_uacce_mode_ops, &uacce_mode, 0444);
+>  MODULE_PARM_DESC(uacce_mode, UACCE_MODE_DESC);
+>  
+>  static const struct pci_device_id sec_dev_ids[] = {
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, SEC_PF_PCI_DEVICE_ID) },
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, SEC_VF_PCI_DEVICE_ID) },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_SEC_PF) },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_SEC_VF) },
+>  	{ 0, }
+>  };
+>  MODULE_DEVICE_TABLE(pci, sec_dev_ids);
+> @@ -717,7 +715,7 @@ static int sec_core_debug_init(struct hisi_qm *qm)
+>  	regset->base = qm->io_base;
+>  	regset->dev = dev;
+>  
+> -	if (qm->pdev->device == SEC_PF_PCI_DEVICE_ID)
+> +	if (qm->pdev->device == PCI_DEVICE_ID_HUAWEI_SEC_PF)
+>  		debugfs_create_file("regs", 0444, tmp_d, regset, &sec_regs_fops);
+>  
+>  	for (i = 0; i < ARRAY_SIZE(sec_dfx_labels); i++) {
+> @@ -735,7 +733,7 @@ static int sec_debug_init(struct hisi_qm *qm)
+>  	struct sec_dev *sec = container_of(qm, struct sec_dev, qm);
+>  	int i;
+>  
+> -	if (qm->pdev->device == SEC_PF_PCI_DEVICE_ID) {
+> +	if (qm->pdev->device == PCI_DEVICE_ID_HUAWEI_SEC_PF) {
+>  		for (i = SEC_CLEAR_ENABLE; i < SEC_DEBUG_FILE_NUM; i++) {
+>  			spin_lock_init(&sec->debug.files[i].lock);
+>  			sec->debug.files[i].index = i;
+> @@ -877,7 +875,7 @@ static int sec_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
+>  	qm->sqe_size = SEC_SQE_SIZE;
+>  	qm->dev_name = sec_name;
+>  
+> -	qm->fun_type = (pdev->device == SEC_PF_PCI_DEVICE_ID) ?
+> +	qm->fun_type = (pdev->device == PCI_DEVICE_ID_HUAWEI_SEC_PF) ?
+>  			QM_HW_PF : QM_HW_VF;
+>  	if (qm->fun_type == QM_HW_PF) {
+>  		qm->qp_base = SEC_PF_DEF_Q_BASE;
+> diff --git a/drivers/crypto/hisilicon/zip/zip_main.c b/drivers/crypto/hisilicon/zip/zip_main.c
+> index 678f8b58ec42..f4a517728385 100644
+> --- a/drivers/crypto/hisilicon/zip/zip_main.c
+> +++ b/drivers/crypto/hisilicon/zip/zip_main.c
+> @@ -15,9 +15,6 @@
+>  #include <linux/uacce.h>
+>  #include "zip.h"
+>  
+> -#define PCI_DEVICE_ID_ZIP_PF		0xa250
+> -#define PCI_DEVICE_ID_ZIP_VF		0xa251
+> -
+>  #define HZIP_QUEUE_NUM_V1		4096
+>  
+>  #define HZIP_CLOCK_GATE_CTRL		0x301004
+> @@ -246,7 +243,7 @@ MODULE_PARM_DESC(uacce_mode, UACCE_MODE_DESC);
+>  
+>  static int pf_q_num_set(const char *val, const struct kernel_param *kp)
+>  {
+> -	return q_num_set(val, kp, PCI_DEVICE_ID_ZIP_PF);
+> +	return q_num_set(val, kp, PCI_DEVICE_ID_HUAWEI_ZIP_PF);
+>  }
+>  
+>  static const struct kernel_param_ops pf_q_num_ops = {
+> @@ -268,8 +265,8 @@ module_param_cb(vfs_num, &vfs_num_ops, &vfs_num, 0444);
+>  MODULE_PARM_DESC(vfs_num, "Number of VFs to enable(1-63), 0(default)");
+>  
+>  static const struct pci_device_id hisi_zip_dev_ids[] = {
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_ZIP_PF) },
+> -	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_ZIP_VF) },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_ZIP_PF) },
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_ZIP_VF) },
+>  	{ 0, }
+>  };
+>  MODULE_DEVICE_TABLE(pci, hisi_zip_dev_ids);
+> @@ -838,7 +835,7 @@ static int hisi_zip_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
+>  	qm->sqe_size = HZIP_SQE_SIZE;
+>  	qm->dev_name = hisi_zip_name;
+>  
+> -	qm->fun_type = (pdev->device == PCI_DEVICE_ID_ZIP_PF) ?
+> +	qm->fun_type = (pdev->device == PCI_DEVICE_ID_HUAWEI_ZIP_PF) ?
+>  			QM_HW_PF : QM_HW_VF;
+>  	if (qm->fun_type == QM_HW_PF) {
+>  		qm->qp_base = HZIP_PF_DEF_Q_BASE;
+> diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+> index aad54c666407..6b98e0d91f0a 100644
+> --- a/include/linux/pci_ids.h
+> +++ b/include/linux/pci_ids.h
+> @@ -2529,6 +2529,12 @@
+>  #define PCI_DEVICE_ID_KORENIX_JETCARDF3	0x17ff
+>  
+>  #define PCI_VENDOR_ID_HUAWEI		0x19e5
+> +#define PCI_DEVICE_ID_HUAWEI_ZIP_PF	0xa250
+> +#define PCI_DEVICE_ID_HUAWEI_ZIP_VF	0xa251
+> +#define PCI_DEVICE_ID_HUAWEI_SEC_PF	0xa255
+> +#define PCI_DEVICE_ID_HUAWEI_SEC_VF	0xa256
+> +#define PCI_DEVICE_ID_HUAWEI_HPRE_PF	0xa258
+> +#define PCI_DEVICE_ID_HUAWEI_HPRE_VF	0xa259
+>  
+>  #define PCI_VENDOR_ID_NETRONOME		0x19ee
+>  #define PCI_DEVICE_ID_NETRONOME_NFP4000	0x4000
 
