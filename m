@@ -2,123 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BF2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:51:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B434C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:51:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229774AbiB1TwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 14:52:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
+        id S229875AbiB1TwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 14:52:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229743AbiB1Tvq (ORCPT
+        with ESMTP id S229838AbiB1Tv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 14:51:46 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB320DF29
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:50:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646077823; x=1677613823;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fyMzmzWob5BwLEcRZwKRCLnS0Nzkv/dRn06vcSYOlQM=;
-  b=DUC1DxOZ9b9qtpoVAlOYQssJAZ6Z0Mnhemti5/ealu5BTCxe6nkMnggM
-   12tvzd6mXjpkxZOGNTbMfaC9Z6rd0In2/XJhc43c3u9pv3RTkXDQyvIN7
-   UgznB6G2/CIwfLjIP5HMsvqPhrq+Apag+0ZcfdX6HEUvQYhIWxsc7mKQH
-   yssv/vKq7+J/fvedmcwVTcT0do94sN4MhgfdTul4FQh+kwJcYrRIVyXlJ
-   ZtoIxMAQHPxbuAGWllPkXIhvhLgyrhLXia5kzLdz50TfLHDRjPZVxrUcn
-   mHn3t02AqCJJb/7vPR8lVOBHNFhQsaYZg0Es08LKo/TGDkocnjtTqBXwT
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="232942862"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="232942862"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 11:50:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="492838943"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 28 Feb 2022 11:50:19 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOm2E-0007kJ-LB; Mon, 28 Feb 2022 19:50:18 +0000
-Date:   Tue, 1 Mar 2022 03:49:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>, mingo@redhat.com,
-        peterz@infradead.org, frederic@kernel.org, rostedt@goodmis.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, tglx@linutronix.de,
-        mtosatti@redhat.com, bristot@redhat.com,
-        linux-kernel@vger.kernel.org,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>
-Subject: Re: [RESEND PATCH 2/2] tracing: Avoid isolated CPUs when queueing
- fsnotify irqwork
-Message-ID: <202203010318.S1y5cIXE-lkp@intel.com>
-References: <20220228141550.260119-2-nsaenzju@redhat.com>
+        Mon, 28 Feb 2022 14:51:58 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE71113DB5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:50:31 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id r187-20020a1c2bc4000000b003810e6b192aso101694wmr.1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:50:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Dt2TIAnb0hgPqs5E3ITetwBw03oi/KH3u9qpCDk2YIc=;
+        b=CzppBtYiraF7Cxt5R+XptC5OZH8T2dPKrJJAwATivyW9xyYv8ML0Zpo3RRuWvWj1b9
+         sbztzFqB0fhBZriWexQYXobqmEYn27dfo2mtBneBPeUY8xoGIm5tqPk0EKcATihU6sim
+         FI7j94CdJvpfOj8JJEXQR8FkJw1TSp1IDUdvLFNCsEhuWza8Wd9QGUfUDQwbkRAi9eFw
+         ZDv7gSrroAHp2d9LQewq1b5E1hnDwirl8RlAvKWjzMkPXLjN357U5NYIPdhRgypkXnLB
+         09LgnjK7rRLBbGsv0vqg02YaDnMI1uoGntf3wbcilLWtye4Fy9lrYqdXg9mkX1jalXpX
+         pVug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Dt2TIAnb0hgPqs5E3ITetwBw03oi/KH3u9qpCDk2YIc=;
+        b=k+yxjbtjR3Emsymj78v+jnr6UYMgdFVNyEsXgqmTVuWzChVNxR7BscfxieWB9GOs2x
+         GiNs6ZmPmkbDdfKVvlmPQ8xadQ4+5OVqJdaA5lykbz7Z8CFNhqwouJAYlQXG+QemymtV
+         8gRrYfbWuNemc8W/DS7hGyGVpA/F36DpljescIfnZ4JLSFwS5ectP+evutscRplVGazH
+         lR0LBPU4ZAHt5mZT+WdPrBu4+ty1SLsCAYXE8wfGn43B2Ohj44/U4L8+v//rJxik7Lan
+         mnzK8LWl1rmkI+CYXRQVh/i0tccbGUN341+5LD2M0lMlDPVZoolQ16oCPMals64tJ2ex
+         DkJQ==
+X-Gm-Message-State: AOAM531PkhJrw7Gemf76XYAC12LdtKJ1mE6kngdEaTTwX/QmEr7slkLW
+        9v1QY/8WefL5QNnKm7cKSiX6u780qSY0yQ==
+X-Google-Smtp-Source: ABdhPJwxapsCu4s5/opiNJQ1tveKgMBQM6nggLxpg5XCcMpIT8JTP2LSc/eToaPcGR8ftKaNzRfOoQ==
+X-Received: by 2002:a1c:1907:0:b0:380:f6ec:4daa with SMTP id 7-20020a1c1907000000b00380f6ec4daamr14950116wmz.50.1646077255350;
+        Mon, 28 Feb 2022 11:40:55 -0800 (PST)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id v25-20020a05600c215900b0038117f41728sm274143wml.43.2022.02.28.11.40.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 11:40:55 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     heiko@sntech.de, herbert@gondor.apana.org.au,
+        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH 16/16] crypto: rockchip: add myself as maintainer
+Date:   Mon, 28 Feb 2022 19:40:37 +0000
+Message-Id: <20220228194037.1600509-17-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220228194037.1600509-1-clabbe@baylibre.com>
+References: <20220228194037.1600509-1-clabbe@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228141550.260119-2-nsaenzju@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nicolas,
+Nobody is set as maintainer of rockchip crypto, I propose to do it as I
+have already reworked lot of this code.
 
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on tip/sched/core]
-[also build test ERROR on next-20220228]
-[cannot apply to rostedt-trace/for-next linus/master v5.17-rc6]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Nicolas-Saenz-Julienne/sched-isolation-Use-raw_smp_processor_id-in-housekeeping_any_cpu/20220228-221742
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 6255b48aebfd4dff375e97fc8b075a235848db0b
-config: i386-randconfig-a002-20220228 (https://download.01.org/0day-ci/archive/20220301/202203010318.S1y5cIXE-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/e3ec0b4adfed05db0d559d2d5234d6d8f1034985
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Nicolas-Saenz-Julienne/sched-isolation-Use-raw_smp_processor_id-in-housekeeping_any_cpu/20220228-221742
-        git checkout e3ec0b4adfed05db0d559d2d5234d6d8f1034985
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> kernel/trace/trace.c:1728:64: error: use of undeclared identifier 'HK_FLAG_MISC'; did you mean 'HK_TYPE_MISC'?
-           irq_work_queue_on(&tr->fsnotify_irqwork, housekeeping_any_cpu(HK_FLAG_MISC));
-                                                                         ^~~~~~~~~~~~
-                                                                         HK_TYPE_MISC
-   include/linux/sched/isolation.h:11:2: note: 'HK_TYPE_MISC' declared here
-           HK_TYPE_MISC,
-           ^
-   1 error generated.
-
-
-vim +1728 kernel/trace/trace.c
-
-  1718	
-  1719	void latency_fsnotify(struct trace_array *tr)
-  1720	{
-  1721		if (!fsnotify_wq)
-  1722			return;
-  1723		/*
-  1724		 * We cannot call queue_work(&tr->fsnotify_work) from here because it's
-  1725		 * possible that we are called from __schedule() or do_idle(), which
-  1726		 * could cause a deadlock.
-  1727		 */
-> 1728		irq_work_queue_on(&tr->fsnotify_irqwork, housekeeping_any_cpu(HK_FLAG_MISC));
-  1729	}
-  1730	
-
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ MAINTAINERS | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index db8052bc1d26..b1b2303ac285 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16828,6 +16828,12 @@ F:	Documentation/ABI/*/sysfs-driver-hid-roccat*
+ F:	drivers/hid/hid-roccat*
+ F:	include/linux/hid-roccat*
+ 
++ROCKCHIP CRYPTO DRIVERS
++M:	Corentin Labbe <clabbe@baylibre.com>
++L:	linux-crypto@vger.kernel.org
++S:	Maintained
++F:	drivers/crypto/rockchip/
++
+ ROCKCHIP I2S TDM DRIVER
+ M:	Nicolas Frattaroli <frattaroli.nicolas@gmail.com>
+ L:	linux-rockchip@lists.infradead.org
+-- 
+2.34.1
+
