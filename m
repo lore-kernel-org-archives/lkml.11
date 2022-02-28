@@ -2,81 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26AEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 06:12:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7369BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 06:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231970AbiB1GMp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 01:12:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48580 "EHLO
+        id S232529AbiB1GQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 01:16:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiB1GMl (ORCPT
+        with ESMTP id S231236AbiB1GQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 01:12:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F05266ACE
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 22:12:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646028722;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=koDNyhpZRRWUbZFhH9KWUoWf+UDX5NXH16ZSUqLPEwY=;
-        b=RmLQNyorDtsYwwMMR5zor/HnhNq5QCh8xoJUhjNELgxTIjcPTZqf5pTQMqyxoFOIbK+jbV
-        KTvy8Tz0fH2sJ1FsdLfN+4PCGijxjX4Ecdg3tfBlBMTwnnjUnXvxnGtHUtE9OmJywyWHLP
-        D4pqL2iGnxnvpNj/f2fDyUGiP5gI7Pc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-350-ks5XyE6KNN-Cmhjz6i-Eiw-1; Mon, 28 Feb 2022 01:11:58 -0500
-X-MC-Unique: ks5XyE6KNN-Cmhjz6i-Eiw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D747800422;
-        Mon, 28 Feb 2022 06:11:56 +0000 (UTC)
-Received: from T590 (ovpn-8-17.pek2.redhat.com [10.72.8.17])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5C84D5DBBD;
-        Mon, 28 Feb 2022 06:11:35 +0000 (UTC)
-Date:   Mon, 28 Feb 2022 14:11:30 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Yu Kuai <yukuai3@huawei.com>, tj@kernel.org, axboe@kernel.dk,
-        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
-Subject: Re: [PATCH v9] block: cancel all throttled bios in del_gendisk()
-Message-ID: <Yhxnkg0AEaj36t+a@T590>
-References: <20220210115637.1074927-1-yukuai3@huawei.com>
- <YhuyBgZSS6m/Mwu6@infradead.org>
+        Mon, 28 Feb 2022 01:16:47 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 42C873CA46
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 22:16:04 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-125-lgUm4UbTM6iVn5quhs8lMw-1; Mon, 28 Feb 2022 06:16:02 +0000
+X-MC-Unique: lgUm4UbTM6iVn5quhs8lMw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Mon, 28 Feb 2022 06:15:59 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Mon, 28 Feb 2022 06:15:59 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Linus Torvalds' <torvalds@linux-foundation.org>,
+        Segher Boessenkool <segher@kernel.crashing.org>
+CC:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Jakob <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>
+Subject: RE: [RFC PATCH 03/13] usb: remove the usage of the list iterator
+ after the loop
+Thread-Topic: [RFC PATCH 03/13] usb: remove the usage of the list iterator
+ after the loop
+Thread-Index: AQHYK3er/AEA45TQBUCd0AhQFcgB96ym+KOQgADr1YCAAJR3MA==
+Date:   Mon, 28 Feb 2022 06:15:59 +0000
+Message-ID: <6729109ae6ad429f87270e2bef2eed2f@AcuMS.aculab.com>
+References: <CAHk-=wg1RdFQ6OGb_H4ZJoUwEr-gk11QXeQx63n91m0tvVUdZw@mail.gmail.com>
+ <6DFD3D91-B82C-469C-8771-860C09BD8623@gmail.com>
+ <CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com>
+ <CAHk-=wgLe-OSLTEHm=V7eRG6Fcr0dpAM1ZRV1a=R_g6pBOr8Bg@mail.gmail.com>
+ <20220226124249.GU614@gate.crashing.org>
+ <CAK8P3a2Dd+ZMzn=gDnTzOW=S3RHQVmm1j3Gy=aKmFEbyD-q=rQ@mail.gmail.com>
+ <20220227010956.GW614@gate.crashing.org>
+ <7abf3406919b4f0c828dacea6ce97ce8@AcuMS.aculab.com>
+ <20220227113245.GY614@gate.crashing.org>
+ <CANiq72m28WrjVHkcg5Y0LDa51Ur4OCpFbGdcq+v4gqiC0Wi6zg@mail.gmail.com>
+ <20220227201724.GZ614@gate.crashing.org>
+ <CAHk-=wijh=SQ_9_-H6O08HgmXrWz37_vcdm55oECo+31LUs2EQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wijh=SQ_9_-H6O08HgmXrWz37_vcdm55oECo+31LUs2EQ@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YhuyBgZSS6m/Mwu6@infradead.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christoph,
-
-On Sun, Feb 27, 2022 at 09:16:54AM -0800, Christoph Hellwig wrote:
-> On Thu, Feb 10, 2022 at 07:56:37PM +0800, Yu Kuai wrote:
-> > Throttled bios can't be issued after del_gendisk() is done, thus
-> > it's better to cancel them immediately rather than waiting for
-> > throttle is done.
-> > 
-> > For example, if user thread is throttled with low bps while it's
-> > issuing large io, and the device is deleted. The user thread will
-> > wait for a long time for io to return.
-> 
-> FYI, this crashed left rigt and center when running xfstests with
-> traces pointing to throtl_pending_timer_fn.
-
-Can you share the exact xfstests test(fs, test)? Or panic log?
-
-I can't reproduce it when running './check -g auto' on XFS, meantime
-tracking throtl_pending_timer_fn().
-
-
-Thanks,
-Ming
+RnJvbTogTGludXMgVG9ydmFsZHMNCj4gU2VudDogMjcgRmVicnVhcnkgMjAyMiAyMTowNQ0KLi4u
+DQo+IEFuZCB0aGVuIHRoZSBDIHN0YW5kYXJkcyBwZW9wbGUgZGVjaWRlZCB0aGF0ICJiZWNhdXNl
+IG91ciBqb2IgaXNuJ3QgdG8NCj4gZGVzY3JpYmUgYWxsIHRoZSBhcmNoaXRlY3R1cmFsIGlzc3Vl
+cyB5b3UgY2FuIGhpdCwgd2UnbGwgY2FsbCBpdA0KPiB1bmRlZmluZWQsIGFuZCBpbiB0aGUgcHJv
+Y2VzcyBsZXQgY29tcGlsZXIgcGVvcGxlIGludGVudGlvbmFsbHkgYnJlYWsNCj4gaXQiLg0KPiAN
+Cj4gVEhBVCBpcyBhIHByb2JsZW0uDQoNCkknbSB3YWl0aW5nIGZvciB0aGVtIHRvIGRlY2lkZSB0
+aGF0IG1lbXNldChwdHIsIDAsIGxlbikgb2YNCmFueSBzdHJ1Y3R1cmUgdGhhdCBjb250YWlucyBh
+IHBvaW50ZXIgaXMgVUIgKGJlY2F1c2UgYSBOVUxMDQpwb2ludGVyIG5lZWQgbm90IGJlIHRoZSBh
+bGwgemVybyBiaXQgcGF0dGVybikgc28gZGVjaWRlDQp0byBkaXNjYXJkIHRoZSBjYWxsIGNvbXBs
+ZXRlbHkgKG9yIHNvbWUgc3VjaCkuDQoNCk5vbi16ZXJvIE5VTEwgcG9pbnRlcnMgaXMgdGhlIG9u
+bHkgcmVhc29uIGFyaXRobWV0aWMgb24gTlVMTA0KcG9pbnRlcnMgaXNuJ3QgdmFsaWQuDQoNCk9y
+IG1heWJlIHRoYXQgY2hhcmFjdGVyIHJhbmdlIHRlc3RzIGFyZSBVQiBiZWNhdXNlICcwJyB0byAn
+OScNCmRvbid0IGhhdmUgdG8gYmUgYWRqYWNlbnQgLSB0aGV5IGFyZSBldmVuIGFkamFjZW50IGlu
+IEVCQ0RJQy4NCg0KU29tZSBvZiB0aGUgJ3N0cmljdCBhbGlhc2luZycgYml0cyBhcmUgYWN0dWFs
+bHkgdXNlZnVsIHNpbmNlDQp0aGV5IGxldCB0aGUgY29tcGlsZXIgcmVvcmRlciByZWFkcyBhbmQg
+d3JpdGVzLg0KQnV0IHRoZSBkZWZpbml0aW9uIGlzIGJyYWluLWRlYWQuDQpTb21ldGltZXMgaXQg
+d291bGQgYmUgbmljZSB0byBoYXZlIGJ5dGUgd3JpdGVzIHJlb3JkZXJlZCwNCmJ1dCBldmVuIHVz
+aW5nIGludDo4IGRvZXNuJ3Qgd29yay4NCg0KSSBoYXZlIG5ldmVyIHdvcmtlZCBvdXQgd2hhdCAn
+cmVzdHJpY3QnIGFjdHVhbGx5IGRvZXMsDQppbiBhbnkgcGxhY2VzIEkndmUgdHJpZWQgaXQgZGlk
+IG5vdGhpbmcuDQpBbHRob3VnaCBJIG1heSBoYXZlIGJlZW4gaG9waW5nIGl0IHdvdWxkIHN0aWxs
+IGhlbHAgd2hlbg0KdGhlIGZ1bmN0aW9uIGdvdCBpbmxpbmVkLg0KDQoJRGF2aWQNCg0KLQ0KUmVn
+aXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRv
+biBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
