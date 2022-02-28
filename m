@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7140AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5376C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238258AbiB1RhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:37:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
+        id S235424AbiB1Rh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:37:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237773AbiB1Reg (ORCPT
+        with ESMTP id S238157AbiB1Reh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:34:36 -0500
+        Mon, 28 Feb 2022 12:34:37 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9969399C;
-        Mon, 28 Feb 2022 09:31:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D1C7D029;
+        Mon, 28 Feb 2022 09:31:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B2AF61365;
-        Mon, 28 Feb 2022 17:30:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2960C36AE7;
-        Mon, 28 Feb 2022 17:30:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F2D661419;
+        Mon, 28 Feb 2022 17:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53387C340E7;
+        Mon, 28 Feb 2022 17:30:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069454;
-        bh=MLtCPOzQia29se3vECjDQjwtcWHGH9cE0eyTMbvnry8=;
+        s=korg; t=1646069456;
+        bh=Rd8jvTNrPWtN6dd5Od5wtu8Di/L6XL1V6MGeJMtvvLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XrSdotJG68OBZMJvaGpl1JZ4SgF3ZQkSRbVVfS9Jb5xZsh9ncMgk8MLBKjPDO6q0/
-         wwC8wRuNrgukEHKo2KEm+BV8ze1Jw9LXJxCPO9aN5lRI5e6QfACVC3HTueWjm7AJqB
-         CXJme86T+JLVZYuGS7DzE29upaZbMpZw5Yl2aNFs=
+        b=MXE+/VOB+5Ire5M1YjlbO35I1GjRaTZfgwGXlHom8xBnYWtt/H09mj1Wbukn3n5Ve
+         vOuAXdETsG/jPxN/B8VTMuVXs++KaQZKctLUGuju5nAOJxrMZTCFXRsWIh9PmXZ8dn
+         AzJhhZIDlo0xVMvk2nTKsg4V6SWmBTzvqpvfwpHU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Simon Horman <simon.horman@corigine.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 25/53] nfp: flower: Fix a potential leak in nfp_tunnel_add_shared_mac()
-Date:   Mon, 28 Feb 2022 18:24:23 +0100
-Message-Id: <20220228172250.117600264@linuxfoundation.org>
+        syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
+Subject: [PATCH 5.4 03/53] vhost/vsock: dont check owner in vhost_vsock_stop() while releasing
+Date:   Mon, 28 Feb 2022 18:24:01 +0100
+Message-Id: <20220228172248.525743374@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -50,50 +52,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-commit 3a14d0888eb4b0045884126acc69abfb7b87814d upstream.
+commit a58da53ffd70294ebea8ecd0eb45fd0d74add9f9 upstream.
 
-ida_simple_get() returns an id between min (0) and max (NFP_MAX_MAC_INDEX)
-inclusive.
-So NFP_MAX_MAC_INDEX (0xff) is a valid id.
+vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
+ownership. It expects current->mm to be valid.
 
-In order for the error handling path to work correctly, the 'invalid'
-value for 'ida_idx' should not be in the 0..NFP_MAX_MAC_INDEX range,
-inclusive.
+vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
+the user has not done close(), so when we are in do_exit(). In this
+case current->mm is invalid and we're releasing the device, so we
+should clean it anyway.
 
-So set it to -1.
+Let's check the owner only when vhost_vsock_stop() is called
+by an ioctl.
 
-Fixes: 20cce8865098 ("nfp: flower: enable MAC address sharing for offloadable devs")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Link: https://lore.kernel.org/r/20220218131535.100258-1-simon.horman@corigine.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+When invoked from release we can not fail so we don't check return
+code of vhost_vsock_stop(). We need to stop vsock even if it's not
+the owner.
+
+Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
+Cc: stable@vger.kernel.org
+Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+Reported-and-tested-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/vhost/vsock.c |   21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
---- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-@@ -588,8 +588,8 @@ nfp_tunnel_add_shared_mac(struct nfp_app
- 			  int port, bool mod)
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -570,16 +570,18 @@ err:
+ 	return ret;
+ }
+ 
+-static int vhost_vsock_stop(struct vhost_vsock *vsock)
++static int vhost_vsock_stop(struct vhost_vsock *vsock, bool check_owner)
  {
- 	struct nfp_flower_priv *priv = app->priv;
--	int ida_idx = NFP_MAX_MAC_INDEX, err;
- 	struct nfp_tun_offloaded_mac *entry;
-+	int ida_idx = -1, err;
- 	u16 nfp_mac_idx = 0;
+ 	size_t i;
+-	int ret;
++	int ret = 0;
  
- 	entry = nfp_tunnel_lookup_offloaded_macs(app, netdev->dev_addr);
-@@ -663,7 +663,7 @@ err_remove_hash:
- err_free_entry:
- 	kfree(entry);
- err_free_ida:
--	if (ida_idx != NFP_MAX_MAC_INDEX)
-+	if (ida_idx != -1)
- 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
+ 	mutex_lock(&vsock->dev.mutex);
  
- 	return err;
+-	ret = vhost_dev_check_owner(&vsock->dev);
+-	if (ret)
+-		goto err;
++	if (check_owner) {
++		ret = vhost_dev_check_owner(&vsock->dev);
++		if (ret)
++			goto err;
++	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
+ 		struct vhost_virtqueue *vq = &vsock->vqs[i];
+@@ -694,7 +696,12 @@ static int vhost_vsock_dev_release(struc
+ 	 * inefficient.  Room for improvement here. */
+ 	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
+ 
+-	vhost_vsock_stop(vsock);
++	/* Don't check the owner, because we are in the release path, so we
++	 * need to stop the vsock device in any case.
++	 * vhost_vsock_stop() can not fail in this case, so we don't need to
++	 * check the return code.
++	 */
++	vhost_vsock_stop(vsock, false);
+ 	vhost_vsock_flush(vsock);
+ 	vhost_dev_stop(&vsock->dev);
+ 
+@@ -792,7 +799,7 @@ static long vhost_vsock_dev_ioctl(struct
+ 		if (start)
+ 			return vhost_vsock_start(vsock);
+ 		else
+-			return vhost_vsock_stop(vsock);
++			return vhost_vsock_stop(vsock, true);
+ 	case VHOST_GET_FEATURES:
+ 		features = VHOST_VSOCK_FEATURES;
+ 		if (copy_to_user(argp, &features, sizeof(features)))
 
 
