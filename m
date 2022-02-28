@@ -2,97 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A068C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233927AbiB1LKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:10:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51076 "EHLO
+        id S233902AbiB1LLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235490AbiB1LJn (ORCPT
+        with ESMTP id S235596AbiB1LLA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:09:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2486CA48;
-        Mon, 28 Feb 2022 03:09:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5256B80FE7;
-        Mon, 28 Feb 2022 11:09:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10EA9C340E7;
-        Mon, 28 Feb 2022 11:09:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646046541;
-        bh=ZWAjzUfZYuJT/DEBzqsIadiIJ6sqa7zdYVhrMqhf4hk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IWlOxSY0YS8+oSTONiP6uipPZHROYfrgZEsYxTVTaaYUY4VEpXl5mSNWDCgbXMqLG
-         Rz48F9rm99BdCLJ/1CBzTfWWIDYKMWD49+emsw1MBiLYF32wVBxrZXsCef7hjUeRKO
-         /DAhBKDih8SJiRnIt2VH8OgtqTAzKHPXF2z7VBQQ=
-Date:   Mon, 28 Feb 2022 12:08:58 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Baokun Li <libaokun1@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        oliver.sang@intel.com, beibei.si@intel.com, jannh@google.com,
-        mszeredi@redhat.com, torvalds@linux-foundation.org,
-        yukuai3@huawei.com
-Subject: Re: [PATCH 5.4] fget: clarify and improve __fget_files()
- implementation
-Message-ID: <YhytSkOJ7caNbTDj@kroah.com>
-References: <20220226063201.167183-1-libaokun1@huawei.com>
+        Mon, 28 Feb 2022 06:11:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B69A7085C
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:09:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646046561;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mk8A/cRIjUQBRWWsNYUbvFqswRRH6zL512hJ5ISpuac=;
+        b=g7fHDQjLO4kMnSZTGIJyZPFuVdlFcVDLnGrD/n26W+m+T5iF7omRkpjau+I95UovaZYAW6
+        yX9BOewRutl6EwKn27RF+gq/mP16oKcJUZri7pneB25L0jTQTP5t+ayQKV4YNnLbNty+Rd
+        OCWpEHXQdjjXqT+L0yUjtqV51KEci1s=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-225-luONIc8SPrGh_djl1X6MIg-1; Mon, 28 Feb 2022 06:09:20 -0500
+X-MC-Unique: luONIc8SPrGh_djl1X6MIg-1
+Received: by mail-qt1-f199.google.com with SMTP id x26-20020ac84a1a000000b002ddcbd9e933so6066583qtq.11
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:09:20 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=mk8A/cRIjUQBRWWsNYUbvFqswRRH6zL512hJ5ISpuac=;
+        b=1fButGjckQjGlo1P6pRt70E2s6Pap0xXOLPPIliLxMsSC241Z/OcCRbxVqpLSl6BaD
+         zBF96sIfAKr7Q/aUDbVWx7ET4WAklSEt8u127NRmUzNfoxg2j/JBO0u5STZp5vB2obSj
+         HpI4ARBOaq/v4pid9XyRgC1I5qrVPXY/idL5CnJtXoUZWg9z1oGa+To1ONsuVvwfn/xN
+         978LqTFEjZRIofF0kt8XzIF8VxLx0/UR6CAbVIYg9qnx7d1Ke/oLc4/5gKYArqgBO8Mb
+         UfshXcszw8/8lcAYUbXOaxULT5gmVM2rKJ9k+kno4XWb6uVwWRQzLGjtCV5wIQODBZ7/
+         XeFQ==
+X-Gm-Message-State: AOAM532dix2Dj8c9PLzPG+GP1AcU6+zXLSsJf01Y17N7/SFrH/d0BXOn
+        B4kcnjABQHSef4Op/EmMd48uNGeqstqPa+6nbdk9Y6nKoGejR8SmC/pvEiGDJ9qS1mgANGqjTiE
+        V000IVxY5zhOuL8Vg/eRXR55Y
+X-Received: by 2002:ac8:590c:0:b0:2de:4c71:354e with SMTP id 12-20020ac8590c000000b002de4c71354emr16194170qty.315.1646046559789;
+        Mon, 28 Feb 2022 03:09:19 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyF44gxifV5SBNXIq21oM3Wnww4M1ERoBoKJLH46fR/MI/Pe/poA+ls11pAGSqMnwJ88bUw7A==
+X-Received: by 2002:ac8:590c:0:b0:2de:4c71:354e with SMTP id 12-20020ac8590c000000b002de4c71354emr16194153qty.315.1646046559535;
+        Mon, 28 Feb 2022 03:09:19 -0800 (PST)
+Received: from fedora (ec2-3-80-233-239.compute-1.amazonaws.com. [3.80.233.239])
+        by smtp.gmail.com with ESMTPSA id t22-20020a05622a181600b002dd4f62308dsm6667218qtc.57.2022.02.28.03.09.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 03:09:18 -0800 (PST)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Siddharth Chandrasekaran <sidcha@amazon.de>
+Cc:     kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH 0/4] KVM: x86: hyper-v: XMM fast hypercalls fixes
+In-Reply-To: <YhypT9pGu600wRLf@147dda3edfb6.ant.amazon.com>
+References: <20220222154642.684285-1-vkuznets@redhat.com>
+ <b466b80c-21d1-f298-b4cd-a4b58988f767@redhat.com>
+ <871qzrdr6x.fsf@redhat.com>
+ <f398b5de-c867-98a4-a716-b18939cfd0ef@redhat.com>
+ <YhypT9pGu600wRLf@147dda3edfb6.ant.amazon.com>
+Date:   Mon, 28 Feb 2022 12:09:14 +0100
+Message-ID: <87sfs3cko5.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220226063201.167183-1-libaokun1@huawei.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 02:32:01PM +0800, Baokun Li wrote:
-> From: Linus Torvalds <torvalds@linux-foundation.org>
-> 
-> commit e386dfc56f837da66d00a078e5314bc8382fab83 upstream.
-> 
-> Commit 054aa8d439b9 ("fget: check that the fd still exists after getting
-> a ref to it") fixed a race with getting a reference to a file just as it
-> was being closed.  It was a fairly minimal patch, and I didn't think
-> re-checking the file pointer lookup would be a measurable overhead,
-> since it was all right there and cached.
-> 
-> But I was wrong, as pointed out by the kernel test robot.
-> 
-> The 'poll2' case of the will-it-scale.per_thread_ops benchmark regressed
-> quite noticeably.  Admittedly it seems to be a very artificial test:
-> doing "poll()" system calls on regular files in a very tight loop in
-> multiple threads.
-> 
-> That means that basically all the time is spent just looking up file
-> descriptors without ever doing anything useful with them (not that doing
-> 'poll()' on a regular file is useful to begin with).  And as a result it
-> shows the extra "re-check fd" cost as a sore thumb.
-> 
-> Happily, the regression is fixable by just writing the code to loook up
-> the fd to be better and clearer.  There's still a cost to verify the
-> file pointer, but now it's basically in the noise even for that
-> benchmark that does nothing else - and the code is more understandable
-> and has better comments too.
-> 
-> [ Side note: this patch is also a classic case of one that looks very
->   messy with the default greedy Myers diff - it's much more legible with
->   either the patience of histogram diff algorithm ]
-> 
-> Link: https://lore.kernel.org/lkml/20211210053743.GA36420@xsang-OptiPlex-9020/
-> Link: https://lore.kernel.org/lkml/20211213083154.GA20853@linux.intel.com/
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Tested-by: Carel Si <beibei.si@intel.com>
-> Cc: Jann Horn <jannh@google.com>
-> Cc: Miklos Szeredi <mszeredi@redhat.com>
-> Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Baokun Li <libaokun1@huawei.com>
-> ---
->  fs/file.c | 73 +++++++++++++++++++++++++++++++++++++++++++------------
->  1 file changed, 57 insertions(+), 16 deletions(-)
+Siddharth Chandrasekaran <sidcha@amazon.de> writes:
 
-All now queued up, thanks for the backports!
+> On Fri, Feb 25, 2022 at 02:17:04PM +0100, Paolo Bonzini wrote:
+>> On 2/25/22 14:13, Vitaly Kuznetsov wrote:
+>> > Let's say we have 1 half of XMM0 consumed. Now:
+>> > 
+>> >   i = 0;
+>> >   j = 1;
+>> >   if (1)
+>> >       sparse_banks[0] = sse128_lo(hc->xmm[0]);
+>> > 
+>> >   This doesn't look right as we need to get the upper half of XMM0.
+>> > 
+>> >   I guess it should be reversed,
+>> > 
+>> >       if (j % 2)
+>> >           sparse_banks[i] = sse128_hi(hc->xmm[j / 2]);
+>> >       else
+>> >           sparse_banks[i] = sse128_lo(hc->xmm[j / 2]);
+>
+> Maybe I am missing parts of this series.. I dont see this change in any
+> of the 4 patches Vitaly sent. Yes, they look swapped to me too.
+>
 
-greg k-h
+There was a conflict with a patch series from Sean:
+https://lore.kernel.org/kvm/20211207220926.718794-1-seanjc@google.com/
+
+and this is a part of the resolution:
+
+commit c0f1eaeb9e628bf86bf50f11cb4a2b671528391e
+Merge: 4dfc4ec2b7f5 47d3e5cdfe60
+Author: Paolo Bonzini <pbonzini@redhat.com>
+Date:   Fri Feb 25 06:28:10 2022 -0500
+
+    Merge branch 'kvm-hv-xmm-hypercall-fixes' into HEAD
+
+-- 
+Vitaly
+
