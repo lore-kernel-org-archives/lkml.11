@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C61C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB426C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:14:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240329AbiB1SPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:15:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60456 "EHLO
+        id S236586AbiB1SPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241455AbiB1SJz (ORCPT
+        with ESMTP id S241612AbiB1SKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7EBB45BC;
-        Mon, 28 Feb 2022 09:50:03 -0800 (PST)
+        Mon, 28 Feb 2022 13:10:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5D0BA743;
+        Mon, 28 Feb 2022 09:50:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1E2360915;
-        Mon, 28 Feb 2022 17:50:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1141C340E7;
-        Mon, 28 Feb 2022 17:50:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BE7860F7C;
+        Mon, 28 Feb 2022 17:49:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 647ECC340F0;
+        Mon, 28 Feb 2022 17:49:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070601;
-        bh=BLTmIppxTsWdWze0CZzsQG7uFrPoMqr09GCc5EhtdPY=;
+        s=korg; t=1646070584;
+        bh=MO36n/M99U6IL4V75gmdNp4IhLFS2AB+rBq5TnOYexA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=evRiHM5R7JUuk5QeFvmnkRbF7ql9ZQ7HSpKZLLcqqL0JlIhMkQxfZZ0AuDORcSA/T
-         R3v8kQo8F0iJNAp9bJOJXXMM/j3p0iIKn5qWm2FVZCmU4axJlvTBRaSGjKyNcOvnj0
-         5JMRLF1xadrv59DGiv2VavR0uu/6PWKbvaKm7HdA=
+        b=q04n2jpMb4x5B/pQF2xKxTdyUtam07Qgj0HPrQ5HfS9ZT8dmwB/HDUkLNqfGsCcaZ
+         +mM9nf8M4ZBwU0hFb8Zyp1xARkSQmjaiWKpKOyxpjOsieDkBevK59CtVlsbIsgRn3z
+         bfushqTegvnJ8RpdMDDYNKyIvZnJHngl1ofCQ5eo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Peter <sven@svenpeter.dev>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 148/164] tps6598x: clear int mask on probe failure
-Date:   Mon, 28 Feb 2022 18:25:10 +0100
-Message-Id: <20220228172413.258312561@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Anderson <seanga2@gmail.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.16 162/164] pinctrl: k210: Fix bias-pull-up
+Date:   Mon, 28 Feb 2022 18:25:24 +0100
+Message-Id: <20220228172414.326174338@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,59 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Sean Anderson <seanga2@gmail.com>
 
-commit aba2081e0a9c977396124aa6df93b55ed5912b19 upstream.
+commit e9f7b9228a94778edb7a63fde3c0a3c5bb793064 upstream.
 
-The interrupt mask is enabled before any potential failure points in
-the driver, which can leave a failure path where we exit with
-interrupts enabled but the device not live. This causes an infinite
-stream of interrupts on an Apple M1 Pro laptop on USB-C.
+Using bias-pull-up would actually cause the pin to have its pull-down
+enabled. Fix this.
 
-Add a failure label that's used post enabling interrupts, where we
-mask them again before returning an error.
-
-Suggested-by: Sven Peter <sven@svenpeter.dev>
-Cc: stable <stable@vger.kernel.org>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Link: https://lore.kernel.org/r/e6b80669-20f3-06e7-9ed5-8951a9c6db6f@kernel.dk
+Signed-off-by: Sean Anderson <seanga2@gmail.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Fixes: d4c34d09ab03 ("pinctrl: Add RISC-V Canaan Kendryte K210 FPIOA driver")
+Link: https://lore.kernel.org/r/20220209182822.640905-1-seanga2@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/typec/tipd/core.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/pinctrl/pinctrl-k210.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/typec/tipd/core.c b/drivers/usb/typec/tipd/core.c
-index 6d27a5b5e3ca..7ffcda94d323 100644
---- a/drivers/usb/typec/tipd/core.c
-+++ b/drivers/usb/typec/tipd/core.c
-@@ -761,12 +761,12 @@ static int tps6598x_probe(struct i2c_client *client)
- 
- 	ret = tps6598x_read32(tps, TPS_REG_STATUS, &status);
- 	if (ret < 0)
--		return ret;
-+		goto err_clear_mask;
- 	trace_tps6598x_status(status);
- 
- 	ret = tps6598x_read32(tps, TPS_REG_SYSTEM_CONF, &conf);
- 	if (ret < 0)
--		return ret;
-+		goto err_clear_mask;
- 
- 	/*
- 	 * This fwnode has a "compatible" property, but is never populated as a
-@@ -855,7 +855,8 @@ static int tps6598x_probe(struct i2c_client *client)
- 	usb_role_switch_put(tps->role_sw);
- err_fwnode_put:
- 	fwnode_handle_put(fwnode);
--
-+err_clear_mask:
-+	tps6598x_write64(tps, TPS_REG_INT_MASK1, 0);
- 	return ret;
- }
- 
--- 
-2.35.1
-
+--- a/drivers/pinctrl/pinctrl-k210.c
++++ b/drivers/pinctrl/pinctrl-k210.c
+@@ -527,7 +527,7 @@ static int k210_pinconf_set_param(struct
+ 	case PIN_CONFIG_BIAS_PULL_UP:
+ 		if (!arg)
+ 			return -EINVAL;
+-		val |= K210_PC_PD;
++		val |= K210_PC_PU;
+ 		break;
+ 	case PIN_CONFIG_DRIVE_STRENGTH:
+ 		arg *= 1000;
 
 
