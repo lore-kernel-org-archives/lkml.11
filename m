@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C00DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA73AC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238878AbiB1Rn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
+        id S238803AbiB1RnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:43:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236441AbiB1RkI (ORCPT
+        with ESMTP id S238312AbiB1RkG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:40:08 -0500
+        Mon, 28 Feb 2022 12:40:06 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D820593185;
-        Mon, 28 Feb 2022 09:34:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27B092D12;
+        Mon, 28 Feb 2022 09:34:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A042614BB;
-        Mon, 28 Feb 2022 17:34:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B7ACC340E7;
-        Mon, 28 Feb 2022 17:34:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A87A2614BF;
+        Mon, 28 Feb 2022 17:34:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0FD4C340E7;
+        Mon, 28 Feb 2022 17:34:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069657;
-        bh=0RtYBQzJmD78NjmUnjR65nAJ5Z8h/s9oL/ps01pFpog=;
+        s=korg; t=1646069655;
+        bh=6b7f/+0qvIxkDMPm2Xppd3Oe6OpoLqQPKu5Y52UCEIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aNOfOn8LkfaD4+rkfYx9ueGqYYtmyOkkAGlbW0kPE5xcSk0xWgnhUd9hzejsc57I3
-         1s4e+bIEmRrLM/CR3WUp7Qx/zU5HeFK74qd80ad4ugMn8KE26594OyyRSrBRe0IK45
-         G7ZRNQF4Q9b7q1CiiVVg+j88Xga8Hvz/gOWpkxrc=
+        b=Emo4c44qd8bgnEd2e57KORqRX1ox28tv+UpwfaGj4WLUpXa+VagjyXa8wG2xpLzgu
+         h0/i8i+lDf6D9cjDuLZ+lAzCMoDVu/YvkkD+57C5qAINLkQKYFHn8RCWicFnGuhhKD
+         zaO0x3uSTXS7qBdrXg75zLQB7FT2gMTxi9cX4/Pg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 45/80] spi: spi-zynq-qspi: Fix a NULL pointer dereference in zynq_qspi_exec_mem_op()
-Date:   Mon, 28 Feb 2022 18:24:26 +0100
-Message-Id: <20220228172317.075616514@linuxfoundation.org>
+        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.10 44/80] net/mlx5e: kTLS, Use CHECKSUM_UNNECESSARY for device-offloaded packets
+Date:   Mon, 28 Feb 2022 18:24:25 +0100
+Message-Id: <20220228172316.905882012@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -49,54 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Tariq Toukan <tariqt@nvidia.com>
 
-[ Upstream commit ab3824427b848da10e9fe2727f035bbeecae6ff4 ]
+commit 7eaf1f37b8817c608c4e959d69986ef459d345cd upstream.
 
-In zynq_qspi_exec_mem_op(), kzalloc() is directly used in memset(),
-which could lead to a NULL pointer dereference on failure of
-kzalloc().
+For RX TLS device-offloaded packets, the HW spec guarantees checksum
+validation for the offloaded packets, but does not define whether the
+CQE.checksum field matches the original packet (ciphertext) or
+the decrypted one (plaintext). This latitude allows architetctural
+improvements between generations of chips, resulting in different decisions
+regarding the value type of CQE.checksum.
 
-Fix this bug by adding a check of tmpbuf.
+Hence, for these packets, the device driver should not make use of this CQE
+field. Here we block CHECKSUM_COMPLETE usage for RX TLS device-offloaded
+packets, and use CHECKSUM_UNNECESSARY instead.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+Value of the packet's tcp_hdr.csum is not modified by the HW, and it always
+matches the original ciphertext.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_SPI_ZYNQ_QSPI=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 67dca5e580f1 ("spi: spi-mem: Add support for Zynq QSPI controller")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Link: https://lore.kernel.org/r/20211130172253.203700-1-zhou1615@umn.edu
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
+Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-zynq-qspi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-zynq-qspi.c b/drivers/spi/spi-zynq-qspi.c
-index b635835729d66..13c0b15fe1764 100644
---- a/drivers/spi/spi-zynq-qspi.c
-+++ b/drivers/spi/spi-zynq-qspi.c
-@@ -570,6 +570,9 @@ static int zynq_qspi_exec_mem_op(struct spi_mem *mem,
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -985,7 +985,8 @@ static inline void mlx5e_handle_csum(str
+ 	}
  
- 	if (op->dummy.nbytes) {
- 		tmpbuf = kzalloc(op->dummy.nbytes, GFP_KERNEL);
-+		if (!tmpbuf)
-+			return -ENOMEM;
-+
- 		memset(tmpbuf, 0xff, op->dummy.nbytes);
- 		reinit_completion(&xqspi->data_completion);
- 		xqspi->txbuf = tmpbuf;
--- 
-2.34.1
-
+ 	/* True when explicitly set via priv flag, or XDP prog is loaded */
+-	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state))
++	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state) ||
++	    get_cqe_tls_offload(cqe))
+ 		goto csum_unnecessary;
+ 
+ 	/* CQE csum doesn't cover padding octets in short ethernet
 
 
