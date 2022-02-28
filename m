@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E21BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F35C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239837AbiB1SOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:14:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60372 "EHLO
+        id S231484AbiB1SOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:14:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241615AbiB1SKI (ORCPT
+        with ESMTP id S241420AbiB1SJx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:10:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D587B91FF;
-        Mon, 28 Feb 2022 09:50:19 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8907DB3E7B;
+        Mon, 28 Feb 2022 09:50:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9501760B2B;
-        Mon, 28 Feb 2022 17:49:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB926C340F4;
-        Mon, 28 Feb 2022 17:49:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0192560B2A;
+        Mon, 28 Feb 2022 17:49:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16579C340E7;
+        Mon, 28 Feb 2022 17:49:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070582;
-        bh=Ctl1DITbHVbdBfKS48ElGs5/qHcBKH9J+pZSVWqw5OY=;
+        s=korg; t=1646070598;
+        bh=haevhic5ONx/+txP4DA9/u0qEZ0jnqnha+YONaK2HDk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nyFHGui1ZSjJ+Ae/i1ikpXo3VJI2ajqFUOtOp6WyD814i4jfBJ+CgB8dSWRSWaTS2
-         foSwJDTE+z2qIPALCAYr4cgdZMc5ofWQ0hcby0QE7zHBtVYb9GIa4fjJf90m3RdBcV
-         c/CXLFOqVC1wI+XsiTtcZ+dRKS2Of66zhdt/mx4E=
+        b=yvmxQC2uxUGavq1jcJedPDxJh+v6HZwf0/EkYQAG2IAeaJfigD9CgoYESBVusVKYS
+         SnmbFgtBez1woSbeeIrv4CDc1WE65zmhEAbzucXN2FO2GAsOPfUhqMsimoxjyAIK4I
+         t9jxW5J4m672JUpWt8q9zqj/zXq67cTrZGdBquWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 144/164] btrfs: reduce extent threshold for autodefrag
-Date:   Mon, 28 Feb 2022 18:25:06 +0100
-Message-Id: <20220228172412.951650926@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Oliver Graute <oliver.graute@kococonnector.com>
+Subject: [PATCH 5.16 147/164] staging: fbtft: fb_st7789v: reset display before initialization
+Date:   Mon, 28 Feb 2022 18:25:09 +0100
+Message-Id: <20220228172413.180337440@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,133 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Oliver Graute <oliver.graute@kococonnector.com>
 
-commit 558732df2122092259ab4ef85594bee11dbb9104 upstream.
+commit b6821b0d9b56386d2bf14806f90ec401468c799f upstream.
 
-There is a big gap between inode_should_defrag() and autodefrag extent
-size threshold.  For inode_should_defrag() it has a flexible
-@small_write value. For compressed extent is 16K, and for non-compressed
-extent it's 64K.
+In rare cases the display is flipped or mirrored. This was observed more
+often in a low temperature environment. A clean reset on init_display()
+should help to get registers in a sane state.
 
-However for autodefrag extent size threshold, it's always fixed to the
-default value (256K).
-
-This means, the following write sequence will trigger autodefrag to
-defrag ranges which didn't trigger autodefrag:
-
-  pwrite 0 8k
-  sync
-  pwrite 8k 128K
-  sync
-
-The latter 128K write will also be considered as a defrag target (if
-other conditions are met). While only that 8K write is really
-triggering autodefrag.
-
-Such behavior can cause extra IO for autodefrag.
-
-Close the gap, by copying the @small_write value into inode_defrag, so
-that later autodefrag can use the same @small_write value which
-triggered autodefrag.
-
-With the existing transid value, this allows autodefrag really to scan
-the ranges which triggered autodefrag.
-
-Although this behavior change is mostly reducing the extent_thresh value
-for autodefrag, I believe in the future we should allow users to specify
-the autodefrag extent threshold through mount options, but that's an
-other problem to consider in the future.
-
-CC: stable@vger.kernel.org # 5.16+
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: ef8f317795da (staging: fbtft: use init function instead of init sequence)
+Cc: stable@vger.kernel.org
+Signed-off-by: Oliver Graute <oliver.graute@kococonnector.com>
+Link: https://lore.kernel.org/r/20220210085322.15676-1-oliver.graute@kococonnector.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/ctree.h |    2 +-
- fs/btrfs/file.c  |   15 ++++++++++++++-
- fs/btrfs/inode.c |    4 ++--
- 3 files changed, 17 insertions(+), 4 deletions(-)
+ drivers/staging/fbtft/fb_st7789v.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/btrfs/ctree.h
-+++ b/fs/btrfs/ctree.h
-@@ -3315,7 +3315,7 @@ void btrfs_exclop_finish(struct btrfs_fs
- int __init btrfs_auto_defrag_init(void);
- void __cold btrfs_auto_defrag_exit(void);
- int btrfs_add_inode_defrag(struct btrfs_trans_handle *trans,
--			   struct btrfs_inode *inode);
-+			   struct btrfs_inode *inode, u32 extent_thresh);
- int btrfs_run_defrag_inodes(struct btrfs_fs_info *fs_info);
- void btrfs_cleanup_defrag_inodes(struct btrfs_fs_info *fs_info);
- int btrfs_sync_file(struct file *file, loff_t start, loff_t end, int datasync);
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -49,6 +49,15 @@ struct inode_defrag {
+--- a/drivers/staging/fbtft/fb_st7789v.c
++++ b/drivers/staging/fbtft/fb_st7789v.c
+@@ -144,6 +144,8 @@ static int init_display(struct fbtft_par
+ {
+ 	int rc;
  
- 	/* root objectid */
- 	u64 root;
++	par->fbtftops.reset(par);
 +
-+	/*
-+	 * The extent size threshold for autodefrag.
-+	 *
-+	 * This value is different for compressed/non-compressed extents,
-+	 * thus needs to be passed from higher layer.
-+	 * (aka, inode_should_defrag())
-+	 */
-+	u32 extent_thresh;
- };
- 
- static int __compare_inode_defrag(struct inode_defrag *defrag1,
-@@ -101,6 +110,8 @@ static int __btrfs_add_inode_defrag(stru
- 			 */
- 			if (defrag->transid < entry->transid)
- 				entry->transid = defrag->transid;
-+			entry->extent_thresh = min(defrag->extent_thresh,
-+						   entry->extent_thresh);
- 			return -EEXIST;
- 		}
- 	}
-@@ -126,7 +137,7 @@ static inline int __need_auto_defrag(str
-  * enabled
-  */
- int btrfs_add_inode_defrag(struct btrfs_trans_handle *trans,
--			   struct btrfs_inode *inode)
-+			   struct btrfs_inode *inode, u32 extent_thresh)
- {
- 	struct btrfs_root *root = inode->root;
- 	struct btrfs_fs_info *fs_info = root->fs_info;
-@@ -152,6 +163,7 @@ int btrfs_add_inode_defrag(struct btrfs_
- 	defrag->ino = btrfs_ino(inode);
- 	defrag->transid = transid;
- 	defrag->root = root->root_key.objectid;
-+	defrag->extent_thresh = extent_thresh;
- 
- 	spin_lock(&fs_info->defrag_inodes_lock);
- 	if (!test_bit(BTRFS_INODE_IN_DEFRAG, &inode->runtime_flags)) {
-@@ -275,6 +287,7 @@ again:
- 	memset(&range, 0, sizeof(range));
- 	range.len = (u64)-1;
- 	range.start = cur;
-+	range.extent_thresh = defrag->extent_thresh;
- 
- 	sb_start_write(fs_info->sb);
- 	ret = btrfs_defrag_file(inode, NULL, &range, defrag->transid,
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -561,12 +561,12 @@ static inline int inode_need_compress(st
- }
- 
- static inline void inode_should_defrag(struct btrfs_inode *inode,
--		u64 start, u64 end, u64 num_bytes, u64 small_write)
-+		u64 start, u64 end, u64 num_bytes, u32 small_write)
- {
- 	/* If this is a small write inside eof, kick off a defrag */
- 	if (num_bytes < small_write &&
- 	    (start > 0 || end + 1 < inode->disk_i_size))
--		btrfs_add_inode_defrag(NULL, inode);
-+		btrfs_add_inode_defrag(NULL, inode, small_write);
- }
- 
- /*
+ 	rc = init_tearing_effect_line(par);
+ 	if (rc)
+ 		return rc;
 
 
