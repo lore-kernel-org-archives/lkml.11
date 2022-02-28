@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EFD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80337C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239423AbiB1SC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:02:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47826 "EHLO
+        id S239742AbiB1SCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:02:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238994AbiB1Ryq (ORCPT
+        with ESMTP id S238997AbiB1Ryq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D17BDEE2;
-        Mon, 28 Feb 2022 09:44:28 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C56465DD;
+        Mon, 28 Feb 2022 09:44:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E66B60909;
-        Mon, 28 Feb 2022 17:44:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27572C340F0;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AFBDB81187;
         Mon, 28 Feb 2022 17:44:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F8CAC340E7;
+        Mon, 28 Feb 2022 17:44:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070267;
-        bh=ic4faoE/L3WKRHns01+UmgIhVyqu/G6ojlYU9A9fePg=;
+        s=korg; t=1646070264;
+        bh=fWel57NGuWYRtGpTpjkrapYfIXQoCTYPPo3Nr8rT9gc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b6yGXFdRRDq4JdQ0fMne1NzK84XDVXyX1CFbBE8O6xiwyqvbR7XGUD82q3XXDJMo4
-         TdWZ/u7vy4eTjgMoblv6D5tXEz8UgPar8wTjpLEUHhmJtnE7btkv1FC+O1OCTWzoL6
-         SOexpIzyagY/2W+dMQmG9KV7u6EZcaORZVws4RYs=
+        b=ES5HMqi5D0epO3NcYhNZSGfFx32j80xH8/dtleLRKDLMTatdF85nHuhLdWnWrDMqK
+         AW3tZgF3jVMvDv2kT4SXrYGIIzp5jeX9DnHMX3pJ4fLUUdyrcOV47QoFiS0rphoEe7
+         AuG+RmanIuE66bhWFg115q2b2MwX5D9aZIVpVexI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        Andy Gospodarek <gospo@broadcom.com>,
+        stable@vger.kernel.org, Edwin Peer <edwin.peer@broadcom.com>,
+        Ben Li <ben.li@broadcom.com>,
         Michael Chan <michael.chan@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 046/164] bnxt_en: Fix occasional ethtool -t loopback test failures
-Date:   Mon, 28 Feb 2022 18:23:28 +0100
-Message-Id: <20220228172404.426336064@linuxfoundation.org>
+Subject: [PATCH 5.16 045/164] bnxt_en: Fix offline ethtool selftest with RDMA enabled
+Date:   Mon, 28 Feb 2022 18:23:27 +0100
+Message-Id: <20220228172404.345412145@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -53,91 +52,108 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Michael Chan <michael.chan@broadcom.com>
 
-commit cfcab3b3b61584a02bb523ffa99564eafa761dfe upstream.
+commit 6758f937669dba14c6aac7ca004edda42ec1b18d upstream.
 
-In the current code, we setup the port to PHY or MAC loopback mode
-and then transmit a test broadcast packet for the loopback test.  This
-scheme fails sometime if the port is shared with management firmware
-that can also send packets.  The driver may receive the management
-firmware's packet and the test will fail when the contents don't
-match the test packet.
+For offline (destructive) self tests, we need to stop the RDMA driver
+first.  Otherwise, the RDMA driver will run into unrecoverable errors
+when destructive firmware tests are being performed.
 
-Change the test packet to use it's own MAC address as the destination
-and setup the port to only receive it's own MAC address.  This should
-filter out other packets sent by management firmware.
+The irq_re_init parameter used in the half close and half open
+sequence when preparing the NIC for offline tests should be set to
+true because the RDMA driver will free all IRQs before the offline
+tests begin.
 
-Fixes: 91725d89b97a ("bnxt_en: Add PHY loopback to ethtool self-test.")
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Fixes: 55fd0cf320c3 ("bnxt_en: Add external loopback test to ethtool selftest.")
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Reviewed-by: Ben Li <ben.li@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         |    7 +++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         |    1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |    2 +-
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |   10 +++++-----
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   12 +++++++++---
+ 2 files changed, 14 insertions(+), 8 deletions(-)
 
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8623,6 +8623,9 @@ static int bnxt_init_chip(struct bnxt *b
- 	vnic->uc_filter_count = 1;
+@@ -10310,12 +10310,12 @@ int bnxt_half_open_nic(struct bnxt *bp)
+ 		goto half_open_err;
+ 	}
  
- 	vnic->rx_mask = 0;
-+	if (test_bit(BNXT_STATE_HALF_OPEN, &bp->state))
-+		goto skip_rx_mask;
-+
- 	if (bp->dev->flags & IFF_BROADCAST)
- 		vnic->rx_mask |= CFA_L2_SET_RX_MASK_REQ_MASK_BCAST;
- 
-@@ -8643,6 +8646,7 @@ static int bnxt_init_chip(struct bnxt *b
- 	if (rc)
- 		goto err_out;
- 
-+skip_rx_mask:
- 	rc = bnxt_hwrm_set_coal(bp);
- 	if (rc)
- 		netdev_warn(bp->dev, "HWRM set coalescing failure rc: %x\n",
-@@ -10315,8 +10319,10 @@ int bnxt_half_open_nic(struct bnxt *bp)
+-	rc = bnxt_alloc_mem(bp, false);
++	rc = bnxt_alloc_mem(bp, true);
+ 	if (rc) {
  		netdev_err(bp->dev, "bnxt_alloc_mem err: %x\n", rc);
  		goto half_open_err;
  	}
-+	set_bit(BNXT_STATE_HALF_OPEN, &bp->state);
- 	rc = bnxt_init_nic(bp, true);
+-	rc = bnxt_init_nic(bp, false);
++	rc = bnxt_init_nic(bp, true);
  	if (rc) {
-+		clear_bit(BNXT_STATE_HALF_OPEN, &bp->state);
  		netdev_err(bp->dev, "bnxt_init_nic err: %x\n", rc);
  		goto half_open_err;
- 	}
-@@ -10337,6 +10343,7 @@ void bnxt_half_close_nic(struct bnxt *bp
- 	bnxt_hwrm_resource_free(bp, false, true);
+@@ -10324,7 +10324,7 @@ int bnxt_half_open_nic(struct bnxt *bp)
+ 
+ half_open_err:
  	bnxt_free_skbs(bp);
- 	bnxt_free_mem(bp, true);
-+	clear_bit(BNXT_STATE_HALF_OPEN, &bp->state);
+-	bnxt_free_mem(bp, false);
++	bnxt_free_mem(bp, true);
+ 	dev_close(bp->dev);
+ 	return rc;
+ }
+@@ -10334,9 +10334,9 @@ half_open_err:
+  */
+ void bnxt_half_close_nic(struct bnxt *bp)
+ {
+-	bnxt_hwrm_resource_free(bp, false, false);
++	bnxt_hwrm_resource_free(bp, false, true);
+ 	bnxt_free_skbs(bp);
+-	bnxt_free_mem(bp, false);
++	bnxt_free_mem(bp, true);
  }
  
  void bnxt_reenable_sriov(struct bnxt *bp)
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1919,6 +1919,7 @@ struct bnxt {
- #define BNXT_STATE_RECOVER		12
- #define BNXT_STATE_FW_NON_FATAL_COND	13
- #define BNXT_STATE_FW_ACTIVATE_RESET	14
-+#define BNXT_STATE_HALF_OPEN		15	/* For offline ethtool tests */
- 
- #define BNXT_NO_FW_ACCESS(bp)					\
- 	(test_bit(BNXT_STATE_FW_FATAL_COND, &(bp)->state) ||	\
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3433,7 +3433,7 @@ static int bnxt_run_loopback(struct bnxt
- 	if (!skb)
- 		return -ENOMEM;
- 	data = skb_put(skb, pkt_size);
--	eth_broadcast_addr(data);
-+	ether_addr_copy(&data[i], bp->dev->dev_addr);
- 	i += ETH_ALEN;
- 	ether_addr_copy(&data[i], bp->dev->dev_addr);
- 	i += ETH_ALEN;
+@@ -25,6 +25,7 @@
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
+ #include "bnxt_hwrm.h"
++#include "bnxt_ulp.h"
+ #include "bnxt_xdp.h"
+ #include "bnxt_ptp.h"
+ #include "bnxt_ethtool.h"
+@@ -3526,9 +3527,12 @@ static void bnxt_self_test(struct net_de
+ 	if (!offline) {
+ 		bnxt_run_fw_tests(bp, test_mask, &test_results);
+ 	} else {
+-		rc = bnxt_close_nic(bp, false, false);
+-		if (rc)
++		bnxt_ulp_stop(bp);
++		rc = bnxt_close_nic(bp, true, false);
++		if (rc) {
++			bnxt_ulp_start(bp, rc);
+ 			return;
++		}
+ 		bnxt_run_fw_tests(bp, test_mask, &test_results);
+ 
+ 		buf[BNXT_MACLPBK_TEST_IDX] = 1;
+@@ -3538,6 +3542,7 @@ static void bnxt_self_test(struct net_de
+ 		if (rc) {
+ 			bnxt_hwrm_mac_loopback(bp, false);
+ 			etest->flags |= ETH_TEST_FL_FAILED;
++			bnxt_ulp_start(bp, rc);
+ 			return;
+ 		}
+ 		if (bnxt_run_loopback(bp))
+@@ -3563,7 +3568,8 @@ static void bnxt_self_test(struct net_de
+ 		}
+ 		bnxt_hwrm_phy_loopback(bp, false, false);
+ 		bnxt_half_close_nic(bp);
+-		rc = bnxt_open_nic(bp, false, true);
++		rc = bnxt_open_nic(bp, true, true);
++		bnxt_ulp_start(bp, rc);
+ 	}
+ 	if (rc || bnxt_test_irq(bp)) {
+ 		buf[BNXT_IRQ_TEST_IDX] = 1;
 
 
