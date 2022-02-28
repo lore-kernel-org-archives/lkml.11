@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB024C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239950AbiB1SEa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:04:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
+        id S239831AbiB1SCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:02:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239187AbiB1Rwj (ORCPT
+        with ESMTP id S235467AbiB1Ryq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:52:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC21493194;
-        Mon, 28 Feb 2022 09:39:47 -0800 (PST)
+        Mon, 28 Feb 2022 12:54:46 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51531F15;
+        Mon, 28 Feb 2022 09:44:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AAE56156B;
-        Mon, 28 Feb 2022 17:39:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E050C340F0;
-        Mon, 28 Feb 2022 17:39:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BA91DCE17D1;
+        Mon, 28 Feb 2022 17:44:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF66EC340E7;
+        Mon, 28 Feb 2022 17:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069986;
-        bh=0Dr3gRhH+CgEtiZ4s/Z9cMlnUNTk/O/bL+ukYHRkZDU=;
+        s=korg; t=1646070243;
+        bh=UnNGVip4Y/0gnGThrejUdG0CPXjBsSWZUAHZ1Nnm1A0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H+23RmiBYdt4UYhJTRscaeGIUiwykOW7CGjnB3N/FHJwaoUdso2A6B51V8v7c0bjF
-         bLOu+0OLtnmyrJJDVCuVPfv4wymN1qKE3hSTiAcEx7t6RCgqTwNZvgaDS6AICZhQ64
-         qtbI/8xTbiejoKrGPnvYgaAAnMGYHTqLM+dhofgA=
+        b=m7Nxyt39KLBeBIxMmTh/5n62SVn4znAKypXL8hMkYgNcKGfBfBlnT/c1o4VnfQbvx
+         HAM01bbFDd6y8GhM+vA3mh8UBINsjoUTik6Q6oeeM0v30Wfz19mvI3Qf25gokNEqt6
+         HCALYthX1bwIo7GyyMBrfTTqYABklH5u8VBNLKjQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>
-Subject: [PATCH 5.15 047/139] ice: check the return of ice_ptp_gettimex64
-Date:   Mon, 28 Feb 2022 18:23:41 +0100
-Message-Id: <20220228172352.632165828@linuxfoundation.org>
+        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 020/164] drm/amdgpu: disable MMHUB PG for Picasso
+Date:   Mon, 28 Feb 2022 18:23:02 +0100
+Message-Id: <20220228172401.831732389@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
-References: <20220228172347.614588246@linuxfoundation.org>
+In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
+References: <20220228172359.567256961@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,44 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Evan Quan <evan.quan@amd.com>
 
-commit ed22d9c8d128293fc7b0b086c7d3654bcb99a8dd upstream.
+commit f626dd0ff05043e5a7154770cc7cda66acee33a3 upstream.
 
-Clang static analysis reports this issue
-time64.h:69:50: warning: The left operand of '+'
-  is a garbage value
-  set_normalized_timespec64(&ts_delta, lhs.tv_sec + rhs.tv_sec,
-                                       ~~~~~~~~~~ ^
-In ice_ptp_adjtime_nonatomic(), the timespec64 variable 'now'
-is set by ice_ptp_gettimex64().  This function can fail
-with -EBUSY, so 'now' can have a gargbage value.
-So check the return.
+MMHUB PG needs to be disabled for Picasso for stability reasons.
 
-Fixes: 06c16d89d2cb ("ice: register 1588 PTP clock device object for E810 devices")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/ice/ice_ptp.c |    5 ++++-
+ drivers/gpu/drm/amd/amdgpu/soc15.c |    5 ++++-
  1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -846,9 +846,12 @@ exit:
- static int ice_ptp_adjtime_nonatomic(struct ptp_clock_info *info, s64 delta)
- {
- 	struct timespec64 now, then;
-+	int ret;
+--- a/drivers/gpu/drm/amd/amdgpu/soc15.c
++++ b/drivers/gpu/drm/amd/amdgpu/soc15.c
+@@ -1114,8 +1114,11 @@ static int soc15_common_early_init(void
+ 				AMD_CG_SUPPORT_SDMA_LS |
+ 				AMD_CG_SUPPORT_VCN_MGCG;
  
- 	then = ns_to_timespec64(delta);
--	ice_ptp_gettimex64(info, &now, NULL);
-+	ret = ice_ptp_gettimex64(info, &now, NULL);
-+	if (ret)
-+		return ret;
- 	now = timespec64_add(now, then);
- 
- 	return ice_ptp_settime64(info, (const struct timespec64 *)&now);
++			/*
++			 * MMHUB PG needs to be disabled for Picasso for
++			 * stability reasons.
++			 */
+ 			adev->pg_flags = AMD_PG_SUPPORT_SDMA |
+-				AMD_PG_SUPPORT_MMHUB |
+ 				AMD_PG_SUPPORT_VCN;
+ 		} else {
+ 			adev->cg_flags = AMD_CG_SUPPORT_GFX_MGCG |
 
 
