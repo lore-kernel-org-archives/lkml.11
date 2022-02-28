@@ -2,271 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 938DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236958AbiB1Rbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:31:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45400 "EHLO
+        id S236494AbiB1Rby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:31:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235684AbiB1RaG (ORCPT
+        with ESMTP id S235039AbiB1RaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:30:06 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D4751E7D;
-        Mon, 28 Feb 2022 09:28:17 -0800 (PST)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21SFwZIj005113;
-        Mon, 28 Feb 2022 11:28:01 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=kRquVZt2Nc4RgM42uE1tX7b+hLjImnlH6w2zpc+0P3g=;
- b=R+0E+ShZ+bskI8bP7JGw9RFuEMJH45i3rh/J66Y8EQ1CjzBZxZyT5BgZCgAdXnsmunze
- NSmDrbUNYUBDpxlUzCoCmP2FuuHTU0a5fbA/H124levd5zAi23WghZa93EfB9dLEbC0d
- 68BdC0JgX/+EXJMOIbW6T5jjM91FeanlHS4V5PeA4esblBMF5M2yHfznGaWx0rk8q3xo
- yjgDCYTWlrzBTA72pqVwkF1H7j45I+77eRDCv7Nm5kYzcM/NMrH5/KydXLg2fdOinq71
- 6ueu+n4+ntfD/ILwiTasFNoo85+FGQprlR3a9WhagdUcesZskhwhquRPvPQ9qa1rIbex jA== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3efjg5thq9-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 28 Feb 2022 11:28:01 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 28 Feb
- 2022 17:27:58 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Mon, 28 Feb 2022 17:27:58 +0000
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.64.213])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 4547BB1A;
-        Mon, 28 Feb 2022 17:27:58 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <kuninori.morimoto.gx@renesas.com>
-CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH V3 2/2] ASoC: audio_graph_card2: Add support for variable slot widths
-Date:   Mon, 28 Feb 2022 17:27:54 +0000
-Message-ID: <20220228172754.453783-3-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220228172754.453783-1-rf@opensource.cirrus.com>
-References: <20220228172754.453783-1-rf@opensource.cirrus.com>
+        Mon, 28 Feb 2022 12:30:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14251541B3;
+        Mon, 28 Feb 2022 09:28:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D9146135F;
+        Mon, 28 Feb 2022 17:28:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FA12C340E7;
+        Mon, 28 Feb 2022 17:28:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069302;
+        bh=CRd4rCeCLKeHll0cDyYiFg6oShG+mdo264UAokc0Yw8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=LcwnO99yogfhHtUX6JDfqvZpoYbM5Y5hY7hrr8CikN0rb4y62Q7UynbSLXWb4Ng4d
+         NXkoextAUGfc/+mgkyMrk+KYEUrlUHO6wqvkH5jh5xJd1scrRaYqOV5EUMAN12ehew
+         DvGydP+Oe9kVrmEZyrsI9AFBY1VU0DgNPhrJ5a6A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Subject: [PATCH 4.14 07/31] serial: 8250: of: Fix mapped region size when using reg-offset property
+Date:   Mon, 28 Feb 2022 18:24:03 +0100
+Message-Id: <20220228172200.579201488@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
+References: <20220228172159.515152296@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: BG3ndA9ZM39saCFu_8Zg1TKOhGAPYTfq
-X-Proofpoint-ORIG-GUID: BG3ndA9ZM39saCFu_8Zg1TKOhGAPYTfq
-X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some audio hardware cannot support the same slot width for all sample
-widths, or a slot width equal to the sample width for all sample widths.
-This is usually due either to limitations of the audio serial port or
-system clocking restrictions.
-A typical example would be:
+From: Robert Hancock <robert.hancock@calian.com>
 
-- 16-bit samples in 16-bit slots
-- 24-bit samples in 32-bit slots
+commit d06b1cf28297e27127d3da54753a3a01a2fa2f28 upstream.
 
-The new dai-tdm-slot-width-map property allows setting a mapping of
-sample widths and the corresponding tdm slot widths and slot counts.
-Although the slot count is usually the same for all cases this does
-allow for adding padding slots to maintain the same bitclk frequency.
+8250_of supports a reg-offset property which is intended to handle
+cases where the device registers start at an offset inside the region
+of memory allocated to the device. The Xilinx 16550 UART, for which this
+support was initially added, requires this. However, the code did not
+adjust the overall size of the mapped region accordingly, causing the
+driver to request an area of memory past the end of the device's
+allocation. For example, if the UART was allocated an address of
+0xb0130000, size of 0x10000 and reg-offset of 0x1000 in the device
+tree, the region of memory reserved was b0131000-b0140fff, which caused
+the driver for the region starting at b0140000 to fail to probe.
 
-The property is added to each endpoint node that needs the component
-DAI to be told the TDM slot width and count.
+Fix this by subtracting reg-offset from the mapped region size.
 
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+Fixes: b912b5e2cfb3 ([POWERPC] Xilinx: of_serial support for Xilinx uart 16550.)
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Link: https://lore.kernel.org/r/20220112194214.881844-1-robert.hancock@calian.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[sudip: adjust context]
+Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/sound/simple_card_utils.h     | 11 +++
- sound/soc/generic/audio-graph-card2.c |  4 ++
- sound/soc/generic/simple-card-utils.c | 97 +++++++++++++++++++++++++++
- 3 files changed, 112 insertions(+)
+ drivers/tty/serial/8250/8250_of.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/include/sound/simple_card_utils.h b/include/sound/simple_card_utils.h
-index 5ee269c59aac..8faa649f712b 100644
---- a/include/sound/simple_card_utils.h
-+++ b/include/sound/simple_card_utils.h
-@@ -16,6 +16,12 @@
- #define asoc_simple_init_mic(card, sjack, prefix) \
- 	asoc_simple_init_jack(card, sjack, 0, prefix, NULL)
+--- a/drivers/tty/serial/8250/8250_of.c
++++ b/drivers/tty/serial/8250/8250_of.c
+@@ -102,8 +102,17 @@ static int of_platform_serial_setup(stru
+ 	port->mapsize = resource_size(&resource);
  
-+struct asoc_simple_tdm_width_map {
-+	u8 sample_bits;
-+	u8 slot_count;
-+	u16 slot_width;
-+};
-+
- struct asoc_simple_dai {
- 	const char *name;
- 	unsigned int sysclk;
-@@ -26,6 +32,8 @@ struct asoc_simple_dai {
- 	unsigned int rx_slot_mask;
- 	struct clk *clk;
- 	bool clk_fixed;
-+	struct asoc_simple_tdm_width_map *tdm_width_map;
-+	int n_tdm_widths;
- };
- 
- struct asoc_simple_data {
-@@ -132,6 +140,9 @@ int asoc_simple_parse_daifmt(struct device *dev,
- 			     struct device_node *codec,
- 			     char *prefix,
- 			     unsigned int *retfmt);
-+int asoc_simple_parse_tdm_width_map(struct device *dev, struct device_node *np,
-+				    struct asoc_simple_dai *dai);
-+
- __printf(3, 4)
- int asoc_simple_set_dailink_name(struct device *dev,
- 				 struct snd_soc_dai_link *dai_link,
-diff --git a/sound/soc/generic/audio-graph-card2.c b/sound/soc/generic/audio-graph-card2.c
-index c3947347dda3..c0f3907a01fd 100644
---- a/sound/soc/generic/audio-graph-card2.c
-+++ b/sound/soc/generic/audio-graph-card2.c
-@@ -503,6 +503,10 @@ static int __graph_parse_node(struct asoc_simple_priv *priv,
- 	if (ret < 0)
- 		return ret;
- 
-+	ret = asoc_simple_parse_tdm_width_map(dev, ep, dai);
-+	if (ret < 0)
-+		return ret;
-+
- 	ret = asoc_simple_parse_clk(dev, ep, dai, dlc);
- 	if (ret < 0)
- 		return ret;
-diff --git a/sound/soc/generic/simple-card-utils.c b/sound/soc/generic/simple-card-utils.c
-index a4babfb63175..14c8b3a74c2d 100644
---- a/sound/soc/generic/simple-card-utils.c
-+++ b/sound/soc/generic/simple-card-utils.c
-@@ -12,6 +12,7 @@
- #include <linux/of_gpio.h>
- #include <linux/of_graph.h>
- #include <sound/jack.h>
-+#include <sound/pcm_params.h>
- #include <sound/simple_card_utils.h>
- 
- void asoc_simple_convert_fixup(struct asoc_simple_data *data,
-@@ -87,6 +88,51 @@ int asoc_simple_parse_daifmt(struct device *dev,
- }
- EXPORT_SYMBOL_GPL(asoc_simple_parse_daifmt);
- 
-+int asoc_simple_parse_tdm_width_map(struct device *dev, struct device_node *np,
-+				    struct asoc_simple_dai *dai)
-+{
-+	u32 *array_values, *p;
-+	int n, i, ret;
-+
-+	if (!of_property_read_bool(np, "dai-tdm-slot-width-map"))
-+		return 0;
-+
-+	n = of_property_count_elems_of_size(np, "dai-tdm-slot-width-map", sizeof(u32));
-+	if (n % 3) {
-+		dev_err(dev, "Invalid number of cells for dai-tdm-slot-width-map\n");
-+		return -EINVAL;
-+	}
-+
-+	dai->tdm_width_map = devm_kcalloc(dev, n, sizeof(*dai->tdm_width_map), GFP_KERNEL);
-+	if (!dai->tdm_width_map)
-+		return -ENOMEM;
-+
-+	array_values = kcalloc(n, sizeof(*array_values), GFP_KERNEL);
-+	if (!array_values)
-+		return -ENOMEM;
-+
-+	ret = of_property_read_u32_array(np, "dai-tdm-slot-width-map", array_values, n);
-+	if (ret < 0) {
-+		dev_err(dev, "Could not read dai-tdm-slot-width-map: %d\n", ret);
-+		goto out;
-+	}
-+
-+	p = array_values;
-+	for (i = 0; i < n / 3; ++i) {
-+		dai->tdm_width_map[i].sample_bits = *p++;
-+		dai->tdm_width_map[i].slot_width = *p++;
-+		dai->tdm_width_map[i].slot_count = *p++;
-+	}
-+
-+	dai->n_tdm_widths = i;
-+	ret = 0;
-+out:
-+	kfree(array_values);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(asoc_simple_parse_tdm_width_map);
-+
- int asoc_simple_set_dailink_name(struct device *dev,
- 				 struct snd_soc_dai_link *dai_link,
- 				 const char *fmt, ...)
-@@ -309,6 +355,42 @@ static int asoc_simple_set_clk_rate(struct device *dev,
- 	return clk_set_rate(simple_dai->clk, rate);
- }
- 
-+static int asoc_simple_set_tdm(struct snd_soc_dai *dai,
-+				struct asoc_simple_dai *simple_dai,
-+				struct snd_pcm_hw_params *params)
-+{
-+	int sample_bits = params_width(params);
-+	int slot_width = simple_dai->slot_width;
-+	int slot_count = simple_dai->slots;
-+	int i, ret;
-+
-+	if (!simple_dai || !simple_dai->tdm_width_map)
-+		return 0;
-+
-+	if (slot_width == 0)
-+		slot_width = sample_bits;
-+
-+	for (i = 0; i < simple_dai->n_tdm_widths; ++i) {
-+		if (simple_dai->tdm_width_map[i].sample_bits == sample_bits) {
-+			slot_width = simple_dai->tdm_width_map[i].slot_width;
-+			slot_count = simple_dai->tdm_width_map[i].slot_count;
-+			break;
+ 	/* Check for shifted address mapping */
+-	if (of_property_read_u32(np, "reg-offset", &prop) == 0)
++	if (of_property_read_u32(np, "reg-offset", &prop) == 0) {
++		if (prop >= port->mapsize) {
++			dev_warn(&ofdev->dev, "reg-offset %u exceeds region size %pa\n",
++				 prop, &port->mapsize);
++			ret = -EINVAL;
++			goto err_unprepare;
 +		}
++
+ 		port->mapbase += prop;
++		port->mapsize -= prop;
 +	}
-+
-+	ret = snd_soc_dai_set_tdm_slot(dai,
-+				       simple_dai->tx_slot_mask,
-+				       simple_dai->rx_slot_mask,
-+				       slot_count,
-+				       slot_width);
-+	if (ret && ret != -ENOTSUPP) {
-+		dev_err(dai->dev, "simple-card: set_tdm_slot error: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- int asoc_simple_hw_params(struct snd_pcm_substream *substream,
- 			  struct snd_pcm_hw_params *params)
- {
-@@ -362,6 +444,21 @@ int asoc_simple_hw_params(struct snd_pcm_substream *substream,
- 				return ret;
- 		}
- 	}
-+
-+	for_each_prop_dai_codec(props, i, pdai) {
-+		sdai = asoc_rtd_to_codec(rtd, i);
-+		ret = asoc_simple_set_tdm(sdai, pdai, params);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	for_each_prop_dai_cpu(props, i, pdai) {
-+		sdai = asoc_rtd_to_cpu(rtd, i);
-+		ret = asoc_simple_set_tdm(sdai, pdai, params);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(asoc_simple_hw_params);
--- 
-2.30.2
+ 
+ 	/* Compatibility with the deprecated pxa driver and 8250_pxa drivers. */
+ 	if (of_device_is_compatible(np, "mrvl,mmp-uart"))
+
 
