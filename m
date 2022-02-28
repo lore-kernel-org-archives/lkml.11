@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC6BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C401C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239337AbiB1SAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:00:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
+        id S238051AbiB1SAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:00:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240705AbiB1Ryb (ORCPT
+        with ESMTP id S240176AbiB1Rx5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140F02980F;
-        Mon, 28 Feb 2022 09:42:46 -0800 (PST)
+        Mon, 28 Feb 2022 12:53:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625D9B1096;
+        Mon, 28 Feb 2022 09:41:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B6AD615B4;
-        Mon, 28 Feb 2022 17:42:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B45A4C340E7;
-        Mon, 28 Feb 2022 17:42:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 12A5A609EE;
+        Mon, 28 Feb 2022 17:41:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D465C340E7;
+        Mon, 28 Feb 2022 17:41:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070165;
-        bh=oYdLpNFMJoWpUsGNteMjbuQJIBxw4NVt3rpKOLt7l1k=;
+        s=korg; t=1646070102;
+        bh=Jr5Pyk+otoV6gfQcM3bxSHkPqT76vEIXtzQ45AJ/KPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pmA66K7YEdZ9Y48g2ATfA85hzd1XEBiCVZWKsKf71XbzRgf7dUhZx0voMzK+lDVPS
-         bflwEOhbkdBJtd4R3/BI9qJiD1Q9u5N9FjakW8ZHilTBm9WqUDGACS9gkhxmeK6hX9
-         dnlUBh2Q9GF3jDJ2PeSAB0JL5lIZqZucH0XL+fag=
+        b=sifSREfif1hDBgXId+ENa+aEk+HpFlg66HceEK7JmwD99l3KEEE2ADtG9oUQ1QtYu
+         uPLtqbQBJLvdBe3mymrNKLFeLgsHT/AoYnMR17l427F2fygrmWo+oI6wuE3jyBCejZ
+         Hb3FvRorN2QPq+3fQVxgV9flm2xYhmB3ExKFAm/c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
-        Paul Moore <paul@paul-moore.com>
-Subject: [PATCH 5.16 010/164] selinux: fix misuse of mutex_is_locked()
-Date:   Mon, 28 Feb 2022 18:22:52 +0100
-Message-Id: <20220228172400.731941088@linuxfoundation.org>
+        stable@vger.kernel.org, Sven Peter <sven@svenpeter.dev>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 124/139] tps6598x: clear int mask on probe failure
+Date:   Mon, 28 Feb 2022 18:24:58 +0100
+Message-Id: <20220228172400.668857813@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
-References: <20220228172359.567256961@linuxfoundation.org>
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,44 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ondrej Mosnacek <omosnace@redhat.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit ce2fc710c9d2b25afc710f49bb2065b4439a62bc upstream.
+commit aba2081e0a9c977396124aa6df93b55ed5912b19 upstream.
 
-mutex_is_locked() tests whether the mutex is locked *by any task*, while
-here we want to test if it is held *by the current task*. To avoid
-false/missed WARNINGs, use lockdep_assert_is_held() and
-lockdep_assert_is_not_held() instead, which do the right thing (though
-they are a no-op if CONFIG_LOCKDEP=n).
+The interrupt mask is enabled before any potential failure points in
+the driver, which can leave a failure path where we exit with
+interrupts enabled but the device not live. This causes an infinite
+stream of interrupts on an Apple M1 Pro laptop on USB-C.
 
-Cc: stable@vger.kernel.org
-Fixes: 2554a48f4437 ("selinux: measure state and policy capabilities")
-Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Add a failure label that's used post enabling interrupts, where we
+mask them again before returning an error.
+
+Suggested-by: Sven Peter <sven@svenpeter.dev>
+Cc: stable <stable@vger.kernel.org>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lore.kernel.org/r/e6b80669-20f3-06e7-9ed5-8951a9c6db6f@kernel.dk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- security/selinux/ima.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/typec/tipd/core.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/security/selinux/ima.c
-+++ b/security/selinux/ima.c
-@@ -77,7 +77,7 @@ void selinux_ima_measure_state_locked(st
- 	size_t policy_len;
- 	int rc = 0;
+--- a/drivers/usb/typec/tipd/core.c
++++ b/drivers/usb/typec/tipd/core.c
+@@ -618,12 +618,12 @@ static int tps6598x_probe(struct i2c_cli
  
--	WARN_ON(!mutex_is_locked(&state->policy_mutex));
-+	lockdep_assert_held(&state->policy_mutex);
+ 	ret = tps6598x_read32(tps, TPS_REG_STATUS, &status);
+ 	if (ret < 0)
+-		return ret;
++		goto err_clear_mask;
+ 	trace_tps6598x_status(status);
  
- 	state_str = selinux_ima_collect_state(state);
- 	if (!state_str) {
-@@ -117,7 +117,7 @@ void selinux_ima_measure_state_locked(st
-  */
- void selinux_ima_measure_state(struct selinux_state *state)
- {
--	WARN_ON(mutex_is_locked(&state->policy_mutex));
-+	lockdep_assert_not_held(&state->policy_mutex);
+ 	ret = tps6598x_read32(tps, TPS_REG_SYSTEM_CONF, &conf);
+ 	if (ret < 0)
+-		return ret;
++		goto err_clear_mask;
  
- 	mutex_lock(&state->policy_mutex);
- 	selinux_ima_measure_state_locked(state);
+ 	/*
+ 	 * This fwnode has a "compatible" property, but is never populated as a
+@@ -712,7 +712,8 @@ err_role_put:
+ 	usb_role_switch_put(tps->role_sw);
+ err_fwnode_put:
+ 	fwnode_handle_put(fwnode);
+-
++err_clear_mask:
++	tps6598x_write64(tps, TPS_REG_INT_MASK1, 0);
+ 	return ret;
+ }
+ 
 
 
