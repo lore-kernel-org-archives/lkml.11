@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 347BFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9380EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234073AbiB1Rvw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:51:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
+        id S239081AbiB1Rv4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:51:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235780AbiB1RpG (ORCPT
+        with ESMTP id S238464AbiB1Rpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:45:06 -0500
+        Mon, 28 Feb 2022 12:45:32 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E723B3F5;
-        Mon, 28 Feb 2022 09:37:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86BB43AEE;
+        Mon, 28 Feb 2022 09:37:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E978161357;
-        Mon, 28 Feb 2022 17:37:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B100C340E7;
-        Mon, 28 Feb 2022 17:37:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53C3E61357;
+        Mon, 28 Feb 2022 17:37:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D186C340E7;
+        Mon, 28 Feb 2022 17:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069864;
-        bh=9nxveOHMsj4ZaiMKU38DDizVd4iIeE9jIrHU6DIUYJY=;
+        s=korg; t=1646069869;
+        bh=re8j0cwAUKK6PJWb56yhqhBnF9YWtkD/UuOaJsCwDGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wU0RpNwmqxM+GDfmmzV1c/naiH5eF2SRnt6dOcftQGXzbS7mKHamk1a8VObW6YeF2
-         84Q9TjNEsAEtuxy3lelE5fMDH8YUHmuKSYJiQUThrqhpDFO+6sLG/RYbgHHsWhm7tp
-         HCg+AOKAilNzDFSuSDi1XL4CS2/Knbux8QpPtSrU=
+        b=aSgipmXNGywZf1MPhAPS65bMk+kZMaCvRlnyVDzIWHQtHwlaJIZHDuwBChfmDH/U0
+         lFyUTShefWOqTVlwePJ05LebPIzAOnphqJTKgcN4YLWgPscbjXeWkfIGQmY7RXfMP4
+         /aOorfgZxxCsVsJo2+rsXDWdkD2u55pTLclQQxho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 038/139] mptcp: add mibs counter for ignored incoming options
-Date:   Mon, 28 Feb 2022 18:23:32 +0100
-Message-Id: <20220228172351.755107471@linuxfoundation.org>
+Subject: [PATCH 5.15 040/139] selftests: mptcp: be more conservative with cookie MPJ limits
+Date:   Mon, 28 Feb 2022 18:23:34 +0100
+Message-Id: <20220228172351.945893181@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -53,87 +51,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-commit f73c1194634506ab60af0debef04671fc431a435 upstream.
+commit e35f885b357d47e04380a2056d1b2cc3e6f4f24b upstream.
 
-The MPTCP in kernel path manager has some constraints on incoming
-addresses announce processing, so that in edge scenarios it can
-end-up dropping (ignoring) some of such announces.
+Since commit 2843ff6f36db ("mptcp: remote addresses fullmesh"), an
+MPTCP client can attempt creating multiple MPJ subflow simultaneusly.
 
-The above is not very limiting in practice since such scenarios are
-very uncommon and MPTCP will recover due to ADD_ADDR retransmissions.
+In such scenario the server, when syncookies are enabled, could end-up
+accepting incoming MPJ syn even above the configured subflow limit, as
+the such limit can be enforced in a reliable way only after the subflow
+creation. In case of syncookie, only after the 3rd ack reception.
 
-This patch adds a few MIB counters to account for such drop events
-to allow easier introspection of the critical scenarios.
+As a consequence the related self-tests case sporadically fails, as it
+verify that the server always accept the expected number of MPJ syn.
 
-Fixes: f7efc7771eac ("mptcp: drop argument port from mptcp_pm_announce_addr")
-Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Address the issues relaxing the MPJ syn number constrain. Note that the
+check on the accepted number of MPJ 3rd ack still remains intact.
+
+Fixes: 2843ff6f36db ("mptcp: remote addresses fullmesh")
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mptcp/mib.c |    2 ++
- net/mptcp/mib.h |    2 ++
- net/mptcp/pm.c  |    8 ++++++--
- 3 files changed, 10 insertions(+), 2 deletions(-)
+ tools/testing/selftests/net/mptcp/mptcp_join.sh |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/net/mptcp/mib.c
-+++ b/net/mptcp/mib.c
-@@ -35,12 +35,14 @@ static const struct snmp_mib mptcp_snmp_
- 	SNMP_MIB_ITEM("AddAddr", MPTCP_MIB_ADDADDR),
- 	SNMP_MIB_ITEM("EchoAdd", MPTCP_MIB_ECHOADD),
- 	SNMP_MIB_ITEM("PortAdd", MPTCP_MIB_PORTADD),
-+	SNMP_MIB_ITEM("AddAddrDrop", MPTCP_MIB_ADDADDRDROP),
- 	SNMP_MIB_ITEM("MPJoinPortSynRx", MPTCP_MIB_JOINPORTSYNRX),
- 	SNMP_MIB_ITEM("MPJoinPortSynAckRx", MPTCP_MIB_JOINPORTSYNACKRX),
- 	SNMP_MIB_ITEM("MPJoinPortAckRx", MPTCP_MIB_JOINPORTACKRX),
- 	SNMP_MIB_ITEM("MismatchPortSynRx", MPTCP_MIB_MISMATCHPORTSYNRX),
- 	SNMP_MIB_ITEM("MismatchPortAckRx", MPTCP_MIB_MISMATCHPORTACKRX),
- 	SNMP_MIB_ITEM("RmAddr", MPTCP_MIB_RMADDR),
-+	SNMP_MIB_ITEM("RmAddrDrop", MPTCP_MIB_RMADDRDROP),
- 	SNMP_MIB_ITEM("RmSubflow", MPTCP_MIB_RMSUBFLOW),
- 	SNMP_MIB_ITEM("MPPrioTx", MPTCP_MIB_MPPRIOTX),
- 	SNMP_MIB_ITEM("MPPrioRx", MPTCP_MIB_MPPRIORX),
---- a/net/mptcp/mib.h
-+++ b/net/mptcp/mib.h
-@@ -28,12 +28,14 @@ enum linux_mptcp_mib_field {
- 	MPTCP_MIB_ADDADDR,		/* Received ADD_ADDR with echo-flag=0 */
- 	MPTCP_MIB_ECHOADD,		/* Received ADD_ADDR with echo-flag=1 */
- 	MPTCP_MIB_PORTADD,		/* Received ADD_ADDR with a port-number */
-+	MPTCP_MIB_ADDADDRDROP,		/* Dropped incoming ADD_ADDR */
- 	MPTCP_MIB_JOINPORTSYNRX,	/* Received a SYN MP_JOIN with a different port-number */
- 	MPTCP_MIB_JOINPORTSYNACKRX,	/* Received a SYNACK MP_JOIN with a different port-number */
- 	MPTCP_MIB_JOINPORTACKRX,	/* Received an ACK MP_JOIN with a different port-number */
- 	MPTCP_MIB_MISMATCHPORTSYNRX,	/* Received a SYN MP_JOIN with a mismatched port-number */
- 	MPTCP_MIB_MISMATCHPORTACKRX,	/* Received an ACK MP_JOIN with a mismatched port-number */
- 	MPTCP_MIB_RMADDR,		/* Received RM_ADDR */
-+	MPTCP_MIB_RMADDRDROP,		/* Dropped incoming RM_ADDR */
- 	MPTCP_MIB_RMSUBFLOW,		/* Remove a subflow */
- 	MPTCP_MIB_MPPRIOTX,		/* Transmit a MP_PRIO */
- 	MPTCP_MIB_MPPRIORX,		/* Received a MP_PRIO */
---- a/net/mptcp/pm.c
-+++ b/net/mptcp/pm.c
-@@ -194,6 +194,8 @@ void mptcp_pm_add_addr_received(struct m
- 		mptcp_pm_add_addr_send_ack(msk);
- 	} else if (mptcp_pm_schedule_work(msk, MPTCP_PM_ADD_ADDR_RECEIVED)) {
- 		pm->remote = *addr;
-+	} else {
-+		__MPTCP_INC_STATS(sock_net((struct sock *)msk), MPTCP_MIB_ADDADDRDROP);
- 	}
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -624,6 +624,7 @@ chk_join_nr()
+ 	local ack_nr=$4
+ 	local count
+ 	local dump_stats
++	local with_cookie
  
- 	spin_unlock_bh(&pm->lock);
-@@ -234,8 +236,10 @@ void mptcp_pm_rm_addr_received(struct mp
- 		mptcp_event_addr_removed(msk, rm_list->ids[i]);
+ 	printf "%02u %-36s %s" "$TEST_COUNT" "$msg" "syn"
+ 	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinSynRx | awk '{print $2}'`
+@@ -637,12 +638,20 @@ chk_join_nr()
+ 	fi
  
- 	spin_lock_bh(&pm->lock);
--	mptcp_pm_schedule_work(msk, MPTCP_PM_RM_ADDR_RECEIVED);
--	pm->rm_list_rx = *rm_list;
-+	if (mptcp_pm_schedule_work(msk, MPTCP_PM_RM_ADDR_RECEIVED))
-+		pm->rm_list_rx = *rm_list;
-+	else
-+		__MPTCP_INC_STATS(sock_net((struct sock *)msk), MPTCP_MIB_RMADDRDROP);
- 	spin_unlock_bh(&pm->lock);
- }
- 
+ 	echo -n " - synack"
++	with_cookie=`ip netns exec $ns2 sysctl -n net.ipv4.tcp_syncookies`
+ 	count=`ip netns exec $ns2 nstat -as | grep MPTcpExtMPJoinSynAckRx | awk '{print $2}'`
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$syn_ack_nr" ]; then
+-		echo "[fail] got $count JOIN[s] synack expected $syn_ack_nr"
+-		ret=1
+-		dump_stats=1
++		# simult connections exceeding the limit with cookie enabled could go up to
++		# synack validation as the conn limit can be enforced reliably only after
++		# the subflow creation
++		if [ "$with_cookie" = 2 ] && [ "$count" -gt "$syn_ack_nr" ] && [ "$count" -le "$syn_nr" ]; then
++			echo -n "[ ok ]"
++		else
++			echo "[fail] got $count JOIN[s] synack expected $syn_ack_nr"
++			ret=1
++			dump_stats=1
++		fi
+ 	else
+ 		echo -n "[ ok ]"
+ 	fi
 
 
