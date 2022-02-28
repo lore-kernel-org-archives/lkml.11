@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 260D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED162C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240409AbiB1SPd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:15:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
+        id S237537AbiB1SPl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:15:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240741AbiB1SJK (ORCPT
+        with ESMTP id S240642AbiB1SJG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E70C5EDED;
-        Mon, 28 Feb 2022 09:49:02 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5343B5E76B;
+        Mon, 28 Feb 2022 09:48:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AE039B815CC;
-        Mon, 28 Feb 2022 17:48:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECA95C340E7;
-        Mon, 28 Feb 2022 17:48:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A73860909;
+        Mon, 28 Feb 2022 17:48:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30B00C340E7;
+        Mon, 28 Feb 2022 17:48:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070538;
-        bh=dWVf+/VS6Rg74DB69mgz/Oz3TpM/GD2pr+57M0z5Q0M=;
+        s=korg; t=1646070527;
+        bh=Ld3mo65E0/KE6WkoUpUGYPKrTJ2wuyv9AoP0+dIK3uc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=puZU05FQ0MymlHKKdmdXLx+9J7E83ou1e/WJCKiOiJ+unJM+B82yVjbA+cdy6O5R1
-         dQKJw5Y5SpZ4W9FXMhlBcxKF0a1NLjotWLIS/72wWL886XDszjWEeXLFxNBE7y2fCg
-         E/51gVpIQwytmqVbrU8JvI1hdOnijMsqvnRRhuvI=
+        b=kgMIFp0kd/C9EHZyMqDnv/UGSujzmye9vKg2DGryvxJhA6kO45qy4fwDsgY0XrBF1
+         JNGUCmYJckv4sAzDWI5ryCB+3OqN/0a7y5kwL1rKK2gOpBh9K01un81IGEMEY1J7MF
+         xlIT/FGBRJzG3MwkI+KiNENV5+DljzL7DSs6oRG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Md Haris Iqbal <haris.iqbal@ionos.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 105/164] RDMA/rtrs-clt: Fix possible double free in error case
-Date:   Mon, 28 Feb 2022 18:24:27 +0100
-Message-Id: <20220228172409.322623491@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 139/164] btrfs: defrag: dont defrag extents which are already at max capacity
+Date:   Mon, 28 Feb 2022 18:25:01 +0100
+Message-Id: <20220228172412.565652216@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -51,125 +48,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Md Haris Iqbal <haris.iqbal@ionos.com>
+From: Qu Wenruo <wqu@suse.com>
 
-[ Upstream commit 8700af2cc18c919b2a83e74e0479038fd113c15d ]
+commit 979b25c300dbcbcb750e88715018e04e854de6c6 upstream.
 
-Callback function rtrs_clt_dev_release() for put_device() calls kfree(clt)
-to free memory. We shouldn't call kfree(clt) again, and we can't use the
-clt after kfree too.
+[BUG]
+For compressed extents, defrag ioctl will always try to defrag any
+compressed extents, wasting not only IO but also CPU time to
+compress/decompress:
 
-Replace device_register() with device_initialize() and device_add() so that
-dev_set_name can() be used appropriately.
+   mkfs.btrfs -f $DEV
+   mount -o compress $DEV $MNT
+   xfs_io -f -c "pwrite -S 0xab 0 128K" $MNT/foobar
+   sync
+   xfs_io -f -c "pwrite -S 0xcd 128K 128K" $MNT/foobar
+   sync
+   echo "=== before ==="
+   xfs_io -c "fiemap -v" $MNT/foobar
+   btrfs filesystem defrag $MNT/foobar
+   sync
+   echo "=== after ==="
+   xfs_io -c "fiemap -v" $MNT/foobar
 
-Move mutex_destroy() to the release function so it can be called in
-the alloc_clt err path.
+Then it shows the 2 128K extents just get COW for no extra benefit, with
+extra IO/CPU spent:
 
-Fixes: eab098246625 ("RDMA/rtrs-clt: Refactor the failure cases in alloc_clt")
-Link: https://lore.kernel.org/r/20220217030929.323849-1-haris.iqbal@ionos.com
-Reported-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Md Haris Iqbal <haris.iqbal@ionos.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    === before ===
+    /mnt/btrfs/file1:
+     EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
+       0: [0..255]:        26624..26879       256   0x8
+       1: [256..511]:      26632..26887       256   0x9
+    === after ===
+    /mnt/btrfs/file1:
+     EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
+       0: [0..255]:        26640..26895       256   0x8
+       1: [256..511]:      26648..26903       256   0x9
+
+This affects not only v5.16 (after the defrag rework), but also v5.15
+(before the defrag rework).
+
+[CAUSE]
+>From the very beginning, btrfs defrag never checks if one extent is
+already at its max capacity (128K for compressed extents, 128M
+otherwise).
+
+And the default extent size threshold is 256K, which is already beyond
+the compressed extent max size.
+
+This means, by default btrfs defrag ioctl will mark all compressed
+extent which is not adjacent to a hole/preallocated range for defrag.
+
+[FIX]
+Introduce a helper to grab the maximum extent size, and then in
+defrag_collect_targets() and defrag_check_next_extent(), reject extents
+which are already at their max capacity.
+
+Reported-by: Filipe Manana <fdmanana@suse.com>
+CC: stable@vger.kernel.org # 5.16
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/ulp/rtrs/rtrs-clt.c | 37 ++++++++++++++------------
- 1 file changed, 20 insertions(+), 17 deletions(-)
+ fs/btrfs/ioctl.c |   20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-index e39709dee179d..7760cbc098add 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-@@ -2664,6 +2664,8 @@ static void rtrs_clt_dev_release(struct device *dev)
- {
- 	struct rtrs_clt *clt = container_of(dev, struct rtrs_clt, dev);
- 
-+	mutex_destroy(&clt->paths_ev_mutex);
-+	mutex_destroy(&clt->paths_mutex);
- 	kfree(clt);
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1020,6 +1020,13 @@ static struct extent_map *defrag_lookup_
+ 	return em;
  }
  
-@@ -2693,6 +2695,8 @@ static struct rtrs_clt *alloc_clt(const char *sessname, size_t paths_num,
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
-+	clt->dev.class = rtrs_clt_dev_class;
-+	clt->dev.release = rtrs_clt_dev_release;
- 	uuid_gen(&clt->paths_uuid);
- 	INIT_LIST_HEAD_RCU(&clt->paths_list);
- 	clt->paths_num = paths_num;
-@@ -2709,43 +2713,41 @@ static struct rtrs_clt *alloc_clt(const char *sessname, size_t paths_num,
- 	init_waitqueue_head(&clt->permits_wait);
- 	mutex_init(&clt->paths_ev_mutex);
- 	mutex_init(&clt->paths_mutex);
-+	device_initialize(&clt->dev);
- 
--	clt->dev.class = rtrs_clt_dev_class;
--	clt->dev.release = rtrs_clt_dev_release;
- 	err = dev_set_name(&clt->dev, "%s", sessname);
- 	if (err)
--		goto err;
-+		goto err_put;
++static u32 get_extent_max_capacity(const struct extent_map *em)
++{
++	if (test_bit(EXTENT_FLAG_COMPRESSED, &em->flags))
++		return BTRFS_MAX_COMPRESSED;
++	return BTRFS_MAX_EXTENT_SIZE;
++}
 +
- 	/*
- 	 * Suppress user space notification until
- 	 * sysfs files are created
- 	 */
- 	dev_set_uevent_suppress(&clt->dev, true);
--	err = device_register(&clt->dev);
--	if (err) {
--		put_device(&clt->dev);
--		goto err;
--	}
-+	err = device_add(&clt->dev);
-+	if (err)
-+		goto err_put;
- 
- 	clt->kobj_paths = kobject_create_and_add("paths", &clt->dev.kobj);
- 	if (!clt->kobj_paths) {
- 		err = -ENOMEM;
--		goto err_dev;
-+		goto err_del;
- 	}
- 	err = rtrs_clt_create_sysfs_root_files(clt);
- 	if (err) {
- 		kobject_del(clt->kobj_paths);
- 		kobject_put(clt->kobj_paths);
--		goto err_dev;
-+		goto err_del;
- 	}
- 	dev_set_uevent_suppress(&clt->dev, false);
- 	kobject_uevent(&clt->dev.kobj, KOBJ_ADD);
- 
- 	return clt;
--err_dev:
--	device_unregister(&clt->dev);
--err:
-+err_del:
-+	device_del(&clt->dev);
-+err_put:
- 	free_percpu(clt->pcpu_path);
--	kfree(clt);
-+	put_device(&clt->dev);
- 	return ERR_PTR(err);
- }
- 
-@@ -2753,9 +2755,10 @@ static void free_clt(struct rtrs_clt *clt)
+ static bool defrag_check_next_extent(struct inode *inode, struct extent_map *em,
+ 				     bool locked)
  {
- 	free_permits(clt);
- 	free_percpu(clt->pcpu_path);
--	mutex_destroy(&clt->paths_ev_mutex);
--	mutex_destroy(&clt->paths_mutex);
--	/* release callback will free clt in last put */
-+
+@@ -1036,6 +1043,12 @@ static bool defrag_check_next_extent(str
+ 		goto out;
+ 	if (test_bit(EXTENT_FLAG_PREALLOC, &next->flags))
+ 		goto out;
 +	/*
-+	 * release callback will free clt and destroy mutexes in last put
++	 * If the next extent is at its max capacity, defragging current extent
++	 * makes no sense, as the total number of extents won't change.
 +	 */
- 	device_unregister(&clt->dev);
- }
++	if (next->len >= get_extent_max_capacity(em))
++		goto out;
+ 	/* Physically adjacent and large enough */
+ 	if ((em->block_start + em->block_len == next->block_start) &&
+ 	    (em->block_len > SZ_128K && next->block_len > SZ_128K))
+@@ -1233,6 +1246,13 @@ static int defrag_collect_targets(struct
+ 		if (range_len >= extent_thresh)
+ 			goto next;
  
--- 
-2.34.1
-
++		/*
++		 * Skip extents already at its max capacity, this is mostly for
++		 * compressed extents, which max cap is only 128K.
++		 */
++		if (em->len >= get_extent_max_capacity(em))
++			goto next;
++
+ 		next_mergeable = defrag_check_next_extent(&inode->vfs_inode, em,
+ 							  locked);
+ 		if (!next_mergeable) {
 
 
