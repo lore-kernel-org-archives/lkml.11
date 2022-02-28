@@ -2,102 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD3CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11270C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237235AbiB1OmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 09:42:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45178 "EHLO
+        id S237241AbiB1Omp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 09:42:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232848AbiB1OmM (ORCPT
+        with ESMTP id S231897AbiB1Omm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 09:42:12 -0500
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com [209.85.222.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F03612A8C;
-        Mon, 28 Feb 2022 06:41:33 -0800 (PST)
-Received: by mail-ua1-f48.google.com with SMTP id t25so6108550uaa.3;
-        Mon, 28 Feb 2022 06:41:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=209/Hf4nH00Ju/2a2j/NloHG1AU0BZ+wP4Cp3BK+aEk=;
-        b=Cpc6jU/yasZLIfZd/O+REjSGJOsvLHhiNhIXWFpyn+/WwykbswmvLJlqmo05eoS4Be
-         lqCnUek3u1MO5z1StJuvo0ew475gOCHFVFPpBmb5GLGsMWjmHCVIxjWrAf60Bs8o5TiO
-         IFeD+HA/4FMLo0gIp0oCVlhJ0vIzs1XAvVMD5k61vVkrK/jnj7YEoNTX5Cf0GCUrXi2W
-         FmgGR+8mmr5nLiTeHVC0DqO/94HR50FBWr36KfXTUCvA2ICCay3HMxSkqdn/JNpsaTN5
-         Jbm4HErEezKl1mzcN2EvcKlF4HF1hewUCugcOgi3jYZgaWDfVMsKQaYiWf5ZOgfafYmM
-         PHGA==
-X-Gm-Message-State: AOAM5325jYXIk7wfhPLPXEuND8Big6Sp+0F3lYayvnqZ9DfINB/th2v4
-        5XEr00UcIyqX4WpHXbiMBrt9o6EaWj0hbQ==
-X-Google-Smtp-Source: ABdhPJydw5lnGoZRIU0GcbS7Qbf6+7CFKn3KnJhNqyxoKzX8kMHZZT+ej+KH1tLpFTpxCDvl7RoIcw==
-X-Received: by 2002:ab0:4911:0:b0:346:3893:b9be with SMTP id z17-20020ab04911000000b003463893b9bemr7362744uac.94.1646059292013;
-        Mon, 28 Feb 2022 06:41:32 -0800 (PST)
-Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com. [209.85.222.52])
-        by smtp.gmail.com with ESMTPSA id u190-20020a1fabc7000000b003334be45eeesm577421vke.34.2022.02.28.06.41.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 06:41:31 -0800 (PST)
-Received: by mail-ua1-f52.google.com with SMTP id 10so6102569uar.9;
-        Mon, 28 Feb 2022 06:41:31 -0800 (PST)
-X-Received: by 2002:ab0:6253:0:b0:341:8be9:7a1 with SMTP id
- p19-20020ab06253000000b003418be907a1mr7934443uao.114.1646059291145; Mon, 28
- Feb 2022 06:41:31 -0800 (PST)
+        Mon, 28 Feb 2022 09:42:42 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513757EDA0;
+        Mon, 28 Feb 2022 06:42:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=ujPnOWbvLWDuP5VEFGAmYpTMedCZmNkrYJPtv8OTgqQ=; b=iVE4UwL1JqhBMEMkDuJQY0xTXQ
+        JaVXp5Bd8Yzr8lQfhEw7pOAb+wVaZ0k2Bqldk7xK9BtTaACFMnRhnmn6HSVmLzldB5sp21KtBJD2s
+        jV8Y0f7PHUOeisnC9I63cue51CRJpXyzicCI/QKRl7E5u0hpW5MM7bz7/oU9ril60op8c+VK+9vE7
+        nJ0voNLfy5LOnljS8MqkQakszidWPIwAAJp6mvMoT/CwcdnOqYMxIAsAURXOrfXoFbF+aQqX7CO7D
+        q0B190hD32ZZfNHTIdXTQdkjrS3RfcbC5hFZLqJn6nDhJ3vjbTy61KXeOs0zTXMRVr88Ehx0bGbkO
+        fPEK2xxw==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOhDr-00CyXK-U6; Mon, 28 Feb 2022 14:41:59 +0000
+Date:   Mon, 28 Feb 2022 06:41:59 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Muchun Song <songmuchun@bytedance.com>
+Cc:     corbet@lwn.net, mike.kravetz@oracle.com, akpm@linux-foundation.org,
+        keescook@chromium.org, yzaikin@google.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, duanxiongchun@bytedance.com
+Subject: Re: [PATCH 3/3] mm: hugetlb: add hugetlb_free_vmemmap sysctl
+Message-ID: <YhzfN574YUta3qay@bombadil.infradead.org>
+References: <20220228071022.26143-1-songmuchun@bytedance.com>
+ <20220228071022.26143-4-songmuchun@bytedance.com>
 MIME-Version: 1.0
-References: <20220227214747.24819-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220227214747.24819-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 28 Feb 2022 15:41:19 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdW2pNUhtrkEv92fd8J-8W0TM_UamJaNcfd+3D4+FXdX6w@mail.gmail.com>
-Message-ID: <CAMuHMdW2pNUhtrkEv92fd8J-8W0TM_UamJaNcfd+3D4+FXdX6w@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: i2c: renesas,riic: Document RZ/V2L SoC
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Chris Brandt <chris.brandt@renesas.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228071022.26143-4-songmuchun@bytedance.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prabhakar,
+On Mon, Feb 28, 2022 at 03:10:22PM +0800, Muchun Song wrote:
+> We must add "hugetlb_free_vmemmap=on" to boot cmdline and reboot the
+> server to enable the feature of freeing vmemmap pages of HugeTLB
+> pages. Rebooting usually taske a long time. Add a sysctl to enable
+> the feature at runtime and do not need to reboot.
+> 
+> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> ---
+>  Documentation/admin-guide/sysctl/vm.rst | 13 +++++++++++++
+>  include/linux/hugetlb.h                 |  5 +++++
+>  include/linux/memory_hotplug.h          |  1 +
+>  kernel/sysctl.c                         | 11 +++++++++++
 
-On Sun, Feb 27, 2022 at 10:47 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Document RZ/V2L I2C bindings. RZ/V2L I2C is identical to one found on
-> the RZ/G2L SoC. No driver changes are required as RZ/G2L compatible
-> string "renesas,riic-rz" will be used as a fallback.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+kernel/sysctl.c is a hot mess with tons of knobs from all over the
+place. And so we've been moving these to their own place. For instance
+all the filesystem knobs are now properly in fs/. So Adding new ones
+to the file is undesirable. If this is going to be added, please add
+it somewhere in mm / hugetlb code.
 
-> --- a/Documentation/devicetree/bindings/i2c/renesas,riic.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/renesas,riic.yaml
-> @@ -20,6 +20,7 @@ properties:
->            - renesas,riic-r7s72100   # RZ/A1H
->            - renesas,riic-r7s9210    # RZ/A2M
->            - renesas,riic-r9a07g044  # RZ/G2{L,LC}
-> +          - renesas,riic-r9a07g054  # RZ/V2L
->        - const: renesas,riic-rz      # RZ/A or RZ/G2L
-
-The last comment looks a bit strange now. Perhaps just drop it?
-
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+  Luis
