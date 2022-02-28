@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1089C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D324C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239144AbiB1Rwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:52:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51578 "EHLO
+        id S239379AbiB1Rw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:52:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238997AbiB1RsA (ORCPT
+        with ESMTP id S239060AbiB1RsD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:48:00 -0500
+        Mon, 28 Feb 2022 12:48:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DA09F6FE;
-        Mon, 28 Feb 2022 09:38:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F139F6E8;
+        Mon, 28 Feb 2022 09:38:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F2946153E;
-        Mon, 28 Feb 2022 17:38:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24A68C340F1;
-        Mon, 28 Feb 2022 17:38:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61DA9614C9;
+        Mon, 28 Feb 2022 17:38:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53AC0C36AE7;
+        Mon, 28 Feb 2022 17:38:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069899;
-        bh=g8s+VFhAuJ9aW9Bqzrl2wZBLCq4Rz/A0aZORghQBWiw=;
+        s=korg; t=1646069907;
+        bh=ossGxllUZrIlYgWBbNFBSCk6U86iaYd8wz7QB1nkS7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dQp9rg1scx0McSWeYT1cLj75378xi9YYDoEVR8Ie7RT0Ef/xEH3VgpoxFy3KwsNYR
-         Asr/phALyJMRi+pm+PCUvI3TsYr5WhM5MrzCGfvH/v3reIATBTZroWaRkM73SLJI4C
-         BInT9MWaqJDHl20Vr5xqmAzYQseu2C0VsftQAmqM=
+        b=0l+irHmeTiW2WIKPCYsgVBjbPEyu2irz5Iqu2jvZsM2cqudFOoob15bGhu+WM3DxU
+         aSoaVV3ALGBzUS6M0ADbbHMDY95/DyHnorTRhBKexDf3Uvokauq5snloKIfeXnr6g/
+         WRDn4/NSbWvTYyF4h2TkJws0/tIHSPdAJUGfTGVE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 053/139] bpf: Fix a bpf_timer initialization issue
-Date:   Mon, 28 Feb 2022 18:23:47 +0100
-Message-Id: <20220228172353.291251909@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 056/139] net: __pskb_pull_tail() & pskb_carve_frag_list() drop_monitor friends
+Date:   Mon, 28 Feb 2022 18:23:50 +0100
+Message-Id: <20220228172353.594640152@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,110 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 5eaed6eedbe9612f642ad2b880f961d1c6c8ec2b upstream.
+commit ef527f968ae05c6717c39f49c8709a7e2c19183a upstream.
 
-The patch in [1] intends to fix a bpf_timer related issue,
-but the fix caused existing 'timer' selftest to fail with
-hang or some random errors. After some debug, I found
-an issue with check_and_init_map_value() in the hashtab.c.
-More specifically, in hashtab.c, we have code
-  l_new = bpf_map_kmalloc_node(&htab->map, ...)
-  check_and_init_map_value(&htab->map, l_new...)
-Note that bpf_map_kmalloc_node() does not do initialization
-so l_new contains random value.
+Whenever one of these functions pull all data from an skb in a frag_list,
+use consume_skb() instead of kfree_skb() to avoid polluting drop
+monitoring.
 
-The function check_and_init_map_value() intends to zero the
-bpf_spin_lock and bpf_timer if they exist in the map.
-But I found bpf_spin_lock is zero'ed but bpf_timer is not zero'ed.
-With [1], later copy_map_value() skips copying of
-bpf_spin_lock and bpf_timer. The non-zero bpf_timer caused
-random failures for 'timer' selftest.
-Without [1], for both bpf_spin_lock and bpf_timer case,
-bpf_timer will be zero'ed, so 'timer' self test is okay.
-
-For check_and_init_map_value(), why bpf_spin_lock is zero'ed
-properly while bpf_timer not. In bpf uapi header, we have
-  struct bpf_spin_lock {
-        __u32   val;
-  };
-  struct bpf_timer {
-        __u64 :64;
-        __u64 :64;
-  } __attribute__((aligned(8)));
-
-The initialization code:
-  *(struct bpf_spin_lock *)(dst + map->spin_lock_off) =
-      (struct bpf_spin_lock){};
-  *(struct bpf_timer *)(dst + map->timer_off) =
-      (struct bpf_timer){};
-It appears the compiler has no obligation to initialize anonymous fields.
-For example, let us use clang with bpf target as below:
-  $ cat t.c
-  struct bpf_timer {
-        unsigned long long :64;
-  };
-  struct bpf_timer2 {
-        unsigned long long a;
-  };
-
-  void test(struct bpf_timer *t) {
-    *t = (struct bpf_timer){};
-  }
-  void test2(struct bpf_timer2 *t) {
-    *t = (struct bpf_timer2){};
-  }
-  $ clang -target bpf -O2 -c -g t.c
-  $ llvm-objdump -d t.o
-   ...
-   0000000000000000 <test>:
-       0:       95 00 00 00 00 00 00 00 exit
-   0000000000000008 <test2>:
-       1:       b7 02 00 00 00 00 00 00 r2 = 0
-       2:       7b 21 00 00 00 00 00 00 *(u64 *)(r1 + 0) = r2
-       3:       95 00 00 00 00 00 00 00 exit
-
-gcc11.2 does not have the above issue. But from
-  INTERNATIONAL STANDARD ©ISO/IEC ISO/IEC 9899:201x
-  Programming languages — C
-  http://www.open-std.org/Jtc1/sc22/wg14/www/docs/n1547.pdf
-  page 157:
-  Except where explicitly stated otherwise, for the purposes of
-  this subclause unnamed members of objects of structure and union
-  type do not participate in initialization. Unnamed members of
-  structure objects have indeterminate value even after initialization.
-
-To fix the problem, let use memset for bpf_timer case in
-check_and_init_map_value(). For consistency, memset is also
-used for bpf_spin_lock case.
-
-  [1] https://lore.kernel.org/bpf/20220209070324.1093182-2-memxor@gmail.com/
-
-Fixes: 68134668c17f3 ("bpf: Add map side support for bpf timers.")
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220211194953.3142152-1-yhs@fb.com
+Fixes: 6fa01ccd8830 ("skbuff: Add pskb_extract() helper function")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220220154052.1308469-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bpf.h |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ net/core/skbuff.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -206,11 +206,9 @@ static inline bool map_value_has_timer(c
- static inline void check_and_init_map_value(struct bpf_map *map, void *dst)
- {
- 	if (unlikely(map_value_has_spin_lock(map)))
--		*(struct bpf_spin_lock *)(dst + map->spin_lock_off) =
--			(struct bpf_spin_lock){};
-+		memset(dst + map->spin_lock_off, 0, sizeof(struct bpf_spin_lock));
- 	if (unlikely(map_value_has_timer(map)))
--		*(struct bpf_timer *)(dst + map->timer_off) =
--			(struct bpf_timer){};
-+		memset(dst + map->timer_off, 0, sizeof(struct bpf_timer));
- }
- 
- /* copy everything but bpf_spin_lock and bpf_timer. There could be one of each. */
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -2254,7 +2254,7 @@ void *__pskb_pull_tail(struct sk_buff *s
+ 		/* Free pulled out fragments. */
+ 		while ((list = skb_shinfo(skb)->frag_list) != insp) {
+ 			skb_shinfo(skb)->frag_list = list->next;
+-			kfree_skb(list);
++			consume_skb(list);
+ 		}
+ 		/* And insert new clone at head. */
+ 		if (clone) {
+@@ -6220,7 +6220,7 @@ static int pskb_carve_frag_list(struct s
+ 	/* Free pulled out fragments. */
+ 	while ((list = shinfo->frag_list) != insp) {
+ 		shinfo->frag_list = list->next;
+-		kfree_skb(list);
++		consume_skb(list);
+ 	}
+ 	/* And insert new clone at head. */
+ 	if (clone) {
 
 
