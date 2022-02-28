@@ -2,107 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39BF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 09:54:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 657E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 09:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234554AbiB1JzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 04:55:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
+        id S234565AbiB1JzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 04:55:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232079AbiB1JzB (ORCPT
+        with ESMTP id S234551AbiB1JzD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 04:55:01 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A834C13F9A;
-        Mon, 28 Feb 2022 01:54:22 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id p4so5331003wmg.1;
-        Mon, 28 Feb 2022 01:54:22 -0800 (PST)
+        Mon, 28 Feb 2022 04:55:03 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 913601A82A;
+        Mon, 28 Feb 2022 01:54:24 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id j17so14541750wrc.0;
+        Mon, 28 Feb 2022 01:54:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=U0+Au0d4zAZVX8zuHvuBcFAkWKb2I4OxQR4LPXo/i04=;
-        b=lBmsKprRvQDoqaPn9bYlg31prPOjW/Yb3ltQctqmzTvtjNFxY/HTucaUpL/gguyBcQ
-         h3jPqfWwKcNVgUlz8SzdEbOIeauJXC/EswUoGMXK19kIZyJRF+HDvB8D9mtwxBRoUQiB
-         NrjGYCg81D1I5XotB+WKPsaI9IatCCLrWkDEoXG5pAvTFYWBqBViZy/61vXDrseYAClT
-         CAQnCoTv6iTATd8xs0PGIxJfDFopwl0ijS2pFQWltmOItoAlwJPoVDUCAe2ngtOD7N52
-         ogNAwFlSjiU3ZJzb6GkYEpY3GFGcKulKDqvUW+3Zek78s/X+z/AbUenEa2xDtsFTk4KH
-         7bcg==
+        bh=A7Z1FVgJGlZ2dvwgZt8YIkYACQclsVMlrLP+8qyAGPs=;
+        b=WS1VQxu/dCiW3P6jRxORXGv3sA2OJy2ZKDs7VmpPXBtUvQId6QocQQkgg1rCH4XC5J
+         AfqhHU4TfYT4avWDMJHv2M2qFzQ0Rv9zLhGjF3R3wPjv3+EId+ak0+NzcmOdy9fwoPmn
+         yvpjU5GFz02D3lCu6l7++p5iwUpjboHDc070bKgN62tRMNpn6ItZteb1RqZg0P2NVqjE
+         rbkM8VcybDQsFXu7Je0alFBdHsdD0eXbbmlxQCBSrWjetW62LsSUBepO9Svo/qscnmgL
+         zBsXGgrH3djp2cNFpVz20b2013wPgynpRUSx5Pv35AA5fDu3/JXwaDFufcGJ34pWAjRl
+         KV6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=U0+Au0d4zAZVX8zuHvuBcFAkWKb2I4OxQR4LPXo/i04=;
-        b=YdCKfYTp8fGRGBIB2mVnn0943Dal1yKTIO4KQ2jBery8LbHLlCDGadakinY+DAp7g0
-         c4/5qFfhajeNlI1hwu1zaw/wYtJNSUvmMMbPf5zzbiCotQ3aKRVdyWSjlxrptvKhOlaK
-         caJlFO2u73/S6YDh4E/a+3PnW3Qc4aWwWcD0/jPaJ7A9yySouqaTfIENHRLeDF2ciTDR
-         OFrnMPIalHeZhFxxWYr09WSyuf2XJjvdZkZaDdFlE/jtVH26gaG9s/vU2VfylhntLAqg
-         uokWVLx9GfXPhnXRbHCS2de2QM2sVuqaXDOZBaHYnXJcXB3VvCyAqqxgeV3qVaoa+XMb
-         vU2A==
-X-Gm-Message-State: AOAM533CtQxH6WgRWXPo0gcRIIr6/iVmkpSAU6Nxr0IQeDmMCmNkdGj8
-        c07VvwRrytyjA12fhZgaiB0=
-X-Google-Smtp-Source: ABdhPJynDyT2YmvMVI1b9GAPVRUaqoNLjRwFrVI46TNy1tFuIgSt6Ei0JnwCeteZP+gsMvr1dfXmLg==
-X-Received: by 2002:a1c:2b41:0:b0:380:e379:b8b0 with SMTP id r62-20020a1c2b41000000b00380e379b8b0mr12638344wmr.87.1646042061055;
-        Mon, 28 Feb 2022 01:54:21 -0800 (PST)
+        bh=A7Z1FVgJGlZ2dvwgZt8YIkYACQclsVMlrLP+8qyAGPs=;
+        b=Q8sOQecmUqAz/g9TK1OBP5L1DoKvNLrKlxih1r9v0YAUR8pO3K9JmM/MU24SbQFYdi
+         dRzRRuaLaFyBbNqQVbuFzUyyDDw/vUPsJiJrAyXrjKb7v+LLZh26kdxvICeDMPx1A0Zj
+         ePaEVTQVUjypHUO1nhCldkCGlwrj9A14/Dbw5Bf0nSrkGEGrFcpAIvV33IDWilWJ4O4T
+         GJLjce3fNwoVjYLJD0l/YsrGTtoPVj0PUfJn5GEkvbahR0tXynEX54FN+vcXLLIcoIgO
+         ftMaf2BIcy7s0Pj8B+r9/KzBcXgwv54ahkOkSJwLUg3nJnySs5+i0cIlBr6tSRFeXCTA
+         33FQ==
+X-Gm-Message-State: AOAM531Vy6BM8emdwskHfNUckqCl7PbkkYL8H/t7g0j3Osqwwm73a+5U
+        VoDCQ9c08j707XIsTikQRbO2DYPkJopttw==
+X-Google-Smtp-Source: ABdhPJz1GC6uvxJkgM9EYizFqh4nwhKC18ePBdTpL5nFxhMH0QLm7YnCHqS0Q3o3LDVmzk9ytup/zQ==
+X-Received: by 2002:a5d:4848:0:b0:1ef:9028:46a9 with SMTP id n8-20020a5d4848000000b001ef902846a9mr6507072wrs.402.1646042063011;
+        Mon, 28 Feb 2022 01:54:23 -0800 (PST)
 Received: from [192.168.0.14] (static-63-182-85-188.ipcom.comunitel.net. [188.85.182.63])
-        by smtp.gmail.com with ESMTPSA id z6-20020a1cf406000000b0037c4e2d3baesm13854560wma.19.2022.02.28.01.54.19
+        by smtp.gmail.com with ESMTPSA id 2-20020a1c1902000000b00380d3873d6asm10955463wmz.43.2022.02.28.01.54.22
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 01:54:20 -0800 (PST)
-Message-ID: <b189dee6-a697-6db5-e834-6a5fe6f75f8f@gmail.com>
-Date:   Mon, 28 Feb 2022 10:45:51 +0100
+        Mon, 28 Feb 2022 01:54:22 -0800 (PST)
+Message-ID: <559c4849-6808-697d-f7f9-72cd87c61317@gmail.com>
+Date:   Mon, 28 Feb 2022 10:54:03 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH] arm64: dts: mt8192: Add watchdog node
+Subject: Re: [PATCH v1] arm/arm64: dts: mediatek: Format mediatek,larbs as an
+ array of phandles
 Content-Language: en-US
-To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
-        Rob Herring <robh+dt@kernel.org>, nfraprado@collabora.com
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
+Cc:     kernel@collabora.com, Rob Herring <robh+dt@kernel.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        srv_heupstream@mediatek.com, Chen-Yu Tsai <wenst@chromium.org>,
-        Ryder Lee <ryder.lee@kernel.org>
-References: <20220207094024.22674-1-allen-kh.cheng@mediatek.com>
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+References: <20220225225315.80220-1-nfraprado@collabora.com>
 From:   Matthias Brugger <matthias.bgg@gmail.com>
-In-Reply-To: <20220207094024.22674-1-allen-kh.cheng@mediatek.com>
+In-Reply-To: <20220225225315.80220-1-nfraprado@collabora.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Nícolas,
 
-
-On 07/02/2022 10:40, Allen-KH Cheng wrote:
-> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+On 25/02/2022 23:53, Nícolas F. R. A. Prado wrote:
+> Commit 39bd2b6a3783 ("dt-bindings: Improve phandle-array schemas")
+> updated the mediatek,larbs property in the mediatek,iommu.yaml
+> dt-binding to make it clearer that the phandles passed to the property
+> are independent, rather than subsequent arguments to the first phandle.
 > 
-> Add watchdog device node to MT8192 SoC.
+> Update the mediatek,larbs property in the Devicetrees to use the same
+> formatting. This change doesn't impact any behavior: the compiled dtb is
+> exactly the same. It does however fix the warnings generated by
+> dtbs_check.
 > 
-> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> 
+> ---
+> 
+>   arch/arm/boot/dts/mt2701.dtsi             | 2 +-
+>   arch/arm/boot/dts/mt7623n.dtsi            | 2 +-
 
-Applied thanks!
+Thanks for your patch. Would you mind to split it in two parts. One for 64 bit 
+and one 32 bits?
 
+Regards,
 Matthias
 
-> ---
->   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 6 ++++++
->   1 file changed, 6 insertions(+)
+>   arch/arm64/boot/dts/mediatek/mt2712e.dtsi | 6 +++---
+>   arch/arm64/boot/dts/mediatek/mt8167.dtsi  | 2 +-
+>   arch/arm64/boot/dts/mediatek/mt8173.dtsi  | 4 ++--
+>   arch/arm64/boot/dts/mediatek/mt8183.dtsi  | 4 ++--
+>   6 files changed, 10 insertions(+), 10 deletions(-)
 > 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> index cc3953df0153..c1d4030e7e4b 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
-> @@ -301,6 +301,12 @@
->   			#interrupt-cells = <2>;
+> diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
+> index 4776f85d6d5b..64722285228c 100644
+> --- a/arch/arm/boot/dts/mt2701.dtsi
+> +++ b/arch/arm/boot/dts/mt2701.dtsi
+> @@ -222,7 +222,7 @@ iommu: mmsys_iommu@10205000 {
+>   		interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>;
+>   		clocks = <&infracfg CLK_INFRA_M4U>;
+>   		clock-names = "bclk";
+> -		mediatek,larbs = <&larb0 &larb1 &larb2>;
+> +		mediatek,larbs = <&larb0>, <&larb1>, <&larb2>;
+>   		#iommu-cells = <1>;
+>   	};
+>   
+> diff --git a/arch/arm/boot/dts/mt7623n.dtsi b/arch/arm/boot/dts/mt7623n.dtsi
+> index bcb0846e29fd..f9e031621c80 100644
+> --- a/arch/arm/boot/dts/mt7623n.dtsi
+> +++ b/arch/arm/boot/dts/mt7623n.dtsi
+> @@ -107,7 +107,7 @@ iommu: mmsys_iommu@10205000 {
+>   		interrupts = <GIC_SPI 106 IRQ_TYPE_LEVEL_LOW>;
+>   		clocks = <&infracfg CLK_INFRA_M4U>;
+>   		clock-names = "bclk";
+> -		mediatek,larbs = <&larb0 &larb1 &larb2>;
+> +		mediatek,larbs = <&larb0>, <&larb1>, <&larb2>;
+>   		#iommu-cells = <1>;
+>   	};
+>   
+> diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> index de16c0d80c30..973c9beade0c 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+> @@ -329,8 +329,8 @@ iommu0: iommu@10205000 {
+>   		interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_LOW>;
+>   		clocks = <&infracfg CLK_INFRA_M4U>;
+>   		clock-names = "bclk";
+> -		mediatek,larbs = <&larb0 &larb1 &larb2
+> -				  &larb3 &larb6>;
+> +		mediatek,larbs = <&larb0>, <&larb1>, <&larb2>,
+> +				 <&larb3>, <&larb6>;
+>   		#iommu-cells = <1>;
+>   	};
+>   
+> @@ -346,7 +346,7 @@ iommu1: iommu@1020a000 {
+>   		interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_LOW>;
+>   		clocks = <&infracfg CLK_INFRA_M4U>;
+>   		clock-names = "bclk";
+> -		mediatek,larbs = <&larb4 &larb5 &larb7>;
+> +		mediatek,larbs = <&larb4>, <&larb5>, <&larb7>;
+>   		#iommu-cells = <1>;
+>   	};
+>   
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8167.dtsi b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
+> index 9029051624a6..54655f2feb04 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8167.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8167.dtsi
+> @@ -174,7 +174,7 @@ larb2: larb@16010000 {
+>   		iommu: m4u@10203000 {
+>   			compatible = "mediatek,mt8167-m4u";
+>   			reg = <0 0x10203000 0 0x1000>;
+> -			mediatek,larbs = <&larb0 &larb1 &larb2>;
+> +			mediatek,larbs = <&larb0>, <&larb1>, <&larb2>;
+>   			interrupts = <GIC_SPI 121 IRQ_TYPE_LEVEL_LOW>;
+>   			#iommu-cells = <1>;
+>   		};
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+> index 2b7d331a4588..042feaedda4a 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+> @@ -588,8 +588,8 @@ iommu: iommu@10205000 {
+>   			interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_LOW>;
+>   			clocks = <&infracfg CLK_INFRA_M4U>;
+>   			clock-names = "bclk";
+> -			mediatek,larbs = <&larb0 &larb1 &larb2
+> -					  &larb3 &larb4 &larb5>;
+> +			mediatek,larbs = <&larb0>, <&larb1>, <&larb2>,
+> +					 <&larb3>, <&larb4>, <&larb5>;
+>   			#iommu-cells = <1>;
 >   		};
 >   
-> +		watchdog: watchdog@10007000 {
-> +			compatible = "mediatek,mt8192-wdt";
-> +			reg = <0 0x10007000 0 0x100>;
-> +			#reset-cells = <1>;
-> +		};
-> +
->   		apmixedsys: syscon@1000c000 {
->   			compatible = "mediatek,mt8192-apmixedsys", "syscon";
->   			reg = <0 0x1000c000 0 0x1000>;
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8183.dtsi b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> index 00f2ddd245e1..523741150968 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8183.dtsi
+> @@ -682,8 +682,8 @@ iommu: iommu@10205000 {
+>   			compatible = "mediatek,mt8183-m4u";
+>   			reg = <0 0x10205000 0 0x1000>;
+>   			interrupts = <GIC_SPI 166 IRQ_TYPE_LEVEL_LOW>;
+> -			mediatek,larbs = <&larb0 &larb1 &larb2 &larb3
+> -					  &larb4 &larb5 &larb6>;
+> +			mediatek,larbs = <&larb0>, <&larb1>, <&larb2>, <&larb3>,
+> +					 <&larb4>, <&larb5>, <&larb6>;
+>   			#iommu-cells = <1>;
+>   		};
+>   
