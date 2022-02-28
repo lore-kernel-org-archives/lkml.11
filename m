@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35277C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239424AbiB1SBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:01:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51160 "EHLO
+        id S237160AbiB1SBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:01:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240793AbiB1Ryp (ORCPT
+        with ESMTP id S240794AbiB1Ryp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C469532E5;
-        Mon, 28 Feb 2022 09:43:41 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA967532FB;
+        Mon, 28 Feb 2022 09:43:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E700AB815C2;
-        Mon, 28 Feb 2022 17:43:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45DEDC340F0;
-        Mon, 28 Feb 2022 17:43:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 79A6F6066C;
+        Mon, 28 Feb 2022 17:43:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED98C340F0;
+        Mon, 28 Feb 2022 17:43:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070218;
-        bh=+zsh4JHBhetjfG7IBa6o0QjEsdeBYt/J3qrEtqfa0Fs=;
+        s=korg; t=1646070223;
+        bh=j302gKTO4w+K7obYcgnAaWR6s5bMHrwgcd+p4UPzX7Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RtsKyLiWtzohGtcNZGwyury4NIg0aCLMjoThm29vVyXdU9utfxcYPLjepDRvFeyGI
-         atx/IImvkpWRDoP3VWsWTI2pFEjcd9kImKBPd9Nyr5TG+jyf1Sdx3w/BZi0tyGO7XL
-         4S/DuUaaKfcfXAg75Emqcov/uT0NTdQ46eeuWnC8=
+        b=RdEreY8v6wtzhA11YIZ3R40wHuIsY8YlDjygTMM7k0R/jNWLuuLW/g7PwmQ4vUyHq
+         D6jBA6HzASow63DkJuIW9TM+snWvygHgkspdi8zA71/ewCIOQc0chGKBPD6Wfy58Iq
+         SC2Jf9EhndPAEAwLA4OTiHaAiBnvTc7eiFXWJWts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 029/164] CDC-NCM: avoid overflow in sanity checking
-Date:   Mon, 28 Feb 2022 18:23:11 +0100
-Message-Id: <20220228172402.810769410@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.16 031/164] netfilter: xt_socket: missing ifdef CONFIG_IP6_NF_IPTABLES dependency
+Date:   Mon, 28 Feb 2022 18:23:13 +0100
+Message-Id: <20220228172403.031007307@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,51 +49,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 8d2b1a1ec9f559d30b724877da4ce592edc41fdc upstream.
+commit 2874b7911132f6975e668f6849c8ac93bc4e1f35 upstream.
 
-A broken device may give an extreme offset like 0xFFF0
-and a reasonable length for a fragment. In the sanity
-check as formulated now, this will create an integer
-overflow, defeating the sanity check. Both offset
-and offset + len need to be checked in such a manner
-that no overflow can occur.
-And those quantities should be unsigned.
+nf_defrag_ipv6_disable() requires CONFIG_IP6_NF_IPTABLES.
 
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 75063c9294fb ("netfilter: xt_socket: fix a typo in socket_mt_destroy()")
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Eric Dumazet<edumazet@google.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/cdc_ncm.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/netfilter/xt_socket.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1715,10 +1715,10 @@ int cdc_ncm_rx_fixup(struct usbnet *dev,
+--- a/net/netfilter/xt_socket.c
++++ b/net/netfilter/xt_socket.c
+@@ -220,8 +220,10 @@ static void socket_mt_destroy(const stru
  {
- 	struct sk_buff *skb;
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
--	int len;
-+	unsigned int len;
- 	int nframes;
- 	int x;
--	int offset;
-+	unsigned int offset;
- 	union {
- 		struct usb_cdc_ncm_ndp16 *ndp16;
- 		struct usb_cdc_ncm_ndp32 *ndp32;
-@@ -1790,8 +1790,8 @@ next_ndp:
- 			break;
- 		}
+ 	if (par->family == NFPROTO_IPV4)
+ 		nf_defrag_ipv4_disable(par->net);
++#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+ 	else if (par->family == NFPROTO_IPV6)
+ 		nf_defrag_ipv6_disable(par->net);
++#endif
+ }
  
--		/* sanity checking */
--		if (((offset + len) > skb_in->len) ||
-+		/* sanity checking - watch out for integer wrap*/
-+		if ((offset > skb_in->len) || (len > skb_in->len - offset) ||
- 				(len > ctx->rx_max) || (len < ETH_HLEN)) {
- 			netif_dbg(dev, rx_err, dev->net,
- 				  "invalid frame detected (ignored) offset[%u]=%u, length=%u, skb=%p\n",
+ static struct xt_match socket_mt_reg[] __read_mostly = {
 
 
