@@ -2,216 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 21:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F18FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 21:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229975AbiB1VCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 16:02:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
+        id S229980AbiB1VDN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 16:03:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbiB1VCa (ORCPT
+        with ESMTP id S229673AbiB1VDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 16:02:30 -0500
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC20ADD45B;
-        Mon, 28 Feb 2022 13:01:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646082106; x=1677618106;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iQvL0ZuBaUBPEkeF0scPNzz3XMBs5b3VZM2NenECRzM=;
-  b=d2iTClJgdOiuxvQV1NxlHHknPxfIePgVbe40yh4YSQpeVXbkdnD93W8w
-   VFPTCpJm1yWt42r0WzZDPsmxOrcrp5S0Bw4uid0wvN1IoBtYJKgtWo5Xt
-   T5qEMgjNLGsS7XYLYODL4hGSZPy4+JSHsaIWSCES/d2kFeA3W73LNFgyZ
-   pCu6ol2eyFBy2PRCphbdrgVAVXcbX6ZS609INXVo8SBQ0pC4MQ237nCCU
-   bYRzUaSouaTRzbou8/uQZehd5ltu+Uemxm2q53Xspnp1rcpVPIpSuUnN3
-   Vppn6Ex9g4KEu4AzOWpFw91ps6m80kmhNY3StHDZ02dSZL/RY/nK/Hf+9
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="236494283"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="236494283"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 13:01:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="575458542"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 28 Feb 2022 13:01:24 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOn92-0007mP-5s; Mon, 28 Feb 2022 21:01:24 +0000
-Date:   Tue, 1 Mar 2022 05:00:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     wudaemon <wudaemon@163.com>, davem@davemloft.net, kuba@kernel.org,
-        m.grzeschik@pengutronix.de, chenhao288@hisilicon.com, arnd@arndb.de
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, wudaemon@163.com,
-        shenyang39@huawei.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: ksz884x: use time_before in netdev_open for
- compatibility and remove static variable
-Message-ID: <202203010451.ORtLeJ28-lkp@intel.com>
-References: <20220228162955.22819-1-wudaemon@163.com>
+        Mon, 28 Feb 2022 16:03:10 -0500
+Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F153CFFD
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 13:02:31 -0800 (PST)
+Received: by mail-oi1-x236.google.com with SMTP id j2so14389522oie.7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 13:02:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=OjxaRtww+0xjPVA2HOQsw52HxUVAinM3d0O8FoXeDko=;
+        b=BAB4ti96IwrLL45RTnLkyVlTAFqJ8Gh6Ntg3w0Rk2WSWnBfnOec8AKO/J2rWYeriVS
+         JQbU7JrNNsR9Q3ge5zfmlnX0P7WIOzNbU3ugL6IYLL++VqB3WQeegRpCYo68Lips/lfp
+         82gfdqDxH3c2c6zf4vn0pA0w0qTvVqMGOQMAs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=OjxaRtww+0xjPVA2HOQsw52HxUVAinM3d0O8FoXeDko=;
+        b=zk1hsxcmF3h9HtCUNOlwvB7el+3Exh6+GjWH+J5LnXqpGMUHnJugUr6GxfzCCd92Rh
+         w1icCnW4JURdzsiTkI/UmWgvDim40e/OXWIZ1MBtRbyde0WMOBx8/KVH2LErCo6JiaV5
+         om9RaXJiYW6wdxZ8bdeYtRealB9hQMR9JZfYKTWGQe0j7z8WCForivSS4zkXx+YVFTir
+         35lDw/ihEw7NlrmDk/IGef/RVMEe/s32UWLr7pdlSFfPhVO5a9EvKLPZgZ7WLVKCq6Rn
+         FA2gbsslkyQBh92tg1WWl+9gPchPLQPayQiYKMlVpbfbGY5mCjtDP/IM7jxryZrJWS+F
+         aZ7w==
+X-Gm-Message-State: AOAM530PlIMgnTPv0BeHskadhZjW/T0hW34jJRJhX9u1JoJLRtSN5O1e
+        AecUeol+DmxVAWqM1DB8YslygpmUcmTKQ/PLihKpyw==
+X-Google-Smtp-Source: ABdhPJz0rtxf29o77JVEbaaT9zWczUDsrAzEfY9cyLITyQ8XWVVDNvI/ytMrImJbvsCu+c4Aupsp99oh6218O1qRzqM=
+X-Received: by 2002:a05:6808:1a28:b0:2d7:3c61:e0d6 with SMTP id
+ bk40-20020a0568081a2800b002d73c61e0d6mr12241619oib.32.1646082150802; Mon, 28
+ Feb 2022 13:02:30 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 28 Feb 2022 13:02:30 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228162955.22819-1-wudaemon@163.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1646030377-12092-2-git-send-email-quic_srivasam@quicinc.com>
+References: <1646030377-12092-1-git-send-email-quic_srivasam@quicinc.com> <1646030377-12092-2-git-send-email-quic_srivasam@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 28 Feb 2022 13:02:30 -0800
+Message-ID: <CAE-0n53XVfXeVHFhokw7pwSOnL4MQAzDg-83OaH=FB=cB2gqdA@mail.gmail.com>
+Subject: Re: [PATCH v5 1/2] soundwire: qcom: Add compatible name for v1.6.0
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, alsa-devel@alsa-project.org,
+        bgoswami@codeaurora.org, bjorn.andersson@linaro.org,
+        broonie@kernel.org, devicetree@vger.kernel.org,
+        judyhsiao@chromium.org, lgirdwood@gmail.com,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        perex@perex.cz, pierre-louis.bossart@linux.intel.com,
+        quic_plai@quicinc.com, robh+dt@kernel.org, rohitkr@codeaurora.org,
+        sanyog.r.kale@intel.com, srinivas.kandagatla@linaro.org,
+        tiwai@suse.com, yung-chuan.liao@linux.intel.com
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi wudaemon,
+Quoting Srinivasa Rao Mandadapu (2022-02-27 22:39:36)
+> Update compatible string and master data information in soundwire driver
+> to support v1.6.0 in lpass sc7280 based platform.
+>
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
+> ---
+>  drivers/soundwire/qcom.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+>
+> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+> index 9eb31ba..fb183bd 100644
+> --- a/drivers/soundwire/qcom.c
+> +++ b/drivers/soundwire/qcom.c
+> @@ -175,6 +175,11 @@ static struct qcom_swrm_data swrm_v1_5_data = {
+>         .default_cols = 16,
+>  };
+>
+> +static struct qcom_swrm_data swrm_v1_6_data = {
 
-Thank you for the patch! Yet something to improve:
+Why not const?
 
-[auto build test ERROR on net-next/master]
-[also build test ERROR on net/master soc/for-next linus/master v5.17-rc6 next-20220228]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> +       .default_rows = 50,
+> +       .default_cols = 16,
 
-url:    https://github.com/0day-ci/linux/commits/wudaemon/net-ksz884x-use-time_before-in-netdev_open-for-compatibility-and-remove-static-variable/20220301-003151
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b42a738e409b62f38a15ce7530e8290b00f823a4
-config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220301/202203010451.ORtLeJ28-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/5db9da911f33045f8dd202d40c20530211b48af0
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review wudaemon/net-ksz884x-use-time_before-in-netdev_open-for-compatibility-and-remove-static-variable/20220301-003151
-        git checkout 5db9da911f33045f8dd202d40c20530211b48af0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ethernet/micrel/
+This is the same as swrm_v1_5_data so just use that struct again?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> +};
+> +
+>  #define to_qcom_sdw(b) container_of(b, struct qcom_swrm_ctrl, bus)
+>
+>  static int qcom_swrm_ahb_reg_read(struct qcom_swrm_ctrl *ctrl, int reg,
+> @@ -1343,6 +1348,7 @@ static int qcom_swrm_remove(struct platform_device *pdev)
+>  static const struct of_device_id qcom_swrm_of_match[] = {
+>         { .compatible = "qcom,soundwire-v1.3.0", .data = &swrm_v1_3_data },
+>         { .compatible = "qcom,soundwire-v1.5.1", .data = &swrm_v1_5_data },
 
-All errors (new ones prefixed by >>):
+These other structs for v1.5 and v1.3 could also be const.
 
-   drivers/net/ethernet/micrel/ksz884x.c:3216:6: warning: variable 'change' set but not used [-Wunused-but-set-variable]
-           int change = 0;
-               ^
-   drivers/net/ethernet/micrel/ksz884x.c:5363:16: warning: unused variable 'next_jiffies' [-Wunused-variable]
-           unsigned long next_jiffies = 0;
-                         ^
->> drivers/net/ethernet/micrel/ksz884x.c:5430:20: error: use of undeclared identifier 'next_jiffies'
-                           if (time_before(next_jiffies, jiffies))
-                                           ^
->> drivers/net/ethernet/micrel/ksz884x.c:5430:20: error: use of undeclared identifier 'next_jiffies'
-   drivers/net/ethernet/micrel/ksz884x.c:5431:5: error: use of undeclared identifier 'next_jiffies'
-                                   next_jiffies = jiffies + HZ * 2;
-                                   ^
-   drivers/net/ethernet/micrel/ksz884x.c:5433:5: error: use of undeclared identifier 'next_jiffies'
-                                   next_jiffies += HZ * 1;
-                                   ^
-   drivers/net/ethernet/micrel/ksz884x.c:5434:31: error: use of undeclared identifier 'next_jiffies'
-                           hw_priv->counter[i].time = next_jiffies;
-                                                      ^
-   2 warnings and 5 errors generated.
-
-
-vim +/next_jiffies +5430 drivers/net/ethernet/micrel/ksz884x.c
-
-  5397	
-  5398	/**
-  5399	 * netdev_open - open network device
-  5400	 * @dev:	Network device.
-  5401	 *
-  5402	 * This function process the open operation of network device.  This is caused
-  5403	 * by the user command "ifconfig ethX up."
-  5404	 *
-  5405	 * Return 0 if successful; otherwise an error code indicating failure.
-  5406	 */
-  5407	static int netdev_open(struct net_device *dev)
-  5408	{
-  5409		struct dev_priv *priv = netdev_priv(dev);
-  5410		struct dev_info *hw_priv = priv->adapter;
-  5411		struct ksz_hw *hw = &hw_priv->hw;
-  5412		struct ksz_port *port = &priv->port;
-  5413		int i;
-  5414		int p;
-  5415		int rc = 0;
-  5416	
-  5417		priv->multicast = 0;
-  5418		priv->promiscuous = 0;
-  5419	
-  5420		/* Reset device statistics. */
-  5421		memset(&dev->stats, 0, sizeof(struct net_device_stats));
-  5422		memset((void *) port->counter, 0,
-  5423			(sizeof(u64) * OID_COUNTER_LAST));
-  5424	
-  5425		if (!(hw_priv->opened)) {
-  5426			rc = prepare_hardware(dev);
-  5427			if (rc)
-  5428				return rc;
-  5429			for (i = 0; i < hw->mib_port_cnt; i++) {
-> 5430				if (time_before(next_jiffies, jiffies))
-  5431					next_jiffies = jiffies + HZ * 2;
-  5432				else
-  5433					next_jiffies += HZ * 1;
-  5434				hw_priv->counter[i].time = next_jiffies;
-  5435				hw->port_mib[i].state = media_disconnected;
-  5436				port_init_cnt(hw, i);
-  5437			}
-  5438			if (hw->ksz_switch)
-  5439				hw->port_mib[HOST_PORT].state = media_connected;
-  5440			else {
-  5441				hw_add_wol_bcast(hw);
-  5442				hw_cfg_wol_pme(hw, 0);
-  5443				hw_clr_wol_pme_status(&hw_priv->hw);
-  5444			}
-  5445		}
-  5446		port_set_power_saving(port, false);
-  5447	
-  5448		for (i = 0, p = port->first_port; i < port->port_cnt; i++, p++) {
-  5449			/*
-  5450			 * Initialize to invalid value so that link detection
-  5451			 * is done.
-  5452			 */
-  5453			hw->port_info[p].partner = 0xFF;
-  5454			hw->port_info[p].state = media_disconnected;
-  5455		}
-  5456	
-  5457		/* Need to open the port in multiple device interfaces mode. */
-  5458		if (hw->dev_count > 1) {
-  5459			port_set_stp_state(hw, port->first_port, STP_STATE_SIMPLE);
-  5460			if (port->first_port > 0)
-  5461				hw_add_addr(hw, dev->dev_addr);
-  5462		}
-  5463	
-  5464		port_get_link_speed(port);
-  5465		if (port->force_link)
-  5466			port_force_link_speed(port);
-  5467		else
-  5468			port_set_link_speed(port);
-  5469	
-  5470		if (!(hw_priv->opened)) {
-  5471			hw_setup_intr(hw);
-  5472			hw_enable(hw);
-  5473			hw_ena_intr(hw);
-  5474	
-  5475			if (hw->mib_port_cnt)
-  5476				ksz_start_timer(&hw_priv->mib_timer_info,
-  5477					hw_priv->mib_timer_info.period);
-  5478		}
-  5479	
-  5480		hw_priv->opened++;
-  5481	
-  5482		ksz_start_timer(&priv->monitor_timer_info,
-  5483			priv->monitor_timer_info.period);
-  5484	
-  5485		priv->media_state = port->linked->state;
-  5486	
-  5487		set_media_state(dev, media_connected);
-  5488		netif_start_queue(dev);
-  5489	
-  5490		return 0;
-  5491	}
-  5492	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> +       { .compatible = "qcom,soundwire-v1.6.0", .data = &swrm_v1_6_data },
+>         {/* sentinel */},
