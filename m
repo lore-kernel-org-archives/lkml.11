@@ -2,113 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E884AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA1D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239011AbiB1RwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:52:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58766 "EHLO
+        id S239096AbiB1RwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:52:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238490AbiB1Rpc (ORCPT
+        with ESMTP id S238289AbiB1RpV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:45:32 -0500
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D880D43EDE;
-        Mon, 28 Feb 2022 09:37:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646069870; x=1677605870;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=YtFAYAFND6XX0wPXuY5rYg2LX5oHVkQyEKvx0qDeeZw=;
-  b=egAxhoxCfkCRjZgJUphGW24wumXkeyy8zvBgtHJM+7cr4GvaBRyIL0k8
-   2qpj8YbhBG744LJMzSA2JLpMkuk5tiuqsIykRWYgYvOfn85SJRyksERwS
-   JjaXiz4uV7Ih+VajWcZsxLK84xCXmEagsgWcRAtA4Gct7fYpG1Lo0xmJb
-   bN6xAgoObcxfjdXM5sedxC/IzR0yevGyMknajTZj29lJ/miBq9qbdQuJ8
-   MIrr13KZ4aJK6R2+XmjU1MWQYizQHza02ZNAvOVzBsoILv+RiPYUW0p12
-   sPdQT+hqBHVqW5WDRyLudYQgikq6M+hLGmdQdGvAQjspTKeWeVPo3BBuy
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="316154512"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="316154512"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:37:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="608524901"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 28 Feb 2022 09:37:15 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOjxS-0007cY-Mj; Mon, 28 Feb 2022 17:37:14 +0000
-Date:   Tue, 1 Mar 2022 01:37:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Muchun Song <songmuchun@bytedance.com>, corbet@lwn.net,
-        mike.kravetz@oracle.com, akpm@linux-foundation.org,
-        mcgrof@kernel.org, keescook@chromium.org, yzaikin@google.com
-Cc:     kbuild-all@lists.01.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH 3/3] mm: hugetlb: add hugetlb_free_vmemmap sysctl
-Message-ID: <202203010141.TqyZvdm5-lkp@intel.com>
-References: <20220228071022.26143-4-songmuchun@bytedance.com>
+        Mon, 28 Feb 2022 12:45:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63C43B024;
+        Mon, 28 Feb 2022 09:37:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0699B815A2;
+        Mon, 28 Feb 2022 17:37:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DEEEC340E7;
+        Mon, 28 Feb 2022 17:37:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069861;
+        bh=TQEvo4SlinlRCuCloRelj2WzOa4s+iA4H9FM7v2aA1c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fpj0H9yiEFI5o2aT0sui7N7UVJKLkxm3ndrj7yD5d2djcLmv3DqDRbBedZ44Yl4Ta
+         kisVTIGgwIyUbJoVIlN923QvWsWtl9pAgXqOJtCvsixceSuJ7lIxpQLoXqYh1NXAi5
+         0Cn9YZ2iHNqBfgtgQwYu9C2WuoSxF3dRNnFD2L6E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 037/139] mptcp: fix race in incoming ADD_ADDR option processing
+Date:   Mon, 28 Feb 2022 18:23:31 +0100
+Message-Id: <20220228172351.651137729@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228071022.26143-4-songmuchun@bytedance.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Muchun,
+From: Paolo Abeni <pabeni@redhat.com>
 
-Thank you for the patch! Yet something to improve:
+commit 837cf45df163a3780bc04b555700231e95b31dc9 upstream.
 
-[auto build test ERROR on hnaz-mm/master]
-[also build test ERROR on next-20220225]
-[cannot apply to mcgrof/sysctl-next linus/master v5.17-rc6]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+If an MPTCP endpoint received multiple consecutive incoming
+ADD_ADDR options, mptcp_pm_add_addr_received() can overwrite
+the current remote address value after the PM lock is released
+in mptcp_pm_nl_add_addr_received() and before such address
+is echoed.
 
-url:    https://github.com/0day-ci/linux/commits/Muchun-Song/add-hugetlb_free_vmemmap-sysctl/20220228-151303
-base:   https://github.com/hnaz/linux-mm master
-config: x86_64-randconfig-c022 (https://download.01.org/0day-ci/archive/20220301/202203010141.TqyZvdm5-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/a2a3193fd949ff24ed0c138ef495e67373839483
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Muchun-Song/add-hugetlb_free_vmemmap-sysctl/20220228-151303
-        git checkout a2a3193fd949ff24ed0c138ef495e67373839483
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Fix the issue caching the remote address value a little earlier
+and always using the cached value after releasing the PM lock.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   mm/hugetlb_vmemmap.c: In function 'hugetlb_vmemmap_sysctl_handler':
->> mm/hugetlb_vmemmap.c:156:55: error: 'memmap_on_memory' undeclared (first use in this function)
-     156 |  if (write && (!is_power_of_2(sizeof(struct page)) || memmap_on_memory))
-         |                                                       ^~~~~~~~~~~~~~~~
-   mm/hugetlb_vmemmap.c:156:55: note: each undeclared identifier is reported only once for each function it appears in
-
-
-vim +/memmap_on_memory +156 mm/hugetlb_vmemmap.c
-
-   148	
-   149	int hugetlb_vmemmap_sysctl_handler(struct ctl_table *table, int write,
-   150					   void *buffer, size_t *length, loff_t *ppos)
-   151	{
-   152		/*
-   153		 * The vmemmap pages cannot be optimized if a "struct page" crosses page
-   154		 * boundaries or memory_hotplug.memmap_on_memory is enabled.
-   155		 */
- > 156		if (write && (!is_power_of_2(sizeof(struct page)) || memmap_on_memory))
-
+Fixes: f7efc7771eac ("mptcp: drop argument port from mptcp_pm_announce_addr")
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ net/mptcp/pm_netlink.c |   19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
+
+--- a/net/mptcp/pm_netlink.c
++++ b/net/mptcp/pm_netlink.c
+@@ -606,6 +606,7 @@ static void mptcp_pm_nl_add_addr_receive
+ 	unsigned int add_addr_accept_max;
+ 	struct mptcp_addr_info remote;
+ 	unsigned int subflows_max;
++	bool reset_port = false;
+ 	int i, nr;
+ 
+ 	add_addr_accept_max = mptcp_pm_get_add_addr_accept_max(msk);
+@@ -615,15 +616,19 @@ static void mptcp_pm_nl_add_addr_receive
+ 		 msk->pm.add_addr_accepted, add_addr_accept_max,
+ 		 msk->pm.remote.family);
+ 
+-	if (lookup_subflow_by_daddr(&msk->conn_list, &msk->pm.remote))
++	remote = msk->pm.remote;
++	if (lookup_subflow_by_daddr(&msk->conn_list, &remote))
+ 		goto add_addr_echo;
+ 
++	/* pick id 0 port, if none is provided the remote address */
++	if (!remote.port) {
++		reset_port = true;
++		remote.port = sk->sk_dport;
++	}
++
+ 	/* connect to the specified remote address, using whatever
+ 	 * local address the routing configuration will pick.
+ 	 */
+-	remote = msk->pm.remote;
+-	if (!remote.port)
+-		remote.port = sk->sk_dport;
+ 	nr = fill_local_addresses_vec(msk, addrs);
+ 
+ 	msk->pm.add_addr_accepted++;
+@@ -636,8 +641,12 @@ static void mptcp_pm_nl_add_addr_receive
+ 		__mptcp_subflow_connect(sk, &addrs[i], &remote);
+ 	spin_lock_bh(&msk->pm.lock);
+ 
++	/* be sure to echo exactly the received address */
++	if (reset_port)
++		remote.port = 0;
++
+ add_addr_echo:
+-	mptcp_pm_announce_addr(msk, &msk->pm.remote, true);
++	mptcp_pm_announce_addr(msk, &remote, true);
+ 	mptcp_pm_nl_addr_send_ack(msk);
+ }
+ 
+
+
