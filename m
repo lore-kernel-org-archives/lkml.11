@@ -2,101 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAC6C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 23:43:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2669DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 23:43:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231127AbiB1XoL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 18:44:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58830 "EHLO
+        id S231396AbiB1XoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 18:44:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230085AbiB1XoJ (ORCPT
+        with ESMTP id S231153AbiB1XoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 18:44:09 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6CC3FBE1
+        Mon, 28 Feb 2022 18:44:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F686C3C32
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 15:43:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646091809;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4EEwWZZAjwW/ysDjBUtGda9incLc4VBnaTI9ZWPATn8=;
+        b=gfBjr9vXt78gbCGwygD9WcsI7IOiXv/FGz/3ah3vJQqxjsv/NCiaXuV84G++j7vUjUlMcf
+        tlR8F59/GrBWRFLZ/7w4Qp2Mf9oE7oZrM4P788oGXKDNu7M7Pl9CEU3Jlt4MGwmDnU9eBU
+        19fItdl/FJtIqAySxXi1EnShgYAFNPY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-583-wh-D7DqNPn6GH7tEfAjdYQ-1; Mon, 28 Feb 2022 18:43:28 -0500
+X-MC-Unique: wh-D7DqNPn6GH7tEfAjdYQ-1
+Received: by mail-wm1-f70.google.com with SMTP id c62-20020a1c3541000000b003815245c642so316636wma.6
         for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 15:43:28 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id g6so23801497ybe.12
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 15:43:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qv0zsMcKFZS0uEN+5UZdpCCNfqy5Tylio2s1vY2ryso=;
-        b=ap5urwZneNBvZkhWi+/alykrLvq+JYqyG5CVt8WwKGtLHNLfvdGlkCi9jb2IB8Dbev
-         MBDfUFmIVhBVZZbas/oLB3vPRnZPejc3kafHFSDs/G7H4Yj4XWQedGscnKmawKj9QX55
-         /X7Jk+kO+yQYrIH8mst8QcYrJcns7dbxoluyOJQm/6lXSz5ROZU4Dwir6Q9PMF09VRsF
-         v1D9R1V2FGi1y5W50xxGS/sHAgitGOSEZSB9bfZXn373UY+vy0mS5V4ixrPsaMulrpKB
-         bOTyoKOAoaw/HBLLkgDMiWzc9WtHQfgGlK8LMXxnRpkt3c0D9CcIoifuZS1dZHhWFt52
-         jv7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qv0zsMcKFZS0uEN+5UZdpCCNfqy5Tylio2s1vY2ryso=;
-        b=Jwkw400AmK+eEd0a6SI2Nn+wyh6mrf60/6D7eYJUsDorndeJnFLde2T2cQ87ChDJxP
-         8sWd+r0Y5mlSVv2HcyQscF9BmaXbaYOuQQkZB4muevIG5IhUHUXU9UhZJxUPuw+3pQS5
-         x4spkWO9b96PgMhSv3dzpEKq7fHF8pCYtzPiM7g0b0KQxAXzhOZW2xKRcJWjtsS6FRpR
-         ABljGLfCRr+MuJGE8Yl5NUwJZ17A7QgavfSWH/gI3Dbv9l6N929BvaDbNkvutVrTPlEQ
-         QmtKPpq9xOzZnoNJwCBvzyraXvC5gN0TjtrPp8YzMuszAezPdY2XgN22ncQKjtqqwByg
-         co3Q==
-X-Gm-Message-State: AOAM5303+zPcsTKSjKjFMvM1UzX3FJgQVki/2IaqTr8FivzRv4lso4nt
-        0Y8FNC4WVOxuCvls8yih8mUYczINBciwp8klkkKq3g==
-X-Google-Smtp-Source: ABdhPJy1LX+l2Mo/igXclj6eX4Kw6KzE1vcvAQRdRbdEaIC9clnEKE1E4s62KfDnNCE8OdnKYLa2bNj2oAdbjzW0rhA=
-X-Received: by 2002:a25:9108:0:b0:61e:329:700 with SMTP id v8-20020a259108000000b0061e03290700mr21280699ybl.369.1646091807701;
- Mon, 28 Feb 2022 15:43:27 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4EEwWZZAjwW/ysDjBUtGda9incLc4VBnaTI9ZWPATn8=;
+        b=JuU+8HQSxYS+9bvqHbP0KyvhnCdae78eyugih9U/nFVzk03gdkmSl4G7qj7WrhBW1u
+         QimXgC4tf1+ruU9FL9TgFFmAi6DsHjCumjgjYKUYMqb4AG5+QQMgFfg4YyJLGnIPPHk8
+         xFgEccCmLnRusT5zGKDikZUV9UCSm/gQSxexLm7TEUVIWwyTIn44k0pnKowJVHtqXLoa
+         B5VRO1jemjG2NKnWJUwSzjbXyaofSqZ8K4jHiKzVxj0mwvMBDwWJI8oXwbqVf7ZoyWcm
+         sWhC0tFp+MBWn34NbdKt9rjArEA8uhoxrgIqJ7wUuLOKs8wzn80WSN5EiODyW1yjFcXr
+         I9fQ==
+X-Gm-Message-State: AOAM532Gzpqfzjaw3AwAeSrVekB//VNY7aYlhvdqK6Fq+Gcnk9fjzXQL
+        MXSeVgapnEnWjPSQvPQ/xgPBHMYzKDqdydy0Fn+B+5KK3BDeDPE1V08jbgGqZ7+JOARAp0GBXUc
+        7RCfJsRXcXfBHLUshsPony9k=
+X-Received: by 2002:adf:9bd9:0:b0:1ef:5b29:3170 with SMTP id e25-20020adf9bd9000000b001ef5b293170mr14630748wrc.28.1646091807196;
+        Mon, 28 Feb 2022 15:43:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzgAWJRgzfQDyBZpe5K/zqzlYmdu+PAAENqR0tnGcDP4HDQmpPqyvlJxF5CdTyafUynljWE/w==
+X-Received: by 2002:adf:9bd9:0:b0:1ef:5b29:3170 with SMTP id e25-20020adf9bd9000000b001ef5b293170mr14630739wrc.28.1646091807003;
+        Mon, 28 Feb 2022 15:43:27 -0800 (PST)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id f21-20020a5d58f5000000b001ea99c3397dsm12368091wrd.21.2022.02.28.15.43.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 15:43:25 -0800 (PST)
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     mcgrof@kernel.org, christophe.leroy@csgroup.eu, pmladek@suse.com
+Cc:     cl@linux.com, mbenes@suse.cz, akpm@linux-foundation.org,
+        jeyu@kernel.org, linux-kernel@vger.kernel.org,
+        linux-modules@vger.kernel.org, void@manifault.com,
+        atomlin@atomlin.com, allen.lkml@gmail.com, joe@perches.com,
+        msuchanek@suse.de, oleksandr@natalenko.name,
+        jason.wessel@windriver.com, daniel.thompson@linaro.org
+Subject: [PATCH v9 01/14] module: Move all into module/
+Date:   Mon, 28 Feb 2022 23:43:09 +0000
+Message-Id: <20220228234322.2073104-2-atomlin@redhat.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220228234322.2073104-1-atomlin@redhat.com>
+References: <20220228234322.2073104-1-atomlin@redhat.com>
 MIME-Version: 1.0
-References: <20220215163926.894-1-paweldembicki@gmail.com>
-In-Reply-To: <20220215163926.894-1-paweldembicki@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 1 Mar 2022 00:43:16 +0100
-Message-ID: <CACRpkda=ky29PiTjWimnNihLDHSTfYWk68qg5GcLqZTD76ba=g@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] ARM: dts: kirkwood: Add Ctera C-200 V1 board
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>, soc@kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Corentin Labbe <clabbe@baylibre.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Hao Fang <fanghao11@huawei.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 5:40 PM Pawel Dembicki <paweldembicki@gmail.com> wrote:
+No functional changes.
 
-> +&i2c0 {
-> +       status = "okay";
-> +
-> +       rtc@30 {
-> +               compatible = "s35390a";
-> +               reg = <0x30>;
-> +       };
-> +
-> +       lm63@4c {
-> +               compatible = "national,lm63";
-> +               reg = <0x4c>;
-> +       };
+This patch moves all module related code into a separate directory,
+modifies each file name and creates a new Makefile. Note: this effort
+is in preparation to refactor core module code.
 
-Think about adding chassis thermal zone for this sensor,
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+---
+ MAINTAINERS                                         |  2 +-
+ kernel/Makefile                                     |  5 +----
+ kernel/module/Makefile                              | 12 ++++++++++++
+ kernel/{module_decompress.c => module/decompress.c} |  2 +-
+ kernel/{module-internal.h => module/internal.h}     |  0
+ kernel/{module.c => module/main.c}                  |  2 +-
+ kernel/{module_signing.c => module/signing.c}       |  2 +-
+ 7 files changed, 17 insertions(+), 8 deletions(-)
+ create mode 100644 kernel/module/Makefile
+ rename kernel/{module_decompress.c => module/decompress.c} (99%)
+ rename kernel/{module-internal.h => module/internal.h} (100%)
+ rename kernel/{module.c => module/main.c} (99%)
+ rename kernel/{module_signing.c => module/signing.c} (97%)
 
-I suppose you don't have any active control of cooling (fan)?
-This often sits on GPIO...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index bd86ed9fbc79..463bdb829db4 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13012,7 +13012,7 @@ L:	linux-kernel@vger.kernel.org
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git modules-next
+ F:	include/linux/module.h
+-F:	kernel/module.c
++F:	kernel/module/
+ 
+ MONOLITHIC POWER SYSTEM PMIC DRIVER
+ M:	Saravanan Sekar <sravanhome@gmail.com>
+diff --git a/kernel/Makefile b/kernel/Makefile
+index 56f4ee97f328..717075b65deb 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -29,7 +29,6 @@ KCOV_INSTRUMENT_softirq.o := n
+ KCSAN_SANITIZE_softirq.o = n
+ # These are called from save_stack_trace() on slub debug path,
+ # and produce insane amounts of uninteresting coverage.
+-KCOV_INSTRUMENT_module.o := n
+ KCOV_INSTRUMENT_extable.o := n
+ KCOV_INSTRUMENT_stacktrace.o := n
+ # Don't self-instrument.
+@@ -53,6 +52,7 @@ obj-y += rcu/
+ obj-y += livepatch/
+ obj-y += dma/
+ obj-y += entry/
++obj-$(CONFIG_MODULES) += module/
+ 
+ obj-$(CONFIG_KCMP) += kcmp.o
+ obj-$(CONFIG_FREEZER) += freezer.o
+@@ -66,9 +66,6 @@ ifneq ($(CONFIG_SMP),y)
+ obj-y += up.o
+ endif
+ obj-$(CONFIG_UID16) += uid16.o
+-obj-$(CONFIG_MODULES) += module.o
+-obj-$(CONFIG_MODULE_DECOMPRESS) += module_decompress.o
+-obj-$(CONFIG_MODULE_SIG) += module_signing.o
+ obj-$(CONFIG_MODULE_SIG_FORMAT) += module_signature.o
+ obj-$(CONFIG_KALLSYMS) += kallsyms.o
+ obj-$(CONFIG_BSD_PROCESS_ACCT) += acct.o
+diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+new file mode 100644
+index 000000000000..cdd5c61b8c7f
+--- /dev/null
++++ b/kernel/module/Makefile
+@@ -0,0 +1,12 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Makefile for linux kernel module support
++#
++
++# These are called from save_stack_trace() on slub debug path,
++# and produce insane amounts of uninteresting coverage.
++KCOV_INSTRUMENT_module.o := n
++
++obj-y += main.o
++obj-$(CONFIG_MODULE_DECOMPRESS) += decompress.o
++obj-$(CONFIG_MODULE_SIG) += signing.o
+diff --git a/kernel/module_decompress.c b/kernel/module/decompress.c
+similarity index 99%
+rename from kernel/module_decompress.c
+rename to kernel/module/decompress.c
+index ffef98a20320..d14d6443225a 100644
+--- a/kernel/module_decompress.c
++++ b/kernel/module/decompress.c
+@@ -12,7 +12,7 @@
+ #include <linux/sysfs.h>
+ #include <linux/vmalloc.h>
+ 
+-#include "module-internal.h"
++#include "internal.h"
+ 
+ static int module_extend_max_pages(struct load_info *info, unsigned int extent)
+ {
+diff --git a/kernel/module-internal.h b/kernel/module/internal.h
+similarity index 100%
+rename from kernel/module-internal.h
+rename to kernel/module/internal.h
+diff --git a/kernel/module.c b/kernel/module/main.c
+similarity index 99%
+rename from kernel/module.c
+rename to kernel/module/main.c
+index 46a5c2ed1928..34a2b0cf3c3e 100644
+--- a/kernel/module.c
++++ b/kernel/module/main.c
+@@ -58,7 +58,7 @@
+ #include <linux/dynamic_debug.h>
+ #include <linux/audit.h>
+ #include <uapi/linux/module.h>
+-#include "module-internal.h"
++#include "internal.h"
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/module.h>
+diff --git a/kernel/module_signing.c b/kernel/module/signing.c
+similarity index 97%
+rename from kernel/module_signing.c
+rename to kernel/module/signing.c
+index 8723ae70ea1f..8aeb6d2ee94b 100644
+--- a/kernel/module_signing.c
++++ b/kernel/module/signing.c
+@@ -12,7 +12,7 @@
+ #include <linux/string.h>
+ #include <linux/verification.h>
+ #include <crypto/public_key.h>
+-#include "module-internal.h"
++#include "internal.h"
+ 
+ /*
+  * Verify the signature on a module.
+-- 
+2.34.1
 
-In that case just add a critical temperature so it can't burn
-down the house.
-
-See:
-arch/arm/boot/dts/gemini-dlink-dns-313.dts
-node thermal-zones {} for an example of how to do this
-quick and easy. You need CONFIG_THERMAL and
-CONFIG_THERMAL_HWMON for this to work.
-
-Yours,
-Linus Walleij
