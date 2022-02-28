@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA73AC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B7BC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238803AbiB1RnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:43:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37082 "EHLO
+        id S238729AbiB1RnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:43:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238312AbiB1RkG (ORCPT
+        with ESMTP id S238352AbiB1RkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:40:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27B092D12;
-        Mon, 28 Feb 2022 09:34:16 -0800 (PST)
+        Mon, 28 Feb 2022 12:40:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D5D931A6;
+        Mon, 28 Feb 2022 09:34:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A87A2614BF;
-        Mon, 28 Feb 2022 17:34:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0FD4C340E7;
-        Mon, 28 Feb 2022 17:34:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32184614B9;
+        Mon, 28 Feb 2022 17:34:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D5AC340E7;
+        Mon, 28 Feb 2022 17:34:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069655;
-        bh=6b7f/+0qvIxkDMPm2Xppd3Oe6OpoLqQPKu5Y52UCEIg=;
+        s=korg; t=1646069660;
+        bh=UKU2ZL74yrXmSvnoOCq0NG2pCsbfm6eBJT405A9w8+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Emo4c44qd8bgnEd2e57KORqRX1ox28tv+UpwfaGj4WLUpXa+VagjyXa8wG2xpLzgu
-         h0/i8i+lDf6D9cjDuLZ+lAzCMoDVu/YvkkD+57C5qAINLkQKYFHn8RCWicFnGuhhKD
-         zaO0x3uSTXS7qBdrXg75zLQB7FT2gMTxi9cX4/Pg=
+        b=Sg/ESZeu+1uy77WNhqxd2xkxMsWVMFnsU+hsuvU9C64e4Z4SMkH6ttlif8hQ7Stmn
+         gqjXn26mWdoEUjraeI+E3BG1q3nbSF5a/brGiELjFEJmYiQHWcAtvcsiacsDFqZhre
+         AQbOETEAfLiTlSzUxSrXnzSIJlsHRd/QFL9mWOwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.10 44/80] net/mlx5e: kTLS, Use CHECKSUM_UNNECESSARY for device-offloaded packets
-Date:   Mon, 28 Feb 2022 18:24:25 +0100
-Message-Id: <20220228172316.905882012@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Prasad Kumpatla <quic_pkumpatl@quicinc.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 46/80] regmap-irq: Update interrupt clear register for proper reset
+Date:   Mon, 28 Feb 2022 18:24:27 +0100
+Message-Id: <20220228172317.218502231@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -48,43 +52,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
 
-commit 7eaf1f37b8817c608c4e959d69986ef459d345cd upstream.
+[ Upstream commit d04ad245d67a3991dfea5e108e4c452c2ab39bac ]
 
-For RX TLS device-offloaded packets, the HW spec guarantees checksum
-validation for the offloaded packets, but does not define whether the
-CQE.checksum field matches the original packet (ciphertext) or
-the decrypted one (plaintext). This latitude allows architetctural
-improvements between generations of chips, resulting in different decisions
-regarding the value type of CQE.checksum.
+With the existing logic where clear_ack is true (HW doesn’t support
+auto clear for ICR), interrupt clear register reset is not handled
+properly. Due to this only the first interrupts get processed properly
+and further interrupts are blocked due to not resetting interrupt
+clear register.
 
-Hence, for these packets, the device driver should not make use of this CQE
-field. Here we block CHECKSUM_COMPLETE usage for RX TLS device-offloaded
-packets, and use CHECKSUM_UNNECESSARY instead.
+Example for issue case where Invert_ack is false and clear_ack is true:
 
-Value of the packet's tcp_hdr.csum is not modified by the HW, and it always
-matches the original ciphertext.
+    Say Default ISR=0x00 & ICR=0x00 and ISR is triggered with 2
+    interrupts making ISR = 0x11.
 
-Fixes: 1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Step 1: Say ISR is set 0x11 (store status_buff = ISR). ISR needs to
+            be cleared with the help of ICR once the Interrupt is processed.
+
+    Step 2: Write ICR = 0x11 (status_buff), this will clear the ISR to 0x00.
+
+    Step 3: Issue - In the existing code, ICR is written with ICR =
+            ~(status_buff) i.e ICR = 0xEE -> This will block all the interrupts
+            from raising except for interrupts 0 and 4. So expectation here is to
+            reset ICR, which will unblock all the interrupts.
+
+            if (chip->clear_ack) {
+                 if (chip->ack_invert && !ret)
+                  ........
+                 else if (!ret)
+                     ret = regmap_write(map, reg,
+                            ~data->status_buf[i]);
+
+So writing 0 and 0xff (when ack_invert is true) should have no effect, other
+than clearing the ACKs just set.
+
+Fixes: 3a6f0fb7b8eb ("regmap: irq: Add support to clear ack registers")
+Signed-off-by: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Link: https://lore.kernel.org/r/20220217085007.30218-1-quic_pkumpatl@quicinc.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/base/regmap/regmap-irq.c | 20 ++++++--------------
+ 1 file changed, 6 insertions(+), 14 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -985,7 +985,8 @@ static inline void mlx5e_handle_csum(str
- 	}
- 
- 	/* True when explicitly set via priv flag, or XDP prog is loaded */
--	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state))
-+	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state) ||
-+	    get_cqe_tls_offload(cqe))
- 		goto csum_unnecessary;
- 
- 	/* CQE csum doesn't cover padding octets in short ethernet
+diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
+index ad5c2de395d1f..87c5c421e0f46 100644
+--- a/drivers/base/regmap/regmap-irq.c
++++ b/drivers/base/regmap/regmap-irq.c
+@@ -170,11 +170,9 @@ static void regmap_irq_sync_unlock(struct irq_data *data)
+ 				ret = regmap_write(map, reg, d->mask_buf[i]);
+ 			if (d->chip->clear_ack) {
+ 				if (d->chip->ack_invert && !ret)
+-					ret = regmap_write(map, reg,
+-							   d->mask_buf[i]);
++					ret = regmap_write(map, reg, UINT_MAX);
+ 				else if (!ret)
+-					ret = regmap_write(map, reg,
+-							   ~d->mask_buf[i]);
++					ret = regmap_write(map, reg, 0);
+ 			}
+ 			if (ret != 0)
+ 				dev_err(d->map->dev, "Failed to ack 0x%x: %d\n",
+@@ -509,11 +507,9 @@ static irqreturn_t regmap_irq_thread(int irq, void *d)
+ 						data->status_buf[i]);
+ 			if (chip->clear_ack) {
+ 				if (chip->ack_invert && !ret)
+-					ret = regmap_write(map, reg,
+-							data->status_buf[i]);
++					ret = regmap_write(map, reg, UINT_MAX);
+ 				else if (!ret)
+-					ret = regmap_write(map, reg,
+-							~data->status_buf[i]);
++					ret = regmap_write(map, reg, 0);
+ 			}
+ 			if (ret != 0)
+ 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
+@@ -745,13 +741,9 @@ int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
+ 					d->status_buf[i] & d->mask_buf[i]);
+ 			if (chip->clear_ack) {
+ 				if (chip->ack_invert && !ret)
+-					ret = regmap_write(map, reg,
+-						(d->status_buf[i] &
+-						 d->mask_buf[i]));
++					ret = regmap_write(map, reg, UINT_MAX);
+ 				else if (!ret)
+-					ret = regmap_write(map, reg,
+-						~(d->status_buf[i] &
+-						  d->mask_buf[i]));
++					ret = regmap_write(map, reg, 0);
+ 			}
+ 			if (ret != 0) {
+ 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
+-- 
+2.34.1
+
 
 
