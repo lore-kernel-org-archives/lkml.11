@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23148C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EFCBC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240099AbiB1SNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:13:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
+        id S240158AbiB1SNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:13:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240768AbiB1SJL (ORCPT
+        with ESMTP id S240847AbiB1SJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDCD5F257;
-        Mon, 28 Feb 2022 09:49:05 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F475FF09;
+        Mon, 28 Feb 2022 09:49:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 682EC6091F;
-        Mon, 28 Feb 2022 17:49:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 867DBC340E7;
-        Mon, 28 Feb 2022 17:49:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CA5360BBB;
+        Mon, 28 Feb 2022 17:48:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A30A1C340E7;
+        Mon, 28 Feb 2022 17:48:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070543;
-        bh=5KaqpvvluzjEctSnCemTvMxDjNe7IYUy995fPKndeGE=;
+        s=korg; t=1646070522;
+        bh=Q8JC4OcwLGjsXfqJrcQWbcSisgO3H+o0nNhmi2ygFr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a/uv84mWjaoI9/FRiW4Pw4Ufotzy/1578GgOnyz5vCfFH++RiJdjYjhrxxuNG/WDI
-         fckO0ezkxDqk1fEhPM0N1dyf1lJx2EdmzXzjUY/0+YgWW84CW0Ma3u12bKJ0gyledq
-         mOHthER7wYHlbOKuDTyZMgwLSGQJ8E39TsSVbHQw=
+        b=z45BKJePhzkIoKV6aYtLh2aYTeKhBPPx8cZhxis73YJ0BjaFmoc/1p0F8g+GcwqfQ
+         tu30+BX5VjwSTeDCoV8r2M97IzlfWadzAeHGeKMRPxRkBGnx9wzJ1y5rbD2rZluczH
+         A25EF8GwJgO75uDprJK1cp+TcRHN9DLBhaN/8q2w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 107/164] bnxt_en: Increase firmware message response DMA wait time
-Date:   Mon, 28 Feb 2022 18:24:29 +0100
-Message-Id: <20220228172409.528909226@linuxfoundation.org>
+        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
+        Qu Wenruo <wqu@suse.com>, David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 138/164] btrfs: defrag: dont try to merge regular extents with preallocated extents
+Date:   Mon, 28 Feb 2022 18:25:00 +0100
+Message-Id: <20220228172412.488282193@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -51,80 +48,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Qu Wenruo <wqu@suse.com>
 
-[ Upstream commit b891106da52b2c12dbaf73400f6d225b06a38d80 ]
+commit 7093f15291e95f16dfb5a93307eda3272bfe1108 upstream.
 
-When polling for the firmware message response, we first poll for the
-response message header.  Once the valid length is detected in the
-header, we poll for the valid bit at the end of the message which
-signals DMA completion.  Normally, this poll time for DMA completion
-is extremely short (0 to a few usec).  But on some devices under some
-rare conditions, it can be up to about 20 msec.
+[BUG]
+With older kernels (before v5.16), btrfs will defrag preallocated extents.
+While with newer kernels (v5.16 and newer) btrfs will not defrag
+preallocated extents, but it will defrag the extent just before the
+preallocated extent, even it's just a single sector.
 
-Increase this delay to 50 msec and use udelay() for the first 10 usec
-for the common case, and usleep_range() beyond that.
+This can be exposed by the following small script:
 
-Also, change the error message to include the above delay time when
-printing the timeout value.
+	mkfs.btrfs -f $dev > /dev/null
 
-Fixes: 3c8c20db769c ("bnxt_en: move HWRM API implementation into separate file")
-Reviewed-by: Vladimir Olovyannikov <vladimir.olovyannikov@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+	mount $dev $mnt
+	xfs_io -f -c "pwrite 0 4k" -c sync -c "falloc 4k 16K" $mnt/file
+	xfs_io -c "fiemap -v" $mnt/file
+	btrfs fi defrag $mnt/file
+	sync
+	xfs_io -c "fiemap -v" $mnt/file
+
+The output looks like this on older kernels:
+
+/mnt/btrfs/file:
+ EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
+   0: [0..7]:          26624..26631         8   0x0
+   1: [8..39]:         26632..26663        32 0x801
+/mnt/btrfs/file:
+ EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
+   0: [0..39]:         26664..26703        40   0x1
+
+Which defrags the single sector along with the preallocated extent, and
+replace them with an regular extent into a new location (caused by data
+COW).
+This wastes most of the data IO just for the preallocated range.
+
+On the other hand, v5.16 is slightly better:
+
+/mnt/btrfs/file:
+ EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
+   0: [0..7]:          26624..26631         8   0x0
+   1: [8..39]:         26632..26663        32 0x801
+/mnt/btrfs/file:
+ EXT: FILE-OFFSET      BLOCK-RANGE      TOTAL FLAGS
+   0: [0..7]:          26664..26671         8   0x0
+   1: [8..39]:         26632..26663        32 0x801
+
+The preallocated range is not defragged, but the sector before it still
+gets defragged, which has no need for it.
+
+[CAUSE]
+One of the function reused by the old and new behavior is
+defrag_check_next_extent(), it will determine if we should defrag
+current extent by checking the next one.
+
+It only checks if the next extent is a hole or inlined, but it doesn't
+check if it's preallocated.
+
+On the other hand, out of the function, both old and new kernel will
+reject preallocated extents.
+
+Such inconsistent behavior causes above behavior.
+
+[FIX]
+- Also check if next extent is preallocated
+  If so, don't defrag current extent.
+
+- Add comments for each branch why we reject the extent
+
+This will reduce the IO caused by defrag ioctl and autodefrag.
+
+CC: stable@vger.kernel.org # 5.16
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c | 12 +++++++++---
- drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h |  2 +-
- 2 files changed, 10 insertions(+), 4 deletions(-)
+ fs/btrfs/ioctl.c |   17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-index 8171f4912fa01..3a0eeb3737767 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-@@ -595,18 +595,24 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
- 
- 		/* Last byte of resp contains valid bit */
- 		valid = ((u8 *)ctx->resp) + len - 1;
--		for (j = 0; j < HWRM_VALID_BIT_DELAY_USEC; j++) {
-+		for (j = 0; j < HWRM_VALID_BIT_DELAY_USEC; ) {
- 			/* make sure we read from updated DMA memory */
- 			dma_rmb();
- 			if (*valid)
- 				break;
--			usleep_range(1, 5);
-+			if (j < 10) {
-+				udelay(1);
-+				j++;
-+			} else {
-+				usleep_range(20, 30);
-+				j += 20;
-+			}
- 		}
- 
- 		if (j >= HWRM_VALID_BIT_DELAY_USEC) {
- 			if (!(ctx->flags & BNXT_HWRM_CTX_SILENT))
- 				netdev_err(bp->dev, "Error (timeout: %u) msg {0x%x 0x%x} len:%d v:%d\n",
--					   hwrm_total_timeout(i),
-+					   hwrm_total_timeout(i) + j,
- 					   le16_to_cpu(ctx->req->req_type),
- 					   le16_to_cpu(ctx->req->seq_id), len,
- 					   *valid);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-index 9a9fc4e8041b6..380ef69afb51b 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-@@ -94,7 +94,7 @@ static inline unsigned int hwrm_total_timeout(unsigned int n)
- }
- 
- 
--#define HWRM_VALID_BIT_DELAY_USEC	150
-+#define HWRM_VALID_BIT_DELAY_USEC	50000
- 
- static inline bool bnxt_cfa_hwrm_message(u16 req_type)
+--- a/fs/btrfs/ioctl.c
++++ b/fs/btrfs/ioctl.c
+@@ -1024,19 +1024,24 @@ static bool defrag_check_next_extent(str
+ 				     bool locked)
  {
--- 
-2.34.1
-
+ 	struct extent_map *next;
+-	bool ret = true;
++	bool ret = false;
+ 
+ 	/* this is the last extent */
+ 	if (em->start + em->len >= i_size_read(inode))
+ 		return false;
+ 
+ 	next = defrag_lookup_extent(inode, em->start + em->len, locked);
++	/* No more em or hole */
+ 	if (!next || next->block_start >= EXTENT_MAP_LAST_BYTE)
+-		ret = false;
+-	else if ((em->block_start + em->block_len == next->block_start) &&
+-		 (em->block_len > SZ_128K && next->block_len > SZ_128K))
+-		ret = false;
+-
++		goto out;
++	if (test_bit(EXTENT_FLAG_PREALLOC, &next->flags))
++		goto out;
++	/* Physically adjacent and large enough */
++	if ((em->block_start + em->block_len == next->block_start) &&
++	    (em->block_len > SZ_128K && next->block_len > SZ_128K))
++		goto out;
++	ret = true;
++out:
+ 	free_extent_map(next);
+ 	return ret;
+ }
 
 
