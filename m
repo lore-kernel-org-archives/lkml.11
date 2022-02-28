@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28A6BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 622D6C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240080AbiB1SC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:02:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
+        id S240193AbiB1SDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:03:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240799AbiB1Ryp (ORCPT
+        with ESMTP id S239973AbiB1Rxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7684053727;
-        Mon, 28 Feb 2022 09:43:57 -0800 (PST)
+        Mon, 28 Feb 2022 12:53:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408D5AF1FF;
+        Mon, 28 Feb 2022 09:41:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D269B81366;
-        Mon, 28 Feb 2022 17:43:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76707C340F1;
-        Mon, 28 Feb 2022 17:43:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54E09614C9;
+        Mon, 28 Feb 2022 17:41:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ACC2C340E7;
+        Mon, 28 Feb 2022 17:41:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070234;
-        bh=VcvQDz9VZtmgeBdwB1Xfn3XxoSMMVM530yEXxV6FkUo=;
+        s=korg; t=1646070077;
+        bh=+6N8+7VcYRDuliUP9Kw7HwRQhd1SqB77Fx6ru+a3Wmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=THjvHQ6Fgdp30K2QILM9Nql8KDOXWD0zRC9DQoVjJzoK/3NquNF2HkXNKSRdoO/iC
-         BIDs3X0APOefL/1MY40GMtCy4Wn4rO8ZPYbTq91/AkOPDceEXRMma8HaJNgcbRS1vt
-         QxtnIIs4ls12ToDC7uFGOX+IAl/jBGn/kj9BASDg=
+        b=It8imby7RrkYOV2lirzUWX1Z/DmwESA9RMbODf9dhlZe4Xs5Tx7T+vGiBeVLQEQnI
+         pcP+5rlU3ENjjXTpiOAKaA+xm7LVynMLw0TLV4I1ZnJQ8fvCPnh9CAoK8hYB5/PCmE
+         wMJU1GQgy3dcoo7O913cmjDqEly2vVs89hpVc7Mo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikko Perttunen <mperttunen@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.16 035/164] gpu: host1x: Always return syncpoint value when waiting
-Date:   Mon, 28 Feb 2022 18:23:17 +0100
-Message-Id: <20220228172403.442823527@linuxfoundation.org>
+        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.15 116/139] xhci: Prevent futile URB re-submissions due to incorrect return value.
+Date:   Mon, 28 Feb 2022 18:24:50 +0100
+Message-Id: <20220228172359.793979798@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
-References: <20220228172359.567256961@linuxfoundation.org>
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,53 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikko Perttunen <mperttunen@nvidia.com>
+From: Hongyu Xie <xiehongyu1@kylinos.cn>
 
-commit 184b58fa816fb5ee1854daf0d430766422bf2a77 upstream.
+commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
 
-The new TegraDRM UAPI uses syncpoint waiting with timeout set to
-zero to indicate reading the syncpoint value. To support that we
-need to return the syncpoint value always when waiting.
+The -ENODEV return value from xhci_check_args() is incorrectly changed
+to -EINVAL in a couple places before propagated further.
 
-Fixes: 44e961381354 ("drm/tegra: Implement syncpoint wait UAPI")
-Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+the return value of xhci_check_args <= 0.
+This causes problems for example r8152_submit_rx, calling usb_submit_urb
+in drivers/net/usb/r8152.c.
+r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
+is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
+
+[commit message and header edit -Mathias]
+
+Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/host1x/syncpt.c |   19 ++-----------------
- 1 file changed, 2 insertions(+), 17 deletions(-)
+ drivers/usb/host/xhci.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/host1x/syncpt.c
-+++ b/drivers/gpu/host1x/syncpt.c
-@@ -225,27 +225,12 @@ int host1x_syncpt_wait(struct host1x_syn
- 	void *ref;
- 	struct host1x_waitlist *waiter;
- 	int err = 0, check_count = 0;
--	u32 val;
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -1611,9 +1611,12 @@ static int xhci_urb_enqueue(struct usb_h
+ 	struct urb_priv	*urb_priv;
+ 	int num_tds;
  
- 	if (value)
--		*value = 0;
--
--	/* first check cache */
--	if (host1x_syncpt_is_expired(sp, thresh)) {
--		if (value)
--			*value = host1x_syncpt_load(sp);
-+		*value = host1x_syncpt_load(sp);
+-	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
+-					true, true, __func__) <= 0)
++	if (!urb)
+ 		return -EINVAL;
++	ret = xhci_check_args(hcd, urb->dev, urb->ep,
++					true, true, __func__);
++	if (ret <= 0)
++		return ret ? ret : -EINVAL;
  
-+	if (host1x_syncpt_is_expired(sp, thresh))
- 		return 0;
--	}
--
--	/* try to read from register */
--	val = host1x_hw_syncpt_load(sp->host, sp);
--	if (host1x_syncpt_is_expired(sp, thresh)) {
--		if (value)
--			*value = val;
--
--		goto done;
--	}
- 
- 	if (!timeout) {
- 		err = -EAGAIN;
+ 	slot_id = urb->dev->slot_id;
+ 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
+@@ -3330,7 +3333,7 @@ static int xhci_check_streams_endpoint(s
+ 		return -EINVAL;
+ 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
+ 	if (ret <= 0)
+-		return -EINVAL;
++		return ret ? ret : -EINVAL;
+ 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
+ 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
+ 				" descriptor for ep 0x%x does not support streams\n",
 
 
