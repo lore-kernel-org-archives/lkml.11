@@ -2,142 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5051FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9036FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:45:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238558AbiB1RqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:46:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
+        id S236962AbiB1Rqb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:46:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238907AbiB1Rnb (ORCPT
+        with ESMTP id S238967AbiB1Rnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:43:31 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D2F9A985;
-        Mon, 28 Feb 2022 09:35:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646069720; x=1677605720;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4h1YWtV6F2Q6sNCl+7xob39bvg1TMmI6b4u3dRROqA4=;
-  b=CVnpusEK/Eramn9TgpeNNSwap1EzIugiOMh0a14eYIcR7T8XB9T3G5bC
-   BLrrMcv9yH7GRS4Snie/X7+jLqyJJBSZD9oXvqTsuB0ewSyzMuPQ9g6Vs
-   pK+4uFkJ7rGXyZq7zGk4UYA6w4ajELA9VPczbcCqijOpbW4/S387l7cQZ
-   P0bwzo4fJV1gFb8Wp8XXPDOJgmjvtJQaGwI+gNo2BQPiF1GsPvPXY6BVC
-   k6dTHxkV2KaZgVknKrzCNamLde4rwHMtVVJuL7DYzq3altgmM7xzsox0y
-   m0KzGHZG0BhZeSUlpgruL/hhO8ntbl+e8unSjvSoO8BwOhEhBnS1Wgxgu
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="277599710"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="277599710"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:35:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="608524532"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 28 Feb 2022 09:35:14 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOjvW-0007ZL-5q; Mon, 28 Feb 2022 17:35:14 +0000
-Date:   Tue, 1 Mar 2022 01:35:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Muchun Song <songmuchun@bytedance.com>, dan.j.williams@intel.com,
-        willy@infradead.org, jack@suse.cz, viro@zeniv.linux.org.uk,
-        akpm@linux-foundation.org, apopple@nvidia.com, shy828301@gmail.com,
-        rcampbell@nvidia.com, hughd@google.com, xiyuyang19@fudan.edu.cn,
-        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
-        hch@infradead.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        duanxiongchun@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v3 4/6] mm: pvmw: add support for walking devmap pages
-Message-ID: <202202281913.ZakSkynK-lkp@intel.com>
-References: <20220228063536.24911-5-songmuchun@bytedance.com>
+        Mon, 28 Feb 2022 12:43:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D9B954BB;
+        Mon, 28 Feb 2022 09:35:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BD79614B9;
+        Mon, 28 Feb 2022 17:35:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 533A8C340E7;
+        Mon, 28 Feb 2022 17:35:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069726;
+        bh=VmStJ6T+OyAkIxE+FbIqLnB7hnpBeUANqtODQkwTNfE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h4IPsyVfhut9/scPEEE3HCFAJ2kMU08OcKuqC79Afyo3HqDN/kd/lOZkCIzYflKEj
+         nzzd+eaiqC09/NgfTRQa5anrzgN23RqfTHEHAObYUoOu3EOsgLjx+3IhbS7tKqtgQw
+         Ro3ZwJ7u6XZGM3caL5Mrn5u20FfpQROXGI804Lxc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        syzbot+c94a3675a626f6333d74@syzkaller.appspotmail.com,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.10 71/80] RDMA/cma: Do not change route.addr.src_addr outside state checks
+Date:   Mon, 28 Feb 2022 18:24:52 +0100
+Message-Id: <20220228172320.302966455@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
+References: <20220228172311.789892158@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228063536.24911-5-songmuchun@bytedance.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Muchun,
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-Thank you for the patch! Yet something to improve:
+commit 22e9f71072fa605cbf033158db58e0790101928d upstream.
 
-[auto build test ERROR on hnaz-mm/master]
-[also build test ERROR on next-20220225]
-[cannot apply to linus/master v5.17-rc6]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+If the state is not idle then resolve_prepare_src() should immediately
+fail and no change to global state should happen. However, it
+unconditionally overwrites the src_addr trying to build a temporary any
+address.
 
-url:    https://github.com/0day-ci/linux/commits/Muchun-Song/Fix-some-bugs-related-to-ramp-and-dax/20220228-143753
-base:   https://github.com/hnaz/linux-mm master
-config: riscv-randconfig-r012-20220227 (https://download.01.org/0day-ci/archive/20220228/202202281913.ZakSkynK-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/0day-ci/linux/commit/4b08af172f30c61ae5f43ec23642e2767371247e
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Muchun-Song/Fix-some-bugs-related-to-ramp-and-dax/20220228-143753
-        git checkout 4b08af172f30c61ae5f43ec23642e2767371247e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
+For instance if the state is already RDMA_CM_LISTEN then this will corrupt
+the src_addr and would cause the test in cma_cancel_operation():
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+           if (cma_any_addr(cma_src_addr(id_priv)) && !id_priv->cma_dev)
 
-All errors (new ones prefixed by >>):
+Which would manifest as this trace from syzkaller:
 
->> mm/page_vma_mapped.c:113:13: error: call to __compiletime_assert_258 declared with 'error' attribute: BUILD_BUG failed
-           if ((pfn + HPAGE_PMD_NR - 1) < pvmw->pfn)
-                      ^
-   include/linux/huge_mm.h:105:26: note: expanded from macro 'HPAGE_PMD_NR'
-   #define HPAGE_PMD_NR (1<<HPAGE_PMD_ORDER)
-                            ^
-   include/linux/huge_mm.h:104:26: note: expanded from macro 'HPAGE_PMD_ORDER'
-   #define HPAGE_PMD_ORDER (HPAGE_PMD_SHIFT-PAGE_SHIFT)
-                            ^
-   include/linux/huge_mm.h:307:28: note: expanded from macro 'HPAGE_PMD_SHIFT'
-   #define HPAGE_PMD_SHIFT ({ BUILD_BUG(); 0; })
-                              ^
-   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
-   include/linux/compiler_types.h:335:2: note: expanded from macro '_compiletime_assert'
-           __compiletime_assert(condition, msg, prefix, suffix)
-           ^
-   include/linux/compiler_types.h:328:4: note: expanded from macro '__compiletime_assert'
-                           prefix ## suffix();                             \
-                           ^
-   <scratch space>:73:1: note: expanded from here
-   __compiletime_assert_258
-   ^
-   1 error generated.
+  BUG: KASAN: use-after-free in __list_add_valid+0x93/0xa0 lib/list_debug.c:26
+  Read of size 8 at addr ffff8881546491e0 by task syz-executor.1/32204
 
+  CPU: 1 PID: 32204 Comm: syz-executor.1 Not tainted 5.12.0-rc8-syzkaller #0
+  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+  Call Trace:
+   __dump_stack lib/dump_stack.c:79 [inline]
+   dump_stack+0x141/0x1d7 lib/dump_stack.c:120
+   print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:232
+   __kasan_report mm/kasan/report.c:399 [inline]
+   kasan_report.cold+0x7c/0xd8 mm/kasan/report.c:416
+   __list_add_valid+0x93/0xa0 lib/list_debug.c:26
+   __list_add include/linux/list.h:67 [inline]
+   list_add_tail include/linux/list.h:100 [inline]
+   cma_listen_on_all drivers/infiniband/core/cma.c:2557 [inline]
+   rdma_listen+0x787/0xe00 drivers/infiniband/core/cma.c:3751
+   ucma_listen+0x16a/0x210 drivers/infiniband/core/ucma.c:1102
+   ucma_write+0x259/0x350 drivers/infiniband/core/ucma.c:1732
+   vfs_write+0x28e/0xa30 fs/read_write.c:603
+   ksys_write+0x1ee/0x250 fs/read_write.c:658
+   do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-vim +/error +113 mm/page_vma_mapped.c
+This is indicating that an rdma_id_private was destroyed without doing
+cma_cancel_listens().
 
-9188af981d385d Andrew Morton      2022-02-25  109  
-9188af981d385d Andrew Morton      2022-02-25  110  /* Returns true if the two ranges overlap.  Careful to not overflow. */
-9188af981d385d Andrew Morton      2022-02-25  111  static bool check_pmd(unsigned long pfn, struct page_vma_mapped_walk *pvmw)
-9188af981d385d Andrew Morton      2022-02-25  112  {
-9188af981d385d Andrew Morton      2022-02-25 @113  	if ((pfn + HPAGE_PMD_NR - 1) < pvmw->pfn)
-9188af981d385d Andrew Morton      2022-02-25  114  		return false;
-9188af981d385d Andrew Morton      2022-02-25  115  	if (pfn > pvmw->pfn + pvmw->nr_pages - 1)
-9188af981d385d Andrew Morton      2022-02-25  116  		return false;
-9188af981d385d Andrew Morton      2022-02-25  117  	return true;
-ace71a19cec5eb Kirill A. Shutemov 2017-02-24  118  }
-ace71a19cec5eb Kirill A. Shutemov 2017-02-24  119  
+Instead of trying to re-use the src_addr memory to indirectly create an
+any address derived from the dst build one explicitly on the stack and
+bind to that as any other normal flow would do. rdma_bind_addr() will copy
+it over the src_addr once it knows the state is valid.
 
+This is similar to commit bc0bdc5afaa7 ("RDMA/cma: Do not change
+route.addr.src_addr.ss_family")
+
+Link: https://lore.kernel.org/r/0-v2-e975c8fd9ef2+11e-syz_cma_srcaddr_jgg@nvidia.com
+Cc: stable@vger.kernel.org
+Fixes: 732d41c545bb ("RDMA/cma: Make the locking for automatic state transition more clear")
+Reported-by: syzbot+c94a3675a626f6333d74@syzkaller.appspotmail.com
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/infiniband/core/cma.c |   38 +++++++++++++++++++++++---------------
+ 1 file changed, 23 insertions(+), 15 deletions(-)
+
+--- a/drivers/infiniband/core/cma.c
++++ b/drivers/infiniband/core/cma.c
+@@ -3321,22 +3321,30 @@ err:
+ static int cma_bind_addr(struct rdma_cm_id *id, struct sockaddr *src_addr,
+ 			 const struct sockaddr *dst_addr)
+ {
+-	if (!src_addr || !src_addr->sa_family) {
+-		src_addr = (struct sockaddr *) &id->route.addr.src_addr;
+-		src_addr->sa_family = dst_addr->sa_family;
+-		if (IS_ENABLED(CONFIG_IPV6) &&
+-		    dst_addr->sa_family == AF_INET6) {
+-			struct sockaddr_in6 *src_addr6 = (struct sockaddr_in6 *) src_addr;
+-			struct sockaddr_in6 *dst_addr6 = (struct sockaddr_in6 *) dst_addr;
+-			src_addr6->sin6_scope_id = dst_addr6->sin6_scope_id;
+-			if (ipv6_addr_type(&dst_addr6->sin6_addr) & IPV6_ADDR_LINKLOCAL)
+-				id->route.addr.dev_addr.bound_dev_if = dst_addr6->sin6_scope_id;
+-		} else if (dst_addr->sa_family == AF_IB) {
+-			((struct sockaddr_ib *) src_addr)->sib_pkey =
+-				((struct sockaddr_ib *) dst_addr)->sib_pkey;
+-		}
++	struct sockaddr_storage zero_sock = {};
++
++	if (src_addr && src_addr->sa_family)
++		return rdma_bind_addr(id, src_addr);
++
++	/*
++	 * When the src_addr is not specified, automatically supply an any addr
++	 */
++	zero_sock.ss_family = dst_addr->sa_family;
++	if (IS_ENABLED(CONFIG_IPV6) && dst_addr->sa_family == AF_INET6) {
++		struct sockaddr_in6 *src_addr6 =
++			(struct sockaddr_in6 *)&zero_sock;
++		struct sockaddr_in6 *dst_addr6 =
++			(struct sockaddr_in6 *)dst_addr;
++
++		src_addr6->sin6_scope_id = dst_addr6->sin6_scope_id;
++		if (ipv6_addr_type(&dst_addr6->sin6_addr) & IPV6_ADDR_LINKLOCAL)
++			id->route.addr.dev_addr.bound_dev_if =
++				dst_addr6->sin6_scope_id;
++	} else if (dst_addr->sa_family == AF_IB) {
++		((struct sockaddr_ib *)&zero_sock)->sib_pkey =
++			((struct sockaddr_ib *)dst_addr)->sib_pkey;
+ 	}
+-	return rdma_bind_addr(id, src_addr);
++	return rdma_bind_addr(id, (struct sockaddr *)&zero_sock);
+ }
+ 
+ /*
+
+
