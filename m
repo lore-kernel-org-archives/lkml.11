@@ -2,156 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48A51C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3518EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229590AbiB1UdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:33:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
+        id S229730AbiB1Ugo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:36:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229621AbiB1Ucu (ORCPT
+        with ESMTP id S229696AbiB1Ugm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:32:50 -0500
-Received: from matoro.tk (unknown [IPv6:2600:1700:4b10:9d80::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E77E19C16;
-        Mon, 28 Feb 2022 12:31:24 -0800 (PST)
-DKIM-Signature: a=rsa-sha256; bh=3Z50+tLC8/CEOc9W5FMuZ/YfLz0LpCHJGNIb1bHqn70=;
- c=relaxed/relaxed; d=matoro.tk;
- h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
- i=@matoro.tk; s=20220111215046; t=1646080260; v=1; x=1646512260;
- b=crJzFMOR6tc9squcx92hLTuFtuCfhgO+BgNnioUeH7k69a4pSO7joK45Wfxj0yH7NEIwX6uZ
- ovLhBNmzxYd5GCzchaGc5QbNkiNzNti5/PIEBt0QyXPX2BToy9B41BFvKbxTGv5xjhVv6kKb/oN
- OVkZTwV0VQF/Nh/w2UdBttHf7cNJH02zmF8O3u9kFIu3JIdWVoXI6KSpQYEr2yd92EMtlkBySjK
- VOka02DgQS/aFvpvPOaq3GW48LdBEpQclkOgPyVi61JJq9bq0ylXW5ZtUxY/5ix8dkvcSA0wnHK
- hZIf4rgSu0P5LiEbYccNCW91mbHc6sUp8HfDA43bsiNAQ9+GWbtWDncUnxcuu2PkY3etBd2b/9G
- zdLjv5VqebunO676QNsGrJRRkEHk7kWB9gid1XivUpxHo3AY+X+T79AbzN/MnHDtxFJuvGoQILr
- LZE/kxHolAH+o3gf/wpTQC5IMskejWDD2C2ITZi4ryHpV/NAEiuQRV1F03SdJI9r5ngOfcA4QqP
- BXYRWYXIYIWbrFE3aw7SFY2xkXoyStoakRiewxY3x02/MgRjFkWvAgznd0fbt0DqESFJ7M35xec
- OEU6V3m+Q53l8JgSfk6YfDSdMAftMhfkYyPj9J1iZNlN4YHvvi7OXXQBftKtjSF8jHYEKGmPGIb
- 3Al+HFYYAy8=
-Received: by matoro.tk (envelope-sender
- <matoro_mailinglist_kernel@matoro.tk>) with ESMTPS id 51b43b45; Mon, 28 Feb
- 2022 15:31:00 -0500
+        Mon, 28 Feb 2022 15:36:42 -0500
+Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8E78EB73
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:36:03 -0800 (PST)
+Received: by mail-ot1-x333.google.com with SMTP id a7-20020a9d5c87000000b005ad1467cb59so10470964oti.5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:36:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=DnbFngqfufuVTV8BEebuiOMNgQnV4+enHodmf57s2nY=;
+        b=Ubg2gogtuClcFrTjghZgjXnPtjDc6NUvr54dAtOrjXTwLIcW4UEVas2lMn9bN23YQH
+         m0zEhI8shmvjqESiG6EdHdvB8pEAd7Ly/QjkAmB2mwTRE8kgbBZPP2GVDFWG1u0ejJNC
+         2AKLLy4/k+cQ6utg/dGqP+Vt799Fz2I487OjQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=DnbFngqfufuVTV8BEebuiOMNgQnV4+enHodmf57s2nY=;
+        b=0aukhCzw/6t/hkbMgbe8j7wB+xGIWf3qWbfrmjf3LtQIMPAsLW0owNlotWXi7WDaFm
+         GMT1R5hWIDNcghEZEnNfUkc5Z1PShesOCqjZ/3N6cFxQWq+vOH8U6BiYULlFpXFV/nb9
+         s2dUDyCDeZD4w5blHRjFIxRM9OBH0DdsX/4pN/DxRAJSQJIB83aDws7xen+ZLBifbqr9
+         BT1AFtwo9J6OZEVzTaSI8bnfXJ4VckKr29PMHsiBImlINeUOmlfMmvJ+aisGoeM1jUFV
+         qiDiTwyTi6S9Msphesz2C7RlpXNVTGk7tx27dMyNVWlIEOKKQuTwjebpCZEr5sgrSRk6
+         8HEQ==
+X-Gm-Message-State: AOAM531yVqUCk7P8ZxvTtjwTvf/pr2VrJbhuA464s3vZyuHF+aR5X5lp
+        5fZwBwsLzW3oxFkbCOFifmKyGNaNCZEiwCPgtVeW2w==
+X-Google-Smtp-Source: ABdhPJzf+lYhpqsqA+oxysJafg7aent578gGwJJLtUFap4dXPJHjOyVXhw/HaLDHOJhrHI4W5Je6BIl+JEjlvzLq+t4=
+X-Received: by 2002:a9d:22e9:0:b0:5ac:1754:342c with SMTP id
+ y96-20020a9d22e9000000b005ac1754342cmr10087910ota.159.1646080562525; Mon, 28
+ Feb 2022 12:36:02 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 28 Feb 2022 12:36:02 -0800
 MIME-Version: 1.0
-Date:   Mon, 28 Feb 2022 15:31:00 -0500
-From:   matoro <matoro_mailinglist_kernel@matoro.tk>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Biederman <ebiederm@xmission.com>,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>,
-        stable@vger.kernel.org,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Anthony Yznaga <anthony.yznaga@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        regressions@lists.linux.dev, linux-ia64@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] binfmt_elf: Avoid total_mapping_size for ET_EXEC
-In-Reply-To: <20220228194613.1149432-1-keescook@chromium.org>
-References: <20220228194613.1149432-1-keescook@chromium.org>
-Message-ID: <5d44f028b2d739395c92e4b3036e2bbf@matoro.tk>
-X-Sender: matoro_mailinglist_kernel@matoro.tk
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <42570508-ed62-af26-220e-c776418a722e@quicinc.com>
+References: <1645182064-15843-1-git-send-email-quic_c_skakit@quicinc.com>
+ <1645182064-15843-6-git-send-email-quic_c_skakit@quicinc.com>
+ <CAE-0n509bg6RzieOtYuUvicU14D7bmgH-u02F1TB+hBZ+xH4CA@mail.gmail.com> <42570508-ed62-af26-220e-c776418a722e@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 28 Feb 2022 12:36:02 -0800
+Message-ID: <CAE-0n50J=4qrkR9ycEGxbKVHwm9Om8S2YSJR_Y71_iErR-wAHw@mail.gmail.com>
+Subject: Re: [PATCH V7 5/5] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Satya Priya Kakitapalli <quic_c_skakit@quicinc.com>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Das Srinagesh <gurus@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
+        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-02-28 14:46, Kees Cook wrote:
-> Partially revert commit 5f501d555653 ("binfmt_elf: reintroduce using
-> MAP_FIXED_NOREPLACE").
-> 
-> At least ia64 has ET_EXEC PT_LOAD segments that are not virtual-address
-> contiguous (but _are_ file-offset contiguous). This would result in
-> giant mapping attempts to cover the entire span, including the virtual
-> address range hole. Disable total_mapping_size for ET_EXEC, which
-> reduces the MAP_FIXED_NOREPLACE coverage to only the first PT_LOAD:
-> 
-> $ readelf -lW /usr/bin/gcc
-> ...
-> Program Headers:
->   Type Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   
-> ...
-> ...
->   LOAD 0x000000 0x4000000000000000 0x4000000000000000 0x00b5a0 0x00b5a0 
-> ...
->   LOAD 0x00b5a0 0x600000000000b5a0 0x600000000000b5a0 0x0005ac 0x000710 
-> ...
-> ...
->        ^^^^^^^^ ^^^^^^^^^^^^^^^^^^                    ^^^^^^^^ ^^^^^^^^
-> 
-> File offset range     : 0x000000-0x00bb4c
-> 			0x00bb4c bytes
-> 
-> Virtual address range : 0x4000000000000000-0x600000000000bcb0
-> 			0x200000000000bcb0 bytes
-> 
-> Ironically, this is the reverse of the problem that originally caused
-> problems with ET_EXEC and MAP_FIXED_NOREPLACE: overlaps. This problem 
-> is
-> with holes. Future work could restore full coverage if 
-> load_elf_binary()
-> were to perform mappings in a separate phase from the loading (where
-> it could resolve both overlaps and holes).
-> 
-> Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-> Cc: Eric Biederman <ebiederm@xmission.com>
-> Cc: linux-fsdevel@vger.kernel.org
-> Cc: linux-mm@kvack.org
-> Reported-by: matoro <matoro_mailinglist_kernel@matoro.tk>
-> Reported-by: John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-> Fixes: 5f501d555653 ("binfmt_elf: reintroduce using 
-> MAP_FIXED_NOREPLACE")
-> Link:
-> https://lore.kernel.org/r/a3edd529-c42d-3b09-135c-7e98a15b150f@leemhuis.info
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
-> matoro (or anyone else) can you please test this?
-> ---
->  fs/binfmt_elf.c | 25 ++++++++++++++++++-------
->  1 file changed, 18 insertions(+), 7 deletions(-)
-> 
-> diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-> index 9bea703ed1c2..474b44032c65 100644
-> --- a/fs/binfmt_elf.c
-> +++ b/fs/binfmt_elf.c
-> @@ -1136,14 +1136,25 @@ static int load_elf_binary(struct linux_binprm 
-> *bprm)
->  			 * is then page aligned.
->  			 */
->  			load_bias = ELF_PAGESTART(load_bias - vaddr);
-> -		}
-> 
-> -		/*
-> -		 * Calculate the entire size of the ELF mapping (total_size).
-> -		 * (Note that first_pt_load is set to false later once the
-> -		 * initial mapping is performed.)
-> -		 */
-> -		if (first_pt_load) {
-> +			/*
-> +			 * Calculate the entire size of the ELF mapping
-> +			 * (total_size), used for the initial mapping,
-> +			 * due to first_pt_load which is set to false later
-> +			 * once the initial mapping is performed.
-> +			 *
-> +			 * Note that this is only sensible when the LOAD
-> +			 * segments are contiguous (or overlapping). If
-> +			 * used for LOADs that are far apart, this would
-> +			 * cause the holes between LOADs to be mapped,
-> +			 * running the risk of having the mapping fail,
-> +			 * as it would be larger than the ELF file itself.
-> +			 *
-> +			 * As a result, only ET_DYN does this, since
-> +			 * some ET_EXEC (e.g. ia64) may have virtual
-> +			 * memory holes between LOADs.
-> +			 *
-> +			 */
->  			total_size = total_mapping_size(elf_phdata,
->  							elf_ex->e_phnum);
->  			if (!total_size) {
+Quoting Satya Priya Kakitapalli (Temp) (2022-02-28 06:25:06)
+>
+> On 2/19/2022 7:31 AM, Stephen Boyd wrote:
+> > Quoting Satya Priya (2022-02-18 03:01:03)
+>
+> >> +               pins = "gpio4";
+> >> +               function = "normal";
+> >> +               bias-disable;
+> >> +               output-high;
+> > Is this a reset signal? Should the driver be deasserting the reset when
+> > it is ready? That could be the same time the gpio is acquired.
+>
+>
+> I didn't get your question exactly.. hope this answers your query
+>
+> The pm8008 chip needs this gpio to be toggled , in order to come out of
+> reset and start any transactions..
+>
+> Please let me know if you have more queries
 
-This does not apply for me, I'm looking around and can't find any 
-reference to the first_pt_load variable you're removing there?  What 
-commit/tag are you applying this on top of?
+Yes that answers it for me. Thanks.
+
+This is a reset gpio and should be a DT property like
+
+	reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>
+
+in the pm8008 node. When the driver probes it should get the gpio and
+do any toggling to take it out of reset. It shouldn't be done through
+pinconf settings.
