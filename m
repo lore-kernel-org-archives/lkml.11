@@ -2,214 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD94C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 990E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231615AbiB1RcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:32:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47126 "EHLO
+        id S236558AbiB1RcT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:32:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236645AbiB1Rap (ORCPT
+        with ESMTP id S235832AbiB1RbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:30:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02C3A77A84;
-        Mon, 28 Feb 2022 09:28:31 -0800 (PST)
+        Mon, 28 Feb 2022 12:31:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067817DAA7;
+        Mon, 28 Feb 2022 09:28:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97D56612FA;
-        Mon, 28 Feb 2022 17:28:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 877F3C340E7;
-        Mon, 28 Feb 2022 17:28:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC8C661357;
+        Mon, 28 Feb 2022 17:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8976C340E7;
+        Mon, 28 Feb 2022 17:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069310;
-        bh=+jFmiezy0bv2WUitnEyc7gsplQtvmGcXqvHe6GSCsE8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jzAhLgIjR6861Ax+Xen1JoRMIrmFGKb+AYGz54jw0xNRoxlMjgzGeo0/JsbjeevDa
-         T8JnOmHHDeeq1PhcCm67Kyyergv1FLgmpB8v1sbQ/dZPfWoMFwiwLqBsHNrqU2LwXc
-         G0Sl1bPZl2kd2D+PXPgdqeEQsEIF+NKYaOMwSSsU=
+        s=korg; t=1646069318;
+        bh=h5149FWo7kuGPAsX8CQkJGC8nWgy6PYR+S4ELLwgXHc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NKFP4VH7z6QwTYHYAA/ltwuogaadX+AmuNGsePOyxi6cU5S6zUeJ6E0UfLWwmiwbB
+         aD0//nupiYpkYGSvCLVGGJpheHv1X+T7KTrlCLZivRn93CrTelvRgpqtm0lJsUcFnI
+         VKSBV7PQ60IwoDoW0ZLJJ7Hl+lQw5by05W+cuMrI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.14 00/31] 4.14.269-rc1 review
-Date:   Mon, 28 Feb 2022 18:23:56 +0100
-Message-Id: <20220228172159.515152296@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 11/34] openvswitch: Fix setting ipv6 fields causing hw csum failure
+Date:   Mon, 28 Feb 2022 18:24:17 +0100
+Message-Id: <20220228172209.384061092@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
+In-Reply-To: <20220228172207.090703467@linuxfoundation.org>
+References: <20220228172207.090703467@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.269-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.14.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.14.269-rc1
-X-KernelTest-Deadline: 2022-03-02T17:22+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.14.269 release.
-There are 31 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Paul Blakey <paulb@nvidia.com>
 
-Responses should be made by Wed, 02 Mar 2022 17:20:16 +0000.
-Anything received after that time might be too late.
+commit d9b5ae5c1b241b91480aa30408be12fe91af834a upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.14.269-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.14.y
-and the diffstat can be found below.
+Ipv6 ttl, label and tos fields are modified without first
+pulling/pushing the ipv6 header, which would have updated
+the hw csum (if available). This might cause csum validation
+when sending the packet to the stack, as can be seen in
+the trace below.
 
-thanks,
+Fix this by updating skb->csum if available.
 
-greg k-h
+Trace resulted by ipv6 ttl dec and then sending packet
+to conntrack [actions: set(ipv6(hlimit=63)),ct(zone=99)]:
+[295241.900063] s_pf0vf2: hw csum failure
+[295241.923191] Call Trace:
+[295241.925728]  <IRQ>
+[295241.927836]  dump_stack+0x5c/0x80
+[295241.931240]  __skb_checksum_complete+0xac/0xc0
+[295241.935778]  nf_conntrack_tcp_packet+0x398/0xba0 [nf_conntrack]
+[295241.953030]  nf_conntrack_in+0x498/0x5e0 [nf_conntrack]
+[295241.958344]  __ovs_ct_lookup+0xac/0x860 [openvswitch]
+[295241.968532]  ovs_ct_execute+0x4a7/0x7c0 [openvswitch]
+[295241.979167]  do_execute_actions+0x54a/0xaa0 [openvswitch]
+[295242.001482]  ovs_execute_actions+0x48/0x100 [openvswitch]
+[295242.006966]  ovs_dp_process_packet+0x96/0x1d0 [openvswitch]
+[295242.012626]  ovs_vport_receive+0x6c/0xc0 [openvswitch]
+[295242.028763]  netdev_frame_hook+0xc0/0x180 [openvswitch]
+[295242.034074]  __netif_receive_skb_core+0x2ca/0xcb0
+[295242.047498]  netif_receive_skb_internal+0x3e/0xc0
+[295242.052291]  napi_gro_receive+0xba/0xe0
+[295242.056231]  mlx5e_handle_rx_cqe_mpwrq_rep+0x12b/0x250 [mlx5_core]
+[295242.062513]  mlx5e_poll_rx_cq+0xa0f/0xa30 [mlx5_core]
+[295242.067669]  mlx5e_napi_poll+0xe1/0x6b0 [mlx5_core]
+[295242.077958]  net_rx_action+0x149/0x3b0
+[295242.086762]  __do_softirq+0xd7/0x2d6
+[295242.090427]  irq_exit+0xf7/0x100
+[295242.093748]  do_IRQ+0x7f/0xd0
+[295242.096806]  common_interrupt+0xf/0xf
+[295242.100559]  </IRQ>
+[295242.102750] RIP: 0033:0x7f9022e88cbd
+[295242.125246] RSP: 002b:00007f9022282b20 EFLAGS: 00000246 ORIG_RAX: ffffffffffffffda
+[295242.132900] RAX: 0000000000000005 RBX: 0000000000000010 RCX: 0000000000000000
+[295242.140120] RDX: 00007f9022282ba8 RSI: 00007f9022282a30 RDI: 00007f9014005c30
+[295242.147337] RBP: 00007f9014014d60 R08: 0000000000000020 R09: 00007f90254a8340
+[295242.154557] R10: 00007f9022282a28 R11: 0000000000000246 R12: 0000000000000000
+[295242.161775] R13: 00007f902308c000 R14: 000000000000002b R15: 00007f9022b71f40
 
--------------
-Pseudo-Shortlog of commits:
+Fixes: 3fdbd1ce11e5 ("openvswitch: add ipv6 'set' action")
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Link: https://lore.kernel.org/r/20220223163416.24096-1-paulb@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/net/checksum.h    |    5 +++++
+ net/openvswitch/actions.c |   46 ++++++++++++++++++++++++++++++++++++++--------
+ 2 files changed, 43 insertions(+), 8 deletions(-)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.14.269-rc1
-
-Linus Torvalds <torvalds@linux-foundation.org>
-    fget: clarify and improve __fget_files() implementation
-
-Miaohe Lin <linmiaohe@huawei.com>
-    memblock: use kfree() to release kmalloced memblock regions
-
-Karol Herbst <kherbst@redhat.com>
-    Revert "drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR"
-
-daniel.starke@siemens.com <daniel.starke@siemens.com>
-    tty: n_gsm: fix proper link termination after failed open
-
-daniel.starke@siemens.com <daniel.starke@siemens.com>
-    tty: n_gsm: fix encoding of control signal octet bit DV
-
-Hongyu Xie <xiehongyu1@kylinos.cn>
-    xhci: Prevent futile URB re-submissions due to incorrect return value.
-
-Puma Hsu <pumahsu@google.com>
-    xhci: re-initialize the HC during resume if HCE was set
-
-Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-    usb: dwc3: gadget: Let the interrupt handler disable bottom halves.
-
-Daniele Palmas <dnlplm@gmail.com>
-    USB: serial: option: add Telit LE910R1 compositions
-
-Slark Xiao <slark_xiao@163.com>
-    USB: serial: option: add support for DW5829e
-
-Steven Rostedt (Google) <rostedt@goodmis.org>
-    tracefs: Set the group ownership in apply_options() not parse_options()
-
-Szymon Heidrich <szymon.heidrich@gmail.com>
-    USB: gadget: validate endpoint index for xilinx udc
-
-Daehwan Jung <dh10.jung@samsung.com>
-    usb: gadget: rndis: add spinlock for rndis response list
-
-Dmytro Bagrii <dimich.dmb@gmail.com>
-    Revert "USB: serial: ch341: add new Product ID for CH341A"
-
-Sergey Shtylyov <s.shtylyov@omp.ru>
-    ata: pata_hpt37x: disable primary channel on HPT371
-
-Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-    iio: adc: men_z188_adc: Fix a resource leak in an error handling path
-
-Bart Van Assche <bvanassche@acm.org>
-    RDMA/ib_srp: Fix a deadlock
-
-ChenXiaoSong <chenxiaosong2@huawei.com>
-    configfs: fix a race in configfs_{,un}register_subsystem()
-
-Gal Pressman <gal@nvidia.com>
-    net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
-
-Maxime Ripard <maxime@cerno.tech>
-    drm/edid: Always set RGB444
-
-Paul Blakey <paulb@nvidia.com>
-    openvswitch: Fix setting ipv6 fields causing hw csum failure
-
-Tao Liu <thomas.liu@ucloud.cn>
-    gso: do not skip outer ip header in case of ipip and net_failover
-
-Eric Dumazet <edumazet@google.com>
-    net: __pskb_pull_tail() & pskb_carve_frag_list() drop_monitor friends
-
-Xin Long <lucien.xin@gmail.com>
-    ping: remove pr_err from ping_lookup
-
-Robert Hancock <robert.hancock@calian.com>
-    serial: 8250: of: Fix mapped region size when using reg-offset property
-
-Oliver Neukum <oneukum@suse.com>
-    USB: zaurus: support another broken Zaurus
-
-Oliver Neukum <oneukum@suse.com>
-    sr9700: sanity check for packet length
-
-Helge Deller <deller@gmx.de>
-    parisc/unaligned: Fix ldw() and stw() unalignment handlers
-
-Helge Deller <deller@gmx.de>
-    parisc/unaligned: Fix fldd and fstd unaligned handlers on 32-bit kernel
-
-Stefano Garzarella <sgarzare@redhat.com>
-    vhost/vsock: don't check owner in vhost_vsock_stop() while releasing
-
-Zhang Qiao <zhangqiao22@huawei.com>
-    cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug
-
-
--------------
-
-Diffstat:
-
- Makefile                                           |  4 +-
- arch/parisc/kernel/unaligned.c                     | 14 ++---
- drivers/ata/pata_hpt37x.c                          | 14 +++++
- drivers/gpu/drm/drm_edid.c                         |  2 +-
- drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c     | 37 +++++------
- drivers/iio/adc/men_z188_adc.c                     |  9 ++-
- drivers/infiniband/ulp/srp/ib_srp.c                |  6 +-
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  2 +-
- drivers/net/usb/cdc_ether.c                        | 12 ++++
- drivers/net/usb/sr9700.c                           |  2 +-
- drivers/net/usb/zaurus.c                           | 12 ++++
- drivers/tty/n_gsm.c                                |  4 +-
- drivers/tty/serial/8250/8250_of.c                  | 11 +++-
- drivers/usb/dwc3/gadget.c                          |  2 +
- drivers/usb/gadget/function/rndis.c                |  8 +++
- drivers/usb/gadget/function/rndis.h                |  1 +
- drivers/usb/gadget/udc/udc-xilinx.c                |  6 ++
- drivers/usb/host/xhci.c                            | 28 ++++++---
- drivers/usb/serial/ch341.c                         |  1 -
- drivers/usb/serial/option.c                        | 12 ++++
- drivers/vhost/vsock.c                              | 21 ++++---
- fs/configfs/dir.c                                  | 14 +++++
- fs/file.c                                          | 73 +++++++++++++++++-----
- fs/tracefs/inode.c                                 |  5 +-
- include/net/checksum.h                             |  5 ++
- kernel/cgroup/cpuset.c                             |  2 +
- mm/memblock.c                                      | 10 ++-
- net/core/skbuff.c                                  |  4 +-
- net/ipv4/af_inet.c                                 |  5 +-
- net/ipv4/ping.c                                    |  1 -
- net/ipv6/ip6_offload.c                             |  2 +
- net/openvswitch/actions.c                          | 46 +++++++++++---
- 32 files changed, 287 insertions(+), 88 deletions(-)
+--- a/include/net/checksum.h
++++ b/include/net/checksum.h
+@@ -143,6 +143,11 @@ static inline void csum_replace2(__sum16
+ 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
+ }
+ 
++static inline void csum_replace(__wsum *csum, __wsum old, __wsum new)
++{
++	*csum = csum_add(csum_sub(*csum, old), new);
++}
++
+ struct sk_buff;
+ void inet_proto_csum_replace4(__sum16 *sum, struct sk_buff *skb,
+ 			      __be32 from, __be32 to, bool pseudohdr);
+--- a/net/openvswitch/actions.c
++++ b/net/openvswitch/actions.c
+@@ -493,12 +493,43 @@ static void set_ipv6_addr(struct sk_buff
+ 	memcpy(addr, new_addr, sizeof(__be32[4]));
+ }
+ 
+-static void set_ipv6_fl(struct ipv6hdr *nh, u32 fl, u32 mask)
++static void set_ipv6_dsfield(struct sk_buff *skb, struct ipv6hdr *nh, u8 ipv6_tclass, u8 mask)
+ {
++	u8 old_ipv6_tclass = ipv6_get_dsfield(nh);
++
++	ipv6_tclass = OVS_MASKED(old_ipv6_tclass, ipv6_tclass, mask);
++
++	if (skb->ip_summed == CHECKSUM_COMPLETE)
++		csum_replace(&skb->csum, (__force __wsum)(old_ipv6_tclass << 12),
++			     (__force __wsum)(ipv6_tclass << 12));
++
++	ipv6_change_dsfield(nh, ~mask, ipv6_tclass);
++}
++
++static void set_ipv6_fl(struct sk_buff *skb, struct ipv6hdr *nh, u32 fl, u32 mask)
++{
++	u32 ofl;
++
++	ofl = nh->flow_lbl[0] << 16 |  nh->flow_lbl[1] << 8 |  nh->flow_lbl[2];
++	fl = OVS_MASKED(ofl, fl, mask);
++
+ 	/* Bits 21-24 are always unmasked, so this retains their values. */
+-	OVS_SET_MASKED(nh->flow_lbl[0], (u8)(fl >> 16), (u8)(mask >> 16));
+-	OVS_SET_MASKED(nh->flow_lbl[1], (u8)(fl >> 8), (u8)(mask >> 8));
+-	OVS_SET_MASKED(nh->flow_lbl[2], (u8)fl, (u8)mask);
++	nh->flow_lbl[0] = (u8)(fl >> 16);
++	nh->flow_lbl[1] = (u8)(fl >> 8);
++	nh->flow_lbl[2] = (u8)fl;
++
++	if (skb->ip_summed == CHECKSUM_COMPLETE)
++		csum_replace(&skb->csum, (__force __wsum)htonl(ofl), (__force __wsum)htonl(fl));
++}
++
++static void set_ipv6_ttl(struct sk_buff *skb, struct ipv6hdr *nh, u8 new_ttl, u8 mask)
++{
++	new_ttl = OVS_MASKED(nh->hop_limit, new_ttl, mask);
++
++	if (skb->ip_summed == CHECKSUM_COMPLETE)
++		csum_replace(&skb->csum, (__force __wsum)(nh->hop_limit << 8),
++			     (__force __wsum)(new_ttl << 8));
++	nh->hop_limit = new_ttl;
+ }
+ 
+ static void set_ip_ttl(struct sk_buff *skb, struct iphdr *nh, u8 new_ttl,
+@@ -616,18 +647,17 @@ static int set_ipv6(struct sk_buff *skb,
+ 		}
+ 	}
+ 	if (mask->ipv6_tclass) {
+-		ipv6_change_dsfield(nh, ~mask->ipv6_tclass, key->ipv6_tclass);
++		set_ipv6_dsfield(skb, nh, key->ipv6_tclass, mask->ipv6_tclass);
+ 		flow_key->ip.tos = ipv6_get_dsfield(nh);
+ 	}
+ 	if (mask->ipv6_label) {
+-		set_ipv6_fl(nh, ntohl(key->ipv6_label),
++		set_ipv6_fl(skb, nh, ntohl(key->ipv6_label),
+ 			    ntohl(mask->ipv6_label));
+ 		flow_key->ipv6.label =
+ 		    *(__be32 *)nh & htonl(IPV6_FLOWINFO_FLOWLABEL);
+ 	}
+ 	if (mask->ipv6_hlimit) {
+-		OVS_SET_MASKED(nh->hop_limit, key->ipv6_hlimit,
+-			       mask->ipv6_hlimit);
++		set_ipv6_ttl(skb, nh, key->ipv6_hlimit, mask->ipv6_hlimit);
+ 		flow_key->ip.ttl = nh->hop_limit;
+ 	}
+ 	return 0;
 
 
