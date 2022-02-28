@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC534C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9789C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238465AbiB1RmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:42:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42232 "EHLO
+        id S238469AbiB1RmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:42:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238350AbiB1RhO (ORCPT
+        with ESMTP id S238349AbiB1RhO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:37:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 890FC8A6FB;
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE91F8AE54;
         Mon, 28 Feb 2022 09:32:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63AF4609EE;
-        Mon, 28 Feb 2022 17:32:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A94BC340E7;
-        Mon, 28 Feb 2022 17:32:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id ACE7BCE17BE;
+        Mon, 28 Feb 2022 17:32:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 999E5C340E7;
+        Mon, 28 Feb 2022 17:32:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069530;
-        bh=enr+3JE+jfp/tXmWjfUXVHUy5lAWuiRIWpJLIBM2HW0=;
+        s=korg; t=1646069527;
+        bh=c3+ZF2Am26AFS69yXSGDqrLPBKoFtoySafESdM+LLg8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J7PGMgeWay6LT8pOCFZPON6DBehY/4+B5RcgJZXDIo2hcYNDbt4y18bSgSwr6l4Lb
-         0fUBbajxcQwgPynsWC3HR8s5FLsE1fTizdOq9k7qEBai5bINCxwXSiaqdVBhdtQrnu
-         tfDeo7nPo4Zui4qlG8lA4hAYVzRxpyoj5VzE47yg=
+        b=QQ+yX7qc0mQ8juWZ4/SDktg1aK5hlsTj2sYwla1cG709SMaXC3UeKvoknPMw85NKO
+         6K6niKh/RCf1QKn4Tumx9BrT1g1f1tKO7EH92+d6Zl0NjuxQG/ab8DfP9tE/eD+SqF
+         LxPR1XWezv7jrcJswDxm4KeAt4KoCLjW+mgKy2dI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
-        Carel Si <beibei.si@intel.com>, Jann Horn <jannh@google.com>,
-        Miklos Szeredi <mszeredi@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Baokun Li <libaokun1@huawei.com>
-Subject: [PATCH 5.4 53/53] fget: clarify and improve __fget_files() implementation
-Date:   Mon, 28 Feb 2022 18:24:51 +0100
-Message-Id: <20220228172252.371692386@linuxfoundation.org>
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: [PATCH 5.4 52/53] memblock: use kfree() to release kmalloced memblock regions
+Date:   Mon, 28 Feb 2022 18:24:50 +0100
+Message-Id: <20220228172252.234235570@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -51,138 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-commit e386dfc56f837da66d00a078e5314bc8382fab83 upstream.
+commit c94afc46cae7ad41b2ad6a99368147879f4b0e56 upstream.
 
-Commit 054aa8d439b9 ("fget: check that the fd still exists after getting
-a ref to it") fixed a race with getting a reference to a file just as it
-was being closed.  It was a fairly minimal patch, and I didn't think
-re-checking the file pointer lookup would be a measurable overhead,
-since it was all right there and cached.
+memblock.{reserved,memory}.regions may be allocated using kmalloc() in
+memblock_double_array(). Use kfree() to release these kmalloced regions
+indicated by memblock_{reserved,memory}_in_slab.
 
-But I was wrong, as pointed out by the kernel test robot.
-
-The 'poll2' case of the will-it-scale.per_thread_ops benchmark regressed
-quite noticeably.  Admittedly it seems to be a very artificial test:
-doing "poll()" system calls on regular files in a very tight loop in
-multiple threads.
-
-That means that basically all the time is spent just looking up file
-descriptors without ever doing anything useful with them (not that doing
-'poll()' on a regular file is useful to begin with).  And as a result it
-shows the extra "re-check fd" cost as a sore thumb.
-
-Happily, the regression is fixable by just writing the code to loook up
-the fd to be better and clearer.  There's still a cost to verify the
-file pointer, but now it's basically in the noise even for that
-benchmark that does nothing else - and the code is more understandable
-and has better comments too.
-
-[ Side note: this patch is also a classic case of one that looks very
-  messy with the default greedy Myers diff - it's much more legible with
-  either the patience of histogram diff algorithm ]
-
-Link: https://lore.kernel.org/lkml/20211210053743.GA36420@xsang-OptiPlex-9020/
-Link: https://lore.kernel.org/lkml/20211213083154.GA20853@linux.intel.com/
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Tested-by: Carel Si <beibei.si@intel.com>
-Cc: Jann Horn <jannh@google.com>
-Cc: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Fixes: 3010f876500f ("mm: discard memblock data later")
+Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/file.c |   73 ++++++++++++++++++++++++++++++++++++++++++++++++--------------
- 1 file changed, 57 insertions(+), 16 deletions(-)
+ mm/memblock.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -706,28 +706,69 @@ void do_close_on_exec(struct files_struc
- 	spin_unlock(&files->file_lock);
- }
- 
--static struct file *__fget(unsigned int fd, fmode_t mask, unsigned int refs)
-+static inline struct file *__fget_files_rcu(struct files_struct *files,
-+		unsigned int fd, fmode_t mask, unsigned int refs)
- {
--	struct files_struct *files = current->files;
--	struct file *file;
-+	for (;;) {
-+		struct file *file;
-+		struct fdtable *fdt = rcu_dereference_raw(files->fdt);
-+		struct file __rcu **fdentry;
- 
--	rcu_read_lock();
--loop:
--	file = fcheck_files(files, fd);
--	if (file) {
--		/* File object ref couldn't be taken.
--		 * dup2() atomicity guarantee is the reason
--		 * we loop to catch the new file (or NULL pointer)
-+		if (unlikely(fd >= fdt->max_fds))
-+			return NULL;
-+
-+		fdentry = fdt->fd + array_index_nospec(fd, fdt->max_fds);
-+		file = rcu_dereference_raw(*fdentry);
-+		if (unlikely(!file))
-+			return NULL;
-+
-+		if (unlikely(file->f_mode & mask))
-+			return NULL;
-+
-+		/*
-+		 * Ok, we have a file pointer. However, because we do
-+		 * this all locklessly under RCU, we may be racing with
-+		 * that file being closed.
-+		 *
-+		 * Such a race can take two forms:
-+		 *
-+		 *  (a) the file ref already went down to zero,
-+		 *      and get_file_rcu_many() fails. Just try
-+		 *      again:
- 		 */
--		if (file->f_mode & mask)
--			file = NULL;
--		else if (!get_file_rcu_many(file, refs))
--			goto loop;
--		else if (__fcheck_files(files, fd) != file) {
-+		if (unlikely(!get_file_rcu_many(file, refs)))
-+			continue;
-+
-+		/*
-+		 *  (b) the file table entry has changed under us.
-+		 *       Note that we don't need to re-check the 'fdt->fd'
-+		 *       pointer having changed, because it always goes
-+		 *       hand-in-hand with 'fdt'.
-+		 *
-+		 * If so, we need to put our refs and try again.
-+		 */
-+		if (unlikely(rcu_dereference_raw(files->fdt) != fdt) ||
-+		    unlikely(rcu_dereference_raw(*fdentry) != file)) {
- 			fput_many(file, refs);
--			goto loop;
-+			continue;
- 		}
-+
-+		/*
-+		 * Ok, we have a ref to the file, and checked that it
-+		 * still exists.
-+		 */
-+		return file;
+--- a/mm/memblock.c
++++ b/mm/memblock.c
+@@ -348,14 +348,20 @@ void __init memblock_discard(void)
+ 		addr = __pa(memblock.reserved.regions);
+ 		size = PAGE_ALIGN(sizeof(struct memblock_region) *
+ 				  memblock.reserved.max);
+-		__memblock_free_late(addr, size);
++		if (memblock_reserved_in_slab)
++			kfree(memblock.reserved.regions);
++		else
++			__memblock_free_late(addr, size);
  	}
-+}
-+
-+
-+static struct file *__fget(unsigned int fd, fmode_t mask, unsigned int refs)
-+{
-+	struct files_struct *files = current->files;
-+	struct file *file;
-+
-+	rcu_read_lock();
-+	file = __fget_files_rcu(files, fd, mask, refs);
- 	rcu_read_unlock();
  
- 	return file;
+ 	if (memblock.memory.regions != memblock_memory_init_regions) {
+ 		addr = __pa(memblock.memory.regions);
+ 		size = PAGE_ALIGN(sizeof(struct memblock_region) *
+ 				  memblock.memory.max);
+-		__memblock_free_late(addr, size);
++		if (memblock_memory_in_slab)
++			kfree(memblock.memory.regions);
++		else
++			__memblock_free_late(addr, size);
+ 	}
+ }
+ #endif
 
 
