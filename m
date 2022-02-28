@@ -2,90 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A83F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238572AbiB1Rqn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:46:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
+        id S238589AbiB1Rqr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:46:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239120AbiB1Rnp (ORCPT
+        with ESMTP id S239122AbiB1Rnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:43:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1171C9BAF3;
-        Mon, 28 Feb 2022 09:35:44 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99619614CD;
-        Mon, 28 Feb 2022 17:35:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5210C340E7;
-        Mon, 28 Feb 2022 17:35:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069743;
-        bh=W+oyjTCIxWodUCtLNaLKp1/WhBPmLkZ4yWLomJTkxbk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U1MoFrqmeI/sVDkE2Cl0IFXtRVc/xhO2+qzILeg4n6QTGuxNKlS8y7sKeLSe58QEN
-         njAGe1Rv3UkrRhtnvAfxOeM8eSZOPFs9Umhtmu53pTY9XzwlAuTW2xlconsjBwBxFV
-         yaAWrY7QRKCYVI9ONcsA6qTxJG5U4hvm4h3f4270=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.10 76/80] tty: n_gsm: fix NULL pointer access due to DLCI release
-Date:   Mon, 28 Feb 2022 18:24:57 +0100
-Message-Id: <20220228172320.940705546@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
-References: <20220228172311.789892158@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E189BAF2
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:35:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646069743; x=1677605743;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=RAryok0vKfVpAzge8J2hbvbGTyPUqsIIgGWXo0OVMu4=;
+  b=Zam9UHM7pK8ivKOs+rn0xC0znsprEVyxFvvpBF3YeFzHqtZcNGeJ0CPt
+   Yeey+PMbGPlD7gUKON/xrQyrgYSa7DRlTxzVSAcRKzmHucfHcjxhzC3vK
+   7fIC8jDv6lKdl/rjuxTt6S+330jtYUhGpZqkkGlJcIfoe0jUgioU/DY00
+   kSoeVynZxwak/ZYRxuQIlLiKreMyAud/2+UYfX4/F2/P2IjkP1RxX6rBp
+   9Fd5DU1nAP/Y7Md1z343ovTo/1UGO6KASNNL6o4Jxvm7iXcMSbyrtBj37
+   hO5zCu26A+BGc7ynTcv6jiIhDE+w2MHqJnJZ0E7MNSLaWEs/DmC6xp4HL
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="232911588"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="232911588"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:35:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="492790835"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 28 Feb 2022 09:35:14 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOjvW-0007ZJ-5P; Mon, 28 Feb 2022 17:35:14 +0000
+Date:   Tue, 1 Mar 2022 01:34:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Liu Yi L <yi.l.liu@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [luxis1999-iommufd:iommufd-v5.17-rc4 21/23] io_pagetable.c:undefined
+ reference to `interval_tree_remove'
+Message-ID: <202202281710.JhYsNhcb-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+tree:   https://github.com/luxis1999/iommufd iommufd-v5.17-rc4
+head:   1b869a792f9bf8455c2a6cd1b29d79d50182dbd1
+commit: e5b0b18da497e526cec5aad8c987ab9fd704adcd [21/23] vfio/pci: Add bind_iommufd() support
+config: csky-randconfig-c024-20220227 (https://download.01.org/0day-ci/archive/20220228/202202281710.JhYsNhcb-lkp@intel.com/config)
+compiler: csky-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/luxis1999/iommufd/commit/e5b0b18da497e526cec5aad8c987ab9fd704adcd
+        git remote add luxis1999-iommufd https://github.com/luxis1999/iommufd
+        git fetch --no-tags luxis1999-iommufd iommufd-v5.17-rc4
+        git checkout e5b0b18da497e526cec5aad8c987ab9fd704adcd
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
 
-commit 96b169f05cdcc844b400695184d77e42071d14f2 upstream.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The here fixed commit made the tty hangup asynchronous to avoid a circular
-locking warning. I could not reproduce this warning. Furthermore, due to
-the asynchronous hangup the function call now gets queued up while the
-underlying tty is being freed. Depending on the timing this results in a
-NULL pointer access in the global work queue scheduler. To be precise in
-process_one_work(). Therefore, the previous commit made the issue worse
-which it tried to fix.
+All errors (new ones prefixed by >>):
 
-This patch fixes this by falling back to the old behavior which uses a
-blocking tty hangup call before freeing up the associated tty.
+   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_abort_area':
+>> io_pagetable.c:(.text+0x72): undefined reference to `interval_tree_remove'
+   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_area_iter_next':
+>> io_pagetable.c:(.text+0x8a): undefined reference to `interval_tree_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_area_iter_first':
+>> io_pagetable.c:(.text+0x12a): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_fill_domain':
+   io_pagetable.c:(.text+0x1e0): undefined reference to `interval_tree_remove'
+>> csky-linux-ld: io_pagetable.c:(.text+0x1ec): undefined reference to `interval_tree_iter_next'
+>> csky-linux-ld: io_pagetable.c:(.text+0x21c): undefined reference to `interval_tree_iter_first'
+>> csky-linux-ld: io_pagetable.c:(.text+0x242): undefined reference to `interval_tree_insert'
+>> csky-linux-ld: io_pagetable.c:(.text+0x28a): undefined reference to `interval_tree_remove'
+   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_unfill_domain':
+   io_pagetable.c:(.text+0x376): undefined reference to `interval_tree_remove'
+   csky-linux-ld: io_pagetable.c:(.text+0x3a0): undefined reference to `interval_tree_insert'
+   csky-linux-ld: io_pagetable.c:(.text+0x3b0): undefined reference to `interval_tree_remove'
+   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_alloc_iova':
+>> io_pagetable.c:(.text+0x470): undefined reference to `interval_tree_span_iter_first'
+>> csky-linux-ld: io_pagetable.c:(.text+0x490): undefined reference to `interval_tree_span_iter_next'
+>> csky-linux-ld: io_pagetable.c:(.text+0x49e): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: io_pagetable.c:(.text+0x4b6): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: io_pagetable.c:(.text+0x4f4): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: io_pagetable.c:(.text+0x4fc): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_alloc_area':
+>> io_pagetable.c:(.text+0x598): undefined reference to `interval_tree_insert'
+   csky-linux-ld: io_pagetable.c:(.text+0x5be): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: io_pagetable.c:(.text+0x614): undefined reference to `interval_tree_insert'
+   csky-linux-ld: io_pagetable.c:(.text+0x61c): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_reserve_iova':
+   io_pagetable.c:(.text+0xad0): undefined reference to `interval_tree_insert'
+   csky-linux-ld: io_pagetable.c:(.text+0xb0c): undefined reference to `interval_tree_insert'
+   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_remove_reserved_iova':
+   io_pagetable.c:(.text+0xb2c): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: io_pagetable.c:(.text+0xb42): undefined reference to `interval_tree_iter_next'
+   csky-linux-ld: io_pagetable.c:(.text+0xb52): undefined reference to `interval_tree_remove'
+   csky-linux-ld: io_pagetable.c:(.text+0xb64): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: io_pagetable.c:(.text+0xb68): undefined reference to `interval_tree_iter_next'
+   csky-linux-ld: io_pagetable.c:(.text+0xb6c): undefined reference to `interval_tree_remove'
+   csky-linux-ld: drivers/iommu/iommufd/ioas.o: in function `iommufd_ioas_iova_ranges':
+>> ioas.c:(.text+0x278): undefined reference to `interval_tree_span_iter_first'
+>> csky-linux-ld: ioas.c:(.text+0x314): undefined reference to `interval_tree_span_iter_next'
+>> csky-linux-ld: ioas.c:(.text+0x36c): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: ioas.c:(.text+0x380): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `pfn_reader_init':
+>> pages.c:(.text+0x208): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `interval_tree_fully_covers':
+>> pages.c:(.text+0x232): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `batch_from_domain':
+   pages.c:(.text+0x2c4): undefined reference to `interval_tree_span_iter_first'
+>> csky-linux-ld: pages.c:(.text+0x2c8): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_unpin':
+   pages.c:(.text+0x2fe): undefined reference to `interval_tree_span_iter_first'
+>> csky-linux-ld: pages.c:(.text+0x310): undefined reference to `interval_tree_span_iter_next'
+>> csky-linux-ld: pages.c:(.text+0x320): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: pages.c:(.text+0x330): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `update_unpinned':
+   pages.c:(.text+0x43c): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: pages.c:(.text+0x448): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_get_exact_user':
+   pages.c:(.text+0x60a): undefined reference to `interval_tree_iter_first'
+>> csky-linux-ld: pages.c:(.text+0x620): undefined reference to `interval_tree_iter_next'
+   csky-linux-ld: pages.c:(.text+0x660): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: pages.c:(.text+0x664): undefined reference to `interval_tree_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `pfn_reader_next':
+   pages.c:(.text+0xa6a): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: pages.c:(.text+0xb28): undefined reference to `interval_tree_iter_first'
+   csky-linux-ld: pages.c:(.text+0xb3a): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_area_unfill_partial_domain':
+   pages.c:(.text+0xc44): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_unmap_domain':
+   pages.c:(.text+0xe38): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: pages.c:(.text+0xe54): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_area_fill_domains':
+   pages.c:(.text+0xfa2): undefined reference to `interval_tree_insert'
+   csky-linux-ld: pages.c:(.text+0xfa8): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: pages.c:(.text+0xfb0): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: pages.c:(.text+0xfe8): undefined reference to `interval_tree_insert'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_area_unfill_domains':
+   pages.c:(.text+0x10e0): undefined reference to `interval_tree_remove'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_unfill_xarray':
+   pages.c:(.text+0x1146): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: pages.c:(.text+0x1160): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: pages.c:(.text+0x1190): undefined reference to `interval_tree_remove'
+   csky-linux-ld: pages.c:(.text+0x119c): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: pages.c:(.text+0x11a4): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: pages.c:(.text+0x11c0): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: pages.c:(.text+0x120c): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_fill_xarray':
+   pages.c:(.text+0x12ca): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: pages.c:(.text+0x130c): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: pages.c:(.text+0x1320): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: pages.c:(.text+0x1466): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: pages.c:(.text+0x14c4): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_add_user':
+   pages.c:(.text+0x1562): undefined reference to `interval_tree_insert'
+   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_remove_user':
+   pages.c:(.text+0x15b6): undefined reference to `interval_tree_remove'
+   csky-linux-ld: pages.c:(.text+0x15f8): undefined reference to `interval_tree_insert'
+   csky-linux-ld: pages.c:(.text+0x1600): undefined reference to `interval_tree_remove'
+   csky-linux-ld: drivers/iommu/iommufd/vfio_compat.o: in function `iommufd_fill_cap_iova':
+   vfio_compat.c:(.text+0x5e): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: vfio_compat.c:(.text+0xb8): undefined reference to `interval_tree_span_iter_next'
+   csky-linux-ld: vfio_compat.c:(.text+0x130): undefined reference to `interval_tree_span_iter_first'
+   csky-linux-ld: vfio_compat.c:(.text+0x134): undefined reference to `interval_tree_span_iter_next'
 
-Fixes: 7030082a7415 ("tty: n_gsm: avoid recursive locking with async port hangup")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220218073123.2121-4-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Kconfig warnings: (for reference only)
+   WARNING: unmet direct dependencies detected for IOMMUFD
+   Depends on IOMMU_SUPPORT
+   Selected by
+   - VFIO_PCI_CORE && VFIO && PCI && MMU
+
 ---
- drivers/tty/n_gsm.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -1719,7 +1719,12 @@ static void gsm_dlci_release(struct gsm_
- 		gsm_destroy_network(dlci);
- 		mutex_unlock(&dlci->mutex);
- 
--		tty_hangup(tty);
-+		/* We cannot use tty_hangup() because in tty_kref_put() the tty
-+		 * driver assumes that the hangup queue is free and reuses it to
-+		 * queue release_one_tty() -> NULL pointer panic in
-+		 * process_one_work().
-+		 */
-+		tty_vhangup(tty);
- 
- 		tty_port_tty_set(&dlci->port, NULL);
- 		tty_kref_put(tty);
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
