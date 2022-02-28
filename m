@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB9EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D922C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238396AbiB1Rl2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:41:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
+        id S238413AbiB1Rlb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:41:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238574AbiB1RiA (ORCPT
+        with ESMTP id S238556AbiB1Rh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:38:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DE0522F7;
-        Mon, 28 Feb 2022 09:33:20 -0800 (PST)
+        Mon, 28 Feb 2022 12:37:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F815620A;
+        Mon, 28 Feb 2022 09:33:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E775B815A6;
-        Mon, 28 Feb 2022 17:33:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C0DAC340E7;
-        Mon, 28 Feb 2022 17:33:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 551A561357;
+        Mon, 28 Feb 2022 17:33:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7249BC340E7;
+        Mon, 28 Feb 2022 17:32:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069598;
-        bh=LcVPZohZIkyfGskbcpephwf6doAGXodWIzwd7jNBeaA=;
+        s=korg; t=1646069579;
+        bh=sSEoqc+9YPIsgkNANlmTg3KrERRDy6bUKBQeTnevo34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TQ0dBSmsj9551NlibONSIytFz+VpCYOAcMc8l5RUPj/N1HJ9MTKyuYwJc16Cx9/5o
-         bl5k2NKnOHcthFO7tMhFtrM8lCcqq5GiPJ+b/fEYWSK+NEz1C9o5NRd2wWPA8ZwZ3P
-         zyO0ME9oiRN0Akmcg1tc0fkbrox7ITDD2pw/1QZ8=
+        b=0HhU0Tm3QH/oWmNtuuluvpyJrw36pGaYGqqZ4yrfREsTmg5kQY/7hrAkjlbh2oh6C
+         aHvvv67qWOyoMs8sfY7tGRBD4mebw7AU0qz4MQ5CceiTFCEf+eydGU/C6uPRKsoOsW
+         DRcZsy2NSlUVqaojWUpUei9iYPlAelae2tPzTf5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.10 09/80] drm/amdgpu: disable MMHUB PG for Picasso
-Date:   Mon, 28 Feb 2022 18:23:50 +0100
-Message-Id: <20220228172312.634310034@linuxfoundation.org>
+        stable@vger.kernel.org, Su Yue <l@damenly.su>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.10 03/80] btrfs: tree-checker: check item_size for dev_item
+Date:   Mon, 28 Feb 2022 18:23:44 +0100
+Message-Id: <20220228172312.111075326@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -48,35 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Su Yue <l@damenly.su>
 
-commit f626dd0ff05043e5a7154770cc7cda66acee33a3 upstream.
+commit ea1d1ca4025ac6c075709f549f9aa036b5b6597d upstream.
 
-MMHUB PG needs to be disabled for Picasso for stability reasons.
+Check item size before accessing the device item to avoid out of bound
+access, similar to inode_item check.
 
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Signed-off-by: Su Yue <l@damenly.su>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/soc15.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ fs/btrfs/tree-checker.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/gpu/drm/amd/amdgpu/soc15.c
-+++ b/drivers/gpu/drm/amd/amdgpu/soc15.c
-@@ -1194,8 +1194,11 @@ static int soc15_common_early_init(void
- 				AMD_CG_SUPPORT_SDMA_MGCG |
- 				AMD_CG_SUPPORT_SDMA_LS;
+--- a/fs/btrfs/tree-checker.c
++++ b/fs/btrfs/tree-checker.c
+@@ -947,6 +947,7 @@ static int check_dev_item(struct extent_
+ 			  struct btrfs_key *key, int slot)
+ {
+ 	struct btrfs_dev_item *ditem;
++	const u32 item_size = btrfs_item_size_nr(leaf, slot);
  
-+			/*
-+			 * MMHUB PG needs to be disabled for Picasso for
-+			 * stability reasons.
-+			 */
- 			adev->pg_flags = AMD_PG_SUPPORT_SDMA |
--				AMD_PG_SUPPORT_MMHUB |
- 				AMD_PG_SUPPORT_VCN;
- 		} else {
- 			adev->cg_flags = AMD_CG_SUPPORT_GFX_MGCG |
+ 	if (key->objectid != BTRFS_DEV_ITEMS_OBJECTID) {
+ 		dev_item_err(leaf, slot,
+@@ -954,6 +955,13 @@ static int check_dev_item(struct extent_
+ 			     key->objectid, BTRFS_DEV_ITEMS_OBJECTID);
+ 		return -EUCLEAN;
+ 	}
++
++	if (unlikely(item_size != sizeof(*ditem))) {
++		dev_item_err(leaf, slot, "invalid item size: has %u expect %zu",
++			     item_size, sizeof(*ditem));
++		return -EUCLEAN;
++	}
++
+ 	ditem = btrfs_item_ptr(leaf, slot, struct btrfs_dev_item);
+ 	if (btrfs_device_id(leaf, ditem) != key->offset) {
+ 		dev_item_err(leaf, slot,
 
 
