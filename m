@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F681C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A10BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239307AbiB1SGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:06:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
+        id S236374AbiB1SHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239773AbiB1SCg (ORCPT
+        with ESMTP id S240054AbiB1SC6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:02:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9FA9D06C;
-        Mon, 28 Feb 2022 09:46:06 -0800 (PST)
+        Mon, 28 Feb 2022 13:02:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE889E9DD;
+        Mon, 28 Feb 2022 09:46:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7281B81187;
-        Mon, 28 Feb 2022 17:45:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 302FDC340F3;
-        Mon, 28 Feb 2022 17:45:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAECE6091F;
+        Mon, 28 Feb 2022 17:46:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C931C340E7;
+        Mon, 28 Feb 2022 17:46:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070344;
-        bh=/msaSY+WqBTLpnAYFKfOlGUPi776Si31St0tFMJTiVQ=;
+        s=korg; t=1646070377;
+        bh=majM6TI35ncnupXMXAvLRdqwSeSHf1zykEvFxKxCwb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TB7Ara9qYqwy1M05bPZ0fzeCIDrS9gFJ+8/3hs42/ypRwQ0Djj5HYfB569MjOd1b5
-         nNnkfPbBIZL0rC4kMrnVx6p1KPDKr26A/JhWsI3aF7VtGqLt5Lef4CBfAOclxpa5Cn
-         FQ1h5BGfANuElnHQ79NMNWaRykcsg88GwrpDpd9Q=
+        b=NodPhlb5dkeDwXCF7CCMDHe9SyMlWJcrM7iXuL8xpxnRErCjt1vH6LYIZTDeInfLq
+         6dWEWNbWDl4lzNOmQHJeCisVb0gXk0MU62nejeNezx3760sJHN7d7Ml00o8Sho0xut
+         /MnHBc28hlcMsYjgdR/Sm7nwbFCGpu/xRJGBCtF0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Roper <matthew.d.roper@intel.com>,
-        Swathi Dhanavanthri <swathi.dhanavanthri@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.16 075/164] drm/i915/dg2: Print PHY name properly on calibration error
-Date:   Mon, 28 Feb 2022 18:23:57 +0100
-Message-Id: <20220228172406.853274007@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.16 086/164] surface: surface3_power: Fix battery readings on batteries without a serial number
+Date:   Mon, 28 Feb 2022 18:24:08 +0100
+Message-Id: <20220228172407.703847528@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,34 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Roper <matthew.d.roper@intel.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 28adef861233c6fce47372ebd2070b55eaa8e899 upstream.
+commit 21d90aaee8d5c2a097ef41f1430d97661233ecc6 upstream.
 
-We need to use phy_name() to convert the PHY value into a human-readable
-character in the error message.
+The battery on the 2nd hand Surface 3 which I recently bought appears to
+not have a serial number programmed in. This results in any I2C reads from
+the registers containing the serial number failing with an I2C NACK.
 
-Fixes: a6a128116e55 ("drm/i915/dg2: Wait for SNPS PHY calibration during display init")
-Signed-off-by: Matt Roper <matthew.d.roper@intel.com>
-Reviewed-by: Swathi Dhanavanthri <swathi.dhanavanthri@intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220215163545.2175730-1-matthew.d.roper@intel.com
-(cherry picked from commit 84073e568eec7b586b2f6fd5fb2fb08f59edec54)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+This was causing mshw0011_bix() to fail causing the battery readings to
+not work at all.
+
+Ignore EREMOTEIO (I2C NACK) errors when retrieving the serial number and
+continue with an empty serial number to fix this.
+
+Fixes: b1f81b496b0d ("platform/x86: surface3_power: MSHW0011 rev-eng implementation")
+BugLink: https://github.com/linux-surface/linux-surface/issues/608
+Reviewed-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Reviewed-by: Maximilian Luz <luzmaximilian@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220224101848.7219-1-hdegoede@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_snps_phy.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/surface/surface3_power.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/i915/display/intel_snps_phy.c
-+++ b/drivers/gpu/drm/i915/display/intel_snps_phy.c
-@@ -34,7 +34,7 @@ void intel_snps_phy_wait_for_calibration
- 		if (intel_de_wait_for_clear(dev_priv, ICL_PHY_MISC(phy),
- 					    DG2_PHY_DP_TX_ACK_MASK, 25))
- 			DRM_ERROR("SNPS PHY %c failed to calibrate after 25ms.\n",
--				  phy);
-+				  phy_name(phy));
+--- a/drivers/platform/surface/surface3_power.c
++++ b/drivers/platform/surface/surface3_power.c
+@@ -232,14 +232,21 @@ static int mshw0011_bix(struct mshw0011_
  	}
- }
+ 	bix->last_full_charg_capacity = ret;
  
+-	/* get serial number */
++	/*
++	 * Get serial number, on some devices (with unofficial replacement
++	 * battery?) reading any of the serial number range addresses gets
++	 * nacked in this case just leave the serial number empty.
++	 */
+ 	ret = i2c_smbus_read_i2c_block_data(client, MSHW0011_BAT0_REG_SERIAL_NO,
+ 					    sizeof(buf), buf);
+-	if (ret != sizeof(buf)) {
++	if (ret == -EREMOTEIO) {
++		/* no serial number available */
++	} else if (ret != sizeof(buf)) {
+ 		dev_err(&client->dev, "Error reading serial no: %d\n", ret);
+ 		return ret;
++	} else {
++		snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
+ 	}
+-	snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
+ 
+ 	/* get cycle count */
+ 	ret = i2c_smbus_read_word_data(client, MSHW0011_BAT0_REG_CYCLE_CNT);
 
 
