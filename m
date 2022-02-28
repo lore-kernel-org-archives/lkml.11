@@ -2,198 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04702C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235812AbiB1OA5 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 09:00:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
+        id S235436AbiB1ODn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 09:03:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234912AbiB1OAy (ORCPT
+        with ESMTP id S230338AbiB1ODl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 09:00:54 -0500
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A9D8878048
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 06:00:13 -0800 (PST)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-170-IkmGZggGOcSuzsrYVp04QA-1; Mon, 28 Feb 2022 14:00:10 +0000
-X-MC-Unique: IkmGZggGOcSuzsrYVp04QA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Mon, 28 Feb 2022 14:00:07 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Mon, 28 Feb 2022 14:00:07 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Manivannan Sadhasivam' <manivannan.sadhasivam@linaro.org>,
-        "mhi@lists.linux.dev" <mhi@lists.linux.dev>
-CC:     "quic_hemantk@quicinc.com" <quic_hemantk@quicinc.com>,
-        "quic_bbhatt@quicinc.com" <quic_bbhatt@quicinc.com>,
-        "quic_jhugo@quicinc.com" <quic_jhugo@quicinc.com>,
-        "vinod.koul@linaro.org" <vinod.koul@linaro.org>,
-        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
-        "dmitry.baryshkov@linaro.org" <dmitry.baryshkov@linaro.org>,
-        "quic_vbadigan@quicinc.com" <quic_vbadigan@quicinc.com>,
-        "quic_cang@quicinc.com" <quic_cang@quicinc.com>,
-        "quic_skananth@quicinc.com" <quic_skananth@quicinc.com>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "elder@linaro.org" <elder@linaro.org>
-Subject: RE: [PATCH v4 05/27] bus: mhi: Use bitfield operations for handling
- DWORDs of ring elements
-Thread-Topic: [PATCH v4 05/27] bus: mhi: Use bitfield operations for handling
- DWORDs of ring elements
-Thread-Index: AQHYLKD5KBrT0mkrcEuEmuVBLjzK3Kyo+w/g
-Date:   Mon, 28 Feb 2022 14:00:07 +0000
-Message-ID: <90b1d3954b8c4157a4045db82b562271@AcuMS.aculab.com>
-References: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
- <20220228124344.77359-6-manivannan.sadhasivam@linaro.org>
-In-Reply-To: <20220228124344.77359-6-manivannan.sadhasivam@linaro.org>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Mon, 28 Feb 2022 09:03:41 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED81026126;
+        Mon, 28 Feb 2022 06:03:02 -0800 (PST)
+Date:   Mon, 28 Feb 2022 15:02:59 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646056981;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EjFJ3Fa2md9hPbH1gPAnTy1aNT3a4ma1Wibufn7mhms=;
+        b=lFbSEZB72GcPAMGGDqd3KgnWB2SnI0ZCM+mfNi1trHwG9/JvYIR9l/roxpUy8oPyONKJa7
+        cM5OkDBg1Jm3IN9eKMOYCrfpuAGy3/UvenMnqxVDORSN4BPV+CU3shjQREtMIs2RtGqEnY
+        ODVJPKVP2CncPVQaO3X7IhDuhaIFCoULYNQOlmv4Ywpyq6zvPKhq56OsTeTWYUMotch5Jf
+        4vmc6FPJer7UXH2OmCX28hwCGY0TzFOQBD+e2KfYBy6Fp7grex50LFxD3w7dynS0SxHRhW
+        mUQrewTrOS7lWl44INCmURyl4S3Owc1Wfx/NsEFp9vnYGGL+dHuRAnKKP7/olg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646056981;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EjFJ3Fa2md9hPbH1gPAnTy1aNT3a4ma1Wibufn7mhms=;
+        b=Te8EpztFgOFTPBh58alfjFwcW1eOnaEQozL5RpTtdvNER1oLk7mquDni8O3F7y71she6PA
+        tpNbTMhHUCwhkJDA==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: Re: [PATCH v2] random: do crng pre-init loading in worker rather
+ than irq
+Message-ID: <YhzWE1NqYQFKeL5B@linutronix.de>
+References: <CAHmME9pTfwbs9xUJy_jrdPcrhSyVixSXBM==9EuB8v7ufWe9Pw@mail.gmail.com>
+ <20220224152937.12747-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220224152937.12747-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam
-> Sent: 28 February 2022 12:43
-> 
-> Instead of using the hardcoded bits in DWORD definitions, let's use the
-> bitfield operations to make it more clear how the DWORDs are structured.
+On 2022-02-24 16:29:37 [+0100], Jason A. Donenfeld wrote:
+> Taking spinlocks from IRQ context is problematic for PREEMPT_RT. That
+> is, in part, why we take trylocks instead. But apparently this still
+> trips up various lock dependency analyzers. That seems like a bug in the
+> analyzers that should be fixed, rather than having to change things
+> here.
 
-That all makes it as clear as mud.
-Try reading it!
+Could you please post a lockdep report so I can take a look?
 
-	David
+> But maybe there's another reason to change things up: by deferring the
+> crng pre-init loading to the worker, we can use the cryptographic hash
+> function rather than xor, which is perhaps a meaningful difference when
+> considering this data has only been through the relatively weak
+> fast_mix() function.
+> 
+> The biggest downside of this approach is that the pre-init loading is
+> now deferred until later, which means things that need random numbers
+> after interrupts are enabled, but before workqueues are running -- or
+> before this particular worker manages to run -- are going to get into
+> trouble. Hopefully in the real world, this window is rather small,
+> especially since this code won't run until 64 interrupts had occurred.
+> 
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Eric Biggers <ebiggers@kernel.org>
+> Cc: Theodore Ts'o <tytso@mit.edu>
+> Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-> 
-> Suggested-by: Alex Elder <elder@linaro.org>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> ---
->  drivers/bus/mhi/host/internal.h | 58 +++++++++++++++++++--------------
->  1 file changed, 33 insertions(+), 25 deletions(-)
-> 
-> diff --git a/drivers/bus/mhi/host/internal.h b/drivers/bus/mhi/host/internal.h
-> index 156bf65b6810..1d1790e83a93 100644
-> --- a/drivers/bus/mhi/host/internal.h
-> +++ b/drivers/bus/mhi/host/internal.h
-> @@ -7,6 +7,7 @@
->  #ifndef _MHI_INT_H
->  #define _MHI_INT_H
-> 
-> +#include <linux/bitfield.h>
->  #include <linux/mhi.h>
-> 
->  extern struct bus_type mhi_bus_type;
-> @@ -205,58 +206,65 @@ enum mhi_cmd_type {
->  /* No operation command */
->  #define MHI_TRE_CMD_NOOP_PTR (0)
->  #define MHI_TRE_CMD_NOOP_DWORD0 (0)
-> -#define MHI_TRE_CMD_NOOP_DWORD1 (cpu_to_le32(MHI_CMD_NOP << 16))
-> +#define MHI_TRE_CMD_NOOP_DWORD1 (cpu_to_le32(FIELD_PREP(GENMASK(23, 16), MHI_CMD_NOP)))
-> 
->  /* Channel reset command */
->  #define MHI_TRE_CMD_RESET_PTR (0)
->  #define MHI_TRE_CMD_RESET_DWORD0 (0)
-> -#define MHI_TRE_CMD_RESET_DWORD1(chid) (cpu_to_le32((chid << 24) | \
-> -					(MHI_CMD_RESET_CHAN << 16)))
-> +#define MHI_TRE_CMD_RESET_DWORD1(chid) (cpu_to_le32(FIELD_PREP(GENMASK(31, 24), chid)) | \
-> +					FIELD_PREP(GENMASK(23, 16), MHI_CMD_RESET_CHAN))
-> 
->  /* Channel stop command */
->  #define MHI_TRE_CMD_STOP_PTR (0)
->  #define MHI_TRE_CMD_STOP_DWORD0 (0)
-> -#define MHI_TRE_CMD_STOP_DWORD1(chid) (cpu_to_le32((chid << 24) | \
-> -				       (MHI_CMD_STOP_CHAN << 16)))
-> +#define MHI_TRE_CMD_STOP_DWORD1(chid) (cpu_to_le32(FIELD_PREP(GENMASK(31, 24), chid)) | \
-> +					FIELD_PREP(GENMASK(23, 16), MHI_CMD_STOP_CHAN))
-> 
->  /* Channel start command */
->  #define MHI_TRE_CMD_START_PTR (0)
->  #define MHI_TRE_CMD_START_DWORD0 (0)
-> -#define MHI_TRE_CMD_START_DWORD1(chid) (cpu_to_le32((chid << 24) | \
-> -					(MHI_CMD_START_CHAN << 16)))
-> +#define MHI_TRE_CMD_START_DWORD1(chid) (cpu_to_le32(FIELD_PREP(GENMASK(31, 24), chid)) | \
-> +					FIELD_PREP(GENMASK(23, 16), MHI_CMD_START_CHAN))
-> 
->  #define MHI_TRE_GET_DWORD(tre, word) (le32_to_cpu((tre)->dword[(word)]))
-> -#define MHI_TRE_GET_CMD_CHID(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 24) & 0xFF)
-> -#define MHI_TRE_GET_CMD_TYPE(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 16) & 0xFF)
-> +#define MHI_TRE_GET_CMD_CHID(tre) (FIELD_GET(GENMASK(31, 24), (MHI_TRE_GET_DWORD(tre, 1))))
-> +#define MHI_TRE_GET_CMD_TYPE(tre) (FIELD_GET(GENMASK(23, 16), (MHI_TRE_GET_DWORD(tre, 1))))
-> 
->  /* Event descriptor macros */
->  #define MHI_TRE_EV_PTR(ptr) (cpu_to_le64(ptr))
-> -#define MHI_TRE_EV_DWORD0(code, len) (cpu_to_le32((code << 24) | len))
-> -#define MHI_TRE_EV_DWORD1(chid, type) (cpu_to_le32((chid << 24) | (type << 16)))
-> +#define MHI_TRE_EV_DWORD0(code, len) (cpu_to_le32(FIELD_PREP(GENMASK(31, 24), code) | \
-> +						FIELD_PREP(GENMASK(15, 0), len)))
-> +#define MHI_TRE_EV_DWORD1(chid, type) (cpu_to_le32(FIELD_PREP(GENMASK(31, 24), chid) | \
-> +						FIELD_PREP(GENMASK(23, 16), type)))
->  #define MHI_TRE_GET_EV_PTR(tre) (le64_to_cpu((tre)->ptr))
-> -#define MHI_TRE_GET_EV_CODE(tre) ((MHI_TRE_GET_DWORD(tre, 0) >> 24) & 0xFF)
-> -#define MHI_TRE_GET_EV_LEN(tre) (MHI_TRE_GET_DWORD(tre, 0) & 0xFFFF)
-> -#define MHI_TRE_GET_EV_CHID(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 24) & 0xFF)
-> -#define MHI_TRE_GET_EV_TYPE(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 16) & 0xFF)
-> -#define MHI_TRE_GET_EV_STATE(tre) ((MHI_TRE_GET_DWORD(tre, 0) >> 24) & 0xFF)
-> -#define MHI_TRE_GET_EV_EXECENV(tre) ((MHI_TRE_GET_DWORD(tre, 0) >> 24) & 0xFF)
-> +#define MHI_TRE_GET_EV_CODE(tre) (FIELD_GET(GENMASK(31, 24), (MHI_TRE_GET_DWORD(tre, 0))))
-> +#define MHI_TRE_GET_EV_LEN(tre) (FIELD_GET(GENMASK(15, 0), (MHI_TRE_GET_DWORD(tre, 0))))
-> +#define MHI_TRE_GET_EV_CHID(tre) (FIELD_GET(GENMASK(31, 24), (MHI_TRE_GET_DWORD(tre, 1))))
-> +#define MHI_TRE_GET_EV_TYPE(tre) (FIELD_GET(GENMASK(23, 16), (MHI_TRE_GET_DWORD(tre, 1))))
-> +#define MHI_TRE_GET_EV_STATE(tre) (FIELD_GET(GENMASK(31, 24), (MHI_TRE_GET_DWORD(tre, 0))))
-> +#define MHI_TRE_GET_EV_EXECENV(tre) (FIELD_GET(GENMASK(31, 24), (MHI_TRE_GET_DWORD(tre, 0))))
->  #define MHI_TRE_GET_EV_SEQ(tre) MHI_TRE_GET_DWORD(tre, 0)
->  #define MHI_TRE_GET_EV_TIME(tre) (MHI_TRE_GET_EV_PTR(tre))
->  #define MHI_TRE_GET_EV_COOKIE(tre) lower_32_bits(MHI_TRE_GET_EV_PTR(tre))
-> -#define MHI_TRE_GET_EV_VEID(tre) ((MHI_TRE_GET_DWORD(tre, 0) >> 16) & 0xFF)
-> -#define MHI_TRE_GET_EV_LINKSPEED(tre) ((MHI_TRE_GET_DWORD(tre, 1) >> 24) & 0xFF)
-> -#define MHI_TRE_GET_EV_LINKWIDTH(tre) (MHI_TRE_GET_DWORD(tre, 0) & 0xFF)
-> +#define MHI_TRE_GET_EV_VEID(tre) (FIELD_GET(GENMASK(23, 16), (MHI_TRE_GET_DWORD(tre, 0))))
-> +#define MHI_TRE_GET_EV_LINKSPEED(tre) (FIELD_GET(GENMASK(31, 24), (MHI_TRE_GET_DWORD(tre, 1))))
-> +#define MHI_TRE_GET_EV_LINKWIDTH(tre) (FIELD_GET(GENMASK(7, 0), (MHI_TRE_GET_DWORD(tre, 0))))
-> 
->  /* Transfer descriptor macros */
->  #define MHI_TRE_DATA_PTR(ptr) (cpu_to_le64(ptr))
-> -#define MHI_TRE_DATA_DWORD0(len) (cpu_to_le32(len & MHI_MAX_MTU))
-> -#define MHI_TRE_DATA_DWORD1(bei, ieot, ieob, chain) (cpu_to_le32((2 << 16) | (bei << 10) \
-> -	| (ieot << 9) | (ieob << 8) | chain))
-> +#define MHI_TRE_DATA_DWORD0(len) (cpu_to_le32(FIELD_PREP(GENMASK(15, 0), len)))
-> +#define MHI_TRE_TYPE_TRANSFER 2
-> +#define MHI_TRE_DATA_DWORD1(bei, ieot, ieob, chain) (cpu_to_le32(FIELD_PREP(GENMASK(23, 16), \
-> +							MHI_TRE_TYPE_TRANSFER) | \
-> +							FIELD_PREP(BIT(10), bei) | \
-> +							FIELD_PREP(BIT(9), ieot) | \
-> +							FIELD_PREP(BIT(8), ieob) | \
-> +							FIELD_PREP(BIT(0), chain)))
-> 
->  /* RSC transfer descriptor macros */
-> -#define MHI_RSCTRE_DATA_PTR(ptr, len) (cpu_to_le64(((u64)len << 48) | ptr))
-> +#define MHI_RSCTRE_DATA_PTR(ptr, len) (cpu_to_le64(FIELD_PREP(GENMASK(64, 48), len) | ptr))
->  #define MHI_RSCTRE_DATA_DWORD0(cookie) (cpu_to_le32(cookie))
-> -#define MHI_RSCTRE_DATA_DWORD1 (cpu_to_le32(MHI_PKT_TYPE_COALESCING << 16))
-> +#define MHI_RSCTRE_DATA_DWORD1 (cpu_to_le32(FIELD_PREP(GENMASK(23, 16), MHI_PKT_TYPE_COALESCING)
-> 
->  enum mhi_pkt_type {
->  	MHI_PKT_TYPE_INVALID = 0x0,
-> --
-> 2.25.1
+Other than that:
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
+Sebastian
