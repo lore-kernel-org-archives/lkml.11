@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF160C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB9FC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240293AbiB1SIc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:08:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43344 "EHLO
+        id S240277AbiB1SI2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:08:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240629AbiB1SDn (ORCPT
+        with ESMTP id S240592AbiB1SDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3492CDBF;
-        Mon, 28 Feb 2022 09:47:25 -0800 (PST)
+        Mon, 28 Feb 2022 13:03:41 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B17DC7;
+        Mon, 28 Feb 2022 09:47:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0719B81085;
-        Mon, 28 Feb 2022 17:46:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48D03C340E7;
-        Mon, 28 Feb 2022 17:46:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D2CE4CE17C8;
+        Mon, 28 Feb 2022 17:47:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDF24C340E7;
+        Mon, 28 Feb 2022 17:47:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070415;
-        bh=mnkt+5Ak8JOKgSSwk+d2Lz2WiQE6cY/xo0S7CuH+MwE=;
+        s=korg; t=1646070429;
+        bh=KpnAx70+VULJuJK9jcH447lr7FsAjRGaGUsvhQiGB3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VXUufLwK2aRIi3Pkqh0riTz1TxZGc/5V9qdzPVBT63gKbhodZJ9+aXcRGFX+79Yy0
-         9Lyi4U8DDUbgi9+jkQfY7lbTMC8MolC3B4TGIrW6V2OzCt03lD+HIH36Q3xyHTUqnH
-         ZTvzWh3BjS5Mzn8JzRaki4vyF3Kwk9uCN4thORPc=
+        b=zxQMwa+HbJ31UyvNJilmEua6Set9PxuX7UPnLPxEtJ/7k3rqsVtJfeHJ+zex0Lh+6
+         aC0F9l1JZoORVVCrtqsajYVUnR60fCD/al6PUg4ogYWlsVay1yBDqGIvWGMDDd6YV7
+         6Dbal9ouO3QH+MCk0/rk+QXZgC6QQAkdfivZC2xo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lama Kayal <lkayal@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 098/164] net/mlx5e: Add missing increment of count
-Date:   Mon, 28 Feb 2022 18:24:20 +0100
-Message-Id: <20220228172408.662393867@linuxfoundation.org>
+        stable@vger.kernel.org, Tao Liu <thomas.liu@ucloud.cn>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 066/164] gso: do not skip outer ip header in case of ipip and net_failover
+Date:   Mon, 28 Feb 2022 18:23:48 +0100
+Message-Id: <20220228172406.148708610@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,52 +49,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lama Kayal <lkayal@nvidia.com>
+From: Tao Liu <thomas.liu@ucloud.cn>
 
-commit 5ee02b7a800654ff9549807bcf0b4c9fd5cf25f9 upstream.
+commit cc20cced0598d9a5ff91ae4ab147b3b5e99ee819 upstream.
 
-Add mistakenly missing increment of count variable when looping over
-output buffer in mlx5e_self_test().
+We encounter a tcp drop issue in our cloud environment. Packet GROed in
+host forwards to a VM virtio_net nic with net_failover enabled. VM acts
+as a IPVS LB with ipip encapsulation. The full path like:
+host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
+ -> ipip encap -> net_failover tx -> virtio_net tx
 
-This resolves the issue of garbage values output when querying with self
-test via ethtool.
+When net_failover transmits a ipip pkt (gso_type = 0x0103, which means
+SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4), there is no gso
+did because it supports TSO and GSO_IPXIP4. But network_header points to
+inner ip header.
 
-before:
-$ ethtool -t eth2
-The test result is PASS
-The test extra info:
-Link Test        0
-Speed Test       1768697188
-Health Test      758528120
-Loopback Test    3288687
+Call Trace:
+ tcp4_gso_segment        ------> return NULL
+ inet_gso_segment        ------> inner iph, network_header points to
+ ipip_gso_segment
+ inet_gso_segment        ------> outer iph
+ skb_mac_gso_segment
 
-after:
-$ ethtool -t eth2
-The test result is PASS
-The test extra info:
-Link Test        0
-Speed Test       0
-Health Test      0
-Loopback Test    0
+Afterwards virtio_net transmits the pkt, only inner ip header is modified.
+And the outer one just keeps unchanged. The pkt will be dropped in remote
+host.
 
-Fixes: 7990b1b5e8bd ("net/mlx5e: loopback test is not supported in switchdev mode")
-Signed-off-by: Lama Kayal <lkayal@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Call Trace:
+ inet_gso_segment        ------> inner iph, outer iph is skipped
+ skb_mac_gso_segment
+ __skb_gso_segment
+ validate_xmit_skb
+ validate_xmit_skb_list
+ sch_direct_xmit
+ __qdisc_run
+ __dev_queue_xmit        ------> virtio_net
+ dev_hard_start_xmit
+ __dev_queue_xmit        ------> net_failover
+ ip_finish_output2
+ ip_output
+ iptunnel_xmit
+ ip_tunnel_xmit
+ ipip_tunnel_xmit        ------> ipip
+ dev_hard_start_xmit
+ __dev_queue_xmit
+ ip_finish_output2
+ ip_output
+ ip_forward
+ ip_rcv
+ __netif_receive_skb_one_core
+ netif_receive_skb_internal
+ napi_gro_receive
+ receive_buf
+ virtnet_poll
+ net_rx_action
+
+The root cause of this issue is specific with the rare combination of
+SKB_GSO_DODGY and a tunnel device that adds an SKB_GSO_ tunnel option.
+SKB_GSO_DODGY is set from external virtio_net. We need to reset network
+header when callbacks.gso_segment() returns NULL.
+
+This patch also includes ipv6_gso_segment(), considering SIT, etc.
+
+Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
+Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
+Reviewed-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_selftest.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/ipv4/af_inet.c     |    5 ++++-
+ net/ipv6/ip6_offload.c |    2 ++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_selftest.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_selftest.c
-@@ -334,6 +334,7 @@ void mlx5e_self_test(struct net_device *
- 		netdev_info(ndev, "\t[%d] %s start..\n", i, st.name);
- 		buf[count] = st.st_func(priv);
- 		netdev_info(ndev, "\t[%d] %s end: result(%lld)\n", i, st.name, buf[count]);
-+		count++;
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1376,8 +1376,11 @@ struct sk_buff *inet_gso_segment(struct
  	}
  
- 	mutex_unlock(&priv->state_lock);
+ 	ops = rcu_dereference(inet_offloads[proto]);
+-	if (likely(ops && ops->callbacks.gso_segment))
++	if (likely(ops && ops->callbacks.gso_segment)) {
+ 		segs = ops->callbacks.gso_segment(skb, features);
++		if (!segs)
++			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
++	}
+ 
+ 	if (IS_ERR_OR_NULL(segs))
+ 		goto out;
+--- a/net/ipv6/ip6_offload.c
++++ b/net/ipv6/ip6_offload.c
+@@ -114,6 +114,8 @@ static struct sk_buff *ipv6_gso_segment(
+ 	if (likely(ops && ops->callbacks.gso_segment)) {
+ 		skb_reset_transport_header(skb);
+ 		segs = ops->callbacks.gso_segment(skb, features);
++		if (!segs)
++			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
+ 	}
+ 
+ 	if (IS_ERR_OR_NULL(segs))
 
 
