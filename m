@@ -2,87 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5E80C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 03:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73BBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 03:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232978AbiB1DoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 22:44:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56918 "EHLO
+        id S232973AbiB1Do3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 22:44:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232969AbiB1DoP (ORCPT
+        with ESMTP id S232987AbiB1Do0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 22:44:15 -0500
+        Sun, 27 Feb 2022 22:44:26 -0500
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 562063982A;
-        Sun, 27 Feb 2022 19:43:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 213A03EB86;
+        Sun, 27 Feb 2022 19:43:45 -0800 (PST)
 Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21RMwaGT029567;
-        Mon, 28 Feb 2022 03:43:33 GMT
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21RMe1Es029547;
+        Mon, 28 Feb 2022 03:43:36 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=WDPd4UU66TYdGYyEzivTW4h3BXzO/do4dlet7bzcTrs=;
- b=HZTxdwhjO6Pw2Qxq8pxHVMvOukRLGlwvT7PFBgEqjESCJ8w1CoUeOcKAh9IFnJkVHnSJ
- lqgWMV5KgLmS5Ejhhp2cyxkJHQ7w9OTKBoGqFCtq8De5iNKog9vSfYzeHW2Ofw7b3ifO
- Oss032za4bI3puwS59qV1KgUcbyiDG7AoD2CIg6H0ax5Jg7piGKzY0WtUZEo11tTLLrc
- z277hi2/yQk2+QUER+UjPtOFCOgfV85YYLUG0b85Y2jSBpabk8Kpzjs9361NH4qrXHIx
- VK+2upTdNojG+XXMHUo5lmgANj1LSii37xlRFgGuQSqaRblrFrWRtxQD/OH1RJN2uZw0 Gg== 
+ bh=pzQ4voSkjB4og5ReiQe7/SL59Nbsej1Cce7b8lDEcbA=;
+ b=VpAuBHfrU2eedUNl97QvXqIRa6IRVmvNRbc6zO+WvVzGUvatZ20ZSMTfAPFr2VaociRK
+ WLzGbDmUeVcnRbBa6i4hMGyKnEtm8TzlIXWX2LJqMbHgjcCoUS2N7vnlzwB2in8q6+2f
+ y3FzZmpvhoZ16e3iA67id3nBEG8he9PcncZ3ryA5AK4lS/9P3vcBn1Vwm5Pg62Rnca+i
+ ZsspsG6YuSiRtgvqiZfvkuZH1InxdQUtaI1RYF9rOEK28LTYTqbzZ9a5ljdtuxq1aMz5
+ gShpNld8OrC2hIri4Ex+2tSSK8u2OCuDHqjou8bsHdtSuOCSqo2f8xNDsBe6eD8BoUUa tA== 
 Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3efbttayev-1
+        by mx0b-00069f02.pphosted.com with ESMTP id 3efbttayf2-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Feb 2022 03:43:32 +0000
+        Mon, 28 Feb 2022 03:43:35 +0000
 Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21S3bHn3157825;
-        Mon, 28 Feb 2022 03:43:32 GMT
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21S3b9h4157681;
+        Mon, 28 Feb 2022 03:43:35 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 3efa8bxnvg-1
+        by aserp3030.oracle.com with ESMTP id 3efa8bxnwr-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Feb 2022 03:43:32 +0000
+        Mon, 28 Feb 2022 03:43:35 +0000
 Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 21S3hPvw165853;
-        Mon, 28 Feb 2022 03:43:31 GMT
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 21S3hPw4165853;
+        Mon, 28 Feb 2022 03:43:34 GMT
 Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by aserp3030.oracle.com with ESMTP id 3efa8bxnt3-7;
-        Mon, 28 Feb 2022 03:43:31 +0000
+        by aserp3030.oracle.com with ESMTP id 3efa8bxnt3-10;
+        Mon, 28 Feb 2022 03:43:34 +0000
 From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Guixin Liu <kanie@linux.alibaba.com>, bostroesser@gmail.com
+To:     Yang Li <yang.lee@linux.alibaba.com>, jejb@linux.ibm.com
 Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        xlpang@linux.alibaba.com, target-devel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xiaoguang.wang@linux.alibaba.com
-Subject: Re: [PATCH V4] scsi: target: tcmu: Make cmd_ring_size changeable via configfs
-Date:   Sun, 27 Feb 2022 22:43:21 -0500
-Message-Id: <164601967777.4503.13105145657095242015.b4-ty@oracle.com>
+        Abaci Robot <abaci@linux.alibaba.com>,
+        linux-scsi@vger.kernel.org, john.garry@huawei.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] scsi: hisi_sas: Remove unnecessary print function dev_err()
+Date:   Sun, 27 Feb 2022 22:43:24 -0500
+Message-Id: <164601967777.4503.17661718587183450666.b4-ty@oracle.com>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1644978109-14885-1-git-send-email-kanie@linux.alibaba.com>
-References: <1644978109-14885-1-git-send-email-kanie@linux.alibaba.com>
+In-Reply-To: <20220215020524.44268-1-yang.lee@linux.alibaba.com>
+References: <20220215020524.44268-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: hGCbUb_VMG1B_joGWGWU4EG_X7pw8rT_
-X-Proofpoint-ORIG-GUID: hGCbUb_VMG1B_joGWGWU4EG_X7pw8rT_
+X-Proofpoint-GUID: RZOZSHQrq0lcDxtJG5mY5lQkY26VYhuj
+X-Proofpoint-ORIG-GUID: RZOZSHQrq0lcDxtJG5mY5lQkY26VYhuj
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 16 Feb 2022 10:21:49 +0800, Guixin Liu wrote:
+On Tue, 15 Feb 2022 10:05:24 +0800, Yang Li wrote:
 
-> Make cmd_ring_size changeable similar to the way it is done for
-> max_data_area_mb, the reason is that our tcmu client will create
-> thousands of tcmu instances, and this will consume lots of mem with
-> default 8Mb cmd ring size for every backstore.
+> The print function dev_err() is redundant because platform_get_irq()
+> already prints an error.
 > 
-> One can change the value by typing:
->     echo "cmd_ring_size_mb=N" > control
-> The "N" is a integer between 1 to 8, if set 1, the cmd ring can hold
-> about 6k cmds(tcmu_cmd_entry about 176 byte) at least.
+> Eliminate the follow coccicheck warnings:
+> ./drivers/scsi/hisi_sas/hisi_sas_v1_hw.c:1661:3-10: line 1661 is
+> redundant because platform_get_irq() already prints an error
+> ./drivers/scsi/hisi_sas/hisi_sas_v1_hw.c:1642:4-11: line 1642 is
+> redundant because platform_get_irq() already prints an error
+> ./drivers/scsi/hisi_sas/hisi_sas_v1_hw.c:1679:3-10: line 1679 is
+> redundant because platform_get_irq() already prints an error
 > 
 > [...]
 
 Applied to 5.18/scsi-queue, thanks!
 
-[1/1] scsi: target: tcmu: Make cmd_ring_size changeable via configfs
-      https://git.kernel.org/mkp/scsi/c/c7ede4f044b9
+[1/1] scsi: hisi_sas: Remove unnecessary print function dev_err()
+      https://git.kernel.org/mkp/scsi/c/07dd40b3078f
 
 -- 
 Martin K. Petersen	Oracle Linux Engineering
