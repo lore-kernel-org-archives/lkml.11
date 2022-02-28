@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DE77C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48608C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239982AbiB1SHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:07:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41102 "EHLO
+        id S239997AbiB1SHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240117AbiB1SDA (ORCPT
+        with ESMTP id S240156AbiB1SDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:00 -0500
+        Mon, 28 Feb 2022 13:03:02 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71C4A9EB9E;
-        Mon, 28 Feb 2022 09:46:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861FD554A8;
+        Mon, 28 Feb 2022 09:46:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE1F26098A;
-        Mon, 28 Feb 2022 17:46:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D19F4C340E7;
-        Mon, 28 Feb 2022 17:46:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 706C160BC5;
+        Mon, 28 Feb 2022 17:46:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8867BC340E7;
+        Mon, 28 Feb 2022 17:46:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070369;
-        bh=x3Ks4l3oF8qlXekP7bV+zF2mkX7O9rC2XCw9cam+juA=;
+        s=korg; t=1646070371;
+        bh=W7CMdv5uDv19IYXVsY7pf+BDkj7Ul3n+XTxUNsLiY04=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u/Ng2NZuM5++r29GcUXuXTWta2c1kyucUBt15F2yz9dqJFO0Xy3L2PmhDKF8r5H/3
-         cQwYuG4/4gpqP2topTdI72XcjIM/VvwaUCO5Tr1xmxsrIa+E9pUBfRQI7skd8Qj8yC
-         kFKEK2ujhUGcsxcHqlCNYRUTHIWYsNi0isBlzuoM=
+        b=OigHslmvej1DfZ4HXN6NM01O63LAVTLM3D1jYyE9m1uqcunW7UzyXpSCx5WyayDG1
+         0kRRQTgWEXMeD/qJbra+D1O/QwMC0eUUatLbPiIAEjWZsd7FoWW80BCKGYnIbG055b
+         E2B26G+ywR7VEDJ/UqT4UhYwcJvB0/LWAiJmDJRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch.siach@siklu.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 083/164] net: mdio-ipq4019: add delay after clock enable
-Date:   Mon, 28 Feb 2022 18:24:05 +0100
-Message-Id: <20220228172407.471992966@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Fernando Fernandez Mancera <ffmancera@riseup.net>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: [PATCH 5.16 084/164] netfilter: nf_tables: fix memory leak during stateful obj update
+Date:   Mon, 28 Feb 2022 18:24:06 +0100
+Message-Id: <20220228172407.548992758@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,44 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baruch Siach <baruch.siach@siklu.com>
+From: Florian Westphal <fw@strlen.de>
 
-commit b6ad6261d27708567b309fdb3102b12c42a070cc upstream.
+commit dad3bdeef45f81a6e90204bcc85360bb76eccec7 upstream.
 
-Experimentation shows that PHY detect might fail when the code attempts
-MDIO bus read immediately after clock enable. Add delay to stabilize the
-clock before bus access.
+stateful objects can be updated from the control plane.
+The transaction logic allocates a temporary object for this purpose.
 
-PHY detect failure started to show after commit 7590fc6f80ac ("net:
-mdio: Demote probed message to debug print") that removed coincidental
-delay between clock enable and bus access.
+The ->init function was called for this object, so plain kfree() leaks
+resources. We must call ->destroy function of the object.
 
-10ms is meant to match the time it take to send the probed message over
-UART at 115200 bps. This might be a far overshoot.
+nft_obj_destroy does this, but it also decrements the module refcount,
+but the update path doesn't increment it.
 
-Fixes: 23a890d493e3 ("net: mdio: Add the reset function for IPQ MDIO driver")
-Signed-off-by: Baruch Siach <baruch.siach@siklu.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+To avoid special-casing the update object release, do module_get for
+the update case too and release it via nft_obj_destroy().
+
+Fixes: d62d0ba97b58 ("netfilter: nf_tables: Introduce stateful object update operation")
+Cc: Fernando Fernandez Mancera <ffmancera@riseup.net>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/mdio/mdio-ipq4019.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/netfilter/nf_tables_api.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
---- a/drivers/net/mdio/mdio-ipq4019.c
-+++ b/drivers/net/mdio/mdio-ipq4019.c
-@@ -200,7 +200,11 @@ static int ipq_mdio_reset(struct mii_bus
- 	if (ret)
- 		return ret;
- 
--	return clk_prepare_enable(priv->mdio_clk);
-+	ret = clk_prepare_enable(priv->mdio_clk);
-+	if (ret == 0)
-+		mdelay(10);
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -6535,12 +6535,15 @@ static int nf_tables_updobj(const struct
+ {
+ 	struct nft_object *newobj;
+ 	struct nft_trans *trans;
+-	int err;
++	int err = -ENOMEM;
 +
-+	return ret;
++	if (!try_module_get(type->owner))
++		return -ENOENT;
+ 
+ 	trans = nft_trans_alloc(ctx, NFT_MSG_NEWOBJ,
+ 				sizeof(struct nft_trans_obj));
+ 	if (!trans)
+-		return -ENOMEM;
++		goto err_trans;
+ 
+ 	newobj = nft_obj_init(ctx, type, attr);
+ 	if (IS_ERR(newobj)) {
+@@ -6557,6 +6560,8 @@ static int nf_tables_updobj(const struct
+ 
+ err_free_trans:
+ 	kfree(trans);
++err_trans:
++	module_put(type->owner);
+ 	return err;
  }
  
- static int ipq4019_mdio_probe(struct platform_device *pdev)
+@@ -8169,7 +8174,7 @@ static void nft_obj_commit_update(struct
+ 	if (obj->ops->update)
+ 		obj->ops->update(obj, newobj);
+ 
+-	kfree(newobj);
++	nft_obj_destroy(&trans->ctx, newobj);
+ }
+ 
+ static void nft_commit_release(struct nft_trans *trans)
+@@ -8914,7 +8919,7 @@ static int __nf_tables_abort(struct net
+ 			break;
+ 		case NFT_MSG_NEWOBJ:
+ 			if (nft_trans_obj_update(trans)) {
+-				kfree(nft_trans_obj_newobj(trans));
++				nft_obj_destroy(&trans->ctx, nft_trans_obj_newobj(trans));
+ 				nft_trans_destroy(trans);
+ 			} else {
+ 				trans->ctx.table->use--;
 
 
