@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E727FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF4B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239951AbiB1SGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:06:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47192 "EHLO
+        id S239814AbiB1SGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:06:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239681AbiB1SB7 (ORCPT
+        with ESMTP id S239655AbiB1SBw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:01:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 101549BAE7;
-        Mon, 28 Feb 2022 09:45:52 -0800 (PST)
+        Mon, 28 Feb 2022 13:01:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346E29A4FA;
+        Mon, 28 Feb 2022 09:45:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B45EAB815C3;
-        Mon, 28 Feb 2022 17:45:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17331C340E7;
-        Mon, 28 Feb 2022 17:45:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B453B815CB;
+        Mon, 28 Feb 2022 17:45:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A928C340E7;
+        Mon, 28 Feb 2022 17:45:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070336;
-        bh=sL2qIDlLMQCZsZRyjpxIFuykDZqrO1sZdzxDqVRJY7s=;
+        s=korg; t=1646070341;
+        bh=VyUfbnGaAd3kqjHNxWN381qVv/0zLvBAVIYkwePJkDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LBbQA2rLvpw3snU64ZatyJ/FncAoOymrb3xoLv+7PG5rWUlqVMhaE8I8uYnsFQQam
-         OXAjqzQJn6tJb4yDuLa44joOcYGYbQ4VHIBNzPtw/wkLEMbpIkvTTHr5oVY+Nn41lC
-         9HwExHT/x63qkJlRd88ExkI4J7cnvU1Isv+WKilg=
+        b=Ui2IHsnLPxndPy/74yf59EDNuZhqYDHtAOjV+KLFSrWKyb36VQgWsQJ4DwB3ZBIvu
+         MSidcRu7G73KdzEnvmuVnTxw1IoGSTouUfzA4LnehbiI1HxV0y12BFE/Dfq5g9WMjq
+         3ZV2lTS/GflYXXBj+adJZNOCwZMTfxEZpBUHlEP0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>, Oz Shlomo <ozsh@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 072/164] net/mlx5e: TC, Reject rules with drop and modify hdr action
-Date:   Mon, 28 Feb 2022 18:23:54 +0100
-Message-Id: <20220228172406.612943451@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Subject: [PATCH 5.16 074/164] drm/vc4: crtc: Fix runtime_pm reference counting
+Date:   Mon, 28 Feb 2022 18:23:56 +0100
+Message-Id: <20220228172406.772484072@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,39 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-commit 23216d387c40b090b221ad457c95912fb47eb11e upstream.
+commit 6764eb690e77ecded48587d6d4e346ba2e196546 upstream.
 
-This kind of action is not supported by firmware and generates a
-syndrome.
+At boot on the BCM2711, if the HDMI controllers are running, the CRTC
+driver will disable itself and its associated HDMI controller to work
+around a hardware bug that would leave some pixels stuck in a FIFO.
 
-kernel: mlx5_core 0000:08:00.0: mlx5_cmd_check:777:(pid 102063): SET_FLOW_TABLE_ENTRY(0x936) op_mod(0x0) failed, status bad parameter(0x3), syndrome (0x8708c3)
+In order to avoid that issue, we need to run some operations in lockstep
+between the CRTC and HDMI controller, and we need to make sure the HDMI
+controller will be powered properly.
 
-Fixes: d7e75a325cb2 ("net/mlx5e: Add offloading of E-Switch TC pedit (header re-write) actions")
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+However, since we haven't enabled it through KMS, the runtime_pm state
+is off at this point so we need to make sure the device is powered
+through pm_runtime_resume_and_get, and once the operations are complete,
+we call pm_runtime_put.
+
+However, the HDMI controller will do that itself in its
+post_crtc_powerdown, which means we'll end up calling pm_runtime_put for
+a single pm_runtime_get, throwing the reference counting off. Let's
+remove the pm_runtime_put call in the CRTC code in order to have the
+proper counting.
+
+Fixes: bca10db67bda ("drm/vc4: crtc: Make sure the HDMI controller is powered when disabling")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220203102003.1114673-1-maxime@cerno.tech
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/vc4/vc4_crtc.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3440,6 +3440,12 @@ actions_match_supported(struct mlx5e_pri
- 	}
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -538,9 +538,11 @@ int vc4_crtc_disable_at_boot(struct drm_
+ 	if (ret)
+ 		return ret;
  
- 	if (actions & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
-+	    actions & MLX5_FLOW_CONTEXT_ACTION_DROP) {
-+		NL_SET_ERR_MSG_MOD(extack, "Drop with modify header action is not supported");
-+		return false;
-+	}
-+
-+	if (actions & MLX5_FLOW_CONTEXT_ACTION_MOD_HDR &&
- 	    !modify_header_match_supported(priv, &parse_attr->spec, flow_action,
- 					   actions, ct_flow, ct_clear, extack))
- 		return false;
+-	ret = pm_runtime_put(&vc4_hdmi->pdev->dev);
+-	if (ret)
+-		return ret;
++	/*
++	 * post_crtc_powerdown will have called pm_runtime_put, so we
++	 * don't need it here otherwise we'll get the reference counting
++	 * wrong.
++	 */
+ 
+ 	return 0;
+ }
 
 
