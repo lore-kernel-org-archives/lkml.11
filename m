@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C146C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239815AbiB1SH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:07:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43730 "EHLO
+        id S235931AbiB1SHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240260AbiB1SDU (ORCPT
+        with ESMTP id S240316AbiB1SDZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85D57B18B6;
-        Mon, 28 Feb 2022 09:46:47 -0800 (PST)
+        Mon, 28 Feb 2022 13:03:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC90B2382;
+        Mon, 28 Feb 2022 09:46:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F01D60748;
-        Mon, 28 Feb 2022 17:46:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 380A2C36AE2;
-        Mon, 28 Feb 2022 17:46:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BE1060BC0;
+        Mon, 28 Feb 2022 17:46:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E4F9C340E7;
+        Mon, 28 Feb 2022 17:46:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070404;
-        bh=2liIzuPif238qtc1zzeUUOVI7Y28db2Sn2eLXFxMt6c=;
+        s=korg; t=1646070382;
+        bh=+l3jU0nvv1HAdt1l7oH7jBuox343EAywraz1n02pq30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R10Nvaz5AkcXrTtcdt7T8zE9R9GlsyVSopL7nkQwqk3EXWD5Wmh4MO03E/TCFVA2n
-         LVZtWZhu4v6C+SIXhNttEMOb1ZssgbTLFvvAGRTQ+pDB/VndsIsjXnIu+ZTDLTwpjE
-         GWEoY2yR5iMzwqDgk+W4sVmLqPMY5NOQpxQI2koE=
+        b=s6F/Lh0WAUehetL2SKOOINcFEthaDwMGr3AjC3J3D+TgOMWFMSSFHixn2/bR9bpaj
+         1xb18q0+zddeXBnBxLf4B8IWaMQ90u9wdPqkbrAMWVoARO/bHfTFLCH+RT58Ha2S4E
+         E3k7YVOmkMvY+6FtB++00NdBOg/+aAarK6FC2JWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 095/164] net/mlx5e: kTLS, Use CHECKSUM_UNNECESSARY for device-offloaded packets
-Date:   Mon, 28 Feb 2022 18:24:17 +0100
-Message-Id: <20220228172408.400648731@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 087/164] udp_tunnel: Fix end of loop test in udp_tunnel_nic_unregister()
+Date:   Mon, 28 Feb 2022 18:24:09 +0100
+Message-Id: <20220228172407.779882137@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,43 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 7eaf1f37b8817c608c4e959d69986ef459d345cd upstream.
+commit de7b2efacf4e83954aed3f029d347dfc0b7a4f49 upstream.
 
-For RX TLS device-offloaded packets, the HW spec guarantees checksum
-validation for the offloaded packets, but does not define whether the
-CQE.checksum field matches the original packet (ciphertext) or
-the decrypted one (plaintext). This latitude allows architetctural
-improvements between generations of chips, resulting in different decisions
-regarding the value type of CQE.checksum.
+This test is checking if we exited the list via break or not.  However
+if it did not exit via a break then "node" does not point to a valid
+udp_tunnel_nic_shared_node struct.  It will work because of the way
+the structs are laid out it's the equivalent of
+"if (info->shared->udp_tunnel_nic_info != dev)" which will always be
+true, but it's not the right way to test.
 
-Hence, for these packets, the device driver should not make use of this CQE
-field. Here we block CHECKSUM_COMPLETE usage for RX TLS device-offloaded
-packets, and use CHECKSUM_UNNECESSARY instead.
-
-Value of the packet's tcp_hdr.csum is not modified by the HW, and it always
-matches the original ciphertext.
-
-Fixes: 1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 74cc6d182d03 ("udp_tunnel: add the ability to share port tables")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ipv4/udp_tunnel_nic.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1348,7 +1348,8 @@ static inline void mlx5e_handle_csum(str
- 	}
+--- a/net/ipv4/udp_tunnel_nic.c
++++ b/net/ipv4/udp_tunnel_nic.c
+@@ -846,7 +846,7 @@ udp_tunnel_nic_unregister(struct net_dev
+ 		list_for_each_entry(node, &info->shared->devices, list)
+ 			if (node->dev == dev)
+ 				break;
+-		if (node->dev != dev)
++		if (list_entry_is_head(node, &info->shared->devices, list))
+ 			return;
  
- 	/* True when explicitly set via priv flag, or XDP prog is loaded */
--	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state))
-+	if (test_bit(MLX5E_RQ_STATE_NO_CSUM_COMPLETE, &rq->state) ||
-+	    get_cqe_tls_offload(cqe))
- 		goto csum_unnecessary;
- 
- 	/* CQE csum doesn't cover padding octets in short ethernet
+ 		list_del(&node->list);
 
 
