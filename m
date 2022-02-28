@@ -2,249 +2,676 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E6AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:22:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C49C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236278AbiB1MXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:23:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43900 "EHLO
+        id S236281AbiB1MXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:23:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236265AbiB1MXG (ORCPT
+        with ESMTP id S236275AbiB1MXL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:23:06 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD99074622
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:22:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=xpRzNym3LsY5nRIvzwNRw6/4XtU7jP5KpqP7Ea6YLTg=; b=eNyDByh6x+wTCv1YMV7eZKFGmp
-        Ys9ClGvGIGVBZQ1cG37XqyXPQFqP5VApuetxl7RPlc2rDvDeEnNIHc9W03bSQoilInoWRmaG9DSYF
-        /xVO0UdVykk269zwwmAccjLO2SvfY+U5IpXwtABFmX77e0g3IelSu6ON4juiHSZP0URdPH0FPgFhP
-        G/eyNDcvz2XpuXnCt8Cjqe9H+QXly5Uqpg+/7q9xnzgUAR/h/a/fvKwC9NgOJuaxtUqaT9vPtgboB
-        +Mgih1OAKjjihsH3Fkv3DcR2DekTfqFFIYCfOiZt4mF9VhQ0izWqryO6Clunyv2lJSkpnM+CAjCKM
-        5rxGxHoA==;
-Received: from [2.53.163.181] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOf2j-00C9v3-N5; Mon, 28 Feb 2022 12:22:22 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     iommu@lists.linux-foundation.org
-Cc:     robin.murphy@arm.com, joro@8bytes.org, will@kernel.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] dma-mapping: remove CONFIG_DMA_REMAP
-Date:   Mon, 28 Feb 2022 14:22:18 +0200
-Message-Id: <20220228122218.853094-1-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
+        Mon, 28 Feb 2022 07:23:11 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D9AE8F
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:22:31 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id j10-20020a17090a94ca00b001bc2a9596f6so11172480pjw.5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:22:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DRNqXfjEE8EbF/PX/yNqJZjs4ngtvwLuRBxmQsgavJg=;
+        b=YUUNDNVipcqQJITv+ague57WXiJel5qSjANMsuTL6NEa/kw0WpqayzC5qrwrgJCvii
+         aOU2wSBDa/ONkBcjG4Ibh34N0Tpf+KWJF+QT3324qxnS9b5hgk8x5YxxvGwFzCB6e0TB
+         LbuTSCZfc9EjsE0FhK2dnKLKbC5MXl9XUaMGsOCYI6xowPjEshE8Zl1nFUxY7qS5dmwb
+         +ARDbcrXYFGnz9SeRPuYgAwIUptL6iP8T7ZA5r6iQG+MFlyiWSj3HbYWOCIFjHAWBj8J
+         sm720SKrDzxPNP6WDSkwbSp3z0JfiD2oj9jzDeufwNvqdgyadKYXtDyz3issme8qUnOn
+         zfTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DRNqXfjEE8EbF/PX/yNqJZjs4ngtvwLuRBxmQsgavJg=;
+        b=6YpAQ3rgIGU762hyh8NY5t+6KXPTbGHFyQFiMSVfwmr83oDKf6JINms71lzsxDn83R
+         3RN6/kinhdMw1hsuTm62Sdc+jJOLMFSMYBOnH/1bgOyU4VWNe7ikTpVuZd4DQQvUlgpJ
+         g9ibLpWCTlAuI/YJezdYrWqBPAqrE64eXCV+tBFCGOT4WHgy3Jw8gjVtI9Kfu0nj9zYu
+         fxcj/iKbghQPnCLRJA9VMuCZMffuZR5IE+oPzFGEPC9A5wECE4HjErLdpMKvGWHylMTA
+         tsl6ve/Ptup9HoCDv90RQu6jng/HgH3XeABErfuhYCno4uByka9PYuWUGQPHwC5YNZvk
+         1Y+w==
+X-Gm-Message-State: AOAM530S2K9Yl/IHKGqUD+h2ZeyYxKaJ/af1ENobWZzIvl+ReSX+QVJx
+        SoTSnnKGALG7azIwFvNuzj1Gvg==
+X-Google-Smtp-Source: ABdhPJxqbSMhWSWJdpm515bJtXosZbDIWgJJ2BkA23gcdQDYT0Us8MSiqpB8C3tUWYUDR6Xnc+C0hA==
+X-Received: by 2002:a17:902:d103:b0:14f:a3a5:3974 with SMTP id w3-20020a170902d10300b0014fa3a53974mr20369935plw.74.1646050950694;
+        Mon, 28 Feb 2022 04:22:30 -0800 (PST)
+Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
+        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.22.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 04:22:30 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
+        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
+        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
+        richard.weiyang@gmail.com, david@fromorbit.com,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
+        vbabka@suse.cz
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
+        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
+        fam.zheng@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v6 02/16] mm: introduce kmem_cache_alloc_lru
+Date:   Mon, 28 Feb 2022 20:21:12 +0800
+Message-Id: <20220228122126.37293-3-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
+References: <20220228122126.37293-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CONFIG_DMA_REMAP is used to build a few helpers around the core
-vmalloc code, and to use them in case there is a highmem page in
-dma-direct, and to make dma coherent allocations be able to use
-non-contiguous pages allocations for DMA allocations in the dma-iommu
-layer.
+We currently allocate scope for every memcg to be able to tracked on
+every superblock instantiated in the system, regardless of whether
+that superblock is even accessible to that memcg.
 
-Right now it needs to be explicitly selected by architectures, and
-is only done so by architectures that require remapping to deal
-with devices that are not DMA coherent.  Make it unconditional for
-builds with CONFIG_MMU as it is very little extra code, but makes
-it much more likely that large DMA allocations succeed on x86.
+These huge memcg counts come from container hosts where memcgs are
+confined to just a small subset of the total number of superblocks
+that instantiated at any given point in time.
 
-This fixes hot plugging a NVMe thunderbolt SSD for me, which tries
-to allocate a 1MB buffer that is otherwise hard to obtain due to
-memory fragmentation on a heavily used laptop.
+For these systems with huge container counts, list_lru does not need
+the capability of tracking every memcg on every superblock. What it
+comes down to is that adding the memcg to the list_lru at the first
+insert. So introduce kmem_cache_alloc_lru to allocate objects and its
+list_lru. In the later patch, we will convert all inode and dentry
+allocation from kmem_cache_alloc to kmem_cache_alloc_lru.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
 ---
+ include/linux/list_lru.h   |   4 ++
+ include/linux/memcontrol.h |  14 ++++++
+ include/linux/slab.h       |   3 ++
+ mm/list_lru.c              | 104 +++++++++++++++++++++++++++++++++++++++++----
+ mm/memcontrol.c            |  14 ------
+ mm/slab.c                  |  39 +++++++++++------
+ mm/slab.h                  |  25 +++++++++--
+ mm/slob.c                  |   6 +++
+ mm/slub.c                  |  42 ++++++++++++------
+ 9 files changed, 198 insertions(+), 53 deletions(-)
 
-Changes since v1:
- - drop a not required CONFIG_MMU check
-
- arch/arm/Kconfig          |  2 +-
- arch/xtensa/Kconfig       |  2 +-
- drivers/iommu/dma-iommu.c | 14 +++++---------
- kernel/dma/Kconfig        |  7 +------
- kernel/dma/Makefile       |  2 +-
- kernel/dma/direct.c       | 18 +++++++-----------
- 6 files changed, 16 insertions(+), 29 deletions(-)
-
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 4c97cb40eebb6..83fb277e50759 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -47,7 +47,7 @@ config ARM
- 	select DMA_DECLARE_COHERENT
- 	select DMA_GLOBAL_POOL if !MMU
- 	select DMA_OPS
--	select DMA_REMAP if MMU
-+	select DMA_NONCOHERENT_MMAP if MMU
- 	select EDAC_SUPPORT
- 	select EDAC_ATOMIC_SCRUB
- 	select GENERIC_ALLOCATOR
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index 8ac599aa6d994..76438ee313d16 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -17,7 +17,7 @@ config XTENSA
- 	select BUILDTIME_TABLE_SORT
- 	select CLONE_BACKWARDS
- 	select COMMON_CLK
--	select DMA_REMAP if MMU
-+	select DMA_NONCOHERENT_MMAP if MMU
- 	select GENERIC_ATOMIC64
- 	select GENERIC_IRQ_SHOW
- 	select GENERIC_PCI_IOMAP
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d85d54f2b5496..cebced7ddf390 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -852,7 +852,6 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
- 	return NULL;
+diff --git a/include/linux/list_lru.h b/include/linux/list_lru.h
+index 729a27b6ff53..ab912c49334f 100644
+--- a/include/linux/list_lru.h
++++ b/include/linux/list_lru.h
+@@ -56,6 +56,8 @@ struct list_lru {
+ 	struct list_head	list;
+ 	int			shrinker_id;
+ 	bool			memcg_aware;
++	/* protects ->mlrus->mlru[i] */
++	spinlock_t		lock;
+ 	/* for cgroup aware lrus points to per cgroup lists, otherwise NULL */
+ 	struct list_lru_memcg	__rcu *mlrus;
+ #endif
+@@ -72,6 +74,8 @@ int __list_lru_init(struct list_lru *lru, bool memcg_aware,
+ #define list_lru_init_memcg(lru, shrinker)		\
+ 	__list_lru_init((lru), true, NULL, shrinker)
+ 
++int memcg_list_lru_alloc(struct mem_cgroup *memcg, struct list_lru *lru,
++			 gfp_t gfp);
+ int memcg_update_all_list_lrus(int num_memcgs);
+ void memcg_drain_all_list_lrus(int src_idx, struct mem_cgroup *dst_memcg);
+ 
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 0abbd685703b..0d6d838cadfd 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -523,6 +523,20 @@ static inline struct mem_cgroup *page_memcg_check(struct page *page)
+ 	return (struct mem_cgroup *)(memcg_data & ~MEMCG_DATA_FLAGS_MASK);
  }
  
--#ifdef CONFIG_DMA_REMAP
- static struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev,
- 		size_t size, enum dma_data_direction dir, gfp_t gfp,
- 		unsigned long attrs)
-@@ -882,7 +881,6 @@ static void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
- 	sg_free_table(&sh->sgt);
- 	kfree(sh);
++static inline struct mem_cgroup *get_mem_cgroup_from_objcg(struct obj_cgroup *objcg)
++{
++	struct mem_cgroup *memcg;
++
++	rcu_read_lock();
++retry:
++	memcg = obj_cgroup_memcg(objcg);
++	if (unlikely(!css_tryget(&memcg->css)))
++		goto retry;
++	rcu_read_unlock();
++
++	return memcg;
++}
++
+ #ifdef CONFIG_MEMCG_KMEM
+ /*
+  * folio_memcg_kmem - Check if the folio has the memcg_kmem flag set.
+diff --git a/include/linux/slab.h b/include/linux/slab.h
+index 37bde99b74af..7ef2e14ccca1 100644
+--- a/include/linux/slab.h
++++ b/include/linux/slab.h
+@@ -135,6 +135,7 @@
+ 
+ #include <linux/kasan.h>
+ 
++struct list_lru;
+ struct mem_cgroup;
+ /*
+  * struct kmem_cache related prototypes
+@@ -416,6 +417,8 @@ static __always_inline unsigned int __kmalloc_index(size_t size,
+ 
+ void *__kmalloc(size_t size, gfp_t flags) __assume_kmalloc_alignment __alloc_size(1);
+ void *kmem_cache_alloc(struct kmem_cache *s, gfp_t flags) __assume_slab_alignment __malloc;
++void *kmem_cache_alloc_lru(struct kmem_cache *s, struct list_lru *lru,
++			   gfp_t gfpflags) __assume_slab_alignment __malloc;
+ void kmem_cache_free(struct kmem_cache *s, void *objp);
+ 
+ /*
+diff --git a/mm/list_lru.c b/mm/list_lru.c
+index 7d1356241aa8..bffa80527723 100644
+--- a/mm/list_lru.c
++++ b/mm/list_lru.c
+@@ -13,6 +13,7 @@
+ #include <linux/mutex.h>
+ #include <linux/memcontrol.h>
+ #include "slab.h"
++#include "internal.h"
+ 
+ #ifdef CONFIG_MEMCG_KMEM
+ static LIST_HEAD(memcg_list_lrus);
+@@ -338,22 +339,30 @@ static void memcg_destroy_list_lru_range(struct list_lru_memcg *mlrus,
+ 		kfree(mlrus->mlru[i]);
  }
--#endif /* CONFIG_DMA_REMAP */
  
- static void iommu_dma_sync_single_for_cpu(struct device *dev,
- 		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
-@@ -1276,7 +1274,7 @@ static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
- 	    dma_free_from_pool(dev, cpu_addr, alloc_size))
- 		return;
++static struct list_lru_per_memcg *memcg_init_list_lru_one(gfp_t gfp)
++{
++	int nid;
++	struct list_lru_per_memcg *mlru;
++
++	mlru = kmalloc(struct_size(mlru, node, nr_node_ids), gfp);
++	if (!mlru)
++		return NULL;
++
++	for_each_node(nid)
++		init_one_lru(&mlru->node[nid]);
++
++	return mlru;
++}
++
+ static int memcg_init_list_lru_range(struct list_lru_memcg *mlrus,
+ 				     int begin, int end)
+ {
+ 	int i;
  
--	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
-+	if (is_vmalloc_addr(cpu_addr)) {
- 		/*
- 		 * If it the address is remapped, then it's either non-coherent
- 		 * or highmem CMA, or an iommu_dma_alloc_remap() construction.
-@@ -1318,7 +1316,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- 	if (!page)
- 		return NULL;
- 
--	if (IS_ENABLED(CONFIG_DMA_REMAP) && (!coherent || PageHighMem(page))) {
-+	if (!coherent || PageHighMem(page)) {
- 		pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
- 
- 		cpu_addr = dma_common_contiguous_remap(page, alloc_size,
-@@ -1350,7 +1348,7 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
- 
- 	gfp |= __GFP_ZERO;
- 
--	if (IS_ENABLED(CONFIG_DMA_REMAP) && gfpflags_allow_blocking(gfp) &&
-+	if (gfpflags_allow_blocking(gfp) &&
- 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS)) {
- 		return iommu_dma_alloc_remap(dev, size, handle, gfp,
- 				dma_pgprot(dev, PAGE_KERNEL, attrs), attrs);
-@@ -1391,7 +1389,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
- 	if (off >= nr_pages || vma_pages(vma) > nr_pages - off)
- 		return -ENXIO;
- 
--	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
-+	if (is_vmalloc_addr(cpu_addr)) {
- 		struct page **pages = dma_common_find_pages(cpu_addr);
- 
- 		if (pages)
-@@ -1413,7 +1411,7 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
- 	struct page *page;
- 	int ret;
- 
--	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
-+	if (is_vmalloc_addr(cpu_addr)) {
- 		struct page **pages = dma_common_find_pages(cpu_addr);
- 
- 		if (pages) {
-@@ -1445,10 +1443,8 @@ static const struct dma_map_ops iommu_dma_ops = {
- 	.free			= iommu_dma_free,
- 	.alloc_pages		= dma_common_alloc_pages,
- 	.free_pages		= dma_common_free_pages,
--#ifdef CONFIG_DMA_REMAP
- 	.alloc_noncontiguous	= iommu_dma_alloc_noncontiguous,
- 	.free_noncontiguous	= iommu_dma_free_noncontiguous,
--#endif
- 	.mmap			= iommu_dma_mmap,
- 	.get_sgtable		= iommu_dma_get_sgtable,
- 	.map_page		= iommu_dma_map_page,
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 1b02179758cbc..56866aaa2ae1a 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -110,15 +110,10 @@ config DMA_GLOBAL_POOL
- 	select DMA_DECLARE_COHERENT
- 	bool
- 
--config DMA_REMAP
--	bool
--	depends on MMU
--	select DMA_NONCOHERENT_MMAP
+ 	for (i = begin; i < end; i++) {
+-		int nid;
+-		struct list_lru_per_memcg *mlru;
 -
- config DMA_DIRECT_REMAP
- 	bool
--	select DMA_REMAP
- 	select DMA_COHERENT_POOL
-+	select DMA_NONCOHERENT_MMAP
+-		mlru = kmalloc(struct_size(mlru, node, nr_node_ids), GFP_KERNEL);
+-		if (!mlru)
++		mlrus->mlru[i] = memcg_init_list_lru_one(GFP_KERNEL);
++		if (!mlrus->mlru[i])
+ 			goto fail;
+-
+-		for_each_node(nid)
+-			init_one_lru(&mlru->node[nid]);
+-		mlrus->mlru[i] = mlru;
+ 	}
+ 	return 0;
+ fail:
+@@ -370,6 +379,8 @@ static int memcg_init_list_lru(struct list_lru *lru, bool memcg_aware)
+ 	if (!memcg_aware)
+ 		return 0;
  
- config DMA_CMA
- 	bool "DMA Contiguous Memory Allocator"
-diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
-index 0dd65ec1d234b..21926e46ef4fb 100644
---- a/kernel/dma/Makefile
-+++ b/kernel/dma/Makefile
-@@ -8,5 +8,5 @@ obj-$(CONFIG_DMA_DECLARE_COHERENT)	+= coherent.o
- obj-$(CONFIG_DMA_API_DEBUG)		+= debug.o
- obj-$(CONFIG_SWIOTLB)			+= swiotlb.o
- obj-$(CONFIG_DMA_COHERENT_POOL)		+= pool.o
--obj-$(CONFIG_DMA_REMAP)			+= remap.o
-+obj-$(CONFIG_MMU)			+= remap.o
- obj-$(CONFIG_DMA_MAP_BENCHMARK)		+= map_benchmark.o
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 50f48e9e45987..35a1d29d6a2e9 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -265,17 +265,13 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
- 	if (!page)
- 		return NULL;
++	spin_lock_init(&lru->lock);
++
+ 	mlrus = kvmalloc(struct_size(mlrus, mlru, size), GFP_KERNEL);
+ 	if (!mlrus)
+ 		return -ENOMEM;
+@@ -416,8 +427,11 @@ static int memcg_update_list_lru(struct list_lru *lru, int old_size, int new_siz
+ 		return -ENOMEM;
+ 	}
+ 
++	spin_lock_irq(&lru->lock);
+ 	memcpy(&new->mlru, &old->mlru, flex_array_size(new, mlru, old_size));
+ 	rcu_assign_pointer(lru->mlrus, new);
++	spin_unlock_irq(&lru->lock);
++
+ 	kvfree_rcu(old, rcu);
+ 	return 0;
+ }
+@@ -502,6 +516,78 @@ void memcg_drain_all_list_lrus(int src_idx, struct mem_cgroup *dst_memcg)
+ 		memcg_drain_list_lru(lru, src_idx, dst_memcg);
+ 	mutex_unlock(&list_lrus_mutex);
+ }
++
++static bool memcg_list_lru_allocated(struct mem_cgroup *memcg,
++				     struct list_lru *lru)
++{
++	bool allocated;
++	int idx;
++
++	idx = memcg->kmemcg_id;
++	if (unlikely(idx < 0))
++		return true;
++
++	rcu_read_lock();
++	allocated = !!rcu_dereference(lru->mlrus)->mlru[idx];
++	rcu_read_unlock();
++
++	return allocated;
++}
++
++int memcg_list_lru_alloc(struct mem_cgroup *memcg, struct list_lru *lru,
++			 gfp_t gfp)
++{
++	int i;
++	unsigned long flags;
++	struct list_lru_memcg *mlrus;
++	struct list_lru_memcg_table {
++		struct list_lru_per_memcg *mlru;
++		struct mem_cgroup *memcg;
++	} *table;
++
++	if (!list_lru_memcg_aware(lru) || memcg_list_lru_allocated(memcg, lru))
++		return 0;
++
++	gfp &= GFP_RECLAIM_MASK;
++	table = kmalloc_array(memcg->css.cgroup->level, sizeof(*table), gfp);
++	if (!table)
++		return -ENOMEM;
 +
 +	/*
-+	 * dma_alloc_contiguous can return highmem pages depending on a
-+	 * combination the cma= arguments and per-arch setup.  These need to be
-+	 * remapped to return a kernel virtual address.
++	 * Because the list_lru can be reparented to the parent cgroup's
++	 * list_lru, we should make sure that this cgroup and all its
++	 * ancestors have allocated list_lru_per_memcg.
 +	 */
- 	if (PageHighMem(page)) {
--		/*
--		 * Depending on the cma= arguments and per-arch setup,
--		 * dma_alloc_contiguous could return highmem pages.
--		 * Without remapping there is no way to return them here, so
--		 * log an error and fail.
--		 */
--		if (!IS_ENABLED(CONFIG_DMA_REMAP)) {
--			dev_info(dev, "Rejecting highmem page from CMA.\n");
--			goto out_free_pages;
--		}
- 		remap = true;
- 		set_uncached = false;
- 	}
-@@ -349,7 +345,7 @@ void dma_direct_free(struct device *dev, size_t size,
- 	    dma_free_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
- 		return;
++	for (i = 0; memcg; memcg = parent_mem_cgroup(memcg), i++) {
++		if (memcg_list_lru_allocated(memcg, lru))
++			break;
++
++		table[i].memcg = memcg;
++		table[i].mlru = memcg_init_list_lru_one(gfp);
++		if (!table[i].mlru) {
++			while (i--)
++				kfree(table[i].mlru);
++			kfree(table);
++			return -ENOMEM;
++		}
++	}
++
++	spin_lock_irqsave(&lru->lock, flags);
++	mlrus = rcu_dereference_protected(lru->mlrus, true);
++	while (i--) {
++		int index = table[i].memcg->kmemcg_id;
++
++		if (mlrus->mlru[index])
++			kfree(table[i].mlru);
++		else
++			mlrus->mlru[index] = table[i].mlru;
++	}
++	spin_unlock_irqrestore(&lru->lock, flags);
++
++	kfree(table);
++
++	return 0;
++}
+ #else
+ static int memcg_init_list_lru(struct list_lru *lru, bool memcg_aware)
+ {
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 36e9f38c919d..ffc5f0798de1 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -2748,20 +2748,6 @@ static void commit_charge(struct folio *folio, struct mem_cgroup *memcg)
+ 	folio->memcg_data = (unsigned long)memcg;
+ }
  
--	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
-+	if (is_vmalloc_addr(cpu_addr)) {
- 		vunmap(cpu_addr);
- 	} else {
- 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
+-static struct mem_cgroup *get_mem_cgroup_from_objcg(struct obj_cgroup *objcg)
+-{
+-	struct mem_cgroup *memcg;
+-
+-	rcu_read_lock();
+-retry:
+-	memcg = obj_cgroup_memcg(objcg);
+-	if (unlikely(!css_tryget(&memcg->css)))
+-		goto retry;
+-	rcu_read_unlock();
+-
+-	return memcg;
+-}
+-
+ #ifdef CONFIG_MEMCG_KMEM
+ /*
+  * The allocated objcg pointers array is not accounted directly.
+diff --git a/mm/slab.c b/mm/slab.c
+index ddf5737c63d9..d9dec7a8fd79 100644
+--- a/mm/slab.c
++++ b/mm/slab.c
+@@ -3211,7 +3211,7 @@ slab_alloc_node(struct kmem_cache *cachep, gfp_t flags, int nodeid, size_t orig_
+ 	bool init = false;
+ 
+ 	flags &= gfp_allowed_mask;
+-	cachep = slab_pre_alloc_hook(cachep, &objcg, 1, flags);
++	cachep = slab_pre_alloc_hook(cachep, NULL, &objcg, 1, flags);
+ 	if (unlikely(!cachep))
+ 		return NULL;
+ 
+@@ -3287,7 +3287,8 @@ __do_cache_alloc(struct kmem_cache *cachep, gfp_t flags)
+ #endif /* CONFIG_NUMA */
+ 
+ static __always_inline void *
+-slab_alloc(struct kmem_cache *cachep, gfp_t flags, size_t orig_size, unsigned long caller)
++slab_alloc(struct kmem_cache *cachep, struct list_lru *lru, gfp_t flags,
++	   size_t orig_size, unsigned long caller)
+ {
+ 	unsigned long save_flags;
+ 	void *objp;
+@@ -3295,7 +3296,7 @@ slab_alloc(struct kmem_cache *cachep, gfp_t flags, size_t orig_size, unsigned lo
+ 	bool init = false;
+ 
+ 	flags &= gfp_allowed_mask;
+-	cachep = slab_pre_alloc_hook(cachep, &objcg, 1, flags);
++	cachep = slab_pre_alloc_hook(cachep, lru, &objcg, 1, flags);
+ 	if (unlikely(!cachep))
+ 		return NULL;
+ 
+@@ -3484,6 +3485,18 @@ void ___cache_free(struct kmem_cache *cachep, void *objp,
+ 	__free_one(ac, objp);
+ }
+ 
++static __always_inline
++void *__kmem_cache_alloc_lru(struct kmem_cache *cachep, struct list_lru *lru,
++			     gfp_t flags)
++{
++	void *ret = slab_alloc(cachep, lru, flags, cachep->object_size, _RET_IP_);
++
++	trace_kmem_cache_alloc(_RET_IP_, ret,
++			       cachep->object_size, cachep->size, flags);
++
++	return ret;
++}
++
+ /**
+  * kmem_cache_alloc - Allocate an object
+  * @cachep: The cache to allocate from.
+@@ -3496,15 +3509,17 @@ void ___cache_free(struct kmem_cache *cachep, void *objp,
+  */
+ void *kmem_cache_alloc(struct kmem_cache *cachep, gfp_t flags)
+ {
+-	void *ret = slab_alloc(cachep, flags, cachep->object_size, _RET_IP_);
+-
+-	trace_kmem_cache_alloc(_RET_IP_, ret,
+-			       cachep->object_size, cachep->size, flags);
+-
+-	return ret;
++	return __kmem_cache_alloc_lru(cachep, NULL, flags);
+ }
+ EXPORT_SYMBOL(kmem_cache_alloc);
+ 
++void *kmem_cache_alloc_lru(struct kmem_cache *cachep, struct list_lru *lru,
++			   gfp_t flags)
++{
++	return __kmem_cache_alloc_lru(cachep, lru, flags);
++}
++EXPORT_SYMBOL(kmem_cache_alloc_lru);
++
+ static __always_inline void
+ cache_alloc_debugcheck_after_bulk(struct kmem_cache *s, gfp_t flags,
+ 				  size_t size, void **p, unsigned long caller)
+@@ -3521,7 +3536,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+ 	size_t i;
+ 	struct obj_cgroup *objcg = NULL;
+ 
+-	s = slab_pre_alloc_hook(s, &objcg, size, flags);
++	s = slab_pre_alloc_hook(s, NULL, &objcg, size, flags);
+ 	if (!s)
+ 		return 0;
+ 
+@@ -3562,7 +3577,7 @@ kmem_cache_alloc_trace(struct kmem_cache *cachep, gfp_t flags, size_t size)
+ {
+ 	void *ret;
+ 
+-	ret = slab_alloc(cachep, flags, size, _RET_IP_);
++	ret = slab_alloc(cachep, NULL, flags, size, _RET_IP_);
+ 
+ 	ret = kasan_kmalloc(cachep, ret, size, flags);
+ 	trace_kmalloc(_RET_IP_, ret,
+@@ -3689,7 +3704,7 @@ static __always_inline void *__do_kmalloc(size_t size, gfp_t flags,
+ 	cachep = kmalloc_slab(size, flags);
+ 	if (unlikely(ZERO_OR_NULL_PTR(cachep)))
+ 		return cachep;
+-	ret = slab_alloc(cachep, flags, size, caller);
++	ret = slab_alloc(cachep, NULL, flags, size, caller);
+ 
+ 	ret = kasan_kmalloc(cachep, ret, size, flags);
+ 	trace_kmalloc(caller, ret,
+diff --git a/mm/slab.h b/mm/slab.h
+index c7f2abc2b154..fd7ae2024897 100644
+--- a/mm/slab.h
++++ b/mm/slab.h
+@@ -231,6 +231,7 @@ struct kmem_cache {
+ #include <linux/kmemleak.h>
+ #include <linux/random.h>
+ #include <linux/sched/mm.h>
++#include <linux/list_lru.h>
+ 
+ /*
+  * State of the slab allocator.
+@@ -472,6 +473,7 @@ static inline size_t obj_full_size(struct kmem_cache *s)
+  * Returns false if the allocation should fail.
+  */
+ static inline bool memcg_slab_pre_alloc_hook(struct kmem_cache *s,
++					     struct list_lru *lru,
+ 					     struct obj_cgroup **objcgp,
+ 					     size_t objects, gfp_t flags)
+ {
+@@ -487,13 +489,26 @@ static inline bool memcg_slab_pre_alloc_hook(struct kmem_cache *s,
+ 	if (!objcg)
+ 		return true;
+ 
+-	if (obj_cgroup_charge(objcg, flags, objects * obj_full_size(s))) {
+-		obj_cgroup_put(objcg);
+-		return false;
++	if (lru) {
++		int ret;
++		struct mem_cgroup *memcg;
++
++		memcg = get_mem_cgroup_from_objcg(objcg);
++		ret = memcg_list_lru_alloc(memcg, lru, flags);
++		css_put(&memcg->css);
++
++		if (ret)
++			goto out;
+ 	}
+ 
++	if (obj_cgroup_charge(objcg, flags, objects * obj_full_size(s)))
++		goto out;
++
+ 	*objcgp = objcg;
+ 	return true;
++out:
++	obj_cgroup_put(objcg);
++	return false;
+ }
+ 
+ static inline void memcg_slab_post_alloc_hook(struct kmem_cache *s,
+@@ -598,6 +613,7 @@ static inline void memcg_free_slab_cgroups(struct slab *slab)
+ }
+ 
+ static inline bool memcg_slab_pre_alloc_hook(struct kmem_cache *s,
++					     struct list_lru *lru,
+ 					     struct obj_cgroup **objcgp,
+ 					     size_t objects, gfp_t flags)
+ {
+@@ -697,6 +713,7 @@ static inline size_t slab_ksize(const struct kmem_cache *s)
+ }
+ 
+ static inline struct kmem_cache *slab_pre_alloc_hook(struct kmem_cache *s,
++						     struct list_lru *lru,
+ 						     struct obj_cgroup **objcgp,
+ 						     size_t size, gfp_t flags)
+ {
+@@ -707,7 +724,7 @@ static inline struct kmem_cache *slab_pre_alloc_hook(struct kmem_cache *s,
+ 	if (should_failslab(s, flags))
+ 		return NULL;
+ 
+-	if (!memcg_slab_pre_alloc_hook(s, objcgp, size, flags))
++	if (!memcg_slab_pre_alloc_hook(s, lru, objcgp, size, flags))
+ 		return NULL;
+ 
+ 	return s;
+diff --git a/mm/slob.c b/mm/slob.c
+index 60c5842215f1..8a8795520361 100644
+--- a/mm/slob.c
++++ b/mm/slob.c
+@@ -635,6 +635,12 @@ void *kmem_cache_alloc(struct kmem_cache *cachep, gfp_t flags)
+ }
+ EXPORT_SYMBOL(kmem_cache_alloc);
+ 
++
++void *kmem_cache_alloc_lru(struct kmem_cache *cachep, struct list_lru *lru, gfp_t flags)
++{
++	return slob_alloc_node(cachep, flags, NUMA_NO_NODE);
++}
++EXPORT_SYMBOL(kmem_cache_alloc_lru);
+ #ifdef CONFIG_NUMA
+ void *__kmalloc_node(size_t size, gfp_t gfp, int node)
+ {
+diff --git a/mm/slub.c b/mm/slub.c
+index 261474092e43..07cdd999c3fe 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -3131,7 +3131,7 @@ static __always_inline void maybe_wipe_obj_freeptr(struct kmem_cache *s,
+  *
+  * Otherwise we can simply pick the next object from the lockless free list.
+  */
+-static __always_inline void *slab_alloc_node(struct kmem_cache *s,
++static __always_inline void *slab_alloc_node(struct kmem_cache *s, struct list_lru *lru,
+ 		gfp_t gfpflags, int node, unsigned long addr, size_t orig_size)
+ {
+ 	void *object;
+@@ -3141,7 +3141,7 @@ static __always_inline void *slab_alloc_node(struct kmem_cache *s,
+ 	struct obj_cgroup *objcg = NULL;
+ 	bool init = false;
+ 
+-	s = slab_pre_alloc_hook(s, &objcg, 1, gfpflags);
++	s = slab_pre_alloc_hook(s, lru, &objcg, 1, gfpflags);
+ 	if (!s)
+ 		return NULL;
+ 
+@@ -3232,27 +3232,41 @@ static __always_inline void *slab_alloc_node(struct kmem_cache *s,
+ 	return object;
+ }
+ 
+-static __always_inline void *slab_alloc(struct kmem_cache *s,
++static __always_inline void *slab_alloc(struct kmem_cache *s, struct list_lru *lru,
+ 		gfp_t gfpflags, unsigned long addr, size_t orig_size)
+ {
+-	return slab_alloc_node(s, gfpflags, NUMA_NO_NODE, addr, orig_size);
++	return slab_alloc_node(s, lru, gfpflags, NUMA_NO_NODE, addr, orig_size);
+ }
+ 
+-void *kmem_cache_alloc(struct kmem_cache *s, gfp_t gfpflags)
++static __always_inline
++void *__kmem_cache_alloc_lru(struct kmem_cache *s, struct list_lru *lru,
++			     gfp_t gfpflags)
+ {
+-	void *ret = slab_alloc(s, gfpflags, _RET_IP_, s->object_size);
++	void *ret = slab_alloc(s, lru, gfpflags, _RET_IP_, s->object_size);
+ 
+ 	trace_kmem_cache_alloc(_RET_IP_, ret, s->object_size,
+ 				s->size, gfpflags);
+ 
+ 	return ret;
+ }
++
++void *kmem_cache_alloc(struct kmem_cache *s, gfp_t gfpflags)
++{
++	return __kmem_cache_alloc_lru(s, NULL, gfpflags);
++}
+ EXPORT_SYMBOL(kmem_cache_alloc);
+ 
++void *kmem_cache_alloc_lru(struct kmem_cache *s, struct list_lru *lru,
++			   gfp_t gfpflags)
++{
++	return __kmem_cache_alloc_lru(s, lru, gfpflags);
++}
++EXPORT_SYMBOL(kmem_cache_alloc_lru);
++
+ #ifdef CONFIG_TRACING
+ void *kmem_cache_alloc_trace(struct kmem_cache *s, gfp_t gfpflags, size_t size)
+ {
+-	void *ret = slab_alloc(s, gfpflags, _RET_IP_, size);
++	void *ret = slab_alloc(s, NULL, gfpflags, _RET_IP_, size);
+ 	trace_kmalloc(_RET_IP_, ret, size, s->size, gfpflags);
+ 	ret = kasan_kmalloc(s, ret, size, gfpflags);
+ 	return ret;
+@@ -3263,7 +3277,7 @@ EXPORT_SYMBOL(kmem_cache_alloc_trace);
+ #ifdef CONFIG_NUMA
+ void *kmem_cache_alloc_node(struct kmem_cache *s, gfp_t gfpflags, int node)
+ {
+-	void *ret = slab_alloc_node(s, gfpflags, node, _RET_IP_, s->object_size);
++	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, s->object_size);
+ 
+ 	trace_kmem_cache_alloc_node(_RET_IP_, ret,
+ 				    s->object_size, s->size, gfpflags, node);
+@@ -3277,7 +3291,7 @@ void *kmem_cache_alloc_node_trace(struct kmem_cache *s,
+ 				    gfp_t gfpflags,
+ 				    int node, size_t size)
+ {
+-	void *ret = slab_alloc_node(s, gfpflags, node, _RET_IP_, size);
++	void *ret = slab_alloc_node(s, NULL, gfpflags, node, _RET_IP_, size);
+ 
+ 	trace_kmalloc_node(_RET_IP_, ret,
+ 			   size, s->size, gfpflags, node);
+@@ -3667,7 +3681,7 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+ 	struct obj_cgroup *objcg = NULL;
+ 
+ 	/* memcg and kmem_cache debug support */
+-	s = slab_pre_alloc_hook(s, &objcg, size, flags);
++	s = slab_pre_alloc_hook(s, NULL, &objcg, size, flags);
+ 	if (unlikely(!s))
+ 		return false;
+ 	/*
+@@ -4417,7 +4431,7 @@ void *__kmalloc(size_t size, gfp_t flags)
+ 	if (unlikely(ZERO_OR_NULL_PTR(s)))
+ 		return s;
+ 
+-	ret = slab_alloc(s, flags, _RET_IP_, size);
++	ret = slab_alloc(s, NULL, flags, _RET_IP_, size);
+ 
+ 	trace_kmalloc(_RET_IP_, ret, size, s->size, flags);
+ 
+@@ -4465,7 +4479,7 @@ void *__kmalloc_node(size_t size, gfp_t flags, int node)
+ 	if (unlikely(ZERO_OR_NULL_PTR(s)))
+ 		return s;
+ 
+-	ret = slab_alloc_node(s, flags, node, _RET_IP_, size);
++	ret = slab_alloc_node(s, NULL, flags, node, _RET_IP_, size);
+ 
+ 	trace_kmalloc_node(_RET_IP_, ret, size, s->size, flags, node);
+ 
+@@ -4923,7 +4937,7 @@ void *__kmalloc_track_caller(size_t size, gfp_t gfpflags, unsigned long caller)
+ 	if (unlikely(ZERO_OR_NULL_PTR(s)))
+ 		return s;
+ 
+-	ret = slab_alloc(s, gfpflags, caller, size);
++	ret = slab_alloc(s, NULL, gfpflags, caller, size);
+ 
+ 	/* Honor the call site pointer we received. */
+ 	trace_kmalloc(caller, ret, size, s->size, gfpflags);
+@@ -4954,7 +4968,7 @@ void *__kmalloc_node_track_caller(size_t size, gfp_t gfpflags,
+ 	if (unlikely(ZERO_OR_NULL_PTR(s)))
+ 		return s;
+ 
+-	ret = slab_alloc_node(s, gfpflags, node, caller, size);
++	ret = slab_alloc_node(s, NULL, gfpflags, node, caller, size);
+ 
+ 	/* Honor the call site pointer we received. */
+ 	trace_kmalloc_node(caller, ret, size, s->size, gfpflags, node);
 -- 
-2.30.2
+2.11.0
 
