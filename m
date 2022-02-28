@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC45EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:15:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A55C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:15:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232496AbiB1CPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:15:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60586 "EHLO
+        id S232513AbiB1CPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 21:15:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231130AbiB1CPc (ORCPT
+        with ESMTP id S231179AbiB1CPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 27 Feb 2022 21:15:32 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB09E527EF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB106527F5;
         Sun, 27 Feb 2022 18:14:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1646014495; x=1677550495;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KCebEsUOr3JNBClpva5gMOxkilzblBWkeHW/AoIsJDM=;
-  b=mxfoZTTV7sDP5hG6Iu8Y/+bTS7rxKeTbMuTkjJBHUkdZ8uSpJGr04Q/B
-   6Q+Cpk8UwAHx1A/AnRN50e2RzerZ3zznxB9L+Dy/gfxAbQVaxCOvSrwI3
-   Ki15W9Tt4CFXiPPMMHw1QDT3tI2TH/XI+OFXYeVinMQABQIyAQFDK3RTF
-   E/U9KTmMDR+Oh9ymzQeFSrOloYa/zpHjVXKGKvT9Kcpm5D0wuq1kg29V9
-   zuRvHW4I2D3FMjKxb6GdQ7FJNhxWD6/iNwqyt+DPzFi54pr1psgWUXgvs
-   d7Yf0jR6eWCm4aCaqpeAbTZY7C0GIDm//wI5stPsh2vHWcVXbZi2USsKG
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="240191919"
+  bh=Ge5i1ep11h5AX/7QSE6NzBNHfdf54JJ+XyE9UORI3J0=;
+  b=C10hkV/UEYvXOBkhDhLdoJBnjcqTuIPuJVPpW/S+rJdwTT0GvNbxbat6
+   m7zCXrxodHqlA7dwabkwFj3AcIJi6OuDceUPfcIc6c/vxiWHSfY/SZG5W
+   Gz4gvXlILyyhdczz47rlo5CJErZUQ98pKxS3sr6VnaiGwMQGU2veuEXO7
+   RLpu+0JcLjkM1cp7wSqRnxQqoB+tMbup/XlythBaEqZBGvWRbyp5mlQzo
+   CFg827UmdnzVlX/PYW+2bRFOKp9D2lkFibeukHQ49+egZcrSqvaIqR4YD
+   rvO35+FOj1jPMxqz4f/uLKWXpCY4prMIzqYedIBMyp7RC+c0YYfWVmPep
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="240191912"
 X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="240191919"
+   d="scan'208";a="240191912"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:17 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:12 -0800
 X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="777936917"
+   d="scan'208";a="777936907"
 Received: from jdpanhor-mobl2.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.49.36])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:13 -0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:08 -0800
 From:   Kai Huang <kai.huang@intel.com>
 To:     x86@kernel.org
 Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
@@ -48,9 +48,9 @@ Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         chang.seok.bae@intel.com, keescook@chromium.org,
         hengqi.arch@bytedance.com, laijs@linux.alibaba.com,
         metze@samba.org, linux-kernel@vger.kernel.org, kai.huang@intel.com
-Subject: [RFC PATCH 08/21] x86/virt/tdx: Do logical-cpu scope TDX module initialization
-Date:   Mon, 28 Feb 2022 15:12:56 +1300
-Message-Id: <3e36f9d3a3b98d6273c296aa17cd0105a27d44ab.1646007267.git.kai.huang@intel.com>
+Subject: [RFC PATCH 07/21] x86/virt/tdx: Do TDX module global initialization
+Date:   Mon, 28 Feb 2022 15:12:55 +1300
+Message-Id: <2fd6826f9df6793f030d949af8a71dc77f946817.1646007267.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1646007267.git.kai.huang@intel.com>
 References: <cover.1646007267.git.kai.huang@intel.com>
@@ -60,60 +60,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Logical-cpu scope initialization requires calling TDH.SYS.LP.INIT on all
-BIOS-enabled cpus, otherwise the TDH.SYS.CONFIG SEAMCALL will fail.
-TDH.SYS.LP.INIT can be called concurrently on all cpus.
-
-Following global initialization, do the logical-cpu scope initialization
-by calling TDH.SYS.LP.INIT on all online cpus.  Whether all BIOS-enabled
-cpus are online is not checked here for simplicity.  The user of TDX
-should guarantee all BIOS-enabled cpus are online.
+Do the TDX module global initialization which requires calling
+TDH.SYS.INIT once on any logical cpu.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
- arch/x86/virt/vmx/tdx.c | 12 ++++++++++++
+ arch/x86/virt/vmx/tdx.c | 11 ++++++++++-
  arch/x86/virt/vmx/tdx.h |  1 +
- 2 files changed, 13 insertions(+)
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/virt/vmx/tdx.c b/arch/x86/virt/vmx/tdx.c
-index 197c721d5388..c9de3d6f903d 100644
+index 17f16ec6cb28..197c721d5388 100644
 --- a/arch/x86/virt/vmx/tdx.c
 +++ b/arch/x86/virt/vmx/tdx.c
-@@ -462,6 +462,13 @@ static int __tdx_detect(void)
- 	return -ENODEV;
- }
+@@ -464,11 +464,20 @@ static int __tdx_detect(void)
  
-+static int tdx_module_init_cpus(void)
-+{
-+	struct seamcall_ctx sc = { .fn = TDH_SYS_LP_INIT };
-+
-+	return seamcall_on_each_cpu(&sc);
-+}
-+
  static int init_tdx_module(void)
  {
- 	int ret;
-@@ -471,6 +478,11 @@ static int init_tdx_module(void)
- 	if (ret)
- 		goto out;
- 
-+	/* Logical-cpu scope initialization */
-+	ret = tdx_module_init_cpus();
++	int ret;
++
++	/* TDX module global initialization */
++	ret = seamcall(TDH_SYS_INIT, 0, 0, 0, 0, NULL, NULL);
 +	if (ret)
 +		goto out;
 +
  	/*
  	 * Return -EFAULT until all steps of TDX module
  	 * initialization are done.
+ 	 */
+-	return -EFAULT;
++	ret = -EFAULT;
++out:
++	return ret;
+ }
+ 
+ static void shutdown_tdx_module(void)
 diff --git a/arch/x86/virt/vmx/tdx.h b/arch/x86/virt/vmx/tdx.h
-index f0983b1936d8..b8cfdd6e12f3 100644
+index dcc1f6dfe378..f0983b1936d8 100644
 --- a/arch/x86/virt/vmx/tdx.h
 +++ b/arch/x86/virt/vmx/tdx.h
-@@ -39,6 +39,7 @@ struct p_seamldr_info {
+@@ -38,6 +38,7 @@ struct p_seamldr_info {
+ /*
   * TDX module SEAMCALL leaf functions
   */
- #define TDH_SYS_INIT		33
-+#define TDH_SYS_LP_INIT		35
++#define TDH_SYS_INIT		33
  #define TDH_SYS_LP_SHUTDOWN	44
  
  struct tdx_module_output;
