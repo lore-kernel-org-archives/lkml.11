@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F52AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD14C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237049AbiB1RbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:31:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44512 "EHLO
+        id S231688AbiB1RbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:31:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236622AbiB1R26 (ORCPT
+        with ESMTP id S235387AbiB1R3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:28:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC36710F4;
-        Mon, 28 Feb 2022 09:28:08 -0800 (PST)
+        Mon, 28 Feb 2022 12:29:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D44A28E00;
+        Mon, 28 Feb 2022 09:28:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01CCAB815B1;
-        Mon, 28 Feb 2022 17:28:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535B9C340F0;
-        Mon, 28 Feb 2022 17:28:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD54661359;
+        Mon, 28 Feb 2022 17:28:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6F0AC340E7;
+        Mon, 28 Feb 2022 17:28:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069285;
-        bh=6D/k4W2XyKIc8/OLA2hacXN7jTCNa6Cnryitd6XkD18=;
+        s=korg; t=1646069291;
+        bh=LVjqfJGQh3rmzEouhCGZMVpEZkEshEbLQvt8jE57hrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ERqK8+92x4h3YC3OhFgPVuCM4wP4RoZcbLp6h6M6EIn/DaCX6WC4ly/TUvBQOOKvP
-         n6HQVhNAgHyfo+wRWQHG/hsvOu8y1Ti7Htt/vfpkr/anKWLkb+gVMIszBMImKzPeKp
-         zXMwdJbpTOkMjAxbdm8JJ809A0cIGhWhcmsr9Lwk=
+        b=QtxXTfYyKIksDBONY+QptudHKxFcXPPGZpBjv1Qm20GZ8HdRQldkKe+SWw1QjsI2T
+         WPortzqQRjzaO3UEDwumn5fpesHJf5koDvzDHzw4tchaUmE3v43jilbneMj21yy9BF
+         i0TdC+dcvmjN3LHGSeu8iiMDw/g/x567z6Vqb36c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.14 03/31] parisc/unaligned: Fix fldd and fstd unaligned handlers on 32-bit kernel
-Date:   Mon, 28 Feb 2022 18:23:59 +0100
-Message-Id: <20220228172200.189589587@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <oliver.sang@intel.com>,
+        Carel Si <beibei.si@intel.com>, Jann Horn <jannh@google.com>,
+        Miklos Szeredi <mszeredi@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Baokun Li <libaokun1@huawei.com>
+Subject: [PATCH 4.14 31/31] fget: clarify and improve __fget_files() implementation
+Date:   Mon, 28 Feb 2022 18:24:27 +0100
+Message-Id: <20220228172202.709481993@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
 References: <20220228172159.515152296@linuxfoundation.org>
@@ -47,80 +51,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit dd2288f4a020d693360e3e8d72f8b9d9c25f5ef6 upstream.
+commit e386dfc56f837da66d00a078e5314bc8382fab83 upstream.
 
-Usually the kernel provides fixup routines to emulate the fldd and fstd
-floating-point instructions if they load or store 8-byte from/to a not
-natuarally aligned memory location.
+Commit 054aa8d439b9 ("fget: check that the fd still exists after getting
+a ref to it") fixed a race with getting a reference to a file just as it
+was being closed.  It was a fairly minimal patch, and I didn't think
+re-checking the file pointer lookup would be a measurable overhead,
+since it was all right there and cached.
 
-On a 32-bit kernel I noticed that those unaligned handlers didn't worked and
-instead the application got a SEGV.
-While checking the code I found two problems:
+But I was wrong, as pointed out by the kernel test robot.
 
-First, the OPCODE_FLDD_L and OPCODE_FSTD_L cases were ifdef'ed out by the
-CONFIG_PA20 option, and as such those weren't built on a pure 32-bit kernel.
-This is now fixed by moving the CONFIG_PA20 #ifdef to prevent the compilation
-of OPCODE_LDD_L and OPCODE_FSTD_L only, and handling the fldd and fstd
-instructions.
+The 'poll2' case of the will-it-scale.per_thread_ops benchmark regressed
+quite noticeably.  Admittedly it seems to be a very artificial test:
+doing "poll()" system calls on regular files in a very tight loop in
+multiple threads.
 
-The second problem are two bugs in the 32-bit inline assembly code, where the
-wrong registers where used. The calculation of the natural alignment used %2
-(vall) instead of %3 (ior), and the first word was stored back to address %1
-(valh) instead of %3 (ior).
+That means that basically all the time is spent just looking up file
+descriptors without ever doing anything useful with them (not that doing
+'poll()' on a regular file is useful to begin with).  And as a result it
+shows the extra "re-check fd" cost as a sore thumb.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org
+Happily, the regression is fixable by just writing the code to loook up
+the fd to be better and clearer.  There's still a cost to verify the
+file pointer, but now it's basically in the noise even for that
+benchmark that does nothing else - and the code is more understandable
+and has better comments too.
+
+[ Side note: this patch is also a classic case of one that looks very
+  messy with the default greedy Myers diff - it's much more legible with
+  either the patience of histogram diff algorithm ]
+
+Link: https://lore.kernel.org/lkml/20211210053743.GA36420@xsang-OptiPlex-9020/
+Link: https://lore.kernel.org/lkml/20211213083154.GA20853@linux.intel.com/
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Tested-by: Carel Si <beibei.si@intel.com>
+Cc: Jann Horn <jannh@google.com>
+Cc: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/unaligned.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ fs/file.c |   73 ++++++++++++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 57 insertions(+), 16 deletions(-)
 
---- a/arch/parisc/kernel/unaligned.c
-+++ b/arch/parisc/kernel/unaligned.c
-@@ -411,7 +411,7 @@ static int emulate_std(struct pt_regs *r
- 	__asm__ __volatile__ (
- "	mtsp	%4, %%sr1\n"
- "	zdep	%2, 29, 2, %%r19\n"
--"	dep	%%r0, 31, 2, %2\n"
-+"	dep	%%r0, 31, 2, %3\n"
- "	mtsar	%%r19\n"
- "	zvdepi	-2, 32, %%r19\n"
- "1:	ldw	0(%%sr1,%3),%%r20\n"
-@@ -423,7 +423,7 @@ static int emulate_std(struct pt_regs *r
- "	andcm	%%r21, %%r19, %%r21\n"
- "	or	%1, %%r20, %1\n"
- "	or	%2, %%r21, %2\n"
--"3:	stw	%1,0(%%sr1,%1)\n"
-+"3:	stw	%1,0(%%sr1,%3)\n"
- "4:	stw	%%r1,4(%%sr1,%3)\n"
- "5:	stw	%2,8(%%sr1,%3)\n"
- "	copy	%%r0, %0\n"
-@@ -611,7 +611,6 @@ void handle_unaligned(struct pt_regs *re
- 		ret = ERR_NOTHANDLED;	/* "undefined", but lets kill them. */
- 		break;
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -679,28 +679,69 @@ void do_close_on_exec(struct files_struc
+ 	spin_unlock(&files->file_lock);
+ }
+ 
+-static struct file *__fget(unsigned int fd, fmode_t mask, unsigned int refs)
++static inline struct file *__fget_files_rcu(struct files_struct *files,
++		unsigned int fd, fmode_t mask, unsigned int refs)
+ {
+-	struct files_struct *files = current->files;
+-	struct file *file;
++	for (;;) {
++		struct file *file;
++		struct fdtable *fdt = rcu_dereference_raw(files->fdt);
++		struct file __rcu **fdentry;
+ 
+-	rcu_read_lock();
+-loop:
+-	file = fcheck_files(files, fd);
+-	if (file) {
+-		/* File object ref couldn't be taken.
+-		 * dup2() atomicity guarantee is the reason
+-		 * we loop to catch the new file (or NULL pointer)
++		if (unlikely(fd >= fdt->max_fds))
++			return NULL;
++
++		fdentry = fdt->fd + array_index_nospec(fd, fdt->max_fds);
++		file = rcu_dereference_raw(*fdentry);
++		if (unlikely(!file))
++			return NULL;
++
++		if (unlikely(file->f_mode & mask))
++			return NULL;
++
++		/*
++		 * Ok, we have a file pointer. However, because we do
++		 * this all locklessly under RCU, we may be racing with
++		 * that file being closed.
++		 *
++		 * Such a race can take two forms:
++		 *
++		 *  (a) the file ref already went down to zero,
++		 *      and get_file_rcu_many() fails. Just try
++		 *      again:
+ 		 */
+-		if (file->f_mode & mask)
+-			file = NULL;
+-		else if (!get_file_rcu_many(file, refs))
+-			goto loop;
+-		else if (__fcheck_files(files, fd) != file) {
++		if (unlikely(!get_file_rcu_many(file, refs)))
++			continue;
++
++		/*
++		 *  (b) the file table entry has changed under us.
++		 *       Note that we don't need to re-check the 'fdt->fd'
++		 *       pointer having changed, because it always goes
++		 *       hand-in-hand with 'fdt'.
++		 *
++		 * If so, we need to put our refs and try again.
++		 */
++		if (unlikely(rcu_dereference_raw(files->fdt) != fdt) ||
++		    unlikely(rcu_dereference_raw(*fdentry) != file)) {
+ 			fput_many(file, refs);
+-			goto loop;
++			continue;
+ 		}
++
++		/*
++		 * Ok, we have a ref to the file, and checked that it
++		 * still exists.
++		 */
++		return file;
  	}
--#ifdef CONFIG_PA20
- 	switch (regs->iir & OPCODE2_MASK)
- 	{
- 	case OPCODE_FLDD_L:
-@@ -622,14 +621,15 @@ void handle_unaligned(struct pt_regs *re
- 		flop=1;
- 		ret = emulate_std(regs, R2(regs->iir),1);
- 		break;
-+#ifdef CONFIG_PA20
- 	case OPCODE_LDD_L:
- 		ret = emulate_ldd(regs, R2(regs->iir),0);
- 		break;
- 	case OPCODE_STD_L:
- 		ret = emulate_std(regs, R2(regs->iir),0);
- 		break;
--	}
- #endif
-+	}
- 	switch (regs->iir & OPCODE3_MASK)
- 	{
- 	case OPCODE_FLDW_L:
++}
++
++
++static struct file *__fget(unsigned int fd, fmode_t mask, unsigned int refs)
++{
++	struct files_struct *files = current->files;
++	struct file *file;
++
++	rcu_read_lock();
++	file = __fget_files_rcu(files, fd, mask, refs);
+ 	rcu_read_unlock();
+ 
+ 	return file;
 
 
