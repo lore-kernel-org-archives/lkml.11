@@ -2,102 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9643AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 07:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF268C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 07:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233555AbiB1HHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 02:07:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32800 "EHLO
+        id S233441AbiB1HIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 02:08:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232959AbiB1HHM (ORCPT
+        with ESMTP id S233559AbiB1HIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 02:07:12 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFE5673D7;
-        Sun, 27 Feb 2022 23:06:34 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id 0D9F41F41AF1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646031993;
-        bh=W4cIZpdLZKXfFvwZZ+vsbBlehwZDS/nqRnEXlzdwp6s=;
-        h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-        b=cuMuERxUAM9UyFWWVvFpdOUavoGkKxn4uhETONY6udK+t36aNX3SuF8haWruqjVfQ
-         w124lo3P6zuGvofyierrkssR2QQ3HrUTvzicN8bCBNK8fcDh0hOZupPZ6qxC3XobhR
-         RvvsrEnaCAJtWs53GLAXpgqr8sJT8DGOY2MCl0BrHbtBuNF2FHzSE+i04hXGABVv7M
-         T5XUsRC3gadjE9o/m+1pe+jz5//WB0f6zYnawT81WadMb7jUirBt4HiyODrOO1ANW4
-         nzHOHIUvl1ysgwvFsOTSk9myKTGeYYv7Z2bDrCS2qgYvzKYbwuXa3NjaKod3OkdJwF
-         kAV09xtEOn8hw==
-Message-ID: <0c22d702-b451-e9b3-8d3f-7c28ca71c1da@collabora.com>
-Date:   Mon, 28 Feb 2022 12:06:22 +0500
+        Mon, 28 Feb 2022 02:08:01 -0500
+Received: from mx1.cqplus1.com (unknown [113.204.237.245])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD303673D8
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 23:07:14 -0800 (PST)
+X-MailGates: (flag:1,DYNAMIC,RELAY,NOHOST,LAN:PASS)(compute_score:DELIVE
+        R,40,3)
+Received: from 172.27.96.203
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(26026:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Mon, 28 Feb 2022 15:05:16 +0800 (CST)
+Received: from CQEXMAIL01.cqplus1.com (172.27.96.203) by
+ CQEXMAIL01.cqplus1.com (172.27.96.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.18; Mon, 28 Feb 2022 15:05:37 +0800
+Received: from CQEXMAIL01.cqplus1.com ([::1]) by CQEXMAIL01.cqplus1.com
+ ([::1]) with mapi id 15.01.2375.018; Mon, 28 Feb 2022 15:05:37 +0800
+From:   =?utf-8?B?cWluamlhblvopoPlgaVd?= <qinjian@cqplus1.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>
+CC:     "mturquette@baylibre.com" <mturquette@baylibre.com>,
+        "sboyd@kernel.org" <sboyd@kernel.org>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "stefan.wahren@i2se.com" <stefan.wahren@i2se.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
+        =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        Rob Herring <robh@kernel.org>
+Subject: RE: [PATCH v9 02/10] dt-bindings: arm: sunplus: Add bindings for
+ Sunplus SP7021 SoC boards
+Thread-Topic: [PATCH v9 02/10] dt-bindings: arm: sunplus: Add bindings for
+ Sunplus SP7021 SoC boards
+Thread-Index: AQHYJtRL7BpgMun7wkSEmTd5rYSoP6ydrKQAgAFsZ7D//5U0gIAJ5rig
+Date:   Mon, 28 Feb 2022 07:05:36 +0000
+Message-ID: <66b2710bc7c048a284fa3b6270ba7bc8@cqplus1.com>
+References: <cover.1645413746.git.qinjian@cqplus1.com>
+ <87cc20bb3ef747c4da89f9e60c0847532bb0a679.1645413746.git.qinjian@cqplus1.com>
+ <141c1b3e-b116-a0eb-78ad-dd9263880e9d@kernel.org>
+ <fd66d0c1f8d5410ca676dd523bcde61b@cqplus1.com>
+ <8ce8a3db-0f42-0b30-6688-01c1ea905425@kernel.org>
+In-Reply-To: <8ce8a3db-0f42-0b30-6688-01c1ea905425@kernel.org>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.28.110.18]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Cc:     usama.anjum@collabora.com, kernel@collabora.com,
-        kernelci@groups.io,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] selftests/lkdtm: add config and turn off
- CFI_FORWARD_PROTO
-Content-Language: en-US
-To:     Kees Cook <keescook@chromium.org>, Shuah Khan <shuah@kernel.org>
-References: <20220217205620.2512094-1-usama.anjum@collabora.com>
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <20220217205620.2512094-1-usama.anjum@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-Any thoughts?
-
-On 2/18/22 1:56 AM, Muhammad Usama Anjum wrote:
-> Add config options which are needed for LKDTM sub-tests.
-> STACKLEAK_ERASING test needs GCC_PLUGIN_STACKLEAK config.
-> READ_AFTER_FREE and READ_BUDDY_AFTER_FREE tests need
-> INIT_ON_FREE_DEFAULT_ON config.
-> 
-> CFI_FORWARD_PROTO always fails as there is no active CFI system of some
-> kind. Turn it off for now by default until proper support.
-> 
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Fixes: 46d1a0f03d66 ("selftests/lkdtm: Add tests for LKDTM targets")
-> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> ---
->  tools/testing/selftests/lkdtm/config    | 2 ++
->  tools/testing/selftests/lkdtm/tests.txt | 2 +-
->  2 files changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/lkdtm/config b/tools/testing/selftests/lkdtm/config
-> index 46f39ee762086..adc9fa60057c5 100644
-> --- a/tools/testing/selftests/lkdtm/config
-> +++ b/tools/testing/selftests/lkdtm/config
-> @@ -2,8 +2,10 @@ CONFIG_LKDTM=y
->  CONFIG_DEBUG_LIST=y
->  CONFIG_SLAB_FREELIST_HARDENED=y
->  CONFIG_FORTIFY_SOURCE=y
-> +CONFIG_GCC_PLUGIN_STACKLEAK=y
->  CONFIG_HARDENED_USERCOPY=y
->  CONFIG_RANDOMIZE_KSTACK_OFFSET_DEFAULT=y
-> +CONFIG_INIT_ON_FREE_DEFAULT_ON=y
->  CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
->  CONFIG_UBSAN=y
->  CONFIG_UBSAN_BOUNDS=y
-> diff --git a/tools/testing/selftests/lkdtm/tests.txt b/tools/testing/selftests/lkdtm/tests.txt
-> index 6b36b7f5dcf96..aa947b0ce1eeb 100644
-> --- a/tools/testing/selftests/lkdtm/tests.txt
-> +++ b/tools/testing/selftests/lkdtm/tests.txt
-> @@ -72,7 +72,7 @@ USERCOPY_STACK_FRAME_FROM
->  USERCOPY_STACK_BEYOND
->  USERCOPY_KERNEL
->  STACKLEAK_ERASING OK: the rest of the thread stack is properly erased
-> -CFI_FORWARD_PROTO
-> +#CFI_FORWARD_PROTO
->  FORTIFIED_STRSCPY
->  FORTIFIED_OBJECT
->  FORTIFIED_SUBOBJECT
+DQo+ID4+IFRoaXMgYmluZGluZyBsb29rcyBpbmNvbXBsZXRlLg0KPiA+DQo+ID4gU3VucGx1cyBT
+UDcwMjEgaXMgYW4gQVJNIENvcnRleCBBNyBiYXNlZCBTb0MuDQo+ID4gVGhlIHBhdGNoIGlzIGZv
+ciBTUDcwMjEgU29DIGFuZCBTUDcwMjEgYmFzZWQgYm9hcmRzLg0KPiA+IFNvcnJ5LCBJIGRvbid0
+IHVuZGVyc3RhbmQgeW91ciBxdWVzdGlvbnMuDQo+ID4gQ291bGQgeW91IGV4cGxhaW4gbW9yZT8N
+Cj4gDQo+IFlvdSBoYXZlIHRoZXJlIG9ubHkgb25lIGNvbXBhdGlibGUgYnV0IGlmIEkgd291bGQg
+ZXhwZWN0IGF0IGxlYXN0IHR3by4NCj4gT25lIGZvciBTb0MgYW5kIG9uZSBmb3IgYm9hcmQuIFNv
+bWV0aGluZyBsaWtlIHRoaXM6DQo+IERvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9h
+cm0vcmRhLnlhbWwNCj4gYnV0IGluIHlvdXIgY2FzZSBlbnVtIHdvdWxkIGhhdmUgb25seSBvbmUg
+ZW50cnkuDQoNCkN1cnJlbnRseSwgd2Ugb25seSBzdXBwb3J0IG9uZSBib2FyZC4gTWF5YmUgd2ls
+bCBzdXBwb3J0IG1vcmUgYm9hcmRzIGluIGZ1dHVyZS4NCg==
