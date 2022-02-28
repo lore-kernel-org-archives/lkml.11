@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB024C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 180DFC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239831AbiB1SCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:02:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        id S239988AbiB1SCz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:02:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235467AbiB1Ryq (ORCPT
+        with ESMTP id S240798AbiB1Ryp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:46 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51531F15;
-        Mon, 28 Feb 2022 09:44:06 -0800 (PST)
+        Mon, 28 Feb 2022 12:54:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 204A953724;
+        Mon, 28 Feb 2022 09:43:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BA91DCE17D1;
-        Mon, 28 Feb 2022 17:44:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF66EC340E7;
-        Mon, 28 Feb 2022 17:44:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD1C960909;
+        Mon, 28 Feb 2022 17:43:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2D07C340F1;
+        Mon, 28 Feb 2022 17:43:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070243;
-        bh=UnNGVip4Y/0gnGThrejUdG0CPXjBsSWZUAHZ1Nnm1A0=;
+        s=korg; t=1646070232;
+        bh=I5WCHMB1VTrzwLsHeb0NI7Mr1kLeGOCs/cC2bJ5zA0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m7Nxyt39KLBeBIxMmTh/5n62SVn4znAKypXL8hMkYgNcKGfBfBlnT/c1o4VnfQbvx
-         HAM01bbFDd6y8GhM+vA3mh8UBINsjoUTik6Q6oeeM0v30Wfz19mvI3Qf25gokNEqt6
-         HCALYthX1bwIo7GyyMBrfTTqYABklH5u8VBNLKjQ=
+        b=dOI7ALDKgcVZvNMyk3sKjWq89Ym+DROvtLgpwoAfDxUtFcewIxlFadaXq5camyZrl
+         DogRcWl1pwmDL7Cll0XJ5vK3iR+y9klZjQUo2D9YrAQSz+Ee722zMQOef6aFXoNmkU
+         vWrNzbEvsU9zg/P46UoQsdjYtgvmfTrC+BAy6frM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 020/164] drm/amdgpu: disable MMHUB PG for Picasso
-Date:   Mon, 28 Feb 2022 18:23:02 +0100
-Message-Id: <20220228172401.831732389@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 034/164] Revert "i40e: Fix reset bw limit when DCB enabled with 1 TC"
+Date:   Mon, 28 Feb 2022 18:23:16 +0100
+Message-Id: <20220228172403.331778163@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,35 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Mateusz Palczewski <mateusz.palczewski@intel.com>
 
-commit f626dd0ff05043e5a7154770cc7cda66acee33a3 upstream.
+commit fe20371578ef640069e6ae9fa8038f60e7908565 upstream.
 
-MMHUB PG needs to be disabled for Picasso for stability reasons.
+Revert of a patch that instead of fixing a AQ error when trying
+to reset BW limit introduced several regressions related to
+creation and managing TC. Currently there are errors when creating
+a TC on both PF and VF.
 
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+Error log:
+[17428.783095] i40e 0000:3b:00.1: AQ command Config VSI BW allocation per TC failed = 14
+[17428.783107] i40e 0000:3b:00.1: Failed configuring TC map 0 for VSI 391
+[17428.783254] i40e 0000:3b:00.1: AQ command Config VSI BW allocation per TC failed = 14
+[17428.783259] i40e 0000:3b:00.1: Unable to  configure TC map 0 for VSI 391
+
+This reverts commit 3d2504663c41104b4359a15f35670cfa82de1bbf.
+
+Fixes: 3d2504663c41 (i40e: Fix reset bw limit when DCB enabled with 1 TC)
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220223175347.1690692-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/soc15.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +-----------
+ 1 file changed, 1 insertion(+), 11 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/soc15.c
-+++ b/drivers/gpu/drm/amd/amdgpu/soc15.c
-@@ -1114,8 +1114,11 @@ static int soc15_common_early_init(void
- 				AMD_CG_SUPPORT_SDMA_LS |
- 				AMD_CG_SUPPORT_VCN_MGCG;
- 
-+			/*
-+			 * MMHUB PG needs to be disabled for Picasso for
-+			 * stability reasons.
-+			 */
- 			adev->pg_flags = AMD_PG_SUPPORT_SDMA |
--				AMD_PG_SUPPORT_MMHUB |
- 				AMD_PG_SUPPORT_VCN;
- 		} else {
- 			adev->cg_flags = AMD_CG_SUPPORT_GFX_MGCG |
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -5372,15 +5372,7 @@ static int i40e_vsi_configure_bw_alloc(s
+ 	/* There is no need to reset BW when mqprio mode is on.  */
+ 	if (pf->flags & I40E_FLAG_TC_MQPRIO)
+ 		return 0;
+-
+-	if (!vsi->mqprio_qopt.qopt.hw) {
+-		if (pf->flags & I40E_FLAG_DCB_ENABLED)
+-			goto skip_reset;
+-
+-		if (IS_ENABLED(CONFIG_I40E_DCB) &&
+-		    i40e_dcb_hw_get_num_tc(&pf->hw) == 1)
+-			goto skip_reset;
+-
++	if (!vsi->mqprio_qopt.qopt.hw && !(pf->flags & I40E_FLAG_DCB_ENABLED)) {
+ 		ret = i40e_set_bw_limit(vsi, vsi->seid, 0);
+ 		if (ret)
+ 			dev_info(&pf->pdev->dev,
+@@ -5388,8 +5380,6 @@ static int i40e_vsi_configure_bw_alloc(s
+ 				 vsi->seid);
+ 		return ret;
+ 	}
+-
+-skip_reset:
+ 	memset(&bw_data, 0, sizeof(bw_data));
+ 	bw_data.tc_valid_bits = enabled_tc;
+ 	for (i = 0; i < I40E_MAX_TRAFFIC_CLASS; i++)
 
 
