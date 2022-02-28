@@ -2,156 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA00C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D948EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238087AbiB1RDQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:03:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
+        id S236080AbiB1RDU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:03:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238048AbiB1RDL (ORCPT
+        with ESMTP id S238038AbiB1RDL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:03:11 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375EA765F;
-        Mon, 28 Feb 2022 09:02:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1646067719;
-        bh=k0F6SvpCnls0O/0DV0EzovTEbGLpabyeCkX8dCik5jo=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Fc/tFMfnhnLQjv5kZ7pSXE/dQgPU6KhkZPWtyb2CPNrs8kEcT1pogOrMaJ1lYmnvV
-         VdV1pBsK9814RNDWLpRKOBHND+OQRGoU22oQE0wCOe25FywrkoNiZluWk8uZIFiZ7L
-         W0fjGQWyv+b8+xkqPBVGsfLlqVJO6oH7BDvJKgWU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [80.245.79.12] ([80.245.79.12]) by web-mail.gmx.net
- (3c-app-gmx-bs53.server.lan [172.19.170.137]) (via HTTP); Mon, 28 Feb 2022
- 18:01:58 +0100
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85C41DF4B
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:02:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646067751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bTJs+XJuztigw3GbZ3t30dvbSAKamp+b28u3hPimDdk=;
+        b=DJokzQ5c8Iy0OP7UpQSJKS+AOQaLK+/vhMerDM29W9jogHBmD1bTK+9KaUCTOdppPPzc5g
+        4ySixw1XMemtxC/NP/6X8GlnSgCala9EzSn3iLWUEIItxQHk3PxF3iPbNC9odHZdTNhhJC
+        h3XpIgDjBaSich67qVAaxu4zXbKEpO4=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-148-4-2kcuvXMD6L1z5-gr9s6g-1; Mon, 28 Feb 2022 12:02:30 -0500
+X-MC-Unique: 4-2kcuvXMD6L1z5-gr9s6g-1
+Received: by mail-qk1-f197.google.com with SMTP id 2-20020a370a02000000b0060df1ac78baso11619359qkk.20
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:02:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bTJs+XJuztigw3GbZ3t30dvbSAKamp+b28u3hPimDdk=;
+        b=unzlS1KDt5Y576Mu4EmW82lYIWJRX8c3paTJikgFvBNL88mssuuswa/30nGX5LAnXN
+         zjoViSKaG9XCvWNeDx34q8/LEcajhJ+CIznpff1APR10OAqilgTMeLH6iYR5nuXM1j5O
+         hCP4gTY8EoXYGf5vN6VNvMzIbOu8UJ4TLX52tEJ6MF2g+lPJXlEZLukpe8AqASdj4rdG
+         DlvLNdf+zvuCqs8SfNohHK718YMsjS3a2JFBuGFYE7OXyAvzq0/taqr6x87E2l1nRnBl
+         DKN3pK+7temCxmyvZHN09hgQGf0Q+t5jnoAyxAmYulvjPLlpJNMeknwFA3Ucc9GAIkpK
+         cOZw==
+X-Gm-Message-State: AOAM532BhV+qzuBhzQ739PKWZUnpxbUmf59xlNSCoyG4fCgSD/HXLzaK
+        AWS769FelEpJBePnxi8gBqjSEXtIW/ajYyOSztsXtv1LXrMm1bxNuEVKCy3swyn0BMFuV7IBUZt
+        ZdzYNibMT3SmSjr3WSeTlVSHc
+X-Received: by 2002:a05:622a:13d0:b0:2de:7076:72ef with SMTP id p16-20020a05622a13d000b002de707672efmr16576284qtk.394.1646067749623;
+        Mon, 28 Feb 2022 09:02:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJygNruTCrsribOVoPoUO6Evv/v5EGaBw/himskSmDc9znLsXDPafPJNecelMcHhqYRswtO/YA==
+X-Received: by 2002:a05:622a:13d0:b0:2de:7076:72ef with SMTP id p16-20020a05622a13d000b002de707672efmr16576233qtk.394.1646067749291;
+        Mon, 28 Feb 2022 09:02:29 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::45])
+        by smtp.gmail.com with ESMTPSA id i20-20020ac85c14000000b002de4b6004a7sm7048642qti.27.2022.02.28.09.02.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 09:02:28 -0800 (PST)
+Date:   Mon, 28 Feb 2022 09:02:24 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Cc:     Dan Williams <dan.j.williams@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Juergen Gross <jgross@suse.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Kuppuswamy Sathyanarayanan <knsathya@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>, sdeep@vmware.com,
+        Sean Christopherson <seanjc@google.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>, X86 ML <x86@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCHv4 29/30] ACPICA: Avoid cache flush on TDX guest
+Message-ID: <20220228170224.igzvf7e3tc6ujrfq@treble>
+References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
+ <20220224155630.52734-30-kirill.shutemov@linux.intel.com>
+ <20220227220526.3rrmy3u7j2xpelcn@treble>
+ <CAPcyv4jqHQDhpSE24-Y6amC9Y-z4vVnXy6Lvo1j2hdCvzPACvQ@mail.gmail.com>
+ <20220228163713.5eewdwcqhmulsp4z@black.fi.intel.com>
 MIME-Version: 1.0
-Message-ID: <trinity-bfe6b2d5-52cd-458d-92b2-66216620a4b3-1646067718759@3c-app-gmx-bs53>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Aw: Re:  Re: Re: [PATCH v3 1/3] dt-bindings: Convert ahci-platform
- DT bindings to yaml
-Content-Type: text/plain; charset=UTF-8
-Date:   Mon, 28 Feb 2022 18:01:58 +0100
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <ddd09f4f-782f-67e9-ec2f-dd5818ae26c5@canonical.com>
-References: <20220227182800.275572-1-linux@fw-web.de>
- <20220227182800.275572-2-linux@fw-web.de>
- <4c3303f5-7af5-9974-7bea-b7f0d6c7ef53@canonical.com>
- <trinity-ac45bde6-392d-4810-8aad-9a06d2bcd85a-1646050780475@3c-app-gmx-bs53>
- <8fbbce9e-4fd9-d420-43ef-953e846d29f1@canonical.com>
- <trinity-f1b6ce3a-6f22-4cf8-bf51-a5e7f007dda7-1646057347735@3c-app-gmx-bs53>
- <ddd09f4f-782f-67e9-ec2f-dd5818ae26c5@canonical.com>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:1sAIoTtR42be1SxcghXxsWmzRmXeoAOJamY6t168/WaUJiXHT+4izW5decLTrn8wEXQT7
- 7sJw/WzpVBqu1akl+pvbxgb7zMRcnKCaNX2ZZXJLAtQnb8WiWCUYkRC04sbpZpqbeNpX0z79jpCX
- G3/uTEddAB5iIVsCTcrtnlXazbRlxitcDF/MnxLdbpFh2esg0pU34lIOxb41swWoI/R/0MgU5DB3
- TBqyHo3GR1IqdDRcSehSA/t0vhnl7IfYkTuyV+aMZR/xYB3vODSCW2qrkUIMhRJRhG8LdqL8B4ZP
- AY=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:VmkEUVxE6/s=:AgE2Y0u0Dd1vG2/ZILjYR/
- fhoyEv+mJ/Y7cEKejpo16PPfmCiYpK7Zjq2rVzM93b9cyHx5LAeoEDAyRw6aFUvK15hBK2Ekx
- cY7nE3icg0HTddlthKYBkgeIEqb6/NvAO8wt2qDgTPJU/GQLyoOh2G3EP3Xhz6fyPFsU3pfGk
- ASDrN4geUk0/c0DJMf62yew1n/gG84cHzoYSL+n0C4S50s+MVFvwZeHTxw1sTdcRz36WWSlg7
- xCURwi0olci2GPJmE3Da9A0pcsTNMr+gORV/u1Q4kHRUbnEdlblHaEpZA3DkNxpKzYJcfjRPI
- QUKG4xzKdYV0dKaWeEGravMhEuwCQgLFLogJKHPYaHUKEVnIIuYM97u+Bt8+kA7yq4vjHmjKj
- HQCOc9g9NqkJyBxJyMrKJlhNP6awcxTKjfQtJ+AgmtqluLl9ilQxwDf6zXJAY5fJ3xGiBDqCr
- XENhmE/GUNnnB5Sl2O3LNAvzd/itkVSIceRLpj/3G3sLd37bmL12q0K7lyc7MzHNp7lmw5+me
- kcQaCeiBtLruBhTUsg7heVQKT8hhgAFd+BKU92KQx2ZiDNZZztspKqvpJwQMPNY1If/Zflauj
- NxvKrf/D2TzRXrYr0+pchFUOXo5zRJqWlOEjmJg6pEC6KiVY42kZ1o60fqZAGkwRLVumHB9KD
- EuspsrjujA6Rgu8/+ohzGV4ihDgbzq0mjefJwdAIj7soWW9IGuMC/5GYk0QPikRpnGCFLy5vK
- Zh3wxy7fuC5sJz+VPcARyM2zg4cRpUIgT1Mx118fiMZHruUPbXarkCddzI9lhdE2yrnl7OTFu
- ZN6NPDv
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220228163713.5eewdwcqhmulsp4z@black.fi.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+On Mon, Feb 28, 2022 at 07:37:13PM +0300, Kirill A. Shutemov wrote:
+> On Sun, Feb 27, 2022 at 05:34:45PM -0800, Dan Williams wrote:
+> > On Sun, Feb 27, 2022 at 2:05 PM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> > >
+> > > On Thu, Feb 24, 2022 at 06:56:29PM +0300, Kirill A. Shutemov wrote:
+> > > > +/*
+> > > > + * ACPI_FLUSH_CPU_CACHE() flushes caches on entering sleep states.
+> > > > + * It is required to prevent data loss.
+> > > > + *
+> > > > + * While running inside TDX guest, the kernel can bypass cache flushing.
+> > > > + * Changing sleep state in a virtual machine doesn't affect the host system
+> > > > + * sleep state and cannot lead to data loss.
+> > > > + *
+> > > > + * TODO: Is it safe to generalize this from TDX guests to all guest kernels?
+> > > > + */
+> > > > +#define ACPI_FLUSH_CPU_CACHE()                                       \
+> > > > +do {                                                         \
+> > > > +     if (!cpu_feature_enabled(X86_FEATURE_TDX_GUEST))        \
+> > > > +             wbinvd();                                       \
+> > > > +} while (0)
+> > >
+> > > If it's safe, why not do it for all VMs?  Is there something specific
+> > > about TDX which makes this more obviously known to be safe than for
+> > > regular VMs?
+> > >
+> > > The patch description and the above comment make it sound like "we're
+> > > not really sure this is safe, so we'll just use TDX as a testing ground
+> > > for the idea." Which doesn't really inspire a lot of confidence in the
+> > > stability of TD sleep states.
+> > 
+> > Agree, why is this marked as "TODO"? The cache flushes associated with
+> > ACPI sleep states are to flush cache before bare metal power loss to
+> > CPU caches and bare metal transition of DDR in self-refresh mode. If a
+> > cache flush is required it is the responsibility of the hypervisor.
+> > Either it is safe for all guests or it is unsafe for all guests, not
+> > TD specific.
+> 
+> Do we have "any VM" check? I can't find it right away.
 
-> Gesendet: Montag, 28. Februar 2022 um 15:35 Uhr
-> Von: "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>
-> >> Gesendet: Montag, 28. Februar 2022 um 13:38 Uhr
-> >> Von: "Krzysztof Kozlowski" <krzysztof.kozlowski@canonical.com>
+X86_FEATURE_HYPERVISOR
 
-> >> No, this has to be oneOf. See for example
-> >> Documentation/devicetree/bindings/gpio/gpio-vf610.yaml or many other =
-files.
+-- 
+Josh
 
-> > compatible:
-> >   oneOf:
-> >     - enum:
-> >       - brcm,iproc-ahci
-> >       - cavium,octeon-7130-ahci
-> >       - hisilicon,hisi-ahci
-> >       - ibm,476gtr-ahci
-> >       - marvell,armada-3700-ahci
-> >       - marvell,armada-380-ahci
-> >       - snps,dwc-ahci
-> >       - snps,spear-ahci
-> >     - items:
-> >       - const: generic-ahci
-> >       - enum:
-> >         - brcm,iproc-ahci
-> >         - cavium,octeon-7130-ahci
-> >         - hisilicon,hisi-ahci
-> >         - ibm,476gtr-ahci
-> >         - marvell,armada-3700-ahci
-> >         - marvell,armada-380-ahci
-> >         - snps,dwc-ahci
-> >         - snps,spear-ahci
->
-> That could be one way, but instead I propose to have only second part
-> (so enum + generic-ahci) for all compatibles mentioned in
-> ahci_platform.c, which do not customize the driver behavior for these
-> compatibles..
-
-tried many ways of defining it, but none passes with the examples. either =
-to short (first example) or too long (second)
-
-as far as i understand the logic it should be similar to this:
-
-properties:
-  compatible:
-    oneOf:
-      - items:
-        - enum:
-          - marvell,berlin2q-achi
-        - const: generic-ahci
-      - items:
-        - enum:
-          - brcm,iproc-ahci
-          - cavium,octeon-7130-ahci
-          - hisilicon,hisi-ahci
-          - ibm,476gtr-ahci
-          - marvell,armada-3700-ahci
-          - marvell,armada-380-ahci
-          - snps,dwc-ahci
-          - snps,spear-ahci
-
-this passes the dt-binding_check (examples) for me, but i guess there are =
-many more compatibles defined with the generic.
-
-dtbs_check found some more like
-
-'brcm,iproc-ahci'
-'marvell,armada-8k-ahci'
-and many more
-
-it looks like these are also checked in the enum, so the yaml itself look =
-correct, but needs some kind of wildcard instead of the "marvell,berlin2q-=
-achi" as second for the generic-ahci compatible
-
-regards Frank
