@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D642CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39607C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237801AbiB1Rj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:39:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
+        id S238216AbiB1Rjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:39:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238331AbiB1RhZ (ORCPT
+        with ESMTP id S238394AbiB1Rhv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:37:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D956369;
-        Mon, 28 Feb 2022 09:32:22 -0800 (PST)
+        Mon, 28 Feb 2022 12:37:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA99E014;
+        Mon, 28 Feb 2022 09:32:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77418B815AE;
-        Mon, 28 Feb 2022 17:32:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7179C340E7;
-        Mon, 28 Feb 2022 17:32:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7295161357;
+        Mon, 28 Feb 2022 17:32:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D5F1C340E7;
+        Mon, 28 Feb 2022 17:32:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069539;
-        bh=9Q2zckVU2MjYx6EoLKZDAOT6Znqr42HIt8j8+BfBou4=;
+        s=korg; t=1646069541;
+        bh=HNlEnn31gDfp78Stg/+wfklDNtibWpDYzDPpIk7TOvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g17zj+6ClA/PVEKXfQaQISI7Lou15MCQT8IFwJ2xvnnM9bqyo5vjWJpTc2qRUybcy
-         r7GW9zHYxj4kWAFrBeaoePTjqBItQR8LJXZTL1sf/mkCrn5eIKNmVLtOC5WaLg3e6Y
-         lWvCxJlo6mTK918r9/Gn57LUmDAts+XAvQ29dCv8=
+        b=VgD0YcyFbFhJmEUoUVMRTJp8WwdUOEVaxw493/ersiOVqEZkudqmeXEzT+z56sU8X
+         kKiQzwJerhIYoUYrzp6pIMXjRLl2+TY3dmrZ5FOZg/ZI3XqZMTBhKYMxvZ6MgLt9kJ
+         WZr47ivlBx/ZOPrwo0+CZpd3RcaY2sbhfnoSXezI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+831661966588c802aae9@syzkaller.appspotmail.com,
-        Bart Van Assche <bvanassche@acm.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 31/53] RDMA/ib_srp: Fix a deadlock
-Date:   Mon, 28 Feb 2022 18:24:29 +0100
-Message-Id: <20220228172250.528772715@linuxfoundation.org>
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.4 32/53] tracing: Have traceon and traceoff trigger honor the instance
+Date:   Mon, 28 Feb 2022 18:24:30 +0100
+Message-Id: <20220228172250.593515553@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -52,45 +50,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-[ Upstream commit 081bdc9fe05bb23248f5effb6f811da3da4b8252 ]
+commit 302e9edd54985f584cfc180098f3554774126969 upstream.
 
-Remove the flush_workqueue(system_long_wq) call since flushing
-system_long_wq is deadlock-prone and since that call is redundant with a
-preceding cancel_work_sync()
+If a trigger is set on an event to disable or enable tracing within an
+instance, then tracing should be disabled or enabled in the instance and
+not at the top level, which is confusing to users.
 
-Link: https://lore.kernel.org/r/20220215210511.28303-3-bvanassche@acm.org
-Fixes: ef6c49d87c34 ("IB/srp: Eliminate state SRP_TARGET_DEAD")
-Reported-by: syzbot+831661966588c802aae9@syzkaller.appspotmail.com
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220223223837.14f94ec3@rorschach.local.home
+
+Cc: stable@vger.kernel.org
+Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
+Tested-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Reviewed-by: Tom Zanussi <zanussi@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/ulp/srp/ib_srp.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ kernel/trace/trace_events_trigger.c |   52 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 46 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/infiniband/ulp/srp/ib_srp.c b/drivers/infiniband/ulp/srp/ib_srp.c
-index 8708ed5477e99..dac806b715afa 100644
---- a/drivers/infiniband/ulp/srp/ib_srp.c
-+++ b/drivers/infiniband/ulp/srp/ib_srp.c
-@@ -4222,9 +4222,11 @@ static void srp_remove_one(struct ib_device *device, void *client_data)
- 		spin_unlock(&host->target_lock);
+--- a/kernel/trace/trace_events_trigger.c
++++ b/kernel/trace/trace_events_trigger.c
+@@ -940,6 +940,16 @@ static void
+ traceon_trigger(struct event_trigger_data *data, void *rec,
+ 		struct ring_buffer_event *event)
+ {
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_on(file->tr);
++		return;
++	}
++
+ 	if (tracing_is_on())
+ 		return;
  
- 		/*
--		 * Wait for tl_err and target port removal tasks.
-+		 * srp_queue_remove_work() queues a call to
-+		 * srp_remove_target(). The latter function cancels
-+		 * target->tl_err_work so waiting for the remove works to
-+		 * finish is sufficient.
- 		 */
--		flush_workqueue(system_long_wq);
- 		flush_workqueue(srp_remove_wq);
+@@ -950,8 +960,15 @@ static void
+ traceon_count_trigger(struct event_trigger_data *data, void *rec,
+ 		      struct ring_buffer_event *event)
+ {
+-	if (tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (tracing_is_on())
++			return;
++	}
  
- 		kfree(host);
--- 
-2.34.1
-
+ 	if (!data->count)
+ 		return;
+@@ -959,13 +976,26 @@ traceon_count_trigger(struct event_trigg
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_on();
++	if (file)
++		tracer_tracing_on(file->tr);
++	else
++		tracing_on();
+ }
+ 
+ static void
+ traceoff_trigger(struct event_trigger_data *data, void *rec,
+ 		 struct ring_buffer_event *event)
+ {
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_off(file->tr);
++		return;
++	}
++
+ 	if (!tracing_is_on())
+ 		return;
+ 
+@@ -976,8 +1006,15 @@ static void
+ traceoff_count_trigger(struct event_trigger_data *data, void *rec,
+ 		       struct ring_buffer_event *event)
+ {
+-	if (!tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (!tracing_is_on())
++			return;
++	}
+ 
+ 	if (!data->count)
+ 		return;
+@@ -985,7 +1022,10 @@ traceoff_count_trigger(struct event_trig
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_off();
++	if (file)
++		tracer_tracing_off(file->tr);
++	else
++		tracing_off();
+ }
+ 
+ static int
 
 
