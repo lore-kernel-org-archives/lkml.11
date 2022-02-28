@@ -2,81 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E1EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A15C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:01:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiB1T6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 14:58:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33756 "EHLO
+        id S229791AbiB1UBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:01:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiB1T6n (ORCPT
+        with ESMTP id S229755AbiB1UBl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 14:58:43 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1E42E09F;
-        Mon, 28 Feb 2022 11:58:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646078284; x=1677614284;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=e74w0OEGEp4eOrov/OjcyDae/25MPuueAdebpU/hUcQ=;
-  b=ekRJ1tF2gWP1QPvuPq1PyyGsV2P+Ptui/NaQ45NYzJ4k/tivbC5UpwjM
-   /rWenSHjGZXMtGk/Uh4jJHPYwCf4r8F6wfzBxawNAi4PMMeRA2CkNBJsY
-   vYHPig/L/MIr5P2dUIdaioBrQ1F0Q+JUV+mpQezml1oft9JUCWRQiZIkk
-   /JeZpu5MUjWWaP6qUE6nWLXb8NTytlKU1vmMapgSHmEm4v+sAy1FK3hmE
-   hTaCjEqSIQ2u9wSh4r3nWqviNQH0Sn5tdPr5t99zRlm7a4SQHOXo99RX0
-   i9atYcmfOXqIVeQL+0h1tHy5wNgGExNf11yVsL3wQrN442b4AGkkupI/f
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="339406630"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="339406630"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 11:58:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="685459499"
-Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Feb 2022 11:58:02 -0800
-From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     corbet@lwn.net, rafael@kernel.org, hdegoede@redhat.com,
-        markgross@kernel.org
-Cc:     platform-driver-x86@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v2 2/2] MAINTAINERS: Add additional file to uncore frequency control
-Date:   Mon, 28 Feb 2022 11:58:00 -0800
-Message-Id: <20220228195800.1422004-2-srinivas.pandruvada@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220228195800.1422004-1-srinivas.pandruvada@linux.intel.com>
-References: <20220228195800.1422004-1-srinivas.pandruvada@linux.intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 28 Feb 2022 15:01:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B69210FCF;
+        Mon, 28 Feb 2022 12:01:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06A00B81643;
+        Mon, 28 Feb 2022 20:01:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E46EC340F1;
+        Mon, 28 Feb 2022 20:00:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646078458;
+        bh=WX2GSxXiBauKudb0mEfuYngTCREWlWxYllb0lfJstnw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=d2TVZTt2KkPq5p75E5jhIPc7tDj4A0MICF9a+hpYB+7RDSM32/j/yrisSBzLt+Qdd
+         ozC9qQ/ph78ht13NvqGPiiZCM69mBC5FwY10tiWhtecj8x/B2IGUpdOnzaPumuFWA7
+         0Xf8OTnEJAzVPjqyGUfKypoTeWbhD786eKc/MfpVyyzulhDuA5zOAr4UBTqZduwLRV
+         6G3O4BdSmakWemA9zpbQoKJR5hQO9YxeFB95GZ2zJ2rqvaQnfmjAe0DiRLoZ8V2nnz
+         aILsjZTXLbcUFi5odjscBHVMqfl6b5OycOPe4f2dQcPDIaOcPPmoA+HNFJ8mIVFvmw
+         DoHs3PwkeGUaA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=billy-the-mountain.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nOmCW-00BDhb-4H; Mon, 28 Feb 2022 20:00:56 +0000
+Date:   Mon, 28 Feb 2022 20:00:55 +0000
+Message-ID: <87y21u69s8.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     "Maulik Shah (mkshah)" <quic_mkshah@quicinc.com>
+Cc:     <linux-kernel@vger.kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        <linux-arm-msm@vger.kernel.org>
+Subject: Re: [PATCH 2/5] irqchip/qcom-pdc: Kill non-wakeup irqdomain
+In-Reply-To: <22ac147c-fb47-fc8c-8e10-8e67db94fbf8@quicinc.com>
+References: <20220224101226.88373-1-maz@kernel.org>
+        <20220224101226.88373-3-maz@kernel.org>
+        <22ac147c-fb47-fc8c-8e10-8e67db94fbf8@quicinc.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: quic_mkshah@quicinc.com, linux-kernel@vger.kernel.org, agross@kernel.org, bjorn.andersson@linaro.org, tglx@linutronix.de, linux-arm-msm@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add additional Documentation file in the list of files.
+On Mon, 28 Feb 2022 19:29:41 +0000,
+"Maulik Shah (mkshah)" <quic_mkshah@quicinc.com> wrote:
+> 
+> Hi,
+> 
+> On 2/24/2022 3:42 PM, Marc Zyngier wrote:
+> > A careful look at the way the PDC driver works shows that:
+> > 
+> > - all interrupts are in the same space
+> > - all interrupts are treated the same
+> > 
+> > And yet the driver creates two domains based on whether
+> > the interrupt gets mapped directly or from the pinctrl code,
+> > which is obviously a waste of resources.
+> The GPIO is kept under separate domain to handle extra configuration
+> for wake GPIO handling.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
-New patch to add file to maintainers list.
+Which extra configuration? The irq_chip structure is the same, the
+translation is the same, the GIC mapping is the same, and the select
+method only serves to select between two irq domains that do the same
+thing.
 
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+So please point me to what the difference is.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index dc4a1370ef1b..d36a51dee153 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9891,6 +9891,7 @@ INTEL UNCORE FREQUENCY CONTROL
- M:	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
- L:	platform-driver-x86@vger.kernel.org
- S:	Maintained
-+F:	Documentation/admin-guide/pm/intel_uncore_frequency_scaling.rst
- F:	drivers/platform/x86/intel/uncore-frequency.c
- 
- INTEL VENDOR SPECIFIC EXTENDED CAPABILITIES DRIVER
+> 
+> On targets like SM8150/SM8250 each wake up capable GPIO (if totan n)
+> line has dedicated parent PDC irq (if total m, n = m) associated with
+> it.
+> However on targets like sdx55 PDC has muxes where each wake GPIO (if
+> total n) line goes through each PDC muxes (if total m, n > m) and
+> any of these muxes can be used to route any one GPIO to PDC (and
+> parent GIC) but unlike other targets it doesn't have one to one
+> mapping for GPIO to GIC interrupt.
+> So this will need to be kept as is to support sdx55 target.
+
+As far as I can tell, the current code doesn't have any support for
+this. And if there is a mux involved in the interrupt routing, this
+should be something entierly separate, as the current code is strictly
+hierarchical.
+
+What am I missing?
+
+	M.
+
 -- 
-2.34.1
-
+Without deviation from the norm, progress is not possible.
