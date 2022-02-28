@@ -2,83 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:25:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED10C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:25:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235245AbiB1MZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:25:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
+        id S236479AbiB1M0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:26:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236510AbiB1MZQ (ORCPT
+        with ESMTP id S236475AbiB1MZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:25:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B8C76E1E;
-        Mon, 28 Feb 2022 04:24:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1133061122;
-        Mon, 28 Feb 2022 12:24:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 661B0C340F5;
-        Mon, 28 Feb 2022 12:24:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646051059;
-        bh=oZOcgtYrh8yNZbOLHL9TFee3Kx3uN+kaijUMv7n/GjA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=i1ozI60qUTEXbDm9LxZvDcalgB+3gC1zwMOCspsbav5qRX79FLyCmF9dorUbugH1S
-         H8kD16eDTvFLzufdtzdgJQKaOH+iZPSZg83IyzL/PIFYf6gOYN6JjeMskxaQ/ie5LW
-         Gns9aq7Rlyb9TUAmQjRgdUj7LpM3IJApBa9anvphQEU95ATdA9DX5uiUlWf4GJidik
-         u0FLKj77hUGQm59BroDX9/hFklHGvrGtWXAUfsJJi4SRnfS1qLY+v/WShuE9Agm34V
-         TKXpUWdMF+PrCWmGyFHcPekbDBtFeP4VcRB4DiRof5rWvcf3mr8SvUFexxnczdLmwa
-         4WXzTjgcRS85Q==
-Date:   Mon, 28 Feb 2022 13:24:58 +0100
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>
-Cc:     "Chatre, Reinette" <reinette.chatre@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
- permissions
-Message-ID: <Yhy/GvJegnTqYdq6@iki.fi>
-References: <cover.1644274683.git.reinette.chatre@intel.com>
- <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
- <YhLhoMFPyOFZ2fsX@iki.fi>
- <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
+        Mon, 28 Feb 2022 07:25:33 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C174075215
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:24:26 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id g7-20020a17090a708700b001bb78857ccdso14644100pjk.1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:24:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=O7Mg/f9nLeyIWPXNcJvDRJ+Jd7WL7Il017lo2NLhARI=;
+        b=zQqTIdjmACn7NJG/xUqkQVbl/A95M9oSKtKPYb/DBJQlkAxgYKLJqDA9F8M0aj4l+6
+         VnlLKjVnqZiljGgdeEC+7n+hF2KidK1suVJKwvh06Jx9uUWB1GdJu25MZQZ1IcSQ/U2o
+         20l2rAW3YSQtjG4wwTMRkqRwOi3twUpOU7kX5R/olhknVmxHSvS9V/TYz+WnvyqNwpYr
+         eB6A27IFxZ4wBia+1dqzVxrkJ8J5Fyo0tStyCMJEkpEIqoYXm6bH5g3vTIwZHjB7IxVx
+         SHIiG5CLMzY3rtYTRBxhE7Eb2jYc3mdtrmgWMLMppC8/juFanpDHY18swAyUbpf2l13Q
+         6DNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=O7Mg/f9nLeyIWPXNcJvDRJ+Jd7WL7Il017lo2NLhARI=;
+        b=gCMLh02+s9fBBJu+n3sx8rO5L1vlp/LHsaL4wpTLds2dK6jdw6bmSoclMJMA2ssTsm
+         QOaEFi9u7KEuIwJksfYKH4kqFSqocRe5qHHcf9STYpBI+t3LalZewu0E+dMIgPY5YtoL
+         MLV1FH+K0qeSb5YI5eKu4umJlbSXR/m61JUzJGfHeH+IkdHBRcBn/12co0CDG/Hm2uI/
+         minWOw2ZNHlWCcJgtPJIAzY69MnY2xbBsc6n5o+exGqiYOEi3UdLsXkSAjVBaiEXaTWt
+         iogha8hyEjDW/WUrSoNIYjwoWvYNdx4MPNFmM+8tbzkgCe+RjEw7X1wubcF7BaHXR3OG
+         SkDg==
+X-Gm-Message-State: AOAM531LUS1TDqvkZP99EettXSYy+OIl5yixvxnn3kb6BxCZg6varv54
+        XxoTCjjmu8rmZh0DwL5ey71Ebw==
+X-Google-Smtp-Source: ABdhPJxrUroSeg9tuGjy2OtYyATly8LKBMC1zKeFNANYJ0uq6OHfCXB8xDMI2/gap6AVSkeFE7BBdQ==
+X-Received: by 2002:a17:90a:b88a:b0:1bc:62eb:49c with SMTP id o10-20020a17090ab88a00b001bc62eb049cmr16659583pjr.228.1646051066270;
+        Mon, 28 Feb 2022 04:24:26 -0800 (PST)
+Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
+        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.24.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 04:24:26 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
+        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
+        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
+        richard.weiyang@gmail.com, david@fromorbit.com,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
+        vbabka@suse.cz
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
+        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
+        fam.zheng@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v6 15/16] mm: list_lru: rename list_lru_per_memcg to list_lru_memcg
+Date:   Mon, 28 Feb 2022 20:21:25 +0800
+Message-Id: <20220228122126.37293-16-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
+References: <20220228122126.37293-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 07:21:50PM +0000, Dhanraj, Vijay wrote:
-> Hi All,
-> 
-> Regarding the recent update of splitting the page permissions change
-> request into two IOCTLS (RELAX and RESTRICT), can we combine them into
-> one? That is, revert to how it was done in the v1 version?
+The name of list_lru_memcg was occupied before and became free since last
+commit. Rename list_lru_per_memcg to list_lru_memcg since the name is brief.
 
-They are logically separate complex functionalities:
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ include/linux/list_lru.h |  2 +-
+ mm/list_lru.c            | 18 +++++++++---------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-1. "restrict" calls EMODPR and requires EACCEPT
-2. "relax" increases permissions up to vetted ("EADD") and could be
-    combined with EMODPE called inside enclave.
+diff --git a/include/linux/list_lru.h b/include/linux/list_lru.h
+index 572c263561ac..b35968ee9fb5 100644
+--- a/include/linux/list_lru.h
++++ b/include/linux/list_lru.h
+@@ -32,7 +32,7 @@ struct list_lru_one {
+ 	long			nr_items;
+ };
+ 
+-struct list_lru_per_memcg {
++struct list_lru_memcg {
+ 	struct rcu_head		rcu;
+ 	/* array of per cgroup per node lists, indexed by node id */
+ 	struct list_lru_one	node[];
+diff --git a/mm/list_lru.c b/mm/list_lru.c
+index 8dc1dabb9f05..38f711e9b56e 100644
+--- a/mm/list_lru.c
++++ b/mm/list_lru.c
+@@ -53,7 +53,7 @@ static inline struct list_lru_one *
+ list_lru_from_memcg_idx(struct list_lru *lru, int nid, int idx)
+ {
+ 	if (list_lru_memcg_aware(lru) && idx >= 0) {
+-		struct list_lru_per_memcg *mlru = xa_load(&lru->xa, idx);
++		struct list_lru_memcg *mlru = xa_load(&lru->xa, idx);
+ 
+ 		return mlru ? &mlru->node[nid] : NULL;
+ 	}
+@@ -306,7 +306,7 @@ unsigned long list_lru_walk_node(struct list_lru *lru, int nid,
+ 
+ #ifdef CONFIG_MEMCG_KMEM
+ 	if (*nr_to_walk > 0 && list_lru_memcg_aware(lru)) {
+-		struct list_lru_per_memcg *mlru;
++		struct list_lru_memcg *mlru;
+ 		unsigned long index;
+ 
+ 		xa_for_each(&lru->xa, index, mlru) {
+@@ -335,10 +335,10 @@ static void init_one_lru(struct list_lru_one *l)
+ }
+ 
+ #ifdef CONFIG_MEMCG_KMEM
+-static struct list_lru_per_memcg *memcg_init_list_lru_one(gfp_t gfp)
++static struct list_lru_memcg *memcg_init_list_lru_one(gfp_t gfp)
+ {
+ 	int nid;
+-	struct list_lru_per_memcg *mlru;
++	struct list_lru_memcg *mlru;
+ 
+ 	mlru = kmalloc(struct_size(mlru, node, nr_node_ids), gfp);
+ 	if (!mlru)
+@@ -352,7 +352,7 @@ static struct list_lru_per_memcg *memcg_init_list_lru_one(gfp_t gfp)
+ 
+ static void memcg_list_lru_free(struct list_lru *lru, int src_idx)
+ {
+-	struct list_lru_per_memcg *mlru = xa_erase_irq(&lru->xa, src_idx);
++	struct list_lru_memcg *mlru = xa_erase_irq(&lru->xa, src_idx);
+ 
+ 	/*
+ 	 * The __list_lru_walk_one() can walk the list of this node.
+@@ -374,7 +374,7 @@ static inline void memcg_init_list_lru(struct list_lru *lru, bool memcg_aware)
+ static void memcg_destroy_list_lru(struct list_lru *lru)
+ {
+ 	XA_STATE(xas, &lru->xa, 0);
+-	struct list_lru_per_memcg *mlru;
++	struct list_lru_memcg *mlru;
+ 
+ 	if (!list_lru_memcg_aware(lru))
+ 		return;
+@@ -476,7 +476,7 @@ int memcg_list_lru_alloc(struct mem_cgroup *memcg, struct list_lru *lru,
+ 	unsigned long flags;
+ 	struct list_lru_memcg *mlrus;
+ 	struct list_lru_memcg_table {
+-		struct list_lru_per_memcg *mlru;
++		struct list_lru_memcg *mlru;
+ 		struct mem_cgroup *memcg;
+ 	} *table;
+ 	XA_STATE(xas, &lru->xa, 0);
+@@ -492,7 +492,7 @@ int memcg_list_lru_alloc(struct mem_cgroup *memcg, struct list_lru *lru,
+ 	/*
+ 	 * Because the list_lru can be reparented to the parent cgroup's
+ 	 * list_lru, we should make sure that this cgroup and all its
+-	 * ancestors have allocated list_lru_per_memcg.
++	 * ancestors have allocated list_lru_memcg.
+ 	 */
+ 	for (i = 0; memcg; memcg = parent_mem_cgroup(memcg), i++) {
+ 		if (memcg_list_lru_allocated(memcg, lru))
+@@ -511,7 +511,7 @@ int memcg_list_lru_alloc(struct mem_cgroup *memcg, struct list_lru *lru,
+ 	xas_lock_irqsave(&xas, flags);
+ 	while (i--) {
+ 		int index = READ_ONCE(table[i].memcg->kmemcg_id);
+-		struct list_lru_per_memcg *mlru = table[i].mlru;
++		struct list_lru_memcg *mlru = table[i].mlru;
+ 
+ 		xas_set(&xas, index);
+ retry:
+-- 
+2.11.0
 
-I don't think it is a good idea.
-
-BR, Jarkko
