@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 377E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E03EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:05:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236926AbiB1SFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:05:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
+        id S239849AbiB1SFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:05:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239983AbiB1R7J (ORCPT
+        with ESMTP id S239286AbiB1R70 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:59:09 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22785B3E6;
-        Mon, 28 Feb 2022 09:45:15 -0800 (PST)
+        Mon, 28 Feb 2022 12:59:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD8C88B18;
+        Mon, 28 Feb 2022 09:45:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 547C4CE17D1;
-        Mon, 28 Feb 2022 17:45:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 648B9C340E7;
-        Mon, 28 Feb 2022 17:45:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F9EB6090B;
+        Mon, 28 Feb 2022 17:45:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A5CAC340F0;
+        Mon, 28 Feb 2022 17:45:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070308;
-        bh=0+G/jHiDBvpeRX0yJRZinnxdfXV2KZtk2TgUzypQAWM=;
+        s=korg; t=1646070319;
+        bh=FeXWa6P1qRtmPfj0mdtYpxdTQB265wDqpUFzlISXYoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C6aDWtSFOEWNrapkbjNYsCTIEBObqTi32EOs+lfB6gf0kDtZfeUy+k0SDKsLcOjB9
-         qr/hM15WnXzB+1vmds9oAo0euODU+a3TSdiKRo8Y29AitxoBrZf///sbKkWdP3D5uM
-         MrCy6xPxYFQRfrPZOzA51A/pV+EH36RqsHhrWSEU=
+        b=0swlm84EcX+OLTLmihWlMGIbj7hmFVxxeC9Zj+2AifmqPg1u42h5V4Tn3j/VV41BD
+         O54n9wv2WY+G8U0FfAKcK6rom4SjJmD1c1pLwjeTxPZpq+DOuUQCLmyNyJXa51XMRc
+         ZwifHfLXRCF80ABLX+Z/y4SUO0dVeW8sXET/KW6U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.16 025/164] drm/i915: Correctly populate use_sagv_wm for all pipes
-Date:   Mon, 28 Feb 2022 18:23:07 +0100
-Message-Id: <20220228172402.400359034@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH 5.16 058/164] selftests: bpf: Check bpf_msg_push_data return value
+Date:   Mon, 28 Feb 2022 18:23:40 +0100
+Message-Id: <20220228172405.416279934@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -51,66 +49,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Felix Maurer <fmaurer@redhat.com>
 
-commit afc189df6bcc6be65961deb54e15ec60e7f85337 upstream.
+commit 61d06f01f9710b327a53492e5add9f972eb909b3 upstream.
 
-When changing between SAGV vs. no SAGV on tgl+ we have to
-update the use_sagv_wm flag for all the crtcs or else
-an active pipe not already in the state will end up using
-the wrong watermarks. That is especially bad when we end up
-with the tighter non-SAGV watermarks with SAGV enabled.
-Usually ends up in underruns.
+bpf_msg_push_data may return a non-zero value to indicate an error. The
+return value should be checked to prevent undetected errors.
 
-Cc: stable@vger.kernel.org
-Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
-Fixes: 7241c57d3140 ("drm/i915: Add TGL+ SAGV support")
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220218064039.12834-2-ville.syrjala@linux.intel.com
-(cherry picked from commit 8dd8ffb824ca7b897ce9f2082ffa7e64831c22dc)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+To indicate an error, the BPF programs now perform a different action
+than their intended one to make the userspace test program notice the
+error, i.e., the programs supposed to pass/redirect drop, the program
+supposed to drop passes.
+
+Fixes: 84fbfe026acaa ("bpf: test_sockmap add options to use msg_push_data")
+Signed-off-by: Felix Maurer <fmaurer@redhat.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/89f767bb44005d6b4dd1f42038c438f76b3ebfad.1644601294.git.fmaurer@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/intel_pm.c |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ tools/testing/selftests/bpf/progs/test_sockmap_kern.h |   26 ++++++++++++------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
---- a/drivers/gpu/drm/i915/intel_pm.c
-+++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -4019,6 +4019,17 @@ static int intel_compute_sagv_mask(struc
- 			return ret;
- 	}
+--- a/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
++++ b/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
+@@ -235,7 +235,7 @@ SEC("sk_msg1")
+ int bpf_prog4(struct sk_msg_md *msg)
+ {
+ 	int *bytes, zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5;
+-	int *start, *end, *start_push, *end_push, *start_pop, *pop;
++	int *start, *end, *start_push, *end_push, *start_pop, *pop, err = 0;
  
-+	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
-+	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
-+		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
-+		if (ret)
-+			return ret;
-+	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
-+		ret = intel_atomic_lock_global_state(&new_bw_state->base);
-+		if (ret)
-+			return ret;
+ 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
+ 	if (bytes)
+@@ -249,8 +249,11 @@ int bpf_prog4(struct sk_msg_md *msg)
+ 		bpf_msg_pull_data(msg, *start, *end, 0);
+ 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
+ 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
+-	if (start_push && end_push)
+-		bpf_msg_push_data(msg, *start_push, *end_push, 0);
++	if (start_push && end_push) {
++		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
++		if (err)
++			return SK_DROP;
 +	}
-+
- 	for_each_new_intel_crtc_in_state(state, crtc,
- 					 new_crtc_state, i) {
- 		struct skl_pipe_wm *pipe_wm = &new_crtc_state->wm.skl.optimal;
-@@ -4034,17 +4045,6 @@ static int intel_compute_sagv_mask(struc
- 			intel_can_enable_sagv(dev_priv, new_bw_state);
- 	}
+ 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
+ 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
+ 	if (start_pop && pop)
+@@ -263,6 +266,7 @@ int bpf_prog6(struct sk_msg_md *msg)
+ {
+ 	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, key = 0;
+ 	int *bytes, *start, *end, *start_push, *end_push, *start_pop, *pop, *f;
++	int err = 0;
+ 	__u64 flags = 0;
  
--	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
--	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
--		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
--		if (ret)
--			return ret;
--	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
--		ret = intel_atomic_lock_global_state(&new_bw_state->base);
--		if (ret)
--			return ret;
--	}
--
- 	return 0;
- }
+ 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
+@@ -279,8 +283,11 @@ int bpf_prog6(struct sk_msg_md *msg)
  
+ 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
+ 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
+-	if (start_push && end_push)
+-		bpf_msg_push_data(msg, *start_push, *end_push, 0);
++	if (start_push && end_push) {
++		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
++		if (err)
++			return SK_DROP;
++	}
+ 
+ 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
+ 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
+@@ -338,7 +345,7 @@ SEC("sk_msg5")
+ int bpf_prog10(struct sk_msg_md *msg)
+ {
+ 	int *bytes, *start, *end, *start_push, *end_push, *start_pop, *pop;
+-	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5;
++	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, err = 0;
+ 
+ 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
+ 	if (bytes)
+@@ -352,8 +359,11 @@ int bpf_prog10(struct sk_msg_md *msg)
+ 		bpf_msg_pull_data(msg, *start, *end, 0);
+ 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
+ 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
+-	if (start_push && end_push)
+-		bpf_msg_push_data(msg, *start_push, *end_push, 0);
++	if (start_push && end_push) {
++		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
++		if (err)
++			return SK_PASS;
++	}
+ 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
+ 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
+ 	if (start_pop && pop)
 
 
