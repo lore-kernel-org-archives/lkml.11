@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC654C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2615C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233195AbiB1SKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:10:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
+        id S233459AbiB1SKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:10:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240819AbiB1SEH (ORCPT
+        with ESMTP id S240822AbiB1SEI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:04:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2252AF3;
+        Mon, 28 Feb 2022 13:04:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8BF1116A;
         Mon, 28 Feb 2022 09:47:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCCB260180;
-        Mon, 28 Feb 2022 17:47:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF491C340E7;
-        Mon, 28 Feb 2022 17:47:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AF33B815C5;
+        Mon, 28 Feb 2022 17:47:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66E7CC340E7;
+        Mon, 28 Feb 2022 17:47:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070456;
-        bh=Ig6iiXM5kdjbiATJC7zMaVmkMdHlc7IqYSCKrSrGdak=;
+        s=korg; t=1646070423;
+        bh=vz++OT2NpQLcJoIMtjCiXJNuGLiWgx78RUDEY0UqYyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1a1n9ZGUglSS3Fj9wM3sblfGm2KWvoIAA+/mPeZ2fxgm1ooTzYlVoBTIm7rKiOlZI
-         c1uUNDfffFdqmx65Olnvc7tMdYtHP2pjqlKUhWP8AoAO8OcTyDwvGQCTxCo2H/Yrav
-         WnVHwXSLJey5YpsAAaUiq9U2Dlh5+Ngo+nHWi28I=
+        b=NzA1XYpTCG0ajw3gGEjpwyNO6pIoJBTG/IHzUV9/l80SBWSf4nwZXifu1mnnSHdLJ
+         JIl/swLKL/q9K/PobIJ8VOlBrQqltRUlg3bRDYFWCsOliTeYsyWIPiciRMPBEnQMu1
+         SdsAGbzWJA1Gl6vc3Usf5JBlp3FK4C1bmaWAp/RI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.16 116/164] iio: adc: tsc2046: fix memory corruption by preventing array overflow
-Date:   Mon, 28 Feb 2022 18:24:38 +0100
-Message-Id: <20220228172410.894334670@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 064/164] tipc: Fix end of loop tests for list_for_each_entry()
+Date:   Mon, 28 Feb 2022 18:23:46 +0100
+Message-Id: <20220228172405.988911270@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,47 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit b7a78a8adaa8849c02f174d707aead0f85dca0da upstream.
+commit a1f8fec4dac8bc7b172b2bdbd881e015261a6322 upstream.
 
-On one side we have indio_dev->num_channels includes all physical channels +
-timestamp channel. On other side we have an array allocated only for
-physical channels. So, fix memory corruption by ARRAY_SIZE() instead of
-num_channels variable.
+These tests are supposed to check if the loop exited via a break or not.
+However the tests are wrong because if we did not exit via a break then
+"p" is not a valid pointer.  In that case, it's the equivalent of
+"if (*(u32 *)sr == *last_key) {".  That's going to work most of the time,
+but there is a potential for those to be equal.
 
-Note the first case is a cleanup rather than a fix as the software
-timestamp channel bit in active_scanmask is never set by the IIO core.
-
-Fixes: 9374e8f5a38d ("iio: adc: add ADC driver for the TI TSC2046 controller")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220107081401.2816357-1-o.rempel@pengutronix.de
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 1593123a6a49 ("tipc: add name table dump to new netlink api")
+Fixes: 1a1a143daf84 ("tipc: add publication dump to new netlink api")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/ti-tsc2046.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/tipc/name_table.c |    2 +-
+ net/tipc/socket.c     |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/iio/adc/ti-tsc2046.c
-+++ b/drivers/iio/adc/ti-tsc2046.c
-@@ -388,7 +388,7 @@ static int tsc2046_adc_update_scan_mode(
- 	mutex_lock(&priv->slock);
- 
- 	size = 0;
--	for_each_set_bit(ch_idx, active_scan_mask, indio_dev->num_channels) {
-+	for_each_set_bit(ch_idx, active_scan_mask, ARRAY_SIZE(priv->l)) {
- 		size += tsc2046_adc_group_set_layout(priv, group, ch_idx);
- 		tsc2046_adc_group_set_cmd(priv, group, ch_idx);
- 		group++;
-@@ -548,7 +548,7 @@ static int tsc2046_adc_setup_spi_msg(str
- 	 * enabled.
- 	 */
- 	size = 0;
--	for (ch_idx = 0; ch_idx < priv->dcfg->num_channels; ch_idx++)
-+	for (ch_idx = 0; ch_idx < ARRAY_SIZE(priv->l); ch_idx++)
- 		size += tsc2046_adc_group_set_layout(priv, ch_idx, ch_idx);
- 
- 	priv->tx = devm_kzalloc(&priv->spi->dev, size, GFP_KERNEL);
+--- a/net/tipc/name_table.c
++++ b/net/tipc/name_table.c
+@@ -967,7 +967,7 @@ static int __tipc_nl_add_nametable_publ(
+ 		list_for_each_entry(p, &sr->all_publ, all_publ)
+ 			if (p->key == *last_key)
+ 				break;
+-		if (p->key != *last_key)
++		if (list_entry_is_head(p, &sr->all_publ, all_publ))
+ 			return -EPIPE;
+ 	} else {
+ 		p = list_first_entry(&sr->all_publ,
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -3749,7 +3749,7 @@ static int __tipc_nl_list_sk_publ(struct
+ 			if (p->key == *last_publ)
+ 				break;
+ 		}
+-		if (p->key != *last_publ) {
++		if (list_entry_is_head(p, &tsk->publications, binding_sock)) {
+ 			/* We never set seq or call nl_dump_check_consistent()
+ 			 * this means that setting prev_seq here will cause the
+ 			 * consistence check to fail in the netlink callback
 
 
