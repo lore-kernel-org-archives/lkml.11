@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF33C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99980C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239162AbiB1RsN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:48:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58822 "EHLO
+        id S232246AbiB1RsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:48:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239720AbiB1Roc (ORCPT
+        with ESMTP id S239755AbiB1Rod (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:44:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D050E9EB9C;
-        Mon, 28 Feb 2022 09:36:58 -0800 (PST)
+        Mon, 28 Feb 2022 12:44:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB3238AE57;
+        Mon, 28 Feb 2022 09:37:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F464B815BE;
-        Mon, 28 Feb 2022 17:36:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA02FC340F1;
-        Mon, 28 Feb 2022 17:36:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 370B0B815A6;
+        Mon, 28 Feb 2022 17:37:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88BDDC340F0;
+        Mon, 28 Feb 2022 17:37:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069812;
-        bh=eHN+QxCJDsMYcD1W3M1wJxnaC7XsIYiU4h+rIJhtuLM=;
+        s=korg; t=1646069822;
+        bh=qu90kltiE3Ztr4yf80d/h8k36oOjn3KCAfxrW+5oMjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J2v4YPqBbaSuMFr0XWDKxx6QBCtzht+yx0awKbczcrgf142E2yLzZiIQfCqnRk4Z/
-         GmW/BwZ8oXnRcSwhznkwI9bwPJWSjSWETh5xPCpL4Ke9/ykkcMh0ilntkTtSGaGmFs
-         vqOMdczLiONUv+fTwZ1y4w/U8YDlYaGg2E0Tzou8=
+        b=KFjnB4Hrh0tI4cFKp354V0ug+qP/JKInpQ1w6LJFao1cbF4XhR6fBJyqqHUvMn08u
+         /+ftLeRyg2ZMwSF+IUkP1SjFY6N+0qhCz3HJf1X06qZWCfC6URIOXxH99OWf6r/you
+         1HLG2TQr0hjCNlGb7Ql9FeabO1gQszRibmPP48G8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.15 021/139] drm/i915: Widen the QGV point mask
-Date:   Mon, 28 Feb 2022 18:23:15 +0100
-Message-Id: <20220228172350.085074050@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
+        Ross Maynard <bids.7405@bigpond.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 025/139] USB: zaurus: support another broken Zaurus
+Date:   Mon, 28 Feb 2022 18:23:19 +0100
+Message-Id: <20220228172350.429537977@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -51,52 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit 3f33364836aacc28cd430d22cf22379e3b5ecd77 upstream.
+commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c upstream.
 
-adlp+ adds some extra bits to the QGV point mask. The code attempts
-to handle that but forgot to actually make sure we can store those
-bits in the bw state. Fix it.
+This SL-6000 says Direct Line, not Ethernet
 
-Cc: stable@vger.kernel.org
-Cc: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
-Fixes: 192fbfb76744 ("drm/i915: Implement PSF GV point support")
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220214091811.13725-4-ville.syrjala@linux.intel.com
-Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
-(cherry picked from commit c0299cc9840b3805205173cc77782f317b78ea0e)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+v2: added Reporter and Link
+
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: Ross Maynard <bids.7405@bigpond.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/display/intel_bw.h |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/usb/cdc_ether.c |   12 ++++++++++++
+ drivers/net/usb/zaurus.c    |   12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
---- a/drivers/gpu/drm/i915/display/intel_bw.h
-+++ b/drivers/gpu/drm/i915/display/intel_bw.h
-@@ -30,19 +30,19 @@ struct intel_bw_state {
- 	 */
- 	u8 pipe_sagv_reject;
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -583,6 +583,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
-+	/* bitmask of active pipes */
-+	u8 active_pipes;
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
 +
- 	/*
- 	 * Current QGV points mask, which restricts
- 	 * some particular SAGV states, not to confuse
- 	 * with pipe_sagv_mask.
- 	 */
--	u8 qgv_points_mask;
-+	u16 qgv_points_mask;
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -638,6 +643,13 @@ static const struct usb_device_id	produc
+ 	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -256,6 +256,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
- 	unsigned int data_rate[I915_MAX_PIPES];
- 	u8 num_active_planes[I915_MAX_PIPES];
- 
--	/* bitmask of active pipes */
--	u8 active_pipes;
--
- 	int min_cdclk;
- };
- 
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+ {
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -315,6 +320,13 @@ static const struct usb_device_id	produc
+ 	.driver_info = ZAURUS_PXA_INFO,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++			    | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor		= 0x04DD,
++	.idProduct		= 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info = (unsigned long)&bogus_mdlm_info,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
 
 
