@@ -2,105 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC1DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 09:44:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E07DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 09:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234426AbiB1Jpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 04:45:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52578 "EHLO
+        id S234432AbiB1JrB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 04:47:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231599AbiB1Jp3 (ORCPT
+        with ESMTP id S232929AbiB1Jq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 04:45:29 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0BC069CC4;
-        Mon, 28 Feb 2022 01:44:50 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id f21so9834682qke.13;
-        Mon, 28 Feb 2022 01:44:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m42zzm1A/Uk2fszLihUQmA9ldzbK7Fh11mCVbXlmHhY=;
-        b=BMCIAstrNglzIjoRryZMWNKrJVUS0F+gf66wVvxk/abudp6l7oRiEV9Go/1Tp2Z5UK
-         FZvgp6oJzdOMnvnNWiv4GiobNN5JtxdixkM5HIopzJq4MHyDAUH09wL2Zq8MKRGOY2G3
-         OGFe9OjLjCkrljdSbJTS3hg5mDsKWg+CbHqK0=
+        Mon, 28 Feb 2022 04:46:57 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A4269CFF
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 01:46:18 -0800 (PST)
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id DBD8D3F1DD
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:46:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646041575;
+        bh=kx3KwflhSQCgPfG7GHkNt9DIyHPaoaEcSwFWIFUDpTI=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=rwdvWQaKfYE0WPA7FVxo1nNoXW7QEg4HBaqb1eTa7MmPwRKXUKzmxQwNIPN/aGHIc
+         BVcy++fbcUq9yhspprHBgCK0ctQswXr4mSW9wFdUjU3ptplR+XRPcl5z4pbq61+Rj3
+         YrYcB89zF34A4BTALMogn/ZwpDwV2yhGGG/kClG2JMtIlMI7rI7/QLEDyTiNs3aFEp
+         0StR5hfsej+fNzTRv3O582QKi4JFhNojP4MFQQsTtjcRNr75IlGwetIR5XWJQNdoaY
+         /vavjPAGgc9l3I2DZX8P/nsFhuDoaH7lxzGDhHFhkedkx7XPoOnvqvwvX2BBDrPH/q
+         rrkAXOh0poosQ==
+Received: by mail-wm1-f72.google.com with SMTP id q17-20020a1ca711000000b0037be98d03a1so6195387wme.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 01:46:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m42zzm1A/Uk2fszLihUQmA9ldzbK7Fh11mCVbXlmHhY=;
-        b=1nB3lGnVZYzJT4lFFXQqVBJ0UQ1MLGw7hzU1GSnhILSSIaKb3LFBEpNfO6UGl0h8Ay
-         GHwX3NsxCfEoNrFbfZeJUvFfNb9eyNM6549bH7NR1xNOrdysu6Uq4tXGZ7MhLea+lZSO
-         kaAZskVAEFQxuGIpuNBehrHqHr3Iw2Gi/sIpG/3xLfKmMm9e4AwuPIpMnzNQl0I2N3TO
-         PcTxnwFLtaR8yHoOyFZFtFSxnsULXtIKUjcPbDeVNOTpJ9WeU/uuvZDMvb81lf5Z2gfc
-         z/dXLKdElKYUhxh7XMwhP9n2XYwqtdnZZaKjFPB6lJMWXM/gRaBSapvWm7o7NI44oi0P
-         nlrQ==
-X-Gm-Message-State: AOAM531LFkYF3BUzlpiEfDy9EZqB9vo6ZJUVZajbGY2lNC+0iqoRWb2j
-        rAjkX68um19Lu0edNLy/kJXHAZp+Wmv5vzxMZVA=
-X-Google-Smtp-Source: ABdhPJymavUC7phOQxSAzrnChJkit6X3vSfBJh8VvkrOfuYY39VSMX5xk/p7XeOex4FlAIcndtpkSyXMeeVQYGpGKKo=
-X-Received: by 2002:a37:f903:0:b0:648:ca74:b7dc with SMTP id
- l3-20020a37f903000000b00648ca74b7dcmr10471405qkj.666.1646041489765; Mon, 28
- Feb 2022 01:44:49 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kx3KwflhSQCgPfG7GHkNt9DIyHPaoaEcSwFWIFUDpTI=;
+        b=uVYu4L6WDgVa4OYkllVqOeuNcUrpS2iMmboZBqBHtTRTLTNGyLzk+mKR+XVHcDxBnt
+         AYEJrpAabiWJvXKfxcfsem+naG4CW2/IepREcf15CYSKUdXuXz6nbcBVcghvRVsyvyjn
+         WjpavBR1j0JYhoSiyaf/YtZiPuE/3gYQ4bVxbVn1/B/OBpXULY9kwLS0k4zx/NINC8VK
+         o0NLTvkHDmoO8TMKLRWG+TeM60+LEjsO8EiJkRJOpdF0/XV0OVWyLdiubAsQ5OGiM04z
+         E/RCQx6fpE3BFMiD/RKEm1OXnPAVPzOJ+Lj1/jg1ezxbUW5GFON5moDJAW3NlE72D2uO
+         4cLw==
+X-Gm-Message-State: AOAM533rteX51tPn+4/vSzwuV98HleTwy8QHAGpJo21J8rfOWd7xi7mJ
+        J1i8wiViMKnus3gMKViLY5u8j2F3Cy4mZX51yTJZV/tKnxliAGJ11jR/qRi+GkjwuXOHppkm4dK
+        p2Ev/PnNw2L53inhDVwlPdBax9aDfJwxlegQMVKRAWQ==
+X-Received: by 2002:adf:f00e:0:b0:1ed:e1d2:f10c with SMTP id j14-20020adff00e000000b001ede1d2f10cmr15225302wro.181.1646041575515;
+        Mon, 28 Feb 2022 01:46:15 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwL0JBj8yLIAMajpevQP4oIWnehXfhmFqdOAerH2yff2r6ZgTyrXSY7IhRRUp4jT3ezbYRq9w==
+X-Received: by 2002:adf:f00e:0:b0:1ed:e1d2:f10c with SMTP id j14-20020adff00e000000b001ede1d2f10cmr15225292wro.181.1646041575355;
+        Mon, 28 Feb 2022 01:46:15 -0800 (PST)
+Received: from [192.168.0.133] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id n5-20020adffe05000000b001edf8fc0cc3sm9924559wrr.41.2022.02.28.01.46.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 01:46:14 -0800 (PST)
+Message-ID: <269c748f-e418-8fda-7c50-f15c3e6c604f@canonical.com>
+Date:   Mon, 28 Feb 2022 10:46:12 +0100
 MIME-Version: 1.0
-References: <20211208013337.13806-1-tommy_huang@aspeedtech.com> <20211208013337.13806-5-tommy_huang@aspeedtech.com>
-In-Reply-To: <20211208013337.13806-5-tommy_huang@aspeedtech.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Mon, 28 Feb 2022 09:44:37 +0000
-Message-ID: <CACPK8XfJH=h_0f2Wp5akLWtdJwd=bmGdhrqJY8qrK9RX=4NtVQ@mail.gmail.com>
-Subject: Re: [PATCH v5 4/7] drm/aspeed: Add AST2600 chip support
-To:     Tommy Haung <tommy_huang@aspeedtech.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] dt-bindings: mmc: renesas,sdhi: Document RZ/V2L SoC
+Content-Language: en-US
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220227212330.22262-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220227212330.22262-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 8 Dec 2021 at 01:34, Tommy Haung <tommy_huang@aspeedtech.com> wrote:
->
-> From: tommy-huang <tommy_huang@aspeedtech.com>
->
-> Add AST2600 chip support and setting.
->
-> Signed-off-by: tommy-huang <tommy_huang@aspeedtech.com>
-
-Reviewed-by: Joel Stanley <joel@jms.id.au>
-
+On 27/02/2022 22:23, Lad Prabhakar wrote:
+> Document RZ/V2L SDHI bindings. RZ/V2L SDHI is almost identical to one
+> found on the R-Car Gen3. No driver changes are required as generic
+> compatible string "renesas,rcar-gen3-sdhi" will be used as a fallback.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 > ---
->  drivers/gpu/drm/aspeed/aspeed_gfx_drv.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
->
-> diff --git a/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c b/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c
-> index d4b56b3c7597..d10246b1d1c2 100644
-> --- a/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c
-> +++ b/drivers/gpu/drm/aspeed/aspeed_gfx_drv.c
-> @@ -82,9 +82,18 @@ static const struct aspeed_gfx_config ast2500_config = {
->         .scan_line_max = 128,
->  };
->
-> +static const struct aspeed_gfx_config ast2600_config = {
-> +       .dac_reg = 0xc0,
-> +       .int_clear_reg = 0x68,
-> +       .vga_scratch_reg = 0x50,
-> +       .throd_val = CRT_THROD_LOW(0x50) | CRT_THROD_HIGH(0x70),
-> +       .scan_line_max = 128,
-> +};
-> +
->  static const struct of_device_id aspeed_gfx_match[] = {
->         { .compatible = "aspeed,ast2400-gfx", .data = &ast2400_config },
->         { .compatible = "aspeed,ast2500-gfx", .data = &ast2500_config },
-> +       { .compatible = "aspeed,ast2600-gfx", .data = &ast2600_config },
->         { },
->  };
->  MODULE_DEVICE_TABLE(of, aspeed_gfx_match);
-> --
-> 2.17.1
->
+> DTSi changes have been posted [0].
+> 
+> [0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/
+> 20220227203744.18355-2-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> ---
+>  Documentation/devicetree/bindings/mmc/renesas,sdhi.yaml | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+
+
+Best regards,
+Krzysztof
