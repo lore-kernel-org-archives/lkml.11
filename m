@@ -2,193 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 498AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 223E4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:24:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236333AbiB1MZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:25:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
+        id S236409AbiB1MZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:25:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236407AbiB1MYj (ORCPT
+        with ESMTP id S236430AbiB1MZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:24:39 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8478E75624
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:23:51 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id j10-20020a17090a94ca00b001bc2a9596f6so11175847pjw.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:23:51 -0800 (PST)
+        Mon, 28 Feb 2022 07:25:04 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F40874876
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:24:01 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id bu29so21154565lfb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:24:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=L18k1O4fFtjGd/n9qxx+Uv18sX+SI8eOaMzIeceQpJ0=;
-        b=PmFMDGtfDLfoL0LYcB+wwlGmX5lNFPAWEUcyKAA3TBBWTyfSMKsewRAH6DHEH5oNwv
-         unnGYp2Q9ZxjgMKNhLxjZXRojT2/Nfgz7TTxcZqK5oOcORPluVooyG/7e9XT+tP+QX+t
-         n4c6USEjWXsjWCK4vbV6+30WN7lTTlDGR/jFMcbF8uDf/fppUYQ3vIQtbyGNV+ZbAsBN
-         lZ2QPNzQJ8Z4AZlYwYnJ1O4Sl2p3CJUE/aqHZIDzfbMoL3auURjakiGtLdAZTNBbqM+O
-         RYkaKJVmvCVeZ8kgCiN3q5nn5ZLdau97E16oPngfZRfx7quFDjH8C7LYWPywYfztdKZo
-         hsDg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=5douA7CZIH+Mx4m1ZPjo7hgc7hLgTfbR8KBe0Jl3pk8=;
+        b=Zx/DYktODLaBxNdmRkxWJ2LcmngjxLMA/yR0j3z1EzR73uwoD1Aw26Y+/6VfDWXHEn
+         JeDYCHDhA0wjBHdfH8SViYJpOwSsAXGWVQk7A7UUutoKVUr3fv4077+yK+kmlj4fC0MI
+         UaFAt3HBPUG5Ol87P3Hr5qmAT3V/xzociNyvkF1YNtOSMCvK7/2RJjEjw2ZkCOvqfDAY
+         eRLJOrHy+3Uyby4dGOeEDHKbuhcYc666aYGEqC8z2m0IwhttTlyq43WaOXXN7FNy1odj
+         vxsx8tCmZ8LPygFMX88UzAcb8Ahwynd/RqSua/MRhJDC7kQNCxx4yyuUJ1WSO/i7mHoe
+         R5Cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=L18k1O4fFtjGd/n9qxx+Uv18sX+SI8eOaMzIeceQpJ0=;
-        b=4GmZvM/mk0R/QDHw7B6U9XgTTHjYR5Q8k/nnqRVtOWT59Vvyj8eISgaNiqBXoYKgAs
-         DD0of1AU7mO4otEke7ph1FvuexWaxjZKYJUi/3HNTUOUglFVz1BtXpcVrq4pRt/VL0z7
-         YPOdKVNFdO1hZTmv6GJrW0iTBeHsSCllk9ffiPrrLW1gX8lbuJGh/U2pDLqNfLxe4/3g
-         43nwu4r2IMaBbNd9/pfgIusWPNUqB3K4wVFuz893HZdjX8PiUFG/Pn+aBne7AXNCBph8
-         FbqUEaJRaNfd208hkX9z3jB0D2Gz+pIdM7A90Th5yQJO0fI3O7kz47g1CsfGj5cGrksx
-         fByQ==
-X-Gm-Message-State: AOAM530OvaTROLkcRDHBd1zwygomfVzlVoxn4V7L+pUvuaINbzee6mXZ
-        qb5mBGuJ94ZzWl64xRwsIj9wKA==
-X-Google-Smtp-Source: ABdhPJwcPPC9tUJoAsYpjtdzRM0Sfy7A/YlLh58B/PmALOKFZQvLipupQ6B7GMgD7E6hVaMZuAiNcA==
-X-Received: by 2002:a17:903:2c7:b0:14f:fc47:5a2f with SMTP id s7-20020a17090302c700b0014ffc475a2fmr20228267plk.112.1646051031022;
-        Mon, 28 Feb 2022 04:23:51 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
-        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.23.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 04:23:50 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
-        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
-        richard.weiyang@gmail.com, david@fromorbit.com,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
-        vbabka@suse.cz
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
-        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
-        fam.zheng@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v6 11/16] mm: list_lru: rename memcg_drain_all_list_lrus to memcg_reparent_list_lrus
-Date:   Mon, 28 Feb 2022 20:21:21 +0800
-Message-Id: <20220228122126.37293-12-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
-References: <20220228122126.37293-1-songmuchun@bytedance.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=5douA7CZIH+Mx4m1ZPjo7hgc7hLgTfbR8KBe0Jl3pk8=;
+        b=DZkRYV83+MAqXmV3upMb0BrSYfcYR2GzikQy+RMIy7jh/0oByNEsxEVfmgzoBUj7ry
+         EZEOqVZItrTgVZ+0XYDqEXlwtmJKNyLRu1NTuu9dxIufy545WGvbV60mQ1PzGCqxWoMN
+         DYIdUXsQb0JxdvcJrTzDiPwrQKU2+ZwdG2t2wz5eNBqqvQcU7hzcu/VUePCkSPfok/F3
+         UQxlPGBRErg0BOCNLxlcI7oR4ldLIHYV0AoNZKONzyyXhhyf4Dx3VOflz0fATOPMP5ga
+         xtJ1y9Wjp4wnoI4OrMd+w4Ocb+4hpz/qehXqZAtKU8LpxGgCLlyWtj5lvz4LmabqdTGp
+         pP3w==
+X-Gm-Message-State: AOAM5339+tzznQlEpxf99FUBLKTmAcV3ssEbVtKaLnRg5hJuDQjJU4M/
+        MZTVEvSk9al19cTknWGwiwU=
+X-Google-Smtp-Source: ABdhPJxiEZ409LKvmGodDzUeaJr366SPHcC8ExlBAW+6dq9/QYXc467qpqIa/MIJW/fuzCdIK/mGRw==
+X-Received: by 2002:ac2:4898:0:b0:443:7f7c:2de4 with SMTP id x24-20020ac24898000000b004437f7c2de4mr13058704lfc.428.1646051039453;
+        Mon, 28 Feb 2022 04:23:59 -0800 (PST)
+Received: from [10.0.0.127] (91-159-150-230.elisa-laajakaista.fi. [91.159.150.230])
+        by smtp.gmail.com with ESMTPSA id m11-20020a05651202eb00b00443130ce80asm932589lfq.138.2022.02.28.04.23.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 04:23:59 -0800 (PST)
+Message-ID: <764a2715-9c24-25f0-74ee-c9cf5d8a46c6@gmail.com>
+Date:   Mon, 28 Feb 2022 14:24:59 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH] ASoC: ti: davinci-i2s: Add check for clk_enable()
+Content-Language: en-US
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, lgirdwood@gmail.com,
+        broonie@kernel.org, perex@perex.cz, tiwai@suse.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+References: <20220228031540.3571959-1-jiasheng@iscas.ac.cn>
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
+In-Reply-To: <20220228031540.3571959-1-jiasheng@iscas.ac.cn>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The purpose of the memcg_drain_all_list_lrus() is list_lrus reparenting.
-It is very similar to memcg_reparent_objcgs(). Rename it to
-memcg_reparent_list_lrus() so that the name can more consistent with
-memcg_reparent_objcgs().
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- include/linux/list_lru.h |  2 +-
- mm/list_lru.c            | 24 ++++++++++++------------
- mm/memcontrol.c          |  6 +++---
- 3 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/include/linux/list_lru.h b/include/linux/list_lru.h
-index c36db6dc2a65..4b00fd8cb373 100644
---- a/include/linux/list_lru.h
-+++ b/include/linux/list_lru.h
-@@ -78,7 +78,7 @@ int __list_lru_init(struct list_lru *lru, bool memcg_aware,
- int memcg_list_lru_alloc(struct mem_cgroup *memcg, struct list_lru *lru,
- 			 gfp_t gfp);
- int memcg_update_all_list_lrus(int num_memcgs);
--void memcg_drain_all_list_lrus(struct mem_cgroup *src, struct mem_cgroup *dst);
-+void memcg_reparent_list_lrus(struct mem_cgroup *memcg, struct mem_cgroup *parent);
- 
- /**
-  * list_lru_add: add an element to the lru list's tail
-diff --git a/mm/list_lru.c b/mm/list_lru.c
-index fc938d8ff48f..488dacd1f8ff 100644
---- a/mm/list_lru.c
-+++ b/mm/list_lru.c
-@@ -457,8 +457,8 @@ int memcg_update_all_list_lrus(int new_size)
- 	return ret;
- }
- 
--static void memcg_drain_list_lru_node(struct list_lru *lru, int nid,
--				      int src_idx, struct mem_cgroup *dst_memcg)
-+static void memcg_reparent_list_lru_node(struct list_lru *lru, int nid,
-+					 int src_idx, struct mem_cgroup *dst_memcg)
- {
- 	struct list_lru_node *nlru = &lru->node[nid];
- 	int dst_idx = dst_memcg->kmemcg_id;
-@@ -486,22 +486,22 @@ static void memcg_drain_list_lru_node(struct list_lru *lru, int nid,
- 	spin_unlock_irq(&nlru->lock);
- }
- 
--static void memcg_drain_list_lru(struct list_lru *lru,
--				 int src_idx, struct mem_cgroup *dst_memcg)
-+static void memcg_reparent_list_lru(struct list_lru *lru,
-+				    int src_idx, struct mem_cgroup *dst_memcg)
- {
- 	int i;
- 
- 	for_each_node(i)
--		memcg_drain_list_lru_node(lru, i, src_idx, dst_memcg);
-+		memcg_reparent_list_lru_node(lru, i, src_idx, dst_memcg);
- 
- 	memcg_list_lru_free(lru, src_idx);
- }
- 
--void memcg_drain_all_list_lrus(struct mem_cgroup *src, struct mem_cgroup *dst)
-+void memcg_reparent_list_lrus(struct mem_cgroup *memcg, struct mem_cgroup *parent)
- {
- 	struct cgroup_subsys_state *css;
- 	struct list_lru *lru;
--	int src_idx = src->kmemcg_id;
-+	int src_idx = memcg->kmemcg_id;
- 
- 	/*
- 	 * Change kmemcg_id of this cgroup and all its descendants to the
-@@ -517,17 +517,17 @@ void memcg_drain_all_list_lrus(struct mem_cgroup *src, struct mem_cgroup *dst)
- 	 * call.
- 	 */
- 	rcu_read_lock();
--	css_for_each_descendant_pre(css, &src->css) {
--		struct mem_cgroup *memcg;
-+	css_for_each_descendant_pre(css, &memcg->css) {
-+		struct mem_cgroup *child;
- 
--		memcg = mem_cgroup_from_css(css);
--		memcg->kmemcg_id = dst->kmemcg_id;
-+		child = mem_cgroup_from_css(css);
-+		child->kmemcg_id = parent->kmemcg_id;
- 	}
- 	rcu_read_unlock();
- 
- 	mutex_lock(&list_lrus_mutex);
- 	list_for_each_entry(lru, &memcg_list_lrus, list)
--		memcg_drain_list_lru(lru, src_idx, dst);
-+		memcg_reparent_list_lru(lru, src_idx, parent);
- 	mutex_unlock(&list_lrus_mutex);
- }
- 
-diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index c8d39d7fc2e5..87ee5b431c05 100644
---- a/mm/memcontrol.c
-+++ b/mm/memcontrol.c
-@@ -3656,7 +3656,7 @@ static void memcg_offline_kmem(struct mem_cgroup *memcg)
- 	memcg_reparent_objcgs(memcg, parent);
- 
- 	/*
--	 * memcg_drain_all_list_lrus() can change memcg->kmemcg_id.
-+	 * memcg_reparent_list_lrus() can change memcg->kmemcg_id.
- 	 * Cache it to local @kmemcg_id.
- 	 */
- 	kmemcg_id = memcg->kmemcg_id;
-@@ -3665,9 +3665,9 @@ static void memcg_offline_kmem(struct mem_cgroup *memcg)
- 	 * After we have finished memcg_reparent_objcgs(), all list_lrus
- 	 * corresponding to this cgroup are guaranteed to remain empty.
- 	 * The ordering is imposed by list_lru_node->lock taken by
--	 * memcg_drain_all_list_lrus().
-+	 * memcg_reparent_list_lrus().
- 	 */
--	memcg_drain_all_list_lrus(memcg, parent);
-+	memcg_reparent_list_lrus(memcg, parent);
- 
- 	memcg_free_cache_id(kmemcg_id);
- }
+On 28/02/2022 05:15, Jiasheng Jiang wrote:
+> As the potential failure of the clk_enable(),
+> it should be better to check it and return error
+> if fails.
+
+Thank you for the patch!
+
+Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+
+
+> 
+> Fixes: 5f9a50c3e55e ("ASoC: Davinci: McBSP: add device tree support for McBSP")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  sound/soc/ti/davinci-i2s.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/sound/soc/ti/davinci-i2s.c b/sound/soc/ti/davinci-i2s.c
+> index 6dca51862dd7..0363a088d2e0 100644
+> --- a/sound/soc/ti/davinci-i2s.c
+> +++ b/sound/soc/ti/davinci-i2s.c
+> @@ -708,7 +708,9 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+>  	dev->clk = clk_get(&pdev->dev, NULL);
+>  	if (IS_ERR(dev->clk))
+>  		return -ENODEV;
+> -	clk_enable(dev->clk);
+> +	ret = clk_enable(dev->clk);
+> +	if (ret)
+> +		goto err_put_clk;
+>  
+>  	dev->dev = &pdev->dev;
+>  	dev_set_drvdata(&pdev->dev, dev);
+> @@ -730,6 +732,7 @@ static int davinci_i2s_probe(struct platform_device *pdev)
+>  	snd_soc_unregister_component(&pdev->dev);
+>  err_release_clk:
+>  	clk_disable(dev->clk);
+> +err_put_clk:
+>  	clk_put(dev->clk);
+>  	return ret;
+>  }
+
 -- 
-2.11.0
-
+Péter
