@@ -2,66 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78421C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 00:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B4D6C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 00:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231510AbiB1Azt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 19:55:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44820 "EHLO
+        id S232149AbiB1A4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 19:56:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231203AbiB1Azq (ORCPT
+        with ESMTP id S229926AbiB1A4q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 19:55:46 -0500
-X-Greylist: delayed 302 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 27 Feb 2022 16:55:07 PST
-Received: from ciao.gmane.io (ciao.gmane.io [116.202.254.214])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83FC47063
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 16:55:06 -0800 (PST)
-Received: from list by ciao.gmane.io with local (Exim 4.92)
-        (envelope-from <glk-linux-kernel-4@m.gmane-mx.org>)
-        id 1nOUEj-0003yc-QB
-        for linux-kernel@vger.kernel.org; Mon, 28 Feb 2022 01:50:01 +0100
-X-Injected-Via-Gmane: http://gmane.org/
-To:     linux-kernel@vger.kernel.org
-From:   Samuel Bronson <naesten@gmail.com>
-Subject: Re: [PATCH v3 1/8] riscv: Avoid unaligned access when relocating modules
-Date:   Fri, 25 Feb 2022 23:48:41 -0500
-Message-ID: <87zgme6xna.fsf@DESKTOP-5JD7O8D.localdomain>
-References: <20220224152456.493365-1-kernel@esmil.dk>
-        <20220224152456.493365-2-kernel@esmil.dk>
-Mime-Version: 1.0
-Content-Type: text/plain
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
-Cancel-Lock: sha1:mColZ0E90tcqhrcGvi1sG17CQfs=
-Cc:     linux-riscv@lists.infradead.org
+        Sun, 27 Feb 2022 19:56:46 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A317F6E4CA;
+        Sun, 27 Feb 2022 16:56:08 -0800 (PST)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 44DA8218CE;
+        Mon, 28 Feb 2022 00:56:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1646009767; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6BMX+ZTu71y6pW6n3w8F+LKPlpMD1xGyNzpWEriNEMU=;
+        b=1oVF7UvWyYQbKC/xLf9MsPR8L3YFujQtqWjDHI94j3Y6llbbBEk2LfEWhVw1RKXMvC0qBD
+        AkIvIvUtlcpZCbTCf0+sxGGDUkQ+B9NLXEnYiMmkxnLDvm4StN1h694Ps83kJCvBCZAZj8
+        EqUfKBdZeCUe1bXwMeZou2fTb0WkjDQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1646009767;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6BMX+ZTu71y6pW6n3w8F+LKPlpMD1xGyNzpWEriNEMU=;
+        b=ZqAexWszEd97yVO/gMY1fUsKeCbC0z3zIfR0iYIdzKVOYZJIVYUn/GzIx+edrJvq14rJuV
+        x5NUKrQjCITcUmBQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 852F2139BD;
+        Mon, 28 Feb 2022 00:56:04 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id LCeyD6QdHGLqPAAAMHmgww
+        (envelope-from <neilb@suse.de>); Mon, 28 Feb 2022 00:56:04 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+From:   "NeilBrown" <neilb@suse.de>
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     "Andreas Dilger" <adilger@dilger.ca>,
+        "Dave Chinner" <david@fromorbit.com>,
+        "Al Viro" <viro@zeniv.linux.org.uk>,
+        "Linux NFS Mailing List" <linux-nfs@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        "LKML" <linux-kernel@vger.kernel.org>,
+        "Daire Byrne" <daire@dneg.com>,
+        "Andreas Dilger" <adilger.kernel@dilger.ca>
+Subject: Re: [PATCH/RFC] VFS: support parallel updates in the one directory.
+In-reply-to: <20220224233848.GC8269@magnolia>
+References: <164568221518.25116.18139840533197037520@noble.neil.brown.name>,
+ <893053D7-E5DD-43DB-941A-05C10FF5F396@dilger.ca>,
+ <20220224233848.GC8269@magnolia>
+Date:   Mon, 28 Feb 2022 11:55:47 +1100
+Message-id: <164600974741.15631.8678502963654197325@noble.neil.brown.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Emil Renner Berthing <kernel@esmil.dk> writes:
+On Fri, 25 Feb 2022, Darrick J. Wong wrote:
+> On Thu, Feb 24, 2022 at 09:31:28AM -0700, Andreas Dilger wrote:
+> > On Feb 23, 2022, at 22:57, NeilBrown <neilb@suse.de> wrote:
+> > >=20
+> > > for i in {1..70}; do ( for j in {1000..8000}; do touch $j; rm -f $j ; d=
+one ) & done
+>=20
+> I think you want something faster here, like ln to hardlink an existing
+> file into the directory.
+>=20
 
-> With the C-extension regular 32bit instructions are not
-> necessarily aligned on 4-byte boundaries. RISC-V instructions
-> are in fact an ordered list of 16bit native-endian
-> "parcels", so access the instruction as such.
+And probably written in C too..
 
-Hold on a minute, this is what it says in my copy of the Unprivileged
-ISA:
+=20
+> (I am also not a fan of "PAR_UPDATE", since 'par' is already an English
+> word that doesn't mean 'parallel'.)
 
-,----
-| RISC-V base ISAs have either little-endian or big-endian memory systems,
-| with the privileged architecture further defining bi-endian operation.
-| Instructions are stored in memory as a sequence of 16-bit *little-endian*
-| parcels, regardless of memory system endianness.  Parcels forming one
-| instruction are stored at increasing halfword addresses, with the
-| *lowest-addressed parcel holding the lowest-numbered bits* in the
-| instruction specification.
-`----
-[Emphasis mine.]
+:-)
+We already have DCACHE_PAR_LOOKUP for parallel lookups in a directory
+(though it is really a lock bit and I think should be named as soch).
+So it made sense to use DCACHE_PAR_UPDATE for parallel updates.
+And then S_PAR_UPDATE for the inode flag to enable this seemed logical.
 
-In other words, the parcels are little endian, and they're arranged in
-little-endian order.  System endianness doesn't matter, it collapses to
-plain old little-endian.
+But I agree that these names are sub-par :-)
 
-(I'm really not sure why they describe the ordering in such a
-round-about way; I assume that's the source of the confusion here?)
-
+NeilBrown
