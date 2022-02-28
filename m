@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:35:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CAFC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238049AbiB1Rg3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:36:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42228 "EHLO
+        id S237602AbiB1Rgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:36:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238365AbiB1RdT (ORCPT
+        with ESMTP id S238359AbiB1RdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:33:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D2688F9B9;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E01E8F9B8;
         Mon, 28 Feb 2022 09:29:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 284DD61359;
-        Mon, 28 Feb 2022 17:29:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 433CBC340E7;
-        Mon, 28 Feb 2022 17:29:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18D4361440;
+        Mon, 28 Feb 2022 17:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B719C340E7;
+        Mon, 28 Feb 2022 17:29:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069391;
-        bh=zCrsfm3otJ/ehLmPJegH4zxAAz8PSQxqpmQzxQJzRxw=;
+        s=korg; t=1646069383;
+        bh=vEPAZ3lTc+fwgGKdNcNvLHd+Ln7uEJIIVY59/b1a6eI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GnbyTRxDc1boepgqjLe33SCuAznZ7GD55+x87OC4XZLkTBbdJn+aiJYmNwEHf9zf1
-         GC/SyOXCI+Fi2CFfoHIIbpBwDCaXMuk7c1zs76GgpbRMuOwED6llRAs+SMZAvqs4nQ
-         ZvX7GZQ0bxD8yC7/iY0gCBLfbQ//IgjmUyj6cDKE=
+        b=GtlyPBEzNVapz7jF0tVTw0KcCgQSfHlXKYxDSXQTHCJerBIeWDA9TAOLMOTytWcpM
+         /jh66RNGHLJvmMlhdJCn4deIlOTLRF0fPLepb3luKqnOILboeg5+oXxUssuWmK+ac8
+         StgYXtGkPORkPgZpFjtHBfDGY1j4qGgg3HWZbdqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: [PATCH 4.19 19/34] memblock: use kfree() to release kmalloced memblock regions
-Date:   Mon, 28 Feb 2022 18:24:25 +0100
-Message-Id: <20220228172209.995028997@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 4.19 34/34] tty: n_gsm: fix encoding of control signal octet bit DV
+Date:   Mon, 28 Feb 2022 18:24:40 +0100
+Message-Id: <20220228172211.396581571@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172207.090703467@linuxfoundation.org>
 References: <20220228172207.090703467@linuxfoundation.org>
@@ -48,46 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: daniel.starke@siemens.com <daniel.starke@siemens.com>
 
-commit c94afc46cae7ad41b2ad6a99368147879f4b0e56 upstream.
+commit 737b0ef3be6b319d6c1fd64193d1603311969326 upstream.
 
-memblock.{reserved,memory}.regions may be allocated using kmalloc() in
-memblock_double_array(). Use kfree() to release these kmalloced regions
-indicated by memblock_{reserved,memory}_in_slab.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.3.7 describes the encoding of the
+control signal octet used by the MSC (modem status command). The same
+encoding is also used in convergence layer type 2 as described in chapter
+5.5.2. Table 7 and 24 both require the DV (data valid) bit to be set 1 for
+outgoing control signal octets sent by the DTE (data terminal equipment),
+i.e. for the initiator side.
+Currently, the DV bit is only set if CD (carrier detect) is on, regardless
+of the side.
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-Fixes: 3010f876500f ("mm: discard memblock data later")
-Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+This patch fixes this behavior by setting the DV bit on the initiator side
+unconditionally.
+
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220218073123.2121-1-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/memblock.c |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/tty/n_gsm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -322,14 +322,20 @@ void __init memblock_discard(void)
- 		addr = __pa(memblock.reserved.regions);
- 		size = PAGE_ALIGN(sizeof(struct memblock_region) *
- 				  memblock.reserved.max);
--		__memblock_free_late(addr, size);
-+		if (memblock_reserved_in_slab)
-+			kfree(memblock.reserved.regions);
-+		else
-+			__memblock_free_late(addr, size);
- 	}
- 
- 	if (memblock.memory.regions != memblock_memory_init_regions) {
- 		addr = __pa(memblock.memory.regions);
- 		size = PAGE_ALIGN(sizeof(struct memblock_region) *
- 				  memblock.memory.max);
--		__memblock_free_late(addr, size);
-+		if (memblock_memory_in_slab)
-+			kfree(memblock.memory.regions);
-+		else
-+			__memblock_free_late(addr, size);
- 	}
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -428,7 +428,7 @@ static u8 gsm_encode_modem(const struct
+ 		modembits |= MDM_RTR;
+ 	if (dlci->modem_tx & TIOCM_RI)
+ 		modembits |= MDM_IC;
+-	if (dlci->modem_tx & TIOCM_CD)
++	if (dlci->modem_tx & TIOCM_CD || dlci->gsm->initiator)
+ 		modembits |= MDM_DV;
+ 	return modembits;
  }
- #endif
 
 
