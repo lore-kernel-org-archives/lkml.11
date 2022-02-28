@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 717FAC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F4BC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239860AbiB1Rxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:53:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55432 "EHLO
+        id S240050AbiB1Rxw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:53:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238709AbiB1Rs7 (ORCPT
+        with ESMTP id S238824AbiB1Rrq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:48:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB10DA1BFE;
-        Mon, 28 Feb 2022 09:38:50 -0800 (PST)
+        Mon, 28 Feb 2022 12:47:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D2E9EBAC;
+        Mon, 28 Feb 2022 09:38:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C22F614C9;
-        Mon, 28 Feb 2022 17:38:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B573C340E7;
-        Mon, 28 Feb 2022 17:38:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2477B815A2;
+        Mon, 28 Feb 2022 17:38:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EDEFC340E7;
+        Mon, 28 Feb 2022 17:38:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069929;
-        bh=WelrOcjhKJZUVYoCTXO2VZocUzNAmGqaCDG+LtKnRe0=;
+        s=korg; t=1646069888;
+        bh=bLLolrOWP7tHtJCgMogA128YNdxA/2Hb5aHAJ4JDUBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SKH9YQuUSmsQB9OH2YP3jqArizWha2ccF6G1xNUy3KWq63/TSajShgy1qfRKQTave
-         7F5drD5eduiFBLkVh300A+oOnQpZlVc0fFMFbuQAUI0pqQnK/kD+1W/rOsvXKW5zD+
-         7B1yk0H8zbNUGak6VbX5I/iXZQGGRoCTriUAORHQ=
+        b=rLbj7wTV3l2V0JGti3U8qb6q2xySSJTKpvRFPwMLL2079Hlm5eUaTLFoNo6vwHZfw
+         j6kMHjR0ASrDLjGDVfihsgztt0W3FmchF7Z0JsmmnXB+FSZjmuvrIsBTrs6vLEJlNa
+         E5ZBNKAXfP85GBoYEV02KpVVzpXxAq6NYz52LpCg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.15 063/139] net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
-Date:   Mon, 28 Feb 2022 18:23:57 +0100
-Message-Id: <20220228172354.323181852@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 015/139] drm/amd/display: Protect update_bw_bounding_box FPU code.
+Date:   Mon, 28 Feb 2022 18:23:09 +0100
+Message-Id: <20220228172349.290270685@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,32 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
 
-commit 0b89429722353d112f8b8b29ca397e95fa994d27 upstream.
+commit 1432108d00e42ffa383240bcac8d58f89ae19104 upstream.
 
-The ioctl EEPROM query wrongly returns success on read failures, fix
-that by returning the appropriate error code.
+For DCN3/3.01/3.02 at least these use the fpu.
 
-Fixes: bb64143eee8c ("net/mlx5e: Add ethtool support for dump module EEPROM")
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+v2: squash in build fix for when DCN is not enabled (Leo)
+
+Signed-off-by: Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn30/dcn30_clk_mgr.c |    2 ++
+ drivers/gpu/drm/amd/display/dc/core/dc.c                     |    7 +++++--
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -1754,7 +1754,7 @@ static int mlx5e_get_module_eeprom(struc
- 		if (size_read < 0) {
- 			netdev_err(priv->netdev, "%s: mlx5_query_eeprom failed:0x%x\n",
- 				   __func__, size_read);
--			return 0;
-+			return size_read;
- 		}
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn30/dcn30_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn30/dcn30_clk_mgr.c
+@@ -437,8 +437,10 @@ static void dcn3_get_memclk_states_from_
+ 	clk_mgr_base->bw_params->clk_table.num_entries = num_levels ? num_levels : 1;
  
- 		i += size_read;
+ 	/* Refresh bounding box */
++	DC_FP_START();
+ 	clk_mgr_base->ctx->dc->res_pool->funcs->update_bw_bounding_box(
+ 			clk_mgr->base.ctx->dc, clk_mgr_base->bw_params);
++	DC_FP_END();
+ }
+ 
+ static bool dcn3_is_smu_present(struct clk_mgr *clk_mgr_base)
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -891,10 +891,13 @@ static bool dc_construct(struct dc *dc,
+ 		goto fail;
+ #ifdef CONFIG_DRM_AMD_DC_DCN
+ 	dc->clk_mgr->force_smu_not_present = init_params->force_smu_not_present;
+-#endif
+ 
+-	if (dc->res_pool->funcs->update_bw_bounding_box)
++	if (dc->res_pool->funcs->update_bw_bounding_box) {
++		DC_FP_START();
+ 		dc->res_pool->funcs->update_bw_bounding_box(dc, dc->clk_mgr->bw_params);
++		DC_FP_END();
++	}
++#endif
+ 
+ 	/* Creation of current_state must occur after dc->dml
+ 	 * is initialized in dc_create_resource_pool because
 
 
