@@ -2,99 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FFEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0D2C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238049AbiB1QzL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 11:55:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38896 "EHLO
+        id S238062AbiB1Q5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 11:57:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238046AbiB1QzD (ORCPT
+        with ESMTP id S233487AbiB1Q5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 11:55:03 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48FB127B29;
-        Mon, 28 Feb 2022 08:54:24 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id w3so18463613edu.8;
-        Mon, 28 Feb 2022 08:54:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C5YgVD22pchSFr4n2QRFausc1ftChAmgohwP8Wg5Uus=;
-        b=A/mk/cfu3W4LvbXsuH6OPqnixZcNLGsp8U+j1ppeX3CDyeeLa2XWuhr6hjGduM1c5w
-         ZhQc5XHsPXylQSYkVQU1+HG79BlfZc+9ol2776y8YGlVlTN/NH7q5QCUSlZ2v5W+lJDs
-         OiQciIn5M5RbGYS14MbyDtCj9+O1JoVJVW/2isYYMWom3fopfilIUMED8qxdVMRYTr2I
-         v0gdbOjShBRyZDVnm8AQhLS6NqG/fj18CL71AcF3qdrdWuj8UGwW0jdkOSlZq1PCnz5g
-         hPXsumBTHKfcV0VeFdjXFeSr7P3CbmOtQY8mI8gCWncanuQ2klpe8eDRWYwydT79gvVd
-         sWjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=C5YgVD22pchSFr4n2QRFausc1ftChAmgohwP8Wg5Uus=;
-        b=rO/0GXinbyGnK9bCcvsInGFK7yhvmh2OTfobC4bpBALcswrZ1jEjo9zpLEL+Ggej2B
-         CuYPUgIWkV2W/XZ6e68zirEwgF3kdytHKpclp7jJA8Jbw/EU37liyygymUaSwtfy6JTJ
-         ocnxQogcPdGhF45T6252QWBUQREXIjGA+DlZe3m/LGNkzzLSK79enr8j6SH/VTJ4o5Ah
-         nOpxVc9zSnkkljywYgqhFC6y/FqsyzQC0eJNyDEe8Xa3X0X9q6/faT3MFyWXRXtHP1m7
-         uCRfrNcVzhNDooJ0p91AIiZgl3Dz94CT/mgWI8Kqm0RpfzD04mDigYef6UteXEZ6di4Z
-         yp6g==
-X-Gm-Message-State: AOAM5310MdDvqvlnglDwb+muTcZMYizjn/7+baacUIibr+Jv8tk8Fkyf
-        pgEnCCF7erFCk1V3UcS5mjOikJkdatloWw==
-X-Google-Smtp-Source: ABdhPJyWnlNroDlH6W2v/Ul8UrWRwLdlx3x+BhRQ+L+RMVNfehHAWa76uj/X4qVGS/Y11f3x+2qZBg==
-X-Received: by 2002:a05:6402:4491:b0:413:162a:fc85 with SMTP id er17-20020a056402449100b00413162afc85mr20419425edb.115.1646067262926;
-        Mon, 28 Feb 2022 08:54:22 -0800 (PST)
-Received: from nlaptop.localdomain (ptr-dtfv0poj8u7zblqwbt6.18120a2.ip6.access.telenet.be. [2a02:1811:cc83:eef0:f2b6:6987:9238:41ca])
-        by smtp.gmail.com with ESMTPSA id ju22-20020a17090798b600b006ce70fa8e4fsm4495828ejc.187.2022.02.28.08.54.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 08:54:22 -0800 (PST)
-From:   Niels Dossche <dossche.niels@gmail.com>
-To:     linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Niels Dossche <dossche.niels@gmail.com>
-Subject: [PATCH] IB/rdmavt: add lock to call to rvt_error_qp to prevent a race condition
-Date:   Mon, 28 Feb 2022 17:53:30 +0100
-Message-Id: <20220228165330.41546-1-dossche.niels@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        Mon, 28 Feb 2022 11:57:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF2D79C75;
+        Mon, 28 Feb 2022 08:56:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71B42612CB;
+        Mon, 28 Feb 2022 16:56:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A46A1C340E7;
+        Mon, 28 Feb 2022 16:56:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646067380;
+        bh=523gBdVPJChXozDXmy5Cb2pK2i/xRfAcGRZVUQAHjNc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LgVJuH4da0tpuW1nX+TSzWKpqT1/5OI3uq9Url+IKydIaNvJrwxxCJ02pDsUamp0J
+         BXgyENWeP0ucoramTVXNaT23Z6w+IPOpRsVnisqnZwdBL4ARuBusSY6JLdz3305OfE
+         YtZvql2BfkwdTq2LxRIJRizjGmx3hngX5RBUDcSxgf2mLkssqkaZFIqarTisHboNdy
+         Xy986yF0zeYZbw6HX61O+ecCg/MIlsoP4bKonolKYJ+91DSdYuEy6Ckl7v583fSXhJ
+         fxInQ5iK44jGAKr2Pvl9ywk4psfT+Vv0H/AbdegLc3kV5x8iLrYBvahTmACsIjfZ5u
+         Ol9BFIfpBb+FA==
+Date:   Mon, 28 Feb 2022 09:56:13 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Marco Elver <elver@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
+        Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Subject: Re: [PATCH] [v2] Kbuild: move to -std=gnu11
+Message-ID: <Yhz+rfcdp9jxgr+P@archlinux-ax161>
+References: <20220228103142.3301082-1-arnd@kernel.org>
+ <CANpmjNP6VE9G8Yng4W7Mayk-0QsqUtAXkrMUSvL5pAP5DpXSmA@mail.gmail.com>
+ <CAK8P3a3cRa1piP2BSmN2dTW4QErhSP7AMO9xqAm=_FFYprAkOA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a3cRa1piP2BSmN2dTW4QErhSP7AMO9xqAm=_FFYprAkOA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The documentation of the function rvt_error_qp says both r_lock and
-s_lock need to be held when calling that function.
-It also asserts using lockdep that both of those locks are held.
-However, the commit I referenced in Fixes accidentally makes the call
-to rvt_error_qp in rvt_ruc_loopback no longer covered by r_lock.
-This results in the lockdep assertion failing and also possibly in a
-race condition.
+On Mon, Feb 28, 2022 at 12:57:55PM +0100, Arnd Bergmann wrote:
+> On Mon, Feb 28, 2022 at 12:47 PM Marco Elver <elver@google.com> wrote:
+> > On Mon, 28 Feb 2022 at 11:32, Arnd Bergmann <arnd@kernel.org> wrote:
+> >
+> > > Nathan Chancellor reported an additional -Wdeclaration-after-statement
+> > > warning that appears in a system header on arm, this still needs a
+> > > workaround.
+> >
+> > On the topic of Wdeclaration-after-statement, Clang only respects this
+> > warning with C99 and later starting with Clang 14:
+> > https://github.com/llvm/llvm-project/commit/c65186c89f35#diff-ec770381d76c859f5f572db789175fe44410a72608f58ad5dbb14335ba56eb97R61
+> >
+> > Until Clang 14, -Wdeclaration-after-statement is ignored by Clang in
+> > newer standards. If this is a big problem, we can probably convince
+> > the Clang stable folks to backport the fixes. However, the build won't
+> > fail, folks might just miss the warning if they don't also test with
+> > GCC.
 
-Fixes: d757c60eca9b ("IB/rdmavt: Fix concurrency panics in QP post_send and modify to error")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
----
- drivers/infiniband/sw/rdmavt/qp.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Unfortunately, none of the branches prior to release/14.x are going to
+see any more updates (at least as far as I am aware, as the LLVM
+community only supports one release branch at a time) but as Arnd
+mentioned below, I do not really see that as a problem, as newer
+versions of clang and GCC will catch these warnings.
 
-diff --git a/drivers/infiniband/sw/rdmavt/qp.c b/drivers/infiniband/sw/rdmavt/qp.c
-index ae50b56e8913..8ef112f883a7 100644
---- a/drivers/infiniband/sw/rdmavt/qp.c
-+++ b/drivers/infiniband/sw/rdmavt/qp.c
-@@ -3190,7 +3190,11 @@ void rvt_ruc_loopback(struct rvt_qp *sqp)
- 	spin_lock_irqsave(&sqp->s_lock, flags);
- 	rvt_send_complete(sqp, wqe, send_status);
- 	if (sqp->ibqp.qp_type == IB_QPT_RC) {
--		int lastwqe = rvt_error_qp(sqp, IB_WC_WR_FLUSH_ERR);
-+		int lastwqe;
-+
-+		spin_lock(&sqp->r_lock);
-+		lastwqe = rvt_error_qp(sqp, IB_WC_WR_FLUSH_ERR);
-+		spin_unlock(&sqp->r_lock);
- 
- 		sqp->s_flags &= ~RVT_S_BUSY;
- 		spin_unlock_irqrestore(&sqp->s_lock, flags);
--- 
-2.35.1
+> I don't expect this is to be a big issue, as long as the latest clang behaves
+> as expected. There are many warnings that are only produced by one of the
+> two compilers, so this is something we already deal with.
+> 
+> I think it's more important to address the extra warning that Nathan
+> reported, where clang now complains about the intermingled declaration
+> in a system header when previously neither gcc nor clang noticed this.
 
+Right. Based on the upstream LLVM bug, I think we should just fix
+arm_neon.h to avoid triggering -Wdeclaration-after-statement to have
+something that is (hopefully) relatively low risk for a clang-14
+backport, rather than addressing the root cause of clang warning in
+system macros, as it sounds like fixing that has some risks that are not
+fully understood at this point. The kernel only uses very specific
+system headers after commit 04e85bbf71c9 ("isystem: delete global
+-isystem compile option"), so I don't think that my suggested approach
+will have many downsides.
+
+I think I see how to potentially fix arm_neon.h in
+clang/utils/TableGen/NeonEmitter.cpp, I just have to think about it a
+little more.
+
+Realistically, I don't think special casing this in lib/raid6 is the end
+of the world:
+
+diff --git a/lib/raid6/Makefile b/lib/raid6/Makefile
+index 45e17619422b..a41ff71b90af 100644
+--- a/lib/raid6/Makefile
++++ b/lib/raid6/Makefile
+@@ -38,6 +38,10 @@ ifeq ($(CONFIG_KERNEL_MODE_NEON),y)
+ NEON_FLAGS := -ffreestanding
+ # Enable <arm_neon.h>
+ NEON_FLAGS += -isystem $(shell $(CC) -print-file-name=include)
++# https://github.com/ClangBuiltLinux/linux/issues/1603
++ifeq ($(CONFIG_CC_IS_CLANG)$(CONFIG_CPU_BIG_ENDIAN),yy)
++NEON_FLAGS += -Wno-declaration-after-statement
++endif
+ ifeq ($(ARCH),arm)
+ NEON_FLAGS += -march=armv7-a -mfloat-abi=softfp -mfpu=neon
+ endif
+
+> > > The differences between gnu99, gnu11, gnu1x and gnu17 are fairly
+> > > minimal and mainly impact warnings at the -Wpedantic level that the
+> > > kernel never enables. Between these, gnu11 is the newest version
+> > > that is supported by all supported compiler versions, though it is
+> > > only the default on gcc-5, while all other supported versions of
+> > > gcc or clang default to gnu1x/gnu17.
+> > >
+> > > Link: https://lore.kernel.org/lkml/CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com/
+> > > Link: https://github.com/ClangBuiltLinux/linux/issues/1603
+> > > Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> > > Cc: Masahiro Yamada <masahiroy@kernel.org>
+> > > Cc: linux-kbuild@vger.kernel.org
+> > > Cc: llvm@lists.linux.dev
+> > > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> >
+> > Acked-by: Marco Elver <elver@google.com>
+
+Cheers,
+Nathan
