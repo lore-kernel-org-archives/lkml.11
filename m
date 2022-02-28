@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F962C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:07:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A7F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239992AbiB1SHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:07:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42988 "EHLO
+        id S237809AbiB1SHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240439AbiB1SDd (ORCPT
+        with ESMTP id S240488AbiB1SDg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:33 -0500
+        Mon, 28 Feb 2022 13:03:36 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7B771CB6;
-        Mon, 28 Feb 2022 09:47:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72CC2B250A;
+        Mon, 28 Feb 2022 09:47:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89BCA60748;
-        Mon, 28 Feb 2022 17:47:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 929E5C340E7;
-        Mon, 28 Feb 2022 17:47:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2F8160B2B;
+        Mon, 28 Feb 2022 17:47:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13A53C340E7;
+        Mon, 28 Feb 2022 17:47:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070432;
-        bh=XSLKRkij1uXAIPZeU+vR3idzKH3jAVHBKW7vVMbPZpQ=;
+        s=korg; t=1646070437;
+        bh=gq/WVgKat1vpQ26apfGtrbtSVgS8xU5ty2S32PBT2DU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z1xg9TOl1Tl7mJyggkxEta+WOt7NX3jMyxIZbXHpCFGgH8ExN4fSEQZLy1n1ntBnV
-         BFgPvQPMv1Bey7+6s16TNwljAjJ3JagjXo0o1bX4AsnTgOAzQVo7V31r308rlOsJBX
-         FJgw8nPdHkBmVVt+KW7LpctBKs8DPhjXQpb3L6Zs=
+        b=ACh8+ZsSK/aqDEM4tcIrWEGbUHtzrKPDMMSuMWcRfkXUIOzppCuhzcU0ZaH1WyyG/
+         mmfBO2DPINpS+uQnTBJS/dAJlnx2sSwkA7YCYzQ9rpOLxchwSW9kY5joUNzHk05ylx
+         4I+hBbgON+uqrCk/a/ke9wVZzKiI+Gy7N9WnX0Vw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH 5.16 057/164] bpf: Do not try bpf_msg_push_data with len 0
-Date:   Mon, 28 Feb 2022 18:23:39 +0100
-Message-Id: <20220228172405.333864395@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+831661966588c802aae9@syzkaller.appspotmail.com,
+        Bart Van Assche <bvanassche@acm.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 109/164] RDMA/ib_srp: Fix a deadlock
+Date:   Mon, 28 Feb 2022 18:24:31 +0100
+Message-Id: <20220228172409.727065773@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -50,43 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Maurer <fmaurer@redhat.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-commit 4a11678f683814df82fca9018d964771e02d7e6d upstream.
+[ Upstream commit 081bdc9fe05bb23248f5effb6f811da3da4b8252 ]
 
-If bpf_msg_push_data() is called with len 0 (as it happens during
-selftests/bpf/test_sockmap), we do not need to do anything and can
-return early.
+Remove the flush_workqueue(system_long_wq) call since flushing
+system_long_wq is deadlock-prone and since that call is redundant with a
+preceding cancel_work_sync()
 
-Calling bpf_msg_push_data() with len 0 previously lead to a wrong ENOMEM
-error: we later called get_order(copy + len); if len was 0, copy + len
-was also often 0 and get_order() returned some undefined value (at the
-moment 52). alloc_pages() caught that and failed, but then bpf_msg_push_data()
-returned ENOMEM. This was wrong because we are most probably not out of
-memory and actually do not need any additional memory.
-
-Fixes: 6fff607e2f14b ("bpf: sk_msg program helper bpf_msg_push_data")
-Signed-off-by: Felix Maurer <fmaurer@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Yonghong Song <yhs@fb.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/df69012695c7094ccb1943ca02b4920db3537466.1644421921.git.fmaurer@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220215210511.28303-3-bvanassche@acm.org
+Fixes: ef6c49d87c34 ("IB/srp: Eliminate state SRP_TARGET_DEAD")
+Reported-by: syzbot+831661966588c802aae9@syzkaller.appspotmail.com
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/infiniband/ulp/srp/ib_srp.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2711,6 +2711,9 @@ BPF_CALL_4(bpf_msg_push_data, struct sk_
- 	if (unlikely(flags))
- 		return -EINVAL;
+diff --git a/drivers/infiniband/ulp/srp/ib_srp.c b/drivers/infiniband/ulp/srp/ib_srp.c
+index e174e853f8a40..285b766e4e704 100644
+--- a/drivers/infiniband/ulp/srp/ib_srp.c
++++ b/drivers/infiniband/ulp/srp/ib_srp.c
+@@ -4047,9 +4047,11 @@ static void srp_remove_one(struct ib_device *device, void *client_data)
+ 		spin_unlock(&host->target_lock);
  
-+	if (unlikely(len == 0))
-+		return 0;
-+
- 	/* First find the starting scatterlist element */
- 	i = msg->sg.start;
- 	do {
+ 		/*
+-		 * Wait for tl_err and target port removal tasks.
++		 * srp_queue_remove_work() queues a call to
++		 * srp_remove_target(). The latter function cancels
++		 * target->tl_err_work so waiting for the remove works to
++		 * finish is sufficient.
+ 		 */
+-		flush_workqueue(system_long_wq);
+ 		flush_workqueue(srp_remove_wq);
+ 
+ 		kfree(host);
+-- 
+2.34.1
+
 
 
