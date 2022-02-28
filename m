@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 951D0C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A528EC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240908AbiB1SEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:04:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55778 "EHLO
+        id S239393AbiB1SE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:04:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239326AbiB1Rwx (ORCPT
+        with ESMTP id S237028AbiB1RzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:52:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6512AA8EEB;
-        Mon, 28 Feb 2022 09:40:04 -0800 (PST)
+        Mon, 28 Feb 2022 12:55:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE51553B57;
+        Mon, 28 Feb 2022 09:44:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF09AB815AB;
-        Mon, 28 Feb 2022 17:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C760C340E7;
-        Mon, 28 Feb 2022 17:39:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9373B815A2;
+        Mon, 28 Feb 2022 17:44:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA3FC340F0;
+        Mon, 28 Feb 2022 17:44:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069997;
-        bh=dpF4urbp5iZlP0BJCXxiiiVzWi4jaSUBnkePsHMbduI=;
+        s=korg; t=1646070275;
+        bh=TmwptS0LPX8K1+wjHqfFZhxtwLD7yiQW5Pozv3nnNUI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jVjvVA6NSkgnm2xb9dFSkglpkh/wqoyOQc3C/T9lozsU9kuh+lQ0Ebci8NVuysxty
-         YcsshUetlBvYjo6m/2OcOzrse2mmJyZFXhb4l5rIAphk/BlHAYR40Cp4TDBa3girCF
-         MKjrOFghqvRa74bjRtS7iFVpbXx6z8jyzw/v96js=
+        b=mIlmsn1Z3UeqJShBONXswOmD2N4h4bmzJL1RoTqm5vaXbXD61FWU5z3apJp/s9avo
+         qyItd0DOk93OW/g9T1Mfb4xcTl4tFys8eKslBQv80Ri4Aad8UCbBWADGSQtIyNx9Pc
+         3iZhxcYFNXyzPGs5mQd7ZM49A+MwWoTq/UWeOCv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.15 050/139] bpf: Fix crash due to incorrect copy_map_value
-Date:   Mon, 28 Feb 2022 18:23:44 +0100
-Message-Id: <20220228172352.969056863@linuxfoundation.org>
+        stable@vger.kernel.org, Vikas Gupta <vikas.gupta@broadcom.com>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Kalesh AP <kalesh-anakkur.purayil@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 048/164] bnxt_en: Restore the resets_reliable flag in bnxt_open()
+Date:   Mon, 28 Feb 2022 18:23:30 +0100
+Message-Id: <20220228172404.579894554@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
-References: <20220228172347.614588246@linuxfoundation.org>
+In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
+References: <20220228172359.567256961@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,84 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-commit a8abb0c3dc1e28454851a00f8b7333d9695d566c upstream.
+commit 0e0e3c5358470cbad10bd7ca29f84a44d179d286 upstream.
 
-When both bpf_spin_lock and bpf_timer are present in a BPF map value,
-copy_map_value needs to skirt both objects when copying a value into and
-out of the map. However, the current code does not set both s_off and
-t_off in copy_map_value, which leads to a crash when e.g. bpf_spin_lock
-is placed in map value with bpf_timer, as bpf_map_update_elem call will
-be able to overwrite the other timer object.
+During ifdown, we call bnxt_inv_fw_health_reg() which will clear
+both the status_reliable and resets_reliable flags if these
+registers are mapped.  This is correct because a FW reset during
+ifdown will clear these register mappings.  If we detect that FW
+has gone through reset during the next ifup, we will remap these
+registers.
 
-When the issue is not fixed, an overwriting can produce the following
-splat:
+But during normal ifup with no FW reset, we need to restore the
+resets_reliable flag otherwise we will not show the reset counter
+during devlink diagnose.
 
-[root@(none) bpf]# ./test_progs -t timer_crash
-[   15.930339] bpf_testmod: loading out-of-tree module taints kernel.
-[   16.037849] ==================================================================
-[   16.038458] BUG: KASAN: user-memory-access in __pv_queued_spin_lock_slowpath+0x32b/0x520
-[   16.038944] Write of size 8 at addr 0000000000043ec0 by task test_progs/325
-[   16.039399]
-[   16.039514] CPU: 0 PID: 325 Comm: test_progs Tainted: G           OE     5.16.0+ #278
-[   16.039983] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ArchLinux 1.15.0-1 04/01/2014
-[   16.040485] Call Trace:
-[   16.040645]  <TASK>
-[   16.040805]  dump_stack_lvl+0x59/0x73
-[   16.041069]  ? __pv_queued_spin_lock_slowpath+0x32b/0x520
-[   16.041427]  kasan_report.cold+0x116/0x11b
-[   16.041673]  ? __pv_queued_spin_lock_slowpath+0x32b/0x520
-[   16.042040]  __pv_queued_spin_lock_slowpath+0x32b/0x520
-[   16.042328]  ? memcpy+0x39/0x60
-[   16.042552]  ? pv_hash+0xd0/0xd0
-[   16.042785]  ? lockdep_hardirqs_off+0x95/0xd0
-[   16.043079]  __bpf_spin_lock_irqsave+0xdf/0xf0
-[   16.043366]  ? bpf_get_current_comm+0x50/0x50
-[   16.043608]  ? jhash+0x11a/0x270
-[   16.043848]  bpf_timer_cancel+0x34/0xe0
-[   16.044119]  bpf_prog_c4ea1c0f7449940d_sys_enter+0x7c/0x81
-[   16.044500]  bpf_trampoline_6442477838_0+0x36/0x1000
-[   16.044836]  __x64_sys_nanosleep+0x5/0x140
-[   16.045119]  do_syscall_64+0x59/0x80
-[   16.045377]  ? lock_is_held_type+0xe4/0x140
-[   16.045670]  ? irqentry_exit_to_user_mode+0xa/0x40
-[   16.046001]  ? mark_held_locks+0x24/0x90
-[   16.046287]  ? asm_exc_page_fault+0x1e/0x30
-[   16.046569]  ? asm_exc_page_fault+0x8/0x30
-[   16.046851]  ? lockdep_hardirqs_on+0x7e/0x100
-[   16.047137]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[   16.047405] RIP: 0033:0x7f9e4831718d
-[   16.047602] Code: b4 0c 00 0f 05 eb a9 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d b3 6c 0c 00 f7 d8 64 89 01 48
-[   16.048764] RSP: 002b:00007fff488086b8 EFLAGS: 00000206 ORIG_RAX: 0000000000000023
-[   16.049275] RAX: ffffffffffffffda RBX: 00007f9e48683740 RCX: 00007f9e4831718d
-[   16.049747] RDX: 0000000000000000 RSI: 0000000000000000 RDI: 00007fff488086d0
-[   16.050225] RBP: 00007fff488086f0 R08: 00007fff488085d7 R09: 00007f9e4cb594a0
-[   16.050648] R10: 0000000000000000 R11: 0000000000000206 R12: 00007f9e484cde30
-[   16.051124] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-[   16.051608]  </TASK>
-[   16.051762] ==================================================================
-
-Fixes: 68134668c17f ("bpf: Add map side support for bpf timers.")
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220209070324.1093182-2-memxor@gmail.com
+Fixes: 8cc95ceb7087 ("bnxt_en: improve fw diagnose devlink health messages")
+Reviewed-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bpf.h |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c |   17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -221,7 +221,8 @@ static inline void copy_map_value(struct
- 	if (unlikely(map_value_has_spin_lock(map))) {
- 		s_off = map->spin_lock_off;
- 		s_sz = sizeof(struct bpf_spin_lock);
--	} else if (unlikely(map_value_has_timer(map))) {
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -7776,6 +7776,19 @@ static int bnxt_map_fw_health_regs(struc
+ 	return 0;
+ }
+ 
++static void bnxt_remap_fw_health_regs(struct bnxt *bp)
++{
++	if (!bp->fw_health)
++		return;
++
++	if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY) {
++		bp->fw_health->status_reliable = true;
++		bp->fw_health->resets_reliable = true;
++	} else {
++		bnxt_try_map_fw_health_reg(bp);
 +	}
-+	if (unlikely(map_value_has_timer(map))) {
- 		t_off = map->timer_off;
- 		t_sz = sizeof(struct bpf_timer);
- 	}
++}
++
+ static int bnxt_hwrm_error_recovery_qcfg(struct bnxt *bp)
+ {
+ 	struct bnxt_fw_health *fw_health = bp->fw_health;
+@@ -9836,8 +9849,8 @@ static int bnxt_hwrm_if_change(struct bn
+ 		resc_reinit = true;
+ 	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE)
+ 		fw_reset = true;
+-	else if (bp->fw_health && !bp->fw_health->status_reliable)
+-		bnxt_try_map_fw_health_reg(bp);
++	else
++		bnxt_remap_fw_health_regs(bp);
+ 
+ 	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state) && !fw_reset) {
+ 		netdev_err(bp->dev, "RESET_DONE not set during FW reset.\n");
 
 
