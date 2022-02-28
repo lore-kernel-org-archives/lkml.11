@@ -2,193 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44716C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:41:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C0BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236561AbiB1MmU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:42:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51750 "EHLO
+        id S236553AbiB1Mml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:42:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232542AbiB1MmP (ORCPT
+        with ESMTP id S231143AbiB1Mmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:42:15 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E4EB74878
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:41:37 -0800 (PST)
+        Mon, 28 Feb 2022 07:42:38 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA52506E0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:41:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-        :Reply-To:Content-Type:Content-ID:Content-Description;
-        bh=IR4abFvHdW12CaulzRpJ7ldY+fqUsw7Tyy0gpgznxxI=; b=OoW4TgUzT4R+MfenewyNryXeUW
-        iUL2PXMIjxTZ5yJDCOM6yL0WBzWRJJ6Y463Kahd9peAFJng7WXdTXf1JgTu2QY7KO3mXw3mumoU/r
-        q30VivZukzwo+BIyGQ/rrRKYztZZpf8WPJXi8TtN8ev7iU/01cpfUCDWt8B5lpLP4vIOPNURRit4t
-        60hDFVt3uDc/endDjmoChnaQKjPMTe2ec7jFN4xF2oVq6OT+BQnRJmHfF0Lg8jjJjCZpcZQlQrHjJ
-        ixUur7ZpsLXDr15j7MCNssueEMdMdmssra5Dod6ibAr+/eYEhicDGIsRbrCoxKfKskpVwe9zdWz3q
-        CNts/IFQ==;
-Received: from [2.53.163.181] (helo=localhost)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOfLJ-00CHew-Lq; Mon, 28 Feb 2022 12:41:34 +0000
-From:   Christoph Hellwig <hch@lst.de>
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, Chao Yu <chao@kernel.org>
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] f2fs: pass the bio operation to bio_alloc_bioset
-Date:   Mon, 28 Feb 2022 14:41:23 +0200
-Message-Id: <20220228124123.856027-3-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220228124123.856027-1-hch@lst.de>
-References: <20220228124123.856027-1-hch@lst.de>
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=TYfrVKkHEOeWThZ1HPoCRjuHgbWI1WpuStectqDw4HU=; b=U4cidNZcZV4cORMh092OsDh5Mf
+        3yXKQ3TuRuNejtbgj5fEEQSHsMrt85wafB8/7S+bBGltJnTi5WvXo3SDqdGPXWo3410aLckqYv2yJ
+        uXg+G7z8Ne7hvQdoicdFlO7n9NWdoCLSqpiKBWAI8KS0ktUQCUJAlNKHHz30ziO6UXEDTykV3R3HN
+        185ADZ0PtEP5Sa8nu9DYGaD6e6QkUNCGCDSMwW9xZHuRnieiY/p7/Mw+hB5sDExcOoCrxXZ/AZTZU
+        h8rB/r/9ZLf0t+01la2ELVw/pPavrKiXeB/lFmzQxjhHO+q1u1n578upIUVLjbE7I9BqZjzKX0TuS
+        W+683v4Q==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOfL1-008WI6-Q1; Mon, 28 Feb 2022 12:41:15 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2E6F53001D0;
+        Mon, 28 Feb 2022 13:41:13 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id DF99C30855E94; Mon, 28 Feb 2022 13:41:13 +0100 (CET)
+Date:   Mon, 28 Feb 2022 13:41:13 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v2 36/39] objtool: Find unused ENDBR instructions
+Message-ID: <YhzC6RmRZs6U4wvG@hirez.programming.kicks-ass.net>
+References: <20220224145138.952963315@infradead.org>
+ <20220224151324.137868984@infradead.org>
+ <20220227034613.a5ejjey5agxlympd@treble>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220227034613.a5ejjey5agxlympd@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor block I/O code so that the bio operation and known flags are set
-at bio allocation time.  Only the later updated flags are updated on the
-fly.
+On Sat, Feb 26, 2022 at 07:46:13PM -0800, Josh Poimboeuf wrote:
+> On Thu, Feb 24, 2022 at 03:52:14PM +0100, Peter Zijlstra wrote:
+> > +#ifdef CONFIG_X86_KERNEL_IBT
+> > +	. = ALIGN(8);
+> > +	.ibt_endbr_sites : AT(ADDR(.ibt_endbr_sites) - LOAD_OFFSET) {
+> > +		__ibt_endbr_sites = .;
+> > +		*(.ibt_endbr_sites)
+> > +		__ibt_endbr_sites_end = .;
+> > +	}
+> > +#endif
+> 
+> ".ibt_endbr_superfluous" maybe?  It's not *all* the endbr sites.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- fs/f2fs/data.c | 70 +++++++++++++++++++++-----------------------------
- 1 file changed, 29 insertions(+), 41 deletions(-)
+Since I like seals, I'll make it .ibt_endbr_seal :-) Also goes well with
+the option at hand.
 
-diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
-index 59dd0347c4bc8..fc077bce679d9 100644
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -388,6 +388,24 @@ int f2fs_target_device_index(struct f2fs_sb_info *sbi, block_t blkaddr)
- 	return 0;
- }
- 
-+static void __attach_io_flag(struct f2fs_io_info *fio, unsigned int io_flag)
-+{
-+	unsigned int temp_mask = (1 << NR_TEMP_TYPE) - 1;
-+	unsigned int fua_flag = io_flag & temp_mask;
-+	unsigned int meta_flag = (io_flag >> NR_TEMP_TYPE) & temp_mask;
-+
-+	/*
-+	 * data/node io flag bits per temp:
-+	 *      REQ_META     |      REQ_FUA      |
-+	 *    5 |    4 |   3 |    2 |    1 |   0 |
-+	 * Cold | Warm | Hot | Cold | Warm | Hot |
-+	 */
-+	if ((1 << fio->temp) & meta_flag)
-+		fio->op_flags |= REQ_META;
-+	if ((1 << fio->temp) & fua_flag)
-+		fio->op_flags |= REQ_FUA;
-+}
-+
- static struct bio *__bio_alloc(struct f2fs_io_info *fio, int npages)
- {
- 	struct f2fs_sb_info *sbi = fio->sbi;
-@@ -395,8 +413,14 @@ static struct bio *__bio_alloc(struct f2fs_io_info *fio, int npages)
- 	sector_t sector;
- 	struct bio *bio;
- 
-+	if (fio->type == DATA)
-+		__attach_io_flag(fio, sbi->data_io_flag);
-+	else if (fio->type == NODE)
-+		__attach_io_flag(fio, sbi->node_io_flag);
-+
- 	bdev = f2fs_target_device(sbi, fio->new_blkaddr, &sector);
--	bio = bio_alloc_bioset(bdev, npages, 0, GFP_NOIO, &f2fs_bioset);
-+	bio = bio_alloc_bioset(bdev, npages, fio->op | fio->op_flags, GFP_NOIO,
-+			       &f2fs_bioset);
- 	bio->bi_iter.bi_sector = sector;
- 	if (is_read_io(fio->op)) {
- 		bio->bi_end_io = f2fs_read_end_io;
-@@ -501,34 +525,6 @@ void f2fs_submit_bio(struct f2fs_sb_info *sbi,
- 	__submit_bio(sbi, bio, type);
- }
- 
--static void __attach_io_flag(struct f2fs_io_info *fio)
--{
--	struct f2fs_sb_info *sbi = fio->sbi;
--	unsigned int temp_mask = (1 << NR_TEMP_TYPE) - 1;
--	unsigned int io_flag, fua_flag, meta_flag;
--
--	if (fio->type == DATA)
--		io_flag = sbi->data_io_flag;
--	else if (fio->type == NODE)
--		io_flag = sbi->node_io_flag;
--	else
--		return;
--
--	fua_flag = io_flag & temp_mask;
--	meta_flag = (io_flag >> NR_TEMP_TYPE) & temp_mask;
--
--	/*
--	 * data/node io flag bits per temp:
--	 *      REQ_META     |      REQ_FUA      |
--	 *    5 |    4 |   3 |    2 |    1 |   0 |
--	 * Cold | Warm | Hot | Cold | Warm | Hot |
--	 */
--	if ((1 << fio->temp) & meta_flag)
--		fio->op_flags |= REQ_META;
--	if ((1 << fio->temp) & fua_flag)
--		fio->op_flags |= REQ_FUA;
--}
--
- static void __submit_merged_bio(struct f2fs_bio_info *io)
- {
- 	struct f2fs_io_info *fio = &io->fio;
-@@ -536,9 +532,6 @@ static void __submit_merged_bio(struct f2fs_bio_info *io)
- 	if (!io->bio)
- 		return;
- 
--	__attach_io_flag(fio);
--	bio_set_op_attrs(io->bio, fio->op, fio->op_flags);
--
- 	if (is_read_io(fio->op))
- 		trace_f2fs_prepare_read_bio(io->sbi->sb, fio->type, io->bio);
- 	else
-@@ -596,10 +589,9 @@ static void __f2fs_submit_merged_write(struct f2fs_sb_info *sbi,
- 	/* change META to META_FLUSH in the checkpoint procedure */
- 	if (type >= META_FLUSH) {
- 		io->fio.type = META_FLUSH;
--		io->fio.op = REQ_OP_WRITE;
--		io->fio.op_flags = REQ_META | REQ_PRIO | REQ_SYNC;
-+		io->bio->bi_opf |= REQ_META | REQ_PRIO | REQ_SYNC;
- 		if (!test_opt(sbi, NOBARRIER))
--			io->fio.op_flags |= REQ_PREFLUSH | REQ_FUA;
-+			io->bio->bi_opf |= REQ_PREFLUSH | REQ_FUA;
- 	}
- 	__submit_merged_bio(io);
- 	up_write(&io->io_rwsem);
-@@ -680,9 +672,6 @@ int f2fs_submit_page_bio(struct f2fs_io_info *fio)
- 	if (fio->io_wbc && !is_read_io(fio->op))
- 		wbc_account_cgroup_owner(fio->io_wbc, page, PAGE_SIZE);
- 
--	__attach_io_flag(fio);
--	bio_set_op_attrs(bio, fio->op, fio->op_flags);
--
- 	inc_page_count(fio->sbi, is_read_io(fio->op) ?
- 			__read_io_type(page): WB_DATA_TYPE(fio->page));
- 
-@@ -876,10 +865,8 @@ int f2fs_merge_page_bio(struct f2fs_io_info *fio)
- alloc_new:
- 	if (!bio) {
- 		bio = __bio_alloc(fio, BIO_MAX_VECS);
--		__attach_io_flag(fio);
- 		f2fs_set_bio_crypt_ctx(bio, fio->page->mapping->host,
- 				       fio->page->index, fio, GFP_NOIO);
--		bio_set_op_attrs(bio, fio->op, fio->op_flags);
- 
- 		add_bio_entry(fio->sbi, bio, page, fio->temp);
- 	} else {
-@@ -988,7 +975,8 @@ static struct bio *f2fs_grab_read_bio(struct inode *inode, block_t blkaddr,
- 	sector_t sector;
- 	struct block_device *bdev = f2fs_target_device(sbi, blkaddr, &sector);
- 
--	bio = bio_alloc_bioset(bdev, bio_max_segs(nr_pages), REQ_OP_READ,
-+	bio = bio_alloc_bioset(bdev, bio_max_segs(nr_pages),
-+			       REQ_OP_READ | op_flag,
- 			       for_write ? GFP_NOIO : GFP_KERNEL, &f2fs_bioset);
- 	if (!bio)
- 		return ERR_PTR(-ENOMEM);
--- 
-2.30.2
+> > +
+> >  	/*
+> >  	 * struct alt_inst entries. From the header (alternative.h):
+> >  	 * "Alternative instructions for different CPU types or capabilities"
+> > --- a/tools/objtool/builtin-check.c
+> > +++ b/tools/objtool/builtin-check.c
+> > @@ -21,7 +21,7 @@
+> >  
+> >  bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
+> >       lto, vmlinux, mcount, noinstr, backup, sls, dryrun,
+> > -     ibt, ibt_fix_direct;
+> > +     ibt, ibt_fix_direct, ibt_seal;
+> >  
+> >  static const char * const check_usage[] = {
+> >  	"objtool check [<options>] file.o",
+> > @@ -50,6 +50,7 @@ const struct option check_options[] = {
+> >  	OPT_BOOLEAN(0, "dry-run", &dryrun, "don't write the modifications"),
+> >  	OPT_BOOLEAN(0, "ibt", &ibt, "validate ENDBR placement"),
+> >  	OPT_BOOLEAN(0, "ibt-fix-direct", &ibt_fix_direct, "fixup direct jmp/call to ENDBR"),
+> > +	OPT_BOOLEAN(0, "ibt-seal", &ibt_seal, "list superfluous ENDBR instructions"),
+> 
+> s/list/annotate/ ?
+
+Done :-)
+
+> Not sure "ibt-seal" is the appropriate name since the "seal" is done at
+> boot time.
+
+It allows sealing; it finds the locations to seal, whatever :-)
+
+> Do we really need a separate option anyway?  To get the full benefits of
+> IBT you might as well enable it...  And always enabling it helps flush
+> out bugs quicker.
+
+Are you asking about --ibt and --ibt-seal or about the existence of
+X86_KERNEL_IBT_SEAL here?
+
+The Makefiles will only ever use --ibt and --ibt-seal together for the
+reason you state. The reason they're two separate objtool arguments is
+because it's stictly speaking two different things being done. Also
+--ibt as such is invariant, while --ibt-seal causes modifications to the
+object file (which can be discarded using the new --dry-run I suppose).
+
+The reason X86_KERNEL_IBT_SEAL exists is because that requires objtool
+while X86_KERNEL_IBT does not -- you seemed to favour not hard relying
+on having objtool present.
+
 
