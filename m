@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC06FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC6BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239319AbiB1SAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:00:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51212 "EHLO
+        id S239337AbiB1SAK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:00:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240742AbiB1Ryd (ORCPT
+        with ESMTP id S240705AbiB1Ryb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:33 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B814EF60;
-        Mon, 28 Feb 2022 09:42:53 -0800 (PST)
+        Mon, 28 Feb 2022 12:54:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 140F02980F;
+        Mon, 28 Feb 2022 09:42:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 46087CE17D2;
-        Mon, 28 Feb 2022 17:42:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 230DEC340E7;
-        Mon, 28 Feb 2022 17:42:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B6AD615B4;
+        Mon, 28 Feb 2022 17:42:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B45A4C340E7;
+        Mon, 28 Feb 2022 17:42:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070170;
-        bh=0kLHFsDZCk0ZTM/V8Kf2IsrIaPAGMGwqKe7xccMH9p4=;
+        s=korg; t=1646070165;
+        bh=oYdLpNFMJoWpUsGNteMjbuQJIBxw4NVt3rpKOLt7l1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vmgkx74WkIpVYeMZ187pbKNNfnfsLPAUin22reBWGxXLf5M3Dm3j9DgWK8BhAPUJq
-         qXSL+NQKBBcg0n8v84TcOot95Fy8eXG0KZzfy1Tx2jI667/Qbm2k46FxjXhs7Vw2jY
-         o0mqfNMI/BjxFp2q+eZt/APeOrcbsLMBu8AG9VUg=
+        b=pmA66K7YEdZ9Y48g2ATfA85hzd1XEBiCVZWKsKf71XbzRgf7dUhZx0voMzK+lDVPS
+         bflwEOhbkdBJtd4R3/BI9qJiD1Q9u5N9FjakW8ZHilTBm9WqUDGACS9gkhxmeK6hX9
+         dnlUBh2Q9GF3jDJ2PeSAB0JL5lIZqZucH0XL+fag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.16 012/164] parisc/unaligned: Fix fldd and fstd unaligned handlers on 32-bit kernel
-Date:   Mon, 28 Feb 2022 18:22:54 +0100
-Message-Id: <20220228172400.970689091@linuxfoundation.org>
+        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 5.16 010/164] selinux: fix misuse of mutex_is_locked()
+Date:   Mon, 28 Feb 2022 18:22:52 +0100
+Message-Id: <20220228172400.731941088@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -47,80 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Ondrej Mosnacek <omosnace@redhat.com>
 
-commit dd2288f4a020d693360e3e8d72f8b9d9c25f5ef6 upstream.
+commit ce2fc710c9d2b25afc710f49bb2065b4439a62bc upstream.
 
-Usually the kernel provides fixup routines to emulate the fldd and fstd
-floating-point instructions if they load or store 8-byte from/to a not
-natuarally aligned memory location.
+mutex_is_locked() tests whether the mutex is locked *by any task*, while
+here we want to test if it is held *by the current task*. To avoid
+false/missed WARNINGs, use lockdep_assert_is_held() and
+lockdep_assert_is_not_held() instead, which do the right thing (though
+they are a no-op if CONFIG_LOCKDEP=n).
 
-On a 32-bit kernel I noticed that those unaligned handlers didn't worked and
-instead the application got a SEGV.
-While checking the code I found two problems:
-
-First, the OPCODE_FLDD_L and OPCODE_FSTD_L cases were ifdef'ed out by the
-CONFIG_PA20 option, and as such those weren't built on a pure 32-bit kernel.
-This is now fixed by moving the CONFIG_PA20 #ifdef to prevent the compilation
-of OPCODE_LDD_L and OPCODE_FSTD_L only, and handling the fldd and fstd
-instructions.
-
-The second problem are two bugs in the 32-bit inline assembly code, where the
-wrong registers where used. The calculation of the natural alignment used %2
-(vall) instead of %3 (ior), and the first word was stored back to address %1
-(valh) instead of %3 (ior).
-
-Signed-off-by: Helge Deller <deller@gmx.de>
 Cc: stable@vger.kernel.org
+Fixes: 2554a48f4437 ("selinux: measure state and policy capabilities")
+Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/unaligned.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ security/selinux/ima.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/parisc/kernel/unaligned.c
-+++ b/arch/parisc/kernel/unaligned.c
-@@ -397,7 +397,7 @@ static int emulate_std(struct pt_regs *r
- 	__asm__ __volatile__ (
- "	mtsp	%4, %%sr1\n"
- "	zdep	%2, 29, 2, %%r19\n"
--"	dep	%%r0, 31, 2, %2\n"
-+"	dep	%%r0, 31, 2, %3\n"
- "	mtsar	%%r19\n"
- "	zvdepi	-2, 32, %%r19\n"
- "1:	ldw	0(%%sr1,%3),%%r20\n"
-@@ -409,7 +409,7 @@ static int emulate_std(struct pt_regs *r
- "	andcm	%%r21, %%r19, %%r21\n"
- "	or	%1, %%r20, %1\n"
- "	or	%2, %%r21, %2\n"
--"3:	stw	%1,0(%%sr1,%1)\n"
-+"3:	stw	%1,0(%%sr1,%3)\n"
- "4:	stw	%%r1,4(%%sr1,%3)\n"
- "5:	stw	%2,8(%%sr1,%3)\n"
- "	copy	%%r0, %0\n"
-@@ -596,7 +596,6 @@ void handle_unaligned(struct pt_regs *re
- 		ret = ERR_NOTHANDLED;	/* "undefined", but lets kill them. */
- 		break;
- 	}
--#ifdef CONFIG_PA20
- 	switch (regs->iir & OPCODE2_MASK)
- 	{
- 	case OPCODE_FLDD_L:
-@@ -607,14 +606,15 @@ void handle_unaligned(struct pt_regs *re
- 		flop=1;
- 		ret = emulate_std(regs, R2(regs->iir),1);
- 		break;
-+#ifdef CONFIG_PA20
- 	case OPCODE_LDD_L:
- 		ret = emulate_ldd(regs, R2(regs->iir),0);
- 		break;
- 	case OPCODE_STD_L:
- 		ret = emulate_std(regs, R2(regs->iir),0);
- 		break;
--	}
- #endif
-+	}
- 	switch (regs->iir & OPCODE3_MASK)
- 	{
- 	case OPCODE_FLDW_L:
+--- a/security/selinux/ima.c
++++ b/security/selinux/ima.c
+@@ -77,7 +77,7 @@ void selinux_ima_measure_state_locked(st
+ 	size_t policy_len;
+ 	int rc = 0;
+ 
+-	WARN_ON(!mutex_is_locked(&state->policy_mutex));
++	lockdep_assert_held(&state->policy_mutex);
+ 
+ 	state_str = selinux_ima_collect_state(state);
+ 	if (!state_str) {
+@@ -117,7 +117,7 @@ void selinux_ima_measure_state_locked(st
+  */
+ void selinux_ima_measure_state(struct selinux_state *state)
+ {
+-	WARN_ON(mutex_is_locked(&state->policy_mutex));
++	lockdep_assert_not_held(&state->policy_mutex);
+ 
+ 	mutex_lock(&state->policy_mutex);
+ 	selinux_ima_measure_state_locked(state);
 
 
