@@ -2,84 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6946EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8686C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237634AbiB1Pnz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 10:43:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55390 "EHLO
+        id S237637AbiB1PqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 10:46:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237339AbiB1Pnu (ORCPT
+        with ESMTP id S234135AbiB1PqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 10:43:50 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D286F27162
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:43:10 -0800 (PST)
-Received: from mail-wr1-f46.google.com ([209.85.221.46]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MOzfO-1nYXxY2tVE-00PO9L for <linux-kernel@vger.kernel.org>; Mon, 28 Feb
- 2022 16:43:08 +0100
-Received: by mail-wr1-f46.google.com with SMTP id r10so16139277wrp.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:43:08 -0800 (PST)
-X-Gm-Message-State: AOAM531SSeduorH/zxKn7/byS+caLnPr/iMl0tIk7QG3IWS5TnQI/Gsm
-        UBgccNc+Lc1sNpRayhpggI+NbYE0/evhNs4p8Q0=
-X-Google-Smtp-Source: ABdhPJxy9c35EGGAS0iifgxjfOaWuz+Cg9Pw2HqEn7LFPLaX1taoWlH9BAHwhP/QqUpTqblafUJ9zpUAXON7IXLX19E=
-X-Received: by 2002:adf:90c1:0:b0:1e4:ad27:22b9 with SMTP id
- i59-20020adf90c1000000b001e4ad2722b9mr16234935wri.219.1646062988362; Mon, 28
- Feb 2022 07:43:08 -0800 (PST)
+        Mon, 28 Feb 2022 10:46:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E02879C79
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:45:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6A1AB811C2
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 15:45:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2A3EC340F0;
+        Mon, 28 Feb 2022 15:45:24 +0000 (UTC)
+Date:   Mon, 28 Feb 2022 10:45:23 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Cc:     bristot@kernel.org, paulmck@kernel.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, mtosatti@redhat.com
+Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
+Message-ID: <20220228104523.01eda61a@gandalf.local.home>
+In-Reply-To: <20220228141423.259691-1-nsaenzju@redhat.com>
+References: <20220228141423.259691-1-nsaenzju@redhat.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220226124826.1564871-1-mail@conchuod.ie>
-In-Reply-To: <20220226124826.1564871-1-mail@conchuod.ie>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 28 Feb 2022 16:42:52 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2y2j=zSsPtAFDZxv9b_e2SG6V5DBy__voiHRnDw5n4Aw@mail.gmail.com>
-Message-ID: <CAK8P3a2y2j=zSsPtAFDZxv9b_e2SG6V5DBy__voiHRnDw5n4Aw@mail.gmail.com>
-Subject: Re: [PATCH] soc: microchip: make mpfs_sys_controller_put static
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     conor.dooley@microchip.com,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:VnEZVw0offLdINVVEeiEBePob+PrWElG+2FgEla6SI7XwfxtzAK
- D532ierdcPqqNkq69dWDXB0u/DPuuqD1R2wiCpV4e/PzqpdWb2i6cgyo9f2Ai6tJmHB92TN
- o9wvefPz6TzbY+SryjpVe26fZXSjceEJ1FjtAc+ysNlMckbEw7x8w7T5jZO4W9WGZgmSxAj
- bFrx3+B+hRf+Klegl/bAg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:QmYRt1Wklbo=:gvA6TfUWaKqhoDbr10zjUK
- 2rNZ+yeowrIfjG1iXM3pRjQ+0mNVuIVWvVMgtHNiKd4h31o49v8eW5UHPls/jlBJAC0WrRcLx
- qxMTIJGGofTDEVStaGgNhT5qfbWqFBXhHFIO5FQXpHbAm5RHcG9ykRSct2Dr+2x54EjZSG7Ea
- 9DAOlx77SZ3VpZojt3JuEPvbna9C6fWC7ITlKGaigWOevGvy2XfH5Piv4dEh0fX3FbE1K4neA
- oQmQulpZ77dK8It/Ngcgyut0Mu9ouqrTIek+/EC6eyO32r9vGMRIlWPOEFwQkZUQfuX9Zhxtu
- QkzZFJ94LXRAh6PxTqRievQHhCxoMb/xmNMBZeAV0DfLkoQzpWn7Pe115XfLcam97mJlIQAv9
- AlhZrq4HxRhHOV/u24Dc2VkLnqWApSZMZnH+OaapzelC/9PNa0O/Yg62Y5Y7pyIU+v28J1nVV
- AZasstk7poiNZDb3BGuISx6HOvcPXx56DxmAMpe17o4hOP+gi9POEM7RANXF/DgsLEhjObYTK
- vUomoBNXtdaSflaMKTbnbhVv4CXFWcLYNyE+D0tCEyT0oUaVPAr7+CiSmN6fXNU/dHfbLWidO
- bKfAGhvdNFJBqvuS5m53Y4Rf+2tvjMzi5Blch6TSW0aHLQ6K292SwwN2j5fWjsrN/yC+jaCSJ
- gXtwRgo6RQZn9WBdhLGr+/MwFZJhjYKvDZlynU5ZedYJ60SnLEc0oetCBoaCOt+Ch5y0=
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 1:48 PM Conor Dooley <mail@conchuod.ie> wrote:
->
-> From: Conor Dooley <conor.dooley@microchip.com>
->
-> dsafsdfd0054 ("soc: add microchip polarfire soc system controller")
-> incorrectly exported mpfs_sys_controller_put. Remove the export and make
-> the function static instead. This fixes the "no previous prototype
-> for 'mpfs_sys_controller_put'" warning spotted by the kernel test robot.
->
-> Fixes: dsafsdfd0054 ("soc: add microchip polarfire soc system
-> controller")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-> Signed-off-by: Conor Dooley <mail@conchuod.ie>
+On Mon, 28 Feb 2022 15:14:23 +0100
+Nicolas Saenz Julienne <nsaenzju@redhat.com> wrote:
 
-For reference, I saw the same report and added a different fix for  this
-at first, but replaced it with this patch now. No need to add it to the at91
-tree. Nicolas, in case there is another problem with this patch, let me know.
+> @@ -1386,6 +1389,22 @@ static int run_osnoise(void)
+>  					osnoise_stop_tracing();
+>  		}
+>  
+> +		/*
+> +		 * Check if we're the only ones running on this nohz_full CPU
+> +		 * and that we're on a PREEMPT_RCU setup. If so, let's fake a
+> +		 * QS since there is no way for RCU to know we're not making
+> +		 * use of it.
+> +		 *
+> +		 * Otherwise it'll be done through cond_resched().
+> +		 */
+> +		if (IS_ENABLED(CONFIG_PREEMPT_RCU) &&
+> +		    !housekeeping_cpu(raw_smp_processor_id(), HK_FLAG_MISC) &&
+> +		    tick_nohz_tick_stopped()) {
+> +			local_irq_save(flags);
+> +			rcu_momentary_dyntick_idle();
+> +			local_irq_restore(flags);
+> +		}
+> +
 
-       Arnd
+This looks very specific and a corner case. Something that depends on how
+RCU works. This really should be in the RCU code such that if something
+changes, RCU maintainers are aware of this and can update this too.
+
+I wonder if this is similar to what we have in trace_benchmark(). Would
+using: cond_resched_tasks_rcu_qs() work for you?
+
+-- Steve
+
+
+>  		/*
