@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AAEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F6CC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240319AbiB1SIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:08:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
+        id S240352AbiB1SIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:08:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240144AbiB1SDB (ORCPT
+        with ESMTP id S240651AbiB1SDp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D092E54685;
-        Mon, 28 Feb 2022 09:46:39 -0800 (PST)
+        Mon, 28 Feb 2022 13:03:45 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBE5F13;
+        Mon, 28 Feb 2022 09:47:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C334B81187;
-        Mon, 28 Feb 2022 17:46:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E97A2C340E7;
-        Mon, 28 Feb 2022 17:46:35 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BC09BCE177C;
+        Mon, 28 Feb 2022 17:47:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC46C340E7;
+        Mon, 28 Feb 2022 17:47:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070396;
-        bh=4SDR2zPe+STyu+dK5B43Nh1E+LcW275FuOXqcL8NV6Q=;
+        s=korg; t=1646070448;
+        bh=KCalSnuWuzSfa+L8A6ehOYwa/W3kEiG0HRBRIYFecX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tiVxsMHzqnlayHZpAWKkpBG5y9O8F2gESyIkqR8UGDKZgyDmXm5ZuBc/yzSqOjdkT
-         spJM+Jdx05NdfRPn9KOeOsAVgHkt8l4MICuMeod+N1w2cWuXBk5ShLjiPv22EU09by
-         /9JcnWWx3xDxQEbNTTJ0AcgGZORlh3+TbbBiRKfc=
+        b=U8FXphQhAAxjNe1ItEAsKlvq9nxSlfzJZOBKX+TFsqSS78s7TYpxmhKiaQm9jI9NM
+         hRQzFFqhksQACmHDOAKsdDU+HZdOKOfbySIQRI+u68berykztgelhYTSoYqkni5svF
+         lL03AzydyWQdCAQZrViLZF2pKRZQz9nqEko3B5Xs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ariel Levkovich <lariel@nvidia.com>,
-        Maor Dickman <maord@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 092/164] net/mlx5: Fix wrong limitation of metadata match on ecpf
-Date:   Mon, 28 Feb 2022 18:24:14 +0100
-Message-Id: <20220228172408.161564826@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.16 113/164] tracing: Have traceon and traceoff trigger honor the instance
+Date:   Mon, 28 Feb 2022 18:24:35 +0100
+Message-Id: <20220228172410.703348887@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,36 +50,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ariel Levkovich <lariel@nvidia.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 07666c75ad17d7389b18ac0235c8cf41e1504ea8 upstream.
+commit 302e9edd54985f584cfc180098f3554774126969 upstream.
 
-Match metadata support check returns false for ecpf device.
-However, this support does exist for ecpf and therefore this
-limitation should be removed to allow feature such as stacked
-devices and internal port offloaded to be supported.
+If a trigger is set on an event to disable or enable tracing within an
+instance, then tracing should be disabled or enabled in the instance and
+not at the top level, which is confusing to users.
 
-Fixes: 92ab1eb392c6 ("net/mlx5: E-Switch, Enable vport metadata matching if firmware supports it")
-Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Link: https://lkml.kernel.org/r/20220223223837.14f94ec3@rorschach.local.home
+
+Cc: stable@vger.kernel.org
+Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
+Tested-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Reviewed-by: Tom Zanussi <zanussi@kernel.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c |    4 ----
- 1 file changed, 4 deletions(-)
+ kernel/trace/trace_events_trigger.c |   52 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 46 insertions(+), 6 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
-@@ -2838,10 +2838,6 @@ bool mlx5_esw_vport_match_metadata_suppo
- 	if (!MLX5_CAP_ESW_FLOWTABLE(esw->dev, flow_source))
- 		return false;
+--- a/kernel/trace/trace_events_trigger.c
++++ b/kernel/trace/trace_events_trigger.c
+@@ -955,6 +955,16 @@ traceon_trigger(struct event_trigger_dat
+ 		struct trace_buffer *buffer, void *rec,
+ 		struct ring_buffer_event *event)
+ {
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_on(file->tr);
++		return;
++	}
++
+ 	if (tracing_is_on())
+ 		return;
  
--	if (mlx5_core_is_ecpf_esw_manager(esw->dev) ||
--	    mlx5_ecpf_vport_exists(esw->dev))
--		return false;
--
- 	return true;
+@@ -966,8 +976,15 @@ traceon_count_trigger(struct event_trigg
+ 		      struct trace_buffer *buffer, void *rec,
+ 		      struct ring_buffer_event *event)
+ {
+-	if (tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (tracing_is_on())
++			return;
++	}
+ 
+ 	if (!data->count)
+ 		return;
+@@ -975,7 +992,10 @@ traceon_count_trigger(struct event_trigg
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_on();
++	if (file)
++		tracer_tracing_on(file->tr);
++	else
++		tracing_on();
  }
  
+ static void
+@@ -983,6 +1003,16 @@ traceoff_trigger(struct event_trigger_da
+ 		 struct trace_buffer *buffer, void *rec,
+ 		 struct ring_buffer_event *event)
+ {
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++
++		tracer_tracing_off(file->tr);
++		return;
++	}
++
+ 	if (!tracing_is_on())
+ 		return;
+ 
+@@ -994,8 +1024,15 @@ traceoff_count_trigger(struct event_trig
+ 		       struct trace_buffer *buffer, void *rec,
+ 		       struct ring_buffer_event *event)
+ {
+-	if (!tracing_is_on())
+-		return;
++	struct trace_event_file *file = data->private_data;
++
++	if (file) {
++		if (!tracer_tracing_is_on(file->tr))
++			return;
++	} else {
++		if (!tracing_is_on())
++			return;
++	}
+ 
+ 	if (!data->count)
+ 		return;
+@@ -1003,7 +1040,10 @@ traceoff_count_trigger(struct event_trig
+ 	if (data->count != -1)
+ 		(data->count)--;
+ 
+-	tracing_off();
++	if (file)
++		tracer_tracing_off(file->tr);
++	else
++		tracing_off();
+ }
+ 
+ static int
 
 
