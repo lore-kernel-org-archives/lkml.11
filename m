@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06CC4C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA9BC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240114AbiB1Rxz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:53:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
+        id S240240AbiB1RyI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:54:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238848AbiB1RtL (ORCPT
+        with ESMTP id S238939AbiB1Rtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:49:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8BC8E1BC;
-        Mon, 28 Feb 2022 09:38:55 -0800 (PST)
+        Mon, 28 Feb 2022 12:49:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C40A27A4;
+        Mon, 28 Feb 2022 09:39:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1B78B815A6;
-        Mon, 28 Feb 2022 17:38:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42CE5C340E7;
-        Mon, 28 Feb 2022 17:38:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E3FE6153C;
+        Mon, 28 Feb 2022 17:39:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59C58C340E7;
+        Mon, 28 Feb 2022 17:39:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069932;
-        bh=VyUfbnGaAd3kqjHNxWN381qVv/0zLvBAVIYkwePJkDA=;
+        s=korg; t=1646069940;
+        bh=lVHnA//5woBoMJ5L8fgPW5iSU8JhzmkqiRQTv0NQwlE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OPIArMzJ0klpiT7Eay/yR2sTvy3jtA3uY4swsk5V2tyoKqVsm6WkQxei2cKYt+2Sp
-         n1Bl06UdxS/zMoykqSVbovbS90kgZAtJhfCuSUQ6hlM5rzaWrkoKkCuhXCEdxuGW9v
-         IXMbNChULBcL+Xr42EcF1VmhC5VO+81rfbRtK7nE=
+        b=IlPGv5T9ZmRJO3U2yX1LWgyX6ePHtUPO/mqfkVcCgenRHqbapXhV8U+qtIaDLznhk
+         I3sjUUazJ1jr9ePMcfPNPTVaZK3w48msR2iP7+dcIFjm0BckO7oKESprV+4zXk+pRV
+         TT1FTpMz5U5qJn+akqRwYVPYbR74vo1ZbNn7HyRo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Javier Martinez Canillas <javierm@redhat.com>
-Subject: [PATCH 5.15 064/139] drm/vc4: crtc: Fix runtime_pm reference counting
-Date:   Mon, 28 Feb 2022 18:23:58 +0100
-Message-Id: <20220228172354.427176066@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoke Wang <xkernel.wang@foxmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 067/139] net: ll_temac: check the return value of devm_kmalloc()
+Date:   Mon, 28 Feb 2022 18:24:01 +0100
+Message-Id: <20220228172354.744362737@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,54 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-commit 6764eb690e77ecded48587d6d4e346ba2e196546 upstream.
+commit b352c3465bb808ab700d03f5bac2f7a6f37c5350 upstream.
 
-At boot on the BCM2711, if the HDMI controllers are running, the CRTC
-driver will disable itself and its associated HDMI controller to work
-around a hardware bug that would leave some pixels stuck in a FIFO.
+devm_kmalloc() returns a pointer to allocated memory on success, NULL
+on failure. While lp->indirect_lock is allocated by devm_kmalloc()
+without proper check. It is better to check the value of it to
+prevent potential wrong memory access.
 
-In order to avoid that issue, we need to run some operations in lockstep
-between the CRTC and HDMI controller, and we need to make sure the HDMI
-controller will be powered properly.
-
-However, since we haven't enabled it through KMS, the runtime_pm state
-is off at this point so we need to make sure the device is powered
-through pm_runtime_resume_and_get, and once the operations are complete,
-we call pm_runtime_put.
-
-However, the HDMI controller will do that itself in its
-post_crtc_powerdown, which means we'll end up calling pm_runtime_put for
-a single pm_runtime_get, throwing the reference counting off. Let's
-remove the pm_runtime_put call in the CRTC code in order to have the
-proper counting.
-
-Fixes: bca10db67bda ("drm/vc4: crtc: Make sure the HDMI controller is powered when disabling")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220203102003.1114673-1-maxime@cerno.tech
+Fixes: f14f5c11f051 ("net: ll_temac: Support indirect_mutex share within TEMAC IP")
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_crtc.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/xilinx/ll_temac_main.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/gpu/drm/vc4/vc4_crtc.c
-+++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -538,9 +538,11 @@ int vc4_crtc_disable_at_boot(struct drm_
- 	if (ret)
- 		return ret;
+--- a/drivers/net/ethernet/xilinx/ll_temac_main.c
++++ b/drivers/net/ethernet/xilinx/ll_temac_main.c
+@@ -1427,6 +1427,8 @@ static int temac_probe(struct platform_d
+ 		lp->indirect_lock = devm_kmalloc(&pdev->dev,
+ 						 sizeof(*lp->indirect_lock),
+ 						 GFP_KERNEL);
++		if (!lp->indirect_lock)
++			return -ENOMEM;
+ 		spin_lock_init(lp->indirect_lock);
+ 	}
  
--	ret = pm_runtime_put(&vc4_hdmi->pdev->dev);
--	if (ret)
--		return ret;
-+	/*
-+	 * post_crtc_powerdown will have called pm_runtime_put, so we
-+	 * don't need it here otherwise we'll get the reference counting
-+	 * wrong.
-+	 */
- 
- 	return 0;
- }
 
 
