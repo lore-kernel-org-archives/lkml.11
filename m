@@ -2,100 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F558C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33274C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:24:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240627AbiB1SYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:24:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56854 "EHLO
+        id S238323AbiB1SZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:25:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240031AbiB1SYi (ORCPT
+        with ESMTP id S240474AbiB1SYg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:24:38 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F23F79C4D;
-        Mon, 28 Feb 2022 10:04:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646071480; x=1677607480;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=PhTJdotKJ2wTOUcIThvtagW0Hjoxa9a1PK57pi8jxnU=;
-  b=S+J5RBTdpwt3DsUiX/Rxysm2t6/Ha/sDhHIlv6H7T9/op/W6CgUz/E9J
-   UV0Dw0LwrSIZd0NjF0FEz0XSJbS76DG+4/7MnP62opSRg8k2r8P8Jqtlk
-   HLJq0EwMK2OgzlyjcrKRhcmjqqHRGiCI2JXinksRn9ZrfsdeZDxAGQLJV
-   MbWo2uwN0ENowBxDo7u+59wUER+L7+o9GmV2czCvsO92934yeDWsfulWD
-   5GRI3+N3U+hj5gTlyQM1fSi6pXaw1/tQb38mAUoCoyM1gPq9UdTj0rbi8
-   CKLRgGt7TKRwwezR1qTAuaBB0iB8kdCqUcA3tx4fXD/fCTDa4DNeXa4XQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="232919519"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="232919519"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 10:04:37 -0800
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="510184837"
-Received: from ensymall-mobl.amr.corp.intel.com (HELO [10.212.116.28]) ([10.212.116.28])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 10:04:35 -0800
-Message-ID: <28a7aa9b-8322-54df-1cfa-275805e2b044@linux.intel.com>
-Date:   Mon, 28 Feb 2022 12:01:21 -0600
+        Mon, 28 Feb 2022 13:24:36 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0745971CB3;
+        Mon, 28 Feb 2022 10:04:33 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id n14so16733860wrq.7;
+        Mon, 28 Feb 2022 10:04:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VaJ7vYxiYDppNFuFvcEyYJgrljTaiSuZmK98Y+vY7wA=;
+        b=obM0ggc5iSG7+04jAJpVvM5h8etlFLjmoe4ZZzOTzBcDwFsuhkVO6s1roPpWq1YY2e
+         w4zuUXbjfJz1VoC3A662BS3NzR0t1zoJoMYFf2e5luAQqjP3126oAW+Zg0g2q/ZdFwWk
+         e+HkxNtaNf8rwIpVk2O8pm66muF7nUj5YcB1tdSePCn7gdQ9Fqh8jWHTYcBXQoj9dcJo
+         ZesQnXxaL2zja28D99QyC50dHVtYWGDCHSXVRUgFZ9JymjrBnrMRLkajEZwCaMW+gUBN
+         awKBE4/e8bAG7z25vJGrzkGIRgvmewZY4NOINQ5RAonQJlzElctNPnRmdia/W70r7N0E
+         o2fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VaJ7vYxiYDppNFuFvcEyYJgrljTaiSuZmK98Y+vY7wA=;
+        b=L8kJIN6X+xl0Wm9B6mu2UBl46XO8rbK7sOYE6MWAOF9b0omyGGxbn+5ljM+ndyaX63
+         ddyvLEvZif1zW5ZwmGeP+qQ8ymorrGr2UxwOLRdCS2KLnD8SlNESrcmioQbdgvpZa5Tw
+         UtG1uKhnsxP2DKJaTtCkRhV9ENhiXD9nCZng/Xoh02xz7fRCzTAtLucV1pL3SBZPrBe4
+         4XajTq+kVetyOua7fAFSHgQ9BGeYPk4am7JwyZRDoXb2vr3fxVPqN36gHo0kkGLfmqHQ
+         is8HYWYExxS2jR8nqFwzBsMlak2Dn/EkmfYC1Xt3aLxjymWpeHLo9jnUi+npPS+yAPGW
+         3wAw==
+X-Gm-Message-State: AOAM531E+m6nIk5Lsy74dKVnuUYux/frYnVAijktuNaUulDjLa2oCkXz
+        Zcv0GqrvtkMRClqhhIgSoqs=
+X-Google-Smtp-Source: ABdhPJz81jTbv3NaGz+ja9PXaKPd0Fkk+Zfd69cpLTOt2pT1n5NhmnRVNBauIgQZyRJh5mxeY3fULA==
+X-Received: by 2002:adf:dd12:0:b0:1ea:9398:8f4f with SMTP id a18-20020adfdd12000000b001ea93988f4fmr15899502wrm.458.1646071472587;
+        Mon, 28 Feb 2022 10:04:32 -0800 (PST)
+Received: from elementary ([94.73.33.246])
+        by smtp.gmail.com with ESMTPSA id m6-20020a5d56c6000000b001edb64e69cdsm11208628wrw.15.2022.02.28.10.04.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 10:04:32 -0800 (PST)
+Date:   Mon, 28 Feb 2022 19:04:30 +0100
+From:   =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        kieran.bingham+renesas@ideasonboard.com, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drm: rcar-du: switch to devm_drm_of_get_bridge
+Message-ID: <20220228180430.GA14803@elementary>
+References: <20220221073757.12181-1-jose.exposito89@gmail.com>
+ <20220221085619.bqyr2etq4xjjqa4p@houat>
+ <YhOCRQhDClgsBAtV@pendragon.ideasonboard.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v3 3/3] soundwire: qcom: add in-band wake up interrupt
- support
-Content-Language: en-US
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        robh+dt@kernel.org, vkoul@kernel.org,
-        yung-chuan.liao@linux.intel.com
-Cc:     devicetree@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com
-References: <20220228172528.3489-1-srinivas.kandagatla@linaro.org>
- <20220228172528.3489-4-srinivas.kandagatla@linaro.org>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220228172528.3489-4-srinivas.kandagatla@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhOCRQhDClgsBAtV@pendragon.ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 21, 2022 at 02:15:01PM +0200, Laurent Pinchart wrote:
+> On Mon, Feb 21, 2022 at 09:56:19AM +0100, Maxime Ripard wrote:
+> > I guess lvds->panel can be removed from the rcar_lvds struct as well?
+> 
+> It's used in rcar_lvds_get_lvds_mode() though, so this patch introduces
+> a regression.
 
-> @@ -1424,6 +1464,11 @@ static int swrm_runtime_resume(struct device *dev)
->  	struct qcom_swrm_ctrl *ctrl = dev_get_drvdata(dev);
->  	int ret;
->  
-> +	if (ctrl->wake_irq > 0) {
-> +		if (!irqd_irq_disabled(irq_get_irq_data(ctrl->wake_irq)))
-> +			disable_irq_nosync(ctrl->wake_irq);
-> +	}
-> +
->  	clk_prepare_enable(ctrl->hclk);
-
-This one is quite interesting. If you disable the IRQ mechanism but
-haven't yet resumed the clock, that leaves a time window where the
-peripheral could attempt to drive the line high. what happens in that case?
-
->  
->  	if (ctrl->clock_stop_not_supported) {
-> @@ -1491,6 +1536,11 @@ static int __maybe_unused swrm_runtime_suspend(struct device *dev)
->  
->  	usleep_range(300, 305);
->  
-> +	if (ctrl->wake_irq > 0) {
-> +		if (irqd_irq_disabled(irq_get_irq_data(ctrl->wake_irq)))
-> +			enable_irq(ctrl->wake_irq);
-> +	}
-> +
-
-and this one is similar, you could have a case where the peripheral
-signals a wake immediately after the ClockStopNow frame, but you may not
-yet have enabled the wake detection interrupt.
-
-Would that imply that the wake is missed?
-
-
-
->  	return 0;
->  }
->  
+True, my bad. Sorry about that.
