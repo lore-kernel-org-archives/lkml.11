@@ -2,46 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75550C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9757CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:47:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238644AbiB1Rrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:47:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
+        id S238650AbiB1Rri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:47:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239298AbiB1Rn4 (ORCPT
+        with ESMTP id S239412AbiB1RoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:43:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A58C9D0CA;
-        Mon, 28 Feb 2022 09:36:07 -0800 (PST)
+        Mon, 28 Feb 2022 12:44:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 450FB9D0F4;
+        Mon, 28 Feb 2022 09:36:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 890D0B815BA;
-        Mon, 28 Feb 2022 17:36:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D81F1C340E7;
-        Mon, 28 Feb 2022 17:36:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85B65614CC;
+        Mon, 28 Feb 2022 17:36:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E666C340F4;
+        Mon, 28 Feb 2022 17:36:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069765;
-        bh=uCerF8BX4XGwIHz+tAyMMigidC2NZyRMn7ck9WmU0ek=;
+        s=korg; t=1646069779;
+        bh=X9Sr+rdd3b35f9HJB8DUKe1EYqkMTwI/FJ63jaiHMT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EzbyMZ23fHmVGgVETgrGMRCveXNSwpgbVRWxL7dubO5MK8veJZqzy3X+RO8eRq/N7
-         srqp+mPz8C8mxjrwlzAL9hTV+vCqiLeMUBW0pIfJ6Hck3moL6a7YYJvld6yqABf9+/
-         sf0+aO7eCcxeTbU9fNwaolYqoE5Qa7Dgxvcqxg5w=
+        b=MlgezriOp73C5zpIO9FqTzurqrYGZ0x7A3oRueHaiAXTMGWWE+V4oPX6oX5KzzTT1
+         Nx5Z45nzMiDoPRDKlnLGnFpQ5n0WvvycawNSd8b27X/y7kGITLltsINLiH82DB/l/K
+         fH6bjiVOWcZ0n2rJ9Bq4cmCB1T/RIe/g79lEInJQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org,
+        "stable@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, kirill.shutemov@linux.intel.com, Song Liu" 
+        <songliubraving@fb.com>
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Szymon Heidrich <szymon.heidrich@gmail.com>,
-        stable <stable@kernel.org>
-Subject: [PATCH 5.10 61/80] USB: gadget: validate endpoint index for xilinx udc
-Date:   Mon, 28 Feb 2022 18:24:42 +0100
-Message-Id: <20220228172319.145029646@linuxfoundation.org>
+        stable@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Adam Majer <amajer@suse.com>, Dirk Mueller <dmueller@suse.com>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 001/139] mm/filemap: Fix handling of THPs in generic_file_buffered_read()
+Date:   Mon, 28 Feb 2022 18:22:55 +0100
+Message-Id: <20220228172347.742815203@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
-References: <20220228172311.789892158@linuxfoundation.org>
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,41 +55,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Szymon Heidrich <szymon.heidrich@gmail.com>
+From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-commit 7f14c7227f342d9932f9b918893c8814f86d2a0d upstream.
+When a THP is present in the page cache, we can return it several times,
+leading to userspace seeing the same data repeatedly if doing a read()
+that crosses a 64-page boundary.  This is probably not a security issue
+(since the data all comes from the same file), but it can be interpreted
+as a transient data corruption issue.  Fortunately, it is very rare as
+it can only occur when CONFIG_READ_ONLY_THP_FOR_FS is enabled, and it can
+only happen to executables.  We don't often call read() on executables.
 
-Assure that host may not manipulate the index to point
-past endpoint array.
+This bug is fixed differently in v5.17 by commit 6b24ca4a1a8d
+("mm: Use multi-index entries in the page cache").  That commit is
+unsuitable for backporting, so fix this in the clearest way.  It
+sacrifices a little performance for clarity, but this should never
+be a performance path in these kernel versions.
 
-Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
-Cc: stable <stable@kernel.org>
+Fixes: cbd59c48ae2b ("mm/filemap: use head pages in generic_file_buffered_read")
+Cc: stable@vger.kernel.org # v5.15, v5.16
+Link: https://lore.kernel.org/r/df3b5d1c-a36b-2c73-3e27-99e74983de3a@suse.cz/
+Analyzed-by: Adam Majer <amajer@suse.com>
+Analyzed-by: Dirk Mueller <dmueller@suse.com>
+Bisected-by: Takashi Iwai <tiwai@suse.de>
+Reported-by: Vlastimil Babka <vbabka@suse.cz>
+Tested-by: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/udc/udc-xilinx.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ mm/filemap.c |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/gadget/udc/udc-xilinx.c
-+++ b/drivers/usb/gadget/udc/udc-xilinx.c
-@@ -1612,6 +1612,8 @@ static void xudc_getstatus(struct xusb_u
- 		break;
- 	case USB_RECIP_ENDPOINT:
- 		epnum = udc->setup.wIndex & USB_ENDPOINT_NUMBER_MASK;
-+		if (epnum >= XUSB_MAX_ENDPOINTS)
-+			goto stall;
- 		target_ep = &udc->ep[epnum];
- 		epcfgreg = udc->read_fn(udc->addr + target_ep->offset);
- 		halt = epcfgreg & XUSB_EP_CFG_STALL_MASK;
-@@ -1679,6 +1681,10 @@ static void xudc_set_clear_feature(struc
- 	case USB_RECIP_ENDPOINT:
- 		if (!udc->setup.wValue) {
- 			endpoint = udc->setup.wIndex & USB_ENDPOINT_NUMBER_MASK;
-+			if (endpoint >= XUSB_MAX_ENDPOINTS) {
-+				xudc_ep0_stall(udc);
-+				return;
-+			}
- 			target_ep = &udc->ep[endpoint];
- 			outinbit = udc->setup.wIndex & USB_ENDPOINT_DIR_MASK;
- 			outinbit = outinbit >> 7;
+--- a/mm/filemap.c
++++ b/mm/filemap.c
+@@ -2354,8 +2354,12 @@ static void filemap_get_read_batch(struc
+ 			break;
+ 		if (PageReadahead(head))
+ 			break;
+-		xas.xa_index = head->index + thp_nr_pages(head) - 1;
+-		xas.xa_offset = (xas.xa_index >> xas.xa_shift) & XA_CHUNK_MASK;
++		if (PageHead(head)) {
++			xas_set(&xas, head->index + thp_nr_pages(head));
++			/* Handle wrap correctly */
++			if (xas.xa_index - 1 >= max)
++				break;
++		}
+ 		continue;
+ put_page:
+ 		put_page(head);
 
 
