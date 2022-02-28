@@ -2,194 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E0FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236102AbiB1MFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:05:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
+        id S235139AbiB1MHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:07:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231370AbiB1MFk (ORCPT
+        with ESMTP id S229519AbiB1MHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:05:40 -0500
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1800817E28
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:04:59 -0800 (PST)
-Date:   Mon, 28 Feb 2022 21:04:48 +0900
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1646049897;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Q1MJ8jXt8CRUuDZRl3QeZdqpRp5teAOKdkqZb44fYZI=;
-        b=MXF4vhaI0lP1IgMok1yrUhPiWMMuJcw0xT7KyvONBR3PtiGZ0VcAJ7JaCAJ4qjcxxbp3Mb
-        CQVZ2KbAviEkCaOoSJ3kZ1UnXOxnXxupUg01+MYcFzKTivvRFLdRnF9Xplx+ln5NJxU+qa
-        utLXmJ26Ig7VnBeHTx6X/q/QEFgaGPw=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, naoya.horiguchi@nec.com,
-        david@redhat.com, osalvador@suse.de, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC] mm/memory-failure.c: fix memory failure race with
- memory offline
-Message-ID: <20220228120448.GA1142923@u2004>
-References: <20220226094034.23938-1-linmiaohe@huawei.com>
+        Mon, 28 Feb 2022 07:07:12 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94A126517A;
+        Mon, 28 Feb 2022 04:06:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646049993; x=1677585993;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=UuAla6m/V0nIds1h63OYuJUqlKC4Nbr7PiBMOfpW4x8=;
+  b=jPQZeZG1dsVTfZWgsHod9odxTpBdBqz6O9VHekiv25zvOT8VgVa13iej
+   koKmTZiMc83mZJHQfdGMUAqeoc91KaPghy9MryeFOwDkLVM9CbdHBynIu
+   yXsRK4kmSSgEnd25DccoXSp05nVLDv15Re5yflra5VvlXtIHKLGZ9r3Jp
+   ImcSpXZHP5t5dixXyMykxDoSs4NCL2LEYC+WYxJ/b30Hz6HbfZv8BZ0Gz
+   eu26Tb4ZHDhGSn3/NJ7yAerOtCOJdWK0HeF/5pvjmImxhF4IAOBWbqtvQ
+   AdQsu5Xvy4eCA2R9wmIW5tEyzxPV6Zv6hZlDjGjbrceVzz5dmvq7ZctQb
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="313584614"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="313584614"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 04:06:33 -0800
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="608431456"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 04:06:29 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nOekU-009IH6-OV;
+        Mon, 28 Feb 2022 14:03:30 +0200
+Date:   Mon, 28 Feb 2022 14:03:30 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Maninder Singh <maninder1.s@samsung.com>
+Cc:     mcgrof@kernel.org, pmladek@suse.com, rostedt@goodmis.org,
+        senozhatsky@chromium.org, linux@rasmusvillemoes.dk,
+        akpm@linux-foundation.org, wangkefeng.wang@huawei.com,
+        v.narang@samsung.com, swboyd@chromium.org, ojeda@kernel.or,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        avimalin@gmail.com, atomlin@redhat.com
+Subject: Re: [PATCH 1/1] kallsyms: enhance %pS/s/b printing when KALLSYSMS is
+ disabled
+Message-ID: <Yhy6EtP/Yr03bHTl@smile.fi.intel.com>
+References: <CGME20220228053457epcas5p1dac3fced39d1594f8fdfc5e64e23ac73@epcas5p1.samsung.com>
+ <20220228053447.1584704-1-maninder1.s@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220226094034.23938-1-linmiaohe@huawei.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220228053447.1584704-1-maninder1.s@samsung.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 05:40:34PM +0800, Miaohe Lin wrote:
-> There is a theoretical race window between memory failure and memory
-> offline. Think about the below scene:
+On Mon, Feb 28, 2022 at 11:04:47AM +0530, Maninder Singh wrote:
+> with commit '82b37e632513 ("kallsyms: print module name in %ps/S
+> case when KALLSYMS is disabled"), module name printing was enhanced.
 > 
->   CPU A					  CPU B
-> memory_failure				offline_pages
->   mutex_lock(&mf_mutex);
->   TestSetPageHWPoison(p)
-> 					  start_isolate_page_range
-> 					    has_unmovable_pages
-> 					      --PageHWPoison is movable
-> 					  do {
-> 					    scan_movable_pages
-> 					    do_migrate_range
-> 					      --PageHWPoison isn't migrated
-> 					  }
-> 					  test_pages_isolated
-> 					    --PageHWPoison is isolated
-> 					remove_memory
->   access page... bang
->   ...
+> As per suggestion from Petr Mladek <pmladek@suse.com>, covering
+> other flavours also to print build id also.
 > 
-> When PageHWPoison is set, the page could be offlined anytime regardless
-> of the page refcnt. It's bacause start_isolate_page_range treats HWPoison
-> page as movable and already isolated, so the page range can be successfully
-> isolated. soft_offline_page and unpoison_memory have the similar race. Fix
-> this by using get_online_mems + put_online_mems pair to guard aginst memory
-> offline when doing memory failure.
+> for %pB no change as it needs to know symbol name to adjust address
+> value which can't be done without KALLSYMS.
+> 
+> original output with KALLSYMS:
+> [8.842129] ps function_1 [crash]
+> [8.842735] pS function_1+0x4/0x2c [crash]
+> [8.842890] pSb function_1+0x4/0x2c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
+> [8.843175] pB function_1+0x4/0x2c [crash]
+> [8.843362] pBb function_1+0x4/0x2c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
+> 
+> original output without KALLSYMS:
+> [12.487424] ps 0xffff800000eb008c
+> [12.487598] pS 0xffff800000eb008c
+> [12.487723] pSb 0xffff800000eb008c
+> [12.487850] pB 0xffff800000eb008c
+> [12.487967] pBb 0xffff800000eb008c
+> 
+> With patched kernel without KALLSYMS:
+> [9.205207] ps 0xffff800000eb008c [crash]
+> [9.205564] pS 0xffff800000eb0000+0x8c [crash]
+> [9.205757] pSb 0xffff800000eb0000+0x8c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
+> [9.206066] pB 0xffff800000eb0000+0x8c [crash]
+> [9.206257] pBb 0xffff800000eb0000+0x8c [crash b367e79021b9f3b0172f9a36d4261c1f528ca1b3]
 
-Sounds convincing to me. Thanks for identifying. Is this problem reproduced
-in your testing, or just picked out by code inspection?
+...
 
-> 
-> There is a even worse race window. If the page refcnt is held, then memory
-> failure happens, the page could be offlined while it's still in use. So The
-> assumption that a page can not be offlined when the page refcnt is held is
-> now broken. This theoretical race window could happen in every vm activity.
-> But this race window might be too small to fix.
+> +static int sprint_module_info(char *buf, char *end, unsigned long value,
+> +			     const char *fmt)
+> +{
+> +	struct module *mod;
+> +	unsigned long offset = 1;
+> +	unsigned long base;
 
-Yes, hwpoisoned pages can now be offlined while they have refcount > 0.
-I think that they need to be categorize into two groups based on
-whether the error page was successfully handled or not.
+> +	int ret = 0;
 
-If a error page is successfully handled, then page_handle_poison() succeeded
-and the refcount should be one (which is held only by hwpoison subsystem
-itself, so there should be no other reference to it), so it should be safely
-offlined as we do now.  But if error handling failed, the hwpoisoned page
-have any value and there could remain some reference to it.  So we might
-better to make offline_pages() fail for such "failed handling" pages, or for
-all hwpoisoned pages with refcount more than one?
+This is hard to find if it's not close to the first use.
+Since you are using positive numbers...
 
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/memory-failure.c | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
-> 
-> diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-> index 5444a8ef4867..b85232a64104 100644
-> --- a/mm/memory-failure.c
-> +++ b/mm/memory-failure.c
-> @@ -1702,6 +1702,7 @@ int memory_failure(unsigned long pfn, int flags)
->  	if (!sysctl_memory_failure_recovery)
->  		panic("Memory failure on page %lx", pfn);
-> 
-> +	get_online_mems();
->  	mutex_lock(&mf_mutex);
-> 
->  	p = pfn_to_online_page(pfn);
-> @@ -1894,11 +1895,13 @@ int memory_failure(unsigned long pfn, int flags)
->  identify_page_state:
->  	res = identify_page_state(pfn, p, page_flags);
->  	mutex_unlock(&mf_mutex);
-> +	put_online_mems();
->  	return res;
->  unlock_page:
->  	unlock_page(p);
->  unlock_mutex:
->  	mutex_unlock(&mf_mutex);
-> +	put_online_mems();
->  	return res;
->  }
->  EXPORT_SYMBOL_GPL(memory_failure);
-> @@ -2058,6 +2061,7 @@ int unpoison_memory(unsigned long pfn)
->  	if (!pfn_valid(pfn))
->  		return -ENXIO;
-> 
-> +	get_online_mems();
->  	p = pfn_to_page(pfn);
->  	page = compound_head(p);
-> 
-> @@ -2114,6 +2118,7 @@ int unpoison_memory(unsigned long pfn)
-> 
->  unlock_mutex:
->  	mutex_unlock(&mf_mutex);
-> +	put_online_mems();
->  	return ret;
->  }
->  EXPORT_SYMBOL(unpoison_memory);
-> @@ -2278,10 +2283,12 @@ int soft_offline_page(unsigned long pfn, int flags)
->  	if (flags & MF_COUNT_INCREASED)
->  		ref_page = pfn_to_page(pfn);
-> 
-> +	get_online_mems();
+> +	const char *modname;
+> +	int modbuildid = 0;
+> +	int len;
+> +#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
+> +	const unsigned char *buildid = NULL;
+> +#endif
+> +
+> +	if (is_ksym_addr(value))
+> +		return 0;
 
-I felt that {get,put}_online_mems() can be put together with takeing/freeing
-mf_mutex with some wrapper lock/unlock function, which slightly improves
-code readability (developers won't have to care about two locking separately).
-That requires moving mutex_lock(&mf_mutex), which could have non-trivial
-change, but maybe that's not so bad.
+> +	if (*fmt == 'B' && fmt[1] == 'b')
+> +		modbuildid = 1;
+> +	else if (*fmt == 'S' && (fmt[1] == 'b' || (fmt[1] == 'R' && fmt[2] == 'b')))
 
-Thanks,
-Naoya Horiguchi
+Why not to split to two conditionals? Would be easier to get,
 
->  	/* Only online pages can be soft-offlined (esp., not ZONE_DEVICE). */
->  	page = pfn_to_online_page(pfn);
->  	if (!page) {
->  		put_ref_page(ref_page);
-> +		put_online_mems();
->  		return -EIO;
->  	}
-> 
-> @@ -2291,13 +2298,12 @@ int soft_offline_page(unsigned long pfn, int flags)
->  		pr_info("%s: %#lx page already poisoned\n", __func__, pfn);
->  		put_ref_page(ref_page);
->  		mutex_unlock(&mf_mutex);
-> +		put_online_mems();
->  		return 0;
->  	}
-> 
->  retry:
-> -	get_online_mems();
->  	ret = get_hwpoison_page(page, flags);
-> -	put_online_mems();
-> 
->  	if (ret > 0) {
->  		ret = soft_offline_in_use_page(page);
-> @@ -2310,6 +2316,7 @@ int soft_offline_page(unsigned long pfn, int flags)
->  	}
-> 
->  	mutex_unlock(&mf_mutex);
-> +	put_online_mems();
-> 
->  	return ret;
->  }
-> ---
-> 2.23.0
-> 
+> +		modbuildid = 1;
+> +	else if (*fmt != 's') {
+
+These all are inconsistent, please switch to fmt[0].
+
+> +		/*
+> +		 * do nothing.
+> +		 */
+> +	} else
+> +		offset = 0;
+> +
+> +	preempt_disable();
+> +	mod = __module_address(value);
+> +	if (mod) {
+> +		ret = 1;
+> +		modname = mod->name;
+> +#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
+> +		if (modbuildid)
+> +			buildid = mod->build_id;
+> +#endif
+> +		if (offset) {
+> +			base = (unsigned long)mod->core_layout.base;
+> +			offset = value - base;
+> +		}
+> +	}
+> +
+> +	preempt_enable();
+
+> +	if (!ret)
+
+This looks a bit strange, but okay, I'm not familiar with the function of this
+code.
+
+> +		return 0;
+> +
+> +	/* address belongs to module */
+> +	if (offset)
+> +		len = sprintf(buf, "0x%lx+0x%lx", base, offset);
+> +	else
+> +		len = sprintf(buf, "0x%lx", value);
+> +
+> +	len += sprintf(buf + len, " [%s", modname);
+> +#if IS_ENABLED(CONFIG_STACKTRACE_BUILD_ID)
+> +	if (modbuildid && buildid) {
+> +		/* build ID should match length of sprintf */
+> +		static_assert(sizeof(typeof_member(struct module, build_id)) == 20);
+> +		len += sprintf(buf + len, " %20phN", buildid);
+> +	}
+> +#endif
+> +	len += sprintf(buf + len, "]");
+> +
+> +	return len;
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
