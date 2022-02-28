@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA44FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236447AbiB1SEq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:04:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
+        id S237882AbiB1SEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:04:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239036AbiB1Rzl (ORCPT
+        with ESMTP id S231637AbiB1R4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:55:41 -0500
+        Mon, 28 Feb 2022 12:56:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12DD8541AD;
-        Mon, 28 Feb 2022 09:44:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AC9546BA;
+        Mon, 28 Feb 2022 09:44:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D1246090B;
-        Mon, 28 Feb 2022 17:44:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A80DDC340F1;
-        Mon, 28 Feb 2022 17:44:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4477760A37;
+        Mon, 28 Feb 2022 17:44:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58510C340E7;
+        Mon, 28 Feb 2022 17:44:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070281;
-        bh=/k8eIg1NAH1SmFReaKQmxUVMuexZO0RUQC9sV/M3azk=;
+        s=korg; t=1646070283;
+        bh=K9tql5DE+JX3H7amGKNF26rUuAB9hl4GAusaWoARLts=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ItjAzw0sYs0den4N8MlW8I3lZHsn9e5MMQBSdygYJQpSs92a1fm/UcbDV2s1g2zze
-         qnorPfeZQGAj+LN9ZmqQqkY/I1mecEhNn6OALzK3YqSr8PuzXC/S9HzWyLE8uYa7Eb
-         kafPsz/HeaDo9xg7WWgRlOY9AjrUMaY1Q2Aa6Ues=
+        b=eP5fZwR15MeulroG8iaU2Twh8VYRWpf6MurTk+Nj8esgh6ctnlVqamGMsOVH7VFg/
+         Ucar4EC6aRWCYMRdlqY/A5U7H7MraqxP7QX8H57c1DS1RfjKVy2TIgMMQwZDTvGNSa
+         n4lRt4rRn2SfUkQ9MyUchIJFye/tqxpwTx4LDKC0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chris Mi <cmi@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 050/164] net/mlx5: Fix tc max supported prio for nic mode
-Date:   Mon, 28 Feb 2022 18:23:32 +0100
-Message-Id: <20220228172404.743113854@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Sandeep Penigalapati <sandeep.penigalapati@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.16 051/164] ice: fix setting l4 port flag when adding filter
+Date:   Mon, 28 Feb 2022 18:23:33 +0100
+Message-Id: <20220228172404.822334067@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,34 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Mi <cmi@nvidia.com>
+From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 
-commit be7f4b0ab149afd19514929fad824b2117d238c9 upstream.
+commit 932645c298c41aad64ef13016ff4c2034eef5aed upstream.
 
-Only prio 1 is supported if firmware doesn't support ignore flow
-level for nic mode. The offending commit removed the check wrongly.
-Add it back.
+Accidentally filter flag for none encapsulated l4 port field is always
+set. Even if user wants to add encapsulated l4 port field.
 
-Fixes: 9a99c8f1253a ("net/mlx5e: E-Switch, Offload all chain 0 priorities when modify header and forward action is not supported")
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Remove this unnecessary flag setting.
+
+Fixes: 9e300987d4a81 ("ice: VXLAN and Geneve TC support")
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
-@@ -121,6 +121,9 @@ u32 mlx5_chains_get_nf_ft_chain(struct m
- 
- u32 mlx5_chains_get_prio_range(struct mlx5_fs_chains *chains)
- {
-+	if (!mlx5_chains_prios_supported(chains))
-+		return 1;
+--- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
++++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
+@@ -711,7 +711,7 @@ ice_tc_set_port(struct flow_match_ports
+ 			fltr->flags |= ICE_TC_FLWR_FIELD_ENC_DEST_L4_PORT;
+ 		else
+ 			fltr->flags |= ICE_TC_FLWR_FIELD_DEST_L4_PORT;
+-		fltr->flags |= ICE_TC_FLWR_FIELD_DEST_L4_PORT;
 +
- 	if (mlx5_chains_ignore_flow_level_supported(chains))
- 		return UINT_MAX;
- 
+ 		headers->l4_key.dst_port = match.key->dst;
+ 		headers->l4_mask.dst_port = match.mask->dst;
+ 	}
+@@ -720,7 +720,7 @@ ice_tc_set_port(struct flow_match_ports
+ 			fltr->flags |= ICE_TC_FLWR_FIELD_ENC_SRC_L4_PORT;
+ 		else
+ 			fltr->flags |= ICE_TC_FLWR_FIELD_SRC_L4_PORT;
+-		fltr->flags |= ICE_TC_FLWR_FIELD_SRC_L4_PORT;
++
+ 		headers->l4_key.src_port = match.key->src;
+ 		headers->l4_mask.src_port = match.mask->src;
+ 	}
 
 
