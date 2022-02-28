@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8F5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8331C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240201AbiB1SNU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:13:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41462 "EHLO
+        id S240309AbiB1SNd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:13:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240884AbiB1SJP (ORCPT
+        with ESMTP id S241221AbiB1SJl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90C160055;
-        Mon, 28 Feb 2022 09:49:12 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1228A9F6E8;
+        Mon, 28 Feb 2022 09:49:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C5E196090B;
-        Mon, 28 Feb 2022 17:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5EAC340E7;
-        Mon, 28 Feb 2022 17:49:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A683CB81085;
+        Mon, 28 Feb 2022 17:49:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02CC2C340F3;
+        Mon, 28 Feb 2022 17:49:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070552;
-        bh=w+wBhdcNP3+fOBzCJ3poBi1CaOnAg9LGPZ5xkmvD6GI=;
+        s=korg; t=1646070579;
+        bh=a8FmRNqMdd1SNMKnzGb7FNCFd2BX9PTgHTGtKvI7Dzg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BIO1vGn7m++zSLrrazX17x6ReCvpXXIadoq/VGMvvo+1gssMkxqYP1EWHaj09A+8W
-         WWk52NHk4cL38bpbpv6A2BnQjq4fR1c83FdRqe2rZx4OpYxpaBJ+N+4bRFOs1ukM2K
-         XiAZ0O43RqdWOjlvTrUNF9E/AKq4qvLpmYBZX+fo=
+        b=W3uRBJuUT/mx0gLiXV25KfpKvwOiVv1HbPL7sXNgJ/41yTR9LgkpOQE6uhcIG3gSE
+         eiNnL0oNc0Nl6iTsKFLAzMOhWQ/Q++bhssiGERs2PJ5sxZ874iS3gsCuSVtbuPQfrb
+         /yd5fbRCLF99K4vvkpYcHipIWtCC/igJMcQte+oA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qu Wenruo <wqu@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 143/164] btrfs: autodefrag: only scan one inode once
-Date:   Mon, 28 Feb 2022 18:25:05 +0100
-Message-Id: <20220228172412.874615154@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Sean Anderson <seanga2@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.16 161/164] pinctrl: fix loop in k210_pinconf_get_drive()
+Date:   Mon, 28 Feb 2022 18:25:23 +0100
+Message-Id: <20220228172414.250248128@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,171 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qu Wenruo <wqu@suse.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 26fbac2517fcad34fa3f950151fd4c0240fb2935 upstream.
+commit ba2ab85951c91a140a8fa51d8347d54e59ec009d upstream.
 
-Although we have btrfs_requeue_inode_defrag(), for autodefrag we are
-still just exhausting all inode_defrag items in the tree.
+The loop exited too early so the k210_pinconf_drive_strength[0] array
+element was never used.
 
-This means, it doesn't make much difference to requeue an inode_defrag,
-other than scan the inode from the beginning till its end.
-
-Change the behaviour to always scan from offset 0 of an inode, and till
-the end.
-
-By this we get the following benefit:
-
-- Straight-forward code
-
-- No more re-queue related check
-
-- Fewer members in inode_defrag
-
-We still keep the same btrfs_get_fs_root() and btrfs_iget() check for
-each loop, and added extra should_auto_defrag() check per-loop.
-
-Note: the patch needs to be backported and is intentionally written
-to minimize the diff size, code will be cleaned up later.
-
-CC: stable@vger.kernel.org # 5.16
-Signed-off-by: Qu Wenruo <wqu@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: d4c34d09ab03 ("pinctrl: Add RISC-V Canaan Kendryte K210 FPIOA driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Reviewed-by: Sean Anderson <seanga2@gmail.com>
+Link: https://lore.kernel.org/r/20220209180804.GA18385@kili
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/file.c |   84 ++++++++++++++------------------------------------------
- 1 file changed, 22 insertions(+), 62 deletions(-)
+ drivers/pinctrl/pinctrl-k210.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/btrfs/file.c
-+++ b/fs/btrfs/file.c
-@@ -49,12 +49,6 @@ struct inode_defrag {
+--- a/drivers/pinctrl/pinctrl-k210.c
++++ b/drivers/pinctrl/pinctrl-k210.c
+@@ -482,7 +482,7 @@ static int k210_pinconf_get_drive(unsign
+ {
+ 	int i;
  
- 	/* root objectid */
- 	u64 root;
--
--	/* last offset we were able to defrag */
--	u64 last_offset;
--
--	/* if we've wrapped around back to zero once already */
--	int cycled;
- };
- 
- static int __compare_inode_defrag(struct inode_defrag *defrag1,
-@@ -107,8 +101,6 @@ static int __btrfs_add_inode_defrag(stru
- 			 */
- 			if (defrag->transid < entry->transid)
- 				entry->transid = defrag->transid;
--			if (defrag->last_offset > entry->last_offset)
--				entry->last_offset = defrag->last_offset;
- 			return -EEXIST;
- 		}
+-	for (i = K210_PC_DRIVE_MAX; i; i--) {
++	for (i = K210_PC_DRIVE_MAX; i >= 0; i--) {
+ 		if (k210_pinconf_drive_strength[i] <= max_strength_ua)
+ 			return i;
  	}
-@@ -179,34 +171,6 @@ int btrfs_add_inode_defrag(struct btrfs_
- }
- 
- /*
-- * Requeue the defrag object. If there is a defrag object that points to
-- * the same inode in the tree, we will merge them together (by
-- * __btrfs_add_inode_defrag()) and free the one that we want to requeue.
-- */
--static void btrfs_requeue_inode_defrag(struct btrfs_inode *inode,
--				       struct inode_defrag *defrag)
--{
--	struct btrfs_fs_info *fs_info = inode->root->fs_info;
--	int ret;
--
--	if (!__need_auto_defrag(fs_info))
--		goto out;
--
--	/*
--	 * Here we don't check the IN_DEFRAG flag, because we need merge
--	 * them together.
--	 */
--	spin_lock(&fs_info->defrag_inodes_lock);
--	ret = __btrfs_add_inode_defrag(inode, defrag);
--	spin_unlock(&fs_info->defrag_inodes_lock);
--	if (ret)
--		goto out;
--	return;
--out:
--	kmem_cache_free(btrfs_inode_defrag_cachep, defrag);
--}
--
--/*
-  * pick the defragable inode that we want, if it doesn't exist, we will get
-  * the next one.
-  */
-@@ -278,8 +242,14 @@ static int __btrfs_run_defrag_inode(stru
- 	struct btrfs_root *inode_root;
- 	struct inode *inode;
- 	struct btrfs_ioctl_defrag_range_args range;
--	int num_defrag;
--	int ret;
-+	int ret = 0;
-+	u64 cur = 0;
-+
-+again:
-+	if (test_bit(BTRFS_FS_STATE_REMOUNTING, &fs_info->fs_state))
-+		goto cleanup;
-+	if (!__need_auto_defrag(fs_info))
-+		goto cleanup;
- 
- 	/* get the inode */
- 	inode_root = btrfs_get_fs_root(fs_info, defrag->root, true);
-@@ -295,39 +265,29 @@ static int __btrfs_run_defrag_inode(stru
- 		goto cleanup;
- 	}
- 
-+	if (cur >= i_size_read(inode)) {
-+		iput(inode);
-+		goto cleanup;
-+	}
-+
- 	/* do a chunk of defrag */
- 	clear_bit(BTRFS_INODE_IN_DEFRAG, &BTRFS_I(inode)->runtime_flags);
- 	memset(&range, 0, sizeof(range));
- 	range.len = (u64)-1;
--	range.start = defrag->last_offset;
-+	range.start = cur;
- 
- 	sb_start_write(fs_info->sb);
--	num_defrag = btrfs_defrag_file(inode, NULL, &range, defrag->transid,
-+	ret = btrfs_defrag_file(inode, NULL, &range, defrag->transid,
- 				       BTRFS_DEFRAG_BATCH);
- 	sb_end_write(fs_info->sb);
--	/*
--	 * if we filled the whole defrag batch, there
--	 * must be more work to do.  Queue this defrag
--	 * again
--	 */
--	if (num_defrag == BTRFS_DEFRAG_BATCH) {
--		defrag->last_offset = range.start;
--		btrfs_requeue_inode_defrag(BTRFS_I(inode), defrag);
--	} else if (defrag->last_offset && !defrag->cycled) {
--		/*
--		 * we didn't fill our defrag batch, but
--		 * we didn't start at zero.  Make sure we loop
--		 * around to the start of the file.
--		 */
--		defrag->last_offset = 0;
--		defrag->cycled = 1;
--		btrfs_requeue_inode_defrag(BTRFS_I(inode), defrag);
--	} else {
--		kmem_cache_free(btrfs_inode_defrag_cachep, defrag);
--	}
--
- 	iput(inode);
--	return 0;
-+
-+	if (ret < 0)
-+		goto cleanup;
-+
-+	cur = max(cur + fs_info->sectorsize, range.start);
-+	goto again;
-+
- cleanup:
- 	kmem_cache_free(btrfs_inode_defrag_cachep, defrag);
- 	return ret;
 
 
