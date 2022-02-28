@@ -2,80 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ADD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9BBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236580AbiB1Rsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:48:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33886 "EHLO
+        id S238591AbiB1Rsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:48:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239846AbiB1Ron (ORCPT
+        with ESMTP id S239871AbiB1Rop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:44:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FAEDFAD;
-        Mon, 28 Feb 2022 09:37:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97720614BF;
-        Mon, 28 Feb 2022 17:37:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0EB0C340E7;
-        Mon, 28 Feb 2022 17:37:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069834;
-        bh=j302gKTO4w+K7obYcgnAaWR6s5bMHrwgcd+p4UPzX7Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l/wBHqL1gGOXc+BQZE7LFA+wQ4rnG4uRCB1MQbQW+Yz4t3DlWY0C42m2CSOie4vLa
-         T3po4KeW0T1safRwnXrtz3H/h5GWj+ZkH6xExJUunDUkVVRN8seM7o43/67AADGYFb
-         AJWmy/M+pABuK841YuJ7PyTjUVMFdAAnqm+sDoqU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 028/139] netfilter: xt_socket: missing ifdef CONFIG_IP6_NF_IPTABLES dependency
-Date:   Mon, 28 Feb 2022 18:23:22 +0100
-Message-Id: <20220228172350.721813561@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
-References: <20220228172347.614588246@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 28 Feb 2022 12:44:45 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105A613F97;
+        Mon, 28 Feb 2022 09:37:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646069839; x=1677605839;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EUN0iBxb6qJUpWGGlQLJZRyk0KG5mMjx/0wyD9IfUo0=;
+  b=VFnCmoMu6b3TtjKDzKXYOwwFvvU5U8/jHghoV+cvzItxR+HXlPiAlxux
+   FgUnuuoHL0UXvjyC4MN5GK17dzTgq/XIkpfoPVyIJWIxHDLZOHIBlffWu
+   +NmES0AkDODUPCuWo6I8PEE90MK/1BaVHU61B+NkaV0TKm9tUEuPVs+1t
+   nrmE1QLPIUArzFIDCl8nVvtQyH2oiwLqQ3fX7h/+iBTeEiVgY16jyxDKY
+   HF7kcYaHDZYtyjyMCu7rIo3F/mHbbezdcXd3YamrL+9wBZff8dIY2GZi2
+   mw0wOdZQyCzgjVcoCMSWLbwh1RMiivy/3wy4ISgF4apj/bAEf0hFrs7l4
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="252669861"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="252669861"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:37:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="492791347"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 28 Feb 2022 09:37:15 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOjxS-0007c7-GK; Mon, 28 Feb 2022 17:37:14 +0000
+Date:   Tue, 1 Mar 2022 01:36:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Mike Rapoport <rppt@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/4] MIPS: Refactor early_parse_mem() to fix mem=
+ parameter
+Message-ID: <202202282330.uO0sH1Bk-lkp@intel.com>
+References: <1646054617-16799-2-git-send-email-yangtiezhu@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1646054617-16799-2-git-send-email-yangtiezhu@loongson.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+Hi Tiezhu,
 
-commit 2874b7911132f6975e668f6849c8ac93bc4e1f35 upstream.
+Thank you for the patch! Perhaps something to improve:
 
-nf_defrag_ipv6_disable() requires CONFIG_IP6_NF_IPTABLES.
+[auto build test WARNING on hnaz-mm/master]
+[also build test WARNING on linus/master v5.17-rc6 next-20220225]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Fixes: 75063c9294fb ("netfilter: xt_socket: fix a typo in socket_mt_destroy()")
+url:    https://github.com/0day-ci/linux/commits/Tiezhu-Yang/MIPS-Modify-mem-and-memmap-parameter/20220228-212554
+base:   https://github.com/hnaz/linux-mm master
+config: mips-randconfig-r025-20220228 (https://download.01.org/0day-ci/archive/20220228/202202282330.uO0sH1Bk-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://github.com/0day-ci/linux/commit/8e3bd7f4c0a4003c328ef2d816454dd50810b974
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Tiezhu-Yang/MIPS-Modify-mem-and-memmap-parameter/20220228-212554
+        git checkout 8e3bd7f4c0a4003c328ef2d816454dd50810b974
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/kernel/
+
+If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Eric Dumazet<edumazet@google.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/mips/kernel/setup.c:350:42: warning: format specifies type 'long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
+           pr_notice("Memory limited to %lldMB\n", memory_limit >> 20);
+                                        ~~~~       ^~~~~~~~~~~~~~~~~~
+                                        %u
+   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
+           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+                                     ~~~     ^~~~~~~~~~~
+   include/linux/printk.h:446:60: note: expanded from macro 'printk'
+   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
+                                                       ~~~    ^~~~~~~~~~~
+   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
+                   _p_func(_fmt, ##__VA_ARGS__);                           \
+                           ~~~~    ^~~~~~~~~~~
+   1 warning generated.
+
+
+vim +350 arch/mips/kernel/setup.c
+
+   343	
+   344	static int __init early_parse_mem(char *p)
+   345	{
+   346		if (!p)
+   347			return 1;
+   348	
+   349		memory_limit = memparse(p, &p) & PAGE_MASK;
+ > 350		pr_notice("Memory limited to %lldMB\n", memory_limit >> 20);
+   351	
+   352		return 0;
+   353	}
+   354	early_param("mem", early_parse_mem);
+   355	
+
 ---
- net/netfilter/xt_socket.c |    2 ++
- 1 file changed, 2 insertions(+)
-
---- a/net/netfilter/xt_socket.c
-+++ b/net/netfilter/xt_socket.c
-@@ -220,8 +220,10 @@ static void socket_mt_destroy(const stru
- {
- 	if (par->family == NFPROTO_IPV4)
- 		nf_defrag_ipv4_disable(par->net);
-+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
- 	else if (par->family == NFPROTO_IPV6)
- 		nf_defrag_ipv6_disable(par->net);
-+#endif
- }
- 
- static struct xt_match socket_mt_reg[] __read_mostly = {
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
