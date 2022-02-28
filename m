@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51878C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42C61C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240304AbiB1SPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:15:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60124 "EHLO
+        id S240329AbiB1SPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:15:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241424AbiB1SJx (ORCPT
+        with ESMTP id S241455AbiB1SJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8940EB3E7D;
-        Mon, 28 Feb 2022 09:50:01 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B7EBB45BC;
+        Mon, 28 Feb 2022 09:50:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E348B6092A;
-        Mon, 28 Feb 2022 17:49:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08965C340E7;
-        Mon, 28 Feb 2022 17:49:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1E2360915;
+        Mon, 28 Feb 2022 17:50:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1141C340E7;
+        Mon, 28 Feb 2022 17:50:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070549;
-        bh=QoV7j+7VjawEmBbE7tClEvzEIsDXiNYm9A4p/HtvrVQ=;
+        s=korg; t=1646070601;
+        bh=BLTmIppxTsWdWze0CZzsQG7uFrPoMqr09GCc5EhtdPY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oXCBRba6ckDMM6RmD0K8agfD+r7QWLcl9V1WAzT/p288OivGs5lbPx/AgFebrCK5r
-         KXFJp6E2UunHn3vo4jMIvHZSAe1rqd717/6CWsfkPWnpJydPrIrrhR7oyCXcY4OJVp
-         7K0tWZ4wGFWzpFJjaFb5S2pPOKOC7RVQvMstOERU=
+        b=evRiHM5R7JUuk5QeFvmnkRbF7ql9ZQ7HSpKZLLcqqL0JlIhMkQxfZZ0AuDORcSA/T
+         R3v8kQo8F0iJNAp9bJOJXXMM/j3p0iIKn5qWm2FVZCmU4axJlvTBRaSGjKyNcOvnj0
+         5JMRLF1xadrv59DGiv2VavR0uu/6PWKbvaKm7HdA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 099/164] spi: spi-zynq-qspi: Fix a NULL pointer dereference in zynq_qspi_exec_mem_op()
-Date:   Mon, 28 Feb 2022 18:24:21 +0100
-Message-Id: <20220228172408.772448140@linuxfoundation.org>
+        stable@vger.kernel.org, Sven Peter <sven@svenpeter.dev>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 148/164] tps6598x: clear int mask on probe failure
+Date:   Mon, 28 Feb 2022 18:25:10 +0100
+Message-Id: <20220228172413.258312561@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,54 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit ab3824427b848da10e9fe2727f035bbeecae6ff4 ]
+commit aba2081e0a9c977396124aa6df93b55ed5912b19 upstream.
 
-In zynq_qspi_exec_mem_op(), kzalloc() is directly used in memset(),
-which could lead to a NULL pointer dereference on failure of
-kzalloc().
+The interrupt mask is enabled before any potential failure points in
+the driver, which can leave a failure path where we exit with
+interrupts enabled but the device not live. This causes an infinite
+stream of interrupts on an Apple M1 Pro laptop on USB-C.
 
-Fix this bug by adding a check of tmpbuf.
+Add a failure label that's used post enabling interrupts, where we
+mask them again before returning an error.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_SPI_ZYNQ_QSPI=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 67dca5e580f1 ("spi: spi-mem: Add support for Zynq QSPI controller")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Link: https://lore.kernel.org/r/20211130172253.203700-1-zhou1615@umn.edu
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Suggested-by: Sven Peter <sven@svenpeter.dev>
+Cc: stable <stable@vger.kernel.org>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lore.kernel.org/r/e6b80669-20f3-06e7-9ed5-8951a9c6db6f@kernel.dk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-zynq-qspi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/typec/tipd/core.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spi-zynq-qspi.c b/drivers/spi/spi-zynq-qspi.c
-index cfa222c9bd5e7..78f31b61a2aac 100644
---- a/drivers/spi/spi-zynq-qspi.c
-+++ b/drivers/spi/spi-zynq-qspi.c
-@@ -570,6 +570,9 @@ static int zynq_qspi_exec_mem_op(struct spi_mem *mem,
+diff --git a/drivers/usb/typec/tipd/core.c b/drivers/usb/typec/tipd/core.c
+index 6d27a5b5e3ca..7ffcda94d323 100644
+--- a/drivers/usb/typec/tipd/core.c
++++ b/drivers/usb/typec/tipd/core.c
+@@ -761,12 +761,12 @@ static int tps6598x_probe(struct i2c_client *client)
  
- 	if (op->dummy.nbytes) {
- 		tmpbuf = kzalloc(op->dummy.nbytes, GFP_KERNEL);
-+		if (!tmpbuf)
-+			return -ENOMEM;
-+
- 		memset(tmpbuf, 0xff, op->dummy.nbytes);
- 		reinit_completion(&xqspi->data_completion);
- 		xqspi->txbuf = tmpbuf;
+ 	ret = tps6598x_read32(tps, TPS_REG_STATUS, &status);
+ 	if (ret < 0)
+-		return ret;
++		goto err_clear_mask;
+ 	trace_tps6598x_status(status);
+ 
+ 	ret = tps6598x_read32(tps, TPS_REG_SYSTEM_CONF, &conf);
+ 	if (ret < 0)
+-		return ret;
++		goto err_clear_mask;
+ 
+ 	/*
+ 	 * This fwnode has a "compatible" property, but is never populated as a
+@@ -855,7 +855,8 @@ static int tps6598x_probe(struct i2c_client *client)
+ 	usb_role_switch_put(tps->role_sw);
+ err_fwnode_put:
+ 	fwnode_handle_put(fwnode);
+-
++err_clear_mask:
++	tps6598x_write64(tps, TPS_REG_INT_MASK1, 0);
+ 	return ret;
+ }
+ 
 -- 
-2.34.1
+2.35.1
 
 
 
