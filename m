@@ -2,136 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:49:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EF56C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233592AbiB1Kt6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:49:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44580 "EHLO
+        id S234934AbiB1KuD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:50:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234960AbiB1Ktj (ORCPT
+        with ESMTP id S234974AbiB1Ktk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:49:39 -0500
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3B15D1B5;
-        Mon, 28 Feb 2022 02:48:59 -0800 (PST)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 4376458027D;
-        Mon, 28 Feb 2022 05:48:59 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 28 Feb 2022 05:48:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; bh=1vVga+h9htbpuVX4XD8VlM10uiiq7ZO3+UmFQE
-        c01vQ=; b=G+ZJOtIyw2/WazvvDKJTEgXHqoMoF3VJv2oKOGq4HDeWkTpOd8WBaT
-        4rHcpBbDc+9Q40E3VRnQZVyZ/TnAHgiMv+n0jHOCoqgKJb3y5c2rfx6jE89SIb6V
-        wuJl+VrQBakHz1bRaiUzukCY3YwHyArUCT2bEJjwBw4fBaNLxo87f39svsg6rW4M
-        FrMUpwRPrVgJt2SgGfjXyh4rTUGiwuracGqh9pypGThpKvggMHATxHjho+kSf+Pw
-        heMa0F3/JUt9L4e2D7WaaUrptrbQLO8XFLDibfMwypC1vdK9qeVxb0NoqswZmsY8
-        Z8Mrhat28uTSDyacKEGujZRc9zr/khHA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=1vVga+h9htbpuVX4X
-        D8VlM10uiiq7ZO3+UmFQEc01vQ=; b=Nh+yscHoWuHDO/JIgKuLzs9zoLl0tZ1mY
-        ytVar5473XvqOezOvfLch4dZ8miNo2Z2FCrbhGra/iXZZdTGj82hJZ68h7V5YRmO
-        qktlxsL8Cx7Lvz3+2nygzNzE9AHjwGj87qTX5C+amkmj2In5kCJolrxtOIDvYkTY
-        Tbue0a8O+ceonP7NqFL1vPkI3KRKftK+bVsX/cJM7Lr7z8vJZIBiSrvH46HxZ7Ra
-        lJGmWt7sv13cPZClOiB/gFeqAjLI33HUDPddiy2dFm1uZyNwtg3B/aQgCLLlC4PB
-        A1DMifsXZpaLTCmKf/PeqVXgw6O28YXpIKL45K2B4I2vA+2RFg9IA==
-X-ME-Sender: <xms:m6gcYpgoaOlXM9gadUBqEGIAviqtLOe-Nbf7EFYWzlYEpnLZERGT7A>
-    <xme:m6gcYuD053lZfrxnnUQtlFblUFSPo_WOMfaqeXe9XLBvJjrhtJz_Lx2q8W_-Pv2RD
-    uGpitA8Be-iJw>
-X-ME-Received: <xmr:m6gcYpHbpEOohqqrGSPr4j0Eli8Xd9nAJL7TGNVlr2KLUHVHL91HzCLHWwCMO9LUARfDg-L3EYLU869VfSBzFb25Y3o>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddttddgudelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
-    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
-    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
-    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
-    drtghomh
-X-ME-Proxy: <xmx:m6gcYuQuBVdHYfmN6Kvl3QfdijgiNSdtGgbI1hwtxnedBylDivM-Pw>
-    <xmx:m6gcYmyTyePgk8ZBswPOe7HUw3YRsapruwGegxM362ndjbrUM4N_ZQ>
-    <xmx:m6gcYk5pvScL-ey9GzG6KyC7NFnr5xGHbFmsISqoiWWB8gRNSWUiqg>
-    <xmx:m6gcYrrYq0YcPQnLfgZ3tW_Y0OF1eHNO5snpJM6jCnDUonnH4CWn_Q>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 28 Feb 2022 05:48:58 -0500 (EST)
-Date:   Mon, 28 Feb 2022 11:48:56 +0100
-From:   Greg KH <greg@kroah.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Hammer Hsieh <hammerh0314@gmail.com>,
-        Li-hao Kuo <lhjeff911@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: manual merge of the tty tree with the spi tree
-Message-ID: <YhyomKViVd3iPYDE@kroah.com>
-References: <20220228191316.411f1475@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228191316.411f1475@canb.auug.org.au>
+        Mon, 28 Feb 2022 05:49:40 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91E0D5BD18;
+        Mon, 28 Feb 2022 02:49:01 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3DC2A1063;
+        Mon, 28 Feb 2022 02:49:01 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.47.185])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C396D3F73D;
+        Mon, 28 Feb 2022 02:48:52 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, geert@linux-m68k.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org,
+        openrisc@lists.librecores.org, linux-um@lists.infradead.org,
+        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
+        linux-arch@vger.kernel.org
+Subject: [PATCH V3 02/30] mm/mmap: Clarify protection_map[] indices
+Date:   Mon, 28 Feb 2022 16:17:25 +0530
+Message-Id: <1646045273-9343-3-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
+References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 07:13:16PM +1100, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Today's linux-next merge of the tty tree got a conflict in:
-> 
->   MAINTAINERS
-> 
-> between commit:
-> 
->   f62ca4e2a863 ("spi: Add spi driver for Sunplus SP7021")
-> 
-> from the spi tree and commits:
-> 
->   b48b9f6deacf ("dt-bindings: serial: Add bindings doc for Sunplus SoC UART Driver")
->   9e8d5470325f ("serial: sunplus-uart: Add Sunplus SoC UART Driver")
-> 
-> from the tty tree.
-> 
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
-> 
-> -- 
-> Cheers,
-> Stephen Rothwell
-> 
-> diff --cc MAINTAINERS
-> index e6b3e94de842,4a30001f6d7b..000000000000
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@@ -18635,13 -18549,12 +18642,19 @@@ S:	Maintaine
->   F:	Documentation/devicetree/bindings/rtc/sunplus,sp7021-rtc.yaml
->   F:	drivers/rtc/rtc-sunplus.c
->   
->  +SUNPLUS SPI CONTROLLER INTERFACE DRIVER
->  +M:	Li-hao Kuo <lhjeff911@gmail.com>
->  +L:	linux-spi@vger.kernel.org
->  +S:	Maintained
->  +F:	Documentation/devicetree/bindings/spi/spi-sunplus-sp7021.yaml
->  +F:	drivers/spi/spi-sunplus-sp7021.c
->  +
-> + SUNPLUS UART DRIVER
-> + M:	Hammer Hsieh <hammerh0314@gmail.com>
-> + S:	Maintained
-> + F:	Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
-> + F:	drivers/tty/serial/sunplus-uart.c
-> + 
->   SUPERH
->   M:	Yoshinori Sato <ysato@users.sourceforge.jp>
->   M:	Rich Felker <dalias@libc.org>
+protection_map[] maps vm_flags access combinations into page protection
+value as defined by the platform via __PXXX and __SXXX macros. The array
+indices in protection_map[], represents vm_flags access combinations but
+it's not very intuitive to derive. This makes it clear and explicit.
 
-Looks correct, thanks!
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+---
+ mm/mmap.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-greg k-h
+diff --git a/mm/mmap.c b/mm/mmap.c
+index d445c1b9d606..34000a7d7efa 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -102,8 +102,22 @@ static void unmap_region(struct mm_struct *mm,
+  *								x: (yes) yes
+  */
+ pgprot_t protection_map[16] __ro_after_init = {
+-	__P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+-	__S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
++	[VM_NONE]					= __P000,
++	[VM_READ]					= __P001,
++	[VM_WRITE]					= __P010,
++	[VM_WRITE | VM_READ]				= __P011,
++	[VM_EXEC]					= __P100,
++	[VM_EXEC | VM_READ]				= __P101,
++	[VM_EXEC | VM_WRITE]				= __P110,
++	[VM_EXEC | VM_WRITE | VM_READ]			= __P111,
++	[VM_SHARED]					= __S000,
++	[VM_SHARED | VM_READ]				= __S001,
++	[VM_SHARED | VM_WRITE]				= __S010,
++	[VM_SHARED | VM_WRITE | VM_READ]		= __S011,
++	[VM_SHARED | VM_EXEC]				= __S100,
++	[VM_SHARED | VM_EXEC | VM_READ]			= __S101,
++	[VM_SHARED | VM_EXEC | VM_WRITE]		= __S110,
++	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= __S111
+ };
+ 
+ #ifndef CONFIG_ARCH_HAS_FILTER_PGPROT
+-- 
+2.25.1
+
