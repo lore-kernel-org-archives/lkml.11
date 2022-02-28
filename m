@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A528EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E5FC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239393AbiB1SE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:04:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
+        id S239950AbiB1SEa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:04:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237028AbiB1RzR (ORCPT
+        with ESMTP id S239187AbiB1Rwj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:55:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE51553B57;
-        Mon, 28 Feb 2022 09:44:38 -0800 (PST)
+        Mon, 28 Feb 2022 12:52:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC21493194;
+        Mon, 28 Feb 2022 09:39:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9373B815A2;
-        Mon, 28 Feb 2022 17:44:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA3FC340F0;
-        Mon, 28 Feb 2022 17:44:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AAE56156B;
+        Mon, 28 Feb 2022 17:39:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E050C340F0;
+        Mon, 28 Feb 2022 17:39:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070275;
-        bh=TmwptS0LPX8K1+wjHqfFZhxtwLD7yiQW5Pozv3nnNUI=;
+        s=korg; t=1646069986;
+        bh=0Dr3gRhH+CgEtiZ4s/Z9cMlnUNTk/O/bL+ukYHRkZDU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mIlmsn1Z3UeqJShBONXswOmD2N4h4bmzJL1RoTqm5vaXbXD61FWU5z3apJp/s9avo
-         qyItd0DOk93OW/g9T1Mfb4xcTl4tFys8eKslBQv80Ri4Aad8UCbBWADGSQtIyNx9Pc
-         3iZhxcYFNXyzPGs5mQd7ZM49A+MwWoTq/UWeOCv4=
+        b=H+23RmiBYdt4UYhJTRscaeGIUiwykOW7CGjnB3N/FHJwaoUdso2A6B51V8v7c0bjF
+         bLOu+0OLtnmyrJJDVCuVPfv4wymN1qKE3hSTiAcEx7t6RCgqTwNZvgaDS6AICZhQ64
+         qtbI/8xTbiejoKrGPnvYgaAAnMGYHTqLM+dhofgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vikas Gupta <vikas.gupta@broadcom.com>,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Somnath Kotur <somnath.kotur@broadcom.com>,
-        Kalesh AP <kalesh-anakkur.purayil@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 048/164] bnxt_en: Restore the resets_reliable flag in bnxt_open()
-Date:   Mon, 28 Feb 2022 18:23:30 +0100
-Message-Id: <20220228172404.579894554@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>
+Subject: [PATCH 5.15 047/139] ice: check the return of ice_ptp_gettimex64
+Date:   Mon, 28 Feb 2022 18:23:41 +0100
+Message-Id: <20220228172352.632165828@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
-References: <20220228172359.567256961@linuxfoundation.org>
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,65 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+From: Tom Rix <trix@redhat.com>
 
-commit 0e0e3c5358470cbad10bd7ca29f84a44d179d286 upstream.
+commit ed22d9c8d128293fc7b0b086c7d3654bcb99a8dd upstream.
 
-During ifdown, we call bnxt_inv_fw_health_reg() which will clear
-both the status_reliable and resets_reliable flags if these
-registers are mapped.  This is correct because a FW reset during
-ifdown will clear these register mappings.  If we detect that FW
-has gone through reset during the next ifup, we will remap these
-registers.
+Clang static analysis reports this issue
+time64.h:69:50: warning: The left operand of '+'
+  is a garbage value
+  set_normalized_timespec64(&ts_delta, lhs.tv_sec + rhs.tv_sec,
+                                       ~~~~~~~~~~ ^
+In ice_ptp_adjtime_nonatomic(), the timespec64 variable 'now'
+is set by ice_ptp_gettimex64().  This function can fail
+with -EBUSY, so 'now' can have a gargbage value.
+So check the return.
 
-But during normal ifup with no FW reset, we need to restore the
-resets_reliable flag otherwise we will not show the reset counter
-during devlink diagnose.
-
-Fixes: 8cc95ceb7087 ("bnxt_en: improve fw diagnose devlink health messages")
-Reviewed-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
-Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 06c16d89d2cb ("ice: register 1588 PTP clock device object for E810 devices")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c |   17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -7776,6 +7776,19 @@ static int bnxt_map_fw_health_regs(struc
- 	return 0;
- }
- 
-+static void bnxt_remap_fw_health_regs(struct bnxt *bp)
-+{
-+	if (!bp->fw_health)
-+		return;
-+
-+	if (bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY) {
-+		bp->fw_health->status_reliable = true;
-+		bp->fw_health->resets_reliable = true;
-+	} else {
-+		bnxt_try_map_fw_health_reg(bp);
-+	}
-+}
-+
- static int bnxt_hwrm_error_recovery_qcfg(struct bnxt *bp)
+--- a/drivers/net/ethernet/intel/ice/ice_ptp.c
++++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
+@@ -846,9 +846,12 @@ exit:
+ static int ice_ptp_adjtime_nonatomic(struct ptp_clock_info *info, s64 delta)
  {
- 	struct bnxt_fw_health *fw_health = bp->fw_health;
-@@ -9836,8 +9849,8 @@ static int bnxt_hwrm_if_change(struct bn
- 		resc_reinit = true;
- 	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE)
- 		fw_reset = true;
--	else if (bp->fw_health && !bp->fw_health->status_reliable)
--		bnxt_try_map_fw_health_reg(bp);
-+	else
-+		bnxt_remap_fw_health_regs(bp);
+ 	struct timespec64 now, then;
++	int ret;
  
- 	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state) && !fw_reset) {
- 		netdev_err(bp->dev, "RESET_DONE not set during FW reset.\n");
+ 	then = ns_to_timespec64(delta);
+-	ice_ptp_gettimex64(info, &now, NULL);
++	ret = ice_ptp_gettimex64(info, &now, NULL);
++	if (ret)
++		return ret;
+ 	now = timespec64_add(now, then);
+ 
+ 	return ice_ptp_settime64(info, (const struct timespec64 *)&now);
 
 
