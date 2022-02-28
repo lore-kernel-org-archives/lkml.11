@@ -2,154 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A8DEC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:25:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE21C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234642AbiB1M0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:26:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49754 "EHLO
+        id S233796AbiB1M1B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:27:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236499AbiB1MZg (ORCPT
+        with ESMTP id S229654AbiB1M1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:25:36 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB5675238
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:24:35 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id 195so11230949pgc.6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:24:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=NevpP32QQ8SJ3jDpfuGxxyXaFtCuF+EJTDzyFWscs5o=;
-        b=ihucVeQ4jgnzm85wwJYDwQ+pBJzqK/MKwHcmdBv9j/RHbv3a1ZtU6Ux8lEzIF95Ex6
-         3lZewDApJuoKqkNiWQKFMHmfJMXbTq0vwQ9RClH0ndB8UJrqXY2ulzd8icYrClgdXqhe
-         Ra7U/pHY64X2k5ZCc4nNUh8KVGVtvo4zVwfTNo91F19Rcka/x2NatjgcwGgT+XHXTYF6
-         5uim+MWZ5ByjtbBIuAC4IyPHvYlW0iA677nEK9WjdDEd/t4Hm4CucamxAkwt2UkFjQmY
-         nTmEhw972lZUkTw2rvYOpWuDH5fLx5DiKrBqe0fLSHLL0Z3EOgl0yJESz9RaIl4tuMGa
-         bZAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=NevpP32QQ8SJ3jDpfuGxxyXaFtCuF+EJTDzyFWscs5o=;
-        b=kfg9kqTwXVCzebJmVLW++5yIiQ55v7mdcy6HbxImSUeVbH6CQCtDsBr8+DBD90Bnx/
-         NWwXUNjZhnbCox0ALk0bVwzEx14nilFVE6Cg4BEhP/+cJaH02fHcTk2xQtSMFyB3vxRb
-         Wnr4wz5EX/VwfWsCZpmZ3YEUe9ZhFFzydevBO0YYWHgLLQV+UXA1PYMtH5HniX4Z1BBT
-         znuCQpPbLI1tl1Z4FlywOFQibeOAAcYhp6ljvcsiuZwqcxgblJKBTgXbrqpJnfpgs8ni
-         +/lSW3hrkbu/un6TRqtG0mBmKKM+9j7qImVpI9gk2341HWefFY48lE+1nT0SKMO1lblt
-         P0xA==
-X-Gm-Message-State: AOAM533owa+wOj7s+stbJQ30s+guEGCMi6T24O4u91QCwaPsgyLobW4G
-        cy8EvOjz0Z4O61AZAhAchlm5TQ==
-X-Google-Smtp-Source: ABdhPJzBHt0LSbQDQn3rid6vU7ULCI5I4vMu3BCDn4hLIJ8Ym2Tkr9hIKLBIhVrgEacU7E7T7cAL2g==
-X-Received: by 2002:a63:4a63:0:b0:373:a03a:8a1d with SMTP id j35-20020a634a63000000b00373a03a8a1dmr16703240pgl.460.1646051074724;
-        Mon, 28 Feb 2022 04:24:34 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
-        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.24.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 04:24:34 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
-        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
-        richard.weiyang@gmail.com, david@fromorbit.com,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
-        vbabka@suse.cz
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
-        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
-        fam.zheng@bytedance.com, smuchun@gmail.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH v6 16/16] mm: memcontrol: rename memcg_cache_id to memcg_kmem_id
-Date:   Mon, 28 Feb 2022 20:21:26 +0800
-Message-Id: <20220228122126.37293-17-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
-References: <20220228122126.37293-1-songmuchun@bytedance.com>
+        Mon, 28 Feb 2022 07:27:00 -0500
+Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7D91275D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:26:21 -0800 (PST)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id 32A604B0; Mon, 28 Feb 2022 13:26:20 +0100 (CET)
+Date:   Mon, 28 Feb 2022 13:26:19 +0100
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 0/9] iommu cleanup and refactoring
+Message-ID: <Yhy/awfTOkQLLZ95@8bytes.org>
+References: <20220216025249.3459465-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216025249.3459465-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The memcg_cache_id() introduced by commit 2633d7a02823 ("slab/slub:
-consider a memcg parameter in kmem_create_cache") is used to index
-in the kmem_cache->memcg_params->memcg_caches array. Since
-kmem_cache->memcg_params.memcg_caches has been removed by commit
-9855609bde03 ("mm: memcg/slab: use a single set of kmem_caches for
-all accounted allocations"). So the name does not need to reflect
-cache related. Just rename it to memcg_kmem_id. And it can reflect
-kmem related.
+On Wed, Feb 16, 2022 at 10:52:40AM +0800, Lu Baolu wrote:
+> Lu Baolu (9):
+>   iommu/vt-d: Remove guest pasid related callbacks
+>   iommu: Remove guest pasid related interfaces and definitions
+>   iommu/vt-d: Remove aux-domain related callbacks
+>   iommu: Remove aux-domain related interfaces and iommu_ops
+>   iommu: Remove apply_resv_region
+>   drm/nouveau/device: Get right pgsize_bitmap of iommu_domain
+>   iommu: Use right way to retrieve iommu_ops
+>   iommu: Remove unused argument in is_attach_deferred
+>   iommu: Split struct iommu_ops
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- include/linux/memcontrol.h | 4 ++--
- mm/list_lru.c              | 8 ++++----
- 2 files changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 1fe44ec5aa03..fe44e4d36bd7 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -1709,7 +1709,7 @@ static inline void memcg_kmem_uncharge_page(struct page *page, int order)
-  * A helper for accessing memcg's kmem_id, used for getting
-  * corresponding LRU lists.
-  */
--static inline int memcg_cache_id(struct mem_cgroup *memcg)
-+static inline int memcg_kmem_id(struct mem_cgroup *memcg)
- {
- 	return memcg ? memcg->kmemcg_id : -1;
- }
-@@ -1747,7 +1747,7 @@ static inline bool memcg_kmem_enabled(void)
- 	return false;
- }
- 
--static inline int memcg_cache_id(struct mem_cgroup *memcg)
-+static inline int memcg_kmem_id(struct mem_cgroup *memcg)
- {
- 	return -1;
- }
-diff --git a/mm/list_lru.c b/mm/list_lru.c
-index 38f711e9b56e..8b402373e965 100644
---- a/mm/list_lru.c
-+++ b/mm/list_lru.c
-@@ -75,7 +75,7 @@ list_lru_from_kmem(struct list_lru *lru, int nid, void *ptr,
- 	if (!memcg)
- 		goto out;
- 
--	l = list_lru_from_memcg_idx(lru, nid, memcg_cache_id(memcg));
-+	l = list_lru_from_memcg_idx(lru, nid, memcg_kmem_id(memcg));
- out:
- 	if (memcg_ptr)
- 		*memcg_ptr = memcg;
-@@ -182,7 +182,7 @@ unsigned long list_lru_count_one(struct list_lru *lru,
- 	long count;
- 
- 	rcu_read_lock();
--	l = list_lru_from_memcg_idx(lru, nid, memcg_cache_id(memcg));
-+	l = list_lru_from_memcg_idx(lru, nid, memcg_kmem_id(memcg));
- 	count = l ? READ_ONCE(l->nr_items) : 0;
- 	rcu_read_unlock();
- 
-@@ -273,7 +273,7 @@ list_lru_walk_one(struct list_lru *lru, int nid, struct mem_cgroup *memcg,
- 	unsigned long ret;
- 
- 	spin_lock(&nlru->lock);
--	ret = __list_lru_walk_one(lru, nid, memcg_cache_id(memcg), isolate,
-+	ret = __list_lru_walk_one(lru, nid, memcg_kmem_id(memcg), isolate,
- 				  cb_arg, nr_to_walk);
- 	spin_unlock(&nlru->lock);
- 	return ret;
-@@ -289,7 +289,7 @@ list_lru_walk_one_irq(struct list_lru *lru, int nid, struct mem_cgroup *memcg,
- 	unsigned long ret;
- 
- 	spin_lock_irq(&nlru->lock);
--	ret = __list_lru_walk_one(lru, nid, memcg_cache_id(memcg), isolate,
-+	ret = __list_lru_walk_one(lru, nid, memcg_kmem_id(memcg), isolate,
- 				  cb_arg, nr_to_walk);
- 	spin_unlock_irq(&nlru->lock);
- 	return ret;
--- 
-2.11.0
-
+Applied to core branch, thanks Baolu!
