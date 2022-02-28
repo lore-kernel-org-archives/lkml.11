@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F27C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:40:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 229A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234055AbiB1RlS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:41:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34824 "EHLO
+        id S238371AbiB1RlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:41:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238573AbiB1RiA (ORCPT
+        with ESMTP id S238571AbiB1RiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:38:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4485153E0A;
-        Mon, 28 Feb 2022 09:33:16 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590E54F9FC;
+        Mon, 28 Feb 2022 09:33:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D17E761359;
-        Mon, 28 Feb 2022 17:33:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7B62C340E7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C2A1B815A2;
         Mon, 28 Feb 2022 17:33:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DAA3C340E7;
+        Mon, 28 Feb 2022 17:33:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069595;
-        bh=/3wMuk5dVomCtEwH4m1c/LTp++Sgz0IwaN6J265Drmk=;
+        s=korg; t=1646069592;
+        bh=InIoslegLjVX1Yt8uC/7lVQLPHklSm5DBQNu2ZKpfd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PoSby5mww/dfFpnWSvghIxIroMPBOsStH7CzuHkp5+9nySLLWMbKwOUwWJKTOtK4x
-         mbSEXzAnRmPoEHoGIblFvq6e13rivGKPLl8Rj1RoIJBC/+H9Se3SxlRr6KLgHjHuO1
-         V5hkEYN1Is9NJ/vMlH8LoqAMHyOZyGK39GeJEwk8=
+        b=fPY0Nrf3kxdPatZLPerEaPwu5oUkOgv1X8hUZM8j7coN4gl1cS/DU/n55tWAlwnmS
+         uB+X2NaHd6ljLV3Lnrnz74aKGECHBmp8L3Ul3YtWb+jiMGwY4dGgiUgj4LMUoVyJg4
+         xCcXITDEFc2vhwKyjehHcim29Z4YVerTq/2QfxIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang Zhang <zhangliang5@huawei.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.10 08/80] KVM: x86/mmu: make apf token non-zero to fix bug
-Date:   Mon, 28 Feb 2022 18:23:49 +0100
-Message-Id: <20220228172312.554378128@linuxfoundation.org>
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.10 07/80] parisc/unaligned: Fix ldw() and stw() unalignment handlers
+Date:   Mon, 28 Feb 2022 18:23:48 +0100
+Message-Id: <20220228172312.491283200@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -48,79 +47,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang Zhang <zhangliang5@huawei.com>
+From: Helge Deller <deller@gmx.de>
 
-commit 6f3c1fc53d86d580d8d6d749c4af23705e4f6f79 upstream.
+commit a97279836867b1cb50a3d4f0b1bf60e0abe6d46c upstream.
 
-In current async pagefault logic, when a page is ready, KVM relies on
-kvm_arch_can_dequeue_async_page_present() to determine whether to deliver
-a READY event to the Guest. This function test token value of struct
-kvm_vcpu_pv_apf_data, which must be reset to zero by Guest kernel when a
-READY event is finished by Guest. If value is zero meaning that a READY
-event is done, so the KVM can deliver another.
-But the kvm_arch_setup_async_pf() may produce a valid token with zero
-value, which is confused with previous mention and may lead the loss of
-this READY event.
+Fix 3 bugs:
 
-This bug may cause task blocked forever in Guest:
- INFO: task stress:7532 blocked for more than 1254 seconds.
-       Not tainted 5.10.0 #16
- "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
- task:stress          state:D stack:    0 pid: 7532 ppid:  1409
- flags:0x00000080
- Call Trace:
-  __schedule+0x1e7/0x650
-  schedule+0x46/0xb0
-  kvm_async_pf_task_wait_schedule+0xad/0xe0
-  ? exit_to_user_mode_prepare+0x60/0x70
-  __kvm_handle_async_pf+0x4f/0xb0
-  ? asm_exc_page_fault+0x8/0x30
-  exc_page_fault+0x6f/0x110
-  ? asm_exc_page_fault+0x8/0x30
-  asm_exc_page_fault+0x1e/0x30
- RIP: 0033:0x402d00
- RSP: 002b:00007ffd31912500 EFLAGS: 00010206
- RAX: 0000000000071000 RBX: ffffffffffffffff RCX: 00000000021a32b0
- RDX: 000000000007d011 RSI: 000000000007d000 RDI: 00000000021262b0
- RBP: 00000000021262b0 R08: 0000000000000003 R09: 0000000000000086
- R10: 00000000000000eb R11: 00007fefbdf2baa0 R12: 0000000000000000
- R13: 0000000000000002 R14: 000000000007d000 R15: 0000000000001000
+a) emulate_stw() doesn't return the error code value, so faulting
+instructions are not reported and aborted.
 
-Signed-off-by: Liang Zhang <zhangliang5@huawei.com>
-Message-Id: <20220222031239.1076682-1-zhangliang5@huawei.com>
+b) Tell emulate_ldw() to handle fldw_l as floating point instruction
+
+c) Tell emulate_ldw() to handle ldw_m as integer instruction
+
+Signed-off-by: Helge Deller <deller@gmx.de>
 Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/mmu.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ arch/parisc/kernel/unaligned.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3631,12 +3631,23 @@ static void shadow_page_table_clear_floo
- 	walk_shadow_page_lockless_end(vcpu);
+--- a/arch/parisc/kernel/unaligned.c
++++ b/arch/parisc/kernel/unaligned.c
+@@ -340,7 +340,7 @@ static int emulate_stw(struct pt_regs *r
+ 	: "r" (val), "r" (regs->ior), "r" (regs->isr)
+ 	: "r19", "r20", "r21", "r22", "r1", FIXUP_BRANCH_CLOBBER );
+ 
+-	return 0;
++	return ret;
  }
- 
-+static u32 alloc_apf_token(struct kvm_vcpu *vcpu)
-+{
-+	/* make sure the token value is not 0 */
-+	u32 id = vcpu->arch.apf.id;
-+
-+	if (id << 12 == 0)
-+		vcpu->arch.apf.id = 1;
-+
-+	return (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
-+}
-+
- static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 				    gfn_t gfn)
+ static int emulate_std(struct pt_regs *regs, int frreg, int flop)
  {
- 	struct kvm_arch_async_pf arch;
+@@ -619,10 +619,10 @@ void handle_unaligned(struct pt_regs *re
+ 	{
+ 	case OPCODE_FLDW_L:
+ 		flop=1;
+-		ret = emulate_ldw(regs, R2(regs->iir),0);
++		ret = emulate_ldw(regs, R2(regs->iir), 1);
+ 		break;
+ 	case OPCODE_LDW_M:
+-		ret = emulate_ldw(regs, R2(regs->iir),1);
++		ret = emulate_ldw(regs, R2(regs->iir), 0);
+ 		break;
  
--	arch.token = (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
-+	arch.token = alloc_apf_token(vcpu);
- 	arch.gfn = gfn;
- 	arch.direct_map = vcpu->arch.mmu->direct_map;
- 	arch.cr3 = vcpu->arch.mmu->get_guest_pgd(vcpu);
+ 	case OPCODE_FSTW_L:
 
 
