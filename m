@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F204BC41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB7EC3525B
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240433AbiB1SI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:08:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39148 "EHLO
+        id S240792AbiB1SJL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:09:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240764AbiB1SEA (ORCPT
+        with ESMTP id S240247AbiB1SDU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:04:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C45602BB04;
-        Mon, 28 Feb 2022 09:47:44 -0800 (PST)
+        Mon, 28 Feb 2022 13:03:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5B4B16F7;
+        Mon, 28 Feb 2022 09:46:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B95FB810DB;
-        Mon, 28 Feb 2022 17:47:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E918C340E7;
-        Mon, 28 Feb 2022 17:47:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B321F60BBF;
+        Mon, 28 Feb 2022 17:46:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C48C340E7;
+        Mon, 28 Feb 2022 17:46:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070442;
-        bh=F9gJERXBsZJBDheWrV6kP9fWLD21CujIcydQ8FHt2JU=;
+        s=korg; t=1646070399;
+        bh=/hFzPLZdxNyr7sNhIlWRmhRcp4xlGHvWKKPXk1bmKxI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nZNoTszv2P3XXCVV1P3npjjjWP3l84Tr5c/e2SB93wDo8/EXeiD43x4Fkn8W+yhzT
-         6mFguFOF3wXzZldPkM+HJ9E9o2WCGdrqLww2Lgu17Z3YefkpnnDCq0luoBIfmILvwx
-         kON3LyqgU4GvDzIPWd6g+ePA1M3orWi0qkjAXTJk=
+        b=GDEqV8+TQD5/jEIq4KrqvsqwYaWaMbd4P2NhueKcrcxi5NydgJXSYTgYUzTcH4KeN
+         scej+6bLNWjFL9X94Az4x4+rukO0WD8em1bBg7N1mq4WB1It4KQg9COh61tdSYIIUy
+         BPbSgDe8srrJY00UVWssroxO6R4VMhx3Y3+TV5jE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 111/164] bpf: Fix crash due to out of bounds access into reg2btf_ids.
-Date:   Mon, 28 Feb 2022 18:24:33 +0100
-Message-Id: <20220228172410.347859308@linuxfoundation.org>
+        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Alex Vesker <valex@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.16 093/164] net/mlx5: DR, Fix the threshold that defines when pool sync is initiated
+Date:   Mon, 28 Feb 2022 18:24:15 +0100
+Message-Id: <20220228172408.235458838@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,54 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-[ Upstream commit 45ce4b4f9009102cd9f581196d480a59208690c1 ]
+commit ecd9c5cd46e013659e2fad433057bad1ba66888e upstream.
 
-When commit e6ac2450d6de ("bpf: Support bpf program calling kernel function") added
-kfunc support, it defined reg2btf_ids as a cheap way to translate the verifier
-reg type to the appropriate btf_vmlinux BTF ID, however
-commit c25b2ae13603 ("bpf: Replace PTR_TO_XXX_OR_NULL with PTR_TO_XXX | PTR_MAYBE_NULL")
-moved the __BPF_REG_TYPE_MAX from the last member of bpf_reg_type enum to after
-the base register types, and defined other variants using type flag
-composition. However, now, the direct usage of reg->type to index into
-reg2btf_ids may no longer fall into __BPF_REG_TYPE_MAX range, and hence lead to
-out of bounds access and kernel crash on dereference of bad pointer.
+When deciding whether to start syncing and actually free all the "hot"
+ICM chunks, we need to consider the type of the ICM chunks that we're
+dealing with. For instance, the amount of available ICM for MODIFY_ACTION
+is significantly lower than the usual STE ICM, so the threshold should
+account for that - otherwise we can deplete MODIFY_ACTION memory just by
+creating and deleting the same modify header action in a continuous loop.
 
-Fixes: c25b2ae13603 ("bpf: Replace PTR_TO_XXX_OR_NULL with PTR_TO_XXX | PTR_MAYBE_NULL")
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220216201943.624869-1-memxor@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This patch replaces the hard-coded threshold with a dynamic value.
+
+Fixes: 1c58651412bb ("net/mlx5: DR, ICM memory pools sync optimization")
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reviewed-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/btf.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c |   11 ++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 1621f9d45fbda..c9da250fee38c 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -5676,7 +5676,8 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 			}
- 			if (check_ctx_reg(env, reg, regno))
- 				return -EINVAL;
--		} else if (is_kfunc && (reg->type == PTR_TO_BTF_ID || reg2btf_ids[reg->type])) {
-+		} else if (is_kfunc && (reg->type == PTR_TO_BTF_ID ||
-+			   (reg2btf_ids[base_type(reg->type)] && !type_flag(reg->type)))) {
- 			const struct btf_type *reg_ref_t;
- 			const struct btf *reg_btf;
- 			const char *reg_ref_tname;
-@@ -5694,7 +5695,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 				reg_ref_id = reg->btf_id;
- 			} else {
- 				reg_btf = btf_vmlinux;
--				reg_ref_id = *reg2btf_ids[reg->type];
-+				reg_ref_id = *reg2btf_ids[base_type(reg->type)];
- 			}
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
+@@ -4,7 +4,6 @@
+ #include "dr_types.h"
  
- 			reg_ref_t = btf_type_skip_modifiers(reg_btf, reg_ref_id,
--- 
-2.34.1
-
+ #define DR_ICM_MODIFY_HDR_ALIGN_BASE 64
+-#define DR_ICM_SYNC_THRESHOLD_POOL (64 * 1024 * 1024)
+ 
+ struct mlx5dr_icm_pool {
+ 	enum mlx5dr_icm_type icm_type;
+@@ -324,10 +323,14 @@ dr_icm_chunk_create(struct mlx5dr_icm_po
+ 
+ static bool dr_icm_pool_is_sync_required(struct mlx5dr_icm_pool *pool)
+ {
+-	if (pool->hot_memory_size > DR_ICM_SYNC_THRESHOLD_POOL)
+-		return true;
++	int allow_hot_size;
+ 
+-	return false;
++	/* sync when hot memory reaches half of the pool size */
++	allow_hot_size =
++		mlx5dr_icm_pool_chunk_size_to_byte(pool->max_log_chunk_sz,
++						   pool->icm_type) / 2;
++
++	return pool->hot_memory_size > allow_hot_size;
+ }
+ 
+ static int dr_icm_pool_sync_all_buddy_pools(struct mlx5dr_icm_pool *pool)
 
 
