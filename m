@@ -2,87 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA5BC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD3CC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240571AbiB1SDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:03:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45776 "EHLO
+        id S240736AbiB1SD5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:03:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239194AbiB1RzJ (ORCPT
+        with ESMTP id S239665AbiB1RxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:55:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A5F2459E;
-        Mon, 28 Feb 2022 09:44:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37343B81085;
-        Mon, 28 Feb 2022 17:44:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87F93C36AEA;
-        Mon, 28 Feb 2022 17:44:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070272;
-        bh=zMGA4gTIdGdhdcERmCkpemte6p3KrE72mw8Fs2CsqBI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1k7UB9GNriA6JXfRtAFT36YILPxxOPteJbOMbUir/8F2oCuYqRawfj8DYjzzMP6/K
-         XlmilpoU8v14KUdkiL3v858DbnZWEl26Y3m0VDVH1ahrda2NKM307B5ULiEDlzzC+T
-         MsNgwIBGbuQGxuzMHqSF2zlAHvhvaObKsL4h+Pc8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Mon, 28 Feb 2022 12:53:17 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5BCAA2C0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:40:44 -0800 (PST)
+Date:   Mon, 28 Feb 2022 17:40:38 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646070039;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=01kkECkLBdLpXhA0pZjXjbhMW1oUQ+BkgGkDZR5N+a8=;
+        b=Tx4Mx0t8IRibpFqaPGjq2/6EvYEe8BQjeU1qknraDT91JaYBZUswNee76XQyXwRKxFQEdA
+        dClKPGs5gmzkqUitR49Vg1b0Rup1254k9OpsRfPkX503ZxRpbkWdB/ATbohLk2sX6Nhf7P
+        rvXJR4bmTQoCsaF3eDaRGnV+m8xoRTRm9dbP2jd289OVsyyDmMHsaHVzTHIHB1sU2Go8Hf
+        Wt7Ze38Ripn4uoHODdAP8jmOHR7uVa5/mLUzBjnfTX+4Ai3VxLkTDUmYN8jtU+2nUErzxP
+        bW6E+xJOMi/IbuvpD/cHmqA0RmtBkP4btWHplo6cXjdQsqzTtRbwwhFr42OOwA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646070039;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=01kkECkLBdLpXhA0pZjXjbhMW1oUQ+BkgGkDZR5N+a8=;
+        b=1UfS2ahIRyEyuzZqZZ9quK1m6YURjoo5yhv7I8GGaHH5ryzEfh5dbyvpkRvajapvVNxR9W
+        Hsd1L0hpuSOhiRAQ==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Gong <curry.gong@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH 5.16 021/164] drm/amdgpu: do not enable asic reset for raven2
-Date:   Mon, 28 Feb 2022 18:23:03 +0100
-Message-Id: <20220228172401.949310843@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
-References: <20220228172359.567256961@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [irqchip: irq/irqchip-next] irqchip/qcom-pdc: Drop open coded version
+ of __assign_bit()
+Cc:     Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220224101226.88373-6-maz@kernel.org>
+References: <20220224101226.88373-6-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164607003826.16921.7381437841996310939.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Gong <curry.gong@amd.com>
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-commit 1e2be869c8a7247a7253ef4f461f85e2f5931b95 upstream.
+Commit-ID:     024e9a021eb7baff3935d8c76fc2d668384398f7
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/024e9a021eb7baff3935d8c76fc2d668384398f7
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Thu, 24 Feb 2022 10:12:26 
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Mon, 28 Feb 2022 17:32:26 
 
-The GPU reset function of raven2 is not maintained or tested, so it should be
-very unstable.
+irqchip/qcom-pdc: Drop open coded version of __assign_bit()
 
-Now the amdgpu_asic_reset function is added to amdgpu_pmops_suspend, which
-causes the S3 test of raven2 to fail, so the asic_reset of raven2 is ignored
-here.
+The driver uses what looks like an open-coded version of __assign_bit().
+Replace it with the real thing.
 
-Fixes: daf8de0874ab5b ("drm/amdgpu: always reset the asic in suspend (v2)")
-Signed-off-by: Chen Gong <curry.gong@amd.com>
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
-Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220224101226.88373-6-maz@kernel.org
 ---
- drivers/gpu/drm/amd/amdgpu/soc15.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/irqchip/qcom-pdc.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/soc15.c
-+++ b/drivers/gpu/drm/amd/amdgpu/soc15.c
-@@ -619,8 +619,8 @@ soc15_asic_reset_method(struct amdgpu_de
- static int soc15_asic_reset(struct amdgpu_device *adev)
- {
- 	/* original raven doesn't have full asic reset */
--	if ((adev->apu_flags & AMD_APU_IS_RAVEN) &&
--	    !(adev->apu_flags & AMD_APU_IS_RAVEN2))
-+	if ((adev->apu_flags & AMD_APU_IS_RAVEN) ||
-+	    (adev->apu_flags & AMD_APU_IS_RAVEN2))
- 		return 0;
+diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+index 0cd20dd..d96916c 100644
+--- a/drivers/irqchip/qcom-pdc.c
++++ b/drivers/irqchip/qcom-pdc.c
+@@ -23,9 +23,6 @@
  
- 	switch (soc15_asic_reset_method(adev)) {
-
-
+ #define PDC_MAX_GPIO_IRQS	256
+ 
+-#define CLEAR_INTR(reg, intr)	(reg & ~(1 << intr))
+-#define ENABLE_INTR(reg, intr)	(reg | (1 << intr))
+-
+ #define IRQ_ENABLE_BANK		0x10
+ #define IRQ_i_CFG		0x110
+ 
+@@ -55,16 +52,16 @@ static u32 pdc_reg_read(int reg, u32 i)
+ static void pdc_enable_intr(struct irq_data *d, bool on)
+ {
+ 	int pin_out = d->hwirq;
++	unsigned long enable;
+ 	unsigned long flags;
+ 	u32 index, mask;
+-	u32 enable;
+ 
+ 	index = pin_out / 32;
+ 	mask = pin_out % 32;
+ 
+ 	raw_spin_lock_irqsave(&pdc_lock, flags);
+ 	enable = pdc_reg_read(IRQ_ENABLE_BANK, index);
+-	enable = on ? ENABLE_INTR(enable, mask) : CLEAR_INTR(enable, mask);
++	__assign_bit(mask, &enable, on);
+ 	pdc_reg_write(IRQ_ENABLE_BANK, index, enable);
+ 	raw_spin_unlock_irqrestore(&pdc_lock, flags);
+ }
