@@ -2,75 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E59C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:58:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229583AbiB1U7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:59:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
+        id S229700AbiB1U7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:59:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiB1U7B (ORCPT
+        with ESMTP id S229595AbiB1U7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:59:01 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CBE24F22;
-        Mon, 28 Feb 2022 12:58:22 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id EFAA0210FA;
-        Mon, 28 Feb 2022 20:58:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646081900;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
+        Mon, 28 Feb 2022 15:59:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7547334B95;
+        Mon, 28 Feb 2022 12:58:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED08F60F7F;
+        Mon, 28 Feb 2022 20:58:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC9ADC340F4;
+        Mon, 28 Feb 2022 20:58:40 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="oqKkKpHI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1646081918;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=FteZVt9c1MVKPFOCakOdo0gY5PZ/CDEv9TeOnEDnzOQ=;
-        b=0BqAyGXLksG7ZI4n7LCThq80eQYwPHuiKuf2eNujA9MT4hKQEc2ClhvKbeK3xznWMQ3LeU
-        YYsmOWUHWR+dD7izAeLHqe9F5eOwIb8CvvAGJsrneYclPV2sJcfgDSmqKlIVEr7c9iODLW
-        VmzvC1wohnHxF2TRGETCuShJ/UYxSLk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646081900;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FteZVt9c1MVKPFOCakOdo0gY5PZ/CDEv9TeOnEDnzOQ=;
-        b=3PIPU2vjGWQiJMKrLRdGGaNPg3DvWGNCDbE44h8dAAJpRVg5dtVQD12lOUOeY/5I0GqslI
-        xRZH6czIHsz+ITDA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id D9CACA3B81;
-        Mon, 28 Feb 2022 20:58:20 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id C1FE8DA823; Mon, 28 Feb 2022 21:54:29 +0100 (CET)
-Date:   Mon, 28 Feb 2022 21:54:29 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Niels Dossche <dossche.niels@gmail.com>
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
-        Niels Dossche <niels.dossche@ugent.be>
-Subject: Re: [PATCH] btrfs: extend locking to all space_info members accesses
-Message-ID: <20220228205429.GL12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Niels Dossche <dossche.niels@gmail.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
-        Niels Dossche <niels.dossche@ugent.be>
-References: <20220225212028.75021-1-niels.dossche@ugent.be>
+        bh=SqohqG3LXXo3Vz4caltCVBd/GVMaQSHhe0U1yNB9f7s=;
+        b=oqKkKpHIwznsnW+OplNfnLGWmSexVKvOIAK/8Ne9Vhd6LxTk4/m0PbqifyRWUawW3Yz2Jf
+        HQYQt3T8EvKRsUl8XloPmk3lnjspGERuADKjYmyUQW4+53zxjEWTUmwnMNM2Q1d2IVUxNi
+        8+HpnCCDLEEZ5fD88a4+Vm2YRI4S9R4=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c466720a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 28 Feb 2022 20:58:37 +0000 (UTC)
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2dbd97f9bfcso5117277b3.9;
+        Mon, 28 Feb 2022 12:58:36 -0800 (PST)
+X-Gm-Message-State: AOAM532aPIhPoEiTqJGrIQ3L7oaR4h8SdO7lRSopceijUeJ/FXxCd9JR
+        sZauA48SFDCnM4YVp+kqcVvaR7qagmA0HT5cP2s=
+X-Google-Smtp-Source: ABdhPJxAgPwGmS0Vl76KY6GXZiI1ElLpNGeheuKi7TiNeDjCSedlJ5mUrV9FsJB1jf5+X9Q0L9hBjFWLu5s35fYcq1E=
+X-Received: by 2002:a81:1143:0:b0:2db:ccb4:b0a1 with SMTP id
+ 64-20020a811143000000b002dbccb4b0a1mr2307269ywr.499.1646081915734; Mon, 28
+ Feb 2022 12:58:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220225212028.75021-1-niels.dossche@ugent.be>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+References: <CAHmME9qHnvwrxEue4Pdm_E1qZQGXFuR9orJSKCWj8fH5TSh6fA@mail.gmail.com>
+ <20220228183355.9090-1-Jason@zx2c4.com> <CAHp75VcjrD3kwN1BfWpjKXaVpG7MHfftMUscSGhcJfStm4b-Xg@mail.gmail.com>
+In-Reply-To: <CAHp75VcjrD3kwN1BfWpjKXaVpG7MHfftMUscSGhcJfStm4b-Xg@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 28 Feb 2022 21:58:24 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pPU7kWXeodY+GZwLvFNTwDZXnRNMFk3EEucdFxc2ZEig@mail.gmail.com>
+Message-ID: <CAHmME9pPU7kWXeodY+GZwLvFNTwDZXnRNMFk3EEucdFxc2ZEig@mail.gmail.com>
+Subject: Re: [PATCH 2/3 v6] ACPI: allow longer device IDs
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-crypto <linux-crypto@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Alexander Graf <graf@amazon.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Len Brown <lenb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 10:20:28PM +0100, Niels Dossche wrote:
-> bytes_pinned is always accessed under space_info->lock, except in
-> btrfs_preempt_reclaim_metadata_space, however the other members are
-> accessed under that lock. The reserved member of the rsv's are also
-> partially accessed under a lock and partially not. Move all these
-> accesses into the same lock to ensure consistency.
-> 
-> Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
-> Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Hi Andy,
 
-Added to misc-next, thanks.
+On Mon, Feb 28, 2022 at 9:47 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> Then why do we not see the ECR from somebody to update the spec or to
+> fix MS' abuse of it?
+> I believe _this_ should be the prerequisite to the proposed change.
+
+Sorry, but no; that seems like a ridiculous requirement. There's
+virtual "hardware" out there that is behaving like this. It serves an
+important security function. There are no technical downsides to
+making the change. It works well.
+
+Yet you're upset that they didn't follow the rules. Indeed, tsk tsk on
+Microsoft. But that doesn't mean Linux users should suffer and have
+poorer security than Windows.
+
+This kind of thing happens all the time. We do our best to find the
+cleanest solution to the problem, and live with it. Linux isn't a
+one-hundred-per-cent-by-the-spec operating system, because the things
+it works with are often not one-hundred-per-cent-by-the-spec. We even
+have quirks tables. It's part of life.
+
+And in this case, the solution is so straightforward that it doesn't
+even require anything closely resembling a "hack" or a layering
+violation. And that space is already being used (zero filled) anyway
+because of struct padding.
+
+This fix is the "clean" way of doing it. Why make this harder than it
+needs to be?
+
+Jason
