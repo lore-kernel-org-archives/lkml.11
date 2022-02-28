@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD629C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDA7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:49:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238898AbiB1Rte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:49:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
+        id S238755AbiB1Rtl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:49:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239031AbiB1Rnk (ORCPT
+        with ESMTP id S239095AbiB1Rnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:43:40 -0500
+        Mon, 28 Feb 2022 12:43:43 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1201B9AD8E;
-        Mon, 28 Feb 2022 09:35:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59279BAE7;
+        Mon, 28 Feb 2022 09:35:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0C3961359;
-        Mon, 28 Feb 2022 17:35:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B62F2C340E7;
-        Mon, 28 Feb 2022 17:35:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D5888614C9;
+        Mon, 28 Feb 2022 17:35:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8349C340E7;
+        Mon, 28 Feb 2022 17:35:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069732;
-        bh=gr45w1REbf3yzOWTxHlcU8BXdSX+zSG8eQlbz3GOI5Y=;
+        s=korg; t=1646069740;
+        bh=ZiqWtC7lTeskoDYpo8BmFDZ0NEqc4zUEXVUcbwg7D5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xKfBNajcsa/MXqWrSroeBYytAYSRNEjEqd94KtVS7TCeGgjw4NdltEM4WuuBtB9D1
-         7vHVfXwmLmDVD2Gsy8eblF2r5CMskXwYyquEeYe6mGvZnVAZdSEBUWhyZN2jVdI2iI
-         +p0hGCkYcdi2ytuFxnMZNORM40dWIm0Ht/8oUxkQ=
+        b=sHOlbHomJvs22oxNK0fWL0TQe0RifXHnF+YJ4nYpVars/UIxdxYB8f2mJVMWRgISC
+         8pn//+AM1Zz6Y72Lw4NczWMyMBRYia3iPCHQHsXl36+Nr007qH3VIC3GtCQ4mtdx3s
+         snzBbqi1iU9wf0UN1RzuIfG09To6gDZBleq50OM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Changbin Du <changbin.du@gmail.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.10 73/80] riscv: fix oops caused by irqsoff latency tracer
-Date:   Mon, 28 Feb 2022 18:24:54 +0100
-Message-Id: <20220228172320.535642879@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.10 75/80] tty: n_gsm: fix proper link termination after failed open
+Date:   Mon, 28 Feb 2022 18:24:56 +0100
+Message-Id: <20220228172320.800541582@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -48,167 +47,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changbin Du <changbin.du@gmail.com>
+From: daniel.starke@siemens.com <daniel.starke@siemens.com>
 
-commit 22e2100b1b07d6f5acc71cc1acb53f680c677d77 upstream.
+commit e3b7468f082d106459e86e8dc6fb9bdd65553433 upstream.
 
-The trace_hardirqs_{on,off}() require the caller to setup frame pointer
-properly. This because these two functions use macro 'CALLER_ADDR1' (aka.
-__builtin_return_address(1)) to acquire caller info. If the $fp is used
-for other purpose, the code generated this macro (as below) could trigger
-memory access fault.
+Trying to open a DLCI by sending a SABM frame may fail with a timeout.
+The link is closed on the initiator side without informing the responder
+about this event. The responder assumes the link is open after sending a
+UA frame to answer the SABM frame. The link gets stuck in a half open
+state.
 
-   0xffffffff8011510e <+80>:    ld      a1,-16(s0)
-   0xffffffff80115112 <+84>:    ld      s2,-8(a1)  # <-- paging fault here
+This patch fixes this by initiating the proper link termination procedure
+after link setup timeout instead of silently closing it down.
 
-The oops message during booting if compiled with 'irqoff' tracer enabled:
-[    0.039615][    T0] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000f8
-[    0.041925][    T0] Oops [#1]
-[    0.042063][    T0] Modules linked in:
-[    0.042864][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1-00233-g9a20c48d1ed2 #29
-[    0.043568][    T0] Hardware name: riscv-virtio,qemu (DT)
-[    0.044343][    T0] epc : trace_hardirqs_on+0x56/0xe2
-[    0.044601][    T0]  ra : restore_all+0x12/0x6e
-[    0.044721][    T0] epc : ffffffff80126a5c ra : ffffffff80003b94 sp : ffffffff81403db0
-[    0.044801][    T0]  gp : ffffffff8163acd8 tp : ffffffff81414880 t0 : 0000000000000020
-[    0.044882][    T0]  t1 : 0098968000000000 t2 : 0000000000000000 s0 : ffffffff81403de0
-[    0.044967][    T0]  s1 : 0000000000000000 a0 : 0000000000000001 a1 : 0000000000000100
-[    0.045046][    T0]  a2 : 0000000000000000 a3 : 0000000000000000 a4 : 0000000000000000
-[    0.045124][    T0]  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000054494d45
-[    0.045210][    T0]  s2 : ffffffff80003b94 s3 : ffffffff81a8f1b0 s4 : ffffffff80e27b50
-[    0.045289][    T0]  s5 : ffffffff81414880 s6 : ffffffff8160fa00 s7 : 00000000800120e8
-[    0.045389][    T0]  s8 : 0000000080013100 s9 : 000000000000007f s10: 0000000000000000
-[    0.045474][    T0]  s11: 0000000000000000 t3 : 7fffffffffffffff t4 : 0000000000000000
-[    0.045548][    T0]  t5 : 0000000000000000 t6 : ffffffff814aa368
-[    0.045620][    T0] status: 0000000200000100 badaddr: 00000000000000f8 cause: 000000000000000d
-[    0.046402][    T0] [<ffffffff80003b94>] restore_all+0x12/0x6e
-
-This because the $fp(aka. $s0) register is not used as frame pointer in the
-assembly entry code.
-
-	resume_kernel:
-		REG_L s0, TASK_TI_PREEMPT_COUNT(tp)
-		bnez s0, restore_all
-		REG_L s0, TASK_TI_FLAGS(tp)
-                andi s0, s0, _TIF_NEED_RESCHED
-                beqz s0, restore_all
-                call preempt_schedule_irq
-                j restore_all
-
-To fix above issue, here we add one extra level wrapper for function
-trace_hardirqs_{on,off}() so they can be safely called by low level entry
-code.
-
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
-Fixes: 3c4697982982 ("riscv: Enable LOCKDEP_SUPPORT & fixup TRACE_IRQFLAGS_SUPPORT")
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220218073123.2121-3-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/kernel/Makefile    |    2 ++
- arch/riscv/kernel/entry.S     |   10 +++++-----
- arch/riscv/kernel/trace_irq.c |   27 +++++++++++++++++++++++++++
- arch/riscv/kernel/trace_irq.h |   11 +++++++++++
- 4 files changed, 45 insertions(+), 5 deletions(-)
- create mode 100644 arch/riscv/kernel/trace_irq.c
- create mode 100644 arch/riscv/kernel/trace_irq.h
+ drivers/tty/n_gsm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@ -44,6 +44,8 @@ obj-$(CONFIG_MODULE_SECTIONS)	+= module-
- obj-$(CONFIG_FUNCTION_TRACER)	+= mcount.o ftrace.o
- obj-$(CONFIG_DYNAMIC_FTRACE)	+= mcount-dyn.o
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1485,7 +1485,7 @@ static void gsm_dlci_t1(struct timer_lis
+ 			dlci->mode = DLCI_MODE_ADM;
+ 			gsm_dlci_open(dlci);
+ 		} else {
+-			gsm_dlci_close(dlci);
++			gsm_dlci_begin_close(dlci); /* prevent half open link */
+ 		}
  
-+obj-$(CONFIG_TRACE_IRQFLAGS)	+= trace_irq.o
-+
- obj-$(CONFIG_RISCV_BASE_PMU)	+= perf_event.o
- obj-$(CONFIG_PERF_EVENTS)	+= perf_callchain.o
- obj-$(CONFIG_HAVE_PERF_REGS)	+= perf_regs.o
---- a/arch/riscv/kernel/entry.S
-+++ b/arch/riscv/kernel/entry.S
-@@ -98,7 +98,7 @@ _save_context:
- .option pop
- 
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- #endif
- 
- #ifdef CONFIG_CONTEXT_TRACKING
-@@ -131,7 +131,7 @@ skip_context_tracking:
- 	andi t0, s1, SR_PIE
- 	beqz t0, 1f
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_on
-+	call __trace_hardirqs_on
- #endif
- 	csrs CSR_STATUS, SR_IE
- 
-@@ -222,7 +222,7 @@ ret_from_exception:
- 	REG_L s0, PT_STATUS(sp)
- 	csrc CSR_STATUS, SR_IE
- #ifdef CONFIG_TRACE_IRQFLAGS
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- #endif
- #ifdef CONFIG_RISCV_M_MODE
- 	/* the MPP value is too large to be used as an immediate arg for addi */
-@@ -258,10 +258,10 @@ restore_all:
- 	REG_L s1, PT_STATUS(sp)
- 	andi t0, s1, SR_PIE
- 	beqz t0, 1f
--	call trace_hardirqs_on
-+	call __trace_hardirqs_on
- 	j 2f
- 1:
--	call trace_hardirqs_off
-+	call __trace_hardirqs_off
- 2:
- #endif
- 	REG_L a0, PT_STATUS(sp)
---- /dev/null
-+++ b/arch/riscv/kernel/trace_irq.c
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-+ */
-+
-+#include <linux/irqflags.h>
-+#include <linux/kprobes.h>
-+#include "trace_irq.h"
-+
-+/*
-+ * trace_hardirqs_on/off require the caller to setup frame pointer properly.
-+ * Otherwise, CALLER_ADDR1 might trigger an pagging exception in kernel.
-+ * Here we add one extra level so they can be safely called by low
-+ * level entry code which $fp is used for other purpose.
-+ */
-+
-+void __trace_hardirqs_on(void)
-+{
-+	trace_hardirqs_on();
-+}
-+NOKPROBE_SYMBOL(__trace_hardirqs_on);
-+
-+void __trace_hardirqs_off(void)
-+{
-+	trace_hardirqs_off();
-+}
-+NOKPROBE_SYMBOL(__trace_hardirqs_off);
---- /dev/null
-+++ b/arch/riscv/kernel/trace_irq.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
-+ */
-+#ifndef __TRACE_IRQ_H
-+#define __TRACE_IRQ_H
-+
-+void __trace_hardirqs_on(void);
-+void __trace_hardirqs_off(void);
-+
-+#endif /* __TRACE_IRQ_H */
+ 		break;
 
 
