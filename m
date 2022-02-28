@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D84C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D1C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232269AbiB1R3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:29:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45222 "EHLO
+        id S235983AbiB1R3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:29:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237120AbiB1R2F (ORCPT
+        with ESMTP id S236994AbiB1R2C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:28:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2061E5B;
-        Mon, 28 Feb 2022 09:27:21 -0800 (PST)
+        Mon, 28 Feb 2022 12:28:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BC3887B6;
+        Mon, 28 Feb 2022 09:27:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E2BAB815B3;
-        Mon, 28 Feb 2022 17:27:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D79C340F1;
-        Mon, 28 Feb 2022 17:27:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7884B815A6;
+        Mon, 28 Feb 2022 17:27:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48DA8C340E7;
+        Mon, 28 Feb 2022 17:27:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069239;
-        bh=CidzmvAFVi43hMNxzqnk5tG9HKIHJRZgVsRGz6ocuw8=;
+        s=korg; t=1646069236;
+        bh=8/VzF5YyFB6FzSHyHsm9QRDs3/DOdSXYW/DlJ3TynqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Co6JB92vrzGgpBSnV/1W1F6NLD+e+lQPiDQ0i2PiD4cN2gYs0elC1jxyHkY+jUPJu
-         0ySLr5b+7R/kbW4R1MB6n+y2Oqxw5FTvXkVD7raeE8END+fHulVyXl2ZHowfUXpqhB
-         3OC+DwqpAlr8jHG5QijfcI54Vl6LpQPmIVcNuN9Y=
+        b=g4ojXVjbtAoKNIdS3geGPOUrZxecAcLptTiycEQ8GHJSCJ9eJVYKp34dFXOKGgcxm
+         /BUAM9XLf799sno6LPMvBhxEZiGHOGN6tWB7o/FoXm4YDHS0493nbuDSg+nORD/i9m
+         v/4F0okGZ3v6wxlvRgRRarjn6vfc6DXOBHiW6ZGA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Laibin Qiu <qiulaibin@huawei.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 14/31] configfs: fix a race in configfs_{,un}register_subsystem()
-Date:   Mon, 28 Feb 2022 18:24:10 +0100
-Message-Id: <20220228172201.258455438@linuxfoundation.org>
+        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 4.14 13/31] net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
+Date:   Mon, 28 Feb 2022 18:24:09 +0100
+Message-Id: <20220228172201.151696974@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
 References: <20220228172159.515152296@linuxfoundation.org>
@@ -49,98 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+From: Gal Pressman <gal@nvidia.com>
 
-[ Upstream commit 84ec758fb2daa236026506868c8796b0500c047d ]
+commit 0b89429722353d112f8b8b29ca397e95fa994d27 upstream.
 
-When configfs_register_subsystem() or configfs_unregister_subsystem()
-is executing link_group() or unlink_group(),
-it is possible that two processes add or delete list concurrently.
-Some unfortunate interleavings of them can cause kernel panic.
+The ioctl EEPROM query wrongly returns success on read failures, fix
+that by returning the appropriate error code.
 
-One of cases is:
-A --> B --> C --> D
-A <-- B <-- C <-- D
-
-     delete list_head *B        |      delete list_head *C
---------------------------------|-----------------------------------
-configfs_unregister_subsystem   |   configfs_unregister_subsystem
-  unlink_group                  |     unlink_group
-    unlink_obj                  |       unlink_obj
-      list_del_init             |         list_del_init
-        __list_del_entry        |           __list_del_entry
-          __list_del            |             __list_del
-            // next == C        |
-            next->prev = prev   |
-                                |               next->prev = prev
-            prev->next = next   |
-                                |                 // prev == B
-                                |                 prev->next = next
-
-Fix this by adding mutex when calling link_group() or unlink_group(),
-but parent configfs_subsystem is NULL when config_item is root.
-So I create a mutex configfs_subsystem_mutex.
-
-Fixes: 7063fbf22611 ("[PATCH] configfs: User-driven configuration filesystem")
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: bb64143eee8c ("net/mlx5e: Add ethtool support for dump module EEPROM")
+Signed-off-by: Gal Pressman <gal@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/configfs/dir.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
-index c875f246cb0e9..ccb49caed502c 100644
---- a/fs/configfs/dir.c
-+++ b/fs/configfs/dir.c
-@@ -50,6 +50,14 @@ DECLARE_RWSEM(configfs_rename_sem);
-  */
- DEFINE_SPINLOCK(configfs_dirent_lock);
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -1662,7 +1662,7 @@ static int mlx5e_get_module_eeprom(struc
+ 		if (size_read < 0) {
+ 			netdev_err(priv->netdev, "%s: mlx5_query_eeprom failed:0x%x\n",
+ 				   __func__, size_read);
+-			return 0;
++			return size_read;
+ 		}
  
-+/*
-+ * All of link_obj/unlink_obj/link_group/unlink_group require that
-+ * subsys->su_mutex is held.
-+ * But parent configfs_subsystem is NULL when config_item is root.
-+ * Use this mutex when config_item is root.
-+ */
-+static DEFINE_MUTEX(configfs_subsystem_mutex);
-+
- static void configfs_d_iput(struct dentry * dentry,
- 			    struct inode * inode)
- {
-@@ -1937,7 +1945,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
- 		group->cg_item.ci_name = group->cg_item.ci_namebuf;
- 
- 	sd = root->d_fsdata;
-+	mutex_lock(&configfs_subsystem_mutex);
- 	link_group(to_config_group(sd->s_element), group);
-+	mutex_unlock(&configfs_subsystem_mutex);
- 
- 	inode_lock_nested(d_inode(root), I_MUTEX_PARENT);
- 
-@@ -1962,7 +1972,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
- 	inode_unlock(d_inode(root));
- 
- 	if (err) {
-+		mutex_lock(&configfs_subsystem_mutex);
- 		unlink_group(group);
-+		mutex_unlock(&configfs_subsystem_mutex);
- 		configfs_release_fs();
- 	}
- 	put_fragment(frag);
-@@ -2008,7 +2020,9 @@ void configfs_unregister_subsystem(struct configfs_subsystem *subsys)
- 
- 	dput(dentry);
- 
-+	mutex_lock(&configfs_subsystem_mutex);
- 	unlink_group(group);
-+	mutex_unlock(&configfs_subsystem_mutex);
- 	configfs_release_fs();
- }
- 
--- 
-2.34.1
-
+ 		i += size_read;
 
 
