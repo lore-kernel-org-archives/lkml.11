@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 652BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E80AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237158AbiB1Rcl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:32:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47086 "EHLO
+        id S237065AbiB1Rcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:32:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237353AbiB1RbZ (ORCPT
+        with ESMTP id S237276AbiB1Rb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:31:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F6185BCB;
-        Mon, 28 Feb 2022 09:28:44 -0800 (PST)
+        Mon, 28 Feb 2022 12:31:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA0A88B33;
+        Mon, 28 Feb 2022 09:28:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E01A61358;
-        Mon, 28 Feb 2022 17:28:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55A66C340E7;
-        Mon, 28 Feb 2022 17:28:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D33B7B815A6;
+        Mon, 28 Feb 2022 17:28:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350BBC340E7;
+        Mon, 28 Feb 2022 17:28:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069323;
-        bh=9M6Px821qfwCZDkVLxy/lqoCbgvn2LIoWJkQWnFZa1Q=;
+        s=korg; t=1646069334;
+        bh=NVZ/13wV06YZ+xr1T2jgfLSQQ++PaVN1I5onuZqPhSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dtk5S+CncPTD7i/wpHK1d7ctmoJ4gR3g7u23y0AuE2M+wZrY6rh9+XIMnpdnsMOMr
-         AP5un8IprmEpRQUmTMbNPaUslkbdXLaAZFtqx+t9hUEt0yhDn2OKLOyVhxR9jl75at
-         rtPDcQmi0+/Lqkpu2lI7JIz0evIjp4B6Qc6Yt9x0=
+        b=dddO4QJzB2tvysv3oKL2nTLNr+6hhLHPpQ3SuTx0Ypw0XlMXj4WzmqKrRrJiuV89U
+         IK2bL9nbSRNnkeNY895arFgHIQwSHV1hlzzLTBzeW1OAInJz8aHglGocuiavLzyLxz
+         dezg6FsvoYGdFp2OSbVl8Uyghg/c3Zn0IygVESOI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 4.19 13/34] net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
-Date:   Mon, 28 Feb 2022 18:24:19 +0100
-Message-Id: <20220228172209.516463410@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
+        Grant Grundler <grundler@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 05/34] sr9700: sanity check for packet length
+Date:   Mon, 28 Feb 2022 18:24:11 +0100
+Message-Id: <20220228172208.942887061@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172207.090703467@linuxfoundation.org>
 References: <20220228172207.090703467@linuxfoundation.org>
@@ -49,32 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit 0b89429722353d112f8b8b29ca397e95fa994d27 upstream.
+commit e9da0b56fe27206b49f39805f7dcda8a89379062 upstream.
 
-The ioctl EEPROM query wrongly returns success on read failures, fix
-that by returning the appropriate error code.
+A malicious device can leak heap data to user space
+providing bogus frame lengths. Introduce a sanity check.
 
-Fixes: bb64143eee8c ("net/mlx5e: Add ethtool support for dump module EEPROM")
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reviewed-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c |    2 +-
+ drivers/net/usb/sr9700.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -1357,7 +1357,7 @@ static int mlx5e_get_module_eeprom(struc
- 		if (size_read < 0) {
- 			netdev_err(priv->netdev, "%s: mlx5_query_eeprom failed:0x%x\n",
- 				   __func__, size_read);
--			return 0;
-+			return size_read;
- 		}
+--- a/drivers/net/usb/sr9700.c
++++ b/drivers/net/usb/sr9700.c
+@@ -410,7 +410,7 @@ static int sr9700_rx_fixup(struct usbnet
+ 		/* ignore the CRC length */
+ 		len = (skb->data[1] | (skb->data[2] << 8)) - 4;
  
- 		i += size_read;
+-		if (len > ETH_FRAME_LEN)
++		if (len > ETH_FRAME_LEN || len > skb->len)
+ 			return 0;
+ 
+ 		/* the last packet of current skb */
 
 
