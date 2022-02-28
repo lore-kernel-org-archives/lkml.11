@@ -2,137 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CCD9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 498AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234119AbiB1MY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:24:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50540 "EHLO
+        id S236333AbiB1MZM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:25:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236401AbiB1MYZ (ORCPT
+        with ESMTP id S236407AbiB1MYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:24:25 -0500
-Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00083.outbound.protection.outlook.com [40.107.0.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F4575222;
-        Mon, 28 Feb 2022 04:23:45 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=afAe9m6jie84oLOykl3Lis2jgfnGIvs6C9lDl+9sEP3520ktiGJk8nXTn9ESSEvhjBimKbLgy9FD6qmS3G0hwtHw+qkJVABArDNnpxA4FyDyK/8OxllR/U7pjM/mr0YyL3nvfm7gQ2HQyxee8/u2PyJ7jQSICuLvWvdBhk+MZga+aMmOcCleljGSRdshy0bG3i55XpVLXO0z9k32EaQL6jDXKMV7lJDqzkMbnYqT0HZ2cUGuRZNb+noxr3OnBw3sXOyRxXeCg64ls2C3kSK0I9VNWtvN88M7nG09V3uRjd1qcd9lSdCF8UJITaRSPueYtaJfGV9WeqfFOnMtTWwxEQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2A6P06fcV7XyekmDKjByC7LAtwOuWLgh+ckCA8rqZYs=;
- b=VK12hA5sI3pobMPFTZqBsGMsPRLL3XqW0zuc6IHuf+L+bO+cKdqrf1G9qXMT8igOBbe2w/TiWKqLnft6Fl80pKTVqYyLxuO/93boi1ssjnAPSoC9WsrmkWYyIqvuvjcxQ8r2TIpFkaGAiLfaRjjykc9+raEr4wYpsNUBMuecgRnfBOAHKzqXMXQ848QxHAUgnnoZ8GsVA+MFfp9nFRsNboWRlEnI8ZRrWjft8UO9mbEHWcaS6/xOQKKa85wS1+csMHOtNRhvbS/T3XAW2oh3v/LrFO0LGZYQhHag0rp281RD14JqewTkn4tZi0u8LHRFXjWRBbJewirwIHqaEazwJQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2A6P06fcV7XyekmDKjByC7LAtwOuWLgh+ckCA8rqZYs=;
- b=EarLvCS2scgGbV17PMw+DtfuRPIfR/0C9sPR6wt2Y2B/aAntD0XlA84r3azaOgWxsIQAlvFYr26glLYuM8sn9KC0Yvbjygc2JfRMwKhr5wOV+W8CeKfvUShqmXupEBhxVATJtD6ex5OXvg61sBk8B1cZNWTHzcGMBtLq/E/cNns=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
- by VI1PR04MB7152.eurprd04.prod.outlook.com (2603:10a6:800:12b::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.25; Mon, 28 Feb
- 2022 12:23:37 +0000
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::98a7:fbac:5cec:776e]) by VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::98a7:fbac:5cec:776e%5]) with mapi id 15.20.5017.026; Mon, 28 Feb 2022
- 12:23:37 +0000
-Date:   Mon, 28 Feb 2022 14:23:34 +0200
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc:     sboyd@kernel.org, robh+dt@kernel.org, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH 0/3] clk: imx8m: remote sys pll1/2 clk gates
-Message-ID: <Yhy+xjPXoCeZ8AhI@abelvesa>
-References: <20220225081733.2294166-1-peng.fan@oss.nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220225081733.2294166-1-peng.fan@oss.nxp.com>
-X-ClientProxiedBy: VI1PR07CA0208.eurprd07.prod.outlook.com
- (2603:10a6:802:3f::32) To VI1PR04MB4688.eurprd04.prod.outlook.com
- (2603:10a6:803:6a::30)
+        Mon, 28 Feb 2022 07:24:39 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8478E75624
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:23:51 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id j10-20020a17090a94ca00b001bc2a9596f6so11175847pjw.5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:23:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=L18k1O4fFtjGd/n9qxx+Uv18sX+SI8eOaMzIeceQpJ0=;
+        b=PmFMDGtfDLfoL0LYcB+wwlGmX5lNFPAWEUcyKAA3TBBWTyfSMKsewRAH6DHEH5oNwv
+         unnGYp2Q9ZxjgMKNhLxjZXRojT2/Nfgz7TTxcZqK5oOcORPluVooyG/7e9XT+tP+QX+t
+         n4c6USEjWXsjWCK4vbV6+30WN7lTTlDGR/jFMcbF8uDf/fppUYQ3vIQtbyGNV+ZbAsBN
+         lZ2QPNzQJ8Z4AZlYwYnJ1O4Sl2p3CJUE/aqHZIDzfbMoL3auURjakiGtLdAZTNBbqM+O
+         RYkaKJVmvCVeZ8kgCiN3q5nn5ZLdau97E16oPngfZRfx7quFDjH8C7LYWPywYfztdKZo
+         hsDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=L18k1O4fFtjGd/n9qxx+Uv18sX+SI8eOaMzIeceQpJ0=;
+        b=4GmZvM/mk0R/QDHw7B6U9XgTTHjYR5Q8k/nnqRVtOWT59Vvyj8eISgaNiqBXoYKgAs
+         DD0of1AU7mO4otEke7ph1FvuexWaxjZKYJUi/3HNTUOUglFVz1BtXpcVrq4pRt/VL0z7
+         YPOdKVNFdO1hZTmv6GJrW0iTBeHsSCllk9ffiPrrLW1gX8lbuJGh/U2pDLqNfLxe4/3g
+         43nwu4r2IMaBbNd9/pfgIusWPNUqB3K4wVFuz893HZdjX8PiUFG/Pn+aBne7AXNCBph8
+         FbqUEaJRaNfd208hkX9z3jB0D2Gz+pIdM7A90Th5yQJO0fI3O7kz47g1CsfGj5cGrksx
+         fByQ==
+X-Gm-Message-State: AOAM530OvaTROLkcRDHBd1zwygomfVzlVoxn4V7L+pUvuaINbzee6mXZ
+        qb5mBGuJ94ZzWl64xRwsIj9wKA==
+X-Google-Smtp-Source: ABdhPJwcPPC9tUJoAsYpjtdzRM0Sfy7A/YlLh58B/PmALOKFZQvLipupQ6B7GMgD7E6hVaMZuAiNcA==
+X-Received: by 2002:a17:903:2c7:b0:14f:fc47:5a2f with SMTP id s7-20020a17090302c700b0014ffc475a2fmr20228267plk.112.1646051031022;
+        Mon, 28 Feb 2022 04:23:51 -0800 (PST)
+Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
+        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.23.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 04:23:50 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
+        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
+        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
+        richard.weiyang@gmail.com, david@fromorbit.com,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
+        vbabka@suse.cz
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
+        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
+        fam.zheng@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v6 11/16] mm: list_lru: rename memcg_drain_all_list_lrus to memcg_reparent_list_lrus
+Date:   Mon, 28 Feb 2022 20:21:21 +0800
+Message-Id: <20220228122126.37293-12-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
+References: <20220228122126.37293-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 305b7b61-0c31-4019-f0e5-08d9fab52537
-X-MS-TrafficTypeDiagnostic: VI1PR04MB7152:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR04MB7152D57A9B5BA08B007F9E7AF6019@VI1PR04MB7152.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ntu7r5uRIUZO1lllx4lgv2e4kTUopSLi9QQyXHZEtgwA2ucKUOOg4pw/YJh13GCDwd9oDuv6kd2gmshwNzWCLP7p1QnhQz0EQZB0RWh3fg6F2PBoqWOpI+2CILT2ZexRDfFFDPZ9AseWz2w2ce2hD3usTJAqTB6LzEwNov8fpYYlBoq/lShz6fG+WKFQrAUa7fc29eZ4JV5ncKq/oVsFRLahCmUW2ENp0jhMlr8JZaq3IR5rlTSp/P9+nxKCfiScg+0nxNdUDN7JSlHcvaPNLZBb1D+G9UhP9LTInLYeZ2qXjUhp5wtrvxf1fIPT0oaXRljb/5aDRjtOLNpG4XX0pIYGiEtrTUoO4ZD/HgflvhGg/gxWUs+s/zTj0LDrJvIIDCn05Yge0gp0T9HLRJlPQfe/eNqYyCP4jjPyhj7vVBxnIefITGJ5G6Vr5822gfMcJfT7Xs1ew4UXNztMstqUmQqXvQwLuCsESmILl61uYfqxOEjM4+uAc1cR6vOLBt776kD3weVCtysRNaS+vjN/B8n1dEGCgRv5hYiXGASqP3OS70DHaS+7+DDmsOu4HE+0tqA2S4GqcB4fM5vfTJcHS3iEnOM1irfAxEA/fI3snOdbhCkQi3QET0mmmR4z7ZzV9qcz9jYiSIMGvZTKpOFGun5bhQr7pQN045rXruEqtBjP+spVUbI9c4srKo0EKlT7aBK05S+Ie0TUEeQXfx2OA5xJFmKKEDCoe1mtIk5g4/rDrDMIHhj3Y5bUd4QZE983
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(508600001)(316002)(6666004)(38100700002)(8936002)(53546011)(6506007)(6512007)(9686003)(38350700002)(83380400001)(52116002)(86362001)(186003)(26005)(2906002)(5660300002)(6486002)(44832011)(7416002)(4744005)(66476007)(66946007)(33716001)(66556008)(6862004)(4326008)(8676002)(32563001)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LJfteVYSnqEy/Dx6Wy32LvcgcqSQJWXEVSz+XB6RohCvZ/fEznaWih6+YvM3?=
- =?us-ascii?Q?0ZlrGlCxIjgUjpZW/Mnp3WVjV7KABf7EGH+LwjH3u8Fvs/DEKENk+YtlPEoC?=
- =?us-ascii?Q?JOLoFvHoepGjsl/zCEAUQEG0Cv9js0mZzEPMYE9DqPZhVPbIbpgI3BhvA+PF?=
- =?us-ascii?Q?7pDASRN3jl29Id78lJJt89U5eYE9mrHwsw8kGqoxM8z/N05HDJu1y3b/ZMaT?=
- =?us-ascii?Q?LW1q2KArq6+8k9Jxror8F1HahQpdbUYzj20r1GZLgLUJ4YtkscMXrH4LG1fS?=
- =?us-ascii?Q?LpHJ97KZpgV7JHwiQe+bR+TEVkgEAsgNeeWIhuUB89O1aRpv+RkxzuYvBypU?=
- =?us-ascii?Q?quKt8vfDGHnJoOcxzY4M15VTFfEiwD7DvdfxrtdpM+8OwjGJ6QxucwWEzz1K?=
- =?us-ascii?Q?n5rgOc4AV0yaqDWmzcB2DQMNttp8W8eI2abUVmsM+dV525mpsWUrhjLyR2u4?=
- =?us-ascii?Q?aIZ6WSpQx/90mNHFHqPwCnWSTLw043v/Sj2idxDUwVkEd3zA/RcAAKVg+flT?=
- =?us-ascii?Q?78904cx0VE6ilOCjciVjRPUJWSJUidjLGkPjrM/rkYZMmGfvq5l+tPAYO0AS?=
- =?us-ascii?Q?WmaiHLx/Yap0bzegXFXS3PPappXHW2Hcf3Tz9luKn73xRBt8xvUv0V3xXgET?=
- =?us-ascii?Q?pWS9K12PsDzElrqrdGeD4eqZUvj43Vi2Q3fcbJVZBQYE6gZ9fWbGB7PPggFd?=
- =?us-ascii?Q?7rBJ2TCiG/LmhupUZS4IkvOEqapDZifaVewDp50bqfKwbdHtTnxFYjlzGJS8?=
- =?us-ascii?Q?wb9IZNO36JMespe6Ax11qms+C7Fdiu6ltstGzQ/Mm/5fHk7nteUJ0WKK4RJA?=
- =?us-ascii?Q?EM2ZWmuePEuJ/7KG0wpZ1FiY3ayP7pjp1UruRjuHGe2ixE33FQHRPP9UxNVS?=
- =?us-ascii?Q?v0whSPH77yiqq8DyBqCZHoWZOivRcfxdcG6bBn7yEDFckUAiS0fStxFMxdGd?=
- =?us-ascii?Q?kLMaUxbi65NWf/GIIWfHMpqZY3zWYpNzVe81GAkgmJvW0gB9NfhdLO1Mib6Z?=
- =?us-ascii?Q?NlD46hXI44qxnalz9xp98qV6kWkVYVsE0eyxC/X5yP6nY3gE2++YnSGkjoB1?=
- =?us-ascii?Q?XOP4ggMf3rZWHwvYCh/PQkqcs6uiqi6uLW7IjSrmQLmOwg/NhZg/RN4tqT7I?=
- =?us-ascii?Q?YCMPhYAgxvzI1vWXFpmyPDstyBSrnYs4gphrcNBjUmkjdxBVmklTBu3ALfGB?=
- =?us-ascii?Q?dLCcFiHtds4JnuluajFpmK3q5KCZxq5Z/CxGQah96j08e+y/ZSRlKhayOIt6?=
- =?us-ascii?Q?CmkTDCpC5rFADUc13Q3jl8ew9EWBPoUEbpAwzdp7y8nk42EHM5u9rIi1b+WM?=
- =?us-ascii?Q?QmXnM+yHIAZuSUsn4pKkvIacb8quWizxvENeT0AdcU/wSiex1F4F3XZXeNOI?=
- =?us-ascii?Q?kz5hxtj+Sv2ki0gvGwRE5jIL0ukEtkMUm52gyYj3dj6BtJnGm0Tbiody4UTt?=
- =?us-ascii?Q?niq8OovXuB8/O/7ilqFjhYz8kahUM4lnBcgn2hA3TRoITXNH7v5LoeZxoeR9?=
- =?us-ascii?Q?rFWyuXscILj2wrjoutFetzetvqNHtshs0TfMiKnTAQADsYoyp21XlFEbOlLD?=
- =?us-ascii?Q?4rXJfOvRS3jxLiFhoADMYrhJ7g4c2/m4h8sMapXC9IKcle4tPF1A6CZJxToM?=
- =?us-ascii?Q?XlrQTI1JU33Z/ZkpHHDwkHI=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 305b7b61-0c31-4019-f0e5-08d9fab52537
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2022 12:23:37.1489
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BvbBjRRtLJ4mIv0z/wvkY7EaMeOitYb1iJPSpev6DSgAzEZAxH1CmcFBkEztFi4eQHCf/PzRYfvg/TLs2sQt5A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7152
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-02-25 16:17:30, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> Same to commit c586f53ae159c6c("clk: imx8mq: remove SYS PLL 1/2 clock gates"),
-> This patchset is to remove the pll gate, but still keep the pll out gate
-> following NXP vendor tree.
-> 
+The purpose of the memcg_drain_all_list_lrus() is list_lrus reparenting.
+It is very similar to memcg_reparent_objcgs(). Rename it to
+memcg_reparent_list_lrus() so that the name can more consistent with
+memcg_reparent_objcgs().
 
-For the entire patchset:
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ include/linux/list_lru.h |  2 +-
+ mm/list_lru.c            | 24 ++++++++++++------------
+ mm/memcontrol.c          |  6 +++---
+ 3 files changed, 16 insertions(+), 16 deletions(-)
 
-Reviewed-by: Abel Vesa <abel.vesa@nxp.com>
+diff --git a/include/linux/list_lru.h b/include/linux/list_lru.h
+index c36db6dc2a65..4b00fd8cb373 100644
+--- a/include/linux/list_lru.h
++++ b/include/linux/list_lru.h
+@@ -78,7 +78,7 @@ int __list_lru_init(struct list_lru *lru, bool memcg_aware,
+ int memcg_list_lru_alloc(struct mem_cgroup *memcg, struct list_lru *lru,
+ 			 gfp_t gfp);
+ int memcg_update_all_list_lrus(int num_memcgs);
+-void memcg_drain_all_list_lrus(struct mem_cgroup *src, struct mem_cgroup *dst);
++void memcg_reparent_list_lrus(struct mem_cgroup *memcg, struct mem_cgroup *parent);
+ 
+ /**
+  * list_lru_add: add an element to the lru list's tail
+diff --git a/mm/list_lru.c b/mm/list_lru.c
+index fc938d8ff48f..488dacd1f8ff 100644
+--- a/mm/list_lru.c
++++ b/mm/list_lru.c
+@@ -457,8 +457,8 @@ int memcg_update_all_list_lrus(int new_size)
+ 	return ret;
+ }
+ 
+-static void memcg_drain_list_lru_node(struct list_lru *lru, int nid,
+-				      int src_idx, struct mem_cgroup *dst_memcg)
++static void memcg_reparent_list_lru_node(struct list_lru *lru, int nid,
++					 int src_idx, struct mem_cgroup *dst_memcg)
+ {
+ 	struct list_lru_node *nlru = &lru->node[nid];
+ 	int dst_idx = dst_memcg->kmemcg_id;
+@@ -486,22 +486,22 @@ static void memcg_drain_list_lru_node(struct list_lru *lru, int nid,
+ 	spin_unlock_irq(&nlru->lock);
+ }
+ 
+-static void memcg_drain_list_lru(struct list_lru *lru,
+-				 int src_idx, struct mem_cgroup *dst_memcg)
++static void memcg_reparent_list_lru(struct list_lru *lru,
++				    int src_idx, struct mem_cgroup *dst_memcg)
+ {
+ 	int i;
+ 
+ 	for_each_node(i)
+-		memcg_drain_list_lru_node(lru, i, src_idx, dst_memcg);
++		memcg_reparent_list_lru_node(lru, i, src_idx, dst_memcg);
+ 
+ 	memcg_list_lru_free(lru, src_idx);
+ }
+ 
+-void memcg_drain_all_list_lrus(struct mem_cgroup *src, struct mem_cgroup *dst)
++void memcg_reparent_list_lrus(struct mem_cgroup *memcg, struct mem_cgroup *parent)
+ {
+ 	struct cgroup_subsys_state *css;
+ 	struct list_lru *lru;
+-	int src_idx = src->kmemcg_id;
++	int src_idx = memcg->kmemcg_id;
+ 
+ 	/*
+ 	 * Change kmemcg_id of this cgroup and all its descendants to the
+@@ -517,17 +517,17 @@ void memcg_drain_all_list_lrus(struct mem_cgroup *src, struct mem_cgroup *dst)
+ 	 * call.
+ 	 */
+ 	rcu_read_lock();
+-	css_for_each_descendant_pre(css, &src->css) {
+-		struct mem_cgroup *memcg;
++	css_for_each_descendant_pre(css, &memcg->css) {
++		struct mem_cgroup *child;
+ 
+-		memcg = mem_cgroup_from_css(css);
+-		memcg->kmemcg_id = dst->kmemcg_id;
++		child = mem_cgroup_from_css(css);
++		child->kmemcg_id = parent->kmemcg_id;
+ 	}
+ 	rcu_read_unlock();
+ 
+ 	mutex_lock(&list_lrus_mutex);
+ 	list_for_each_entry(lru, &memcg_list_lrus, list)
+-		memcg_drain_list_lru(lru, src_idx, dst);
++		memcg_reparent_list_lru(lru, src_idx, parent);
+ 	mutex_unlock(&list_lrus_mutex);
+ }
+ 
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index c8d39d7fc2e5..87ee5b431c05 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -3656,7 +3656,7 @@ static void memcg_offline_kmem(struct mem_cgroup *memcg)
+ 	memcg_reparent_objcgs(memcg, parent);
+ 
+ 	/*
+-	 * memcg_drain_all_list_lrus() can change memcg->kmemcg_id.
++	 * memcg_reparent_list_lrus() can change memcg->kmemcg_id.
+ 	 * Cache it to local @kmemcg_id.
+ 	 */
+ 	kmemcg_id = memcg->kmemcg_id;
+@@ -3665,9 +3665,9 @@ static void memcg_offline_kmem(struct mem_cgroup *memcg)
+ 	 * After we have finished memcg_reparent_objcgs(), all list_lrus
+ 	 * corresponding to this cgroup are guaranteed to remain empty.
+ 	 * The ordering is imposed by list_lru_node->lock taken by
+-	 * memcg_drain_all_list_lrus().
++	 * memcg_reparent_list_lrus().
+ 	 */
+-	memcg_drain_all_list_lrus(memcg, parent);
++	memcg_reparent_list_lrus(memcg, parent);
+ 
+ 	memcg_free_cache_id(kmemcg_id);
+ }
+-- 
+2.11.0
 
-> Peng Fan (3):
->   clk: imx8mm: remove SYS PLL 1/2 clock gates
->   clk: imx8mn: remove SYS PLL 1/2 clock gates
->   clk: imx8mp: remove SYS PLL 1/2 clock gates
-> 
->  drivers/clk/imx/clk-imx8mm.c | 49 ++++++++++++-----------------------
->  drivers/clk/imx/clk-imx8mn.c | 50 ++++++++++++------------------------
->  drivers/clk/imx/clk-imx8mp.c | 48 ++++++++++++----------------------
->  3 files changed, 48 insertions(+), 99 deletions(-)
-> 
-> -- 
-> 2.25.1
->
