@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 447A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D72C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234906AbiB1Rlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:41:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42198 "EHLO
+        id S235260AbiB1RmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:42:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238404AbiB1Rhv (ORCPT
+        with ESMTP id S238377AbiB1Rhn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:37:51 -0500
+        Mon, 28 Feb 2022 12:37:43 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3DDDDECA;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4001DFB6;
         Mon, 28 Feb 2022 09:32:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 522676140B;
-        Mon, 28 Feb 2022 17:32:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 343A7C340E7;
-        Mon, 28 Feb 2022 17:32:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1513861459;
+        Mon, 28 Feb 2022 17:32:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A21BC340E7;
+        Mon, 28 Feb 2022 17:32:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069533;
-        bh=kUMCLelcyBnmGSrfhG9kHSouDJ5eCfOYfQauTCi5Qkk=;
+        s=korg; t=1646069536;
+        bh=93VhQEaHboX50eHHlwuPWGL8BptRVPbGklzyVUlkH8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VRWo9zWDBYLBhWRwi6ZeuTtA72DqwzBkbcMQZUtyV8nd+V1DsY6Pa3SPy3fMvYmAT
-         i+BBwbDfIYg5v2bSPQKE467tctDLkU2Cs5lTO5gde/qGhbx/3TxyAX777Ha6kPBmq2
-         4nStUwCtwry9zXAXKzKyJ6/5tfuLsWAXji9nMZlY=
+        b=zVEhAjn3gyAzr9lJ+8wSKcbaG/f/ocv8Nzq7hgFhNLhcj+I+qHBrESCkJ9yl4bS7y
+         f45bQwMPTi/jXQhDaNxzwGCb2z+LU570GyZDt4lusTOWu9zUMTLDQOEK5d5/oy69Fp
+         AO6Y03939TQ106SdG5IXxoonNLysMbBV2zk/F1cg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 29/53] spi: spi-zynq-qspi: Fix a NULL pointer dereference in zynq_qspi_exec_mem_op()
-Date:   Mon, 28 Feb 2022 18:24:27 +0100
-Message-Id: <20220228172250.404297965@linuxfoundation.org>
+        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
+        Laibin Qiu <qiulaibin@huawei.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 30/53] configfs: fix a race in configfs_{,un}register_subsystem()
+Date:   Mon, 28 Feb 2022 18:24:28 +0100
+Message-Id: <20220228172250.470518132@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -49,52 +49,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: ChenXiaoSong <chenxiaosong2@huawei.com>
 
-[ Upstream commit ab3824427b848da10e9fe2727f035bbeecae6ff4 ]
+[ Upstream commit 84ec758fb2daa236026506868c8796b0500c047d ]
 
-In zynq_qspi_exec_mem_op(), kzalloc() is directly used in memset(),
-which could lead to a NULL pointer dereference on failure of
-kzalloc().
+When configfs_register_subsystem() or configfs_unregister_subsystem()
+is executing link_group() or unlink_group(),
+it is possible that two processes add or delete list concurrently.
+Some unfortunate interleavings of them can cause kernel panic.
 
-Fix this bug by adding a check of tmpbuf.
+One of cases is:
+A --> B --> C --> D
+A <-- B <-- C <-- D
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+     delete list_head *B        |      delete list_head *C
+--------------------------------|-----------------------------------
+configfs_unregister_subsystem   |   configfs_unregister_subsystem
+  unlink_group                  |     unlink_group
+    unlink_obj                  |       unlink_obj
+      list_del_init             |         list_del_init
+        __list_del_entry        |           __list_del_entry
+          __list_del            |             __list_del
+            // next == C        |
+            next->prev = prev   |
+                                |               next->prev = prev
+            prev->next = next   |
+                                |                 // prev == B
+                                |                 prev->next = next
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
+Fix this by adding mutex when calling link_group() or unlink_group(),
+but parent configfs_subsystem is NULL when config_item is root.
+So I create a mutex configfs_subsystem_mutex.
 
-Builds with CONFIG_SPI_ZYNQ_QSPI=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 67dca5e580f1 ("spi: spi-mem: Add support for Zynq QSPI controller")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Link: https://lore.kernel.org/r/20211130172253.203700-1-zhou1615@umn.edu
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 7063fbf22611 ("[PATCH] configfs: User-driven configuration filesystem")
+Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-zynq-qspi.c | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/configfs/dir.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/spi/spi-zynq-qspi.c b/drivers/spi/spi-zynq-qspi.c
-index 1ced6eb8b3303..b3588240eb39b 100644
---- a/drivers/spi/spi-zynq-qspi.c
-+++ b/drivers/spi/spi-zynq-qspi.c
-@@ -558,6 +558,9 @@ static int zynq_qspi_exec_mem_op(struct spi_mem *mem,
+diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
+index 2992cebb78661..d73d88d9c2598 100644
+--- a/fs/configfs/dir.c
++++ b/fs/configfs/dir.c
+@@ -36,6 +36,14 @@
+  */
+ DEFINE_SPINLOCK(configfs_dirent_lock);
  
- 	if (op->dummy.nbytes) {
- 		tmpbuf = kzalloc(op->dummy.nbytes, GFP_KERNEL);
-+		if (!tmpbuf)
-+			return -ENOMEM;
++/*
++ * All of link_obj/unlink_obj/link_group/unlink_group require that
++ * subsys->su_mutex is held.
++ * But parent configfs_subsystem is NULL when config_item is root.
++ * Use this mutex when config_item is root.
++ */
++static DEFINE_MUTEX(configfs_subsystem_mutex);
 +
- 		memset(tmpbuf, 0xff, op->dummy.nbytes);
- 		reinit_completion(&xqspi->data_completion);
- 		xqspi->txbuf = tmpbuf;
+ static void configfs_d_iput(struct dentry * dentry,
+ 			    struct inode * inode)
+ {
+@@ -1884,7 +1892,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
+ 		group->cg_item.ci_name = group->cg_item.ci_namebuf;
+ 
+ 	sd = root->d_fsdata;
++	mutex_lock(&configfs_subsystem_mutex);
+ 	link_group(to_config_group(sd->s_element), group);
++	mutex_unlock(&configfs_subsystem_mutex);
+ 
+ 	inode_lock_nested(d_inode(root), I_MUTEX_PARENT);
+ 
+@@ -1909,7 +1919,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
+ 	inode_unlock(d_inode(root));
+ 
+ 	if (err) {
++		mutex_lock(&configfs_subsystem_mutex);
+ 		unlink_group(group);
++		mutex_unlock(&configfs_subsystem_mutex);
+ 		configfs_release_fs();
+ 	}
+ 	put_fragment(frag);
+@@ -1956,7 +1968,9 @@ void configfs_unregister_subsystem(struct configfs_subsystem *subsys)
+ 
+ 	dput(dentry);
+ 
++	mutex_lock(&configfs_subsystem_mutex);
+ 	unlink_group(group);
++	mutex_unlock(&configfs_subsystem_mutex);
+ 	configfs_release_fs();
+ }
+ 
 -- 
 2.34.1
 
