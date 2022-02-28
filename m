@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B3DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:37:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A83C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:37:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238325AbiB1Rht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:37:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39994 "EHLO
+        id S238625AbiB1RiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:38:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238196AbiB1RfR (ORCPT
+        with ESMTP id S238121AbiB1Rf1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:35:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD3686E36;
-        Mon, 28 Feb 2022 09:31:16 -0800 (PST)
+        Mon, 28 Feb 2022 12:35:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22AE27D02F;
+        Mon, 28 Feb 2022 09:31:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 852A461359;
-        Mon, 28 Feb 2022 17:31:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CC3FC340F5;
-        Mon, 28 Feb 2022 17:31:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E023261365;
+        Mon, 28 Feb 2022 17:31:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01903C340E7;
+        Mon, 28 Feb 2022 17:31:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069473;
-        bh=E7Nksd3jl9+VASg76mwSXa4BXe5fGV8PjlgQ+VkJpGo=;
+        s=korg; t=1646069481;
+        bh=3eRJEy+ZjS94CDexDLediyf+S+DU9xrQ07WNDcrwUXM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SIEkD6EvBRB07jo2sfwwz/lp8TkOu78jNnqf8xBrXjOz7+6KxumbaR1JF8hnpgZdJ
-         JsEdwxULajLlXFQvdLAXalEzMRt3Fp22Y3/HLIuwMIiZTAsl+C9ua9KIv273TrdLaP
-         eTI4tKYfGh+7PwPG6fVtPmn5Go7ERMUcXaqaPHg4=
+        b=Kxu9hgaH5nVNXrkFznqD6GcBafQMI6y6+8ZmLQmMptCY+HqNlc396ELDtRpTrFgsL
+         +7IDflxpNu77JNJF1Gzaj3BFvXibp20Bg6sktsqzNLOow0uaVnR4UZRvEiKNuFAQLT
+         vWYFPZtaM5YnSAYrd21TUMfI0NxOJihhOd2vS6K4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Nick Gregory <Nick.Gregory@Sophos.com>
-Subject: [PATCH 5.4 09/53] netfilter: nf_tables_offload: incorrect flow offload action array size
-Date:   Mon, 28 Feb 2022 18:24:07 +0100
-Message-Id: <20220228172248.987579826@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.4 36/53] ata: pata_hpt37x: disable primary channel on HPT371
+Date:   Mon, 28 Feb 2022 18:24:34 +0100
+Message-Id: <20220228172250.877933175@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -48,136 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit b1a5983f56e371046dcf164f90bfaf704d2b89f6 upstream.
+commit 8d093e02e898b24c58788b0289e3202317a96d2a upstream.
 
-immediate verdict expression needs to allocate one slot in the flow offload
-action array, however, immediate data expression does not need to do so.
+The HPT371 chip physically has only one channel, the secondary one,
+however the primary channel registers do exist! Thus we have to
+manually disable the non-existing channel if the BIOS hasn't done this
+already. Similarly to the pata_hpt3x2n driver, always disable the
+primary channel.
 
-fwd and dup expression need to allocate one slot, this is missing.
-
-Add a new offload_action interface to report if this expression needs to
-allocate one slot in the flow offload action array.
-
-Fixes: be2861dc36d7 ("netfilter: nft_{fwd,dup}_netdev: add offload support")
-Reported-and-tested-by: Nick Gregory <Nick.Gregory@Sophos.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 669a5db411d8 ("[libata] Add a bunch of PATA drivers.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_tables.h         |    2 +-
- include/net/netfilter/nf_tables_offload.h |    2 --
- net/netfilter/nf_tables_offload.c         |    3 ++-
- net/netfilter/nft_dup_netdev.c            |    6 ++++++
- net/netfilter/nft_fwd_netdev.c            |    6 ++++++
- net/netfilter/nft_immediate.c             |   12 +++++++++++-
- 6 files changed, 26 insertions(+), 5 deletions(-)
+ drivers/ata/pata_hpt37x.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -805,7 +805,7 @@ struct nft_expr_ops {
- 	int				(*offload)(struct nft_offload_ctx *ctx,
- 						   struct nft_flow_rule *flow,
- 						   const struct nft_expr *expr);
--	u32				offload_flags;
-+	bool				(*offload_action)(const struct nft_expr *expr);
- 	const struct nft_expr_type	*type;
- 	void				*data;
- };
---- a/include/net/netfilter/nf_tables_offload.h
-+++ b/include/net/netfilter/nf_tables_offload.h
-@@ -60,8 +60,6 @@ struct nft_flow_rule {
- 	struct flow_rule	*rule;
- };
+--- a/drivers/ata/pata_hpt37x.c
++++ b/drivers/ata/pata_hpt37x.c
+@@ -918,6 +918,20 @@ static int hpt37x_init_one(struct pci_de
+ 	pci_write_config_byte(dev, 0x5a, irqmask);
  
--#define NFT_OFFLOAD_F_ACTION	(1 << 0)
--
- void nft_flow_rule_set_addr_type(struct nft_flow_rule *flow,
- 				 enum flow_dissector_key_id addr_type);
- 
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -55,7 +55,8 @@ struct nft_flow_rule *nft_flow_rule_crea
- 
- 	expr = nft_expr_first(rule);
- 	while (nft_expr_more(rule, expr)) {
--		if (expr->ops->offload_flags & NFT_OFFLOAD_F_ACTION)
-+		if (expr->ops->offload_action &&
-+		    expr->ops->offload_action(expr))
- 			num_actions++;
- 
- 		expr = nft_expr_next(expr);
---- a/net/netfilter/nft_dup_netdev.c
-+++ b/net/netfilter/nft_dup_netdev.c
-@@ -67,6 +67,11 @@ static int nft_dup_netdev_offload(struct
- 	return nft_fwd_dup_netdev_offload(ctx, flow, FLOW_ACTION_MIRRED, oif);
- }
- 
-+static bool nft_dup_netdev_offload_action(const struct nft_expr *expr)
-+{
-+	return true;
-+}
+ 	/*
++	 * HPT371 chips physically have only one channel, the secondary one,
++	 * but the primary channel registers do exist!  Go figure...
++	 * So,  we manually disable the non-existing channel here
++	 * (if the BIOS hasn't done this already).
++	 */
++	if (dev->device == PCI_DEVICE_ID_TTI_HPT371) {
++		u8 mcr1;
 +
- static struct nft_expr_type nft_dup_netdev_type;
- static const struct nft_expr_ops nft_dup_netdev_ops = {
- 	.type		= &nft_dup_netdev_type,
-@@ -75,6 +80,7 @@ static const struct nft_expr_ops nft_dup
- 	.init		= nft_dup_netdev_init,
- 	.dump		= nft_dup_netdev_dump,
- 	.offload	= nft_dup_netdev_offload,
-+	.offload_action	= nft_dup_netdev_offload_action,
- };
- 
- static struct nft_expr_type nft_dup_netdev_type __read_mostly = {
---- a/net/netfilter/nft_fwd_netdev.c
-+++ b/net/netfilter/nft_fwd_netdev.c
-@@ -77,6 +77,11 @@ static int nft_fwd_netdev_offload(struct
- 	return nft_fwd_dup_netdev_offload(ctx, flow, FLOW_ACTION_REDIRECT, oif);
- }
- 
-+static bool nft_fwd_netdev_offload_action(const struct nft_expr *expr)
-+{
-+	return true;
-+}
++		pci_read_config_byte(dev, 0x50, &mcr1);
++		mcr1 &= ~0x04;
++		pci_write_config_byte(dev, 0x50, mcr1);
++	}
 +
- struct nft_fwd_neigh {
- 	enum nft_registers	sreg_dev:8;
- 	enum nft_registers	sreg_addr:8;
-@@ -219,6 +224,7 @@ static const struct nft_expr_ops nft_fwd
- 	.dump		= nft_fwd_netdev_dump,
- 	.validate	= nft_fwd_validate,
- 	.offload	= nft_fwd_netdev_offload,
-+	.offload_action	= nft_fwd_netdev_offload_action,
- };
- 
- static const struct nft_expr_ops *
---- a/net/netfilter/nft_immediate.c
-+++ b/net/netfilter/nft_immediate.c
-@@ -163,6 +163,16 @@ static int nft_immediate_offload(struct
- 	return 0;
- }
- 
-+static bool nft_immediate_offload_action(const struct nft_expr *expr)
-+{
-+	const struct nft_immediate_expr *priv = nft_expr_priv(expr);
-+
-+	if (priv->dreg == NFT_REG_VERDICT)
-+		return true;
-+
-+	return false;
-+}
-+
- static const struct nft_expr_ops nft_imm_ops = {
- 	.type		= &nft_imm_type,
- 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_immediate_expr)),
-@@ -173,7 +183,7 @@ static const struct nft_expr_ops nft_imm
- 	.dump		= nft_immediate_dump,
- 	.validate	= nft_immediate_validate,
- 	.offload	= nft_immediate_offload,
--	.offload_flags	= NFT_OFFLOAD_F_ACTION,
-+	.offload_action	= nft_immediate_offload_action,
- };
- 
- struct nft_expr_type nft_imm_type __read_mostly = {
++	/*
+ 	 * default to pci clock. make sure MA15/16 are set to output
+ 	 * to prevent drives having problems with 40-pin cables. Needed
+ 	 * for some drives such as IBM-DTLA which will not enter ready
 
 
