@@ -2,123 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7D8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C02C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237839AbiB1RhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:37:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
+        id S236156AbiB1RhJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:37:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238873AbiB1Rd6 (ORCPT
+        with ESMTP id S238870AbiB1Rd6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:33:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4878B9399A
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:30:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646069433;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TBNyyVKFIgtXo2siONgO+K8rh6ETB7+JIbrxg9YBDkY=;
-        b=RDZg6FLdaLIpDOd+CDVdMEsTHyKOp276FRMvtUA75t+rQCb6a1tA74+LfJz8ygjmhVsGM6
-        Mh2lier5aB6ddsnIqSpirj5WPiF7a5dbJK9UjBuxHDdu7R7wjSjYj5AaN7NE3ZJZA8RF/Y
-        gQwHgSxgmjLTOVBbKAGjkVoZKUa1dxk=
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
- [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-567-gBEVDOdGOOeCOY5olWqBiQ-1; Mon, 28 Feb 2022 12:30:32 -0500
-X-MC-Unique: gBEVDOdGOOeCOY5olWqBiQ-1
-Received: by mail-pl1-f198.google.com with SMTP id x6-20020a1709029a4600b0014efe26b04fso5084324plv.21
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:30:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TBNyyVKFIgtXo2siONgO+K8rh6ETB7+JIbrxg9YBDkY=;
-        b=4JetjpUMRjBdsXQcFvYsv+eclTCfGg31G1RQIjTs7v3O6vHNresqgUHi7xb0O7Pv6Q
-         rl0b5jNIrhoyzUGX/lS9WVg4mQ68fkgqm/GyPE6xaAMnn+GozciSEoa+7WxO/TM8b16R
-         AT8CkNeOWTyhtV4RxbUkGtEPnbrLhni//LbUQHMB+8MOet1YaNuzMeXgp6YXTWVjAq4W
-         SKuEBV92Ir79Ofjt1fzfZoALhnNlNd30mc+4KVwcapAqllkx/B7//6If+G2tubC+59tc
-         TMdBr2vOuXg12tNXfskl58RhqcXm+qA2Z5sHFPO+OcLbxzeaPsDFbbpJSFNiZ275vcf6
-         sDMA==
-X-Gm-Message-State: AOAM530e1HzofgNrdinWLTSM/K4GkDyyZdJ7s/zne/4b4sdjyJGs8dpc
-        nGbIJCTGBdpqVQMWM/eXfA5Rb2Iskc1VhehFE4wAcKPjjz5FFovzZAiRffeh8aouBvxylbP2jWR
-        boAMkDqqXN4ftVKKsfgPgYKT3FbMnWXKWRxxlDMah
-X-Received: by 2002:a17:90a:560a:b0:1bc:72e7:3c13 with SMTP id r10-20020a17090a560a00b001bc72e73c13mr17481032pjf.246.1646069430727;
-        Mon, 28 Feb 2022 09:30:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw1v8+Lu0rP+9NAXHotlnTBxz36fDCgljyirfY6qlP//hmJIiUmPdBMWOJ0HtOZuZM/abGbibrD7d754N3pyLA=
-X-Received: by 2002:a17:90a:560a:b0:1bc:72e7:3c13 with SMTP id
- r10-20020a17090a560a00b001bc72e73c13mr17481014pjf.246.1646069430520; Mon, 28
- Feb 2022 09:30:30 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2C393992;
+        Mon, 28 Feb 2022 09:30:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CF96E6140B;
+        Mon, 28 Feb 2022 17:30:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E592CC340F1;
+        Mon, 28 Feb 2022 17:30:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069443;
+        bh=0Ur9b9NVUv1Ys4I0wG9XQmOVmgDkBGlKP/zekti89a8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RtbzzRTNEFqpRBGZ/64H6+NfCY+T3Y6U5BEBDQKDzFa2ZJSQ0quABRQGmFV+4TYAL
+         CJrHf0eoZXLIuIQQxcvamXuaVD8q1QaKZW2hIrKbJgW97D3A4XBdmJQp/ezfV8xS65
+         UzFkHpIKp4HIjGiGf/5i1E8u1SFhXWeFOMQdbRJg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Matthias Reichl <hias@horus.com>,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [PATCH 5.4 21/53] drm/edid: Always set RGB444
+Date:   Mon, 28 Feb 2022 18:24:19 +0100
+Message-Id: <20220228172249.865887796@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
+References: <20220228172248.232273337@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
- <20220224110828.2168231-2-benjamin.tissoires@redhat.com> <YhdtKN7qodX7VDPV@kroah.com>
-In-Reply-To: <YhdtKN7qodX7VDPV@kroah.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Mon, 28 Feb 2022 18:30:19 +0100
-Message-ID: <CAO-hwJL73en_7thxM6Xt-RC2kqp=D8oyWuU_EL60hCsFCYPrsg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 1/6] HID: initial BPF implementation
-To:     Greg KH <greg@kroah.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 12:41 PM Greg KH <greg@kroah.com> wrote:
->
-> On Thu, Feb 24, 2022 at 12:08:23PM +0100, Benjamin Tissoires wrote:
-> > index 000000000000..243ac45a253f
-> > --- /dev/null
-> > +++ b/include/uapi/linux/bpf_hid.h
-> > @@ -0,0 +1,39 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-or-later WITH Linux-syscall-note */
-> > +
-> > +/*
-> > + *  HID BPF public headers
-> > + *
-> > + *  Copyright (c) 2021 Benjamin Tissoires
-> > + */
-> > +
-> > +#ifndef _UAPI__LINUX_BPF_HID_H__
-> > +#define _UAPI__LINUX_BPF_HID_H__
-> > +
-> > +#include <linux/types.h>
-> > +
-> > +#define HID_BPF_MAX_BUFFER_SIZE              16384           /* 16kb */
-> > +
-> > +struct hid_device;
-> > +
-> > +enum hid_bpf_event {
-> > +     HID_BPF_UNDEF = 0,
-> > +     HID_BPF_DEVICE_EVENT,
-> > +};
-> > +
-> > +/* type is HID_BPF_DEVICE_EVENT */
-> > +struct hid_bpf_ctx_device_event {
-> > +     __u8 data[HID_BPF_MAX_BUFFER_SIZE];
-> > +     unsigned long size;
->
-> That's not a valid type to cross the user/kernel boundry, shouldn't it
-> be "__u64"?  But really, isn't __u32 enough here?
+From: Maxime Ripard <maxime@cerno.tech>
 
-Fixed locally with a __u16 instead. Will be present in v2.
+commit ecbd4912a693b862e25cba0a6990a8c95b00721e upstream.
 
-Cheers,
-Benjamin
+In order to fill the drm_display_info structure each time an EDID is
+read, the code currently will call drm_add_display_info with the parsed
+EDID.
+
+drm_add_display_info will then call drm_reset_display_info to reset all
+the fields to 0, and then set them to the proper value depending on the
+EDID.
+
+In the color_formats case, we will thus report that we don't support any
+color format, and then fill it back with RGB444 plus the additional
+formats described in the EDID Feature Support byte.
+
+However, since that byte only contains format-related bits since the 1.4
+specification, this doesn't happen if the EDID is following an earlier
+specification. In turn, it means that for one of these EDID, we end up
+with color_formats set to 0.
+
+The EDID 1.3 specification never really specifies what it means by RGB
+exactly, but since both HDMI and DVI will use RGB444, it's fairly safe
+to assume it's supposed to be RGB444.
+
+Let's move the addition of RGB444 to color_formats earlier in
+drm_add_display_info() so that it's always set for a digital display.
+
+Fixes: da05a5a71ad8 ("drm: parse color format support for digital displays")
+Cc: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Reported-by: Matthias Reichl <hias@horus.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220203115416.1137308-1-maxime@cerno.tech
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/gpu/drm/drm_edid.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -4659,6 +4659,7 @@ u32 drm_add_display_info(struct drm_conn
+ 	if (!(edid->input & DRM_EDID_INPUT_DIGITAL))
+ 		return quirks;
+ 
++	info->color_formats |= DRM_COLOR_FORMAT_RGB444;
+ 	drm_parse_cea_ext(connector, edid);
+ 
+ 	/*
+@@ -4707,7 +4708,6 @@ u32 drm_add_display_info(struct drm_conn
+ 	DRM_DEBUG("%s: Assigning EDID-1.4 digital sink color depth as %d bpc.\n",
+ 			  connector->name, info->bpc);
+ 
+-	info->color_formats |= DRM_COLOR_FORMAT_RGB444;
+ 	if (edid->features & DRM_EDID_FEATURE_RGB_YCRCB444)
+ 		info->color_formats |= DRM_COLOR_FORMAT_YCRCB444;
+ 	if (edid->features & DRM_EDID_FEATURE_RGB_YCRCB422)
+
 
