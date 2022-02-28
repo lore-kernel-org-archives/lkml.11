@@ -2,127 +2,409 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BB2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 646C7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237975AbiB1Qk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 11:40:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55372 "EHLO
+        id S237968AbiB1QmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 11:42:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbiB1Qk4 (ORCPT
+        with ESMTP id S233463AbiB1QmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 11:40:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 93E97811AD
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:40:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646066415;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TVHqe2Rl4ckESyri6fM5aL5b86W/vuj/KYSXZXZ7fFE=;
-        b=iaj4voUo5sc+H9lrCriGGwiO0UDlRSfwxjqZ1SJeO2X4ZdK79SQwLlPjlFWdulhH4XbVJo
-        nsZm0w0otnhTi3AQyzqYLa/x0DQPBZPXwnWyo1xHbMyT3peMJb8SYMcb4/sUC5pbqmozx1
-        QSpCifi8be0801iU2Cvqn7uagO7eoeM=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-111-B_1wxtUdOgSwqe0HRGA7Vg-1; Mon, 28 Feb 2022 11:40:13 -0500
-X-MC-Unique: B_1wxtUdOgSwqe0HRGA7Vg-1
-Received: by mail-qv1-f70.google.com with SMTP id z8-20020a0cda88000000b00432946b4c84so11701729qvj.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:40:13 -0800 (PST)
+        Mon, 28 Feb 2022 11:42:17 -0500
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 185FF60ABD
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:41:38 -0800 (PST)
+Received: by mail-io1-xd29.google.com with SMTP id 195so15406221iou.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:41:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hPakznVuhJ1xaWvKgzoZiETkDKgXaYCtu8p9TdQ8faQ=;
+        b=fgdF3GXIaRoTZMBPTvi+jmEsukupYacTFncMKDvOHsKaCmZUSUxZWbpPIfDdPRviK6
+         zCi9MpDYol1ups/FT/J4zVt0gJG8hK9/HWjW92WOMx0ZENuqUyk5CxpihfOwSnq6O39N
+         tZO+ax3lG7SbLSzbhJXti12T048Ny8FD7/PdiQfz2x4sHutvlydGwyJ5Tpk0aLwAakn9
+         zuoMVaq3MqNUNy854XEU4sWZi5SYw23tqSrxSRDHXcyWDlevRkCA24H8IPt3RZLUw9Ot
+         Txyu5kJCrVwDH5CSf9xOLZSqV8TmZqBWuYSgFotv/1vcQq8K4yyf4/2iaIgj4ph7p98q
+         7sIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TVHqe2Rl4ckESyri6fM5aL5b86W/vuj/KYSXZXZ7fFE=;
-        b=G12qMlYOysNJH8VqLv61hx5FnXQjUcHH5nbdkqMGSRPocOckIsKujjlblm8IES+TI8
-         xcoN9dMH9gXLlBppd5U5iAjGxFSY7F3cmK9B1lQO8iBMM7hhvWuE8IDK6gsmn2bTLSLO
-         hGH5SvR3iwrGzfSpoHtBG9u0gMXB+1k5SwbFVeAOfkdRHWLbRf9wLmixy6V5vMg3f04I
-         inmsAj4H8+iFavheqtIfPgLppQPwpVgEZAarkR6ljbanMclbjxJTg63a45PzFfW5EwpT
-         X/O1JQuYTGrhOqoPJj1hqLFnT4ZlrXVfStFNUqujtnIjZBtJRpSf+2B67//K8bBU7Bno
-         8iGw==
-X-Gm-Message-State: AOAM531q0M8A+ulAj3o6IAOOYj65/9SxTsd6cs0zIYYjXNeUb30UtuwW
-        grtGiepUNIw/80oZX8xxJAqMW0sx6d4588cWjIViwjltf0f95kVGIdDAyFWVUErMm5qw3LuMsk+
-        quoZBPjLwk0m4CdjRHZYGkJkw
-X-Received: by 2002:a37:4c3:0:b0:649:714a:54b5 with SMTP id 186-20020a3704c3000000b00649714a54b5mr10879790qke.386.1646066413151;
-        Mon, 28 Feb 2022 08:40:13 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwPM3UwqEK7pbmAUbuMH0uT7fW30UXnkQrEEWyAFsc9g1GKfpQq0EkkcRM2OxFNP3f99Dtc+w==
-X-Received: by 2002:a37:4c3:0:b0:649:714a:54b5 with SMTP id 186-20020a3704c3000000b00649714a54b5mr10879768qke.386.1646066412871;
-        Mon, 28 Feb 2022 08:40:12 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id 10-20020ac8594a000000b002de6f5c4a7csm7306148qtz.92.2022.02.28.08.40.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 08:40:12 -0800 (PST)
-Date:   Mon, 28 Feb 2022 08:40:07 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, knsathya@kernel.org, pbonzini@redhat.com,
-        sdeep@vmware.com, seanjc@google.com, tony.luck@intel.com,
-        vkuznets@redhat.com, wanpengli@tencent.com,
-        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org, David Rientjes <rientjes@google.com>
-Subject: Re: [PATCHv4 01/30] x86/mm: Fix warning on build with
- X86_MEM_ENCRYPT=y
-Message-ID: <20220228164007.nfrg7xvrl4blzzrm@treble>
-References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
- <20220224155630.52734-2-kirill.shutemov@linux.intel.com>
- <20220227220130.23yjme7jucxo266l@treble>
- <20220228162056.gul22bjr4w6zjslq@black.fi.intel.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hPakznVuhJ1xaWvKgzoZiETkDKgXaYCtu8p9TdQ8faQ=;
+        b=4JnyoOSwiseVXNo7omKTVve0dazQWwf0Dpp6OoqyXPUK/Ch7yDRNNeimXEdJQkPVCy
+         TrNHiq4JPcpuVd6T5YD/Alcf+Z5yIKPbcsz3vdDnjjn5+e05qLfJMpMgr24tKmDeU7gr
+         xIy3ZxPUQ6WcoOs6C9E9CAAw9qqL9rBcJdIIgc3lC0DDRPEX1XVJ2BbpE6MpTe20lcJL
+         bz3o5jAYP3A5Zy9drxHay7U0XA9wAOpCJ2o9+OlhL4UB3vkgfZN6Y2YAEXe6/VOKMxSq
+         Hbe40LUkwgewa0c98Jvu4D6a1szl7oce97Nqk4HDIAcwFNaBJyMLjL7cq/fh+AndlQL5
+         rFIQ==
+X-Gm-Message-State: AOAM5319PnsdNAp6cYOO3LppIGK+otF3d3UD8DE3sqSsBA2RrjPT3y7w
+        +d94fRcEmP9sB6PkhfNpGZFDsA==
+X-Google-Smtp-Source: ABdhPJzPb7W4ahDgwTq0Ym69XmRY6CAObJs0KHfXc3mdTyzDcSuUsC+7U8yOsMT6GgNgXeb6QWxpTQ==
+X-Received: by 2002:a05:6638:2387:b0:314:7ce4:1be8 with SMTP id q7-20020a056638238700b003147ce41be8mr18151326jat.286.1646066497383;
+        Mon, 28 Feb 2022 08:41:37 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id g10-20020a92520a000000b002c28ee02997sm6660207ilb.54.2022.02.28.08.41.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 08:41:36 -0800 (PST)
+Message-ID: <043bd7c6-97af-26ae-78fa-8b22b0e5606d@linaro.org>
+Date:   Mon, 28 Feb 2022 10:41:35 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220228162056.gul22bjr4w6zjslq@black.fi.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 16/27] bus: mhi: ep: Add support for managing MHI state
+ machine
+Content-Language: en-US
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        mhi@lists.linux.dev
+Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
+        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
+        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
+        quic_vbadigan@quicinc.com, quic_cang@quicinc.com,
+        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
+ <20220228124344.77359-17-manivannan.sadhasivam@linaro.org>
+From:   Alex Elder <elder@linaro.org>
+In-Reply-To: <20220228124344.77359-17-manivannan.sadhasivam@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 07:20:56PM +0300, Kirill A. Shutemov wrote:
-> On Sun, Feb 27, 2022 at 02:01:30PM -0800, Josh Poimboeuf wrote:
-> > On Thu, Feb 24, 2022 at 06:56:01PM +0300, Kirill A. Shutemov wrote:
-> > > So far, AMD_MEM_ENCRYPT is the only user of X86_MEM_ENCRYPT. TDX will be
-> > > the second. It will make mem_encrypt.c build without AMD_MEM_ENCRYPT,
-> > > which triggers a warning:
-> > > 
-> > > arch/x86/mm/mem_encrypt.c:69:13: warning: no previous prototype for
-> > > 	function 'mem_encrypt_init' [-Wmissing-prototypes]
-> > > 
-> > > Fix it by moving mem_encrypt_init() declaration outside of #ifdef
-> > > CONFIG_AMD_MEM_ENCRYPT.
-> > > 
-> > > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > > Fixes: 20f07a044a76 ("x86/sev: Move common memory encryption code to mem_encrypt.c")
-> > > Acked-by: David Rientjes <rientjes@google.com>
-> > 
-> > The patch title, warning, and "Fixes" tag tend to give the impression
-> > this is fixing a real user-visible bug.  But the bug is theoretical, as
-> > it's not possible to enable X86_MEM_ENCRYPT without AMD_MEM_ENCRYPT,
-> > until patch 27.
-> > 
-> > IMO it would be preferable to just squash this change with patch 27.
-> > 
-> > Having it as a separate patch is also fine, but it shouldn't be
-> > described as a fix or use the Fixes tag.  It's more of a preparatory
-> > patch.
+On 2/28/22 6:43 AM, Manivannan Sadhasivam wrote:
+> Add support for managing the MHI state machine by controlling the state
+> transitions. Only the following MHI state transitions are supported:
 > 
-> maintainer-tip.rst seems disagree with you:
+> 1. Ready state
+> 2. M0 state
+> 3. M3 state
+> 4. SYS_ERR state
 > 
->    A Fixes tag should be added even for changes which do not need to be
->    backported to stable kernels, i.e. when addressing a recently introduced
->    issue which only affects tip or the current head of mainline.
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+Some minor comments below, but otherwise:
+
+Reviewed-by: Alex Elder <elder@linaro.org.
+
+> ---
+>   drivers/bus/mhi/ep/Makefile   |   2 +-
+>   drivers/bus/mhi/ep/internal.h |  11 +++
+>   drivers/bus/mhi/ep/main.c     |  54 +++++++++++++-
+>   drivers/bus/mhi/ep/sm.c       | 136 ++++++++++++++++++++++++++++++++++
+>   include/linux/mhi_ep.h        |  12 +++
+>   5 files changed, 213 insertions(+), 2 deletions(-)
+>   create mode 100644 drivers/bus/mhi/ep/sm.c
 > 
-> I will leave it as is.
+> diff --git a/drivers/bus/mhi/ep/Makefile b/drivers/bus/mhi/ep/Makefile
+> index 7ba0e04801eb..aad85f180b70 100644
+> --- a/drivers/bus/mhi/ep/Makefile
+> +++ b/drivers/bus/mhi/ep/Makefile
+> @@ -1,2 +1,2 @@
+>   obj-$(CONFIG_MHI_BUS_EP) += mhi_ep.o
+> -mhi_ep-y := main.o mmio.o ring.o
+> +mhi_ep-y := main.o mmio.o ring.o sm.o
+> diff --git a/drivers/bus/mhi/ep/internal.h b/drivers/bus/mhi/ep/internal.h
+> index 8753ae93eda3..536351218685 100644
+> --- a/drivers/bus/mhi/ep/internal.h
+> +++ b/drivers/bus/mhi/ep/internal.h
+> @@ -144,6 +144,11 @@ struct mhi_ep_event {
+>   	struct mhi_ep_ring ring;
+>   };
+>   
+> +struct mhi_ep_state_transition {
+> +	struct list_head node;
+> +	enum mhi_state state;
+> +};
+> +
+>   struct mhi_ep_chan {
+>   	char *name;
+>   	struct mhi_ep_device *mhi_dev;
+> @@ -198,5 +203,11 @@ void mhi_ep_mmio_update_ner(struct mhi_ep_cntrl *mhi_cntrl);
+>   /* MHI EP core functions */
+>   int mhi_ep_send_state_change_event(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_state state);
+>   int mhi_ep_send_ee_event(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_ee_type exec_env);
+> +bool mhi_ep_check_mhi_state(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_state cur_mhi_state,
+> +			    enum mhi_state mhi_state);
+> +int mhi_ep_set_mhi_state(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_state mhi_state);
+> +int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl);
+> +int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl);
+> +int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl);
+>   
+>   #endif
+> diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
+> index 903f9bd3e03d..7a29543586d0 100644
+> --- a/drivers/bus/mhi/ep/main.c
+> +++ b/drivers/bus/mhi/ep/main.c
+> @@ -106,6 +106,43 @@ static int mhi_ep_send_cmd_comp_event(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_e
+>   	return mhi_ep_send_event(mhi_cntrl, 0, &event, 0);
+>   }
+>   
+> +static void mhi_ep_state_worker(struct work_struct *work)
+> +{
+> +	struct mhi_ep_cntrl *mhi_cntrl = container_of(work, struct mhi_ep_cntrl, state_work);
+> +	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+> +	struct mhi_ep_state_transition *itr, *tmp;
+> +	unsigned long flags;
+> +	LIST_HEAD(head);
+> +	int ret;
+> +
+> +	spin_lock_irqsave(&mhi_cntrl->list_lock, flags);
+> +	list_splice_tail_init(&mhi_cntrl->st_transition_list, &head);
+> +	spin_unlock_irqrestore(&mhi_cntrl->list_lock, flags);
+> +
+> +	list_for_each_entry_safe(itr, tmp, &head, node) {
+> +		list_del(&itr->node);
+> +		dev_dbg(dev, "Handling MHI state transition to %s\n",
+> +			 mhi_state_str(itr->state));
+> +
+> +		switch (itr->state) {
+> +		case MHI_STATE_M0:
+> +			ret = mhi_ep_set_m0_state(mhi_cntrl);
+> +			if (ret)
+> +				dev_err(dev, "Failed to transition to M0 state\n");
+> +			break;
+> +		case MHI_STATE_M3:
+> +			ret = mhi_ep_set_m3_state(mhi_cntrl);
+> +			if (ret)
+> +				dev_err(dev, "Failed to transition to M3 state\n");
+> +			break;
+> +		default:
+> +			dev_err(dev, "Invalid MHI state transition: %d\n", itr->state);
+> +			break;
+> +		}
+> +		kfree(itr);
+> +	}
+> +}
+> +
+>   static void mhi_ep_release_device(struct device *dev)
+>   {
+>   	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
+> @@ -315,6 +352,17 @@ int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
+>   		goto err_free_ch;
+>   	}
+>   
+> +	INIT_WORK(&mhi_cntrl->state_work, mhi_ep_state_worker);
+> +
+> +	mhi_cntrl->wq = alloc_workqueue("mhi_ep_wq", 0, 0);
+> +	if (!mhi_cntrl->wq) {
+> +		ret = -ENOMEM;
+> +		goto err_free_cmd;
+> +	}
+> +
+> +	INIT_LIST_HEAD(&mhi_cntrl->st_transition_list);
+> +	spin_lock_init(&mhi_cntrl->state_lock);
+> +	spin_lock_init(&mhi_cntrl->list_lock);
+>   	mutex_init(&mhi_cntrl->event_lock);
+>   
+>   	/* Set MHI version and AMSS EE before enumeration */
+> @@ -325,7 +373,7 @@ int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
+>   	mhi_cntrl->index = ida_alloc(&mhi_ep_cntrl_ida, GFP_KERNEL);
+>   	if (mhi_cntrl->index < 0) {
+>   		ret = mhi_cntrl->index;
+> -		goto err_free_cmd;
+> +		goto err_destroy_wq;
+>   	}
+>   
+>   	/* Allocate the controller device */
+> @@ -352,6 +400,8 @@ int mhi_ep_register_controller(struct mhi_ep_cntrl *mhi_cntrl,
+>   	put_device(&mhi_dev->dev);
+>   err_ida_free:
+>   	ida_free(&mhi_ep_cntrl_ida, mhi_cntrl->index);
+> +err_destroy_wq:
+> +	destroy_workqueue(mhi_cntrl->wq);
+>   err_free_cmd:
+>   	kfree(mhi_cntrl->mhi_cmd);
+>   err_free_ch:
+> @@ -365,6 +415,8 @@ void mhi_ep_unregister_controller(struct mhi_ep_cntrl *mhi_cntrl)
+>   {
+>   	struct mhi_ep_device *mhi_dev = mhi_cntrl->mhi_dev;
+>   
+> +	destroy_workqueue(mhi_cntrl->wq);
+> +
+>   	kfree(mhi_cntrl->mhi_cmd);
+>   	kfree(mhi_cntrl->mhi_chan);
+>   
+> diff --git a/drivers/bus/mhi/ep/sm.c b/drivers/bus/mhi/ep/sm.c
+> new file mode 100644
+> index 000000000000..ad49276ec044
+> --- /dev/null
+> +++ b/drivers/bus/mhi/ep/sm.c
+> @@ -0,0 +1,136 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2022 Linaro Ltd.
+> + * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> + */
+> +
+> +#include <linux/errno.h>
+> +#include <linux/mhi_ep.h>
+> +#include "internal.h"
+> +
+> +bool __must_check mhi_ep_check_mhi_state(struct mhi_ep_cntrl *mhi_cntrl,
+> +					 enum mhi_state cur_mhi_state,
+> +					 enum mhi_state mhi_state)
+> +{
+> +	if (mhi_state == MHI_STATE_SYS_ERR)
+> +		return true;    /* Allowed in any state */
+> +
+> +	if (mhi_state == MHI_STATE_READY)
+> +		return cur_mhi_state == MHI_STATE_RESET;
+> +
+> +	if (mhi_state == MHI_STATE_M0)
+> +		return (cur_mhi_state == MHI_STATE_M3 || cur_mhi_state == MHI_STATE_READY);
 
-How does that disagree with me?
+Parentheses not required here.
 
-The "Fixes" tag is for bug fixes.  If it's not possible to trigger the
-warning and there's no user impact, it's not a bug.
+> +
+> +	if (mhi_state == MHI_STATE_M3)
+> +		return cur_mhi_state == MHI_STATE_M0;
+> +
+> +	return false;
+> +}
+> +
+> +int mhi_ep_set_mhi_state(struct mhi_ep_cntrl *mhi_cntrl, enum mhi_state mhi_state)
+> +{
+> +	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+> +
+> +	if (!mhi_ep_check_mhi_state(mhi_cntrl, mhi_cntrl->mhi_state, mhi_state)) {
+> +		dev_err(dev, "MHI state change to %s from %s is not allowed!\n",
+> +			mhi_state_str(mhi_state),
+> +			mhi_state_str(mhi_cntrl->mhi_state));
+> +		return -EACCES;
+> +	}
+> +
+> +	/* TODO */
 
--- 
-Josh
+What is TODO here?  It probably doesn't belong, but if you're going
+to keep it, at least say what's expected...
+
+> +	if (mhi_state == MHI_STATE_M1 || mhi_state == MHI_STATE_M2) {
+> +		dev_err(dev, "MHI state (%s) not supported\n", mhi_state_str(mhi_state));
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	mhi_ep_mmio_masked_write(mhi_cntrl, EP_MHISTATUS, MHISTATUS_MHISTATE_MASK, mhi_state);
+> +	mhi_cntrl->mhi_state = mhi_state;
+> +
+> +	if (mhi_state == MHI_STATE_READY)
+> +		mhi_ep_mmio_masked_write(mhi_cntrl, EP_MHISTATUS, MHISTATUS_READY_MASK, 1);
+> +
+> +	if (mhi_state == MHI_STATE_SYS_ERR)
+> +		mhi_ep_mmio_masked_write(mhi_cntrl, EP_MHISTATUS, MHISTATUS_SYSERR_MASK, 1);
+> +
+> +	return 0;
+> +}
+> +
+> +int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl)
+> +{
+> +	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+> +	enum mhi_state old_state;
+> +	int ret;
+> +
+> +	spin_lock_bh(&mhi_cntrl->state_lock);
+> +	old_state = mhi_cntrl->mhi_state;
+> +
+> +	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M0);
+> +	spin_unlock_bh(&mhi_cntrl->state_lock);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Signal host that the device moved to M0 */
+> +	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_M0);
+> +	if (ret) {
+> +		dev_err(dev, "Failed sending M0 state change event\n");
+> +		return ret;
+> +	}
+> +
+> +	if (old_state == MHI_STATE_READY) {
+> +		/* Send AMSS EE event to host */
+> +		ret = mhi_ep_send_ee_event(mhi_cntrl, MHI_EE_AMSS);
+> +		if (ret) {
+> +			dev_err(dev, "Failed sending AMSS EE event\n");
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl)
+> +{
+> +	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+> +	int ret;
+> +
+> +	spin_lock_bh(&mhi_cntrl->state_lock);
+> +	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M3);
+> +	spin_unlock_bh(&mhi_cntrl->state_lock);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Signal host that the device moved to M3 */
+> +	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_M3);
+> +	if (ret) {
+> +		dev_err(dev, "Failed sending M3 state change event\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl)
+> +{
+> +	struct device *dev = &mhi_cntrl->mhi_dev->dev;
+> +	enum mhi_state mhi_state;
+> +	int ret, is_ready;
+> +
+> +	spin_lock_bh(&mhi_cntrl->state_lock);
+> +	/* Ensure that the MHISTATUS is set to RESET by host */
+> +	mhi_state = mhi_ep_mmio_masked_read(mhi_cntrl, EP_MHISTATUS, MHISTATUS_MHISTATE_MASK);
+> +	is_ready = mhi_ep_mmio_masked_read(mhi_cntrl, EP_MHISTATUS, MHISTATUS_READY_MASK);
+> +
+> +	if (mhi_state != MHI_STATE_RESET || is_ready) {
+> +		dev_err(dev, "READY state transition failed. MHI host not in RESET state\n");
+> +		spin_unlock_bh(&mhi_cntrl->state_lock);
+> +		return -EIO;
+> +	}
+> +
+> +	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_READY);
+> +	spin_unlock_bh(&mhi_cntrl->state_lock);
+> +
+> +	return ret;
+> +}
+> diff --git a/include/linux/mhi_ep.h b/include/linux/mhi_ep.h
+> index 44a4669382ad..dc27a5de7d3c 100644
+> --- a/include/linux/mhi_ep.h
+> +++ b/include/linux/mhi_ep.h
+> @@ -67,6 +67,11 @@ struct mhi_ep_db_info {
+>    * @cmd_ctx_host_pa: Physical address of host command context data structure
+>    * @chdb: Array of channel doorbell interrupt info
+>    * @event_lock: Lock for protecting event rings
+> + * @list_lock: Lock for protecting state transition and channel doorbell lists
+> + * @state_lock: Lock for protecting state transitions
+> + * @st_transition_list: List of state transitions
+> + * @wq: Dedicated workqueue for handling rings and state changes
+> + * @state_work: State transition worker
+>    * @raise_irq: CB function for raising IRQ to the host
+>    * @alloc_addr: CB function for allocating memory in endpoint for storing host context
+>    * @map_addr: CB function for mapping host context to endpoint
+> @@ -102,6 +107,13 @@ struct mhi_ep_cntrl {
+>   
+>   	struct mhi_ep_db_info chdb[4];
+>   	struct mutex event_lock;
+> +	spinlock_t list_lock;
+> +	spinlock_t state_lock;
+> +
+> +	struct list_head st_transition_list;
+> +
+> +	struct workqueue_struct *wq;
+> +	struct work_struct state_work;
+>   
+>   	void (*raise_irq)(struct mhi_ep_cntrl *mhi_cntrl, u32 vector);
+>   	void __iomem *(*alloc_addr)(struct mhi_ep_cntrl *mhi_cntrl, phys_addr_t *phys_addr,
 
