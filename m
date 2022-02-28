@@ -2,92 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C76CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D5CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232081AbiB1NXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:23:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
+        id S235797AbiB1NY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:24:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235607AbiB1NXp (ORCPT
+        with ESMTP id S235681AbiB1NYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 08:23:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C327826121
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 05:23:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646054585;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PlD7TMS0jB91fn4FULs2gWc+/7qJIEEnhaVLcZF9VF0=;
-        b=WRrFxXYl2nA2pRdgyp+KL2EsoQKzLcTZHZWxPIVA8mKCdTyYzIaU9+2W/GGc23ZHl3poxE
-        VJuaQ39le6hlYbP7BFKg3FnEmQSKcG91+bYaAghh0JzTjS66n79S8i+0aaRhMKtbvTTosm
-        3v08jGCn7zYzoDxPxqIJL2B+5rwj2bM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-290-tmaySKIlOYekywmpiySahA-1; Mon, 28 Feb 2022 08:23:00 -0500
-X-MC-Unique: tmaySKIlOYekywmpiySahA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3D0488066F4;
-        Mon, 28 Feb 2022 13:22:59 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.37.0])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BAAC8838C0;
-        Mon, 28 Feb 2022 13:22:57 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-To:     torvalds@linux-foundation.org, akpm@linux-foundation.org
-cc:     dhowells@redhat.com, willy@infradead.org, kirill@shutemov.name,
+        Mon, 28 Feb 2022 08:24:25 -0500
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22CF926AC0;
+        Mon, 28 Feb 2022 05:23:44 -0800 (PST)
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxeMjazBxiKEAIAA--.10706S5;
+        Mon, 28 Feb 2022 21:23:39 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Mike Rapoport <rppt@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mm: Export PageHeadHuge()
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2494561.1646054576.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Mon, 28 Feb 2022 13:22:56 +0000
-Message-ID: <2494562.1646054576@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Subject: [PATCH v3 3/4] MIPS: Refactor early_parse_memmap() to fix memmap= parameter
+Date:   Mon, 28 Feb 2022 21:23:36 +0800
+Message-Id: <1646054617-16799-4-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+In-Reply-To: <1646054617-16799-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1646054617-16799-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9DxeMjazBxiKEAIAA--.10706S5
+X-Coremail-Antispam: 1UD129KBjvJXoWxCF17tw4rKFW8Ar18GrWkXrb_yoWrXFyrpr
+        1xurWSkr48tF9rJFyfJr1ku345Jw1vkF4UGa42krn5Awn8Gr1UA348WFW7KFyaqryUJ3Wj
+        qFs8tFyj9392kw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUBa14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_JrWl82xGYIkIc2
+        x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+        Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
+        8EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AI
+        xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
+        vE14v26r1j6r18McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
+        r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW5GwCF04k20x
+        vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
+        3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIx
+        AIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAI
+        cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvEx4A2js
+        IEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUzbyAUUUUU=
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-    =
+According to Documentation/admin-guide/kernel-parameters.txt,
+the kernel command-line parameter memmap= means "Force usage
+of a specific region of memory", but when add "memmap=3G@64M"
+to the command-line, kernel boot hangs in sparse_init().
 
-Export PageHeadHuge() - it's used by folio_test_hugetlb() and thence by
-such as folio_file_page() and folio_contains().  Matthew suggested I use
-the first of those instead of doing the same calculation manually - but
-I can't call it from a module.
+In order to support memmap=limit@base, refactor the function
+early_parse_memmap() and then use memblock_mem_range_remove_map()
+to limit the memory region.
 
-Kirill suggested rearranging things to put it in a header, but that
-introduces header dependencies because of where constants are defined.
+With this patch, when add "memmap=3G@64M" to the command-line,
+the kernel boots successfully, we can see the following messages:
 
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: willy@infradead.org
-Link: https://lore.kernel.org/r/163707085314.3221130.14783857863702203440.=
-stgit@warthog.procyon.org.uk/
+  [    0.000000] Memory limited to 64MB-3136MB
+  ...
+  [    0.000000] Early memory node ranges
+  [    0.000000]   node   0: [mem 0x0000000004000000-0x000000000effffff]
+  [    0.000000]   node   0: [mem 0x0000000090200000-0x00000000ffffffff]
+  [    0.000000]   node   0: [mem 0x0000000120000000-0x00000001653fffff]
+  ...
+  [    0.000000] Memory: 3070816K/3147776K available (...)
 
+When add "memmap=128M@64M nr_cpus=1 init 3" to the command-line,
+the kernel also boots successfully, we can see the following messages:
+
+  [    0.000000] Memory limited to 64MB-192MB
+  ...
+  [    0.000000] Early memory node ranges
+  [    0.000000]   node   0: [mem 0x0000000004000000-0x000000000c1fffff]
+  ...
+  [    0.000000] Memory: 95312K/133120K available (...)
+
+After login, the output of free command is consistent with the
+above log.
+
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
- mm/hugetlb.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/kernel/setup.c | 40 ++++++++++++++++++++++++----------------
+ 1 file changed, 24 insertions(+), 16 deletions(-)
 
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index 61895cc01d09..5768df43b05c 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -1854,6 +1854,7 @@ int PageHeadHuge(struct page *page_head)
- =
-
- 	return page_head[1].compound_dtor =3D=3D HUGETLB_PAGE_DTOR;
+diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
+index 6b6d718..c940405 100644
+--- a/arch/mips/kernel/setup.c
++++ b/arch/mips/kernel/setup.c
+@@ -340,6 +340,7 @@ static void __init bootmem_init(void)
+ 
+ static int usermem __initdata;
+ static phys_addr_t memory_limit;
++static phys_addr_t memory_base;
+ 
+ static int __init early_parse_mem(char *p)
+ {
+@@ -356,7 +357,6 @@ early_param("mem", early_parse_mem);
+ static int __init early_parse_memmap(char *p)
+ {
+ 	char *oldp;
+-	u64 start_at, mem_size;
+ 
+ 	if (!p)
+ 		return -EINVAL;
+@@ -367,30 +367,38 @@ static int __init early_parse_memmap(char *p)
+ 	}
+ 
+ 	oldp = p;
+-	mem_size = memparse(p, &p);
++	memory_limit = memparse(p, &p) & PAGE_MASK;
+ 	if (p == oldp)
+ 		return -EINVAL;
+ 
+ 	if (*p == '@') {
+-		start_at = memparse(p+1, &p);
+-		memblock_add(start_at, mem_size);
++		memory_base = memparse(p + 1, &p) & PAGE_MASK;
++	} else if (*p == '$') {
++		memory_base = memparse(p+1, &p) & PAGE_MASK;
++		memblock_reserve(memory_base, memory_limit);
++		pr_notice("Memory reserved to %lldMB-%lldMB\n",
++			  memory_base >> 20, (memory_base + memory_limit) >> 20);
++		memory_base = 0;
++		memory_limit = 0;
++		return 0;
+ 	} else if (*p == '#') {
+-		pr_err("\"memmap=nn#ss\" (force ACPI data) invalid on MIPS\n");
++		pr_err("\"memmap=nn#ss\" invalid on MIPS\n");
++		memory_limit = 0;
++		return -EINVAL;
++	} else if (*p == '!') {
++		pr_err("\"memmap=nn!ss\" invalid on MIPS\n");
++		memory_limit = 0;
+ 		return -EINVAL;
+-	} else if (*p == '$') {
+-		start_at = memparse(p+1, &p);
+-		memblock_add(start_at, mem_size);
+-		memblock_reserve(start_at, mem_size);
+ 	} else {
+-		pr_err("\"memmap\" invalid format!\n");
++		pr_err("Unrecognized memmap syntax: %s\n", p);
++		memory_limit = 0;
+ 		return -EINVAL;
+ 	}
+ 
+-	if (*p == '\0') {
+-		usermem = 1;
+-		return 0;
+-	} else
+-		return -EINVAL;
++	pr_notice("Memory limited to %lldMB-%lldMB\n",
++		  memory_base >> 20, (memory_base + memory_limit) >> 20);
++
++	return *p == '\0' ? 0 : -EINVAL;
  }
-+EXPORT_SYMBOL(PageHeadHuge);
- =
-
- /*
-  * Find and lock address space (mapping) in write mode.
+ early_param("memmap", early_parse_memmap);
+ 
+@@ -667,7 +675,7 @@ static void __init arch_mem_init(char **cmdline_p)
+ 		__pa_symbol(&__nosave_end) - __pa_symbol(&__nosave_begin));
+ 
+ 	/* Limit the memory. */
+-	memblock_enforce_memory_limit(memory_limit);
++	memblock_mem_range_remove_map(memory_base, memory_limit);
+ 	memblock_allow_resize();
+ 
+ 	early_memtest(PFN_PHYS(ARCH_PFN_OFFSET), PFN_PHYS(max_low_pfn));
+-- 
+2.1.0
 
