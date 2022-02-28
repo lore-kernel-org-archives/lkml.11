@@ -2,166 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCAC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9588C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239356AbiB1R7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47842 "EHLO
+        id S239380AbiB1R7t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:59:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240376AbiB1RyP (ORCPT
+        with ESMTP id S240386AbiB1RyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADDEEB16F0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:42:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646070113;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+pMff1CjJQQtrDDYhTBw5IeTxg6x2wxXAOITJ3SlaQg=;
-        b=eV7PRb1vEJ/vXcb9yIpntLGmMO/jmrGizWHFs8EgLmpA6tHPqN00+yukZTvi7pACLSXair
-        dIVjY7VRkINIVubJxlekc+jdrybIydHg2qO4W2LDt3NNWHUzPHzIq1MHGn/OGrjnOWIpja
-        EQJk6AkeMnpOsxNZncE+Iq/4eux/9PY=
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
- [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-653-v0AjD8v6N4CxB-Zauq7QDQ-1; Mon, 28 Feb 2022 12:41:51 -0500
-X-MC-Unique: v0AjD8v6N4CxB-Zauq7QDQ-1
-Received: by mail-pl1-f199.google.com with SMTP id y3-20020a1709029b8300b0014c8bcb70a1so5120422plp.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:41:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+pMff1CjJQQtrDDYhTBw5IeTxg6x2wxXAOITJ3SlaQg=;
-        b=YYu4Atwti6OfAQ4l+IAyobX7hIsDNr72pa/34I6kuiMijaJ3fPxlp8084oeSZAtYva
-         w4kJ89SUeTV47Mg3h8ubb8VTEKGY7vFHfYlUnkkIAVrUWN/DzGgGUqGldM5pMK59B3Be
-         WzGasVtTdfSh6RlwHrRUIAQY4E6y3W5bR+otCxDD/l98O1J0JwA/P0m3p6iqeofLwrr2
-         dL70KuenBCS0tTMf1gPm70KLn6/Akq0I+l8wx/uIfYjXpK4pVFCV0lauXLUFgwBEz5W7
-         jUMDJPIjgORHcpxP0TdZO3qgrEI+GqBhdK41vlPJ/92k08ZzIH26NZ/oSj8OvGaBnvP9
-         ZloA==
-X-Gm-Message-State: AOAM531/D+cIVrUt+LRvr+HMIWecEM88yVgShp4Bahs5gXRsDGyeK37O
-        nPGDxo3PjZQZrgZjSV3UDPd6+k8HxymgDRFGLbP1JbFsgy6jl80GwoT7fuocY3/xgffG3KKqANq
-        xGkNbwH/J17O3p2aE4wIgH023sGflBzsgD9OEYUvP
-X-Received: by 2002:a05:6a00:1c4c:b0:4f4:236b:4382 with SMTP id s12-20020a056a001c4c00b004f4236b4382mr1298665pfw.29.1646070108101;
-        Mon, 28 Feb 2022 09:41:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxhNSW6RN5nrKEatCvn7DkBEzajnGbEnhX4158KlrGGVvwRKbmMoUbrvuMj891xUnUhZdN02WQep+maI+2Mpfw=
-X-Received: by 2002:a05:6a00:1c4c:b0:4f4:236b:4382 with SMTP id
- s12-20020a056a001c4c00b004f4236b4382mr1298642pfw.29.1646070107819; Mon, 28
- Feb 2022 09:41:47 -0800 (PST)
+        Mon, 28 Feb 2022 12:54:16 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48403B1895;
+        Mon, 28 Feb 2022 09:42:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6526EB815C2;
+        Mon, 28 Feb 2022 17:42:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C08B2C340E7;
+        Mon, 28 Feb 2022 17:42:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646070124;
+        bh=/BUH6X6Lf9OT0xsbSheMjAlZZE59F3xBuVRrMWxHapc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NygE5+wR2DOfpbuxC7/NKUMy/5VPuIC7uU+uDntCeT35NTYSyQqgz1q5e0qYZ2T0G
+         jl226GUxiZEhedc8lqsPCwdz0Xz8o3XBELrBj8MnV37NEepKPBReaay9+pVhbOOBnD
+         3Q1Pxc2KWdmyQivMzCGFJDZCvw+SG21dJrgsoye4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Changbin Du <changbin.du@gmail.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 127/139] riscv: fix oops caused by irqsoff latency tracer
+Date:   Mon, 28 Feb 2022 18:25:01 +0100
+Message-Id: <20220228172401.024088700@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
- <20220224110828.2168231-3-benjamin.tissoires@redhat.com> <CAPhsuW6m-HpfKLke1b7ni1j5Je3b3J0fa+MfJNnq2C9baOry1A@mail.gmail.com>
-In-Reply-To: <CAPhsuW6m-HpfKLke1b7ni1j5Je3b3J0fa+MfJNnq2C9baOry1A@mail.gmail.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Mon, 28 Feb 2022 18:41:36 +0100
-Message-ID: <CAO-hwJKCEtQi-VHikw_tLxa5to0Y40KO7HSQrQtzcth_MawQ5A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 2/6] HID: bpf: allow to change the report
- descriptor from an eBPF program
-To:     Song Liu <song@kernel.org>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 8:31 AM Song Liu <song@kernel.org> wrote:
->
-> On Thu, Feb 24, 2022 at 3:09 AM Benjamin Tissoires
-> <benjamin.tissoires@redhat.com> wrote:
-> >
-> > The report descriptor is the dictionary of the HID protocol specific
-> > to the given device.
-> > Changing it is a common habit in the HID world, and making that feature
-> > accessible from eBPF allows to fix devices without having to install a
-> > new kernel.
-> >
-> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
-> [...]
->
-> > diff --git a/include/linux/hid.h b/include/linux/hid.h
-> > index 8fd79011f461..66d949d10b78 100644
-> > --- a/include/linux/hid.h
-> > +++ b/include/linux/hid.h
-> > @@ -1213,10 +1213,16 @@ do {                                                                    \
-> >
-> >  #ifdef CONFIG_BPF
-> >  u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *rd, int *size);
-> > +u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size);
-> >  int hid_bpf_module_init(void);
-> >  void hid_bpf_module_exit(void);
-> >  #else
-> >  static inline u8 *hid_bpf_raw_event(struct hid_device *hdev, u8 *rd, int *size) { return rd; }
-> > +static inline u8 *hid_bpf_report_fixup(struct hid_device *hdev, u8 *rdesc,
-> > +                                      unsigned int *size)
-> > +{
-> > +       return kmemdup(rdesc, *size, GFP_KERNEL);
-> > +}
-> >  static inline int hid_bpf_module_init(void) { return 0; }
-> >  static inline void hid_bpf_module_exit(void) {}
-> >  #endif
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 5978b92cacd3..a7a8d9cfcf24 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -999,6 +999,7 @@ enum bpf_attach_type {
-> >         BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
-> >         BPF_PERF_EVENT,
-> >         BPF_HID_DEVICE_EVENT,
-> > +       BPF_HID_RDESC_FIXUP,
-> >         __MAX_BPF_ATTACH_TYPE
-> >  };
-> >
-> > diff --git a/include/uapi/linux/bpf_hid.h b/include/uapi/linux/bpf_hid.h
-> > index 243ac45a253f..c0801d7174c3 100644
-> > --- a/include/uapi/linux/bpf_hid.h
-> > +++ b/include/uapi/linux/bpf_hid.h
-> > @@ -18,6 +18,7 @@ struct hid_device;
-> >  enum hid_bpf_event {
-> >         HID_BPF_UNDEF = 0,
-> >         HID_BPF_DEVICE_EVENT,
-> > +       HID_BPF_RDESC_FIXUP,
-> >  };
-> >
-> >  /* type is HID_BPF_DEVICE_EVENT */
-> > @@ -26,12 +27,19 @@ struct hid_bpf_ctx_device_event {
-> >         unsigned long size;
-> >  };
-> >
-> > +/* type is HID_BPF_RDESC_FIXUP */
-> > +struct hid_bpf_ctx_rdesc_fixup {
-> > +       __u8 data[HID_BPF_MAX_BUFFER_SIZE];
-> > +       unsigned long size;
-> > +};
->
-> This looks same as HID_BPF_DEVICE_EVENT, do we really need to
-> separate the two?
+From: Changbin Du <changbin.du@gmail.com>
 
-I wanted to separate them because the other types have other requirements.
+commit 22e2100b1b07d6f5acc71cc1acb53f680c677d77 upstream.
 
-However, they all need a "data" with "size" associated. So I'll add
-data and size to the common definition of the struct, leaving only the
-specifics in the union (which means that DEVICE_EVENT and RDESC_FIXUP
-won't have a definition in the union). I'll see the look of it before
-submitting v2.
+The trace_hardirqs_{on,off}() require the caller to setup frame pointer
+properly. This because these two functions use macro 'CALLER_ADDR1' (aka.
+__builtin_return_address(1)) to acquire caller info. If the $fp is used
+for other purpose, the code generated this macro (as below) could trigger
+memory access fault.
 
-Cheers,
-Benjamin
+   0xffffffff8011510e <+80>:    ld      a1,-16(s0)
+   0xffffffff80115112 <+84>:    ld      s2,-8(a1)  # <-- paging fault here
+
+The oops message during booting if compiled with 'irqoff' tracer enabled:
+[    0.039615][    T0] Unable to handle kernel NULL pointer dereference at virtual address 00000000000000f8
+[    0.041925][    T0] Oops [#1]
+[    0.042063][    T0] Modules linked in:
+[    0.042864][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.17.0-rc1-00233-g9a20c48d1ed2 #29
+[    0.043568][    T0] Hardware name: riscv-virtio,qemu (DT)
+[    0.044343][    T0] epc : trace_hardirqs_on+0x56/0xe2
+[    0.044601][    T0]  ra : restore_all+0x12/0x6e
+[    0.044721][    T0] epc : ffffffff80126a5c ra : ffffffff80003b94 sp : ffffffff81403db0
+[    0.044801][    T0]  gp : ffffffff8163acd8 tp : ffffffff81414880 t0 : 0000000000000020
+[    0.044882][    T0]  t1 : 0098968000000000 t2 : 0000000000000000 s0 : ffffffff81403de0
+[    0.044967][    T0]  s1 : 0000000000000000 a0 : 0000000000000001 a1 : 0000000000000100
+[    0.045046][    T0]  a2 : 0000000000000000 a3 : 0000000000000000 a4 : 0000000000000000
+[    0.045124][    T0]  a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000054494d45
+[    0.045210][    T0]  s2 : ffffffff80003b94 s3 : ffffffff81a8f1b0 s4 : ffffffff80e27b50
+[    0.045289][    T0]  s5 : ffffffff81414880 s6 : ffffffff8160fa00 s7 : 00000000800120e8
+[    0.045389][    T0]  s8 : 0000000080013100 s9 : 000000000000007f s10: 0000000000000000
+[    0.045474][    T0]  s11: 0000000000000000 t3 : 7fffffffffffffff t4 : 0000000000000000
+[    0.045548][    T0]  t5 : 0000000000000000 t6 : ffffffff814aa368
+[    0.045620][    T0] status: 0000000200000100 badaddr: 00000000000000f8 cause: 000000000000000d
+[    0.046402][    T0] [<ffffffff80003b94>] restore_all+0x12/0x6e
+
+This because the $fp(aka. $s0) register is not used as frame pointer in the
+assembly entry code.
+
+	resume_kernel:
+		REG_L s0, TASK_TI_PREEMPT_COUNT(tp)
+		bnez s0, restore_all
+		REG_L s0, TASK_TI_FLAGS(tp)
+                andi s0, s0, _TIF_NEED_RESCHED
+                beqz s0, restore_all
+                call preempt_schedule_irq
+                j restore_all
+
+To fix above issue, here we add one extra level wrapper for function
+trace_hardirqs_{on,off}() so they can be safely called by low level entry
+code.
+
+Signed-off-by: Changbin Du <changbin.du@gmail.com>
+Fixes: 3c4697982982 ("riscv: Enable LOCKDEP_SUPPORT & fixup TRACE_IRQFLAGS_SUPPORT")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/riscv/kernel/Makefile    |    2 ++
+ arch/riscv/kernel/entry.S     |   10 +++++-----
+ arch/riscv/kernel/trace_irq.c |   27 +++++++++++++++++++++++++++
+ arch/riscv/kernel/trace_irq.h |   11 +++++++++++
+ 4 files changed, 45 insertions(+), 5 deletions(-)
+ create mode 100644 arch/riscv/kernel/trace_irq.c
+ create mode 100644 arch/riscv/kernel/trace_irq.h
+
+--- a/arch/riscv/kernel/Makefile
++++ b/arch/riscv/kernel/Makefile
+@@ -50,6 +50,8 @@ obj-$(CONFIG_MODULE_SECTIONS)	+= module-
+ obj-$(CONFIG_FUNCTION_TRACER)	+= mcount.o ftrace.o
+ obj-$(CONFIG_DYNAMIC_FTRACE)	+= mcount-dyn.o
+ 
++obj-$(CONFIG_TRACE_IRQFLAGS)	+= trace_irq.o
++
+ obj-$(CONFIG_RISCV_BASE_PMU)	+= perf_event.o
+ obj-$(CONFIG_PERF_EVENTS)	+= perf_callchain.o
+ obj-$(CONFIG_HAVE_PERF_REGS)	+= perf_regs.o
+--- a/arch/riscv/kernel/entry.S
++++ b/arch/riscv/kernel/entry.S
+@@ -108,7 +108,7 @@ _save_context:
+ .option pop
+ 
+ #ifdef CONFIG_TRACE_IRQFLAGS
+-	call trace_hardirqs_off
++	call __trace_hardirqs_off
+ #endif
+ 
+ #ifdef CONFIG_CONTEXT_TRACKING
+@@ -144,7 +144,7 @@ skip_context_tracking:
+ 	li t0, EXC_BREAKPOINT
+ 	beq s4, t0, 1f
+ #ifdef CONFIG_TRACE_IRQFLAGS
+-	call trace_hardirqs_on
++	call __trace_hardirqs_on
+ #endif
+ 	csrs CSR_STATUS, SR_IE
+ 
+@@ -235,7 +235,7 @@ ret_from_exception:
+ 	REG_L s0, PT_STATUS(sp)
+ 	csrc CSR_STATUS, SR_IE
+ #ifdef CONFIG_TRACE_IRQFLAGS
+-	call trace_hardirqs_off
++	call __trace_hardirqs_off
+ #endif
+ #ifdef CONFIG_RISCV_M_MODE
+ 	/* the MPP value is too large to be used as an immediate arg for addi */
+@@ -271,10 +271,10 @@ restore_all:
+ 	REG_L s1, PT_STATUS(sp)
+ 	andi t0, s1, SR_PIE
+ 	beqz t0, 1f
+-	call trace_hardirqs_on
++	call __trace_hardirqs_on
+ 	j 2f
+ 1:
+-	call trace_hardirqs_off
++	call __trace_hardirqs_off
+ 2:
+ #endif
+ 	REG_L a0, PT_STATUS(sp)
+--- /dev/null
++++ b/arch/riscv/kernel/trace_irq.c
+@@ -0,0 +1,27 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
++ */
++
++#include <linux/irqflags.h>
++#include <linux/kprobes.h>
++#include "trace_irq.h"
++
++/*
++ * trace_hardirqs_on/off require the caller to setup frame pointer properly.
++ * Otherwise, CALLER_ADDR1 might trigger an pagging exception in kernel.
++ * Here we add one extra level so they can be safely called by low
++ * level entry code which $fp is used for other purpose.
++ */
++
++void __trace_hardirqs_on(void)
++{
++	trace_hardirqs_on();
++}
++NOKPROBE_SYMBOL(__trace_hardirqs_on);
++
++void __trace_hardirqs_off(void)
++{
++	trace_hardirqs_off();
++}
++NOKPROBE_SYMBOL(__trace_hardirqs_off);
+--- /dev/null
++++ b/arch/riscv/kernel/trace_irq.h
+@@ -0,0 +1,11 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (C) 2022 Changbin Du <changbin.du@gmail.com>
++ */
++#ifndef __TRACE_IRQ_H
++#define __TRACE_IRQ_H
++
++void __trace_hardirqs_on(void);
++void __trace_hardirqs_off(void);
++
++#endif /* __TRACE_IRQ_H */
+
 
