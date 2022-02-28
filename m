@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 966CEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA594C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232255AbiB1SGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:06:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
+        id S239941AbiB1SGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:06:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233048AbiB1SBO (ORCPT
+        with ESMTP id S239453AbiB1SB5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:01:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E95089A4DB;
-        Mon, 28 Feb 2022 09:45:43 -0800 (PST)
+        Mon, 28 Feb 2022 13:01:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFDF9BAD5;
+        Mon, 28 Feb 2022 09:45:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D961B815A2;
-        Mon, 28 Feb 2022 17:45:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A2FC36AEB;
-        Mon, 28 Feb 2022 17:45:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 859CFB81085;
+        Mon, 28 Feb 2022 17:45:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA73DC340E7;
+        Mon, 28 Feb 2022 17:45:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070330;
-        bh=F2vCmGtfB9sTj5ir4yOVL3TWXdmdCoMtLfGqbooFxpI=;
+        s=korg; t=1646070347;
+        bh=uW5lP9Jlu1qgQDuB/8Sam5qo0Jjx9pzRygNq0AAbrZQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PV9OzBF4tyGjWW6bZSuDFcE7obMbjko7RhXlqiAQVplMHLKRTZR9dybPcc/zbd/P+
-         wH4Quf7IqgZpdmbhjmOi2MmoWAXQtEPn/FTi/MG5876ipZZaWXKe1zQjtIzoDtHs4R
-         gr57gY8s2Z3vuZUglaKGHyOwF+4lVyE8K4sFkJ3c=
+        b=Z6+2wbufnX6eyk9EwLnUUJAKfOC4jPqw/9goBY9pBMY/H1MHzEdLQF6Qz0iPAdwe5
+         roFVmMm/7RlXXTdJIA2zLs/LAH8n5bpxHesXOw1a2pC87IfwTQuVinXnDWxLs4rUt9
+         RA8jlboUMcfGeZ36WgoCwGPtxK4p+ff0gI+aumxg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 070/164] net/mlx5e: Fix wrong return value on ioctl EEPROM query failure
-Date:   Mon, 28 Feb 2022 18:23:52 +0100
-Message-Id: <20220228172406.456959105@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        =?UTF-8?q?Michel=20D=C3=A4nzer?= <mdaenzer@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 076/164] drm/amd/display: For vblank_disable_immediate, check PSR is really used
+Date:   Mon, 28 Feb 2022 18:23:58 +0100
+Message-Id: <20220228172406.930512356@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,32 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gal Pressman <gal@nvidia.com>
+From: Michel Dänzer <mdaenzer@redhat.com>
 
-commit 0b89429722353d112f8b8b29ca397e95fa994d27 upstream.
+commit 4d22336f903930eb94588b939c310743a3640276 upstream.
 
-The ioctl EEPROM query wrongly returns success on read failures, fix
-that by returning the appropriate error code.
+Even if PSR is allowed for a present GPU, there might be no eDP link
+which supports PSR.
 
-Fixes: bb64143eee8c ("net/mlx5e: Add ethtool support for dump module EEPROM")
-Signed-off-by: Gal Pressman <gal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 708978487304 ("drm/amdgpu/display: Only set vblank_disable_immediate when PSR is not enabled")
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Michel Dänzer <mdaenzer@redhat.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |   17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
-@@ -1752,7 +1752,7 @@ static int mlx5e_get_module_eeprom(struc
- 		if (size_read < 0) {
- 			netdev_err(priv->netdev, "%s: mlx5_query_eeprom failed:0x%x\n",
- 				   __func__, size_read);
--			return 0;
-+			return size_read;
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -4232,6 +4232,9 @@ static int amdgpu_dm_initialize_drm_devi
+ 	}
+ #endif
+ 
++	/* Disable vblank IRQs aggressively for power-saving. */
++	adev_to_drm(adev)->vblank_disable_immediate = true;
++
+ 	/* loops over all connectors on the board */
+ 	for (i = 0; i < link_cnt; i++) {
+ 		struct dc_link *link = NULL;
+@@ -4277,19 +4280,17 @@ static int amdgpu_dm_initialize_drm_devi
+ 				update_connector_ext_caps(aconnector);
+ 			if (psr_feature_enabled)
+ 				amdgpu_dm_set_psr_caps(link);
++
++			/* TODO: Fix vblank control helpers to delay PSR entry to allow this when
++			 * PSR is also supported.
++			 */
++			if (link->psr_settings.psr_feature_enabled)
++				adev_to_drm(adev)->vblank_disable_immediate = false;
  		}
  
- 		i += size_read;
+ 
+ 	}
+ 
+-	/*
+-	 * Disable vblank IRQs aggressively for power-saving.
+-	 *
+-	 * TODO: Fix vblank control helpers to delay PSR entry to allow this when PSR
+-	 * is also supported.
+-	 */
+-	adev_to_drm(adev)->vblank_disable_immediate = !psr_feature_enabled;
+-
+ 	/* Software is initialized. Now we can register interrupt handlers. */
+ 	switch (adev->asic_type) {
+ #if defined(CONFIG_DRM_AMD_DC_SI)
 
 
