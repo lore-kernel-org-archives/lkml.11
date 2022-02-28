@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63CCFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E98DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235365AbiB1Ra3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:30:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45494 "EHLO
+        id S235798AbiB1Rac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:30:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235964AbiB1R2t (ORCPT
+        with ESMTP id S235175AbiB1R2w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:28:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACB71178;
-        Mon, 28 Feb 2022 09:27:49 -0800 (PST)
+        Mon, 28 Feb 2022 12:28:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9442541AB;
+        Mon, 28 Feb 2022 09:27:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29A90B815AE;
-        Mon, 28 Feb 2022 17:27:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83698C340E7;
-        Mon, 28 Feb 2022 17:27:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20F166140B;
+        Mon, 28 Feb 2022 17:27:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A0A0C340F6;
+        Mon, 28 Feb 2022 17:27:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069266;
-        bh=2+Cm03NTYhFQYeji16bdohSY4T37ypFHgrm8LqX1P5c=;
+        s=korg; t=1646069269;
+        bh=DPO3BcLiwBn8PmDoRW5r8RbBNLCnhtbo3AwL7su6q/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I6P9I7w+LP1hLfJcaIOEoi1sYAG6vXOExtIuSwvNdV44OXqtB6xGQlJI6B9lUGSyZ
-         VT68yNI25AYoJ57pBxHtZNeoWDyanvwY1Vzdxp3FBbkV8zs8eCpHHqcoIgZpyd6NiE
-         2UnJ9VXkinISD6RsiM7OCO1iUy1HLRi1IZE0icDQ=
+        b=c7FT4qGKiXhOYI9GAVAt+FHrHIB0eZlckaOG8yVgKwJx88lHgk221tif+RfLEvKvD
+         vGMDYeciloZz5oONBrhvu+S01xM/kgFQ6+HflfOF3Ss64cXh2tlRQ9T6j1xY7BtowN
+         moPl+xvLNKmgDRHNwXFPrx/Z7L5xz2HYnp5rxOms=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.14 23/31] USB: serial: option: add Telit LE910R1 compositions
-Date:   Mon, 28 Feb 2022 18:24:19 +0100
-Message-Id: <20220228172202.039985433@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: [PATCH 4.14 24/31] usb: dwc3: gadget: Let the interrupt handler disable bottom halves.
+Date:   Mon, 28 Feb 2022 18:24:20 +0100
+Message-Id: <20220228172202.213218587@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
 References: <20220228172159.515152296@linuxfoundation.org>
@@ -48,43 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-commit cfc4442c642d568014474b6718ccf65dc7ca6099 upstream.
+commit 84918a89d6efaff075de570b55642b6f4ceeac6d upstream.
 
-Add support for the following Telit LE910R1 compositions:
+The interrupt service routine registered for the gadget is a primary
+handler which mask the interrupt source and a threaded handler which
+handles the source of the interrupt. Since the threaded handler is
+voluntary threaded, the IRQ-core does not disable bottom halves before
+invoke the handler like it does for the forced-threaded handler.
 
-0x701a: rndis, tty, tty, tty
-0x701b: ecm, tty, tty, tty
-0x9201: tty
+Due to changes in networking it became visible that a network gadget's
+completions handler may schedule a softirq which remains unprocessed.
+The gadget's completion handler is usually invoked either in hard-IRQ or
+soft-IRQ context. In this context it is enough to just raise the softirq
+because the softirq itself will be handled once that context is left.
+In the case of the voluntary threaded handler, there is nothing that
+will process pending softirqs. Which means it remain queued until
+another random interrupt (on this CPU) fires and handles it on its exit
+path or another thread locks and unlocks a lock with the bh suffix.
+Worst case is that the CPU goes idle and the NOHZ complains about
+unhandled softirqs.
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Link: https://lore.kernel.org/r/20220218134552.4051-1-dnlplm@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Disable bottom halves before acquiring the lock (and disabling
+interrupts) and enable them after dropping the lock. This ensures that
+any pending softirqs will handled right away.
+
+Link: https://lkml.kernel.org/r/c2a64979-73d1-2c22-e048-c275c9f81558@samsung.com
+Fixes: e5f68b4a3e7b0 ("Revert "usb: dwc3: gadget: remove unnecessary _irqsave()"")
+Cc: stable <stable@kernel.org>
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lore.kernel.org/r/Yg/YPejVQH3KkRVd@linutronix.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/usb/dwc3/gadget.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -1282,10 +1282,16 @@ static const struct usb_device_id option
- 	  .driver_info = NCTRL(2) },
- 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x7011, 0xff),	/* Telit LE910-S1 (ECM) */
- 	  .driver_info = NCTRL(2) },
-+	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x701a, 0xff),	/* Telit LE910R1 (RNDIS) */
-+	  .driver_info = NCTRL(2) },
-+	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x701b, 0xff),	/* Telit LE910R1 (ECM) */
-+	  .driver_info = NCTRL(2) },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9010),				/* Telit SBL FN980 flashing device */
- 	  .driver_info = NCTRL(0) | ZLP },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9200),				/* Telit LE910S1 flashing device */
- 	  .driver_info = NCTRL(0) | ZLP },
-+	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9201),				/* Telit LE910R1 flashing device */
-+	  .driver_info = NCTRL(0) | ZLP },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, ZTE_PRODUCT_MF622, 0xff, 0xff, 0xff) }, /* ZTE WCDMA products */
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0002, 0xff, 0xff, 0xff),
- 	  .driver_info = RSVD(1) },
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -3153,9 +3153,11 @@ static irqreturn_t dwc3_thread_interrupt
+ 	unsigned long flags;
+ 	irqreturn_t ret = IRQ_NONE;
+ 
++	local_bh_disable();
+ 	spin_lock_irqsave(&dwc->lock, flags);
+ 	ret = dwc3_process_event_buf(evt);
+ 	spin_unlock_irqrestore(&dwc->lock, flags);
++	local_bh_enable();
+ 
+ 	return ret;
+ }
 
 
