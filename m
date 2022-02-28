@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE12C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE2BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238551AbiB1RtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:49:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
+        id S237974AbiB1RtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:49:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235865AbiB1RmR (ORCPT
+        with ESMTP id S238668AbiB1Rmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:42:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B0498F43;
-        Mon, 28 Feb 2022 09:34:46 -0800 (PST)
+        Mon, 28 Feb 2022 12:42:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89A1996B1;
+        Mon, 28 Feb 2022 09:34:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5C06614D8;
-        Mon, 28 Feb 2022 17:34:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 097ACC340F0;
-        Mon, 28 Feb 2022 17:34:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C12E614AB;
+        Mon, 28 Feb 2022 17:34:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84168C340E7;
+        Mon, 28 Feb 2022 17:34:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069685;
-        bh=x8gsEUFvD/6HJ5lGf/pH1UHKiTAOjFi55OMQrV1AT0s=;
+        s=korg; t=1646069698;
+        bh=FeXWa6P1qRtmPfj0mdtYpxdTQB265wDqpUFzlISXYoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UD7/wdkjzye8m3VMlB9y9SY8P7TvcBG7Np5AKQfUvnRxjafVAvA4GwBaRSEFOVtM2
-         RQOfYSgRYm3RxhHFtC3QjuhHio3Yf8VlzzrI2GzHaXZHfz7UonX900vkwx5JVnZS1v
-         3LJbNGJsjDadHG+9SITl0xkicBFdHc/UbqlHTfqI=
+        b=EmMgkFqcfXWAqOnd3J1zems8l5b/RiMWtgCWT+GSQsCLC8gPhcnYYbaLAw3hkvcUL
+         BjqYYCUQdgLECMxFhX7ZaK3mYA5tmaUJDzFYnWoakZyng2IhVuYE8nKSk6RN1friGM
+         IavfzTXoiardSnFOXgcIeJJtOaTXc2ckoWBjLX2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.10 54/80] iio: adc: ad7124: fix mask used for setting AIN_BUFP & AIN_BUFM bits
-Date:   Mon, 28 Feb 2022 18:24:35 +0100
-Message-Id: <20220228172318.205347914@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH 5.10 25/80] selftests: bpf: Check bpf_msg_push_data return value
+Date:   Mon, 28 Feb 2022 18:24:06 +0100
+Message-Id: <20220228172314.611913643@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -50,37 +49,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cosmin Tanislav <demonsingur@gmail.com>
+From: Felix Maurer <fmaurer@redhat.com>
 
-commit 0e33d15f1dce9e3a80a970ea7f0b27837168aeca upstream.
+commit 61d06f01f9710b327a53492e5add9f972eb909b3 upstream.
 
-According to page 90 of the datasheet [1], AIN_BUFP is bit 6 and
-AIN_BUFM is bit 5 of the CONFIG_0 -> CONFIG_7 registers.
+bpf_msg_push_data may return a non-zero value to indicate an error. The
+return value should be checked to prevent undetected errors.
 
-Fix the mask used for setting these bits.
+To indicate an error, the BPF programs now perform a different action
+than their intended one to make the userspace test program notice the
+error, i.e., the programs supposed to pass/redirect drop, the program
+supposed to drop passes.
 
-[1]: https://www.analog.com/media/en/technical-documentation/data-sheets/ad7124-8.pdf
-
-Fixes: 0eaecea6e487 ("iio: adc: ad7124: Add buffered input support")
-Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Link: https://lore.kernel.org/r/20220112200036.694490-1-cosmin.tanislav@analog.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 84fbfe026acaa ("bpf: test_sockmap add options to use msg_push_data")
+Signed-off-by: Felix Maurer <fmaurer@redhat.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/89f767bb44005d6b4dd1f42038c438f76b3ebfad.1644601294.git.fmaurer@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/adc/ad7124.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/bpf/progs/test_sockmap_kern.h |   26 ++++++++++++------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
---- a/drivers/iio/adc/ad7124.c
-+++ b/drivers/iio/adc/ad7124.c
-@@ -74,7 +74,7 @@
- #define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
- #define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
- #define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
--#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(7, 6)
-+#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(6, 5)
- #define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
+--- a/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
++++ b/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
+@@ -235,7 +235,7 @@ SEC("sk_msg1")
+ int bpf_prog4(struct sk_msg_md *msg)
+ {
+ 	int *bytes, zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5;
+-	int *start, *end, *start_push, *end_push, *start_pop, *pop;
++	int *start, *end, *start_push, *end_push, *start_pop, *pop, err = 0;
  
- /* AD7124_FILTER_X */
+ 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
+ 	if (bytes)
+@@ -249,8 +249,11 @@ int bpf_prog4(struct sk_msg_md *msg)
+ 		bpf_msg_pull_data(msg, *start, *end, 0);
+ 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
+ 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
+-	if (start_push && end_push)
+-		bpf_msg_push_data(msg, *start_push, *end_push, 0);
++	if (start_push && end_push) {
++		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
++		if (err)
++			return SK_DROP;
++	}
+ 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
+ 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
+ 	if (start_pop && pop)
+@@ -263,6 +266,7 @@ int bpf_prog6(struct sk_msg_md *msg)
+ {
+ 	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, key = 0;
+ 	int *bytes, *start, *end, *start_push, *end_push, *start_pop, *pop, *f;
++	int err = 0;
+ 	__u64 flags = 0;
+ 
+ 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
+@@ -279,8 +283,11 @@ int bpf_prog6(struct sk_msg_md *msg)
+ 
+ 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
+ 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
+-	if (start_push && end_push)
+-		bpf_msg_push_data(msg, *start_push, *end_push, 0);
++	if (start_push && end_push) {
++		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
++		if (err)
++			return SK_DROP;
++	}
+ 
+ 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
+ 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
+@@ -338,7 +345,7 @@ SEC("sk_msg5")
+ int bpf_prog10(struct sk_msg_md *msg)
+ {
+ 	int *bytes, *start, *end, *start_push, *end_push, *start_pop, *pop;
+-	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5;
++	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, err = 0;
+ 
+ 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
+ 	if (bytes)
+@@ -352,8 +359,11 @@ int bpf_prog10(struct sk_msg_md *msg)
+ 		bpf_msg_pull_data(msg, *start, *end, 0);
+ 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
+ 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
+-	if (start_push && end_push)
+-		bpf_msg_push_data(msg, *start_push, *end_push, 0);
++	if (start_push && end_push) {
++		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
++		if (err)
++			return SK_PASS;
++	}
+ 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
+ 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
+ 	if (start_pop && pop)
 
 
