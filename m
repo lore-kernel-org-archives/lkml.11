@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1398C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B5AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240101AbiB1SOh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:14:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60336 "EHLO
+        id S240112AbiB1SOj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:14:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240828AbiB1SJN (ORCPT
+        with ESMTP id S241095AbiB1SJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E6A5F8E3;
-        Mon, 28 Feb 2022 09:49:09 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97FB66578B;
+        Mon, 28 Feb 2022 09:49:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9894CB815C3;
-        Mon, 28 Feb 2022 17:48:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE98EC340F0;
-        Mon, 28 Feb 2022 17:48:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2765B81085;
+        Mon, 28 Feb 2022 17:49:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09AC2C340F0;
+        Mon, 28 Feb 2022 17:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070519;
-        bh=jmCHv4Pcr66fmoJD8G80iizX87HKTRbZ0Vbs/HTggEE=;
+        s=korg; t=1646070568;
+        bh=IPVL7hk31qUAKuMv72Hz7WyWUp+5k0PpgSLU/nBRXdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OGQNgsdENr1wLa0x+VzzNShzWfQPyZwks+8nbPwq4RzNsrcldc4zahMLJgEs+s9yS
-         UQDV39Z3GvD0dtHTeRu8Ylh9FXcGYkY3RVebLj4v4+X4beRimjrvi5uR8sh5hZTz+R
-         o+TPVhx24h++ejXHIXL+fgUPdQutVbqCYjXXX2No=
+        b=zPDL1xQjcnhRBlIvhsZc0q3UWR0MbFdXz6tZhktQ7oI9mcsYwdWfbbc2PrH3gkHnx
+         xNvK02BhNnp6JUwHriFWunyXJc5F2MAQWEZsNzDZEYXeY3YKpKmJ2AvrrAuhN4i1zC
+         hXkl2izY9M7LPC1a7T9tJobbnjm/VuOhob/Umw4c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <marten.lindahl@axis.com>
-Subject: [PATCH 5.16 137/164] driver core: Free DMA range map when device is released
-Date:   Mon, 28 Feb 2022 18:24:59 +0100
-Message-Id: <20220228172412.413019616@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.16 157/164] tty: n_gsm: fix NULL pointer access due to DLCI release
+Date:   Mon, 28 Feb 2022 18:25:19 +0100
+Message-Id: <20220228172413.951064702@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,91 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mårten Lindahl <marten.lindahl@axis.com>
+From: daniel.starke@siemens.com <daniel.starke@siemens.com>
 
-commit d8f7a5484f2188e9af2d9e4e587587d724501b12 upstream.
+commit 96b169f05cdcc844b400695184d77e42071d14f2 upstream.
 
-When unbinding/binding a driver with DMA mapped memory, the DMA map is
-not freed before the driver is reloaded. This leads to a memory leak
-when the DMA map is overwritten when reprobing the driver.
+The here fixed commit made the tty hangup asynchronous to avoid a circular
+locking warning. I could not reproduce this warning. Furthermore, due to
+the asynchronous hangup the function call now gets queued up while the
+underlying tty is being freed. Depending on the timing this results in a
+NULL pointer access in the global work queue scheduler. To be precise in
+process_one_work(). Therefore, the previous commit made the issue worse
+which it tried to fix.
 
-This can be reproduced with a platform driver having a dma-range:
+This patch fixes this by falling back to the old behavior which uses a
+blocking tty hangup call before freeing up the associated tty.
 
-dummy {
-	...
-	#address-cells = <0x2>;
-	#size-cells = <0x2>;
-	ranges;
-	dma-ranges = <...>;
-	...
-};
-
-and then unbinding/binding it:
-
-~# echo soc:dummy >/sys/bus/platform/drivers/<driver>/unbind
-
-DMA map object 0xffffff800b0ae540 still being held by &pdev->dev
-
-~# echo soc:dummy >/sys/bus/platform/drivers/<driver>/bind
-~# echo scan > /sys/kernel/debug/kmemleak
-~# cat /sys/kernel/debug/kmemleak
-unreferenced object 0xffffff800b0ae540 (size 64):
-  comm "sh", pid 833, jiffies 4295174550 (age 2535.352s)
-  hex dump (first 32 bytes):
-    00 00 00 80 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 80 00 00 00 00 00 00 00 80 00 00 00 00  ................
-  backtrace:
-    [<ffffffefd1694708>] create_object.isra.0+0x108/0x344
-    [<ffffffefd1d1a850>] kmemleak_alloc+0x8c/0xd0
-    [<ffffffefd167e2d0>] __kmalloc+0x440/0x6f0
-    [<ffffffefd1a960a4>] of_dma_get_range+0x124/0x220
-    [<ffffffefd1a8ce90>] of_dma_configure_id+0x40/0x2d0
-    [<ffffffefd198b68c>] platform_dma_configure+0x5c/0xa4
-    [<ffffffefd198846c>] really_probe+0x8c/0x514
-    [<ffffffefd1988990>] __driver_probe_device+0x9c/0x19c
-    [<ffffffefd1988cd8>] device_driver_attach+0x54/0xbc
-    [<ffffffefd1986634>] bind_store+0xc4/0x120
-    [<ffffffefd19856e0>] drv_attr_store+0x30/0x44
-    [<ffffffefd173c9b0>] sysfs_kf_write+0x50/0x60
-    [<ffffffefd173c1c4>] kernfs_fop_write_iter+0x124/0x1b4
-    [<ffffffefd16a013c>] new_sync_write+0xdc/0x160
-    [<ffffffefd16a256c>] vfs_write+0x23c/0x2a0
-    [<ffffffefd16a2758>] ksys_write+0x64/0xec
-
-To prevent this we should free the dma_range_map when the device is
-released.
-
-Fixes: e0d072782c73 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset")
-Cc: stable <stable@vger.kernel.org>
-Suggested-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Mårten Lindahl <marten.lindahl@axis.com>
-Link: https://lore.kernel.org/r/20220216094128.4025861-1-marten.lindahl@axis.com
+Fixes: 7030082a7415 ("tty: n_gsm: avoid recursive locking with async port hangup")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220218073123.2121-4-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/dd.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/tty/n_gsm.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/base/dd.c
-+++ b/drivers/base/dd.c
-@@ -629,6 +629,9 @@ re_probe:
- 			drv->remove(dev);
+diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
+index 53fa1cec49bd..79397a40a8f8 100644
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1752,7 +1752,12 @@ static void gsm_dlci_release(struct gsm_dlci *dlci)
+ 		gsm_destroy_network(dlci);
+ 		mutex_unlock(&dlci->mutex);
  
- 		devres_release_all(dev);
-+		arch_teardown_dma_ops(dev);
-+		kfree(dev->dma_range_map);
-+		dev->dma_range_map = NULL;
- 		driver_sysfs_remove(dev);
- 		dev->driver = NULL;
- 		dev_set_drvdata(dev, NULL);
-@@ -1208,6 +1211,8 @@ static void __device_release_driver(stru
+-		tty_hangup(tty);
++		/* We cannot use tty_hangup() because in tty_kref_put() the tty
++		 * driver assumes that the hangup queue is free and reuses it to
++		 * queue release_one_tty() -> NULL pointer panic in
++		 * process_one_work().
++		 */
++		tty_vhangup(tty);
  
- 		devres_release_all(dev);
- 		arch_teardown_dma_ops(dev);
-+		kfree(dev->dma_range_map);
-+		dev->dma_range_map = NULL;
- 		dev->driver = NULL;
- 		dev_set_drvdata(dev, NULL);
- 		if (dev->pm_domain && dev->pm_domain->dismiss)
+ 		tty_port_tty_set(&dlci->port, NULL);
+ 		tty_kref_put(tty);
+-- 
+2.35.1
+
 
 
