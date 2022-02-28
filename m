@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A10BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236374AbiB1SHD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:07:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        id S239895AbiB1SHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240054AbiB1SC6 (ORCPT
+        with ESMTP id S240018AbiB1SC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:02:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EE889E9DD;
-        Mon, 28 Feb 2022 09:46:31 -0800 (PST)
+        Mon, 28 Feb 2022 13:02:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F409C9D0D9;
+        Mon, 28 Feb 2022 09:46:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAECE6091F;
-        Mon, 28 Feb 2022 17:46:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C931C340E7;
-        Mon, 28 Feb 2022 17:46:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF5C9B815A2;
+        Mon, 28 Feb 2022 17:46:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264F8C340E7;
+        Mon, 28 Feb 2022 17:46:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070377;
-        bh=majM6TI35ncnupXMXAvLRdqwSeSHf1zykEvFxKxCwb8=;
+        s=korg; t=1646070366;
+        bh=Bpsb1rp0neLYVsyJi0rU++lKp9fmwiwEbLY+ew+FR2g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NodPhlb5dkeDwXCF7CCMDHe9SyMlWJcrM7iXuL8xpxnRErCjt1vH6LYIZTDeInfLq
-         6dWEWNbWDl4lzNOmQHJeCisVb0gXk0MU62nejeNezx3760sJHN7d7Ml00o8Sho0xut
-         /MnHBc28hlcMsYjgdR/Sm7nwbFCGpu/xRJGBCtF0=
+        b=WhycuOR0WnqKYKdvmQgJzJOCb6/hZng8haLqHgk4zLTlW/9Z5B863a/CMi8iTXlFC
+         4y3xIcjDhovln/YUSYfqGCaDR5PoA/e0aRH8yqZZ54IUM2egHFylBsCuunmxwku2Cz
+         Jzy2R72LC4u7VawqbD/YfkEpRyjV64iNg28xYLDM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.16 086/164] surface: surface3_power: Fix battery readings on batteries without a serial number
-Date:   Mon, 28 Feb 2022 18:24:08 +0100
-Message-Id: <20220228172407.703847528@linuxfoundation.org>
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Simon Horman <simon.horman@corigine.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 082/164] nfp: flower: Fix a potential leak in nfp_tunnel_add_shared_mac()
+Date:   Mon, 28 Feb 2022 18:24:04 +0100
+Message-Id: <20220228172407.398113380@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -50,57 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 21d90aaee8d5c2a097ef41f1430d97661233ecc6 upstream.
+commit 3a14d0888eb4b0045884126acc69abfb7b87814d upstream.
 
-The battery on the 2nd hand Surface 3 which I recently bought appears to
-not have a serial number programmed in. This results in any I2C reads from
-the registers containing the serial number failing with an I2C NACK.
+ida_simple_get() returns an id between min (0) and max (NFP_MAX_MAC_INDEX)
+inclusive.
+So NFP_MAX_MAC_INDEX (0xff) is a valid id.
 
-This was causing mshw0011_bix() to fail causing the battery readings to
-not work at all.
+In order for the error handling path to work correctly, the 'invalid'
+value for 'ida_idx' should not be in the 0..NFP_MAX_MAC_INDEX range,
+inclusive.
 
-Ignore EREMOTEIO (I2C NACK) errors when retrieving the serial number and
-continue with an empty serial number to fix this.
+So set it to -1.
 
-Fixes: b1f81b496b0d ("platform/x86: surface3_power: MSHW0011 rev-eng implementation")
-BugLink: https://github.com/linux-surface/linux-surface/issues/608
-Reviewed-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Reviewed-by: Maximilian Luz <luzmaximilian@gmail.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220224101848.7219-1-hdegoede@redhat.com
+Fixes: 20cce8865098 ("nfp: flower: enable MAC address sharing for offloadable devs")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/r/20220218131535.100258-1-simon.horman@corigine.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/platform/surface/surface3_power.c |   13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/platform/surface/surface3_power.c
-+++ b/drivers/platform/surface/surface3_power.c
-@@ -232,14 +232,21 @@ static int mshw0011_bix(struct mshw0011_
- 	}
- 	bix->last_full_charg_capacity = ret;
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -922,8 +922,8 @@ nfp_tunnel_add_shared_mac(struct nfp_app
+ 			  int port, bool mod)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+-	int ida_idx = NFP_MAX_MAC_INDEX, err;
+ 	struct nfp_tun_offloaded_mac *entry;
++	int ida_idx = -1, err;
+ 	u16 nfp_mac_idx = 0;
  
--	/* get serial number */
-+	/*
-+	 * Get serial number, on some devices (with unofficial replacement
-+	 * battery?) reading any of the serial number range addresses gets
-+	 * nacked in this case just leave the serial number empty.
-+	 */
- 	ret = i2c_smbus_read_i2c_block_data(client, MSHW0011_BAT0_REG_SERIAL_NO,
- 					    sizeof(buf), buf);
--	if (ret != sizeof(buf)) {
-+	if (ret == -EREMOTEIO) {
-+		/* no serial number available */
-+	} else if (ret != sizeof(buf)) {
- 		dev_err(&client->dev, "Error reading serial no: %d\n", ret);
- 		return ret;
-+	} else {
-+		snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
- 	}
--	snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
+ 	entry = nfp_tunnel_lookup_offloaded_macs(app, netdev->dev_addr);
+@@ -997,7 +997,7 @@ err_remove_hash:
+ err_free_entry:
+ 	kfree(entry);
+ err_free_ida:
+-	if (ida_idx != NFP_MAX_MAC_INDEX)
++	if (ida_idx != -1)
+ 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
  
- 	/* get cycle count */
- 	ret = i2c_smbus_read_word_data(client, MSHW0011_BAT0_REG_CYCLE_CNT);
+ 	return err;
 
 
