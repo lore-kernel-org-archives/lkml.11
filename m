@@ -2,80 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B58C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:16:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237519AbiB1PRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 10:17:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37220 "EHLO
+        id S237548AbiB1PRO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 10:17:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237525AbiB1PRC (ORCPT
+        with ESMTP id S237544AbiB1PRJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 10:17:02 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2A8811B0;
-        Mon, 28 Feb 2022 07:16:16 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id l25-20020a9d7a99000000b005af173a2875so9736614otn.2;
-        Mon, 28 Feb 2022 07:16:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3erX1W/V8eKoqrAyYmfugbwLeZekQvkkVtHUA9NIwMk=;
-        b=drpj1huI2zUtT9Wxsj1mWTLeR7td9jWzGtULueocDG5ZY8vkEnbQe+F9SxynenJPt9
-         1YQxDabJkCDr9VRQRt+LIJ+ge7VwvhZRjkVtgccg8gg1LRTeEDZgCj/PK6o3zVxFqXSR
-         IBubXJps1jrO7uwOlTm8tEda55t/VFR/omtiacO+Guj67wxrRfLIWSQuLJpafmaQRxM1
-         MAAXm47q36VY3tKbW3bqVQY7pd89RN4ie8+Uw2s8ANxcipLCuNiptwD/uNMZZn2VwtpJ
-         LM8YL9V9dzV97ahyiSPKTl6/TaeCbzxCj3cixXfjOrquBp3Q07y1oWvU/vmxBJg/U9Dg
-         5QtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3erX1W/V8eKoqrAyYmfugbwLeZekQvkkVtHUA9NIwMk=;
-        b=rdB/Z7Ib/P1bsEP+HDjlVBB33RLxToa4lrXyY8oX15j+46YuHE/wN69fd8B7xIGjn4
-         AtDKrRp0kQuSF9JbmMH+FfOBaNnwe8kjAbI7SkX1+g4unn+vqWR+gm19fczGOWy4xwN4
-         FfZpXDShFAJMEk10qA6qka8t2MB2efWqusJw7WURNpKt7A1Tsj4BEBrQ42EAx1976xLf
-         cOEoh2SgTxZBLCgVwh1X9SPBvfBEcO9mNxiqTfKUmSKRfIN3ay0xgsPMFOe0q7rMLa4h
-         cxFlpSzWAWOQ5CpHPS7ooUQQBsfq6pFe50F/lT/BTAzhASTTpRAC6yQQyf5KmnuKjgw8
-         SD2Q==
-X-Gm-Message-State: AOAM532dONIL2QsbTOAoiZFQNoFX2NGfSVym5yqEDaUcjwFrUxvYOPV2
-        TtJANPiQPsqumLo3SaVF98Xy94uEyjM/tlDLjyg=
-X-Google-Smtp-Source: ABdhPJx9TTxxLNEwF+4nqK17T9MfrZryYcQnu8nF9wuFdmJwPKwtyAsHwaCtK/g+ns54aBxeRErB7ut9nPOPqMIGnK0=
-X-Received: by 2002:a9d:7096:0:b0:5ad:ebf7:a225 with SMTP id
- l22-20020a9d7096000000b005adebf7a225mr9336023otj.370.1646061375645; Mon, 28
- Feb 2022 07:16:15 -0800 (PST)
+        Mon, 28 Feb 2022 10:17:09 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAB683000;
+        Mon, 28 Feb 2022 07:16:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646061390; x=1677597390;
+  h=message-id:date:mime-version:to:cc:references:from:
+   subject:in-reply-to:content-transfer-encoding;
+  bh=GFDKt/IDNLdqLTuvDR6yJcVQxe8prvsZyzafk0irqZQ=;
+  b=dZt5eLPlw3/rVdLr0/J8lsOrDWfpq0pa3v7loKEUbA+zmQIBU9tSmasN
+   cEPgzjUNMugxHN/ucZYKc9r9F2VHfmsEYHCzP/JmpeoUkZEukEJDuXGr6
+   HztKmgEg6rAZoUePgH6Er969RH/lUr0q+v9AD1/L+mRwopSRyNQ4/SF3M
+   KnOw+gpCfe+5T5gTbRcSDXnIfBb9oPeRKaFtfxbb1ikbSSkbX6asrAjLE
+   PzR1yRYiqnPsUWTbonVrysuvzql5XdgO5urnMG/HwOy8GaHWflNw3vaCQ
+   aogwzXcEFOdsGk72YKTlegqxI2LCeywn8BFOiDmxIy9jrl6iW2m6JcC7S
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="277563357"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="277563357"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 07:16:28 -0800
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="550276016"
+Received: from eliasbro-mobl.amr.corp.intel.com (HELO [10.212.174.65]) ([10.212.174.65])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 07:16:27 -0800
+Message-ID: <f6a256a6-a7d7-a8e7-c9a8-e232203c63af@intel.com>
+Date:   Mon, 28 Feb 2022 07:16:22 -0800
 MIME-Version: 1.0
-References: <20220225221625.3531852-1-keescook@chromium.org>
- <CANpmjNOup5JCjRpRkhsF3Z+dPX6_MQE5u6WhnMit84c1TyRK+A@mail.gmail.com> <CA+DvKQ+PYtDyejaUoBj51D_Y7muYaR1_FhQGWGWvgQawCbp31Q@mail.gmail.com>
-In-Reply-To: <CA+DvKQ+PYtDyejaUoBj51D_Y7muYaR1_FhQGWGWvgQawCbp31Q@mail.gmail.com>
-From:   Daniel Micay <danielmicay@gmail.com>
-Date:   Mon, 28 Feb 2022 10:15:59 -0500
-Message-ID: <CA+DvKQ+bp7Y7gmaVhacjv9uF6Ar-o4tet872h4Q8RPYPJjcJQA@mail.gmail.com>
-Subject: Re: [PATCH] mm: Handle ksize() vs __alloc_size by forgetting size
-To:     Marco Elver <elver@google.com>
-Cc:     Kees Cook <keescook@chromium.org>, llvm@lists.linux.dev,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>, linux-mm@kvack.org,
-        stable@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>,
+        "Dhanraj, Vijay" <vijay.dhanraj@intel.com>
+Cc:     "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "Zhang, Cathy" <cathy.zhang@intel.com>,
+        "Xing, Cedric" <cedric.xing@intel.com>,
+        "Huang, Haitao" <haitao.huang@intel.com>,
+        "Shanahan, Mark" <mark.shanahan@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
+ <YhLhoMFPyOFZ2fsX@iki.fi>
+ <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
+ <Yhy/GvJegnTqYdq6@iki.fi>
+From:   Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
+ permissions
+In-Reply-To: <Yhy/GvJegnTqYdq6@iki.fi>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looked through them and nearly all seem easy to replace.
+On 2/28/22 04:24, Jarkko Sakkinen wrote:
+>> Regarding the recent update of splitting the page permissions change
+>> request into two IOCTLS (RELAX and RESTRICT), can we combine them into
+>> one? That is, revert to how it was done in the v1 version?
+> They are logically separate complex functionalities:
+> 
+> 1. "restrict" calls EMODPR and requires EACCEPT
+> 2. "relax" increases permissions up to vetted ("EADD") and could be
+>     combined with EMODPE called inside enclave.
 
-By the way, the call to ksize in arch/x86/kernel/cpu/microcode/amd.c
-doesn't look right. It allocates the memory with kmemdup. I don't see
-how it can assume that the padding is zero, and that seems to be a
-requirement since it zeroes the destination before copying to it.
-Seems far more reasonable to add a field with the size.
+It would be great to have a _slightly_ better justification than that.
+Existing permission interfaces like chmod or mprotect() don't have this
+asymmetry.
+
+I think you're saying that the underlying hardware implementation is
+asymmetric, so the interface should be too.  I don't find that argument
+very convincing.  If the hardware interface is arcane and we can make it
+look more sane in the ioctl() layer, we should that, asymmetry or not.
+
+If we can't make it any more sane, let's say why the ioctl() must or
+should be asymmetric.
+
+The SGX2 page permission mechanism is horribly counter intuitive.
+*Everybody* that looks at it thinks that it's wrong.  That means that we
+have a lot of work ahead of us to explain the interfaces that get
+layered on top.
