@@ -2,168 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62FAFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35102C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:37:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234825AbiB1Ngk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:36:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48042 "EHLO
+        id S235143AbiB1Nhm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:37:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiB1Ngi (ORCPT
+        with ESMTP id S234616AbiB1Nhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 08:36:38 -0500
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED9E675C0B;
-        Mon, 28 Feb 2022 05:35:58 -0800 (PST)
-Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
- (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 28 Feb
- 2022 21:35:56 +0800
-Message-ID: <837c988c-1347-8aa6-cffd-2130f8894cb0@amlogic.com>
-Date:   Mon, 28 Feb 2022 21:35:55 +0800
+        Mon, 28 Feb 2022 08:37:40 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608E075C10
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 05:37:02 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso14802310pjj.2
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 05:37:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:in-reply-to:references:subject:message-id:date
+         :mime-version:content-transfer-encoding;
+        bh=9O/Lni+iqGcrkwxA9DWmuMqoLhFH+SpOfK8UNsywB74=;
+        b=rfF4O0RCWIfKvhyf5N7suLWZt2W55bwAcXDHa+lMQfsT9iHbp8rUP11PkuqHCXG7wa
+         zU/7k7NZhQg8Qginfi8CPkY4+hJ9QFSUQfQDDCAfTVNx/7YA0OwKYvcKVI1K9174xjZz
+         rO0fMS2fksY9ntODzv2V00kQB8emJKKOZaSrfa6G/xG762sS27UmPqWAaP1iMHfxgB8/
+         gxNKABKCL3NO8zpwtZxHcJy2YablfizBxJNsPn0MM1/HANTwsPUm6wuT0+dVf8M+ymqs
+         7LM6NZqeAv9Q8R1gJWY/D8OJqmcA5rPKIIOhkRmeTXdWTO+oMMB0xZLhl+EaP8BC37Cj
+         CjVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=9O/Lni+iqGcrkwxA9DWmuMqoLhFH+SpOfK8UNsywB74=;
+        b=XENtQW0bBiSc5vm8u/GsUOe9O1Yfcwmqgn7CG/SpRjTyDBCnj02FgQxmO0Y6U8zDEg
+         TAf3jz7wle/09YzVbY/2yFKg+C/xOEfRBjDhYeWHPJsvShcwVb4XHELl85WtKKTuOr8V
+         IHIERCst5ry36CdJ3V/rEmT84sg8/5GiOrMFJr4t+nr/2KFkN+73ZX5vzY//cf2r0X6k
+         HlW9s/5M/RrklzWibLQE6bScEfhGBQgF/R/gv6cBv6NASsDpJ+Foz3nmKfJonr9rJzHz
+         UWIWdAy2VYvNnOQf/ynVhiUuDEAsUwyGhxLwjuNeeKGRvYjw3Xupy4G/YCDcjRkjzh8A
+         v8UQ==
+X-Gm-Message-State: AOAM533jssHr1G/Hy2rN9aK3Fa4Qo8YpHmz02WKrGlg5cmPLd+GnFX0a
+        hXCBlP3xGm3TOXCdLgPXZQbG32Mynom6rg==
+X-Google-Smtp-Source: ABdhPJwJgTC7vwspU3jNtdfRXtNKV+8vWmMP8DO8GTRLIHPsSgiCUtX5kVHob8xNbWsMh6SzGrKXMg==
+X-Received: by 2002:a17:90a:8689:b0:1bd:4c83:4c5c with SMTP id p9-20020a17090a868900b001bd4c834c5cmr5524100pjn.142.1646055421789;
+        Mon, 28 Feb 2022 05:37:01 -0800 (PST)
+Received: from [127.0.1.1] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id u16-20020a056a00125000b004e1e36d4428sm13219848pfi.104.2022.02.28.05.37.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 05:37:01 -0800 (PST)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     mingo@redhat.com, rostedt@goodmis.org, gregkh@linuxfoundation.org,
+        Yu Kuai <yukuai3@huawei.com>
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com
+In-Reply-To: <20220228034354.4047385-1-yukuai3@huawei.com>
+References: <20220228034354.4047385-1-yukuai3@huawei.com>
+Subject: Re: [PATCH v2] blktrace: fix use after free for struct blk_trace
+Message-Id: <164605542062.3958.11033668942703223709.b4-ty@kernel.dk>
+Date:   Mon, 28 Feb 2022 06:37:00 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH V2] tty: serial: meson: Fix the compile link error
- reported by kernel test robot
-Content-Language: en-US
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        <linux-serial@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20220228090351.9976-1-yu.tu@amlogic.com>
- <790952bd-b066-0b41-545c-1f65cd4244af@baylibre.com>
-From:   Yu Tu <yu.tu@amlogic.com>
-In-Reply-To: <790952bd-b066-0b41-545c-1f65cd4244af@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.18.29.173]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Neil,
-	Thank you very much for your reply.
+On Mon, 28 Feb 2022 11:43:54 +0800, Yu Kuai wrote:
+> When tracing the whole disk, 'dropped' and 'msg' will be created
+> under 'q->debugfs_dir' and 'bt->dir' is NULL, thus blk_trace_free()
+> won't remove those files. What's worse, the following UAF can be
+> triggered because of accessing stale 'dropped' and 'msg':
+> 
+> ==================================================================
+> BUG: KASAN: use-after-free in blk_dropped_read+0x89/0x100
+> Read of size 4 at addr ffff88816912f3d8 by task blktrace/1188
+> 
+> [...]
 
-On 2022/2/28 17:52, Neil Armstrong wrote:
-> [ EXTERNAL EMAIL ]
-> 
-> i,
-> 
-> On 28/02/2022 10:03, Yu Tu wrote:
->> Describes the calculation of the UART baud rate clock using a clock
->> frame. Forgot to add in Kconfig kernel test Robot compilation error
->> due to COMMON_CLK dependency.
->>
->> Fixes: 44023b8e1f14 ("tty: serial:meson: Describes the calculation of 
->> the UART baud rate clock using a clock frame“)
-> 
-> AFAIK this commit is not in an uptream/feature branch, so you should 
-> simply fix your `Use CCF to describe the UART baud rate clock` instead.
-> 
-I'll correct it right away as you suggested.
+Applied, thanks!
 
-> Neil
-> 
->> Reported-by: kernel test robot <lkp@intel.com>
->> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->> ---
->>   drivers/tty/serial/Kconfig      |  1 +
->>   drivers/tty/serial/meson_uart.c | 37 +++++++++++++++++++++++----------
->>   2 files changed, 27 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
->> index e952ec5c7a7c..a0f2b82fc18b 100644
->> --- a/drivers/tty/serial/Kconfig
->> +++ b/drivers/tty/serial/Kconfig
->> @@ -200,6 +200,7 @@ config SERIAL_KGDB_NMI
->>   config SERIAL_MESON
->>       tristate "Meson serial port support"
->>       depends on ARCH_MESON || COMPILE_TEST
->> +    depends on COMMON_CLK
->>       select SERIAL_CORE
->>       help
->>         This enables the driver for the on-chip UARTs of the Amlogic
->> diff --git a/drivers/tty/serial/meson_uart.c 
->> b/drivers/tty/serial/meson_uart.c
->> index bf6be5468aaf..972f210f3492 100644
->> --- a/drivers/tty/serial/meson_uart.c
->> +++ b/drivers/tty/serial/meson_uart.c
->> @@ -780,28 +780,37 @@ static int meson_uart_probe(struct 
->> platform_device *pdev)
->>           return ret;
->>       irq = platform_get_irq(pdev, 0);
->> -    if (irq < 0)
->> -        return irq;
->> +    if (irq < 0) {
->> +        ret = irq;
->> +        goto err_out_clk_disable;
->> +    }
->>       of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
->>       if (meson_ports[pdev->id]) {
->>           dev_err(&pdev->dev, "port %d already allocated\n", pdev->id);
->> -        return -EBUSY;
->> +        ret = -EBUSY;
->> +        goto err_out_clk_disable;
->>       }
->>       port = devm_kzalloc(&pdev->dev, sizeof(struct uart_port), 
->> GFP_KERNEL);
->> -    if (!port)
->> -        return -ENOMEM;
->> +    if (!port) {
->> +        ret = -ENOMEM;
->> +        goto err_out_clk_disable;
->> +    }
->>       port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
->> -    if (IS_ERR(port->membase))
->> -        return PTR_ERR(port->membase);
->> +    if (IS_ERR(port->membase)) {
->> +        ret = PTR_ERR(port->membase);
->> +        goto err_out_clk_disable;
->> +    }
->>       private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
->>                       GFP_KERNEL);
->> -    if (!private_data)
->> -        return -ENOMEM;
->> +    if (!private_data) {
->> +        ret = -ENOMEM;
->> +        goto err_out_clk_disable;
->> +    }
->>       if (device_get_match_data(&pdev->dev))
->>           private_data->use_xtal_clk = true;
->> @@ -822,7 +831,7 @@ static int meson_uart_probe(struct platform_device 
->> *pdev)
->>       ret = meson_uart_probe_clocks(port);
->>       if (ret)
->> -        return ret;
->> +        goto err_out_clk_disable;
->>       meson_ports[pdev->id] = port;
->>       platform_set_drvdata(pdev, port);
->> @@ -831,9 +840,15 @@ static int meson_uart_probe(struct 
->> platform_device *pdev)
->>       meson_uart_reset(port);
->>       ret = uart_add_one_port(&meson_uart_driver, port);
->> -    if (ret)
->> +    if (ret) {
->>           meson_ports[pdev->id] = NULL;
->> +        goto err_out_clk_disable;
->> +    }
->> +
->> +    return 0;
->> +err_out_clk_disable:
->> +    clk_disable_unprepare(pclk);
->>       return ret;
->>   }
->>
->> base-commit: c2faf737abfb10f88f2d2612d573e9edc3c42c37
-> 
+[1/1] blktrace: fix use after free for struct blk_trace
+      commit: 30939293262eb433c960c4532a0d59c4073b2b84
+
+Best regards,
+-- 
+Jens Axboe
+
+
