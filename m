@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1931AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238230AbiB1Rjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:39:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
+        id S238233AbiB1RkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:40:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238538AbiB1Rh6 (ORCPT
+        with ESMTP id S238542AbiB1Rh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:37:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909E750059;
-        Mon, 28 Feb 2022 09:32:51 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B8D517CB;
+        Mon, 28 Feb 2022 09:32:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C4ECB815B3;
-        Mon, 28 Feb 2022 17:32:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F51C340F1;
-        Mon, 28 Feb 2022 17:32:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD5E61358;
+        Mon, 28 Feb 2022 17:32:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5874DC340E7;
+        Mon, 28 Feb 2022 17:32:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069569;
-        bh=C6gmUbI3lDqmvA6/v3kymtV/MNnaqkTM8sJlK3mLUn4=;
+        s=korg; t=1646069571;
+        bh=Yw6SyZzdlpXfPY/msMJMT04oO7U+wsIO7oEnIK954Oo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CSQ2m6AVeIMWcvfSIO85c9pHFAdMZJuuFz9a3BzQr0KBAHO7oa4PWcMxdyUBEZweH
-         AiGB/VsuUDP0jxye1jekLnnr4GAvoj9Zs1v1BhPY+bIUN4NzE+MgO5fx4xj5fIdvR/
-         C9IkLFJ8AtKido6oJXtx3mwhIwPrDQkUkWEdYFbM=
+        b=Q+IE83pH5qU2EAw1ZeU3IwZQyXPMo5gL7t/czI3FawRMigW9ZE4+aAm2lpL6UdLV4
+         K9IAKDz+L6+8+zYsO6HtZCPe68esZnR2tYIgm7xb/a9+YDR6uIyFdkieKbnWam0D20
+         5LUG1v6JOFU5Es4LLsuVOAKp+NYPIOVHMw616JeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 14/80] CDC-NCM: avoid overflow in sanity checking
-Date:   Mon, 28 Feb 2022 18:23:55 +0100
-Message-Id: <20220228172313.354550555@linuxfoundation.org>
+        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Nick Gregory <Nick.Gregory@Sophos.com>
+Subject: [PATCH 5.10 15/80] netfilter: nf_tables_offload: incorrect flow offload action array size
+Date:   Mon, 28 Feb 2022 18:23:56 +0100
+Message-Id: <20220228172313.447748713@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -48,51 +48,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-commit 8d2b1a1ec9f559d30b724877da4ce592edc41fdc upstream.
+commit b1a5983f56e371046dcf164f90bfaf704d2b89f6 upstream.
 
-A broken device may give an extreme offset like 0xFFF0
-and a reasonable length for a fragment. In the sanity
-check as formulated now, this will create an integer
-overflow, defeating the sanity check. Both offset
-and offset + len need to be checked in such a manner
-that no overflow can occur.
-And those quantities should be unsigned.
+immediate verdict expression needs to allocate one slot in the flow offload
+action array, however, immediate data expression does not need to do so.
 
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+fwd and dup expression need to allocate one slot, this is missing.
+
+Add a new offload_action interface to report if this expression needs to
+allocate one slot in the flow offload action array.
+
+Fixes: be2861dc36d7 ("netfilter: nft_{fwd,dup}_netdev: add offload support")
+Reported-and-tested-by: Nick Gregory <Nick.Gregory@Sophos.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/cdc_ncm.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/net/netfilter/nf_tables.h         |    2 +-
+ include/net/netfilter/nf_tables_offload.h |    2 --
+ net/netfilter/nf_tables_offload.c         |    3 ++-
+ net/netfilter/nft_dup_netdev.c            |    6 ++++++
+ net/netfilter/nft_fwd_netdev.c            |    6 ++++++
+ net/netfilter/nft_immediate.c             |   12 +++++++++++-
+ 6 files changed, 26 insertions(+), 5 deletions(-)
 
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1702,10 +1702,10 @@ int cdc_ncm_rx_fixup(struct usbnet *dev,
- {
- 	struct sk_buff *skb;
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
--	int len;
-+	unsigned int len;
- 	int nframes;
- 	int x;
--	int offset;
-+	unsigned int offset;
- 	union {
- 		struct usb_cdc_ncm_ndp16 *ndp16;
- 		struct usb_cdc_ncm_ndp32 *ndp32;
-@@ -1777,8 +1777,8 @@ next_ndp:
- 			break;
- 		}
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -825,7 +825,7 @@ struct nft_expr_ops {
+ 	int				(*offload)(struct nft_offload_ctx *ctx,
+ 						   struct nft_flow_rule *flow,
+ 						   const struct nft_expr *expr);
+-	u32				offload_flags;
++	bool				(*offload_action)(const struct nft_expr *expr);
+ 	const struct nft_expr_type	*type;
+ 	void				*data;
+ };
+--- a/include/net/netfilter/nf_tables_offload.h
++++ b/include/net/netfilter/nf_tables_offload.h
+@@ -67,8 +67,6 @@ struct nft_flow_rule {
+ 	struct flow_rule	*rule;
+ };
  
--		/* sanity checking */
--		if (((offset + len) > skb_in->len) ||
-+		/* sanity checking - watch out for integer wrap*/
-+		if ((offset > skb_in->len) || (len > skb_in->len - offset) ||
- 				(len > ctx->rx_max) || (len < ETH_HLEN)) {
- 			netif_dbg(dev, rx_err, dev->net,
- 				  "invalid frame detected (ignored) offset[%u]=%u, length=%u, skb=%p\n",
+-#define NFT_OFFLOAD_F_ACTION	(1 << 0)
+-
+ void nft_flow_rule_set_addr_type(struct nft_flow_rule *flow,
+ 				 enum flow_dissector_key_id addr_type);
+ 
+--- a/net/netfilter/nf_tables_offload.c
++++ b/net/netfilter/nf_tables_offload.c
+@@ -94,7 +94,8 @@ struct nft_flow_rule *nft_flow_rule_crea
+ 
+ 	expr = nft_expr_first(rule);
+ 	while (nft_expr_more(rule, expr)) {
+-		if (expr->ops->offload_flags & NFT_OFFLOAD_F_ACTION)
++		if (expr->ops->offload_action &&
++		    expr->ops->offload_action(expr))
+ 			num_actions++;
+ 
+ 		expr = nft_expr_next(expr);
+--- a/net/netfilter/nft_dup_netdev.c
++++ b/net/netfilter/nft_dup_netdev.c
+@@ -67,6 +67,11 @@ static int nft_dup_netdev_offload(struct
+ 	return nft_fwd_dup_netdev_offload(ctx, flow, FLOW_ACTION_MIRRED, oif);
+ }
+ 
++static bool nft_dup_netdev_offload_action(const struct nft_expr *expr)
++{
++	return true;
++}
++
+ static struct nft_expr_type nft_dup_netdev_type;
+ static const struct nft_expr_ops nft_dup_netdev_ops = {
+ 	.type		= &nft_dup_netdev_type,
+@@ -75,6 +80,7 @@ static const struct nft_expr_ops nft_dup
+ 	.init		= nft_dup_netdev_init,
+ 	.dump		= nft_dup_netdev_dump,
+ 	.offload	= nft_dup_netdev_offload,
++	.offload_action	= nft_dup_netdev_offload_action,
+ };
+ 
+ static struct nft_expr_type nft_dup_netdev_type __read_mostly = {
+--- a/net/netfilter/nft_fwd_netdev.c
++++ b/net/netfilter/nft_fwd_netdev.c
+@@ -77,6 +77,11 @@ static int nft_fwd_netdev_offload(struct
+ 	return nft_fwd_dup_netdev_offload(ctx, flow, FLOW_ACTION_REDIRECT, oif);
+ }
+ 
++static bool nft_fwd_netdev_offload_action(const struct nft_expr *expr)
++{
++	return true;
++}
++
+ struct nft_fwd_neigh {
+ 	enum nft_registers	sreg_dev:8;
+ 	enum nft_registers	sreg_addr:8;
+@@ -219,6 +224,7 @@ static const struct nft_expr_ops nft_fwd
+ 	.dump		= nft_fwd_netdev_dump,
+ 	.validate	= nft_fwd_validate,
+ 	.offload	= nft_fwd_netdev_offload,
++	.offload_action	= nft_fwd_netdev_offload_action,
+ };
+ 
+ static const struct nft_expr_ops *
+--- a/net/netfilter/nft_immediate.c
++++ b/net/netfilter/nft_immediate.c
+@@ -213,6 +213,16 @@ static int nft_immediate_offload(struct
+ 	return 0;
+ }
+ 
++static bool nft_immediate_offload_action(const struct nft_expr *expr)
++{
++	const struct nft_immediate_expr *priv = nft_expr_priv(expr);
++
++	if (priv->dreg == NFT_REG_VERDICT)
++		return true;
++
++	return false;
++}
++
+ static const struct nft_expr_ops nft_imm_ops = {
+ 	.type		= &nft_imm_type,
+ 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_immediate_expr)),
+@@ -224,7 +234,7 @@ static const struct nft_expr_ops nft_imm
+ 	.dump		= nft_immediate_dump,
+ 	.validate	= nft_immediate_validate,
+ 	.offload	= nft_immediate_offload,
+-	.offload_flags	= NFT_OFFLOAD_F_ACTION,
++	.offload_action	= nft_immediate_offload_action,
+ };
+ 
+ struct nft_expr_type nft_imm_type __read_mostly = {
 
 
