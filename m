@@ -2,104 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA1EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF2E6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:39:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236614AbiB1Nir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:38:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52008 "EHLO
+        id S236523AbiB1Njr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:39:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236561AbiB1Nio (ORCPT
+        with ESMTP id S236535AbiB1Nhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 08:38:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5F628E07
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 05:38:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38A8CB8112D
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 13:38:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD50C340E7;
-        Mon, 28 Feb 2022 13:38:02 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Gh3Ek2K7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1646055481;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Jp0tzar9XDCt4OwMcSl74uoHMR8VXI+dpMIexJoOH+Y=;
-        b=Gh3Ek2K7j2tFgs3PkOadZubvr2UgwwCsxyr53Sn/Cy24dwbXC7eS7YSLay9TMIGP9eSApI
-        XSJ3UDmU9THx09JmjkKJpuHGT9EpnyPIp9gvC0TSW374StU8WrXEznvO6dBpptHLYRx1Wy
-        NLjdD2dNCsmDwVdTL2wZy4FPeowJaiI=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id c2640e39 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 28 Feb 2022 13:38:01 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: [PATCH 2/2] random: don't let 644 read-only sysctls be written to
-Date:   Mon, 28 Feb 2022 14:37:43 +0100
-Message-Id: <20220228133743.2243-2-Jason@zx2c4.com>
-In-Reply-To: <20220228133743.2243-1-Jason@zx2c4.com>
-References: <20220228133743.2243-1-Jason@zx2c4.com>
+        Mon, 28 Feb 2022 08:37:53 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCDF75C13;
+        Mon, 28 Feb 2022 05:37:14 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id l12so5539296ljh.12;
+        Mon, 28 Feb 2022 05:37:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=aj6KUOaZOqE3uq2D8cyeXlngR1zSjmAmzoWF1U7pslM=;
+        b=VA3iZPMwP59jluFEBQuvoGvxhFeX9+DFwf7UEk5RHYeS5EAn8lp0aTqES853r9OZsY
+         sEWlPl5U9HjC4jnuU2eYUWgKN3A5isMa/3Xb+W66TkLp/MQSbW2/Rt0cQulEGelx5CTM
+         weFtVatykpJMFpdNW0hXJVFynYnalYkxSGEIleFx8wL3cQ8O13BwL8++wR3HgG2Jrsm9
+         fDcuiB19M2VWoefvxdRMLqruIphLf1Nx2+TZ2Lrqvgnxj0LA8/BMO0u/InSH30ENTGzJ
+         rysbDyxln1A58UYG4sNP/w+EDWwHDJ6dKCNOsrA3lMFFEqNxceXLKxCcwvA+hsUy+2gB
+         PkKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=aj6KUOaZOqE3uq2D8cyeXlngR1zSjmAmzoWF1U7pslM=;
+        b=yLpmjZAy41TQfUJ6cs8e7Ta+iCMdUw+85cOaeq0m4sCZmItkoC++rFymGKmyc/5mu7
+         EVqV3zKHVqF1s7HcVw4bvaiC0lyLC3LhGHvtGYUvK3AcLs64TgHDWiE1FfrmNfzdJDAh
+         +m5Ywq+ju6w7wUsEWjvNuRoDxIgl/95BGVKQD4X9eJsz3NSlmmUrJ7EIVzcvdXtn84zS
+         CsMXrLLT0LDibSl1qiP9rJo0WRJ5jATCf/8O4ReZ/6MZYIo+IJSV/07oJgS8CvOYG5/J
+         0T0WcCb6m+d+Mp4nrK34hMQ6p9BWHKjpdpXKTsNm3FdRU4ZM2SHcJC0h1Zv6dxIpN1Bz
+         aadA==
+X-Gm-Message-State: AOAM531zlDwEa/dCL6QzB2huGLmQbfpQp1h3puqIgUSd+25HgD3ewamw
+        NKlCmAy6axnJPwaI702y6hE=
+X-Google-Smtp-Source: ABdhPJyxEhstvlkyxzKUhjRORgnKa/8C4Gtif3HPn8db0OHuxbl+3L5vfG80QePxi9c8+v7OBbkQcA==
+X-Received: by 2002:a2e:808b:0:b0:238:ea7c:faf8 with SMTP id i11-20020a2e808b000000b00238ea7cfaf8mr14255323ljg.513.1646055433276;
+        Mon, 28 Feb 2022 05:37:13 -0800 (PST)
+Received: from wse-c0127.beijerelectronics.com ([208.127.141.29])
+        by smtp.gmail.com with ESMTPSA id i16-20020a2e5410000000b0024647722a4asm1326640ljb.29.2022.02.28.05.37.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 05:37:13 -0800 (PST)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org,
+        Hans Schultz <schultz.hans+netdev@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH iproute2-next V2 4/4] man8/ip-link.8: add locked port feature description and cmd syntax
+Date:   Mon, 28 Feb 2022 14:36:50 +0100
+Message-Id: <20220228133650.31358-5-schultz.hans+netdev@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220228133650.31358-1-schultz.hans+netdev@gmail.com>
+References: <20220228133650.31358-1-schultz.hans+netdev@gmail.com>
 MIME-Version: 1.0
+Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We leave around these old sysctls for compatibility, and we keep them
-"writable" for compatibility, but even after writing, we should keep
-reporting the same value. This is consistent with how userspaces tend to
-use sysctl_random_write_wakeup_bits, writing to it, and then later
-reading from it and using the value.
-
-Cc: Dominik Brodowski <linux@dominikbrodowski.net>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Hans Schultz <schultz.hans+netdev@gmail.com>
 ---
- drivers/char/random.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ man/man8/ip-link.8.in | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 116ebf50d791..06c6e15b5f3d 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1669,6 +1669,13 @@ static int proc_do_uuid(struct ctl_table *table, int write, void *buffer,
- 	return proc_dostring(&fake_table, 0, buffer, lenp, ppos);
- }
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index 19a0c9ca..800ef278 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -2376,6 +2376,7 @@ the following additional arguments are supported:
+ ] [
+ .BR isolated " { " on " | " off " }"
+ ] [
++.BR locked " { " on " | " off " }"
+ .BR backup_port " DEVICE"
+ ] [
+ .BR nobackup_port " ]"
+@@ -2473,6 +2474,11 @@ is enabled on the port. By default this flag is off.
+ - controls whether vlan to tunnel mapping is enabled on the port. By
+ default this flag is off.
  
-+/* The same as proc_dointvec, but writes don't change anything. */
-+static int proc_do_rointvec(struct ctl_table *table, int write, void *buffer,
-+			    size_t *lenp, loff_t *ppos)
-+{
-+	return write ? 0 : proc_dointvec(table, write, buffer, lenp, ppos);
-+}
++.BR locked " { " on " | " off " }"
++- sets or unsets a port in locked mode, so that when enabled, hosts
++behind the port cannot communicate through the port unless a FDB entry
++representing the host is in the FDB. By default this flag is off.
 +
- static struct ctl_table random_table[] = {
- 	{
- 		.procname	= "poolsize",
-@@ -1689,14 +1696,14 @@ static struct ctl_table random_table[] = {
- 		.data		= &sysctl_random_write_wakeup_bits,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_do_rointvec,
- 	},
- 	{
- 		.procname	= "urandom_min_reseed_secs",
- 		.data		= &sysctl_random_min_urandom_seed,
- 		.maxlen		= sizeof(int),
- 		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
-+		.proc_handler	= proc_do_rointvec,
- 	},
- 	{
- 		.procname	= "boot_id",
+ .BI backup_port " DEVICE"
+ - if the port loses carrier all traffic will be redirected to the
+ configured backup port
 -- 
-2.35.1
+2.30.2
 
