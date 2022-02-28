@@ -2,138 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40FE7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 09:02:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 09:02:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234141AbiB1JCg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 04:02:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39726 "EHLO
+        id S234156AbiB1JCj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 04:02:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234150AbiB1JCc (ORCPT
+        with ESMTP id S234145AbiB1JCd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 04:02:32 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7F56662E;
-        Mon, 28 Feb 2022 01:01:53 -0800 (PST)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K6Z9561Zhz67wrK;
-        Mon, 28 Feb 2022 17:00:41 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Feb 2022 10:01:51 +0100
-Received: from A2006125610.china.huawei.com (10.47.94.1) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 28 Feb 2022 09:01:44 +0000
-From:   Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To:     <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-crypto@vger.kernel.org>
-CC:     <alex.williamson@redhat.com>, <jgg@nvidia.com>,
-        <cohuck@redhat.com>, <mgurtovoy@nvidia.com>, <yishaih@nvidia.com>,
-        <linuxarm@huawei.com>, <liulongfang@huawei.com>,
-        <prime.zeng@hisilicon.com>, <jonathan.cameron@huawei.com>,
-        <wangzhou1@hisilicon.com>
-Subject: [PATCH v6 01/10] crypto: hisilicon/qm: Move the QM header to include/linux
-Date:   Mon, 28 Feb 2022 09:01:12 +0000
-Message-ID: <20220228090121.1903-2-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20220228090121.1903-1-shameerali.kolothum.thodi@huawei.com>
-References: <20220228090121.1903-1-shameerali.kolothum.thodi@huawei.com>
+        Mon, 28 Feb 2022 04:02:33 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF1966AC1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 01:01:54 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id d28so14258396wra.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 01:01:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=GklO/UHCHEE9F5DiQFSvvtbE7AZlaReUkQYnTqJmpAI=;
+        b=ywFgbJzrh/DZClHZ80xiwFkRi6o9PJgtnA5qZ87ix1K4Dc7VPHm7hkmJmzEbNSTHdz
+         Dm79YKPrll7KOUeQe9Ik3eKSGFz5rHB5YuAQbb5nnPPHDqlXqBpPwTNqMYpkuNejJKVl
+         bMWopoyytqWNeIhRi8ebORgk9K/X0aDgdDebHgGtnWwQif4xujvmzBy9Pe6j/EkL246n
+         DWr9SN9UM2QlDxJl51nKzhaoyr6STfoP7RbjwtfYJJWX5rcyzf+F0Di/d3KoAgA1/u9H
+         9124JV1MODZVXIKIdHmSJeuu0QPpdsECy0iO4omzIx3yBwRYUguyDi1Rx2eBUy60Wh87
+         53Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=GklO/UHCHEE9F5DiQFSvvtbE7AZlaReUkQYnTqJmpAI=;
+        b=W+h93YsnzB1PtiTnNkzbTmirI3k6XPgv+4u6SGiECdTJzNwaDR/vuEIp7p5SVNcaFn
+         T5paREon38p6jqaD9TtrA3N3ajFLdrUsOt7HyIMNFj2rZ/Zv3DZr4GMoVGAZ1b5XQeh5
+         xvGAzaF1ho6VWQOOW2cE9j3NHdHwwFaIm4+LZRPUWjRXHgERaiCwFXMlDBVyQnUbZxxG
+         SD1P8jPsLL6aoR40b8Bu8WaDGGwtL6OclR36cEJ3O3mJm63YIGE/NMfQQVuwQnr0BR3j
+         zWjeQ0flLXtPNzCogoIXIzOrwirXvNCcWKdvr9Qq7TbTBZ+TGSQWwsPE9ON5UPmXvESj
+         4EEw==
+X-Gm-Message-State: AOAM531v10ecckxh5T8rdP0QCfs9691066dx4MnSYgY1y6+riS4T+7Qm
+        cgLXlQyjuXZE1pmoiPpPDwgefw==
+X-Google-Smtp-Source: ABdhPJzDkZIVZHzdceQbuQQa3A+DqOc0pW2JK4Xes6piiRp38ouCSl9r0mt6vKg4TeGRtJ9A9lpQ+w==
+X-Received: by 2002:a5d:40c7:0:b0:1ed:bd9d:e2e8 with SMTP id b7-20020a5d40c7000000b001edbd9de2e8mr14779672wrq.693.1646038912837;
+        Mon, 28 Feb 2022 01:01:52 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id c4-20020adfed84000000b001e5b8d5b8dasm14202553wro.36.2022.02.28.01.01.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 01:01:52 -0800 (PST)
+Date:   Mon, 28 Feb 2022 09:01:49 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Greg KH <greg@kroah.com>, Arnd Bergmann <arnd@arndb.de>,
+        Alistair Francis <alistair@alistair23.me>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: linux-next: manual merge of the char-misc tree with the mfd tree
+Message-ID: <YhyPfcjJtIKNQtF8@google.com>
+References: <20220228193928.3ec6ee98@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.47.94.1]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220228193928.3ec6ee98@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we are going to introduce VFIO PCI HiSilicon ACC
-driver for live migration in subsequent patches, move
-the ACC QM header file to a common include dir.
+On Mon, 28 Feb 2022, Stephen Rothwell wrote:
 
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/crypto/hisilicon/hpre/hpre.h                         | 2 +-
- drivers/crypto/hisilicon/qm.c                                | 2 +-
- drivers/crypto/hisilicon/sec2/sec.h                          | 2 +-
- drivers/crypto/hisilicon/sgl.c                               | 2 +-
- drivers/crypto/hisilicon/zip/zip.h                           | 2 +-
- drivers/crypto/hisilicon/qm.h => include/linux/hisi_acc_qm.h | 0
- 6 files changed, 5 insertions(+), 5 deletions(-)
- rename drivers/crypto/hisilicon/qm.h => include/linux/hisi_acc_qm.h (100%)
+> Hi all,
+> 
+> Today's linux-next merge of the char-misc tree got a conflict in:
 
-diff --git a/drivers/crypto/hisilicon/hpre/hpre.h b/drivers/crypto/hisilicon/hpre/hpre.h
-index e0b4a1982ee9..9a0558ed82f9 100644
---- a/drivers/crypto/hisilicon/hpre/hpre.h
-+++ b/drivers/crypto/hisilicon/hpre/hpre.h
-@@ -4,7 +4,7 @@
- #define __HISI_HPRE_H
- 
- #include <linux/list.h>
--#include "../qm.h"
-+#include <linux/hisi_acc_qm.h>
- 
- #define HPRE_SQE_SIZE			sizeof(struct hpre_sqe)
- #define HPRE_PF_DEF_Q_NUM		64
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index c5b84a5ea350..ed23e1d3fa27 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -15,7 +15,7 @@
- #include <linux/uacce.h>
- #include <linux/uaccess.h>
- #include <uapi/misc/uacce/hisi_qm.h>
--#include "qm.h"
-+#include <linux/hisi_acc_qm.h>
- 
- /* eq/aeq irq enable */
- #define QM_VF_AEQ_INT_SOURCE		0x0
-diff --git a/drivers/crypto/hisilicon/sec2/sec.h b/drivers/crypto/hisilicon/sec2/sec.h
-index d97cf02b1df7..c2e9b01187a7 100644
---- a/drivers/crypto/hisilicon/sec2/sec.h
-+++ b/drivers/crypto/hisilicon/sec2/sec.h
-@@ -4,7 +4,7 @@
- #ifndef __HISI_SEC_V2_H
- #define __HISI_SEC_V2_H
- 
--#include "../qm.h"
-+#include <linux/hisi_acc_qm.h>
- #include "sec_crypto.h"
- 
- /* Algorithm resource per hardware SEC queue */
-diff --git a/drivers/crypto/hisilicon/sgl.c b/drivers/crypto/hisilicon/sgl.c
-index 057273769f26..534687401135 100644
---- a/drivers/crypto/hisilicon/sgl.c
-+++ b/drivers/crypto/hisilicon/sgl.c
-@@ -3,7 +3,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/module.h>
- #include <linux/slab.h>
--#include "qm.h"
-+#include <linux/hisi_acc_qm.h>
- 
- #define HISI_ACC_SGL_SGE_NR_MIN		1
- #define HISI_ACC_SGL_NR_MAX		256
-diff --git a/drivers/crypto/hisilicon/zip/zip.h b/drivers/crypto/hisilicon/zip/zip.h
-index 517fdbdff3ea..3dfd3bac5a33 100644
---- a/drivers/crypto/hisilicon/zip/zip.h
-+++ b/drivers/crypto/hisilicon/zip/zip.h
-@@ -7,7 +7,7 @@
- #define pr_fmt(fmt)	"hisi_zip: " fmt
- 
- #include <linux/list.h>
--#include "../qm.h"
-+#include <linux/hisi_acc_qm.h>
- 
- enum hisi_zip_error_type {
- 	/* negative compression */
-diff --git a/drivers/crypto/hisilicon/qm.h b/include/linux/hisi_acc_qm.h
-similarity index 100%
-rename from drivers/crypto/hisilicon/qm.h
-rename to include/linux/hisi_acc_qm.h
+I did ask for this *not* to be merged when it was in -testing.
+
+I'll follow-up with Greg.
+
+>   drivers/mfd/simple-mfd-i2c.c
+> 
+> between commit:
+> 
+>   5913eb45d036 ("mfd: simple-mfd-i2c: Enable support for the silergy,sy7636a")
+> 
+> from the mfd tree and commit:
+> 
+>   d0cac2434c8e ("mfd: simple-mfd-i2c: Add Delta TN48M CPLD support")
+> 
+> from the char-misc tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+> 
+
+
+
 -- 
-2.25.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
