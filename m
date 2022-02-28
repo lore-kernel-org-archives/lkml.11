@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39607C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF182C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238216AbiB1Rjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:39:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41626 "EHLO
+        id S233629AbiB1Rjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:39:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238394AbiB1Rhv (ORCPT
+        with ESMTP id S238453AbiB1Rhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:37:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA99E014;
-        Mon, 28 Feb 2022 09:32:32 -0800 (PST)
+        Mon, 28 Feb 2022 12:37:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463202A26F;
+        Mon, 28 Feb 2022 09:32:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7295161357;
-        Mon, 28 Feb 2022 17:32:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D5F1C340E7;
-        Mon, 28 Feb 2022 17:32:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 105D56135F;
+        Mon, 28 Feb 2022 17:32:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FCC1C340E7;
+        Mon, 28 Feb 2022 17:32:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069541;
-        bh=HNlEnn31gDfp78Stg/+wfklDNtibWpDYzDPpIk7TOvg=;
+        s=korg; t=1646069555;
+        bh=hB1FCymVo+iKu6qvqLsvVFV56s88lMs8Vo0RdBY0W/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VgD0YcyFbFhJmEUoUVMRTJp8WwdUOEVaxw493/ersiOVqEZkudqmeXEzT+z56sU8X
-         kKiQzwJerhIYoUYrzp6pIMXjRLl2+TY3dmrZ5FOZg/ZI3XqZMTBhKYMxvZ6MgLt9kJ
-         WZr47ivlBx/ZOPrwo0+CZpd3RcaY2sbhfnoSXezI=
+        b=g7X5rHOK255RLPKh1Llv2JZqSrDmEpMUN5GgwTzHOnyiKjwLIiU7JlXbvArXzB9qd
+         XUwBVXgUOZTbhkyRd9gNUOpP+hWfho7TFkoVyJUyPegxwKUxSq5cr6H3NMFp6cqiQe
+         LuK6zi5DdCDAcY/CXmgeE1DD2ypu4I/TRygo1Gl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.4 32/53] tracing: Have traceon and traceoff trigger honor the instance
-Date:   Mon, 28 Feb 2022 18:24:30 +0100
-Message-Id: <20220228172250.593515553@linuxfoundation.org>
+        stable@vger.kernel.org, Zhao Gongyi <zhaogongyi@huawei.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Waiman Long <longman@redhat.com>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.10 01/80] cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug
+Date:   Mon, 28 Feb 2022 18:23:42 +0100
+Message-Id: <20220228172311.956462417@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
-References: <20220228172248.232273337@linuxfoundation.org>
+In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
+References: <20220228172311.789892158@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,120 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Zhang Qiao <zhangqiao22@huawei.com>
 
-commit 302e9edd54985f584cfc180098f3554774126969 upstream.
+commit 05c7b7a92cc87ff8d7fde189d0fade250697573c upstream.
 
-If a trigger is set on an event to disable or enable tracing within an
-instance, then tracing should be disabled or enabled in the instance and
-not at the top level, which is confusing to users.
+As previously discussed(https://lkml.org/lkml/2022/1/20/51),
+cpuset_attach() is affected with similar cpu hotplug race,
+as follow scenario:
 
-Link: https://lkml.kernel.org/r/20220223223837.14f94ec3@rorschach.local.home
+     cpuset_attach()				cpu hotplug
+    ---------------------------            ----------------------
+    down_write(cpuset_rwsem)
+    guarantee_online_cpus() // (load cpus_attach)
+					sched_cpu_deactivate
+					  set_cpu_active()
+					  // will change cpu_active_mask
+    set_cpus_allowed_ptr(cpus_attach)
+      __set_cpus_allowed_ptr_locked()
+       // (if the intersection of cpus_attach and
+         cpu_active_mask is empty, will return -EINVAL)
+    up_write(cpuset_rwsem)
 
-Cc: stable@vger.kernel.org
-Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
-Tested-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+To avoid races such as described above, protect cpuset_attach() call
+with cpu_hotplug_lock.
+
+Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
+Cc: stable@vger.kernel.org # v2.6.32+
+Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
+Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
+Acked-by: Waiman Long <longman@redhat.com>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_trigger.c |   52 +++++++++++++++++++++++++++++++-----
- 1 file changed, 46 insertions(+), 6 deletions(-)
+ kernel/cgroup/cpuset.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/kernel/trace/trace_events_trigger.c
-+++ b/kernel/trace/trace_events_trigger.c
-@@ -940,6 +940,16 @@ static void
- traceon_trigger(struct event_trigger_data *data, void *rec,
- 		struct ring_buffer_event *event)
- {
-+	struct trace_event_file *file = data->private_data;
-+
-+	if (file) {
-+		if (tracer_tracing_is_on(file->tr))
-+			return;
-+
-+		tracer_tracing_on(file->tr);
-+		return;
-+	}
-+
- 	if (tracing_is_on())
- 		return;
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -2212,6 +2212,7 @@ static void cpuset_attach(struct cgroup_
+ 	cgroup_taskset_first(tset, &css);
+ 	cs = css_cs(css);
  
-@@ -950,8 +960,15 @@ static void
- traceon_count_trigger(struct event_trigger_data *data, void *rec,
- 		      struct ring_buffer_event *event)
- {
--	if (tracing_is_on())
--		return;
-+	struct trace_event_file *file = data->private_data;
-+
-+	if (file) {
-+		if (tracer_tracing_is_on(file->tr))
-+			return;
-+	} else {
-+		if (tracing_is_on())
-+			return;
-+	}
++	cpus_read_lock();
+ 	percpu_down_write(&cpuset_rwsem);
  
- 	if (!data->count)
- 		return;
-@@ -959,13 +976,26 @@ traceon_count_trigger(struct event_trigg
- 	if (data->count != -1)
- 		(data->count)--;
+ 	/* prepare for attach */
+@@ -2267,6 +2268,7 @@ static void cpuset_attach(struct cgroup_
+ 		wake_up(&cpuset_attach_wq);
  
--	tracing_on();
-+	if (file)
-+		tracer_tracing_on(file->tr);
-+	else
-+		tracing_on();
+ 	percpu_up_write(&cpuset_rwsem);
++	cpus_read_unlock();
  }
  
- static void
- traceoff_trigger(struct event_trigger_data *data, void *rec,
- 		 struct ring_buffer_event *event)
- {
-+	struct trace_event_file *file = data->private_data;
-+
-+	if (file) {
-+		if (!tracer_tracing_is_on(file->tr))
-+			return;
-+
-+		tracer_tracing_off(file->tr);
-+		return;
-+	}
-+
- 	if (!tracing_is_on())
- 		return;
- 
-@@ -976,8 +1006,15 @@ static void
- traceoff_count_trigger(struct event_trigger_data *data, void *rec,
- 		       struct ring_buffer_event *event)
- {
--	if (!tracing_is_on())
--		return;
-+	struct trace_event_file *file = data->private_data;
-+
-+	if (file) {
-+		if (!tracer_tracing_is_on(file->tr))
-+			return;
-+	} else {
-+		if (!tracing_is_on())
-+			return;
-+	}
- 
- 	if (!data->count)
- 		return;
-@@ -985,7 +1022,10 @@ traceoff_count_trigger(struct event_trig
- 	if (data->count != -1)
- 		(data->count)--;
- 
--	tracing_off();
-+	if (file)
-+		tracer_tracing_off(file->tr);
-+	else
-+		tracing_off();
- }
- 
- static int
+ /* The various types of files and directories in a cpuset file system */
 
 
