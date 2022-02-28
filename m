@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1FC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236279AbiB1R35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:29:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
+        id S236361AbiB1RaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:30:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237319AbiB1R2I (ORCPT
+        with ESMTP id S235433AbiB1R1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:28:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B7717E3D;
-        Mon, 28 Feb 2022 09:27:29 -0800 (PST)
+        Mon, 28 Feb 2022 12:27:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 782CF887B7;
+        Mon, 28 Feb 2022 09:26:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B109CB815B3;
-        Mon, 28 Feb 2022 17:27:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17E1DC340E7;
-        Mon, 28 Feb 2022 17:27:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A6FC61368;
+        Mon, 28 Feb 2022 17:26:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B451C340E7;
+        Mon, 28 Feb 2022 17:26:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069247;
-        bh=Vj7+RV1mSAdxwWoIV35hkfTUgm01kukRlhS/2oE8/tA=;
+        s=korg; t=1646069201;
+        bh=o2ESmCgyPHSQwaUceGzJDCD9pF7SYBayw3oBqz0aP5g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XEDhL+2bRrDVY5XOyaLBhcMU8I7dxtqYDVxtAnUdf/kvfcrHPym6iBfxntfZNCvJJ
-         TgkUqrvbRrbWQ08JUNOC0scwhIoEusIuOsCBFzcVGouNAZx9gEtGli72FzOf6cvUXo
-         g/B5dON7JzW9RA6y1aZmNHJqYf2N4VK0695e6YBI=
+        b=zWS5m8q/2jdSwKpj8ayP4b1MC1Ha50x94W79PZ4K13+N128h4BgQLrfiNm9Y6rjC2
+         xi9L0FIBAY8DA5l/F1yc2C5iAc/vPt/T4C5HBRPYFyueGJ0TJpFpNr2s3R1PuayWq8
+         gz1tIyVZCqmpV0FpUgIp+Sp4qy2bNgmPPpURZIqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Subject: [PATCH 4.14 17/31] ata: pata_hpt37x: disable primary channel on HPT371
-Date:   Mon, 28 Feb 2022 18:24:13 +0100
-Message-Id: <20220228172201.481566753@linuxfoundation.org>
+        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.9 22/29] USB: serial: option: add support for DW5829e
+Date:   Mon, 28 Feb 2022 18:23:49 +0100
+Message-Id: <20220228172144.034526375@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
-References: <20220228172159.515152296@linuxfoundation.org>
+In-Reply-To: <20220228172141.744228435@linuxfoundation.org>
+References: <20220228172141.744228435@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,47 +48,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Slark Xiao <slark_xiao@163.com>
 
-commit 8d093e02e898b24c58788b0289e3202317a96d2a upstream.
+commit 6ecb3f0b18b320320460a42e40d6fb603f6ded96 upstream.
 
-The HPT371 chip physically has only one channel, the secondary one,
-however the primary channel registers do exist! Thus we have to
-manually disable the non-existing channel if the BIOS hasn't done this
-already. Similarly to the pata_hpt3x2n driver, always disable the
-primary channel.
+Dell DW5829e same as DW5821e except CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+There are 2 types product of DW5829e: normal and eSIM.
+So we will add 2 PID for DW5829e.
+And for each PID, it support MBIM or RMNET.
+Let's see test evidence as below:
 
-Fixes: 669a5db411d8 ("[libata] Add a bunch of PATA drivers.")
+DW5829e MBIM mode:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  4 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+
+DW5829e RMNET mode:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+
+DW5829e-eSIM MBIM mode:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  6 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+
+DW5829e-eSIM RMNET mode:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+
+BTW, the interface 0x6 of MBIM mode is GNSS port, which not same as NMEA
+port. So it's banned from serial option driver.
+The remaining interfaces 0x2-0x5 are: MODEM, MODEM, NMEA, DIAG.
+
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Link: https://lore.kernel.org/r/20220214021401.6264-1-slark_xiao@163.com
+[ johan: drop unnecessary reservation of interface 1 ]
 Cc: stable@vger.kernel.org
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/ata/pata_hpt37x.c |   14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/usb/serial/option.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/ata/pata_hpt37x.c
-+++ b/drivers/ata/pata_hpt37x.c
-@@ -920,6 +920,20 @@ static int hpt37x_init_one(struct pci_de
- 	pci_write_config_byte(dev, 0x5a, irqmask);
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -201,6 +201,8 @@ static void option_instat_callback(struc
  
- 	/*
-+	 * HPT371 chips physically have only one channel, the secondary one,
-+	 * but the primary channel registers do exist!  Go figure...
-+	 * So,  we manually disable the non-existing channel here
-+	 * (if the BIOS hasn't done this already).
-+	 */
-+	if (dev->device == PCI_DEVICE_ID_TTI_HPT371) {
-+		u8 mcr1;
-+
-+		pci_read_config_byte(dev, 0x50, &mcr1);
-+		mcr1 &= ~0x04;
-+		pci_write_config_byte(dev, 0x50, mcr1);
-+	}
-+
-+	/*
- 	 * default to pci clock. make sure MA15/16 are set to output
- 	 * to prevent drives having problems with 40-pin cables. Needed
- 	 * for some drives such as IBM-DTLA which will not enter ready
+ #define DELL_PRODUCT_5821E			0x81d7
+ #define DELL_PRODUCT_5821E_ESIM			0x81e0
++#define DELL_PRODUCT_5829E_ESIM			0x81e4
++#define DELL_PRODUCT_5829E			0x81e6
+ 
+ #define KYOCERA_VENDOR_ID			0x0c88
+ #define KYOCERA_PRODUCT_KPC650			0x17da
+@@ -1058,6 +1060,10 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
+ 	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5821E_ESIM),
+ 	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
++	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E),
++	  .driver_info = RSVD(0) | RSVD(6) },
++	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E_ESIM),
++	  .driver_info = RSVD(0) | RSVD(6) },
+ 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_E100A) },	/* ADU-E100, ADU-310 */
+ 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_500A) },
+ 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_620UW) },
 
 
