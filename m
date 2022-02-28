@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B9BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E909AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237332AbiB1SBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:01:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
+        id S239559AbiB1SBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:01:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240795AbiB1Ryp (ORCPT
+        with ESMTP id S240788AbiB1Ryp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92AF0532FE;
-        Mon, 28 Feb 2022 09:43:47 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36412532CF;
+        Mon, 28 Feb 2022 09:43:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DAC160919;
-        Mon, 28 Feb 2022 17:43:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 483E9C340F0;
-        Mon, 28 Feb 2022 17:43:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1A1FB815B8;
+        Mon, 28 Feb 2022 17:43:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAFDC340F0;
+        Mon, 28 Feb 2022 17:43:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070226;
-        bh=wTMGyY6Kndnigy9AW+gjE4f4Ti19rqa13nEH/sEjFTw=;
+        s=korg; t=1646070207;
+        bh=8wWpISkZyJgiArA4xVbREKZImf0BuW/NQ7Py7TDMWyU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A7G3KdNdtcEYxvDzDp3oodKFZKFVZExy9jFjL4NsuI11d2CkDQ0oxFYFYTtDe+jVq
-         ZkVuFPj0nCjxM3VV/yDAvduIf2sIOJbryOILfsra9EegtzhUplJCeNvrIHYbRxsm8B
-         CRjRvYPM9cJoDH0TyOkaX727wcFGuMHGWlvRYq40=
+        b=1r5m++GOXtzQI6QVc81dkFgi0fIx08n/o8txDG0/WaPk0CgV85UKEAGs1O/syj3/l
+         Zmlgf2qDwsZKwRkYQK8OLRvSWbRiXiH15iTbj+O/FUpbJ07pMU4c5czx9dBuS+dyMm
+         bWYKXrCH1sBsNlyBX9TDfRUNzv93uAxR3R1wgkGU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Nick Gregory <Nick.Gregory@Sophos.com>
-Subject: [PATCH 5.16 032/164] netfilter: nf_tables_offload: incorrect flow offload action array size
-Date:   Mon, 28 Feb 2022 18:23:14 +0100
-Message-Id: <20220228172403.136712769@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+ca8bf833622a1662745b@syzkaller.appspotmail.com,
+        Dylan Yudaken <dylany@fb.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 009/164] io_uring: disallow modification of rsrc_data during quiesce
+Date:   Mon, 28 Feb 2022 18:22:51 +0100
+Message-Id: <20220228172400.614445343@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,138 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Dylan Yudaken <dylany@fb.com>
 
-commit b1a5983f56e371046dcf164f90bfaf704d2b89f6 upstream.
+commit 80912cef18f16f8fe59d1fb9548d4364342be360 upstream.
 
-immediate verdict expression needs to allocate one slot in the flow offload
-action array, however, immediate data expression does not need to do so.
+io_rsrc_ref_quiesce will unlock the uring while it waits for references to
+the io_rsrc_data to be killed.
+There are other places to the data that might add references to data via
+calls to io_rsrc_node_switch.
+There is a race condition where this reference can be added after the
+completion has been signalled. At this point the io_rsrc_ref_quiesce call
+will wake up and relock the uring, assuming the data is unused and can be
+freed - although it is actually being used.
 
-fwd and dup expression need to allocate one slot, this is missing.
+To fix this check in io_rsrc_ref_quiesce if a resource has been revived.
 
-Add a new offload_action interface to report if this expression needs to
-allocate one slot in the flow offload action array.
-
-Fixes: be2861dc36d7 ("netfilter: nft_{fwd,dup}_netdev: add offload support")
-Reported-and-tested-by: Nick Gregory <Nick.Gregory@Sophos.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Reported-by: syzbot+ca8bf833622a1662745b@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Dylan Yudaken <dylany@fb.com>
+Link: https://lore.kernel.org/r/20220222161751.995746-1-dylany@fb.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/netfilter/nf_tables.h         |    2 +-
- include/net/netfilter/nf_tables_offload.h |    2 --
- net/netfilter/nf_tables_offload.c         |    3 ++-
- net/netfilter/nft_dup_netdev.c            |    6 ++++++
- net/netfilter/nft_fwd_netdev.c            |    6 ++++++
- net/netfilter/nft_immediate.c             |   12 +++++++++++-
- 6 files changed, 26 insertions(+), 5 deletions(-)
+ fs/io_uring.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -889,9 +889,9 @@ struct nft_expr_ops {
- 	int				(*offload)(struct nft_offload_ctx *ctx,
- 						   struct nft_flow_rule *flow,
- 						   const struct nft_expr *expr);
-+	bool				(*offload_action)(const struct nft_expr *expr);
- 	void				(*offload_stats)(struct nft_expr *expr,
- 							 const struct flow_stats *stats);
--	u32				offload_flags;
- 	const struct nft_expr_type	*type;
- 	void				*data;
- };
---- a/include/net/netfilter/nf_tables_offload.h
-+++ b/include/net/netfilter/nf_tables_offload.h
-@@ -67,8 +67,6 @@ struct nft_flow_rule {
- 	struct flow_rule	*rule;
- };
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -7865,7 +7865,15 @@ static __cold int io_rsrc_ref_quiesce(st
+ 		ret = wait_for_completion_interruptible(&data->done);
+ 		if (!ret) {
+ 			mutex_lock(&ctx->uring_lock);
+-			break;
++			if (atomic_read(&data->refs) > 0) {
++				/*
++				 * it has been revived by another thread while
++				 * we were unlocked
++				 */
++				mutex_unlock(&ctx->uring_lock);
++			} else {
++				break;
++			}
+ 		}
  
--#define NFT_OFFLOAD_F_ACTION	(1 << 0)
--
- void nft_flow_rule_set_addr_type(struct nft_flow_rule *flow,
- 				 enum flow_dissector_key_id addr_type);
- 
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -94,7 +94,8 @@ struct nft_flow_rule *nft_flow_rule_crea
- 
- 	expr = nft_expr_first(rule);
- 	while (nft_expr_more(rule, expr)) {
--		if (expr->ops->offload_flags & NFT_OFFLOAD_F_ACTION)
-+		if (expr->ops->offload_action &&
-+		    expr->ops->offload_action(expr))
- 			num_actions++;
- 
- 		expr = nft_expr_next(expr);
---- a/net/netfilter/nft_dup_netdev.c
-+++ b/net/netfilter/nft_dup_netdev.c
-@@ -67,6 +67,11 @@ static int nft_dup_netdev_offload(struct
- 	return nft_fwd_dup_netdev_offload(ctx, flow, FLOW_ACTION_MIRRED, oif);
- }
- 
-+static bool nft_dup_netdev_offload_action(const struct nft_expr *expr)
-+{
-+	return true;
-+}
-+
- static struct nft_expr_type nft_dup_netdev_type;
- static const struct nft_expr_ops nft_dup_netdev_ops = {
- 	.type		= &nft_dup_netdev_type,
-@@ -75,6 +80,7 @@ static const struct nft_expr_ops nft_dup
- 	.init		= nft_dup_netdev_init,
- 	.dump		= nft_dup_netdev_dump,
- 	.offload	= nft_dup_netdev_offload,
-+	.offload_action	= nft_dup_netdev_offload_action,
- };
- 
- static struct nft_expr_type nft_dup_netdev_type __read_mostly = {
---- a/net/netfilter/nft_fwd_netdev.c
-+++ b/net/netfilter/nft_fwd_netdev.c
-@@ -77,6 +77,11 @@ static int nft_fwd_netdev_offload(struct
- 	return nft_fwd_dup_netdev_offload(ctx, flow, FLOW_ACTION_REDIRECT, oif);
- }
- 
-+static bool nft_fwd_netdev_offload_action(const struct nft_expr *expr)
-+{
-+	return true;
-+}
-+
- struct nft_fwd_neigh {
- 	u8			sreg_dev;
- 	u8			sreg_addr;
-@@ -219,6 +224,7 @@ static const struct nft_expr_ops nft_fwd
- 	.dump		= nft_fwd_netdev_dump,
- 	.validate	= nft_fwd_validate,
- 	.offload	= nft_fwd_netdev_offload,
-+	.offload_action	= nft_fwd_netdev_offload_action,
- };
- 
- static const struct nft_expr_ops *
---- a/net/netfilter/nft_immediate.c
-+++ b/net/netfilter/nft_immediate.c
-@@ -213,6 +213,16 @@ static int nft_immediate_offload(struct
- 	return 0;
- }
- 
-+static bool nft_immediate_offload_action(const struct nft_expr *expr)
-+{
-+	const struct nft_immediate_expr *priv = nft_expr_priv(expr);
-+
-+	if (priv->dreg == NFT_REG_VERDICT)
-+		return true;
-+
-+	return false;
-+}
-+
- static const struct nft_expr_ops nft_imm_ops = {
- 	.type		= &nft_imm_type,
- 	.size		= NFT_EXPR_SIZE(sizeof(struct nft_immediate_expr)),
-@@ -224,7 +234,7 @@ static const struct nft_expr_ops nft_imm
- 	.dump		= nft_immediate_dump,
- 	.validate	= nft_immediate_validate,
- 	.offload	= nft_immediate_offload,
--	.offload_flags	= NFT_OFFLOAD_F_ACTION,
-+	.offload_action	= nft_immediate_offload_action,
- };
- 
- struct nft_expr_type nft_imm_type __read_mostly = {
+ 		atomic_inc(&data->refs);
 
 
