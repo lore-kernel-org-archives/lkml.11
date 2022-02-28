@@ -2,160 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57AF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 05:32:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79928C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 05:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233094AbiB1Fcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 00:32:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57224 "EHLO
+        id S233118AbiB1Fna (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 00:43:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230221AbiB1Fcv (ORCPT
+        with ESMTP id S233104AbiB1FnY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 00:32:51 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234553FD9C
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 21:32:13 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id p3-20020a17090a680300b001bbfb9d760eso13803038pjj.2
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 21:32:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zt5yG2/AIuh58baIFrL7CF1jcLSWp/+HZOTSJf5d7NQ=;
-        b=b7NwzpIVwlYqDvvKLnONGL8kears9DE7ord8WnaiDDwPdS3Ggvxu6FggIxv8MJA1M/
-         J+1bWhLizd9gVhjHpT/H1uOahYxeCb0TKp/E6dwE5y1aQqQ6ASLbDoA2Fs4eW3R3uAy1
-         ger0jrB/hhDQeQ0LyyIwS77yDrPgc70m1AtIvdH6gVciMpzaZuaB0U5GKK48RA61+CoB
-         km1SFaGOWVb1RI0ysu2jfsOYaxCQwm97f3ZusOjhaTOX7CjmOs+4bU5bAs4YBl6J+AWd
-         zuWnp+KhjWOcK9Oe8T22zJ3yVCBVaXIe1+U7JotaoNBs2Wkz0vZ0FHcf+8Y/AX4pW1hT
-         K81g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=zt5yG2/AIuh58baIFrL7CF1jcLSWp/+HZOTSJf5d7NQ=;
-        b=UQHsAv1jKbjR1/mZP4aqoY2bMsvl2tt+3K57WdroPbv0zCLIYaU1vAcU4pDa/Clq0+
-         KsDQaAP9qb6PV0um5ZTIC5WMQhoB/S9Uf6KVjCuAtkJ9hL/t+1K7iMLmxvHUcdT2aKgI
-         KrbqA4kvyiJIb2jAmKNOzdDQqToP3Qw76NvK5o3MAuHTvNLNOOEUKnEVKd6mgjyd2z8d
-         1VoCJVcyzQjyheuDuKZHrhGUKlfTVhhnvouULFKFp8dPnhWdK+QlCSPyiiqvSbsAE3Al
-         Z8OLoY1p8iNmoAKt7d6Kra+7fMYgRgw5KYit+HV4qBc5xJl+Qx2NuITmElGwH3UFI/lW
-         7Oew==
-X-Gm-Message-State: AOAM530NSGbdhhGuVQCgxG/XGK0CyX8T14J7DMiH6uEe7XyEp5bgs7/W
-        NtNe+OlhzeSsN48eNBrajCWY
-X-Google-Smtp-Source: ABdhPJxZc/BTEAuj9x5C2k3riOwaVUIb+L9Tl/2fOVKyvK7OzISMCizxK35I4A9itytUYdU8quoSgQ==
-X-Received: by 2002:a17:902:ead1:b0:14f:a8e2:4005 with SMTP id p17-20020a170902ead100b0014fa8e24005mr18736546pld.10.1646026332549;
-        Sun, 27 Feb 2022 21:32:12 -0800 (PST)
-Received: from localhost.localdomain ([117.207.25.37])
-        by smtp.gmail.com with ESMTPSA id u5-20020a056a00158500b004f0f12b320asm12102353pfk.6.2022.02.27.21.32.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Feb 2022 21:32:12 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     kishon@ti.com, lorenzo.pieralisi@arm.com
-Cc:     kw@linux.com, bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
-        dmitry.baryshkov@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH] PCI: endpoint: Use blocking notifier instead of atomic
-Date:   Mon, 28 Feb 2022 11:01:59 +0530
-Message-Id: <20220228053159.4946-1-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
+        Mon, 28 Feb 2022 00:43:24 -0500
+Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC15112626;
+        Sun, 27 Feb 2022 21:42:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
+        s=42; h=From:Cc:To:Date:Message-ID;
+        bh=ZarKmxo+ugXggNHBorwehSX+5pGd4hCfQ7JY95+wXEI=; b=ocZgmVNRz4UhLSI31zBjGwrXff
+        FRXuCbcpR0g7OPLOwncqvBKP7FxOzrZL1qaDfC9xrwevGV4bqR0e8YWLWG776CvMaRUX2fdkPS4m9
+        HmL+pXxZN6imPx9Z6cEvkez7rrTSEOsRoMml8anMQuU3GEt05TIFyXw3mRSD0OxD8APS8B/qGZF5w
+        467T943XGoz4BCHAwan9360I3F/njMd+yQowFAUKrdYb83a38lAO7/E6RIZp73gekd9qCN/J1sJ2F
+        nWkQy7fhKOdaNv251AHA3reQiRzwYEDGfKSPWOVSbbIVqHSKYUugw9myc6FbSEurM3T3/LPVkxVo8
+        8nyV0hY3OHccr2Kmu/KrVgtX0ENX77tfspFEGUqBCTPGutZVgUOEVw9sVkgn6ymzk7KgBMYvBSOTZ
+        JAyqLigrFFobqpFWSk2o7SNvUDujk6ZR3FKTQUEx7r57kG5VTnJRHmaMhTkDbwnGJ7gBBlwZq8uzG
+        EMAiL7hP9uP4VosbEaPMxXNS;
+Received: from [127.0.0.2] (localhost [127.0.0.1])
+        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
+        (Exim)
+        id 1nOYnu-005nxf-3y; Mon, 28 Feb 2022 05:42:38 +0000
+Message-ID: <d1b3419e-886c-d479-0c43-b4e64e5465a8@samba.org>
+Date:   Mon, 28 Feb 2022 06:42:36 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [Lsf-pc] [LSF/MM/BPF TOPIC] Enabling change notification for
+ network and cluster fs
+Content-Language: en-US
+To:     Amir Goldstein <amir73il@gmail.com>,
+        Steve French <smfrench@gmail.com>
+Cc:     CIFS <linux-cifs@vger.kernel.org>,
+        samba-technical <samba-technical@lists.samba.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Ioannis Angelakopoulos <jaggel@bu.edu>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        lsf-pc <lsf-pc@lists.linux-foundation.org>,
+        Vivek Goyal <vgoyal@redhat.com>
+References: <CAH2r5mt9OfU+8PoKsmv_7aszhbw-dOuDCL6BOxb_2yRwc4HHCw@mail.gmail.com>
+ <Yhf+FemcQQToB5x+@redhat.com>
+ <CAH2r5mt6Sh7qorfCHWnZzc6LUDd-s_NzGB=sa-UDM2-ivzpmAQ@mail.gmail.com>
+ <YhjYSMIE2NBZ/dGr@redhat.com> <YhjeX0HvXbED65IM@casper.infradead.org>
+ <CAH2r5mt9EtTEJCKsHkvRctfhMv7LnT6XT_JEvAb7ji6-oYnTPg@mail.gmail.com>
+ <YhkFZE8wUWhycwX2@redhat.com>
+ <CAH2r5msPz1JZK4OWX_=+2HTzKTZE07ACxbEv3xM-1T0HTnVWMw@mail.gmail.com>
+ <CAOQ4uxi+VJG56TPvcpOqoVAGgbb8gZQJEfvhXyGyB5VboRE2wA@mail.gmail.com>
+From:   Ralph Boehme <slow@samba.org>
+In-Reply-To: <CAOQ4uxi+VJG56TPvcpOqoVAGgbb8gZQJEfvhXyGyB5VboRE2wA@mail.gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------JEWlc3Q4btmHvqWa9vlw3Pbv"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The use of atomic notifier causes sleeping in atomic context bug when
-the EPC core functions are used in the notifier chain. This is due to the
-use of epc->lock (mutex) in core functions protecting the concurrent use of
-EPC.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------JEWlc3Q4btmHvqWa9vlw3Pbv
+Content-Type: multipart/mixed; boundary="------------L1f0AmtwKPzAH3rid24m0PNl";
+ protected-headers="v1"
+From: Ralph Boehme <slow@samba.org>
+To: Amir Goldstein <amir73il@gmail.com>, Steve French <smfrench@gmail.com>
+Cc: CIFS <linux-cifs@vger.kernel.org>,
+ samba-technical <samba-technical@lists.samba.org>,
+ LKML <linux-kernel@vger.kernel.org>, Matthew Wilcox <willy@infradead.org>,
+ Ioannis Angelakopoulos <jaggel@bu.edu>,
+ linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+ lsf-pc <lsf-pc@lists.linux-foundation.org>, Vivek Goyal <vgoyal@redhat.com>
+Message-ID: <d1b3419e-886c-d479-0c43-b4e64e5465a8@samba.org>
+Subject: Re: [Lsf-pc] [LSF/MM/BPF TOPIC] Enabling change notification for
+ network and cluster fs
+References: <CAH2r5mt9OfU+8PoKsmv_7aszhbw-dOuDCL6BOxb_2yRwc4HHCw@mail.gmail.com>
+ <Yhf+FemcQQToB5x+@redhat.com>
+ <CAH2r5mt6Sh7qorfCHWnZzc6LUDd-s_NzGB=sa-UDM2-ivzpmAQ@mail.gmail.com>
+ <YhjYSMIE2NBZ/dGr@redhat.com> <YhjeX0HvXbED65IM@casper.infradead.org>
+ <CAH2r5mt9EtTEJCKsHkvRctfhMv7LnT6XT_JEvAb7ji6-oYnTPg@mail.gmail.com>
+ <YhkFZE8wUWhycwX2@redhat.com>
+ <CAH2r5msPz1JZK4OWX_=+2HTzKTZE07ACxbEv3xM-1T0HTnVWMw@mail.gmail.com>
+ <CAOQ4uxi+VJG56TPvcpOqoVAGgbb8gZQJEfvhXyGyB5VboRE2wA@mail.gmail.com>
+In-Reply-To: <CAOQ4uxi+VJG56TPvcpOqoVAGgbb8gZQJEfvhXyGyB5VboRE2wA@mail.gmail.com>
 
-So switch to blocking notifier for getting rid of the bug as it runs in
-non-atomic context and allows sleeping in notifier chain.
+--------------L1f0AmtwKPzAH3rid24m0PNl
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/pci/endpoint/pci-epc-core.c | 10 +++++-----
- include/linux/pci-epc.h             |  6 +++---
- 2 files changed, 8 insertions(+), 8 deletions(-)
+SGkgQW1pciwNCg0KT24gMi8yNi8yMiAxMToyMiwgQW1pciBHb2xkc3RlaW4gd3JvdGU6DQo+
+IEkgZ3Vlc3MgU01CIHByb3RvY29sIGRvZXMgbm90IGFsbG93IGNsaWVudCBCIHRvIHJlcXVl
+c3QgYSBOT1RJRlkgb24gY2hhbmdlDQo+IHdoZW4gY2xpZW50IEEgaGFzIGEgZGlyZWN0b3J5
+IGxlYXNlLCBiZWNhdXNlIHJlcXVlc3RpbmcgTk9USUZZIHJlcXVpcmVzDQo+IGdldHRpbmcg
+YSByZWFkIGZpbGUgaGFuZGxlIG9uIHRoZSBkaXI/DQpmd2l3LCB5b3UgZG9uJ3QgZ2V0IGEg
+IlciIFNNQjMgZGlyZWN0b3J5IGxlYXNlLCBzbyB0aGlzIGlzIG5vdCBhIHByb2JsZW0uDQoN
+Ci1zbG93DQo=
 
-diff --git a/drivers/pci/endpoint/pci-epc-core.c b/drivers/pci/endpoint/pci-epc-core.c
-index 6120d99bff73..6ad9b38b63a9 100644
---- a/drivers/pci/endpoint/pci-epc-core.c
-+++ b/drivers/pci/endpoint/pci-epc-core.c
-@@ -693,7 +693,7 @@ void pci_epc_linkup(struct pci_epc *epc)
- 	if (!epc || IS_ERR(epc))
- 		return;
- 
--	atomic_notifier_call_chain(&epc->notifier, LINK_UP, NULL);
-+	blocking_notifier_call_chain(&epc->notifier, LINK_UP, NULL);
- }
- EXPORT_SYMBOL_GPL(pci_epc_linkup);
- 
-@@ -710,7 +710,7 @@ void pci_epc_linkdown(struct pci_epc *epc)
- 	if (!epc || IS_ERR(epc))
- 		return;
- 
--	atomic_notifier_call_chain(&epc->notifier, LINK_DOWN, NULL);
-+	blocking_notifier_call_chain(&epc->notifier, LINK_DOWN, NULL);
- }
- EXPORT_SYMBOL_GPL(pci_epc_linkdown);
- 
-@@ -727,7 +727,7 @@ void pci_epc_init_notify(struct pci_epc *epc)
- 	if (!epc || IS_ERR(epc))
- 		return;
- 
--	atomic_notifier_call_chain(&epc->notifier, CORE_INIT, NULL);
-+	blocking_notifier_call_chain(&epc->notifier, CORE_INIT, NULL);
- }
- EXPORT_SYMBOL_GPL(pci_epc_init_notify);
- 
-@@ -744,7 +744,7 @@ void pci_epc_bme_notify(struct pci_epc *epc)
- 	if (!epc || IS_ERR(epc))
- 		return;
- 
--	atomic_notifier_call_chain(&epc->notifier, BME, NULL);
-+	blocking_notifier_call_chain(&epc->notifier, BME, NULL);
- }
- EXPORT_SYMBOL_GPL(pci_epc_bme_notify);
- 
-@@ -808,7 +808,7 @@ __pci_epc_create(struct device *dev, const struct pci_epc_ops *ops,
- 
- 	mutex_init(&epc->lock);
- 	INIT_LIST_HEAD(&epc->pci_epf);
--	ATOMIC_INIT_NOTIFIER_HEAD(&epc->notifier);
-+	BLOCKING_INIT_NOTIFIER_HEAD(&epc->notifier);
- 
- 	device_initialize(&epc->dev);
- 	epc->dev.class = pci_epc_class;
-diff --git a/include/linux/pci-epc.h b/include/linux/pci-epc.h
-index 8454610df4c3..7a5c7705f86f 100644
---- a/include/linux/pci-epc.h
-+++ b/include/linux/pci-epc.h
-@@ -149,7 +149,7 @@ struct pci_epc {
- 	/* mutex to protect against concurrent access of EP controller */
- 	struct mutex			lock;
- 	unsigned long			function_num_map;
--	struct atomic_notifier_head	notifier;
-+	struct blocking_notifier_head	notifier;
- };
- 
- /**
-@@ -195,13 +195,13 @@ static inline void *epc_get_drvdata(struct pci_epc *epc)
- static inline int
- pci_epc_register_notifier(struct pci_epc *epc, struct notifier_block *nb)
- {
--	return atomic_notifier_chain_register(&epc->notifier, nb);
-+	return blocking_notifier_chain_register(&epc->notifier, nb);
- }
- 
- static inline int
- pci_epc_unregister_notifier(struct pci_epc *epc, struct notifier_block *nb)
- {
--	return atomic_notifier_chain_unregister(&epc->notifier, nb);
-+	return blocking_notifier_chain_unregister(&epc->notifier, nb);
- }
- 
- struct pci_epc *
--- 
-2.25.1
+--------------L1f0AmtwKPzAH3rid24m0PNl--
 
+--------------JEWlc3Q4btmHvqWa9vlw3Pbv
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEE+uLGCIokJSBRxVnkqh6bcSY5nkYFAmIcYMwFAwAAAAAACgkQqh6bcSY5nkbN
+khAAqRE+qx1Qbz8iS3db4Q568BEftRKDCQKnklyufG4iQ4ecGeIowtqJQpNNAgcdoV6OaMxB/+7j
+89aZjdzC00Dis/xnC+bB13njUK2fEBb/XLq/UiHJSm0LQbeQRT7LAZiiXhaLsiOLSBY7rg/1J4kG
+t4ewoM2sk4ynQO7hz7zxO3vZ4jS0gxZXtjBvjNmDJERsJ9mCPYmLFB9OfwfOyIf406xN7UHHhuou
+x+95l0gA8CdulBXXqLuy/8tp08XLxNi2BC7M+JDR0Db1ak2vTEqQpBISkdEMBJt1g/dWceIv7tgs
+MUGW/sCuEr2zDT7ipUYZiHg2B9p4RDxcin7CwsUx2/w/Ly8SOh9KRNH8GbNStOUTqBB7G0n7/mt9
+WC1pMgcBsm+8VV0lhFmlt8/EwsXWhJuZdRl5yDmDdO2qM3jdpKuUcQvrb4SaYdE5F9l/ovhBfixe
+WEl2Gk0sYwmShqYm3cHDBjv/wPKq9S0AteI8ngb33HH078w2YZIRUy3edK7KzaujPC/Cj2kY7kHK
+KHQhp0Wg2eb4z5zSxRO6SJ+8zaMyhk5OYL+/9HSX5haCWdqQs+HRNB5w9tV7ayZo298e1AnP0zXB
+fgl6bKibWJNz90gTQINFtQYBA4sIuH0QXvviX/In5aA+d1MBXEDdWiqW6vZ5X+gvn9AHATAGaOpu
+/dw=
+=ZJvZ
+-----END PGP SIGNATURE-----
+
+--------------JEWlc3Q4btmHvqWa9vlw3Pbv--
