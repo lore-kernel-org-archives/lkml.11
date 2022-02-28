@@ -2,74 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CABFBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E53C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233236AbiB1RkW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
+        id S233216AbiB1Rk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:40:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238614AbiB1RiC (ORCPT
+        with ESMTP id S238677AbiB1RiM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:38:02 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59672574B3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:33:28 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id qx21so26261454ejb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:33:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=c4YZwBBQho++OJi9JKUYs2TaH6tp8j1xjs9eFNnTtXc=;
-        b=GC0TsiAVVJWcZVS7y6WfiVVuddzdFvXLwaqD8MOHUPUkZnINo5dgZeh9W91OpCsxUZ
-         FJ/IjgTSgueCGSK+DEliiFeEC0Eymkq27Dxaw2jSO+WMlyaAqHT+u5BWu9rA/IqBF156
-         f4TzIMGYp8xsELnG9XxGIEJIxOgEdiknRQm+j4+hMAg+Wnqj6aDUWCubU5DqHfN7GpU4
-         BkKw/UXDLw11uA7rux+U7mzHJRphIdhsrhMwObLtSvxQ85ssCbskQUmx6KB6p35hs8td
-         Gtj0QwrXoZ+mLuZ+me90bYoDHKD1o0Myyl58n39NGydn8Nskv5RR8DKicI83T4ovQ0UR
-         LN6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=c4YZwBBQho++OJi9JKUYs2TaH6tp8j1xjs9eFNnTtXc=;
-        b=iytvU/hy6IAljeDULXO5K/SmighJUK8l60GeSgg5NUGOj2hWO4wkLOub8KvokMtz5/
-         OMYPbxv04KdlxiDtY0lrcPxggXHZOnaK13hUgP3Y8py/G1jXgVmqgSR7TMMqGxOW4LcB
-         Yu33hqeCiAOqI1PwyJDM7Ix29d+p75tV9uuOqyOjZt4auuN9Abi8gR85TRFoHDYFKtG8
-         Kpl0W/B71U6oj6PGRiaejcoJ9F+ne6G3qWHpad2OLKR49F8Ul5I1pCp2dCngvrhPFxpX
-         riMcLNWJRbaT9tSYefb+GPEmdpkf61eKTB+xNsrXBeaIF5JvH7fTHICnv6yq+jLlcRBB
-         vm5w==
-X-Gm-Message-State: AOAM530MZw0T2i5fsZONyHJeStHACgV79En6ethE0W6HxgjuLMk04A+B
-        56OvBA/CHHuQ9QR40Lg0hPVo1ZOvcdMXXzed5oQ=
-X-Google-Smtp-Source: ABdhPJyYuGLKMR9wTGeDFqadaZHRCnFQi/61QLVu89LXmFHy20TIOLSpP5zb0c30j56gV5BWVNscHOF85Dgt6lEnILo=
-X-Received: by 2002:a17:907:234c:b0:6cd:7ca0:8423 with SMTP id
- we12-20020a170907234c00b006cd7ca08423mr16012446ejb.218.1646069606778; Mon, 28
- Feb 2022 09:33:26 -0800 (PST)
+        Mon, 28 Feb 2022 12:38:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ABE558396;
+        Mon, 28 Feb 2022 09:33:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 26F0961365;
+        Mon, 28 Feb 2022 17:33:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD56C340E7;
+        Mon, 28 Feb 2022 17:33:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069611;
+        bh=qK+VQoyk07Wrq8YomqxayQN8UuSK0Eki19yVr7Lbo+4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HNFuLAFzsqLcmjiBg618j2sq0m7uLgpa3M1WIlKkJ5HNKMxTqGSLURYueNToZw4DS
+         JG4IHVXyM4ofXEHSz6U1tLIMuF1DfJvkI3aaLt3SFX1899bkqt5m5BsqPunJsR7K6h
+         55QjMP7+29nkIIXB0MLx/mS+biAqvynii2TQuHgY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 29/80] tipc: Fix end of loop tests for list_for_each_entry()
+Date:   Mon, 28 Feb 2022 18:24:10 +0100
+Message-Id: <20220228172315.013367868@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
+References: <20220228172311.789892158@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Received: by 2002:a17:906:e914:b0:6d0:9dc2:9a62 with HTTP; Mon, 28 Feb 2022
- 09:33:26 -0800 (PST)
-In-Reply-To: <20220228172651.12642-1-youling257@gmail.com>
-References: <20220222024651.36675-1-qiang.yu@amd.com> <20220228172651.12642-1-youling257@gmail.com>
-From:   youling 257 <youling257@gmail.com>
-Date:   Tue, 1 Mar 2022 01:33:26 +0800
-Message-ID: <CAOzgRdaCuBX1E_eeaKsx+toFaBeR6p9RXN8PJZXc5OMY0a76UQ@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/amdgpu: check vm ready by amdgpu_vm->evicting flag
-To:     qiang.yu@amd.com
-Cc:     pmenzel@molgen.mpg.de, christian.koenig@amd.com,
-        alexander.deucher@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-https://gitlab.freedesktop.org/drm/amd/-/issues/1922
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-2022-03-01 1:26 GMT+08:00, youling257 <youling257@gmail.com>:
-> this patch cause suspend to disk resume amdgpu hang,
-> [drm:amdgpu_job_timedout [amdgpu]] *ERROR* ring gfx timeout, signaled
-> seq=8330, emitted seq=8332
->
-> https://gitlab.freedesktop.org/drm/amd/-/issues/1915
->
+commit a1f8fec4dac8bc7b172b2bdbd881e015261a6322 upstream.
+
+These tests are supposed to check if the loop exited via a break or not.
+However the tests are wrong because if we did not exit via a break then
+"p" is not a valid pointer.  In that case, it's the equivalent of
+"if (*(u32 *)sr == *last_key) {".  That's going to work most of the time,
+but there is a potential for those to be equal.
+
+Fixes: 1593123a6a49 ("tipc: add name table dump to new netlink api")
+Fixes: 1a1a143daf84 ("tipc: add publication dump to new netlink api")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/tipc/name_table.c |    2 +-
+ net/tipc/socket.c     |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+--- a/net/tipc/name_table.c
++++ b/net/tipc/name_table.c
+@@ -931,7 +931,7 @@ static int __tipc_nl_add_nametable_publ(
+ 		list_for_each_entry(p, &sr->all_publ, all_publ)
+ 			if (p->key == *last_key)
+ 				break;
+-		if (p->key != *last_key)
++		if (list_entry_is_head(p, &sr->all_publ, all_publ))
+ 			return -EPIPE;
+ 	} else {
+ 		p = list_first_entry(&sr->all_publ,
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -3743,7 +3743,7 @@ static int __tipc_nl_list_sk_publ(struct
+ 			if (p->key == *last_publ)
+ 				break;
+ 		}
+-		if (p->key != *last_publ) {
++		if (list_entry_is_head(p, &tsk->publications, binding_sock)) {
+ 			/* We never set seq or call nl_dump_check_consistent()
+ 			 * this means that setting prev_seq here will cause the
+ 			 * consistence check to fail in the netlink callback
+
+
