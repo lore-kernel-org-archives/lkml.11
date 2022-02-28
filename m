@@ -2,114 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F1BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A97C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:06:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232378AbiB1CFw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:05:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60718 "EHLO
+        id S232385AbiB1CHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 21:07:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231546AbiB1CFv (ORCPT
+        with ESMTP id S231546AbiB1CHN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 21:05:51 -0500
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC6659394;
-        Sun, 27 Feb 2022 18:05:13 -0800 (PST)
-Received: by mail-pj1-x1043.google.com with SMTP id q8-20020a17090a178800b001bc299b8de1so10012694pja.1;
-        Sun, 27 Feb 2022 18:05:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=AMsxO2P3weaQAvlcqcwWLnN/LSWoD+a1H1M9VEhhr+w=;
-        b=j5TxDo4q28a7EkdINe9hZaFOYrbEIeY0GW4nGZYiUQGsx3beX0nzXOMizDIng+TyOK
-         JG7IQiZ5cnvYTOrT1SHSXTc3pBt9W3yF20HJwxD7DOOeS+xgT3m/wNIdiQW90Y2EEr70
-         Qw4eQbrYRbHTT407/zye0HiQOcHA0Rt873EXaGuYzPHSTuWmE7aoW+oZKECPZkxTwh0K
-         mhbYvdTnZBz6xbf5llOmEagVYu4dkhpwIv0O0Dz0eGjf9Ztlw/SVah37NXAveh7F5WZV
-         0dkpQukXd++9/nsNQTZCMUToqu/UCwCk/YgvH0zs/OkKfwNE3KlmJpRWqzA8D6Msbv6J
-         XVHQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AMsxO2P3weaQAvlcqcwWLnN/LSWoD+a1H1M9VEhhr+w=;
-        b=U8yt1RCHjKBUQ/Ybx1jrqTaX1TWK/SmLFhIIBtUgNHqJOqB8lSGi1HoBVOLw7SK7IU
-         4lO2giyq0mSzOxianKDHR9j6sPk4kvk2ZveDmjNFdjzlqCbli4OQKxRr5YibUBzXrBIQ
-         tpZfHmn5dW1xBHgo7QkGjCAXw1cQd6C4Sjw2AvmLhfD/9qKsa1YOXrwODbiR+te/FxiO
-         4q1vX8pIvKI6CpfvZhQVTFy0wjYBbTl4LdPRw9cv7r1g/eWpU42NKGfXVWDyVTfZJo4n
-         5fpqEmnNsBTOJeYLAxVYaPx+NN9xNPlsgmHaNRX/YVvevFhpqCM5A4I7Xb+iHff4BDfh
-         ni5Q==
-X-Gm-Message-State: AOAM533Nds+9WCj0Z0JET+f2gc+QGbaKC6pZJ1gjfgJ/5yb/iFY+Jx+c
-        vuZ48jDxlOyRhSxKCxqF4QRb0b4t+p2fjYI3
-X-Google-Smtp-Source: ABdhPJwgsHZDrr3WcZ2QSJ03lyGKdCVA1+Af/7uT9ugUWz2zbbuDjNAzETd/XhFa7GQK7AYk444qsA==
-X-Received: by 2002:a17:902:f344:b0:151:533b:b6c5 with SMTP id q4-20020a170902f34400b00151533bb6c5mr7453783ple.58.1646013913235;
-        Sun, 27 Feb 2022 18:05:13 -0800 (PST)
-Received: from [10.11.37.162] ([103.84.139.53])
-        by smtp.gmail.com with ESMTPSA id j7-20020a056a00130700b004b9f7cd94a4sm10969747pfu.56.2022.02.27.18.05.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Feb 2022 18:05:12 -0800 (PST)
-Message-ID: <69b0dd44-93ac-fa33-f9c1-6f787185ab47@gmail.com>
-Date:   Mon, 28 Feb 2022 10:05:03 +0800
+        Sun, 27 Feb 2022 21:07:13 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F9C6B084;
+        Sun, 27 Feb 2022 18:06:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646013995; x=1677549995;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=dBj8IZqKdQrN7LWqpr45uLHPvsxj4KiRmjJ+NZe7L/4=;
+  b=Z8c7wj1o95ptdUePhqY22HSfUGp5TZDRRC48hvsGB0XFi/oFNt0/0iGx
+   7vFYGO+/t9S3NkxgPpioJPNHUW7bS4zkalLdM8BEYTWg5bQ2jQ1BSvaVS
+   SHeDUq9Agp3NqR1J+lLwbJYU980oKt/YyhdQQTMvywlIHw2gVlV98VJo6
+   v7zak3+K3lV7TMVJJI9JPTXLHSogAZk5Dx1neF0nWHTiB49kKzPSGbHu/
+   Qrh3Dk98UW2/PrI7TauNxZnpOyimwnmG41b/C39Gv5R5NIV9FvN7jmR3b
+   n23UJQDDqBuqw866al+JgZMx6aP8FMy39VgkDzXzo2QjFivyRtW5CPjM9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="252707116"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="252707116"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:06:35 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="777935759"
+Received: from w3.sh.intel.com ([10.74.142.175])
+  by fmsmga006.fm.intel.com with ESMTP; 27 Feb 2022 18:06:33 -0800
+From:   Yonghua Huang <yonghua.huang@intel.com>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        reinette.chatre@intel.com, zhi.a.wang@intel.com,
+        yu1.wang@intel.com, fei1.Li@intel.com,
+        Yonghua Huang <yonghua.huang@intel.com>,
+        Fei Li <fei1.li@intel.com>
+Subject: [PATCH] virt: acrn: obtain pa from VMA with PFNMAP flag
+Date:   Mon, 28 Feb 2022 05:22:12 +0300
+Message-Id: <20220228022212.419406-1-yonghua.huang@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] can: usb: fix a possible memory leak in
- esd_usb2_start_xmit
-Content-Language: en-US
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        stefan.maetje@esd.eu, mailhol.vincent@wanadoo.fr,
-        paskripkin@gmail.com, thunder.leizhen@huawei.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220225060019.21220-1-hbh25y@gmail.com>
- <20220225155621.7zmfukra63qcxjo5@pengutronix.de>
-From:   Hangyu Hua <hbh25y@gmail.com>
-In-Reply-To: <20220225155621.7zmfukra63qcxjo5@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi
+ acrn_vm_ram_map can't pin the user pages with VM_PFNMAP flag
+ by calling get_user_pages_fast(), the PA(physical pages)
+ may be mapped by kernel driver and set PFNMAP flag.
 
-I get it. But this means ems_usb_start_xmit have a redundant 
-dev_kfree_skb beacause can_put_echo_skb delete original skb and 
-can_free_echo_skb delete the cloned skb. While this code is harmless do 
-you think we need to delete it ?
+ This patch fixes logic to setup EPT mapping for PFN mapped RAM region
+ by checking the memory attribute before adding EPT mapping for them.
 
-Thanks.
+Fixes: 88f537d5e8dd ("virt: acrn: Introduce EPT mapping management")
+Signed-off-by: Yonghua Huang <yonghua.huang@intel.com>
+Signed-off-by: Fei Li <fei1.li@intel.com>
+---
+ drivers/virt/acrn/mm.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-On 2022/2/25 23:56, Marc Kleine-Budde wrote:
-> On 25.02.2022 14:00:19, Hangyu Hua wrote:
->> As in case of ems_usb_start_xmit, dev_kfree_skb needs to be called when
->> usb_submit_urb fails to avoid possible refcount leaks.
-> 
-> Thanks for your patch. Have you tested that there is actually a mem
-> leak? Please have a look at the can_free_echo_skb() function that is
-> called a few lines earlier.
-> 
->> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->> ---
->>   drivers/net/can/usb/esd_usb2.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/can/usb/esd_usb2.c b/drivers/net/can/usb/esd_usb2.c
->> index 286daaaea0b8..7b5e6c250d00 100644
->> --- a/drivers/net/can/usb/esd_usb2.c
->> +++ b/drivers/net/can/usb/esd_usb2.c
->> @@ -810,7 +810,7 @@ static netdev_tx_t esd_usb2_start_xmit(struct sk_buff *skb,
->>   		usb_unanchor_urb(urb);
->>   
->>   		stats->tx_dropped++;
->> -
->> +		dev_kfree_skb(skb);
->>   		if (err == -ENODEV)
->>   			netif_device_detach(netdev);
->>   		else
-> 
-> regards,
-> Marc
-> 
+diff --git a/drivers/virt/acrn/mm.c b/drivers/virt/acrn/mm.c
+index c4f2e15c8a2b..3b1b1e7a844b 100644
+--- a/drivers/virt/acrn/mm.c
++++ b/drivers/virt/acrn/mm.c
+@@ -162,10 +162,34 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
+ 	void *remap_vaddr;
+ 	int ret, pinned;
+ 	u64 user_vm_pa;
++	unsigned long pfn;
++	struct vm_area_struct *vma;
+ 
+ 	if (!vm || !memmap)
+ 		return -EINVAL;
+ 
++	mmap_read_lock(current->mm);
++	vma = vma_lookup(current->mm, memmap->vma_base);
++	if (vma && ((vma->vm_flags & VM_PFNMAP) != 0)) {
++		if ((memmap->vma_base + memmap->len) > vma->vm_end) {
++			mmap_read_unlock(current->mm);
++			return -EINVAL;
++		}
++
++		ret = follow_pfn(vma, memmap->vma_base, &pfn);
++		mmap_read_unlock(current->mm);
++		if (ret < 0) {
++			dev_dbg(acrn_dev.this_device,
++				"Failed to lookup PFN at VMA:%pK.\n", (void *)memmap->vma_base);
++			return ret;
++		}
++
++		return acrn_mm_region_add(vm, memmap->user_vm_pa,
++			 PFN_PHYS(pfn), memmap->len,
++			 ACRN_MEM_TYPE_WB, memmap->attr);
++	}
++	mmap_read_unlock(current->mm);
++
+ 	/* Get the page number of the map region */
+ 	nr_pages = memmap->len >> PAGE_SHIFT;
+ 	pages = vzalloc(nr_pages * sizeof(struct page *));
+
+base-commit: 73878e5eb1bd3c9656685ca60bc3a49d17311e0c
+-- 
+2.25.1
+
