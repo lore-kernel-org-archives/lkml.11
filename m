@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84BDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240067AbiB1SOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:14:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60336 "EHLO
+        id S240078AbiB1SOe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:14:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240974AbiB1SJT (ORCPT
+        with ESMTP id S240951AbiB1SJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0296212F;
-        Mon, 28 Feb 2022 09:49:20 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F11D60CF8;
+        Mon, 28 Feb 2022 09:49:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB32C60B2B;
-        Mon, 28 Feb 2022 17:49:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2398C340F0;
-        Mon, 28 Feb 2022 17:49:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22D64B810DB;
+        Mon, 28 Feb 2022 17:48:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62477C340E7;
+        Mon, 28 Feb 2022 17:48:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070560;
-        bh=FRMQIgHnKl+0Pg10lRV5FfN6Az8DijS8QpZajPo3VIA=;
+        s=korg; t=1646070524;
+        bh=CBgevf1pY8eY7xOWrAXmwUj5QG1zUH/pjtrJvDnC8rE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u9aELVprxn6vkf1ALDUgrF/aYbTmoVaCtI2E54anUeRbyTBFjFtO/gR94W4k2eLaI
-         pj5iMrEp5kfC5tvHmHZgbQNZQWIBmhEFX3MVvFRUgZBkYpWeEmfwvoAUuHx1hkofU5
-         wB12SbOU0L7TWj8P2I7MLslcvY7aDIZqwd1w0U+Y=
+        b=kCibI38lwK2yi6GFCRr6RlZT4UQIOWuSQuVYuWToxZdAR+gzKTMrtkSoYwb/Uhfh/
+         3z7KuQsvhprhjx6Op/VDNUhDe58kTObGMPnJAjvHud7wKR5MVnKUxZu28fH2iryXHm
+         hV9eJtvbX3H3S4XxYGHKHfbgfA2+K4IF6l0FrT+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
-Subject: [PATCH 5.16 154/164] tty: n_gsm: fix encoding of control signal octet bit DV
-Date:   Mon, 28 Feb 2022 18:25:16 +0100
-Message-Id: <20220228172413.721798458@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 103/164] net: use sk_is_tcp() in more places
+Date:   Mon, 28 Feb 2022 18:24:25 +0100
+Message-Id: <20220228172409.132500311@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -47,44 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: daniel.starke@siemens.com <daniel.starke@siemens.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 737b0ef3be6b319d6c1fd64193d1603311969326 upstream.
+[ Upstream commit 42f67eea3ba36cef2dce2e853de6ddcb2e89eb39 ]
 
-n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
-See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
-The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
-the newer 27.010 here. Chapter 5.4.6.3.7 describes the encoding of the
-control signal octet used by the MSC (modem status command). The same
-encoding is also used in convergence layer type 2 as described in chapter
-5.5.2. Table 7 and 24 both require the DV (data valid) bit to be set 1 for
-outgoing control signal octets sent by the DTE (data terminal equipment),
-i.e. for the initiator side.
-Currently, the DV bit is only set if CD (carrier detect) is on, regardless
-of the side.
+Move sk_is_tcp() to include/net/sock.h and use it where we can.
 
-This patch fixes this behavior by setting the DV bit on the initiator side
-unconditionally.
-
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220218073123.2121-1-daniel.starke@siemens.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/skmsg.h | 6 ------
+ include/net/sock.h    | 5 +++++
+ net/core/skbuff.c     | 6 ++----
+ net/core/sock.c       | 6 ++----
+ 4 files changed, 9 insertions(+), 14 deletions(-)
 
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -439,7 +439,7 @@ static u8 gsm_encode_modem(const struct
- 		modembits |= MDM_RTR;
- 	if (dlci->modem_tx & TIOCM_RI)
- 		modembits |= MDM_IC;
--	if (dlci->modem_tx & TIOCM_CD)
-+	if (dlci->modem_tx & TIOCM_CD || dlci->gsm->initiator)
- 		modembits |= MDM_DV;
- 	return modembits;
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index 584d94be9c8b0..18a717fe62eb0 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -507,12 +507,6 @@ static inline bool sk_psock_strp_enabled(struct sk_psock *psock)
+ 	return !!psock->saved_data_ready;
  }
+ 
+-static inline bool sk_is_tcp(const struct sock *sk)
+-{
+-	return sk->sk_type == SOCK_STREAM &&
+-	       sk->sk_protocol == IPPROTO_TCP;
+-}
+-
+ static inline bool sk_is_udp(const struct sock *sk)
+ {
+ 	return sk->sk_type == SOCK_DGRAM &&
+diff --git a/include/net/sock.h b/include/net/sock.h
+index d47e9658da285..4e575735563a7 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2654,6 +2654,11 @@ static inline void skb_setup_tx_timestamp(struct sk_buff *skb, __u16 tsflags)
+ 			   &skb_shinfo(skb)->tskey);
+ }
+ 
++static inline bool sk_is_tcp(const struct sock *sk)
++{
++	return sk->sk_type == SOCK_STREAM && sk->sk_protocol == IPPROTO_TCP;
++}
++
+ /**
+  * sk_eat_skb - Release a skb if it is no longer needed
+  * @sk: socket to eat this skb from
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 92edd03c2cd1c..2b2e19afef158 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4849,8 +4849,7 @@ static void __skb_complete_tx_timestamp(struct sk_buff *skb,
+ 	serr->header.h4.iif = skb->dev ? skb->dev->ifindex : 0;
+ 	if (sk->sk_tsflags & SOF_TIMESTAMPING_OPT_ID) {
+ 		serr->ee.ee_data = skb_shinfo(skb)->tskey;
+-		if (sk->sk_protocol == IPPROTO_TCP &&
+-		    sk->sk_type == SOCK_STREAM)
++		if (sk_is_tcp(sk))
+ 			serr->ee.ee_data -= sk->sk_tskey;
+ 	}
+ 
+@@ -4919,8 +4918,7 @@ void __skb_tstamp_tx(struct sk_buff *orig_skb,
+ 	if (tsonly) {
+ #ifdef CONFIG_INET
+ 		if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_STATS) &&
+-		    sk->sk_protocol == IPPROTO_TCP &&
+-		    sk->sk_type == SOCK_STREAM) {
++		    sk_is_tcp(sk)) {
+ 			skb = tcp_get_timestamping_opt_stats(sk, orig_skb,
+ 							     ack_skb);
+ 			opt_stats = true;
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 7de234693a3bf..d18e4ffd84820 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -874,8 +874,7 @@ int sock_set_timestamping(struct sock *sk, int optname,
+ 
+ 	if (val & SOF_TIMESTAMPING_OPT_ID &&
+ 	    !(sk->sk_tsflags & SOF_TIMESTAMPING_OPT_ID)) {
+-		if (sk->sk_protocol == IPPROTO_TCP &&
+-		    sk->sk_type == SOCK_STREAM) {
++		if (sk_is_tcp(sk)) {
+ 			if ((1 << sk->sk_state) &
+ 			    (TCPF_CLOSE | TCPF_LISTEN))
+ 				return -EINVAL;
+@@ -1372,8 +1371,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 
+ 	case SO_ZEROCOPY:
+ 		if (sk->sk_family == PF_INET || sk->sk_family == PF_INET6) {
+-			if (!((sk->sk_type == SOCK_STREAM &&
+-			       sk->sk_protocol == IPPROTO_TCP) ||
++			if (!(sk_is_tcp(sk) ||
+ 			      (sk->sk_type == SOCK_DGRAM &&
+ 			       sk->sk_protocol == IPPROTO_UDP)))
+ 				ret = -ENOTSUPP;
+-- 
+2.34.1
+
 
 
