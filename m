@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F57C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA5BC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240522AbiB1SDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:03:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54468 "EHLO
+        id S240571AbiB1SDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:03:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239784AbiB1Rxc (ORCPT
+        with ESMTP id S239194AbiB1RzJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23DBEAC068;
-        Mon, 28 Feb 2022 09:40:57 -0800 (PST)
+        Mon, 28 Feb 2022 12:55:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A5F2459E;
+        Mon, 28 Feb 2022 09:44:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDC48B815AB;
-        Mon, 28 Feb 2022 17:40:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41D2FC340E7;
-        Mon, 28 Feb 2022 17:40:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37343B81085;
+        Mon, 28 Feb 2022 17:44:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87F93C36AEA;
+        Mon, 28 Feb 2022 17:44:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070039;
-        bh=urQX6y50ENfkDfckR2XgPPLuEaOQejttoMPgSiW3WW0=;
+        s=korg; t=1646070272;
+        bh=zMGA4gTIdGdhdcERmCkpemte6p3KrE72mw8Fs2CsqBI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aQzvYMVfptxAMrb/TWomR0D7fDydFlyjxt6knVd9Ghc4liJu47rAiz7mq8uqhnl/w
-         lqI24Umd+KwYomiKg+dCJbRxRSlT9bfd9F4q80e05S51+0+FtFC8qDHxVqJJgD/kjZ
-         wNx/rQIhci+pshCs/mCEeY4oYN/0nn3ryx2hs1b4=
+        b=1k7UB9GNriA6JXfRtAFT36YILPxxOPteJbOMbUir/8F2oCuYqRawfj8DYjzzMP6/K
+         XlmilpoU8v14KUdkiL3v858DbnZWEl26Y3m0VDVH1ahrda2NKM307B5ULiEDlzzC+T
+         MsNgwIBGbuQGxuzMHqSF2zlAHvhvaObKsL4h+Pc8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Savaton <guillaume@baierouge.fr>,
-        Samuel Holland <samuel@sholland.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 086/139] gpio: rockchip: Reset int_bothedge when changing trigger
-Date:   Mon, 28 Feb 2022 18:24:20 +0100
-Message-Id: <20220228172356.701598093@linuxfoundation.org>
+        stable@vger.kernel.org, Chen Gong <curry.gong@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH 5.16 021/164] drm/amdgpu: do not enable asic reset for raven2
+Date:   Mon, 28 Feb 2022 18:23:03 +0100
+Message-Id: <20220228172401.949310843@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
-References: <20220228172347.614588246@linuxfoundation.org>
+In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
+References: <20220228172359.567256961@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,104 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Samuel Holland <samuel@sholland.org>
+From: Chen Gong <curry.gong@amd.com>
 
-[ Upstream commit 7920af5c826cb4a7ada1ae26fdd317642805adc2 ]
+commit 1e2be869c8a7247a7253ef4f461f85e2f5931b95 upstream.
 
-With v2 hardware, an IRQ can be configured to trigger on both edges via
-a bit in the int_bothedge register. Currently, the driver sets this bit
-when changing the trigger type to IRQ_TYPE_EDGE_BOTH, but fails to reset
-this bit if the trigger type is later changed to something else. This
-causes spurious IRQs, and when using gpio-keys with wakeup-event-action
-set to EV_ACT_(DE)ASSERTED, those IRQs translate into spurious wakeups.
+The GPU reset function of raven2 is not maintained or tested, so it should be
+very unstable.
 
-Fixes: 3bcbd1a85b68 ("gpio/rockchip: support next version gpio controller")
-Reported-by: Guillaume Savaton <guillaume@baierouge.fr>
-Tested-by: Guillaume Savaton <guillaume@baierouge.fr>
-Signed-off-by: Samuel Holland <samuel@sholland.org>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Now the amdgpu_asic_reset function is added to amdgpu_pmops_suspend, which
+causes the S3 test of raven2 to fail, so the asic_reset of raven2 is ignored
+here.
+
+Fixes: daf8de0874ab5b ("drm/amdgpu: always reset the asic in suspend (v2)")
+Signed-off-by: Chen Gong <curry.gong@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-rockchip.c | 56 +++++++++++++++++++-----------------
- 1 file changed, 29 insertions(+), 27 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/soc15.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
-index ce63cbd14d69a..24155c038f6d0 100644
---- a/drivers/gpio/gpio-rockchip.c
-+++ b/drivers/gpio/gpio-rockchip.c
-@@ -410,10 +410,8 @@ static int rockchip_irq_set_type(struct irq_data *d, unsigned int type)
- 	level = rockchip_gpio_readl(bank, bank->gpio_regs->int_type);
- 	polarity = rockchip_gpio_readl(bank, bank->gpio_regs->int_polarity);
+--- a/drivers/gpu/drm/amd/amdgpu/soc15.c
++++ b/drivers/gpu/drm/amd/amdgpu/soc15.c
+@@ -619,8 +619,8 @@ soc15_asic_reset_method(struct amdgpu_de
+ static int soc15_asic_reset(struct amdgpu_device *adev)
+ {
+ 	/* original raven doesn't have full asic reset */
+-	if ((adev->apu_flags & AMD_APU_IS_RAVEN) &&
+-	    !(adev->apu_flags & AMD_APU_IS_RAVEN2))
++	if ((adev->apu_flags & AMD_APU_IS_RAVEN) ||
++	    (adev->apu_flags & AMD_APU_IS_RAVEN2))
+ 		return 0;
  
--	switch (type) {
--	case IRQ_TYPE_EDGE_BOTH:
-+	if (type == IRQ_TYPE_EDGE_BOTH) {
- 		if (bank->gpio_type == GPIO_TYPE_V2) {
--			bank->toggle_edge_mode &= ~mask;
- 			rockchip_gpio_writel_bit(bank, d->hwirq, 1,
- 						 bank->gpio_regs->int_bothedge);
- 			goto out;
-@@ -431,30 +429,34 @@ static int rockchip_irq_set_type(struct irq_data *d, unsigned int type)
- 			else
- 				polarity |= mask;
- 		}
--		break;
--	case IRQ_TYPE_EDGE_RISING:
--		bank->toggle_edge_mode &= ~mask;
--		level |= mask;
--		polarity |= mask;
--		break;
--	case IRQ_TYPE_EDGE_FALLING:
--		bank->toggle_edge_mode &= ~mask;
--		level |= mask;
--		polarity &= ~mask;
--		break;
--	case IRQ_TYPE_LEVEL_HIGH:
--		bank->toggle_edge_mode &= ~mask;
--		level &= ~mask;
--		polarity |= mask;
--		break;
--	case IRQ_TYPE_LEVEL_LOW:
--		bank->toggle_edge_mode &= ~mask;
--		level &= ~mask;
--		polarity &= ~mask;
--		break;
--	default:
--		ret = -EINVAL;
--		goto out;
-+	} else {
-+		if (bank->gpio_type == GPIO_TYPE_V2) {
-+			rockchip_gpio_writel_bit(bank, d->hwirq, 0,
-+						 bank->gpio_regs->int_bothedge);
-+		} else {
-+			bank->toggle_edge_mode &= ~mask;
-+		}
-+		switch (type) {
-+		case IRQ_TYPE_EDGE_RISING:
-+			level |= mask;
-+			polarity |= mask;
-+			break;
-+		case IRQ_TYPE_EDGE_FALLING:
-+			level |= mask;
-+			polarity &= ~mask;
-+			break;
-+		case IRQ_TYPE_LEVEL_HIGH:
-+			level &= ~mask;
-+			polarity |= mask;
-+			break;
-+		case IRQ_TYPE_LEVEL_LOW:
-+			level &= ~mask;
-+			polarity &= ~mask;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			goto out;
-+		}
- 	}
- 
- 	rockchip_gpio_writel(bank, level, bank->gpio_regs->int_type);
--- 
-2.34.1
-
+ 	switch (soc15_asic_reset_method(adev)) {
 
 
