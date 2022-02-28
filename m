@@ -2,104 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDC8C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5051FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:45:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238712AbiB1RqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:46:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58768 "EHLO
+        id S238558AbiB1RqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:46:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238936AbiB1Rnd (ORCPT
+        with ESMTP id S238907AbiB1Rnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:43:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41399A99B;
-        Mon, 28 Feb 2022 09:35:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6681EB815BA;
-        Mon, 28 Feb 2022 17:35:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC50C340F1;
-        Mon, 28 Feb 2022 17:35:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069721;
-        bh=/IPjo5Im5eTlmflgA6jvO3M2vFnLOiss2A90CD++VY8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e4Oh6kv0+APDqSjGsLv9WZwKjTZUlDyxC9DPhkctNJPIicWoz1N4GMtmk1zE6yzWM
-         OxAIyaNU/NAoaKLLGgua+Cnz8kFcvb2HYk8v45l/Te5gMcuhcQcOmlHfrv0BqpWzJ9
-         MPkl0EqNTLnlXwFmCUbCjaddiNEq4M6hJkq+7/1U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.10 69/80] xhci: Prevent futile URB re-submissions due to incorrect return value.
-Date:   Mon, 28 Feb 2022 18:24:50 +0100
-Message-Id: <20220228172320.092444120@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
-References: <20220228172311.789892158@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 28 Feb 2022 12:43:31 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74D2F9A985;
+        Mon, 28 Feb 2022 09:35:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646069720; x=1677605720;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4h1YWtV6F2Q6sNCl+7xob39bvg1TMmI6b4u3dRROqA4=;
+  b=CVnpusEK/Eramn9TgpeNNSwap1EzIugiOMh0a14eYIcR7T8XB9T3G5bC
+   BLrrMcv9yH7GRS4Snie/X7+jLqyJJBSZD9oXvqTsuB0ewSyzMuPQ9g6Vs
+   pK+4uFkJ7rGXyZq7zGk4UYA6w4ajELA9VPczbcCqijOpbW4/S387l7cQZ
+   P0bwzo4fJV1gFb8Wp8XXPDOJgmjvtJQaGwI+gNo2BQPiF1GsPvPXY6BVC
+   k6dTHxkV2KaZgVknKrzCNamLde4rwHMtVVJuL7DYzq3altgmM7xzsox0y
+   m0KzGHZG0BhZeSUlpgruL/hhO8ntbl+e8unSjvSoO8BwOhEhBnS1Wgxgu
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="277599710"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="277599710"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:35:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="608524532"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 28 Feb 2022 09:35:14 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOjvW-0007ZL-5q; Mon, 28 Feb 2022 17:35:14 +0000
+Date:   Tue, 1 Mar 2022 01:35:10 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Muchun Song <songmuchun@bytedance.com>, dan.j.williams@intel.com,
+        willy@infradead.org, jack@suse.cz, viro@zeniv.linux.org.uk,
+        akpm@linux-foundation.org, apopple@nvidia.com, shy828301@gmail.com,
+        rcampbell@nvidia.com, hughd@google.com, xiyuyang19@fudan.edu.cn,
+        kirill.shutemov@linux.intel.com, zwisler@kernel.org,
+        hch@infradead.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        duanxiongchun@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v3 4/6] mm: pvmw: add support for walking devmap pages
+Message-ID: <202202281913.ZakSkynK-lkp@intel.com>
+References: <20220228063536.24911-5-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228063536.24911-5-songmuchun@bytedance.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongyu Xie <xiehongyu1@kylinos.cn>
+Hi Muchun,
 
-commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
+Thank you for the patch! Yet something to improve:
 
-The -ENODEV return value from xhci_check_args() is incorrectly changed
-to -EINVAL in a couple places before propagated further.
+[auto build test ERROR on hnaz-mm/master]
+[also build test ERROR on next-20220225]
+[cannot apply to linus/master v5.17-rc6]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
-xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
-the return value of xhci_check_args <= 0.
-This causes problems for example r8152_submit_rx, calling usb_submit_urb
-in drivers/net/usb/r8152.c.
-r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
-is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
+url:    https://github.com/0day-ci/linux/commits/Muchun-Song/Fix-some-bugs-related-to-ramp-and-dax/20220228-143753
+base:   https://github.com/hnaz/linux-mm master
+config: riscv-randconfig-r012-20220227 (https://download.01.org/0day-ci/archive/20220228/202202281913.ZakSkynK-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/0day-ci/linux/commit/4b08af172f30c61ae5f43ec23642e2767371247e
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Muchun-Song/Fix-some-bugs-related-to-ramp-and-dax/20220228-143753
+        git checkout 4b08af172f30c61ae5f43ec23642e2767371247e
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
 
-[commit message and header edit -Mathias]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+All errors (new ones prefixed by >>):
+
+>> mm/page_vma_mapped.c:113:13: error: call to __compiletime_assert_258 declared with 'error' attribute: BUILD_BUG failed
+           if ((pfn + HPAGE_PMD_NR - 1) < pvmw->pfn)
+                      ^
+   include/linux/huge_mm.h:105:26: note: expanded from macro 'HPAGE_PMD_NR'
+   #define HPAGE_PMD_NR (1<<HPAGE_PMD_ORDER)
+                            ^
+   include/linux/huge_mm.h:104:26: note: expanded from macro 'HPAGE_PMD_ORDER'
+   #define HPAGE_PMD_ORDER (HPAGE_PMD_SHIFT-PAGE_SHIFT)
+                            ^
+   include/linux/huge_mm.h:307:28: note: expanded from macro 'HPAGE_PMD_SHIFT'
+   #define HPAGE_PMD_SHIFT ({ BUILD_BUG(); 0; })
+                              ^
+   note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+   include/linux/compiler_types.h:335:2: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ^
+   include/linux/compiler_types.h:328:4: note: expanded from macro '__compiletime_assert'
+                           prefix ## suffix();                             \
+                           ^
+   <scratch space>:73:1: note: expanded from here
+   __compiletime_assert_258
+   ^
+   1 error generated.
+
+
+vim +/error +113 mm/page_vma_mapped.c
+
+9188af981d385d Andrew Morton      2022-02-25  109  
+9188af981d385d Andrew Morton      2022-02-25  110  /* Returns true if the two ranges overlap.  Careful to not overflow. */
+9188af981d385d Andrew Morton      2022-02-25  111  static bool check_pmd(unsigned long pfn, struct page_vma_mapped_walk *pvmw)
+9188af981d385d Andrew Morton      2022-02-25  112  {
+9188af981d385d Andrew Morton      2022-02-25 @113  	if ((pfn + HPAGE_PMD_NR - 1) < pvmw->pfn)
+9188af981d385d Andrew Morton      2022-02-25  114  		return false;
+9188af981d385d Andrew Morton      2022-02-25  115  	if (pfn > pvmw->pfn + pvmw->nr_pages - 1)
+9188af981d385d Andrew Morton      2022-02-25  116  		return false;
+9188af981d385d Andrew Morton      2022-02-25  117  	return true;
+ace71a19cec5eb Kirill A. Shutemov 2017-02-24  118  }
+ace71a19cec5eb Kirill A. Shutemov 2017-02-24  119  
+
 ---
- drivers/usb/host/xhci.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1487,9 +1487,12 @@ static int xhci_urb_enqueue(struct usb_h
- 	struct urb_priv	*urb_priv;
- 	int num_tds;
- 
--	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
--					true, true, __func__) <= 0)
-+	if (!urb)
- 		return -EINVAL;
-+	ret = xhci_check_args(hcd, urb->dev, urb->ep,
-+					true, true, __func__);
-+	if (ret <= 0)
-+		return ret ? ret : -EINVAL;
- 
- 	slot_id = urb->dev->slot_id;
- 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
-@@ -3289,7 +3292,7 @@ static int xhci_check_streams_endpoint(s
- 		return -EINVAL;
- 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
- 	if (ret <= 0)
--		return -EINVAL;
-+		return ret ? ret : -EINVAL;
- 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
- 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
- 				" descriptor for ep 0x%x does not support streams\n",
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
