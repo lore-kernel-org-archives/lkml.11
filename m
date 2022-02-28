@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E909AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239559AbiB1SBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:01:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51154 "EHLO
+        id S239568AbiB1SB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:01:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240788AbiB1Ryp (ORCPT
+        with ESMTP id S240786AbiB1Ryp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36412532CF;
-        Mon, 28 Feb 2022 09:43:30 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2B652E74;
+        Mon, 28 Feb 2022 09:43:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1A1FB815B8;
-        Mon, 28 Feb 2022 17:43:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAFDC340F0;
-        Mon, 28 Feb 2022 17:43:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEA0D608C4;
+        Mon, 28 Feb 2022 17:43:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF4DCC340F0;
+        Mon, 28 Feb 2022 17:43:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070207;
-        bh=8wWpISkZyJgiArA4xVbREKZImf0BuW/NQ7Py7TDMWyU=;
+        s=korg; t=1646070202;
+        bh=tZIKfWR+H3BlXKJ0ATaZf8/I7giSuWW2xGUyyzNSUi8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1r5m++GOXtzQI6QVc81dkFgi0fIx08n/o8txDG0/WaPk0CgV85UKEAGs1O/syj3/l
-         Zmlgf2qDwsZKwRkYQK8OLRvSWbRiXiH15iTbj+O/FUpbJ07pMU4c5czx9dBuS+dyMm
-         bWYKXrCH1sBsNlyBX9TDfRUNzv93uAxR3R1wgkGU=
+        b=ka7BXfF9XlieE5F150XyutzDUGVhOwt84evGE2BoX3KrclQeBAD+O7QpR/vrKnD8X
+         dwbdte3cPksWVRe14dRvLLQIjFNIwWOt5eNBb4WS9IzKWHvlAwRxWMoEizugC5qvMB
+         uHwGUJAxK2jMC/eyOLm1xcG4t771OJmF11CFQWEo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+ca8bf833622a1662745b@syzkaller.appspotmail.com,
-        Dylan Yudaken <dylany@fb.com>, Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 009/164] io_uring: disallow modification of rsrc_data during quiesce
-Date:   Mon, 28 Feb 2022 18:22:51 +0100
-Message-Id: <20220228172400.614445343@linuxfoundation.org>
+        stable@vger.kernel.org, Siarhei Volkau <lis8215@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 5.16 007/164] clk: jz4725b: fix mmc0 clock gating
+Date:   Mon, 28 Feb 2022 18:22:49 +0100
+Message-Id: <20220228172400.393088220@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,49 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dylan Yudaken <dylany@fb.com>
+From: Siarhei Volkau <lis8215@gmail.com>
 
-commit 80912cef18f16f8fe59d1fb9548d4364342be360 upstream.
+commit 2f0754f27a230fee6e6d753f07585cee03bedfe3 upstream.
 
-io_rsrc_ref_quiesce will unlock the uring while it waits for references to
-the io_rsrc_data to be killed.
-There are other places to the data that might add references to data via
-calls to io_rsrc_node_switch.
-There is a race condition where this reference can be added after the
-completion has been signalled. At this point the io_rsrc_ref_quiesce call
-will wake up and relock the uring, assuming the data is unused and can be
-freed - although it is actually being used.
+The mmc0 clock gate bit was mistakenly assigned to "i2s" clock.
+You can find that the same bit is assigned to "mmc0" too.
+It leads to mmc0 hang for a long time after any sound activity
+also it  prevented PM_SLEEP to work properly.
+I guess it was introduced by copy-paste from jz4740 driver
+where it is really controls I2S clock gate.
 
-To fix this check in io_rsrc_ref_quiesce if a resource has been revived.
-
-Reported-by: syzbot+ca8bf833622a1662745b@syzkaller.appspotmail.com
+Fixes: 226dfa4726eb ("clk: Add Ingenic jz4725b CGU driver")
+Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
+Tested-by: Siarhei Volkau <lis8215@gmail.com>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
 Cc: stable@vger.kernel.org
-Signed-off-by: Dylan Yudaken <dylany@fb.com>
-Link: https://lore.kernel.org/r/20220222161751.995746-1-dylany@fb.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Link: https://lore.kernel.org/r/20220205171849.687805-2-lis8215@gmail.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/clk/ingenic/jz4725b-cgu.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -7865,7 +7865,15 @@ static __cold int io_rsrc_ref_quiesce(st
- 		ret = wait_for_completion_interruptible(&data->done);
- 		if (!ret) {
- 			mutex_lock(&ctx->uring_lock);
--			break;
-+			if (atomic_read(&data->refs) > 0) {
-+				/*
-+				 * it has been revived by another thread while
-+				 * we were unlocked
-+				 */
-+				mutex_unlock(&ctx->uring_lock);
-+			} else {
-+				break;
-+			}
- 		}
+--- a/drivers/clk/ingenic/jz4725b-cgu.c
++++ b/drivers/clk/ingenic/jz4725b-cgu.c
+@@ -139,11 +139,10 @@ static const struct ingenic_cgu_clk_info
+ 	},
  
- 		atomic_inc(&data->refs);
+ 	[JZ4725B_CLK_I2S] = {
+-		"i2s", CGU_CLK_MUX | CGU_CLK_DIV | CGU_CLK_GATE,
++		"i2s", CGU_CLK_MUX | CGU_CLK_DIV,
+ 		.parents = { JZ4725B_CLK_EXT, JZ4725B_CLK_PLL_HALF, -1, -1 },
+ 		.mux = { CGU_REG_CPCCR, 31, 1 },
+ 		.div = { CGU_REG_I2SCDR, 0, 1, 9, -1, -1, -1 },
+-		.gate = { CGU_REG_CLKGR, 6 },
+ 	},
+ 
+ 	[JZ4725B_CLK_SPI] = {
 
 
