@@ -2,94 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B01EFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D58DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235139AbiB1MfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:35:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59986 "EHLO
+        id S232942AbiB1MfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:35:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232067AbiB1MfA (ORCPT
+        with ESMTP id S229997AbiB1MfK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:35:00 -0500
-Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3345F40902;
-        Mon, 28 Feb 2022 04:34:20 -0800 (PST)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-        id 56FDE4B0; Mon, 28 Feb 2022 13:34:19 +0100 (CET)
-Date:   Mon, 28 Feb 2022 13:34:18 +0100
-From:   Joerg Roedel <joro@8bytes.org>
-To:     Yong Wu <yong.wu@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>, youlin.pei@mediatek.com,
-        anan.sun@mediatek.com, xueqi.zhang@mediatek.com,
-        yen-chang.chen@mediatek.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
-        libo.kang@mediatek.com, chengci.xu@mediatek.com
-Subject: Re: [PATCH v5 00/34] MT8195 IOMMU SUPPORT
-Message-ID: <YhzBSsn/zUlGg5JE@8bytes.org>
-References: <20220217113453.13658-1-yong.wu@mediatek.com>
+        Mon, 28 Feb 2022 07:35:10 -0500
+Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A856541FB9
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:34:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=KLObTzpFJ3JFXNqoLhXcI5yVpeoc073bLS8HdX2ztiQ=; b=Bb887ZalSzkmjPq0ejXoGiY+wT
+        xy9UGV04gqVgMOOo+iBKyvUv6Y6DzOvTPAZcboJfypVUvyrhSx9smPZk3cRIZKa7kfAMp+oYVBB5w
+        g+BtBVoRv9NRMkYy7li/ZVeFrxxzIj7VoQ/4vwasgDfvZ5D/7dGoy/jra9RIhrtQlGsYQuQn94/c4
+        SH+/Uxa/eS1RlP9Tzwai8/enmwtupJu50x73rwc0a1ULNNVLAt0TycWgwxgHbn4uIgVNRbZfcdJEL
+        d4FVQsbe8KRAPkusWI6AhbaZBbwZ1fWPKrGAuVPPq7Yqc9iY0vygeO7VZl+UgLuU2VVtiSM8AEER6
+        5pdlO/Ug==;
+Received: from [189.79.213.38] (helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nOfEE-000C20-HQ; Mon, 28 Feb 2022 13:34:14 +0100
+Message-ID: <561910c7-ad9a-7f0f-ea98-125989146fdd@igalia.com>
+Date:   Mon, 28 Feb 2022 09:33:56 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220217113453.13658-1-yong.wu@mediatek.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH V6] panic: Move panic_print before kmsg dumpers
+Content-Language: en-US
+To:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Petr Mladek <pmladek@suse.com>, akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, bhe@redhat.com, anton@enomsg.org,
+        ccross@android.com, dyoung@redhat.com, feng.tang@intel.com,
+        john.ogness@linutronix.de, keescook@chromium.org,
+        kernel@gpiccoli.net, kexec@lists.infradead.org,
+        rostedt@goodmis.org, tony.luck@intel.com, vgoyal@redhat.com
+References: <20220214141308.841525-1-gpiccoli@igalia.com>
+ <YhRFNKtxSE8Xrbfw@google.com>
+ <7e15bc6a-ceae-aa3a-0a86-18d24181b0ed@igalia.com>
+ <YhWNhzacAVDuFtwB@google.com> <YheXRmmWr619Qxin@alley>
+ <YhhmnmgAlVCcVqSV@google.com> <YhjIsPpA0kN1yeOM@alley>
+ <YhmPCE4zn5Nup+ou@google.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <YhmPCE4zn5Nup+ou@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yong Wu,
+On 25/02/2022 23:23, Sergey Senozhatsky wrote:
+> On (22/02/25 13:16), Petr Mladek wrote:
+>>
+>> The result looks good to me. We could do it as a followup patch.
+> 
+> Yup, sounds good to me. Thanks.
 
-On Thu, Feb 17, 2022 at 07:34:19PM +0800, Yong Wu wrote:
-> Yong Wu (34):
->   dt-bindings: mediatek: mt8195: Add binding for MM IOMMU
->   dt-bindings: mediatek: mt8195: Add binding for infra IOMMU
->   iommu/mediatek: Fix 2 HW sharing pgtable issue
->   iommu/mediatek: Add list_del in mtk_iommu_remove
->   iommu/mediatek: Remove clk_disable in mtk_iommu_remove
->   iommu/mediatek: Add mutex for m4u_group and m4u_dom in data
->   iommu/mediatek: Add mutex for data in the mtk_iommu_domain
->   iommu/mediatek: Adapt sharing and non-sharing pgtable case
->   iommu/mediatek: Add 12G~16G support for multi domains
->   iommu/mediatek: Add a flag DCM_DISABLE
->   iommu/mediatek: Add a flag NON_STD_AXI
->   iommu/mediatek: Remove the granule in the tlb flush
->   iommu/mediatek: Always enable output PA over 32bits in isr
->   iommu/mediatek: Add SUB_COMMON_3BITS flag
->   iommu/mediatek: Add IOMMU_TYPE flag
->   iommu/mediatek: Contain MM IOMMU flow with the MM TYPE
->   iommu/mediatek: Adjust device link when it is sub-common
->   iommu/mediatek: Allow IOMMU_DOMAIN_UNMANAGED for PCIe VFIO
->   iommu/mediatek: Add a PM_CLK_AO flag for infra iommu
->   iommu/mediatek: Add infra iommu support
->   iommu/mediatek: Add PCIe support
->   iommu/mediatek: Add mt8195 support
->   iommu/mediatek: Only adjust code about register base
->   iommu/mediatek: Just move code position in hw_init
->   iommu/mediatek: Separate mtk_iommu_data for v1 and v2
->   iommu/mediatek: Remove mtk_iommu.h
->   iommu/mediatek-v1: Just rename mtk_iommu to mtk_iommu_v1
->   iommu/mediatek: Add mtk_iommu_bank_data structure
->   iommu/mediatek: Initialise bank HW for each a bank
->   iommu/mediatek: Change the domid to iova_region_id
->   iommu/mediatek: Get the proper bankid for multi banks
->   iommu/mediatek: Initialise/Remove for multi bank dev
->   iommu/mediatek: Backup/restore regsiters for multi banks
->   iommu/mediatek: mt8195: Enable multi banks for infra iommu
+Cool, I also agree.
 
-This doesn't apply cleanly, can you please send a version rebased to
-v5.17-rc4?
+So Andrew: is there anything missing in order to get this patch merged?
+If you prefer, I can send a new version...with the reviews' tags.
+Lemme know =D
 
 Thanks,
 
-	Joerg
+
+Guilherme
