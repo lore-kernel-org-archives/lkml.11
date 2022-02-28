@@ -2,115 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:10:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8035DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233902AbiB1LLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:11:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57456 "EHLO
+        id S229835AbiB1LOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:14:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235596AbiB1LLA (ORCPT
+        with ESMTP id S235599AbiB1LLE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:11:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B69A7085C
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:09:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646046561;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mk8A/cRIjUQBRWWsNYUbvFqswRRH6zL512hJ5ISpuac=;
-        b=g7fHDQjLO4kMnSZTGIJyZPFuVdlFcVDLnGrD/n26W+m+T5iF7omRkpjau+I95UovaZYAW6
-        yX9BOewRutl6EwKn27RF+gq/mP16oKcJUZri7pneB25L0jTQTP5t+ayQKV4YNnLbNty+Rd
-        OCWpEHXQdjjXqT+L0yUjtqV51KEci1s=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-225-luONIc8SPrGh_djl1X6MIg-1; Mon, 28 Feb 2022 06:09:20 -0500
-X-MC-Unique: luONIc8SPrGh_djl1X6MIg-1
-Received: by mail-qt1-f199.google.com with SMTP id x26-20020ac84a1a000000b002ddcbd9e933so6066583qtq.11
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:09:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=mk8A/cRIjUQBRWWsNYUbvFqswRRH6zL512hJ5ISpuac=;
-        b=1fButGjckQjGlo1P6pRt70E2s6Pap0xXOLPPIliLxMsSC241Z/OcCRbxVqpLSl6BaD
-         zBF96sIfAKr7Q/aUDbVWx7ET4WAklSEt8u127NRmUzNfoxg2j/JBO0u5STZp5vB2obSj
-         HpI4ARBOaq/v4pid9XyRgC1I5qrVPXY/idL5CnJtXoUZWg9z1oGa+To1ONsuVvwfn/xN
-         978LqTFEjZRIofF0kt8XzIF8VxLx0/UR6CAbVIYg9qnx7d1Ke/oLc4/5gKYArqgBO8Mb
-         UfshXcszw8/8lcAYUbXOaxULT5gmVM2rKJ9k+kno4XWb6uVwWRQzLGjtCV5wIQODBZ7/
-         XeFQ==
-X-Gm-Message-State: AOAM532dix2Dj8c9PLzPG+GP1AcU6+zXLSsJf01Y17N7/SFrH/d0BXOn
-        B4kcnjABQHSef4Op/EmMd48uNGeqstqPa+6nbdk9Y6nKoGejR8SmC/pvEiGDJ9qS1mgANGqjTiE
-        V000IVxY5zhOuL8Vg/eRXR55Y
-X-Received: by 2002:ac8:590c:0:b0:2de:4c71:354e with SMTP id 12-20020ac8590c000000b002de4c71354emr16194170qty.315.1646046559789;
-        Mon, 28 Feb 2022 03:09:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyF44gxifV5SBNXIq21oM3Wnww4M1ERoBoKJLH46fR/MI/Pe/poA+ls11pAGSqMnwJ88bUw7A==
-X-Received: by 2002:ac8:590c:0:b0:2de:4c71:354e with SMTP id 12-20020ac8590c000000b002de4c71354emr16194153qty.315.1646046559535;
-        Mon, 28 Feb 2022 03:09:19 -0800 (PST)
-Received: from fedora (ec2-3-80-233-239.compute-1.amazonaws.com. [3.80.233.239])
-        by smtp.gmail.com with ESMTPSA id t22-20020a05622a181600b002dd4f62308dsm6667218qtc.57.2022.02.28.03.09.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 03:09:18 -0800 (PST)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Siddharth Chandrasekaran <sidcha@amazon.de>
-Cc:     kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH 0/4] KVM: x86: hyper-v: XMM fast hypercalls fixes
-In-Reply-To: <YhypT9pGu600wRLf@147dda3edfb6.ant.amazon.com>
-References: <20220222154642.684285-1-vkuznets@redhat.com>
- <b466b80c-21d1-f298-b4cd-a4b58988f767@redhat.com>
- <871qzrdr6x.fsf@redhat.com>
- <f398b5de-c867-98a4-a716-b18939cfd0ef@redhat.com>
- <YhypT9pGu600wRLf@147dda3edfb6.ant.amazon.com>
-Date:   Mon, 28 Feb 2022 12:09:14 +0100
-Message-ID: <87sfs3cko5.fsf@redhat.com>
+        Mon, 28 Feb 2022 06:11:04 -0500
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EEBF70CE2;
+        Mon, 28 Feb 2022 03:09:41 -0800 (PST)
+Received: from evilbit.green-communications.fr ([92.154.77.116]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.103]) with ESMTPSA (Nemesis)
+ id 1Mv3M8-1oFN0F40K8-00r03u; Mon, 28 Feb 2022 12:04:20 +0100
+From:   Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Testing the thermal genetlink API
+Date:   Mon, 28 Feb 2022 12:03:50 +0100
+Message-Id: <20220228110351.20518-1-nicolas.cavallari@green-communications.fr>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:289vm7xDMk7TSjp9EJ53roceQIvaOK1Ht1fwI108U7LfRi15fj3
+ /VmeRsBsZY0lCaLhVsA0Yc3XFDlui72OYPzGwswK2JWcZlzYSqad/VVJUsE0XwgkOmzgNqY
+ yGu8Mc7yxdx7q4+QcwlnLX3VjLXa85gs2O3oxUqSsuYzwwWXtGmhD2ZNRYgMRWjoC0qT0GO
+ aL4p4xbyTiwMoKiEt8pZA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:+dczmfZgk9k=:8Qp+aw4edBZaso/74U09d/
+ deqOTtDXqhrCy+6HWUoGR76/R5kYCVbeut64Kf8E31n2MU+Npt6EEqO+lcq19NkxbqPp7HWKl
+ Kk/bGYepzpB5xZPyRYCyc3p3lV0czxtFJ1fmk+WsE3xdXc5JR08vNCabwmCbtaK/h1aov9Ldl
+ E1HcQVQ0zmexvokmk0HyrQXuxatp3Ln7oG5eHkLE9yMwmk+4iyyl7x9Et1SeKVw5dQbQUvB+J
+ Iidk1y0+aj9RwmRcJCtjP07lPVNIUdUxg91SAharWjQ1+I6Ho3JJPyNIqp0d2B9tqVOSRmSDA
+ Va73/nV8zig9OwLV9/Q7CvacitYd2xIVkbF/c2Qv0ksR5pfy6aNLvc3hVSTsFiNmAb1DNFjo2
+ U1vamzj/mx2XSjVtQ7wFmmefNBB6YYVZOA8VqD3CBGQNsC+AP76Y4MvXMJ3c1KOrKx4VYKWvU
+ 3sAdYWq8plbVjA/YpobwsDcg1QniFs0n8zBPXW0XKTWP42m70CNqRRFEXibfsLue624WrOMEN
+ 2d7exTU/yTejBXW23WIVREebSWQPnuq29AasqpXiqEmZsrh/a2xZuGugpWIhO8LbS4mctqkes
+ KAQEv9TT5Hs5XLHyJqhnHiqGOnGlP30fNbOL2s658BaTrEbZxMEOvDFtmK61LK/5dAyRKMFU/
+ u+u+7ySzupDHkK4YmLGLweoB7h3q39EKZWavy84/ryRt47RP+QOuaS6V1tvNC78ycVUGcBmaV
+ pm42KfULfxiCk+u/L2sTnAxDUZ6Au05qc1O77g==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Siddharth Chandrasekaran <sidcha@amazon.de> writes:
+I've played a bit with the thermal netlink interface and it wasn't pleasant:
 
-> On Fri, Feb 25, 2022 at 02:17:04PM +0100, Paolo Bonzini wrote:
->> On 2/25/22 14:13, Vitaly Kuznetsov wrote:
->> > Let's say we have 1 half of XMM0 consumed. Now:
->> > 
->> >   i = 0;
->> >   j = 1;
->> >   if (1)
->> >       sparse_banks[0] = sse128_lo(hc->xmm[0]);
->> > 
->> >   This doesn't look right as we need to get the upper half of XMM0.
->> > 
->> >   I guess it should be reversed,
->> > 
->> >       if (j % 2)
->> >           sparse_banks[i] = sse128_hi(hc->xmm[j / 2]);
->> >       else
->> >           sparse_banks[i] = sse128_lo(hc->xmm[j / 2]);
->
-> Maybe I am missing parts of this series.. I dont see this change in any
-> of the 4 patches Vitaly sent. Yes, they look swapped to me too.
->
+1. The way attributes are used is painful.  Instead of using arrays of
+   nested structs-like, it flattens them into a big nested attr where
+   you have to guess when an entry starts and when it ends.
+   libnl provides no helper for this case:
 
-There was a conflict with a patch series from Sean:
-https://lore.kernel.org/kvm/20211207220926.718794-1-seanjc@google.com/
+   [{nla_type=TZ|F_NESTED},
+	[{nla_type=TZ_ID}, 1]
+	[{nla_type=TZ_NAME}, "name1"]
+	[{nla_type=TZ_ID}, 2]
+	[{nla_type=TZ_NAME}, "name2"]
+	[{nla_type=TZ_ID}, 3]
+	[{nla_type=TZ_NAME}, "name3"]
+	[{nla_type=TZ_ID}, 4]
+	[{nla_type=TZ_NAME}, "name4"]
+   ]
 
-and this is a part of the resolution:
+2. The genl_cmd types are not unique between multicast events and
+   command replies.  If you send genl_cmd=3 (CMD_TZ_GET_TEMP) and you
+   get a genl_cmd=3 reply, you cannot know if it is a CMD_TZ_GET_TEMP
+   response or a EVENT_TZ_DISABLE because both have genl_cmd=3, but
+   completely different semantics.
 
-commit c0f1eaeb9e628bf86bf50f11cb4a2b671528391e
-Merge: 4dfc4ec2b7f5 47d3e5cdfe60
-Author: Paolo Bonzini <pbonzini@redhat.com>
-Date:   Fri Feb 25 06:28:10 2022 -0500
+3. The API is heavy.  Getting the complete information about all thermal
+   zones requires 1 + 6 * thermal_zones netlink requests, each of them
+   only returning few information.  You need most of them to merely
+   translate the event's TZ_ID/TZ_TRIP_ID/CDEV_ID to names.
 
-    Merge branch 'kvm-hv-xmm-hypercall-fixes' into HEAD
+4. THERMAL_GENL_CMD_TZ_GET_TRIP cause an oops if the thermal zone driver
+   does not have a get_trip_hyst callback.
+   This concerns all drivers, short of two.  A patch follows.
 
--- 
-Vitaly
+For the record, I couldn't find any open source program using this API.
+It's also not enabled in all distributions.
+
 
