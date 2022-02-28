@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C146C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F962C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235931AbiB1SHc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:07:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43094 "EHLO
+        id S239992AbiB1SHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240316AbiB1SDZ (ORCPT
+        with ESMTP id S240439AbiB1SDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC90B2382;
-        Mon, 28 Feb 2022 09:46:58 -0800 (PST)
+        Mon, 28 Feb 2022 13:03:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7B771CB6;
+        Mon, 28 Feb 2022 09:47:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BE1060BC0;
-        Mon, 28 Feb 2022 17:46:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E4F9C340E7;
-        Mon, 28 Feb 2022 17:46:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89BCA60748;
+        Mon, 28 Feb 2022 17:47:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 929E5C340E7;
+        Mon, 28 Feb 2022 17:47:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070382;
-        bh=+l3jU0nvv1HAdt1l7oH7jBuox343EAywraz1n02pq30=;
+        s=korg; t=1646070432;
+        bh=XSLKRkij1uXAIPZeU+vR3idzKH3jAVHBKW7vVMbPZpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s6F/Lh0WAUehetL2SKOOINcFEthaDwMGr3AjC3J3D+TgOMWFMSSFHixn2/bR9bpaj
-         1xb18q0+zddeXBnBxLf4B8IWaMQ90u9wdPqkbrAMWVoARO/bHfTFLCH+RT58Ha2S4E
-         E3k7YVOmkMvY+6FtB++00NdBOg/+aAarK6FC2JWI=
+        b=Z1xg9TOl1Tl7mJyggkxEta+WOt7NX3jMyxIZbXHpCFGgH8ExN4fSEQZLy1n1ntBnV
+         BFgPvQPMv1Bey7+6s16TNwljAjJ3JagjXo0o1bX4AsnTgOAzQVo7V31r308rlOsJBX
+         FJgw8nPdHkBmVVt+KW7LpctBKs8DPhjXQpb3L6Zs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 087/164] udp_tunnel: Fix end of loop test in udp_tunnel_nic_unregister()
-Date:   Mon, 28 Feb 2022 18:24:09 +0100
-Message-Id: <20220228172407.779882137@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH 5.16 057/164] bpf: Do not try bpf_msg_push_data with len 0
+Date:   Mon, 28 Feb 2022 18:23:39 +0100
+Message-Id: <20220228172405.333864395@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,35 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Felix Maurer <fmaurer@redhat.com>
 
-commit de7b2efacf4e83954aed3f029d347dfc0b7a4f49 upstream.
+commit 4a11678f683814df82fca9018d964771e02d7e6d upstream.
 
-This test is checking if we exited the list via break or not.  However
-if it did not exit via a break then "node" does not point to a valid
-udp_tunnel_nic_shared_node struct.  It will work because of the way
-the structs are laid out it's the equivalent of
-"if (info->shared->udp_tunnel_nic_info != dev)" which will always be
-true, but it's not the right way to test.
+If bpf_msg_push_data() is called with len 0 (as it happens during
+selftests/bpf/test_sockmap), we do not need to do anything and can
+return early.
 
-Fixes: 74cc6d182d03 ("udp_tunnel: add the ability to share port tables")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Calling bpf_msg_push_data() with len 0 previously lead to a wrong ENOMEM
+error: we later called get_order(copy + len); if len was 0, copy + len
+was also often 0 and get_order() returned some undefined value (at the
+moment 52). alloc_pages() caught that and failed, but then bpf_msg_push_data()
+returned ENOMEM. This was wrong because we are most probably not out of
+memory and actually do not need any additional memory.
+
+Fixes: 6fff607e2f14b ("bpf: sk_msg program helper bpf_msg_push_data")
+Signed-off-by: Felix Maurer <fmaurer@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Yonghong Song <yhs@fb.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/df69012695c7094ccb1943ca02b4920db3537466.1644421921.git.fmaurer@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/udp_tunnel_nic.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/filter.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/ipv4/udp_tunnel_nic.c
-+++ b/net/ipv4/udp_tunnel_nic.c
-@@ -846,7 +846,7 @@ udp_tunnel_nic_unregister(struct net_dev
- 		list_for_each_entry(node, &info->shared->devices, list)
- 			if (node->dev == dev)
- 				break;
--		if (node->dev != dev)
-+		if (list_entry_is_head(node, &info->shared->devices, list))
- 			return;
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2711,6 +2711,9 @@ BPF_CALL_4(bpf_msg_push_data, struct sk_
+ 	if (unlikely(flags))
+ 		return -EINVAL;
  
- 		list_del(&node->list);
++	if (unlikely(len == 0))
++		return 0;
++
+ 	/* First find the starting scatterlist element */
+ 	i = msg->sg.start;
+ 	do {
 
 
