@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82740C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1CC1C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238836AbiB1RnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:43:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37390 "EHLO
+        id S238855AbiB1RnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:43:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238011AbiB1Rjb (ORCPT
+        with ESMTP id S235998AbiB1RjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:39:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC05A91341;
-        Mon, 28 Feb 2022 09:34:09 -0800 (PST)
+        Mon, 28 Feb 2022 12:39:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AA490CD2;
+        Mon, 28 Feb 2022 09:34:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38A20B815B8;
-        Mon, 28 Feb 2022 17:34:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 924E3C340E7;
-        Mon, 28 Feb 2022 17:34:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A1DAB815A6;
+        Mon, 28 Feb 2022 17:34:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD3C7C340E7;
+        Mon, 28 Feb 2022 17:34:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069646;
-        bh=+l3jU0nvv1HAdt1l7oH7jBuox343EAywraz1n02pq30=;
+        s=korg; t=1646069644;
+        bh=UetJ5oyp/PARJAuwEtlGVz+riQ4VPsAix6ryU2qb2oE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ntvs8eFVBoMNXhP6oGQ3QWz7uHVUVDtt6CniZRzKh2E9HSHIvnasC89O0Tg/qA/rj
-         Jk19Ycx9Er5SXx00CWmtNL+PrCGG6DSiv2WJiWvYKRl8cHXkp6IrxFcYcuDX8tpV7n
-         nC2VWhD6y8wftdrfN/OG12J2Fw8fGnT9SfhoaAyo=
+        b=m4BKFHjXwJF2MEwlom7CGw7Es27Z1W41P9SQoYkVHm0eKrlttinX21j782q1PZ3jy
+         Mw6P0D/yzOO7sV49kjIeQPvQ82eurj/Q0qdcRgzDCMrG2jIEgKeZ9zP/NuxvYcVuYs
+         JTHJ9myZGBlcVONfz3ohS9k/X85x+Y7oohXDAa30=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 41/80] udp_tunnel: Fix end of loop test in udp_tunnel_nic_unregister()
-Date:   Mon, 28 Feb 2022 18:24:22 +0100
-Message-Id: <20220228172316.511306586@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.10 40/80] surface: surface3_power: Fix battery readings on batteries without a serial number
+Date:   Mon, 28 Feb 2022 18:24:21 +0100
+Message-Id: <20220228172316.417155470@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -48,35 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit de7b2efacf4e83954aed3f029d347dfc0b7a4f49 upstream.
+commit 21d90aaee8d5c2a097ef41f1430d97661233ecc6 upstream.
 
-This test is checking if we exited the list via break or not.  However
-if it did not exit via a break then "node" does not point to a valid
-udp_tunnel_nic_shared_node struct.  It will work because of the way
-the structs are laid out it's the equivalent of
-"if (info->shared->udp_tunnel_nic_info != dev)" which will always be
-true, but it's not the right way to test.
+The battery on the 2nd hand Surface 3 which I recently bought appears to
+not have a serial number programmed in. This results in any I2C reads from
+the registers containing the serial number failing with an I2C NACK.
 
-Fixes: 74cc6d182d03 ("udp_tunnel: add the ability to share port tables")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This was causing mshw0011_bix() to fail causing the battery readings to
+not work at all.
+
+Ignore EREMOTEIO (I2C NACK) errors when retrieving the serial number and
+continue with an empty serial number to fix this.
+
+Fixes: b1f81b496b0d ("platform/x86: surface3_power: MSHW0011 rev-eng implementation")
+BugLink: https://github.com/linux-surface/linux-surface/issues/608
+Reviewed-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Reviewed-by: Maximilian Luz <luzmaximilian@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220224101848.7219-1-hdegoede@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/udp_tunnel_nic.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/platform/x86/surface3_power.c |   13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
---- a/net/ipv4/udp_tunnel_nic.c
-+++ b/net/ipv4/udp_tunnel_nic.c
-@@ -846,7 +846,7 @@ udp_tunnel_nic_unregister(struct net_dev
- 		list_for_each_entry(node, &info->shared->devices, list)
- 			if (node->dev == dev)
- 				break;
--		if (node->dev != dev)
-+		if (list_entry_is_head(node, &info->shared->devices, list))
- 			return;
+--- a/drivers/platform/x86/surface3_power.c
++++ b/drivers/platform/x86/surface3_power.c
+@@ -233,14 +233,21 @@ static int mshw0011_bix(struct mshw0011_
+ 	}
+ 	bix->last_full_charg_capacity = ret;
  
- 		list_del(&node->list);
+-	/* get serial number */
++	/*
++	 * Get serial number, on some devices (with unofficial replacement
++	 * battery?) reading any of the serial number range addresses gets
++	 * nacked in this case just leave the serial number empty.
++	 */
+ 	ret = i2c_smbus_read_i2c_block_data(client, MSHW0011_BAT0_REG_SERIAL_NO,
+ 					    sizeof(buf), buf);
+-	if (ret != sizeof(buf)) {
++	if (ret == -EREMOTEIO) {
++		/* no serial number available */
++	} else if (ret != sizeof(buf)) {
+ 		dev_err(&client->dev, "Error reading serial no: %d\n", ret);
+ 		return ret;
++	} else {
++		snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
+ 	}
+-	snprintf(bix->serial, ARRAY_SIZE(bix->serial), "%3pE%6pE", buf + 7, buf);
+ 
+ 	/* get cycle count */
+ 	ret = i2c_smbus_read_word_data(client, MSHW0011_BAT0_REG_CYCLE_CNT);
 
 
