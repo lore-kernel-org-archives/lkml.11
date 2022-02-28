@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F159CC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 189A3C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235373AbiB1SKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:10:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38518 "EHLO
+        id S236189AbiB1SLB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:11:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240862AbiB1SER (ORCPT
+        with ESMTP id S240898AbiB1SEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:04:17 -0500
+        Mon, 28 Feb 2022 13:04:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B61332ECF;
-        Mon, 28 Feb 2022 09:47:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E4C36318;
+        Mon, 28 Feb 2022 09:47:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32AC96091F;
-        Mon, 28 Feb 2022 17:47:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44EABC340E7;
-        Mon, 28 Feb 2022 17:47:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00A2160B2B;
+        Mon, 28 Feb 2022 17:47:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1534AC340E7;
+        Mon, 28 Feb 2022 17:47:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070453;
-        bh=b15eEKyFsvxhv7wzv4TWKHP+1e+cw/Eu+//k6NfN7gs=;
+        s=korg; t=1646070464;
+        bh=urQX6y50ENfkDfckR2XgPPLuEaOQejttoMPgSiW3WW0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zO8yQWQjt2JtxTP24F65NK6KXE2EQi/+KhNsTpXQr/zjFlgxepN9GGlfjw5JUHkSX
-         FvmeWXkSUUU5HREYCeLaDktRc6wSJCEjRQo2bo0g3g25xy2Tu548C2zKxULR1dO/IS
-         CvSSdwprw/zdm0CLMziHu7z4Laur8MObN/ZI4qpQ=
+        b=ZgonQewmRdY0puyaF+Ti7FIil1bBc6ezSrIkgfadryFcvqu7SxRovfPtLJ/vizAxx
+         D3Vq5c2rrpiCMBrMSsa6gUv7Y7Npmc0cEXPpHKCm88cLs6NbsVi+leQ5JN+bm6mz1u
+         3chJ2jf0YS8lzJDEYlnakTYifSWbbt2wEcJFD0wA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.16 115/164] iio: adc: men_z188_adc: Fix a resource leak in an error handling path
-Date:   Mon, 28 Feb 2022 18:24:37 +0100
-Message-Id: <20220228172410.836581504@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Savaton <guillaume@baierouge.fr>,
+        Samuel Holland <samuel@sholland.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 101/164] gpio: rockchip: Reset int_bothedge when changing trigger
+Date:   Mon, 28 Feb 2022 18:24:23 +0100
+Message-Id: <20220228172408.954586862@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -50,50 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Samuel Holland <samuel@sholland.org>
 
-commit e0a2e37f303828d030a83f33ffe14b36cb88d563 upstream.
+[ Upstream commit 7920af5c826cb4a7ada1ae26fdd317642805adc2 ]
 
-If iio_device_register() fails, a previous ioremap() is left unbalanced.
+With v2 hardware, an IRQ can be configured to trigger on both edges via
+a bit in the int_bothedge register. Currently, the driver sets this bit
+when changing the trigger type to IRQ_TYPE_EDGE_BOTH, but fails to reset
+this bit if the trigger type is later changed to something else. This
+causes spurious IRQs, and when using gpio-keys with wakeup-event-action
+set to EV_ACT_(DE)ASSERTED, those IRQs translate into spurious wakeups.
 
-Update the error handling path and add the missing iounmap() call, as
-already done in the remove function.
-
-Fixes: 74aeac4da66f ("iio: adc: Add MEN 16z188 ADC driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Link: https://lore.kernel.org/r/320fc777863880247c2aff4a9d1a54ba69abf080.1643445149.git.christophe.jaillet@wanadoo.fr
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3bcbd1a85b68 ("gpio/rockchip: support next version gpio controller")
+Reported-by: Guillaume Savaton <guillaume@baierouge.fr>
+Tested-by: Guillaume Savaton <guillaume@baierouge.fr>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/men_z188_adc.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/gpio/gpio-rockchip.c | 56 +++++++++++++++++++-----------------
+ 1 file changed, 29 insertions(+), 27 deletions(-)
 
---- a/drivers/iio/adc/men_z188_adc.c
-+++ b/drivers/iio/adc/men_z188_adc.c
-@@ -103,6 +103,7 @@ static int men_z188_probe(struct mcb_dev
- 	struct z188_adc *adc;
- 	struct iio_dev *indio_dev;
- 	struct resource *mem;
-+	int ret;
+diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
+index ce63cbd14d69a..24155c038f6d0 100644
+--- a/drivers/gpio/gpio-rockchip.c
++++ b/drivers/gpio/gpio-rockchip.c
+@@ -410,10 +410,8 @@ static int rockchip_irq_set_type(struct irq_data *d, unsigned int type)
+ 	level = rockchip_gpio_readl(bank, bank->gpio_regs->int_type);
+ 	polarity = rockchip_gpio_readl(bank, bank->gpio_regs->int_polarity);
  
- 	indio_dev = devm_iio_device_alloc(&dev->dev, sizeof(struct z188_adc));
- 	if (!indio_dev)
-@@ -128,8 +129,14 @@ static int men_z188_probe(struct mcb_dev
- 	adc->mem = mem;
- 	mcb_set_drvdata(dev, indio_dev);
+-	switch (type) {
+-	case IRQ_TYPE_EDGE_BOTH:
++	if (type == IRQ_TYPE_EDGE_BOTH) {
+ 		if (bank->gpio_type == GPIO_TYPE_V2) {
+-			bank->toggle_edge_mode &= ~mask;
+ 			rockchip_gpio_writel_bit(bank, d->hwirq, 1,
+ 						 bank->gpio_regs->int_bothedge);
+ 			goto out;
+@@ -431,30 +429,34 @@ static int rockchip_irq_set_type(struct irq_data *d, unsigned int type)
+ 			else
+ 				polarity |= mask;
+ 		}
+-		break;
+-	case IRQ_TYPE_EDGE_RISING:
+-		bank->toggle_edge_mode &= ~mask;
+-		level |= mask;
+-		polarity |= mask;
+-		break;
+-	case IRQ_TYPE_EDGE_FALLING:
+-		bank->toggle_edge_mode &= ~mask;
+-		level |= mask;
+-		polarity &= ~mask;
+-		break;
+-	case IRQ_TYPE_LEVEL_HIGH:
+-		bank->toggle_edge_mode &= ~mask;
+-		level &= ~mask;
+-		polarity |= mask;
+-		break;
+-	case IRQ_TYPE_LEVEL_LOW:
+-		bank->toggle_edge_mode &= ~mask;
+-		level &= ~mask;
+-		polarity &= ~mask;
+-		break;
+-	default:
+-		ret = -EINVAL;
+-		goto out;
++	} else {
++		if (bank->gpio_type == GPIO_TYPE_V2) {
++			rockchip_gpio_writel_bit(bank, d->hwirq, 0,
++						 bank->gpio_regs->int_bothedge);
++		} else {
++			bank->toggle_edge_mode &= ~mask;
++		}
++		switch (type) {
++		case IRQ_TYPE_EDGE_RISING:
++			level |= mask;
++			polarity |= mask;
++			break;
++		case IRQ_TYPE_EDGE_FALLING:
++			level |= mask;
++			polarity &= ~mask;
++			break;
++		case IRQ_TYPE_LEVEL_HIGH:
++			level &= ~mask;
++			polarity |= mask;
++			break;
++		case IRQ_TYPE_LEVEL_LOW:
++			level &= ~mask;
++			polarity &= ~mask;
++			break;
++		default:
++			ret = -EINVAL;
++			goto out;
++		}
+ 	}
  
--	return iio_device_register(indio_dev);
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto err_unmap;
- 
-+	return 0;
-+
-+err_unmap:
-+	iounmap(adc->base);
- err:
- 	mcb_release_mem(mem);
- 	return -ENXIO;
+ 	rockchip_gpio_writel(bank, level, bank->gpio_regs->int_type);
+-- 
+2.34.1
+
 
 
