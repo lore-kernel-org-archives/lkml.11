@@ -2,192 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 224A0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E322BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbiB1Cd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:33:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54510 "EHLO
+        id S232627AbiB1Cd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 21:33:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231653AbiB1Cd0 (ORCPT
+        with ESMTP id S232343AbiB1Cdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 21:33:26 -0500
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCA538DB3;
-        Sun, 27 Feb 2022 18:32:46 -0800 (PST)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4K6PTN3yk6z9sMq;
-        Mon, 28 Feb 2022 10:29:12 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by canpemm500010.china.huawei.com
- (7.192.105.118) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 28 Feb
- 2022 10:32:43 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <tytso@mit.edu>, <adilger.kernel@dilger.ca>,
-        <linux-ext4@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <jack@suse.cz>,
-        <lczerner@redhat.com>, Ye Bin <yebin10@huawei.com>
-Subject: [PATCH v3] ext4:fix file system corrupted when rmdir non empty directory with IO error
-Date:   Mon, 28 Feb 2022 10:48:15 +0800
-Message-ID: <20220228024815.3952506-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Sun, 27 Feb 2022 21:33:52 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B88E3AA7C;
+        Sun, 27 Feb 2022 18:33:15 -0800 (PST)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21RN94dP021511;
+        Mon, 28 Feb 2022 02:33:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
+ from : message-id : references : date : in-reply-to : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=R8ySC4LZ1/0UkAGWzugbE9gUlmHvHbFCnSrUD6rG2v0=;
+ b=C28NdlSD98/lEJFM6MkCSO/7wAWk/feAYyMCfjvM0V8oLbug3Kbf7qZxZXR0hZ1yjncL
+ eDH1kBpgrGOp77Wwz8ZIN1nM7L99xYnQNl/vAyLyCPR9pAexbOqwBEoUj1DXQPyOF/au
+ Oka3Y4JE2Rv7wcEefOKNb4nlqyBdMnSWFtsw/FdPDDDL+V3TL+9bUEd5q9BGblMcEYvM
+ Eko45VabD7wfmoysUhUnQJFQIdZtgUiDMkDLqm4z36+qhnxnVrUe7bdTlqc7mR9R5A/q
+ Aqn8OUOx0Ap5iCwx6AD0KqTXDdsM+6fvFNfR9CubU5Vzrw2+JylGwMEj7ZJzde4VpFmZ tw== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3efat1txew-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Feb 2022 02:33:07 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21S2VFeU087121;
+        Mon, 28 Feb 2022 02:33:05 GMT
+Received: from nam02-bn1-obe.outbound.protection.outlook.com (mail-bn1nam07lp2047.outbound.protection.outlook.com [104.47.51.47])
+        by userp3020.oracle.com with ESMTP id 3efdnj9njh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Feb 2022 02:33:05 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YMwwnw+Qpr3547nkZ4FO6vOp5xFa+fiiynRCCU1hp4PURntpkUezI1WUU6F3HLINziqwP6QPPY474OXwip0vu57jWs0WzSmFi0StcBNfwv13I2f2CY48gnBeVi7e6QRIVAImedm2A5v0a5aVIHgPwu1ctgID4AR9GbXduFex17j1cSzFcX8cAo81tehQX7cOtFP9XqrFBFZbRHiJIaseXwaiOEMstWD2cSpm1EWyX9YG8kmnDiaYuyBTt0rNLCec/gtfVlaydqHcShxxOFrj/HaU1exALBTmhixevK/UvE2F/LZ17I7xE8sEw68A8SnmuAR0TxWXPrUA+KyPZ/41Ig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=R8ySC4LZ1/0UkAGWzugbE9gUlmHvHbFCnSrUD6rG2v0=;
+ b=m902n5YsaSuS5+mO6j1uSvJkncjgYvBH1w32qisanUG1541lbZiqTbDLn45VoOxsENosdOLcV7qZhWO8uMLOFPJ/6so848tRENUFHiYRMm459hRdgayURgHz1CtrJb/0MgC3TM20E1ANFFrL2VEDvMOIGJkcfJyU7PPI2iZuV5YG4p6n4r13c2zpPu6gh+2fC81rPqMPtPCeu0AcBbBmaFhekx/z8l3JFAljVG49/pGtEgJNnGxg+6XFMt/szgI/AGzR2iGvmHxUuQnHVvfzEz3fR7pxuuIemJ+KNZZr2r3T4VU9sC1COeH/RnKdNICSdfXht4C732t2AD07UK7vPQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R8ySC4LZ1/0UkAGWzugbE9gUlmHvHbFCnSrUD6rG2v0=;
+ b=h6lELaPcwj4PXheI9MHX5Jo9M313Eb2HaLVPJAWS+jpKZHZ1VWEFipZeNgqQiEtbi0BEYR4cV1EH5awXK7NVsikeQhrzIQzIqVlV/Us3FTfJCWVX5yWeX0/VrawtT8gNH3UhME/Y8MrF6wGeqjtG3s2qipkQgqTN6OHRL7CTw+4=
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
+ by DM5PR10MB2012.namprd10.prod.outlook.com (2603:10b6:3:113::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.24; Mon, 28 Feb
+ 2022 02:33:02 +0000
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::180:b394:7d46:e1c0]) by PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::180:b394:7d46:e1c0%6]) with mapi id 15.20.5017.026; Mon, 28 Feb 2022
+ 02:33:02 +0000
+To:     Khazhismel Kumykov <khazhy@google.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-doc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bvanassche@acm.org,
+        Hannes Reinecke <hare@suse.com>
+Subject: Re: [PATCH v2] scsi: docs: update notes about scsi_times_out
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <yq14k4j90vd.fsf@ca-mkp.ca.oracle.com>
+References: <20220219001601.3534043-1-khazhy@google.com>
+Date:   Sun, 27 Feb 2022 21:33:00 -0500
+In-Reply-To: <20220219001601.3534043-1-khazhy@google.com> (Khazhismel
+        Kumykov's message of "Fri, 18 Feb 2022 16:16:01 -0800")
+Content-Type: text/plain
+X-ClientProxiedBy: SN4PR0701CA0017.namprd07.prod.outlook.com
+ (2603:10b6:803:28::27) To PH0PR10MB4759.namprd10.prod.outlook.com
+ (2603:10b6:510:3d::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4dc1ce32-0a66-4c19-0f22-08d9fa62a47e
+X-MS-TrafficTypeDiagnostic: DM5PR10MB2012:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR10MB20125F36D0DE8A7AA1BCCA698E019@DM5PR10MB2012.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: w9rOYzEcxwFszk9RuMu8P5H97DSfSERk9rWAbmuQs6YCTn2Bj1aTaSALoA+wUjXSdOQN8esxoFREp9wlwoEa+vpzqUviyrncr+np8TwMsQfJKZre6lVLL/qpSlDDegz0fhEpBlaCZ2vQKFD6be/o9E1xDXyGQt5DZoqrHGyGqpOvnpyyisOciYIZaDxYBI8FgiwgJYdiDTzrQgj2aSK6VCwdSiwH5Vph1eb2wgjnm8Xr+8TA+ivKKa4saYJArglShCemwdCLehE7zT+VLI9ZuffW1VDEGd0t5WX712+z1mTmEaOvl2aiH7RkFBrUuDSXx5Gfdi2ceTSOb+/Frgi1mIDIoGHgvYPOmVZn/ovXalSrDanhm972kS+kR/MaL7s4jeuA1DUNA9yB6cGzuD1AvRfIV+07YF4B26UsSTF1O6grGpzAIGqBd8+gib6M7SP/28JIqUvMZRHuLbGisTHdcTg9UXmL6R18xUlw6Tbu0crcgwGm6QSs3cnlN+MKgxDV3Bx4gA+JUq2KsqMZArGWL6VRWHkokfl3l+zc7XJlUpyVaCNFbNRHOxnGgzdvlzER9TB+jrkw3cI4uPDkSMQSsbg89XFsAv3AiQKV+QtKQi6RZzxw1/Iavnztk14u37TW3YCnwjy+iJP249orZLWHSpmappj/U/WvKsAM+PSf8MJXYfPiALbX5optgnlz2yMqA2gbUD2TDWiGRmwynG/3uQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(6512007)(316002)(66946007)(558084003)(66556008)(66476007)(86362001)(8676002)(4326008)(6486002)(6506007)(38350700002)(5660300002)(6916009)(52116002)(54906003)(36916002)(508600001)(26005)(186003)(2906002)(83380400001)(8936002)(38100700002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?HnRbVt6wxzqJepryZbJOVZSCWcnsTyp9/fSANPbKy+Z7kexjovgrGaiaTZRC?=
+ =?us-ascii?Q?n1eBpD2le/bxMeopL+OYqvWRbiUD4mbySmDAxn87i46p1X4olnGLfY3AOUHJ?=
+ =?us-ascii?Q?W2oX1u1h+D4HBalh/3xfg8N9LEeS/PNTEUBH76uus+LFLZmQ+2C4Mxe7pSby?=
+ =?us-ascii?Q?7q/2oCIwk/mzng4vfNtkMofWO7BO+ohzsKDYkyDRq0PK/qY/4AfETaErE8Jn?=
+ =?us-ascii?Q?QQUiRcLcuZZJ3YiRcVD9NudtviBtFhlEDxABpFcILByYfhBQ/rWYK9jkrbMZ?=
+ =?us-ascii?Q?Fbf0/tWwd3gb6ik3xSJ9VFeE25JZ4v8tM4MDxArnEC54ujPPf+NfQbWZuYn1?=
+ =?us-ascii?Q?nsFjAG7qa646m7tva1xbyA/yPz4fB+HRzscJg9vGHTiTF1QtxxbpdSxIxRO8?=
+ =?us-ascii?Q?2H3d9/8OTGD960dcsg7M0KrQrvtRnLxTCrtshlvcdqLq6tGTxn2SCRPZQogw?=
+ =?us-ascii?Q?pjztxHJi826+6OtpJC2WpuVfDYkngeyUjCV+uQ7QB6azn008u1xjuPZGwiqX?=
+ =?us-ascii?Q?LkYjGuSOdEd8OHA0NaaXuIzg+GEG+6LhPW87QR/KInKB0YRmR0HSkrVPrY98?=
+ =?us-ascii?Q?TbrGAE95wCYukGIRVZ2PQJVl3GS9B6P8TSq464g+2dXklCquCO7QSrVl+hAS?=
+ =?us-ascii?Q?FWC+Y6bimkhptnPHzwAq+Jdo1C30V/SJhlZJLNbN4vJlLHPTjK4YTDwKxX8b?=
+ =?us-ascii?Q?aiwqiMxLqaOAKXRmlZ70D7oIcDn2YYO6mztMqqFjh8Fha0IOUF1AGZljR1Gv?=
+ =?us-ascii?Q?IdJBmJxALBMP0NSRwn1apTndjUN1EQYkPoPswGQ7wLGayA2ExuJ+wmuDIElW?=
+ =?us-ascii?Q?dAnjrtigZG4QVgtKLKyCpMcjrSBeLXb/gmGCd8Rnh63oM8WKLSTqhL8KPcU4?=
+ =?us-ascii?Q?gdfeizwnNjpLC84hkRRA7D2MmbOrBSxZZeXVme2If5StKEVOvNlU/7rglUbO?=
+ =?us-ascii?Q?kx+X4FBGIezDWXrICqpGC/ptY94Nmp7TXPXPVbJn0KFibvRFyR96Snr0k7x8?=
+ =?us-ascii?Q?g2vv+Fqaq8VBiRqCKnQgeiXEwpZG3A7wwKNyPUhgQGyp6UWvRM1cetK7hzk4?=
+ =?us-ascii?Q?37YbsLE2p1xBRy6/92cQJiRYbPy4dWT2qa9YLcpWYDKT2gmceOZL1UmbG1n9?=
+ =?us-ascii?Q?E+gYfrCg5LsNJl/PQUCdjRAVv8S4jYBfoyorHFm81y5a0uaav00MKQhiOyE5?=
+ =?us-ascii?Q?Eqkn07uk1dyeODdVJV4nRt5OsMP+n9EnVdguKV52yj1++1I9dPTVjRw1xFs2?=
+ =?us-ascii?Q?aRQC2h8JWZMR8e5xQey+QJdI4J3EckzEawGu0Gx+yxPVxOLPbmbqMZBu7jA8?=
+ =?us-ascii?Q?ik/v+Qtsj1Bu43mzwMXWXJ/xgXTy8up/u/5ULZ6NTHJs2OYKkgIhaMUlSTzJ?=
+ =?us-ascii?Q?FGBb+9q6pgmzh6NhLvQPdY0CrJHhmaO3px5bBXBo0MsRwFVoxO7wMlR6wEUG?=
+ =?us-ascii?Q?7JPgZiQi9i6qMVUZoA+aghkYHigraJKsAwJfyEQkSWELpA9EonftaU8SLluF?=
+ =?us-ascii?Q?tcMYuzYHSdEcTYSpgMfLI57B57DIRfdahq5fnzZvVl6Jlr2OTZyiOlJVZZNe?=
+ =?us-ascii?Q?iB5lr1ao2YV8DyJFpjeh2YM6OLvObr4JTKuC7FZkAQatCYPjZiHRdjR19AdX?=
+ =?us-ascii?Q?dSuayzWNjPpJRoHXrQEPcbOiPy+SAcx0UgWQpCa/lQvkLh3p/t4l3O0pcqsr?=
+ =?us-ascii?Q?Hvqbyw=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4dc1ce32-0a66-4c19-0f22-08d9fa62a47e
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2022 02:33:02.4349
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: K0Tz5t90rAWnPPB5X6cUyRs4cnSTnA97N1tVyJiR5qL5X/J1T6O9UDSrh6n8S+6vzkTb/klsxTQjG0+5DTBoRQfN3PBr4JMSTidGr4RCq3g=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB2012
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10271 signatures=684655
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=882 bulkscore=0
+ adultscore=0 phishscore=0 spamscore=0 suspectscore=0 malwarescore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202280013
+X-Proofpoint-GUID: 2ApnO1pC299tOtHpDQaWTBSnl3WuyifA
+X-Proofpoint-ORIG-GUID: 2ApnO1pC299tOtHpDQaWTBSnl3WuyifA
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We inject IO error when rmdir non empty direcory, then got issue as follows:
-step1: mkfs.ext4 -F /dev/sda
-step2: mount /dev/sda  test
-step3: cd test
-step4: mkdir -p 1/2
-step5: rmdir 1
-	[  110.920551] ext4_empty_dir: inject fault
-	[  110.921926] EXT4-fs warning (device sda): ext4_rmdir:3113: inode #12:
-	comm rmdir: empty directory '1' has too many links (3)
-step6: cd ..
-step7: umount test
-step8: fsck.ext4 -f /dev/sda
-	e2fsck 1.42.9 (28-Dec-2013)
-	Pass 1: Checking inodes, blocks, and sizes
-	Pass 2: Checking directory structure
-	Entry '..' in .../??? (13) has deleted/unused inode 12.  Clear<y>? yes
-	Pass 3: Checking directory connectivity
-	Unconnected directory inode 13 (...)
-	Connect to /lost+found<y>? yes
-	Pass 4: Checking reference counts
-	Inode 13 ref count is 3, should be 2.  Fix<y>? yes
-	Pass 5: Checking group summary information
 
-	/dev/sda: ***** FILE SYSTEM WAS MODIFIED *****
-	/dev/sda: 12/131072 files (0.0% non-contiguous), 26157/524288 blocks
+Khazhismel,
 
-ext4_rmdir
-	if (!ext4_empty_dir(inode))
-		goto end_rmdir;
-ext4_empty_dir
-	bh = ext4_read_dirblock(inode, 0, DIRENT_HTREE);
-	if (IS_ERR(bh))
-		return true;
-Now if read directory block failed, 'ext4_empty_dir' will return true, assume
-directory is empty. Obviously, it will lead to above issue.
-To solve this issue, if read directory block failed 'ext4_empty_dir' just
-return false. To avoid making things worse when file system is already
-corrupted, 'ext4_empty_dir' also return false.
+> Most importantly: eh_timed_out() is not limited by scmd->allowed,
+> and can reset timer forever.
 
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- fs/ext4/inline.c |  9 ++++-----
- fs/ext4/namei.c  | 10 +++++-----
- 2 files changed, 9 insertions(+), 10 deletions(-)
+Applied to 5.18/scsi-staging, thanks!
 
-diff --git a/fs/ext4/inline.c b/fs/ext4/inline.c
-index e42941803605..9c076262770d 100644
---- a/fs/ext4/inline.c
-+++ b/fs/ext4/inline.c
-@@ -1783,19 +1783,20 @@ bool empty_inline_dir(struct inode *dir, int *has_inline_data)
- 	void *inline_pos;
- 	unsigned int offset;
- 	struct ext4_dir_entry_2 *de;
--	bool ret = true;
-+	bool ret = false;
- 
- 	err = ext4_get_inode_loc(dir, &iloc);
- 	if (err) {
- 		EXT4_ERROR_INODE_ERR(dir, -err,
- 				     "error %d getting inode %lu block",
- 				     err, dir->i_ino);
--		return true;
-+		return false;
- 	}
- 
- 	down_read(&EXT4_I(dir)->xattr_sem);
- 	if (!ext4_has_inline_data(dir)) {
- 		*has_inline_data = 0;
-+		ret = true;
- 		goto out;
- 	}
- 
-@@ -1804,7 +1805,6 @@ bool empty_inline_dir(struct inode *dir, int *has_inline_data)
- 		ext4_warning(dir->i_sb,
- 			     "bad inline directory (dir #%lu) - no `..'",
- 			     dir->i_ino);
--		ret = true;
- 		goto out;
- 	}
- 
-@@ -1823,16 +1823,15 @@ bool empty_inline_dir(struct inode *dir, int *has_inline_data)
- 				     dir->i_ino, le32_to_cpu(de->inode),
- 				     le16_to_cpu(de->rec_len), de->name_len,
- 				     inline_size);
--			ret = true;
- 			goto out;
- 		}
- 		if (le32_to_cpu(de->inode)) {
--			ret = false;
- 			goto out;
- 		}
- 		offset += ext4_rec_len_from_disk(de->rec_len, inline_size);
- 	}
- 
-+	ret = true;
- out:
- 	up_read(&EXT4_I(dir)->xattr_sem);
- 	brelse(iloc.bh);
-diff --git a/fs/ext4/namei.c b/fs/ext4/namei.c
-index 8cf0a924a49b..39e223f7bf64 100644
---- a/fs/ext4/namei.c
-+++ b/fs/ext4/namei.c
-@@ -2997,14 +2997,14 @@ bool ext4_empty_dir(struct inode *inode)
- 	if (inode->i_size < ext4_dir_rec_len(1, NULL) +
- 					ext4_dir_rec_len(2, NULL)) {
- 		EXT4_ERROR_INODE(inode, "invalid size");
--		return true;
-+		return false;
- 	}
- 	/* The first directory block must not be a hole,
- 	 * so treat it as DIRENT_HTREE
- 	 */
- 	bh = ext4_read_dirblock(inode, 0, DIRENT_HTREE);
- 	if (IS_ERR(bh))
--		return true;
-+		return false;
- 
- 	de = (struct ext4_dir_entry_2 *) bh->b_data;
- 	if (ext4_check_dir_entry(inode, NULL, de, bh, bh->b_data, bh->b_size,
-@@ -3012,7 +3012,7 @@ bool ext4_empty_dir(struct inode *inode)
- 	    le32_to_cpu(de->inode) != inode->i_ino || strcmp(".", de->name)) {
- 		ext4_warning_inode(inode, "directory missing '.'");
- 		brelse(bh);
--		return true;
-+		return false;
- 	}
- 	offset = ext4_rec_len_from_disk(de->rec_len, sb->s_blocksize);
- 	de = ext4_next_entry(de, sb->s_blocksize);
-@@ -3021,7 +3021,7 @@ bool ext4_empty_dir(struct inode *inode)
- 	    le32_to_cpu(de->inode) == 0 || strcmp("..", de->name)) {
- 		ext4_warning_inode(inode, "directory missing '..'");
- 		brelse(bh);
--		return true;
-+		return false;
- 	}
- 	offset += ext4_rec_len_from_disk(de->rec_len, sb->s_blocksize);
- 	while (offset < inode->i_size) {
-@@ -3035,7 +3035,7 @@ bool ext4_empty_dir(struct inode *inode)
- 				continue;
- 			}
- 			if (IS_ERR(bh))
--				return true;
-+				return false;
- 		}
- 		de = (struct ext4_dir_entry_2 *) (bh->b_data +
- 					(offset & (sb->s_blocksize - 1)));
 -- 
-2.31.1
-
+Martin K. Petersen	Oracle Linux Engineering
