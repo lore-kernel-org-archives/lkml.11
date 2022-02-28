@@ -2,148 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE31CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8728C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:35:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240787AbiB1Sf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:35:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39020 "EHLO
+        id S240008AbiB1SgL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:36:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240863AbiB1SfN (ORCPT
+        with ESMTP id S240726AbiB1Sfo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:35:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6A0C57673
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:20:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646072417;
+        Mon, 28 Feb 2022 13:35:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D205AEDB;
+        Mon, 28 Feb 2022 10:21:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2351B81627;
+        Mon, 28 Feb 2022 18:21:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E838C340F1;
+        Mon, 28 Feb 2022 18:21:17 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="XYXgcGvo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1646072474;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=orhGTYdV3Bv/raBfU/TMPJNTKkeJWFEFU6gUy29N18Q=;
-        b=TMUWNc6WzqKle+LeS7BVmMYl72moS976znNxUIYSy8JwrwlG6AwUNzmZjiEosYKpJ5lm7l
-        p/XhebX+RoDBkJj0N7UbttUzPfP1Ejql9TFRhNgEXXFgajewmRLwrYi2G49KJUFJXV9BsP
-        nsJeyzVNa/LKyhdseoNto04aIQVwUqs=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-674-sw0r6USGPkS6UxguNNtX4g-1; Mon, 28 Feb 2022 13:20:15 -0500
-X-MC-Unique: sw0r6USGPkS6UxguNNtX4g-1
-Received: by mail-wr1-f71.google.com with SMTP id m3-20020adfa3c3000000b001ea95eb48abso2408146wrb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:20:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=orhGTYdV3Bv/raBfU/TMPJNTKkeJWFEFU6gUy29N18Q=;
-        b=GiZzMFGOp536ILd5gI3nMMR43jrnkMr1GG97/5Ai9iBVm1sRIvfriJtrgJUrLHp3vi
-         NAqWFbB5/Rf+yL1dudxG8gvVxtJVFhM676T+vJSvyK3xiLr/CHXaJ2vAeBw55it+oxR5
-         YR+Feg5RqeW2B0bMBIZNCMIzLUu6QdeDW+KTNM75SMbDhanDIWsD/lPN5RYjPuUgZgUq
-         Dq/cOTPo70ylAd5Dfpmqk/tY46wXOJc/FheeWaFIcYvLjm1sIPnLcHnd0jR/X938/XlE
-         LJ/s2zYi3E7uh/v6hkQ2tEMakqhiJha3xaodlTKMZPQR9xIrzv6nE7m9+Le86GrwtGz7
-         lhJA==
-X-Gm-Message-State: AOAM531e3pziG1z8ysnbESKJeewFne5y0UkY0cIOnib27thrzoOhgNng
-        uFqUkyaVeqLKHL+6tt6OBTq9mbx6t7icnkMznEnQRkZgSyqcYTRv8/qbTjPDHz4onM9C4QybEiw
-        T/WrGre+WUBgiKHR0IFGLrilx
-X-Received: by 2002:a5d:6ace:0:b0:1ed:89dc:a456 with SMTP id u14-20020a5d6ace000000b001ed89dca456mr16584017wrw.114.1646072414692;
-        Mon, 28 Feb 2022 10:20:14 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwX6LCwjM3rRS9iR38UBNnioqX1YITtz59t3yxfMc4WXmec4vPtTM6aVb5tg0CqwdJ+750kqw==
-X-Received: by 2002:a5d:6ace:0:b0:1ed:89dc:a456 with SMTP id u14-20020a5d6ace000000b001ed89dca456mr16584005wrw.114.1646072414441;
-        Mon, 28 Feb 2022 10:20:14 -0800 (PST)
-Received: from ?IPv6:2a0c:5a80:1b14:b500:abb:f9d1:7bc2:3db8? ([2a0c:5a80:1b14:b500:abb:f9d1:7bc2:3db8])
-        by smtp.gmail.com with ESMTPSA id d6-20020a5d4f86000000b001ea8119512bsm11177560wru.55.2022.02.28.10.20.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 10:20:14 -0800 (PST)
-Message-ID: <9194bc573ec0ccd2d3842ffd4a76894d683a197d.camel@redhat.com>
-Subject: Re: [RESEND PATCH 2/2] tracing: Avoid isolated CPUs when queueing
- fsnotify irqwork
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     kernel test robot <lkp@intel.com>, mingo@redhat.com,
-        peterz@infradead.org, frederic@kernel.org, rostedt@goodmis.org
-Cc:     kbuild-all@lists.01.org, tglx@linutronix.de, mtosatti@redhat.com,
-        bristot@redhat.com, linux-kernel@vger.kernel.org
-Date:   Mon, 28 Feb 2022 19:20:13 +0100
-In-Reply-To: <202203010138.m94KpMH3-lkp@intel.com>
-References: <20220228141550.260119-2-nsaenzju@redhat.com>
-         <202203010138.m94KpMH3-lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        bh=E0iIkz5uHWJtsoXeAkWT2e1MnU1M3yDSoa1B9WDhNOA=;
+        b=XYXgcGvoVCXgQUAB7Vz9CsdApL3I2knmdXAMh8LuZ+7pJyuLFk5G4oSKbOMtyCqqEEPETY
+        24DzY4e3f4DEvkiOLqe3X8YKM0UlY6ll5ijBcius1BlP/ADCRf3Yxg6GsxK7gMIRGW1NEW
+        pSwPt4Lylt6hdFPd21WqhUbv3q9d5MM=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f8da637a (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 28 Feb 2022 18:21:13 +0000 (UTC)
+Received: by mail-yb1-f169.google.com with SMTP id b35so22239895ybi.13;
+        Mon, 28 Feb 2022 10:21:12 -0800 (PST)
+X-Gm-Message-State: AOAM5307QW332jo5sc29OuNwiuFIPHw6RoUVxAa3djMFQN7NXk+fmaxq
+        2ZuCWNsYDUctA1tnFiDrCi8U1oe6ffpjVR4VMfs=
+X-Google-Smtp-Source: ABdhPJwlOr5HJkXmhp0mYINN9ApBCTxUkGi+q4lnl0CZTJ86zUWbK9eJ0VzSl/XHmScThD3AURRzQiHnSPOu9R2Jd2Y=
+X-Received: by 2002:a25:e204:0:b0:610:cb53:b753 with SMTP id
+ h4-20020a25e204000000b00610cb53b753mr19163518ybe.267.1646072472285; Mon, 28
+ Feb 2022 10:21:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220226220639.1173594-1-Jason@zx2c4.com> <20220226220639.1173594-3-Jason@zx2c4.com>
+ <0c73d29e-e558-efb9-d0d7-c612b2bb7e90@amazon.com> <YhtyBHUyFysmZ9bC@zx2c4.com>
+ <CAHmME9pocD1CoZbnF7p4k0ws7-R0Vc9H4i5TRJ_MCX-d3AZhFw@mail.gmail.com> <CAJZ5v0h_Z9XS9ZgSF4CWrZ4RU7=Oa02MY3_g0Y_rcgRNzsizfQ@mail.gmail.com>
+In-Reply-To: <CAJZ5v0h_Z9XS9ZgSF4CWrZ4RU7=Oa02MY3_g0Y_rcgRNzsizfQ@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 28 Feb 2022 19:21:00 +0100
+X-Gmail-Original-Message-ID: <CAHmME9qHnvwrxEue4Pdm_E1qZQGXFuR9orJSKCWj8fH5TSh6fA@mail.gmail.com>
+Message-ID: <CAHmME9qHnvwrxEue4Pdm_E1qZQGXFuR9orJSKCWj8fH5TSh6fA@mail.gmail.com>
+Subject: Re: [PATCH v5 2/3] ACPI: allow longer device IDs
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Alexander Graf <graf@amazon.com>, Len Brown <lenb@kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-01 at 02:07 +0800, kernel test robot wrote:
-> Hi Nicolas,
-> 
-> I love your patch! Yet something to improve:
-> 
-> [auto build test ERROR on tip/sched/core]
-> [also build test ERROR on next-20220225]
-> [cannot apply to rostedt-trace/for-next linus/master v5.17-rc6]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Nicolas-Saenz-Julienne/sched-isolation-Use-raw_smp_processor_id-in-housekeeping_any_cpu/20220228-221742
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 6255b48aebfd4dff375e97fc8b075a235848db0b
-> config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220301/202203010138.m94KpMH3-lkp@intel.com/config)
-> compiler: mips-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/e3ec0b4adfed05db0d559d2d5234d6d8f1034985
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Nicolas-Saenz-Julienne/sched-isolation-Use-raw_smp_processor_id-in-housekeeping_any_cpu/20220228-221742
->         git checkout e3ec0b4adfed05db0d559d2d5234d6d8f1034985
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash kernel/
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
->    kernel/trace/trace.c: In function 'latency_fsnotify':
-> > > kernel/trace/trace.c:1728:71: error: 'HK_FLAG_MISC' undeclared (first use in this function); did you mean 'HK_TYPE_MISC'?
->     1728 |         irq_work_queue_on(&tr->fsnotify_irqwork, housekeeping_any_cpu(HK_FLAG_MISC));
->          |                                                                       ^~~~~~~~~~~~
->          |                                                                       HK_TYPE_MISC
->    kernel/trace/trace.c:1728:71: note: each undeclared identifier is reported only once for each function it appears in
->    kernel/trace/trace.c: In function 'trace_check_vprintf':
->    kernel/trace/trace.c:3827:17: warning: function 'trace_check_vprintf' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
->     3827 |                 trace_seq_vprintf(&iter->seq, iter->fmt, ap);
->          |                 ^~~~~~~~~~~~~~~~~
->    kernel/trace/trace.c:3894:17: warning: function 'trace_check_vprintf' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
->     3894 |                 trace_seq_vprintf(&iter->seq, p, ap);
->          |                 ^~~~~~~~~~~~~~~~~
-> 
-> 
-> vim +1728 kernel/trace/trace.c
-> 
->   1718	
->   1719	void latency_fsnotify(struct trace_array *tr)
->   1720	{
->   1721		if (!fsnotify_wq)
->   1722			return;
->   1723		/*
->   1724		 * We cannot call queue_work(&tr->fsnotify_work) from here because it's
->   1725		 * possible that we are called from __schedule() or do_idle(), which
->   1726		 * could cause a deadlock.
->   1727		 */
-> > 1728		irq_work_queue_on(&tr->fsnotify_irqwork, housekeeping_any_cpu(HK_FLAG_MISC));
->   1729	}
->   1730	
+Hi Rafael,
 
-It seems my patch conflicts with:
+On Mon, Feb 28, 2022 at 7:19 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> Increasing the ACPI_ID_LEN value is fine with me, but the patch
+> changelog is not entirely accurate.
+>
+> The ACPI subsystem uses struct acpi_device_id mostly (if not only) for
+> device ID matching and it is generally used for creating lists of ACPI
+> device IDs in drivers (and allow/deny lists etc).  The device IDs
+> extracted from the ACPI tables can be longer than ACPI_ID_LEN.
+>
+> This means that drivers cannot match device IDs longer than 8
+> characters (excluding the terminating 0), because the IDs in the lists
+> used by them for ID matching cannot be longer than this and not
+> because the ACPI subsystem is limited by that value.
 
-04d4e665a609 ("sched/isolation: Use single feature type while referring to housekeeping cpumask")
+Thanks for your notes there. I think Ard more or less pointed out
+something similar too. I'll amend the commit message, send a v2, and
+hopefully this change is okay with Mika/Andy/Hans.
 
-I'll rebase and send a v2.
-
--- 
-Nicolás Sáenz
-
+Regards,
+Jason
