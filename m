@@ -2,87 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C43E5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB56C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235165AbiB1NTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:19:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47784 "EHLO
+        id S235140AbiB1NTW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:19:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232109AbiB1NTB (ORCPT
+        with ESMTP id S232573AbiB1NTV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 08:19:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0CBB1EAD7;
-        Mon, 28 Feb 2022 05:18:21 -0800 (PST)
+        Mon, 28 Feb 2022 08:19:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7619321824;
+        Mon, 28 Feb 2022 05:18:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DB45612FE;
-        Mon, 28 Feb 2022 13:18:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72281C340E7;
-        Mon, 28 Feb 2022 13:18:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D962F612FE;
+        Mon, 28 Feb 2022 13:18:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4915C340EE;
+        Mon, 28 Feb 2022 13:18:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646054300;
-        bh=yxGEHfot5dt7JWoIs1jlTjlg4Y11zVRZt6EPyBbEl+E=;
+        s=k20201202; t=1646054319;
+        bh=XfIHH2mAQKwp0r1bdsldo5rQLUX2ZAbLdDoUJspHYv8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RhsXvtENJPZEqGrFPUieFhkthDNujpkEbe5vgtl4aCdXK+Fcd1D0+LCao8hE7kCSA
-         i/UQJ2W12lgvtZzuyoysssoTd7mhyYT7TCEAgOV/FgEbNcDudmuCIBJtCGcuFI3T4K
-         xkv17TuhzrjxrI3gZJ6S4v9u3gsZzkWbXONRLQcaNieLS5rYiJvQ9Oc+B9Z1YLfLNR
-         fB7U2YR6wU0iIDnmSxfZj8g+JOP5vBVtEcJA0ik2RNdoL786y2kXJFo+ROZyHC43x8
-         +709m2jae+idTJ2Xsc1ysapz75NXrMNKQzJlbN6wF9bGMkoXP3x8x9z0QG0whTG7Ko
-         UYYJd4pMcr8Hg==
-Date:   Mon, 28 Feb 2022 13:18:16 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Rob Herring <robh+dt@kernel.org>, Pratyush Yadav <p.yadav@ti.com>,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] spi: Add new mode to generate additional clock
- cycles
-Message-ID: <YhzLmNcJH2KsXsMC@sirena.org.uk>
-References: <cover.1645950971.git.christophe.leroy@csgroup.eu>
- <2bbe791f1c2b3c809c8863020184cdcfdadd1510.1645950971.git.christophe.leroy@csgroup.eu>
+        b=Vdfn/ApER9g7nrPN7jyeWPZTOfE8Dy0Mb4YhSRqtoJS7wG1p0xzAWiPChnjTNyJCv
+         ZLPmy74tCxa/HkYBs6i8EVsanZ6n+7ZrcYXKSZiyoA/RDc/GnBJFW2FyBlg5lNv+/U
+         QPvUXubpvWmLWk16t3DXgYCN6d+dfndkgSrdmQx9K0XjfbuM7NyoV4be67eyrRRfeL
+         JZzBMcYuyT9LBXNhmxcTT93qmLWxiVCL9Cl/9u3xwPgA02UVVwqBrB9XA6wFUQ9l1L
+         HC++jj67ZvV9+3z6Z3Ns+iaBG84Nb0U1PCSQJ6HHbSxNVg1yM/YomTb9mg9PV5o6ga
+         6aXDlPK1mlv2A==
+Date:   Mon, 28 Feb 2022 14:19:17 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>
+Cc:     "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "Zhang, Cathy" <cathy.zhang@intel.com>,
+        "Xing, Cedric" <cedric.xing@intel.com>,
+        "Huang, Haitao" <haitao.huang@intel.com>,
+        "Shanahan, Mark" <mark.shanahan@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
+ permissions
+Message-ID: <YhzL1YthJCwabsj0@iki.fi>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
+ <YhLhoMFPyOFZ2fsX@iki.fi>
+ <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
+ <Yhy/GvJegnTqYdq6@iki.fi>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="cdm2/dmGKlfIytbZ"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2bbe791f1c2b3c809c8863020184cdcfdadd1510.1645950971.git.christophe.leroy@csgroup.eu>
-X-Cookie: Killing turkeys causes winter.
+In-Reply-To: <Yhy/GvJegnTqYdq6@iki.fi>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 28, 2022 at 01:25:07PM +0100, Jarkko Sakkinen wrote:
+> On Wed, Feb 23, 2022 at 07:21:50PM +0000, Dhanraj, Vijay wrote:
+> > Hi All,
+> > 
+> > Regarding the recent update of splitting the page permissions change
+> > request into two IOCTLS (RELAX and RESTRICT), can we combine them into
+> > one? That is, revert to how it was done in the v1 version?
+> 
+> They are logically separate complex functionalities:
+> 
+> 1. "restrict" calls EMODPR and requires EACCEPT
+> 2. "relax" increases permissions up to vetted ("EADD") and could be
+>     combined with EMODPE called inside enclave.
+> 
+> I don't think it is a good idea.
 
---cdm2/dmGKlfIytbZ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I.e. in microarchitecture there is no EMODP but two different flows, 
+and thus it is not sane to act like there was with that kind of ioctl.
+It is as granular as the hardware is this way, and I think that is
+common sense.
 
-On Sun, Feb 27, 2022 at 11:00:34AM +0100, Christophe Leroy wrote:
+It would make much sense as combining ECREATE/EADD/EINIT into a single
+multi-function ioctl. Often user space needs to be anyway have at least
+some logically distinct flows fore these.
 
-> +  spi-trailing-clock:
-> +    description:
-> +      Add a few clock cycles (minimum 2) with chipselect OFF after transfers.
-> +
-
-We should make this a specification of the actual requirement, not just
-a boolean with a vague "a few" requirement - with the above we'd have to
-add a new property if some device turns up which requires three clocks
-instead of two.
-
---cdm2/dmGKlfIytbZ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIcy5cACgkQJNaLcl1U
-h9AllQf/YJaP/qR2wottG+/EKGYXx52lG4My6wzT7+VgVtlthD3xmiNezRygrAyR
-1mKrrog3yCg1M8eUJMM3jv2S+7yg+JlHaegBIAwnWd7AEGBLxMxNiBHGbwrI9WJd
-laduiHNd8C6lDHd37Pj2sNwNti3jv66IZTdLSBKOKD9Bi1Y1Iv3PyDT/Z2Kw+bQd
-7imbWEW8AtRq68ljQYdlJXC2/HVfW/D0OVLWwd24x+chQNwfwocuMH0NUxtcQsyh
-NS3nLV7HYmIQKUvrysfohca+TI5myQ9JZJuhyj5hadUNG4+hEd3gKHgprK7tyxXC
-RlgLEc5COkAYTRouycz7rzKtAe2byQ==
-=y5b3
------END PGP SIGNATURE-----
-
---cdm2/dmGKlfIytbZ--
+BR, Jarkko
