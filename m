@@ -2,78 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 752AAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 22:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 555A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 22:05:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231277AbiB1WGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 17:06:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55878 "EHLO
+        id S231316AbiB1WGZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 17:06:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231196AbiB1WGQ (ORCPT
+        with ESMTP id S231272AbiB1WGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 17:06:16 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CF7C4B70;
-        Mon, 28 Feb 2022 14:05:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=LsTLwsZ6isv+2phk734MyDwecvpupY6W/CRXpDrGAno=; b=TaKnZcVM3qgnA8RqwS/9rsFT94
-        Ybkk8EZ0f5H/9P0cKQG6pwJt9mwjTc7E6lBjS75fab2id5XRHjV3+CIqaFo6XeQb3+/LgguPgJpJX
-        Z6Y+AmTswo1gJQ2LQ8x3rBdFCngNgckRltN1jqAwr7v7Z0f6ADInFyJngCEhOkYZTWtexRxY/8hNp
-        z40/8qG7WlGLSit/ABYkws8uqJpY8PsuOB14gOSZr/HxiBWMKXrrp1EHy9Xml+pSSszeVDGJvKgfr
-        db5iGBvBJqiTow5Glaiz84/Gxc856PsaxJVQ34rHGIQldxc/2n2MUGt5SmiJK42zx1R7v2qjfLxaX
-        kf5WqzBQ==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOo97-00EG2X-Pf; Mon, 28 Feb 2022 22:05:33 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Fabian Frederick <fabf@skynet.be>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, linux-pm@vger.kernel.org,
-        Len Brown <len.brown@intel.com>
-Subject: [PATCH] PM/hibernate: fix __setup handler error handling
-Date:   Mon, 28 Feb 2022 14:05:32 -0800
-Message-Id: <20220228220532.8531-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 28 Feb 2022 17:06:17 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825BBC4B55
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 14:05:37 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id r13so27674250ejd.5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 14:05:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JvcF/uCui9GejoorR8kzc/i0AUGjtyXAWJIZdvZ03NQ=;
+        b=cSeWu9QLPxDY4T3cjtJyzxfFc2K1Ozx68VyjxgERiihlulc7eVq/5SblXRpR/nvCw6
+         tXE0HgjcCsUowDAj2oeNw+E+Qq+Wy2qrjCHpKVu+gzi4+1pJHnNqzf+IsjSX1g4q1NAf
+         kTWfcOGfMFG8nUWsdKEKIKE9+0k2s247ZsfsMCIYPdVKniRsbxs+lgaJJiU9ySveyNGy
+         rBrbgGCnny0NIcJb9dfeUGs5Gl5kxLLYJRHLU+oj2gXvhWOJVoW6yuNGWa4KXzPs9Z8E
+         9l5BIMEj9AKjteiFx5OIqPPaLHkZp6c9Ey+JU7UVVCvNsOoZzY6RK8V2WELW6fGEPk0/
+         wjnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JvcF/uCui9GejoorR8kzc/i0AUGjtyXAWJIZdvZ03NQ=;
+        b=p8f3VlmQ2pl4akwKMRuBYBe4Vhd1Pj3dYRdOsiJT+0e5ltIp9y86tBWx2nK0ATvJKH
+         ucAXxSXD9B3NoqTSdJs14boYwBy8KKeIByu9IqjNGCtOdf0TvTsgb0Z3WSlESADAAE69
+         5CuLJgbeY3x/noIJjL4sdliz9uy1VGl9pGl6xtkmhDBbxGUgQ0XQXWK+AI2CkV25xxAj
+         JRCNZlYdUHyKlNLLabBcIaTbNfJucdUCOAP5+8HWqeCDPofTQQefXvOMfN6brlrVq6iF
+         5RYTmjVQ8vNGo8b22b/7E//EfBTlC5piKKAMPRuvkllGVShql+3aXJ8BbyCjL/jf6ag1
+         588w==
+X-Gm-Message-State: AOAM53254Iw5hZMmhgG0Vf5ypZs6xCMPnqIJfAxFCCwRtXym8HWZSmzr
+        wYjJH9Gs8aDofYTj0vRSAygMZTzBbFqP8Bh0yhQkJA==
+X-Google-Smtp-Source: ABdhPJwpkgVdZCj65iCTvwkPVrG3pCwzeMtzGd+dQTnVXHD2RKASDg/uq8cVcFevBFQRY7nJ1J8BcX2gApQC7gUftqA=
+X-Received: by 2002:a17:906:eda9:b0:6ce:e24e:7b95 with SMTP id
+ sa9-20020a170906eda900b006cee24e7b95mr16927248ejb.314.1646085935827; Mon, 28
+ Feb 2022 14:05:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220225182248.3812651-1-seanjc@google.com> <20220225182248.3812651-4-seanjc@google.com>
+In-Reply-To: <20220225182248.3812651-4-seanjc@google.com>
+From:   Ben Gardon <bgardon@google.com>
+Date:   Mon, 28 Feb 2022 14:05:24 -0800
+Message-ID: <CANgfPd_yjt7AL0aC++=QHkTnnbwi+qsnihc0S2dEZryytoyMGg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/7] KVM: Drop kvm_reload_remote_mmus(), open code
+ request in x86 users
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If an invalid value is used in "resumedelay=<seconds>", it is
-silently ignored. Add a warning message and then let the __setup
-handler return 1 to indicate that the kernel command line option
-has been handled.
+On Fri, Feb 25, 2022 at 10:22 AM Sean Christopherson <seanjc@google.com> wrote:
+>
+> Remove the generic kvm_reload_remote_mmus() and open code its
+> functionality into the two x86 callers.  x86 is (obviously) the only
+> architecture that uses the hook, and is also the only architecture that
+> uses KVM_REQ_MMU_RELOAD in a way that's consistent with the name.  That
+> will change in a future patch, as x86's usage when zapping a single
+> shadow page x86 doesn't actually _need_ to reload all vCPUs' MMUs, only
+> MMUs whose root is being zapped actually need to be reloaded.
+>
+> s390 also uses KVM_REQ_MMU_RELOAD, but for a slightly different purpose.
+>
+> Drop the generic code in anticipation of implementing s390 and x86 arch
+> specific requests, which will allow dropping KVM_REQ_MMU_RELOAD entirely.
+>
+> Opportunistically reword the x86 TDP MMU comment to avoid making
+> references to functions (and requests!) when possible, and to remove the
+> rather ambiguous "this".
+>
+> No functional change intended.
+>
+> Cc: Ben Gardon <bgardon@google.com>
 
-Fixes: 317cf7e5e85e3 ("PM / hibernate: convert simple_strtoul to kstrtoul")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Fabian Frederick <fabf@skynet.be>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Pavel Machek <pavel@ucw.cz>
-Cc: linux-pm@vger.kernel.org
-Cc: Len Brown <len.brown@intel.com>
----
- kernel/power/hibernate.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Ben Gardon <bgardon@google.com>
 
---- linux-next-20220228.orig/kernel/power/hibernate.c
-+++ linux-next-20220228/kernel/power/hibernate.c
-@@ -1329,7 +1329,7 @@ static int __init resumedelay_setup(char
- 	int rc = kstrtouint(str, 0, &resume_delay);
- 
- 	if (rc)
--		return rc;
-+		pr_warn("resumedelay: bad option string '%s'\n", str);
- 	return 1;
- }
- 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c   | 14 +++++++-------
+>  include/linux/kvm_host.h |  1 -
+>  virt/kvm/kvm_main.c      |  5 -----
+>  3 files changed, 7 insertions(+), 13 deletions(-)
+>
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index b2c1c4eb6007..32c6d4b33d03 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -2353,7 +2353,7 @@ static bool __kvm_mmu_prepare_zap_page(struct kvm *kvm,
+>                  * treats invalid shadow pages as being obsolete.
+>                  */
+>                 if (!is_obsolete_sp(kvm, sp))
+> -                       kvm_reload_remote_mmus(kvm);
+> +                       kvm_make_all_cpus_request(kvm, KVM_REQ_MMU_RELOAD);
+>         }
+>
+>         if (sp->lpage_disallowed)
+> @@ -5639,11 +5639,11 @@ static void kvm_mmu_zap_all_fast(struct kvm *kvm)
+>          */
+>         kvm->arch.mmu_valid_gen = kvm->arch.mmu_valid_gen ? 0 : 1;
+>
+> -       /* In order to ensure all threads see this change when
+> -        * handling the MMU reload signal, this must happen in the
+> -        * same critical section as kvm_reload_remote_mmus, and
+> -        * before kvm_zap_obsolete_pages as kvm_zap_obsolete_pages
+> -        * could drop the MMU lock and yield.
+> +       /*
+> +        * In order to ensure all vCPUs drop their soon-to-be invalid roots,
+> +        * invalidating TDP MMU roots must be done while holding mmu_lock for
+> +        * write and in the same critical section as making the reload request,
+> +        * e.g. before kvm_zap_obsolete_pages() could drop mmu_lock and yield.
+>          */
+>         if (is_tdp_mmu_enabled(kvm))
+>                 kvm_tdp_mmu_invalidate_all_roots(kvm);
+> @@ -5656,7 +5656,7 @@ static void kvm_mmu_zap_all_fast(struct kvm *kvm)
+>          * Note: we need to do this under the protection of mmu_lock,
+>          * otherwise, vcpu would purge shadow page but miss tlb flush.
+>          */
+> -       kvm_reload_remote_mmus(kvm);
+> +       kvm_make_all_cpus_request(kvm, KVM_REQ_MMU_RELOAD);
+>
+>         kvm_zap_obsolete_pages(kvm);
+>
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index f11039944c08..0aeb47cffd43 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -1325,7 +1325,6 @@ int kvm_vcpu_yield_to(struct kvm_vcpu *target);
+>  void kvm_vcpu_on_spin(struct kvm_vcpu *vcpu, bool usermode_vcpu_not_eligible);
+>
+>  void kvm_flush_remote_tlbs(struct kvm *kvm);
+> -void kvm_reload_remote_mmus(struct kvm *kvm);
+>
+>  #ifdef KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE
+>  int kvm_mmu_topup_memory_cache(struct kvm_mmu_memory_cache *mc, int min);
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 83c57bcc6eb6..66bb1631cb89 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -354,11 +354,6 @@ void kvm_flush_remote_tlbs(struct kvm *kvm)
+>  EXPORT_SYMBOL_GPL(kvm_flush_remote_tlbs);
+>  #endif
+>
+> -void kvm_reload_remote_mmus(struct kvm *kvm)
+> -{
+> -       kvm_make_all_cpus_request(kvm, KVM_REQ_MMU_RELOAD);
+> -}
+> -
+>  #ifdef KVM_ARCH_NR_OBJS_PER_MEMORY_CACHE
+>  static inline void *mmu_memory_cache_alloc_obj(struct kvm_mmu_memory_cache *mc,
+>                                                gfp_t gfp_flags)
+> --
+> 2.35.1.574.g5d30c73bfb-goog
+>
