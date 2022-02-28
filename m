@@ -2,153 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33667C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E31C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235207AbiB1Kyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:54:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50694 "EHLO
+        id S235252AbiB1Kyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:54:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235329AbiB1KxR (ORCPT
+        with ESMTP id S235394AbiB1Kxf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:53:17 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66E1B6929F;
-        Mon, 28 Feb 2022 02:51:36 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 14D93106F;
-        Mon, 28 Feb 2022 02:51:36 -0800 (PST)
-Received: from p8cg001049571a15.arm.com (unknown [10.163.47.185])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 138ED3F73D;
-        Mon, 28 Feb 2022 02:51:27 -0800 (PST)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org, geert@linux-m68k.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, sparclinux@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-s390@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-alpha@vger.kernel.org, linux-sh@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, linux-parisc@vger.kernel.org,
-        openrisc@lists.librecores.org, linux-um@lists.infradead.org,
-        linux-hexagon@vger.kernel.org, linux-ia64@vger.kernel.org,
-        linux-arch@vger.kernel.org, Chris Zankel <chris@zankel.net>,
-        Guo Ren <guoren@kernel.org>
-Subject: [PATCH V3 20/30] xtensa/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Date:   Mon, 28 Feb 2022 16:17:43 +0530
-Message-Id: <1646045273-9343-21-git-send-email-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
-References: <1646045273-9343-1-git-send-email-anshuman.khandual@arm.com>
+        Mon, 28 Feb 2022 05:53:35 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B658B6662D;
+        Mon, 28 Feb 2022 02:51:43 -0800 (PST)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 1F6FD580272;
+        Mon, 28 Feb 2022 05:51:43 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 28 Feb 2022 05:51:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; bh=CVV/FYiagZabkUSFBdzimqho0tyD8t54QWCRsx
+        SiA/4=; b=BpGnFStaHo1d/eOGvhZtY0UB7XWUsy4MUYujb2tbTC2HAaGLaEXjTX
+        M6HnisywIXRsg4+/biO8DDKcrghJl5ttdrtYUUbDoLgrkBIOVXYamEGnbsDopWsI
+        RzXqwyZPQZMzHoePbFikdsa83SF5QYweWJItA0TWGwc+6r4NYicdq5FH+MJPxEkB
+        djqI+9HGbRkBjEXbEET+VR7DntOPVJaxTeEPe472wWDR2GVURsL9IPRt5r1NEsQ0
+        HZguG4oREsF6xtZPif8rOiON0FWspctgD/p9D5BBSxrMFTNe1md4+8TQndj9vKxC
+        lxlcj0ch7cQ9cfYpbQXMEBT0AwXuiOig==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=CVV/FYiagZabkUSFB
+        dzimqho0tyD8t54QWCRsxSiA/4=; b=PgSWRXuhoUJJH5NYUqfD/XCDRX5uHR20J
+        /ni7MR7GGw0DODiPJHILHXPxmh74GFzfRpU4ZicZYiofEeBU/xebXwJVvAcSRiZn
+        mKvXj0v8skxoCEX4XKgbeckpyDV0YIKDATNpEvKMHFvf4Y0qdvlkHuyqR5y6SFET
+        TwPQE/KhuTi9/GP3jUfLXBx8dkenXi0DS7oEYbuWMA1T6AdNgp3VJSvTd/sYnKXG
+        69mrCtSZRH2YR5pfV60elRUjA+QTfpk4KuKxBqdExutlC2isNbHbcZ6w5r13TM1y
+        fMf+iaIIDPMUdnZrNq5XZZBQhB4/HbuAxlf2QnLGJmXqjSR5DJ+7A==
+X-ME-Sender: <xms:PqkcYnI33Jx1Elr4ziWVwCa3i9NR2MA6RP9RX4XTGGc-UQYk15TjMg>
+    <xme:PqkcYrIjouSQyy14A8nQSo4GRD42Qeb81BKqYR1xeUfTg5q55JSpkrHyNAVO2Oarv
+    Ta4RaEj7qoxVQ>
+X-ME-Received: <xmr:PqkcYvt2k0At9bmwAsf0MgTEWbfiR2bsPzUvHzvMqQ-auAzZFlRW64BfPzxxkuAunAwIhOQYhO6mqJ-2QqmAjxBr9K0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddttddgudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
+    vghrufhiiigvpedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:PqkcYgaX9pkmjFFiWEIxoi4ovItnC5xm1taQOhDuhZ6Exat6pN_O7g>
+    <xmx:PqkcYuZ1ecM1dDINYS9SBKCTSVhQZuKdoSoDHb7goVoVifK2ohL2fg>
+    <xmx:PqkcYkBzkv-6_kfKJGPJ_Lh_8mdwodoMd89NGIkZxl13iizu9bBltA>
+    <xmx:P6kcYuKj9_VkEsCJXsTn1jsuxPksSaqWehaiExcIZZSvUgGHhThJjA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 28 Feb 2022 05:51:42 -0500 (EST)
+Date:   Mon, 28 Feb 2022 11:51:40 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Mark Brown <broonie@kernel.org>,
+        Hammer Hsieh <hammerh0314@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Vincent Shih <vincent.sunplus@gmail.com>,
+        Li-hao Kuo <lhjeff911@gmail.com>
+Subject: Re: linux-next: manual merge of the char-misc tree with the spi and
+ tty trees
+Message-ID: <YhypPL9HsxTKOJyA@kroah.com>
+References: <20220228193630.2e079d89@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228193630.2e079d89@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This defines and exports a platform specific custom vm_get_page_prot() via
-subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
-macros can be dropped which are no longer needed.
+On Mon, Feb 28, 2022 at 07:36:30PM +1100, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the char-misc tree got a conflict in:
+> 
+>   MAINTAINERS
+> 
+> between commits:
+> 
+>   f62ca4e2a863 ("spi: Add spi driver for Sunplus SP7021")
+>   b48b9f6deacf ("dt-bindings: serial: Add bindings doc for Sunplus SoC UART Driver")
+>   9e8d5470325f ("serial: sunplus-uart: Add Sunplus SoC UART Driver")
+> 
+> from the spi and tty trees and commits:
+> 
+>   9e8d5470325f ("serial: sunplus-uart: Add Sunplus SoC UART Driver")
+>   8fb29b450182 ("dt-bindings: nvmem: Add bindings doc for Sunplus OCOTP driver")
+> 
+> from the char-misc tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+> 
+> -- 
+> Cheers,
+> Stephen Rothwell
+> 
+> diff --cc MAINTAINERS
+> index d1e56ec04e14,37ea1436fc62..000000000000
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@@ -18642,19 -18578,12 +18678,25 @@@ S:	Maintaine
+>   F:	Documentation/devicetree/bindings/rtc/sunplus,sp7021-rtc.yaml
+>   F:	drivers/rtc/rtc-sunplus.c
+>   
+> + SUNPLUS OCOTP DRIVER
+> + M:	Vincent Shih <vincent.sunplus@gmail.com>
+> + S:	Maintained
+> + F:	Documentation/devicetree/bindings/nvmem/sunplus,sp7021-ocotp.yaml
+> + F:	drivers/nvmem/sunplus-ocotp.c
+> + 
+>  +SUNPLUS SPI CONTROLLER INTERFACE DRIVER
+>  +M:	Li-hao Kuo <lhjeff911@gmail.com>
+>  +L:	linux-spi@vger.kernel.org
+>  +S:	Maintained
+>  +F:	Documentation/devicetree/bindings/spi/spi-sunplus-sp7021.yaml
+>  +F:	drivers/spi/spi-sunplus-sp7021.c
+>  +
+>  +SUNPLUS UART DRIVER
+>  +M:	Hammer Hsieh <hammerh0314@gmail.com>
+>  +S:	Maintained
+>  +F:	Documentation/devicetree/bindings/serial/sunplus,sp7021-uart.yaml
+>  +F:	drivers/tty/serial/sunplus-uart.c
+>  +
+>   SUPERH
+>   M:	Yoshinori Sato <ysato@users.sourceforge.jp>
+>   M:	Rich Felker <dalias@libc.org>
 
-Cc: Chris Zankel <chris@zankel.net>
-Cc: Guo Ren <guoren@kernel.org>
-Cc: linux-xtensa@linux-xtensa.org
-Cc: linux-csky@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- arch/xtensa/Kconfig               |  1 +
- arch/xtensa/include/asm/pgtable.h | 19 -----------------
- arch/xtensa/mm/init.c             | 35 +++++++++++++++++++++++++++++++
- 3 files changed, 36 insertions(+), 19 deletions(-)
+Fix looks good, thanks.
 
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index 8ac599aa6d99..1608f7517546 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -9,6 +9,7 @@ config XTENSA
- 	select ARCH_HAS_DMA_SET_UNCACHED if MMU
- 	select ARCH_HAS_STRNCPY_FROM_USER if !KASAN
- 	select ARCH_HAS_STRNLEN_USER
-+	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_USE_MEMTEST
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_USE_QUEUED_SPINLOCKS
-diff --git a/arch/xtensa/include/asm/pgtable.h b/arch/xtensa/include/asm/pgtable.h
-index bd5aeb795567..509f765281d8 100644
---- a/arch/xtensa/include/asm/pgtable.h
-+++ b/arch/xtensa/include/asm/pgtable.h
-@@ -198,26 +198,7 @@
-  * the MMU can't do page protection for execute, and considers that the same as
-  * read.  Also, write permissions may imply read permissions.
-  * What follows is the closest we can get by reasonable means..
-- * See linux/mm/mmap.c for protection_map[] array that uses these definitions.
-  */
--#define __P000	PAGE_NONE		/* private --- */
--#define __P001	PAGE_READONLY		/* private --r */
--#define __P010	PAGE_COPY		/* private -w- */
--#define __P011	PAGE_COPY		/* private -wr */
--#define __P100	PAGE_READONLY_EXEC	/* private x-- */
--#define __P101	PAGE_READONLY_EXEC	/* private x-r */
--#define __P110	PAGE_COPY_EXEC		/* private xw- */
--#define __P111	PAGE_COPY_EXEC		/* private xwr */
--
--#define __S000	PAGE_NONE		/* shared  --- */
--#define __S001	PAGE_READONLY		/* shared  --r */
--#define __S010	PAGE_SHARED		/* shared  -w- */
--#define __S011	PAGE_SHARED		/* shared  -wr */
--#define __S100	PAGE_READONLY_EXEC	/* shared  x-- */
--#define __S101	PAGE_READONLY_EXEC	/* shared  x-r */
--#define __S110	PAGE_SHARED_EXEC	/* shared  xw- */
--#define __S111	PAGE_SHARED_EXEC	/* shared  xwr */
--
- #ifndef __ASSEMBLY__
- 
- #define pte_ERROR(e) \
-diff --git a/arch/xtensa/mm/init.c b/arch/xtensa/mm/init.c
-index 6a32b2cf2718..5f090749e9e0 100644
---- a/arch/xtensa/mm/init.c
-+++ b/arch/xtensa/mm/init.c
-@@ -216,3 +216,38 @@ static int __init parse_memmap_opt(char *str)
- 	return 0;
- }
- early_param("memmap", parse_memmap_opt);
-+
-+pgprot_t vm_get_page_prot(unsigned long vm_flags)
-+{
-+	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
-+	case VM_NONE:
-+		return PAGE_NONE;
-+	case VM_READ:
-+		return PAGE_READONLY;
-+	case VM_WRITE:
-+	case VM_WRITE | VM_READ:
-+		return PAGE_COPY;
-+	case VM_EXEC:
-+	case VM_EXEC | VM_READ:
-+		return PAGE_READONLY_EXEC;
-+	case VM_EXEC | VM_WRITE:
-+	case VM_EXEC | VM_WRITE | VM_READ:
-+		return PAGE_COPY_EXEC;
-+	case VM_SHARED:
-+		return PAGE_NONE;
-+	case VM_SHARED | VM_READ:
-+		return PAGE_READONLY;
-+	case VM_SHARED | VM_WRITE:
-+	case VM_SHARED | VM_WRITE | VM_READ:
-+		return PAGE_SHARED;
-+	case VM_SHARED | VM_EXEC:
-+	case VM_SHARED | VM_EXEC | VM_READ:
-+		return PAGE_READONLY_EXEC;
-+	case VM_SHARED | VM_EXEC | VM_WRITE:
-+	case VM_SHARED | VM_EXEC | VM_WRITE | VM_READ:
-+		return PAGE_SHARED_EXEC;
-+	default:
-+		BUILD_BUG();
-+	}
-+}
-+EXPORT_SYMBOL(vm_get_page_prot);
--- 
-2.25.1
-
+greg k-h
