@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4E0C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A20C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240971AbiB1SJT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:09:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
+        id S240461AbiB1SI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:08:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240553AbiB1SDj (ORCPT
+        with ESMTP id S240763AbiB1SEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:39 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0896ED3;
-        Mon, 28 Feb 2022 09:47:24 -0800 (PST)
+        Mon, 28 Feb 2022 13:04:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CF725EA3;
+        Mon, 28 Feb 2022 09:47:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 17A7ACE1795;
-        Mon, 28 Feb 2022 17:46:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1976AC340E7;
-        Mon, 28 Feb 2022 17:46:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E31860BAC;
+        Mon, 28 Feb 2022 17:47:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D7B2C340E7;
+        Mon, 28 Feb 2022 17:47:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070407;
-        bh=UZuSh1OU8WluWR2uN48A2AvG3fGWeT73zKvtCXMShvM=;
+        s=korg; t=1646070426;
+        bh=TaSq0yeK+b33MBxYUt2Y0AuI9BSRYo5QSHye+JRBEL0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DaBZ4O+uAfjV7l0wV9f58c0aad86wAPRKWnT/rjzm/5TtbaR8+Y8i0dgrfVNig3gH
-         LPK7IQ4Pt7uz2iTV3l/c6H5r67hhcT9AazQr8RHTp3zkSUOeP7e9FdQV4K83DekcFY
-         ws/4i2vOIHnAMFFvd9+dKRvCLsqrgl5oMtTEAMcI=
+        b=evQTNWcsCwzfB45JRYKkoh+ClsE6wPywI/HpBxAWbdVnKmbjQY9qgdkN5oly42Dor
+         gK/CBYNWh5lK1pHJKKZ9eyrLgBiHjYe90VXIZYaYpniqRHMOe8oXuFvd8rgqYKiYRd
+         M3sqTG625wA7B/9Ymbb9QY6AFUA7pakntcr7/4FY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Alex Vesker <valex@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.16 096/164] net/mlx5: DR, Fix slab-out-of-bounds in mlx5_cmd_dr_create_fte
-Date:   Mon, 28 Feb 2022 18:24:18 +0100
-Message-Id: <20220228172408.488479024@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 5.16 065/164] clk: qcom: gcc-msm8994: Remove NoC clocks
+Date:   Mon, 28 Feb 2022 18:23:47 +0100
+Message-Id: <20220228172406.070279719@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,97 +49,327 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-commit 0aec12d97b2036af0946e3d582144739860ac07b upstream.
+commit 3494894afff4ad11f25d8342cc99699be496d082 upstream.
 
-When adding a rule with 32 destinations, we hit the following out-of-band
-access issue:
+Just like in commit 05cf3ec00d46 ("clk: qcom: gcc-msm8996: Drop (again)
+gcc_aggre1_pnoc_ahb_clk") adding NoC clocks turned out to be a huge
+mistake, as they cause a lot of issues at little benefit (basically
+letting Linux know about their children's frequencies), especially when
+mishandled or misconfigured.
 
-  BUG: KASAN: slab-out-of-bounds in mlx5_cmd_dr_create_fte+0x18ee/0x1e70
+Adding these ones broke SDCC approx 99 out of 100 times, but that somehow
+went unnoticed. To prevent further issues like this one, remove them.
 
-This patch fixes the issue by both increasing the allocated buffers to
-accommodate for the needed actions and by checking the number of actions
-to prevent this issue when a rule with too many actions is provided.
+This commit is effectively a revert of 74a33fac3aab ("clk: qcom:
+gcc-msm8994: Add missing NoC clocks") with ABI preservation.
 
-Fixes: 1ffd498901c1 ("net/mlx5: DR, Increase supported num of actions to 32")
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
-Reviewed-by: Alex Vesker <valex@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 74a33fac3aab ("clk: qcom: gcc-msm8994: Add missing NoC clocks")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20220217232408.78932-1-konrad.dybcio@somainline.org
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c |   33 +++++++++++----
- 1 file changed, 26 insertions(+), 7 deletions(-)
+ drivers/clk/qcom/gcc-msm8994.c |  106 +++--------------------------------------
+ 1 file changed, 9 insertions(+), 97 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
-@@ -222,7 +222,11 @@ static bool contain_vport_reformat_actio
- 		dst->dest_attr.vport.flags & MLX5_FLOW_DEST_VPORT_REFORMAT_ID;
- }
+--- a/drivers/clk/qcom/gcc-msm8994.c
++++ b/drivers/clk/qcom/gcc-msm8994.c
+@@ -107,42 +107,6 @@ static const struct clk_parent_data gcc_
+ 	{ .hw = &gpll4.clkr.hw },
+ };
  
--#define MLX5_FLOW_CONTEXT_ACTION_MAX  32
-+/* We want to support a rule with 32 destinations, which means we need to
-+ * account for 32 destinations plus usually a counter plus one more action
-+ * for a multi-destination flow table.
-+ */
-+#define MLX5_FLOW_CONTEXT_ACTION_MAX  34
- static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
- 				  struct mlx5_flow_table *ft,
- 				  struct mlx5_flow_group *group,
-@@ -392,9 +396,9 @@ static int mlx5_cmd_dr_create_fte(struct
- 			enum mlx5_flow_destination_type type = dst->dest_attr.type;
- 			u32 id;
+-static struct clk_rcg2 system_noc_clk_src = {
+-	.cmd_rcgr = 0x0120,
+-	.hid_width = 5,
+-	.parent_map = gcc_xo_gpll0_map,
+-	.clkr.hw.init = &(struct clk_init_data){
+-		.name = "system_noc_clk_src",
+-		.parent_data = gcc_xo_gpll0,
+-		.num_parents = ARRAY_SIZE(gcc_xo_gpll0),
+-		.ops = &clk_rcg2_ops,
+-	},
+-};
+-
+-static struct clk_rcg2 config_noc_clk_src = {
+-	.cmd_rcgr = 0x0150,
+-	.hid_width = 5,
+-	.parent_map = gcc_xo_gpll0_map,
+-	.clkr.hw.init = &(struct clk_init_data){
+-		.name = "config_noc_clk_src",
+-		.parent_data = gcc_xo_gpll0,
+-		.num_parents = ARRAY_SIZE(gcc_xo_gpll0),
+-		.ops = &clk_rcg2_ops,
+-	},
+-};
+-
+-static struct clk_rcg2 periph_noc_clk_src = {
+-	.cmd_rcgr = 0x0190,
+-	.hid_width = 5,
+-	.parent_map = gcc_xo_gpll0_map,
+-	.clkr.hw.init = &(struct clk_init_data){
+-		.name = "periph_noc_clk_src",
+-		.parent_data = gcc_xo_gpll0,
+-		.num_parents = ARRAY_SIZE(gcc_xo_gpll0),
+-		.ops = &clk_rcg2_ops,
+-	},
+-};
+-
+ static struct freq_tbl ftbl_ufs_axi_clk_src[] = {
+ 	F(50000000, P_GPLL0, 12, 0, 0),
+ 	F(100000000, P_GPLL0, 6, 0, 0),
+@@ -1149,8 +1113,6 @@ static struct clk_branch gcc_blsp1_ahb_c
+ 		.enable_mask = BIT(17),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_blsp1_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1434,8 +1396,6 @@ static struct clk_branch gcc_blsp2_ahb_c
+ 		.enable_mask = BIT(15),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_blsp2_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1763,8 +1723,6 @@ static struct clk_branch gcc_lpass_q6_ax
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_lpass_q6_axi_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1777,8 +1735,6 @@ static struct clk_branch gcc_mss_q6_bimc
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_mss_q6_bimc_axi_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1806,9 +1762,6 @@ static struct clk_branch gcc_pcie_0_cfg_
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_pcie_0_cfg_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &config_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1821,9 +1774,6 @@ static struct clk_branch gcc_pcie_0_mstr
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_pcie_0_mstr_axi_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1853,9 +1803,6 @@ static struct clk_branch gcc_pcie_0_slv_
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_pcie_0_slv_axi_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1883,9 +1830,6 @@ static struct clk_branch gcc_pcie_1_cfg_
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_pcie_1_cfg_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &config_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1898,9 +1842,6 @@ static struct clk_branch gcc_pcie_1_mstr
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_pcie_1_mstr_axi_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1929,9 +1870,6 @@ static struct clk_branch gcc_pcie_1_slv_
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_pcie_1_slv_axi_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1959,8 +1897,6 @@ static struct clk_branch gcc_pdm_ahb_clk
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_pdm_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -1988,9 +1924,6 @@ static struct clk_branch gcc_sdcc1_ahb_c
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_sdcc1_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2003,9 +1936,6 @@ static struct clk_branch gcc_sdcc2_ahb_c
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_sdcc2_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2033,9 +1963,6 @@ static struct clk_branch gcc_sdcc3_ahb_c
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_sdcc3_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2063,9 +1990,6 @@ static struct clk_branch gcc_sdcc4_ahb_c
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_sdcc4_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+-			.flags = CLK_SET_RATE_PARENT,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2123,8 +2047,6 @@ static struct clk_branch gcc_tsif_ahb_cl
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_tsif_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2152,8 +2074,6 @@ static struct clk_branch gcc_ufs_ahb_clk
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_ufs_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &config_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2197,8 +2117,6 @@ static struct clk_branch gcc_ufs_rx_symb
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_ufs_rx_symbol_0_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2212,8 +2130,6 @@ static struct clk_branch gcc_ufs_rx_symb
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_ufs_rx_symbol_1_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2242,8 +2158,6 @@ static struct clk_branch gcc_ufs_tx_symb
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_ufs_tx_symbol_0_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2257,8 +2171,6 @@ static struct clk_branch gcc_ufs_tx_symb
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_ufs_tx_symbol_1_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &system_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2363,8 +2275,6 @@ static struct clk_branch gcc_usb_hs_ahb_
+ 		.enable_mask = BIT(0),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_usb_hs_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2487,8 +2397,6 @@ static struct clk_branch gcc_boot_rom_ah
+ 		.enable_mask = BIT(10),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_boot_rom_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &config_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2502,8 +2410,6 @@ static struct clk_branch gcc_prng_ahb_cl
+ 		.enable_mask = BIT(13),
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gcc_prng_ahb_clk",
+-			.parent_hws = (const struct clk_hw *[]){ &periph_noc_clk_src.clkr.hw },
+-			.num_parents = 1,
+ 			.ops = &clk_branch2_ops,
+ 		},
+ 	},
+@@ -2546,9 +2452,6 @@ static struct clk_regmap *gcc_msm8994_cl
+ 	[GPLL0] = &gpll0.clkr,
+ 	[GPLL4_EARLY] = &gpll4_early.clkr,
+ 	[GPLL4] = &gpll4.clkr,
+-	[CONFIG_NOC_CLK_SRC] = &config_noc_clk_src.clkr,
+-	[PERIPH_NOC_CLK_SRC] = &periph_noc_clk_src.clkr,
+-	[SYSTEM_NOC_CLK_SRC] = &system_noc_clk_src.clkr,
+ 	[UFS_AXI_CLK_SRC] = &ufs_axi_clk_src.clkr,
+ 	[USB30_MASTER_CLK_SRC] = &usb30_master_clk_src.clkr,
+ 	[BLSP1_QUP1_I2C_APPS_CLK_SRC] = &blsp1_qup1_i2c_apps_clk_src.clkr,
+@@ -2695,6 +2598,15 @@ static struct clk_regmap *gcc_msm8994_cl
+ 	[USB_SS_PHY_LDO] = &usb_ss_phy_ldo.clkr,
+ 	[GCC_BOOT_ROM_AHB_CLK] = &gcc_boot_rom_ahb_clk.clkr,
+ 	[GCC_PRNG_AHB_CLK] = &gcc_prng_ahb_clk.clkr,
++
++	/*
++	 * The following clocks should NOT be managed by this driver, but they once were
++	 * mistakengly added. Now they are only here to indicate that they are not defined
++	 * on purpose, even though the names will stay in the header file (for ABI sanity).
++	 */
++	[CONFIG_NOC_CLK_SRC] = NULL,
++	[PERIPH_NOC_CLK_SRC] = NULL,
++	[SYSTEM_NOC_CLK_SRC] = NULL,
+ };
  
--			if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
--			    num_term_actions >= MLX5_FLOW_CONTEXT_ACTION_MAX) {
--				err = -ENOSPC;
-+			if (fs_dr_num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
-+			    num_term_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
-+				err = -EOPNOTSUPP;
- 				goto free_actions;
- 			}
- 
-@@ -464,8 +468,9 @@ static int mlx5_cmd_dr_create_fte(struct
- 			    MLX5_FLOW_DESTINATION_TYPE_COUNTER)
- 				continue;
- 
--			if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
--				err = -ENOSPC;
-+			if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
-+			    fs_dr_num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
-+				err = -EOPNOTSUPP;
- 				goto free_actions;
- 			}
- 
-@@ -485,14 +490,28 @@ static int mlx5_cmd_dr_create_fte(struct
- 	params.match_sz = match_sz;
- 	params.match_buf = (u64 *)fte->val;
- 	if (num_term_actions == 1) {
--		if (term_actions->reformat)
-+		if (term_actions->reformat) {
-+			if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
-+				err = -EOPNOTSUPP;
-+				goto free_actions;
-+			}
- 			actions[num_actions++] = term_actions->reformat;
-+		}
- 
-+		if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
-+			err = -EOPNOTSUPP;
-+			goto free_actions;
-+		}
- 		actions[num_actions++] = term_actions->dest;
- 	} else if (num_term_actions > 1) {
- 		bool ignore_flow_level =
- 			!!(fte->action.flags & FLOW_ACT_IGNORE_FLOW_LEVEL);
- 
-+		if (num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX ||
-+		    fs_dr_num_actions == MLX5_FLOW_CONTEXT_ACTION_MAX) {
-+			err = -EOPNOTSUPP;
-+			goto free_actions;
-+		}
- 		tmp_action = mlx5dr_action_create_mult_dest_tbl(domain,
- 								term_actions,
- 								num_term_actions,
+ static struct gdsc *gcc_msm8994_gdscs[] = {
 
 
