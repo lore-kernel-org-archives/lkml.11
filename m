@@ -2,139 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2F48C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:05:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 921B8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235184AbiB1LGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:06:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
+        id S235414AbiB1LHE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:07:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiB1LGD (ORCPT
+        with ESMTP id S229615AbiB1LHB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:06:03 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1320E27170
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:05:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=dz6qK9THBXNx47QlkmlmkFdR+PsiS+lbm9R8dnl18zI=; b=MNgflNy3N5H2WGSa7oyZa8vSbR
-        /46FugsmNbOyiuQNkk5ECP6piunzZF++xCDMQ3c6AUGxXtvTa30VhuWqQI93ytHFE/DzGfOdcvFva
-        0/ky/ok+OIep0XLy2Ah4GmlnRmM706D2Ziq3VtXJmfMawc0gtc5r8KX+jDDhYf6/pAOgkUaFF3710
-        zltxspiNZMBvXWTyec6eDZV/TWzGtSXE0T2eodASRT98LEDLoYRipnxST5xkpArZwxfEUdgCbLFjG
-        cnoosGVfsYwyy/sDbPbdLewo5mUgGVhCeTRRLrbrv8a5tAB4GZmsTIoW7lk7Dg0RDVV9e256KUE4x
-        aZBlBhjQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOdq1-008Qxo-R8; Mon, 28 Feb 2022 11:05:09 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 27BB93001C3;
-        Mon, 28 Feb 2022 12:05:06 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 62D6F307D8483; Mon, 28 Feb 2022 12:05:06 +0100 (CET)
-Date:   Mon, 28 Feb 2022 12:05:06 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com
-Subject: Re: [PATCH 21/29] objtool: Rename --duplicate to --lto
-Message-ID: <YhysYkcfwLr68Job@hirez.programming.kicks-ass.net>
-References: <20220218164902.008644515@infradead.org>
- <20220218171409.814392411@infradead.org>
- <20220226194209.bvv3t65hhtnwltmk@treble>
- <20220226214802.4chmsrtstlerefmu@treble>
+        Mon, 28 Feb 2022 06:07:01 -0500
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D3FE30F5D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:06:23 -0800 (PST)
+Received: by mail-io1-f72.google.com with SMTP id e23-20020a6b6917000000b006406b9433d6so8315670ioc.14
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:06:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:cc;
+        bh=NGeRMKnns/CkUBI5ujUz37hjPuAcdJGxEeUdErwvJTg=;
+        b=dfDam53E2hSbMiq0xgRz2BgvOf2GUaSAArLd7PbIVxDAF7j89DqWegcGO2yQDGsrAm
+         S+WogvngOkMD8wrV0zA/3uQFnXqnANbk6tXrDIboIXV0NoBEcVRXS950nuJQRVSX5WGf
+         YzHvSL7GYU+msJRpRRKpBi/yShgVnOGLGxTyhjAZxdvAEYXo0HKlJsW2B405mxz7wl25
+         CPdKfboFHsv12qTxIU0xagZOfJC30HJbchyzHhh/+CJGzz/89gWywmQ/pdrBayUsI3T6
+         QsONO2vxoNop/iRs8jlnKG6U5JglzYut8V1dlxTaFaAM1814MPyqgCsOKh8Vh3HGXBNA
+         c4IA==
+X-Gm-Message-State: AOAM530CeIx0SD8IXXXJDb4J1FDftkzjXs/iIijR20fyGkvOuxn1ILM+
+        zirJS/oW179Uu8mwzQW9LX7nsNBUu/zbeepbR6U4f6u4vu91
+X-Google-Smtp-Source: ABdhPJxeTFVWqRcnYQKyeoUA5fs9iql/0PWMeiaUOHnhz5OQep44nI/xLdBW0DeoycNoFKhdyFNXJ09Y+uZkA9tshqS68Y5B1qpt
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220226214802.4chmsrtstlerefmu@treble>
+X-Received: by 2002:a02:b19e:0:b0:30d:d9f5:d03c with SMTP id
+ t30-20020a02b19e000000b0030dd9f5d03cmr16825134jah.19.1646046382076; Mon, 28
+ Feb 2022 03:06:22 -0800 (PST)
+Date:   Mon, 28 Feb 2022 03:06:22 -0800
+In-Reply-To: <YhysqzlMHWTXLR4B@linutronix.de>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e3387805d912097c@google.com>
+Subject: Re: [syzbot] linux-next test error: WARNING in __mod_memcg_lruvec_state
+From:   syzbot <syzbot+a526c269335f529d25c8@syzkaller.appspotmail.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     akpm@linux-foundation.org, bigeasy@linutronix.de,
+        cgroups@vger.kernel.org, hannes@cmpxchg.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-next@vger.kernel.org, mhocko@kernel.org,
+        roman.gushchin@linux.dev, sfr@canb.auug.org.au,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 01:48:02PM -0800, Josh Poimboeuf wrote:
-> On Sat, Feb 26, 2022 at 11:42:13AM -0800, Josh Poimboeuf wrote:
-> > > +	OPT_BOOLEAN(0, "lto", &lto, "whole-archive like runs"),
-> > 
-> > "--lto" is a confusing name, since this "feature" isn't specific to LTO.
-> > 
-> > Also, it gives no indication of what it actually does.
-> >
-> > What it does is, run objtool on vmlinux or module just like it's a
-> > normal object, and *don't* do noinstr validation.  Right?
+> #syz test: git://git.kernel.org/pub/scm/linux/kernel/git/bigeasy/staging.git 71d365035711aef4c4b1018d02fcf7868e3cb0c5
 
-How about --whole-archive, much like the linker then?
+This crash does not have a reproducer. I cannot test it.
 
-The distinction is that we run objtool *only* on vmlinux and modules and
-not also on the individual .o files.
-
-There's 3 models:
-
- A) every translation unit
-    (module parts get --module)
-
- B) every translation unit + shallow vmlinux
-    (module parts get --module, vmlinux.o gets --vmlinux)
-
- C) vmlinux + modules
-    (modules get --module, vmlinux.o gets --vmlinux
-    --duplicate/lto/whole-archive, pick your poison).
-
-
-objtool started out with (A); then for noinstr validation I added a
-shallow vmlinux pass that *only* checks .noinstr.text and .entry.text
-for escapes (B). This is to not unduly add time to the slowest (single
-threaded) part of the kernel build, linking vmlinux.
-
-Then CLANG_LTO added (C), due to LTO there simply isn't asm to poke at
-until the whole-archive thing. But this means that the vmlinux run needs
-to do all validation, not only the shallow noinstr validation.
---duplicate was added there, a bad name because it really doesn't do
-duplicate work, it's the first and only objtool run (it's only duplicate
-if you also run on each TU, but we don't do that).
-
-Now with these patches I need whole-archive objtool passes and instead
-of making a 4th mode, or extend (B), I chose to just bite the bullet and
-go full LTO style (C).
-
-Now, I figured it would be good to have a flag to indicate we're running
-LTO style and --duplicate is more or less that, except for the terrible
-name.
-
-> > It's weird for the noinstr-only-mode to be the default.
-> > 
-> > BTW "--duplicate" had similar problems...
-> > 
-> > So how about:
-> > 
-> > - Default to normal mode on vmlinux/module, i.e. validate and/or
-> >   generate ORC like any other object.  This default is more logically
-> >   consistent and makes sense for the future once we get around to
-> >   parallelizing objtool.
-> > 
-> > - Have "--noinstr", which does noinstr validation, in addition to all
-> >   the other objtool validation/generation.  So it's additive, like any
-> >   other cmdline option.  (Maybe this option isn't necessarily needed for
-> >   now.)
-> 
-> It just dawned on me that "--noinstr" already exists.  But I'm
-> scratching my head trying to figure out the difference between
-> "--noinstr" and omitting "--lto".
-
-If you run: "objtool check --vmlinux --noinstr vmlinux.o", it'll only do
-the shallow .noinstr.text/.entry.text checks. If OTOH you do: "objtool
-check --vmlinux --noinstr --lto vmlinux.o" it'll do everything
-(including noinstr).
-
-Similarlt, "--module --lto" will come to mean whole module (which is
-currently not distinguishable from a regular module part run).
-
-(barring the possible 's/--lto/--whole-archive/' rename proposed up top)
-
-
+>
+> On 2022-02-27 22:09:43 [-0800], Andrew Morton wrote:
+>> (cc bigeasy)
+>> 
+>>                         WARN_ON_ONCE(!irqs_disabled());
+>> 
+>> in __mod_memcg_lruvec_state(), methinks.
+>
+> This report ist from before you added
+>    mm-memcg-protect-per-cpu-counter-by-disabling-preemption-on-preempt_rt-where-needed-fix.patch
+>
+> to your tree. So it can be ignored. The next -next tree should be fine.
+>
+> Sebastian
