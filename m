@@ -2,82 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A220C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E77EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:59:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232848AbiB1N7m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:59:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
+        id S236901AbiB1N5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:57:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiB1N7l (ORCPT
+        with ESMTP id S236840AbiB1N5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 08:59:41 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6220C52E7F
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 05:59:02 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id 27so11411095pgk.10
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 05:59:02 -0800 (PST)
+        Mon, 28 Feb 2022 08:57:49 -0500
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C0F67D015;
+        Mon, 28 Feb 2022 05:57:10 -0800 (PST)
+Received: by mail-qv1-xf33.google.com with SMTP id 8so12569625qvf.2;
+        Mon, 28 Feb 2022 05:57:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=FzjJyXn/bqOXd4ZYAkke0bU4g6qSzR3Mr9gnRy2DvTg=;
-        b=emMjftZwGqnvQ1Csf6dPnjraA5SYoxWJ4upPlVDyELTS1MxrD52sQOVyQQfZHHud9E
-         n4PiZrOVHuD1p30t04u/zokGLZu2h9LHxx06ku9OYQHMky9qrusGrUMoG+0r7qF7dDxQ
-         xvjzoabzSEE01OIot3iNZ2TId9Tc7TmAMm8j4Dnu+EAIg9EnGg1mgrv+ZiCA5xHXoS8l
-         yBkiyjAG9xlxqSDQ/g/I1eEGDJ3N8fQ0fS2Ism64Kf1sIv0Duiwy2zAHnzBr3TU7gei8
-         O9bA0FehEHNomNs22oJW4kYYQ6Wu7+tQSBrBRU/s55JtsxcErBW2udeVpERkYth/+Gdu
-         HmoA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gwYHMhbRHXQxrol3Z4onOOebIeXrEkEaF8cW1M7ix2U=;
+        b=DhunHPDFR2V3Hox2LdEShrwB0I3eShU0H4fvqIdK+bMIwAsCFDMmDxrEpkJkykMeV0
+         f/P3nuUDuCob8St13oVJktiQ2Ww69QXeBxbSKxX3PPJjfSNxKYx9fljBCgNv89PIeS7b
+         ILdszhgU8EBRvQGJln1QI8D6D698gEXGA3y9SvUdzFUqGQPuntRmm4YPoDyB6qyep1K5
+         H8nb6oaxe0tWG6CE2PPG8FtfYVVOBXH9iAVatcmO1D7rGTKRa3zJ7RYZZ+u/wiDx99c8
+         t4kiYnRutathdQFMfvCpkXzi29kKntBXXYiT5TDCR4aaUiUdcKy0zsewS0Py0t98X0Mo
+         f9+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FzjJyXn/bqOXd4ZYAkke0bU4g6qSzR3Mr9gnRy2DvTg=;
-        b=mI8VD50tMsujAy6OsCZ9Vvv5zCKT087NU7WNGYe2JddFDwsvWZX4swvUtD9J53UGIw
-         /Ux5G8iD5ncajJx9nBbA7nrGrbL2lYyISomY/BtiSPG3g+3HdusNFwbzfzhF7mTXIpp5
-         qMQW4OH51ennLNKB32rhx0KCviBIzXaCFt+0dFILooUGXfslt5+z6d8q/tz65rKSR7DP
-         MItP4hUoSv1A/8vpz8VTjVBmAH7HauoZO1MrbMR5GcuVserEm9Xy3HMEF0OAbbf1wFc6
-         DvXMaXZ8t3JeGn7FMIIOseFKg1hDza0LImRIsvb3NjuXEHZSBtihDJB6JPkCVMjAPNSq
-         jPSA==
-X-Gm-Message-State: AOAM532tcZEKTTzr0Vqc998vlk9awAvnRlyvdoKKYQHq4BtgLVag6uyG
-        bgqMLEVFf8p95JSi9NdlpdqvVA==
-X-Google-Smtp-Source: ABdhPJzClDcESKk8VbFJpCZhSD/v69impDvOr5RcvpSjNZ/GD5HaNMYGmPul8QPhtciskytT/yiiXw==
-X-Received: by 2002:a05:6a00:1692:b0:4df:c6b0:2f02 with SMTP id k18-20020a056a00169200b004dfc6b02f02mr21648679pfc.50.1646056741739;
-        Mon, 28 Feb 2022 05:59:01 -0800 (PST)
-Received: from [192.168.1.100] ([198.8.77.157])
-        by smtp.gmail.com with ESMTPSA id j8-20020a056a00174800b004f26d3f5b03sm14287785pfc.39.2022.02.28.05.59.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 05:59:01 -0800 (PST)
-Message-ID: <36cfd242-6bb0-0af6-0faf-946c79baa378@kernel.dk>
-Date:   Mon, 28 Feb 2022 06:58:59 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] nvme-pci: trigger disk activity LED
-Content-Language: en-US
-To:     Christoph Hellwig <hch@lst.de>, Enzo Matsumiya <ematsumiya@suse.de>
-Cc:     linux-nvme@lists.infradead.org, Keith Busch <kbusch@kernel.org>,
-        Jens Axboe <axboe@fb.com>, Sagi Grimberg <sagi@grimberg.me>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gwYHMhbRHXQxrol3Z4onOOebIeXrEkEaF8cW1M7ix2U=;
+        b=ZewqfxkCkkNFvWMRQQA2zi2rsmGXIHAl9hbkLwqY6dYfsVMcWFrWzHULuvmkQOYR20
+         qFfB6fQSfg+1lGUH4gl9QL+l3qpmVwLjbMDbKZsrCkvpOY7LVkddBcDGRBvlkRMc+UQ5
+         /u24Vu0l4VTSsGAPj++yBfvEtJ744g/IuPFmefds5l1oW/RbjOlPCWA7ZzgGvxk43lKP
+         Yse9L4FGZAkqN3+j7oi2vqk+oL3JdK6CEjHrwSp4yZm3qftb7ifY6JrOfEYyRjTvsY/F
+         RnUL4bbnM7Q9dBDSfnPItXogM/2fJ6Od5iXo9Y6jFYIhEFG/AEDfM5NREgOfG98Ng4aY
+         l9Ww==
+X-Gm-Message-State: AOAM530MzWSvD7lUUWMYhrR0NKN0ICc974RwBMCiMnPC7ipzLjXiziQv
+        7DU8RYYI8/dmeDYKkZbrZFE=
+X-Google-Smtp-Source: ABdhPJxkrLbQyS3Zcpt3zgmIhbkWINWdUv5D/WJEcUEfNDhC6TXSahGBuov5CQ56hIdXTZYp9U8VaA==
+X-Received: by 2002:ad4:5aaf:0:b0:432:ec0a:f90c with SMTP id u15-20020ad45aaf000000b00432ec0af90cmr6051866qvg.27.1646056629455;
+        Mon, 28 Feb 2022 05:57:09 -0800 (PST)
+Received: from master-x64.sparksnet ([2601:153:980:85b1::10])
+        by smtp.gmail.com with ESMTPSA id b8-20020a05620a088800b00648bfd00a41sm4932244qka.80.2022.02.28.05.57.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 05:57:09 -0800 (PST)
+From:   Peter Geis <pgwipeout@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiko Stuebner <heiko@sntech.de>
+Cc:     linux-rockchip@lists.infradead.org, michael.riesch@wolfvision.net,
+        jbx6244@gmail.com, Peter Geis <pgwipeout@gmail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-References: <20220227234258.24619-1-ematsumiya@suse.de>
- <20220228092215.GA8549@lst.de>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220228092215.GA8549@lst.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Subject: [PATCH v4 2/8] dt-bindings: soc: grf: add rk3566-pipe-grf compatible
+Date:   Mon, 28 Feb 2022 08:56:53 -0500
+Message-Id: <20220228135700.1089526-3-pgwipeout@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220228135700.1089526-1-pgwipeout@gmail.com>
+References: <20220228135700.1089526-1-pgwipeout@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/28/22 2:22 AM, Christoph Hellwig wrote:
-> I don't think we should add code to the absolutel fast path for
-> blinkenlights.
+The rk3566 requires special handling for the dwc3-otg clock in order for
+the port to function correctly.
+Add a binding for the rk3566-pipe-grf so we can handle setup with the
+grf driver.
 
-Agree. It'd be a lot better to put the cost on the led trigger
-side, and not need anything in the fast path for block devices.
-Monitor disk stats, or something like that.
+Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+---
+ Documentation/devicetree/bindings/soc/rockchip/grf.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
+diff --git a/Documentation/devicetree/bindings/soc/rockchip/grf.yaml b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
+index 5079e9d24af6..75a2b8bb25fb 100644
+--- a/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
++++ b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
+@@ -15,6 +15,7 @@ properties:
+       - items:
+           - enum:
+               - rockchip,rk3288-sgrf
++              - rockchip,rk3566-pipe-grf
+               - rockchip,rk3568-pipe-grf
+               - rockchip,rk3568-pipe-phy-grf
+               - rockchip,rk3568-usb2phy-grf
 -- 
-Jens Axboe
+2.25.1
 
