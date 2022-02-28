@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDD5C3527D
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC07C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239544AbiB1RxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:53:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34278 "EHLO
+        id S240556AbiB1RyX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:54:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239121AbiB1RsF (ORCPT
+        with ESMTP id S239072AbiB1RvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:48:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8075FA1474;
-        Mon, 28 Feb 2022 09:38:41 -0800 (PST)
+        Mon, 28 Feb 2022 12:51:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA4EA2F2F;
+        Mon, 28 Feb 2022 09:39:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24126B815B3;
-        Mon, 28 Feb 2022 17:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A228C340F3;
-        Mon, 28 Feb 2022 17:38:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B69661540;
+        Mon, 28 Feb 2022 17:39:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0A0DC340E7;
+        Mon, 28 Feb 2022 17:39:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069918;
-        bh=e9qSJssGN+HZrIwdyr6Y6yzckhlwCSUpu93cFoY6+y8=;
+        s=korg; t=1646069957;
+        bh=/k8eIg1NAH1SmFReaKQmxUVMuexZO0RUQC9sV/M3azk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OoSHnDFNY521Tt/Fl1UcIF0ypQrdo5TKElOh5rUTebQefmIdoseG5G0TM7z9nv2Qo
-         SCzz1IZc3SFj1be15MVcL4R9Og6OdAVCWLTP0VZmRmX90FfWWb3qJnmYYTHxvnRog8
-         eqKCc2WSPfUPzVMcLc+LR9emJlXhKI2v19UxNgi0=
+        b=tnh8paZRUQ+vU0NmtSW6hldxaw1tyylScjMbxh0HJwooyog1UVkg6hTIcCrefDvlb
+         GrTJDFyjKnKkAZIBPS6+0xDnZDGWNX5GoIDSxF6c1kx3gyqALIxDDbaab/edF7pJoH
+         zZRR0ljyJxKycpz+t7AMQ9ekVm8iKGH6ZWUtivPE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mauri Sandberg <maukka@ext.kapsi.fi>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 060/139] net: mv643xx_eth: process retval from of_get_mac_address
-Date:   Mon, 28 Feb 2022 18:23:54 +0100
-Message-Id: <20220228172354.001537175@linuxfoundation.org>
+        stable@vger.kernel.org, Chris Mi <cmi@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.15 046/139] net/mlx5: Fix tc max supported prio for nic mode
+Date:   Mon, 28 Feb 2022 18:23:40 +0100
+Message-Id: <20220228172352.534990702@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,80 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauri Sandberg <maukka@ext.kapsi.fi>
+From: Chris Mi <cmi@nvidia.com>
 
-commit 42404d8f1c01861b22ccfa1d70f950242720ae57 upstream.
+commit be7f4b0ab149afd19514929fad824b2117d238c9 upstream.
 
-Obtaining a MAC address may be deferred in cases when the MAC is stored
-in an NVMEM block, for example, and it may not be ready upon the first
-retrieval attempt and return EPROBE_DEFER.
+Only prio 1 is supported if firmware doesn't support ignore flow
+level for nic mode. The offending commit removed the check wrongly.
+Add it back.
 
-It is also possible that a port that does not rely on NVMEM has been
-already created when getting the defer request. Thus, also the resources
-allocated previously must be freed when doing a roll-back.
-
-Fixes: 76723bca2802 ("net: mv643xx_eth: add DT parsing support")
-Signed-off-by: Mauri Sandberg <maukka@ext.kapsi.fi>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220223142337.41757-1-maukka@ext.kapsi.fi
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 9a99c8f1253a ("net/mlx5e: E-Switch, Offload all chain 0 priorities when modify header and forward action is not supported")
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/marvell/mv643xx_eth.c |   24 ++++++++++++++----------
- 1 file changed, 14 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/marvell/mv643xx_eth.c
-+++ b/drivers/net/ethernet/marvell/mv643xx_eth.c
-@@ -2700,6 +2700,16 @@ MODULE_DEVICE_TABLE(of, mv643xx_eth_shar
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
+@@ -121,6 +121,9 @@ u32 mlx5_chains_get_nf_ft_chain(struct m
  
- static struct platform_device *port_platdev[3];
- 
-+static void mv643xx_eth_shared_of_remove(void)
-+{
-+	int n;
-+
-+	for (n = 0; n < 3; n++) {
-+		platform_device_del(port_platdev[n]);
-+		port_platdev[n] = NULL;
-+	}
-+}
-+
- static int mv643xx_eth_shared_of_add_port(struct platform_device *pdev,
- 					  struct device_node *pnp)
+ u32 mlx5_chains_get_prio_range(struct mlx5_fs_chains *chains)
  {
-@@ -2736,7 +2746,9 @@ static int mv643xx_eth_shared_of_add_por
- 		return -EINVAL;
- 	}
++	if (!mlx5_chains_prios_supported(chains))
++		return 1;
++
+ 	if (mlx5_chains_ignore_flow_level_supported(chains))
+ 		return UINT_MAX;
  
--	of_get_mac_address(pnp, ppd.mac_addr);
-+	ret = of_get_mac_address(pnp, ppd.mac_addr);
-+	if (ret)
-+		return ret;
- 
- 	mv643xx_eth_property(pnp, "tx-queue-size", ppd.tx_queue_size);
- 	mv643xx_eth_property(pnp, "tx-sram-addr", ppd.tx_sram_addr);
-@@ -2800,21 +2812,13 @@ static int mv643xx_eth_shared_of_probe(s
- 		ret = mv643xx_eth_shared_of_add_port(pdev, pnp);
- 		if (ret) {
- 			of_node_put(pnp);
-+			mv643xx_eth_shared_of_remove();
- 			return ret;
- 		}
- 	}
- 	return 0;
- }
- 
--static void mv643xx_eth_shared_of_remove(void)
--{
--	int n;
--
--	for (n = 0; n < 3; n++) {
--		platform_device_del(port_platdev[n]);
--		port_platdev[n] = NULL;
--	}
--}
- #else
- static inline int mv643xx_eth_shared_of_probe(struct platform_device *pdev)
- {
 
 
