@@ -2,190 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E761C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F75FC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240645AbiB1SDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:03:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
+        id S240678AbiB1SDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239680AbiB1RxS (ORCPT
+        with ESMTP id S239643AbiB1RxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:18 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E767BAA2EC
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:40:47 -0800 (PST)
-Date:   Mon, 28 Feb 2022 17:40:42 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646070043;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=J9gn+lq1OxgspfBuH8uvwct2hS/UCwEfO2G29M1/3f8=;
-        b=cxPiqNfpSdXlqHi5fadnPig8ssk3b+7bgpM2d0i2Bup5Qe13CMvtyXzQK1nJkwn9sreZIy
-        ZksYcRVkfo17ShTL+2xmWqgN5DASMTnnNsmTK7RUCKJnYse8lu1AMmEdy9cjo7ZXhzvvWY
-        iYltHyJ4VTjPRcokM7YJLRBMY8NDzQtyLrx9azSGJrasqEPBKt++jLLZM9glsprEzV4nrs
-        PhBikcR5cjJuvxbvzUzOXP1QPPHZMvYoveFGAsCNA5xQzlig4iISQyuN26nrRMtJK6exH1
-        DeBGtmhgzPPX2PRWwv88efsgbi1GlBtGrNhJtYR1uoYMertwg0aNJ0DcAEpqrA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646070043;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=J9gn+lq1OxgspfBuH8uvwct2hS/UCwEfO2G29M1/3f8=;
-        b=XTMe+aOEpn/wQJu05p6eNIW2Jgnk2hKHTPDezjHd8iC9/lSyremxQq550tRK7BQso2nveM
-        I25tfiX58kGKd1Aw==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
+        Mon, 28 Feb 2022 12:53:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7FAAA033;
+        Mon, 28 Feb 2022 09:40:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE61D61591;
+        Mon, 28 Feb 2022 17:40:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0B2AC340F0;
+        Mon, 28 Feb 2022 17:40:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646070042;
+        bh=Vj7+RV1mSAdxwWoIV35hkfTUgm01kukRlhS/2oE8/tA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pxgX1PWNSbBHjWMWLiz94aVZ7Sz+gkCmADDLB4jdkW/nVV2Kjb61SeUx4dV9R5xQf
+         tLOtwNWoxZRt9WL2dlL5HaIcdM+dSgU/f/o/UCFm2XVe5WaB2chSbFA3FTL499koBK
+         SN/6av0W3T8H/jXc9KxyYNwgNKfuS53Q4+z6IJYo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/qcom-pdc: Kill PDC_NO_PARENT_IRQ
-Cc:     Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220224101226.88373-2-maz@kernel.org>
-References: <20220224101226.88373-2-maz@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 5.15 104/139] ata: pata_hpt37x: disable primary channel on HPT371
+Date:   Mon, 28 Feb 2022 18:24:38 +0100
+Message-Id: <20220228172358.602085120@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164607004262.16921.13704832568538557968.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-Commit-ID:     9fbc4f3979658ad30f3239d6a3660892976a8206
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/9fbc4f3979658ad30f3239d6a3660892976a8206
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Thu, 24 Feb 2022 10:12:22 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Mon, 28 Feb 2022 17:32:25 
+commit 8d093e02e898b24c58788b0289e3202317a96d2a upstream.
 
-irqchip/qcom-pdc: Kill PDC_NO_PARENT_IRQ
+The HPT371 chip physically has only one channel, the secondary one,
+however the primary channel registers do exist! Thus we have to
+manually disable the non-existing channel if the BIOS hasn't done this
+already. Similarly to the pata_hpt3x2n driver, always disable the
+primary channel.
 
-PDC_NO_PARENT_IRQ is pretty pointless, as all it indicates is
-that the PDC terminates the interrupt hierarchy. Which is
-exactly the same as not having a mapping in the GIC space.
-This is also bad practice to treat the absence of a hwirq
-as a hwirq itself.
-
-Just explicitly use the region mapping pointer, and drop
-the definition.
-
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220224101226.88373-2-maz@kernel.org
+Fixes: 669a5db411d8 ("[libata] Add a bunch of PATA drivers.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/qcom-pdc.c | 34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+ drivers/ata/pata_hpt37x.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 173e652..3b214c4 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -30,14 +30,14 @@
- #define IRQ_ENABLE_BANK		0x10
- #define IRQ_i_CFG		0x110
+--- a/drivers/ata/pata_hpt37x.c
++++ b/drivers/ata/pata_hpt37x.c
+@@ -920,6 +920,20 @@ static int hpt37x_init_one(struct pci_de
+ 	pci_write_config_byte(dev, 0x5a, irqmask);
  
--#define PDC_NO_PARENT_IRQ	~0UL
--
- struct pdc_pin_region {
- 	u32 pin_base;
- 	u32 parent_base;
- 	u32 cnt;
- };
- 
-+#define pin_to_hwirq(r, p)	((r)->parent_base + (p) - (r)->pin_base)
+ 	/*
++	 * HPT371 chips physically have only one channel, the secondary one,
++	 * but the primary channel registers do exist!  Go figure...
++	 * So,  we manually disable the non-existing channel here
++	 * (if the BIOS hasn't done this already).
++	 */
++	if (dev->device == PCI_DEVICE_ID_TTI_HPT371) {
++		u8 mcr1;
 +
- static DEFINE_RAW_SPINLOCK(pdc_lock);
- static void __iomem *pdc_base;
- static struct pdc_pin_region *pdc_region;
-@@ -186,19 +186,17 @@ static struct irq_chip qcom_pdc_gic_chip = {
- 	.irq_set_affinity	= irq_chip_set_affinity_parent,
- };
- 
--static irq_hw_number_t get_parent_hwirq(int pin)
-+static struct pdc_pin_region *get_pin_region(int pin)
- {
- 	int i;
--	struct pdc_pin_region *region;
- 
- 	for (i = 0; i < pdc_region_cnt; i++) {
--		region = &pdc_region[i];
--		if (pin >= region->pin_base &&
--		    pin < region->pin_base + region->cnt)
--			return (region->parent_base + pin - region->pin_base);
-+		if (pin >= pdc_region[i].pin_base &&
-+		    pin < pdc_region[i].pin_base + pdc_region[i].cnt)
-+			return &pdc_region[i];
- 	}
- 
--	return PDC_NO_PARENT_IRQ;
-+	return NULL;
- }
- 
- static int qcom_pdc_translate(struct irq_domain *d, struct irq_fwspec *fwspec,
-@@ -221,7 +219,8 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
- {
- 	struct irq_fwspec *fwspec = data;
- 	struct irq_fwspec parent_fwspec;
--	irq_hw_number_t hwirq, parent_hwirq;
-+	struct pdc_pin_region *region;
-+	irq_hw_number_t hwirq;
- 	unsigned int type;
- 	int ret;
- 
-@@ -234,8 +233,8 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
- 	if (ret)
- 		return ret;
- 
--	parent_hwirq = get_parent_hwirq(hwirq);
--	if (parent_hwirq == PDC_NO_PARENT_IRQ)
-+	region = get_pin_region(hwirq);
-+	if (!region)
- 		return irq_domain_disconnect_hierarchy(domain->parent, virq);
- 
- 	if (type & IRQ_TYPE_EDGE_BOTH)
-@@ -247,7 +246,7 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
- 	parent_fwspec.fwnode      = domain->parent->fwnode;
- 	parent_fwspec.param_count = 3;
- 	parent_fwspec.param[0]    = 0;
--	parent_fwspec.param[1]    = parent_hwirq;
-+	parent_fwspec.param[1]    = pin_to_hwirq(region, hwirq);
- 	parent_fwspec.param[2]    = type;
- 
- 	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
-@@ -265,7 +264,8 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
- {
- 	struct irq_fwspec *fwspec = data;
- 	struct irq_fwspec parent_fwspec;
--	irq_hw_number_t hwirq, parent_hwirq;
-+	struct pdc_pin_region *region;
-+	irq_hw_number_t hwirq;
- 	unsigned int type;
- 	int ret;
- 
-@@ -281,8 +281,8 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
- 	if (ret)
- 		return ret;
- 
--	parent_hwirq = get_parent_hwirq(hwirq);
--	if (parent_hwirq == PDC_NO_PARENT_IRQ)
-+	region = get_pin_region(hwirq);
-+	if (!region)
- 		return irq_domain_disconnect_hierarchy(domain->parent, virq);
- 
- 	if (type & IRQ_TYPE_EDGE_BOTH)
-@@ -294,7 +294,7 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
- 	parent_fwspec.fwnode      = domain->parent->fwnode;
- 	parent_fwspec.param_count = 3;
- 	parent_fwspec.param[0]    = 0;
--	parent_fwspec.param[1]    = parent_hwirq;
-+	parent_fwspec.param[1]    = pin_to_hwirq(region, hwirq);
- 	parent_fwspec.param[2]    = type;
- 
- 	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
++		pci_read_config_byte(dev, 0x50, &mcr1);
++		mcr1 &= ~0x04;
++		pci_write_config_byte(dev, 0x50, mcr1);
++	}
++
++	/*
+ 	 * default to pci clock. make sure MA15/16 are set to output
+ 	 * to prevent drives having problems with 40-pin cables. Needed
+ 	 * for some drives such as IBM-DTLA which will not enter ready
+
+
