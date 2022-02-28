@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 926C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 140E7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240033AbiB1SMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:12:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60442 "EHLO
+        id S240064AbiB1SNA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:13:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240687AbiB1SJI (ORCPT
+        with ESMTP id S240726AbiB1SJK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3E45EBF0;
-        Mon, 28 Feb 2022 09:48:57 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7033F5EDD3;
+        Mon, 28 Feb 2022 09:49:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48E20B815C8;
-        Mon, 28 Feb 2022 17:48:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A13E6C340E7;
-        Mon, 28 Feb 2022 17:48:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB7A26098A;
+        Mon, 28 Feb 2022 17:48:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0CFDC340E7;
+        Mon, 28 Feb 2022 17:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070533;
-        bh=qemwP1wcJjrddnQVCK5JyKnEA14bE0FgG6LNS9kGDWU=;
+        s=korg; t=1646070516;
+        bh=ZeUaeCJFJ4bWJ2ejkrzVSGb9kDF1BPevUpezIc/prvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oiDXQnCLC4A4bxFTHS35yrXKpfSTVBqeiWC/x727Ok950y1alKr4dT9F8HuRat7f/
-         mzdqLuVVum0EbnmKOUE5w5loNS9weZl0BdhWGQey8fs3avnc+qnv7g3slRnG+U9DDu
-         CoLGI2cS+NPIsfmFIsntf9s0iJ8tmESNbrX1gMpc=
+        b=c22YwA0eENFTd/Q1pimEApjiv6hh9JoOu+pDLUcoZOVwRZ4oq8tJ2aeM+CeB/WMQ7
+         z0Kkpsh8BKAPk5mUudmu778Kh46iZbK57kHDEP2lsQsVEwkS86JXx49nhb5uPtb29p
+         lWgcceIVmjESnjek6a7tZMCzwO5fByQ2Tz0yjj5Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 141/164] btrfs: prevent copying too big compressed lzo segment
-Date:   Mon, 28 Feb 2022 18:25:03 +0100
-Message-Id: <20220228172412.720363069@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH 5.16 136/164] mtd: core: Fix a conflict between MTD and NVMEM on wp-gpios property
+Date:   Mon, 28 Feb 2022 18:24:58 +0100
+Message-Id: <20220228172412.339466039@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,80 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dāvis Mosāns <davispuh@gmail.com>
+From: Christophe Kerello <christophe.kerello@foss.st.com>
 
-commit 741b23a970a79d5d3a1db2d64fa2c7b375a4febb upstream.
+commit 6c7621890995d089a56a06d11580d185ede7c2f8 upstream.
 
-Compressed length can be corrupted to be a lot larger than memory
-we have allocated for buffer.
-This will cause memcpy in copy_compressed_segment to write outside
-of allocated memory.
+Wp-gpios property can be used on NVMEM nodes and the same property can
+be also used on MTD NAND nodes. In case of the wp-gpios property is
+defined at NAND level node, the GPIO management is done at NAND driver
+level. Write protect is disabled when the driver is probed or resumed
+and is enabled when the driver is released or suspended.
 
-This mostly results in stuck read syscall but sometimes when using
-btrfs send can get #GP
+When no partitions are defined in the NAND DT node, then the NAND DT node
+will be passed to NVMEM framework. If wp-gpios property is defined in
+this node, the GPIO resource is taken twice and the NAND controller
+driver fails to probe.
 
-  kernel: general protection fault, probably for non-canonical address 0x841551d5c1000: 0000 [#1] PREEMPT SMP NOPTI
-  kernel: CPU: 17 PID: 264 Comm: kworker/u256:7 Tainted: P           OE     5.17.0-rc2-1 #12
-  kernel: Workqueue: btrfs-endio btrfs_work_helper [btrfs]
-  kernel: RIP: 0010:lzo_decompress_bio (./include/linux/fortify-string.h:225 fs/btrfs/lzo.c:322 fs/btrfs/lzo.c:394) btrfs
-  Code starting with the faulting instruction
-  ===========================================
-     0:*  48 8b 06                mov    (%rsi),%rax              <-- trapping instruction
-     3:   48 8d 79 08             lea    0x8(%rcx),%rdi
-     7:   48 83 e7 f8             and    $0xfffffffffffffff8,%rdi
-     b:   48 89 01                mov    %rax,(%rcx)
-     e:   44 89 f0                mov    %r14d,%eax
-    11:   48 8b 54 06 f8          mov    -0x8(%rsi,%rax,1),%rdx
-  kernel: RSP: 0018:ffffb110812efd50 EFLAGS: 00010212
-  kernel: RAX: 0000000000001000 RBX: 000000009ca264c8 RCX: ffff98996e6d8ff8
-  kernel: RDX: 0000000000000064 RSI: 000841551d5c1000 RDI: ffffffff9500435d
-  kernel: RBP: ffff989a3be856c0 R08: 0000000000000000 R09: 0000000000000000
-  kernel: R10: 0000000000000000 R11: 0000000000001000 R12: ffff98996e6d8000
-  kernel: R13: 0000000000000008 R14: 0000000000001000 R15: 000841551d5c1000
-  kernel: FS:  0000000000000000(0000) GS:ffff98a09d640000(0000) knlGS:0000000000000000
-  kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  kernel: CR2: 00001e9f984d9ea8 CR3: 000000014971a000 CR4: 00000000003506e0
-  kernel: Call Trace:
-  kernel:  <TASK>
-  kernel: end_compressed_bio_read (fs/btrfs/compression.c:104 fs/btrfs/compression.c:1363 fs/btrfs/compression.c:323) btrfs
-  kernel: end_workqueue_fn (fs/btrfs/disk-io.c:1923) btrfs
-  kernel: btrfs_work_helper (fs/btrfs/async-thread.c:326) btrfs
-  kernel: process_one_work (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:212 ./include/trace/events/workqueue.h:108 kernel/workqueue.c:2312)
-  kernel: worker_thread (./include/linux/list.h:292 kernel/workqueue.c:2455)
-  kernel: ? process_one_work (kernel/workqueue.c:2397)
-  kernel: kthread (kernel/kthread.c:377)
-  kernel: ? kthread_complete_and_exit (kernel/kthread.c:332)
-  kernel: ret_from_fork (arch/x86/entry/entry_64.S:301)
-  kernel:  </TASK>
+A new Boolean flag named ignore_wp has been added in nvmem_config.
+In case ignore_wp is set, it means that the GPIO is handled by the
+provider. Lets set this flag in MTD layer to avoid the conflict on
+wp_gpios property.
 
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 2a127da461a9 ("nvmem: add support for the write-protect pin")
+Cc: stable@vger.kernel.org
+Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220220151432.16605-3-srinivas.kandagatla@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/lzo.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/mtd/mtdcore.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/btrfs/lzo.c
-+++ b/fs/btrfs/lzo.c
-@@ -380,6 +380,17 @@ int lzo_decompress_bio(struct list_head
- 		kunmap(cur_page);
- 		cur_in += LZO_LEN;
+--- a/drivers/mtd/mtdcore.c
++++ b/drivers/mtd/mtdcore.c
+@@ -546,6 +546,7 @@ static int mtd_nvmem_add(struct mtd_info
+ 	config.stride = 1;
+ 	config.read_only = true;
+ 	config.root_only = true;
++	config.ignore_wp = true;
+ 	config.no_of_node = !of_device_is_compatible(node, "nvmem-cells");
+ 	config.priv = mtd;
  
-+		if (seg_len > lzo1x_worst_compress(PAGE_SIZE)) {
-+			/*
-+			 * seg_len shouldn't be larger than we have allocated
-+			 * for workspace->cbuf
-+			 */
-+			btrfs_err(fs_info, "unexpectedly large lzo segment len %u",
-+					seg_len);
-+			ret = -EIO;
-+			goto out;
-+		}
-+
- 		/* Copy the compressed segment payload into workspace */
- 		copy_compressed_segment(cb, workspace->cbuf, seg_len, &cur_in);
- 
+@@ -830,6 +831,7 @@ static struct nvmem_device *mtd_otp_nvme
+ 	config.owner = THIS_MODULE;
+ 	config.type = NVMEM_TYPE_OTP;
+ 	config.root_only = true;
++	config.ignore_wp = true;
+ 	config.reg_read = reg_read;
+ 	config.size = size;
+ 	config.of_node = np;
 
 
