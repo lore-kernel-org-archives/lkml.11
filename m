@@ -2,150 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4503FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7D8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238341AbiB1Rg7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:36:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
+        id S237839AbiB1RhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:37:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238830AbiB1Rdz (ORCPT
+        with ESMTP id S238873AbiB1Rd6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:33:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD27677A93;
-        Mon, 28 Feb 2022 09:30:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E84DB815AB;
-        Mon, 28 Feb 2022 17:30:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B61EFC340F4;
-        Mon, 28 Feb 2022 17:30:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069435;
-        bh=SvDQLbu5beE3Sm6Z67NDVZ7DhnI92oBSclkppH4UUcM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XJSqc94YLfeE1u02Zg50p9SWGd25Vq+3XyQqqJbOwQrB/0+D6Dgn2BbEXI6/lOMpa
-         zZjJMXsOhzarB+nRrgBN73gsyWASbVlmt1MacCUJGJf80O9pu5aYqHZK+lUjhkZauX
-         avvp0TP2V4f+EcJkoxR8v21r+uQ0XC1ku1XIes9c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tao Liu <thomas.liu@ucloud.cn>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 19/53] gso: do not skip outer ip header in case of ipip and net_failover
-Date:   Mon, 28 Feb 2022 18:24:17 +0100
-Message-Id: <20220228172249.730686703@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
-References: <20220228172248.232273337@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 28 Feb 2022 12:33:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4878B9399A
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:30:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646069433;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TBNyyVKFIgtXo2siONgO+K8rh6ETB7+JIbrxg9YBDkY=;
+        b=RDZg6FLdaLIpDOd+CDVdMEsTHyKOp276FRMvtUA75t+rQCb6a1tA74+LfJz8ygjmhVsGM6
+        Mh2lier5aB6ddsnIqSpirj5WPiF7a5dbJK9UjBuxHDdu7R7wjSjYj5AaN7NE3ZJZA8RF/Y
+        gQwHgSxgmjLTOVBbKAGjkVoZKUa1dxk=
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
+ [209.85.214.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-567-gBEVDOdGOOeCOY5olWqBiQ-1; Mon, 28 Feb 2022 12:30:32 -0500
+X-MC-Unique: gBEVDOdGOOeCOY5olWqBiQ-1
+Received: by mail-pl1-f198.google.com with SMTP id x6-20020a1709029a4600b0014efe26b04fso5084324plv.21
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:30:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TBNyyVKFIgtXo2siONgO+K8rh6ETB7+JIbrxg9YBDkY=;
+        b=4JetjpUMRjBdsXQcFvYsv+eclTCfGg31G1RQIjTs7v3O6vHNresqgUHi7xb0O7Pv6Q
+         rl0b5jNIrhoyzUGX/lS9WVg4mQ68fkgqm/GyPE6xaAMnn+GozciSEoa+7WxO/TM8b16R
+         AT8CkNeOWTyhtV4RxbUkGtEPnbrLhni//LbUQHMB+8MOet1YaNuzMeXgp6YXTWVjAq4W
+         SKuEBV92Ir79Ofjt1fzfZoALhnNlNd30mc+4KVwcapAqllkx/B7//6If+G2tubC+59tc
+         TMdBr2vOuXg12tNXfskl58RhqcXm+qA2Z5sHFPO+OcLbxzeaPsDFbbpJSFNiZ275vcf6
+         sDMA==
+X-Gm-Message-State: AOAM530e1HzofgNrdinWLTSM/K4GkDyyZdJ7s/zne/4b4sdjyJGs8dpc
+        nGbIJCTGBdpqVQMWM/eXfA5Rb2Iskc1VhehFE4wAcKPjjz5FFovzZAiRffeh8aouBvxylbP2jWR
+        boAMkDqqXN4ftVKKsfgPgYKT3FbMnWXKWRxxlDMah
+X-Received: by 2002:a17:90a:560a:b0:1bc:72e7:3c13 with SMTP id r10-20020a17090a560a00b001bc72e73c13mr17481032pjf.246.1646069430727;
+        Mon, 28 Feb 2022 09:30:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw1v8+Lu0rP+9NAXHotlnTBxz36fDCgljyirfY6qlP//hmJIiUmPdBMWOJ0HtOZuZM/abGbibrD7d754N3pyLA=
+X-Received: by 2002:a17:90a:560a:b0:1bc:72e7:3c13 with SMTP id
+ r10-20020a17090a560a00b001bc72e73c13mr17481014pjf.246.1646069430520; Mon, 28
+ Feb 2022 09:30:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220224110828.2168231-1-benjamin.tissoires@redhat.com>
+ <20220224110828.2168231-2-benjamin.tissoires@redhat.com> <YhdtKN7qodX7VDPV@kroah.com>
+In-Reply-To: <YhdtKN7qodX7VDPV@kroah.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Mon, 28 Feb 2022 18:30:19 +0100
+Message-ID: <CAO-hwJL73en_7thxM6Xt-RC2kqp=D8oyWuU_EL60hCsFCYPrsg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 1/6] HID: initial BPF implementation
+To:     Greg KH <greg@kroah.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tao Liu <thomas.liu@ucloud.cn>
+On Thu, Feb 24, 2022 at 12:41 PM Greg KH <greg@kroah.com> wrote:
+>
+> On Thu, Feb 24, 2022 at 12:08:23PM +0100, Benjamin Tissoires wrote:
+> > index 000000000000..243ac45a253f
+> > --- /dev/null
+> > +++ b/include/uapi/linux/bpf_hid.h
+> > @@ -0,0 +1,39 @@
+> > +/* SPDX-License-Identifier: GPL-2.0-or-later WITH Linux-syscall-note */
+> > +
+> > +/*
+> > + *  HID BPF public headers
+> > + *
+> > + *  Copyright (c) 2021 Benjamin Tissoires
+> > + */
+> > +
+> > +#ifndef _UAPI__LINUX_BPF_HID_H__
+> > +#define _UAPI__LINUX_BPF_HID_H__
+> > +
+> > +#include <linux/types.h>
+> > +
+> > +#define HID_BPF_MAX_BUFFER_SIZE              16384           /* 16kb */
+> > +
+> > +struct hid_device;
+> > +
+> > +enum hid_bpf_event {
+> > +     HID_BPF_UNDEF = 0,
+> > +     HID_BPF_DEVICE_EVENT,
+> > +};
+> > +
+> > +/* type is HID_BPF_DEVICE_EVENT */
+> > +struct hid_bpf_ctx_device_event {
+> > +     __u8 data[HID_BPF_MAX_BUFFER_SIZE];
+> > +     unsigned long size;
+>
+> That's not a valid type to cross the user/kernel boundry, shouldn't it
+> be "__u64"?  But really, isn't __u32 enough here?
 
-commit cc20cced0598d9a5ff91ae4ab147b3b5e99ee819 upstream.
+Fixed locally with a __u16 instead. Will be present in v2.
 
-We encounter a tcp drop issue in our cloud environment. Packet GROed in
-host forwards to a VM virtio_net nic with net_failover enabled. VM acts
-as a IPVS LB with ipip encapsulation. The full path like:
-host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
- -> ipip encap -> net_failover tx -> virtio_net tx
-
-When net_failover transmits a ipip pkt (gso_type = 0x0103, which means
-SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4), there is no gso
-did because it supports TSO and GSO_IPXIP4. But network_header points to
-inner ip header.
-
-Call Trace:
- tcp4_gso_segment        ------> return NULL
- inet_gso_segment        ------> inner iph, network_header points to
- ipip_gso_segment
- inet_gso_segment        ------> outer iph
- skb_mac_gso_segment
-
-Afterwards virtio_net transmits the pkt, only inner ip header is modified.
-And the outer one just keeps unchanged. The pkt will be dropped in remote
-host.
-
-Call Trace:
- inet_gso_segment        ------> inner iph, outer iph is skipped
- skb_mac_gso_segment
- __skb_gso_segment
- validate_xmit_skb
- validate_xmit_skb_list
- sch_direct_xmit
- __qdisc_run
- __dev_queue_xmit        ------> virtio_net
- dev_hard_start_xmit
- __dev_queue_xmit        ------> net_failover
- ip_finish_output2
- ip_output
- iptunnel_xmit
- ip_tunnel_xmit
- ipip_tunnel_xmit        ------> ipip
- dev_hard_start_xmit
- __dev_queue_xmit
- ip_finish_output2
- ip_output
- ip_forward
- ip_rcv
- __netif_receive_skb_one_core
- netif_receive_skb_internal
- napi_gro_receive
- receive_buf
- virtnet_poll
- net_rx_action
-
-The root cause of this issue is specific with the rare combination of
-SKB_GSO_DODGY and a tunnel device that adds an SKB_GSO_ tunnel option.
-SKB_GSO_DODGY is set from external virtio_net. We need to reset network
-header when callbacks.gso_segment() returns NULL.
-
-This patch also includes ipv6_gso_segment(), considering SIT, etc.
-
-Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
-Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/ipv4/af_inet.c     |    5 ++++-
- net/ipv6/ip6_offload.c |    2 ++
- 2 files changed, 6 insertions(+), 1 deletion(-)
-
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -1344,8 +1344,11 @@ struct sk_buff *inet_gso_segment(struct
- 	}
- 
- 	ops = rcu_dereference(inet_offloads[proto]);
--	if (likely(ops && ops->callbacks.gso_segment))
-+	if (likely(ops && ops->callbacks.gso_segment)) {
- 		segs = ops->callbacks.gso_segment(skb, features);
-+		if (!segs)
-+			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
-+	}
- 
- 	if (IS_ERR_OR_NULL(segs))
- 		goto out;
---- a/net/ipv6/ip6_offload.c
-+++ b/net/ipv6/ip6_offload.c
-@@ -111,6 +111,8 @@ static struct sk_buff *ipv6_gso_segment(
- 	if (likely(ops && ops->callbacks.gso_segment)) {
- 		skb_reset_transport_header(skb);
- 		segs = ops->callbacks.gso_segment(skb, features);
-+		if (!segs)
-+			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
- 	}
- 
- 	if (IS_ERR_OR_NULL(segs))
-
+Cheers,
+Benjamin
 
