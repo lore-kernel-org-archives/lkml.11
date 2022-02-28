@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BB63C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D54BC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237281AbiB1R7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:59:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50996 "EHLO
+        id S236632AbiB1R75 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:59:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240418AbiB1RyR (ORCPT
+        with ESMTP id S240530AbiB1RyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:17 -0500
+        Mon, 28 Feb 2022 12:54:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 116F2B18AD;
-        Mon, 28 Feb 2022 09:42:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF4E315A0D;
+        Mon, 28 Feb 2022 09:42:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33F2BB815C6;
-        Mon, 28 Feb 2022 17:42:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EE0CC340E7;
-        Mon, 28 Feb 2022 17:42:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE068B815AB;
+        Mon, 28 Feb 2022 17:42:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A5B7C340E7;
+        Mon, 28 Feb 2022 17:42:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070126;
-        bh=OW5+OUNm89gARk4f1MrpkJRAi39Z9FkxXGUPPWLts+E=;
+        s=korg; t=1646070143;
+        bh=y1SU/BTsz0Cz1b5TkDBk+IMdQX/XvpIL1a+b4XrJ5wg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TBv6zwDtCjBpflS3vgYV3y4RhESyqbka3vLhfz07x+NXrXj+V25dGC+J1k3cGE7K4
-         5sdBJfvElkXwxAKCbce48bQuQEo2FetPAZg5IVmClDFT/jDApCVz2yigBDl6ZGNRVw
-         ecgoWH7V4uY56OCL0J2LV4mVjNWjF14NPi4aXAW8=
+        b=l/XuBg9YFpSJVaVSxFTYmzXfFdoaCB5XTQMyGXkX2YBvjlETLaBD+tVvWqMIZGItb
+         A+hxx5S4ymSQ3ndZhbailkuYx8FS28kZrfJMmsHh+vy+fRB4J8WFjXM3P9qG5KqDcz
+         WViAyMDdG7SW8HM23XWBruqRgGI3VrNaRsJYq+60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Thierry Reding <treding@nvidia.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH 5.15 136/139] gpio: tegra186: Fix chip_data type confusion
-Date:   Mon, 28 Feb 2022 18:25:10 +0100
-Message-Id: <20220228172402.013192656@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.15 130/139] tty: n_gsm: fix NULL pointer access due to DLCI release
+Date:   Mon, 28 Feb 2022 18:25:04 +0100
+Message-Id: <20220228172401.350680921@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -50,80 +47,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: daniel.starke@siemens.com <daniel.starke@siemens.com>
 
-commit d1e972ace42390de739cde87d96043dcbe502286 upstream.
+commit 96b169f05cdcc844b400695184d77e42071d14f2 upstream.
 
-The tegra186 GPIO driver makes the assumption that the pointer
-returned by irq_data_get_irq_chip_data() is a pointer to a
-tegra_gpio structure. Unfortunately, it is actually a pointer
-to the inner gpio_chip structure, as mandated by the gpiolib
-infrastructure. Nice try.
+The here fixed commit made the tty hangup asynchronous to avoid a circular
+locking warning. I could not reproduce this warning. Furthermore, due to
+the asynchronous hangup the function call now gets queued up while the
+underlying tty is being freed. Depending on the timing this results in a
+NULL pointer access in the global work queue scheduler. To be precise in
+process_one_work(). Therefore, the previous commit made the issue worse
+which it tried to fix.
 
-The saving grace is that the gpio_chip is the first member of
-tegra_gpio, so the bug has gone undetected since... forever.
+This patch fixes this by falling back to the old behavior which uses a
+blocking tty hangup call before freeing up the associated tty.
 
-Fix it by performing a container_of() on the pointer. This results
-in no additional code, and makes it possible to understand how
-the whole thing works.
-
-Fixes: 5b2b135a87fc ("gpio: Add Tegra186 support")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: Thierry Reding <treding@nvidia.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Link: https://lore.kernel.org/r/20220211093904.1112679-1-maz@kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 7030082a7415 ("tty: n_gsm: avoid recursive locking with async port hangup")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220218073123.2121-4-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-tegra186.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/tty/n_gsm.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/gpio/gpio-tegra186.c
-+++ b/drivers/gpio/gpio-tegra186.c
-@@ -337,9 +337,12 @@ static int tegra186_gpio_of_xlate(struct
- 	return offset + pin;
- }
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -1722,7 +1722,12 @@ static void gsm_dlci_release(struct gsm_
+ 		gsm_destroy_network(dlci);
+ 		mutex_unlock(&dlci->mutex);
  
-+#define to_tegra_gpio(x) container_of((x), struct tegra_gpio, gpio)
-+
- static void tegra186_irq_ack(struct irq_data *data)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
+-		tty_hangup(tty);
++		/* We cannot use tty_hangup() because in tty_kref_put() the tty
++		 * driver assumes that the hangup queue is free and reuses it to
++		 * queue release_one_tty() -> NULL pointer panic in
++		 * process_one_work().
++		 */
++		tty_vhangup(tty);
  
- 	base = tegra186_gpio_get_base(gpio, data->hwirq);
-@@ -351,7 +354,8 @@ static void tegra186_irq_ack(struct irq_
- 
- static void tegra186_irq_mask(struct irq_data *data)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 	u32 value;
- 
-@@ -366,7 +370,8 @@ static void tegra186_irq_mask(struct irq
- 
- static void tegra186_irq_unmask(struct irq_data *data)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 	u32 value;
- 
-@@ -381,7 +386,8 @@ static void tegra186_irq_unmask(struct i
- 
- static int tegra186_irq_set_type(struct irq_data *data, unsigned int type)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 	u32 value;
- 
+ 		tty_port_tty_set(&dlci->port, NULL);
+ 		tty_kref_put(tty);
 
 
