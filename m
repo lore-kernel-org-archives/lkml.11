@@ -2,153 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD67C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 821C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:54:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238043AbiB1Qwn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 11:52:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58564 "EHLO
+        id S238045AbiB1Qyw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 11:54:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238030AbiB1Qwm (ORCPT
+        with ESMTP id S236654AbiB1Qyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 11:52:42 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C493185BFB;
-        Mon, 28 Feb 2022 08:52:02 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 79765219AE;
-        Mon, 28 Feb 2022 16:52:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646067121;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XocCnGjm2EQXZ0laNpIeMqRP6VR8fqTUlbHXocSsTtc=;
-        b=OSD1g+gnDTctBNt0JAVhfwCEE0FfzGz72nb14G7Z6yegCoTGabziegffuhYyGT4LqIrAjJ
-        m2xtgmr29J1fw0zlRQFySRNlWteNXVDP4WyBHVdWwqrPD3x+4/mXjJxn3QqIs/qUyrL9NQ
-        tV1qC/WkiR8wZ/nTsd8YUlDtha3baLg=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646067121;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XocCnGjm2EQXZ0laNpIeMqRP6VR8fqTUlbHXocSsTtc=;
-        b=CUMJ0mU9zPQqboqou/A2n4GfErSVQkqKd36wRxosoZL4GjTDrhCLxEjmIzRNsLXXuBwAjN
-        Du2iJBUgvk0/CcBA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 6D5B6A3B87;
-        Mon, 28 Feb 2022 16:52:01 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 43D88DA823; Mon, 28 Feb 2022 17:48:10 +0100 (CET)
-Date:   Mon, 28 Feb 2022 17:48:10 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
-Cc:     dsterba@suse.cz, Chris Mason <clm@fb.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v4] btrfs: add fs state details to error messages.
-Message-ID: <20220228164810.GI12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Sweet Tea Dorminy <sweettea-kernel@dorminy.me>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com
-References: <a059920460fe13f773fd9a2e870ceb9a8e3a105a.1645644489.git.sweettea-kernel@dorminy.me>
- <20220224132210.GS12643@twin.jikos.cz>
- <284ccc08-8de7-9188-19d8-20f4eda56cb4@dorminy.me>
- <20220224184231.GZ12643@twin.jikos.cz>
- <20f14d85-6a07-e66d-4711-c16c6930c2a3@dorminy.me>
+        Mon, 28 Feb 2022 11:54:49 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C48C27B28
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:54:10 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id 132so12063486pga.5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:54:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/PP18PnlVf/AcE9TCVp3WkPzAUoq9OmCtcVZO7RF9H0=;
+        b=gKIUb/KnSbcay3ZyS25SnMcMCkia1zVN8fogNkDZhAJy/PZ4nFs1s7suvXkAwiLrgf
+         zMdI+/Uq1FcmfvLktwbNajZiyi9blVd4xqrH72deaYtxQCgr0vIXB4w8JSpJ0pZTIV2u
+         eYz3PEIKyCBVIfD1jZNHmLA5KmL3VAGBwlgVzQIUWQ3wc0unNGZc+4IlJ0s9ja3PBGjy
+         QEAP81qnZf23+Je1wJ7KA/IjQxWbvjqjvrUb1FLbHE2baA7fjU/SMrNHw7VozR1idXC6
+         FpGRgMGeVXK5J6f4PjEe3oEQJIcAJj7i/1NtdvMywuxlJ/TtqAQ4rCM0Ow3PoF5K0/ux
+         k+8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/PP18PnlVf/AcE9TCVp3WkPzAUoq9OmCtcVZO7RF9H0=;
+        b=fAyIr4YB8BNGgsbjLtLTzXV0eeplIJMFSdPQrjA1oV31qAY/gkcd9hOOveoPhk2qp6
+         vNi6SyvmsrIHPxC/93mr4lCvAqDhnuCtATRfGqtcFeePGV8+YDLMPe0v+L4lXGr++iAv
+         6WyW/VzjzcKMTOHRf+yBu0isL9dIADVdE7mTKWWsz9A6YoHjUu4NuxCmo4JbSYVuOkvB
+         QldhyzCxJnY1RAWvozrTQaT/27zKLeyogFnl3rdL0M7p9RWH0Owv6SGdOkTT3JxtslQd
+         DOA8TSWOZSF1KpP9DgJIPfZ07TQMyVRe76GLRmOmL8dmMQ260aclcCyi3gOspafrXykm
+         1dgQ==
+X-Gm-Message-State: AOAM530BSbZHP0XMOf1z010LVsQ81sUxMrIq5fDuLxJWSKAQeeFN3/dT
+        vQ8I5m6X4oAtRkQq7VIF3WN0UQ==
+X-Google-Smtp-Source: ABdhPJxkrRPzgHLEA6/yaGSmJMHupUBt5XWeQCaT+Zgrv9LZMBwjgbpIY8cgrhjD6wWV3UeC0NUOqw==
+X-Received: by 2002:a63:8c52:0:b0:378:907d:1c6d with SMTP id q18-20020a638c52000000b00378907d1c6dmr5604028pgn.477.1646067249560;
+        Mon, 28 Feb 2022 08:54:09 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id l2-20020a056a0016c200b004e10af156adsm14601792pfc.190.2022.02.28.08.54.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 08:54:08 -0800 (PST)
+Date:   Mon, 28 Feb 2022 09:54:06 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] coresight: Drop unused 'none' enum value for each
+ component
+Message-ID: <20220228165406.GA1278407@p14s>
+References: <1645005118-10561-1-git-send-email-anshuman.khandual@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20f14d85-6a07-e66d-4711-c16c6930c2a3@dorminy.me>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <1645005118-10561-1-git-send-email-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 03:09:08PM -0500, Sweet Tea Dorminy wrote:
-> >> All the other interactions with info->fs_state are test/set/clear_bit,
-> >> which treat the argument as volatile and are therefore safe to do from
-> >> multiple threads. Without the READ_ONCE (reading it as a volatile),
-> >> the compiler or cpu could turn the reads of info->fs_state in
-> >> for_each_set_bit() into writes of random stuff into info->fs_state,
-> >> potentially clearing the state bits or filling them with garbage.
-> > I'm not sure I'm missing something, but I find the above hard to
-> > believe. Concurrent access to a variable from multiple threads may not
-> > produce consistent results, but random writes should not happen when
-> > we're just reading.
-> 
-> Maybe I've been reading too many articles about the things compilers are 
-> technically allowed to do. But as per the following link, the C standard 
-> does permit compilers inventing writes except to atomics and volatiles: 
-> https://lwn.net/Articles/793253/#Invented%20Stores
+Good morning,
 
-There's a difference between technically allowed to do and actually
-doing it. The article sections says that no such compiler is known with
-some exception of an old one that got fixed. Also as I read the example
-of the invented write, it's very specific and I don't se how it applies
-here at all.
+On Wed, Feb 16, 2022 at 03:21:58PM +0530, Anshuman Khandual wrote:
+> CORESIGHT_DEV_TYPE_NONE/CORESIGHT_DEV_SUBTYPE_XXXX_NONE values are not used
+> any where. Actual enumeration can start from 0. Just drop these unused enum
+> values.
+> 
+> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+> Cc: Mike Leach <mike.leach@linaro.org>
+> Cc: Leo Yan <leo.yan@linaro.org>
+> Cc: coresight@lists.linaro.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+> ---
+>  drivers/hwtracing/coresight/coresight-core.c | 3 ---
+>  include/linux/coresight.h                    | 5 -----
+>  2 files changed, 8 deletions(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-core.c b/drivers/hwtracing/coresight/coresight-core.c
+> index 88653d1c06a4..af00dca8d1ac 100644
+> --- a/drivers/hwtracing/coresight/coresight-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-core.c
+> @@ -1278,9 +1278,6 @@ static struct attribute *coresight_source_attrs[] = {
+>  ATTRIBUTE_GROUPS(coresight_source);
+>  
+>  static struct device_type coresight_dev_type[] = {
+> -	{
+> -		.name = "none",
+> -	},
+>  	{
+>  		.name = "sink",
+>  		.groups = coresight_sink_groups,
+> diff --git a/include/linux/coresight.h b/include/linux/coresight.h
+> index 93a2922b7653..9f445f09fcfe 100644
+> --- a/include/linux/coresight.h
+> +++ b/include/linux/coresight.h
+> @@ -36,7 +36,6 @@
+>  extern struct bus_type coresight_bustype;
+>  
+>  enum coresight_dev_type {
+> -	CORESIGHT_DEV_TYPE_NONE,
+>  	CORESIGHT_DEV_TYPE_SINK,
+>  	CORESIGHT_DEV_TYPE_LINK,
+>  	CORESIGHT_DEV_TYPE_LINKSINK,
+> @@ -46,7 +45,6 @@ enum coresight_dev_type {
+>  };
+>  
+>  enum coresight_dev_subtype_sink {
+> -	CORESIGHT_DEV_SUBTYPE_SINK_NONE,
+>  	CORESIGHT_DEV_SUBTYPE_SINK_PORT,
+>  	CORESIGHT_DEV_SUBTYPE_SINK_BUFFER,
+>  	CORESIGHT_DEV_SUBTYPE_SINK_SYSMEM,
+> @@ -54,21 +52,18 @@ enum coresight_dev_subtype_sink {
+>  };
+>  
+>  enum coresight_dev_subtype_link {
+> -	CORESIGHT_DEV_SUBTYPE_LINK_NONE,
+>  	CORESIGHT_DEV_SUBTYPE_LINK_MERG,
+>  	CORESIGHT_DEV_SUBTYPE_LINK_SPLIT,
+>  	CORESIGHT_DEV_SUBTYPE_LINK_FIFO,
+>  };
+>  
+>  enum coresight_dev_subtype_source {
+> -	CORESIGHT_DEV_SUBTYPE_SOURCE_NONE,
+>  	CORESIGHT_DEV_SUBTYPE_SOURCE_PROC,
+>  	CORESIGHT_DEV_SUBTYPE_SOURCE_BUS,
+>  	CORESIGHT_DEV_SUBTYPE_SOURCE_SOFTWARE,
+>  };
+>  
+>  enum coresight_dev_subtype_helper {
+> -	CORESIGHT_DEV_SUBTYPE_HELPER_NONE,
+>  	CORESIGHT_DEV_SUBTYPE_HELPER_CATU,
+>  };
 
-> >> Even if this is right, it'd be rare, but it would be exceeding weird
-> >> for a message to be logged listing an error and then future messages
-> >> be logged without any such state, or with a random collection of
-> >> garbage states.
-> > How would that happen? The volatile keyword is only a compiler hint not
-> > to do optimizations on the variable, what actually happens on the CPU
-> > level depends if the instruction is locked or not, so different threads
-> > may read different bits.
-> > You seem to imply that once a variable is not used with volatile
-> > semantics, even just for read, the result could lead to random writes
-> > because it's otherwise undefined.
-> 
-> Pretty much; once a variable is read without READ_ONCE, it's unsafe to 
-> write a new value on another thread that depends on the old value. 
+These have never been used in the 7 years the subsystem has existed and I don't
+see in what kind of situation they could be...
 
-You're giving 'volatile' too much credit for guaranteeing safety for
-interprocess operation, it's just a compiler hint to avoid
-optimizations, it's not a synchronization primitive. In some cases
-lockless reads are safe, as long as there are no updates or potential
-reloads between reads that could be changed by another thread. We use
-READ_ONCE in many cases, compiler in most cases generates the same
-instructions as without it and it's merely an annotation and a way of
-syntactic comment to denote special handling.
+I have applied this patch.
 
-> Imagine a compiler which invents stores; then if you are both reading 
-> and setting a variable 'a' on different threads, the following could happen:
-> 
-> thread 1 (reads)       thread 2 (modifies)
-> 
-> reads a into tmp
-> 
-> stores junk into a
-> 
->                                  reads junk from a
-> 
-> stores tmp into a
-> 
->                                  writes junk | 2 to a
-> 
-> 
-> Now a contains junk indefinitely.
+Thanks,
+Mathieu
 
-But we're only reading here, that why I don't see any real risk. We read
-a variable, potentially changed from other thread, and actually changed
-by atomic bit operations. Where are the invented writes going to come
-from, can't we rely on the bit handling primitives?
-
-If you're example above would be real, we'd either lack proper locking
-or there's a serious problem with compiler that would blow up in many
-places (like inventing newly set bits in flags or random values
-appearing in regular variables).
-
-> But if it's too theoretical, I'm happy to drop it and amend my paranoia 
-> level.
-
-I think it's highly theoretical but the READ_ONCE should be there as a
-matter of clean code practice, so I've updated the code.
+>  
+> -- 
+> 2.20.1
+> 
