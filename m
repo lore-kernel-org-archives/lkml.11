@@ -2,228 +2,331 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 279F2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 495ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:46:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229572AbiB1Taj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 14:30:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        id S229483AbiB1Tqk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 14:46:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiB1Tah (ORCPT
+        with ESMTP id S229457AbiB1Tqi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 14:30:37 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4DEF120EAF;
-        Mon, 28 Feb 2022 11:29:48 -0800 (PST)
+        Mon, 28 Feb 2022 14:46:38 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 877291FEFA9
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:45:47 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id i8so19897wrr.8
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:45:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646076588; x=1677612588;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=w5CiYDbdNUlxrAQe0dmDd/g10ZXmQOIeCXoLQYICtJ4=;
-  b=j50H539QlrCFYLg28nzmSLUi+BKr1a5g+ePDkbYAlLLlh7KRBJ8GxoTB
-   7Zce8vrszgRbda3tOdY9Wrjtummv0p88mIaKWqR8USAcDt1FlO8MIRtjp
-   DVZxkZ4JRDD5pl2P/VcQug0uZdEU3V+iGObAOFUlC888+ufktuJ3MErlL
-   I=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 28 Feb 2022 11:29:48 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 11:29:48 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 28 Feb 2022 11:29:47 -0800
-Received: from [10.216.31.79] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Mon, 28 Feb
- 2022 11:29:45 -0800
-Message-ID: <22ac147c-fb47-fc8c-8e10-8e67db94fbf8@quicinc.com>
-Date:   Tue, 1 Mar 2022 00:59:41 +0530
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GHpdtAlTcspTEUjTHGrVm+ax9xkwkOuqMMVc7q/8Ibs=;
+        b=2YW+JkjTQeX01R2meYtkCGrn+zWlP+oytmhWUAizCx0a3VTVaM4fsFoSYyIuY/1G6J
+         nvpqoLWmvOLAcwz5HRtkBT4tcyPsjp9ExV471Mcf/CEyU6BKgSBO67Vwf/tbls2QwdCs
+         9ht/XQlLA9o7zkXhUS7cEXRH+T0jOHtjJI2qF/8ZhvCnpxvvnrYYMrXS8GVzdFvrq5Dx
+         09H16ZM8wLlKyR/e2hqVshjKc6Z3R9SWl0e8e6oOjRi0VfmzbkGKFsH0pZTjDtl1b4uR
+         3HKLyz/wg3lvt2Dfr+hl0RaPNqIGW5IiALU3UqWwJBM2ramZ68rpEzF9XHXpwWo1V7lX
+         9/uw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GHpdtAlTcspTEUjTHGrVm+ax9xkwkOuqMMVc7q/8Ibs=;
+        b=wXtd3W/IFDVRVfP51g8BNQslBUlAONtj+ivbXvhc8x4u6nMXtEohjEqIGS9vzYgamN
+         RR4pK6lUuH4fVaahR8Ry5k9Ie0mWSe022JMhB9+TyfHVb1geadk+/3+vuneogXZY4Z8K
+         AmNgD4iRKFOUohN2h6SwJ07YUZ5Rec7DA/F7T+vLAK66Ft2JdC3tFi9P06VZj6iAv/Oy
+         jabvX3Qc/ssb2yegIyOl/4yBirsetK9GOzQPmiQyOIfEqGJZ6q/zZDmmlrfmM9llR6lo
+         Tjea1ijSUJjp/y7prxoKdk9DczJmy0onkEKe9uR48cVfjr+xwlcieH7gM313669nG7Va
+         ipiQ==
+X-Gm-Message-State: AOAM533K72SD8JzXkibAA8Hy9FRo3H/MNBSOWh8ygl/pzuCNWKiYSVM2
+        XPUs+/f1EZxzDz4JBwApRo27/A==
+X-Google-Smtp-Source: ABdhPJw+OJwbkRpsVAU+L7etyv7z0b4JQsL7JkKOZbd4zx9WSOwPsN5rjTqJ/HeVW0ANBo/FPceFsA==
+X-Received: by 2002:a5d:678b:0:b0:1ed:9f21:d36 with SMTP id v11-20020a5d678b000000b001ed9f210d36mr17283236wru.550.1646077247270;
+        Mon, 28 Feb 2022 11:40:47 -0800 (PST)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id v25-20020a05600c215900b0038117f41728sm274143wml.43.2022.02.28.11.40.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 11:40:46 -0800 (PST)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     heiko@sntech.de, herbert@gondor.apana.org.au,
+        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH 05/16] crypto: rockchip: do not store mode globally
+Date:   Mon, 28 Feb 2022 19:40:26 +0000
+Message-Id: <20220228194037.1600509-6-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220228194037.1600509-1-clabbe@baylibre.com>
+References: <20220228194037.1600509-1-clabbe@baylibre.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 2/5] irqchip/qcom-pdc: Kill non-wakeup irqdomain
-To:     Marc Zyngier <maz@kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        <linux-arm-msm@vger.kernel.org>
-References: <20220224101226.88373-1-maz@kernel.org>
- <20220224101226.88373-3-maz@kernel.org>
-From:   "Maulik Shah (mkshah)" <quic_mkshah@quicinc.com>
-In-Reply-To: <20220224101226.88373-3-maz@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Storing the mode globally does not work if 2 requests are handled in the
+same time.
+We should store it in a request context.
 
-On 2/24/2022 3:42 PM, Marc Zyngier wrote:
-> A careful look at the way the PDC driver works shows that:
->
-> - all interrupts are in the same space
-> - all interrupts are treated the same
->
-> And yet the driver creates two domains based on whether
-> the interrupt gets mapped directly or from the pinctrl code,
-> which is obviously a waste of resources.
-The GPIO is kept under separate domain to handle extra configuration for 
-wake GPIO handling.
+Fixes: ce0183cb6464b ("crypto: rockchip - switch to skcipher API")
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+---
+ drivers/crypto/rockchip/rk3288_crypto.h       |  5 +-
+ .../crypto/rockchip/rk3288_crypto_skcipher.c  | 58 ++++++++++++-------
+ 2 files changed, 41 insertions(+), 22 deletions(-)
 
-On targets like SM8150/SM8250 each wake up capable GPIO (if totan n) 
-line has dedicated parent PDC irq (if total m, n = m) associated with it.
-However on targets like sdx55 PDC has muxes where each wake GPIO (if 
-total n) line goes through each PDC muxes (if total m, n > m) and
-any of these muxes can be used to route any one GPIO to PDC (and parent 
-GIC) but unlike other targets it doesn't have one to one mapping for 
-GPIO to GIC interrupt.
-So this will need to be kept as is to support sdx55 target.
+diff --git a/drivers/crypto/rockchip/rk3288_crypto.h b/drivers/crypto/rockchip/rk3288_crypto.h
+index 656d6795d400..c919d9a43a08 100644
+--- a/drivers/crypto/rockchip/rk3288_crypto.h
++++ b/drivers/crypto/rockchip/rk3288_crypto.h
+@@ -245,10 +245,13 @@ struct rk_ahash_rctx {
+ struct rk_cipher_ctx {
+ 	struct rk_crypto_info		*dev;
+ 	unsigned int			keylen;
+-	u32				mode;
+ 	u8				iv[AES_BLOCK_SIZE];
+ };
+ 
++struct rk_cipher_rctx {
++	u32				mode;
++};
++
+ enum alg_type {
+ 	ALG_TYPE_HASH,
+ 	ALG_TYPE_CIPHER,
+diff --git a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
+index 8c44a19eab75..bbd0bf52bf07 100644
+--- a/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
++++ b/drivers/crypto/rockchip/rk3288_crypto_skcipher.c
+@@ -76,9 +76,10 @@ static int rk_aes_ecb_encrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_AES_ECB_MODE;
++	rctx->mode = RK_CRYPTO_AES_ECB_MODE;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -86,9 +87,10 @@ static int rk_aes_ecb_decrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_AES_ECB_MODE | RK_CRYPTO_DEC;
++	rctx->mode = RK_CRYPTO_AES_ECB_MODE | RK_CRYPTO_DEC;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -96,9 +98,10 @@ static int rk_aes_cbc_encrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_AES_CBC_MODE;
++	rctx->mode = RK_CRYPTO_AES_CBC_MODE;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -106,9 +109,10 @@ static int rk_aes_cbc_decrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_AES_CBC_MODE | RK_CRYPTO_DEC;
++	rctx->mode = RK_CRYPTO_AES_CBC_MODE | RK_CRYPTO_DEC;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -116,9 +120,10 @@ static int rk_des_ecb_encrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = 0;
++	rctx->mode = 0;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -126,9 +131,10 @@ static int rk_des_ecb_decrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_DEC;
++	rctx->mode = RK_CRYPTO_DEC;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -136,9 +142,10 @@ static int rk_des_cbc_encrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_TDES_CHAINMODE_CBC;
++	rctx->mode = RK_CRYPTO_TDES_CHAINMODE_CBC;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -146,9 +153,10 @@ static int rk_des_cbc_decrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_TDES_CHAINMODE_CBC | RK_CRYPTO_DEC;
++	rctx->mode = RK_CRYPTO_TDES_CHAINMODE_CBC | RK_CRYPTO_DEC;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -156,9 +164,10 @@ static int rk_des3_ede_ecb_encrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_TDES_SELECT;
++	rctx->mode = RK_CRYPTO_TDES_SELECT;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -166,9 +175,10 @@ static int rk_des3_ede_ecb_decrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_TDES_SELECT | RK_CRYPTO_DEC;
++	rctx->mode = RK_CRYPTO_TDES_SELECT | RK_CRYPTO_DEC;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -176,9 +186,10 @@ static int rk_des3_ede_cbc_encrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_TDES_SELECT | RK_CRYPTO_TDES_CHAINMODE_CBC;
++	rctx->mode = RK_CRYPTO_TDES_SELECT | RK_CRYPTO_TDES_CHAINMODE_CBC;
+ 	return rk_handle_req(dev, req);
+ }
+ 
+@@ -186,9 +197,10 @@ static int rk_des3_ede_cbc_decrypt(struct skcipher_request *req)
+ {
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_crypto_info *dev = ctx->dev;
+ 
+-	ctx->mode = RK_CRYPTO_TDES_SELECT | RK_CRYPTO_TDES_CHAINMODE_CBC |
++	rctx->mode = RK_CRYPTO_TDES_SELECT | RK_CRYPTO_TDES_CHAINMODE_CBC |
+ 		    RK_CRYPTO_DEC;
+ 	return rk_handle_req(dev, req);
+ }
+@@ -199,6 +211,7 @@ static void rk_ablk_hw_init(struct rk_crypto_info *dev)
+ 		skcipher_request_cast(dev->async_req);
+ 	struct crypto_skcipher *cipher = crypto_skcipher_reqtfm(req);
+ 	struct crypto_tfm *tfm = crypto_skcipher_tfm(cipher);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(cipher);
+ 	u32 ivsize, block, conf_reg = 0;
+ 
+@@ -206,22 +219,22 @@ static void rk_ablk_hw_init(struct rk_crypto_info *dev)
+ 	ivsize = crypto_skcipher_ivsize(cipher);
+ 
+ 	if (block == DES_BLOCK_SIZE) {
+-		ctx->mode |= RK_CRYPTO_TDES_FIFO_MODE |
++		rctx->mode |= RK_CRYPTO_TDES_FIFO_MODE |
+ 			     RK_CRYPTO_TDES_BYTESWAP_KEY |
+ 			     RK_CRYPTO_TDES_BYTESWAP_IV;
+-		CRYPTO_WRITE(dev, RK_CRYPTO_TDES_CTRL, ctx->mode);
++		CRYPTO_WRITE(dev, RK_CRYPTO_TDES_CTRL, rctx->mode);
+ 		memcpy_toio(dev->reg + RK_CRYPTO_TDES_IV_0, req->iv, ivsize);
+ 		conf_reg = RK_CRYPTO_DESSEL;
+ 	} else {
+-		ctx->mode |= RK_CRYPTO_AES_FIFO_MODE |
++		rctx->mode |= RK_CRYPTO_AES_FIFO_MODE |
+ 			     RK_CRYPTO_AES_KEY_CHANGE |
+ 			     RK_CRYPTO_AES_BYTESWAP_KEY |
+ 			     RK_CRYPTO_AES_BYTESWAP_IV;
+ 		if (ctx->keylen == AES_KEYSIZE_192)
+-			ctx->mode |= RK_CRYPTO_AES_192BIT_key;
++			rctx->mode |= RK_CRYPTO_AES_192BIT_key;
+ 		else if (ctx->keylen == AES_KEYSIZE_256)
+-			ctx->mode |= RK_CRYPTO_AES_256BIT_key;
+-		CRYPTO_WRITE(dev, RK_CRYPTO_AES_CTRL, ctx->mode);
++			rctx->mode |= RK_CRYPTO_AES_256BIT_key;
++		CRYPTO_WRITE(dev, RK_CRYPTO_AES_CTRL, rctx->mode);
+ 		memcpy_toio(dev->reg + RK_CRYPTO_AES_IV_0, req->iv, ivsize);
+ 	}
+ 	conf_reg |= RK_CRYPTO_BYTESWAP_BTFIFO |
+@@ -246,6 +259,7 @@ static int rk_set_data_start(struct rk_crypto_info *dev)
+ 	struct skcipher_request *req =
+ 		skcipher_request_cast(dev->async_req);
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
+ 	u32 ivsize = crypto_skcipher_ivsize(tfm);
+ 	u8 *src_last_blk = page_address(sg_page(dev->sg_src)) +
+@@ -254,7 +268,7 @@ static int rk_set_data_start(struct rk_crypto_info *dev)
+ 	/* Store the iv that need to be updated in chain mode.
+ 	 * And update the IV buffer to contain the next IV for decryption mode.
+ 	 */
+-	if (ctx->mode & RK_CRYPTO_DEC) {
++	if (rctx->mode & RK_CRYPTO_DEC) {
+ 		memcpy(ctx->iv, src_last_blk, ivsize);
+ 		sg_pcopy_to_buffer(dev->first, dev->src_nents, req->iv,
+ 				   ivsize, dev->total - ivsize);
+@@ -294,11 +308,12 @@ static void rk_iv_copyback(struct rk_crypto_info *dev)
+ 	struct skcipher_request *req =
+ 		skcipher_request_cast(dev->async_req);
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
+ 	u32 ivsize = crypto_skcipher_ivsize(tfm);
+ 
+ 	/* Update the IV buffer to contain the next IV for encryption mode. */
+-	if (!(ctx->mode & RK_CRYPTO_DEC)) {
++	if (!(rctx->mode & RK_CRYPTO_DEC)) {
+ 		if (dev->aligned) {
+ 			memcpy(req->iv, sg_virt(dev->sg_dst) +
+ 				dev->sg_dst->length - ivsize, ivsize);
+@@ -314,11 +329,12 @@ static void rk_update_iv(struct rk_crypto_info *dev)
+ 	struct skcipher_request *req =
+ 		skcipher_request_cast(dev->async_req);
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
++	struct rk_cipher_rctx *rctx = skcipher_request_ctx(req);
+ 	struct rk_cipher_ctx *ctx = crypto_skcipher_ctx(tfm);
+ 	u32 ivsize = crypto_skcipher_ivsize(tfm);
+ 	u8 *new_iv = NULL;
+ 
+-	if (ctx->mode & RK_CRYPTO_DEC) {
++	if (rctx->mode & RK_CRYPTO_DEC) {
+ 		new_iv = ctx->iv;
+ 	} else {
+ 		new_iv = page_address(sg_page(dev->sg_dst)) +
+-- 
+2.34.1
 
-Thanks,
-Maulik
->
-> Kill the non-wakeup domain and unify all the interrupt handling.
->
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> ---
->   drivers/irqchip/qcom-pdc.c | 84 +++++---------------------------------
->   1 file changed, 10 insertions(+), 74 deletions(-)
->
-> diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-> index 3b214c4e6755..5be531403f50 100644
-> --- a/drivers/irqchip/qcom-pdc.c
-> +++ b/drivers/irqchip/qcom-pdc.c
-> @@ -21,7 +21,6 @@
->   #include <linux/slab.h>
->   #include <linux/types.h>
->   
-> -#define PDC_MAX_IRQS		168
->   #define PDC_MAX_GPIO_IRQS	256
->   
->   #define CLEAR_INTR(reg, intr)	(reg & ~(1 << intr))
-> @@ -224,51 +223,6 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
->   	unsigned int type;
->   	int ret;
->   
-> -	ret = qcom_pdc_translate(domain, fwspec, &hwirq, &type);
-> -	if (ret)
-> -		return ret;
-> -
-> -	ret  = irq_domain_set_hwirq_and_chip(domain, virq, hwirq,
-> -					     &qcom_pdc_gic_chip, NULL);
-> -	if (ret)
-> -		return ret;
-> -
-> -	region = get_pin_region(hwirq);
-> -	if (!region)
-> -		return irq_domain_disconnect_hierarchy(domain->parent, virq);
-> -
-> -	if (type & IRQ_TYPE_EDGE_BOTH)
-> -		type = IRQ_TYPE_EDGE_RISING;
-> -
-> -	if (type & IRQ_TYPE_LEVEL_MASK)
-> -		type = IRQ_TYPE_LEVEL_HIGH;
-> -
-> -	parent_fwspec.fwnode      = domain->parent->fwnode;
-> -	parent_fwspec.param_count = 3;
-> -	parent_fwspec.param[0]    = 0;
-> -	parent_fwspec.param[1]    = pin_to_hwirq(region, hwirq);
-> -	parent_fwspec.param[2]    = type;
-> -
-> -	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
-> -					    &parent_fwspec);
-> -}
-> -
-> -static const struct irq_domain_ops qcom_pdc_ops = {
-> -	.translate	= qcom_pdc_translate,
-> -	.alloc		= qcom_pdc_alloc,
-> -	.free		= irq_domain_free_irqs_common,
-> -};
-> -
-> -static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
-> -			       unsigned int nr_irqs, void *data)
-> -{
-> -	struct irq_fwspec *fwspec = data;
-> -	struct irq_fwspec parent_fwspec;
-> -	struct pdc_pin_region *region;
-> -	irq_hw_number_t hwirq;
-> -	unsigned int type;
-> -	int ret;
-> -
->   	ret = qcom_pdc_translate(domain, fwspec, &hwirq, &type);
->   	if (ret)
->   		return ret;
-> @@ -301,16 +255,9 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
->   					    &parent_fwspec);
->   }
->   
-> -static int qcom_pdc_gpio_domain_select(struct irq_domain *d,
-> -				       struct irq_fwspec *fwspec,
-> -				       enum irq_domain_bus_token bus_token)
-> -{
-> -	return bus_token == DOMAIN_BUS_WAKEUP;
-> -}
-> -
-> -static const struct irq_domain_ops qcom_pdc_gpio_ops = {
-> -	.select		= qcom_pdc_gpio_domain_select,
-> -	.alloc		= qcom_pdc_gpio_alloc,
-> +static const struct irq_domain_ops qcom_pdc_ops = {
-> +	.translate	= qcom_pdc_translate,
-> +	.alloc		= qcom_pdc_alloc,
->   	.free		= irq_domain_free_irqs_common,
->   };
->   
-> @@ -361,7 +308,7 @@ static int pdc_setup_pin_mapping(struct device_node *np)
->   
->   static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
->   {
-> -	struct irq_domain *parent_domain, *pdc_domain, *pdc_gpio_domain;
-> +	struct irq_domain *parent_domain, *pdc_domain;
->   	int ret;
->   
->   	pdc_base = of_iomap(node, 0);
-> @@ -383,32 +330,21 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
->   		goto fail;
->   	}
->   
-> -	pdc_domain = irq_domain_create_hierarchy(parent_domain, 0, PDC_MAX_IRQS,
-> -						 of_fwnode_handle(node),
-> -						 &qcom_pdc_ops, NULL);
-> -	if (!pdc_domain) {
-> -		pr_err("%pOF: GIC domain add failed\n", node);
-> -		ret = -ENOMEM;
-> -		goto fail;
-> -	}
-> -
-> -	pdc_gpio_domain = irq_domain_create_hierarchy(parent_domain,
-> +	pdc_domain = irq_domain_create_hierarchy(parent_domain,
->   					IRQ_DOMAIN_FLAG_QCOM_PDC_WAKEUP,
->   					PDC_MAX_GPIO_IRQS,
->   					of_fwnode_handle(node),
-> -					&qcom_pdc_gpio_ops, NULL);
-> -	if (!pdc_gpio_domain) {
-> -		pr_err("%pOF: PDC domain add failed for GPIO domain\n", node);
-> +					&qcom_pdc_ops, NULL);
-> +	if (!pdc_domain) {
-> +		pr_err("%pOF: PDC domain add failed\n", node);
->   		ret = -ENOMEM;
-> -		goto remove;
-> +		goto fail;
->   	}
->   
-> -	irq_domain_update_bus_token(pdc_gpio_domain, DOMAIN_BUS_WAKEUP);
-> +	irq_domain_update_bus_token(pdc_domain, DOMAIN_BUS_WAKEUP);
->   
->   	return 0;
->   
-> -remove:
-> -	irq_domain_remove(pdc_domain);
->   fail:
->   	kfree(pdc_region);
->   	iounmap(pdc_base);
