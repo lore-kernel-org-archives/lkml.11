@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FC13C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236176AbiB1SCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:02:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46994 "EHLO
+        id S239717AbiB1SCW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:02:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238720AbiB1Ryq (ORCPT
+        with ESMTP id S238846AbiB1Ryq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A886C65B5;
-        Mon, 28 Feb 2022 09:44:17 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F762BE3;
+        Mon, 28 Feb 2022 09:44:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 420F360909;
-        Mon, 28 Feb 2022 17:44:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56728C340E7;
-        Mon, 28 Feb 2022 17:44:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 587B9B815AB;
+        Mon, 28 Feb 2022 17:44:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1954C340E7;
+        Mon, 28 Feb 2022 17:44:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070256;
-        bh=Lx0IS8Gmlt0ON9JS9/mUQFsYYSB2G4HV4Wd3sTPvW9Y=;
+        s=korg; t=1646070254;
+        bh=re8j0cwAUKK6PJWb56yhqhBnF9YWtkD/UuOaJsCwDGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PWIwinXCptXdDWraazRL5Hx3WmM5wzHFkU2sHW41YKrmVyul+3SihxOROzDOZgZjB
-         q1nf/yHbdpab/7AewD6mAPSEOY4qLTOo6MHt3BsuUom5mBa97AG2z7RJJxf5RLYSMQ
-         LWB9a2EGyUZQDJ8fiG38xT0+gPWlts1FRjyspE0Q=
+        b=slrqwLYUAMWcNjj05Fp0y5XJ56R9ckXJpNQ/L1xhsyo+T5QqZ6KZ21SPWkDGyXoBR
+         ZUGxxzTYumBf7YfqDCqBHPQxVqfqz620UMzxBK3uFemwTUJVP0YPGX4Rj2v0Jbkb1v
+         qgd8fRp7tV9af4hbBY2eEVqFAXLfExb9bq4A92IQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Manish Chopra <manishc@marvell.com>,
-        Alok Prasad <palok@marvell.com>,
-        Ariel Elior <aelior@marvell.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 042/164] bnx2x: fix driver load from initrd
-Date:   Mon, 28 Feb 2022 18:23:24 +0100
-Message-Id: <20220228172404.089422826@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 041/164] selftests: mptcp: be more conservative with cookie MPJ limits
+Date:   Mon, 28 Feb 2022 18:23:23 +0100
+Message-Id: <20220228172404.008132583@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -50,40 +49,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manish Chopra <manishc@marvell.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-commit e13ad1443684f7afaff24cf207e85e97885256bd upstream.
+commit e35f885b357d47e04380a2056d1b2cc3e6f4f24b upstream.
 
-Commit b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0") added
-new firmware support in the driver with maintaining older firmware
-compatibility. However, older firmware was not added in MODULE_FIRMWARE()
-which caused missing firmware files in initrd image leading to driver load
-failure from initrd. This patch adds MODULE_FIRMWARE() for older firmware
-version to have firmware files included in initrd.
+Since commit 2843ff6f36db ("mptcp: remote addresses fullmesh"), an
+MPTCP client can attempt creating multiple MPJ subflow simultaneusly.
 
-Fixes: b7a49f73059f ("bnx2x: Utilize firmware 7.13.21.0")
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215627
-Signed-off-by: Manish Chopra <manishc@marvell.com>
-Signed-off-by: Alok Prasad <palok@marvell.com>
-Signed-off-by: Ariel Elior <aelior@marvell.com>
-Link: https://lore.kernel.org/r/20220223085720.12021-1-manishc@marvell.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+In such scenario the server, when syncookies are enabled, could end-up
+accepting incoming MPJ syn even above the configured subflow limit, as
+the such limit can be enforced in a reliable way only after the subflow
+creation. In case of syncookie, only after the 3rd ack reception.
+
+As a consequence the related self-tests case sporadically fails, as it
+verify that the server always accept the expected number of MPJ syn.
+
+Address the issues relaxing the MPJ syn number constrain. Note that the
+check on the accepted number of MPJ 3rd ack still remains intact.
+
+Fixes: 2843ff6f36db ("mptcp: remote addresses fullmesh")
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c |    3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/net/mptcp/mptcp_join.sh |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-+++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_main.c
-@@ -100,6 +100,9 @@ MODULE_LICENSE("GPL");
- MODULE_FIRMWARE(FW_FILE_NAME_E1);
- MODULE_FIRMWARE(FW_FILE_NAME_E1H);
- MODULE_FIRMWARE(FW_FILE_NAME_E2);
-+MODULE_FIRMWARE(FW_FILE_NAME_E1_V15);
-+MODULE_FIRMWARE(FW_FILE_NAME_E1H_V15);
-+MODULE_FIRMWARE(FW_FILE_NAME_E2_V15);
+--- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -624,6 +624,7 @@ chk_join_nr()
+ 	local ack_nr=$4
+ 	local count
+ 	local dump_stats
++	local with_cookie
  
- int bnx2x_num_queues;
- module_param_named(num_queues, bnx2x_num_queues, int, 0444);
+ 	printf "%02u %-36s %s" "$TEST_COUNT" "$msg" "syn"
+ 	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinSynRx | awk '{print $2}'`
+@@ -637,12 +638,20 @@ chk_join_nr()
+ 	fi
+ 
+ 	echo -n " - synack"
++	with_cookie=`ip netns exec $ns2 sysctl -n net.ipv4.tcp_syncookies`
+ 	count=`ip netns exec $ns2 nstat -as | grep MPTcpExtMPJoinSynAckRx | awk '{print $2}'`
+ 	[ -z "$count" ] && count=0
+ 	if [ "$count" != "$syn_ack_nr" ]; then
+-		echo "[fail] got $count JOIN[s] synack expected $syn_ack_nr"
+-		ret=1
+-		dump_stats=1
++		# simult connections exceeding the limit with cookie enabled could go up to
++		# synack validation as the conn limit can be enforced reliably only after
++		# the subflow creation
++		if [ "$with_cookie" = 2 ] && [ "$count" -gt "$syn_ack_nr" ] && [ "$count" -le "$syn_nr" ]; then
++			echo -n "[ ok ]"
++		else
++			echo "[fail] got $count JOIN[s] synack expected $syn_ack_nr"
++			ret=1
++			dump_stats=1
++		fi
+ 	else
+ 		echo -n "[ ok ]"
+ 	fi
 
 
