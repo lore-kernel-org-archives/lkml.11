@@ -2,75 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D26C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:31:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE007C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236144AbiB1Nbl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:31:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
+        id S236254AbiB1Nbq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:31:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234974AbiB1Nbj (ORCPT
+        with ESMTP id S235283AbiB1Nbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 08:31:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2157B552;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD95B32EE5;
         Mon, 28 Feb 2022 05:31:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5582B61366;
-        Mon, 28 Feb 2022 13:31:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AD1B1C340FB;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B369B80D90;
         Mon, 28 Feb 2022 13:30:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 16CE9C340F0;
+        Mon, 28 Feb 2022 13:30:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646055059;
-        bh=COP7QMQ9xUh7IM7rpNprhgLL+2MxeN0ohPvU/K2GftA=;
+        s=k20201202; t=1646055058;
+        bh=/VuYTTGgeEib3boM9Ub2hTNazbf2SqMji6n9B3orojI=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=vDTFmWujGUdDKfVK1TT+i+W3mqIvA117XWM7lHGSUoMCwOMMVzpbe/MjwiS+irAyQ
-         oNQU9sG1gT18Cl5mYdelGAJFaCmjnlOaPisAaJJY7wiuRmJa4Y4BwYDw5FLiybMdlc
-         2GPey8rCmLlzhLB4F50yUPykbg9nfiJan8JxoYBnAzKDytnwzB+Oojbr+3Mu7l+wRg
-         ZdXfQnVkaYQMghdFaIY2/t8OKVKRrWKEDYqlzt2ptKB2H5vk/2NiNxu+/NIAAYYX0k
-         05fRLX+5U8D0VFGyfHf9mezW1OiiH4BWUp/EGJGUiuuJtYMXSRfw/JM+Jvp6mAffGG
-         sEI7Mb4U7XRuQ==
+        b=RxTGsogK/V7McELULdz3MvlwygpAWPsnAc+UpNS4QL229/0eUVRAtlYWh1jUCjahn
+         1u6LXGYmz+LfiW03HZSJ+LgHz+pESJgYX9qCZXh7FAFch9V4z1mfGm4Vq1cOXc4Cjh
+         tCi2YLlkNAwZxbzEcpzdtWIBkQn/2xsHls3wTO7fN33szxMQWMRsDjS4WM38PSgIgu
+         kvxDXk3J+JFTNaZ34G7aj4Z6srx3SAACQJjh4MdJtLvF/9DYOSo6U8jUWljr3Mws2q
+         WJde7W6im2prdC9xj/5XTnvviksR43wU6sq+EnKnx3CECE+GvIcDMagtWWZVFqem9G
+         I/q38MwD5qH+g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 96773F0383C;
-        Mon, 28 Feb 2022 13:30:59 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EE84CE5D087;
+        Mon, 28 Feb 2022 13:30:57 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: qlcnic: use time_is_before_jiffies() instead of open
- coding it
+Subject: Re: [PATCH bpf-next] bpf: add config to allow loading modules with BTF
+ mismatches
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164605505961.13902.9622614799721918952.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Feb 2022 13:30:59 +0000
-References: <1646017980-61037-1-git-send-email-wangqing@vivo.com>
-In-Reply-To: <1646017980-61037-1-git-send-email-wangqing@vivo.com>
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     shshaikh@marvell.com, manishc@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <164605505797.13902.1254314206143134404.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Feb 2022 13:30:57 +0000
+References: <20220223012814.1898677-1-connoro@google.com>
+In-Reply-To: <20220223012814.1898677-1-connoro@google.com>
+To:     Connor O'Brien <connoro@google.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        shung-hsi.yu@suse.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, msuchanek@suse.de
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-On Sun, 27 Feb 2022 19:13:00 -0800 you wrote:
-> From: Wang Qing <wangqing@vivo.com>
-> 
-> Use the helper function time_is_{before,after}_jiffies() to improve
-> code readability.
-> 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
+On Wed, 23 Feb 2022 01:28:14 +0000 you wrote:
+> BTF mismatch can occur for a separately-built module even when the ABI
+> is otherwise compatible and nothing else would prevent successfully
+> loading. Add a new config to control how mismatches are handled. By
+> default, preserve the current behavior of refusing to load the
+> module. If MODULE_ALLOW_BTF_MISMATCH is enabled, load the module but
+> ignore its BTF information.
 > 
 > [...]
 
 Here is the summary with links:
-  - net: qlcnic: use time_is_before_jiffies() instead of open coding it
-    https://git.kernel.org/netdev/net-next/c/3b6cab7b5a2f
+  - [bpf-next] bpf: add config to allow loading modules with BTF mismatches
+    https://git.kernel.org/bpf/bpf-next/c/5e214f2e43e4
 
 You are awesome, thank you!
 -- 
