@@ -2,125 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D798BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3489C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232145AbiB1M5i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:57:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46064 "EHLO
+        id S232408AbiB1M6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:58:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229903AbiB1M5e (ORCPT
+        with ESMTP id S233191AbiB1M5z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:57:34 -0500
-X-Greylist: delayed 2322 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 04:56:52 PST
-Received: from mx.treblig.org (mx.treblig.org [46.43.15.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B536271CAE
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:56:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=treblig.org
-        ; s=bytemarkmx; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID
-        :Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-        :List-Post:List-Owner:List-Archive;
-        bh=KXZFUJH9IMivzQ4dLa//v1ZDi0JJT/uywv36ICj5Y9g=; b=lcX1dXwH45zc5S/ujByc+8polV
-        2wVY1WEVAM2fPfI4zPWRCs2Xv0uZumsu7N5e7KnSWfgaLVA7HUMJV3J8evpYuZVzJS+rDwjuTwxNz
-        2RSb1peVyJmmxy3b6dTCsEzAMnmxfu3eT8ZUQQZH7qIFsCbx6DTS3joA1nDnjeHZ1JqTtuNcMv+oz
-        9F2TKAhFqfn2BVdhMbLiRJjPLutAMK6EkL0GdO1e30om1Z7XfLNighHUghScv6EZq9h5i2lgDxfsD
-        SnC0r1vzkPDMe4wT/KjMRwmAj1bAHmsqyUrJ+SQ9wV+vYLEd2sbpIaLrhrZr2Pll90EOmHv6hu21x
-        3K56qZmQ==;
-Received: from dg by mx.treblig.org with local (Exim 4.94.2)
-        (envelope-from <dg@treblig.org>)
-        id 1nOeyc-000qHH-Di; Mon, 28 Feb 2022 12:18:06 +0000
-Date:   Mon, 28 Feb 2022 12:18:06 +0000
-From:   "Dr. David Alan Gilbert" <linux@treblig.org>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     pasha.tatashin@soleen.com, songmuchun@bytedance.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: Use strtobool for param parsing
-Message-ID: <Yhy9fsyLyY9TU1Yp@gallifrey>
-References: <20220227181038.126926-1-linux@treblig.org>
- <20220227135128.3f5aabca43c7a33acea91cc8@linux-foundation.org>
+        Mon, 28 Feb 2022 07:57:55 -0500
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EFC67804D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:57:17 -0800 (PST)
+Received: from vanadium.ugent.be (vanadium.ugent.be [157.193.99.61])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id F17332A9DB5;
+        Mon, 28 Feb 2022 13:57:14 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1646053035;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bapqjhLApcwzDEhybuGVU/3933XunfSW4IVKilZ7qD4=;
+        b=pv0ZTcwUvhCAo4vxv2igrSpgiecCPZyuDI4hMokJve/s2Gdp7QcZcXzj5UohqsBwM7ZAAA
+        eNzPSkxzaKOjLZv7DGoka7E+VKNpTHHGKC9F7+Hdagu30tmeQ4KgeCkDRLBDWQk5XnYUeI
+        Kit+3/QQ8BzKWgnbEP71BU/7x1GRzLGMgb5uWMt2XL7CL0LW15E+ekd/P7P6XJQYLaNFOg
+        vekTaj76LdctZmJ60lIbMjl1uhQdUpY+Qm3v2CKx0c6G6gIzcdc7Lei5D+oNAHa9DDqQh7
+        IoziqFLAMWxOiUJyyzseWZL1GYr1eH1qszF3viLsY/5vuvOuwXEVdEPD9kf6aA==
+Message-ID: <4a8dac0dc296920c6e58584d48d6eaf6644b0322.camel@svanheule.net>
+Subject: Re: [PATCH v5 0/4] Per-parent domains for realtek-rtl IRQ driver
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Birger Koblitz <mail@birger-koblitz.de>,
+        Bert Vermeulen <bert@biot.com>,
+        John Crispin <john@phrozen.org>, linux-kernel@vger.kernel.org
+Date:   Mon, 28 Feb 2022 13:57:13 +0100
+In-Reply-To: <87czjo49ht.wl-maz@kernel.org>
+References: <cover.1644864700.git.sander@svanheule.net>
+         <87czjo49ht.wl-maz@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-In-Reply-To: <20220227135128.3f5aabca43c7a33acea91cc8@linux-foundation.org>
-X-Chocolate: 70 percent or better cocoa solids preferably
-X-Operating-System: Linux/5.10.0-9-amd64 (x86_64)
-X-Uptime: 12:17:30 up 112 days, 21:50,  1 user,  load average: 0.06, 0.01,
- 0.00
-User-Agent: Mutt/2.0.5 (2021-01-21)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Andrew Morton (akpm@linux-foundation.org) wrote:
-> On Sun, 27 Feb 2022 18:10:39 +0000 "Dr. David Alan Gilbert" <linux@treblig.org> wrote:
-> 
-> > Use strtobool rather than open coding "on" and "off" parsing in
-> > mm/hugetlb_vmemmap.c and mm/page_table_check.c.
+Hi Marc,
+
+On Tue, 2022-02-15 at 12:09 +0000, Marc Zyngier wrote:
+> On Mon, 14 Feb 2022 18:56:57 +0000,
+> Sander Vanheule <sander@svanheule.net> wrote:
 > > 
-> > Signed-off-by: Dr. David Alan Gilbert <linux@treblig.org>
-> > ---
-> >  mm/hugetlb_vmemmap.c  | 12 +-----------
-> >  mm/page_table_check.c | 10 +---------
-> >  2 files changed, 2 insertions(+), 20 deletions(-)
+> > The original implementation for this interrupt controller/router used
+> > an interrupt-map parser to determine which parent interrupts were
+> > present. However, this controller is not transparent, so a list of
+> > parent interrupts seems more appropriate, while also getting rid of the
+> > assumed routing to parent interrupts.
 > > 
-> > diff --git a/mm/hugetlb_vmemmap.c b/mm/hugetlb_vmemmap.c
-> > index c540c21e26f5b..919411386e547 100644
-> > --- a/mm/hugetlb_vmemmap.c
-> > +++ b/mm/hugetlb_vmemmap.c
-> > @@ -192,17 +192,7 @@ static int __init early_hugetlb_free_vmemmap_param(char *buf)
-> >  		return 0;
-> >  	}
-> >  
-> > -	if (!buf)
-> > -		return -EINVAL;
-> > -
-> > -	if (!strcmp(buf, "on"))
-> > -		hugetlb_free_vmemmap_enabled = true;
-> > -	else if (!strcmp(buf, "off"))
-> > -		hugetlb_free_vmemmap_enabled = false;
-> > -	else
-> > -		return -EINVAL;
-> > -
-> > -	return 0;
-> > +	return strtobool(buf, &hugetlb_free_vmemmap_enabled);
-> >  }
-> >  early_param("hugetlb_free_vmemmap", early_hugetlb_free_vmemmap_param);
+> > Additionally, N real cascaded interrupts are implemented, instead of
+> > handling all input interrupts with one cascaded interrupt. Otherwise it
+> > is possible that the priority of the parent interrupts is not respected.
 > 
-> This part falls afoul of the changes in
-> https://lkml.kernel.org/r/20211101031651.75851-3-songmuchun@bytedance.com
-
-Hmm, yes that's quite different.
-
-> > diff --git a/mm/page_table_check.c b/mm/page_table_check.c
-> > index 3763bd077861a..2458281bff893 100644
-> > --- a/mm/page_table_check.c
-> > +++ b/mm/page_table_check.c
-> > @@ -23,15 +23,7 @@ EXPORT_SYMBOL(page_table_check_disabled);
-> >  
-> >  static int __init early_page_table_check_param(char *buf)
-> >  {
-> > -	if (!buf)
-> > -		return -EINVAL;
-> > -
-> > -	if (strcmp(buf, "on") == 0)
-> > -		__page_table_check_enabled = true;
-> > -	else if (strcmp(buf, "off") == 0)
-> > -		__page_table_check_enabled = false;
-> > -
-> > -	return 0;
-> > +	return strtobool(buf, &__page_table_check_enabled);
-> >  }
+> My original question[1] still stands. An old kernel breaks with a new
+> DT. I am not convinced that this is an acceptable outcome.
 > 
-> But this works OK.
+>         M.
+> 
+> [1] https://lore.kernel.org/all/874k585efy.wl-maz@kernel.org
 
-Thanks for taking it.
 
-Dave
+My apologies for the delay in replying, although I suppose the lack of response
+from others perhaps indicates that there is little interest maintaining old
+kernel/new DT compatibility for this hardware. John has previously argued in
+favour of breaking compatibility [2].
 
--- 
- -----Open up your eyes, open up your mind, open up your code -------   
-/ Dr. David Alan Gilbert    |       Running GNU/Linux       | Happy  \ 
-\        dave @ treblig.org |                               | In Hex /
- \ _________________________|_____ http://www.treblig.org   |_______/
+Chances of someone running a vanilla kernel build on this hardware are close to
+zero at this moment. The most important part, the internal ethernet switch, is
+only supported with out-of-tree patches. If patches can be included on an old
+(LTS) kernel to provide networking support, then patches can be included to be
+compatible with a new DT specification for the interrupts as well. OpenWrt does
+exactly this: use an old (5.10) kernel with new upstream features backported.
+
+The binding could be adjusted to allow (but deprecate) interrupt-map for the new
+two-part compatibles. This would require a new DT to both specify two-cell
+interrupt specifiers, and an equivalent interrupt-map definition to ensure
+perfect two-way compatibility. This duplicated info would need to be maintained
+for years however, as LTS kernels stay around for a long time. In my opinion,
+breaking compatibility with old kernels would allow us to move forward with a
+cleaner driver and binding.
+
+Best,
+Sander
+
+[2]
+https://lore.kernel.org/all/9c169aad-3c7b-2ffb-90a2-1ca791a3f411@phrozen.org/
