@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5706FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 487CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239222AbiB1R5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:57:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55990 "EHLO
+        id S231886AbiB1R5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:57:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239945AbiB1Rxl (ORCPT
+        with ESMTP id S240014AbiB1Rxs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F03CAF1D1;
-        Mon, 28 Feb 2022 09:41:15 -0800 (PST)
+        Mon, 28 Feb 2022 12:53:48 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36215B0A78;
+        Mon, 28 Feb 2022 09:41:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 376BDB815B8;
-        Mon, 28 Feb 2022 17:40:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AC8BC340F0;
-        Mon, 28 Feb 2022 17:40:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1807661357;
+        Mon, 28 Feb 2022 17:41:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F276C340E7;
+        Mon, 28 Feb 2022 17:41:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070055;
-        bh=DzwcJXbODgTKFsEgFpXDiJ68s9xoeQXLilc34DuJJns=;
+        s=korg; t=1646070083;
+        bh=ZeUaeCJFJ4bWJ2ejkrzVSGb9kDF1BPevUpezIc/prvg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nlm0Xti+eLJBjrZzfHduBdHOYuUrDKLrtIzYqUDPt4EQgStBVtcN7shv9IfQBGkze
-         WZgKHP+svlPbpblz+3MhOWkrTZhnBXn9JuhhIUK9b/68QGJ5Erc2IDjLxjYQyeQiMN
-         PMG6UVJGiYrFwECLia9sfa21MJcOsDv1vWs10pC4=
+        b=vN3cb0cATCHgq6T6f8G0e8xhd+TEoIrLhI6pAsIYwlT/xs5RQ6KSNpoTnite6MsYp
+         /dS+YPHAafsmgP7iMEq4XRqwIyEWCnjhngsDhmT7OMkLoDBW4/4n5el1chz3z0wqLF
+         HP5UnKjFV/OocjS+gk8TfkypdAam+XBuBMxBr/eA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 109/139] USB: serial: option: add support for DW5829e
-Date:   Mon, 28 Feb 2022 18:24:43 +0100
-Message-Id: <20220228172359.127352489@linuxfoundation.org>
+        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Christophe Kerello <christophe.kerello@foss.st.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: [PATCH 5.15 118/139] mtd: core: Fix a conflict between MTD and NVMEM on wp-gpios property
+Date:   Mon, 28 Feb 2022 18:24:52 +0100
+Message-Id: <20220228172400.008762930@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,114 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Slark Xiao <slark_xiao@163.com>
+From: Christophe Kerello <christophe.kerello@foss.st.com>
 
-commit 6ecb3f0b18b320320460a42e40d6fb603f6ded96 upstream.
+commit 6c7621890995d089a56a06d11580d185ede7c2f8 upstream.
 
-Dell DW5829e same as DW5821e except CAT level.
-DW5821e supports CAT16 but DW5829e supports CAT9.
-There are 2 types product of DW5829e: normal and eSIM.
-So we will add 2 PID for DW5829e.
-And for each PID, it support MBIM or RMNET.
-Let's see test evidence as below:
+Wp-gpios property can be used on NVMEM nodes and the same property can
+be also used on MTD NAND nodes. In case of the wp-gpios property is
+defined at NAND level node, the GPIO management is done at NAND driver
+level. Write protect is disabled when the driver is probed or resumed
+and is enabled when the driver is released or suspended.
 
-DW5829e MBIM mode:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  4 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
-P:  Vendor=413c ProdID=81e6 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+When no partitions are defined in the NAND DT node, then the NAND DT node
+will be passed to NVMEM framework. If wp-gpios property is defined in
+this node, the GPIO resource is taken twice and the NAND controller
+driver fails to probe.
 
-DW5829e RMNET mode:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e6 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+A new Boolean flag named ignore_wp has been added in nvmem_config.
+In case ignore_wp is set, it means that the GPIO is handled by the
+provider. Lets set this flag in MTD layer to avoid the conflict on
+wp_gpios property.
 
-DW5829e-eSIM MBIM mode:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  6 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
-P:  Vendor=413c ProdID=81e4 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e-eSIM Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
-
-DW5829e-eSIM RMNET mode:
-T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
-D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
-P:  Vendor=413c ProdID=81e4 Rev=03.18
-S:  Manufacturer=Dell Inc.
-S:  Product=DW5829e-eSIM Snapdragon X20 LTE
-S:  SerialNumber=0123456789ABCDEF
-C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
-I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
-I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-
-BTW, the interface 0x6 of MBIM mode is GNSS port, which not same as NMEA
-port. So it's banned from serial option driver.
-The remaining interfaces 0x2-0x5 are: MODEM, MODEM, NMEA, DIAG.
-
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Link: https://lore.kernel.org/r/20220214021401.6264-1-slark_xiao@163.com
-[ johan: drop unnecessary reservation of interface 1 ]
+Fixes: 2a127da461a9 ("nvmem: add support for the write-protect pin")
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220220151432.16605-3-srinivas.kandagatla@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/mtd/mtdcore.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -198,6 +198,8 @@ static void option_instat_callback(struc
+--- a/drivers/mtd/mtdcore.c
++++ b/drivers/mtd/mtdcore.c
+@@ -546,6 +546,7 @@ static int mtd_nvmem_add(struct mtd_info
+ 	config.stride = 1;
+ 	config.read_only = true;
+ 	config.root_only = true;
++	config.ignore_wp = true;
+ 	config.no_of_node = !of_device_is_compatible(node, "nvmem-cells");
+ 	config.priv = mtd;
  
- #define DELL_PRODUCT_5821E			0x81d7
- #define DELL_PRODUCT_5821E_ESIM			0x81e0
-+#define DELL_PRODUCT_5829E_ESIM			0x81e4
-+#define DELL_PRODUCT_5829E			0x81e6
- 
- #define KYOCERA_VENDOR_ID			0x0c88
- #define KYOCERA_PRODUCT_KPC650			0x17da
-@@ -1063,6 +1065,10 @@ static const struct usb_device_id option
- 	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
- 	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5821E_ESIM),
- 	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
-+	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E),
-+	  .driver_info = RSVD(0) | RSVD(6) },
-+	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E_ESIM),
-+	  .driver_info = RSVD(0) | RSVD(6) },
- 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_E100A) },	/* ADU-E100, ADU-310 */
- 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_500A) },
- 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_620UW) },
+@@ -830,6 +831,7 @@ static struct nvmem_device *mtd_otp_nvme
+ 	config.owner = THIS_MODULE;
+ 	config.type = NVMEM_TYPE_OTP;
+ 	config.root_only = true;
++	config.ignore_wp = true;
+ 	config.reg_read = reg_read;
+ 	config.size = size;
+ 	config.of_node = np;
 
 
