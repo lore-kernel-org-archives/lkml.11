@@ -2,84 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7024CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 21:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 21:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230044AbiB1VMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 16:12:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
+        id S230055AbiB1VMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 16:12:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbiB1VMF (ORCPT
+        with ESMTP id S229747AbiB1VMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 16:12:05 -0500
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB735AA7A
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 13:11:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646082686; x=1677618686;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=LobaXSROVV91E+AOosHRlE77gRHfzWg5+Pud7kDr9a4=;
-  b=jkAemDSIVxqgjcudRLRcTyKNdP2h44V2a9q8cc7Mc4kR5OJcMM0xdxNO
-   2XTfAadAk6U6GTJrSaMpKV7WzknQ5OdOhALCP662L9X2pSQXG3rEvEZS4
-   8B7wTYLJO3dWAhP3iYgOB5rUFSNTZ3/Qe8E/2b0LXbLYtr9i5QdjrTK20
-   k3FbfwscsNQZRxyH/7tq9duKbuyn7GB+kSzwfiPKJPTN19Sf3HlnDeccm
-   Wu9jk/WYcZt9qUPeaeikzbpMEHaQ9Ups+ThHIJ0FoQX0ghunaxgnhh9ME
-   6GE6Ix3cHMJSBNDNtWIwREBij2Z1mCM9Kqu5rM5lBVCdv5TOcz9navqqm
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253180801"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="253180801"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 13:11:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="534622821"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 28 Feb 2022 13:11:24 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOnIi-0007mn-8I; Mon, 28 Feb 2022 21:11:24 +0000
-Date:   Tue, 1 Mar 2022 05:10:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tudor Ambarus <tudor.ambarus@microchip.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [ambarus:spi-nor/id-collisions-v4 39/39] make[4]: *** No rule to
- make target 'drivers/mtd/spi-nor/xmc.o', needed by
- 'drivers/mtd/spi-nor/built-in.a'.
-Message-ID: <202203010516.FbpMDFBg-lkp@intel.com>
+        Mon, 28 Feb 2022 16:12:10 -0500
+Received: from fanzine2.igalia.com (fanzine2.igalia.com [213.97.179.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9405C642
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 13:11:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=x6PJ0OStsGSuT4SBe9w5lcOqToFTV+nwUQ86UsifhPk=; b=o/A3ngpsdDVHXa1bTj1PeYsV6D
+        KtP6cL4mEKpfwhutiFyHtp58ktDyADJK4EJW25V8BIzEEQ1m5q7kGb07ArokBRZ6ZE4QRta2o2HtH
+        0jEMJ90jEJH1GZqJ0hY5JuFWDd6qteQfdAEGV/iLq0eWvryKM2zlY2Q/qtH8S+esGFLXXBt+pOlKQ
+        4PDj4z3es+WEtjYNNj9TfG8hdmpOuVEEmh0SfFp5jljTux43e9CRwx38O1NsBvtVpWdJhD7kJe/P2
+        ksMrG//Y0XH9cVbdNZeOQu8Z85SKJc9e8UUSNeIJ2lJ/hp9IOkSGk/cA92dILK18YtgCABT/D2+7K
+        V2N9Y2JQ==;
+Received: from [165.90.126.25] (helo=killbill.home)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1nOnIf-000CFy-Fr; Mon, 28 Feb 2022 22:11:21 +0100
+From:   Melissa Wen <mwen@igalia.com>
+To:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        airlied@linux.ie, alexander.deucher@amd.com,
+        christian.koenig@amd.com, daniel@ffwll.ch, harry.wentland@amd.com,
+        Rodrigo.Siqueira@amd.com, sunpeng.li@amd.com, Xinhui.Pan@amd.com
+Cc:     Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Jasdeep Dhillon <jdhillon@amd.com>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Melissa Wen <mwen@igalia.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] isolate FPU code from dcn10 and dcn21 to dml folder
+Date:   Mon, 28 Feb 2022 20:10:45 -0100
+Message-Id: <20220228211047.3957945-1-mwen@igalia.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ambarus/linux-0day spi-nor/id-collisions-v4
-head:   0dff6e52ceae6f25ba4afb713dde9bec6903fe72
-commit: 0dff6e52ceae6f25ba4afb713dde9bec6903fe72 [39/39] mtd: spi-nor: Move XMC to manufacturer ID collisions driver
-config: sh-randconfig-r001-20220228 (https://download.01.org/0day-ci/archive/20220301/202203010516.FbpMDFBg-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ambarus/linux-0day/commit/0dff6e52ceae6f25ba4afb713dde9bec6903fe72
-        git remote add ambarus https://github.com/ambarus/linux-0day
-        git fetch --no-tags ambarus spi-nor/id-collisions-v4
-        git checkout 0dff6e52ceae6f25ba4afb713dde9bec6903fe72
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sh SHELL=/bin/bash drivers/mtd/
+Continuing the work of isolating FPU code from DCN drivers, this
+patchset moves FPU-specific operations from dcn10 and dcn21 to dml
+folder. I move FPU code from dcn21 to dml/dcn20_fpu since there is a
+documentation in dcn20_fpu.c that states dcn20_fpu centralizes:
+`all DCN20 and DCN2.1 (DCN2x) functions that require FPU access`
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Also, there isn't a dcn10_fpu in dml/dcn10 folder, therefore, I create
+related files to isolate FPU structs there.
 
-All errors (new ones prefixed by >>):
+This patchset depends on previous patch to isolate FPU code from dcn20
+driver: https://patchwork.freedesktop.org/series/100487/   
 
->> make[4]: *** No rule to make target 'drivers/mtd/spi-nor/xmc.o', needed by 'drivers/mtd/spi-nor/built-in.a'.
-   make[4]: Target '__build' not remade because of errors.
+Melissa Wen (2):
+  drm/amd/display: move FPU operations from dcn21 to dml/dcn20 folder
+  drm/amd/display: move FPU code from dcn10 to dml/dcn10 folder
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ .../drm/amd/display/dc/dcn10/dcn10_resource.c |  62 --
+ .../drm/amd/display/dc/dcn10/dcn10_resource.h |   4 +
+ drivers/gpu/drm/amd/display/dc/dcn21/Makefile |  25 -
+ .../drm/amd/display/dc/dcn21/dcn21_resource.c | 566 +-----------------
+ .../drm/amd/display/dc/dcn21/dcn21_resource.h |  11 +
+ drivers/gpu/drm/amd/display/dc/dml/Makefile   |   2 +
+ .../drm/amd/display/dc/dml/dcn10/dcn10_fpu.c  | 124 ++++
+ .../drm/amd/display/dc/dml/dcn10/dcn10_fpu.h  |  30 +
+ .../drm/amd/display/dc/dml/dcn20/dcn20_fpu.c  | 538 ++++++++++++++++-
+ .../drm/amd/display/dc/dml/dcn20/dcn20_fpu.h  |   9 +
+ 10 files changed, 731 insertions(+), 640 deletions(-)
+ create mode 100644 drivers/gpu/drm/amd/display/dc/dml/dcn10/dcn10_fpu.c
+ create mode 100644 drivers/gpu/drm/amd/display/dc/dml/dcn10/dcn10_fpu.h
+
+-- 
+2.34.1
+
