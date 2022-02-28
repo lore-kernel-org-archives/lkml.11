@@ -2,217 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4AF5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7869DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:59:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238080AbiB1Q6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 11:58:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46402 "EHLO
+        id S237875AbiB1RA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:00:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238078AbiB1Q6o (ORCPT
+        with ESMTP id S233315AbiB1RAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 11:58:44 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC5030F6F;
-        Mon, 28 Feb 2022 08:58:02 -0800 (PST)
-Received: from localhost (unknown [IPv6:2a02:3030:d:c6d6:6038:4205:518a:e601])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: sebastianfricke)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id BF26D1F434C8;
-        Mon, 28 Feb 2022 16:58:00 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1646067481;
-        bh=eOnO+F0pkrYqrHAPOaocB5MRt2wL2To09bEpPfIIIqE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RQiWvbw0MlPn0BzkxylKr+PL3C54L8qRHuDeuFdbq/Ho4SvYUONa7jcxx0tZtEaqZ
-         W6JUboVE/vSQTB/eBa0YjVZOR2g96vS9Jqe3uXjThU78yxrhbxw+Gld93wocjrZpvU
-         +QwAb76qfJQw+pCZ4l+3MMZ2HxxRZMUmxFm/Zp4zT4rGituXBNxcuEhG8Ox6cQfTYj
-         Xb9AXlGHXueWlEl9De7wvhYd/HMcYUmFvsUkl3oQ1H8g9ZROIGvY2OgQ9U5RPv/mgM
-         nkKzVSofLEGfl2Dm0eP28GLPFFnr9QYPh5e7XJInTwdjfrZyspMNXXVmucF8Ii65Rf
-         0DjgTx3KhESBg==
-Date:   Mon, 28 Feb 2022 17:57:57 +0100
-From:   Sebastian Fricke <sebastian.fricke@collabora.com>
-To:     Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc:     mchehab@kernel.org, ezequiel@vanguardiasur.com.ar,
-        p.zabel@pengutronix.de, gregkh@linuxfoundation.org,
-        mripard@kernel.org, paul.kocialkowski@bootlin.com, wens@csie.org,
-        jernej.skrabec@gmail.com, jonas@kwiboo.se, nicolas@ndufresne.ca,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        kernel@collabora.com, knaerzche@gmail.com, jc@kynesim.co.uk
-Subject: Re: [PATCH v4 04/15] media: uapi: HEVC: Add missing fields in HEVC
- controls
-Message-ID: <20220228165757.sjqxdxb3toxkcasl@basti-XPS-13-9310>
-References: <20220228140838.622021-1-benjamin.gaignard@collabora.com>
- <20220228140838.622021-5-benjamin.gaignard@collabora.com>
+        Mon, 28 Feb 2022 12:00:24 -0500
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9409F85BCD
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:59:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646067585; x=1677603585;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mt8s7io4bRnq3KbQhdcgmNlPex7ZeHertn8F1Onb4+0=;
+  b=LxiqcWQg596AJudHJOYS3Iqi/GULvOV0zbcmfNnSym9O6mdSZ9FyF35+
+   0tcyIf1jYpeO2JBoDwqUkfwCIC0ybJD0qLOgF7YL/QVHeLsR1vBTfAbG0
+   GrGQGg/PThDZTPMzRCzQd1Q8E6AWEGGjde0s9coOVgQim2WpVMCyzpmab
+   o2wYjcc7Rpd48JxGnDn1wMstx31jhNibw9MKU5VTYzF+w/uWfv/GLKl6E
+   jze4xVo7ssJhPMsMplOZEZkD5MD84qe61gEhEN1wI+lk673pPZ8wgW9jk
+   JGKhnzs8tkNIcNpku6ea4kK87GOjC/s5hf/2x3piwTRFit8kVTJQwIXv3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="277589402"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="277589402"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 08:59:45 -0800
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="608512605"
+Received: from chunhanz-mobl.amr.corp.intel.com (HELO localhost) ([10.212.29.175])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 08:59:44 -0800
+Date:   Mon, 28 Feb 2022 08:59:44 -0800
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V8 33/44] memremap_pages: Introduce
+ pgmap_protection_available()
+Message-ID: <Yhz/gK9K6KtON0bq@iweiny-desk3>
+References: <20220127175505.851391-1-ira.weiny@intel.com>
+ <20220127175505.851391-34-ira.weiny@intel.com>
+ <CAPcyv4gWcs5u1vRMjzQwJque98u_6MPTWKOFb6XS273egyiXHA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220228140838.622021-5-benjamin.gaignard@collabora.com>
+In-Reply-To: <CAPcyv4gWcs5u1vRMjzQwJque98u_6MPTWKOFb6XS273egyiXHA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Benjamin,
+On Fri, Feb 04, 2022 at 08:19:43AM -0800, Dan Williams wrote:
+> On Thu, Jan 27, 2022 at 9:55 AM <ira.weiny@intel.com> wrote:
 
-On 28.02.2022 15:08, Benjamin Gaignard wrote:
->Complete the HEVC controls with missing fields from H.265 specifications.
->Even if these fields aren't used by the current mainlined drivers
->they will be need for (at least) rkvdec driver.
->
->Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->---
-> .../media/v4l/ext-ctrls-codec.rst             | 22 +++++++++++++++++++
-> include/media/hevc-ctrls.h                    |  6 ++++-
-> 2 files changed, 27 insertions(+), 1 deletion(-)
->
->diff --git a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->index 4cd7c541fc30..d096cb75993a 100644
->--- a/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->+++ b/Documentation/userspace-api/media/v4l/ext-ctrls-codec.rst
->@@ -2661,6 +2661,16 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->     :stub-columns: 0
->     :widths:       1 1 2
->
->+    * - __u8
->+      - ``video_parameter_set_id``
->+      - Specifies the value of the vps_video_parameter_set_id of the active VPS
->+        as descibed in section "7.4.3.2.1 General sequence parameter set RBSP semantics"
->+        of H.265 specifications.
->+    * - __u8
->+      - ``seq_parameter_set_id``
->+      - Provides an identifier for the SPS for reference by other syntax elements
->+        as descibed in section "7.4.3.2.1 General sequence parameter set RBSP semantics"
->+        of H.265 specifications.
->     * - __u16
->       - ``pic_width_in_luma_samples``
->       -
->@@ -2800,6 +2810,9 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->     :stub-columns: 0
->     :widths:       1 1 2
->
->+    * - __u8
->+      - ``pic_parameter_set_id``
->+      - Identifies the PPS for reference by other syntax elements.
->     * - __u8
->       - ``num_extra_slice_header_bits``
->       -
->@@ -3026,6 +3039,15 @@ enum v4l2_mpeg_video_hevc_size_of_length_field -
->     * - __u8
->       - ``ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX]``
->       - The list of L1 reference elements as indices in the DPB.
->+    * - __u16
->+      - ``short_term_ref_pic_set_size``
->+      - Specifies the number of st_ref_pic_set( ) syntax structures included in the SPS.
->+        The value of num_short_term_ref_pic_sets shall be in the range of 0 to 64, inclusive.
->+    * - __u16
->+      - ``long_term_ref_pic_set_size``
->+      - Specifies the number of candidate long-term reference pictures that are specified
->+        in the SPS. The value of num_long_term_ref_pics_sps shall be in the range
->+        of 0 to 32, inclusive.
->     * - __u8
+[snip]
 
-I would like to argue that the names for these fields are not optimal.
+> > @@ -63,6 +64,16 @@ static void devmap_managed_enable_put(struct dev_pagemap *pgmap)
+> >  }
+> >  #endif /* CONFIG_DEV_PAGEMAP_OPS */
+> >
+> > +#ifdef CONFIG_DEVMAP_ACCESS_PROTECTION
+> > +
+> > +bool pgmap_protection_available(void)
+> > +{
+> > +       return pks_available();
+> > +}
+> > +EXPORT_SYMBOL_GPL(pgmap_protection_available);
+> 
+> Any reason this was chosen to be an out-of-line function? Doesn't this
+> defeat the performance advantages of static_cpu_has()?
 
-The are quite similar to the ones from the specification:
-`num_short_term_ref_pic_sets` & `num_long_term_ref_pics_sps`, while
-they actually do something different. (Which means that descriptions for
-the fields are sadly incorrect as well)
+Unfortunately, yes.  pkeys.h includes mm.h which means I can't include pkeys.h
+here in mm.h.
 
-Looking at the code from the H265 parser in GStreamer:
-```
-       READ_UINT8 (&nr, slice->short_term_ref_pic_set_sps_flag, 1);
-       if (!slice->short_term_ref_pic_set_sps_flag) {
-         guint pos = nal_reader_get_pos (&nr);
-         if (!gst_h265_parser_parse_short_term_ref_pic_sets
-             (&slice->short_term_ref_pic_sets, &nr,
-                 sps->num_short_term_ref_pic_sets, sps))
-           goto error;
+Let me see what I can do.  In patch 11 I created pks-keys.h.  Let me see if I
+can leverage that header instead of pkeys.h.
 
-         slice->short_term_ref_pic_set_size = nal_reader_get_pos (&nr) - pos;
-```
+When I created that header I was thinking that the user and supervisor pkey
+functions may need even more separation in the headers but I was fearful of
+putting too much in pks-keys.h because it was created to avoid conflicts in
+asm/processor.h.  Looking at it again I think pks_available() may be ok in
+pks-keys.h.
 
-We can see that the `short_term_ref_pic_set_size` is calculated by
-gettting the difference between the nal_reader position before calling
-`gst_h265_parser_parse_short_term_ref_pic_sets` and the position of the
-nal reader afterwards.
-The variable `num_short_term_ref_pic_sets` is used as part of the short
-term reference picture set parsing process, but it is not directly
-related to `short_term_ref_pic_set_size` (otherwise a direct
-transformation of `num_short_term_ref_pic_sets` ->
-`short_term_ref_pic_set_size` would have been way easier)
+Ira
 
-Further when I look at a patch from Alex Bee for RKVDEC that uses these
-fields (actually the only user) (https://github.com/LibreELEC/LibreELEC.tv/blob/master/projects/Rockchip/patches/linux/default/linux-2000-v4l2-wip-rkvdec-hevc.patch#L3007)
-I can see that he describes them as bit offsets.
-
-So, to avoid confusion, I would argue that we should rename these
-(They are not part of the specification anyway)
-
-s/short_term_ref_pic_set_size/short_term_ref_pic_set_bit_offset/
-s/long_term_ref_pic_set_size/long_term_ref_pic_set_bit_offset/
-
-These names describe the purpose and the content a bit better and avoid
-confusion with existing values.
-
-Additonally, I noticed that calculating the bit offset for the long term
-is a bit tricky. I wasn't able to find a direct reference in
-'non-vendor' code.
-
-The process for parsing the short term reference picture set is depicted with a lot of detail in
-the specification, but I wasn't able to find the something equivalent for the long term
-reference picture set.
-
-Having a switft look into mpp, I can see at:
-https://github.com/JeffyCN/rockchip_mirrors/blob/mpp/mpp/hal/rkdec/h265d/hal_h265d_com.c#L512
-
-That they do roughly the same short term is simply the read bits by the
-BitReader - the read bits before the operation on the short term
-reference picture set. (so very similar to what the h265 parser does in
-GStreamer)
-The bit offset for long term is equal to short term unless the
-`long_term_ref_pics_present_flag` is set. In which case, we perform some
-operations on the long term reference picture set and add the amount of
-used bits to the bit offset.
-
-Greetings,
-Sebastian
-
->       - ``padding``
->       - Applications and drivers must set this to zero.
->diff --git a/include/media/hevc-ctrls.h b/include/media/hevc-ctrls.h
->index 01ccda48d8c5..a329e086a89a 100644
->--- a/include/media/hevc-ctrls.h
->+++ b/include/media/hevc-ctrls.h
->@@ -58,6 +58,8 @@ enum v4l2_mpeg_video_hevc_start_code {
-> /* The controls are not stable at the moment and will likely be reworked. */
-> struct v4l2_ctrl_hevc_sps {
-> 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Sequence parameter set */
->+	__u8	video_parameter_set_id;
->+	__u8	seq_parameter_set_id;
-> 	__u16	pic_width_in_luma_samples;
-> 	__u16	pic_height_in_luma_samples;
-> 	__u8	bit_depth_luma_minus8;
->@@ -108,6 +110,7 @@ struct v4l2_ctrl_hevc_sps {
->
-> struct v4l2_ctrl_hevc_pps {
-> 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Picture parameter set */
->+	__u8	pic_parameter_set_id;
-> 	__u8	num_extra_slice_header_bits;
-> 	__u8	num_ref_idx_l0_default_active_minus1;
-> 	__u8	num_ref_idx_l1_default_active_minus1;
->@@ -199,7 +202,8 @@ struct v4l2_ctrl_hevc_slice_params {
-> 	__u32	slice_segment_addr;
-> 	__u8	ref_idx_l0[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
-> 	__u8	ref_idx_l1[V4L2_HEVC_DPB_ENTRIES_NUM_MAX];
->-
->+	__u16	short_term_ref_pic_set_size;
->+	__u16	long_term_ref_pic_set_size;
-> 	__u8	padding;
->
-> 	/* ISO/IEC 23008-2, ITU-T Rec. H.265: Weighted prediction parameter */
->-- 
->2.32.0
->
+> 
+> > +
+> > +#endif /* CONFIG_DEVMAP_ACCESS_PROTECTION */
+> > +
+> >  static void pgmap_array_delete(struct range *range)
+> >  {
+> >         xa_store_range(&pgmap_array, PHYS_PFN(range->start), PHYS_PFN(range->end),
+> > --
+> > 2.31.1
+> >
