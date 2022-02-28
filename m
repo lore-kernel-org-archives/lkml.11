@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA0BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20234C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237349AbiB1R52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:57:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
+        id S232506AbiB1R5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:57:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240064AbiB1Rxx (ORCPT
+        with ESMTP id S240107AbiB1Rxy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:53 -0500
+        Mon, 28 Feb 2022 12:53:54 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B49CEB0C7C;
-        Mon, 28 Feb 2022 09:41:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD01B0E82;
+        Mon, 28 Feb 2022 09:41:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9280161590;
-        Mon, 28 Feb 2022 17:41:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6E2AC340F0;
-        Mon, 28 Feb 2022 17:41:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D3B1614C9;
+        Mon, 28 Feb 2022 17:41:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C934C340E7;
+        Mon, 28 Feb 2022 17:41:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070089;
-        bh=7lSeKmtAk7TmkQrY5ZdGX1u07q8whDThD0ZzKg+6csA=;
+        s=korg; t=1646070094;
+        bh=W9GXwMYb2HVLNn3xLFVtQuFcMxE6hhdS/ncOTpwgpnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQc6bnvIhBSzhgjmvGEexWZAsFoBnL80UgRKp8tEfzb54JFO/gn25qBFJ2d0KQF1x
-         vsWG661i0Vn3scrxmg5yuGgqsK9G9yHxx6zL/neYdbgUr/kJj6auPRKr7XBD/C8poa
-         spmH6BCYLViznw+rqDte7TCBq02lLKBjeEiVPDN4=
+        b=pOqQMmp0pHCXSTAbYTwXHqmOJUWDuzh56XzdM/DD0eU8K+ORqHLzZHFCnGqyaAOt0
+         BVD90GCC1JCmC0NoP8P+SSTBXo82oe+rw49FAE09Etmwr6plX00VaSrL/LXp6ZfZpL
+         LEtuRShITREZuDmOcQmYb0SM2bQyY9rbwbNyVPdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 120/139] btrfs: prevent copying too big compressed lzo segment
-Date:   Mon, 28 Feb 2022 18:24:54 +0100
-Message-Id: <20220228172400.226471387@linuxfoundation.org>
+        stable@vger.kernel.org, Chuansheng Liu <chuansheng.liu@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 122/139] thermal: int340x: fix memory leak in int3400_notify()
+Date:   Mon, 28 Feb 2022 18:24:56 +0100
+Message-Id: <20220228172400.450400542@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,80 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dāvis Mosāns <davispuh@gmail.com>
+From: Chuansheng Liu <chuansheng.liu@intel.com>
 
-commit 741b23a970a79d5d3a1db2d64fa2c7b375a4febb upstream.
+commit 3abea10e6a8f0e7804ed4c124bea2d15aca977c8 upstream.
 
-Compressed length can be corrupted to be a lot larger than memory
-we have allocated for buffer.
-This will cause memcpy in copy_compressed_segment to write outside
-of allocated memory.
+It is easy to hit the below memory leaks in my TigerLake platform:
 
-This mostly results in stuck read syscall but sometimes when using
-btrfs send can get #GP
+unreferenced object 0xffff927c8b91dbc0 (size 32):
+  comm "kworker/0:2", pid 112, jiffies 4294893323 (age 83.604s)
+  hex dump (first 32 bytes):
+    4e 41 4d 45 3d 49 4e 54 33 34 30 30 20 54 68 65  NAME=INT3400 The
+    72 6d 61 6c 00 6b 6b 6b 6b 6b 6b 6b 6b 6b 6b a5  rmal.kkkkkkkkkk.
+  backtrace:
+    [<ffffffff9c502c3e>] __kmalloc_track_caller+0x2fe/0x4a0
+    [<ffffffff9c7b7c15>] kvasprintf+0x65/0xd0
+    [<ffffffff9c7b7d6e>] kasprintf+0x4e/0x70
+    [<ffffffffc04cb662>] int3400_notify+0x82/0x120 [int3400_thermal]
+    [<ffffffff9c8b7358>] acpi_ev_notify_dispatch+0x54/0x71
+    [<ffffffff9c88f1a7>] acpi_os_execute_deferred+0x17/0x30
+    [<ffffffff9c2c2c0a>] process_one_work+0x21a/0x3f0
+    [<ffffffff9c2c2e2a>] worker_thread+0x4a/0x3b0
+    [<ffffffff9c2cb4dd>] kthread+0xfd/0x130
+    [<ffffffff9c201c1f>] ret_from_fork+0x1f/0x30
 
-  kernel: general protection fault, probably for non-canonical address 0x841551d5c1000: 0000 [#1] PREEMPT SMP NOPTI
-  kernel: CPU: 17 PID: 264 Comm: kworker/u256:7 Tainted: P           OE     5.17.0-rc2-1 #12
-  kernel: Workqueue: btrfs-endio btrfs_work_helper [btrfs]
-  kernel: RIP: 0010:lzo_decompress_bio (./include/linux/fortify-string.h:225 fs/btrfs/lzo.c:322 fs/btrfs/lzo.c:394) btrfs
-  Code starting with the faulting instruction
-  ===========================================
-     0:*  48 8b 06                mov    (%rsi),%rax              <-- trapping instruction
-     3:   48 8d 79 08             lea    0x8(%rcx),%rdi
-     7:   48 83 e7 f8             and    $0xfffffffffffffff8,%rdi
-     b:   48 89 01                mov    %rax,(%rcx)
-     e:   44 89 f0                mov    %r14d,%eax
-    11:   48 8b 54 06 f8          mov    -0x8(%rsi,%rax,1),%rdx
-  kernel: RSP: 0018:ffffb110812efd50 EFLAGS: 00010212
-  kernel: RAX: 0000000000001000 RBX: 000000009ca264c8 RCX: ffff98996e6d8ff8
-  kernel: RDX: 0000000000000064 RSI: 000841551d5c1000 RDI: ffffffff9500435d
-  kernel: RBP: ffff989a3be856c0 R08: 0000000000000000 R09: 0000000000000000
-  kernel: R10: 0000000000000000 R11: 0000000000001000 R12: ffff98996e6d8000
-  kernel: R13: 0000000000000008 R14: 0000000000001000 R15: 000841551d5c1000
-  kernel: FS:  0000000000000000(0000) GS:ffff98a09d640000(0000) knlGS:0000000000000000
-  kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  kernel: CR2: 00001e9f984d9ea8 CR3: 000000014971a000 CR4: 00000000003506e0
-  kernel: Call Trace:
-  kernel:  <TASK>
-  kernel: end_compressed_bio_read (fs/btrfs/compression.c:104 fs/btrfs/compression.c:1363 fs/btrfs/compression.c:323) btrfs
-  kernel: end_workqueue_fn (fs/btrfs/disk-io.c:1923) btrfs
-  kernel: btrfs_work_helper (fs/btrfs/async-thread.c:326) btrfs
-  kernel: process_one_work (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:212 ./include/trace/events/workqueue.h:108 kernel/workqueue.c:2312)
-  kernel: worker_thread (./include/linux/list.h:292 kernel/workqueue.c:2455)
-  kernel: ? process_one_work (kernel/workqueue.c:2397)
-  kernel: kthread (kernel/kthread.c:377)
-  kernel: ? kthread_complete_and_exit (kernel/kthread.c:332)
-  kernel: ret_from_fork (arch/x86/entry/entry_64.S:301)
-  kernel:  </TASK>
+Fix it by calling kfree() accordingly.
 
-CC: stable@vger.kernel.org # 4.9+
-Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: 38e44da59130 ("thermal: int3400_thermal: process "thermal table changed" event")
+Signed-off-by: Chuansheng Liu <chuansheng.liu@intel.com>
+Cc: 4.14+ <stable@vger.kernel.org> # 4.14+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/lzo.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/thermal/intel/int340x_thermal/int3400_thermal.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/fs/btrfs/lzo.c
-+++ b/fs/btrfs/lzo.c
-@@ -363,6 +363,17 @@ int lzo_decompress_bio(struct list_head
- 		kunmap(cur_page);
- 		cur_in += LZO_LEN;
+--- a/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
++++ b/drivers/thermal/intel/int340x_thermal/int3400_thermal.c
+@@ -405,6 +405,10 @@ static void int3400_notify(acpi_handle h
+ 	thermal_prop[3] = kasprintf(GFP_KERNEL, "EVENT=%d", therm_event);
+ 	thermal_prop[4] = NULL;
+ 	kobject_uevent_env(&priv->thermal->device.kobj, KOBJ_CHANGE, thermal_prop);
++	kfree(thermal_prop[0]);
++	kfree(thermal_prop[1]);
++	kfree(thermal_prop[2]);
++	kfree(thermal_prop[3]);
+ }
  
-+		if (seg_len > lzo1x_worst_compress(PAGE_SIZE)) {
-+			/*
-+			 * seg_len shouldn't be larger than we have allocated
-+			 * for workspace->cbuf
-+			 */
-+			btrfs_err(fs_info, "unexpectedly large lzo segment len %u",
-+					seg_len);
-+			ret = -EIO;
-+			goto out;
-+		}
-+
- 		/* Copy the compressed segment payload into workspace */
- 		copy_compressed_segment(cb, workspace->cbuf, seg_len, &cur_in);
- 
+ static int int3400_thermal_get_temp(struct thermal_zone_device *thermal,
 
 
