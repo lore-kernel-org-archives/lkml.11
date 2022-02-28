@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E80AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE53CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237065AbiB1Rcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:32:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
+        id S238128AbiB1Rcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:32:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237276AbiB1Rb4 (ORCPT
+        with ESMTP id S237434AbiB1Rb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:31:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA0A88B33;
-        Mon, 28 Feb 2022 09:28:57 -0800 (PST)
+        Mon, 28 Feb 2022 12:31:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D8389306;
+        Mon, 28 Feb 2022 09:29:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D33B7B815A6;
-        Mon, 28 Feb 2022 17:28:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350BBC340E7;
-        Mon, 28 Feb 2022 17:28:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3082B815B1;
+        Mon, 28 Feb 2022 17:28:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0509EC340E7;
+        Mon, 28 Feb 2022 17:28:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069334;
-        bh=NVZ/13wV06YZ+xr1T2jgfLSQQ++PaVN1I5onuZqPhSI=;
+        s=korg; t=1646069337;
+        bh=BxCuIGi7ZJPatYBs5BVdEEY0J5pI9k4Ffs5MQyrDOnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dddO4QJzB2tvysv3oKL2nTLNr+6hhLHPpQ3SuTx0Ypw0XlMXj4WzmqKrRrJiuV89U
-         IK2bL9nbSRNnkeNY895arFgHIQwSHV1hlzzLTBzeW1OAInJz8aHglGocuiavLzyLxz
-         dezg6FsvoYGdFp2OSbVl8Uyghg/c3Zn0IygVESOI=
+        b=tcKjbce7BWl0RjLU+gCIh5GFfJgzLaxb4bHIWZTZB5Cr87pmDRzYhxKGTzzePmINB
+         CLPKqW/xe74CWRxG+LrxnIGei028XLfnHYqqiG+qTV9AdisItakC+NCZw5Cih/bUJv
+         k+eCkpdJmRo8+maQG52O7zaDoVTuFa2LCGpz2/18=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        Grant Grundler <grundler@chromium.org>,
+        Ross Maynard <bids.7405@bigpond.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 05/34] sr9700: sanity check for packet length
-Date:   Mon, 28 Feb 2022 18:24:11 +0100
-Message-Id: <20220228172208.942887061@linuxfoundation.org>
+Subject: [PATCH 4.19 06/34] USB: zaurus: support another broken Zaurus
+Date:   Mon, 28 Feb 2022 18:24:12 +0100
+Message-Id: <20220228172209.012894151@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172207.090703467@linuxfoundation.org>
 References: <20220228172207.090703467@linuxfoundation.org>
@@ -51,29 +51,77 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Oliver Neukum <oneukum@suse.com>
 
-commit e9da0b56fe27206b49f39805f7dcda8a89379062 upstream.
+commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c upstream.
 
-A malicious device can leak heap data to user space
-providing bogus frame lengths. Introduce a sanity check.
+This SL-6000 says Direct Line, not Ethernet
+
+v2: added Reporter and Link
 
 Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reviewed-by: Grant Grundler <grundler@chromium.org>
+Reported-by: Ross Maynard <bids.7405@bigpond.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/sr9700.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/cdc_ether.c |   12 ++++++++++++
+ drivers/net/usb/zaurus.c    |   12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
---- a/drivers/net/usb/sr9700.c
-+++ b/drivers/net/usb/sr9700.c
-@@ -410,7 +410,7 @@ static int sr9700_rx_fixup(struct usbnet
- 		/* ignore the CRC length */
- 		len = (skb->data[1] | (skb->data[2] << 8)) - 4;
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -584,6 +584,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
--		if (len > ETH_FRAME_LEN)
-+		if (len > ETH_FRAME_LEN || len > skb->len)
- 			return 0;
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -639,6 +644,13 @@ static const struct usb_device_id	produc
+ 	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -268,6 +268,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
- 		/* the last packet of current skb */
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+ {
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -327,6 +332,13 @@ static const struct usb_device_id	produc
+ 	.driver_info = ZAURUS_PXA_INFO,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++			    | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor		= 0x04DD,
++	.idProduct		= 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info = (unsigned long)&bogus_mdlm_info,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
 
 
