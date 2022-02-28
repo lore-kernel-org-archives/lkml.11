@@ -2,90 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39B57C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234851AbiB1KqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:46:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35800 "EHLO
+        id S234858AbiB1Kqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:46:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiB1KqB (ORCPT
+        with ESMTP id S229565AbiB1Kqw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 05:46:01 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2FE5A5B7
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 02:45:23 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nOdWm-0005z3-QJ; Mon, 28 Feb 2022 11:45:16 +0100
-Received: from pengutronix.de (unknown [90.153.54.255])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id C54443F14B;
-        Mon, 28 Feb 2022 10:45:14 +0000 (UTC)
-Date:   Mon, 28 Feb 2022 11:45:14 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Hangyu Hua <hbh25y@gmail.com>
-Cc:     wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        stefan.maetje@esd.eu, mailhol.vincent@wanadoo.fr,
-        paskripkin@gmail.com, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] can: usb: delete a redundant dev_kfree_skb() in
- ems_usb_start_xmit()
-Message-ID: <20220228104514.der655r4jkl42e7o@pengutronix.de>
-References: <20220228083639.38183-1-hbh25y@gmail.com>
- <20220228085536.pa5wdq3w4ul5wqn5@pengutronix.de>
- <75c14302-b928-1e09-7cd1-78b8c2695f06@gmail.com>
+        Mon, 28 Feb 2022 05:46:52 -0500
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C8D657B3E;
+        Mon, 28 Feb 2022 02:46:13 -0800 (PST)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 95D2358025B;
+        Mon, 28 Feb 2022 05:46:10 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Mon, 28 Feb 2022 05:46:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; bh=feVj5PTVg+Alvboej1oYXFjSRH9S+YW1b1Xb8Q
+        QaQPc=; b=bGJWYiJv7fV9kVLNaDdOg1JT9KrAiyOBxvzIfjNWGrjV6P8pGmyE8m
+        ZjVmWnmhkZVJ2HL06VIDY7V+b4AoD82hSYUZ9Aw4AM3tECWCNl8fxeqEjHWBEIq0
+        EY8Th4aGQzuDesHVw/XBA0k1qZCxu0WRwYqjzvwtwOJwBeFzDwjM68iGybNyZFmr
+        kR0BREZFG/9qBY++9iszRhCPZBATvxEzC050vbSHEkOvGYd8kN9ubYkgjIb2XFGw
+        xOO5SNrxdRjX5kX2+gLzttkQez1KhsmcoaJCJBi0qNuj4uQs10DflbO0Cefbhg/j
+        g9BOmKa2Fc3rGZ9SKN5OAPFV5sH6kwxg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=feVj5PTVg+Alvboej
+        1oYXFjSRH9S+YW1b1Xb8QQaQPc=; b=c7KElXrnqnPUfuHZk64XXpktPPkEGrC0/
+        6f2+7c6K23R/v+b6FukYLKm4OoNrJGJd/l0+vPw4+Kf1qLsJDzNjqbp/F4/7amgs
+        T3/WbLT1GrMHSM1ubtg5ESJ46BBIUOKZ+zWPYwfKqRNJQbBCbousNS9951X7zEf/
+        sFKylsL9zAi03YS/yvwWx7addRQHQgSd6j2chRSFh3R+9m9rJLY+JFXAi4LrjgkQ
+        AESGGwkIPmkgIKqOcEBINN9H7HAEKA0l7g59+YcNg2ga4E5+BhXL4qwBTKzfpZYD
+        3ZrNFrNCFD7qC/pfnIa4dgqe6Mux1/b4Z3C8eHHYfGN977ig9A8Mg==
+X-ME-Sender: <xms:8qccYojSGPhpsK-uM6EwszLoreUFXPcq5d6UwazAjBh7HaGhtk9dLw>
+    <xme:8qccYhDwDT0WYOQfYq_D9GW06i23hvAhhembdcy6_CX08giWX5o6KPV9yVqdJMRdW
+    38-LIdpcokwKA>
+X-ME-Received: <xmr:8qccYgHvvarNLMkQW6BM7SQ3Cx3vEYEE_3cQ8wr1Yit28injU3EIcsBIJVdS1Y3mgHEj3jqXWOl-40sS0EeBZoLTMIE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddttddgudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeevueehje
+    fgfffgiedvudekvdektdelleelgefhleejieeugeegveeuuddukedvteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:8qccYpQVac_7ndlD2z8vYgSpat-_-b1Vd-jI_SEamHOkSSEDN2ogiw>
+    <xmx:8qccYlzs1DGNM0vIh1LoQ2QUWY-KGruqbP2UETrPjXm7U-ZRkShs3Q>
+    <xmx:8qccYn7nubE893oGmogyrLq7VjC21ZgUKf6EQHB7NfslrkKUBJ5Y9Q>
+    <xmx:8qccYoo5Rg5fKLbhFn6t9BhA23mX_8PaTeXJjifWgmiYSG6y5Y4hDQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 28 Feb 2022 05:46:09 -0500 (EST)
+Date:   Mon, 28 Feb 2022 11:46:07 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alistair Francis <alistair@alistair23.me>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: linux-next: manual merge of the char-misc tree with the mfd tree
+Message-ID: <Yhyn72NO/roH1gA8@kroah.com>
+References: <20220228193928.3ec6ee98@canb.auug.org.au>
+ <YhyPfcjJtIKNQtF8@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7eh4p5gbufrubt3s"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <75c14302-b928-1e09-7cd1-78b8c2695f06@gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <YhyPfcjJtIKNQtF8@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 28, 2022 at 09:01:49AM +0000, Lee Jones wrote:
+> On Mon, 28 Feb 2022, Stephen Rothwell wrote:
+> 
+> > Hi all,
+> > 
+> > Today's linux-next merge of the char-misc tree got a conflict in:
+> 
+> I did ask for this *not* to be merged when it was in -testing.
 
---7eh4p5gbufrubt3s
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Sorry, I missed that, I saw your ack on the patch so that's why I took
+it.
 
-On 28.02.2022 18:44:06, Hangyu Hua wrote:
-> I get it. I'll remake a patch that matches your suggestions.
+> I'll follow-up with Greg.
 
-Not needed, it's already applied:
-> > Added patch to can/testing.
+Should I revert this from my tree?
 
-Marc
+thanks,
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---7eh4p5gbufrubt3s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmIcp7cACgkQrX5LkNig
-01340gf/Y+FncybB30L2oHpNPFt478Sked0wTAKMnn8MTwJA+zCDUwFwMmwM1QPN
-u4v7v1lhNozapHCkU2lCgn0OwHuu4r42zTDxT/SWOFSR53bF3DE7OaCn44/7IcSe
-qR253VIrPsA7dC0dvwAZ/EtdXc9sjJZMKP3VsibtmNZYn+3fvZEAQktCafPs1yfs
-XkF7eEB2xD1ORONY+eRyW/LIXpdcZZsl/ShE+OoyMa4Jh2Udo215hOiLnvykAfh7
-uxzMMGK+GS7kDVAESApxJWuxhcdSUxc5RDq0AX6JnL7EK5eSMKKFEXscUEI3NMBP
-XqK8orgQoTkeNokWljv/bWBSbHNL9A==
-=i5Li
------END PGP SIGNATURE-----
-
---7eh4p5gbufrubt3s--
+greg k-h
