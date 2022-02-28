@@ -2,136 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E2DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 21:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7024CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 21:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230037AbiB1VHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 16:07:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40998 "EHLO
+        id S230044AbiB1VMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 16:12:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229582AbiB1VHU (ORCPT
+        with ESMTP id S229582AbiB1VMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 16:07:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 08AAD13D24
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 13:06:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646082398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LYnovbPtGcgc9E/8oVMTSKgr3ODQnP2MrUjRdl+DpK0=;
-        b=MtVjFSGlkt1CWwkaqwCvIJoj0kfEqMRm6ZPaDnYfMtErrFNlsz4RErz7vBHTM0QBjDPqk0
-        rpmkJgUW+a6BQif3PFLKnF5h3Bx+pAev1n1wpV2XwCrrFWyeDDHyXr8Eykv0pkvAPW7GLz
-        FsDGw9QeSS2YnQuHcTgJkl6MMNuKhAI=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-12-amDrzvEeM6uPiDraZxEOLw-1; Mon, 28 Feb 2022 16:06:36 -0500
-X-MC-Unique: amDrzvEeM6uPiDraZxEOLw-1
-Received: by mail-qv1-f69.google.com with SMTP id z8-20020a0cda88000000b00432946b4c84so12579303qvj.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 13:06:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=LYnovbPtGcgc9E/8oVMTSKgr3ODQnP2MrUjRdl+DpK0=;
-        b=Rwd3P6aoGDc0CeVS+CW6y5nNMf+aK5VV6XYHT+OybNIHWPciMuNQCglVN6bpyCW07b
-         FiI8RH3Pya/sVv4RM6j8F5f6i0C6yVw1pwLoWTZeRgZvq8IJWSg6stG9ZlqVhLzqkahx
-         Db9PrX2HT7JZ8hMIxh1p33xlK750G3y6H9ZcIpIYmAzra9TDjHUiAWbVF3mA1nZNv8EC
-         PS9dof2viKzzdJOo/lQr6dTbAVtq1Y5r+QJL5bVgxBv4x2yymfpPDWZs2egAi8h2nkh4
-         NqHI9YjBWDQoXwLK8NOui4YcDJxs8gddffeLDwbW3eIUziDWOvAznHWJr2TYbLXQLlaj
-         qu2A==
-X-Gm-Message-State: AOAM530wKFkqXh1ldwz5L1Cd4F4RkUFW4svhgcD7vjC1Ta7LN63h+8Ak
-        i3KDMrDF4ZMUQo8+HFSOSRq9XM6Js+x95G8WfWG0UI+KBX76eBBKzJ0Z0/hXwKFCXhfKIH+I6Fa
-        CORZbWzfFzwd1K1R0qX1bMGf3
-X-Received: by 2002:a05:6214:2421:b0:432:843f:b437 with SMTP id gy1-20020a056214242100b00432843fb437mr15149191qvb.102.1646082395631;
-        Mon, 28 Feb 2022 13:06:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzYR48coK6y+4ntjFW3gm3X78BcUfrEpCL4Q9kP1stQ4+ZmgiQnbNc7mm9sQd0BlLKJGiAMPA==
-X-Received: by 2002:a05:6214:2421:b0:432:843f:b437 with SMTP id gy1-20020a056214242100b00432843fb437mr15149181qvb.102.1646082395416;
-        Mon, 28 Feb 2022 13:06:35 -0800 (PST)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id n8-20020a05620a152800b00648e52be61bsm5437078qkk.37.2022.02.28.13.06.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 13:06:35 -0800 (PST)
-Subject: Re: [PATCH] iio: scd4x: check return of scd4x_write_and_fetch
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     roan@protonic.nl, lars@metafoo.de, nathan@kernel.org,
-        ndesaulniers@google.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-References: <20220227154331.80338-1-trix@redhat.com>
- <20220227174850.73520e39@jic23-huawei>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <b13706f7-4a9e-ba3d-2828-8570c409096c@redhat.com>
-Date:   Mon, 28 Feb 2022 13:06:32 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Mon, 28 Feb 2022 16:12:05 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB735AA7A
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 13:11:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646082686; x=1677618686;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LobaXSROVV91E+AOosHRlE77gRHfzWg5+Pud7kDr9a4=;
+  b=jkAemDSIVxqgjcudRLRcTyKNdP2h44V2a9q8cc7Mc4kR5OJcMM0xdxNO
+   2XTfAadAk6U6GTJrSaMpKV7WzknQ5OdOhALCP662L9X2pSQXG3rEvEZS4
+   8B7wTYLJO3dWAhP3iYgOB5rUFSNTZ3/Qe8E/2b0LXbLYtr9i5QdjrTK20
+   k3FbfwscsNQZRxyH/7tq9duKbuyn7GB+kSzwfiPKJPTN19Sf3HlnDeccm
+   Wu9jk/WYcZt9qUPeaeikzbpMEHaQ9Ups+ThHIJ0FoQX0ghunaxgnhh9ME
+   6GE6Ix3cHMJSBNDNtWIwREBij2Z1mCM9Kqu5rM5lBVCdv5TOcz9navqqm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253180801"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="253180801"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 13:11:26 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="534622821"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 28 Feb 2022 13:11:24 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOnIi-0007mn-8I; Mon, 28 Feb 2022 21:11:24 +0000
+Date:   Tue, 1 Mar 2022 05:10:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Tudor Ambarus <tudor.ambarus@microchip.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [ambarus:spi-nor/id-collisions-v4 39/39] make[4]: *** No rule to
+ make target 'drivers/mtd/spi-nor/xmc.o', needed by
+ 'drivers/mtd/spi-nor/built-in.a'.
+Message-ID: <202203010516.FbpMDFBg-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220227174850.73520e39@jic23-huawei>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/ambarus/linux-0day spi-nor/id-collisions-v4
+head:   0dff6e52ceae6f25ba4afb713dde9bec6903fe72
+commit: 0dff6e52ceae6f25ba4afb713dde9bec6903fe72 [39/39] mtd: spi-nor: Move XMC to manufacturer ID collisions driver
+config: sh-randconfig-r001-20220228 (https://download.01.org/0day-ci/archive/20220301/202203010516.FbpMDFBg-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ambarus/linux-0day/commit/0dff6e52ceae6f25ba4afb713dde9bec6903fe72
+        git remote add ambarus https://github.com/ambarus/linux-0day
+        git fetch --no-tags ambarus spi-nor/id-collisions-v4
+        git checkout 0dff6e52ceae6f25ba4afb713dde9bec6903fe72
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sh SHELL=/bin/bash drivers/mtd/
 
-On 2/27/22 9:48 AM, Jonathan Cameron wrote:
-> On Sun, 27 Feb 2022 07:43:31 -0800
-> trix@redhat.com wrote:
->
->> From: Tom Rix <trix@redhat.com>
->>
->> Clang static analysis reports this problem
->> scd4x.c:474:10: warning: The left operand of '==' is a
->>    garbage value
->>    if (val == 0xff) {
->>        ~~~ ^
->> val is only set from a successful call to scd4x_write_and_fetch()
->> So check it's return.
->>
->> Fixes: 49d22b695cbb ("drivers: iio: chemical: Add support for Sensirion SCD4x CO2 sensor")
->> Signed-off-by: Tom Rix <trix@redhat.com>
-> Good find, but I'd prefer a separate check on ret inline with what the
-> other error checking paths in that function are doing.
->
->> ---
->>   drivers/iio/chemical/scd4x.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/chemical/scd4x.c b/drivers/iio/chemical/scd4x.c
->> index 20d4e7584e923..b978330fb761c 100644
->> --- a/drivers/iio/chemical/scd4x.c
->> +++ b/drivers/iio/chemical/scd4x.c
->> @@ -471,7 +471,7 @@ static ssize_t calibration_forced_value_store(struct device *dev,
->>   	ret = scd4x_write_and_fetch(state, CMD_FRC, arg, &val, sizeof(val));
->>   	mutex_unlock(&state->lock);
->>   
->> -	if (val == 0xff) {
->> +	if (!ret && val == 0xff) {
->>   		dev_err(dev, "forced calibration has failed");
->>   		return -EINVAL;
->>   	}
-> Prefer
->
-> 	if (ret)
-> 		return ret;
->
-> 	if (val == 0xff) {
-> 		dev_err(dev, "...
-> 		return -EINVAL;
-> 	}
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-ok and the next line can be simplified to
+All errors (new ones prefixed by >>):
 
-return len;
+>> make[4]: *** No rule to make target 'drivers/mtd/spi-nor/xmc.o', needed by 'drivers/mtd/spi-nor/built-in.a'.
+   make[4]: Target '__build' not remade because of errors.
 
-Tom
-
-> Thanks,
->
-> Jonathan
->
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
