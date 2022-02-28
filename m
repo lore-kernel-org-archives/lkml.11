@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B4FC3527A
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAE9C3527C
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240377AbiB1RyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:54:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55642 "EHLO
+        id S239417AbiB1RxC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:53:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238994AbiB1Rue (ORCPT
+        with ESMTP id S238858AbiB1Rrq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:50:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B9B8C7CE;
-        Mon, 28 Feb 2022 09:39:08 -0800 (PST)
+        Mon, 28 Feb 2022 12:47:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D329F3BD;
+        Mon, 28 Feb 2022 09:38:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77F5BB815A6;
-        Mon, 28 Feb 2022 17:39:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAA96C340E7;
-        Mon, 28 Feb 2022 17:39:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D83DB815BE;
+        Mon, 28 Feb 2022 17:38:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8EFCC340E7;
+        Mon, 28 Feb 2022 17:38:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069946;
-        bh=0leDAzX86teA78GwaoD+ubeZaW6X+jtdR+Zlfk2BI4o=;
+        s=korg; t=1646069891;
+        bh=H4bCPBLG7fxRFwWOWxzj2fIKxJazT6R4qsz8GJmb+dM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Er3MjgJLQIaqrzWl+ad/kIubJWe4FS7XvI5Y41dk5fZUiiQ7FGLFoYTEqfz1kNNZJ
-         uqHVEMWBQrq8iaCX1PMx5q/SGfPB7eMMrCOpfTrPLhWJVF4/5gxwiUn2FdjcpmwMUx
-         vGGsbT1KnRYLD+WlFl77prMgQ8seJ7ZleDzsAk74=
+        b=2YXX8ZKZfkFYIZ+JmwuBmJuGYJ2kKJB/EvXKW1m4YVj0KNRxixZYP/GdZG/UOgyZt
+         RO8CDc5vXzYlER5eYxAICipDc8rX02d2elcb/l9MAmEcdfQevBj1PjBxY1Z8rvQzFv
+         bPDs6h4bWml2CJaO4Jw4TjSuCrHeJ7hypT6hsT4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+e918523f77e62790d6d9@syzkaller.appspotmail.com,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 069/139] netfilter: nf_tables: unregister flowtable hooks on netns exit
-Date:   Mon, 28 Feb 2022 18:24:03 +0100
-Message-Id: <20220228172354.970125703@linuxfoundation.org>
+        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 016/139] drm/amd/pm: fix some OEM SKU specific stability issues
+Date:   Mon, 28 Feb 2022 18:23:10 +0100
+Message-Id: <20220228172349.397553169@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,69 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Evan Quan <evan.quan@amd.com>
 
-commit 6069da443bf65f513bb507bb21e2f87cfb1ad0b6 upstream.
+commit e3f3824874da78db5775a5cb9c0970cd1c6978bc upstream.
 
-Unregister flowtable hooks before they are releases via
-nf_tables_flowtable_destroy() otherwise hook core reports UAF.
+Add a quirk in sienna_cichlid_ppt.c to fix some OEM SKU
+specific stability issues.
 
-BUG: KASAN: use-after-free in nf_hook_entries_grow+0x5a7/0x700 net/netfilter/core.c:142 net/netfilter/core.c:142
-Read of size 4 at addr ffff8880736f7438 by task syz-executor579/3666
-
-CPU: 0 PID: 3666 Comm: syz-executor579 Not tainted 5.16.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- __dump_stack lib/dump_stack.c:88 [inline] lib/dump_stack.c:106
- dump_stack_lvl+0x1dc/0x2d8 lib/dump_stack.c:106 lib/dump_stack.c:106
- print_address_description+0x65/0x380 mm/kasan/report.c:247 mm/kasan/report.c:247
- __kasan_report mm/kasan/report.c:433 [inline]
- __kasan_report mm/kasan/report.c:433 [inline] mm/kasan/report.c:450
- kasan_report+0x19a/0x1f0 mm/kasan/report.c:450 mm/kasan/report.c:450
- nf_hook_entries_grow+0x5a7/0x700 net/netfilter/core.c:142 net/netfilter/core.c:142
- __nf_register_net_hook+0x27e/0x8d0 net/netfilter/core.c:429 net/netfilter/core.c:429
- nf_register_net_hook+0xaa/0x180 net/netfilter/core.c:571 net/netfilter/core.c:571
- nft_register_flowtable_net_hooks+0x3c5/0x730 net/netfilter/nf_tables_api.c:7232 net/netfilter/nf_tables_api.c:7232
- nf_tables_newflowtable+0x2022/0x2cf0 net/netfilter/nf_tables_api.c:7430 net/netfilter/nf_tables_api.c:7430
- nfnetlink_rcv_batch net/netfilter/nfnetlink.c:513 [inline]
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline]
- nfnetlink_rcv_batch net/netfilter/nfnetlink.c:513 [inline] net/netfilter/nfnetlink.c:652
- nfnetlink_rcv_skb_batch net/netfilter/nfnetlink.c:634 [inline] net/netfilter/nfnetlink.c:652
- nfnetlink_rcv+0x10e6/0x2550 net/netfilter/nfnetlink.c:652 net/netfilter/nfnetlink.c:652
-
-__nft_release_hook() calls nft_unregister_flowtable_net_hooks() which
-only unregisters the hooks, then after RCU grace period, it is
-guaranteed that no packets add new entries to the flowtable (no flow
-offload rules and flowtable hooks are reachable from packet path), so it
-is safe to call nf_flow_table_free() which cleans up the remaining
-entries from the flowtable (both software and hardware) and it unbinds
-the flow_block.
-
-Fixes: ff4bf2f42a40 ("netfilter: nf_tables: add nft_unregister_flowtable_hook()")
-Reported-by: syzbot+e918523f77e62790d6d9@syzkaller.appspotmail.com
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c |   32 +++++++++++++++-
+ 1 file changed, 31 insertions(+), 1 deletion(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -9574,10 +9574,13 @@ EXPORT_SYMBOL_GPL(__nft_release_basechai
- 
- static void __nft_release_hook(struct net *net, struct nft_table *table)
- {
-+	struct nft_flowtable *flowtable;
- 	struct nft_chain *chain;
- 
- 	list_for_each_entry(chain, &table->chains, list)
- 		nf_tables_unregister_hook(net, table, chain);
-+	list_for_each_entry(flowtable, &table->flowtables, list)
-+		nft_unregister_flowtable_net_hooks(net, &flowtable->hook_list);
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
+@@ -418,6 +418,36 @@ static int sienna_cichlid_store_powerpla
+ 	return 0;
  }
  
- static void __nft_release_hooks(struct net *net)
++static int sienna_cichlid_patch_pptable_quirk(struct smu_context *smu)
++{
++	struct amdgpu_device *adev = smu->adev;
++	uint32_t *board_reserved;
++	uint16_t *freq_table_gfx;
++	uint32_t i;
++
++	/* Fix some OEM SKU specific stability issues */
++	GET_PPTABLE_MEMBER(BoardReserved, &board_reserved);
++	if ((adev->pdev->device == 0x73DF) &&
++	    (adev->pdev->revision == 0XC3) &&
++	    (adev->pdev->subsystem_device == 0x16C2) &&
++	    (adev->pdev->subsystem_vendor == 0x1043))
++		board_reserved[0] = 1387;
++
++	GET_PPTABLE_MEMBER(FreqTableGfx, &freq_table_gfx);
++	if ((adev->pdev->device == 0x73DF) &&
++	    (adev->pdev->revision == 0XC3) &&
++	    ((adev->pdev->subsystem_device == 0x16C2) ||
++	    (adev->pdev->subsystem_device == 0x133C)) &&
++	    (adev->pdev->subsystem_vendor == 0x1043)) {
++		for (i = 0; i < NUM_GFXCLK_DPM_LEVELS; i++) {
++			if (freq_table_gfx[i] > 2500)
++				freq_table_gfx[i] = 2500;
++		}
++	}
++
++	return 0;
++}
++
+ static int sienna_cichlid_setup_pptable(struct smu_context *smu)
+ {
+ 	int ret = 0;
+@@ -438,7 +468,7 @@ static int sienna_cichlid_setup_pptable(
+ 	if (ret)
+ 		return ret;
+ 
+-	return ret;
++	return sienna_cichlid_patch_pptable_quirk(smu);
+ }
+ 
+ static int sienna_cichlid_tables_init(struct smu_context *smu)
 
 
