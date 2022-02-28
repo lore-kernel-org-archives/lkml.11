@@ -2,89 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B825BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E761C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:04:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240466AbiB1SDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:03:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55648 "EHLO
+        id S240645AbiB1SDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:03:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239820AbiB1Rxe (ORCPT
+        with ESMTP id S239680AbiB1RxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31A3DAC916;
-        Mon, 28 Feb 2022 09:41:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23E76614C9;
-        Mon, 28 Feb 2022 17:40:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40B63C340E7;
-        Mon, 28 Feb 2022 17:40:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070058;
-        bh=TG+mq0mWCM/MrB0JN5FlEuzzUbsrlAfNgtd+H9v3LVM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=La1CUkL5dATEaW67lycRIpmsoH9apKAOzqpu4tzLW2kGzZUiVRw59fUtFmroqA2Nd
-         ZrpEDeWdcvo+GuQfw+eVSknW/X1Owe6ZRHjoEZgoL0a18ui+kNNzPHAXKrF6Mnml0f
-         mOmfqg23f3eHE4bTufHic9DP7DtqaQWFEjb4W+D0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Mon, 28 Feb 2022 12:53:18 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E767BAA2EC
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:40:47 -0800 (PST)
+Date:   Mon, 28 Feb 2022 17:40:42 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646070043;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=J9gn+lq1OxgspfBuH8uvwct2hS/UCwEfO2G29M1/3f8=;
+        b=cxPiqNfpSdXlqHi5fadnPig8ssk3b+7bgpM2d0i2Bup5Qe13CMvtyXzQK1nJkwn9sreZIy
+        ZksYcRVkfo17ShTL+2xmWqgN5DASMTnnNsmTK7RUCKJnYse8lu1AMmEdy9cjo7ZXhzvvWY
+        iYltHyJ4VTjPRcokM7YJLRBMY8NDzQtyLrx9azSGJrasqEPBKt++jLLZM9glsprEzV4nrs
+        PhBikcR5cjJuvxbvzUzOXP1QPPHZMvYoveFGAsCNA5xQzlig4iISQyuN26nrRMtJK6exH1
+        DeBGtmhgzPPX2PRWwv88efsgbi1GlBtGrNhJtYR1uoYMertwg0aNJ0DcAEpqrA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646070043;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=J9gn+lq1OxgspfBuH8uvwct2hS/UCwEfO2G29M1/3f8=;
+        b=XTMe+aOEpn/wQJu05p6eNIW2Jgnk2hKHTPDezjHd8iC9/lSyremxQq550tRK7BQso2nveM
+        I25tfiX58kGKd1Aw==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.15 110/139] USB: serial: option: add Telit LE910R1 compositions
-Date:   Mon, 28 Feb 2022 18:24:44 +0100
-Message-Id: <20220228172359.221305178@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
-References: <20220228172347.614588246@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [irqchip: irq/irqchip-next] irqchip/qcom-pdc: Kill PDC_NO_PARENT_IRQ
+Cc:     Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220224101226.88373-2-maz@kernel.org>
+References: <20220224101226.88373-2-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164607004262.16921.13704832568538557968.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-commit cfc4442c642d568014474b6718ccf65dc7ca6099 upstream.
+Commit-ID:     9fbc4f3979658ad30f3239d6a3660892976a8206
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/9fbc4f3979658ad30f3239d6a3660892976a8206
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Thu, 24 Feb 2022 10:12:22 
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Mon, 28 Feb 2022 17:32:25 
 
-Add support for the following Telit LE910R1 compositions:
+irqchip/qcom-pdc: Kill PDC_NO_PARENT_IRQ
 
-0x701a: rndis, tty, tty, tty
-0x701b: ecm, tty, tty, tty
-0x9201: tty
+PDC_NO_PARENT_IRQ is pretty pointless, as all it indicates is
+that the PDC terminates the interrupt hierarchy. Which is
+exactly the same as not having a mapping in the GIC space.
+This is also bad practice to treat the absence of a hwirq
+as a hwirq itself.
 
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Link: https://lore.kernel.org/r/20220218134552.4051-1-dnlplm@gmail.com
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Just explicitly use the region mapping pointer, and drop
+the definition.
+
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220224101226.88373-2-maz@kernel.org
 ---
- drivers/usb/serial/option.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/irqchip/qcom-pdc.c | 34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -1279,10 +1279,16 @@ static const struct usb_device_id option
- 	  .driver_info = NCTRL(2) },
- 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x7011, 0xff),	/* Telit LE910-S1 (ECM) */
- 	  .driver_info = NCTRL(2) },
-+	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x701a, 0xff),	/* Telit LE910R1 (RNDIS) */
-+	  .driver_info = NCTRL(2) },
-+	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x701b, 0xff),	/* Telit LE910R1 (ECM) */
-+	  .driver_info = NCTRL(2) },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9010),				/* Telit SBL FN980 flashing device */
- 	  .driver_info = NCTRL(0) | ZLP },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9200),				/* Telit LE910S1 flashing device */
- 	  .driver_info = NCTRL(0) | ZLP },
-+	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9201),				/* Telit LE910R1 flashing device */
-+	  .driver_info = NCTRL(0) | ZLP },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, ZTE_PRODUCT_MF622, 0xff, 0xff, 0xff) }, /* ZTE WCDMA products */
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0002, 0xff, 0xff, 0xff),
- 	  .driver_info = RSVD(1) },
-
-
+diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+index 173e652..3b214c4 100644
+--- a/drivers/irqchip/qcom-pdc.c
++++ b/drivers/irqchip/qcom-pdc.c
+@@ -30,14 +30,14 @@
+ #define IRQ_ENABLE_BANK		0x10
+ #define IRQ_i_CFG		0x110
+ 
+-#define PDC_NO_PARENT_IRQ	~0UL
+-
+ struct pdc_pin_region {
+ 	u32 pin_base;
+ 	u32 parent_base;
+ 	u32 cnt;
+ };
+ 
++#define pin_to_hwirq(r, p)	((r)->parent_base + (p) - (r)->pin_base)
++
+ static DEFINE_RAW_SPINLOCK(pdc_lock);
+ static void __iomem *pdc_base;
+ static struct pdc_pin_region *pdc_region;
+@@ -186,19 +186,17 @@ static struct irq_chip qcom_pdc_gic_chip = {
+ 	.irq_set_affinity	= irq_chip_set_affinity_parent,
+ };
+ 
+-static irq_hw_number_t get_parent_hwirq(int pin)
++static struct pdc_pin_region *get_pin_region(int pin)
+ {
+ 	int i;
+-	struct pdc_pin_region *region;
+ 
+ 	for (i = 0; i < pdc_region_cnt; i++) {
+-		region = &pdc_region[i];
+-		if (pin >= region->pin_base &&
+-		    pin < region->pin_base + region->cnt)
+-			return (region->parent_base + pin - region->pin_base);
++		if (pin >= pdc_region[i].pin_base &&
++		    pin < pdc_region[i].pin_base + pdc_region[i].cnt)
++			return &pdc_region[i];
+ 	}
+ 
+-	return PDC_NO_PARENT_IRQ;
++	return NULL;
+ }
+ 
+ static int qcom_pdc_translate(struct irq_domain *d, struct irq_fwspec *fwspec,
+@@ -221,7 +219,8 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
+ {
+ 	struct irq_fwspec *fwspec = data;
+ 	struct irq_fwspec parent_fwspec;
+-	irq_hw_number_t hwirq, parent_hwirq;
++	struct pdc_pin_region *region;
++	irq_hw_number_t hwirq;
+ 	unsigned int type;
+ 	int ret;
+ 
+@@ -234,8 +233,8 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
+ 	if (ret)
+ 		return ret;
+ 
+-	parent_hwirq = get_parent_hwirq(hwirq);
+-	if (parent_hwirq == PDC_NO_PARENT_IRQ)
++	region = get_pin_region(hwirq);
++	if (!region)
+ 		return irq_domain_disconnect_hierarchy(domain->parent, virq);
+ 
+ 	if (type & IRQ_TYPE_EDGE_BOTH)
+@@ -247,7 +246,7 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
+ 	parent_fwspec.fwnode      = domain->parent->fwnode;
+ 	parent_fwspec.param_count = 3;
+ 	parent_fwspec.param[0]    = 0;
+-	parent_fwspec.param[1]    = parent_hwirq;
++	parent_fwspec.param[1]    = pin_to_hwirq(region, hwirq);
+ 	parent_fwspec.param[2]    = type;
+ 
+ 	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
+@@ -265,7 +264,8 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
+ {
+ 	struct irq_fwspec *fwspec = data;
+ 	struct irq_fwspec parent_fwspec;
+-	irq_hw_number_t hwirq, parent_hwirq;
++	struct pdc_pin_region *region;
++	irq_hw_number_t hwirq;
+ 	unsigned int type;
+ 	int ret;
+ 
+@@ -281,8 +281,8 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
+ 	if (ret)
+ 		return ret;
+ 
+-	parent_hwirq = get_parent_hwirq(hwirq);
+-	if (parent_hwirq == PDC_NO_PARENT_IRQ)
++	region = get_pin_region(hwirq);
++	if (!region)
+ 		return irq_domain_disconnect_hierarchy(domain->parent, virq);
+ 
+ 	if (type & IRQ_TYPE_EDGE_BOTH)
+@@ -294,7 +294,7 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
+ 	parent_fwspec.fwnode      = domain->parent->fwnode;
+ 	parent_fwspec.param_count = 3;
+ 	parent_fwspec.param[0]    = 0;
+-	parent_fwspec.param[1]    = parent_hwirq;
++	parent_fwspec.param[1]    = pin_to_hwirq(region, hwirq);
+ 	parent_fwspec.param[2]    = type;
+ 
+ 	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
