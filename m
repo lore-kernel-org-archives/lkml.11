@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77DD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D95C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:37:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234181AbiB1Rhe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:37:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39886 "EHLO
+        id S233173AbiB1Rhj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:37:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238080AbiB1Rey (ORCPT
+        with ESMTP id S232930AbiB1Rex (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:34:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561187E084;
-        Mon, 28 Feb 2022 09:31:15 -0800 (PST)
+        Mon, 28 Feb 2022 12:34:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A0F7DE3E;
+        Mon, 28 Feb 2022 09:31:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 497EDB815AB;
-        Mon, 28 Feb 2022 17:31:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0B2BC340E7;
-        Mon, 28 Feb 2022 17:31:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89590B815A6;
+        Mon, 28 Feb 2022 17:31:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4F43C340E7;
+        Mon, 28 Feb 2022 17:31:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069462;
-        bh=InIoslegLjVX1Yt8uC/7lVQLPHklSm5DBQNu2ZKpfd0=;
+        s=korg; t=1646069470;
+        bh=hlaVVHROS+1+1hqghdgDQ6aqQYuXHJ1E37LvManwwR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ln7aUeRHpzN031nnkYcn+TXdzMBQ4wotRMExwqWdIdztYOq2vQP9t1c5R6tfln/55
-         fAHLgzLehDXEFHCQMoPfgIapIWC0+qX3sNDiFD5J6DaWTWGQp5c0hqCuRGfbV8xnBp
-         XdZ/jAzxIDq41CAkATuh7dudWhMx0NTeAwSlwMx8=
+        b=fHWh6dg6Qu6o2FfaoTOdarJ6bBie16xcWg3UpESXTNODOysJOYfh2A3q2w++oFhWM
+         xSiYQvbIIEHOYQUE2B2rLkKDmgpBKGdqxpJLzLg/OBDiYQ9BZ3O1ZklYjp4204Cd9A
+         tCXyxoXVCcj8yU0qHs/54reO4iOxjMyp3Wd6o1jo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.4 05/53] parisc/unaligned: Fix ldw() and stw() unalignment handlers
-Date:   Mon, 28 Feb 2022 18:24:03 +0100
-Message-Id: <20220228172248.682710207@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
+        Ross Maynard <bids.7405@bigpond.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 08/53] USB: zaurus: support another broken Zaurus
+Date:   Mon, 28 Feb 2022 18:24:06 +0100
+Message-Id: <20220228172248.917252022@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -47,49 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit a97279836867b1cb50a3d4f0b1bf60e0abe6d46c upstream.
+commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c upstream.
 
-Fix 3 bugs:
+This SL-6000 says Direct Line, not Ethernet
 
-a) emulate_stw() doesn't return the error code value, so faulting
-instructions are not reported and aborted.
+v2: added Reporter and Link
 
-b) Tell emulate_ldw() to handle fldw_l as floating point instruction
-
-c) Tell emulate_ldw() to handle ldw_m as integer instruction
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: Ross Maynard <bids.7405@bigpond.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/unaligned.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/usb/cdc_ether.c |   12 ++++++++++++
+ drivers/net/usb/zaurus.c    |   12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
---- a/arch/parisc/kernel/unaligned.c
-+++ b/arch/parisc/kernel/unaligned.c
-@@ -340,7 +340,7 @@ static int emulate_stw(struct pt_regs *r
- 	: "r" (val), "r" (regs->ior), "r" (regs->isr)
- 	: "r19", "r20", "r21", "r22", "r1", FIXUP_BRANCH_CLOBBER );
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -571,6 +571,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
--	return 0;
-+	return ret;
- }
- static int emulate_std(struct pt_regs *regs, int frreg, int flop)
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -626,6 +631,13 @@ static const struct usb_device_id	produc
+ 	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -256,6 +256,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+ 
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
  {
-@@ -619,10 +619,10 @@ void handle_unaligned(struct pt_regs *re
- 	{
- 	case OPCODE_FLDW_L:
- 		flop=1;
--		ret = emulate_ldw(regs, R2(regs->iir),0);
-+		ret = emulate_ldw(regs, R2(regs->iir), 1);
- 		break;
- 	case OPCODE_LDW_M:
--		ret = emulate_ldw(regs, R2(regs->iir),1);
-+		ret = emulate_ldw(regs, R2(regs->iir), 0);
- 		break;
- 
- 	case OPCODE_FSTW_L:
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -315,6 +320,13 @@ static const struct usb_device_id	produc
+ 	.driver_info = ZAURUS_PXA_INFO,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++			    | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor		= 0x04DD,
++	.idProduct		= 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info = (unsigned long)&bogus_mdlm_info,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
 
 
