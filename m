@@ -2,48 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7231BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239048AbiB1Rvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:51:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
+        id S238962AbiB1Rvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:51:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240031AbiB1RpA (ORCPT
+        with ESMTP id S240052AbiB1RpC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:45:00 -0500
+        Mon, 28 Feb 2022 12:45:02 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3812DAB9;
-        Mon, 28 Feb 2022 09:37:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A477D36152;
+        Mon, 28 Feb 2022 09:37:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1AD86135F;
-        Mon, 28 Feb 2022 17:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5C9C340E7;
-        Mon, 28 Feb 2022 17:37:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85499614CC;
+        Mon, 28 Feb 2022 17:37:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88E9DC340E7;
+        Mon, 28 Feb 2022 17:37:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069853;
-        bh=pRsXDIZaX6/B6+4vcBJG6GbnQNuzWJ76G+Fce0QPDKA=;
+        s=korg; t=1646069858;
+        bh=oYdLpNFMJoWpUsGNteMjbuQJIBxw4NVt3rpKOLt7l1k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HQ38uZItqMpFXogzBnV/deiDMadG8itTQGiHx3APW3LF15eLoJzDfKOYng8SGCPC5
-         eoJXV3KWmP7b4jWafbYFiZuK+sAt1+sS1Z2OA+1aoZQJ7ER+aPSTkhiFDYWuE+gS+r
-         4dB5CLKeMS88pzDlQlvulGEP8cuHrlS1qxSuWkSk=
+        b=KNhVp+3ho132MGHrJjxSTf/G0bj3jOAHjUYzwVB5CLkqXUtDgZuUhOdYfun7Gl8wV
+         EO83Pizc5oT50LkJgchz0ZgDBb0N4snRhhAgSjKodxBfIbP7vssi3NDJrQIrxXWFIz
+         gxq0TpjY0r1CY5BnOsoAIRJyeLeXOLHRJqw1epLQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        alexander.shishkin@intel.com, Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.15 035/139] perf evlist: Fix failed to use cpu list for uncore events
-Date:   Mon, 28 Feb 2022 18:23:29 +0100
-Message-Id: <20220228172351.462238127@linuxfoundation.org>
+        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
+        Paul Moore <paul@paul-moore.com>
+Subject: [PATCH 5.15 010/139] selinux: fix misuse of mutex_is_locked()
+Date:   Mon, 28 Feb 2022 18:23:04 +0100
+Message-Id: <20220228172348.760488567@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -55,81 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+From: Ondrej Mosnacek <omosnace@redhat.com>
 
-commit 8a3d2ee0de3828e0d01f9682d35ee53704659bd0 upstream.
+commit ce2fc710c9d2b25afc710f49bb2065b4439a62bc upstream.
 
-The 'perf record' and 'perf stat' commands have supported the option
-'-C/--cpus' to count or collect only on the list of CPUs provided.
+mutex_is_locked() tests whether the mutex is locked *by any task*, while
+here we want to test if it is held *by the current task*. To avoid
+false/missed WARNINGs, use lockdep_assert_is_held() and
+lockdep_assert_is_not_held() instead, which do the right thing (though
+they are a no-op if CONFIG_LOCKDEP=n).
 
-Commit 1d3351e631fc34d7 ("perf tools: Enable on a list of CPUs for
-hybrid") add it to be supported for hybrid. For hybrid support, it
-checks the cpu list are available on hybrid PMU. But when we test only
-uncore events(or events not in cpu_core and cpu_atom), there is a bug:
-
-Before:
-
- # perf stat -C0  -e uncore_clock/clockticks/ sleep 1
-   failed to use cpu list 0
-
-In this case, for uncore event, its pmu_name is not cpu_core or
-cpu_atom, so in evlist__fix_hybrid_cpus, perf_pmu__find_hybrid_pmu
-should return NULL,both events_nr and unmatched_count should be 0 ,then
-the cpu list check function evlist__fix_hybrid_cpus return -1 and the
-error "failed to use cpu list 0" will happen. Bypass "events_nr=0" case
-then the issue is fixed.
-
-After:
-
- # perf stat -C0  -e uncore_clock/clockticks/ sleep 1
-
- Performance counter stats for 'CPU(s) 0':
-
-       195,476,873      uncore_clock/clockticks/
-
-       1.004518677 seconds time elapsed
-
-When testing with at least one core event and uncore events, it has no
-issue.
-
- # perf stat -C0  -e cpu_core/cpu-cycles/,uncore_clock/clockticks/ sleep 1
-
- Performance counter stats for 'CPU(s) 0':
-
-         5,993,774      cpu_core/cpu-cycles/
-       301,025,912      uncore_clock/clockticks/
-
-       1.003964934 seconds time elapsed
-
-Fixes: 1d3351e631fc34d7 ("perf tools: Enable on a list of CPUs for hybrid")
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: alexander.shishkin@intel.com
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jin Yao <yao.jin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: http://lore.kernel.org/lkml/20220218093127.1844241-1-zhengjun.xing@linux.intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: stable@vger.kernel.org
+Fixes: 2554a48f4437 ("selinux: measure state and policy capabilities")
+Signed-off-by: Ondrej Mosnacek <omosnace@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/evlist-hybrid.c |    4 ++--
+ security/selinux/ima.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/tools/perf/util/evlist-hybrid.c
-+++ b/tools/perf/util/evlist-hybrid.c
-@@ -153,8 +153,8 @@ int evlist__fix_hybrid_cpus(struct evlis
- 		perf_cpu_map__put(matched_cpus);
- 		perf_cpu_map__put(unmatched_cpus);
- 	}
--
--	ret = (unmatched_count == events_nr) ? -1 : 0;
-+	if (events_nr)
-+		ret = (unmatched_count == events_nr) ? -1 : 0;
- out:
- 	perf_cpu_map__put(cpus);
- 	return ret;
+--- a/security/selinux/ima.c
++++ b/security/selinux/ima.c
+@@ -77,7 +77,7 @@ void selinux_ima_measure_state_locked(st
+ 	size_t policy_len;
+ 	int rc = 0;
+ 
+-	WARN_ON(!mutex_is_locked(&state->policy_mutex));
++	lockdep_assert_held(&state->policy_mutex);
+ 
+ 	state_str = selinux_ima_collect_state(state);
+ 	if (!state_str) {
+@@ -117,7 +117,7 @@ void selinux_ima_measure_state_locked(st
+  */
+ void selinux_ima_measure_state(struct selinux_state *state)
+ {
+-	WARN_ON(mutex_is_locked(&state->policy_mutex));
++	lockdep_assert_not_held(&state->policy_mutex);
+ 
+ 	mutex_lock(&state->policy_mutex);
+ 	selinux_ima_measure_state_locked(state);
 
 
