@@ -2,95 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AA1DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C8A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237260AbiB1On6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 09:43:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49668 "EHLO
+        id S237268AbiB1OoA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 09:44:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232032AbiB1On5 (ORCPT
+        with ESMTP id S237258AbiB1On6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 09:43:57 -0500
-Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB6F275CE;
-        Mon, 28 Feb 2022 06:43:18 -0800 (PST)
-Received: by mail-vs1-f43.google.com with SMTP id w4so13216446vsq.1;
-        Mon, 28 Feb 2022 06:43:18 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ns+Arg4klDnlGygzEk76LpslXMQxYcezrQQdYtWZQRM=;
-        b=Az6a6ZZMru/1c4jIsr8cqU6QUs1OEHKHuC0MSNMgBLCLBhKbWBFW4aE9Mf02OHX9EY
-         56C4WFsPZT5Gpnkx3XSLAf6VVOWNfCQmGD8XNuA2Hr1crbqHr6FoUHowhMs5jR7W5tPN
-         zZ26HFNhGpQkgHP6Rao8WEM3Qc6iAcEA4S9WHqtubLXejrL79/sCPCsMS6SE6xrGELTR
-         Jng/N7hg6AncVZZGOLuyt4HvJNMiwPGGWgwJ0pFwsfP7PsqBf3IbIk+JOAgXZheTI/vF
-         37Q/ol+IC7zbi0SfB6u8SgBoTTvBkE+Wn/b09MAiaku8ckXnBnd1BzCdSbGCAIjUCKC4
-         CjCQ==
-X-Gm-Message-State: AOAM532P0eaac71Tg3jck8dxizXS8bkI4nStYXFj20RiWlgvwCrtFbzu
-        EiKiC8wGzMMIaUFbXiRvEp6Ks593JVBfjA==
-X-Google-Smtp-Source: ABdhPJxl52M6ZZgpP5yjBITdm43oaD1BGSuWXEGpgKo6MbTulYbr3mBtKg3xCFjSV++zHuj3t+JmQA==
-X-Received: by 2002:a05:6102:3a12:b0:31e:6646:b3d1 with SMTP id b18-20020a0561023a1200b0031e6646b3d1mr5199619vsu.51.1646059397136;
-        Mon, 28 Feb 2022 06:43:17 -0800 (PST)
-Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com. [209.85.217.45])
-        by smtp.gmail.com with ESMTPSA id t123-20020a1f4681000000b00333ad3ec70dsm106433vka.42.2022.02.28.06.43.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 06:43:16 -0800 (PST)
-Received: by mail-vs1-f45.google.com with SMTP id w4so13216383vsq.1;
-        Mon, 28 Feb 2022 06:43:16 -0800 (PST)
-X-Received: by 2002:a67:af08:0:b0:31b:9451:bc39 with SMTP id
- v8-20020a67af08000000b0031b9451bc39mr7651662vsl.68.1646059396569; Mon, 28 Feb
- 2022 06:43:16 -0800 (PST)
+        Mon, 28 Feb 2022 09:43:58 -0500
+Received: from 9.mo548.mail-out.ovh.net (9.mo548.mail-out.ovh.net [46.105.48.137])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660B2275D1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 06:43:19 -0800 (PST)
+Received: from mxplan5.mail.ovh.net (unknown [10.109.146.107])
+        by mo548.mail-out.ovh.net (Postfix) with ESMTPS id 050CE2339A;
+        Mon, 28 Feb 2022 14:37:45 +0000 (UTC)
+Received: from kaod.org (37.59.142.100) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 28 Feb
+ 2022 15:37:44 +0100
+Authentication-Results: garm.ovh; auth=pass (GARM-100R003a3ef605e-0c0a-4f25-99c2-225566a87550,
+                    252894939833E8233A028C6995915A29C4CB1534) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <423d3bfa-c963-c765-fa65-700db9980804@kaod.org>
+Date:   Mon, 28 Feb 2022 15:37:44 +0100
 MIME-Version: 1.0
-References: <20220227224845.27348-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220227224845.27348-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 28 Feb 2022 15:43:05 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdV+AFpiYwgPN6F1=nx6ivFAU3YYtM1xu4jwyKZh+VNQHQ@mail.gmail.com>
-Message-ID: <CAMuHMdV+AFpiYwgPN6F1=nx6ivFAU3YYtM1xu4jwyKZh+VNQHQ@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: timer: renesas: ostm: Document Renesas
- RZ/V2L OSTM
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 01/10] mtd: spi-nor: aspeed: Rename Kconfig option
+Content-Language: en-US
+To:     Joel Stanley <joel@jms.id.au>
+CC:     Pratyush Yadav <p.yadav@ti.com>, <linux-spi@vger.kernel.org>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        Mark Brown <broonie@kernel.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Chin-Ting Kuo <chin-ting_kuo@aspeedtech.com>,
+        devicetree <devicetree@vger.kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Chris Brandt <chris.brandt@renesas.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220214094231.3753686-1-clg@kaod.org>
+ <20220214094231.3753686-2-clg@kaod.org>
+ <20220225073155.f2cxfhm7surf34d4@ti.com>
+ <688b7a65-d4b6-682b-494a-1d4178699dba@kaod.org>
+ <CACPK8XeCfLmEJSLV6q5BLpCVztzG3dZehCgqrjgrNr7LaOiReQ@mail.gmail.com>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <CACPK8XeCfLmEJSLV6q5BLpCVztzG3dZehCgqrjgrNr7LaOiReQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.100]
+X-ClientProxiedBy: DAG7EX1.mxp5.local (172.16.2.61) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: cd52e354-2258-48f9-a7dc-fd9434f95e6a
+X-Ovh-Tracer-Id: 16012829951295261572
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddruddttddgieeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkfffgggfuffvfhfhjggtgfhisehtkeertddtfeejnecuhfhrohhmpeevrogurhhitggpnfgvpgfiohgrthgvrhcuoegtlhhgsehkrghougdrohhrgheqnecuggftrfgrthhtvghrnhepieegvdffkeegfeetuddttddtveduiefhgeduffekiedtkeekteekhfffleevleelnecukfhppedtrddtrddtrddtpdefjedrheelrddugedvrddutddtnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 11:49 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Document the General Timer Module(a.k.a OSTM) found on the RZ/V2L SoC.
-> OSTM module is identical to one found RZ/G2L SoC. No driver changes are
-> required as generic compatible string "renesas,ostm" will be used as a
-> fallback.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+On 2/28/22 07:07, Joel Stanley wrote:
+> On Sun, 27 Feb 2022 at 18:50, Cédric Le Goater <clg@kaod.org> wrote:
+>>
+>> On 2/25/22 08:31, Pratyush Yadav wrote:
+>>> On 14/02/22 10:42AM, Cédric Le Goater wrote:
+>>>> To prepare transition to the new Aspeed SMC SPI controller driver using
+>>>> the spi-mem interface, change the kernel CONFIG option of the current
+>>>> driver to reflect that the implementation uses the MTD SPI-NOR interface.
+>>>> Once the new driver is sufficiently exposed, we should remove the old one.
+>>>
+>>> I don't quite understand the reasoning behind this. Why keep the old
+>>> driver around? Why not directly replace it with the new one? Does the
+>>> new one have any limitations that this one doesn't?
+>>
+>> No. The old one has more limitations than the new one. The old one in
+>> mainline is half baked since we could never merge the necessary bits
+>> for training. We have been keeping a full version in the OpenBMC tree.
+>>
+>> Joel, could we simply drop the old driver in mainline and keep the old
+>> one in the OpenBMC tree until we feel comfortable ? I guess we need
+>> more testing.
+> 
+> I would answer Pratyush's question with: the old one is well tested,
+> and the new one is not. We would intend to keep the old one around for
+> a release cycle or two, and once we're confident the new one is stable
+> we would remove the old.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+yes but we could handle the transition in the OpenBMC tree without putting
+the burden on mainline.
+  
+mainline would only have the newer spi-mem based driver, the OpenBMC tree
+would have it also, along with the older SPI-NOR based driver.
 
-Gr{oetje,eeting}s,
+So this patch renaming the Kconfig option would only apply to the OpenBMC
+tree.
 
-                        Geert
+C.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
