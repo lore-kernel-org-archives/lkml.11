@@ -2,79 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D486DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D492C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236449AbiB1Nb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:31:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60814 "EHLO
+        id S230094AbiB1NcX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:32:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236141AbiB1Nbl (ORCPT
+        with ESMTP id S231643AbiB1NcR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 08:31:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD577B559;
-        Mon, 28 Feb 2022 05:31:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C5AC4B810DD;
-        Mon, 28 Feb 2022 13:31:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C4996C340FC;
-        Mon, 28 Feb 2022 13:30:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646055059;
-        bh=1ia+snfJ5Mt+LKRqsgmhlU/MdPrM/xXjXAwfJjhkEdg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ik1K/CAvyMfeRogy98gzXbq5PHC8vLDMYlldQycE6gnF1xM46vxAUm9Oni2TtQfBS
-         kPSzzn0wpcd4upRYSU4QCZN2rFonq0O4WMeX3A31ydEsIAKD6QSTX8IBp/vMGNZtfI
-         GnLes4Ykth3rWhEVH2reGY+5aalmLStZVq1pihYj/ikDV0iLftwlbO2fr9DaRIH9Sp
-         /swoxugUQwl8spwHIfTBdRHvLxgZUZrChxLltZcTkpQDirB7yWpQ1spBJstZPCdxVM
-         qXC0eM/ciicdTPCCawiZFhssdXSYn46UHMIatUL0RC7DgJpo2lz+3QmdZyWSxMUJY4
-         uIc/q6/kOVmcw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AA02AE5D087;
-        Mon, 28 Feb 2022 13:30:59 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 28 Feb 2022 08:32:17 -0500
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1707C799;
+        Mon, 28 Feb 2022 05:31:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1646055095; x=1677591095;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=seL8w24Rs2hJ5D/EQMqMwiD72YuTr6yhj+1HA6vGq7c=;
+  b=ZSYbSEwzhBA8WZwoySfIWtuM2KjQMK7N8/j3uns2n+GPF06v83zKnxo+
+   mSIbyZjhU6arZeZI+h/S0esQ6wK2xYXQgkV3Cbtrfkl7jnxuYisJtnpnR
+   rtcYKMxEC7cN+a6LsUm8PhnGzmkUMFAhAQLB/iEJJ0HfiTI9bNyAYgU2c
+   8=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 28 Feb 2022 05:31:35 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 05:31:34 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 28 Feb 2022 05:31:34 -0800
+Received: from jinlmao-gv.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Mon, 28 Feb 2022 05:31:30 -0800
+From:   Mao Jinlong <quic_jinlmao@quicinc.com>
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>
+CC:     Mao Jinlong <jinlmao@qti.qualcomm.com>,
+        <coresight@lists.linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        Tingwei Zhang <quic_tingweiz@quicinc.com>,
+        Jinlong Mao <quic_jinlmao@quicinc.com>,
+        Yuanfang Zhang <quic_yuanfang@quicinc.com>,
+        Tao Zhang <quic_taozha@quicinc.com>,
+        Hao Zhang <quic_hazha@quicinc.com>
+Subject: [PATCH] coresight: Defer probe when the child dev is not probed
+Date:   Mon, 28 Feb 2022 21:31:12 +0800
+Message-ID: <20220228133112.3987-1-quic_jinlmao@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: decnet: use time_is_before_jiffies() instead of open
- coding it
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164605505969.13902.12629071764540834310.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Feb 2022 13:30:59 +0000
-References: <1646018155-61556-1-git-send-email-wangqing@vivo.com>
-In-Reply-To: <1646018155-61556-1-git-send-email-wangqing@vivo.com>
-To:     Qing Wang <wangqing@vivo.com>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+From: Mao Jinlong <jinlmao@qti.qualcomm.com>
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+It is possible that when device probe, its child device is not
+probed. Then it will fail when add sysfs connection for the device.
+Make device defer probe when the child device is not probed.
 
-On Sun, 27 Feb 2022 19:15:55 -0800 you wrote:
-> From: Wang Qing <wangqing@vivo.com>
-> 
-> Use the helper function time_is_{before,after}_jiffies() to improve
-> code readability.
-> 
-> Signed-off-by: Wang Qing <wangqing@vivo.com>
-> 
-> [...]
+Signed-off-by: Mao Jinlong <jinlmao@qti.qualcomm.com>
+---
+ drivers/hwtracing/coresight/coresight-sysfs.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Here is the summary with links:
-  - net: decnet: use time_is_before_jiffies() instead of open coding it
-    https://git.kernel.org/netdev/net-next/c/98fffd72f934
-
-You are awesome, thank you!
+diff --git a/drivers/hwtracing/coresight/coresight-sysfs.c b/drivers/hwtracing/coresight/coresight-sysfs.c
+index 34d2a2d31d00..7df9eb59bf2c 100644
+--- a/drivers/hwtracing/coresight/coresight-sysfs.c
++++ b/drivers/hwtracing/coresight/coresight-sysfs.c
+@@ -73,8 +73,10 @@ int coresight_add_sysfs_link(struct coresight_sysfs_link *info)
+ 	if (!info->orig || !info->target ||
+ 	    !info->orig_name || !info->target_name)
+ 		return -EINVAL;
+-	if (!info->orig->has_conns_grp || !info->target->has_conns_grp)
++	if (!info->orig->has_conns_grp)
+ 		return -EINVAL;
++	if (!info->target->has_conns_grp)
++		return -EPROBE_DEFER;
+ 
+ 	/* first link orig->target */
+ 	ret = sysfs_add_link_to_group(&info->orig->dev.kobj,
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.17.1
 
