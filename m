@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2615C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F159CC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233459AbiB1SKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:10:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44482 "EHLO
+        id S235373AbiB1SKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:10:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240822AbiB1SEI (ORCPT
+        with ESMTP id S240862AbiB1SER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:04:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8BF1116A;
-        Mon, 28 Feb 2022 09:47:37 -0800 (PST)
+        Mon, 28 Feb 2022 13:04:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B61332ECF;
+        Mon, 28 Feb 2022 09:47:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AF33B815C5;
-        Mon, 28 Feb 2022 17:47:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66E7CC340E7;
-        Mon, 28 Feb 2022 17:47:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32AC96091F;
+        Mon, 28 Feb 2022 17:47:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44EABC340E7;
+        Mon, 28 Feb 2022 17:47:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070423;
-        bh=vz++OT2NpQLcJoIMtjCiXJNuGLiWgx78RUDEY0UqYyc=;
+        s=korg; t=1646070453;
+        bh=b15eEKyFsvxhv7wzv4TWKHP+1e+cw/Eu+//k6NfN7gs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NzA1XYpTCG0ajw3gGEjpwyNO6pIoJBTG/IHzUV9/l80SBWSf4nwZXifu1mnnSHdLJ
-         JIl/swLKL/q9K/PobIJ8VOlBrQqltRUlg3bRDYFWCsOliTeYsyWIPiciRMPBEnQMu1
-         SdsAGbzWJA1Gl6vc3Usf5JBlp3FK4C1bmaWAp/RI=
+        b=zO8yQWQjt2JtxTP24F65NK6KXE2EQi/+KhNsTpXQr/zjFlgxepN9GGlfjw5JUHkSX
+         FvmeWXkSUUU5HREYCeLaDktRc6wSJCEjRQo2bo0g3g25xy2Tu548C2zKxULR1dO/IS
+         CvSSdwprw/zdm0CLMziHu7z4Laur8MObN/ZI4qpQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 064/164] tipc: Fix end of loop tests for list_for_each_entry()
-Date:   Mon, 28 Feb 2022 18:23:46 +0100
-Message-Id: <20220228172405.988911270@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.16 115/164] iio: adc: men_z188_adc: Fix a resource leak in an error handling path
+Date:   Mon, 28 Feb 2022 18:24:37 +0100
+Message-Id: <20220228172410.836581504@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,47 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit a1f8fec4dac8bc7b172b2bdbd881e015261a6322 upstream.
+commit e0a2e37f303828d030a83f33ffe14b36cb88d563 upstream.
 
-These tests are supposed to check if the loop exited via a break or not.
-However the tests are wrong because if we did not exit via a break then
-"p" is not a valid pointer.  In that case, it's the equivalent of
-"if (*(u32 *)sr == *last_key) {".  That's going to work most of the time,
-but there is a potential for those to be equal.
+If iio_device_register() fails, a previous ioremap() is left unbalanced.
 
-Fixes: 1593123a6a49 ("tipc: add name table dump to new netlink api")
-Fixes: 1a1a143daf84 ("tipc: add publication dump to new netlink api")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Update the error handling path and add the missing iounmap() call, as
+already done in the remove function.
+
+Fixes: 74aeac4da66f ("iio: adc: Add MEN 16z188 ADC driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/320fc777863880247c2aff4a9d1a54ba69abf080.1643445149.git.christophe.jaillet@wanadoo.fr
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/tipc/name_table.c |    2 +-
- net/tipc/socket.c     |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/men_z188_adc.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/net/tipc/name_table.c
-+++ b/net/tipc/name_table.c
-@@ -967,7 +967,7 @@ static int __tipc_nl_add_nametable_publ(
- 		list_for_each_entry(p, &sr->all_publ, all_publ)
- 			if (p->key == *last_key)
- 				break;
--		if (p->key != *last_key)
-+		if (list_entry_is_head(p, &sr->all_publ, all_publ))
- 			return -EPIPE;
- 	} else {
- 		p = list_first_entry(&sr->all_publ,
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -3749,7 +3749,7 @@ static int __tipc_nl_list_sk_publ(struct
- 			if (p->key == *last_publ)
- 				break;
- 		}
--		if (p->key != *last_publ) {
-+		if (list_entry_is_head(p, &tsk->publications, binding_sock)) {
- 			/* We never set seq or call nl_dump_check_consistent()
- 			 * this means that setting prev_seq here will cause the
- 			 * consistence check to fail in the netlink callback
+--- a/drivers/iio/adc/men_z188_adc.c
++++ b/drivers/iio/adc/men_z188_adc.c
+@@ -103,6 +103,7 @@ static int men_z188_probe(struct mcb_dev
+ 	struct z188_adc *adc;
+ 	struct iio_dev *indio_dev;
+ 	struct resource *mem;
++	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&dev->dev, sizeof(struct z188_adc));
+ 	if (!indio_dev)
+@@ -128,8 +129,14 @@ static int men_z188_probe(struct mcb_dev
+ 	adc->mem = mem;
+ 	mcb_set_drvdata(dev, indio_dev);
+ 
+-	return iio_device_register(indio_dev);
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto err_unmap;
+ 
++	return 0;
++
++err_unmap:
++	iounmap(adc->base);
+ err:
+ 	mcb_release_mem(mem);
+ 	return -ENXIO;
 
 
