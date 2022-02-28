@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6745DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238833AbiB1Ruw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:50:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33880 "EHLO
+        id S238976AbiB1Ru5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:50:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239646AbiB1Ro0 (ORCPT
+        with ESMTP id S239448AbiB1RoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:44:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5823589CDE;
-        Mon, 28 Feb 2022 09:36:48 -0800 (PST)
+        Mon, 28 Feb 2022 12:44:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632999D4E4;
+        Mon, 28 Feb 2022 09:36:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2070B815C2;
-        Mon, 28 Feb 2022 17:36:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16E01C340F6;
-        Mon, 28 Feb 2022 17:36:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BC83B815A2;
+        Mon, 28 Feb 2022 17:36:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58B16C340F5;
+        Mon, 28 Feb 2022 17:36:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069806;
-        bh=VQdY0C3fKQDElC+gRi2LMy2/1Au1SFhhlrXAKAmiWyE=;
+        s=korg; t=1646069781;
+        bh=uyedKT2X1iZVhp4ujHdVP2F6tNmM6r6qtYwLCazL8ZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZJpGqgdD0Bo6KxGtj/+ffoP04zvEjdkig5Wx5F6klU9rSk70E4NyBbd30WOKrHo4S
-         AeO5j3cN9/tdxvJjAou6dwTXedQ9VeXobrKZBCdN5lIrrzcOzIZIy0G3PB3iqJICZg
-         kUW3vUPKxiLaRAMEZL5idtqsoclCTmB6QIn32kd0=
+        b=URwYa9boka5PFFSxcndfnXcLCShI4eYHQG5xKVsRZi+oG31CwhL0abmWYzEY1/USy
+         kmmkLYCc/vAyMxi9ylGN+EDv9zPrCQ75akNQvizpj356YsnZX0lItDD/JMoVNDxUp8
+         TFdTyYaC1TkwtrP0eq3X1VaeumrSrcfyIZ5Z89+s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Gong <curry.gong@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH 5.15 019/139] drm/amdgpu: do not enable asic reset for raven2
-Date:   Mon, 28 Feb 2022 18:23:13 +0100
-Message-Id: <20220228172349.920321831@linuxfoundation.org>
+        stable@vger.kernel.org, Zhao Gongyi <zhaogongyi@huawei.com>,
+        Zhang Qiao <zhangqiao22@huawei.com>,
+        Waiman Long <longman@redhat.com>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.15 002/139] cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug
+Date:   Mon, 28 Feb 2022 18:22:56 +0100
+Message-Id: <20220228172347.834548462@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,40 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Gong <curry.gong@amd.com>
+From: Zhang Qiao <zhangqiao22@huawei.com>
 
-commit 1e2be869c8a7247a7253ef4f461f85e2f5931b95 upstream.
+commit 05c7b7a92cc87ff8d7fde189d0fade250697573c upstream.
 
-The GPU reset function of raven2 is not maintained or tested, so it should be
-very unstable.
+As previously discussed(https://lkml.org/lkml/2022/1/20/51),
+cpuset_attach() is affected with similar cpu hotplug race,
+as follow scenario:
 
-Now the amdgpu_asic_reset function is added to amdgpu_pmops_suspend, which
-causes the S3 test of raven2 to fail, so the asic_reset of raven2 is ignored
-here.
+     cpuset_attach()				cpu hotplug
+    ---------------------------            ----------------------
+    down_write(cpuset_rwsem)
+    guarantee_online_cpus() // (load cpus_attach)
+					sched_cpu_deactivate
+					  set_cpu_active()
+					  // will change cpu_active_mask
+    set_cpus_allowed_ptr(cpus_attach)
+      __set_cpus_allowed_ptr_locked()
+       // (if the intersection of cpus_attach and
+         cpu_active_mask is empty, will return -EINVAL)
+    up_write(cpuset_rwsem)
 
-Fixes: daf8de0874ab5b ("drm/amdgpu: always reset the asic in suspend (v2)")
-Signed-off-by: Chen Gong <curry.gong@amd.com>
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
-Reviewed-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+To avoid races such as described above, protect cpuset_attach() call
+with cpu_hotplug_lock.
+
+Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
+Cc: stable@vger.kernel.org # v2.6.32+
+Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
+Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
+Acked-by: Waiman Long <longman@redhat.com>
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/soc15.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/cgroup/cpuset.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/gpu/drm/amd/amdgpu/soc15.c
-+++ b/drivers/gpu/drm/amd/amdgpu/soc15.c
-@@ -607,8 +607,8 @@ soc15_asic_reset_method(struct amdgpu_de
- static int soc15_asic_reset(struct amdgpu_device *adev)
- {
- 	/* original raven doesn't have full asic reset */
--	if ((adev->apu_flags & AMD_APU_IS_RAVEN) &&
--	    !(adev->apu_flags & AMD_APU_IS_RAVEN2))
-+	if ((adev->apu_flags & AMD_APU_IS_RAVEN) ||
-+	    (adev->apu_flags & AMD_APU_IS_RAVEN2))
- 		return 0;
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -2249,6 +2249,7 @@ static void cpuset_attach(struct cgroup_
+ 	cgroup_taskset_first(tset, &css);
+ 	cs = css_cs(css);
  
- 	switch (soc15_asic_reset_method(adev)) {
++	cpus_read_lock();
+ 	percpu_down_write(&cpuset_rwsem);
+ 
+ 	guarantee_online_mems(cs, &cpuset_attach_nodemask_to);
+@@ -2302,6 +2303,7 @@ static void cpuset_attach(struct cgroup_
+ 		wake_up(&cpuset_attach_wq);
+ 
+ 	percpu_up_write(&cpuset_rwsem);
++	cpus_read_unlock();
+ }
+ 
+ /* The various types of files and directories in a cpuset file system */
 
 
