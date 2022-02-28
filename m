@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E99C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 868F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235400AbiB1R3v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:29:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
+        id S236101AbiB1R3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:29:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237225AbiB1R2G (ORCPT
+        with ESMTP id S234633AbiB1R1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:28:06 -0500
+        Mon, 28 Feb 2022 12:27:38 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F0B62E9;
-        Mon, 28 Feb 2022 09:27:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C21888F1;
+        Mon, 28 Feb 2022 09:26:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91B7E6135F;
-        Mon, 28 Feb 2022 17:27:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BDC7C340E7;
-        Mon, 28 Feb 2022 17:27:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0A3461366;
+        Mon, 28 Feb 2022 17:26:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C60B1C340E7;
+        Mon, 28 Feb 2022 17:26:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069242;
-        bh=syfSvU/7y2CmgSCUm/TKqAHV3WuNmsFV4FablvfBExk=;
+        s=korg; t=1646069204;
+        bh=OmiwR0cP9/UDpGSq71on02f3Ni28EWSDD1wgMRG9K/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VSIlNTZB+2ujE6Se1Ije/s5oSdfa6uW/PS7kx6ZUs8oRbSeLv4M2OCKbvZDW3qtGq
-         6i20XRJ6LkfjK072luOHMsxqTyNaBy+9oiQa6YKpbnW5HG66QEvbSssA1V2DmMqYHl
-         ZslvR02ly1AwOj90W5l50281mCvE0bT5avUut/k4=
+        b=cuived22+1m08CaZkVtGWc8sAXH/xHzVHzcgcR6UcCvu8kruBOWx6r5ZLWnpvys6o
+         c1nfYMtxEZiL8/diVeBMxQno/bd/GnviCrxwBC27BdCkI1QuNpRRY+QjzMN25mIC80
+         Cw/5qlUJ16/sgAXifWwLUDc56DJEVdAbw0GLBrAA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+831661966588c802aae9@syzkaller.appspotmail.com,
-        Bart Van Assche <bvanassche@acm.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 15/31] RDMA/ib_srp: Fix a deadlock
-Date:   Mon, 28 Feb 2022 18:24:11 +0100
-Message-Id: <20220228172201.340337725@linuxfoundation.org>
+        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.9 23/29] USB: serial: option: add Telit LE910R1 compositions
+Date:   Mon, 28 Feb 2022 18:23:50 +0100
+Message-Id: <20220228172144.125876469@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
-References: <20220228172159.515152296@linuxfoundation.org>
+In-Reply-To: <20220228172141.744228435@linuxfoundation.org>
+References: <20220228172141.744228435@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,45 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Daniele Palmas <dnlplm@gmail.com>
 
-[ Upstream commit 081bdc9fe05bb23248f5effb6f811da3da4b8252 ]
+commit cfc4442c642d568014474b6718ccf65dc7ca6099 upstream.
 
-Remove the flush_workqueue(system_long_wq) call since flushing
-system_long_wq is deadlock-prone and since that call is redundant with a
-preceding cancel_work_sync()
+Add support for the following Telit LE910R1 compositions:
 
-Link: https://lore.kernel.org/r/20220215210511.28303-3-bvanassche@acm.org
-Fixes: ef6c49d87c34 ("IB/srp: Eliminate state SRP_TARGET_DEAD")
-Reported-by: syzbot+831661966588c802aae9@syzkaller.appspotmail.com
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+0x701a: rndis, tty, tty, tty
+0x701b: ecm, tty, tty, tty
+0x9201: tty
+
+Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
+Link: https://lore.kernel.org/r/20220218134552.4051-1-dnlplm@gmail.com
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/ulp/srp/ib_srp.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/usb/serial/option.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/infiniband/ulp/srp/ib_srp.c b/drivers/infiniband/ulp/srp/ib_srp.c
-index 9f7287f45d06f..63358c4c8e57c 100644
---- a/drivers/infiniband/ulp/srp/ib_srp.c
-+++ b/drivers/infiniband/ulp/srp/ib_srp.c
-@@ -3683,9 +3683,11 @@ static void srp_remove_one(struct ib_device *device, void *client_data)
- 		spin_unlock(&host->target_lock);
- 
- 		/*
--		 * Wait for tl_err and target port removal tasks.
-+		 * srp_queue_remove_work() queues a call to
-+		 * srp_remove_target(). The latter function cancels
-+		 * target->tl_err_work so waiting for the remove works to
-+		 * finish is sufficient.
- 		 */
--		flush_workqueue(system_long_wq);
- 		flush_workqueue(srp_remove_wq);
- 
- 		kfree(host);
--- 
-2.34.1
-
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -1255,10 +1255,16 @@ static const struct usb_device_id option
+ 	  .driver_info = NCTRL(2) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x7011, 0xff),	/* Telit LE910-S1 (ECM) */
+ 	  .driver_info = NCTRL(2) },
++	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x701a, 0xff),	/* Telit LE910R1 (RNDIS) */
++	  .driver_info = NCTRL(2) },
++	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x701b, 0xff),	/* Telit LE910R1 (ECM) */
++	  .driver_info = NCTRL(2) },
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9010),				/* Telit SBL FN980 flashing device */
+ 	  .driver_info = NCTRL(0) | ZLP },
+ 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9200),				/* Telit LE910S1 flashing device */
+ 	  .driver_info = NCTRL(0) | ZLP },
++	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9201),				/* Telit LE910R1 flashing device */
++	  .driver_info = NCTRL(0) | ZLP },
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, ZTE_PRODUCT_MF622, 0xff, 0xff, 0xff) }, /* ZTE WCDMA products */
+ 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0002, 0xff, 0xff, 0xff),
+ 	  .driver_info = RSVD(1) },
 
 
