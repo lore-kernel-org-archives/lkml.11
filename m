@@ -2,49 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C00C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96450C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239398AbiB1SAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:00:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51162 "EHLO
+        id S234988AbiB1SAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:00:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240783AbiB1Ryp (ORCPT
+        with ESMTP id S240791AbiB1Ryp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:45 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CE5952E72;
-        Mon, 28 Feb 2022 09:43:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CAB532DF;
+        Mon, 28 Feb 2022 09:43:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA075B815B3;
-        Mon, 28 Feb 2022 17:43:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C5C6C340E7;
-        Mon, 28 Feb 2022 17:43:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33908B815B3;
+        Mon, 28 Feb 2022 17:43:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F8BAC340E7;
+        Mon, 28 Feb 2022 17:43:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070199;
-        bh=LooQy0wNydj8kHhRYE5mtQl6DAH/C3OhSN4ERmFREeI=;
+        s=korg; t=1646070215;
+        bh=qu90kltiE3Ztr4yf80d/h8k36oOjn3KCAfxrW+5oMjI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KUrWy9kIB70MvQA+1IiCdCBYwKHBPsCJ04wJqZLDl2S/5Ib2T1llGH6BvVnvVDhLz
-         37WTBdnMAdZ5NsWehc6aHCFy6Ik9WrqNxrdeJjJsszsWGC/kOSAQ5SBiV2D3YzSCYo
-         d/jCwDtLBkzKQ2NmwAKy3lVdAOHEmAxo3MCxLMWk=
+        b=dWcy7qvdrPWP5LjFR/HmXk2NA94NVBTuoa22dWBU87DggmKPGJdoalzMCVKfEwPpd
+         9Ko6enAGOE9iY5n4xJSThi6Qi/sNU+30O59aWwBBxG6O1mpCdStzOvRJ0T/7ODTN5P
+         Yop5W+uFpV2N/K+pdKOaBXYsVqEN3FJP4VtMHA4A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Daniel Micay <danielmicay@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Nathan Chancellor <nathan@kernel.org>, linux-mm@kvack.org,
-        llvm@lists.linux.dev, David Rientjes <rientjes@google.com>
-Subject: [PATCH 5.16 006/164] slab: remove __alloc_size attribute from __kmalloc_track_caller
-Date:   Mon, 28 Feb 2022 18:22:48 +0100
-Message-Id: <20220228172400.279076305@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
+        Ross Maynard <bids.7405@bigpond.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 028/164] USB: zaurus: support another broken Zaurus
+Date:   Mon, 28 Feb 2022 18:23:10 +0100
+Message-Id: <20220228172402.702798055@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -56,57 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit 93dd04ab0b2b32ae6e70284afc764c577156658e upstream.
+commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c upstream.
 
-Commit c37495d6254c ("slab: add __alloc_size attributes for better
-bounds checking") added __alloc_size attributes to a bunch of kmalloc
-function prototypes.  Unfortunately the change to __kmalloc_track_caller
-seems to cause clang to generate broken code and the first time this is
-called when booting, the box will crash.
+This SL-6000 says Direct Line, not Ethernet
 
-While the compiler problems are being reworked and attempted to be
-solved [1], let's just drop the attribute to solve the issue now.  Once
-it is resolved it can be added back.
+v2: added Reporter and Link
 
-[1] https://github.com/ClangBuiltLinux/linux/issues/1599
-
-Fixes: c37495d6254c ("slab: add __alloc_size attributes for better bounds checking")
-Cc: stable <stable@vger.kernel.org>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Daniel Micay <danielmicay@gmail.com>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Christoph Lameter <cl@linux.com>
-Cc: Pekka Enberg <penberg@kernel.org>
-Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Cc: linux-mm@kvack.org
-Cc: linux-kernel@vger.kernel.org
-Cc: llvm@lists.linux.dev
-Acked-by: Nick Desaulniers <ndesaulniers@google.com>
-Acked-by: David Rientjes <rientjes@google.com>
-Acked-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
-Link: https://lore.kernel.org/r/20220218131358.3032912-1-gregkh@linuxfoundation.org
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reported-by: Ross Maynard <bids.7405@bigpond.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/slab.h |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/usb/cdc_ether.c |   12 ++++++++++++
+ drivers/net/usb/zaurus.c    |   12 ++++++++++++
+ 2 files changed, 24 insertions(+)
 
---- a/include/linux/slab.h
-+++ b/include/linux/slab.h
-@@ -669,8 +669,7 @@ static inline __alloc_size(1, 2) void *k
-  * allocator where we care about the real place the memory allocation
-  * request comes from.
-  */
--extern void *__kmalloc_track_caller(size_t size, gfp_t flags, unsigned long caller)
--				   __alloc_size(1);
-+extern void *__kmalloc_track_caller(size_t size, gfp_t flags, unsigned long caller);
- #define kmalloc_track_caller(size, flags) \
- 	__kmalloc_track_caller(size, flags, _RET_IP_)
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -583,6 +583,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
  
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
+  * wire-incompatible with true CDC Ethernet implementations.
+  * (And, it seems, needlessly so...)
+@@ -638,6 +643,13 @@ static const struct usb_device_id	produc
+ 	.driver_info		= 0,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++		 | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor               = 0x04DD,
++	.idProduct              = 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info		= 0,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
+--- a/drivers/net/usb/zaurus.c
++++ b/drivers/net/usb/zaurus.c
+@@ -256,6 +256,11 @@ static const struct usb_device_id	produc
+ 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
+ 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+ 
++#define ZAURUS_FAKE_INTERFACE \
++	.bInterfaceClass	= USB_CLASS_COMM, \
++	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
++	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++
+ /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
+ {
+ 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
+@@ -315,6 +320,13 @@ static const struct usb_device_id	produc
+ 	.driver_info = ZAURUS_PXA_INFO,
+ }, {
+ 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
++			    | USB_DEVICE_ID_MATCH_DEVICE,
++	.idVendor		= 0x04DD,
++	.idProduct		= 0x9032,	/* SL-6000 */
++	ZAURUS_FAKE_INTERFACE,
++	.driver_info = (unsigned long)&bogus_mdlm_info,
++}, {
++	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
+ 		 | USB_DEVICE_ID_MATCH_DEVICE,
+ 	.idVendor               = 0x04DD,
+ 	/* reported with some C860 units */
 
 
