@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6259AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC654C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240563AbiB1SJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:09:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43262 "EHLO
+        id S233195AbiB1SKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:10:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240090AbiB1SDA (ORCPT
+        with ESMTP id S240819AbiB1SEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A9119E9FE;
-        Mon, 28 Feb 2022 09:46:34 -0800 (PST)
+        Mon, 28 Feb 2022 13:04:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA2252AF3;
+        Mon, 28 Feb 2022 09:47:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 182EFB815C8;
-        Mon, 28 Feb 2022 17:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7215DC340F0;
-        Mon, 28 Feb 2022 17:46:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCCB260180;
+        Mon, 28 Feb 2022 17:47:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF491C340E7;
+        Mon, 28 Feb 2022 17:47:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070363;
-        bh=hASjgU5IbImGYbBcnUlqosQGVE2k2Av8fnxVz6ioyzs=;
+        s=korg; t=1646070456;
+        bh=Ig6iiXM5kdjbiATJC7zMaVmkMdHlc7IqYSCKrSrGdak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YqUqIGohxPXSoj6bdRbdvcLzdQoMjpefE0tu/AsKqg72Uru3+ol9ieT+m+jtC8/OI
-         SQdB2+cHtYIF5lVK1tcmKZnXt+HYTPlP9NWS4057EXRN/XJ+kPxWhjZe2hD7EKR7pU
-         Fe7HEHGHFRzlqWpc2WLReidsv0UgE/XEamxWtPpA=
+        b=1a1n9ZGUglSS3Fj9wM3sblfGm2KWvoIAA+/mPeZ2fxgm1ooTzYlVoBTIm7rKiOlZI
+         c1uUNDfffFdqmx65Olnvc7tMdYtHP2pjqlKUhWP8AoAO8OcTyDwvGQCTxCo2H/Yrav
+         WnVHwXSLJey5YpsAAaUiq9U2Dlh5+Ngo+nHWi28I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 081/164] net: dsa: avoid call to __dev_set_promiscuity() while rtnl_mutex isnt held
-Date:   Mon, 28 Feb 2022 18:24:03 +0100
-Message-Id: <20220228172407.321734179@linuxfoundation.org>
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.16 116/164] iio: adc: tsc2046: fix memory corruption by preventing array overflow
+Date:   Mon, 28 Feb 2022 18:24:38 +0100
+Message-Id: <20220228172410.894334670@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,119 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-commit 8940e6b669ca1196ce0a0549c819078096390f76 upstream.
+commit b7a78a8adaa8849c02f174d707aead0f85dca0da upstream.
 
-If the DSA master doesn't support IFF_UNICAST_FLT, then the following
-call path is possible:
+On one side we have indio_dev->num_channels includes all physical channels +
+timestamp channel. On other side we have an array allocated only for
+physical channels. So, fix memory corruption by ARRAY_SIZE() instead of
+num_channels variable.
 
-dsa_slave_switchdev_event_work
--> dsa_port_host_fdb_add
-   -> dev_uc_add
-      -> __dev_set_rx_mode
-         -> __dev_set_promiscuity
+Note the first case is a cleanup rather than a fix as the software
+timestamp channel bit in active_scanmask is never set by the IIO core.
 
-Since the blamed commit, dsa_slave_switchdev_event_work() no longer
-holds rtnl_lock(), which triggers the ASSERT_RTNL() from
-__dev_set_promiscuity().
-
-Taking rtnl_lock() around dev_uc_add() is impossible, because all the
-code paths that call dsa_flush_workqueue() do so from contexts where the
-rtnl_mutex is already held - so this would lead to an instant deadlock.
-
-dev_uc_add() in itself doesn't require the rtnl_mutex for protection.
-There is this comment in __dev_set_rx_mode() which assumes so:
-
-		/* Unicast addresses changes may only happen under the rtnl,
-		 * therefore calling __dev_set_promiscuity here is safe.
-		 */
-
-but it is from commit 4417da668c00 ("[NET]: dev: secondary unicast
-address support") dated June 2007, and in the meantime, commit
-f1f28aa3510d ("netdev: Add addr_list_lock to struct net_device."), dated
-July 2008, has added &dev->addr_list_lock to protect this instead of the
-global rtnl_mutex.
-
-Nonetheless, __dev_set_promiscuity() does assume rtnl_mutex protection,
-but it is the uncommon path of what we typically expect dev_uc_add()
-to do. So since only the uncommon path requires rtnl_lock(), just check
-ahead of time whether dev_uc_add() would result into a call to
-__dev_set_promiscuity(), and handle that condition separately.
-
-DSA already configures the master interface to be promiscuous if the
-tagger requires this. We can extend this to also cover the case where
-the master doesn't handle dev_uc_add() (doesn't support IFF_UNICAST_FLT),
-and on the premise that we'd end up making it promiscuous during
-operation anyway, either if a DSA slave has a non-inherited MAC address,
-or if the bridge notifies local FDB entries for its own MAC address, the
-address of a station learned on a foreign port, etc.
-
-Fixes: 0faf890fc519 ("net: dsa: drop rtnl_lock from dsa_slave_switchdev_event_work")
-Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 9374e8f5a38d ("iio: adc: add ADC driver for the TI TSC2046 controller")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220107081401.2816357-1-o.rempel@pengutronix.de
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/dsa/master.c |    7 ++++++-
- net/dsa/port.c   |   20 ++++++++++++++------
- 2 files changed, 20 insertions(+), 7 deletions(-)
+ drivers/iio/adc/ti-tsc2046.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -260,11 +260,16 @@ static void dsa_netdev_ops_set(struct ne
- 	dev->dsa_ptr->netdev_ops = ops;
- }
+--- a/drivers/iio/adc/ti-tsc2046.c
++++ b/drivers/iio/adc/ti-tsc2046.c
+@@ -388,7 +388,7 @@ static int tsc2046_adc_update_scan_mode(
+ 	mutex_lock(&priv->slock);
  
-+/* Keep the master always promiscuous if the tagging protocol requires that
-+ * (garbles MAC DA) or if it doesn't support unicast filtering, case in which
-+ * it would revert to promiscuous mode as soon as we call dev_uc_add() on it
-+ * anyway.
-+ */
- static void dsa_master_set_promiscuity(struct net_device *dev, int inc)
- {
- 	const struct dsa_device_ops *ops = dev->dsa_ptr->tag_ops;
+ 	size = 0;
+-	for_each_set_bit(ch_idx, active_scan_mask, indio_dev->num_channels) {
++	for_each_set_bit(ch_idx, active_scan_mask, ARRAY_SIZE(priv->l)) {
+ 		size += tsc2046_adc_group_set_layout(priv, group, ch_idx);
+ 		tsc2046_adc_group_set_cmd(priv, group, ch_idx);
+ 		group++;
+@@ -548,7 +548,7 @@ static int tsc2046_adc_setup_spi_msg(str
+ 	 * enabled.
+ 	 */
+ 	size = 0;
+-	for (ch_idx = 0; ch_idx < priv->dcfg->num_channels; ch_idx++)
++	for (ch_idx = 0; ch_idx < ARRAY_SIZE(priv->l); ch_idx++)
+ 		size += tsc2046_adc_group_set_layout(priv, ch_idx, ch_idx);
  
--	if (!ops->promisc_on_master)
-+	if ((dev->priv_flags & IFF_UNICAST_FLT) && !ops->promisc_on_master)
- 		return;
- 
- 	rtnl_lock();
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -777,9 +777,15 @@ int dsa_port_host_fdb_add(struct dsa_por
- 	struct dsa_port *cpu_dp = dp->cpu_dp;
- 	int err;
- 
--	err = dev_uc_add(cpu_dp->master, addr);
--	if (err)
--		return err;
-+	/* Avoid a call to __dev_set_promiscuity() on the master, which
-+	 * requires rtnl_lock(), since we can't guarantee that is held here,
-+	 * and we can't take it either.
-+	 */
-+	if (cpu_dp->master->priv_flags & IFF_UNICAST_FLT) {
-+		err = dev_uc_add(cpu_dp->master, addr);
-+		if (err)
-+			return err;
-+	}
- 
- 	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_ADD, &info);
- }
-@@ -796,9 +802,11 @@ int dsa_port_host_fdb_del(struct dsa_por
- 	struct dsa_port *cpu_dp = dp->cpu_dp;
- 	int err;
- 
--	err = dev_uc_del(cpu_dp->master, addr);
--	if (err)
--		return err;
-+	if (cpu_dp->master->priv_flags & IFF_UNICAST_FLT) {
-+		err = dev_uc_del(cpu_dp->master, addr);
-+		if (err)
-+			return err;
-+	}
- 
- 	return dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_DEL, &info);
- }
+ 	priv->tx = devm_kzalloc(&priv->spi->dev, size, GFP_KERNEL);
 
 
