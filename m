@@ -2,132 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B68C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C76CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235641AbiB1NXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:23:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35618 "EHLO
+        id S232081AbiB1NXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:23:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232050AbiB1NXn (ORCPT
+        with ESMTP id S235607AbiB1NXp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 08:23:43 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF0E626121;
-        Mon, 28 Feb 2022 05:23:04 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 2BDED2113A;
-        Mon, 28 Feb 2022 13:23:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646054583;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oNvLdI+iZsXcVPiWs0ldraacfaGBUEaJwBk4ZA2v124=;
-        b=rWm36XAZ+Llc9U2KXh2MPBcdn+RT/qlvq2rSEOELa7CXgyIbCnSv3eYuDAtuPoL2SvdM58
-        lh4PAaind+isGMTnTBPbFB9f6c6VikkIJrmmVYoyhA4rLWPCvoPkmVAF3Xp5EU0w3AcUnQ
-        A79o4qcmmjPCwQH/x+MN0LKM2sKO4Xw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646054583;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=oNvLdI+iZsXcVPiWs0ldraacfaGBUEaJwBk4ZA2v124=;
-        b=NTy2NkO24rhwN3/jLw4GQXPDL/VZeLSdeIm58qi61G+/SIy2JEKcfSCmGpKt/FLfgZhQ7D
-        CyLReitTHv7C/uAg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 84B2CA3B85;
-        Mon, 28 Feb 2022 13:23:02 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id A0D17DA823; Mon, 28 Feb 2022 14:19:11 +0100 (CET)
-Date:   Mon, 28 Feb 2022 14:19:11 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
-        Jonathan Corbet <corbet@lwn.net>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-btrfs <linux-btrfs@vger.kernel.org>
-Subject: Re: [PATCH] [v2] Kbuild: move to -std=gnu11
-Message-ID: <20220228131911.GH12643@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Arnd Bergmann <arnd@kernel.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
-        Jonathan Corbet <corbet@lwn.net>,
-        Federico Vaga <federico.vaga@vaga.pv.it>,
-        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-doc-tw-discuss@lists.sourceforge.net,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-btrfs <linux-btrfs@vger.kernel.org>
-References: <20220228103142.3301082-1-arnd@kernel.org>
- <87v8wz5frv.fsf@intel.com>
- <CAK8P3a1YUR4BNu8Nrc5XW+sFjL7-hWTHh7kstV27wmj1aqc4vA@mail.gmail.com>
+        Mon, 28 Feb 2022 08:23:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C327826121
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 05:23:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646054585;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=PlD7TMS0jB91fn4FULs2gWc+/7qJIEEnhaVLcZF9VF0=;
+        b=WRrFxXYl2nA2pRdgyp+KL2EsoQKzLcTZHZWxPIVA8mKCdTyYzIaU9+2W/GGc23ZHl3poxE
+        VJuaQ39le6hlYbP7BFKg3FnEmQSKcG91+bYaAghh0JzTjS66n79S8i+0aaRhMKtbvTTosm
+        3v08jGCn7zYzoDxPxqIJL2B+5rwj2bM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-290-tmaySKIlOYekywmpiySahA-1; Mon, 28 Feb 2022 08:23:00 -0500
+X-MC-Unique: tmaySKIlOYekywmpiySahA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3D0488066F4;
+        Mon, 28 Feb 2022 13:22:59 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.37.0])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BAAC8838C0;
+        Mon, 28 Feb 2022 13:22:57 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+To:     torvalds@linux-foundation.org, akpm@linux-foundation.org
+cc:     dhowells@redhat.com, willy@infradead.org, kirill@shutemov.name,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] mm: Export PageHeadHuge()
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a1YUR4BNu8Nrc5XW+sFjL7-hWTHh7kstV27wmj1aqc4vA@mail.gmail.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2494561.1646054576.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Mon, 28 Feb 2022 13:22:56 +0000
+Message-ID: <2494562.1646054576@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 02:01:06PM +0100, Arnd Bergmann wrote:
-> On Mon, Feb 28, 2022 at 1:36 PM Jani Nikula <jani.nikula@linux.intel.com> wrote:
-> > >
-> > > One minor issue that remains is an added gcc warning for shifts of
-> > > negative integers when building with -Werror, which happens with the
-> > > 'make W=1' option, as well as for three drivers in the kernel that always
-> > > enable -Werror, but it was only observed with the i915 driver so far.
-> > > To be on the safe side, add -Wno-shift-negative-value to any -Wextra
-> > > in a Makefile.
-> >
-> > Do you mean always enable -Wall and/or -Wextra instead of -Werror?
-> >
-> > We do use -Werror for our CI and development too, but it's hidden behind
-> > a config option that depends on COMPILE_TEST=n to avoid any problems
-> > with allmodconfig/allyesconfig.
-> 
-> What I meant here is that I'm adding -Wno-shift-negative-value to all
-> four places in the kernel that already use -Wextra.
-> 
-> > For the future, makes me wonder if we couldn't have a way for drivers to
-> > locally enable -Wall/-Wextra in a way that incorporates the exceptions
-> > from kbuild instead of having to duplicate them.
-> 
-> I have an older patch series that does this, but it also does a few other
-> things that I couldn't quite get right in the end with all combinations of
-> compiler versions and warning levels, so I did not submit that.
-> 
-> What this allows is to have per-directory statements like
-> 
-> KBUILD_WARN1=1
+    =
 
-We've added the individual warnings to the per-directory flags so it's a
-bit more flexible than just enabling W=1. The idea is to add possibly
-stricter warnings once we make sure it builds fine and does not
-produce false reports. Extending W=1 in the same way would affect
-everybody.
+Export PageHeadHuge() - it's used by folio_test_hugetlb() and thence by
+such as folio_file_page() and folio_contains().  Matthew suggested I use
+the first of those instead of doing the same calculation manually - but
+I can't call it from a module.
+
+Kirill suggested rearranging things to put it in a header, but that
+introduces header dependencies because of where constants are defined.
+
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: willy@infradead.org
+Link: https://lore.kernel.org/r/163707085314.3221130.14783857863702203440.=
+stgit@warthog.procyon.org.uk/
+
+---
+ mm/hugetlb.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index 61895cc01d09..5768df43b05c 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -1854,6 +1854,7 @@ int PageHeadHuge(struct page *page_head)
+ =
+
+ 	return page_head[1].compound_dtor =3D=3D HUGETLB_PAGE_DTOR;
+ }
++EXPORT_SYMBOL(PageHeadHuge);
+ =
+
+ /*
+  * Find and lock address space (mapping) in write mode.
+
