@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6CFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C9D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:50:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238976AbiB1Ru5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:50:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33786 "EHLO
+        id S238835AbiB1RvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:51:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239448AbiB1RoK (ORCPT
+        with ESMTP id S239743AbiB1Roc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:44:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632999D4E4;
-        Mon, 28 Feb 2022 09:36:24 -0800 (PST)
+        Mon, 28 Feb 2022 12:44:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0192989CCE;
+        Mon, 28 Feb 2022 09:37:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BC83B815A2;
-        Mon, 28 Feb 2022 17:36:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58B16C340F5;
-        Mon, 28 Feb 2022 17:36:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17874B815AB;
+        Mon, 28 Feb 2022 17:36:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F50AC340E7;
+        Mon, 28 Feb 2022 17:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069781;
-        bh=uyedKT2X1iZVhp4ujHdVP2F6tNmM6r6qtYwLCazL8ZE=;
+        s=korg; t=1646069814;
+        bh=8H3ilQxvEFSiNZJR4VwvS7wdjepomJp/3DHWHpzouf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=URwYa9boka5PFFSxcndfnXcLCShI4eYHQG5xKVsRZi+oG31CwhL0abmWYzEY1/USy
-         kmmkLYCc/vAyMxi9ylGN+EDv9zPrCQ75akNQvizpj356YsnZX0lItDD/JMoVNDxUp8
-         TFdTyYaC1TkwtrP0eq3X1VaeumrSrcfyIZ5Z89+s=
+        b=Gs3HRtX5JlJ36Na0+99Q2vLcVZeDPRzkZqvWN92U2teoZRdjoegkUPCpeQtJMd2y5
+         AOblxkS9+83tauHooXVTJEcE2XoZvblqlUctCKKVIxfyemSnLMAzv8mEUUditlHlmS
+         EC0XnUMvXjLZQDjnN33f4ugvKqPxgfwM7ypTx5hI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhao Gongyi <zhaogongyi@huawei.com>,
-        Zhang Qiao <zhangqiao22@huawei.com>,
-        Waiman Long <longman@redhat.com>,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.15 002/139] cgroup/cpuset: Fix a race between cpuset_attach() and cpu hotplug
-Date:   Mon, 28 Feb 2022 18:22:56 +0100
-Message-Id: <20220228172347.834548462@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.15 022/139] drm/i915: Correctly populate use_sagv_wm for all pipes
+Date:   Mon, 28 Feb 2022 18:23:16 +0100
+Message-Id: <20220228172350.165308597@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -51,59 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Qiao <zhangqiao22@huawei.com>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit 05c7b7a92cc87ff8d7fde189d0fade250697573c upstream.
+commit afc189df6bcc6be65961deb54e15ec60e7f85337 upstream.
 
-As previously discussed(https://lkml.org/lkml/2022/1/20/51),
-cpuset_attach() is affected with similar cpu hotplug race,
-as follow scenario:
+When changing between SAGV vs. no SAGV on tgl+ we have to
+update the use_sagv_wm flag for all the crtcs or else
+an active pipe not already in the state will end up using
+the wrong watermarks. That is especially bad when we end up
+with the tighter non-SAGV watermarks with SAGV enabled.
+Usually ends up in underruns.
 
-     cpuset_attach()				cpu hotplug
-    ---------------------------            ----------------------
-    down_write(cpuset_rwsem)
-    guarantee_online_cpus() // (load cpus_attach)
-					sched_cpu_deactivate
-					  set_cpu_active()
-					  // will change cpu_active_mask
-    set_cpus_allowed_ptr(cpus_attach)
-      __set_cpus_allowed_ptr_locked()
-       // (if the intersection of cpus_attach and
-         cpu_active_mask is empty, will return -EINVAL)
-    up_write(cpuset_rwsem)
-
-To avoid races such as described above, protect cpuset_attach() call
-with cpu_hotplug_lock.
-
-Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
-Cc: stable@vger.kernel.org # v2.6.32+
-Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
-Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
-Acked-by: Waiman Long <longman@redhat.com>
-Reviewed-by: Michal Koutný <mkoutny@suse.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Cc: stable@vger.kernel.org
+Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
+Fixes: 7241c57d3140 ("drm/i915: Add TGL+ SAGV support")
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220218064039.12834-2-ville.syrjala@linux.intel.com
+(cherry picked from commit 8dd8ffb824ca7b897ce9f2082ffa7e64831c22dc)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cpuset.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/i915/intel_pm.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
---- a/kernel/cgroup/cpuset.c
-+++ b/kernel/cgroup/cpuset.c
-@@ -2249,6 +2249,7 @@ static void cpuset_attach(struct cgroup_
- 	cgroup_taskset_first(tset, &css);
- 	cs = css_cs(css);
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -4020,6 +4020,17 @@ static int intel_compute_sagv_mask(struc
+ 			return ret;
+ 	}
  
-+	cpus_read_lock();
- 	percpu_down_write(&cpuset_rwsem);
++	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
++	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
++		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
++		if (ret)
++			return ret;
++	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
++		ret = intel_atomic_lock_global_state(&new_bw_state->base);
++		if (ret)
++			return ret;
++	}
++
+ 	for_each_new_intel_crtc_in_state(state, crtc,
+ 					 new_crtc_state, i) {
+ 		struct skl_pipe_wm *pipe_wm = &new_crtc_state->wm.skl.optimal;
+@@ -4035,17 +4046,6 @@ static int intel_compute_sagv_mask(struc
+ 			intel_can_enable_sagv(dev_priv, new_bw_state);
+ 	}
  
- 	guarantee_online_mems(cs, &cpuset_attach_nodemask_to);
-@@ -2302,6 +2303,7 @@ static void cpuset_attach(struct cgroup_
- 		wake_up(&cpuset_attach_wq);
- 
- 	percpu_up_write(&cpuset_rwsem);
-+	cpus_read_unlock();
+-	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
+-	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
+-		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
+-		if (ret)
+-			return ret;
+-	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
+-		ret = intel_atomic_lock_global_state(&new_bw_state->base);
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	return 0;
  }
  
- /* The various types of files and directories in a cpuset file system */
 
 
