@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1FBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD8AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:28:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234689AbiB1R2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:28:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
+        id S234775AbiB1R2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:28:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235285AbiB1R1s (ORCPT
+        with ESMTP id S236662AbiB1R16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:27:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A94388B37;
-        Mon, 28 Feb 2022 09:26:52 -0800 (PST)
+        Mon, 28 Feb 2022 12:27:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DB089CFA;
+        Mon, 28 Feb 2022 09:27:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2633B815AB;
-        Mon, 28 Feb 2022 17:26:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 326D3C340E7;
-        Mon, 28 Feb 2022 17:26:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15AA261357;
+        Mon, 28 Feb 2022 17:27:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F490C340F0;
+        Mon, 28 Feb 2022 17:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069209;
-        bh=4PQKIwUXxRzP9Abgeu8v7P8lJQoD90sckGSUc3Fd8ko=;
+        s=korg; t=1646069228;
+        bh=O2F04uEV820YnXbDhXQj5SJ4t6h3DukeBJd5WnRFAs8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fjzKplmT8T0+PdDj2wu23qi58gYeMEpQSR6LgHb5leBKdvXk/8ffqwme2aKn3DVuM
-         Heuq0ZDayNlAsLdJl8Wig+CMDardjn0/5ooOOCBkKOzLLdnCTfaYU9KZ5Q232RU4Q0
-         raULftYo2qZdG2QFewTDf+YtPECbufJ87g5c0JBI=
+        b=TyunaZQSkNAhMZPTcm666x952xeu2a20PDhyX8vrp7Roe9rAJ/1VjgCQ55j0JVOib
+         VI7LlOZkq0bXVk6Jgadl5JNEUfe8CkLuPfjlOiNeS1KKac7+EiDhvqLGLZ6R9ac+zF
+         7efdc93fvOT9NSOFjI8xQUbwVAwIm8YS7RUwJxIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 4.9 25/29] xhci: Prevent futile URB re-submissions due to incorrect return value.
-Date:   Mon, 28 Feb 2022 18:23:52 +0100
-Message-Id: <20220228172144.265818325@linuxfoundation.org>
+        stable@vger.kernel.org, Tao Liu <thomas.liu@ucloud.cn>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 10/31] gso: do not skip outer ip header in case of ipip and net_failover
+Date:   Mon, 28 Feb 2022 18:24:06 +0100
+Message-Id: <20220228172200.932578882@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172141.744228435@linuxfoundation.org>
-References: <20220228172141.744228435@linuxfoundation.org>
+In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
+References: <20220228172159.515152296@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,58 +49,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongyu Xie <xiehongyu1@kylinos.cn>
+From: Tao Liu <thomas.liu@ucloud.cn>
 
-commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
+commit cc20cced0598d9a5ff91ae4ab147b3b5e99ee819 upstream.
 
-The -ENODEV return value from xhci_check_args() is incorrectly changed
-to -EINVAL in a couple places before propagated further.
+We encounter a tcp drop issue in our cloud environment. Packet GROed in
+host forwards to a VM virtio_net nic with net_failover enabled. VM acts
+as a IPVS LB with ipip encapsulation. The full path like:
+host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
+ -> ipip encap -> net_failover tx -> virtio_net tx
 
-xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
-xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
-the return value of xhci_check_args <= 0.
-This causes problems for example r8152_submit_rx, calling usb_submit_urb
-in drivers/net/usb/r8152.c.
-r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
-is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
+When net_failover transmits a ipip pkt (gso_type = 0x0103, which means
+SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4), there is no gso
+did because it supports TSO and GSO_IPXIP4. But network_header points to
+inner ip header.
 
-[commit message and header edit -Mathias]
+Call Trace:
+ tcp4_gso_segment        ------> return NULL
+ inet_gso_segment        ------> inner iph, network_header points to
+ ipip_gso_segment
+ inet_gso_segment        ------> outer iph
+ skb_mac_gso_segment
 
-Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
+Afterwards virtio_net transmits the pkt, only inner ip header is modified.
+And the outer one just keeps unchanged. The pkt will be dropped in remote
+host.
+
+Call Trace:
+ inet_gso_segment        ------> inner iph, outer iph is skipped
+ skb_mac_gso_segment
+ __skb_gso_segment
+ validate_xmit_skb
+ validate_xmit_skb_list
+ sch_direct_xmit
+ __qdisc_run
+ __dev_queue_xmit        ------> virtio_net
+ dev_hard_start_xmit
+ __dev_queue_xmit        ------> net_failover
+ ip_finish_output2
+ ip_output
+ iptunnel_xmit
+ ip_tunnel_xmit
+ ipip_tunnel_xmit        ------> ipip
+ dev_hard_start_xmit
+ __dev_queue_xmit
+ ip_finish_output2
+ ip_output
+ ip_forward
+ ip_rcv
+ __netif_receive_skb_one_core
+ netif_receive_skb_internal
+ napi_gro_receive
+ receive_buf
+ virtnet_poll
+ net_rx_action
+
+The root cause of this issue is specific with the rare combination of
+SKB_GSO_DODGY and a tunnel device that adds an SKB_GSO_ tunnel option.
+SKB_GSO_DODGY is set from external virtio_net. We need to reset network
+header when callbacks.gso_segment() returns NULL.
+
+This patch also includes ipv6_gso_segment(), considering SIT, etc.
+
+Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
+Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
+Reviewed-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/ipv4/af_inet.c     |    5 ++++-
+ net/ipv6/ip6_offload.c |    2 ++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1397,9 +1397,12 @@ int xhci_urb_enqueue(struct usb_hcd *hcd
- 	struct urb_priv	*urb_priv;
- 	int size, i;
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1268,8 +1268,11 @@ struct sk_buff *inet_gso_segment(struct
+ 	}
  
--	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
--					true, true, __func__) <= 0)
-+	if (!urb)
- 		return -EINVAL;
-+	ret = xhci_check_args(hcd, urb->dev, urb->ep,
-+					true, true, __func__);
-+	if (ret <= 0)
-+		return ret ? ret : -EINVAL;
+ 	ops = rcu_dereference(inet_offloads[proto]);
+-	if (likely(ops && ops->callbacks.gso_segment))
++	if (likely(ops && ops->callbacks.gso_segment)) {
+ 		segs = ops->callbacks.gso_segment(skb, features);
++		if (!segs)
++			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
++	}
  
- 	slot_id = urb->dev->slot_id;
- 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
-@@ -3031,7 +3034,7 @@ static int xhci_check_streams_endpoint(s
- 		return -EINVAL;
- 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
- 	if (ret <= 0)
--		return -EINVAL;
-+		return ret ? ret : -EINVAL;
- 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
- 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
- 				" descriptor for ep 0x%x does not support streams\n",
+ 	if (IS_ERR_OR_NULL(segs))
+ 		goto out;
+--- a/net/ipv6/ip6_offload.c
++++ b/net/ipv6/ip6_offload.c
+@@ -96,6 +96,8 @@ static struct sk_buff *ipv6_gso_segment(
+ 	if (likely(ops && ops->callbacks.gso_segment)) {
+ 		skb_reset_transport_header(skb);
+ 		segs = ops->callbacks.gso_segment(skb, features);
++		if (!segs)
++			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
+ 	}
+ 
+ 	if (IS_ERR_OR_NULL(segs))
 
 
