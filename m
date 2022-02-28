@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96450C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5C7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234988AbiB1SAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:00:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46786 "EHLO
+        id S237920AbiB1SA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:00:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240791AbiB1Ryp (ORCPT
+        with ESMTP id S240790AbiB1Ryp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CAB532DF;
-        Mon, 28 Feb 2022 09:43:38 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15446532DA;
+        Mon, 28 Feb 2022 09:43:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33908B815B3;
-        Mon, 28 Feb 2022 17:43:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F8BAC340E7;
-        Mon, 28 Feb 2022 17:43:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6A3F608C4;
+        Mon, 28 Feb 2022 17:43:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C18FAC340E7;
+        Mon, 28 Feb 2022 17:43:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070215;
-        bh=qu90kltiE3Ztr4yf80d/h8k36oOjn3KCAfxrW+5oMjI=;
+        s=korg; t=1646070213;
+        bh=hy8PdvQdBNc6m20A7AJTiF/QWo27iNFlxzFo5oLCz/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dWcy7qvdrPWP5LjFR/HmXk2NA94NVBTuoa22dWBU87DggmKPGJdoalzMCVKfEwPpd
-         9Ko6enAGOE9iY5n4xJSThi6Qi/sNU+30O59aWwBBxG6O1mpCdStzOvRJ0T/7ODTN5P
-         Yop5W+uFpV2N/K+pdKOaBXYsVqEN3FJP4VtMHA4A=
+        b=o4vEgjlqBVzAdMMOJ3t0doKM+TZhM43OCFV3zBFBUhGDY6ChdCy5n5Y42JJC4hVFR
+         SnOpTjINdl0e01rbkroDGMO/XjvwoGqnWratFTywHeftq82kHkmpgesV0EwqdsP0Zz
+         WNNEvtDqgcxW8HevMn9TOtDlc4/JPZcLkMm57CUE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        Ross Maynard <bids.7405@bigpond.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 028/164] USB: zaurus: support another broken Zaurus
-Date:   Mon, 28 Feb 2022 18:23:10 +0100
-Message-Id: <20220228172402.702798055@linuxfoundation.org>
+        stable@vger.kernel.org, koba.ko@canonical.com,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH 5.16 019/164] drm/amd: Check if ASPM is enabled from PCIe subsystem
+Date:   Mon, 28 Feb 2022 18:23:01 +0100
+Message-Id: <20220228172401.722576560@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,79 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit 6605cc67ca18b9d583eb96e18a20f5f4e726103c upstream.
+commit 7294863a6f01248d72b61d38478978d638641bee upstream.
 
-This SL-6000 says Direct Line, not Ethernet
+commit 0064b0ce85bb ("drm/amd/pm: enable ASPM by default") enabled ASPM
+by default but a variety of hardware configurations it turns out that this
+caused a regression.
 
-v2: added Reporter and Link
+* PPC64LE hardware does not support ASPM at a hardware level.
+  CONFIG_PCIEASPM is often disabled on these architectures.
+* Some dGPUs on ALD platforms don't work with ASPM enabled and PCIe subsystem
+  disables it
 
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reported-by: Ross Maynard <bids.7405@bigpond.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215361
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Check with the PCIe subsystem to see that ASPM has been enabled
+or not.
+
+Fixes: 0064b0ce85bb ("drm/amd/pm: enable ASPM by default")
+Link: https://wiki.raptorcs.com/w/images/a/ad/P9_PHB_version1.0_27July2018_pub.pdf
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1723
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1739
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1885
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1907
+Tested-by: koba.ko@canonical.com
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/cdc_ether.c |   12 ++++++++++++
- drivers/net/usb/zaurus.c    |   12 ++++++++++++
- 2 files changed, 24 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/usb/cdc_ether.c
-+++ b/drivers/net/usb/cdc_ether.c
-@@ -583,6 +583,11 @@ static const struct usb_device_id	produc
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -2014,6 +2014,9 @@ static int amdgpu_pci_probe(struct pci_d
+ 		return -ENODEV;
+ 	}
  
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
++	if (amdgpu_aspm == -1 && !pcie_aspm_enabled(pdev))
++		amdgpu_aspm = 0;
 +
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible;
-  * wire-incompatible with true CDC Ethernet implementations.
-  * (And, it seems, needlessly so...)
-@@ -638,6 +643,13 @@ static const struct usb_device_id	produc
- 	.driver_info		= 0,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+		 | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor               = 0x04DD,
-+	.idProduct              = 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info		= 0,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
- 	.idVendor               = 0x04DD,
- 	/* reported with some C860 units */
---- a/drivers/net/usb/zaurus.c
-+++ b/drivers/net/usb/zaurus.c
-@@ -256,6 +256,11 @@ static const struct usb_device_id	produc
- 	.bInterfaceSubClass	= USB_CDC_SUBCLASS_ETHERNET, \
- 	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
- 
-+#define ZAURUS_FAKE_INTERFACE \
-+	.bInterfaceClass	= USB_CLASS_COMM, \
-+	.bInterfaceSubClass	= USB_CDC_SUBCLASS_MDLM, \
-+	.bInterfaceProtocol	= USB_CDC_PROTO_NONE
-+
- /* SA-1100 based Sharp Zaurus ("collie"), or compatible. */
- {
- 	.match_flags	=   USB_DEVICE_ID_MATCH_INT_INFO
-@@ -315,6 +320,13 @@ static const struct usb_device_id	produc
- 	.driver_info = ZAURUS_PXA_INFO,
- }, {
- 	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
-+			    | USB_DEVICE_ID_MATCH_DEVICE,
-+	.idVendor		= 0x04DD,
-+	.idProduct		= 0x9032,	/* SL-6000 */
-+	ZAURUS_FAKE_INTERFACE,
-+	.driver_info = (unsigned long)&bogus_mdlm_info,
-+}, {
-+	.match_flags    =   USB_DEVICE_ID_MATCH_INT_INFO
- 		 | USB_DEVICE_ID_MATCH_DEVICE,
- 	.idVendor               = 0x04DD,
- 	/* reported with some C860 units */
+ 	if (amdgpu_virtual_display ||
+ 	    amdgpu_device_asic_has_dc_support(flags & AMD_ASIC_MASK))
+ 		supports_atomic = true;
 
 
