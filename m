@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:49:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB53C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbiB1Ttw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 14:49:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42384 "EHLO
+        id S229809AbiB1Tum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 14:50:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229715AbiB1TtW (ORCPT
+        with ESMTP id S229800AbiB1TuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 14:49:22 -0500
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8031017D3;
-        Mon, 28 Feb 2022 11:48:03 -0800 (PST)
+        Mon, 28 Feb 2022 14:50:20 -0500
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDDB1045A4;
+        Mon, 28 Feb 2022 11:48:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646077683; x=1677613683;
+  t=1646077718; x=1677613718;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=1MFGPwTVi4fkcJE1bidBkDRBUekRc5PhOv1PXZ7T9Ec=;
-  b=kkMoOgD5vbWAN5uFlQ3v4ifsKENEOn8QGFUf63i5ShQdtcDP5nbCw+ta
-   45fq6De3R/a0GZWw0Xc12sqrVY0P3AQDP5FKzPEfujiAkazSZRrFTP0tm
-   pGtkUfjM0dPk1n3tMt/a9vrSW3gUBaOtaypw8AFK8adWSx1oMkqVzRIZC
-   M=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 28 Feb 2022 11:30:07 -0800
+  bh=NR4aZ/bRgNURQk62vE8gVk6b/hhnUrasqlZ5/snLD7I=;
+  b=dOXJhgdP/ZHR7u7E6VEABf6vIqaQ39ub3yXx6+y3bK6dhuPWBf7iyxaO
+   wzsrdaJxDosgrwvEjU4M0pS1KCd5XhFCrxA5D9CGCyZrPJ+gARBBNVpNv
+   91XoBCwmkzUEmldfjLOYGUp6WSlROD3iO4szW6kCZMRXO0Jd671tjbXOQ
+   A=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 28 Feb 2022 11:31:12 -0800
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 11:30:07 -0800
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 11:31:12 -0800
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 28 Feb 2022 11:30:06 -0800
+ 15.2.986.15; Mon, 28 Feb 2022 11:31:11 -0800
 Received: from [10.216.31.79] (10.80.80.8) by nalasex01a.na.qualcomm.com
  (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15; Mon, 28 Feb
- 2022 11:30:04 -0800
-Message-ID: <a8c9765a-0d98-35a8-d9bb-1112f7733848@quicinc.com>
-Date:   Tue, 1 Mar 2022 01:00:00 +0530
+ 2022 11:31:09 -0800
+Message-ID: <8e4f02ae-d3e8-57f2-2d08-e56759d3c082@quicinc.com>
+Date:   Tue, 1 Mar 2022 01:01:05 +0530
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.6.1
-Subject: Re: [PATCH 3/5] irqchip/qcom-pdc: Kill qcom_pdc_translate helper
+Subject: Re: [PATCH 5/5] irqchip/qcom-pdc: Drop open coded version of
+ __assign_bit()
 To:     Marc Zyngier <maz@kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         <linux-arm-msm@vger.kernel.org>
 References: <20220224101226.88373-1-maz@kernel.org>
- <20220224101226.88373-4-maz@kernel.org>
+ <20220224101226.88373-6-maz@kernel.org>
 From:   "Maulik Shah (mkshah)" <quic_mkshah@quicinc.com>
-In-Reply-To: <20220224101226.88373-4-maz@kernel.org>
+In-Reply-To: <20220224101226.88373-6-maz@kernel.org>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.80.80.8]
@@ -65,9 +66,8 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 Hi,
 
 On 2/24/2022 3:42 PM, Marc Zyngier wrote:
-> qcom_pdc_translate() really is nothing but an open coded version
-> of irq_domain_translate_twocell(). Get rid of it and use the common
-> version instead.
+> The driver uses what looks like an open-coded version of __assign_bit().
+> Replace it with the real thing.
 >
 > Signed-off-by: Marc Zyngier <maz@kernel.org>
 Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
@@ -75,7 +75,7 @@ Reviewed-by: Maulik Shah <quic_mkshah@quicinc.com>
 Thanks,
 Maulik
 > ---
->   drivers/irqchip/qcom-pdc.c | 19 ++-----------------
->   1 file changed, 2 insertions(+), 17 deletions(-)
+>   drivers/irqchip/qcom-pdc.c | 7 ++-----
+>   1 file changed, 2 insertions(+), 5 deletions(-)
 >
 >
