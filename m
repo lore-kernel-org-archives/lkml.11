@@ -2,79 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 858ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235885AbiB1NYa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:24:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38402 "EHLO
+        id S235925AbiB1NYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:24:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235696AbiB1NYZ (ORCPT
+        with ESMTP id S235683AbiB1NYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 08:24:25 -0500
 Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2301826AD6;
-        Mon, 28 Feb 2022 05:23:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F46826AEA;
+        Mon, 28 Feb 2022 05:23:45 -0800 (PST)
 Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxeMjazBxiKEAIAA--.10706S2;
-        Mon, 28 Feb 2022 21:23:38 +0800 (CST)
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxeMjazBxiKEAIAA--.10706S4;
+        Mon, 28 Feb 2022 21:23:39 +0800 (CST)
 From:   Tiezhu Yang <yangtiezhu@loongson.cn>
 To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Mike Rapoport <rppt@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>
 Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/4] MIPS: Modify mem= and memmap= parameter
-Date:   Mon, 28 Feb 2022 21:23:33 +0800
-Message-Id: <1646054617-16799-1-git-send-email-yangtiezhu@loongson.cn>
+Subject: [PATCH v3 2/4] memblock: Introduce memblock_mem_range_remove_map()
+Date:   Mon, 28 Feb 2022 21:23:35 +0800
+Message-Id: <1646054617-16799-3-git-send-email-yangtiezhu@loongson.cn>
 X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9DxeMjazBxiKEAIAA--.10706S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrKr4xGFyxXr17Zw1DCF45KFg_yoWDKrb_tF
-        WY9F9rGw47GF43WFWrtF43XFyxtr4UXw4rtFn7K3yxKr9rAF45GF43u3yavr1vvFyvv3W5
-        J3s8Z3s3tr129jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbc8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
-        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
-        cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
-        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ry8MxAI
-        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8Jw
-        CI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
-        6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU1NVyUUUUU
+In-Reply-To: <1646054617-16799-1-git-send-email-yangtiezhu@loongson.cn>
+References: <1646054617-16799-1-git-send-email-yangtiezhu@loongson.cn>
+X-CM-TRANSID: AQAAf9DxeMjazBxiKEAIAA--.10706S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7CF43XF17ZrWkZFyUKF1DAwb_yoW8CFy7pr
+        n3G3W8CF48GFn7Xa97G3W3ury7A34rCF1fWFW7Cr1q9a4xJr1xuw4kGayUtFyjqF47KFs0
+        vF1xJayDGFZF9FUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUBI14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
+        x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+        Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l84
+        ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I2
+        62IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcV
+        AFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG
+        0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ry8MxAIw28Icx
+        kI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2Iq
+        xVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42
+        IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY
+        6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Gr0_Cr1lIxAIcVC2z280aV
+        CY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7sRiDUU3UUUUU==
 X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the current code, the kernel command-line parameter mem= and memmap=
-can not work well on MIPS, this patchset refactors the related code to
-fix them.
+This is preparation for supporting memmap=limit@base parameter,
+no functionality change.
 
-For kdump on MIPS, if the users want to limit the memory region for the
-capture kernel to avoid corrupting the memory image of the panic kernel,
-use the parameter memmap=limit@base is the proper way, I will submit a
-patch to use memmap=limit@base for kexec-tools after this patchset is
-applied.
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ include/linux/memblock.h | 1 +
+ mm/memblock.c            | 9 +++++++--
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-v3: Modify patch #3 to maintain compatibility for memmap=limit{$,#,!}base,
-    commented by Mike Rapoport, thank you.
-
-v2: Add some new patches to support memmap=limit@base
-
-Tiezhu Yang (4):
-  MIPS: Refactor early_parse_mem() to fix mem= parameter
-  memblock: Introduce memblock_mem_range_remove_map()
-  MIPS: Refactor early_parse_memmap() to fix memmap= parameter
-  MIPS: Remove not used variable usermem
-
- arch/mips/kernel/setup.c | 69 ++++++++++++++++++++++--------------------------
- include/linux/memblock.h |  1 +
- mm/memblock.c            |  9 +++++--
- 3 files changed, 40 insertions(+), 39 deletions(-)
-
+diff --git a/include/linux/memblock.h b/include/linux/memblock.h
+index 50ad196..e558d2c 100644
+--- a/include/linux/memblock.h
++++ b/include/linux/memblock.h
+@@ -482,6 +482,7 @@ phys_addr_t memblock_end_of_DRAM(void);
+ void memblock_enforce_memory_limit(phys_addr_t memory_limit);
+ void memblock_cap_memory_range(phys_addr_t base, phys_addr_t size);
+ void memblock_mem_limit_remove_map(phys_addr_t limit);
++void memblock_mem_range_remove_map(phys_addr_t base, phys_addr_t limit);
+ bool memblock_is_memory(phys_addr_t addr);
+ bool memblock_is_map_memory(phys_addr_t addr);
+ bool memblock_is_region_memory(phys_addr_t base, phys_addr_t size);
+diff --git a/mm/memblock.c b/mm/memblock.c
+index 1018e50..2476d15d 100644
+--- a/mm/memblock.c
++++ b/mm/memblock.c
+@@ -1723,7 +1723,7 @@ void __init memblock_cap_memory_range(phys_addr_t base, phys_addr_t size)
+ 			base + size, PHYS_ADDR_MAX);
+ }
+ 
+-void __init memblock_mem_limit_remove_map(phys_addr_t limit)
++void __init memblock_mem_range_remove_map(phys_addr_t base, phys_addr_t limit)
+ {
+ 	phys_addr_t max_addr;
+ 
+@@ -1736,7 +1736,12 @@ void __init memblock_mem_limit_remove_map(phys_addr_t limit)
+ 	if (max_addr == PHYS_ADDR_MAX)
+ 		return;
+ 
+-	memblock_cap_memory_range(0, max_addr);
++	memblock_cap_memory_range(base, max_addr);
++}
++
++void __init memblock_mem_limit_remove_map(phys_addr_t limit)
++{
++	memblock_mem_range_remove_map(0, limit);
+ }
+ 
+ static int __init_memblock memblock_search(struct memblock_type *type, phys_addr_t addr)
 -- 
 2.1.0
 
