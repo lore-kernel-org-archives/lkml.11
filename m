@@ -2,149 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92120C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:09:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 660A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbiB1UJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:09:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45856 "EHLO
+        id S230118AbiB1UKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:10:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230082AbiB1UJy (ORCPT
+        with ESMTP id S230125AbiB1UKj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:09:54 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72383110E
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:09:13 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id vz16so27228137ejb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:09:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uod9R4vPcpqIjzHofeC96qXcIXUlGW+U5alvKq7K0ZA=;
-        b=Y+K+LAchMzIcesbCiqrzhisJgvbUIKYh3oFG/AlZJTKul1K9rRfHylHsN/EgM8hdwz
-         P3hABFpC0Wcw+/0V4cKR5X0P787Wy9QwMeL5ORY50P9+oNZqmMp6NkFq4yV6NAIkP79C
-         0bvk8ZnwfFSPqzKfD7Qqea+fs2YLRTaNcLanw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uod9R4vPcpqIjzHofeC96qXcIXUlGW+U5alvKq7K0ZA=;
-        b=A0t5ZGb0Rk8rgyW06syZK7GmYuw2CmJxqTs+sWRZwQJa1Wk/Qkdzvn8Tt/dsEqRoDE
-         9J4xXsxJizqreHunLbeX2WfUtgvOiD7wI5nr91MYPVFyudOcxxuUhEYrGeulH+N/BKRg
-         0Yn88AEn6Hvc6oIxXYjiWWlnJiJFVBuksLTFE/G/VhvQzbx8xjA11wn776VMifGhqDjw
-         kerFIBiv1Tz0JlJkmgLZcg6iW3IXKNT+ae5iTc+wtlHSx84Sa3fPFDLAdvs3FDt2jq1m
-         JgCInJZp1SG7VufEmOySDOZEyFcNJ0nOdv3HfDA8zThkMfAkmeaqpBIuYRf19gWx8f/N
-         /Amg==
-X-Gm-Message-State: AOAM532rFTm6+fs/7qQP0n1207V60I3dAKP0zIWYjSpzub4/9niobnFb
-        tkNTUNdAyEe1PALufv9lxygsGLSMziiIilbwBAk=
-X-Google-Smtp-Source: ABdhPJy7YdSRZFlfI1E4thDQ1SXfmxyrU2a0T2iLgynZtB2TK0/r49RfZWp9oHTNQXyh0SFk10plCg==
-X-Received: by 2002:a17:906:58b:b0:6cf:65f5:de28 with SMTP id 11-20020a170906058b00b006cf65f5de28mr16306136ejn.614.1646078951723;
-        Mon, 28 Feb 2022 12:09:11 -0800 (PST)
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com. [209.85.218.47])
-        by smtp.gmail.com with ESMTPSA id u22-20020a17090657d600b006ce3bc743b3sm4587434ejr.60.2022.02.28.12.09.11
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 12:09:11 -0800 (PST)
-Received: by mail-ej1-f47.google.com with SMTP id gb39so27162342ejc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:09:11 -0800 (PST)
-X-Received: by 2002:ac2:44a4:0:b0:445:8fc5:a12a with SMTP id
- c4-20020ac244a4000000b004458fc5a12amr7653619lfm.27.1646078630855; Mon, 28 Feb
- 2022 12:03:50 -0800 (PST)
+        Mon, 28 Feb 2022 15:10:39 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40852888FB
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:09:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=LKVWP8B+dI0EaZkytYActdFU39zpsIqLuQva1HVoMGg=; b=V8SES8QyyNE0exxZXZafkkTxrn
+        K/0Gadad546pboJjUBuVT60uhMZp4a3+RrZFobLie04dlhnVYwG1MOjbq0AkPpDWWBC98sUMiFpg5
+        0hsEJ7bnEKt9FWesLv/AC1o2xSsUtTIy3pT2cRe+c8wOKAD4pi4nUY9zUuCUsKvLXF0ad1c4F/WRJ
+        8oW4Niu1+yv+42CuKrw5niLpiYOev0WY7G+ZllnRf1QmWc6lZU2QVLIWeuQUWvrSGIVKBQRtxsSJ1
+        iXZ8jdwV5gWHgvzGeV+lba6JnmgC+F4wefqocfL8woQKxgmyF230pRG726UIL8cjZYZwfRSlDtvN3
+        OuEuyKjg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nOmKt-00DztU-Ub; Mon, 28 Feb 2022 20:09:36 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 2ED64986271; Mon, 28 Feb 2022 21:09:34 +0100 (CET)
+Date:   Mon, 28 Feb 2022 21:09:34 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
+        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
+        ndesaulniers@google.com, keescook@chromium.org,
+        samitolvanen@google.com, mark.rutland@arm.com,
+        alyssa.milburn@intel.com
+Subject: Re: [PATCH 21/29] objtool: Rename --duplicate to --lto
+Message-ID: <20220228200934.GF11184@worktop.programming.kicks-ass.net>
+References: <20220218164902.008644515@infradead.org>
+ <20220218171409.814392411@infradead.org>
+ <20220226194209.bvv3t65hhtnwltmk@treble>
+ <20220226214802.4chmsrtstlerefmu@treble>
+ <YhysYkcfwLr68Job@hirez.programming.kicks-ass.net>
+ <20220228183228.splleoatuxxjr5kq@treble>
 MIME-Version: 1.0
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
- <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
-In-Reply-To: <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 28 Feb 2022 12:03:34 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
-Message-ID: <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
- as a ptr
-To:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc:     Jakob Koschel <jakobkoschel@gmail.com>,
-        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        samba-technical@lists.samba.org,
-        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
-        linux-arch <linux-arch@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        intel-wired-lan@lists.osuosl.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        v9fs-developer@lists.sourceforge.net,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-sgx@vger.kernel.org,
-        linux-block <linux-block@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        tipc-discussion@lists.sourceforge.net,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Mike Rapoport <rppt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228183228.splleoatuxxjr5kq@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 11:56 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+On Mon, Feb 28, 2022 at 10:32:28AM -0800, Josh Poimboeuf wrote:
+
+> Thanks for the explanations.  To summarize, we have:
+> 
+>   A) legacy mode:
+> 
+>      translation unit: objtool check [--module]
+>      vmlinux.o:        N/A
+>      module:           N/A
+> 
+>   B) CONFIG_VMLINUX_VALIDATION=y && !(CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y)
+> 
+>      translation unit: objtool check [--module]
+>      vmlinux:          objtool check --vmlinux --noinstr
+>      module:           objtool check --module --noinstr
+
+Not the module thing here; noinstr never leaves the core kernel (for
+now; I need me a few compiler features before I can tackle the idle path
+issues).
+
+>   C) CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y:
+> 
+>      translation unit: N/A
+>      vmlinux:          objtool check --vmlinux --noinstr --lto
+>      module:           objtool check --module --noinstr --lto
+> 
+> Right?
+
+More or less, with the one caveat above.
+
+> I think I get it, but it's mental gymnastics for me to remember how the
+> options interact.  It still seems counterintuitive, because whatever
+> "objtool check" does to a translation unit, I'd expect "objtool check
+> --vmlinux" to do the same things.
+
+I think I agree. It is a bit weird.
+
+> So how about we just get rid of the magical --vmlinux and --lto options
+> altogether, and make --noinstr additive, like all the other options?
 >
-> I do wish we could actually poison the 'pos' value after the loop
-> somehow - but clearly the "might be uninitialized" I was hoping for
-> isn't the way to do it.
+>   A) legacy mode:
+>      .o files: objtool check [--module]
+>       vmlinux: N/A
+>        module: N/A
+>
+>   B) CONFIG_NOINSTR_VALIDATION=y && !(CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y):
+>      .o files: objtool check [--module]
+>       vmlinux: objtool check --noinstr-only
+>        module: objtool check --module --noinstr-only
+>
+>   C) CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y:
+>      .o files: N/A
+>       vmlinux: objtool check --noinstr
+>        module: objtool check --module --noinstr
 
-Side note: we do need *some* way to do it.
+I like the --noinstr-only thing. But I think I still like a flag to
+differentiate between TU/.o file and vmlinux/whole-module invocation.
 
-Because if we make that change, and only set it to another pointer
-when not the head, then we very much change the semantics of
-"list_for_each_head()". The "list was empty" case would now exit with
-'pos' not set at all (or set to NULL if we add that). Or it would be
-set to the last entry.
-
-And regardless, that means that all the
-
-        if (pos == head)
-
-kinds of checks after the loop would be fundamentally broken.
-
-Darn. I really hoped for (and naively expected) that we could actually
-have the compiler warn about the use-after-loop case. That whole
-"compiler will now complain about bad use" was integral to my clever
-plan to use the C99 feature of declaring the iterator inside the loop.
-
-But my "clever plan" was apparently some ACME-level Wile E. Coyote sh*t.
-
-Darn.
-
-                   Linus
+Anyway, you ok with me cleaning this up later, in a separate series?
