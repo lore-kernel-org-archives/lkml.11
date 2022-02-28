@@ -2,94 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43FBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:40:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F96BC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232728AbiB1Clc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:41:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52070 "EHLO
+        id S232054AbiB1CpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 21:45:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232433AbiB1Ck6 (ORCPT
+        with ESMTP id S229985AbiB1CpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 21:40:58 -0500
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD3A6D84C;
-        Sun, 27 Feb 2022 18:40:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1646015993;
-        bh=TpdW3ujSzU0TXKj+hjSJqItA5IWaO0lajrfotqHvNTE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=SHDpFx/t87YD4N39Vn0qmonme2X2chHIAI7X3OefweS/IUkys5tCyBcHo7Td1Lv7v
-         8L+mKBznQMuaBoBuDtrf4Nuqxi5yDdtCt5jJgVYzMG9mWinpHOQbCBb/hEmb65u1xV
-         jZ6CS6XQaXj7nlhKdn94u+MPeC3k9hRRsihy9jBM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([149.172.237.68]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mg6Zq-1nqglD2Osw-00hbbS; Mon, 28
- Feb 2022 03:39:53 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        u.kleine-koenig@pengutronix.de
-Cc:     linux@armlinux.org.uk, richard.genoud@gmail.com,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        ludovic.desroches@microchip.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
-        linux-imx@nxp.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@foss.st.com, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com, lukas@wunner.de,
-        p.rosenberger@kunbus.com, Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [PATCH v4 4/9] serial: sc16is7xx: remove redundant check in rs485_config
-Date:   Mon, 28 Feb 2022 03:39:23 +0100
-Message-Id: <20220228023928.1067-5-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228023928.1067-1-LinoSanfilippo@gmx.de>
-References: <20220228023928.1067-1-LinoSanfilippo@gmx.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:oSVWg5rBCqpWa6pMX1jUqajlxQKq82aAt/AFQNSu3Xr1YF5rLO9
- gIRovRZ9arcEguHqRVmFa3sxRXd6jVcPN07+t4pnm2iAQK+CpO+iRq9oIssAlL98vv+w0Pa
- x0WkPFDbMq2uF4t1IG+E98MuZpzZJYyVNe1FdI38bQMUme4ePfskpdr9xmdBh3Z/S3kxt/Y
- A4UthJuyuD4JeA4DkJvWw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:46l4yZiWaho=:rgAJEltv7CEBl925Gvl0Ze
- 1Fq0F86+Azyy+VB5eCzIfVhub8QX2MJqWr/D2X5AXXjZkiLpn4FV1fnsr0pAv+yDc91HPlL9Y
- nqZWCNMiNfyelGzNfyIqwc760ISN9pBZv0JLt77KXDYnP6dzwiGE0wfowNzkHcQapWKUbxwy8
- YUckouXi++aouCIoCRZCwZUp3HWmcQp8lNprg1ixTNCqbtBNAxfPa+ndFTHzaHScYZTrogD3X
- yQT4Yw/KHM8+2v8o0SjZ5FxLgP2b1FQkN/RXvz1jCKYEfB/YMFTVmsAaOsnQeIND0ce5vPoFE
- r9ND3ZgBMNAed3kDr53GDHvvMwJqHx8LOKlfggds7Inm08/vIrEa/vx8i/EzoygAXs7uUW0kF
- Wssz4AbeXclEQYj5ebrInEzC6UdZEqhilOatkUQPyvLgDTHxQ4fuzRpEMIHp4XNK6N/t174MH
- Cn93zISM7GPL5+lgcdO5hmr+L0rEtSMU6DgieP2no/XuXiAwDHmYXOZqKNNDpV0AMMBTjg/IK
- 6jYKzcXlGhsCLWkWbAHkvuu1mgYMKLjg/J5BLWZNt7QwWcaIphn6R5jZeTnYfCHK+ULZ1jhH8
- f4pmlH20WmnlD0jBrpzX15U4imbKzFAh+BhIeNpxAzy5A25APWDtFQNrEuYokC12cj1Au8J/3
- 6WHhJI81t6aNVLLWtvD5LOzubHNrvzOXo3rSxyiYTcLTvbPlMXjvdBAlfzIi5PZYsIA3J/0XU
- Zp/uE/Au+tMn8rnrQ6SEUIbdY3yckErUWQTPIm60ZxQpF3P8eGTgyngam4OtdaA9PN4njY+5O
- so5BT5310JJoe3R49rHyEXTepsUreB2uKm8sKkaU9o/7KpQkgLOBnCsTrXhPirHSmQtf+j3dv
- fIfD4Ye/9gGYqE0qOBjm3edIfRSi5yVevTNkFdvkqAyMip81Op8bcfwCXsy3X6j0FDHNGXs6+
- I7kjs+7gIReooFF0KZwm5xgYWYpq3aMe1XiwMDyGaNyJku4Vh3HJeQ3wryzSK7JZ8vRd11c94
- GwoqbsymVyx4KbVM1fyuywBSP2sBYkxznP0SvCT0MoNmctMlvnZ95TlsGhLyW2geBCOa1e3Gw
- +J2WXUMF8vHeyA=
+        Sun, 27 Feb 2022 21:45:12 -0500
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A030F1CB38;
+        Sun, 27 Feb 2022 18:44:34 -0800 (PST)
+Received: by mail-ot1-f45.google.com with SMTP id s1-20020a056830148100b005acfdcb1f4bso8438184otq.4;
+        Sun, 27 Feb 2022 18:44:34 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=/qRGHudNo2KzOCPZ3MYbWDMzFzdSswmrfq6gIYo21yQ=;
+        b=TRXEuHxDRkFL6ApO5eHM+/LaFUHCBKLC5Fy0Pw8lVaIagHNpclhmxgrBOkFg4oip7r
+         ys2WZqiVH2ixfbjW58CqtWQrVhJ7NGsTwOtKrxT4Tam+/yW9Cev5l2kPHWR/U8P56oUn
+         EKP/xUFFEKIyPddjoO2V8PiwVIeyZ82T+A8UmRpV8YYtGY6SJcyoJpHl8LH65Vvus4ap
+         27Wqokq9uiysWuuPJC++vIFmOuuMu7DoIYuPOQPOQe5GCLaA2GIXfvYWAHugWHMhHaYx
+         qjzEdht+qLcjwOsw1vSxctQPo3afOPSCwdcMaGvg4EIvoMBlSo8O1FB8YrMlUlcPjBcb
+         MbnQ==
+X-Gm-Message-State: AOAM533BFkaQ0OgDTg9KEnXrphMIdITVapT3l24NSbNKaLDnqvMBgvLs
+        2xRsSIsKiKU7lRzv4sghQ+b3W3vKzQ==
+X-Google-Smtp-Source: ABdhPJzzxKMlfVFaWHZYyKcYwPUmsSew02e4QthzvrfN5L5ZpZFS5NdKefUV6W/dmlX+O8Pf7AHhiA==
+X-Received: by 2002:a05:6830:1f56:b0:5af:a42e:fcb5 with SMTP id u22-20020a0568301f5600b005afa42efcb5mr8112423oth.85.1646016273915;
+        Sun, 27 Feb 2022 18:44:33 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id u3-20020a056808114300b002d51f9b3263sm5521775oiu.28.2022.02.27.18.44.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 27 Feb 2022 18:44:33 -0800 (PST)
+Received: (nullmailer pid 47198 invoked by uid 1000);
+        Mon, 28 Feb 2022 02:44:30 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Vincent Shih <vincent.sunplus@gmail.com>
+Cc:     linux-usb@vger.kernel.org, p.zabel@pengutronix.de,
+        gregkh@linuxfoundation.org, wells.lu@sunplus.com,
+        robh+dt@kernel.org, linux-kernel@vger.kernel.org,
+        stern@rowland.harvard.edu, devicetree@vger.kernel.org
+In-Reply-To: <1645955441-6496-3-git-send-email-vincent.sunplus@gmail.com>
+References: <1645955441-6496-1-git-send-email-vincent.sunplus@gmail.com> <1645955441-6496-3-git-send-email-vincent.sunplus@gmail.com>
+Subject: Re: [PATCH v2 2/2] dt-bindings: usb: Add bindings doc for Sunplus EHCI driver
+Date:   Sun, 27 Feb 2022 20:44:30 -0600
+Message-Id: <1646016270.937444.47197.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SW4gdWFydF9zZXRfcnM0ODVfY29uZmlnKCkgdGhlIHNlcmlhbCBjb3JlIGFscmVhZHkgZW5zdXJl
-cyB0aGF0IG9ubHkgb25lIG9mCmJvdGggb3B0aW9ucyBSVFMgb24gc2VuZCBvciBSVFMgYWZ0ZXIg
-c2VuZCBpcyBzZXQuCgpTbyByZW1vdmUgdGhpcyBjaGVjayBmcm9tIHRoZSBkcml2ZXJzIHJzNDg1
-X2NvbmZpZygpIGZ1bmN0aW9uIHRvIGF2b2lkCnJlZHVuZGFuY3kuCgpTaWduZWQtb2ZmLWJ5OiBM
-aW5vIFNhbmZpbGlwcG8gPExpbm9TYW5maWxpcHBvQGdteC5kZT4KLS0tCiBkcml2ZXJzL3R0eS9z
-ZXJpYWwvc2MxNmlzN3h4LmMgfCAxMCAtLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgMTAgZGVs
-ZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jIGIv
-ZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jCmluZGV4IGI3YTJkYjljMDNlMi4uYjRlNjZh
-MzIyYTU4IDEwMDY0NAotLS0gYS9kcml2ZXJzL3R0eS9zZXJpYWwvc2MxNmlzN3h4LmMKKysrIGIv
-ZHJpdmVycy90dHkvc2VyaWFsL3NjMTZpczd4eC5jCkBAIC05ODMsMTYgKzk4Myw2IEBAIHN0YXRp
-YyBpbnQgc2MxNmlzN3h4X2NvbmZpZ19yczQ4NShzdHJ1Y3QgdWFydF9wb3J0ICpwb3J0LAogCXN0
-cnVjdCBzYzE2aXM3eHhfb25lICpvbmUgPSB0b19zYzE2aXM3eHhfb25lKHBvcnQsIHBvcnQpOwog
-CiAJaWYgKHJzNDg1LT5mbGFncyAmIFNFUl9SUzQ4NV9FTkFCTEVEKSB7Ci0JCWJvb2wgcnRzX2R1
-cmluZ19yeCwgcnRzX2R1cmluZ190eDsKLQotCQlydHNfZHVyaW5nX3J4ID0gcnM0ODUtPmZsYWdz
-ICYgU0VSX1JTNDg1X1JUU19BRlRFUl9TRU5EOwotCQlydHNfZHVyaW5nX3R4ID0gcnM0ODUtPmZs
-YWdzICYgU0VSX1JTNDg1X1JUU19PTl9TRU5EOwotCi0JCWlmIChydHNfZHVyaW5nX3J4ID09IHJ0
-c19kdXJpbmdfdHgpCi0JCQlkZXZfZXJyKHBvcnQtPmRldiwKLQkJCQkidW5zdXBwb3J0ZWQgUlRT
-IHNpZ25hbGxpbmcgb25fc2VuZDolZCBhZnRlcl9zZW5kOiVkIC0gZXhhY3RseSBvbmUgb2YgUlM0
-ODUgUlRTIGZsYWdzIHNob3VsZCBiZSBzZXRcbiIsCi0JCQkJcnRzX2R1cmluZ190eCwgcnRzX2R1
-cmluZ19yeCk7Ci0KIAkJLyoKIAkJICogUlRTIHNpZ25hbCBpcyBoYW5kbGVkIGJ5IEhXLCBpdCdz
-IHRpbWluZyBjYW4ndCBiZSBpbmZsdWVuY2VkLgogCQkgKiBIb3dldmVyLCBpdCdzIHNvbWV0aW1l
-cyB1c2VmdWwgdG8gZGVsYXkgVFggZXZlbiB3aXRob3V0IFJUUwotLSAKMi4zNS4xCgo=
+On Sun, 27 Feb 2022 17:50:41 +0800, Vincent Shih wrote:
+> Add bindings doc for Sunplus EHCI driver
+> 
+> Signed-off-by: Vincent Shih <vincent.sunplus@gmail.com>
+> ---
+>  .../bindings/usb/sunplus,sp7021-usb-ehci.yaml      | 97 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 98 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.yaml
+> 
+
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.yaml:62:18: [warning] too many spaces after colon (colons)
+
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/usb/sunplus,sp7021-usb-ehci.example.dt.yaml:0:0: /example-0/usb@9c102100: failed to match any schema with compatible: ['sunplus,sp7021-usb-ehci']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1598222
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
