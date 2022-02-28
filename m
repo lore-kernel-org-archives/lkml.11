@@ -2,108 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1595EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1465C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240646AbiB1S2M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:28:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50148 "EHLO
+        id S240498AbiB1S3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:29:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240806AbiB1S1u (ORCPT
+        with ESMTP id S240876AbiB1S3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:27:50 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C3DB3E7D;
-        Mon, 28 Feb 2022 10:10:27 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id p15so13982917oip.3;
-        Mon, 28 Feb 2022 10:10:27 -0800 (PST)
+        Mon, 28 Feb 2022 13:29:25 -0500
+Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2549EE61F0;
+        Mon, 28 Feb 2022 10:12:43 -0800 (PST)
+Received: by mail-oo1-xc32.google.com with SMTP id 189-20020a4a03c6000000b003179d7b30d8so19745767ooi.2;
+        Mon, 28 Feb 2022 10:12:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=sender:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=7wQWrntmzj+Iyb2AkW1h0mbOWmxT1sYGcUG1qHtruzA=;
-        b=hO9hm+T3VPBeUPH7RQD/Y0rI1IKC/jJ2dA97Y/k0Edaujb0hG+dz7Suf8AtSqBJdzN
-         N0wpwz906k2hpLIL5b5sVa2R2MhQOh0tUIgjHy0JwiLPevs2xVo4LSbHZlnxVKeEqYGe
-         DYKGhs05u+MNlJD+T9pLdl696AxwN9ArskJ/BOuw5GpObFdJaNd9ujzVRVvRu+KuOIwE
-         WMk/0F+oZeBhyvAC/cgxTum/6Nu9+SMFHLfUxW/v5j8dDrIGrZfksvHdwp73OFlW917l
-         59wqgfvaPTX79smzDIyXotarX6JpDcXANBPNxruKstDgzV8PcNW6EgU9A+T3PEuuB6lj
-         W/Nw==
+        bh=d1AmaAaEMdz2x5BUvuXaCe1mKX/9fT+CrQaw2mHcoFY=;
+        b=W/zV0DlBABRfKVI0YNf8QA1qRNlRfMuu2wPwwoPVjjgfZw1aFcV0K0J7KBighDG7mL
+         jxnY/NZajJCuKB18+ubTx2H7eS/Ug0kUF9L/eYmqUjXMHzch3EaP2sXyGtf1FMdCASH0
+         P351C/3mVw4EYJizPlxIu1kgAh8Q+jUUWsGO/jvzSKL5J5x/yALc1kPYEOlubG+rhZO7
+         8IbN2GbHfob4dHmiBcv+O+8dnVmMalfo3bPoJwT7SdsoTPSoH7jw+cggk4PbwiuhquVR
+         pATVs5/S0lO/ONWFC9FaeYd1XvLNOskQvRRE0JFd+U9LHfdRITq5993j7cLE2RrBQ5Qf
+         MFhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
          :subject:content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=7wQWrntmzj+Iyb2AkW1h0mbOWmxT1sYGcUG1qHtruzA=;
-        b=c/DFlWQnZp7gYjhaxquIg6NKSdfmm4oJMk9xzBeRMIif1ep+/7vRm4N8QfSfYy9BM2
-         Q17vqeAe7CoUm5e1W6tMSASVzKeXvTWp3+c11oE6S2SGV8ERrM4QLj6vy+gnTolb4Bhg
-         I9hifVBGxR9zv11O1IqNwtxLJnYZ/Mcaf1go8RHMwDgrInCPHIECYtXSGhA6XBZe4cV8
-         GBwfLNJBmeUAF0eHTBJoqIIJE9iY2fCHIbIkWBSIaUnibHXHn3ixvE0jKPTUYN9rn8ws
-         OppCH2LnjTOURqWbIOFVkNhmYQVuPGndl+11hnOq11pQvbrdq8kMaUKNvU5+v0ZHEeMH
-         Z+MQ==
-X-Gm-Message-State: AOAM531YDcwd+ootxVdIJ86iAuSiN+Kn5MO7xIymOV+PjpiCitEcgf+F
-        BVxB8JjtFf6H8ghRZDC+Ycob/21rQLo=
-X-Google-Smtp-Source: ABdhPJyiXkfCIS04W7ZFPsOkY+JzUPJmnYpp09LkpTS7tVVjk6qnJNOcCg/oLMt6gMfJG0uAnknBKA==
-X-Received: by 2002:a54:4f1c:0:b0:2d0:6df2:808e with SMTP id e28-20020a544f1c000000b002d06df2808emr11795057oiy.67.1646071826308;
-        Mon, 28 Feb 2022 10:10:26 -0800 (PST)
+        bh=d1AmaAaEMdz2x5BUvuXaCe1mKX/9fT+CrQaw2mHcoFY=;
+        b=aPw1tXdJ+6lxRKOUHQmN2uVah9d4PdGazae0FHvdPOgTXLrcoinORBc1gPbVdnbC/3
+         hkzrnKCBZYu23ylXgzquHVX6N0pVo0E7BXQ0qGu7NlVj6ym1WfiiVAhknmRTam0KZGhm
+         54byVRwcP4shfuRsaNnI8xLmROt1ZxQgT5u+JJrbpi9IrF2CdLKWY6zGcFX3CQn00WMo
+         9iS+vY8JxpXC4NwftDPQYr+YoVhH7nCcY8iMVQLjcPfEc588224Q9lcfdUnG1ALmVnfM
+         0fg5NsIffvJoGVWig7zfTEtGsKdYjCokYE/FCJkOL9VAKJjD161yera/iZttx2XmN+HS
+         yfNw==
+X-Gm-Message-State: AOAM53263LZ+P4htGst9DcGNTz1GPfeWOlrs1fpp14vOsU/kCbw88nLG
+        AtA0dykzb7SEXAvScCzU5qg=
+X-Google-Smtp-Source: ABdhPJwmoUnIffAb5nrphZJusLTJz2elU/3FWrlM/T4jVYqkvoAU1hB08H8w+irkNjs4vWj6V9TmIg==
+X-Received: by 2002:a4a:95d1:0:b0:317:9a32:fd21 with SMTP id p17-20020a4a95d1000000b003179a32fd21mr9502562ooi.89.1646071962172;
+        Mon, 28 Feb 2022 10:12:42 -0800 (PST)
 Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id m17-20020a0568080f1100b002d71e151e51sm6553576oiw.0.2022.02.28.10.10.24
+        by smtp.gmail.com with ESMTPSA id a4-20020a9d6e84000000b005afe328af91sm3900287otr.54.2022.02.28.10.12.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 10:10:25 -0800 (PST)
+        Mon, 28 Feb 2022 10:12:41 -0800 (PST)
 Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <9edce888-8e7c-9c97-dc70-17df7f348832@roeck-us.net>
-Date:   Mon, 28 Feb 2022 10:10:23 -0800
+Message-ID: <ad5fe94a-bfa2-8cda-058d-92545cead239@roeck-us.net>
+Date:   Mon, 28 Feb 2022 10:12:39 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v2 0/2] ic2: mux: pca9541: add delayed-release support
+Subject: Re: [PATCH v3 1/2] hwmon: (adm1275) Allow setting sample averaging
 Content-Language: en-US
-To:     Zev Weiss <zev@bewilderbeest.net>
-Cc:     linux-i2c@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-        Rob Herring <robh+dt@kernel.org>, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Wolfram Sang <wsa@kernel.org>
-References: <20220201001810.19516-1-zev@bewilderbeest.net>
- <YhyLIRFbs226KTwA@hatter.bewilderbeest.net>
- <fbb305e3-73b3-7a2d-99cf-a7205b7344ff@roeck-us.net>
- <Yh0CUzBzGJc4zyTR@hatter.bewilderbeest.net>
+To:     Potin Lai <potin.lai@quantatw.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Patrick Williams <patrick@stwcx.xyz>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220228103716.10774-1-potin.lai@quantatw.com>
+ <20220228103716.10774-2-potin.lai@quantatw.com>
 From:   Guenter Roeck <linux@roeck-us.net>
-In-Reply-To: <Yh0CUzBzGJc4zyTR@hatter.bewilderbeest.net>
+In-Reply-To: <20220228103716.10774-2-potin.lai@quantatw.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/28/22 09:11, Zev Weiss wrote:
-> On Mon, Feb 28, 2022 at 05:57:27AM PST, Guenter Roeck wrote:
->> On 2/28/22 00:43, Zev Weiss wrote:
->>> On Mon, Jan 31, 2022 at 04:18:08PM PST, Zev Weiss wrote:
->>>> Hello,
->>>>
->>>> This series adds support for a new pca9541 device-tree property
->>>> ("release-delay-us"), which delays releasing ownership of the bus
->>>> after a transaction for a configurable duration, anticipating that
->>>> another transaction may follow shortly.  By avoiding a
->>>> release/reacquisition between transactions, this can provide a
->>>> substantial performance improvement for back-to-back operations -- on
->>>> a Delta AHE-50DC (ASPEED AST1250) system running OpenBMC with dozens
->>>> of LM25066 PMICs on PCA9541-arbitrated busses, a setting of 10000 (10
->>>> ms) reduces the median latency the psusensor daemon's hwmon sysfs file
->>>> reads from 2.28 ms to 0.99 ms (a 57% improvement).
->>>>
->>>
->>> Ping...Guenter, any thoughts on this?
->>>
->>
->> It sounds reasonable to me, but I don't have access to hardware anymore
->> to test it, so I have no means to confirm that it actually works.
->>
+On 2/28/22 02:37, Potin Lai wrote:
+> Current driver assume PWR_AVG and VI_AVG as 1 by default, and user needs
+> to set sample averaging via sysfs manually.
 > 
-> Ack, thanks.  In that case, what's the path forward on getting changes to this driver merged?  I see sign-offs from Wolfram and Peter on the last few commits that touched it -- any input from the i2c/i2c-mux maintainers?
+> This patch parses the properties below from device tree, and setting
+> sample averaging during probe. Allowed input value from 1 to 128. If the
+> inputed value is not power of 2, the sample averaging number will be
+> configured with the smaller and cloest power of 2.
 > 
+> - adi,power-sample-average
+> - adi,volt-curr-sample-average
+> 
+> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
+> ---
+>   drivers/hwmon/pmbus/adm1275.c | 36 +++++++++++++++++++++++++++++++++++
+>   1 file changed, 36 insertions(+)
+> 
+> diff --git a/drivers/hwmon/pmbus/adm1275.c b/drivers/hwmon/pmbus/adm1275.c
+> index d311e0557401..212c7f3c59b0 100644
+> --- a/drivers/hwmon/pmbus/adm1275.c
+> +++ b/drivers/hwmon/pmbus/adm1275.c
+> @@ -475,6 +475,7 @@ static int adm1275_probe(struct i2c_client *client)
+>   	int vindex = -1, voindex = -1, cindex = -1, pindex = -1;
+>   	int tindex = -1;
+>   	u32 shunt;
+> +	u32 avg;
+>   
+>   	if (!i2c_check_functionality(client->adapter,
+>   				     I2C_FUNC_SMBUS_READ_BYTE_DATA
+> @@ -756,6 +757,41 @@ static int adm1275_probe(struct i2c_client *client)
+>   		return -ENODEV;
+>   	}
+>   
+> +	if (data->have_power_sampling &&
+> +	    of_property_read_u32(client->dev.of_node,
+> +				"adi,power-sample-average", &avg) == 0) {
+> +		if (avg > ADM1275_SAMPLES_AVG_MAX || avg < 1)
+> +			return -EINVAL;
+> +		dev_info(&client->dev,
+> +			"Setting power sample averaging number to %u",
+> +			BIT(ilog2(avg)));
+> +		ret = adm1275_write_pmon_config(data, client, true,
+> +						ilog2(avg));
+> +		if (ret < 0) {
+> +			dev_err(&client->dev,
+> +				"Setting power sample averaging failed with error %d",
+> +				ret);
+> +			return ret;
+> +		}
+> +	}
+> +
+> +	if (of_property_read_u32(client->dev.of_node,
+> +				"adi,volt-curr-sample-average", &avg) == 0) {
+> +		if (avg > ADM1275_SAMPLES_AVG_MAX || avg < 1)
+> +			return -EINVAL;
+> +		dev_info(&client->dev,
+> +			"Setting voltage and current sample averaging number to %u",
+> +			BIT(ilog2(avg)));
 
-The i2c/i2c-mux maintainers will need to accept it, and you'll need
-approval for the DT changes from a DT maintainer (presumably Rob).
+Please no such logging noise. Imagine if everyone would do that -
+the log would be full with similar messages.
 
+Thanks,
 Guenter
+
+> +		ret = adm1275_write_pmon_config(data, client, false,
+> +						ilog2(avg));
+> +		if (ret < 0) {
+> +			dev_err(&client->dev,
+> +				"Setting voltage and current sample averaging failed with error %d",
+> +				ret);
+> +			return ret;
+> +		}
+> +	}
+> +
+>   	if (voindex < 0)
+>   		voindex = vindex;
+>   	if (vindex >= 0) {
+
