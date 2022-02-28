@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D310C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 195D6C3527A
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240849AbiB1SJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:09:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47326 "EHLO
+        id S240027AbiB1SHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240470AbiB1SDg (ORCPT
+        with ESMTP id S240456AbiB1SDf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D54F8B1A9A;
+        Mon, 28 Feb 2022 13:03:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6810D75E6E;
         Mon, 28 Feb 2022 09:47:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C16A060BFE;
-        Mon, 28 Feb 2022 17:46:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE1ACC340F0;
-        Mon, 28 Feb 2022 17:46:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46FFE60916;
+        Mon, 28 Feb 2022 17:47:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CAAFC340E7;
+        Mon, 28 Feb 2022 17:47:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070388;
-        bh=jMJ/i/MT3k5J8P2WjDJWvWIVbj+0xe6ekMLEIvaprlA=;
+        s=korg; t=1646070434;
+        bh=pTjuL6BPXjGQj8a+GNkF6+8a01Bmr4IZIrwdI89SEF8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MEqsK2LTK1kjBMLQK89IhYK9nHp2FLHBGxjag0cGCwBLRMbnc1ycGF6MsUstuaHZl
-         S/17lHQ4Lya2TF9mnq/6OJQLDmvlRUb7VcTQbCbZlFcrNVt9o+U+gJQA3A0oht2LOP
-         NKSHZjTbopBcZt8rjn7gEhM0ouWHYHuI8sRIepss=
+        b=wcmkxS7iszO2ARQCQebqke9HQzFDfV+ppc2Jomi8HgebI1UPlEEpMSBvDCkEPpLi2
+         tE0hEI8TXHATtlgHXu/nKweLiZNEKoZF75WMfRBrFch8Ei8D4+S5eZr04BNGE20xo9
+         PXXqhJPlB5s3arAUJNgzCfhD1clt5/cts5BYK4No=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cris Forno <cforno12@outlook.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Dany Madden <drt@linux.ibm.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 089/164] ibmvnic: schedule failover only if vioctl fails
-Date:   Mon, 28 Feb 2022 18:24:11 +0100
-Message-Id: <20220228172407.932323143@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Palus <jpalus@fastmail.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 100/164] PCI: mvebu: Fix device enumeration regression
+Date:   Mon, 28 Feb 2022 18:24:22 +0100
+Message-Id: <20220228172408.862588812@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -50,42 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit 277f2bb14361790a70e4b3c649e794b75a91a597 upstream.
+[ Upstream commit c49ae619905eebd3f54598a84e4cd2bd58ba8fe9 ]
 
-If client is unable to initiate a failover reset via H_VIOCTL hcall, then
-it should schedule a failover reset as a last resort. Otherwise, there is
-no need to do a last resort.
+Jan reported that on Turris Omnia (Armada 385), no PCIe devices were
+detected after upgrading from v5.16.1 to v5.16.3 and identified the cause
+as the backport of 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus
+of PCIe Root Port via emulated bridge"), which appeared in v5.17-rc1.
 
-Fixes: 334c42414729 ("ibmvnic: improve failover sysfs entry")
-Reported-by: Cris Forno <cforno12@outlook.com>
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-Signed-off-by: Dany Madden <drt@linux.ibm.com>
-Link: https://lore.kernel.org/r/20220221210545.115283-1-drt@linux.ibm.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+91a8d79fc797 was incorrectly applied from mailing list patch [1] to the
+linux git repository [2] probably due to resolving merge conflicts
+incorrectly. Fix it now.
+
+[1] https://lore.kernel.org/r/20211125124605.25915-12-pali@kernel.org
+[2] https://git.kernel.org/linus/91a8d79fc797
+
+[bhelgaas: commit log]
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215540
+Fixes: 91a8d79fc797 ("PCI: mvebu: Fix configuring secondary bus of PCIe Root Port via emulated bridge")
+Link: https://lore.kernel.org/r/20220214110228.25825-1-pali@kernel.org
+Link: https://lore.kernel.org/r/20220127234917.GA150851@bhelgaas
+Reported-by: Jan Palus <jpalus@fastmail.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/pci/controller/pci-mvebu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5919,10 +5919,14 @@ static ssize_t failover_store(struct dev
- 		   be64_to_cpu(session_token));
- 	rc = plpar_hcall_norets(H_VIOCTL, adapter->vdev->unit_address,
- 				H_SESSION_ERR_DETECTED, session_token, 0, 0);
--	if (rc)
-+	if (rc) {
- 		netdev_err(netdev,
- 			   "H_VIOCTL initiated failover failed, rc %ld\n",
- 			   rc);
-+		goto last_resort;
-+	}
-+
-+	return count;
+diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+index 357e9a293edf7..2a3bf82aa4e26 100644
+--- a/drivers/pci/controller/pci-mvebu.c
++++ b/drivers/pci/controller/pci-mvebu.c
+@@ -1288,7 +1288,8 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
+ 		 * indirectly via kernel emulated PCI bridge driver.
+ 		 */
+ 		mvebu_pcie_setup_hw(port);
+-		mvebu_pcie_set_local_dev_nr(port, 0);
++		mvebu_pcie_set_local_dev_nr(port, 1);
++		mvebu_pcie_set_local_bus_nr(port, 0);
+ 	}
  
- last_resort:
- 	netdev_dbg(netdev, "Trying to send CRQ_CMD, the last resort\n");
+ 	pcie->nports = i;
+-- 
+2.34.1
+
 
 
