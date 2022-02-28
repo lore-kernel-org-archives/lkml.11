@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9957C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 926C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:12:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236006AbiB1SMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:12:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40192 "EHLO
+        id S240033AbiB1SMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:12:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240518AbiB1SJB (ORCPT
+        with ESMTP id S240687AbiB1SJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:09:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36BB5E140;
-        Mon, 28 Feb 2022 09:48:40 -0800 (PST)
+        Mon, 28 Feb 2022 13:09:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3E45EBF0;
+        Mon, 28 Feb 2022 09:48:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5011E60748;
-        Mon, 28 Feb 2022 17:48:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59532C340E7;
-        Mon, 28 Feb 2022 17:48:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48E20B815C8;
+        Mon, 28 Feb 2022 17:48:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A13E6C340E7;
+        Mon, 28 Feb 2022 17:48:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070510;
-        bh=+6N8+7VcYRDuliUP9Kw7HwRQhd1SqB77Fx6ru+a3Wmg=;
+        s=korg; t=1646070533;
+        bh=qemwP1wcJjrddnQVCK5JyKnEA14bE0FgG6LNS9kGDWU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YTAxgC1uMMBZZ2M0p/w9CNhMsnPIxH235p93TBp8GQl4dcR/qXA+TO07rb9zUdXAF
-         Byu9iXT8WZOEUDsJENRcbnuOO15/d3BQlYxfkFbQUaV2gw9ko/UTw4chCR1Ms0qWll
-         Js6RnEn66KEbYy+HFmy7WZoDBXewle9srWu3mnU4=
+        b=oiDXQnCLC4A4bxFTHS35yrXKpfSTVBqeiWC/x727Ok950y1alKr4dT9F8HuRat7f/
+         mzdqLuVVum0EbnmKOUE5w5loNS9weZl0BdhWGQey8fs3avnc+qnv7g3slRnG+U9DDu
+         CoLGI2cS+NPIsfmFIsntf9s0iJ8tmESNbrX1gMpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.16 134/164] xhci: Prevent futile URB re-submissions due to incorrect return value.
-Date:   Mon, 28 Feb 2022 18:24:56 +0100
-Message-Id: <20220228172412.183961892@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?D=C4=81vis=20Mos=C4=81ns?= <davispuh@gmail.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 141/164] btrfs: prevent copying too big compressed lzo segment
+Date:   Mon, 28 Feb 2022 18:25:03 +0100
+Message-Id: <20220228172412.720363069@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,58 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongyu Xie <xiehongyu1@kylinos.cn>
+From: Dāvis Mosāns <davispuh@gmail.com>
 
-commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
+commit 741b23a970a79d5d3a1db2d64fa2c7b375a4febb upstream.
 
-The -ENODEV return value from xhci_check_args() is incorrectly changed
-to -EINVAL in a couple places before propagated further.
+Compressed length can be corrupted to be a lot larger than memory
+we have allocated for buffer.
+This will cause memcpy in copy_compressed_segment to write outside
+of allocated memory.
 
-xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
-xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
-the return value of xhci_check_args <= 0.
-This causes problems for example r8152_submit_rx, calling usb_submit_urb
-in drivers/net/usb/r8152.c.
-r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
-is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
+This mostly results in stuck read syscall but sometimes when using
+btrfs send can get #GP
 
-[commit message and header edit -Mathias]
+  kernel: general protection fault, probably for non-canonical address 0x841551d5c1000: 0000 [#1] PREEMPT SMP NOPTI
+  kernel: CPU: 17 PID: 264 Comm: kworker/u256:7 Tainted: P           OE     5.17.0-rc2-1 #12
+  kernel: Workqueue: btrfs-endio btrfs_work_helper [btrfs]
+  kernel: RIP: 0010:lzo_decompress_bio (./include/linux/fortify-string.h:225 fs/btrfs/lzo.c:322 fs/btrfs/lzo.c:394) btrfs
+  Code starting with the faulting instruction
+  ===========================================
+     0:*  48 8b 06                mov    (%rsi),%rax              <-- trapping instruction
+     3:   48 8d 79 08             lea    0x8(%rcx),%rdi
+     7:   48 83 e7 f8             and    $0xfffffffffffffff8,%rdi
+     b:   48 89 01                mov    %rax,(%rcx)
+     e:   44 89 f0                mov    %r14d,%eax
+    11:   48 8b 54 06 f8          mov    -0x8(%rsi,%rax,1),%rdx
+  kernel: RSP: 0018:ffffb110812efd50 EFLAGS: 00010212
+  kernel: RAX: 0000000000001000 RBX: 000000009ca264c8 RCX: ffff98996e6d8ff8
+  kernel: RDX: 0000000000000064 RSI: 000841551d5c1000 RDI: ffffffff9500435d
+  kernel: RBP: ffff989a3be856c0 R08: 0000000000000000 R09: 0000000000000000
+  kernel: R10: 0000000000000000 R11: 0000000000001000 R12: ffff98996e6d8000
+  kernel: R13: 0000000000000008 R14: 0000000000001000 R15: 000841551d5c1000
+  kernel: FS:  0000000000000000(0000) GS:ffff98a09d640000(0000) knlGS:0000000000000000
+  kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  kernel: CR2: 00001e9f984d9ea8 CR3: 000000014971a000 CR4: 00000000003506e0
+  kernel: Call Trace:
+  kernel:  <TASK>
+  kernel: end_compressed_bio_read (fs/btrfs/compression.c:104 fs/btrfs/compression.c:1363 fs/btrfs/compression.c:323) btrfs
+  kernel: end_workqueue_fn (fs/btrfs/disk-io.c:1923) btrfs
+  kernel: btrfs_work_helper (fs/btrfs/async-thread.c:326) btrfs
+  kernel: process_one_work (./arch/x86/include/asm/jump_label.h:27 ./include/linux/jump_label.h:212 ./include/trace/events/workqueue.h:108 kernel/workqueue.c:2312)
+  kernel: worker_thread (./include/linux/list.h:292 kernel/workqueue.c:2455)
+  kernel: ? process_one_work (kernel/workqueue.c:2397)
+  kernel: kthread (kernel/kthread.c:377)
+  kernel: ? kthread_complete_and_exit (kernel/kthread.c:332)
+  kernel: ret_from_fork (arch/x86/entry/entry_64.S:301)
+  kernel:  </TASK>
 
-Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
+CC: stable@vger.kernel.org # 4.9+
+Signed-off-by: Dāvis Mosāns <davispuh@gmail.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ fs/btrfs/lzo.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1611,9 +1611,12 @@ static int xhci_urb_enqueue(struct usb_h
- 	struct urb_priv	*urb_priv;
- 	int num_tds;
+--- a/fs/btrfs/lzo.c
++++ b/fs/btrfs/lzo.c
+@@ -380,6 +380,17 @@ int lzo_decompress_bio(struct list_head
+ 		kunmap(cur_page);
+ 		cur_in += LZO_LEN;
  
--	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
--					true, true, __func__) <= 0)
-+	if (!urb)
- 		return -EINVAL;
-+	ret = xhci_check_args(hcd, urb->dev, urb->ep,
-+					true, true, __func__);
-+	if (ret <= 0)
-+		return ret ? ret : -EINVAL;
++		if (seg_len > lzo1x_worst_compress(PAGE_SIZE)) {
++			/*
++			 * seg_len shouldn't be larger than we have allocated
++			 * for workspace->cbuf
++			 */
++			btrfs_err(fs_info, "unexpectedly large lzo segment len %u",
++					seg_len);
++			ret = -EIO;
++			goto out;
++		}
++
+ 		/* Copy the compressed segment payload into workspace */
+ 		copy_compressed_segment(cb, workspace->cbuf, seg_len, &cur_in);
  
- 	slot_id = urb->dev->slot_id;
- 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
-@@ -3330,7 +3333,7 @@ static int xhci_check_streams_endpoint(s
- 		return -EINVAL;
- 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
- 	if (ret <= 0)
--		return -EINVAL;
-+		return ret ? ret : -EINVAL;
- 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
- 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
- 				" descriptor for ep 0x%x does not support streams\n",
 
 
