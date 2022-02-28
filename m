@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54600C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 724FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:15:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232557AbiB1CQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:16:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
+        id S232566AbiB1CQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 21:16:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232459AbiB1CPe (ORCPT
+        with ESMTP id S232469AbiB1CPf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 21:15:34 -0500
+        Sun, 27 Feb 2022 21:15:35 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF1153B47;
-        Sun, 27 Feb 2022 18:14:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD61354FA9;
+        Sun, 27 Feb 2022 18:14:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646014496; x=1677550496;
+  t=1646014497; x=1677550497;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=1hcI89qzJIq9qMe/CEjop+OcHI446TN21iLPJVGm8LE=;
-  b=DujBQNMxNMQaVqHt9EgTGJlNgVqiZOU6yOtvVomHvYWvBTJFtkMbAG2L
-   uwWSd0PvelyiM6V10PngnsAewMs9Xim3SE6hqnUtsX+Q+FJKaeHynJawK
-   bfsIeuPGyHjHISTo2OjZQ2xivyhhrpy1UQYNZIuhsvHMx6mFNqnsiyDX5
-   VpGbsyaqhgNUYvjF6+ODL+I1tIb1qahVnQQZVx6MH96pnTC+oA9VXNGzE
-   Co84jTxungXE7uM2zVQHWcmnE6E0D8FayUnhi8UvYWQ/F4Mytv8iFpH9s
-   dB6yvvE30DwKTminBOlIC/zDjYiZfzt2hUtG4zCXcnR+MvFyzZoVurJBs
+  bh=/QmiEMPw2IIicAjmLMzTawZr+TBnOGP5WhdAWSgfHeE=;
+  b=lhNZc7nnKdBXxMKpzGWmrhWpC65EGRCy3oY7ZOEiYnBDWo3dEawCzpn6
+   q0K8jCBHkXKv+loiTCUFIYE0T/LWBt+5RE8JHIGHgF/y379mZKjU5gNYO
+   /M9etMovZ0gDSPgIWhbf3x1QYpnm5cj9CG81lSFMErWfEDkrw2EWDFT3L
+   N98j+DlalxsT8rIlupnSPMQCjFxrxse6kk+uKU5arq6nEYJlJoFoPOxoj
+   AfKrLGUTuYz0KatWIAdM8DADfN+RFGSzmOgYuujsjz+ZaHZUIdK3v/90Y
+   L1lhlH0NwFFjAKnVpo49LQfCuFQqOVH0ELI0XiSdCgoV8XyHJoadT10Zm
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="240191952"
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="240191969"
 X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="240191952"
+   d="scan'208";a="240191969"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:35 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:52 -0800
 X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="777936949"
+   d="scan'208";a="777936972"
 Received: from jdpanhor-mobl2.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.49.36])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:30 -0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:48 -0800
 From:   Kai Huang <kai.huang@intel.com>
 To:     x86@kernel.org
 Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
@@ -48,9 +48,9 @@ Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         chang.seok.bae@intel.com, keescook@chromium.org,
         hengqi.arch@bytedance.com, laijs@linux.alibaba.com,
         metze@samba.org, linux-kernel@vger.kernel.org, kai.huang@intel.com
-Subject: [RFC PATCH 12/21] x86/virt/tdx: Create TDMRs to cover all system RAM
-Date:   Mon, 28 Feb 2022 15:13:00 +1300
-Message-Id: <2570f75f10ea67b849a47159e4bcde1227e1c8be.1646007267.git.kai.huang@intel.com>
+Subject: [RFC PATCH 16/21] x86/virt/tdx: Configure TDX module with TDMRs and global KeyID
+Date:   Mon, 28 Feb 2022 15:13:04 +1300
+Message-Id: <50bee01627c6cfe0a1f53058c41fa775762be035.1646007267.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1646007267.git.kai.huang@intel.com>
 References: <cover.1646007267.git.kai.huang@intel.com>
@@ -60,201 +60,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel configures TDX usable memory regions to the TDX module via
-an array of "TD Memory Region" (TDMR).  Each TDMR entry (TDMR_INFO)
-contains the information of the base/size of a memory region, the
-base/size of the associated Physical Address Metadata Table (PAMT) and
-a list of reserved areas in the region.
-
-Create a number of TDMRs according to the verified e820 RAM entries.
-As the first step only set up the base/size information for each TDMR.
-
-TDMR must be 1G aligned and the size must be in 1G granularity.  This
-implies that one TDMR could cover multiple e820 RAM entries.  If a RAM
-entry spans the 1GB boundary and the former part is already covered by
-the previous TDMR, just create a new TDMR for the latter part.
-
-TDX only supports a limited number of TDMRs (currently 64).  Abort the
-TDMR construction process when the number of TDMRs exceeds this
-limitation.
+After the TDX usable memory regions are constructed in an array of TDMRs
+and the global KeyID is reserved, configure them to the TDX module.  The
+configuration is done via TDH.SYS.CONFIG, which is one call and can be
+done on any logical cpu.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
- arch/x86/virt/vmx/tdx.c | 138 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 138 insertions(+)
+ arch/x86/virt/vmx/tdx.c | 42 +++++++++++++++++++++++++++++++++++++++++
+ arch/x86/virt/vmx/tdx.h |  2 ++
+ 2 files changed, 44 insertions(+)
 
 diff --git a/arch/x86/virt/vmx/tdx.c b/arch/x86/virt/vmx/tdx.c
-index 0780ec71651b..fe83cf9ac2f9 100644
+index e6c54b2a1f6e..008628674a2f 100644
 --- a/arch/x86/virt/vmx/tdx.c
 +++ b/arch/x86/virt/vmx/tdx.c
-@@ -53,6 +53,18 @@
- 		((u32)(((_keyid_part) & 0xffffffffull) + 1))
- #define TDX_KEYID_NUM(_keyid_part)	((u32)((_keyid_part) >> 32))
- 
-+/* TDMR must be 1gb aligned */
-+#define TDMR_ALIGNMENT		BIT_ULL(30)
-+#define TDMR_PFN_ALIGNMENT	(TDMR_ALIGNMENT >> PAGE_SHIFT)
-+
-+/* Align up and down the address to TDMR boundary */
-+#define TDMR_ALIGN_DOWN(_addr)	ALIGN_DOWN((_addr), TDMR_ALIGNMENT)
-+#define TDMR_ALIGN_UP(_addr)	ALIGN((_addr), TDMR_ALIGNMENT)
-+
-+/* TDMR's start and end address */
-+#define TDMR_START(_tdmr)	((_tdmr)->base)
-+#define TDMR_END(_tdmr)		((_tdmr)->base + (_tdmr)->size)
-+
- /*
-  * TDX module status during initialization
-  */
-@@ -732,6 +744,44 @@ static int e820_check_against_cmrs(void)
- 	return 0;
+@@ -1203,6 +1203,42 @@ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+ 	return ret;
  }
  
-+/* The starting offset of reserved areas within TDMR_INFO */
-+#define TDMR_RSVD_START		64
-+
-+static struct tdmr_info *__alloc_tdmr(void)
++static int config_tdx_module(struct tdmr_info **tdmr_array, int tdmr_num,
++			     u64 global_keyid)
 +{
-+	int tdmr_sz;
++	u64 *tdmr_pa_array;
++	int i, array_sz;
++	int ret;
 +
 +	/*
-+	 * TDMR_INFO's actual size depends on maximum number of reserved
-+	 * areas that one TDMR supports.
++	 * TDMR_INFO entries are configured to the TDX module via an
++	 * array of the physical address of each TDMR_INFO.  TDX requires
++	 * the array itself must be 512 aligned.  Round up the array size
++	 * to 512 aligned so the buffer allocated by kzalloc() meets the
++	 * alignment requirement.
 +	 */
-+	tdmr_sz = TDMR_RSVD_START + tdx_sysinfo.max_reserved_per_tdmr *
-+		sizeof(struct tdmr_reserved_area);
-+
-+	/*
-+	 * TDX requires TDMR_INFO to be 512 aligned.  Always align up
-+	 * TDMR_INFO size to 512 so the memory allocated via kzalloc()
-+	 * can meet the alignment requirement.
-+	 */
-+	tdmr_sz = ALIGN(tdmr_sz, TDMR_INFO_ALIGNMENT);
-+
-+	return kzalloc(tdmr_sz, GFP_KERNEL);
-+}
-+
-+/* Create a new TDMR at given index in the TDMR array */
-+static struct tdmr_info *alloc_tdmr(struct tdmr_info **tdmr_array, int idx)
-+{
-+	struct tdmr_info *tdmr;
-+
-+	if (WARN_ON_ONCE(tdmr_array[idx]))
-+		return NULL;
-+
-+	tdmr = __alloc_tdmr();
-+	tdmr_array[idx] = tdmr;
-+
-+	return tdmr;
-+}
-+
- static void free_tdmrs(struct tdmr_info **tdmr_array, int tdmr_num)
- {
- 	int i;
-@@ -745,6 +795,89 @@ static void free_tdmrs(struct tdmr_info **tdmr_array, int tdmr_num)
- 	}
- }
- 
-+/*
-+ * Create TDMRs to cover all RAM entries in e820_table.  The created
-+ * TDMRs are saved to @tdmr_array and @tdmr_num is set to the actual
-+ * number of TDMRs.  All entries in @tdmr_array must be initially NULL.
-+ */
-+static int create_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
-+{
-+	struct tdmr_info *tdmr;
-+	u64 start, end;
-+	int i, tdmr_idx;
-+	int ret = 0;
-+
-+	tdmr_idx = 0;
-+	tdmr = alloc_tdmr(tdmr_array, 0);
-+	if (!tdmr)
++	array_sz = ALIGN(tdmr_num * sizeof(u64), TDMR_INFO_PA_ARRAY_ALIGNMENT);
++	tdmr_pa_array = kzalloc(array_sz, GFP_KERNEL);
++	if (!tdmr_pa_array)
 +		return -ENOMEM;
++
++	for (i = 0; i < tdmr_num; i++)
++		tdmr_pa_array[i] = __pa(tdmr_array[i]);
++
 +	/*
-+	 * Loop over all RAM entries in e820 and create TDMRs to cover
-+	 * them.  To keep it simple, always try to use one TDMR to cover
-+	 * one RAM entry.
++	 * TDH.SYS.CONFIG fails when TDH.SYS.LP.INIT is not done on all
++	 * BIOS-enabled cpus.  tdx_init() only disables CPU hotplug but
++	 * doesn't do early check whether all BIOS-enabled cpus are
++	 * online, so TDH.SYS.CONFIG can fail here.
 +	 */
-+	e820_for_each_mem(e820_table, i, start, end) {
-+		start = TDMR_ALIGN_DOWN(start);
-+		end = TDMR_ALIGN_UP(end);
++	ret = seamcall(TDH_SYS_CONFIG, __pa(tdmr_pa_array), tdmr_num,
++				global_keyid, 0, NULL, NULL);
++	/* Free the array as it is not required any more. */
++	kfree(tdmr_pa_array);
 +
-+		/*
-+		 * If the current TDMR's size hasn't been initialized, it
-+		 * is a new allocated TDMR to cover the new RAM entry.
-+		 * Otherwise the current TDMR already covers the previous
-+		 * RAM entry.  In the latter case, check whether the
-+		 * current RAM entry has been fully or partially covered
-+		 * by the current TDMR, since TDMR is 1G aligned.
-+		 */
-+		if (tdmr->size) {
-+			/*
-+			 * Loop to next RAM entry if the current entry
-+			 * is already fully covered by the current TDMR.
-+			 */
-+			if (end <= TDMR_END(tdmr))
-+				continue;
-+
-+			/*
-+			 * If part of current RAM entry has already been
-+			 * covered by current TDMR, skip the already
-+			 * covered part.
-+			 */
-+			if (start < TDMR_END(tdmr))
-+				start = TDMR_END(tdmr);
-+
-+			/*
-+			 * Create a new TDMR to cover the current RAM
-+			 * entry, or the remaining part of it.
-+			 */
-+			tdmr_idx++;
-+			if (tdmr_idx >= tdx_sysinfo.max_tdmrs) {
-+				ret = -E2BIG;
-+				goto err;
-+			}
-+			tdmr = alloc_tdmr(tdmr_array, tdmr_idx);
-+			if (!tdmr) {
-+				ret = -ENOMEM;
-+				goto err;
-+			}
-+		}
-+
-+		tdmr->base = start;
-+		tdmr->size = end - start;
-+	}
-+
-+	/* @tdmr_idx is always the index of last valid TDMR. */
-+	*tdmr_num = tdmr_idx + 1;
-+
-+	return 0;
-+err:
-+	/*
-+	 * Clean up already allocated TDMRs in case of error.  @tdmr_idx
-+	 * indicates the last TDMR that wasn't created successfully,
-+	 * therefore only needs to free @tdmr_idx TDMRs.
-+	 */
-+	free_tdmrs(tdmr_array, tdmr_idx);
 +	return ret;
 +}
 +
- static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+ static int init_tdx_module(void)
  {
- 	int ret;
-@@ -753,8 +886,13 @@ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
- 	if (ret)
- 		goto err;
+ 	struct tdmr_info **tdmr_array;
+@@ -1248,11 +1284,17 @@ static int init_tdx_module(void)
+ 	 */
+ 	tdx_global_keyid = tdx_keyid_start;
  
-+	ret = create_tdmrs(tdmr_array, tdmr_num);
++	/* Config the TDX module with TDMRs and global KeyID */
++	ret = config_tdx_module(tdmr_array, tdmr_num, tdx_global_keyid);
 +	if (ret)
-+		goto err;
++		goto out_free_pamts;
 +
- 	/* Return -EFAULT until constructing TDMRs is done */
+ 	/*
+ 	 * Return -EFAULT until all steps of TDX module
+ 	 * initialization are done.
+ 	 */
  	ret = -EFAULT;
-+	free_tdmrs(tdmr_array, *tdmr_num);
- err:
- 	return ret;
- }
++out_free_pamts:
+ 	/*
+ 	 * Free PAMTs allocated in construct_tdmrs() when TDX module
+ 	 * initialization fails.
+diff --git a/arch/x86/virt/vmx/tdx.h b/arch/x86/virt/vmx/tdx.h
+index 05bf9fe6bd00..d8e2800397af 100644
+--- a/arch/x86/virt/vmx/tdx.h
++++ b/arch/x86/virt/vmx/tdx.h
+@@ -95,6 +95,7 @@ struct tdmr_reserved_area {
+ } __packed;
+ 
+ #define TDMR_INFO_ALIGNMENT	512
++#define TDMR_INFO_PA_ARRAY_ALIGNMENT	512
+ 
+ struct tdmr_info {
+ 	u64 base;
+@@ -125,6 +126,7 @@ struct tdmr_info {
+ #define TDH_SYS_INIT		33
+ #define TDH_SYS_LP_INIT		35
+ #define TDH_SYS_LP_SHUTDOWN	44
++#define TDH_SYS_CONFIG		45
+ 
+ struct tdx_module_output;
+ u64 __seamcall(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
 -- 
 2.33.1
 
