@@ -2,180 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62CF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A73EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233793AbiB1R0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:26:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42826 "EHLO
+        id S233850AbiB1R0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:26:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233513AbiB1R0X (ORCPT
+        with ESMTP id S233602AbiB1R0Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:26:23 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9751875E62
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:25:44 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id i20so6103306wmc.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:25:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=FmiziqktK1UrOgPFNs78A4lHVO3Bduu86Seb9OC3k1c=;
-        b=K+n/iswAmZ36iYyamoHmNZHrTZnMxXeQtaEPylc+co1LNZ4a0PiQWszAfkrk8SLwgj
-         HCd2KxQ/G3O9OyJS7ymWIl4DC5VZss/oUTAU1gCJ9P5qmWtAOyYwtL1GQ+HOPxT1VyGa
-         mTZ98GgZfeK8KzcF2OuMNNVGU0JvX0GWJPeF2hIzxYZ+C1GOSRj5kK/5vmEGOFG2QFXv
-         JJzemBOuNiDULBbVfeJlFYvUXHmPzptAXh/JGE0VDQRxCJIaz/tgPKO2+kcgdfIdfVas
-         SxUeFz5WHIj/n4HAKEeZI3zoH82nusaeWDdLacpkBlBKjQKUvun0I+L/jXpqZPf8JlE9
-         VJSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=FmiziqktK1UrOgPFNs78A4lHVO3Bduu86Seb9OC3k1c=;
-        b=VK1q1gST3y0A/kPuUiB/2WNYv/0Z3WtTU4bD/JeXIW/isLb1WIhRQaJgi9P8QHr2Gx
-         QamTsBIEvOlSI/nHe+u90BklUrZETbPov5r2h+YhHn60T+KkxBGqiLZjGdpQTlc1uHEI
-         DhVt8T1z/t8Z8T2LwavOwpxTh6EBwO5rxQzdEr/7abJTpgs3RIMM9V052t80GrCDZ37k
-         uELgiJqdRyz97GMdOstFozb7TXPRaaMDrSLxoeO/sICOsXAm/2VSFzU4hVmSb55VaVAw
-         avKTAzd5WqfoDdKaJ5m3PGWhJSmi6XVIdVZaKTCUc4EPmnirmWoKJq0p26cKTXcTlqfF
-         fHSw==
-X-Gm-Message-State: AOAM532sfYFI4UQjzg4iJolyGOMx10iDMKgHOfiMjhqIFC2NH9rDvSYo
-        YHxusLaey/yTW9p+yfAWWo2eIA==
-X-Google-Smtp-Source: ABdhPJwN+7DvfLFriQmU6bf7VkKjU3vUUHF2S5mpLJH74nHkyMflLKGXjM3VbQkL9njttDpa3TNgRQ==
-X-Received: by 2002:a05:600c:4615:b0:381:c68:e8f8 with SMTP id m21-20020a05600c461500b003810c68e8f8mr14077589wmo.117.1646069143234;
-        Mon, 28 Feb 2022 09:25:43 -0800 (PST)
-Received: from srini-hackbox.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.gmail.com with ESMTPSA id f21-20020a7bcd15000000b0034efd01ee16sm11514124wmj.42.2022.02.28.09.25.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 09:25:42 -0800 (PST)
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-To:     robh+dt@kernel.org, vkoul@kernel.org,
-        yung-chuan.liao@linux.intel.com
-Cc:     pierre-louis.bossart@linux.intel.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
-        quic_srivasam@quicinc.com,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH v3 3/3] soundwire: qcom: add in-band wake up interrupt support
-Date:   Mon, 28 Feb 2022 17:25:28 +0000
-Message-Id: <20220228172528.3489-4-srinivas.kandagatla@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20220228172528.3489-1-srinivas.kandagatla@linaro.org>
-References: <20220228172528.3489-1-srinivas.kandagatla@linaro.org>
+        Mon, 28 Feb 2022 12:26:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29FFF75E6B;
+        Mon, 28 Feb 2022 09:25:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CD25DB815A5;
+        Mon, 28 Feb 2022 17:25:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11042C340F4;
+        Mon, 28 Feb 2022 17:25:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069143;
+        bh=Vv7wFnUGlLa3rURQC2K9jde3PYf5CPhS7IZInxX0iB0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mYck5cBhKsgarVNK0pTvm2l+/iT7xQl5uEjfKIuvR/78zCOOtEcL+TzMQKdGCFHhF
+         nkScTEPDTtu0uT66ddNWeQq6DQ+4DstVN0DCmnYDj1d0g+HlT7lZ0LW5Dl+fjm6SbJ
+         SyE1aW8qd48oMSJopETavQkRTC34SyR/OMgtCxok=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, david regan <dregan@mail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 4.9 01/29] mtd: rawnand: brcmnand: Fixed incorrect sub-page ECC status
+Date:   Mon, 28 Feb 2022 18:23:28 +0100
+Message-Id: <20220228172141.922269337@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172141.744228435@linuxfoundation.org>
+References: <20220228172141.744228435@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of the Qualcomm SoundWire Controller instances like the ones that are
-connected to RX path along with Headset connections support Waking up
-Controller from Low power clock stop state using SoundWire In-band interrupt.
-SoundWire Slave on the bus would initiate this by pulling the data line high,
-while the clock is stopped.
+From: david regan <dregan@mail.com>
 
-Add support to this wake up interrupt.
+commit 36415a7964711822e63695ea67fede63979054d9 upstream.
 
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+The brcmnand driver contains a bug in which if a page (example 2k byte)
+is read from the parallel/ONFI NAND and within that page a subpage (512
+byte) has correctable errors which is followed by a subpage with
+uncorrectable errors, the page read will return the wrong status of
+correctable (as opposed to the actual status of uncorrectable.)
+
+The bug is in function brcmnand_read_by_pio where there is a check for
+uncorrectable bits which will be preempted if a previous status for
+correctable bits is detected.
+
+The fix is to stop checking for bad bits only if we already have a bad
+bits status.
+
+Fixes: 27c5b17cd1b1 ("mtd: nand: add NAND driver "library" for Broadcom STB NAND controller")
+Signed-off-by: david regan <dregan@mail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/trinity-478e0c09-9134-40e8-8f8c-31c371225eda-1643237024774@3c-app-mailcom-lxa02
+[florian: make patch apply to 4.14, file was renamed]
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soundwire/qcom.c | 50 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ drivers/mtd/nand/brcmnand/brcmnand.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index 810232686196..e893aee1b057 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -14,6 +14,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
- #include <linux/slab.h>
-+#include <linux/pm_wakeirq.h>
- #include <linux/slimbus.h>
- #include <linux/soundwire/sdw.h>
- #include <linux/soundwire/sdw_registers.h>
-@@ -154,6 +155,7 @@ struct qcom_swrm_ctrl {
- 	u8 rd_cmd_id;
- 	int irq;
- 	unsigned int version;
-+	int wake_irq;
- 	int num_din_ports;
- 	int num_dout_ports;
- 	int cols_index;
-@@ -503,6 +505,31 @@ static int qcom_swrm_enumerate(struct sdw_bus *bus)
- 	return 0;
- }
+--- a/drivers/mtd/nand/brcmnand/brcmnand.c
++++ b/drivers/mtd/nand/brcmnand/brcmnand.c
+@@ -1637,7 +1637,7 @@ static int brcmnand_read_by_pio(struct m
+ 					mtd->oobsize / trans,
+ 					host->hwcfg.sector_size_1k);
  
-+static irqreturn_t qcom_swrm_wake_irq_handler(int irq, void *dev_id)
-+{
-+	struct qcom_swrm_ctrl *swrm = dev_id;
-+	int ret;
-+
-+	ret = pm_runtime_get_sync(swrm->dev);
-+	if (ret < 0 && ret != -EACCES) {
-+		dev_err_ratelimited(swrm->dev,
-+				    "pm_runtime_get_sync failed in %s, ret %d\n",
-+				    __func__, ret);
-+		pm_runtime_put_noidle(swrm->dev);
-+	}
-+
-+	if (swrm->wake_irq > 0) {
-+		if (!irqd_irq_disabled(irq_get_irq_data(swrm->wake_irq)))
-+			disable_irq_nosync(swrm->wake_irq);
-+	}
-+
-+	pm_runtime_mark_last_busy(swrm->dev);
-+	pm_runtime_put_autosuspend(swrm->dev);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+
- static irqreturn_t qcom_swrm_irq_handler(int irq, void *dev_id)
- {
- 	struct qcom_swrm_ctrl *swrm = dev_id;
-@@ -1340,6 +1367,19 @@ static int qcom_swrm_probe(struct platform_device *pdev)
- 		goto err_clk;
- 	}
- 
-+	ctrl->wake_irq = of_irq_get(dev->of_node, 1);
-+	if (ctrl->wake_irq > 0) {
-+		ret = devm_request_threaded_irq(dev, ctrl->wake_irq, NULL,
-+						qcom_swrm_wake_irq_handler,
-+						IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-+						"swr_wake_irq", ctrl);
-+		if (ret) {
-+			dev_err(dev, "Failed to request soundwire wake irq\n");
-+			goto err_init;
-+		}
-+	}
-+
-+
- 	ret = sdw_bus_master_add(&ctrl->bus, dev, dev->fwnode);
- 	if (ret) {
- 		dev_err(dev, "Failed to register Soundwire controller (%d)\n",
-@@ -1424,6 +1464,11 @@ static int swrm_runtime_resume(struct device *dev)
- 	struct qcom_swrm_ctrl *ctrl = dev_get_drvdata(dev);
- 	int ret;
- 
-+	if (ctrl->wake_irq > 0) {
-+		if (!irqd_irq_disabled(irq_get_irq_data(ctrl->wake_irq)))
-+			disable_irq_nosync(ctrl->wake_irq);
-+	}
-+
- 	clk_prepare_enable(ctrl->hclk);
- 
- 	if (ctrl->clock_stop_not_supported) {
-@@ -1491,6 +1536,11 @@ static int __maybe_unused swrm_runtime_suspend(struct device *dev)
- 
- 	usleep_range(300, 305);
- 
-+	if (ctrl->wake_irq > 0) {
-+		if (irqd_irq_disabled(irq_get_irq_data(ctrl->wake_irq)))
-+			enable_irq(ctrl->wake_irq);
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.21.0
+-		if (!ret) {
++		if (ret != -EBADMSG) {
+ 			*err_addr = brcmnand_read_reg(ctrl,
+ 					BRCMNAND_UNCORR_ADDR) |
+ 				((u64)(brcmnand_read_reg(ctrl,
+
 
