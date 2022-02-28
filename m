@@ -2,83 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D6F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA17EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232289AbiB1LOX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:14:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57982 "EHLO
+        id S232853AbiB1LOZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:14:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235607AbiB1LLE (ORCPT
+        with ESMTP id S233270AbiB1LNF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:11:04 -0500
-X-Greylist: delayed 312 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 03:09:41 PST
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D95E6E8F1;
-        Mon, 28 Feb 2022 03:09:40 -0800 (PST)
-Received: from evilbit.green-communications.fr ([92.154.77.116]) by
- mrelayeu.kundenserver.de (mreue012 [213.165.67.103]) with ESMTPSA (Nemesis)
- id 1MqZE0-1o25Ic3yFs-00mcLC; Mon, 28 Feb 2022 12:04:23 +0100
-From:   Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] thermal: genetlink: Fix TZ_GET_TRIP NULL pointer dereference
-Date:   Mon, 28 Feb 2022 12:03:51 +0100
-Message-Id: <20220228110351.20518-2-nicolas.cavallari@green-communications.fr>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228110351.20518-1-nicolas.cavallari@green-communications.fr>
-References: <20220228110351.20518-1-nicolas.cavallari@green-communications.fr>
+        Mon, 28 Feb 2022 06:13:05 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71367710F3;
+        Mon, 28 Feb 2022 03:10:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646046605; x=1677582605;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=pPM+/dJeHfzqF2MwScC0enTLh1mKtTcaV6SSL4S9rYU=;
+  b=SO6gfJgmLRTjC80MWQvROvwlmmqq015dS5cjNekgYmZJmvFNSutkr9E3
+   WGjs9xhTdJj6OqvbiownYD1PB5fdconUUePm2JpuFJS1aSSUqUc7ylQtK
+   GUV1RsCwSubrDp0FzUJbXXj+ykLkpWxWGLF3BnUmGe4QJD6gxPLA5jvbQ
+   Uc2ijL/as8b93GuwKW380ARlvtaqK72keAJ9YYdO4u0jVtJK4fMBJGzHG
+   QNCPh1jwH1fnmKLv5x8FzqAm9+bhnZst/1TOUwadi2b7NgaQ5lQKBbxND
+   ZTNZu4e8VYhyZ61Se+Qt7o/NHlmlHWTRarz4UP/Im5iHWhNGCImKgh2G/
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="252588367"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="252588367"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 03:09:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="640854617"
+Received: from linux.intel.com ([10.54.29.200])
+  by orsmga004.jf.intel.com with ESMTP; 28 Feb 2022 03:09:40 -0800
+Received: from P12HL01TMIN.png.intel.com (P12HL01TMIN.png.intel.com [10.158.65.75])
+        by linux.intel.com (Postfix) with ESMTP id 6D3E85805A3;
+        Mon, 28 Feb 2022 03:09:37 -0800 (PST)
+From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        pei.lee.ling@intel.com
+Subject: [PATCH net 1/1] net: stmmac: Resolve poor line rate after switching from TSO off to TSO on
+Date:   Mon, 28 Feb 2022 19:15:58 +0800
+Message-Id: <20220228111558.3825974-1-vee.khee.wong@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:Z23tdDyKIgIMHnYp/38gWcoqsVjOYU4hm9ReJpXzE/mCJ5x6hUX
- 4iYXgS7D7k995wnC7lbYkdxiO6y58eg2A4BYDeBxh/BsztFyOi2L+KGdGz5YY8Z/fthO/WF
- 8hLl/FdDWsDTM3QdE2nV6x6aStzK6DuVKs1H1b7JCuyYrMCNSczoHVCeT3t/U1mFuCm7PAY
- VSTkkA+XZPRjJP9AIVg8w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:wZmt3fsaZFA=:cLOupJGsEzb0sPlifnbInd
- 8UsZi9s9FlvobtrUwKhn66i2XKvST2QxIjulNPv+psAnUS7Wu+y7lDVQUFDcC49taSHXNm8ZD
- obJaOCjZfuCeOqlxrDky9F2HP6E25n3/cRofyUVuD69Y8f8CHE0bgoV1wFN8Y3gG7sUiF5Ki7
- ZG7xf7F/8VjsOcjZux+iuAKEJvBAT9tU/0a172kER7xPiDLaqyPr9YF+S2/pkyQ4RVFnkwe6W
- 6w5MQJA9pMQW5HR3mFL32be3SX4bdvTXMhv08oVlkg43y+YkboW1zjoCC9/dTcphnp9Q/10QB
- 843Tx8aGmPsU8SJxVzvlzjtitQ186WYlKtHkvDL2CGJpkchyGLoGh+Bq+RtGeUhmhjYhy4QLM
- dA2RP7K528SLyBi7orqbTI2NTZ/Ri893WGXBDfnBcElP97aPMnj5OUWCpC8ejMIMVhC8j8eQU
- vCSpnsbBzD3ySiRE0FkhdU1B0GKFW7e4Uem04WlDcjeL/ZmLWybIBbS8yj1QV9kxB5FfPzARf
- IyX4O6JiyCX2eF8fILMsX/3XsL9ZiYEbgOAusemGL2oVqxVk929C6jb2AC/BSJO0+RRFoPnYu
- /W8peUrW7zo0Lhwrn0qqkr7eh1rakXitvdA+gRG72BKpH+NO4YhkEbK2H2ApnhNDoWWoZmU3L
- YhY/gjqiWbRTfqpST581q3WB3eoGeJw87tPXg88RRrVxpr35sRDT4eIjDP3MuCWWUAp2ovDAr
- OBPzulVOjfkdUpxu8TTwJVWM1h7bk+tn1lFcQg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Do not call get_trip_hyst() if the thermal zone does not define one.
+From: Ling Pei Lee <pei.lee.ling@intel.com>
 
-Signed-off-by: Nicolas Cavallari <nicolas.cavallari@green-communications.fr>
+Sequential execution of these steps:
+i) TSO ON – iperf3 execution,
+ii) TSO OFF – iperf3 execution,
+iii) TSO ON – iperf3 execution, it leads to iperf3 0 bytes transfer.
+
+Example of mentioned Issue happened:
+root@TGLA:~# iperf3 -c 169.254.168.191
+Connecting to host 169.254.168.191, port 5201
+[  5] local 169.254.50.108 port 45846 connected to 169.254.168.191
+port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   113 MBytes   947 Mbits/sec    0    378 KBytes
+[  5]   1.00-2.00   sec   111 MBytes   933 Mbits/sec    0    378 KBytes
+[  5]   2.00-3.00   sec   111 MBytes   933 Mbits/sec    0    378 KBytes
+[  5]   3.00-4.00   sec   111 MBytes   929 Mbits/sec    0    378 KBytes
+[  5]   4.00-5.00   sec   111 MBytes   934 Mbits/sec    0    378 KBytes
+[  5]   5.00-6.00   sec   111 MBytes   932 Mbits/sec    0    378 KBytes
+[  5]   6.00-7.00   sec   111 MBytes   932 Mbits/sec    0    378 KBytes
+[  5]   7.00-8.00   sec   111 MBytes   932 Mbits/sec    0    378 KBytes
+[  5]   8.00-9.00   sec   111 MBytes   931 Mbits/sec    0    378 KBytes
+[  5]   9.00-10.00  sec   111 MBytes   932 Mbits/sec    0    378 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  1.09 GBytes   933 Mbits/sec    0    sender
+[  5]   0.00-10.00  sec  1.09 GBytes   932 Mbits/sec         receiver
+
+iperf Done.
+root@TGLA:~# ethtool -K enp0s30f4 tso off
+root@TGLA:~# iperf3 -c 169.254.168.191
+Connecting to host 169.254.168.191, port 5201
+[  5] local 169.254.50.108 port 45854 connected to 169.254.168.191
+port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   104 MBytes   870 Mbits/sec    0    352 KBytes
+[  5]   1.00-2.00   sec   101 MBytes   850 Mbits/sec    0    369 KBytes
+[  5]   2.00-3.00   sec   102 MBytes   860 Mbits/sec    0    369 KBytes
+[  5]   3.00-4.00   sec   102 MBytes   853 Mbits/sec    0    369 KBytes
+[  5]   4.00-5.00   sec   102 MBytes   855 Mbits/sec    0    369 KBytes
+[  5]   5.00-6.00   sec   101 MBytes   849 Mbits/sec    0    369 KBytes
+[  5]   6.00-7.00   sec   102 MBytes   860 Mbits/sec    0    369 KBytes
+[  5]   7.00-8.00   sec   102 MBytes   853 Mbits/sec    0    369 KBytes
+[  5]   8.00-9.00   sec   101 MBytes   851 Mbits/sec    0    369 KBytes
+[  5]   9.00-10.00  sec   102 MBytes   856 Mbits/sec    0    369 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  1020 MBytes   856 Mbits/sec    0    sender
+[  5]   0.00-10.00  sec  1019 MBytes   854 Mbits/sec         receiver
+
+iperf Done.
+root@TGLA:~# ethtool -K enp0s30f4 tso on
+root@TGLA:~# iperf3 -c 169.254.168.191
+Connecting to host 169.254.168.191, port 5201
+[  5] local 169.254.50.108 port 45860 connected to 169.254.168.191
+port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   107 KBytes   879 Kbits/sec    0   1.41 KBytes
+[  5]   1.00-2.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
+[  5]   2.00-3.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
+[  5]   3.00-4.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
+[  5]   4.00-5.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
+[  5]   5.00-6.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
+[  5]   6.00-7.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
+[  5]   7.00-8.00   sec  0.00 Bytes  0.00 bits/sec    0   1.41 KBytes
+
+Clear mss in TDES and call stmmac_enable_tso() to indicate
+a new TSO transmission when it is enabled from TSO off using
+ethtool command
+
+Fixes: f748be531d70 ("stmmac: support new GMAC4")
+Signed-off-by: Ling Pei Lee <pei.lee.ling@intel.com>
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
 ---
- drivers/thermal/thermal_netlink.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/thermal/thermal_netlink.c b/drivers/thermal/thermal_netlink.c
-index a16dd4d5d710..73e68cce292e 100644
---- a/drivers/thermal/thermal_netlink.c
-+++ b/drivers/thermal/thermal_netlink.c
-@@ -419,11 +419,12 @@ static int thermal_genl_cmd_tz_get_trip(struct param *p)
- 	for (i = 0; i < tz->trips; i++) {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index b745d624b2cb..9e2ea0e0bd68 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -5460,6 +5460,8 @@ static netdev_features_t stmmac_fix_features(struct net_device *dev,
+ 					     netdev_features_t features)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
++	u32 tx_cnt = priv->plat->tx_queues_to_use;
++	u32 chan;
  
- 		enum thermal_trip_type type;
--		int temp, hyst;
-+		int temp, hyst = 0;
+ 	if (priv->plat->rx_coe == STMMAC_RX_COE_NONE)
+ 		features &= ~NETIF_F_RXCSUM;
+@@ -5483,6 +5485,16 @@ static netdev_features_t stmmac_fix_features(struct net_device *dev,
+ 			priv->tso = false;
+ 	}
  
- 		tz->ops->get_trip_type(tz, i, &type);
- 		tz->ops->get_trip_temp(tz, i, &temp);
--		tz->ops->get_trip_hyst(tz, i, &hyst);
-+		if (tz->ops->get_trip_hyst)
-+			tz->ops->get_trip_hyst(tz, i, &hyst);
++	for (chan = 0; chan < tx_cnt; chan++) {
++		struct stmmac_tx_queue *tx_q = &priv->tx_queue[chan];
++
++		/* TSO and TBS cannot co-exist */
++		if (tx_q->tbs & STMMAC_TBS_AVAIL)
++			continue;
++
++		tx_q->mss = 0;
++		stmmac_enable_tso(priv, priv->ioaddr, priv->tso, chan);
++	}
+ 	return features;
+ }
  
- 		if (nla_put_u32(msg, THERMAL_GENL_ATTR_TZ_TRIP_ID, i) ||
- 		    nla_put_u32(msg, THERMAL_GENL_ATTR_TZ_TRIP_TYPE, type) ||
 -- 
-2.35.1
+2.25.1
 
