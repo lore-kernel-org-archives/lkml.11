@@ -2,192 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 586EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:47:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E184C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236740AbiB1Mri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:47:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40706 "EHLO
+        id S236736AbiB1Mse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:48:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236797AbiB1MrR (ORCPT
+        with ESMTP id S236918AbiB1Mrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:47:17 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CCF479C52
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:46:17 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id z15so11050566pfe.7
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:46:17 -0800 (PST)
+        Mon, 28 Feb 2022 07:47:47 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3E5578056
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:46:48 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id j17so15331266wrc.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:46:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DfwzfNqq6vq0SsTnjLEp+6L4UBQXfn7xq4uvXb2A4qw=;
-        b=bA1BWSLFNpCciGnGldmGs1g305ey7gWYd43oNQc5VxwUczAgrbRw2sleyGyaQ+yTks
-         KIoWCdmI4qVwT2R/y+CkuyNPTHKpcHZxECpjxvZh8d6+KuF2Nh4tEiHZVcmH+kf8VXpn
-         wdDr+0npYRU+vCHEevPo6oY1GTStiukGcKmfZfC4F9ay6enSEPHLTHpZ0Ap6OxDBtkXX
-         u2q1+qlM5qRf1SyzfLkTqEaKaGWxqq47wcYzBNSTshELUZQzOFs8bpZXDhS/fybJxCDU
-         sFnHzByYu3ZTkLQUYCFBHbQvA8kqGS8PheXsfV1lVHZ7E9XR2/Tdc7kE6HCOwnW9+2/b
-         5vNg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ENGlgL22OWGxOqpN7D6oXT0hPbVh0EZ15Mfm4UzwnvY=;
+        b=ljyjusgUpWXziHEKYTetMqrmUP11BZzq9qcRuzLvnsBBDvDFMWWBboFzEhXE0FRKgH
+         sabnPHqcCRzixCkwQ9jjzyfoUtEEo/geDmfMcpKcf7X1IJQVNNGpCM9iNudyut9JaLGD
+         gIjc44NB9u9Y+r5TngXZYQR+tzMO9RU5b3G06QuYWQ9EuamTqf/nuxDimEoZDRzsmJLP
+         bGIQNAn2i70MzrRxpINOlnLqMuFGFgn6RUz7oGwzUT9HFXcqLe5UH3Etr1nnsyAPw4xm
+         1Xbqp+ZTV1YsUtxLAkYLaSkITgK7JZ4hRVlx2Bdx0XoUUUdx0ZDxcK+pyL4iWFxsNcKd
+         AHSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DfwzfNqq6vq0SsTnjLEp+6L4UBQXfn7xq4uvXb2A4qw=;
-        b=CPYyGQPSoKPWZyOhR9KIWejELbuNSc9vz6sptD9FIrLHCrYf3rr9sG66hmi/BmLyyE
-         I+CVuBsj2kVjduf3lCmojJ/dyjpDPcr01Sa5857iU05OXkoqn6BLt0aCvT5WonCFaxMf
-         OiiAqeMQPSl9P2obhnv1rZoo2h73QpV9yeagS6ZHLgMi3amBllJNtSwciTf7tn0ZtVMo
-         z0PXP054Hn+xx7NITbrxkdGOXxbXJm1Iw2zSdxaLanpIC6V78fgCVx/IOyhwVU3zxune
-         SlmRoDBu76H427nWeCQ7Kx7RCxeJDSQL7IZ0M6f9K0Mv8gCoKNu8gWo8dzxFz7yR5RFe
-         JKpw==
-X-Gm-Message-State: AOAM531tTTiPCWxSv9oVNAI5n/FX3WRElNYJ6o9nIuuKa0SliPVDMRfw
-        C/4dYkPbUFaQxoKjayODpF4x
-X-Google-Smtp-Source: ABdhPJyoDhxnyLLhiXj3FVUBCTzye9LuIHWe8nXli2d39+oXfn3otagNBKy+7n1ttyR5IGl84g15pQ==
-X-Received: by 2002:a05:6a00:8d5:b0:4e1:77c9:def8 with SMTP id s21-20020a056a0008d500b004e177c9def8mr21504500pfu.55.1646052376709;
-        Mon, 28 Feb 2022 04:46:16 -0800 (PST)
-Received: from localhost.localdomain ([117.207.25.37])
-        by smtp.gmail.com with ESMTPSA id y12-20020a056a00190c00b004f39e28fb87sm14256737pfi.98.2022.02.28.04.46.11
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ENGlgL22OWGxOqpN7D6oXT0hPbVh0EZ15Mfm4UzwnvY=;
+        b=upkQeG3kltq5NhA4ig831ne0qpLnnoq5rcWorqai7vQiTkBlJfZtVLOY+jeLIxi+zA
+         iJ7c+n8nRcyfRFkKTZ+ZTz9AyoFWcPgQPgL6cB+aQR1mJRz0eYNzrsLKq+t9TJI41GBp
+         DgUSYSNjnlRBE2ubFP+2l3E/wZnnmoqK6luoq3UWvfLko6oSi1KndjDCaIXz/M6lQdsd
+         9/g+6yMjgXoEAjJK55OeXUC/zVP2PrUVMcfR4ySSpXVqnq1cfyMR0vxpk3G3tdqU3Ner
+         OJ0DCfzhIExuwBV7n5MoHokqBFFjYt5NUmHBMWxdX94ex+IuxF/3H0xi/15za6xDWvOB
+         hOhw==
+X-Gm-Message-State: AOAM532/MBH1JTTjHDhtLaoWXDUuoo209ZWE0xpOn0gUz4zgSrEKttTM
+        tAhwi1SJbtmQQ4+tCGGrP3resw==
+X-Google-Smtp-Source: ABdhPJwqS0yccbm1J0MBxEWU/k07soEzJwbYH8MePkGfCGdFtIgewWhv4vABIqsTTlRKUnh9dhxw/g==
+X-Received: by 2002:a5d:6b0b:0:b0:1ef:d826:723a with SMTP id v11-20020a5d6b0b000000b001efd826723amr2405653wrw.420.1646052406418;
+        Mon, 28 Feb 2022 04:46:46 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id l5-20020adff485000000b001e322a6ba79sm10577218wro.86.2022.02.28.04.46.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 04:46:16 -0800 (PST)
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     mhi@lists.linux.dev
-Cc:     quic_hemantk@quicinc.com, quic_bbhatt@quicinc.com,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        quic_vbadigan@quicinc.com, quic_cang@quicinc.com,
-        quic_skananth@quicinc.com, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, elder@linaro.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v4 26/27] bus: mhi: ep: Add support for suspending and resuming channels
-Date:   Mon, 28 Feb 2022 18:13:43 +0530
-Message-Id: <20220228124344.77359-27-manivannan.sadhasivam@linaro.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
-References: <20220228124344.77359-1-manivannan.sadhasivam@linaro.org>
+        Mon, 28 Feb 2022 04:46:46 -0800 (PST)
+Date:   Mon, 28 Feb 2022 12:46:44 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Greg KH <greg@kroah.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alistair Francis <alistair@alistair23.me>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: linux-next: manual merge of the char-misc tree with the mfd tree
+Message-ID: <YhzENKPtY+WOp566@google.com>
+References: <20220228193928.3ec6ee98@canb.auug.org.au>
+ <YhyPfcjJtIKNQtF8@google.com>
+ <Yhyn72NO/roH1gA8@kroah.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yhyn72NO/roH1gA8@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for suspending and resuming the channels in MHI endpoint stack.
-The channels will be moved to the suspended state during M3 state
-transition and will be resumed during M0 transition.
+On Mon, 28 Feb 2022, Greg KH wrote:
 
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
----
- drivers/bus/mhi/ep/internal.h |  2 ++
- drivers/bus/mhi/ep/main.c     | 58 +++++++++++++++++++++++++++++++++++
- drivers/bus/mhi/ep/sm.c       |  5 +++
- 3 files changed, 65 insertions(+)
+> On Mon, Feb 28, 2022 at 09:01:49AM +0000, Lee Jones wrote:
+> > On Mon, 28 Feb 2022, Stephen Rothwell wrote:
+> > 
+> > > Hi all,
+> > > 
+> > > Today's linux-next merge of the char-misc tree got a conflict in:
+> > 
+> > I did ask for this *not* to be merged when it was in -testing.
+> 
+> Sorry, I missed that, I saw your ack on the patch so that's why I took
+> it.
+> 
+> > I'll follow-up with Greg.
+> 
+> Should I revert this from my tree?
 
-diff --git a/drivers/bus/mhi/ep/internal.h b/drivers/bus/mhi/ep/internal.h
-index a229d8b70227..14fbf4e41ebf 100644
---- a/drivers/bus/mhi/ep/internal.h
-+++ b/drivers/bus/mhi/ep/internal.h
-@@ -210,6 +210,8 @@ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl);
- int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl);
- int mhi_ep_set_ready_state(struct mhi_ep_cntrl *mhi_cntrl);
- void mhi_ep_handle_syserr(struct mhi_ep_cntrl *mhi_cntrl);
-+void mhi_ep_resume_channels(struct mhi_ep_cntrl *mhi_cntrl);
-+void mhi_ep_suspend_channels(struct mhi_ep_cntrl *mhi_cntrl);
- 
- /* MHI EP memory management functions */
- int mhi_ep_alloc_map(struct mhi_ep_cntrl *mhi_cntrl, u64 pci_addr, size_t size,
-diff --git a/drivers/bus/mhi/ep/main.c b/drivers/bus/mhi/ep/main.c
-index 25d34cf26fd7..3efdbf924076 100644
---- a/drivers/bus/mhi/ep/main.c
-+++ b/drivers/bus/mhi/ep/main.c
-@@ -1129,6 +1129,64 @@ void mhi_ep_power_down(struct mhi_ep_cntrl *mhi_cntrl)
- }
- EXPORT_SYMBOL_GPL(mhi_ep_power_down);
- 
-+void mhi_ep_suspend_channels(struct mhi_ep_cntrl *mhi_cntrl)
-+{
-+	struct mhi_ep_chan *mhi_chan;
-+	u32 tmp;
-+	int i;
-+
-+	for (i = 0; i < mhi_cntrl->max_chan; i++) {
-+		mhi_chan = &mhi_cntrl->mhi_chan[i];
-+
-+		if (!mhi_chan->mhi_dev)
-+			continue;
-+
-+		mutex_lock(&mhi_chan->lock);
-+		/* Skip if the channel is not currently running */
-+		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[i].chcfg);
-+		if (FIELD_GET(CHAN_CTX_CHSTATE_MASK, tmp) != MHI_CH_STATE_RUNNING) {
-+			mutex_unlock(&mhi_chan->lock);
-+			continue;
-+		}
-+
-+		dev_dbg(&mhi_chan->mhi_dev->dev, "Suspending channel\n");
-+		/* Set channel state to SUSPENDED */
-+		tmp &= ~CHAN_CTX_CHSTATE_MASK;
-+		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_SUSPENDED);
-+		mhi_cntrl->ch_ctx_cache[i].chcfg = cpu_to_le32(tmp);
-+		mutex_unlock(&mhi_chan->lock);
-+	}
-+}
-+
-+void mhi_ep_resume_channels(struct mhi_ep_cntrl *mhi_cntrl)
-+{
-+	struct mhi_ep_chan *mhi_chan;
-+	u32 tmp;
-+	int i;
-+
-+	for (i = 0; i < mhi_cntrl->max_chan; i++) {
-+		mhi_chan = &mhi_cntrl->mhi_chan[i];
-+
-+		if (!mhi_chan->mhi_dev)
-+			continue;
-+
-+		mutex_lock(&mhi_chan->lock);
-+		/* Skip if the channel is not currently suspended */
-+		tmp = le32_to_cpu(mhi_cntrl->ch_ctx_cache[i].chcfg);
-+		if (FIELD_GET(CHAN_CTX_CHSTATE_MASK, tmp) != MHI_CH_STATE_SUSPENDED) {
-+			mutex_unlock(&mhi_chan->lock);
-+			continue;
-+		}
-+
-+		dev_dbg(&mhi_chan->mhi_dev->dev, "Resuming channel\n");
-+		/* Set channel state to RUNNING */
-+		tmp &= ~CHAN_CTX_CHSTATE_MASK;
-+		tmp |= FIELD_PREP(CHAN_CTX_CHSTATE_MASK, MHI_CH_STATE_RUNNING);
-+		mhi_cntrl->ch_ctx_cache[i].chcfg = cpu_to_le32(tmp);
-+		mutex_unlock(&mhi_chan->lock);
-+	}
-+}
-+
- static void mhi_ep_release_device(struct device *dev)
- {
- 	struct mhi_ep_device *mhi_dev = to_mhi_ep_device(dev);
-diff --git a/drivers/bus/mhi/ep/sm.c b/drivers/bus/mhi/ep/sm.c
-index 4d6e8c2d615c..22b578bd851b 100644
---- a/drivers/bus/mhi/ep/sm.c
-+++ b/drivers/bus/mhi/ep/sm.c
-@@ -62,8 +62,11 @@ int mhi_ep_set_m0_state(struct mhi_ep_cntrl *mhi_cntrl)
- 	enum mhi_state old_state;
- 	int ret;
- 
-+	/* If MHI is in M3, resume suspended channels */
- 	spin_lock_bh(&mhi_cntrl->state_lock);
- 	old_state = mhi_cntrl->mhi_state;
-+	if (old_state == MHI_STATE_M3)
-+		mhi_ep_resume_channels(mhi_cntrl);
- 
- 	ret = mhi_ep_set_mhi_state(mhi_cntrl, MHI_STATE_M0);
- 	spin_unlock_bh(&mhi_cntrl->state_lock);
-@@ -106,6 +109,8 @@ int mhi_ep_set_m3_state(struct mhi_ep_cntrl *mhi_cntrl)
- 		return ret;
- 	}
- 
-+	mhi_ep_suspend_channels(mhi_cntrl);
-+
- 	/* Signal host that the device moved to M3 */
- 	ret = mhi_ep_send_state_change_event(mhi_cntrl, MHI_STATE_M3);
- 	if (ret) {
+I did try to catch it before a revert would have been required.
+
+But yes, please revert it.
+
+The Ack is not standard and should not be merged.
+
 -- 
-2.25.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
