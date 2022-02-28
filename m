@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3884C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C00DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239054AbiB1Rnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:43:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37350 "EHLO
+        id S238878AbiB1Rn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:43:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238268AbiB1RkQ (ORCPT
+        with ESMTP id S236441AbiB1RkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:40:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43892986C7;
-        Mon, 28 Feb 2022 09:34:34 -0800 (PST)
+        Mon, 28 Feb 2022 12:40:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D820593185;
+        Mon, 28 Feb 2022 09:34:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D704FB815A6;
-        Mon, 28 Feb 2022 17:34:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F08C340E7;
-        Mon, 28 Feb 2022 17:34:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A042614BB;
+        Mon, 28 Feb 2022 17:34:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B7ACC340E7;
+        Mon, 28 Feb 2022 17:34:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069671;
-        bh=/TC6U4bhgC1qLOu19zfPJeKQe7FGvbvv3H7xnnBIuCo=;
+        s=korg; t=1646069657;
+        bh=0RtYBQzJmD78NjmUnjR65nAJ5Z8h/s9oL/ps01pFpog=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uErlsgpPhFHGJScBWxdya2ARdDl9/o2V11y51UkZs7g/FPbxx7NBKnkGzQyh8IMrG
-         QXcvQK768fAWoqDIYfP+6OyGV++KHFxkqC0MSgbeIILDw3F5ca6I6Zq7CLxZMYgUQx
-         chpPYHjHGLmI5XpnkGQfN1wF+MVsxVFRPUTXC0TA=
+        b=aNOfOn8LkfaD4+rkfYx9ueGqYYtmyOkkAGlbW0kPE5xcSk0xWgnhUd9hzejsc57I3
+         1s4e+bIEmRrLM/CR3WUp7Qx/zU5HeFK74qd80ad4ugMn8KE26594OyyRSrBRe0IK45
+         G7ZRNQF4Q9b7q1CiiVVg+j88Xga8Hvz/gOWpkxrc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Md Haris Iqbal <haris.iqbal@ionos.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 49/80] RDMA/rtrs-clt: Move free_permit from free_clt to rtrs_clt_close
-Date:   Mon, 28 Feb 2022 18:24:30 +0100
-Message-Id: <20220228172317.581029281@linuxfoundation.org>
+Subject: [PATCH 5.10 45/80] spi: spi-zynq-qspi: Fix a NULL pointer dereference in zynq_qspi_exec_mem_op()
+Date:   Mon, 28 Feb 2022 18:24:26 +0100
+Message-Id: <20220228172317.075616514@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -50,47 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Md Haris Iqbal <haris.iqbal@ionos.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit c46fa8911b17e3f808679061a8af8bee219f4602 ]
+[ Upstream commit ab3824427b848da10e9fe2727f035bbeecae6ff4 ]
 
-Error path of rtrs_clt_open() calls free_clt(), where free_permit is
-called.  This is wrong since error path of rtrs_clt_open() does not need
-to call free_permit().
+In zynq_qspi_exec_mem_op(), kzalloc() is directly used in memset(),
+which could lead to a NULL pointer dereference on failure of
+kzalloc().
 
-Also, moving free_permits() call to rtrs_clt_close(), makes it more
-aligned with the call to alloc_permit() in rtrs_clt_open().
+Fix this bug by adding a check of tmpbuf.
 
-Fixes: 6a98d71daea1 ("RDMA/rtrs: client: main functionality")
-Link: https://lore.kernel.org/r/20220217030929.323849-2-haris.iqbal@ionos.com
-Signed-off-by: Md Haris Iqbal <haris.iqbal@ionos.com>
-Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_SPI_ZYNQ_QSPI=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 67dca5e580f1 ("spi: spi-mem: Add support for Zynq QSPI controller")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Link: https://lore.kernel.org/r/20211130172253.203700-1-zhou1615@umn.edu
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/ulp/rtrs/rtrs-clt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/spi/spi-zynq-qspi.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-index 5a3c11b0b3102..13634eda833de 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-@@ -2638,7 +2638,6 @@ static struct rtrs_clt *alloc_clt(const char *sessname, size_t paths_num,
+diff --git a/drivers/spi/spi-zynq-qspi.c b/drivers/spi/spi-zynq-qspi.c
+index b635835729d66..13c0b15fe1764 100644
+--- a/drivers/spi/spi-zynq-qspi.c
++++ b/drivers/spi/spi-zynq-qspi.c
+@@ -570,6 +570,9 @@ static int zynq_qspi_exec_mem_op(struct spi_mem *mem,
  
- static void free_clt(struct rtrs_clt *clt)
- {
--	free_permits(clt);
- 	free_percpu(clt->pcpu_path);
- 
- 	/*
-@@ -2759,6 +2758,7 @@ void rtrs_clt_close(struct rtrs_clt *clt)
- 		rtrs_clt_destroy_sess_files(sess, NULL);
- 		kobject_put(&sess->kobj);
- 	}
-+	free_permits(clt);
- 	free_clt(clt);
- }
- EXPORT_SYMBOL(rtrs_clt_close);
+ 	if (op->dummy.nbytes) {
+ 		tmpbuf = kzalloc(op->dummy.nbytes, GFP_KERNEL);
++		if (!tmpbuf)
++			return -ENOMEM;
++
+ 		memset(tmpbuf, 0xff, op->dummy.nbytes);
+ 		reinit_completion(&xqspi->data_completion);
+ 		xqspi->txbuf = tmpbuf;
 -- 
 2.34.1
 
