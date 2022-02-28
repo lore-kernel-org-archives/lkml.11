@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6641C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7B9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:39:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232354AbiB1Rjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:39:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33676 "EHLO
+        id S238230AbiB1Rjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:39:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238490AbiB1Rhz (ORCPT
+        with ESMTP id S238538AbiB1Rh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:37:55 -0500
+        Mon, 28 Feb 2022 12:37:58 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D507543AEE;
-        Mon, 28 Feb 2022 09:32:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 909E750059;
+        Mon, 28 Feb 2022 09:32:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 470FCB815AC;
-        Mon, 28 Feb 2022 17:32:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BB6EC340E7;
-        Mon, 28 Feb 2022 17:32:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C4ECB815B3;
+        Mon, 28 Feb 2022 17:32:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F51C340F1;
+        Mon, 28 Feb 2022 17:32:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069561;
-        bh=KwnSvAIvypkgAY4He7R23xQE0ck3L9g5jFxUpjd0lPM=;
+        s=korg; t=1646069569;
+        bh=C6gmUbI3lDqmvA6/v3kymtV/MNnaqkTM8sJlK3mLUn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LHjTpN5nJsuPnfL/fxAhcvhJ6Z4xw5l9+X5klu/LMt8oZhXB6BYjwDUS5vgeePR81
-         BCyTcDRVfp//p62PkkqHdn2RCoh3k2G9e2FDbnZnyPlQ9jcHif761S4sRB/qwlNY4O
-         5w5PrLc2cl7kNMTjQQvH+mDlRg1G0IGvUogW7Es8=
+        b=CSQ2m6AVeIMWcvfSIO85c9pHFAdMZJuuFz9a3BzQr0KBAHO7oa4PWcMxdyUBEZweH
+         AiGB/VsuUDP0jxye1jekLnnr4GAvoj9Zs1v1BhPY+bIUN4NzE+MgO5fx4xj5fIdvR/
+         C9IkLFJ8AtKido6oJXtx3mwhIwPrDQkUkWEdYFbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH 5.10 11/80] drm/i915: Correctly populate use_sagv_wm for all pipes
-Date:   Mon, 28 Feb 2022 18:23:52 +0100
-Message-Id: <20220228172312.814623524@linuxfoundation.org>
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 14/80] CDC-NCM: avoid overflow in sanity checking
+Date:   Mon, 28 Feb 2022 18:23:55 +0100
+Message-Id: <20220228172313.354550555@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -51,66 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ville Syrjälä <ville.syrjala@linux.intel.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit afc189df6bcc6be65961deb54e15ec60e7f85337 upstream.
+commit 8d2b1a1ec9f559d30b724877da4ce592edc41fdc upstream.
 
-When changing between SAGV vs. no SAGV on tgl+ we have to
-update the use_sagv_wm flag for all the crtcs or else
-an active pipe not already in the state will end up using
-the wrong watermarks. That is especially bad when we end up
-with the tighter non-SAGV watermarks with SAGV enabled.
-Usually ends up in underruns.
+A broken device may give an extreme offset like 0xFFF0
+and a reasonable length for a fragment. In the sanity
+check as formulated now, this will create an integer
+overflow, defeating the sanity check. Both offset
+and offset + len need to be checked in such a manner
+that no overflow can occur.
+And those quantities should be unsigned.
 
-Cc: stable@vger.kernel.org
-Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
-Fixes: 7241c57d3140 ("drm/i915: Add TGL+ SAGV support")
-Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220218064039.12834-2-ville.syrjala@linux.intel.com
-(cherry picked from commit 8dd8ffb824ca7b897ce9f2082ffa7e64831c22dc)
-Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/i915/intel_pm.c |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/net/usb/cdc_ncm.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/i915/intel_pm.c
-+++ b/drivers/gpu/drm/i915/intel_pm.c
-@@ -3996,6 +3996,17 @@ static int intel_compute_sagv_mask(struc
- 			return ret;
- 	}
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -1702,10 +1702,10 @@ int cdc_ncm_rx_fixup(struct usbnet *dev,
+ {
+ 	struct sk_buff *skb;
+ 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
+-	int len;
++	unsigned int len;
+ 	int nframes;
+ 	int x;
+-	int offset;
++	unsigned int offset;
+ 	union {
+ 		struct usb_cdc_ncm_ndp16 *ndp16;
+ 		struct usb_cdc_ncm_ndp32 *ndp32;
+@@ -1777,8 +1777,8 @@ next_ndp:
+ 			break;
+ 		}
  
-+	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
-+	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
-+		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
-+		if (ret)
-+			return ret;
-+	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
-+		ret = intel_atomic_lock_global_state(&new_bw_state->base);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	for_each_new_intel_crtc_in_state(state, crtc,
- 					 new_crtc_state, i) {
- 		struct skl_pipe_wm *pipe_wm = &new_crtc_state->wm.skl.optimal;
-@@ -4010,17 +4021,6 @@ static int intel_compute_sagv_mask(struc
- 				       intel_can_enable_sagv(dev_priv, new_bw_state);
- 	}
- 
--	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
--	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
--		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
--		if (ret)
--			return ret;
--	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
--		ret = intel_atomic_lock_global_state(&new_bw_state->base);
--		if (ret)
--			return ret;
--	}
--
- 	return 0;
- }
- 
+-		/* sanity checking */
+-		if (((offset + len) > skb_in->len) ||
++		/* sanity checking - watch out for integer wrap*/
++		if ((offset > skb_in->len) || (len > skb_in->len - offset) ||
+ 				(len > ctx->rx_max) || (len < ETH_HLEN)) {
+ 			netif_dbg(dev, rx_err, dev->net,
+ 				  "invalid frame detected (ignored) offset[%u]=%u, length=%u, skb=%p\n",
 
 
