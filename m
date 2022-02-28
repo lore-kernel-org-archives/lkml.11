@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 487CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA7DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231886AbiB1R5M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:57:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46504 "EHLO
+        id S236083AbiB1R5Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:57:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240014AbiB1Rxs (ORCPT
+        with ESMTP id S240053AbiB1Rxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36215B0A78;
-        Mon, 28 Feb 2022 09:41:24 -0800 (PST)
+        Mon, 28 Feb 2022 12:53:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86485B0C6F;
+        Mon, 28 Feb 2022 09:41:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1807661357;
-        Mon, 28 Feb 2022 17:41:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F276C340E7;
-        Mon, 28 Feb 2022 17:41:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF36BB815D2;
+        Mon, 28 Feb 2022 17:41:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 324D0C340E7;
+        Mon, 28 Feb 2022 17:41:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070083;
-        bh=ZeUaeCJFJ4bWJ2ejkrzVSGb9kDF1BPevUpezIc/prvg=;
+        s=korg; t=1646070069;
+        bh=kHjlrUGxe5V6yIekYKm6DoIIlAVCwygVHRQyvgZOCHY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vN3cb0cATCHgq6T6f8G0e8xhd+TEoIrLhI6pAsIYwlT/xs5RQ6KSNpoTnite6MsYp
-         /dS+YPHAafsmgP7iMEq4XRqwIyEWCnjhngsDhmT7OMkLoDBW4/4n5el1chz3z0wqLF
-         HP5UnKjFV/OocjS+gk8TfkypdAam+XBuBMxBr/eA=
+        b=ukZlbXzr6g1kCVVj2zS4wNKnHC0w9Nh8dkbkRDo1sTEeDXkvBYetnia8w4jCj/E0t
+         DDcu0XPl+cKdC0JhfS7U6b7HqKMiiMxYftrlegDXNM6H0pH0RE8SfF8IVgAL8xVrM5
+         n+WmIkOjVPl7qQIhKFIxe0iUyMCEGCwxu3ZHVpOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 5.15 118/139] mtd: core: Fix a conflict between MTD and NVMEM on wp-gpios property
-Date:   Mon, 28 Feb 2022 18:24:52 +0100
-Message-Id: <20220228172400.008762930@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Prasad Kumpatla <quic_pkumpatl@quicinc.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 087/139] regmap-irq: Update interrupt clear register for proper reset
+Date:   Mon, 28 Feb 2022 18:24:21 +0100
+Message-Id: <20220228172356.797876633@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,55 +52,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Kerello <christophe.kerello@foss.st.com>
+From: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
 
-commit 6c7621890995d089a56a06d11580d185ede7c2f8 upstream.
+[ Upstream commit d04ad245d67a3991dfea5e108e4c452c2ab39bac ]
 
-Wp-gpios property can be used on NVMEM nodes and the same property can
-be also used on MTD NAND nodes. In case of the wp-gpios property is
-defined at NAND level node, the GPIO management is done at NAND driver
-level. Write protect is disabled when the driver is probed or resumed
-and is enabled when the driver is released or suspended.
+With the existing logic where clear_ack is true (HW doesn’t support
+auto clear for ICR), interrupt clear register reset is not handled
+properly. Due to this only the first interrupts get processed properly
+and further interrupts are blocked due to not resetting interrupt
+clear register.
 
-When no partitions are defined in the NAND DT node, then the NAND DT node
-will be passed to NVMEM framework. If wp-gpios property is defined in
-this node, the GPIO resource is taken twice and the NAND controller
-driver fails to probe.
+Example for issue case where Invert_ack is false and clear_ack is true:
 
-A new Boolean flag named ignore_wp has been added in nvmem_config.
-In case ignore_wp is set, it means that the GPIO is handled by the
-provider. Lets set this flag in MTD layer to avoid the conflict on
-wp_gpios property.
+    Say Default ISR=0x00 & ICR=0x00 and ISR is triggered with 2
+    interrupts making ISR = 0x11.
 
-Fixes: 2a127da461a9 ("nvmem: add support for the write-protect pin")
-Cc: stable@vger.kernel.org
-Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220220151432.16605-3-srinivas.kandagatla@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Step 1: Say ISR is set 0x11 (store status_buff = ISR). ISR needs to
+            be cleared with the help of ICR once the Interrupt is processed.
+
+    Step 2: Write ICR = 0x11 (status_buff), this will clear the ISR to 0x00.
+
+    Step 3: Issue - In the existing code, ICR is written with ICR =
+            ~(status_buff) i.e ICR = 0xEE -> This will block all the interrupts
+            from raising except for interrupts 0 and 4. So expectation here is to
+            reset ICR, which will unblock all the interrupts.
+
+            if (chip->clear_ack) {
+                 if (chip->ack_invert && !ret)
+                  ........
+                 else if (!ret)
+                     ret = regmap_write(map, reg,
+                            ~data->status_buf[i]);
+
+So writing 0 and 0xff (when ack_invert is true) should have no effect, other
+than clearing the ACKs just set.
+
+Fixes: 3a6f0fb7b8eb ("regmap: irq: Add support to clear ack registers")
+Signed-off-by: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Link: https://lore.kernel.org/r/20220217085007.30218-1-quic_pkumpatl@quicinc.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/mtdcore.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/base/regmap/regmap-irq.c | 20 ++++++--------------
+ 1 file changed, 6 insertions(+), 14 deletions(-)
 
---- a/drivers/mtd/mtdcore.c
-+++ b/drivers/mtd/mtdcore.c
-@@ -546,6 +546,7 @@ static int mtd_nvmem_add(struct mtd_info
- 	config.stride = 1;
- 	config.read_only = true;
- 	config.root_only = true;
-+	config.ignore_wp = true;
- 	config.no_of_node = !of_device_is_compatible(node, "nvmem-cells");
- 	config.priv = mtd;
- 
-@@ -830,6 +831,7 @@ static struct nvmem_device *mtd_otp_nvme
- 	config.owner = THIS_MODULE;
- 	config.type = NVMEM_TYPE_OTP;
- 	config.root_only = true;
-+	config.ignore_wp = true;
- 	config.reg_read = reg_read;
- 	config.size = size;
- 	config.of_node = np;
+diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
+index d2656581a6085..4a446259a184e 100644
+--- a/drivers/base/regmap/regmap-irq.c
++++ b/drivers/base/regmap/regmap-irq.c
+@@ -189,11 +189,9 @@ static void regmap_irq_sync_unlock(struct irq_data *data)
+ 				ret = regmap_write(map, reg, d->mask_buf[i]);
+ 			if (d->chip->clear_ack) {
+ 				if (d->chip->ack_invert && !ret)
+-					ret = regmap_write(map, reg,
+-							   d->mask_buf[i]);
++					ret = regmap_write(map, reg, UINT_MAX);
+ 				else if (!ret)
+-					ret = regmap_write(map, reg,
+-							   ~d->mask_buf[i]);
++					ret = regmap_write(map, reg, 0);
+ 			}
+ 			if (ret != 0)
+ 				dev_err(d->map->dev, "Failed to ack 0x%x: %d\n",
+@@ -556,11 +554,9 @@ static irqreturn_t regmap_irq_thread(int irq, void *d)
+ 						data->status_buf[i]);
+ 			if (chip->clear_ack) {
+ 				if (chip->ack_invert && !ret)
+-					ret = regmap_write(map, reg,
+-							data->status_buf[i]);
++					ret = regmap_write(map, reg, UINT_MAX);
+ 				else if (!ret)
+-					ret = regmap_write(map, reg,
+-							~data->status_buf[i]);
++					ret = regmap_write(map, reg, 0);
+ 			}
+ 			if (ret != 0)
+ 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
+@@ -817,13 +813,9 @@ int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
+ 					d->status_buf[i] & d->mask_buf[i]);
+ 			if (chip->clear_ack) {
+ 				if (chip->ack_invert && !ret)
+-					ret = regmap_write(map, reg,
+-						(d->status_buf[i] &
+-						 d->mask_buf[i]));
++					ret = regmap_write(map, reg, UINT_MAX);
+ 				else if (!ret)
+-					ret = regmap_write(map, reg,
+-						~(d->status_buf[i] &
+-						  d->mask_buf[i]));
++					ret = regmap_write(map, reg, 0);
+ 			}
+ 			if (ret != 0) {
+ 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
+-- 
+2.34.1
+
 
 
