@@ -2,201 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73869C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:40:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1210BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235967AbiB1LlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:41:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40426 "EHLO
+        id S234267AbiB1LoQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:44:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232721AbiB1LlU (ORCPT
+        with ESMTP id S231209AbiB1LoN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:41:20 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CEAB71C8B;
-        Mon, 28 Feb 2022 03:40:42 -0800 (PST)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21S9cW2R008190;
-        Mon, 28 Feb 2022 11:39:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=OqbNlEGVi0Jhv1xB49AY5u0qmTkxv1WHdEQutQxlTT8=;
- b=WUSt1la7FIyC8ZUVQu5nCaBTXgKOLI/Q6bKKhlaHU30XfXgGPEAo3gmzBt/NE/JaCfhj
- O+hoiRx4PSkEcmWeUQDXx4RplN3znxyQGuUUxtx8+aQ1fvj6k+WCvCCLs5hMZG/vZX/N
- jg/fUHOCjUX5voQefXR+XB4BsDw3Irc/v1R+wnH4iol3bZs1O3TKRE0H8ZH0OS7h1+Vq
- p5GtUcrhSRtwoVgdyau19oh0Ahwnv75FOWDyTK50CZPLlRYGGL1N0Bs2/SbR+4CPW52r
- VKDCn0x4c1cgHZSRfnI6Qb+jA9wMWpTKGiAKWga/ruqdV97Tmk6MiOMaIiOvgrFrPGCV +g== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3efb02m17t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Feb 2022 11:39:40 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21SBVPlj016430;
-        Mon, 28 Feb 2022 11:39:40 GMT
-Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2169.outbound.protection.outlook.com [104.47.73.169])
-        by aserp3030.oracle.com with ESMTP id 3efa8cckpf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Feb 2022 11:39:40 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WCQX5NY4dE2xQvEr0sL98uvLyQoyLrh5a0jWSWIQp/huSfot/3vl03g7He1qmTVAdwOVsI8iZK8z29JKf6cZJIiayYEgyaGYH1b2Fmediy8GivFX+pTHBKMEyzgr+BXF3656H1N+weUyR03HzFfrJoFV3d+1SYYII2bBPsz9w75MLmWrHEN90kGiqvr6ePt0KrX667W3VO0vTikYvpawYZ6A7nYWmrySCGawdSP5xUv8RCmVHVtsLdrqIJ1Lj0/gWIhJFvXkb4tBYJQB1183OcrQrHogQ4CK/on3caF+WTtaqYFHPF5Q/scwOlrmRpjJvTx1ga3ncsIIDqZE1UkJGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OqbNlEGVi0Jhv1xB49AY5u0qmTkxv1WHdEQutQxlTT8=;
- b=V1HATOWw3GxC5jn/JGCZc33bIUy+LQmOZQ4IqghYANez6+035Jfu02X8uRq+RZ7S1LN0D/Dj9a4izsxewWAo+6QfsT/oh8zL884ZjjzUxLNzTsUYpgl4AejViQJwkXmpkuS5QO5ugmCPuLC3bHHzopefW2y3rjgkndXf2YQmweHaEQRXYLlDwxqgQ3Zm3Rfx3bcKL/BWf04MwC6hmicsOfAQwttMUM5qIAmfUgJCotiDFqBolSMpj3+A49rCtySpwF0uxcQgvmcQmEsau+fKqf7Ji+xXWu83lKdes20/mktmWdd1lpcSnowoVw1H89mQEz9jzzL/SOteEFB/6jNMww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OqbNlEGVi0Jhv1xB49AY5u0qmTkxv1WHdEQutQxlTT8=;
- b=wGS8NmDTNU/GV1DmxKgvxarGxBre6uklesfQdatmpiYNNK8g0Vm+Ds4DkLPUTxj9C1DB0e5mWC5AgMr+6jre59U09N4kgFx8wK5YB6HrGCI1iZ/Su4cYx1eLRbmnT9whQg36qICZFSeFhBP21mRBkSAncZXkC+RPQRfMmivuA4U=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CY4PR10MB1992.namprd10.prod.outlook.com
- (2603:10b6:903:124::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26; Mon, 28 Feb
- 2022 11:39:36 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::2c3d:92b5:42b3:c1c5%4]) with mapi id 15.20.5017.027; Mon, 28 Feb 2022
- 11:39:36 +0000
-Date:   Mon, 28 Feb 2022 14:38:58 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jakob Koschel <jakobkoschel@gmail.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergman <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        "Bos, H.J." <h.j.bos@vu.nl>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-sgx@vger.kernel.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-crypto@vger.kernel.org,
-        dmaengine@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-rdma@vger.kernel.org, linux-media@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        bcm-kernel-feedback-list@broadcom.com, linux-tegra@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, kvm@vger.kernel.org,
-        linux-cifs@vger.kernel.org, samba-technical@lists.samba.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        v9fs-developer@lists.sourceforge.net,
-        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 3/6] treewide: fix incorrect use to determine if list is
- empty
-Message-ID: <20220228113858.GB2812@kadam>
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-4-jakobkoschel@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228110822.491923-4-jakobkoschel@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0047.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::35)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        Mon, 28 Feb 2022 06:44:13 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8707541315;
+        Mon, 28 Feb 2022 03:43:33 -0800 (PST)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21SAfrkD020461;
+        Mon, 28 Feb 2022 11:43:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : content-transfer-encoding : mime-version; s=pp1;
+ bh=0xCp/ATpsuD2F+JEa6OQf2m5ItqJIR8e3PtY1vfYToA=;
+ b=dXCtt3yqeP1xPQW6d70whkHxA6uAIhoo9o7m/pZZ+w4dQtn4m1zBiudK6LIKvSVVFzQl
+ QkbaZYpiQ9F6Db6mhoKODpXpRgB87ag7JZ4Ho9fZ5XbQbr05+gSfj3uvOcA8AZG1hBx2
+ hbuTmc7rOAGA/n/lOCJbwSbvG8mLUZ0zWHGcz3dmWX7jnUzKaB53BhgjJ9x8GnWw9SyC
+ xqMdDUfQrvWLY2oUdYZOO2oVohOrI+Ic0BNXmOhaQFzyoCikW6A9TXeyzq9mnE2lt0xL
+ j/JrS/KIwPdCDLV4sGDwzqRTwioVnet9ZvcQZB5JCcCuaC0qgQq8CrIRsyT6X1G+Yfh2 Tg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3egvv31cr5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Feb 2022 11:43:03 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 21SBLDYY022474;
+        Mon, 28 Feb 2022 11:43:02 GMT
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3egvv31cqq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Feb 2022 11:43:02 +0000
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 21SBXPi9026001;
+        Mon, 28 Feb 2022 11:43:01 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+        by ppma05wdc.us.ibm.com with ESMTP id 3efbu9um1u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Feb 2022 11:43:01 +0000
+Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
+        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 21SBgwxN34144634
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Feb 2022 11:42:58 GMT
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 85B11112064;
+        Mon, 28 Feb 2022 11:42:58 +0000 (GMT)
+Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 28A02112065;
+        Mon, 28 Feb 2022 11:42:58 +0000 (GMT)
+Received: from amdrome3.watson.ibm.com (unknown [9.2.130.16])
+        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 28 Feb 2022 11:42:58 +0000 (GMT)
+From:   Dov Murik <dovmurik@linux.ibm.com>
+To:     linux-efi@vger.kernel.org
+Cc:     Dov Murik <dovmurik@linux.ibm.com>, Borislav Petkov <bp@suse.de>,
+        Ashish Kalra <ashish.kalra@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Andrew Scull <ascull@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Peter Gonda <pgonda@google.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
+        Jim Cadden <jcadden@ibm.com>,
+        Daniele Buono <dbuono@linux.vnet.ibm.com>,
+        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v8 0/4] Allow guest access to EFI confidential computing secret area
+Date:   Mon, 28 Feb 2022 11:42:50 +0000
+Message-Id: <20220228114254.1099945-1-dovmurik@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: tpONIeqnAhBzcjpIF-0WFAKxt-sfRH2i
+X-Proofpoint-ORIG-GUID: jgAUmGvH9andj8RPrHYImJVHyACnzMdV
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e2d38878-6d1e-4001-acf2-08d9faaeff5c
-X-MS-TrafficTypeDiagnostic: CY4PR10MB1992:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR10MB199245A769D59389E3932A138E019@CY4PR10MB1992.namprd10.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5WRTAwKBns2/XQ9PsyPpqednV8fus9ZsglKwbOmsgxlB7syM+0sD3GbxVb5jYdPYGhG4LadKveKCgpATaKtxLuSe+PcogCe0nRBaDyZq39uv4rPFOrUu3wOA2mehZPYjZWaY+vB8BznQMHFuQXJy53w2WXU10pM0NQdpjs28jqgJKMtQTt1eQIjdbTnkP4df+v/HV0kqBr6Ork6ytX78P4Fkn9hPuEFvnzSWDm3em34qX4kJyGWbB7rjhRhHYuqvyeuw2ZOS7wECMc524/JRIqlVBRqnsNUiHcOLu0OcqS75wpJseMatI0BKlWvRiworHJBPmPPdhX8hRgDfDuOF4utV5rfGnct7vEstIhmreKv5rZW9Ys9ioNrWHnFEV4BuzaeFKMz4Ffq+VmeJRQpG5g9DupQ8i3QXdR0AsSKPv5ORYbzkzGY4u64pKt6Aeo8q/VmvxJEiI9C+puGzwOiecyerJutHP1peoXsQjmN1xzvIoyVUIArMSgi7Ka2ycoazfimZ+wX1/HwF9xgUewn691VAzfKylohgnW8EWhQayEtmfaDz+xLwjc9rk2Kcx5Fdb3xKkhQ3VAzSQcjLik330N55oWtQN3jRBRb4Ake/IVffypQngavuoI7JHAxa3T5OB3UjXy10uAxuDUGS7MfPVkEetCWRT47h20rrQqd5N9uxfS+HYfVzIzwekqhthM4Uh9QxwPBa+Tel3BAiR8l8Pg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(4744005)(38350700002)(6486002)(7366002)(6512007)(38100700002)(9686003)(7406005)(33716001)(83380400001)(2906002)(6506007)(52116002)(7416002)(6666004)(316002)(86362001)(508600001)(5660300002)(33656002)(44832011)(8936002)(186003)(54906003)(6916009)(1076003)(4326008)(66476007)(8676002)(66946007)(66556008)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NA5Meblnx6V84SsPfqJWvMoKr+dP9hpfGzR4U3LvL1ahID65eQY1UcY57sic?=
- =?us-ascii?Q?0XeRZnJInYgM270YbWfQW0L3bYtzIg3cRtT2zttJWZuelv0UbS1CixTLcAkm?=
- =?us-ascii?Q?nXUtmqr5tatkFOhnVjKyU/KGn7r0aM7YzFN4dilEhhPM/zNaIlHwQo4QJBLd?=
- =?us-ascii?Q?PyJl3utnNe3hJr/jJqwECOjUxuC/2eujqTedNu64aUAdgcW/Lw/Rv4k7FY1H?=
- =?us-ascii?Q?ZW6OfRviTcAgC+GWZK+EUrZV5kkk4JzKI0zHpkYeaXiNaB1bnkVKRWLBxmof?=
- =?us-ascii?Q?mdSGQ8E5j5cqr5m7/4+XXdKHxqXYDRXnnzdk4Ph6NWtycYZg89Gb3iW9efAw?=
- =?us-ascii?Q?3W8P8vNQIfs+2g2t5praY4Lc96spQW/RXy6jDcevwMgTluX8GzXYCdpRAwJ6?=
- =?us-ascii?Q?K6KE1X+Eca+M6/41u4y379/ATNhTH/GCiOa1ljJP9FHxO7ZxdJtGDlMKKwnE?=
- =?us-ascii?Q?Rean1o/p2jRczmtcDxEq6d99tR2ZADj/shTPCDiuU75MErbSZlozrP4dESdT?=
- =?us-ascii?Q?yM0IJsglBTpjOo1QqSOtmMzpYOe+7DWs0zLA3U+UU+1LT1Sk8hksbJXprs2S?=
- =?us-ascii?Q?qqOf2vGFEHPi7EpEOREHIp4JwR1xAKcVczRQvC2zXPo8yVoNBEEeHzaVKib4?=
- =?us-ascii?Q?ZbJJdUZ7Y1hmYNgQRhCumjMx3HD5+p2/LcoVeaiNtDmxAxf34VsSWh+WEMrZ?=
- =?us-ascii?Q?eWkJdBrN4oZqrfUeBDzDiaaeCqwy1AJyk0blttzAJrDbGcH+ImpbsJb73YBf?=
- =?us-ascii?Q?DwxQfEu3vpeUep92um5/woZPP5HNZ1hzae9t6AVeFe7SQlLSYxkZOg2LRmLl?=
- =?us-ascii?Q?it/jW4zwfEQzp7vBNFI3KP7pl29Sutb506CCmG9iAK65ekCMp/02JvvtQrc/?=
- =?us-ascii?Q?I5cdf3XZguLuH5qCU9GyiODq2ggW3ANgCFb9D2BdZ87SN1Pi8FvN2+zkiq+3?=
- =?us-ascii?Q?1SCeRgvxyQcly22CHcVsqqLD2NFyQirmX++nDAukoV/s/Rnl0FIfzC8AkHQ9?=
- =?us-ascii?Q?/LaA7B8cKNVPkiKIigTqE162HDfHRx2wJfO1NVVtlEzYJfPNjaHm1zkm5ati?=
- =?us-ascii?Q?6GqSNKa8rJ68t3QTuAMONeK7KP9DSS/g7QcFomoodu8jXZoZvMqAUOTNx0qD?=
- =?us-ascii?Q?NQOGZ5SBEvJYILrvIiDmeu2XYScAsVaCVTqoEgSCCaJM1kn/AEuk0bhK1EKK?=
- =?us-ascii?Q?kbecQcVF2k6DyM7HaB1XQ5juQVi8VfbeCUWHB+61UhZRVrOGruEeFcuqIgUg?=
- =?us-ascii?Q?HasYt4CD1u8JqEw2tphWmyIg8F7orSEkP9fAKLRt3q//bEXGxt2Y5gKnQXfo?=
- =?us-ascii?Q?zJcJn7rWgrJKg8vHkmlmSLX1l2PVJ8YVnJnP7pJLrjNlQNtqLWHKk6IrqMYV?=
- =?us-ascii?Q?T4oXQzGhsgvyPz52Pnp9jIMj+Km4n63ZZ81jbVgTY+cEqGPY4myVJmqbyzYH?=
- =?us-ascii?Q?YYu8ndUXQ2dTJqYljZz+v5TfhksJ25cOI2cbsIZD8+R4AZm2QW1tA4ZrbFij?=
- =?us-ascii?Q?cFk2NbMoFGGiVGcP3N910jbPQiDn92BBsWw548NLTq9hjwAwuBT9JRA3iEW2?=
- =?us-ascii?Q?UwbbxQiZhQ3ffBhCRqAb8oc51lPG+l15Y9cGNeJA+0AgUzMq4o5x89Rrlm31?=
- =?us-ascii?Q?1g6zVA0FMVndR5JORsqDTnihObEqAXlLb6ILHWU/cDWTeWaVmm7KzDjevcYa?=
- =?us-ascii?Q?3aYugQ=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2d38878-6d1e-4001-acf2-08d9faaeff5c
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2022 11:39:36.8121
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dkUwrPKpjs80RDqoyAOItasMuWoYE+Ye3JvGuw+6/228Sl54myDfnuMBziNyptgx5nEMsebN63SK9V7twBYSnLPH4MRsx5zMiCALFupkGdw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1992
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10271 signatures=684655
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 phishscore=0
- malwarescore=0 mlxscore=0 suspectscore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202280065
-X-Proofpoint-GUID: 5d_oYQli914BnmJHotDzcMWXY7cT3DqS
-X-Proofpoint-ORIG-GUID: 5d_oYQli914BnmJHotDzcMWXY7cT3DqS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-28_04,2022-02-26_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ priorityscore=1501 mlxlogscore=999 malwarescore=0 suspectscore=0
+ adultscore=0 impostorscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202280065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 12:08:19PM +0100, Jakob Koschel wrote:
-> The list iterator value will *always* be set by list_for_each_entry().
-> It is incorrect to assume that the iterator value will be NULL if the
-> list is empty.
-> 
-> Instead of checking the pointer it should be checked if
-> the list is empty.
-> In acpi_get_pmu_hw_inf() instead of setting the pointer to NULL
-> on the break, it is set to the correct value and leaving it
-> NULL if no element was found.
-> 
-> Signed-off-by: Jakob Koschel <jakobkoschel@gmail.com>
-> ---
->  arch/powerpc/sysdev/fsl_gtm.c            |  4 ++--
->  drivers/media/pci/saa7134/saa7134-alsa.c |  4 ++--
->  drivers/perf/xgene_pmu.c                 | 13 +++++++------
->  3 files changed, 11 insertions(+), 10 deletions(-)
+Confidential computing (coco) hardware such as AMD SEV (Secure Encrypted
+Virtualization) allows guest owners to inject secrets into the VMs
+memory without the host/hypervisor being able to read them.  In SEV,
+secret injection is performed early in the VM launch process, before the
+guest starts running.
 
-These are all bug fixes.
+OVMF already reserves designated area for secret injection (in its
+AmdSev package; see edk2 commit 01726b6d23d4 "OvmfPkg/AmdSev: Expose the
+Sev Secret area using a configuration table" [1]), but the secrets were
+not available in the guest kernel.
 
-1) Send them as 3 separate patches.
-2) Add Fixes tags.
+The patch series keeps the address of the EFI-provided memory for
+injected secrets, and exposes the secrets to userspace via securityfs
+using a new efi_secret kernel module.  The module is autoloaded (by the
+EFI driver) if the secret area is populated.
 
-regards,
-dan carpenter
+The first patch in EFI keeps the address of the secret area as passed in
+the EFI configuration table.  The second patch introduces the new
+efi_secret module that exposes the content of the secret entries as
+securityfs files, and allows clearing out secrets with a file unlink
+interface.  The third patch auto-loads the efi_secret module during
+startup if the injected secrets area is populated.  The last patch
+documents the data flow of confidential computing secret injection.
+
+As a usage example, consider a guest performing computations on
+encrypted files.  The Guest Owner provides the decryption key (= secret)
+using the secret injection mechanism.  The guest application reads the
+secret from the efi_secret filesystem and proceeds to decrypt the files
+into memory and then performs the needed computations on the content.
+
+In this example, the host can't read the files from the disk image
+because they are encrypted.  Host can't read the decryption key because
+it is passed using the secret injection mechanism (= secure channel).
+Host can't read the decrypted content from memory because it's a
+confidential (memory-encrypted) guest.
+
+This has been tested with AMD SEV and SEV-ES guests, but the kernel side
+of handling the secret area has no SEV-specific dependencies, and
+therefore might be usable (perhaps with minor changes) for any
+confidential computing hardware that can publish the secret area via the
+standard EFI config table entry.
+
+To enable this functionality, set CONFIG_EFI_SECRET=m when building the
+guest kernel.
+
+Here is a simple example for usage of the efi_secret module in a guest
+to which an EFI secret area with 4 secrets was injected during launch:
+
+# ls -la /sys/kernel/security/secrets/coco
+total 0
+drwxr-xr-x 2 root root 0 Jun 28 11:54 .
+drwxr-xr-x 3 root root 0 Jun 28 11:54 ..
+-r--r----- 1 root root 0 Jun 28 11:54 736870e5-84f0-4973-92ec-06879ce3da0b
+-r--r----- 1 root root 0 Jun 28 11:54 83c83f7f-1356-4975-8b7e-d3a0b54312c6
+-r--r----- 1 root root 0 Jun 28 11:54 9553f55d-3da2-43ee-ab5d-ff17f78864d2
+-r--r----- 1 root root 0 Jun 28 11:54 e6f5a162-d67f-4750-a67c-5d065f2a9910
+
+# hd /sys/kernel/security/secrets/coco/e6f5a162-d67f-4750-a67c-5d065f2a9910
+00000000  74 68 65 73 65 2d 61 72  65 2d 74 68 65 2d 6b 61  |these-are-the-ka|
+00000010  74 61 2d 73 65 63 72 65  74 73 00 01 02 03 04 05  |ta-secrets......|
+00000020  06 07                                             |..|
+00000022
+
+# rm /sys/kernel/security/secrets/coco/e6f5a162-d67f-4750-a67c-5d065f2a9910
+
+# ls -la /sys/kernel/security/secrets/coco
+total 0
+drwxr-xr-x 2 root root 0 Jun 28 11:55 .
+drwxr-xr-x 3 root root 0 Jun 28 11:54 ..
+-r--r----- 1 root root 0 Jun 28 11:54 736870e5-84f0-4973-92ec-06879ce3da0b
+-r--r----- 1 root root 0 Jun 28 11:54 83c83f7f-1356-4975-8b7e-d3a0b54312c6
+-r--r----- 1 root root 0 Jun 28 11:54 9553f55d-3da2-43ee-ab5d-ff17f78864d2
+
+
+[1] https://github.com/tianocore/edk2/commit/01726b6d23d4
+
+
+---
+
+v8 changes:
+ - Change path of filesystem to <securityfs>/secrets/coco and fix the
+   documentation accordingly (Thanks Gerd, Matthew)
+ - Remove patch 2/5 (of v7) because the latest OVMF release (edk2-stable202202)
+   already contains the fix to mark the launch secret page as EFI_RESERVED_TYPE.
+
+v7: https://lore.kernel.org/linux-coco/20220201124413.1093099-1-dovmurik@linux.ibm.com/
+v7 changes:
+ - Improve description of efi_secret module in Kconfig.
+ - Fix sparse warnings on pointer address space mismatch
+   (Reported-by: kernel test robot <lkp@intel.com>)
+
+v6: https://lore.kernel.org/linux-coco/20211129114251.3741721-1-dovmurik@linux.ibm.com/
+v6 changes:
+ - Autoload the efi_secret module if the secret area is populated
+   (thanks Greg KH).
+ - efi_secret: Depend on X86_64 because we use ioremap_encrypted() which
+   is only defined for this arch.
+ - efi_secret.c: Remove unneeded tableheader_guid local variable.
+ - Documentation fixes.
+
+v5: https://lore.kernel.org/linux-coco/20211118113359.642571-1-dovmurik@linux.ibm.com/
+v5 changes:
+ - Simplify EFI code: instead of copying the secret area, the firmware
+   marks the secret area as EFI_RESERVED_TYPE, and then the uefi_init()
+   code just keeps the pointer as it appears in the EFI configuration
+   table.  The use of reserved pages is similar to the AMD SEV-SNP
+   patches for handling SNP-Secrets and SNP-CPUID pages.
+ - In order to handle OVMF releases out there which mark the
+   confidential computing secrets page as EFI_BOOT_SERVICES_DATA, add
+   efi/libstub code that detects this and fixes the E820 map to reserve
+   this page.
+ - In the efi_secret module code, map the secrets page using
+   ioremap_encrypted (again, similar to the AMD SEV-SNP guest patches
+   for accessing SNP-Secrets and SNP-CPUID pages).
+ - Add documentation in Documentation/security/coco/efi_secret.
+
+v4: https://lore.kernel.org/linux-coco/20211020061408.3447533-1-dovmurik@linux.ibm.com/
+v4 changes:
+ - Guard all the new EFI and efi-stub code (patches 1+2) with #ifdef
+   CONFIG_EFI_COCO_SECRET (thanks Greg KH).  Selecting
+   CONFIG_EFI_SECRET=m (patch 3) will enable the EFI parts as well.
+ - Guard call to clflush_cache_range() with #ifdef CONFIG_X86
+   (Reported-by: kernel test robot <lkp@intel.com>)
+
+v3: https://lore.kernel.org/linux-coco/20211014130848.592611-1-dovmurik@linux.ibm.com/
+v3 changes:
+ - Rename the module to efi_secret
+ - Remove the exporting of clean_cache_range
+ - Use clflush_cache_range in wipe_memory
+ - Document function wipe_memory
+ - Initialize efi.coco_secret to EFI_INVALID_TABLE_ADDR to correctly detect
+   when there's no secret area published in the EFI configuration tables
+
+v2: https://lore.kernel.org/linux-coco/20211007061838.1381129-1-dovmurik@linux.ibm.com
+v2 changes:
+ - Export clean_cache_range()
+ - When deleteing a secret, call clean_cache_range() after explicit_memzero
+ - Add Documentation/ABI/testing/securityfs-coco-sev_secret
+
+v1: https://lore.kernel.org/linux-coco/20210809190157.279332-1-dovmurik@linux.ibm.com/
+
+RFC: https://lore.kernel.org/linux-coco/20210628183431.953934-1-dovmurik@linux.ibm.com/
+
+
+Dov Murik (4):
+  efi: Save location of EFI confidential computing area
+  virt: Add efi_secret module to expose confidential computing secrets
+  efi: Load efi_secret module if EFI secret area is populated
+  docs: security: Add secrets/coco documentation
+
+ Documentation/ABI/testing/securityfs-secrets-coco |  51 +++
+ Documentation/security/index.rst                  |   1 +
+ Documentation/security/secrets/coco.rst           | 103 ++++++
+ Documentation/security/secrets/index.rst          |   9 +
+ arch/x86/platform/efi/efi.c                       |   3 +
+ drivers/firmware/efi/Kconfig                      |  16 +
+ drivers/firmware/efi/Makefile                     |   1 +
+ drivers/firmware/efi/coco.c                       |  58 ++++
+ drivers/firmware/efi/efi.c                        |   6 +
+ drivers/virt/Kconfig                              |   3 +
+ drivers/virt/Makefile                             |   1 +
+ drivers/virt/coco/efi_secret/Kconfig              |  19 ++
+ drivers/virt/coco/efi_secret/Makefile             |   2 +
+ drivers/virt/coco/efi_secret/efi_secret.c         | 337 ++++++++++++++++++++
+ include/linux/efi.h                               |  10 +
+ 15 files changed, 620 insertions(+)
+ create mode 100644 Documentation/ABI/testing/securityfs-secrets-coco
+ create mode 100644 Documentation/security/secrets/coco.rst
+ create mode 100644 Documentation/security/secrets/index.rst
+ create mode 100644 drivers/firmware/efi/coco.c
+ create mode 100644 drivers/virt/coco/efi_secret/Kconfig
+ create mode 100644 drivers/virt/coco/efi_secret/Makefile
+ create mode 100644 drivers/virt/coco/efi_secret/efi_secret.c
+
+
+base-commit: 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
+-- 
+2.25.1
 
