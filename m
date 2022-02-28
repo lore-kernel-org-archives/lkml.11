@@ -2,52 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6752C3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4772C35278
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239903AbiB1R7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:59:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46786 "EHLO
+        id S239958AbiB1R7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:59:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240690AbiB1Rya (ORCPT
+        with ESMTP id S240717AbiB1Ryc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF8B28998;
-        Mon, 28 Feb 2022 09:42:44 -0800 (PST)
+        Mon, 28 Feb 2022 12:54:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40B933364;
+        Mon, 28 Feb 2022 09:42:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88E5BB815AB;
-        Mon, 28 Feb 2022 17:42:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8D0DC340E7;
-        Mon, 28 Feb 2022 17:42:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57B9E609EE;
+        Mon, 28 Feb 2022 17:42:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A2F3C340E7;
+        Mon, 28 Feb 2022 17:42:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070162;
-        bh=+HyTJW9oh68MjDBNP2PCnJ/peQpW+kpxwJTPtWuGjx0=;
+        s=korg; t=1646070167;
+        bh=H5afrEMBcaQ1QX0wDf3EYgdzqPZ8LQJerIuF+PCrhek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kDbIVWJB9a1A3DhtE+tJ0GfNO9d6Le61z5EFW1m+CG8gEN0LTuj0uAXPqtCwLIhCt
-         8q97U6e3Ue2YHaaTL6auj3yOwKWhegvPnuxfYANUcvb3gRxj1sCH1pAHcTToQjlXLN
-         EDs5l8vbBtCwbG4K1+1fVePEbLUKkM/IKLGgAtIs=
+        b=ePJ0fOCrIHvOw/7fuVGasDTpFxyc0vzpDr0zH+Xl4PoidUNtgnTt3OFwoLgIgt0wL
+         JxMC9QMtHmtPltWVB+3zRMjX26/usWDQL9aIyPTOHI83hwkDmqE7jqDnl9axIsypvG
+         ysqE7XRtbt3NdVMuNCRSRlegg8y/Vd+Nz3Xoeob4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org,
-        "stable@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, kirill.shutemov@linux.intel.com, Song Liu" 
-        <songliubraving@fb.com>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlastimil Babka <vbabka@suse.cz>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Adam Majer <amajer@suse.com>, Dirk Mueller <dmueller@suse.com>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.16 001/164] mm/filemap: Fix handling of THPs in generic_file_buffered_read()
-Date:   Mon, 28 Feb 2022 18:22:43 +0100
-Message-Id: <20220228172359.727109405@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
+Subject: [PATCH 5.16 011/164] vhost/vsock: dont check owner in vhost_vsock_stop() while releasing
+Date:   Mon, 28 Feb 2022 18:22:53 +0100
+Message-Id: <20220228172400.851408749@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -55,52 +52,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+From: Stefano Garzarella <sgarzare@redhat.com>
 
-When a THP is present in the page cache, we can return it several times,
-leading to userspace seeing the same data repeatedly if doing a read()
-that crosses a 64-page boundary.  This is probably not a security issue
-(since the data all comes from the same file), but it can be interpreted
-as a transient data corruption issue.  Fortunately, it is very rare as
-it can only occur when CONFIG_READ_ONLY_THP_FOR_FS is enabled, and it can
-only happen to executables.  We don't often call read() on executables.
+commit a58da53ffd70294ebea8ecd0eb45fd0d74add9f9 upstream.
 
-This bug is fixed differently in v5.17 by commit 6b24ca4a1a8d
-("mm: Use multi-index entries in the page cache").  That commit is
-unsuitable for backporting, so fix this in the clearest way.  It
-sacrifices a little performance for clarity, but this should never
-be a performance path in these kernel versions.
+vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
+ownership. It expects current->mm to be valid.
 
-Fixes: cbd59c48ae2b ("mm/filemap: use head pages in generic_file_buffered_read")
-Cc: stable@vger.kernel.org # v5.15, v5.16
-Link: https://lore.kernel.org/r/df3b5d1c-a36b-2c73-3e27-99e74983de3a@suse.cz/
-Analyzed-by: Adam Majer <amajer@suse.com>
-Analyzed-by: Dirk Mueller <dmueller@suse.com>
-Bisected-by: Takashi Iwai <tiwai@suse.de>
-Reported-by: Vlastimil Babka <vbabka@suse.cz>
-Tested-by: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
+the user has not done close(), so when we are in do_exit(). In this
+case current->mm is invalid and we're releasing the device, so we
+should clean it anyway.
+
+Let's check the owner only when vhost_vsock_stop() is called
+by an ioctl.
+
+When invoked from release we can not fail so we don't check return
+code of vhost_vsock_stop(). We need to stop vsock even if it's not
+the owner.
+
+Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
+Cc: stable@vger.kernel.org
+Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
+Reported-and-tested-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
+Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/filemap.c |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/vhost/vsock.c |   21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
---- a/mm/filemap.c
-+++ b/mm/filemap.c
-@@ -2365,8 +2365,12 @@ static void filemap_get_read_batch(struc
- 			break;
- 		if (PageReadahead(head))
- 			break;
--		xas.xa_index = head->index + thp_nr_pages(head) - 1;
--		xas.xa_offset = (xas.xa_index >> xas.xa_shift) & XA_CHUNK_MASK;
-+		if (PageHead(head)) {
-+			xas_set(&xas, head->index + thp_nr_pages(head));
-+			/* Handle wrap correctly */
-+			if (xas.xa_index - 1 >= max)
-+				break;
-+		}
- 		continue;
- put_page:
- 		put_page(head);
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -629,16 +629,18 @@ err:
+ 	return ret;
+ }
+ 
+-static int vhost_vsock_stop(struct vhost_vsock *vsock)
++static int vhost_vsock_stop(struct vhost_vsock *vsock, bool check_owner)
+ {
+ 	size_t i;
+-	int ret;
++	int ret = 0;
+ 
+ 	mutex_lock(&vsock->dev.mutex);
+ 
+-	ret = vhost_dev_check_owner(&vsock->dev);
+-	if (ret)
+-		goto err;
++	if (check_owner) {
++		ret = vhost_dev_check_owner(&vsock->dev);
++		if (ret)
++			goto err;
++	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
+ 		struct vhost_virtqueue *vq = &vsock->vqs[i];
+@@ -753,7 +755,12 @@ static int vhost_vsock_dev_release(struc
+ 	 * inefficient.  Room for improvement here. */
+ 	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
+ 
+-	vhost_vsock_stop(vsock);
++	/* Don't check the owner, because we are in the release path, so we
++	 * need to stop the vsock device in any case.
++	 * vhost_vsock_stop() can not fail in this case, so we don't need to
++	 * check the return code.
++	 */
++	vhost_vsock_stop(vsock, false);
+ 	vhost_vsock_flush(vsock);
+ 	vhost_dev_stop(&vsock->dev);
+ 
+@@ -868,7 +875,7 @@ static long vhost_vsock_dev_ioctl(struct
+ 		if (start)
+ 			return vhost_vsock_start(vsock);
+ 		else
+-			return vhost_vsock_stop(vsock);
++			return vhost_vsock_stop(vsock, true);
+ 	case VHOST_GET_FEATURES:
+ 		features = VHOST_VSOCK_FEATURES;
+ 		if (copy_to_user(argp, &features, sizeof(features)))
 
 
