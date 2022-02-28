@@ -2,114 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2A97C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:06:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D080C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:07:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232385AbiB1CHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:07:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33904 "EHLO
+        id S232395AbiB1CH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 21:07:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231546AbiB1CHN (ORCPT
+        with ESMTP id S230142AbiB1CH5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 21:07:13 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2F9C6B084;
-        Sun, 27 Feb 2022 18:06:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646013995; x=1677549995;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=dBj8IZqKdQrN7LWqpr45uLHPvsxj4KiRmjJ+NZe7L/4=;
-  b=Z8c7wj1o95ptdUePhqY22HSfUGp5TZDRRC48hvsGB0XFi/oFNt0/0iGx
-   7vFYGO+/t9S3NkxgPpioJPNHUW7bS4zkalLdM8BEYTWg5bQ2jQ1BSvaVS
-   SHeDUq9Agp3NqR1J+lLwbJYU980oKt/YyhdQQTMvywlIHw2gVlV98VJo6
-   v7zak3+K3lV7TMVJJI9JPTXLHSogAZk5Dx1neF0nWHTiB49kKzPSGbHu/
-   Qrh3Dk98UW2/PrI7TauNxZnpOyimwnmG41b/C39Gv5R5NIV9FvN7jmR3b
-   n23UJQDDqBuqw866al+JgZMx6aP8FMy39VgkDzXzo2QjFivyRtW5CPjM9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="252707116"
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="252707116"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:06:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="777935759"
-Received: from w3.sh.intel.com ([10.74.142.175])
-  by fmsmga006.fm.intel.com with ESMTP; 27 Feb 2022 18:06:33 -0800
-From:   Yonghua Huang <yonghua.huang@intel.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        reinette.chatre@intel.com, zhi.a.wang@intel.com,
-        yu1.wang@intel.com, fei1.Li@intel.com,
-        Yonghua Huang <yonghua.huang@intel.com>,
-        Fei Li <fei1.li@intel.com>
-Subject: [PATCH] virt: acrn: obtain pa from VMA with PFNMAP flag
-Date:   Mon, 28 Feb 2022 05:22:12 +0300
-Message-Id: <20220228022212.419406-1-yonghua.huang@intel.com>
+        Sun, 27 Feb 2022 21:07:57 -0500
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com (mail-eopbgr150057.outbound.protection.outlook.com [40.107.15.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7886B08D;
+        Sun, 27 Feb 2022 18:07:20 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Z8YEsg8l6k8owhwytuHAw2YvDOPwt+d3OP2WkHx0ozJ4As7UphaimVfMnAbsWU41QA7W1XZRYis0rjt+zO4vC4JFiOWII9pISG70NPU0gWX7QT9iOOlPxdRZWvBhydsCzvgZ+TVjvVTawHRCwSJp/y+QQeII5YTZqzya5Ssn1gZbXQdI1K9w3Jx294bwGv1ZiGYKDCRTUhAybERP3sujgj9F7upGcNklJveGeV4mbp8G01sxtwQURfTrVxjOAN0iWtA689PzlpRhPzNGOjywjRg2Rb0RUdC1pxGavl4IBJqtZQ81kj2JKrmx8JDL6mrEmP8KiJor/OhjYHUs9ywG8g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=68D02XazkrwaDXAN15PZpeHsm572ACCjuLvA8NShyGI=;
+ b=hLayyggAncQTuNkVuBMMfEnZsnx2c6vQ27t8ODS9UFjrbqhX5x8Xc33aghJGQJyAhpCpkKTPXmajeMx0HHkImKTGa8dVoP0FfJ8xwvvmLNYySh20knZ3W7/EQ7fQsrj7s8rJLMO0ZCNawZc/PrCunivWwjACWjWIXinKMpr2iTgDfI56gfkSFHEoCLaBrEOiphKAGNP3AMDfNpO7gyOmbattPC6x2cyfrU0VvR/lwL0DGlcodcYQhSwlcXqJ07hmz1JgEa4EasNR6iJPZQlsnMmArtTT4YFpB6Xw5rpVZYeEoIYbllxb/0/wu//SjjoMbKLper2ciBnvJvuX0odRZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=68D02XazkrwaDXAN15PZpeHsm572ACCjuLvA8NShyGI=;
+ b=gvU2WwBQsOoi2KsGmg33r3wqNlCxaS9K2lZhq2/HJSXMLRcfMPSwZnKRQJkfh1YjnQMMi1OuUB8JFcwjtwzbpBvXgpwg0DuWB48cMjPh3C+aZUmx/IcZLuFAd8Gg5MwXULMOhBYmLI2bSVWPqlJAI/U/0ORz2TPux+iqq6DJn2E=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by PAXPR04MB8734.eurprd04.prod.outlook.com (2603:10a6:102:21e::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26; Mon, 28 Feb
+ 2022 02:07:16 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::552c:ed46:26dc:77cc]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::552c:ed46:26dc:77cc%4]) with mapi id 15.20.4995.018; Mon, 28 Feb 2022
+ 02:07:16 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     sboyd@kernel.org, robh+dt@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, abel.vesa@nxp.com
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH V6 0/5] imx: add i.MX93 clk bindings and driver
+Date:   Mon, 28 Feb 2022 10:09:03 +0800
+Message-Id: <20220228020908.2810346-1-peng.fan@oss.nxp.com>
 X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SG2PR06CA0218.apcprd06.prod.outlook.com
+ (2603:1096:4:68::26) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fae4a9a2-d0b4-49e1-9afe-08d9fa5f0a8c
+X-MS-TrafficTypeDiagnostic: PAXPR04MB8734:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <PAXPR04MB87340C4980544B664B756E44C9019@PAXPR04MB8734.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5Rd5NTFoAAKpDeDmgvxsZeVT/FLGXKks8OUWwR95/lYEjLr/0jclN++bwUnZ9dOtBrXnUx4t4TKPdC1HOZ5Uc1Z7qIkgv34o5CBzU7IBAa/u3xIjiR+gp3BewrupPx7lld7ji7bn+EXW3+OxRP5gLQxOJDP+CUCr0WscgvhA+79WHb4Sz1bmmtg/ng5KCdHLVGdTAGAaMdJ9z5U9MLLXWBBNueIhDQDOJKM8fYYVtay9oyLFAo6weRgNcdcYezDfvfNIP7XEYjtPnDQxcMcgGcueNeMlmryLGo1QOxMO0ikxRaSbLJXdvSZjPQm9ctv0xdU/svL0hthKqouYOtijrWLGsinI8UYL2bCUY1j4NE/hQopFK8Q/E4IWikrS5hQgdb/Pl/a0AWQnR+BXbJkoh4fSiSWuM6NO6A6+iDNTe3ntcMM4y/jpx9hHVHogaoqV9Tx56FFYIKMMmh58/CKlQ7CmY4x4CUp6YcwtwGjBu31ZNMQO321rtQ5R1JSYIq4gM5TIQgYasIpjIyzp+6M0YCl9+QyWJp0MrSlmrIW9afJNgyYJKxXhvl+PrV/4zfXDxcHlJEOXjTsqpFYMvchyR6rZ/9v5da1s2y1WsE7sBulFUyhiG9vOCuf4UmbBrvOUEm9ilUHdqjhKDOWyIL3iBvHWCqyJXlGXPwObuqaa6iceNOQRoIs7e7JFznCUBa3gdAapkIxquHLZ/u6aiw1QyQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(5660300002)(66946007)(7416002)(66556008)(1076003)(86362001)(83380400001)(4326008)(8936002)(508600001)(186003)(26005)(6486002)(6506007)(52116002)(8676002)(6666004)(38100700002)(38350700002)(316002)(2906002)(66476007)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hYbDj/gP6Ish+RwaZhxTFyuxs06TyTwzPKFKwzJPnsxMN6+5Pxl3Zk5VGH2+?=
+ =?us-ascii?Q?Q2qXLf3mM+l6zZn1OM/6ArFrY0pHpCp04efV9dKdqRpw/nW/aExWxAFXNRFP?=
+ =?us-ascii?Q?jyme/7zET775JIHSG3RyY5U5Qc9LC3TGcWNGl/vbOVGaXHS5LksaKSE8ytbD?=
+ =?us-ascii?Q?rdm3j3fyOvRy7AT+g5BHLE06J8j0lGgNosHEdNxhYrDXIME9do22XIChcNdC?=
+ =?us-ascii?Q?r79iUK2cZ4T5+yJBneXEQL3v+bMlwr6kpwcjAZBv3JQnXCDNYYy5jucNRsHQ?=
+ =?us-ascii?Q?h99KMrNqtjTNEfmElXYGQtq/fgsYTAgdQ0mH+fGKhFp0LyelKFV9Asf9HoBy?=
+ =?us-ascii?Q?dOqe/j2QcvBHuKmAzRLfYh1TiJpufo/HIuZ7lk9zDEk0qoym7WF7lSri5ajI?=
+ =?us-ascii?Q?BAb9SA+ac9ll1cmDf0WpBQpOZCvzf3NYmdJahiL4duAglSRwJoln0bzCw26Z?=
+ =?us-ascii?Q?SmZkzoBiMvovAbqtm9utdHCz7nCUp/I9sJ0WIu7JcIYrqpGQg+p5QEQrDNXc?=
+ =?us-ascii?Q?AsexbIdKKThL6UKs7uujkMFGIGJja9S7ra/nJeLLTG3Jk/ynhUZesvBrU7qp?=
+ =?us-ascii?Q?eOAajbsRGM3u5mEZf3jbDJPuu/uD+E6yPwMcj3u7vWiZ1TuX+4HM/M/aCzb3?=
+ =?us-ascii?Q?O44cR14epr6ZQ83nIlXe7Zty7bRserDGCjn8lKc3WkkiD7ppAAslXi0y3nzj?=
+ =?us-ascii?Q?7s0Ku+uF9IxUVQKHuOSMb4g1kmVkgJ9WnWOweRE465NmfnEG3TkKshctF/H2?=
+ =?us-ascii?Q?M4xZ1vOuRnDfV1WVWF973EY6h8zTeJnvAy8AvrYcvYRSiMaci8O/JO9TRfzB?=
+ =?us-ascii?Q?c1bJ5kCVyvzefSOjfVfdBsC29d+F5zuQ68IY8kCgmotTCxHv8GLKn5sGICcm?=
+ =?us-ascii?Q?vJ7f3MyLDaSVo0dFqtFt3YwvdSFIMiZAKXdWrrnxnCyxk45Mp1hfM9VUbnQZ?=
+ =?us-ascii?Q?iWEssCYa45iv/uDc+OsTWIVLeLrQICVGzAIjnO9xu1P/uerJgq0wZ2T9mYlf?=
+ =?us-ascii?Q?BMvRX0Ij9JAY2aI45KD0yP5G6ySxU1dQdq+isXS+DFq8xvGqIBhhtigXQnwl?=
+ =?us-ascii?Q?uX/EVvuZ8CjqCAyT96CFn0kHujvsnQBkUzFSyPj2HALGemdz8OWUGiVmP3vP?=
+ =?us-ascii?Q?0FvrZui1qo71OOhk7ECqbDuIeHUSa2zEJMw/BS6ptipJ8wsdpAqwiQAFj7yv?=
+ =?us-ascii?Q?8J7aoxUsH0H0fi8PK8HsLJvn+ojU6qP00bSfQnYARiTkqjpBvU2FUOrqkxqK?=
+ =?us-ascii?Q?R7q6HrUA1GmXtqNRMtzxDgtdisrV08/77soU0cHh++ae/Ezh/C8K6G1Ypios?=
+ =?us-ascii?Q?dpjVEWOIppCvQnVsRZTS84axtIaeL44mCT62AzGpXFg8rZY42wtnySQhVvor?=
+ =?us-ascii?Q?oHxe+ekI4rEdWZ9S91Ru90DodACUHYMVXIwCSsRX0jtDUaj2Uuk8dl+4U9Sk?=
+ =?us-ascii?Q?uWkCtnb9tJhpbJOfyY/n0UM4rOL7VBHlYgz8OJKlKvR7r/x4ZxVRe4I27Kwp?=
+ =?us-ascii?Q?sAyvAd53vkXDrWrvSrF56ZuBl3gPjBYUciIaOKM0dToP5v158C5nhdryZa//?=
+ =?us-ascii?Q?QaMS9BmeQnbkrSG3B4j6bT+22qb8PVZNqKYqDAFQupPEwDUKX/zXUByqNq4O?=
+ =?us-ascii?Q?jeYk0aoy/J8RJHw8of+rSfo=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fae4a9a2-d0b4-49e1-9afe-08d9fa5f0a8c
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2022 02:07:16.0159
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XQDGuGpRr4cs/w/7ACJkBO2AQGiW/W/bBJQmzGLnIUzBc4BNZqVTlZihXfliF7WpNdXeFsT445YcaF7m9uLlDA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8734
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
- acrn_vm_ram_map can't pin the user pages with VM_PFNMAP flag
- by calling get_user_pages_fast(), the PA(physical pages)
- may be mapped by kernel driver and set PFNMAP flag.
+From: Peng Fan <peng.fan@nxp.com>
 
- This patch fixes logic to setup EPT mapping for PFN mapped RAM region
- by checking the memory attribute before adding EPT mapping for them.
+V6:
+ Add R-b
+ Address comments from Stephen for patch 4,5 to cleanup header including 
+ and static const array, drop unneeded WARN_ON.
 
-Fixes: 88f537d5e8dd ("virt: acrn: Introduce EPT mapping management")
-Signed-off-by: Yonghua Huang <yonghua.huang@intel.com>
-Signed-off-by: Fei Li <fei1.li@intel.com>
----
- drivers/virt/acrn/mm.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+V5:
+ Add Rob's R-b/A-b tag
+ Use FIELD_GET/PREP in patch 4/5 per Sascha's comments
 
-diff --git a/drivers/virt/acrn/mm.c b/drivers/virt/acrn/mm.c
-index c4f2e15c8a2b..3b1b1e7a844b 100644
---- a/drivers/virt/acrn/mm.c
-+++ b/drivers/virt/acrn/mm.c
-@@ -162,10 +162,34 @@ int acrn_vm_ram_map(struct acrn_vm *vm, struct acrn_vm_memmap *memmap)
- 	void *remap_vaddr;
- 	int ret, pinned;
- 	u64 user_vm_pa;
-+	unsigned long pfn;
-+	struct vm_area_struct *vma;
- 
- 	if (!vm || !memmap)
- 		return -EINVAL;
- 
-+	mmap_read_lock(current->mm);
-+	vma = vma_lookup(current->mm, memmap->vma_base);
-+	if (vma && ((vma->vm_flags & VM_PFNMAP) != 0)) {
-+		if ((memmap->vma_base + memmap->len) > vma->vm_end) {
-+			mmap_read_unlock(current->mm);
-+			return -EINVAL;
-+		}
-+
-+		ret = follow_pfn(vma, memmap->vma_base, &pfn);
-+		mmap_read_unlock(current->mm);
-+		if (ret < 0) {
-+			dev_dbg(acrn_dev.this_device,
-+				"Failed to lookup PFN at VMA:%pK.\n", (void *)memmap->vma_base);
-+			return ret;
-+		}
-+
-+		return acrn_mm_region_add(vm, memmap->user_vm_pa,
-+			 PFN_PHYS(pfn), memmap->len,
-+			 ACRN_MEM_TYPE_WB, memmap->attr);
-+	}
-+	mmap_read_unlock(current->mm);
-+
- 	/* Get the page number of the map region */
- 	nr_pages = memmap->len >> PAGE_SHIFT;
- 	pages = vzalloc(nr_pages * sizeof(struct page *));
+V4:
+ Add Abel's R-b and Krzysztof's A-b
+ Address Krzysztof's comments
+ Address Sascha's comments in patch 4/5
+ Typo fix
 
-base-commit: 73878e5eb1bd3c9656685ca60bc3a49d17311e0c
+V3:
+ Drop an error included header file in 5/5
+
+V2:
+ Split yaml binding and clock header
+ apply to Abel's tree
+
+Add i.MX93 clk bindings and clk.
+
+Peng Fan (5):
+  dt-bindings: clock: Add imx93 clock support
+  dt-bindings: clock: add i.MX93 clock definition
+  clk: imx: add i.MX93 composite clk
+  clk: imx: support fracn gppll
+  clk: imx: add i.MX93 clk
+
+ .../bindings/clock/imx93-clock.yaml           |  62 ++++
+ drivers/clk/imx/Kconfig                       |   6 +
+ drivers/clk/imx/Makefile                      |   4 +
+ drivers/clk/imx/clk-composite-93.c            |  93 +++++
+ drivers/clk/imx/clk-fracn-gppll.c             | 323 +++++++++++++++++
+ drivers/clk/imx/clk-imx93.c                   | 338 ++++++++++++++++++
+ drivers/clk/imx/clk.h                         |  30 ++
+ include/dt-bindings/clock/imx93-clock.h       | 201 +++++++++++
+ 8 files changed, 1057 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/imx93-clock.yaml
+ create mode 100644 drivers/clk/imx/clk-composite-93.c
+ create mode 100644 drivers/clk/imx/clk-fracn-gppll.c
+ create mode 100644 drivers/clk/imx/clk-imx93.c
+ create mode 100644 include/dt-bindings/clock/imx93-clock.h
+
 -- 
 2.25.1
 
