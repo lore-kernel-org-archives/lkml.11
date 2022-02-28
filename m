@@ -2,114 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 660A7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:10:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C18C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230118AbiB1UKm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:10:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
+        id S230143AbiB1ULR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:11:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbiB1UKj (ORCPT
+        with ESMTP id S230117AbiB1ULN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:10:39 -0500
+        Mon, 28 Feb 2022 15:11:13 -0500
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40852888FB
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:09:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EFE8A6D7
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:10:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=LKVWP8B+dI0EaZkytYActdFU39zpsIqLuQva1HVoMGg=; b=V8SES8QyyNE0exxZXZafkkTxrn
-        K/0Gadad546pboJjUBuVT60uhMZp4a3+RrZFobLie04dlhnVYwG1MOjbq0AkPpDWWBC98sUMiFpg5
-        0hsEJ7bnEKt9FWesLv/AC1o2xSsUtTIy3pT2cRe+c8wOKAD4pi4nUY9zUuCUsKvLXF0ad1c4F/WRJ
-        8oW4Niu1+yv+42CuKrw5niLpiYOev0WY7G+ZllnRf1QmWc6lZU2QVLIWeuQUWvrSGIVKBQRtxsSJ1
-        iXZ8jdwV5gWHgvzGeV+lba6JnmgC+F4wefqocfL8woQKxgmyF230pRG726UIL8cjZYZwfRSlDtvN3
-        OuEuyKjg==;
+        bh=2jbfLrSvabZhSRAV6PbcmymrKxcMw4bmZkyd9X9fc5M=; b=XJC2MMh7oyskdts0nFgxedjw4k
+        IywefnfRP5nhTF4zmniYWZWtKRsz9ooc0SlJ7admVJExTYh2bqbAVy12keAhWoMIEYSVz7QRWhY3h
+        XP23b1KkLeZKKts7r9sLKl9Xw7oaPeQ4CSkufowBbafHBDHUwOtP5ePJPsNYu3tdwduZqKMEFtKGA
+        buCdPhQw47cjh3usVKkVUCoCo3IzIWH6moD5zBnhmspEqZ6zjZ3UdWv+KGKOkCXEpZU4z8tvcgh0q
+        eMVMnYzRgZEz1BlFYhRFGDajC/cNdNpL0cMgIRWjkA4jL4SteFFqYuNw5hGVD5UzIiMpZIBR1Ue1f
+        rMwZ0INw==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOmKt-00DztU-Ub; Mon, 28 Feb 2022 20:09:36 +0000
+        id 1nOmLP-00DzuP-QT; Mon, 28 Feb 2022 20:10:08 +0000
 Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 2ED64986271; Mon, 28 Feb 2022 21:09:34 +0100 (CET)
-Date:   Mon, 28 Feb 2022 21:09:34 +0100
+        id 687AB986271; Mon, 28 Feb 2022 21:10:07 +0100 (CET)
+Date:   Mon, 28 Feb 2022 21:10:07 +0100
 From:   Peter Zijlstra <peterz@infradead.org>
 To:     Josh Poimboeuf <jpoimboe@redhat.com>
 Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
         andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
         ndesaulniers@google.com, keescook@chromium.org,
         samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com
-Subject: Re: [PATCH 21/29] objtool: Rename --duplicate to --lto
-Message-ID: <20220228200934.GF11184@worktop.programming.kicks-ass.net>
-References: <20220218164902.008644515@infradead.org>
- <20220218171409.814392411@infradead.org>
- <20220226194209.bvv3t65hhtnwltmk@treble>
- <20220226214802.4chmsrtstlerefmu@treble>
- <YhysYkcfwLr68Job@hirez.programming.kicks-ass.net>
- <20220228183228.splleoatuxxjr5kq@treble>
+        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v2 34/39] objtool: Validate IBT assumptions
+Message-ID: <20220228201007.GG11184@worktop.programming.kicks-ass.net>
+References: <20220224145138.952963315@infradead.org>
+ <20220224151324.018939604@infradead.org>
+ <20220227031348.drbmkcmoqur53aay@treble>
+ <20220227170003.GE11184@worktop.programming.kicks-ass.net>
+ <20220227222055.uqgcz33dwhl3atpr@treble>
+ <YhyaS4tN9NpCJcmk@hirez.programming.kicks-ass.net>
+ <20220228183655.gcacvddofbaaiqhz@treble>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220228183228.splleoatuxxjr5kq@treble>
+In-Reply-To: <20220228183655.gcacvddofbaaiqhz@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 10:32:28AM -0800, Josh Poimboeuf wrote:
-
-> Thanks for the explanations.  To summarize, we have:
+On Mon, Feb 28, 2022 at 10:36:55AM -0800, Josh Poimboeuf wrote:
+> On Mon, Feb 28, 2022 at 10:47:55AM +0100, Peter Zijlstra wrote:
+> > On Sun, Feb 27, 2022 at 02:20:55PM -0800, Josh Poimboeuf wrote:
+> > > On Sun, Feb 27, 2022 at 06:00:03PM +0100, Peter Zijlstra wrote:
+> > > > > > @@ -3101,6 +3164,17 @@ static int validate_branch(struct objtoo
+> > > > > >  
+> > > > > >  		if (insn->hint) {
+> > > > > >  			state.cfi = *insn->cfi;
+> > > > > > +			if (ibt) {
+> > > > > > +				struct symbol *sym;
+> > > > > > +
+> > > > > > +				if (insn->cfi->type == UNWIND_HINT_TYPE_REGS_PARTIAL &&
+> > > > > > +				    (sym = find_symbol_by_offset(insn->sec, insn->offset)) &&
+> > > > > > +				    insn->type != INSN_ENDBR && !insn->noendbr) {
+> > > > > > +					WARN_FUNC("IRET_REGS hint without ENDBR: %s",
+> > > > > > +						  insn->sec, insn->offset,
+> > > > > > +						  sym->name);
+> > > > > > +				}
+> > > > > 
+> > > > > No need to print sym->name here, WARN_FUNC() already does it?
+> > > > 
+> > > > Almost; perhaps the change to make is to either introduce WARN_SYM or
+> > > > make WARN_FUNC also print !STT_FUNC symbols ?
+> > > 
+> > > In the case of no function, WARN_FUNC() falls back to printing sec+off.
+> > > Is that not good enough?
+> > 
+> > I got really tired of doing the manual symbol lookup... I don't suppose
+> > it matters too much now that I've more or less completed the triage, but
+> > it was useful.
 > 
->   A) legacy mode:
-> 
->      translation unit: objtool check [--module]
->      vmlinux.o:        N/A
->      module:           N/A
-> 
->   B) CONFIG_VMLINUX_VALIDATION=y && !(CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y)
-> 
->      translation unit: objtool check [--module]
->      vmlinux:          objtool check --vmlinux --noinstr
->      module:           objtool check --module --noinstr
+> Maybe it would be reasonable to change WARN_FUNC to do that?  i.e. fall
+> back from func+off to sym+off to sec+off.
 
-Not the module thing here; noinstr never leaves the core kernel (for
-now; I need me a few compiler features before I can tackle the idle path
-issues).
-
->   C) CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y:
-> 
->      translation unit: N/A
->      vmlinux:          objtool check --vmlinux --noinstr --lto
->      module:           objtool check --module --noinstr --lto
-> 
-> Right?
-
-More or less, with the one caveat above.
-
-> I think I get it, but it's mental gymnastics for me to remember how the
-> options interact.  It still seems counterintuitive, because whatever
-> "objtool check" does to a translation unit, I'd expect "objtool check
-> --vmlinux" to do the same things.
-
-I think I agree. It is a bit weird.
-
-> So how about we just get rid of the magical --vmlinux and --lto options
-> altogether, and make --noinstr additive, like all the other options?
->
->   A) legacy mode:
->      .o files: objtool check [--module]
->       vmlinux: N/A
->        module: N/A
->
->   B) CONFIG_NOINSTR_VALIDATION=y && !(CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y):
->      .o files: objtool check [--module]
->       vmlinux: objtool check --noinstr-only
->        module: objtool check --module --noinstr-only
->
->   C) CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y:
->      .o files: N/A
->       vmlinux: objtool check --noinstr
->        module: objtool check --module --noinstr
-
-I like the --noinstr-only thing. But I think I still like a flag to
-differentiate between TU/.o file and vmlinux/whole-module invocation.
-
-Anyway, you ok with me cleaning this up later, in a separate series?
+I'll make it happen.
