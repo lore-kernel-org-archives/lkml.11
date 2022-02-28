@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71191C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C42EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239483AbiB1SA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:00:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51080 "EHLO
+        id S239498AbiB1SAc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:00:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240764AbiB1Ryg (ORCPT
+        with ESMTP id S240785AbiB1Ryp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC4F522EC;
-        Mon, 28 Feb 2022 09:43:10 -0800 (PST)
+        Mon, 28 Feb 2022 12:54:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00F6B532C6;
+        Mon, 28 Feb 2022 09:43:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A3066066C;
-        Mon, 28 Feb 2022 17:43:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34904C340E7;
-        Mon, 28 Feb 2022 17:43:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 915C960180;
+        Mon, 28 Feb 2022 17:43:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99CB6C340E7;
+        Mon, 28 Feb 2022 17:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070189;
-        bh=HrLjEndDO//JD/2Xs5TV5gBE1S7WGnjDJ4hoAuKHawo=;
+        s=korg; t=1646070205;
+        bh=8seL92Jujnzxe9kcZe3hncaHsIPde+ilak9Z5aBPr0A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xlulyREPTgjQfgz3uC0OiGEDpEru9Y27DtYVx528QVEGI1AKyRRWdqNr3i9vvA2b7
-         hgwsd3W+tDoVBnZddZ6Mx3YtCytFo3VhzSSUyGwHPC2ZGIjqYRemEktx6Tjbw8O1y4
-         FhPwJAgONP54AtWO8kTkE9QP7VmhTfiPf55CqES0=
+        b=XSZKlrRnN4PODrfSLExwF00Pp8Ehw5wwRVkGyXGqkAR3yxP5jKxS9Nr4i2ikkwwjR
+         1RJ9ashgK79B9e9PIIvAXyytF4egfvomDQQ0+R1eRQrXPh2lz617QmTV3sARv2/9n/
+         xxGSqw7AI9mU2Xnymx/1IOUBvlnIz7bZLNrQbwcQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
-        "Masami Ichikawa(CIP)" <masami.ichikawa@cybertrust.co.jp>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.16 003/164] cgroup-v1: Correct privileges check in release_agent writes
-Date:   Mon, 28 Feb 2022 18:22:45 +0100
-Message-Id: <20220228172359.945412729@linuxfoundation.org>
+        stable@vger.kernel.org, Bob Chen <chenbo.chen@alibaba-inc.com>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.16 008/164] io_uring: dont convert to jiffies for waiting on timeouts
+Date:   Mon, 28 Feb 2022 18:22:50 +0100
+Message-Id: <20220228172400.500203076@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -50,52 +48,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Koutný <mkoutny@suse.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 467a726b754f474936980da793b4ff2ec3e382a7 upstream.
+commit 228339662b398a59b3560cd571deb8b25b253c7e upstream.
 
-The idea is to check: a) the owning user_ns of cgroup_ns, b)
-capabilities in init_user_ns.
+If an application calls io_uring_enter(2) with a timespec passed in,
+convert that timespec to ktime_t rather than jiffies. The latter does
+not provide the granularity the application may expect, and may in
+fact provided different granularity on different systems, depending
+on what the HZ value is configured at.
 
-The commit 24f600856418 ("cgroup-v1: Require capabilities to set
-release_agent") got this wrong in the write handler of release_agent
-since it checked user_ns of the opener (may be different from the owning
-user_ns of cgroup_ns).
-Secondly, to avoid possibly confused deputy, the capability of the
-opener must be checked.
+Turn the timespec into an absolute ktime_t, and use that with
+schedule_hrtimeout() instead.
 
-Fixes: 24f600856418 ("cgroup-v1: Require capabilities to set release_agent")
+Link: https://github.com/axboe/liburing/issues/531
 Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/stable/20220216121142.GB30035@blackbody.suse.cz/
-Signed-off-by: Michal Koutný <mkoutny@suse.com>
-Reviewed-by: Masami Ichikawa(CIP) <masami.ichikawa@cybertrust.co.jp>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Reported-by: Bob Chen <chenbo.chen@alibaba-inc.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/cgroup/cgroup-v1.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ fs/io_uring.c |   13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
---- a/kernel/cgroup/cgroup-v1.c
-+++ b/kernel/cgroup/cgroup-v1.c
-@@ -546,6 +546,7 @@ static ssize_t cgroup_release_agent_writ
- 					  char *buf, size_t nbytes, loff_t off)
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -7633,7 +7633,7 @@ static int io_run_task_work_sig(void)
+ /* when returns >0, the caller should retry */
+ static inline int io_cqring_wait_schedule(struct io_ring_ctx *ctx,
+ 					  struct io_wait_queue *iowq,
+-					  signed long *timeout)
++					  ktime_t timeout)
  {
- 	struct cgroup *cgrp;
-+	struct cgroup_file_ctx *ctx;
+ 	int ret;
  
- 	BUILD_BUG_ON(sizeof(cgrp->root->release_agent_path) < PATH_MAX);
+@@ -7645,8 +7645,9 @@ static inline int io_cqring_wait_schedul
+ 	if (test_bit(0, &ctx->check_cq_overflow))
+ 		return 1;
  
-@@ -553,8 +554,9 @@ static ssize_t cgroup_release_agent_writ
- 	 * Release agent gets called with all capabilities,
- 	 * require capabilities to set release agent.
- 	 */
--	if ((of->file->f_cred->user_ns != &init_user_ns) ||
--	    !capable(CAP_SYS_ADMIN))
-+	ctx = of->priv;
-+	if ((ctx->ns->user_ns != &init_user_ns) ||
-+	    !file_ns_capable(of->file, &init_user_ns, CAP_SYS_ADMIN))
- 		return -EPERM;
+-	*timeout = schedule_timeout(*timeout);
+-	return !*timeout ? -ETIME : 1;
++	if (!schedule_hrtimeout(&timeout, HRTIMER_MODE_ABS))
++		return -ETIME;
++	return 1;
+ }
  
- 	cgrp = cgroup_kn_lock_live(of->kn, false);
+ /*
+@@ -7659,7 +7660,7 @@ static int io_cqring_wait(struct io_ring
+ {
+ 	struct io_wait_queue iowq;
+ 	struct io_rings *rings = ctx->rings;
+-	signed long timeout = MAX_SCHEDULE_TIMEOUT;
++	ktime_t timeout = KTIME_MAX;
+ 	int ret;
+ 
+ 	do {
+@@ -7675,7 +7676,7 @@ static int io_cqring_wait(struct io_ring
+ 
+ 		if (get_timespec64(&ts, uts))
+ 			return -EFAULT;
+-		timeout = timespec64_to_jiffies(&ts);
++		timeout = ktime_add_ns(timespec64_to_ktime(ts), ktime_get_ns());
+ 	}
+ 
+ 	if (sig) {
+@@ -7707,7 +7708,7 @@ static int io_cqring_wait(struct io_ring
+ 		}
+ 		prepare_to_wait_exclusive(&ctx->cq_wait, &iowq.wq,
+ 						TASK_INTERRUPTIBLE);
+-		ret = io_cqring_wait_schedule(ctx, &iowq, &timeout);
++		ret = io_cqring_wait_schedule(ctx, &iowq, timeout);
+ 		finish_wait(&ctx->cq_wait, &iowq.wq);
+ 		cond_resched();
+ 	} while (ret > 0);
 
 
