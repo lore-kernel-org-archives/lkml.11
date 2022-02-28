@@ -2,122 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 08:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C71C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 08:11:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233846AbiB1IKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 03:10:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36648 "EHLO
+        id S233851AbiB1IMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 03:12:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231949AbiB1IKM (ORCPT
+        with ESMTP id S231684AbiB1IL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 03:10:12 -0500
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DAA569480;
-        Mon, 28 Feb 2022 00:09:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1646035774; x=1677571774;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=p9K9p80/Kt5ZYVZQzZ80bVW17pYGTl7pqRSVohlsFhU=;
-  b=PbVEwk8jZqlvFXcIDK4WxWUpVx5JLcvjPc3D8oMp2d286HzKksCvpbVK
-   N2gaDJCe9SBFNPBXYWMneMXaajaiankVBefIJIALWnI7AWgNypfozqqwn
-   iAnm2djIioGJ1KD2mF9QrK/gHf9PO29uIwxO2aEnJ6i1Tkaq+XkwV5HNL
-   A=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 28 Feb 2022 00:09:34 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 00:09:33 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 28 Feb 2022 00:09:32 -0800
-Received: from hu-srivasam-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.15; Mon, 28 Feb 2022 00:09:26 -0800
-From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <quic_plai@quicinc.com>, <bgoswami@codeaurora.org>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <srinivas.kandagatla@linaro.org>, <rohitkr@codeaurora.org>,
-        <linux-arm-msm@vger.kernel.org>, <alsa-devel@alsa-project.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <swboyd@chromium.org>, <judyhsiao@chromium.org>,
-        <yung-chuan.liao@linux.intel.com>,
-        <pierre-louis.bossart@linux.intel.com>, <sanyog.r.kale@intel.com>
-CC:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        "Venkata Prasad Potturu" <quic_potturu@quicinc.com>
-Subject: [PATCH] ASoC: qcom: soundwire: Add support for controlling audio CGCR from HLOS
-Date:   Mon, 28 Feb 2022 13:39:10 +0530
-Message-ID: <1646035750-25635-1-git-send-email-quic_srivasam@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 28 Feb 2022 03:11:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCB2692B9;
+        Mon, 28 Feb 2022 00:11:20 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68594B80E47;
+        Mon, 28 Feb 2022 08:11:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2506C340E7;
+        Mon, 28 Feb 2022 08:11:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646035878;
+        bh=y1tdMpsiRpffhOx2vBGdYD8HZmjyMt0V4WvXxZ/HDI4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=V+KDVirnh3eOYCFV8FXguYwOhS1tTrAiJ9F0r9TEI1UpdiS6lrWv/9qsq+Z7R/F8c
+         bZdQLocTorrgNjW1WC7kweF/RNvrUKPNhmWTYwFwMOKrmMLK5+120uQ6abXSs3S2vR
+         +OWwJrC6zjIjrqS72GmHxVXQzFpQqOp5lU/D03q9Dkwg0o+jwIbS+dSeia5FvTnFQf
+         4V+bZGIfy/88ds4iki52ciHTi1GXFyz222Ssuh9RbjH0aL0vAJdlW1GE7eHRF2fY03
+         9iVW81iOYpG++HKlentvm3Vp/hOT9P12a3Ko93wjxX3eZy0PlpsU5BEU4SEtqrIk+/
+         sF/PnIeE17wwQ==
+Date:   Mon, 28 Feb 2022 00:11:16 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-mmc@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bart Van Assche <bvanassche@acm.org>
+Subject: Re: [PATCH v4 0/3] block: show crypto capabilities in sysfs
+Message-ID: <YhyDpNN/Yoajneg/@sol.localdomain>
+References: <20220124215938.2769-1-ebiggers@kernel.org>
+ <YhL3obBiHO92EcEc@sol.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YhL3obBiHO92EcEc@sol.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for controlling soundwire audio CGCR interface using clock framework
-to make hclk ungating with software.
-As per new hardware changes, software has to always ungate hclk if soundwire
-is operational and keep it running.
-This requirement is for latest LPASS chipsets for RX, TX and WSA path to work.
+On Sun, Feb 20, 2022 at 06:23:29PM -0800, Eric Biggers wrote:
+> On Mon, Jan 24, 2022 at 01:59:35PM -0800, Eric Biggers wrote:
+> > This series adds sysfs files that expose the inline encryption
+> > capabilities of request queues.
+> > 
+> > Patches 1 and 2 are some related cleanups for existing blk-sysfs code.
+> > Patch 3 is the real change; see there for more details.
+> > 
+> > This series applies to v5.17-rc1.
+> > 
+> > Changed v3 => v4:
+> >    - Reworded a comment in patch 2.
+> >    - Updated dates in sysfs documentation.
+> >    - Added more Reviewed-by tags.
+> > 
+> > Changed v2 => v3:
+> >    - Moved the documentation into Documentation/ABI/stable/sysfs-block,
+> >      and improved it a bit.
+> >    - Write "/sys/block/" instead of "/sys/class/block/".
+> >    - Added Reviewed-by tags.
+> > 
+> > Changed v1 => v2:
+> >    - Use sysfs_emit() instead of sprintf().
+> >    - Use __ATTR_RO().
+> > 
+> > Eric Biggers (3):
+> >   block: simplify calling convention of elv_unregister_queue()
+> >   block: don't delete queue kobject before its children
+> >   blk-crypto: show crypto capabilities in sysfs
+> > 
+> 
+> Any more feedback on this?
+> 
 
-Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
----
-This patch set depends on:
-	-- Clock driver patches with reset control support, yet to be posted.
+Jens, can you apply this for 5.18?  Is there anything else you're waiting for?
 
- drivers/soundwire/qcom.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-index fb183bd..440aad8 100644
---- a/drivers/soundwire/qcom.c
-+++ b/drivers/soundwire/qcom.c
-@@ -12,6 +12,7 @@
- #include <linux/of_irq.h>
- #include <linux/of_device.h>
- #include <linux/regmap.h>
-+#include <linux/reset.h>
- #include <linux/slab.h>
- #include <linux/slimbus.h>
- #include <linux/soundwire/sdw.h>
-@@ -129,6 +130,7 @@ struct qcom_swrm_ctrl {
- 	struct device *dev;
- 	struct regmap *regmap;
- 	void __iomem *mmio;
-+	struct reset_control *audio_cgcr;
- #ifdef CONFIG_DEBUG_FS
- 	struct dentry *debugfs;
- #endif
-@@ -618,6 +620,8 @@ static int qcom_swrm_init(struct qcom_swrm_ctrl *ctrl)
- 	val = FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_ROW_CTRL_BMSK, ctrl->rows_index);
- 	val |= FIELD_PREP(SWRM_MCP_FRAME_CTRL_BANK_COL_CTRL_BMSK, ctrl->cols_index);
- 
-+	reset_control_reset(ctrl->audio_cgcr);
-+
- 	ctrl->reg_write(ctrl, SWRM_MCP_FRAME_CTRL_BANK_ADDR(0), val);
- 
- 	/* Enable Auto enumeration */
-@@ -1269,6 +1273,9 @@ static int qcom_swrm_probe(struct platform_device *pdev)
- 	ctrl->bus.ops = &qcom_swrm_ops;
- 	ctrl->bus.port_ops = &qcom_swrm_port_ops;
- 	ctrl->bus.compute_params = &qcom_swrm_compute_params;
-+	ctrl->audio_cgcr = devm_reset_control_get_exclusive(dev, "swr_audio_cgcr");
-+	if (IS_ERR(ctrl->audio_cgcr))
-+		dev_err(dev, "Failed to get audio_cgcr reset required for soundwire-v1.6.0\n");
- 
- 	ret = qcom_swrm_get_port_config(ctrl);
- 	if (ret)
--- 
-2.7.4
-
+- Eric
