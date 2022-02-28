@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D324C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F19C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239379AbiB1Rw7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:52:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51728 "EHLO
+        id S239333AbiB1Rwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239060AbiB1RsD (ORCPT
+        with ESMTP id S239034AbiB1RsB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:48:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F139F6E8;
-        Mon, 28 Feb 2022 09:38:28 -0800 (PST)
+        Mon, 28 Feb 2022 12:48:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D7F9A0BD4;
+        Mon, 28 Feb 2022 09:38:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61DA9614C9;
-        Mon, 28 Feb 2022 17:38:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53AC0C36AE7;
-        Mon, 28 Feb 2022 17:38:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D74FB815A6;
+        Mon, 28 Feb 2022 17:38:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3203C340E7;
+        Mon, 28 Feb 2022 17:38:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069907;
-        bh=ossGxllUZrIlYgWBbNFBSCk6U86iaYd8wz7QB1nkS7M=;
+        s=korg; t=1646069902;
+        bh=DPJAuAPFM8K/Q36q1OmOYafTxEDA+plBeNeaVns3Bl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0l+irHmeTiW2WIKPCYsgVBjbPEyu2irz5Iqu2jvZsM2cqudFOoob15bGhu+WM3DxU
-         aSoaVV3ALGBzUS6M0ADbbHMDY95/DyHnorTRhBKexDf3Uvokauq5snloKIfeXnr6g/
-         WRDn4/NSbWvTYyF4h2TkJws0/tIHSPdAJUGfTGVE=
+        b=arzL1d9ETt2yC1WOmAqpUc6taXuPuTLo/+2sx1ZCLJTBptqSZf4BaUQ/e/mEFNtDZ
+         m14+PiI+ouPsqJvuyzyoHzzpKTye1CtK0j9hnIpTwfY3Nm1nYVFhnifyYQStz28qV5
+         pgkAsCA+FiM3EwRjtEzDoYFaUylHDcfQH7k12PgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 056/139] net: __pskb_pull_tail() & pskb_carve_frag_list() drop_monitor friends
-Date:   Mon, 28 Feb 2022 18:23:50 +0100
-Message-Id: <20220228172353.594640152@linuxfoundation.org>
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Brian Vazquez <brianvv@google.com>
+Subject: [PATCH 5.15 054/139] bpf: Add schedule points in batch ops
+Date:   Mon, 28 Feb 2022 18:23:48 +0100
+Message-Id: <20220228172353.386435815@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -50,40 +53,61 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-commit ef527f968ae05c6717c39f49c8709a7e2c19183a upstream.
+commit 75134f16e7dd0007aa474b281935c5f42e79f2c8 upstream.
 
-Whenever one of these functions pull all data from an skb in a frag_list,
-use consume_skb() instead of kfree_skb() to avoid polluting drop
-monitoring.
+syzbot reported various soft lockups caused by bpf batch operations.
 
-Fixes: 6fa01ccd8830 ("skbuff: Add pskb_extract() helper function")
+ INFO: task kworker/1:1:27 blocked for more than 140 seconds.
+ INFO: task hung in rcu_barrier
+
+Nothing prevents batch ops to process huge amount of data,
+we need to add schedule points in them.
+
+Note that maybe_wait_bpf_programs(map) calls from
+generic_map_delete_batch() can be factorized by moving
+the call after the loop.
+
+This will be done later in -next tree once we get this fix merged,
+unless there is strong opinion doing this optimization sooner.
+
+Fixes: aa2e93b8e58e ("bpf: Add generic support for update and delete batch ops")
+Fixes: cb4d03ab499d ("bpf: Add generic support for lookup batch op")
+Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Link: https://lore.kernel.org/r/20220220154052.1308469-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
+Acked-by: Brian Vazquez <brianvv@google.com>
+Link: https://lore.kernel.org/bpf/20220217181902.808742-1-eric.dumazet@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/skbuff.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/bpf/syscall.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -2254,7 +2254,7 @@ void *__pskb_pull_tail(struct sk_buff *s
- 		/* Free pulled out fragments. */
- 		while ((list = skb_shinfo(skb)->frag_list) != insp) {
- 			skb_shinfo(skb)->frag_list = list->next;
--			kfree_skb(list);
-+			consume_skb(list);
- 		}
- 		/* And insert new clone at head. */
- 		if (clone) {
-@@ -6220,7 +6220,7 @@ static int pskb_carve_frag_list(struct s
- 	/* Free pulled out fragments. */
- 	while ((list = shinfo->frag_list) != insp) {
- 		shinfo->frag_list = list->next;
--		kfree_skb(list);
-+		consume_skb(list);
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1337,6 +1337,7 @@ int generic_map_delete_batch(struct bpf_
+ 		maybe_wait_bpf_programs(map);
+ 		if (err)
+ 			break;
++		cond_resched();
  	}
- 	/* And insert new clone at head. */
- 	if (clone) {
+ 	if (copy_to_user(&uattr->batch.count, &cp, sizeof(cp)))
+ 		err = -EFAULT;
+@@ -1394,6 +1395,7 @@ int generic_map_update_batch(struct bpf_
+ 
+ 		if (err)
+ 			break;
++		cond_resched();
+ 	}
+ 
+ 	if (copy_to_user(&uattr->batch.count, &cp, sizeof(cp)))
+@@ -1491,6 +1493,7 @@ int generic_map_lookup_batch(struct bpf_
+ 		swap(prev_key, key);
+ 		retry = MAP_LOOKUP_RETRIES;
+ 		cp++;
++		cond_resched();
+ 	}
+ 
+ 	if (err == -EFAULT)
 
 
