@@ -2,110 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50572C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:39:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99178C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235667AbiB1Ske (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:40:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38938 "EHLO
+        id S234750AbiB1Skl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:40:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240819AbiB1SkQ (ORCPT
+        with ESMTP id S240782AbiB1Sjv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:40:16 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B03E9B1A83
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:31:40 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id v21so16846845wrv.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:31:40 -0800 (PST)
+        Mon, 28 Feb 2022 13:39:51 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFED45040
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:28:56 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id z2so11472968plg.8
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:28:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=80IauG/d1J+24O+js6o66KmrN0KsXMCLre6trIg99LQ=;
-        b=iMrbNpsj+1cEzLoigb874QD2f9x0Svo32wxz2+LBSGHl8vwNV4yGlBiP1HGdQV3PoX
-         NPIKH4eQeFuWAL9MxTvrJKJneoatmzeWN1WDnolpHqwf0/yhsSaxaAp74JvBOgBXcoQ7
-         1IndfORgIfOq46dOCBD19cAY2y5JKz4/iN1u2qCa4ViyvDy6APu1HmZ8aqbx2YRuAywQ
-         L1nQvDE9IqctLNIv8YIqQtWJIgIVA5EY8dP3em70i96qa3GOtsS96UCC7WZStxyRv6au
-         wBV2IgmC+M7ED202x7xe7+iyYG6zcEAeyP1uROqu5yC3yssHk793OaI2207EGEpuZuW3
-         ehJA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=953U8rJ4XL9BO0MAZAoSvNfxJjSMk/eYFo8dV60tgFc=;
+        b=FpK1ngedQX3i3ivR3W3a6s9CDUpEcLJ7+K72A8HWuIj+TG9fFxdNTS8IxACdRptz5O
+         VJNsv0VTwQYiTNicWanwklaKPytRcWWcHmq0OX9OJRvN6X7P2PKdM58VR1MdzviHqS6h
+         NnRbxHH8agrt2Ew2iEAOGcbFr3lrxgtJSG0lw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=80IauG/d1J+24O+js6o66KmrN0KsXMCLre6trIg99LQ=;
-        b=TR+gPXiRDMOeugRFen+B8yy3T5piE8S5Y1o7LgSFje6SEduRa3/AiXyZlZNkPXNs/9
-         jHm/O/rPzWWfA8G89ouCjIDwlhTP1D9RZXVJqYoCjVkUN+tECHTSxWwbDz5aOWj19TRA
-         rP1YNX26tUJhxZpDTNmqxhAIH8ePWDvpL4WuAzeYmNgYvwUrchc8S61be33jS69+8nXO
-         NnqYSTb4moA0aWxfZG9toMZscvcJ38dHgi6Faw8fQwqignLJqS+r2yZrKWnfmTHzIkVb
-         F8oFC+QF6mGpkIYEdAyEHpdWYIKY9iQaHxJfotjK2uGIeCkMUeIkeB01cXEBhYHW/Bno
-         ms9w==
-X-Gm-Message-State: AOAM5311xvD9eDOPj3rIM3to1l8z1WfI3RcV+k7zOMwZgtDNIJYWkqnJ
-        yDBhJj618YtFbpmruNqJzYg=
-X-Google-Smtp-Source: ABdhPJyPAH/7Ee3C7zgL5tsV5rMzbtFf4QKcHZbN52HkzSCV9cCbcgECaNTt8rOXdUCTC9tDW5e9KA==
-X-Received: by 2002:a5d:59a6:0:b0:1f0:150:4bad with SMTP id p6-20020a5d59a6000000b001f001504badmr445442wrr.581.1646073099334;
-        Mon, 28 Feb 2022 10:31:39 -0800 (PST)
-Received: from localhost.localdomain ([94.73.33.246])
-        by smtp.gmail.com with ESMTPSA id v2-20020adf8b42000000b001edc38024c9sm12670725wra.65.2022.02.28.10.31.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 10:31:39 -0800 (PST)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     andrzej.hajda@intel.com
-Cc:     narmstrong@baylibre.com, robert.foss@linaro.org,
-        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
-        matthias.bgg@gmail.com, maxime@cerno.tech,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH] drm/bridge: parade-ps8640: switch to devm_drm_of_get_bridge
-Date:   Mon, 28 Feb 2022 19:31:31 +0100
-Message-Id: <20220228183131.23494-1-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=953U8rJ4XL9BO0MAZAoSvNfxJjSMk/eYFo8dV60tgFc=;
+        b=J44Ay6FoEz9ZxzAmxnBsDN1e5whg3+L9telj51FxmVBithMny+jOr306p7T/i29MhN
+         TUOK6FjKXS8jHn5FlfXWXLzxtKVNCrYtsITVfa6+cdvQAHEEpfrs+LTnuIswLZuqmYDX
+         SxeXkxt1HDmuZa6nSTd/87e7utTMl5ZCUyu+nmHShkQNUfJwYBcuV9f9oz9uac+AqUV1
+         trOJWQCUtpbErgx8CJqZEj7AgDfemarNkFVGsSCX+jWmg01zti5MNeEJZR77O/H315b2
+         roeGaK1jcXObgXgFSjIij++k9TmdxQKDo8thpky9EM2LrdmSpvvVn1Usm+klDwShEt80
+         HErw==
+X-Gm-Message-State: AOAM531Nt9YFsyuuLdtWqDAbgv+rgtiW7yj7SCmuyjMnTlrCcnn+kPba
+        LaQxtNlFxY+f/6iiRl4kTcZC3w==
+X-Google-Smtp-Source: ABdhPJwK4X9UEdRlczlObVA8zipBl9vNEDhwutWp0ODiei04VVcvgZUDYK9KSHSJekx+YOkQqo2U/g==
+X-Received: by 2002:a17:903:2041:b0:14f:b0a6:18f5 with SMTP id q1-20020a170903204100b0014fb0a618f5mr22231706pla.50.1646072936309;
+        Mon, 28 Feb 2022 10:28:56 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:f16d:303:27ee:ee6a])
+        by smtp.gmail.com with UTF8SMTPSA id a8-20020a17090a740800b001bc691c79fcsm64964pjg.49.2022.02.28.10.28.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 10:28:55 -0800 (PST)
+Date:   Mon, 28 Feb 2022 10:28:53 -0800
+From:   "mka@chromium.org" <mka@chromium.org>
+To:     "Linyu Yuan (QUIC)" <quic_linyyuan@quicinc.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "Tao Wang (Consultant) (QUIC)" <quic_wat@quicinc.com>,
+        "balbi@kernel.org" <balbi@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "dianders@chromium.org" <dianders@chromium.org>,
+        "frowand.list@gmail.com" <frowand.list@gmail.com>,
+        "hadess@hadess.net" <hadess@hadess.net>,
+        "krzk@kernel.org" <krzk@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "mathias.nyman@intel.com" <mathias.nyman@intel.com>,
+        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "peter.chen@kernel.org" <peter.chen@kernel.org>,
+        "ravisadineni@chromium.org" <ravisadineni@chromium.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "rogerq@kernel.org" <rogerq@kernel.org>,
+        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
+        "swboyd@chromium.org" <swboyd@chromium.org>
+Subject: Re: =?utf-8?B?5Zue5aSNOiDlm57lpI0=?= =?utf-8?Q?=3A?= Re: [PATCH v20
+ 3/5] usb: misc: Add onboard_usb_hub driver
+Message-ID: <Yh0UZUU9/9Hd6Pc1@google.com>
+References: <SA1PR02MB86067ACF0C96F18B7306D208903A9@SA1PR02MB8606.namprd02.prod.outlook.com>
+ <SA1PR02MB860660B6F33011E5A97F7930903A9@SA1PR02MB8606.namprd02.prod.outlook.com>
+ <YhURQAksLKVuzU36@google.com>
+ <SA1PR02MB860602E0AC4D9BD0BC4245B5903C9@SA1PR02MB8606.namprd02.prod.outlook.com>
+ <YhXolQDwIMbTi/O2@kroah.com>
+ <DM8PR02MB81988555CA6B66BB3FD5E488E3019@DM8PR02MB8198.namprd02.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <DM8PR02MB81988555CA6B66BB3FD5E488E3019@DM8PR02MB8198.namprd02.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function "drm_of_find_panel_or_bridge" has been deprecated in
-favor of "devm_drm_of_get_bridge".
+On Mon, Feb 28, 2022 at 03:08:34AM +0000, Linyu Yuan (QUIC) wrote:
+> > From: gregkh@linuxfoundation.org <gregkh@linuxfoundation.org>
+> > Sent: Wednesday, February 23, 2022 3:56 PM
+> > To: Tao Wang (Consultant) (QUIC) <quic_wat@quicinc.com>
+> > Cc: mka@chromium.org; balbi@kernel.org; devicetree@vger.kernel.org;
+> > dianders@chromium.org; frowand.list@gmail.com; hadess@hadess.net;
+> > krzk@kernel.org; linux-kernel@vger.kernel.org; linux-usb@vger.kernel.org;
+> > mathias.nyman@intel.com; michal.simek@xilinx.com;
+> > peter.chen@kernel.org; ravisadineni@chromium.org; robh+dt@kernel.org;
+> > rogerq@kernel.org; stern@rowland.harvard.edu; swboyd@chromium.org;
+> > Linyu Yuan (QUIC) <quic_linyyuan@quicinc.com>
+> > Subject: Re: 回复: 回复: Re: [PATCH v20 3/5] usb: misc: Add
+> > onboard_usb_hub driver
+> > 
+> > On Wed, Feb 23, 2022 at 07:40:31AM +0000, Tao Wang (Consultant) (QUIC)
+> > wrote:
+> > > Ok, thanks your reply.
+> > >
+> > > Here is my question, we must modify the driver "onboard_usb_hub.c" if
+> > we want to use it. But it's hard to complete because it's an opensource code.
+> > 
+> > I do not understand.  We do not deal with code that is not in the kernel
+> > source tree, as we have no idea what is out there.  Please just submit
+> > your changes to be merged into the tree and all will be fine.
+> 
+> Hi Greg and mka,
+> 
+> Let's make it clear that we are talking about once this driver is approved into usb tree,
+> If we use different USB HUB which have VID/PID not defined in this driver,
+> We need to update this driver.
+> 
+> But if we defined VID/PID in device tree(for a specific board, manufacture should know VID/PID from HUB it used),
+> dynamic parsed by the driver,  then we don't need to change this driver (increase VID/PID table).
 
-Switch to the new function and reduce boilerplate.
+As per my earlier reply, the kernel/USB core uses the VID:PID reported
+by the USB device, the compatible string in the device tree is purely
+informational. That's not something that could be changed by this
+driver.
 
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/gpu/drm/bridge/parade-ps8640.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
-
-diff --git a/drivers/gpu/drm/bridge/parade-ps8640.c b/drivers/gpu/drm/bridge/parade-ps8640.c
-index 818704bf5e86..1c2c4dd50ce0 100644
---- a/drivers/gpu/drm/bridge/parade-ps8640.c
-+++ b/drivers/gpu/drm/bridge/parade-ps8640.c
-@@ -566,7 +566,6 @@ static int ps8640_probe(struct i2c_client *client)
- 	struct device *dev = &client->dev;
- 	struct device_node *np = dev->of_node;
- 	struct ps8640 *ps_bridge;
--	struct drm_panel *panel;
- 	int ret;
- 	u32 i;
- 
-@@ -651,13 +650,7 @@ static int ps8640_probe(struct i2c_client *client)
- 	devm_of_dp_aux_populate_ep_devices(&ps_bridge->aux);
- 
- 	/* port@1 is ps8640 output port */
--	ret = drm_of_find_panel_or_bridge(np, 1, 0, &panel, NULL);
--	if (ret < 0)
--		return ret;
--	if (!panel)
--		return -ENODEV;
--
--	ps_bridge->panel_bridge = devm_drm_panel_bridge_add(dev, panel);
-+	ps_bridge->panel_bridge = devm_drm_of_get_bridge(dev, np, 1, 0);
- 	if (IS_ERR(ps_bridge->panel_bridge))
- 		return PTR_ERR(ps_bridge->panel_bridge);
- 
--- 
-2.25.1
-
+And even if the VID:PID from the device tree was used: how is the
+kernel supposed to know that the onboard_hub driver should be
+probed for a given VID:PID from the device tree, without listing
+the VID:PID (or compatible string) in the driver (which is what
+you seem to seek to avoid)?
