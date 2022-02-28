@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F57C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240216AbiB1SDS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:03:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47842 "EHLO
+        id S240522AbiB1SDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:03:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239950AbiB1Rxm (ORCPT
+        with ESMTP id S239784AbiB1Rxc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFFAAF1EC;
-        Mon, 28 Feb 2022 09:41:16 -0800 (PST)
+        Mon, 28 Feb 2022 12:53:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23DBEAC068;
+        Mon, 28 Feb 2022 09:40:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B516C61590;
-        Mon, 28 Feb 2022 17:41:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C863FC340E7;
-        Mon, 28 Feb 2022 17:41:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDC48B815AB;
+        Mon, 28 Feb 2022 17:40:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41D2FC340E7;
+        Mon, 28 Feb 2022 17:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070075;
-        bh=6ttKOQ9m0Pb17Q3CVH254bmmxO+Df4LgDPnSSCUWaO4=;
+        s=korg; t=1646070039;
+        bh=urQX6y50ENfkDfckR2XgPPLuEaOQejttoMPgSiW3WW0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pQnIVxEu0NgxqnNe6/FD/g2eHtDytP/hj1SqRgb7Qgf8uLQNYcwxEVkqLbUxJMhPz
-         HGJG1c4MYkiq8KVfnsFcu5UniVMvcG/c2DFd7gtj1phPgITc2Z5+iPQaMUq91ULqpI
-         6S4oLp/wUbNtCU3RNvna5vGBMSDygkCDysYK0Smw=
+        b=aQzvYMVfptxAMrb/TWomR0D7fDydFlyjxt6knVd9Ghc4liJu47rAiz7mq8uqhnl/w
+         lqI24Umd+KwYomiKg+dCJbRxRSlT9bfd9F4q80e05S51+0+FtFC8qDHxVqJJgD/kjZ
+         wNx/rQIhci+pshCs/mCEeY4oYN/0nn3ryx2hs1b4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Puma Hsu <pumahsu@google.com>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.15 115/139] xhci: re-initialize the HC during resume if HCE was set
-Date:   Mon, 28 Feb 2022 18:24:49 +0100
-Message-Id: <20220228172359.696217241@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Savaton <guillaume@baierouge.fr>,
+        Samuel Holland <samuel@sholland.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 086/139] gpio: rockchip: Reset int_bothedge when changing trigger
+Date:   Mon, 28 Feb 2022 18:24:20 +0100
+Message-Id: <20220228172356.701598093@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,68 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Puma Hsu <pumahsu@google.com>
+From: Samuel Holland <samuel@sholland.org>
 
-commit 8b328f8002bcf29ef517ee4bf234e09aabec4d2e upstream.
+[ Upstream commit 7920af5c826cb4a7ada1ae26fdd317642805adc2 ]
 
-When HCE(Host Controller Error) is set, it means an internal
-error condition has been detected. Software needs to re-initialize
-the HC, so add this check in xhci resume.
+With v2 hardware, an IRQ can be configured to trigger on both edges via
+a bit in the int_bothedge register. Currently, the driver sets this bit
+when changing the trigger type to IRQ_TYPE_EDGE_BOTH, but fails to reset
+this bit if the trigger type is later changed to something else. This
+causes spurious IRQs, and when using gpio-keys with wakeup-event-action
+set to EV_ACT_(DE)ASSERTED, those IRQs translate into spurious wakeups.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Puma Hsu <pumahsu@google.com>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220215123320.1253947-2-mathias.nyman@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3bcbd1a85b68 ("gpio/rockchip: support next version gpio controller")
+Reported-by: Guillaume Savaton <guillaume@baierouge.fr>
+Tested-by: Guillaume Savaton <guillaume@baierouge.fr>
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xhci.c |   19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ drivers/gpio/gpio-rockchip.c | 56 +++++++++++++++++++-----------------
+ 1 file changed, 29 insertions(+), 27 deletions(-)
 
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1091,6 +1091,7 @@ int xhci_resume(struct xhci_hcd *xhci, b
- 	int			retval = 0;
- 	bool			comp_timer_running = false;
- 	bool			pending_portevent = false;
-+	bool			reinit_xhc = false;
+diff --git a/drivers/gpio/gpio-rockchip.c b/drivers/gpio/gpio-rockchip.c
+index ce63cbd14d69a..24155c038f6d0 100644
+--- a/drivers/gpio/gpio-rockchip.c
++++ b/drivers/gpio/gpio-rockchip.c
+@@ -410,10 +410,8 @@ static int rockchip_irq_set_type(struct irq_data *d, unsigned int type)
+ 	level = rockchip_gpio_readl(bank, bank->gpio_regs->int_type);
+ 	polarity = rockchip_gpio_readl(bank, bank->gpio_regs->int_polarity);
  
- 	if (!hcd->state)
- 		return 0;
-@@ -1107,10 +1108,11 @@ int xhci_resume(struct xhci_hcd *xhci, b
- 	set_bit(HCD_FLAG_HW_ACCESSIBLE, &xhci->shared_hcd->flags);
- 
- 	spin_lock_irq(&xhci->lock);
--	if ((xhci->quirks & XHCI_RESET_ON_RESUME) || xhci->broken_suspend)
--		hibernated = true;
- 
--	if (!hibernated) {
-+	if (hibernated || xhci->quirks & XHCI_RESET_ON_RESUME || xhci->broken_suspend)
-+		reinit_xhc = true;
-+
-+	if (!reinit_xhc) {
- 		/*
- 		 * Some controllers might lose power during suspend, so wait
- 		 * for controller not ready bit to clear, just as in xHC init.
-@@ -1143,12 +1145,17 @@ int xhci_resume(struct xhci_hcd *xhci, b
- 			spin_unlock_irq(&xhci->lock);
- 			return -ETIMEDOUT;
+-	switch (type) {
+-	case IRQ_TYPE_EDGE_BOTH:
++	if (type == IRQ_TYPE_EDGE_BOTH) {
+ 		if (bank->gpio_type == GPIO_TYPE_V2) {
+-			bank->toggle_edge_mode &= ~mask;
+ 			rockchip_gpio_writel_bit(bank, d->hwirq, 1,
+ 						 bank->gpio_regs->int_bothedge);
+ 			goto out;
+@@ -431,30 +429,34 @@ static int rockchip_irq_set_type(struct irq_data *d, unsigned int type)
+ 			else
+ 				polarity |= mask;
  		}
--		temp = readl(&xhci->op_regs->status);
+-		break;
+-	case IRQ_TYPE_EDGE_RISING:
+-		bank->toggle_edge_mode &= ~mask;
+-		level |= mask;
+-		polarity |= mask;
+-		break;
+-	case IRQ_TYPE_EDGE_FALLING:
+-		bank->toggle_edge_mode &= ~mask;
+-		level |= mask;
+-		polarity &= ~mask;
+-		break;
+-	case IRQ_TYPE_LEVEL_HIGH:
+-		bank->toggle_edge_mode &= ~mask;
+-		level &= ~mask;
+-		polarity |= mask;
+-		break;
+-	case IRQ_TYPE_LEVEL_LOW:
+-		bank->toggle_edge_mode &= ~mask;
+-		level &= ~mask;
+-		polarity &= ~mask;
+-		break;
+-	default:
+-		ret = -EINVAL;
+-		goto out;
++	} else {
++		if (bank->gpio_type == GPIO_TYPE_V2) {
++			rockchip_gpio_writel_bit(bank, d->hwirq, 0,
++						 bank->gpio_regs->int_bothedge);
++		} else {
++			bank->toggle_edge_mode &= ~mask;
++		}
++		switch (type) {
++		case IRQ_TYPE_EDGE_RISING:
++			level |= mask;
++			polarity |= mask;
++			break;
++		case IRQ_TYPE_EDGE_FALLING:
++			level |= mask;
++			polarity &= ~mask;
++			break;
++		case IRQ_TYPE_LEVEL_HIGH:
++			level &= ~mask;
++			polarity |= mask;
++			break;
++		case IRQ_TYPE_LEVEL_LOW:
++			level &= ~mask;
++			polarity &= ~mask;
++			break;
++		default:
++			ret = -EINVAL;
++			goto out;
++		}
  	}
  
--	/* If restore operation fails, re-initialize the HC during resume */
--	if ((temp & STS_SRE) || hibernated) {
-+	temp = readl(&xhci->op_regs->status);
-+
-+	/* re-initialize the HC on Restore Error, or Host Controller Error */
-+	if (temp & (STS_SRE | STS_HCE)) {
-+		reinit_xhc = true;
-+		xhci_warn(xhci, "xHC error in resume, USBSTS 0x%x, Reinit\n", temp);
-+	}
- 
-+	if (reinit_xhc) {
- 		if ((xhci->quirks & XHCI_COMP_MODE_QUIRK) &&
- 				!(xhci_all_ports_seen_u0(xhci))) {
- 			del_timer_sync(&xhci->comp_mode_recovery_timer);
+ 	rockchip_gpio_writel(bank, level, bank->gpio_regs->int_type);
+-- 
+2.34.1
+
 
 
