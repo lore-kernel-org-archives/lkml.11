@@ -2,166 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 237D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A033C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240652AbiB1Sla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:41:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
+        id S240626AbiB1Sl5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:41:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240697AbiB1SkV (ORCPT
+        with ESMTP id S240702AbiB1Slh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:40:21 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94C2424596
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:32:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646073155;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1t6rYRbTMQR99dgTTwzmR0JbGj6Nz3pGfTv0NpS6LGk=;
-        b=CEDg+T4L1Me93wwUV5hyx74ud/Wtv08W9uUudIt69IBCyeLwy9w+V1+ZdYts+ymWN/N4N5
-        4+XW74MNufYIU4ZKS1W2TbZZxJp8U/43g9I9RrzqVogMB10XmdXTygN/8uadIExuqGQegj
-        cDWTpDGkBpiAuf3Oe+jdsPPUMVJKcLM=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-176-GiTrhr1UNDGgPCkH4G3DCw-1; Mon, 28 Feb 2022 13:32:33 -0500
-X-MC-Unique: GiTrhr1UNDGgPCkH4G3DCw-1
-Received: by mail-qv1-f69.google.com with SMTP id z3-20020a0cf003000000b004328f6a7131so12538127qvk.19
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:32:33 -0800 (PST)
+        Mon, 28 Feb 2022 13:41:37 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4263E54BD3
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:35:43 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id c192so6219079wma.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:35:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XWE8ka0LFITuVWLTsvK0XnLYaX+ahuY1DLqYbhtqPVM=;
+        b=fhg7jpYf1EYHHy4sAaAQg8FUpD08rHouaef4QgIbFmDlV/OB0oARBG55IS0Vs6V7RM
+         dz1g6KwYdqfXj8/RsQiP30R9Vsy4j0+9+90azseP39z+yyaDaTIR3o0saIcI0j3ONmGp
+         /f5z4djXrqFENtGpVcKk6MIwkg81alkL2gPZgrjTjqO6rp0ITjedEQorl6w2nQxqQqia
+         7YeF5sP/D2kJomyggm4iB9PAa1WwbwGAKIsgBiJM/WQIg1mPwiUBLbwFKYWz8RORrDrp
+         pCQLJArueazRmcCsFyK7FLRFqlLoqTSoPbfR4dL8g6+wY22pXI0ZidCNDoEuP0NpDoga
+         rz3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1t6rYRbTMQR99dgTTwzmR0JbGj6Nz3pGfTv0NpS6LGk=;
-        b=yqmAlOOrb5qndGdmC8F7h915UYADMlx8549/0eHf/DNPlGWXGaXj2DFK3zcYShorVP
-         0Kh8EYSj/WD0Vdg/5qs6v8oqi9LKINs2lnHvJj2UeL0i4xaEC7YZVYQxvFBQ9Bj6MOIg
-         GXemjeOsnT/r7ZNWrLRdOBxLc7WsSNiPpnG5tBZGp9RoftXkxoG9WuCCQN/DxDoLXuN8
-         v1A9Yv2uvhlMUkalQa6j/IGU5E+TqZ8mYVJ9QcQD45yg1XFBxzZ76yeS0XGDylu1bhKR
-         KIXngILUoZ8aiqm+7YYg9fiX1lXmxzIUorShfT71D6LE14rstP63CXT+sMzCvfZ8sYCt
-         sSzA==
-X-Gm-Message-State: AOAM530LWlvXthQ9Z/pSEBV2UVF9WJzcu8uwDx2Axz6tPKiU5LQBYXoy
-        G1zhcd11aXvkZDvhlEDqdXNFP72GUC44ZplkO/gKlN3WmgHgpSXxfJC/skmHUvqS8MY0racVqRZ
-        SA/OvADDHZj8ldXcmuDpiwu32
-X-Received: by 2002:a05:622a:40e:b0:2df:f698:f1ef with SMTP id n14-20020a05622a040e00b002dff698f1efmr8420578qtx.595.1646073153379;
-        Mon, 28 Feb 2022 10:32:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxdovyLTQzK8AKram1AGlxe6VTSsqEeiNq9UKZ0U02LnVrZkEYIoDqjD8fD0kPN0rfyrV1OYQ==
-X-Received: by 2002:a05:622a:40e:b0:2df:f698:f1ef with SMTP id n14-20020a05622a040e00b002dff698f1efmr8420541qtx.595.1646073153037;
-        Mon, 28 Feb 2022 10:32:33 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id e9-20020a05620a014900b005084ce66b44sm5347108qkn.88.2022.02.28.10.32.30
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XWE8ka0LFITuVWLTsvK0XnLYaX+ahuY1DLqYbhtqPVM=;
+        b=R61vif8/Qrlt8CnzRvhZ2Mcjdl43AkkOVb5wCrLdmQRGSOEApPD5c08B4Sfy5AlO75
+         BIeIws/ZJjeFQcX3/a1Rp07SvGQWb5aC0o3jipLBzB8UQ/yQZw5aCecyAK2UpnDqPKTl
+         0PPfjs/nMqRwHUKWqDECai/ztemy47snMsn5xYsHasQpnoS51cjuAnueIyNLni68wGhY
+         ZJeEpHOeZqy5A9Jmj406u0VvYIpJIQU98vlK02/U6iR3y05305/M1JadD6sd1e9CEcqV
+         Gerk2xtXqfWRGxKJqtc/rzJ6aXwQC35WM0PvyYLfQf0tRzOaEQ6v2KFDKy7E/oRDxoqF
+         DdzA==
+X-Gm-Message-State: AOAM5323PFVO0bAgPB3qQ+TRqbGd+qTYGgVtjhwzkiULzrYHW8vgvRa8
+        LLRxWKBXa7byFFkinECDBo4=
+X-Google-Smtp-Source: ABdhPJwV3VqdHtOu+yvIpbun8KXIm09AgnYoutTtzWN3kkuBLC0rMsfci3Y49igHiesLNf6e99/m3g==
+X-Received: by 2002:a1c:544a:0:b0:37f:a9c8:d598 with SMTP id p10-20020a1c544a000000b0037fa9c8d598mr14285948wmi.26.1646073341878;
+        Mon, 28 Feb 2022 10:35:41 -0800 (PST)
+Received: from localhost.localdomain ([94.73.33.246])
+        by smtp.gmail.com with ESMTPSA id x5-20020adfec05000000b001e58cc95affsm11351387wrn.38.2022.02.28.10.35.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 10:32:31 -0800 (PST)
-Date:   Mon, 28 Feb 2022 10:32:28 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com
-Subject: Re: [PATCH 21/29] objtool: Rename --duplicate to --lto
-Message-ID: <20220228183228.splleoatuxxjr5kq@treble>
-References: <20220218164902.008644515@infradead.org>
- <20220218171409.814392411@infradead.org>
- <20220226194209.bvv3t65hhtnwltmk@treble>
- <20220226214802.4chmsrtstlerefmu@treble>
- <YhysYkcfwLr68Job@hirez.programming.kicks-ass.net>
+        Mon, 28 Feb 2022 10:35:41 -0800 (PST)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     andrzej.hajda@intel.com
+Cc:     narmstrong@baylibre.com, robert.foss@linaro.org,
+        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
+        maxime@cerno.tech, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+Subject: [PATCH] drm/bridge: tc358775: switch to devm_drm_of_get_bridge
+Date:   Mon, 28 Feb 2022 19:35:37 +0100
+Message-Id: <20220228183537.24600-1-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YhysYkcfwLr68Job@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 12:05:06PM +0100, Peter Zijlstra wrote:
-> > It just dawned on me that "--noinstr" already exists.  But I'm
-> > scratching my head trying to figure out the difference between
-> > "--noinstr" and omitting "--lto".
-> 
-> If you run: "objtool check --vmlinux --noinstr vmlinux.o", it'll only do
-> the shallow .noinstr.text/.entry.text checks. If OTOH you do: "objtool
-> check --vmlinux --noinstr --lto vmlinux.o" it'll do everything
-> (including noinstr).
+The function "drm_of_find_panel_or_bridge" has been deprecated in
+favor of "devm_drm_of_get_bridge".
 
-I think I got all that.  But what does "--vmlinux" do by itself?
+Switch to the new function and reduce boilerplate.
 
-> Similarlt, "--module --lto" will come to mean whole module (which is
-> currently not distinguishable from a regular module part run).
-> 
-> (barring the possible 's/--lto/--whole-archive/' rename proposed up top)
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+---
+ drivers/gpu/drm/bridge/tc358775.c | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
-Thanks for the explanations.  To summarize, we have:
-
-  A) legacy mode:
-
-     translation unit: objtool check [--module]
-     vmlinux.o:        N/A
-     module:           N/A
-
-  B) CONFIG_VMLINUX_VALIDATION=y && !(CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y)
-
-     translation unit: objtool check [--module]
-     vmlinux:          objtool check --vmlinux --noinstr
-     module:           objtool check --module --noinstr
-     
-  C) CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y:
-
-     translation unit: N/A
-     vmlinux:          objtool check --vmlinux --noinstr --lto
-     module:           objtool check --module --noinstr --lto
-
-Right?
-
-I think I get it, but it's mental gymnastics for me to remember how the
-options interact.  It still seems counterintuitive, because whatever
-"objtool check" does to a translation unit, I'd expect "objtool check
---vmlinux" to do the same things.
-
-I suppose it makes sense if I can remember that --vmlinux is a magical
-option which disables all that other stuff.  And it's counteracted by
---lto, which removes the magic.  But that's all hard to remember and
-just seems weird.
-
-There are a variety of ways to run objtool against vmlinux.  The "lto"
-approach is going to be less of an exception and may end up being the
-default someday.  So making --vmlinux do weird stuff is going to be even
-less intuitive as we go forward.  Let's make the default sane and
-consistent with other file types.
-
-So how about we just get rid of the magical --vmlinux and --lto options
-altogether, and make --noinstr additive, like all the other options?
-
-  A) legacy mode:
-     .o files: objtool check [--module]
-      vmlinux: N/A
-       module: N/A
-
-  B) CONFIG_NOINSTR_VALIDATION=y && !(CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y):
-     .o files: objtool check [--module]
-      vmlinux: objtool check --noinstr-only
-       module: objtool check --module --noinstr-only
-     
-  C) CONFIG_X86_KERNEL_IBT=y || CONFIG_LTO=y:
-     .o files: N/A
-      vmlinux: objtool check --noinstr
-       module: objtool check --module --noinstr
-
-(notice I renamed VMLINUX_VALIDATION to NOINSTR_VALIDATION)
-
-
-Isn't that much more logical and intuitive?
-
-  a) objtool has sane defaults, regardless of object type
-
-  b) no magic options, other than --noinstr-only, but that's
-     communicated in its name
-
-  c) --vmlinux is no longer needed -- fewer options to juggle
-
+diff --git a/drivers/gpu/drm/bridge/tc358775.c b/drivers/gpu/drm/bridge/tc358775.c
+index 2c76331b251d..b158e5ad561c 100644
+--- a/drivers/gpu/drm/bridge/tc358775.c
++++ b/drivers/gpu/drm/bridge/tc358775.c
+@@ -649,7 +649,6 @@ static int tc_attach_host(struct tc_data *tc)
+ static int tc_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ {
+ 	struct device *dev = &client->dev;
+-	struct drm_panel *panel;
+ 	struct tc_data *tc;
+ 	int ret;
+ 
+@@ -660,14 +659,8 @@ static int tc_probe(struct i2c_client *client, const struct i2c_device_id *id)
+ 	tc->dev = dev;
+ 	tc->i2c = client;
+ 
+-	ret = drm_of_find_panel_or_bridge(dev->of_node, TC358775_LVDS_OUT0,
+-					  0, &panel, NULL);
+-	if (ret < 0)
+-		return ret;
+-	if (!panel)
+-		return -ENODEV;
+-
+-	tc->panel_bridge = devm_drm_panel_bridge_add(dev, panel);
++	tc->panel_bridge = devm_drm_of_get_bridge(dev, dev->of_node,
++						  TC358775_LVDS_OUT0, 0);
+ 	if (IS_ERR(tc->panel_bridge))
+ 		return PTR_ERR(tc->panel_bridge);
+ 
 -- 
-Josh
+2.25.1
 
