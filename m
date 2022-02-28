@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6FE6C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FD3C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240513AbiB1RyV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:54:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55658 "EHLO
+        id S239090AbiB1Ry4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:54:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239069AbiB1RvJ (ORCPT
+        with ESMTP id S238961AbiB1Rvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:51:09 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C18A645A;
-        Mon, 28 Feb 2022 09:39:17 -0800 (PST)
+        Mon, 28 Feb 2022 12:51:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B1A9025F;
+        Mon, 28 Feb 2022 09:39:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E6A66CE17AC;
-        Mon, 28 Feb 2022 17:39:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3EF4C340F1;
-        Mon, 28 Feb 2022 17:39:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45FDD6153D;
+        Mon, 28 Feb 2022 17:39:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AEF6C340F0;
+        Mon, 28 Feb 2022 17:39:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069954;
-        bh=W7CMdv5uDv19IYXVsY7pf+BDkj7Ul3n+XTxUNsLiY04=;
+        s=korg; t=1646069967;
+        bh=WG4M8uByYE/W8oH65uK27LmFurDpKuZphLt/hTbcEr8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GBSxoFH1Yv8JMs2cGJiXizguyaxt2xsooTqAZ8p7iWTe3JEV8qgVdx/F8pACgwyHA
-         U1ae0JdVtN5BoU46YnM2wAETygfg8SLddY/DDPEOhXR86PL/EM6PRB+6Df+4+8Z48Y
-         SLpsOBiWR6n9h0yvVgObwr4Oo4NO7Nr2iUj9kNDY=
+        b=uyMEtMJA7bi3j83wyeO0I9nBKD94MmkoprafrobRKMMz7xleI8fKRn647+kpdZL8K
+         Eu5OMpQFArJGXXKCmxVUpRc1snA9dDPDwIZ593XLTpS1f5DglGxYO2Jgu8sNchan3g
+         OylaZvmEmqXSmZ+vc9hZUAI+0E17qtr1j1ezgcsY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Fernando Fernandez Mancera <ffmancera@riseup.net>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: [PATCH 5.15 072/139] netfilter: nf_tables: fix memory leak during stateful obj update
-Date:   Mon, 28 Feb 2022 18:24:06 +0100
-Message-Id: <20220228172355.314943753@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Vesker <valex@nvidia.com>,
+        Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.15 076/139] net/mlx5: DR, Cache STE shadow memory
+Date:   Mon, 28 Feb 2022 18:24:10 +0100
+Message-Id: <20220228172355.723263697@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -50,77 +49,214 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Yevgeny Kliteynik <kliteyn@nvidia.com>
 
-commit dad3bdeef45f81a6e90204bcc85360bb76eccec7 upstream.
+commit e5b2bc30c21139ae10f0e56989389d0bc7b7b1d6 upstream.
 
-stateful objects can be updated from the control plane.
-The transaction logic allocates a temporary object for this purpose.
+During rule insertion on each ICM memory chunk we also allocate shadow memory
+used for management. This includes the hw_ste, dr_ste and miss list per entry.
+Since the scale of these allocations is large we noticed a performance hiccup
+that happens once malloc and free are stressed.
+In extreme usecases when ~1M chunks are freed at once, it might take up to 40
+seconds to complete this, up to the point the kernel sees this as self-detected
+stall on CPU:
 
-The ->init function was called for this object, so plain kfree() leaks
-resources. We must call ->destroy function of the object.
+ rcu: INFO: rcu_sched self-detected stall on CPU
 
-nft_obj_destroy does this, but it also decrements the module refcount,
-but the update path doesn't increment it.
+To resolve this we will increase the reuse of shadow memory.
+Doing this we see that a time in the aforementioned usecase dropped from ~40
+seconds to ~8-10 seconds.
 
-To avoid special-casing the update object release, do module_get for
-the update case too and release it via nft_obj_destroy().
-
-Fixes: d62d0ba97b58 ("netfilter: nf_tables: Introduce stateful object update operation")
-Cc: Fernando Fernandez Mancera <ffmancera@riseup.net>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 29cf8febd185 ("net/mlx5: DR, ICM pool memory allocator")
+Signed-off-by: Alex Vesker <valex@nvidia.com>
+Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/netfilter/nf_tables_api.c |   13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c |  109 ++++++----
+ drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h      |    5 
+ 2 files changed, 79 insertions(+), 35 deletions(-)
 
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -6535,12 +6535,15 @@ static int nf_tables_updobj(const struct
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_icm_pool.c
+@@ -136,37 +136,35 @@ static void dr_icm_pool_mr_destroy(struc
+ 	kvfree(icm_mr);
+ }
+ 
+-static int dr_icm_chunk_ste_init(struct mlx5dr_icm_chunk *chunk)
++static int dr_icm_buddy_get_ste_size(struct mlx5dr_icm_buddy_mem *buddy)
  {
- 	struct nft_object *newobj;
- 	struct nft_trans *trans;
--	int err;
-+	int err = -ENOMEM;
-+
-+	if (!try_module_get(type->owner))
-+		return -ENOENT;
- 
- 	trans = nft_trans_alloc(ctx, NFT_MSG_NEWOBJ,
- 				sizeof(struct nft_trans_obj));
- 	if (!trans)
+-	chunk->ste_arr = kvzalloc(chunk->num_of_entries *
+-				  sizeof(chunk->ste_arr[0]), GFP_KERNEL);
+-	if (!chunk->ste_arr)
 -		return -ENOMEM;
-+		goto err_trans;
+-
+-	chunk->hw_ste_arr = kvzalloc(chunk->num_of_entries *
+-				     DR_STE_SIZE_REDUCED, GFP_KERNEL);
+-	if (!chunk->hw_ste_arr)
+-		goto out_free_ste_arr;
+-
+-	chunk->miss_list = kvmalloc(chunk->num_of_entries *
+-				    sizeof(chunk->miss_list[0]), GFP_KERNEL);
+-	if (!chunk->miss_list)
+-		goto out_free_hw_ste_arr;
++	/* We support only one type of STE size, both for ConnectX-5 and later
++	 * devices. Once the support for match STE which has a larger tag is
++	 * added (32B instead of 16B), the STE size for devices later than
++	 * ConnectX-5 needs to account for that.
++	 */
++	return DR_STE_SIZE_REDUCED;
++}
  
- 	newobj = nft_obj_init(ctx, type, attr);
- 	if (IS_ERR(newobj)) {
-@@ -6557,6 +6560,8 @@ static int nf_tables_updobj(const struct
+-	return 0;
++static void dr_icm_chunk_ste_init(struct mlx5dr_icm_chunk *chunk, int offset)
++{
++	struct mlx5dr_icm_buddy_mem *buddy = chunk->buddy_mem;
++	int index = offset / DR_STE_SIZE;
  
- err_free_trans:
- 	kfree(trans);
-+err_trans:
-+	module_put(type->owner);
- 	return err;
+-out_free_hw_ste_arr:
+-	kvfree(chunk->hw_ste_arr);
+-out_free_ste_arr:
+-	kvfree(chunk->ste_arr);
+-	return -ENOMEM;
++	chunk->ste_arr = &buddy->ste_arr[index];
++	chunk->miss_list = &buddy->miss_list[index];
++	chunk->hw_ste_arr = buddy->hw_ste_arr +
++			    index * dr_icm_buddy_get_ste_size(buddy);
  }
  
-@@ -8169,7 +8174,7 @@ static void nft_obj_commit_update(struct
- 	if (obj->ops->update)
- 		obj->ops->update(obj, newobj);
- 
--	kfree(newobj);
-+	nft_obj_destroy(&trans->ctx, newobj);
+ static void dr_icm_chunk_ste_cleanup(struct mlx5dr_icm_chunk *chunk)
+ {
+-	kvfree(chunk->miss_list);
+-	kvfree(chunk->hw_ste_arr);
+-	kvfree(chunk->ste_arr);
++	struct mlx5dr_icm_buddy_mem *buddy = chunk->buddy_mem;
++
++	memset(chunk->hw_ste_arr, 0,
++	       chunk->num_of_entries * dr_icm_buddy_get_ste_size(buddy));
++	memset(chunk->ste_arr, 0,
++	       chunk->num_of_entries * sizeof(chunk->ste_arr[0]));
  }
  
- static void nft_commit_release(struct nft_trans *trans)
-@@ -8914,7 +8919,7 @@ static int __nf_tables_abort(struct net
- 			break;
- 		case NFT_MSG_NEWOBJ:
- 			if (nft_trans_obj_update(trans)) {
--				kfree(nft_trans_obj_newobj(trans));
-+				nft_obj_destroy(&trans->ctx, nft_trans_obj_newobj(trans));
- 				nft_trans_destroy(trans);
- 			} else {
- 				trans->ctx.table->use--;
+ static enum mlx5dr_icm_type
+@@ -189,6 +187,44 @@ static void dr_icm_chunk_destroy(struct
+ 	kvfree(chunk);
+ }
+ 
++static int dr_icm_buddy_init_ste_cache(struct mlx5dr_icm_buddy_mem *buddy)
++{
++	int num_of_entries =
++		mlx5dr_icm_pool_chunk_size_to_entries(buddy->pool->max_log_chunk_sz);
++
++	buddy->ste_arr = kvcalloc(num_of_entries,
++				  sizeof(struct mlx5dr_ste), GFP_KERNEL);
++	if (!buddy->ste_arr)
++		return -ENOMEM;
++
++	/* Preallocate full STE size on non-ConnectX-5 devices since
++	 * we need to support both full and reduced with the same cache.
++	 */
++	buddy->hw_ste_arr = kvcalloc(num_of_entries,
++				     dr_icm_buddy_get_ste_size(buddy), GFP_KERNEL);
++	if (!buddy->hw_ste_arr)
++		goto free_ste_arr;
++
++	buddy->miss_list = kvmalloc(num_of_entries * sizeof(struct list_head), GFP_KERNEL);
++	if (!buddy->miss_list)
++		goto free_hw_ste_arr;
++
++	return 0;
++
++free_hw_ste_arr:
++	kvfree(buddy->hw_ste_arr);
++free_ste_arr:
++	kvfree(buddy->ste_arr);
++	return -ENOMEM;
++}
++
++static void dr_icm_buddy_cleanup_ste_cache(struct mlx5dr_icm_buddy_mem *buddy)
++{
++	kvfree(buddy->ste_arr);
++	kvfree(buddy->hw_ste_arr);
++	kvfree(buddy->miss_list);
++}
++
+ static int dr_icm_buddy_create(struct mlx5dr_icm_pool *pool)
+ {
+ 	struct mlx5dr_icm_buddy_mem *buddy;
+@@ -208,11 +244,19 @@ static int dr_icm_buddy_create(struct ml
+ 	buddy->icm_mr = icm_mr;
+ 	buddy->pool = pool;
+ 
++	if (pool->icm_type == DR_ICM_TYPE_STE) {
++		/* Reduce allocations by preallocating and reusing the STE structures */
++		if (dr_icm_buddy_init_ste_cache(buddy))
++			goto err_cleanup_buddy;
++	}
++
+ 	/* add it to the -start- of the list in order to search in it first */
+ 	list_add(&buddy->list_node, &pool->buddy_mem_list);
+ 
+ 	return 0;
+ 
++err_cleanup_buddy:
++	mlx5dr_buddy_cleanup(buddy);
+ err_free_buddy:
+ 	kvfree(buddy);
+ free_mr:
+@@ -234,6 +278,9 @@ static void dr_icm_buddy_destroy(struct
+ 
+ 	mlx5dr_buddy_cleanup(buddy);
+ 
++	if (buddy->pool->icm_type == DR_ICM_TYPE_STE)
++		dr_icm_buddy_cleanup_ste_cache(buddy);
++
+ 	kvfree(buddy);
+ }
+ 
+@@ -261,26 +308,18 @@ dr_icm_chunk_create(struct mlx5dr_icm_po
+ 	chunk->byte_size =
+ 		mlx5dr_icm_pool_chunk_size_to_byte(chunk_size, pool->icm_type);
+ 	chunk->seg = seg;
++	chunk->buddy_mem = buddy_mem_pool;
+ 
+-	if (pool->icm_type == DR_ICM_TYPE_STE && dr_icm_chunk_ste_init(chunk)) {
+-		mlx5dr_err(pool->dmn,
+-			   "Failed to init ste arrays (order: %d)\n",
+-			   chunk_size);
+-		goto out_free_chunk;
+-	}
++	if (pool->icm_type == DR_ICM_TYPE_STE)
++		dr_icm_chunk_ste_init(chunk, offset);
+ 
+ 	buddy_mem_pool->used_memory += chunk->byte_size;
+-	chunk->buddy_mem = buddy_mem_pool;
+ 	INIT_LIST_HEAD(&chunk->chunk_list);
+ 
+ 	/* chunk now is part of the used_list */
+ 	list_add_tail(&chunk->chunk_list, &buddy_mem_pool->used_list);
+ 
+ 	return chunk;
+-
+-out_free_chunk:
+-	kvfree(chunk);
+-	return NULL;
+ }
+ 
+ static bool dr_icm_pool_is_sync_required(struct mlx5dr_icm_pool *pool)
+--- a/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/mlx5dr.h
+@@ -160,6 +160,11 @@ struct mlx5dr_icm_buddy_mem {
+ 	 * sync_ste command sets them free.
+ 	 */
+ 	struct list_head	hot_list;
++
++	/* Memory optimisation */
++	struct mlx5dr_ste	*ste_arr;
++	struct list_head	*miss_list;
++	u8			*hw_ste_arr;
+ };
+ 
+ int mlx5dr_buddy_init(struct mlx5dr_icm_buddy_mem *buddy,
 
 
