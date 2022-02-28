@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4772C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B864CC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239958AbiB1R7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:59:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
+        id S239867AbiB1R7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:59:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240717AbiB1Ryc (ORCPT
+        with ESMTP id S240237AbiB1RyH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40B933364;
-        Mon, 28 Feb 2022 09:42:48 -0800 (PST)
+        Mon, 28 Feb 2022 12:54:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3399DB12D9;
+        Mon, 28 Feb 2022 09:41:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57B9E609EE;
-        Mon, 28 Feb 2022 17:42:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A2F3C340E7;
-        Mon, 28 Feb 2022 17:42:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A144B815BA;
+        Mon, 28 Feb 2022 17:41:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A5A1C340F1;
+        Mon, 28 Feb 2022 17:41:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070167;
-        bh=H5afrEMBcaQ1QX0wDf3EYgdzqPZ8LQJerIuF+PCrhek=;
+        s=korg; t=1646070107;
+        bh=S8J+aiyOcgabjctDUgCUvtmL825UWRiMZ0r3ZLPkzCk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ePJ0fOCrIHvOw/7fuVGasDTpFxyc0vzpDr0zH+Xl4PoidUNtgnTt3OFwoLgIgt0wL
-         JxMC9QMtHmtPltWVB+3zRMjX26/usWDQL9aIyPTOHI83hwkDmqE7jqDnl9axIsypvG
-         ysqE7XRtbt3NdVMuNCRSRlegg8y/Vd+Nz3Xoeob4=
+        b=N7cb9nddZIYkXLXUz73gKwiVmFdRrUr0V277vCBHFgu2OL8lF8xwgsxkTfyaE44jM
+         S/WidmhS5CE4wE+p5FPHQo5RVquEskQi6j3omJJxQLpEgyTLx4NI4lzihjCzQlIAQR
+         3GmxUCHywqlkT41vHiCJHaCfbKnrQFpY/jNAyvYA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
-Subject: [PATCH 5.16 011/164] vhost/vsock: dont check owner in vhost_vsock_stop() while releasing
-Date:   Mon, 28 Feb 2022 18:22:53 +0100
-Message-Id: <20220228172400.851408749@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Md Haris Iqbal <haris.iqbal@ionos.com>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 089/139] RDMA/rtrs-clt: Fix possible double free in error case
+Date:   Mon, 28 Feb 2022 18:24:23 +0100
+Message-Id: <20220228172357.000407449@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
-References: <20220228172359.567256961@linuxfoundation.org>
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,85 +51,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefano Garzarella <sgarzare@redhat.com>
+From: Md Haris Iqbal <haris.iqbal@ionos.com>
 
-commit a58da53ffd70294ebea8ecd0eb45fd0d74add9f9 upstream.
+[ Upstream commit 8700af2cc18c919b2a83e74e0479038fd113c15d ]
 
-vhost_vsock_stop() calls vhost_dev_check_owner() to check the device
-ownership. It expects current->mm to be valid.
+Callback function rtrs_clt_dev_release() for put_device() calls kfree(clt)
+to free memory. We shouldn't call kfree(clt) again, and we can't use the
+clt after kfree too.
 
-vhost_vsock_stop() is also called by vhost_vsock_dev_release() when
-the user has not done close(), so when we are in do_exit(). In this
-case current->mm is invalid and we're releasing the device, so we
-should clean it anyway.
+Replace device_register() with device_initialize() and device_add() so that
+dev_set_name can() be used appropriately.
 
-Let's check the owner only when vhost_vsock_stop() is called
-by an ioctl.
+Move mutex_destroy() to the release function so it can be called in
+the alloc_clt err path.
 
-When invoked from release we can not fail so we don't check return
-code of vhost_vsock_stop(). We need to stop vsock even if it's not
-the owner.
-
-Fixes: 433fc58e6bf2 ("VSOCK: Introduce vhost_vsock.ko")
-Cc: stable@vger.kernel.org
-Reported-by: syzbot+1e3ea63db39f2b4440e0@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+3140b17cb44a7b174008@syzkaller.appspotmail.com
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: eab098246625 ("RDMA/rtrs-clt: Refactor the failure cases in alloc_clt")
+Link: https://lore.kernel.org/r/20220217030929.323849-1-haris.iqbal@ionos.com
+Reported-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Md Haris Iqbal <haris.iqbal@ionos.com>
+Reviewed-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vhost/vsock.c |   21 ++++++++++++++-------
- 1 file changed, 14 insertions(+), 7 deletions(-)
+ drivers/infiniband/ulp/rtrs/rtrs-clt.c | 37 ++++++++++++++------------
+ 1 file changed, 20 insertions(+), 17 deletions(-)
 
---- a/drivers/vhost/vsock.c
-+++ b/drivers/vhost/vsock.c
-@@ -629,16 +629,18 @@ err:
- 	return ret;
+diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
+index 55ebe01ec9951..3272514f05405 100644
+--- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
++++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
+@@ -2664,6 +2664,8 @@ static void rtrs_clt_dev_release(struct device *dev)
+ {
+ 	struct rtrs_clt *clt = container_of(dev, struct rtrs_clt, dev);
+ 
++	mutex_destroy(&clt->paths_ev_mutex);
++	mutex_destroy(&clt->paths_mutex);
+ 	kfree(clt);
  }
  
--static int vhost_vsock_stop(struct vhost_vsock *vsock)
-+static int vhost_vsock_stop(struct vhost_vsock *vsock, bool check_owner)
- {
- 	size_t i;
--	int ret;
-+	int ret = 0;
+@@ -2693,6 +2695,8 @@ static struct rtrs_clt *alloc_clt(const char *sessname, size_t paths_num,
+ 		return ERR_PTR(-ENOMEM);
+ 	}
  
- 	mutex_lock(&vsock->dev.mutex);
++	clt->dev.class = rtrs_clt_dev_class;
++	clt->dev.release = rtrs_clt_dev_release;
+ 	uuid_gen(&clt->paths_uuid);
+ 	INIT_LIST_HEAD_RCU(&clt->paths_list);
+ 	clt->paths_num = paths_num;
+@@ -2709,43 +2713,41 @@ static struct rtrs_clt *alloc_clt(const char *sessname, size_t paths_num,
+ 	init_waitqueue_head(&clt->permits_wait);
+ 	mutex_init(&clt->paths_ev_mutex);
+ 	mutex_init(&clt->paths_mutex);
++	device_initialize(&clt->dev);
  
--	ret = vhost_dev_check_owner(&vsock->dev);
--	if (ret)
+-	clt->dev.class = rtrs_clt_dev_class;
+-	clt->dev.release = rtrs_clt_dev_release;
+ 	err = dev_set_name(&clt->dev, "%s", sessname);
+ 	if (err)
 -		goto err;
-+	if (check_owner) {
-+		ret = vhost_dev_check_owner(&vsock->dev);
-+		if (ret)
-+			goto err;
-+	}
++		goto err_put;
++
+ 	/*
+ 	 * Suppress user space notification until
+ 	 * sysfs files are created
+ 	 */
+ 	dev_set_uevent_suppress(&clt->dev, true);
+-	err = device_register(&clt->dev);
+-	if (err) {
+-		put_device(&clt->dev);
+-		goto err;
+-	}
++	err = device_add(&clt->dev);
++	if (err)
++		goto err_put;
  
- 	for (i = 0; i < ARRAY_SIZE(vsock->vqs); i++) {
- 		struct vhost_virtqueue *vq = &vsock->vqs[i];
-@@ -753,7 +755,12 @@ static int vhost_vsock_dev_release(struc
- 	 * inefficient.  Room for improvement here. */
- 	vsock_for_each_connected_socket(vhost_vsock_reset_orphans);
+ 	clt->kobj_paths = kobject_create_and_add("paths", &clt->dev.kobj);
+ 	if (!clt->kobj_paths) {
+ 		err = -ENOMEM;
+-		goto err_dev;
++		goto err_del;
+ 	}
+ 	err = rtrs_clt_create_sysfs_root_files(clt);
+ 	if (err) {
+ 		kobject_del(clt->kobj_paths);
+ 		kobject_put(clt->kobj_paths);
+-		goto err_dev;
++		goto err_del;
+ 	}
+ 	dev_set_uevent_suppress(&clt->dev, false);
+ 	kobject_uevent(&clt->dev.kobj, KOBJ_ADD);
  
--	vhost_vsock_stop(vsock);
-+	/* Don't check the owner, because we are in the release path, so we
-+	 * need to stop the vsock device in any case.
-+	 * vhost_vsock_stop() can not fail in this case, so we don't need to
-+	 * check the return code.
+ 	return clt;
+-err_dev:
+-	device_unregister(&clt->dev);
+-err:
++err_del:
++	device_del(&clt->dev);
++err_put:
+ 	free_percpu(clt->pcpu_path);
+-	kfree(clt);
++	put_device(&clt->dev);
+ 	return ERR_PTR(err);
+ }
+ 
+@@ -2753,9 +2755,10 @@ static void free_clt(struct rtrs_clt *clt)
+ {
+ 	free_permits(clt);
+ 	free_percpu(clt->pcpu_path);
+-	mutex_destroy(&clt->paths_ev_mutex);
+-	mutex_destroy(&clt->paths_mutex);
+-	/* release callback will free clt in last put */
++
++	/*
++	 * release callback will free clt and destroy mutexes in last put
 +	 */
-+	vhost_vsock_stop(vsock, false);
- 	vhost_vsock_flush(vsock);
- 	vhost_dev_stop(&vsock->dev);
+ 	device_unregister(&clt->dev);
+ }
  
-@@ -868,7 +875,7 @@ static long vhost_vsock_dev_ioctl(struct
- 		if (start)
- 			return vhost_vsock_start(vsock);
- 		else
--			return vhost_vsock_stop(vsock);
-+			return vhost_vsock_stop(vsock, true);
- 	case VHOST_GET_FEATURES:
- 		features = VHOST_VSOCK_FEATURES;
- 		if (copy_to_user(argp, &features, sizeof(features)))
+-- 
+2.34.1
+
 
 
