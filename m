@@ -2,94 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BACA8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40855C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:24:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235201AbiB1MYf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:24:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
+        id S236351AbiB1MYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:24:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236309AbiB1MXq (ORCPT
+        with ESMTP id S236381AbiB1MYQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:23:46 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C3F70338;
-        Mon, 28 Feb 2022 04:23:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646050987; x=1677586987;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=f9GuMcreOg8go0q3hnGUhIUuS8VdA6vaXulxqgkswAY=;
-  b=eoH21kheduVTJrzVnHgAUxkxfoIW5i9iN2shE9uO8FbUMoweiNlELC7g
-   0zIdfVh7/9+8QXxQvknrFL5RN0+IOXFuKNcpJQnZE0gQgq+pTJY85oSXh
-   q3sD+DEM1pxPngOqZb5xlDMzr1mn9L/BD/puzSZc5IsdVhS7RAJ1zyYvd
-   qq6DoU9qAJnifC58E2TvnHI17L7VGOkVTgWOGprWJAup6KLtxtO0ENUue
-   sZBPAnUs7rwzVqji1oxtbKGGGnbH5oh4mpd09ZCDEh/P6jrB2OXgboSa1
-   CLC99YWHo+lD3eb+tcneH8oCzx6MapgTT3gheEKq7xsJoYmI1ncfNbxmb
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,142,1643698800"; 
-   d="scan'208";a="155104963"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Feb 2022 05:23:07 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 28 Feb 2022 05:23:06 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 28 Feb 2022 05:23:04 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <ludovic.desroches@microchip.com>
-CC:     <robh+dt@kernel.org>, <linux@armlinux.org.uk>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 1/2] ARM: dts: at91: sama7g5: add eic node
-Date:   Mon, 28 Feb 2022 14:23:25 +0200
-Message-ID: <20220228122326.1400954-2-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220228122326.1400954-1-claudiu.beznea@microchip.com>
-References: <20220228122326.1400954-1-claudiu.beznea@microchip.com>
+        Mon, 28 Feb 2022 07:24:16 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54DAC74DC5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:23:34 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id d17so11043249pfl.0
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:23:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4weE4kqhVNNelpninfKVs0Z5lAWaMF5vJ9tpJi1vKqM=;
+        b=jNIurO4J5jzzg6tw4FkyFriQIvcP76IRCFSaYIPHcK6WypzpBeQpxT2wVTd235Rx+H
+         zIM3T3a8rwrhBykl8ohYk5Rc989WTu+s+jPwkike3SU1b3etv0KAPcS0b4SrXMmRau5V
+         0XbYaQddQw2cwYkWhjXYHjmGO10fEHgAzCMhMqJ2gkZ3249Xgb3P6nEgYgKIL7C8Fduc
+         PlmhdyUHJ1/oOtXztvv1x2qiybg82kKYTC7ZYo3Wp4hJOrsH08TwJq1UFHRkMxviVlee
+         kHCyRPQBH+81w9gv77XtRh/AUjRq2gsCar9rXwYlvYrfL/BuBWxcTVZaCJTztmsk1L4F
+         5z6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4weE4kqhVNNelpninfKVs0Z5lAWaMF5vJ9tpJi1vKqM=;
+        b=hgs5Ia2gVdKqH9OkA4mEJnxUbyvPXDghovo7kRuPDeD1evAf6c0mbeDxLOdIAu6mye
+         vlATVfuxyvZlBz/hJlG02f09f+gTgsXJb/vpDrOWSTL8G4hCDewETM9+ohFQ/7y/GFJ7
+         AYlGaBwwYREOhzPUaM4qba1ydimcucB7Y8whbVVD2nwCis87ekxj2cR3TmrZCjfYxgtP
+         lorTFiSW9yd225VlvNcayEaPB1NA90vmpfPpi15xblupk4q9dwtmsR0jicbOnkxVBQm7
+         PNt6WbDLwFHxiv7oWgl8RCPLX9AbSfrUMedPxTv1Ubd0GqBfaqbBffyjsb8MIUflIuMx
+         R9ZA==
+X-Gm-Message-State: AOAM533gebu/Ld3BNfAIDeym3F1ZjlbuGD5ZaxDhk0KVNcQFiN523Jht
+        DlQE4nz2SoqzQKFQPjQ2R3CiEg==
+X-Google-Smtp-Source: ABdhPJy0Y3sz8zYIu7FfTE85icoaySMSdHhDkvZcfxDVS79w35TAOVMTZcKVPjThbCUvuMwVu0O9uQ==
+X-Received: by 2002:a65:554e:0:b0:34d:f721:7fef with SMTP id t14-20020a65554e000000b0034df7217fefmr7749911pgr.476.1646051013796;
+        Mon, 28 Feb 2022 04:23:33 -0800 (PST)
+Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.227])
+        by smtp.gmail.com with ESMTPSA id ep22-20020a17090ae65600b001b92477db10sm10466753pjb.29.2022.02.28.04.23.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 04:23:33 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     willy@infradead.org, akpm@linux-foundation.org, hannes@cmpxchg.org,
+        mhocko@kernel.org, vdavydov.dev@gmail.com, shakeelb@google.com,
+        roman.gushchin@linux.dev, shy828301@gmail.com, alexs@kernel.org,
+        richard.weiyang@gmail.com, david@fromorbit.com,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        jaegeuk@kernel.org, chao@kernel.org, kari.argillander@gmail.com,
+        vbabka@suse.cz
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-nfs@vger.kernel.org,
+        zhengqi.arch@bytedance.com, duanxiongchun@bytedance.com,
+        fam.zheng@bytedance.com, smuchun@gmail.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH v6 09/16] mm: memcontrol: move memcg_online_kmem() to mem_cgroup_css_online()
+Date:   Mon, 28 Feb 2022 20:21:19 +0800
+Message-Id: <20220228122126.37293-10-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220228122126.37293-1-songmuchun@bytedance.com>
+References: <20220228122126.37293-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add EIC node.
+It will simplify the code if moving memcg_online_kmem() to
+mem_cgroup_css_online() and do not need to set ->kmemcg_id
+to -1 to indicate the memcg is offline. In the next patch,
+->kmemcg_id will be used to sync list lru reparenting which
+requires not to change ->kmemcg_id.
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 ---
- arch/arm/boot/dts/sama7g5.dtsi | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ mm/memcontrol.c | 37 ++++++++++++++++---------------------
+ 1 file changed, 16 insertions(+), 21 deletions(-)
 
-diff --git a/arch/arm/boot/dts/sama7g5.dtsi b/arch/arm/boot/dts/sama7g5.dtsi
-index e6d0c90cf710..efc5437f09ec 100644
---- a/arch/arm/boot/dts/sama7g5.dtsi
-+++ b/arch/arm/boot/dts/sama7g5.dtsi
-@@ -455,6 +455,19 @@ i2s1: i2s@e1620000 {
- 			status = "disabled";
- 		};
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index ffc5f0798de1..5bdf5184681c 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -3616,7 +3616,8 @@ static int memcg_online_kmem(struct mem_cgroup *memcg)
+ 	if (cgroup_memory_nokmem)
+ 		return 0;
  
-+		eic: interrupt-controller@e1628000 {
-+			compatible = "microchip,sama7g5-eic";
-+			reg = <0xe1628000 0xec>;
-+			interrupt-parent = <&gic>;
-+			interrupt-controller;
-+			#interrupt-cells = <2>;
-+			interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&pmc PMC_TYPE_PERIPHERAL 37>;
-+			clock-names = "pclk";
-+			status = "disabled";
-+		};
+-	BUG_ON(memcg->kmemcg_id >= 0);
++	if (unlikely(mem_cgroup_is_root(memcg)))
++		return 0;
+ 
+ 	memcg_id = memcg_alloc_cache_id();
+ 	if (memcg_id < 0)
+@@ -3642,7 +3643,10 @@ static void memcg_offline_kmem(struct mem_cgroup *memcg)
+ 	struct mem_cgroup *parent;
+ 	int kmemcg_id;
+ 
+-	if (memcg->kmemcg_id == -1)
++	if (cgroup_memory_nokmem)
++		return;
 +
- 		pit64b0: timer@e1800000 {
- 			compatible = "microchip,sama7g5-pit64b", "microchip,sam9x60-pit64b";
- 			reg = <0xe1800000 0x4000>;
++	if (unlikely(mem_cgroup_is_root(memcg)))
+ 		return;
+ 
+ 	parent = parent_mem_cgroup(memcg);
+@@ -3652,7 +3656,6 @@ static void memcg_offline_kmem(struct mem_cgroup *memcg)
+ 	memcg_reparent_objcgs(memcg, parent);
+ 
+ 	kmemcg_id = memcg->kmemcg_id;
+-	BUG_ON(kmemcg_id < 0);
+ 
+ 	/*
+ 	 * After we have finished memcg_reparent_objcgs(), all list_lrus
+@@ -3663,7 +3666,6 @@ static void memcg_offline_kmem(struct mem_cgroup *memcg)
+ 	memcg_drain_all_list_lrus(kmemcg_id, parent);
+ 
+ 	memcg_free_cache_id(kmemcg_id);
+-	memcg->kmemcg_id = -1;
+ }
+ #else
+ static int memcg_online_kmem(struct mem_cgroup *memcg)
+@@ -5178,7 +5180,6 @@ mem_cgroup_css_alloc(struct cgroup_subsys_state *parent_css)
+ {
+ 	struct mem_cgroup *parent = mem_cgroup_from_css(parent_css);
+ 	struct mem_cgroup *memcg, *old_memcg;
+-	long error = -ENOMEM;
+ 
+ 	old_memcg = set_active_memcg(parent);
+ 	memcg = mem_cgroup_alloc();
+@@ -5207,34 +5208,26 @@ mem_cgroup_css_alloc(struct cgroup_subsys_state *parent_css)
+ 		return &memcg->css;
+ 	}
+ 
+-	/* The following stuff does not apply to the root */
+-	error = memcg_online_kmem(memcg);
+-	if (error)
+-		goto fail;
+-
+ 	if (cgroup_subsys_on_dfl(memory_cgrp_subsys) && !cgroup_memory_nosocket)
+ 		static_branch_inc(&memcg_sockets_enabled_key);
+ 
+ 	return &memcg->css;
+-fail:
+-	mem_cgroup_id_remove(memcg);
+-	mem_cgroup_free(memcg);
+-	return ERR_PTR(error);
+ }
+ 
+ static int mem_cgroup_css_online(struct cgroup_subsys_state *css)
+ {
+ 	struct mem_cgroup *memcg = mem_cgroup_from_css(css);
+ 
++	if (memcg_online_kmem(memcg))
++		goto remove_id;
++
+ 	/*
+ 	 * A memcg must be visible for expand_shrinker_info()
+ 	 * by the time the maps are allocated. So, we allocate maps
+ 	 * here, when for_each_mem_cgroup() can't skip it.
+ 	 */
+-	if (alloc_shrinker_info(memcg)) {
+-		mem_cgroup_id_remove(memcg);
+-		return -ENOMEM;
+-	}
++	if (alloc_shrinker_info(memcg))
++		goto offline_kmem;
+ 
+ 	/* Online state pins memcg ID, memcg ID pins CSS */
+ 	refcount_set(&memcg->id.ref, 1);
+@@ -5244,6 +5237,11 @@ static int mem_cgroup_css_online(struct cgroup_subsys_state *css)
+ 		queue_delayed_work(system_unbound_wq, &stats_flush_dwork,
+ 				   2UL*HZ);
+ 	return 0;
++offline_kmem:
++	memcg_offline_kmem(memcg);
++remove_id:
++	mem_cgroup_id_remove(memcg);
++	return -ENOMEM;
+ }
+ 
+ static void mem_cgroup_css_offline(struct cgroup_subsys_state *css)
+@@ -5301,9 +5299,6 @@ static void mem_cgroup_css_free(struct cgroup_subsys_state *css)
+ 	cancel_work_sync(&memcg->high_work);
+ 	mem_cgroup_remove_from_trees(memcg);
+ 	free_shrinker_info(memcg);
+-
+-	/* Need to offline kmem if online_css() fails */
+-	memcg_offline_kmem(memcg);
+ 	mem_cgroup_free(memcg);
+ }
+ 
 -- 
-2.32.0
+2.11.0
 
