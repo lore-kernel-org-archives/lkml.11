@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDD2C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A57EC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:58:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239494AbiB1R54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:57:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
+        id S239579AbiB1R6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:58:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240287AbiB1RyK (ORCPT
+        with ESMTP id S240490AbiB1RyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:54:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23685B0EA3;
-        Mon, 28 Feb 2022 09:41:59 -0800 (PST)
+        Mon, 28 Feb 2022 12:54:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D96A95496;
+        Mon, 28 Feb 2022 09:42:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24F13B815B3;
-        Mon, 28 Feb 2022 17:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C705C340F3;
-        Mon, 28 Feb 2022 17:41:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 73D5261359;
+        Mon, 28 Feb 2022 17:42:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88563C340E7;
+        Mon, 28 Feb 2022 17:42:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070115;
-        bh=6tDy2ua6iB4fOAElIvkDCYv79PsnJOR5zcUKUqVEqz8=;
+        s=korg; t=1646070137;
+        bh=i9oPbGcq/MjZko/YyDFlSKcU+6sIhZtLIzvUO1A3F+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p0iZXQarOW/D5nAQPUiTAXbOsayYXLidV+12XP/rzeFSnWVmay0q201JApxQW+sGE
-         OETNGIdAN10bj61ojB1YMm01vX+cqi6Zs4VNn+5JyzGddwaISJeIZRpgwjrUl91WUe
-         ZUCGdQbqck5vlCAqGNYyaRuqFw6Qps/maC9gyy2s=
+        b=IAho8DIPnE9whgHZow5JM57O1/NvsXvyt8EP0NFP/XEJISkk9oboJff2BkLqRQdb/
+         /Tm6xXCt0PiprLXF09BJ0/U+yPX3YPLGcmPU+5AO9as5yOJMO8jm4A67BoGMZoX2ow
+         v+JlPioBSEZD2lsi2jLT1/1eJQvrbCdnj5xrVr8U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, ChenXiaoSong <chenxiaosong2@huawei.com>,
-        Laibin Qiu <qiulaibin@huawei.com>,
-        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 092/139] configfs: fix a race in configfs_{,un}register_subsystem()
-Date:   Mon, 28 Feb 2022 18:24:26 +0100
-Message-Id: <20220228172357.276924748@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.15 128/139] tty: n_gsm: fix encoding of control signal octet bit DV
+Date:   Mon, 28 Feb 2022 18:25:02 +0100
+Message-Id: <20220228172401.131593814@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,98 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChenXiaoSong <chenxiaosong2@huawei.com>
+From: daniel.starke@siemens.com <daniel.starke@siemens.com>
 
-[ Upstream commit 84ec758fb2daa236026506868c8796b0500c047d ]
+commit 737b0ef3be6b319d6c1fd64193d1603311969326 upstream.
 
-When configfs_register_subsystem() or configfs_unregister_subsystem()
-is executing link_group() or unlink_group(),
-it is possible that two processes add or delete list concurrently.
-Some unfortunate interleavings of them can cause kernel panic.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.3.7 describes the encoding of the
+control signal octet used by the MSC (modem status command). The same
+encoding is also used in convergence layer type 2 as described in chapter
+5.5.2. Table 7 and 24 both require the DV (data valid) bit to be set 1 for
+outgoing control signal octets sent by the DTE (data terminal equipment),
+i.e. for the initiator side.
+Currently, the DV bit is only set if CD (carrier detect) is on, regardless
+of the side.
 
-One of cases is:
-A --> B --> C --> D
-A <-- B <-- C <-- D
+This patch fixes this behavior by setting the DV bit on the initiator side
+unconditionally.
 
-     delete list_head *B        |      delete list_head *C
---------------------------------|-----------------------------------
-configfs_unregister_subsystem   |   configfs_unregister_subsystem
-  unlink_group                  |     unlink_group
-    unlink_obj                  |       unlink_obj
-      list_del_init             |         list_del_init
-        __list_del_entry        |           __list_del_entry
-          __list_del            |             __list_del
-            // next == C        |
-            next->prev = prev   |
-                                |               next->prev = prev
-            prev->next = next   |
-                                |                 // prev == B
-                                |                 prev->next = next
-
-Fix this by adding mutex when calling link_group() or unlink_group(),
-but parent configfs_subsystem is NULL when config_item is root.
-So I create a mutex configfs_subsystem_mutex.
-
-Fixes: 7063fbf22611 ("[PATCH] configfs: User-driven configuration filesystem")
-Signed-off-by: ChenXiaoSong <chenxiaosong2@huawei.com>
-Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
+Cc: stable@vger.kernel.org
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220218073123.2121-1-daniel.starke@siemens.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/configfs/dir.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/tty/n_gsm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/configfs/dir.c b/fs/configfs/dir.c
-index d3cd2a94d1e8c..d1f9d26322027 100644
---- a/fs/configfs/dir.c
-+++ b/fs/configfs/dir.c
-@@ -34,6 +34,14 @@
-  */
- DEFINE_SPINLOCK(configfs_dirent_lock);
- 
-+/*
-+ * All of link_obj/unlink_obj/link_group/unlink_group require that
-+ * subsys->su_mutex is held.
-+ * But parent configfs_subsystem is NULL when config_item is root.
-+ * Use this mutex when config_item is root.
-+ */
-+static DEFINE_MUTEX(configfs_subsystem_mutex);
-+
- static void configfs_d_iput(struct dentry * dentry,
- 			    struct inode * inode)
- {
-@@ -1859,7 +1867,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
- 		group->cg_item.ci_name = group->cg_item.ci_namebuf;
- 
- 	sd = root->d_fsdata;
-+	mutex_lock(&configfs_subsystem_mutex);
- 	link_group(to_config_group(sd->s_element), group);
-+	mutex_unlock(&configfs_subsystem_mutex);
- 
- 	inode_lock_nested(d_inode(root), I_MUTEX_PARENT);
- 
-@@ -1884,7 +1894,9 @@ int configfs_register_subsystem(struct configfs_subsystem *subsys)
- 	inode_unlock(d_inode(root));
- 
- 	if (err) {
-+		mutex_lock(&configfs_subsystem_mutex);
- 		unlink_group(group);
-+		mutex_unlock(&configfs_subsystem_mutex);
- 		configfs_release_fs();
- 	}
- 	put_fragment(frag);
-@@ -1931,7 +1943,9 @@ void configfs_unregister_subsystem(struct configfs_subsystem *subsys)
- 
- 	dput(dentry);
- 
-+	mutex_lock(&configfs_subsystem_mutex);
- 	unlink_group(group);
-+	mutex_unlock(&configfs_subsystem_mutex);
- 	configfs_release_fs();
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -435,7 +435,7 @@ static u8 gsm_encode_modem(const struct
+ 		modembits |= MDM_RTR;
+ 	if (dlci->modem_tx & TIOCM_RI)
+ 		modembits |= MDM_IC;
+-	if (dlci->modem_tx & TIOCM_CD)
++	if (dlci->modem_tx & TIOCM_CD || dlci->gsm->initiator)
+ 		modembits |= MDM_DV;
+ 	return modembits;
  }
- 
--- 
-2.34.1
-
 
 
