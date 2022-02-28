@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E68FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:45:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEDC8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238677AbiB1RqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:46:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58812 "EHLO
+        id S238712AbiB1RqU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:46:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238819AbiB1RnE (ORCPT
+        with ESMTP id S238936AbiB1Rnd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:43:04 -0500
+        Mon, 28 Feb 2022 12:43:33 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7358F888C6;
-        Mon, 28 Feb 2022 09:35:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41399A99B;
+        Mon, 28 Feb 2022 09:35:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22136B815B8;
-        Mon, 28 Feb 2022 17:35:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D85C340E7;
-        Mon, 28 Feb 2022 17:35:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6681EB815BA;
+        Mon, 28 Feb 2022 17:35:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC50C340F1;
+        Mon, 28 Feb 2022 17:35:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069712;
-        bh=0uozSdYEpm4wPeKQjXI6P7p2CNOcuYuCBw5SCjpmGnI=;
+        s=korg; t=1646069721;
+        bh=/IPjo5Im5eTlmflgA6jvO3M2vFnLOiss2A90CD++VY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kh1wzB47HUC8WebH65qHm7Um323sAd4KwztMzHj4lgA7N6nS43iR5Qvc47bFaAqlr
-         j4HS7hpKPevWemQJviaOvNI1NTHAgZCEh2NA5SasPQhEoUmoAR0BOIX344fOu8ms9+
-         ZpVuqqBttx9BhfXj+hl08glEez4LkjZwzv7tFP3o=
+        b=e4Oh6kv0+APDqSjGsLv9WZwKjTZUlDyxC9DPhkctNJPIicWoz1N4GMtmk1zE6yzWM
+         OxAIyaNU/NAoaKLLGgua+Cnz8kFcvb2HYk8v45l/Te5gMcuhcQcOmlHfrv0BqpWzJ9
+         MPkl0EqNTLnlXwFmCUbCjaddiNEq4M6hJkq+7/1U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 5.10 66/80] usb: dwc3: pci: Fix Bay Trail phy GPIO mappings
-Date:   Mon, 28 Feb 2022 18:24:47 +0100
-Message-Id: <20220228172319.741053910@linuxfoundation.org>
+        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 5.10 69/80] xhci: Prevent futile URB re-submissions due to incorrect return value.
+Date:   Mon, 28 Feb 2022 18:24:50 +0100
+Message-Id: <20220228172320.092444120@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -47,39 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Hongyu Xie <xiehongyu1@kylinos.cn>
 
-commit 62e3f0afe246720f7646eb1b034a6897dac34405 upstream.
+commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
 
-When the Bay Trail phy GPIO mappings where added cs and reset were swapped,
-this did not cause any issues sofar, because sofar they were always driven
-high/low at the same time.
+The -ENODEV return value from xhci_check_args() is incorrectly changed
+to -EINVAL in a couple places before propagated further.
 
-Note the new mapping has been verified both in /sys/kernel/debug/gpio
-output on Android factory images on multiple devices, as well as in
-the schematics for some devices.
+xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+the return value of xhci_check_args <= 0.
+This causes problems for example r8152_submit_rx, calling usb_submit_urb
+in drivers/net/usb/r8152.c.
+r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
+is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
 
-Fixes: 5741022cbdf3 ("usb: dwc3: pci: Add GPIO lookup table on platforms without ACPI GPIO resources")
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://lore.kernel.org/r/20220213130524.18748-3-hdegoede@redhat.com
+[commit message and header edit -Mathias]
+
+Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/dwc3-pci.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/host/xhci.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/dwc3/dwc3-pci.c
-+++ b/drivers/usb/dwc3/dwc3-pci.c
-@@ -81,8 +81,8 @@ static const struct acpi_gpio_mapping ac
- static struct gpiod_lookup_table platform_bytcr_gpios = {
- 	.dev_id		= "0000:00:16.0",
- 	.table		= {
--		GPIO_LOOKUP("INT33FC:00", 54, "reset", GPIO_ACTIVE_HIGH),
--		GPIO_LOOKUP("INT33FC:02", 14, "cs", GPIO_ACTIVE_HIGH),
-+		GPIO_LOOKUP("INT33FC:00", 54, "cs", GPIO_ACTIVE_HIGH),
-+		GPIO_LOOKUP("INT33FC:02", 14, "reset", GPIO_ACTIVE_HIGH),
- 		{}
- 	},
- };
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -1487,9 +1487,12 @@ static int xhci_urb_enqueue(struct usb_h
+ 	struct urb_priv	*urb_priv;
+ 	int num_tds;
+ 
+-	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
+-					true, true, __func__) <= 0)
++	if (!urb)
+ 		return -EINVAL;
++	ret = xhci_check_args(hcd, urb->dev, urb->ep,
++					true, true, __func__);
++	if (ret <= 0)
++		return ret ? ret : -EINVAL;
+ 
+ 	slot_id = urb->dev->slot_id;
+ 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
+@@ -3289,7 +3292,7 @@ static int xhci_check_streams_endpoint(s
+ 		return -EINVAL;
+ 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
+ 	if (ret <= 0)
+-		return -EINVAL;
++		return ret ? ret : -EINVAL;
+ 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
+ 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
+ 				" descriptor for ep 0x%x does not support streams\n",
 
 
