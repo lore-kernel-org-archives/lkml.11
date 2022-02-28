@@ -2,91 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A381AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22460C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237684AbiB1QeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 11:34:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33368 "EHLO
+        id S237939AbiB1Qeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 11:34:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233788AbiB1QeU (ORCPT
+        with ESMTP id S233788AbiB1QeX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 11:34:20 -0500
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75FD8443DE;
-        Mon, 28 Feb 2022 08:33:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1646066021; x=1677602021;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=UdSjyJ1B+8BlqPXgKZCokBvRIg9/Y/nN4hv5bYbeSv8=;
-  b=H93m1Zy1ONPvoY1GqCE8xWHc2CzPIOZxV2P4nKKwmx97+qNzNC3IG0NQ
-   lrAB4/Ii/yvOp0h39u1lkSGxqsh8ATdq2bDY+8Cu8odDSgH4hshRUWQPb
-   YLmXX+cxgIZLJvx9KiollU2OK+czBA2E6HEDwk4hyVUWMp+e/IsB7hVXI
-   XJRM7DB6ZN45Bm6oVB4H//kMUspaWa7pOkUBc9ymev1yd05zuMGn9q/zy
-   JvbfUGNfmKmZAJgjBaZzV4i+VQEZPHpMOqdyE0j3DUcXIqEMAn2RqAm2M
-   BtNcAn+AHHtj8xDRpUmHidljcZGC/Zt3j3f8bd7zTrMFRQHfX+MGdVls1
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.90,142,1643698800"; 
-   d="scan'208";a="87262415"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Feb 2022 09:33:40 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 28 Feb 2022 09:33:40 -0700
-Received: from ROB-ULT-M18064N.mchp-main.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 28 Feb 2022 09:33:37 -0700
-From:   Tudor Ambarus <tudor.ambarus@microchip.com>
-To:     <p.yadav@ti.com>, <michael@walle.cc>
-CC:     <miquel.raynal@bootlin.com>, <richard@nod.at>, <vigneshr@ti.com>,
-        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        <stable@vger.kernel.org>
-Subject: [PATCH] mtd: spi-nor: Skip erase logic when SPI_NOR_NO_ERASE is set
-Date:   Mon, 28 Feb 2022 18:33:34 +0200
-Message-ID: <20220228163334.277730-1-tudor.ambarus@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 28 Feb 2022 11:34:23 -0500
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E2F4553D
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:33:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646066024; x=1677602024;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VlHnhmwNwO/GBLBiot4vMGB+Zw3qP5eoaVyiPtEbzfY=;
+  b=bc1eZ6zBScbxV4UiGsBsp4wxADbbCC5BszFo9udZ8XnVwlxoK3UHoEqB
+   DgB0YW5GgiVC1E7eAtwlvWsn2fEdrPMCcFGRaNHMooAc+OGenQWVq1Ao4
+   9g4q3lgXyvO7pzFf2OJWwSUSdYWoJ+pxCewwP+86zjyvrGFj6nkZVO/vz
+   qK4ZsVQF0yhUMaqIDaXdFwDHvZF69ycE3jKfQgJSo8Ahnyt9Ux5D9pwv0
+   MQx2PxEa4kiFAdVUmjo2rtB36DqPHdEjGlYXDokM0U710Oiir8gN0A4gA
+   RKCz1KzdOm3d19hYYUFpomR4kZIdvBaT9zdl7iykC1IS2X3rHC5scEzHv
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="251755740"
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="251755740"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 08:33:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
+   d="scan'208";a="510153382"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga006.jf.intel.com with ESMTP; 28 Feb 2022 08:33:36 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1000)
+        id 59722142; Mon, 28 Feb 2022 18:33:53 +0200 (EET)
+Date:   Mon, 28 Feb 2022 19:33:53 +0300
+From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, knsathya@kernel.org, pbonzini@redhat.com,
+        sdeep@vmware.com, seanjc@google.com, tony.luck@intel.com,
+        vkuznets@redhat.com, wanpengli@tencent.com,
+        thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCHv4 15/30] x86/boot: Allow to hook up alternative port I/O
+ helpers
+Message-ID: <20220228163353.d6redrbv3kpb557n@black.fi.intel.com>
+References: <20220224155630.52734-1-kirill.shutemov@linux.intel.com>
+ <20220224155630.52734-16-kirill.shutemov@linux.intel.com>
+ <20220227220219.6myd32n6oojwbnyh@treble>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220227220219.6myd32n6oojwbnyh@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Even if SPI_NOR_NO_ERASE was set, one could still send erase opcodes
-to the flash. It is not recommended to send unsupported opcodes to
-flashes. Fix the logic and do not set mtd->_erase when SPI_NOR_NO_ERASE
-is specified. With this users will not be able to issue erase opcodes to
-flashes and instead they will recive an -ENOTSUPP error.
+On Sun, Feb 27, 2022 at 02:02:19PM -0800, Josh Poimboeuf wrote:
+> On Thu, Feb 24, 2022 at 06:56:15PM +0300, Kirill A. Shutemov wrote:
+> > Port I/O instructions trigger #VE in the TDX environment. In response to
+> > the exception, kernel emulates these instructions using hypercalls.
+> > 
+> > But during early boot, on the decompression stage, it is cumbersome to
+> > deal with #VE. It is cleaner to go to hypercalls directly, bypassing #VE
+> > handling.
+> > 
+> > Add a way to hook up alternative port I/O helpers in the boot stub.
+> > 
+> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> 
+> I think you missed my comment from v3.
 
-Cc: stable@vger.kernel.org
-Fixes: b199489d37b2 ("mtd: spi-nor: add the framework for SPI NOR")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
----
- drivers/mtd/spi-nor/core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+I did not missed it, but I failed to acknowledge it.
 
-diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index 86a536c97c18..cd2d094ef837 100644
---- a/drivers/mtd/spi-nor/core.c
-+++ b/drivers/mtd/spi-nor/core.c
-@@ -2969,10 +2969,11 @@ static void spi_nor_set_mtd_info(struct spi_nor *nor)
- 	mtd->flags = MTD_CAP_NORFLASH;
- 	if (nor->info->flags & SPI_NOR_NO_ERASE)
- 		mtd->flags |= MTD_NO_ERASE;
-+	else
-+		mtd->_erase = spi_nor_erase;
- 	mtd->writesize = nor->params->writesize;
- 	mtd->writebufsize = nor->params->page_size;
- 	mtd->size = nor->params->size;
--	mtd->_erase = spi_nor_erase;
- 	mtd->_read = spi_nor_read;
- 	/* Might be already set by some SST flashes. */
- 	if (!mtd->_write)
+To me it is a judgement call. Either way has right to live.
+I talked to Borislav on this and we suggested to keep it as. Rework later
+as needed.
+
+> Repeating it here:
+> 
+> At least from reading the commit message it's not self-evident why #VE
+> handling would be worse, especially since there's already #VC support in
+> boot.  It would help to give more info about that in the commit message.
+> 
+> The current approach also seems fragile, doesn't it require all future
+> code to remember to not do i/o directly?  How do we make sure that
+> doesn't happen going forward?
+> 
+> How does it fail if some code accidentally does i/o directly?  Or
+> triggers #VE some other way?  Is the error understandable and
+> actionable?
+
+Dealing with failure in decompression code is a pain. We don't have usual
+infrastructure there. The patch deals with port I/O which is the only way
+to communicate issue to the user. If it fails for whatever reason we are
+screwed. And it doesn't depend on how it was implemented.
+
 -- 
-2.25.1
-
+ Kirill A. Shutemov
