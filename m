@@ -2,112 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E3DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240669AbiB1Smn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:42:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38994 "EHLO
+        id S240869AbiB1Snn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:43:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240821AbiB1SmY (ORCPT
+        with ESMTP id S241004AbiB1Sm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:42:24 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8E9245A6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:37:30 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id r10so16899864wrp.3
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:37:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FlcmLpC9MBKD3947PIF9JBPxwRTyA5/sqH+s1PuwUHA=;
-        b=S5++n9QxaQfiFhgQFs96jfErSI/ww1y7RpotfHjiJEWLsph0ZM/igU4VDtQfolrv7z
-         jUOFYtkgyTZDnHbFp+D185jf2GxZa4+rpL6Pkrcuws8veJn7YEwjBQFuL1CKU7VT0+QE
-         UeCpiTSDs3iIHb70piAFIZygkYVrN51zrxA1VO1108x5+WQpnpNfkHQaGil6eg8IgErG
-         E95mQRsHwvyCdnrsdonlQZjnRtLF3UJxJ3YFAtzGy7sqHQsn84H5ZfGh9Q/gDDf3CAFe
-         wemf6FQ6pAsU8L5DgJMEmQk4ypOFFeyG6BLRYdQU/fmN0N5l3/GkP+7LeSOagPMWsG3i
-         ndJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FlcmLpC9MBKD3947PIF9JBPxwRTyA5/sqH+s1PuwUHA=;
-        b=1phxtEkUz6pvYRBbFgsMk8lkjjiz8713Kf86UYcUOWVJ6AFN8ypG0byN2S4oEhcR2H
-         VhEJBrbR4jNylOwkZjr9GHeRgHdA89PpkOC2a7mpqHAb4sHWYOadX5eKjoJW6av5z0kg
-         UzIjFNXSUQd2K6Ck+U0ybW5SDguQ2GRrtKobKUXI8odIBzSIIjwnFzUybVUFRFhJr55c
-         WaOiZ3FQPFSLIO6AZMmnIkzZv2IN6fbZjK7jUNUDnJwmFhDKaXaT6VK8SYXWaG/VwOTa
-         AN8zeWiyIIMUTL4mUaYbyNhlddmBCzX3pHVf+D7f9aqFw2vguL+RmHe2EAAkEddNuVps
-         qB5w==
-X-Gm-Message-State: AOAM532xXb8boiPWgbQ0Vg8AHLHp3h5/HaTV01fqz1k6dQgRD4mx5BhT
-        zciMKbXaAnKMw6opUF5tqjE=
-X-Google-Smtp-Source: ABdhPJzdPnTmp+jt9Q6auFBhuceMuV3NSfET7n29J8hcSME3Pn3qZnJsDTxIqxll+743o4mXZnt2Og==
-X-Received: by 2002:adf:bbcd:0:b0:1ed:b9a6:c66d with SMTP id z13-20020adfbbcd000000b001edb9a6c66dmr16931748wrg.455.1646073448611;
-        Mon, 28 Feb 2022 10:37:28 -0800 (PST)
-Received: from localhost.localdomain ([94.73.33.246])
-        by smtp.gmail.com with ESMTPSA id s3-20020a5d4ec3000000b001ea95eba44dsm11118198wrv.109.2022.02.28.10.37.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 10:37:28 -0800 (PST)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     andrzej.hajda@intel.com
-Cc:     narmstrong@baylibre.com, robert.foss@linaro.org,
-        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
-        maxime@cerno.tech, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH] drm/bridge: ti-sn65dsi83: switch to devm_drm_of_get_bridge
-Date:   Mon, 28 Feb 2022 19:37:24 +0100
-Message-Id: <20220228183724.25030-1-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 28 Feb 2022 13:42:58 -0500
+X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 10:39:26 PST
+Received: from imap2.colo.codethink.co.uk (imap2.colo.codethink.co.uk [78.40.148.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7082731917;
+        Mon, 28 Feb 2022 10:39:26 -0800 (PST)
+Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.21])
+        by imap2.colo.codethink.co.uk with esmtpsa  (Exim 4.92 #3 (Debian))
+        id 1nOjeo-0003hq-Jq; Mon, 28 Feb 2022 17:17:58 +0000
+Message-ID: <467c5472-25fd-2611-4bb8-d70d6b60b299@codethink.co.uk>
+Date:   Mon, 28 Feb 2022 17:45:49 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.0
+Subject: Re: [PATCHv4 2/2] PCI: fu740: Force gen1 for initial device probe
+Content-Language: en-GB
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     paul.walmsley@sifive.com, greentime.hu@sifive.com,
+        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+References: <20220223205141.GA149346@bhelgaas>
+From:   Ben Dooks <ben.dooks@codethink.co.uk>
+Organization: Codethink Limited.
+In-Reply-To: <20220223205141.GA149346@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function "drm_of_find_panel_or_bridge" has been deprecated in
-favor of "devm_drm_of_get_bridge".
+On 23/02/2022 20:51, Bjorn Helgaas wrote:
+> On Mon, Feb 21, 2022 at 09:03:47PM +0000, Ben Dooks wrote:
+>> The fu740 PCIe core does not probe any devices on the SiFive Unmatched
+>> board without this fix from U-Boot (or having U-Boot explicitly start
+>> the PCIe via either boot-script or user command).
+>>
+>> The fix claims to set the link-speed to gen1 to get the probe
+>> to work. As this is a copy from U-Boot, the code is assumed to be
+>> correct and does fix the issue on the Unmatched. The code is at:
+> 
+> Maybe something like:
+> 
+>    Limit the link to Gen1 speed.
+> 
+> since "the fix claims" and "the code is assumed" is sort of
+> weasel-worded.
+> 
+> The subject says "for initial device probe," but if you change
+> PCI_EXP_LNKCAP, I assume that limits the link speed forever, even
+> after a retrain?
 
-Switch to the new function and reduce boilerplate.
+Yes, thought I had checked this but having just gone back and booted
+things again, the following is observed:
 
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/gpu/drm/bridge/ti-sn65dsi83.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+- U-Boot "pci enum" and then unpatched kernel -> link 8GT/s
+- U-Boot "pci enum" and patched kernel -> link 2.5GT/s
+- U-Boot no pci and patched kernel > link 2.5 GT/s
 
-diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi83.c b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
-index 945f08de45f1..91cc00b66d3c 100644
---- a/drivers/gpu/drm/bridge/ti-sn65dsi83.c
-+++ b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
-@@ -552,8 +552,6 @@ static int sn65dsi83_parse_dt(struct sn65dsi83 *ctx, enum sn65dsi83_model model)
- 	struct drm_bridge *panel_bridge;
- 	struct device *dev = ctx->dev;
- 	struct device_node *endpoint;
--	struct drm_panel *panel;
--	int ret;
- 
- 	endpoint = of_graph_get_endpoint_by_regs(dev->of_node, 0, 0);
- 	ctx->dsi_lanes = of_property_count_u32_elems(endpoint, "data-lanes");
-@@ -588,14 +586,9 @@ static int sn65dsi83_parse_dt(struct sn65dsi83 *ctx, enum sn65dsi83_model model)
- 		}
- 	}
- 
--	ret = drm_of_find_panel_or_bridge(dev->of_node, 2, 0, &panel, &panel_bridge);
--	if (ret < 0)
--		return ret;
--	if (panel) {
--		panel_bridge = devm_drm_panel_bridge_add(dev, panel);
--		if (IS_ERR(panel_bridge))
--			return PTR_ERR(panel_bridge);
--	}
-+	panel_bridge = devm_drm_of_get_bridge(dev, dev->of_node, 2, 0);
-+	if (IS_ERR(panel_bridge))
-+		return PTR_ERR(panel_bridge);
- 
- 	ctx->panel_bridge = panel_bridge;
- 
+Clearly there needs to be some fix for this, either have two rounds
+of soft-reset on the first probe, or if the device does probe at a
+degraded link, do something about it.
+
+I am not clear what the correct fix for this is.
+
+1) Detect no U-Boot initialisation and force a two stage probe
+2) If no devices on initial probe, go around and do #1
+3) Always do a two stage reset
+4) Something else.
+
+Do any other systems see this issue?
+
+I assume we need to go back and re-do this. At least this is a 100%
+reliable repeat on the Unmatched board in our test rack.
+
+>> https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c#L271
+> 
+> Maybe use this so the link doesn't become stale when more things are
+> added to pcie_dw_sifive.c:
+> 
+>   https://source.denx.de/u-boot/u-boot/-/blob/master/drivers/pci/pcie_dw_sifive.c?id=v2022.01#L271
+
+Thanks, useful to know.
+
+>> The code has been this way since the driver was commited in:
+>> https://source.denx.de/u-boot/u-boot/-/commit/416395c772018c6bf52aad36aca163115001793f
+> 
+> s/commited/committed/
+
+Oops,
+
+> 
+>> Signed-off-by: Ben Dooks <ben.dooks@codethink.co.uk>
+>> ---
+>>   drivers/pci/controller/dwc/pcie-fu740.c | 19 +++++++++++++++++++
+>>   1 file changed, 19 insertions(+)
+>>
+>> diff --git a/drivers/pci/controller/dwc/pcie-fu740.c b/drivers/pci/controller/dwc/pcie-fu740.c
+>> index 842b7202b96e..19501ec8c487 100644
+>> --- a/drivers/pci/controller/dwc/pcie-fu740.c
+>> +++ b/drivers/pci/controller/dwc/pcie-fu740.c
+>> @@ -177,11 +177,30 @@ static void fu740_pcie_init_phy(struct fu740_pcie *afp)
+>>   	fu740_phyregwrite(1, PCIEX8MGMT_PHY_LANE3_BASE, PCIEX8MGMT_PHY_INIT_VAL, afp);
+>>   }
+>>   
+>> +/* This is copied from u-boot. Force system to gen1 otherwise nothing probes
+>> + * as found on the SiFive Unmatched board.
+>> + */
+> 
+> s/u-boot/U-Boot/
+> 
+> Use usual multi-line comment style.
+
+Ok.
+
+> 
+>> +static void fu740_pcie_force_gen1(struct dw_pcie *dw, struct fu740_pcie *afp )
+>> +{
+>> +	unsigned val;
+> 
+> u32, since that's what dw_pcie_readl_dbi() returns and
+> dw_pcie_writel_dbi() expects.
+> 
+>> +
+>> +	dw_pcie_dbi_ro_wr_en(dw);
+>> +
+>> +	val = dw_pcie_readl_dbi(dw, 0x70 + PCI_EXP_LNKCAP);
+> 
+> I assume 0x70 is the offset of the PCIe Capability.  There should be a
+> #define for that.
+
+Will fix.
+
+>> +	pr_info("%s: link-cap was %08x\n", __func__, val);
+> 
+>    dev_info(pci->dev, "...");
+> 
+>> +	dw_pcie_writel_dbi(dw, 0x70 + PCI_EXP_LNKCAP, val | 0xf);
+> 
+> I don't understand this.  Per PCIe r6.0, sec 7.5.3.6, 1111b is a
+> reserved encoding for the low four bits of PCI_EXP_LNKCAP.
+> 
+> If you want PCI_EXP_LNKCAP to advertise only 2.5 GT/s, the low four
+> bits should be 0001b to indicate Supported Link Speeds Vector field
+> bit 0, which is defined as 2.5 GT/s.
+
+Yeah, this does not make sense now. I sort of assumed it was W1C
+type thing (write-1-clear). I'm just wondering if this is now some
+sort of undefined behaviour or they originally meant to clear out
+some bits only... It does work, just shows the following from lspci;
+
+  LnkCap: Port #0, Speed unknown, Width x8, ASPM L0s L1, Exit Latency 
+L0s <4us, L1 <4us
+          ClockPM- Surprise- LLActRep+ BwNot- ASPMOptComp+
+  LnkCtl: ASPM Disabled; RCB 64 bytes, Disabled- CommClk+
+         ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
+   LnkSta: Speed 2.5GT/s (downgraded), Width x8 (ok)
+         TrErr- Train- SlotClk+ DLActive+ BWMgmt- ABWMgmt-
+
+
+>> +	dw_pcie_dbi_ro_wr_dis(dw);
+>> +}
+>> +
+>>   static int fu740_pcie_start_link(struct dw_pcie *pci)
+>>   {
+>>   	struct device *dev = pci->dev;
+>>   	struct fu740_pcie *afp = dev_get_drvdata(dev);
+>>   
+>> +	/* Force PCIe gen1 otherwise Unmatched board does not probe */
+>> +	fu740_pcie_force_gen1(pci, afp);
+> 
+> I guess the "Unmatched" board is the only thing we need to care about
+> here?  Are there or will there be other boards that don't need this?
+> 
+>>   	/* Enable LTSSM */
+>>   	writel_relaxed(0x1, afp->mgmt_base + PCIEX8MGMT_APP_LTSSM_ENABLE);
+>>   	return 0;
+>> -- 
+>> 2.34.1
+>>
+> 
+
+
 -- 
-2.25.1
+Ben Dooks				http://www.codethink.co.uk/
+Senior Engineer				Codethink - Providing Genius
 
+https://www.codethink.co.uk/privacy.html
