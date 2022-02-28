@@ -2,123 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BBFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236553AbiB1Mml (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:42:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S236556AbiB1Mob (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 07:44:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231143AbiB1Mmi (ORCPT
+        with ESMTP id S231143AbiB1Moa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:42:38 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA52506E0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 04:41:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=TYfrVKkHEOeWThZ1HPoCRjuHgbWI1WpuStectqDw4HU=; b=U4cidNZcZV4cORMh092OsDh5Mf
-        3yXKQ3TuRuNejtbgj5fEEQSHsMrt85wafB8/7S+bBGltJnTi5WvXo3SDqdGPXWo3410aLckqYv2yJ
-        uXg+G7z8Ne7hvQdoicdFlO7n9NWdoCLSqpiKBWAI8KS0ktUQCUJAlNKHHz30ziO6UXEDTykV3R3HN
-        185ADZ0PtEP5Sa8nu9DYGaD6e6QkUNCGCDSMwW9xZHuRnieiY/p7/Mw+hB5sDExcOoCrxXZ/AZTZU
-        h8rB/r/9ZLf0t+01la2ELVw/pPavrKiXeB/lFmzQxjhHO+q1u1n578upIUVLjbE7I9BqZjzKX0TuS
-        W+683v4Q==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOfL1-008WI6-Q1; Mon, 28 Feb 2022 12:41:15 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2E6F53001D0;
-        Mon, 28 Feb 2022 13:41:13 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id DF99C30855E94; Mon, 28 Feb 2022 13:41:13 +0100 (CET)
-Date:   Mon, 28 Feb 2022 13:41:13 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        andrew.cooper3@citrix.com, linux-kernel@vger.kernel.org,
-        ndesaulniers@google.com, keescook@chromium.org,
-        samitolvanen@google.com, mark.rutland@arm.com,
-        alyssa.milburn@intel.com, mbenes@suse.cz, rostedt@goodmis.org,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 36/39] objtool: Find unused ENDBR instructions
-Message-ID: <YhzC6RmRZs6U4wvG@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151324.137868984@infradead.org>
- <20220227034613.a5ejjey5agxlympd@treble>
+        Mon, 28 Feb 2022 07:44:30 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E4D945ACF;
+        Mon, 28 Feb 2022 04:43:51 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id e13so10622679plh.3;
+        Mon, 28 Feb 2022 04:43:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/n04DAAy6NTAncSMZU/fUAYsk1NlkqyxPFCnG7ywoio=;
+        b=qv3AxVdM1dwmQfDNhw99Z04ba3T03Ipac6lwppRsf5ao6Xo9OXs45ucMkAtSMnEV2P
+         vayO5LFETyD8aVxU0t/N23hGsNbAgKx3a0lfXklWg0M7Wy9hsrvjr71hzsVmd2qJ/3Q7
+         NVwirb4mjzPkzgPv9Q26P9LOWSKLU7axVJGzoYIxTBm5A8IENBnT2uqS2Qtyko8qr8Q7
+         fnJZH8HviAkUvyMlPOtjwzDv2+1m9bJc2JSmt2XAQ97SETSo3KRCf7cX33YPruXjrsyh
+         TDelEOXtICdRefWZSyKxWPUS2CQ3TwZLFH2Zl70NAi6fhmRXoPuok6Ak6Ow4KtyS4+9e
+         1hlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/n04DAAy6NTAncSMZU/fUAYsk1NlkqyxPFCnG7ywoio=;
+        b=y2FqhB/YhMN9/TzUR/wa7Nol3PQW732svpxCH90zu/SuZg31qzs3W7Cd6BSks9+76D
+         9afPlu+/dPcQJst+NeBaaktfRPY+G6B+WlElb7bgQeyXsV3V85VyUtZ0aldoDXfFJNgA
+         IoATGazLoeC7NO+1uEsDmISi5RkdpbPmxxwNzorS76TpDLnkYwsZzuxt+wvmEJS4Bmjl
+         bZ+/266E+Va1jlLa6ZoS++fE0VZn7YEekEDmfBSyClYHRN+fa40yZsgc1aNFHqYxIXvA
+         XqLG4+0MNxqaUkF+Zd8IlTPB8w487okyLZAUThZaNMr6fdgEt1mlBZgv4jw7reJvyvmD
+         fTBg==
+X-Gm-Message-State: AOAM530CU10Q4FJN1BhcZc3YyJQubi1n6FOFz/CIWORFU8e/E/5XDF+q
+        8/gmbJGGAYgnFokYNB41M+HgwIw6TljA5A==
+X-Google-Smtp-Source: ABdhPJwXnYWUpczIZyfADpFl80koCgkjgM5Nl7e7lTmmqj9FC3f2XCvwOn2XunGXyF+n53k40jBW2A==
+X-Received: by 2002:a17:902:e80c:b0:14f:f95c:41ee with SMTP id u12-20020a170902e80c00b0014ff95c41eemr19504178plg.31.1646052230892;
+        Mon, 28 Feb 2022 04:43:50 -0800 (PST)
+Received: from localhost.localdomain ([122.161.51.77])
+        by smtp.gmail.com with ESMTPSA id z23-20020aa79597000000b004e1bf2f5818sm14129214pfj.87.2022.02.28.04.43.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 04:43:50 -0800 (PST)
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Mark Brown <broonie@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 0/3] DTC fixes for Arm pl022 bindings
+Date:   Mon, 28 Feb 2022 18:13:42 +0530
+Message-Id: <20220228124345.99474-1-singh.kuldeep87k@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220227034613.a5ejjey5agxlympd@treble>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Feb 26, 2022 at 07:46:13PM -0800, Josh Poimboeuf wrote:
-> On Thu, Feb 24, 2022 at 03:52:14PM +0100, Peter Zijlstra wrote:
-> > +#ifdef CONFIG_X86_KERNEL_IBT
-> > +	. = ALIGN(8);
-> > +	.ibt_endbr_sites : AT(ADDR(.ibt_endbr_sites) - LOAD_OFFSET) {
-> > +		__ibt_endbr_sites = .;
-> > +		*(.ibt_endbr_sites)
-> > +		__ibt_endbr_sites_end = .;
-> > +	}
-> > +#endif
-> 
-> ".ibt_endbr_superfluous" maybe?  It's not *all* the endbr sites.
+This patchset helps in resolving dtc warnings for arm pl022 bindings.
+Fixing requires updation to clock and clock-names properties.
+One more dts fix is required to eliminate all warnings which will be
+sent from other tree.
 
-Since I like seals, I'll make it .ibt_endbr_seal :-) Also goes well with
-the option at hand.
+Please note, this patch is based on top of
+git://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git, for-next
 
-> > +
-> >  	/*
-> >  	 * struct alt_inst entries. From the header (alternative.h):
-> >  	 * "Alternative instructions for different CPU types or capabilities"
-> > --- a/tools/objtool/builtin-check.c
-> > +++ b/tools/objtool/builtin-check.c
-> > @@ -21,7 +21,7 @@
-> >  
-> >  bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
-> >       lto, vmlinux, mcount, noinstr, backup, sls, dryrun,
-> > -     ibt, ibt_fix_direct;
-> > +     ibt, ibt_fix_direct, ibt_seal;
-> >  
-> >  static const char * const check_usage[] = {
-> >  	"objtool check [<options>] file.o",
-> > @@ -50,6 +50,7 @@ const struct option check_options[] = {
-> >  	OPT_BOOLEAN(0, "dry-run", &dryrun, "don't write the modifications"),
-> >  	OPT_BOOLEAN(0, "ibt", &ibt, "validate ENDBR placement"),
-> >  	OPT_BOOLEAN(0, "ibt-fix-direct", &ibt_fix_direct, "fixup direct jmp/call to ENDBR"),
-> > +	OPT_BOOLEAN(0, "ibt-seal", &ibt_seal, "list superfluous ENDBR instructions"),
-> 
-> s/list/annotate/ ?
+Kuldeep Singh (3):
+  dt-bindings: spi: Update clocks property for ARM pl022
+  dt-bindings: spi: Update clock-names property for ARM pl022
+  dt-bindings: spi: Add spiclk to clock-names property in pl022
 
-Done :-)
+ .../devicetree/bindings/spi/spi-pl022.yaml          | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-> Not sure "ibt-seal" is the appropriate name since the "seal" is done at
-> boot time.
-
-It allows sealing; it finds the locations to seal, whatever :-)
-
-> Do we really need a separate option anyway?  To get the full benefits of
-> IBT you might as well enable it...  And always enabling it helps flush
-> out bugs quicker.
-
-Are you asking about --ibt and --ibt-seal or about the existence of
-X86_KERNEL_IBT_SEAL here?
-
-The Makefiles will only ever use --ibt and --ibt-seal together for the
-reason you state. The reason they're two separate objtool arguments is
-because it's stictly speaking two different things being done. Also
---ibt as such is invariant, while --ibt-seal causes modifications to the
-object file (which can be discarded using the new --dry-run I suppose).
-
-The reason X86_KERNEL_IBT_SEAL exists is because that requires objtool
-while X86_KERNEL_IBT does not -- you seemed to favour not hard relying
-on having objtool present.
-
+-- 
+2.25.1
 
