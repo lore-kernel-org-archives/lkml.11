@@ -2,141 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34AC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98FE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237339AbiB1OsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 09:48:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34280 "EHLO
+        id S237360AbiB1OsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 09:48:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237352AbiB1Orz (ORCPT
+        with ESMTP id S237375AbiB1Or7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 09:47:55 -0500
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC037F6FF
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 06:47:16 -0800 (PST)
-Received: by mail-lj1-x22f.google.com with SMTP id bn33so17739670ljb.6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 06:47:16 -0800 (PST)
+        Mon, 28 Feb 2022 09:47:59 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D006480207
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 06:47:19 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id u11so17739452lju.4
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 06:47:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+T4HBXFbynYzp9NCIHMJxk+jY5JAUB+Pkhx9FGv2/08=;
-        b=lZjS13JhrhbO4VVZDtKqTtLaPCWbfw7wRO/xBPdNDF85YyQ4JA/3Z8MeM1lFDhb/E6
-         GtfYHsiScz+AzwtC57GP090qGWvSnxiVQ77bZzMOqeXpwAS6SHMvfBJqhe7dPtJD0oXJ
-         fupofbK/ftYf4OcK3RRcO+pTxKSOXVx74pqVKLQA09+0m1SXKcGYW75rtwekLtaGfHeT
-         zSIjuXnWlqsNlZsVTBR0AEuXFUbBvVY6jubrHQelNoowV3rN9RR5FpeetMBgePrzfyIK
-         q2rwpSizmQi1k0iBVp8qGksn+XMNw25A+Gc+xdyazMnnFaECUO8K+xz61PQMzLECg+oe
-         LQOw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wVolMfpuoGDt9XCP+363s8gQ0xUicGtJcmsMqdqFw1w=;
+        b=j0Qo309S6hgbmP3ipd/KV2J3R+BIUQFYoZ83AhxK88SCE+HmSRf4w08bt+aPlfdW7/
+         uYLKmxXKTnSHV2INU3FvleBLvn9tb+GlIssYTgokngxJDd2JXGjI9oPzusCc9XqQwn3T
+         1Skv19AWT9gSL3FGuNmFXqZCaCslOyIhvdM8AaqcamrkDzBDMf4UyydzdofNjjdP+3ZZ
+         kMOA6VbHJHB/DQQNRpMzLdtHu3zQlv7QrrtgQU5QJT0mTdkNZQ2p5fs2qd44GFsYTDa7
+         w6fDM6AJ0RY+JxY6nALgJt4J/snff05XTeZZM8fi0Ca5cH90HXknkANA8zFhKwK5A7EX
+         BoqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+T4HBXFbynYzp9NCIHMJxk+jY5JAUB+Pkhx9FGv2/08=;
-        b=NoRVSUeLBZbaecUyRh8rP0sMqelLYeTQM0DyarswqbZ9pNlyoBa7w1RaZOfQCqRkQM
-         T28If+fPA4C/PO3cI7WGXYW9Tdv967kCiKdl+3Islu01NzpwKqYPuKQu7Ye3sd5hcej5
-         MO76rgp1HWkOAJabwfSieL8X/2mmEm4VztidDvauVdkymqPsWIcV8sefvANMCZfhNUDR
-         v2rQL8JH/Rv+e1XystEGAnw5yAbZW7/GA9V3T6OxVCxLmiLVc9lCn9g2bmpOh8NpW8vA
-         8qUef1Ebnei99rgQnYWofAFcmj0FbvGdIBJRa77Au127OPR2cprw+Ii8YwLP1PIZdE5l
-         vnHA==
-X-Gm-Message-State: AOAM531xrgj8wyU9CsVX71NKjUbz1uFYFqcdoBgf5LaUF8XVoPDWT13x
-        ZXGzR4eUDxi/kV7QJtwL7WA=
-X-Google-Smtp-Source: ABdhPJwmgYezxw2Ilwq5McE9oPdFNgJgf2yg1jrhcPuqjkMZMzM+aCO7rbw47ZY2Ao5f+88ka04U5g==
-X-Received: by 2002:a2e:9b54:0:b0:246:3b89:83e with SMTP id o20-20020a2e9b54000000b002463b89083emr13968319ljj.489.1646059634624;
-        Mon, 28 Feb 2022 06:47:14 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wVolMfpuoGDt9XCP+363s8gQ0xUicGtJcmsMqdqFw1w=;
+        b=X6klU5/6e2BzJvjkfVhdd4oc9+HYfsxmArd3D19IOqo4zSG+Mg4NGvyGh9tKiC32sG
+         ePL+oMkFMbCWSNP6xZxmbQzo/emHTHNNvZ6DAwndneXXBFvzia25rKaqrWj80DvrF4cv
+         EE+fsEqa4sxufeXNlg/V/sLDfXqoIUW6OdFG0SjpMkKKn9D+TAr01RjbY5tntc0EqDY1
+         1UceHv8wigKNVuMN+6q3pxk1T7xgIgiRY4cTJ9hkZINiNSsb7oUNKqd0t+c4P9FLhof/
+         6NbqgVJWFAt39RFKAwNj3Dwhu0j5OtR+vx69htTXzt9w0wQShGMwl6UXEZiAl7K8jlzT
+         JS7w==
+X-Gm-Message-State: AOAM533AUDxb9f301HgFDTlwZUNY1sL79lcp4dy2VAaZS26PgzSqTTpb
+        VBqR/6F9ecetIco+GO5YHCg=
+X-Google-Smtp-Source: ABdhPJypZNl0cy1qm5rfj/e4qV8VLCzwXi5IXSlKHc3dq3Zof8peeKvCKbrtelr5Rod7+SKSnVyJqQ==
+X-Received: by 2002:a2e:bb8f:0:b0:244:c93b:3dff with SMTP id y15-20020a2ebb8f000000b00244c93b3dffmr14167825lje.226.1646059638221;
+        Mon, 28 Feb 2022 06:47:18 -0800 (PST)
 Received: from elysium.toya.net.pl (staticline-31-183-165-244.toya.net.pl. [31.183.165.244])
-        by smtp.gmail.com with ESMTPSA id r14-20020ac252ae000000b00443f3cbc03asm993996lfm.6.2022.02.28.06.47.13
+        by smtp.gmail.com with ESMTPSA id r14-20020ac252ae000000b00443f3cbc03asm993996lfm.6.2022.02.28.06.47.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 06:47:14 -0800 (PST)
+        Mon, 28 Feb 2022 06:47:17 -0800 (PST)
 From:   Karolina Drobnik <karolinadrobnik@gmail.com>
 To:     linux-mm@kvack.org
 Cc:     rppt@kernel.org, akpm@linux-foundation.org,
         linux-kernel@vger.kernel.org,
         Karolina Drobnik <karolinadrobnik@gmail.com>
-Subject: [PATCH 0/9] Add tests for memblock allocation functions
-Date:   Mon, 28 Feb 2022 15:46:42 +0100
-Message-Id: <cover.1646055639.git.karolinadrobnik@gmail.com>
+Subject: [PATCH 2/9] memblock tests: Add simulation of physical memory
+Date:   Mon, 28 Feb 2022 15:46:44 +0100
+Message-Id: <dce115503c74a6936c44694b00014658a1bb6522.1646055639.git.karolinadrobnik@gmail.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <cover.1646055639.git.karolinadrobnik@gmail.com>
+References: <cover.1646055639.git.karolinadrobnik@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Patches are on top of memblock/for-next.
+Allocation functions that return virtual addresses (with an exception
+of _raw variant) clear the allocated memory after reserving it. This
+requires valid memory ranges in memblock.memory.
 
-This series adds test coverage for memblock allocation functions that return
-virtual addresses:
-  * memblock_alloc
-  * memblock_alloc_try_nid
-  * memblock_alloc_from
+Introduce memory_block variable to store memory that can be registered
+with memblock data structure. Move assert.h and size.h includes to common.h
+to share them between the test files.
 
-These tests are a part of memblock simulator, a user space test suite that uses
-the actual memblock code[1]. All the tests are run as one, monolithic test, that
-exercises both basic operations and allocation functions of memblock.
+Signed-off-by: Karolina Drobnik <karolinadrobnik@gmail.com>
+---
+ tools/testing/memblock/tests/basic_api.c |  1 -
+ tools/testing/memblock/tests/basic_api.h |  1 -
+ tools/testing/memblock/tests/common.c    | 19 +++++++++++++++++++
+ tools/testing/memblock/tests/common.h    | 18 ++++++++++++++++++
+ 4 files changed, 37 insertions(+), 2 deletions(-)
 
-To simplify implementation of the memory allocation tests, reset_memblock() was
-split into two functions - reset_memblock_attributes() and
-reset_memblock_regions(). The former sets default values for region array names,
-allocation direction flag (bottom_up) and current memory limit. The latter only
-resets region arrays and corresponding counters.
-
-In addition to these, the patch set introduces a data structure that simulates
-physical memory, test_memory. It is a simple wrapper around a pointer to the
-memory block allocated via malloc(), which is added to memblock as available
-memory. This is required because the tested functions interact with the memory
-before allocating it.
-
-Patchset structure:
-  * Patch 1 splits reset_memblock() into two functions -
-    reset_memblock_regions() and reset_memblock_attributes(), and updates
-    basic API tests to use the new definitions
-  * Patch 2 adds test_memory struct and functions to add (or release) dummy
-    physical memory
-  * Patches 3 - 8 add test cases for memblock_alloc, memblock_alloc_try_nid and
-    memblock_alloc_from for both allocation directions (default top down and
-    bottom up)
-  * Patch 9 adds README and TODO files
-
-[1] https://lore.kernel.org/linux-mm/cover.1643796665.git.karolinadrobnik@gmail.com/
-
-Karolina Drobnik (9):
-  memblock tests: Split up reset_memblock function
-  memblock tests: Add simulation of physical memory
-  memblock tests: Add memblock_alloc tests for top down
-  memblock tests: Add memblock_alloc tests for bottom up
-  memblock tests: Add memblock_alloc_from tests for top down
-  memblock tests: Add memblock_alloc_from tests for bottom up
-  memblock tests: Add memblock_alloc_try_nid tests for top down
-  memblock tests: Add memblock_alloc_try_nid tests for bottom up
-  memblock tests: Add TODO and README files
-
- tools/testing/memblock/Makefile               |    3 +-
- tools/testing/memblock/README                 |  114 ++
- tools/testing/memblock/TODO                   |   28 +
- tools/testing/memblock/main.c                 |    7 +
- tools/testing/memblock/tests/alloc_api.c      |  742 +++++++++++
- tools/testing/memblock/tests/alloc_api.h      |    9 +
- .../memblock/tests/alloc_helpers_api.c        |  393 ++++++
- .../memblock/tests/alloc_helpers_api.h        |    9 +
- tools/testing/memblock/tests/alloc_nid_api.c  | 1167 +++++++++++++++++
- tools/testing/memblock/tests/alloc_nid_api.h  |    9 +
- tools/testing/memblock/tests/basic_api.c      |   49 +-
- tools/testing/memblock/tests/basic_api.h      |    1 -
- tools/testing/memblock/tests/common.c         |   33 +-
- tools/testing/memblock/tests/common.h         |   21 +-
- 14 files changed, 2550 insertions(+), 35 deletions(-)
- create mode 100644 tools/testing/memblock/README
- create mode 100644 tools/testing/memblock/TODO
- create mode 100644 tools/testing/memblock/tests/alloc_api.c
- create mode 100644 tools/testing/memblock/tests/alloc_api.h
- create mode 100644 tools/testing/memblock/tests/alloc_helpers_api.c
- create mode 100644 tools/testing/memblock/tests/alloc_helpers_api.h
- create mode 100644 tools/testing/memblock/tests/alloc_nid_api.c
- create mode 100644 tools/testing/memblock/tests/alloc_nid_api.h
-
-
-base-commit: f30b002ccfee8c60c8feb590e145c0b5e8fa4c67
---
+diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
+index d5035a3dcce8..fbc1ce160303 100644
+--- a/tools/testing/memblock/tests/basic_api.c
++++ b/tools/testing/memblock/tests/basic_api.c
+@@ -1,7 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-or-later
+ #include <string.h>
+ #include <linux/memblock.h>
+-#include <linux/sizes.h>
+ #include "basic_api.h"
+ 
+ #define EXPECTED_MEMBLOCK_REGIONS			128
+diff --git a/tools/testing/memblock/tests/basic_api.h b/tools/testing/memblock/tests/basic_api.h
+index 1ceecfca1f47..1873faa54754 100644
+--- a/tools/testing/memblock/tests/basic_api.h
++++ b/tools/testing/memblock/tests/basic_api.h
+@@ -2,7 +2,6 @@
+ #ifndef _MEMBLOCK_BASIC_H
+ #define _MEMBLOCK_BASIC_H
+ 
+-#include <assert.h>
+ #include "common.h"
+ 
+ int memblock_basic_checks(void);
+diff --git a/tools/testing/memblock/tests/common.c b/tools/testing/memblock/tests/common.c
+index dd7e87c589fe..62d3191f7c9a 100644
+--- a/tools/testing/memblock/tests/common.c
++++ b/tools/testing/memblock/tests/common.c
+@@ -5,6 +5,8 @@
+ #define INIT_MEMBLOCK_REGIONS			128
+ #define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
+ 
++static struct test_memory memory_block;
++
+ void reset_memblock_regions(void)
+ {
+ 	memset(memblock.memory.regions, 0,
+@@ -27,3 +29,20 @@ void reset_memblock_attributes(void)
+ 	memblock.bottom_up	= false;
+ 	memblock.current_limit	= MEMBLOCK_ALLOC_ANYWHERE;
+ }
++
++void setup_memblock(void)
++{
++	reset_memblock_regions();
++	memblock_add((phys_addr_t)memory_block.base, MEM_SIZE);
++}
++
++void dummy_physical_memory_init(void)
++{
++	memory_block.base = malloc(MEM_SIZE);
++	assert(memory_block.base);
++}
++
++void dummy_physical_memory_cleanup(void)
++{
++	free(memory_block.base);
++}
+diff --git a/tools/testing/memblock/tests/common.h b/tools/testing/memblock/tests/common.h
+index b864c64fb60f..619054d03219 100644
+--- a/tools/testing/memblock/tests/common.h
++++ b/tools/testing/memblock/tests/common.h
+@@ -2,8 +2,23 @@
+ #ifndef _MEMBLOCK_TEST_H
+ #define _MEMBLOCK_TEST_H
+ 
++#include <stdlib.h>
++#include <assert.h>
+ #include <linux/types.h>
+ #include <linux/memblock.h>
++#include <linux/sizes.h>
++
++#define MEM_SIZE SZ_16K
++
++/*
++ * Available memory registered with memblock needs to be valid for allocs
++ * test to run. This is a convenience wrapper for memory allocated in
++ * dummy_physical_memory_init() that is later registered with memblock
++ * in setup_memblock().
++ */
++struct test_memory {
++	void *base;
++};
+ 
+ struct region {
+ 	phys_addr_t base;
+@@ -12,5 +27,8 @@ struct region {
+ 
+ void reset_memblock_regions(void);
+ void reset_memblock_attributes(void);
++void setup_memblock(void);
++void dummy_physical_memory_init(void);
++void dummy_physical_memory_cleanup(void);
+ 
+ #endif
+-- 
 2.30.2
 
