@@ -2,280 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55A93C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38430C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 10:55:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235342AbiB1K4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 05:56:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50654 "EHLO
+        id S235446AbiB1K4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 05:56:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235331AbiB1Ky6 (ORCPT
+        with ESMTP id S235318AbiB1Ky6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 05:54:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC3BF19C31
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 02:53:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646045604;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7GQmQW/BlbYfYtfb064IAKtH+WOfqAhIygtC6q2kp90=;
-        b=NGeqhu+XYp4q3Yr0aQOJX5FhsRi680K6ShqbnNKKb1PGUPQENos6pVi5LwLGHpcD6BkOn3
-        uXGJ0uLHkfeYeGxzajPL7+M8ehkd9/imR5mpEVH4NZnDYm9EXCjvVy+NPaaGFtIRGKbBHw
-        BHxVGXyiQaQ+Jv+iA+vWCc6M6R8yScQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-424-86vaKDhnPq-Z9agzHNbIhQ-1; Mon, 28 Feb 2022 05:53:18 -0500
-X-MC-Unique: 86vaKDhnPq-Z9agzHNbIhQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EF5261006AA9;
-        Mon, 28 Feb 2022 10:53:16 +0000 (UTC)
-Received: from x1.localdomain.com (unknown [10.39.193.120])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C62066C92C;
-        Mon, 28 Feb 2022 10:53:12 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Myron Stowe <myron.stowe@redhat.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        =?UTF-8?q?Benoit=20Gr=C3=A9goire?= <benoitg@coeus.ca>,
-        Hui Wang <hui.wang@canonical.com>, linux-acpi@vger.kernel.org,
-        linux-pci@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] x86/PCI: Disable exclusion of E820 reserved addressed in some cases
-Date:   Mon, 28 Feb 2022 11:52:59 +0100
-Message-Id: <20220228105259.230903-2-hdegoede@redhat.com>
-In-Reply-To: <20220228105259.230903-1-hdegoede@redhat.com>
-References: <20220228105259.230903-1-hdegoede@redhat.com>
+Received: from mx07-001d1705.pphosted.com (mx07-001d1705.pphosted.com [185.132.183.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 601D919C02;
+        Mon, 28 Feb 2022 02:53:22 -0800 (PST)
+Received: from pps.filterd (m0209324.ppops.net [127.0.0.1])
+        by mx08-001d1705.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21S6rZ4H001223;
+        Mon, 28 Feb 2022 10:53:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sony.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=S1;
+ bh=zB+lZCeGR9GxazSq5uhX56nbMsCg+RM8thPPcY4Me+8=;
+ b=WL5NV2jX+5Kqb2Q5wbHGqTgRlEDYLb+QaA9BUv36NXFeH0MFQOctPFPabxnPiT6Ocn7f
+ X7ySatZ1GfQALJvVpuJ0xcf6VPm3MVBoNv08D2NV6RiugQA8CRyvfHnBL5DV/oDJ/wj5
+ m1qZ9hbpHIPXxeC/lN1wyPTe21DgzbB9nRgBf08Vxupxmsq0LyNzz0TM4HSzV1DiBAF6
+ k4Y5c/5bN7YFSq1fjgoVhf1GvbtdlWNjMmilyWeTXRWNVoFbasjPOzU9DolJYKJGm6pP
+ JSEXSSPUe+H2XSVSpWGyPVVyZNGnP0r6zHIRbXBZpxLGbkp3dUKsIJL9Y52Nhe0zhfAH Bg== 
+Received: from apc01-psa-obe.outbound.protection.outlook.com (mail-psaapc01lp2043.outbound.protection.outlook.com [104.47.26.43])
+        by mx08-001d1705.pphosted.com (PPS) with ESMTPS id 3efefrshn8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Feb 2022 10:53:09 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OB7RZ5ZdQHERvEleyZcfWgiWGDXnlj3OcT3DTN0Em/lcLqu5VLu6AKIoLIwq/4ZmMeqe1qlypuIxRQbhdohIE3wmxLfrcXsEw3eIkRJA8ksLvLKtYY4YmqESG6akTzKy7/UWyzcB0cJ9W7SOd4V+FUiuGyYzIz0922F9Bp4j2isSXNLqeUZwf7m1fwn51NLXhJ/pBnugo3hnqiin7XHPM8hH2YVadB9rqhJnzLL417U9ZgcKtC3VZe6fa9rHvYf19jaeAi497hyv/RSE8c3GvDeSEdekcPmboqRDK2kRh+5DtAqgIy0dMAQlyl2x4fYAsdomsxokLBBm5T67iAJ1+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zB+lZCeGR9GxazSq5uhX56nbMsCg+RM8thPPcY4Me+8=;
+ b=n4X517jOXP7YYNkdlSa4pFBcoxN7+6d5SLoaqos93+Q9D3ZfJyzdcXtJw2NgwCjjiPQ5Dupkz9rz3c3ACGmxjgGqPrj4lqPdZoIpZsVpIrR+clEavoql9ve/7ULvitmo8swQ/2tW+aN/shxry9QQYTYswHQe/9fP3+ws8JeTguiOmF3ar7HHnkJkVDjq80BEjnkHyqhLU1dKSUBvREEEO0oZ1qW7e8b5yS47ozZNUxNtMNcHnxeqtLNkKM5SIvLikPA2JQAsVK/e2nyq6pH+2i4jciczg7wEgSWg1W9BOciRJVWs01Wje+uNhdQB+mCwqFKh8MtBZNsDjWV4Px55IA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=sony.com; dmarc=pass action=none header.from=sony.com;
+ dkim=pass header.d=sony.com; arc=none
+Received: from HK2PR04MB3891.apcprd04.prod.outlook.com (2603:1096:202:35::13)
+ by TYZPR04MB4511.apcprd04.prod.outlook.com (2603:1096:400:5a::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.22; Mon, 28 Feb
+ 2022 10:51:54 +0000
+Received: from HK2PR04MB3891.apcprd04.prod.outlook.com
+ ([fe80::98b0:9ef4:57f2:c045]) by HK2PR04MB3891.apcprd04.prod.outlook.com
+ ([fe80::98b0:9ef4:57f2:c045%4]) with mapi id 15.20.5017.026; Mon, 28 Feb 2022
+ 10:51:54 +0000
+From:   "Yuezhang.Mo@sony.com" <Yuezhang.Mo@sony.com>
+To:     "Kohada.Tetsuhiro@dc.MitsubishiElectric.co.jp" 
+        <Kohada.Tetsuhiro@dc.MitsubishiElectric.co.jp>,
+        "linkinjeon@kernel.org" <linkinjeon@kernel.org>,
+        "sj1557.seo@samsung.com" <sj1557.seo@samsung.com>
+CC:     "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] exfat: do not clear VolumeDirty in writeback
+Thread-Topic: [PATCH] exfat: do not clear VolumeDirty in writeback
+Thread-Index: AQHYHKozeVmted1T5UKvjQCq+AaGCayoqY+AgAA/KGA=
+Date:   Mon, 28 Feb 2022 10:51:54 +0000
+Message-ID: <HK2PR04MB3891B4F1C2BC707582E81C0C81019@HK2PR04MB3891.apcprd04.prod.outlook.com>
+References: <HK2PR04MB38914869B1FEE326CFE11779812D9@HK2PR04MB3891.apcprd04.prod.outlook.com>
+ <TYAPR01MB5353E089F4843C6CE6A0BA1E90019@TYAPR01MB5353.jpnprd01.prod.outlook.com>
+In-Reply-To: <TYAPR01MB5353E089F4843C6CE6A0BA1E90019@TYAPR01MB5353.jpnprd01.prod.outlook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 72fb6db1-379b-454b-76ab-08d9faa85585
+x-ms-traffictypediagnostic: TYZPR04MB4511:EE_
+x-microsoft-antispam-prvs: <TYZPR04MB4511B9DFCA7634A2083E973781019@TYZPR04MB4511.apcprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: uXRArqCwMTkOZHimMEdhYRHRPh9oKkHiVlxhu3kzYd9+DnsIylZQjn6hnBwjNCWJyOB9Q/x419slb1755DE+9WXbJbW/h8tHliuWKG5SI3aK2hQ+HPIT2e0aTYFzqRJWYNYlGQlxTo+g/w1lm+qf7eHPO5aPiaqCZU6rGfQJwMKOLXPez2TRRxqWIUw2hlUBFC/vRY+5U/IbuR89PqwO+/nisix3i/Vj3e+BO0HAqoKxzP2J2EZUlUB5n4O2tvRRFHhrOnX/VIV40OrYggzOpV10EC8GZYAv4EKIq2+ZdXV3pEVr2ByGtpWta4sj2XJvst9GinonADPBFv+5pSSG+o5kAhG7rOCU4KHOkQgS89srvPvxbzxoo3yQ3ND3CGU2huE8zc+YL5PCxXiFZmcQjs+7AkaEO7pG87E/epQ8mADGnz334iAqm5bd40TR5GOTrlDnBSz9DyFC3wMTdhN8/XfuTQmEPzsTbTZX+Q30MfK2kdfBx5XOeeuSdakEIQiT3ko90gP6FyWGpVft+C34QIxoBLE9iS/aTwnB4GKrrUHhens3QU7f+TJ5TP5UjAah/sltvNrsvUt8wPlPL4HJyoa1jU3gNNCmE6a6aQDmWr69Y8jJtnuXkBQICE6Bg6zZX2QAYn2jr7OtTIPGJZTnrPmtdMEQQmpdNi1H0qoZlc5Iln4M9WsP0s+2Z+WsEdzqrvmE7v3RSAIF/CckkGkWRg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR04MB3891.apcprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(5660300002)(33656002)(122000001)(38070700005)(82960400001)(86362001)(38100700002)(2906002)(76116006)(66946007)(64756008)(8676002)(66446008)(8936002)(66476007)(52536014)(4326008)(66556008)(186003)(26005)(110136005)(83380400001)(54906003)(71200400001)(508600001)(9686003)(7696005)(6506007)(316002)(55016003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dFNjcXZ1bUcxMmY1OWJJaWU3R0U1Z0tFTXkwY0E4MG1QNHluMkdrU0dSa0VX?=
+ =?utf-8?B?c1piM1lKVzZSQkNrSTYrYlBCRjQvTEVUZGVtTWd5TDlPOGppWlhVSlo1aWVx?=
+ =?utf-8?B?N1ZVWEI4S1FDTTlmdnpLLzRBdVZ5eHN2cXphY1krTG0xUzdZZEQxTmdmci9n?=
+ =?utf-8?B?ZmRva3crcFFjb0ZXUnB2Nk1CK1JoUXVCMXFjbUlZZ1M4OEZnV0ZxeDBsZVEw?=
+ =?utf-8?B?TWRyM1d2MEZQNFBJa1ZBWmFlTnFPUWxQQ1ZtNEc3S0M0Vy83R1dzRlBRRHlQ?=
+ =?utf-8?B?U1RpLy9sRHVGQTZvbWJibnB0RVZXWkxobDk5TmJLREEzQVJsR3JqeHY1Y3ls?=
+ =?utf-8?B?YjJCTXJ6VEhlUHIrZXNuQXdyc0lJRmdFN3d6S24zNHNTWlJFOTN4SnZIMnov?=
+ =?utf-8?B?SnRMYUk2L2NEcHMzSGlOckwyeXJ1OFFUMFJKd3A1RnZVZ1JGdWZ2WnU3bUZU?=
+ =?utf-8?B?QVpRaStLTHd1djdNVDNLWDJyTVBiVTFyNjNITWRWN0RteHdTMHFTVFZORmdI?=
+ =?utf-8?B?cjhjS0xjdTRvLzRLYjVLRDA5cElMQzJIT1NTcy9tcGFBK3hHdEtERmdmZEVm?=
+ =?utf-8?B?blVKUjVLTU5XbDB3TjkzMFpWeDJYKzFHcEd2bWZqQ3g4eXBDc09mSmZmRFVD?=
+ =?utf-8?B?TW9rK3dKSC9SM2FXZ2ZQSGJjU25vZmlUNEJMazdIa2llbDNuUHVlT21pQUJX?=
+ =?utf-8?B?N01hYWlJQXFWVjVMVEloODhHdCtUZXdNOEtnbHI3MGxnTlU4VU8rcU9WZndB?=
+ =?utf-8?B?bXZEaXRYRzZHT3p4YmRQV2JxTVhSL0I1U1Znckt1b1NxNjNKVHFJazZyVmFV?=
+ =?utf-8?B?eWo4QW52M255UW5Zb3pQZlhrUUpWS2hmYkhQMTIxSFIrY3V3QUFjQTF6aVNl?=
+ =?utf-8?B?KzdaTzVrdzJyV0xlUW5OYVdqRlUzUDJXcEcwUVNXZTQ3QStienRvSUZacjY2?=
+ =?utf-8?B?Qlk2a2FwOWFrZk5DbVRKVVhBV1JlaFVZNnVucitzamVMbFdEUkZuaXRBcEt1?=
+ =?utf-8?B?Umc0WUo2MTVVd2hYeWwvRFhKVW1vaUlpc3A1bkIrVHFSRnZvK2t2cCt0dEU0?=
+ =?utf-8?B?OUdXZTZ6dm5TNmhyVTQ3ZTRVWWVkN0VpRVlSZkpId3FXTStCalVtV2JDdHZG?=
+ =?utf-8?B?MTdyRDBNbVAwNWk5S1dJUmpJcWQvdTlVTVVZQ0VmMHQyc2lnZXJKUGVTVzF1?=
+ =?utf-8?B?dFp4OE9Pbk1VbHNjM002Q21CVXNIYXdUSVB3WE9pMVpUejVwditVOWd2RlAw?=
+ =?utf-8?B?Q3lzaTd2SFlQNjV0MGN0V2c0Z0dSd0I1YURZZ1RFSTZ3SllkTnVvd1YraUpn?=
+ =?utf-8?B?dmVOYW4vUE1JV3dZMXRmVlVVYTFkRFUzMkdYQmpic2JmYmJTQWZLbnZvR0o1?=
+ =?utf-8?B?T3g4dkN0WVM1NFByTnozdnlYTmNKRi9IQW5QRkI5S2grVzJjV2pZdXlSNHBU?=
+ =?utf-8?B?QUVGNFQ5dkkzTi9MN1gzMHJwZVpUUkx4blFWeXFEUU9oejIwNllDV0VMaGow?=
+ =?utf-8?B?Ly9yWWc2aGUrYkJYVDVLamZ3aVN3WnJQNmNCQm8wQnQrbU0zN1BFQTFNa1ZP?=
+ =?utf-8?B?YXFwbFR5ZkpFSVpYdk9rSWdPL2Qxbm1CdVlXMWFnc0p4VzFrY09iWjJqNVZx?=
+ =?utf-8?B?L2dITnB1OWVIU2xZbi9sN3RwK0RIV0wrN3o1ZE9XbENZbytTQ3J3RFRrOUdF?=
+ =?utf-8?B?aGcvSXI1aTJyYVVlSHRWOTZEM2EveDQ3UHBDdDkrSXpicHIra1c3MzVicGh6?=
+ =?utf-8?B?UkNRNTk1dDVHU3BSTTU3TFBOdDljamJrZFVwbHNRWGNLVVhFMXpxWERhemdE?=
+ =?utf-8?B?WVZQWG45Z29IaXVMTzNyczdpMW1ydjVXS25yYlZidEZMMDNCRmt4TmVXeXVT?=
+ =?utf-8?B?UGlxSlNoVno3VWRFL21sRkZ5clVmSHBPZEVOdnhwMVBicEVnS3puSHEweGFF?=
+ =?utf-8?B?OXFrZzZRS0V3S2FIWVNaaDAzMnVuVkd4MGYzZXpqNDYzemJHbFhtRVRSVEhv?=
+ =?utf-8?B?STBScGNhL2srLzZ1OWRZdVd3d1lUN2E2KzNGVG95NTAwU01sVU13NjE4Vlk1?=
+ =?utf-8?B?aW90a0lRcTAxelMzTSsyZEpTMHFlN05KNnJBQ1hBYW5mS0h3TWlRSk81OUNo?=
+ =?utf-8?B?R1NJcUtTZE9oY1QrNHd1MEZFUzZyczdVWnJCSWR3d1gxbkhHbnJHYkQwQ2ZC?=
+ =?utf-8?Q?BSRjO6gR12Dz9zvHk7dDZJQ=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-OriginatorOrg: sony.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HK2PR04MB3891.apcprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 72fb6db1-379b-454b-76ab-08d9faa85585
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Feb 2022 10:51:54.4801
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 66c65d8a-9158-4521-a2d8-664963db48e4
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Vb0qUPmVfEFqjZFTMv38D0GFOXCT0mCBY18fVXVO1dgJZyalVaWuXkIChnmkElOS6mkNMWGO7yD8CMZuEqm+WQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYZPR04MB4511
+X-Proofpoint-ORIG-GUID: 7_UOlu37D2ZVFKwGuJw89ekhHGBFeGng
+X-Proofpoint-GUID: 7_UOlu37D2ZVFKwGuJw89ekhHGBFeGng
+X-Sony-Outbound-GUID: 7_UOlu37D2ZVFKwGuJw89ekhHGBFeGng
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-28_04,2022-02-26_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 lowpriorityscore=0 spamscore=0 clxscore=1011
+ adultscore=0 mlxlogscore=989 mlxscore=0 phishscore=0 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202280062
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some fw has a bug where the PCI bridge window returned by the ACPI
-resources partly overlaps with some other address range, causing issues.
-To workaround this Linux excludes E820 reserved addresses when allocating
-addresses from the PCI bridge window. 2 known examples of such fw bugs are:
-
-1. The returned window contains addresses which map to system RAM,
-see commit 4dc2287c1805 ("x86: avoid E820 regions when allocating
-address space").
-
-2. The Lenovo X1 carbon gen 2 BIOS has an overlap between an EFI/E820
-reserved range and the ACPI provided PCI bridge window:
- efi: mem46: [MMIO] range=[0x00000000dfa00000-0x00000000dfa0ffff] (0MB)
- BIOS-e820: [mem 0x00000000dceff000-0x00000000dfa0ffff] reserved
- pci_bus 0000:00: root bus resource [mem 0xdfa00000-0xfebfffff window]
-If Linux assigns the overlapping 0xdfa00000-0xdfa0ffff range to a PCI BAR
-then the system fails to resume after a suspend.
-
-Recently (2019) some systems have shown-up with EFI memmap MMIO entries
-covering the entire ACPI provided PCI bridge window. These memmap entries
-get converted into e820_table entries, causing all attempts to assign
-memory to PCI BARs which have not been setup by the BIOS to fail.
-For example see these dmesg snippets from a Lenovo IdeaPad 3 15IIL 81WE:
- efi: mem63: [MMIO] range=[0x0000000065400000-0x00000000cfffffff] (1708MB)
- BIOS-e820: [mem 0x000000004bc50000-0x00000000cfffffff] reserved
- pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
- pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
- pci 0000:00:15.0: BAR 0: failed to assign [mem size 0x00001000 64bit]
-
-To fix this, check if the ACPI provided PCI bridge window is fully
-contained within in EFI memmap MMIO region and in that case disable
-the "exclude E820 reserved addresses" workaround, fixing the problem
-of not being able to find free space for unassigned BARs.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=206459
-BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1868899
-BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1871793
-BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=2029207
-BugLink: https://bugs.launchpad.net/bugs/1878279
-BugLink: https://bugs.launchpad.net/bugs/1931715
-BugLink: https://bugs.launchpad.net/bugs/1932069
-BugLink: https://bugs.launchpad.net/bugs/1921649
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
-Changes in v2:
-- Add a couple of missing includes to arch/x86/include/asm/pci_x86.h
-  to fix i386 build errors Reported-by: kernel test robot <lkp@intel.com>
-- Do not call resource_is_efi_mmio_region() on resource-list entries which
-  have just been destroyed because they match resource_is_pcicfg_ioport()
-  Reported-by: kernel test robot <oliver.sang@intel.com>
-- Add (res->flags & IORESOURCE_MEM) check to resource_is_efi_mmio_region()
----
- arch/x86/include/asm/pci_x86.h | 10 +++++
- arch/x86/kernel/resource.c     |  4 ++
- arch/x86/pci/acpi.c            | 68 +++++++++++++++++++++++++++++++++-
- 3 files changed, 81 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/include/asm/pci_x86.h b/arch/x86/include/asm/pci_x86.h
-index 490411dba438..4ce61ab01a4f 100644
---- a/arch/x86/include/asm/pci_x86.h
-+++ b/arch/x86/include/asm/pci_x86.h
-@@ -5,7 +5,9 @@
-  *	(c) 1999 Martin Mares <mj@ucw.cz>
-  */
- 
-+#include <linux/init.h>
- #include <linux/ioport.h>
-+#include <linux/spinlock.h>
- 
- #undef DEBUG
- 
-@@ -64,6 +66,8 @@ void pcibios_scan_specific_bus(int busn);
- 
- /* pci-irq.c */
- 
-+struct pci_dev;
-+
- struct irq_info {
- 	u8 bus, devfn;			/* Bus, device and function */
- 	struct {
-@@ -232,3 +236,9 @@ static inline void mmio_config_writel(void __iomem *pos, u32 val)
- # define x86_default_pci_init_irq	NULL
- # define x86_default_pci_fixup_irqs	NULL
- #endif
-+
-+#if defined CONFIG_PCI && defined CONFIG_ACPI
-+extern bool pci_use_e820;
-+#else
-+#define pci_use_e820 true
-+#endif
-diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
-index 9b9fb7882c20..e8dc9bc327bd 100644
---- a/arch/x86/kernel/resource.c
-+++ b/arch/x86/kernel/resource.c
-@@ -1,6 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <linux/ioport.h>
- #include <asm/e820/api.h>
-+#include <asm/pci_x86.h>
- 
- static void resource_clip(struct resource *res, resource_size_t start,
- 			  resource_size_t end)
-@@ -28,6 +29,9 @@ static void remove_e820_regions(struct resource *avail)
- 	int i;
- 	struct e820_entry *entry;
- 
-+	if (!pci_use_e820)
-+		return;
-+
- 	for (i = 0; i < e820_table->nr_entries; i++) {
- 		entry = &e820_table->entries[i];
- 
-diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
-index 052f1d78a562..fce05e03ba9e 100644
---- a/arch/x86/pci/acpi.c
-+++ b/arch/x86/pci/acpi.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
-+#include <linux/efi.h>
- #include <linux/pci.h>
- #include <linux/acpi.h>
- #include <linux/init.h>
-@@ -21,6 +22,7 @@ struct pci_root_info {
- 
- static bool pci_use_crs = true;
- static bool pci_ignore_seg;
-+bool pci_use_e820 = true;
- 
- static int __init set_use_crs(const struct dmi_system_id *id)
- {
-@@ -291,6 +293,63 @@ static bool resource_is_pcicfg_ioport(struct resource *res)
- 		res->start == 0xCF8 && res->end == 0xCFF;
- }
- 
-+/*
-+ * Some fw has a bug where the PCI bridge window returned by the ACPI resources
-+ * partly overlaps with some other address range, causing issues. To workaround
-+ * this Linux excludes E820 reserved addresses when allocating addresses from
-+ * the PCI bridge window. 2 known examples of such firmware bugs are:
-+ *
-+ * 1. The returned window contains addresses which map to system RAM, see
-+ * commit 4dc2287c1805 ("x86: avoid E820 regions when allocating address space").
-+ *
-+ * 2. The Lenovo X1 carbon gen 2 BIOS has an overlap between an EFI/E820
-+ * reserved range and the ACPI provided PCI bridge window:
-+ *  efi: mem46: [MMIO] range=[0x00000000dfa00000-0x00000000dfa0ffff] (0MB)
-+ *  BIOS-e820: [mem 0x00000000dceff000-0x00000000dfa0ffff] reserved
-+ *  pci_bus 0000:00: root bus resource [mem 0xdfa00000-0xfebfffff window]
-+ * If Linux assigns the overlapping 0xdfa00000-0xdfa0ffff range to a PCI BAR
-+ * then the system fails to resume after a suspend.
-+ *
-+ * Recently (2019) some systems have shown-up with EFI memmap MMIO entries
-+ * covering the entire ACPI provided PCI bridge window. These memmap entries
-+ * get converted into e820_table entries, causing all attempts to assign
-+ * memory to PCI BARs which have not been setup by the BIOS to fail.
-+ * For example see these dmesg snippets from a Lenovo IdeaPad 3 15IIL 81WE:
-+ *  efi: mem63: [MMIO] range=[0x0000000065400000-0x00000000cfffffff] (1708MB)
-+ *  BIOS-e820: [mem 0x000000004bc50000-0x00000000cfffffff] reserved
-+ *  pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
-+ *  pci 0000:00:15.0: BAR 0: no space for [mem size 0x00001000 64bit]
-+ *  pci 0000:00:15.0: BAR 0: failed to assign [mem size 0x00001000 64bit]
-+ *
-+ * To code below checks if the ACPI provided PCI bridge window is fully
-+ * contained within in EFI memmap MMIO region and in that case disables
-+ * the "exclude E820 reserved addresses" workaround to avoid this issue.
-+ */
-+static bool resource_is_efi_mmio_region(const struct resource *res)
-+{
-+	unsigned long long start, end;
-+	efi_memory_desc_t *md;
-+
-+	if (!(res->flags & IORESOURCE_MEM))
-+		return false;
-+
-+	if (!efi_enabled(EFI_MEMMAP))
-+		return false;
-+
-+	for_each_efi_memory_desc(md) {
-+		if (md->type != EFI_MEMORY_MAPPED_IO)
-+			continue;
-+
-+		start = md->phys_addr;
-+		end = start + (md->num_pages << EFI_PAGE_SHIFT) - 1;
-+
-+		if (res->start >= start && res->end <= end)
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
- {
- 	struct acpi_device *device = ci->bridge;
-@@ -300,9 +359,16 @@ static int pci_acpi_root_prepare_resources(struct acpi_pci_root_info *ci)
- 
- 	status = acpi_pci_probe_root_resources(ci);
- 	if (pci_use_crs) {
--		resource_list_for_each_entry_safe(entry, tmp, &ci->resources)
-+		resource_list_for_each_entry_safe(entry, tmp, &ci->resources) {
- 			if (resource_is_pcicfg_ioport(entry->res))
- 				resource_list_destroy_entry(entry);
-+			else if (resource_is_efi_mmio_region(entry->res)) {
-+				dev_info(&device->dev,
-+					"host bridge window %pR is marked by EFI as MMIO\n",
-+					entry->res);
-+				pci_use_e820 = false;
-+			}
-+		}
- 		return status;
- 	}
- 
--- 
-2.35.1
-
+SGksIEtvaGFkYS5UZXRzdWhpcm8uDQoNClRoYW5rIGZvciB5b3VyIGNvbW1lbnRzLg0KDQo+PiBB
+bmQgVm9sdW1lRGlydHkgd2lsbCBiZSBzZXQgYWdhaW4gd2hlbiB1cGRhdGluZyB0aGUgcGFyZW50
+IGRpcmVjdG9yeS4gDQo+PiBJdCBtZWFucyB0aGF0IEJvb3RTZWN0b3Igd2lsbCBiZSB3cml0dGVu
+IHR3aWNlIGluIGVhY2ggd3JpdGViYWNrLCB0aGF0IHdpbGwgc2hvcnRlbiB0aGUgbGlmZSBvZiB0
+aGUgZGV2aWNlLg0KPiANCj4gSSBoYXZlIHRoZSBzYW1lIGNvbmNlcm4uDQo+IEZyb20gYSBsaWZl
+c3BhbiBwb2ludCBvZiB2aWV3LCB3ZSBzaG91bGQgcHJvYmFibHkgY2xlYXIgZGlydHkgd2l0aCBq
+dXN0IHN5bmNfZnMoKS4NCg0KSWYgaXQgaXMgYWNjZXB0YWJsZSBmb3IgVm9sdW1lRGlydHkgdG8g
+cmVtYWluIGRpcnR5IGFmdGVyIGFsbCB1cGRhdGVzIGFyZSBjb21wbGV0ZSwgSSB0aGluayBpdCBp
+cyBhIGdvb2QgaWRlYS4NCihQUzogVGhlIG9yaWdpbmFsIGxvZ2ljIGlzIHRvIGNsZWFyIFZvbHVt
+ZURpcnR5IGFmdGVyIEJpdE1hcCwgRkFUIGFuZCBkaXJlY3RvcnkgZW50cmllcyBhcmUgdXBkYXRl
+ZC4pDQoNCj4+ICAJc3luY19ibG9ja2RldihzYi0+c19iZGV2KTsNCj4+IC0JaWYgKGV4ZmF0X2Ns
+ZWFyX3ZvbHVtZV9kaXJ0eShzYikpDQo+PiArCWlmIChfX2V4ZmF0X2NsZWFyX3ZvbHVtZV9kaXJ0
+eShzYikpDQo+IA0KPiBJZiBTQl9TWU5DSFJPTk9VUyBvciBTQl9ESVJTWU5DIGlzIG5vdCBwcmVz
+ZW50LCBpc24ndCBkaXJ0eSBjbGVhcmVkPw0KDQpXaXRoIHRoaXMgcGF0Y2gsIGV4ZmF0X2NsZWFy
+X3ZvbHVtZV9kaXJ0eSgpIHdpbGwgbm90IGNsZWFyIFZvbHVtZURpcnR5IGlmIFNCX1NZTkNIUk9O
+T1VTIG9yIFNCX0RJUlNZTkMgaXMgbm90IHByZXNlbnQsIGFuZCBfX2V4ZmF0X2NsZWFyX3ZvbHVt
+ZV9kaXJ0eSgpIHdpbGwgY2xlYXIgVm9sdW1lRGlydHkgdW5jb25kaXRpb25hbGx5Lg0KDQo+PiAr
+aW50IGV4ZmF0X2NsZWFyX3ZvbHVtZV9kaXJ0eShzdHJ1Y3Qgc3VwZXJfYmxvY2sgKnNiKSB7DQo+
+PiArCWlmIChzYi0+c19mbGFncyAmIChTQl9TWU5DSFJPTk9VUyB8IFNCX0RJUlNZTkMpKQ0KPj4g
+KwkJcmV0dXJuIF9fZXhmYXRfY2xlYXJfdm9sdW1lX2RpcnR5KHNiKTsNCj4gDQo+IEV2ZW4gd2hl
+biBvbmx5IG9uZSBvZiBTQiBvciBESVIgaXMgc3luY2VkLCBkaXJ0eSB3aWxsIGJlIGNsZWFyZWQu
+DQo+IElzbid0IGl0IG5lY2Vzc2FyeSB0byBoYXZlIGJvdGggU0JfU1lOQ0hST05PVVMgYW5kIFNC
+X0RJUlNZTkM/DQoNClZvbHVtZURpcnR5IHdpbGwgYmUgY2xlYXJlZCBpZiBvbmUgb2YgU0JfU1lO
+Q0hST05PVVMgYW5kIFNCX0RJUlNZTkMgaXMgc2V0Lg0KVGhlIGNvbmRpdGlvbiBvZiAoc2ItPnNf
+ZmxhZ3MgJiAoU0JfU1lOQ0hST05PVVMgfCBTQl9ESVJTWU5DKSkgaXMgZXhhY3RseSB0aGF0Lg0K
+DQo+IEFuZCwgSSB0aGluayBpdCB3b3VsZCBiZSBiZXR0ZXIgdG8gdXNlIElTX1NZTkMgb3IgSVNf
+RElSU1lOQyBtYWNybyBoZXJlLg0KDQpJZiB1c2UgSVNfU1lOQyBvciBJU19ESVJTWU5DLCB3ZSBz
+aG91bGQgcGFzcyBgaW5vZGVgIGFzIGFuIGFyZ3VtZW50LCBpdCB3aWxsIGJlIGEgYmlnIGNoYW5n
+ZSBmb3IgY29kZS4NCkFuZCBpZiBvcGVuIGEgZmlsZSB3aXRoIE9fU1lOQywgSVNfRElSU1lOQyBh
+bmQgSVNfU1lOQyB3aWxsIGJlIHRydWUsIFZvbHVtZURpcnR5IHdpbGwgYmUgY2xlYXJlZC4gDQpT
+byBJIHRoaW5rIGl0IGlzIG5vdCBuZWNlc3NhcnkgdG8gdXNlIElTX0RJUlNZTkMgYW5kIElTX1NZ
+TkMuDQoNCkJlc3QgUmVnYXJkcywNCll1ZXpoYW5nLE1vDQo=
