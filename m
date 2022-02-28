@@ -2,165 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 628BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232089AbiB1LCJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:02:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57780 "EHLO
+        id S233471AbiB1LDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:03:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230405AbiB1LCI (ORCPT
+        with ESMTP id S230405AbiB1LDx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:02:08 -0500
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEF605F48;
-        Mon, 28 Feb 2022 03:01:29 -0800 (PST)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 21SB1IsA049473;
-        Mon, 28 Feb 2022 05:01:18 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1646046078;
-        bh=e7GXnQtw9Hp7YCOAOLD/4wQvxSNf4wePlNbT2z/eA7w=;
-        h=From:To:CC:Subject:Date;
-        b=Jrgm9AimMcJAgfkKQazAgGYUvTpbwAacNSOZ+hvm6oxZn4uH/CDXzszfuV6WFyXtr
-         b/8kW8uFuxAeudkRcw6WOiFLT8sJSqTfeT/N4hsz/iCeHQh5k8xhtfJC8UvdzQuZvK
-         6WC2qUaq5u7UnjfqRQeDQRQp98ptU1yAQgURY2CY=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 21SB1HBV065830
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 28 Feb 2022 05:01:18 -0600
-Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 28
- Feb 2022 05:01:17 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 28 Feb 2022 05:01:17 -0600
-Received: from swubn03.india.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 21SB1EVl042106;
-        Mon, 28 Feb 2022 05:01:14 -0600
-From:   Aparna M <a-m1@ti.com>
-To:     <nm@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
-        <kristo@kernel.org>, <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <praneeth@ti.com>, <nikhil.nd@ti.com>
-Subject: [PATCH v3] arm64: dts: ti: k3-am642-sk: Enable WLAN connected to SDHCI0
-Date:   Mon, 28 Feb 2022 16:31:11 +0530
-Message-ID: <20220228110111.30637-1-a-m1@ti.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 28 Feb 2022 06:03:53 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B351E3E2;
+        Mon, 28 Feb 2022 03:03:14 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id d28so14808499wra.4;
+        Mon, 28 Feb 2022 03:03:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Zbcz7VnvPXSNCztHz9sMRX7epSbG59XZn9pyu61UWHk=;
+        b=Oxj8JHlRz2mdVmoqigS0luCtmjoUGIdmOc0RrlMqAcNJkhut3cfH0O2mrE/ZN35eRA
+         VJuMEYvoFGx3i6hUlAg9fNUzhIxxOX6t9Dknps+IjiCb1Nx5UamllnjQ/a4Es/oJ0MN/
+         0gN1bg1skzYA+O+aGmN1eNJntgiA4r3vUMPtDYDE9F48W9BanaHaPErQ1DcKjaclTMkj
+         jnrBkH0t/aYm1I8A3mgzP1WAG567o0wVuGR40v2RaLbN8akGMFYBAT8PwIpDSLCrD0U+
+         my3H+o+iwrO4pyNafLkILq2XPN2ucabzpReR9CV8mW58yAKTRzMSYKjqdp30wWeaq4jp
+         sQwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Zbcz7VnvPXSNCztHz9sMRX7epSbG59XZn9pyu61UWHk=;
+        b=Kl3ezIa5O47RBy73exErUJh3nJy0xN6OCgWcTyLThE4b53kNnu8PM86VPem3oadD4Y
+         shdTm8PGPFR3uO4kexFzN35bmO9wA/tRQm+SuPCkasCOcfcMK0ejMM2Q2fu+NroF8vum
+         shOH2HVJwGPS8V2b+VI38bIS4mzeeObyOF4RDX7mSBON2d0+gMsLXvToinpndHWYTma/
+         wfcOzCOX5NgYAY5ZrDWejdO9f+CZwTwj4o/vM89UZ/f37/xxXn38ccaPS7+jCsG6WrRi
+         WieTPaa4I23FOeJpY4XH27Xscw4hQKMtvy8/n/bJKRtbMyMEkQBoAmW4HrH/3C/u9XHn
+         x4CA==
+X-Gm-Message-State: AOAM5331ccPTGGLS29Rxm0JrHFGYz9LbokFVYM5s5aIta3oXeZ8rH7dW
+        MxyL7fyvATWzecaoZNh63F0=
+X-Google-Smtp-Source: ABdhPJyoSngUdbBN26xRaezsM/eDpcmtYGFW89dx6ojT/oBJ2L/ABdocEt8cEWhHXD5mzfXcpXS/dw==
+X-Received: by 2002:adf:ea44:0:b0:1ef:6f00:cf47 with SMTP id j4-20020adfea44000000b001ef6f00cf47mr11507757wrn.460.1646046192880;
+        Mon, 28 Feb 2022 03:03:12 -0800 (PST)
+Received: from [192.168.0.14] (static-63-182-85-188.ipcom.comunitel.net. [188.85.182.63])
+        by smtp.gmail.com with ESMTPSA id z5-20020a05600c0a0500b0037fa93193a8sm12557012wmp.44.2022.02.28.03.03.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 03:03:12 -0800 (PST)
+Message-ID: <2f2d2d0f-3854-501d-e6dd-146f64d726d6@gmail.com>
+Date:   Mon, 28 Feb 2022 12:03:11 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [v7 0/5] Mediatek MT8195 power domain support
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Enric Balletbo Serra <eballetbo@gmail.com>,
+        Nicolas Boichat <drinkcat@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        srv_heupstream@mediatek.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220130012104.5292-1-chun-jie.chen@mediatek.com>
+ <319d7236-292c-787f-4578-bffe75e33ba1@collabora.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <319d7236-292c-787f-4578-bffe75e33ba1@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kishon Vijay Abraham I <kishon@ti.com>
 
-WL1837 module is connected to SDHCI0 in AM642 SK. Enable it here.
-This will enable the WiFi functionaliy on the board.
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Signed-off-by: Nikhil Devshatwar <nikhil.nd@ti.com>
-Signed-off-by: Aparna M <a-m1@ti.com>
----
+On 15/02/2022 10:06, AngeloGioacchino Del Regno wrote:
+> Il 30/01/22 02:20, Chun-Jie Chen ha scritto:
+>> This patch series adds power domain support for MT8195
+>> and is based on 5.17-rc1.
+> 
+> Hello Matthias,
+> 
+> this series has been tested for a while on multiple MediaTek platforms, hence
+> new versions will not be necessary.
+> 
+> Can you please pick it for v5.18?
 
-v2 -> v3: Use generic node names for the regulators as per DT Specs
-v1 -> v2: Add "From" tag in commit message
+Whole series applied,
 
- arch/arm64/boot/dts/ti/k3-am642-sk.dts | 62 ++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+Thanks!
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am642-sk.dts b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-index 6b04745147be..a6be747e5bf1 100644
---- a/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-+++ b/arch/arm64/boot/dts/ti/k3-am642-sk.dts
-@@ -125,6 +125,31 @@
- 		vin-supply = <&vcc_3v3_sys>;
- 		gpio = <&exp1 3 GPIO_ACTIVE_HIGH>;
- 	};
-+
-+	com8_ls_en: regulator-1 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "com8_ls_en";
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		regulator-always-on;
-+		regulator-boot-on;
-+		pinctrl-0 = <&main_com8_ls_en_pins_default>;
-+		pinctrl-names = "default";
-+		gpio = <&main_gpio0 62 GPIO_ACTIVE_LOW>;
-+	};
-+
-+	wlan_en: regulator-2 {
-+		/* output of SN74AVC4T245RSVR */
-+		compatible = "regulator-fixed";
-+		regulator-name = "wlan_en";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+		enable-active-high;
-+		pinctrl-0 = <&main_wlan_en_pins_default>;
-+		pinctrl-names = "default";
-+		vin-supply = <&com8_ls_en>;
-+		gpio = <&main_gpio0 48 GPIO_ACTIVE_HIGH>;
-+	};
- };
- 
- &main_pmx0 {
-@@ -216,6 +241,23 @@
- 			AM64X_IOPAD(0x0270, PIN_INPUT, 0) /* (D18) ECAP0_IN_APWM_OUT */
- 		>;
- 	};
-+	main_wlan_en_pins_default: main-wlan-en-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00c4, PIN_OUTPUT_PULLUP, 7) /* (V8) GPIO0_48 */
-+		>;
-+	};
-+
-+	main_com8_ls_en_pins_default: main-com8-ls-en-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00fc, PIN_OUTPUT, 7) /* (U7) PRG1_PRU0_GPO17.GPIO0_62 */
-+		>;
-+	};
-+
-+	main_wlan_pins_default: main-wlan-pins-default {
-+		pinctrl-single,pins = <
-+			AM64X_IOPAD(0x00bc, PIN_INPUT, 7) /* (U8) GPIO0_46 */
-+		>;
-+	};
- };
- 
- &mcu_uart0 {
-@@ -293,6 +335,26 @@
- 	status = "reserved";
- };
- 
-+&sdhci0 {
-+	vmmc-supply = <&wlan_en>;
-+	bus-width = <4>;
-+	non-removable;
-+	cap-power-off-card;
-+	keep-power-in-suspend;
-+	ti,driver-strength-ohm = <50>;
-+
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	wlcore: wlcore@2 {
-+		compatible = "ti,wl1837";
-+		reg = <2>;
-+		pinctrl-0 = <&main_wlan_pins_default>;
-+		pinctrl-names = "default";
-+		interrupt-parent = <&main_gpio0>;
-+		interrupts = <46 IRQ_TYPE_EDGE_FALLING>;
-+	};
-+};
-+
- &sdhci1 {
- 	/* SD/MMC */
- 	vmmc-supply = <&vdd_mmc1>;
--- 
-2.17.1
+Matthias
 
+> 
+> Thank you,
+> Angelo
+> 
+>>
+>> change since v6:
+>> - rebase to 5.17-rc1
+>>
+>> change since v5:
+>> - rebase to 5.16-rc1
+>> - add domain capacity in mfg power domain
+>>
+>> change since v4:
+>> - rebase to 5.15-rc1 (fix conflict at patch 4 in this series)
+>> - change license
+>>
+>> change since v3:
+>> - remove redundant bus protection steps
+>> - remove unused power domain
+>>
+>> change since v2:
+>> - move modification of wakeup capacity to single patch
+>>
+>> reason for resend v2:
+>> - miss patch version in series
+>>
+>> changes since v1:
+>> - fix signed-off name
+>> - describe more detail in patch 3
+>> - move modification of removing redundant macro to single patch
+>>
+>> Chun-Jie Chen (5):
+>>    dt-bindings: power: Add MT8195 power domains
+>>    soc: mediatek: pm-domains: Add wakeup capacity support in power domain
+>>    soc: mediatek: pm-domains: Remove unused macro
+>>    soc: mediatek: pm-domains: Move power status offset to power domain
+>>      data
+>>    soc: mediatek: pm-domains: Add support for mt8195
+>>
+>>   .../power/mediatek,power-controller.yaml      |   2 +
+>>   drivers/soc/mediatek/mt8167-pm-domains.h      |  16 +-
+>>   drivers/soc/mediatek/mt8173-pm-domains.h      |  22 +-
+>>   drivers/soc/mediatek/mt8183-pm-domains.h      |  32 +-
+>>   drivers/soc/mediatek/mt8192-pm-domains.h      |  44 +-
+>>   drivers/soc/mediatek/mt8195-pm-domains.h      | 613 ++++++++++++++++++
+>>   drivers/soc/mediatek/mtk-pm-domains.c         |  12 +-
+>>   drivers/soc/mediatek/mtk-pm-domains.h         |   8 +-
+>>   include/dt-bindings/power/mt8195-power.h      |  46 ++
+>>   include/linux/soc/mediatek/infracfg.h         |  82 +++
+>>   10 files changed, 862 insertions(+), 15 deletions(-)
+>>   create mode 100644 drivers/soc/mediatek/mt8195-pm-domains.h
+>>   create mode 100644 include/dt-bindings/power/mt8195-power.h
+>>
+> 
