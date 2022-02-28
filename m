@@ -2,184 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD80C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B11C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 14:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237226AbiB1Ohu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 09:37:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60100 "EHLO
+        id S237232AbiB1OkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 09:40:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234274AbiB1Oht (ORCPT
+        with ESMTP id S236629AbiB1OkN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 09:37:49 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A37367EDA0;
-        Mon, 28 Feb 2022 06:37:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=8gK1MLeSoPmiKMeGhKrlABpUTydohzP3HzJO0Sk5SLs=; b=Vbh/4hNPnPdabQ6gj2ACyOSSzn
-        smwnYm9+HOetCiY5KBm+eI6Y3vsIr/YlUtQBgF8KYWnKTZGoHSqfBhzYOrG1e2nlq57jFZuXrSSzA
-        9ruB2YvPHM6WeCB9ZRcXrgGnZW77emFdr7q1Zz0L3wSem79OX8WZG4pG5++0gORtFpJbHiWK2NS/+
-        +F5iftJX8+BLZiOFkkov+DDAaZdadI4oLdVTlXpFBceyBBL/lRg6J+tB3ZRh/wv77WYIjSTy91BJ8
-        aVxHVDHnUZEcIVyZxA0xRpgLk3uRkXjunFN6IN307jnVLuebCA9wtgOc+1rj0a9Ec+l4we2B7ab4C
-        u6aBmBFg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOh90-00Cwne-Bt; Mon, 28 Feb 2022 14:36:58 +0000
-Date:   Mon, 28 Feb 2022 06:36:58 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Vasily Averin <vvs@virtuozzo.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Vlastimil Babka <vbabka@suse.cz>, NeilBrown <neilb@suse.de>,
-        Michal Hocko <mhocko@suse.com>
-Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
-        Linux MM <linux-mm@kvack.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
-        kernel@openvz.org
-Subject: Re: [PATCH RFC] net: memcg accounting for veth devices
-Message-ID: <YhzeCkXEvga7+o/A@bombadil.infradead.org>
-References: <a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com>
+        Mon, 28 Feb 2022 09:40:13 -0500
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCE547EB30;
+        Mon, 28 Feb 2022 06:39:31 -0800 (PST)
+Received: by mail-vs1-f47.google.com with SMTP id w4so13203433vsq.1;
+        Mon, 28 Feb 2022 06:39:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NgPIIS3M2iTi6HGFIRcC5El8608r4c/KqNVPec9SSG4=;
+        b=ffmocanYAypu5L+ic6J4Ofg+rMeCmubsQkdIU4eiZPn6NIVFxkZMts/h5/a8JJltFU
+         QOmGFQf+6STnU1ndj11APO1Vx1qA/RYd4rZ554Cdx7dhnzv8AUIjrN2s6padSHy/Dm3g
+         RQ1K9/cA6PPU0XLrOlF1cyyPMb18IGsreaQ1OyUFiGzkbb+oYYmnxd9bWdFrAXJsXueJ
+         Jn9+61dtJbblTv2XxbjmeR8Wqludz0GBoMOqJIHZvhcx6x7WhUrPg+ascfMjUyrqCs88
+         MiWKdaNey7GbiqLJNaxkxfOhOSNonXm0gwQRXfD+fUeST7Eh4sXBE++sAMVlssWYlm6h
+         rddA==
+X-Gm-Message-State: AOAM530MsidFvP3VUJhw4V+hSyJdm2JLidEqV0uOIbdMgr/OYAsONsBG
+        5NQRrZeJwVkh4Ksfq3SdlxnQLccOgGJAvA==
+X-Google-Smtp-Source: ABdhPJxy2QXChRRRWCURNZDdchQO0wgb0eFxxABpB3l0RqxmsL2eGT98L6xaShVkxMBpC0ndRXro0w==
+X-Received: by 2002:a67:cc19:0:b0:31b:b3be:a32a with SMTP id q25-20020a67cc19000000b0031bb3bea32amr7907335vsl.80.1646059170808;
+        Mon, 28 Feb 2022 06:39:30 -0800 (PST)
+Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com. [209.85.221.169])
+        by smtp.gmail.com with ESMTPSA id g21-20020a056102245500b0031b6426f679sm1332980vss.26.2022.02.28.06.39.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 06:39:30 -0800 (PST)
+Received: by mail-vk1-f169.google.com with SMTP id l10so5259609vki.9;
+        Mon, 28 Feb 2022 06:39:30 -0800 (PST)
+X-Received: by 2002:a05:6122:ca1:b0:330:b95b:e048 with SMTP id
+ ba33-20020a0561220ca100b00330b95be048mr8242679vkb.39.1646059170224; Mon, 28
+ Feb 2022 06:39:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+References: <20220227231531.32279-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220227231531.32279-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 28 Feb 2022 15:39:19 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVzMFwHnfmybZAoqqa0sW1QiHYSYvKoS68m_y0+BjB=rA@mail.gmail.com>
+Message-ID: <CAMuHMdVzMFwHnfmybZAoqqa0sW1QiHYSYvKoS68m_y0+BjB=rA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: usb: renesas,usbhs: Document RZ/V2L bindings
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        USB list <linux-usb@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 10:17:16AM +0300, Vasily Averin wrote:
-> Following one-liner running inside memcg-limited container consumes
-> huge number of host memory and can trigger global OOM.
-> 
-> for i in `seq 1 xxx` ; do ip l a v$i type veth peer name vp$i ; done
-> 
-> Patch accounts most part of these allocations and can protect host.
-> ---[cut]---
-> It is not polished, and perhaps should be splitted.
-> obviously it affects other kind of netdevices too.
-> Unfortunately I'm not sure that I will have enough time to handle it properly
-> and decided to publish current patch version as is.
-> OpenVz workaround it by using per-container limit for number of
-> available netdevices, but upstream does not have any kind of
-> per-container configuration.
-> ------
+On Mon, Feb 28, 2022 at 12:15 AM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Document RZ/V2L (R9A07G054) SoC bindings. USBHS block is identical to one
+> found on RZ/A2 SoC. No driver changes are required as generic compatible
+> string "renesas,rza2-usbhs" will be used as a fallback.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 
-Should this just be a new ucount limit on kernel/ucount.c and have veth
-use something like inc_ucount(current_user_ns(), current_euid(), UCOUNT_VETH)?
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-This might be abusing ucounts though, not sure, Eric?
+Gr{oetje,eeting}s,
 
-  Luis
-> 
-> Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
-> ---
->  drivers/net/veth.c    | 2 +-
->  fs/kernfs/mount.c     | 2 +-
->  fs/proc/proc_sysctl.c | 3 ++-
->  net/core/neighbour.c  | 4 ++--
->  net/ipv4/devinet.c    | 2 +-
->  net/ipv6/addrconf.c   | 6 +++---
->  6 files changed, 10 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 354a963075c5..6e0b4a9d0843 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -1307,7 +1307,7 @@ static int veth_alloc_queues(struct net_device *dev)
->  	struct veth_priv *priv = netdev_priv(dev);
->  	int i;
-> -	priv->rq = kcalloc(dev->num_rx_queues, sizeof(*priv->rq), GFP_KERNEL);
-> +	priv->rq = kcalloc(dev->num_rx_queues, sizeof(*priv->rq), GFP_KERNEL_ACCOUNT);
->  	if (!priv->rq)
->  		return -ENOMEM;
-> diff --git a/fs/kernfs/mount.c b/fs/kernfs/mount.c
-> index cfa79715fc1a..2881aeeaa880 100644
-> --- a/fs/kernfs/mount.c
-> +++ b/fs/kernfs/mount.c
-> @@ -391,7 +391,7 @@ void __init kernfs_init(void)
->  {
->  	kernfs_node_cache = kmem_cache_create("kernfs_node_cache",
->  					      sizeof(struct kernfs_node),
-> -					      0, SLAB_PANIC, NULL);
-> +					      0, SLAB_PANIC | SLAB_ACCOUNT, NULL);
->  	/* Creates slab cache for kernfs inode attributes */
->  	kernfs_iattrs_cache  = kmem_cache_create("kernfs_iattrs_cache",
-> diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
-> index 7d9cfc730bd4..e20ce8198a44 100644
-> --- a/fs/proc/proc_sysctl.c
-> +++ b/fs/proc/proc_sysctl.c
-> @@ -1333,7 +1333,8 @@ struct ctl_table_header *__register_sysctl_table(
->  		nr_entries++;
->  	header = kzalloc(sizeof(struct ctl_table_header) +
-> -			 sizeof(struct ctl_node)*nr_entries, GFP_KERNEL);
-> +			 sizeof(struct ctl_node)*nr_entries,
-> +			 GFP_KERNEL_ACCOUNT);
->  	if (!header)
->  		return NULL;
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index ec0bf737b076..66a4445421f1 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -1665,7 +1665,7 @@ struct neigh_parms *neigh_parms_alloc(struct net_device *dev,
->  	struct net *net = dev_net(dev);
->  	const struct net_device_ops *ops = dev->netdev_ops;
-> -	p = kmemdup(&tbl->parms, sizeof(*p), GFP_KERNEL);
-> +	p = kmemdup(&tbl->parms, sizeof(*p), GFP_KERNEL_ACCOUNT);
->  	if (p) {
->  		p->tbl		  = tbl;
->  		refcount_set(&p->refcnt, 1);
-> @@ -3728,7 +3728,7 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
->  	char neigh_path[ sizeof("net//neigh/") + IFNAMSIZ + IFNAMSIZ ];
->  	char *p_name;
-> -	t = kmemdup(&neigh_sysctl_template, sizeof(*t), GFP_KERNEL);
-> +	t = kmemdup(&neigh_sysctl_template, sizeof(*t), GFP_KERNEL_ACCOUNT);
->  	if (!t)
->  		goto err;
-> diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-> index fba2bffd65f7..47523fe5b891 100644
-> --- a/net/ipv4/devinet.c
-> +++ b/net/ipv4/devinet.c
-> @@ -2566,7 +2566,7 @@ static int __devinet_sysctl_register(struct net *net, char *dev_name,
->  	struct devinet_sysctl_table *t;
->  	char path[sizeof("net/ipv4/conf/") + IFNAMSIZ];
-> -	t = kmemdup(&devinet_sysctl, sizeof(*t), GFP_KERNEL);
-> +	t = kmemdup(&devinet_sysctl, sizeof(*t), GFP_KERNEL_ACCOUNT);
->  	if (!t)
->  		goto out;
-> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> index f927c199a93c..9d903342bc41 100644
-> --- a/net/ipv6/addrconf.c
-> +++ b/net/ipv6/addrconf.c
-> @@ -358,7 +358,7 @@ static int snmp6_alloc_dev(struct inet6_dev *idev)
->  	if (!idev->stats.icmpv6dev)
->  		goto err_icmp;
->  	idev->stats.icmpv6msgdev = kzalloc(sizeof(struct icmpv6msg_mib_device),
-> -					   GFP_KERNEL);
-> +					   GFP_KERNEL_ACCOUNT);
->  	if (!idev->stats.icmpv6msgdev)
->  		goto err_icmpmsg;
-> @@ -382,7 +382,7 @@ static struct inet6_dev *ipv6_add_dev(struct net_device *dev)
->  	if (dev->mtu < IPV6_MIN_MTU)
->  		return ERR_PTR(-EINVAL);
-> -	ndev = kzalloc(sizeof(struct inet6_dev), GFP_KERNEL);
-> +	ndev = kzalloc(sizeof(struct inet6_dev), GFP_KERNEL_ACCOUNT);
->  	if (!ndev)
->  		return ERR_PTR(err);
-> @@ -7023,7 +7023,7 @@ static int __addrconf_sysctl_register(struct net *net, char *dev_name,
->  	struct ctl_table *table;
->  	char path[sizeof("net/ipv6/conf/") + IFNAMSIZ];
-> -	table = kmemdup(addrconf_sysctl, sizeof(addrconf_sysctl), GFP_KERNEL);
-> +	table = kmemdup(addrconf_sysctl, sizeof(addrconf_sysctl), GFP_KERNEL_ACCOUNT);
->  	if (!table)
->  		goto out;
-> -- 
-> 2.25.1
-> 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
