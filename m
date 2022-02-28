@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D255CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7771FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239120AbiB1R4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:56:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
+        id S239260AbiB1R45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:56:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239674AbiB1RxS (ORCPT
+        with ESMTP id S239726AbiB1RxU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A60AA2E6;
-        Mon, 28 Feb 2022 09:40:47 -0800 (PST)
+        Mon, 28 Feb 2022 12:53:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B74AB45C;
+        Mon, 28 Feb 2022 09:40:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB149614CC;
-        Mon, 28 Feb 2022 17:40:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F386DC340F0;
-        Mon, 28 Feb 2022 17:40:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6980B815B3;
+        Mon, 28 Feb 2022 17:40:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AA35C340F1;
+        Mon, 28 Feb 2022 17:40:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070031;
-        bh=STnS/3RRWhsPBmCHC2DlFKfKbvwnvLdEGavJaXHMJJA=;
+        s=korg; t=1646070050;
+        bh=uCerF8BX4XGwIHz+tAyMMigidC2NZyRMn7ck9WmU0ek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JHSaXV7XlX9crxCqcveNAqBz5n9iXkmcJyoWmRYb0028oyYbC4RxnulQ9FioRuoyn
-         ogrN766rVv+JSOFYCmmbsUjfXbCidS0T7JaaXmQfAlKt8e4Mb362Zz6hDYbCH9EyGO
-         8HdRVkneeH9ceEWsDIF2xx4iilmByY3GJ/VWQ6x4=
+        b=JYwiOUvPp7KR4gir9LGF6R13Q5f/C2S1J3H4fx5jE0zHyBh6030X1/vd2gIiRnsK2
+         hiduJtQmEvYn53qKh13uhO3NlonZI+6KYcT4DRgkianLa7x3r6QAv4cblCP5hIKZar
+         0g2p6jXbDtv7AOGZ93X/09SD9wdy86RxnYeKSN+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mario Tesi <mario.tesi@st.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 101/139] iio: imu: st_lsm6dsx: wait for settling time in st_lsm6dsx_read_oneshot
-Date:   Mon, 28 Feb 2022 18:24:35 +0100
-Message-Id: <20220228172358.298857577@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Szymon Heidrich <szymon.heidrich@gmail.com>,
+        stable <stable@kernel.org>
+Subject: [PATCH 5.15 107/139] USB: gadget: validate endpoint index for xilinx udc
+Date:   Mon, 28 Feb 2022 18:24:41 +0100
+Message-Id: <20220228172358.911729878@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,40 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Szymon Heidrich <szymon.heidrich@gmail.com>
 
-commit ea85bf906466191b58532bb19f4fbb4591f0a77e upstream.
+commit 7f14c7227f342d9932f9b918893c8814f86d2a0d upstream.
 
-We need to wait for sensor settling time (~ 3/ODR) before reading data
-in st_lsm6dsx_read_oneshot routine in order to avoid corrupted samples.
+Assure that host may not manipulate the index to point
+past endpoint array.
 
-Fixes: 290a6ce11d93 ("iio: imu: add support to lsm6dsx driver")
-Reported-by: Mario Tesi <mario.tesi@st.com>
-Tested-by: Mario Tesi <mario.tesi@st.com>
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Link: https://lore.kernel.org/r/b41ebda5535895298716c76d939f9f165fcd2d13.1644098120.git.lorenzo@kernel.org
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+Cc: stable <stable@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/usb/gadget/udc/udc-xilinx.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -1372,8 +1372,12 @@ static int st_lsm6dsx_read_oneshot(struc
- 	if (err < 0)
- 		return err;
- 
-+	/*
-+	 * we need to wait for sensor settling time before
-+	 * reading data in order to avoid corrupted samples
-+	 */
- 	delay = 1000000000 / sensor->odr;
--	usleep_range(delay, 2 * delay);
-+	usleep_range(3 * delay, 4 * delay);
- 
- 	err = st_lsm6dsx_read_locked(hw, addr, &data, sizeof(data));
- 	if (err < 0)
+--- a/drivers/usb/gadget/udc/udc-xilinx.c
++++ b/drivers/usb/gadget/udc/udc-xilinx.c
+@@ -1612,6 +1612,8 @@ static void xudc_getstatus(struct xusb_u
+ 		break;
+ 	case USB_RECIP_ENDPOINT:
+ 		epnum = udc->setup.wIndex & USB_ENDPOINT_NUMBER_MASK;
++		if (epnum >= XUSB_MAX_ENDPOINTS)
++			goto stall;
+ 		target_ep = &udc->ep[epnum];
+ 		epcfgreg = udc->read_fn(udc->addr + target_ep->offset);
+ 		halt = epcfgreg & XUSB_EP_CFG_STALL_MASK;
+@@ -1679,6 +1681,10 @@ static void xudc_set_clear_feature(struc
+ 	case USB_RECIP_ENDPOINT:
+ 		if (!udc->setup.wValue) {
+ 			endpoint = udc->setup.wIndex & USB_ENDPOINT_NUMBER_MASK;
++			if (endpoint >= XUSB_MAX_ENDPOINTS) {
++				xudc_ep0_stall(udc);
++				return;
++			}
+ 			target_ep = &udc->ep[endpoint];
+ 			outinbit = udc->setup.wIndex & USB_ENDPOINT_DIR_MASK;
+ 			outinbit = outinbit >> 7;
 
 
