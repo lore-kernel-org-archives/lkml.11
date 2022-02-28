@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9400C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236494AbiB1Rby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:31:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47412 "EHLO
+        id S232233AbiB1Rb7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:31:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235039AbiB1RaW (ORCPT
+        with ESMTP id S235581AbiB1Ral (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:30:22 -0500
+        Mon, 28 Feb 2022 12:30:41 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14251541B3;
-        Mon, 28 Feb 2022 09:28:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B0275C07;
+        Mon, 28 Feb 2022 09:28:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D9146135F;
-        Mon, 28 Feb 2022 17:28:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FA12C340E7;
-        Mon, 28 Feb 2022 17:28:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52AD961366;
+        Mon, 28 Feb 2022 17:28:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D42C340E7;
+        Mon, 28 Feb 2022 17:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069302;
-        bh=CRd4rCeCLKeHll0cDyYiFg6oShG+mdo264UAokc0Yw8=;
+        s=korg; t=1646069304;
+        bh=n1C6owpLgNwjx+El9E0AT/7N/2KvJH9zm209lQ/YAnM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LcwnO99yogfhHtUX6JDfqvZpoYbM5Y5hY7hrr8CikN0rb4y62Q7UynbSLXWb4Ng4d
-         NXkoextAUGfc/+mgkyMrk+KYEUrlUHO6wqvkH5jh5xJd1scrRaYqOV5EUMAN12ehew
-         DvGydP+Oe9kVrmEZyrsI9AFBY1VU0DgNPhrJ5a6A=
+        b=fSTsV0WQhPaZXXabtlzr+SVMd+y72ORQuMv6J1IoRqjltdF9YrREJDumvLEd3QuuL
+         oozuxAZo2fx+bbe5yYPXw0zhTC+mfSUc5rL2q+by6Gftx9DKI8INqqMwhOztkWa+JB
+         7DCXjVkZM3N/4FPuG++G15KXUbYY6N7i2som/IUw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Subject: [PATCH 4.14 07/31] serial: 8250: of: Fix mapped region size when using reg-offset property
-Date:   Mon, 28 Feb 2022 18:24:03 +0100
-Message-Id: <20220228172200.579201488@linuxfoundation.org>
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>
+Subject: [PATCH 4.14 08/31] ping: remove pr_err from ping_lookup
+Date:   Mon, 28 Feb 2022 18:24:04 +0100
+Message-Id: <20220228172200.673878080@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
 References: <20220228172159.515152296@linuxfoundation.org>
@@ -48,55 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Xin Long <lucien.xin@gmail.com>
 
-commit d06b1cf28297e27127d3da54753a3a01a2fa2f28 upstream.
+commit cd33bdcbead882c2e58fdb4a54a7bd75b610a452 upstream.
 
-8250_of supports a reg-offset property which is intended to handle
-cases where the device registers start at an offset inside the region
-of memory allocated to the device. The Xilinx 16550 UART, for which this
-support was initially added, requires this. However, the code did not
-adjust the overall size of the mapped region accordingly, causing the
-driver to request an area of memory past the end of the device's
-allocation. For example, if the UART was allocated an address of
-0xb0130000, size of 0x10000 and reg-offset of 0x1000 in the device
-tree, the region of memory reserved was b0131000-b0140fff, which caused
-the driver for the region starting at b0140000 to fail to probe.
+As Jakub noticed, prints should be avoided on the datapath.
+Also, as packets would never come to the else branch in
+ping_lookup(), remove pr_err() from ping_lookup().
 
-Fix this by subtracting reg-offset from the mapped region size.
-
-Fixes: b912b5e2cfb3 ([POWERPC] Xilinx: of_serial support for Xilinx uart 16550.)
-Cc: stable <stable@vger.kernel.org>
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Link: https://lore.kernel.org/r/20220112194214.881844-1-robert.hancock@calian.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-[sudip: adjust context]
-Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Fixes: 35a79e64de29 ("ping: fix the dif and sdif check in ping_lookup")
+Reported-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Link: https://lore.kernel.org/r/1ef3f2fcd31bd681a193b1fcf235eee1603819bd.1645674068.git.lucien.xin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/8250/8250_of.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/ipv4/ping.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/tty/serial/8250/8250_of.c
-+++ b/drivers/tty/serial/8250/8250_of.c
-@@ -102,8 +102,17 @@ static int of_platform_serial_setup(stru
- 	port->mapsize = resource_size(&resource);
+--- a/net/ipv4/ping.c
++++ b/net/ipv4/ping.c
+@@ -192,7 +192,6 @@ static struct sock *ping_lookup(struct n
+ 			 (int)ident, &ipv6_hdr(skb)->daddr, dif);
+ #endif
+ 	} else {
+-		pr_err("ping: protocol(%x) is not supported\n", ntohs(skb->protocol));
+ 		return NULL;
+ 	}
  
- 	/* Check for shifted address mapping */
--	if (of_property_read_u32(np, "reg-offset", &prop) == 0)
-+	if (of_property_read_u32(np, "reg-offset", &prop) == 0) {
-+		if (prop >= port->mapsize) {
-+			dev_warn(&ofdev->dev, "reg-offset %u exceeds region size %pa\n",
-+				 prop, &port->mapsize);
-+			ret = -EINVAL;
-+			goto err_unprepare;
-+		}
-+
- 		port->mapbase += prop;
-+		port->mapsize -= prop;
-+	}
- 
- 	/* Compatibility with the deprecated pxa driver and 8250_pxa drivers. */
- 	if (of_device_is_compatible(np, "mrvl,mmp-uart"))
 
 
