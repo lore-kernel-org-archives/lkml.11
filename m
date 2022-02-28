@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A26C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:06:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239895AbiB1SHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:07:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
+        id S238766AbiB1SHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:07:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240018AbiB1SC5 (ORCPT
+        with ESMTP id S239953AbiB1SCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:02:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F409C9D0D9;
-        Mon, 28 Feb 2022 09:46:28 -0800 (PST)
+        Mon, 28 Feb 2022 13:02:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4299E544;
+        Mon, 28 Feb 2022 09:46:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF5C9B815A2;
-        Mon, 28 Feb 2022 17:46:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 264F8C340E7;
-        Mon, 28 Feb 2022 17:46:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8FC960915;
+        Mon, 28 Feb 2022 17:45:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF02C340F1;
+        Mon, 28 Feb 2022 17:45:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070366;
-        bh=Bpsb1rp0neLYVsyJi0rU++lKp9fmwiwEbLY+ew+FR2g=;
+        s=korg; t=1646070358;
+        bh=DiWxa7CRxLNnk/Q2GSybc+1limzUwZwODUflL+oC7Q8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WhycuOR0WnqKYKdvmQgJzJOCb6/hZng8haLqHgk4zLTlW/9Z5B863a/CMi8iTXlFC
-         4y3xIcjDhovln/YUSYfqGCaDR5PoA/e0aRH8yqZZ54IUM2egHFylBsCuunmxwku2Cz
-         Jzy2R72LC4u7VawqbD/YfkEpRyjV64iNg28xYLDM=
+        b=DAcjc2UCVXUHz5T6OiRu582ViHU2cWG4bPzRx/iGBz6jaguqkucqTNiqdb+B7BY1d
+         e7fqBkUTrU2q5mrWViP5YfIujvkXNG2WH98NKoBPwx8jrL8dOoEoPgqCldSpackYO5
+         R2DDNhyZ9WUgb72R4molkd3otxXNGRL7Z4L31Cb8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Simon Horman <simon.horman@corigine.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 082/164] nfp: flower: Fix a potential leak in nfp_tunnel_add_shared_mac()
-Date:   Mon, 28 Feb 2022 18:24:04 +0100
-Message-Id: <20220228172407.398113380@linuxfoundation.org>
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 079/164] net: Force inlining of checksum functions in net/checksum.h
+Date:   Mon, 28 Feb 2022 18:24:01 +0100
+Message-Id: <20220228172407.166733618@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -50,50 +52,248 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 3a14d0888eb4b0045884126acc69abfb7b87814d upstream.
+commit 5486f5bf790b5c664913076c3194b8f916a5c7ad upstream.
 
-ida_simple_get() returns an id between min (0) and max (NFP_MAX_MAC_INDEX)
-inclusive.
-So NFP_MAX_MAC_INDEX (0xff) is a valid id.
+All functions defined as static inline in net/checksum.h are
+meant to be inlined for performance reason.
 
-In order for the error handling path to work correctly, the 'invalid'
-value for 'ida_idx' should not be in the 0..NFP_MAX_MAC_INDEX range,
-inclusive.
+But since commit ac7c3e4ff401 ("compiler: enable
+CONFIG_OPTIMIZE_INLINING forcibly") the compiler is allowed to
+uninline functions when it wants.
 
-So set it to -1.
+Fair enough in the general case, but for tiny performance critical
+checksum helpers that's counter-productive.
 
-Fixes: 20cce8865098 ("nfp: flower: enable MAC address sharing for offloadable devs")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
-Link: https://lore.kernel.org/r/20220218131535.100258-1-simon.horman@corigine.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The problem mainly arises when selecting CONFIG_CC_OPTIMISE_FOR_SIZE,
+Those helpers being 'static inline' in header files you suddenly find
+them duplicated many times in the resulting vmlinux.
+
+Here is a typical exemple when building powerpc pmac32_defconfig
+with CONFIG_CC_OPTIMISE_FOR_SIZE. csum_sub() appears 4 times:
+
+	c04a23cc <csum_sub>:
+	c04a23cc:	7c 84 20 f8 	not     r4,r4
+	c04a23d0:	7c 63 20 14 	addc    r3,r3,r4
+	c04a23d4:	7c 63 01 94 	addze   r3,r3
+	c04a23d8:	4e 80 00 20 	blr
+		...
+	c04a2ce8:	4b ff f6 e5 	bl      c04a23cc <csum_sub>
+		...
+	c04a2d2c:	4b ff f6 a1 	bl      c04a23cc <csum_sub>
+		...
+	c04a2d54:	4b ff f6 79 	bl      c04a23cc <csum_sub>
+		...
+	c04a754c <csum_sub>:
+	c04a754c:	7c 84 20 f8 	not     r4,r4
+	c04a7550:	7c 63 20 14 	addc    r3,r3,r4
+	c04a7554:	7c 63 01 94 	addze   r3,r3
+	c04a7558:	4e 80 00 20 	blr
+		...
+	c04ac930:	4b ff ac 1d 	bl      c04a754c <csum_sub>
+		...
+	c04ad264:	4b ff a2 e9 	bl      c04a754c <csum_sub>
+		...
+	c04e3b08 <csum_sub>:
+	c04e3b08:	7c 84 20 f8 	not     r4,r4
+	c04e3b0c:	7c 63 20 14 	addc    r3,r3,r4
+	c04e3b10:	7c 63 01 94 	addze   r3,r3
+	c04e3b14:	4e 80 00 20 	blr
+		...
+	c04e5788:	4b ff e3 81 	bl      c04e3b08 <csum_sub>
+		...
+	c04e65c8:	4b ff d5 41 	bl      c04e3b08 <csum_sub>
+		...
+	c0512d34 <csum_sub>:
+	c0512d34:	7c 84 20 f8 	not     r4,r4
+	c0512d38:	7c 63 20 14 	addc    r3,r3,r4
+	c0512d3c:	7c 63 01 94 	addze   r3,r3
+	c0512d40:	4e 80 00 20 	blr
+		...
+	c0512dfc:	4b ff ff 39 	bl      c0512d34 <csum_sub>
+		...
+	c05138bc:	4b ff f4 79 	bl      c0512d34 <csum_sub>
+		...
+
+Restore the expected behaviour by using __always_inline for all
+functions defined in net/checksum.h
+
+vmlinux size is even reduced by 256 bytes with this patch:
+
+	   text	   data	    bss	    dec	    hex	filename
+	6980022	2515362	 194384	9689768	 93daa8	vmlinux.before
+	6979862	2515266	 194384	9689512	 93d9a8	vmlinux.now
+
+Fixes: ac7c3e4ff401 ("compiler: enable CONFIG_OPTIMIZE_INLINING forcibly")
+Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/checksum.h |   45 +++++++++++++++++++++++----------------------
+ 1 file changed, 23 insertions(+), 22 deletions(-)
 
---- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-@@ -922,8 +922,8 @@ nfp_tunnel_add_shared_mac(struct nfp_app
- 			  int port, bool mod)
+--- a/include/net/checksum.h
++++ b/include/net/checksum.h
+@@ -22,7 +22,7 @@
+ #include <asm/checksum.h>
+ 
+ #ifndef _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
+-static inline
++static __always_inline
+ __wsum csum_and_copy_from_user (const void __user *src, void *dst,
+ 				      int len)
  {
- 	struct nfp_flower_priv *priv = app->priv;
--	int ida_idx = NFP_MAX_MAC_INDEX, err;
- 	struct nfp_tun_offloaded_mac *entry;
-+	int ida_idx = -1, err;
- 	u16 nfp_mac_idx = 0;
+@@ -33,7 +33,7 @@ __wsum csum_and_copy_from_user (const vo
+ #endif
  
- 	entry = nfp_tunnel_lookup_offloaded_macs(app, netdev->dev_addr);
-@@ -997,7 +997,7 @@ err_remove_hash:
- err_free_entry:
- 	kfree(entry);
- err_free_ida:
--	if (ida_idx != NFP_MAX_MAC_INDEX)
-+	if (ida_idx != -1)
- 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
+ #ifndef HAVE_CSUM_COPY_USER
+-static __inline__ __wsum csum_and_copy_to_user
++static __always_inline __wsum csum_and_copy_to_user
+ (const void *src, void __user *dst, int len)
+ {
+ 	__wsum sum = csum_partial(src, len, ~0U);
+@@ -45,7 +45,7 @@ static __inline__ __wsum csum_and_copy_t
+ #endif
  
- 	return err;
+ #ifndef _HAVE_ARCH_CSUM_AND_COPY
+-static inline __wsum
++static __always_inline __wsum
+ csum_partial_copy_nocheck(const void *src, void *dst, int len)
+ {
+ 	memcpy(dst, src, len);
+@@ -54,7 +54,7 @@ csum_partial_copy_nocheck(const void *sr
+ #endif
+ 
+ #ifndef HAVE_ARCH_CSUM_ADD
+-static inline __wsum csum_add(__wsum csum, __wsum addend)
++static __always_inline __wsum csum_add(__wsum csum, __wsum addend)
+ {
+ 	u32 res = (__force u32)csum;
+ 	res += (__force u32)addend;
+@@ -62,12 +62,12 @@ static inline __wsum csum_add(__wsum csu
+ }
+ #endif
+ 
+-static inline __wsum csum_sub(__wsum csum, __wsum addend)
++static __always_inline __wsum csum_sub(__wsum csum, __wsum addend)
+ {
+ 	return csum_add(csum, ~addend);
+ }
+ 
+-static inline __sum16 csum16_add(__sum16 csum, __be16 addend)
++static __always_inline __sum16 csum16_add(__sum16 csum, __be16 addend)
+ {
+ 	u16 res = (__force u16)csum;
+ 
+@@ -75,12 +75,12 @@ static inline __sum16 csum16_add(__sum16
+ 	return (__force __sum16)(res + (res < (__force u16)addend));
+ }
+ 
+-static inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
++static __always_inline __sum16 csum16_sub(__sum16 csum, __be16 addend)
+ {
+ 	return csum16_add(csum, ~addend);
+ }
+ 
+-static inline __wsum csum_shift(__wsum sum, int offset)
++static __always_inline __wsum csum_shift(__wsum sum, int offset)
+ {
+ 	/* rotate sum to align it with a 16b boundary */
+ 	if (offset & 1)
+@@ -88,42 +88,43 @@ static inline __wsum csum_shift(__wsum s
+ 	return sum;
+ }
+ 
+-static inline __wsum
++static __always_inline __wsum
+ csum_block_add(__wsum csum, __wsum csum2, int offset)
+ {
+ 	return csum_add(csum, csum_shift(csum2, offset));
+ }
+ 
+-static inline __wsum
++static __always_inline __wsum
+ csum_block_add_ext(__wsum csum, __wsum csum2, int offset, int len)
+ {
+ 	return csum_block_add(csum, csum2, offset);
+ }
+ 
+-static inline __wsum
++static __always_inline __wsum
+ csum_block_sub(__wsum csum, __wsum csum2, int offset)
+ {
+ 	return csum_block_add(csum, ~csum2, offset);
+ }
+ 
+-static inline __wsum csum_unfold(__sum16 n)
++static __always_inline __wsum csum_unfold(__sum16 n)
+ {
+ 	return (__force __wsum)n;
+ }
+ 
+-static inline __wsum csum_partial_ext(const void *buff, int len, __wsum sum)
++static __always_inline
++__wsum csum_partial_ext(const void *buff, int len, __wsum sum)
+ {
+ 	return csum_partial(buff, len, sum);
+ }
+ 
+ #define CSUM_MANGLED_0 ((__force __sum16)0xffff)
+ 
+-static inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
++static __always_inline void csum_replace_by_diff(__sum16 *sum, __wsum diff)
+ {
+ 	*sum = csum_fold(csum_add(diff, ~csum_unfold(*sum)));
+ }
+ 
+-static inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
++static __always_inline void csum_replace4(__sum16 *sum, __be32 from, __be32 to)
+ {
+ 	__wsum tmp = csum_sub(~csum_unfold(*sum), (__force __wsum)from);
+ 
+@@ -136,7 +137,7 @@ static inline void csum_replace4(__sum16
+  *  m : old value of a 16bit field
+  *  m' : new value of a 16bit field
+  */
+-static inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
++static __always_inline void csum_replace2(__sum16 *sum, __be16 old, __be16 new)
+ {
+ 	*sum = ~csum16_add(csum16_sub(~(*sum), old), new);
+ }
+@@ -155,16 +156,16 @@ void inet_proto_csum_replace16(__sum16 *
+ void inet_proto_csum_replace_by_diff(__sum16 *sum, struct sk_buff *skb,
+ 				     __wsum diff, bool pseudohdr);
+ 
+-static inline void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
+-					    __be16 from, __be16 to,
+-					    bool pseudohdr)
++static __always_inline
++void inet_proto_csum_replace2(__sum16 *sum, struct sk_buff *skb,
++			      __be16 from, __be16 to, bool pseudohdr)
+ {
+ 	inet_proto_csum_replace4(sum, skb, (__force __be32)from,
+ 				 (__force __be32)to, pseudohdr);
+ }
+ 
+-static inline __wsum remcsum_adjust(void *ptr, __wsum csum,
+-				    int start, int offset)
++static __always_inline __wsum remcsum_adjust(void *ptr, __wsum csum,
++					     int start, int offset)
+ {
+ 	__sum16 *psum = (__sum16 *)(ptr + offset);
+ 	__wsum delta;
+@@ -180,7 +181,7 @@ static inline __wsum remcsum_adjust(void
+ 	return delta;
+ }
+ 
+-static inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
++static __always_inline void remcsum_unadjust(__sum16 *psum, __wsum delta)
+ {
+ 	*psum = csum_fold(csum_sub(delta, (__force __wsum)*psum));
+ }
 
 
