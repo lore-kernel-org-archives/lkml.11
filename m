@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69258C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA314C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235728AbiB1RaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:30:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47654 "EHLO
+        id S230123AbiB1Ra0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:30:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235089AbiB1R2Q (ORCPT
+        with ESMTP id S235108AbiB1R2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:28:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 925377658;
-        Mon, 28 Feb 2022 09:27:33 -0800 (PST)
+        Mon, 28 Feb 2022 12:28:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48138532DD;
+        Mon, 28 Feb 2022 09:27:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6435D6140B;
-        Mon, 28 Feb 2022 17:27:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78454C340E7;
-        Mon, 28 Feb 2022 17:27:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E9DAB815B3;
+        Mon, 28 Feb 2022 17:27:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB821C340F1;
+        Mon, 28 Feb 2022 17:27:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069252;
-        bh=ZA5ZIlBBETFxYJgI7oWlcjxjvZ4pnoLYfcmYbSL3PKI=;
+        s=korg; t=1646069264;
+        bh=HoLEQ2TaX6ubWk9PSokg3s7x9DbVFI2HCJZN2ota9Mo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=blp2JmZW05pFVoIVb5BgqO8wJOzmJG3TO1qJRxEMA7bNqnSTQ1Sb/H0qso2NVZ9St
-         GYv0kkRnylLL48NYEcBHytc+j4EUPLavndxsrB5At2XBD8t6ipuu0tdt6rHP26kWeY
-         bfHlqvMBPtitmL9smtZs3NQKt/vl8Teqfnmwo11c=
+        b=SSdw+59XLuVG6NXZHh3e0SjzdoYbf1pNE+rck/YeUo4yN7CBX4aN7WiJohwF0dRqy
+         4WvgIMhVAwYRPi0frmV1vf+rveH6r4+n8x+xQSxTMbhPu2EeNDgmx830zj2NKEtJzC
+         wBnWghaRzf6UQ8nwZEU8uezlEfBy90trHGAhvHac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Daehwan Jung <dh10.jung@samsung.com>
-Subject: [PATCH 4.14 19/31] usb: gadget: rndis: add spinlock for rndis response list
-Date:   Mon, 28 Feb 2022 18:24:15 +0100
-Message-Id: <20220228172201.660498618@linuxfoundation.org>
+        stable@vger.kernel.org, Slark Xiao <slark_xiao@163.com>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 4.14 22/31] USB: serial: option: add support for DW5829e
+Date:   Mon, 28 Feb 2022 18:24:18 +0100
+Message-Id: <20220228172201.853541602@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
 References: <20220228172159.515152296@linuxfoundation.org>
@@ -48,103 +48,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daehwan Jung <dh10.jung@samsung.com>
+From: Slark Xiao <slark_xiao@163.com>
 
-commit aaaba1c86d04dac8e49bf508b492f81506257da3 upstream.
+commit 6ecb3f0b18b320320460a42e40d6fb603f6ded96 upstream.
 
-There's no lock for rndis response list. It could cause list corruption
-if there're two different list_add at the same time like below.
-It's better to add in rndis_add_response / rndis_free_response
-/ rndis_get_next_response to prevent any race condition on response list.
+Dell DW5829e same as DW5821e except CAT level.
+DW5821e supports CAT16 but DW5829e supports CAT9.
+There are 2 types product of DW5829e: normal and eSIM.
+So we will add 2 PID for DW5829e.
+And for each PID, it support MBIM or RMNET.
+Let's see test evidence as below:
 
-[  361.894299] [1:   irq/191-dwc3:16979] list_add corruption.
-next->prev should be prev (ffffff80651764d0),
-but was ffffff883dc36f80. (next=ffffff80651764d0).
+DW5829e MBIM mode:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  4 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
 
-[  361.904380] [1:   irq/191-dwc3:16979] Call trace:
-[  361.904391] [1:   irq/191-dwc3:16979]  __list_add_valid+0x74/0x90
-[  361.904401] [1:   irq/191-dwc3:16979]  rndis_msg_parser+0x168/0x8c0
-[  361.904409] [1:   irq/191-dwc3:16979]  rndis_command_complete+0x24/0x84
-[  361.904417] [1:   irq/191-dwc3:16979]  usb_gadget_giveback_request+0x20/0xe4
-[  361.904426] [1:   irq/191-dwc3:16979]  dwc3_gadget_giveback+0x44/0x60
-[  361.904434] [1:   irq/191-dwc3:16979]  dwc3_ep0_complete_data+0x1e8/0x3a0
-[  361.904442] [1:   irq/191-dwc3:16979]  dwc3_ep0_interrupt+0x29c/0x3dc
-[  361.904450] [1:   irq/191-dwc3:16979]  dwc3_process_event_entry+0x78/0x6cc
-[  361.904457] [1:   irq/191-dwc3:16979]  dwc3_process_event_buf+0xa0/0x1ec
-[  361.904465] [1:   irq/191-dwc3:16979]  dwc3_thread_interrupt+0x34/0x5c
+DW5829e RMNET mode:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  5 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e6 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
 
-Fixes: f6281af9d62e ("usb: gadget: rndis: use list_for_each_entry_safe")
-Cc: stable <stable@kernel.org>
-Signed-off-by: Daehwan Jung <dh10.jung@samsung.com>
-Link: https://lore.kernel.org/r/1645507768-77687-1-git-send-email-dh10.jung@samsung.com
+DW5829e-eSIM MBIM mode:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  6 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  2
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 7 Cfg#= 2 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
+I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+I:  If#=0x6 Alt= 0 #EPs= 1 Cls=ff(vend.) Sub=ff Prot=ff Driver=(none)
+
+DW5829e-eSIM RMNET mode:
+T:  Bus=04 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#=  7 Spd=5000 MxCh= 0
+D:  Ver= 3.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS= 9 #Cfgs=  1
+P:  Vendor=413c ProdID=81e4 Rev=03.18
+S:  Manufacturer=Dell Inc.
+S:  Product=DW5829e-eSIM Snapdragon X20 LTE
+S:  SerialNumber=0123456789ABCDEF
+C:  #Ifs= 6 Cfg#= 1 Atr=a0 MxPwr=896mA
+I:  If#=0x0 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+I:  If#=0x1 Alt= 0 #EPs= 1 Cls=03(HID  ) Sub=00 Prot=00 Driver=usbhid
+I:  If#=0x2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+I:  If#=0x5 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+
+BTW, the interface 0x6 of MBIM mode is GNSS port, which not same as NMEA
+port. So it's banned from serial option driver.
+The remaining interfaces 0x2-0x5 are: MODEM, MODEM, NMEA, DIAG.
+
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Link: https://lore.kernel.org/r/20220214021401.6264-1-slark_xiao@163.com
+[ johan: drop unnecessary reservation of interface 1 ]
+Cc: stable@vger.kernel.org
+Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/gadget/function/rndis.c |    8 ++++++++
- drivers/usb/gadget/function/rndis.h |    1 +
- 2 files changed, 9 insertions(+)
+ drivers/usb/serial/option.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/usb/gadget/function/rndis.c
-+++ b/drivers/usb/gadget/function/rndis.c
-@@ -922,6 +922,7 @@ struct rndis_params *rndis_register(void
- 	params->resp_avail = resp_avail;
- 	params->v = v;
- 	INIT_LIST_HEAD(&params->resp_queue);
-+	spin_lock_init(&params->resp_lock);
- 	pr_debug("%s: configNr = %d\n", __func__, i);
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -201,6 +201,8 @@ static void option_instat_callback(struc
  
- 	return params;
-@@ -1015,12 +1016,14 @@ void rndis_free_response(struct rndis_pa
- {
- 	rndis_resp_t *r, *n;
+ #define DELL_PRODUCT_5821E			0x81d7
+ #define DELL_PRODUCT_5821E_ESIM			0x81e0
++#define DELL_PRODUCT_5829E_ESIM			0x81e4
++#define DELL_PRODUCT_5829E			0x81e6
  
-+	spin_lock(&params->resp_lock);
- 	list_for_each_entry_safe(r, n, &params->resp_queue, list) {
- 		if (r->buf == buf) {
- 			list_del(&r->list);
- 			kfree(r);
- 		}
- 	}
-+	spin_unlock(&params->resp_lock);
- }
- EXPORT_SYMBOL_GPL(rndis_free_response);
- 
-@@ -1030,14 +1033,17 @@ u8 *rndis_get_next_response(struct rndis
- 
- 	if (!length) return NULL;
- 
-+	spin_lock(&params->resp_lock);
- 	list_for_each_entry_safe(r, n, &params->resp_queue, list) {
- 		if (!r->send) {
- 			r->send = 1;
- 			*length = r->length;
-+			spin_unlock(&params->resp_lock);
- 			return r->buf;
- 		}
- 	}
- 
-+	spin_unlock(&params->resp_lock);
- 	return NULL;
- }
- EXPORT_SYMBOL_GPL(rndis_get_next_response);
-@@ -1054,7 +1060,9 @@ static rndis_resp_t *rndis_add_response(
- 	r->length = length;
- 	r->send = 0;
- 
-+	spin_lock(&params->resp_lock);
- 	list_add_tail(&r->list, &params->resp_queue);
-+	spin_unlock(&params->resp_lock);
- 	return r;
- }
- 
---- a/drivers/usb/gadget/function/rndis.h
-+++ b/drivers/usb/gadget/function/rndis.h
-@@ -177,6 +177,7 @@ typedef struct rndis_params {
- 	void			(*resp_avail)(void *v);
- 	void			*v;
- 	struct list_head	resp_queue;
-+	spinlock_t		resp_lock;
- } rndis_params;
- 
- /* RNDIS Message parser and other useless functions */
+ #define KYOCERA_VENDOR_ID			0x0c88
+ #define KYOCERA_PRODUCT_KPC650			0x17da
+@@ -1066,6 +1068,10 @@ static const struct usb_device_id option
+ 	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
+ 	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5821E_ESIM),
+ 	  .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
++	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E),
++	  .driver_info = RSVD(0) | RSVD(6) },
++	{ USB_DEVICE(DELL_VENDOR_ID, DELL_PRODUCT_5829E_ESIM),
++	  .driver_info = RSVD(0) | RSVD(6) },
+ 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_E100A) },	/* ADU-E100, ADU-310 */
+ 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_500A) },
+ 	{ USB_DEVICE(ANYDATA_VENDOR_ID, ANYDATA_PRODUCT_ADU_620UW) },
 
 
