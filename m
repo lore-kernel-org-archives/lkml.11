@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D152C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:46:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75550C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235721AbiB1Rr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:47:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
+        id S238644AbiB1Rrb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:47:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239303AbiB1Rn4 (ORCPT
+        with ESMTP id S239298AbiB1Rn4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:43:56 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB689D05A;
-        Mon, 28 Feb 2022 09:36:08 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A58C9D0CA;
+        Mon, 28 Feb 2022 09:36:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7AD0D614CD;
-        Mon, 28 Feb 2022 17:36:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A84FC340E7;
-        Mon, 28 Feb 2022 17:36:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 890D0B815BA;
+        Mon, 28 Feb 2022 17:36:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D81F1C340E7;
+        Mon, 28 Feb 2022 17:36:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069767;
-        bh=5OcLa9xhiQm5sSpWziM/BAipFWqf/w/nCCjsk6ZkN4A=;
+        s=korg; t=1646069765;
+        bh=uCerF8BX4XGwIHz+tAyMMigidC2NZyRMn7ck9WmU0ek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SaAQXE1Fe/ZGXcHE+fZD8E3wn0csvwYw1gzYZfTcU6IMJNdYTQao1IyyTiWWA5d4E
-         Tk34uWSreSQuCD36HWBW7PLY/qyiI1Bc1ov76jq2uwepwfRONd8pknui9B1pxVhCso
-         WeRykPpwC9+ke86+Jp3iqFZsQnBgXwWF/S41wdOM=
+        b=EzbyMZ23fHmVGgVETgrGMRCveXNSwpgbVRWxL7dubO5MK8veJZqzy3X+RO8eRq/N7
+         srqp+mPz8C8mxjrwlzAL9hTV+vCqiLeMUBW0pIfJ6Hck3moL6a7YYJvld6yqABf9+/
+         sf0+aO7eCcxeTbU9fNwaolYqoE5Qa7Dgxvcqxg5w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.10 62/80] tracefs: Set the group ownership in apply_options() not parse_options()
-Date:   Mon, 28 Feb 2022 18:24:43 +0100
-Message-Id: <20220228172319.275058355@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Szymon Heidrich <szymon.heidrich@gmail.com>,
+        stable <stable@kernel.org>
+Subject: [PATCH 5.10 61/80] USB: gadget: validate endpoint index for xilinx udc
+Date:   Mon, 28 Feb 2022 18:24:42 +0100
+Message-Id: <20220228172319.145029646@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -48,50 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Szymon Heidrich <szymon.heidrich@gmail.com>
 
-commit 851e99ebeec3f4a672bb5010cf1ece095acee447 upstream.
+commit 7f14c7227f342d9932f9b918893c8814f86d2a0d upstream.
 
-Al Viro brought it to my attention that the dentries may not be filled
-when the parse_options() is called, causing the call to set_gid() to
-possibly crash. It should only be called if parse_options() succeeds
-totally anyway.
+Assure that host may not manipulate the index to point
+past endpoint array.
 
-He suggested the logical place to do the update is in apply_options().
-
-Link: https://lore.kernel.org/all/20220225165219.737025658@goodmis.org/
-Link: https://lkml.kernel.org/r/20220225153426.1c4cab6b@gandalf.local.home
-
-Cc: stable@vger.kernel.org
-Acked-by: Al Viro <viro@zeniv.linux.org.uk>
-Reported-by: Al Viro <viro@zeniv.linux.org.uk>
-Fixes: 48b27b6b5191 ("tracefs: Set all files to the same group ownership as the mount option")
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Signed-off-by: Szymon Heidrich <szymon.heidrich@gmail.com>
+Cc: stable <stable@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/tracefs/inode.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/udc/udc-xilinx.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/fs/tracefs/inode.c
-+++ b/fs/tracefs/inode.c
-@@ -262,7 +262,6 @@ static int tracefs_parse_options(char *d
- 			if (!gid_valid(gid))
- 				return -EINVAL;
- 			opts->gid = gid;
--			set_gid(tracefs_mount->mnt_root, gid);
- 			break;
- 		case Opt_mode:
- 			if (match_octal(&args[0], &option))
-@@ -289,7 +288,9 @@ static int tracefs_apply_options(struct
- 	inode->i_mode |= opts->mode;
- 
- 	inode->i_uid = opts->uid;
--	inode->i_gid = opts->gid;
-+
-+	/* Set all the group ids to the mount option */
-+	set_gid(sb->s_root, opts->gid);
- 
- 	return 0;
- }
+--- a/drivers/usb/gadget/udc/udc-xilinx.c
++++ b/drivers/usb/gadget/udc/udc-xilinx.c
+@@ -1612,6 +1612,8 @@ static void xudc_getstatus(struct xusb_u
+ 		break;
+ 	case USB_RECIP_ENDPOINT:
+ 		epnum = udc->setup.wIndex & USB_ENDPOINT_NUMBER_MASK;
++		if (epnum >= XUSB_MAX_ENDPOINTS)
++			goto stall;
+ 		target_ep = &udc->ep[epnum];
+ 		epcfgreg = udc->read_fn(udc->addr + target_ep->offset);
+ 		halt = epcfgreg & XUSB_EP_CFG_STALL_MASK;
+@@ -1679,6 +1681,10 @@ static void xudc_set_clear_feature(struc
+ 	case USB_RECIP_ENDPOINT:
+ 		if (!udc->setup.wValue) {
+ 			endpoint = udc->setup.wIndex & USB_ENDPOINT_NUMBER_MASK;
++			if (endpoint >= XUSB_MAX_ENDPOINTS) {
++				xudc_ep0_stall(udc);
++				return;
++			}
+ 			target_ep = &udc->ep[endpoint];
+ 			outinbit = udc->setup.wIndex & USB_ENDPOINT_DIR_MASK;
+ 			outinbit = outinbit >> 7;
 
 
