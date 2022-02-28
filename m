@@ -2,63 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69384C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F7CC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236066AbiB1L6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:58:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59902 "EHLO
+        id S236072AbiB1L64 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:58:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236046AbiB1L6V (ORCPT
+        with ESMTP id S233606AbiB1L6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:58:21 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 563DBE6D;
-        Mon, 28 Feb 2022 03:57:40 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 752C7ED1;
-        Mon, 28 Feb 2022 03:57:40 -0800 (PST)
-Received: from [10.1.39.130] (e127744.cambridge.arm.com [10.1.39.130])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A90BD3F73D;
-        Mon, 28 Feb 2022 03:57:37 -0800 (PST)
-Subject: Re: [PATCH] perf test: Add perf_event_attr tests for the arm_spe
- event
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, James Clark <james.clark@arm.com>
-References: <20220126160710.32983-1-german.gomez@arm.com>
- <20220205081013.GA391033@leoy-ThinkPad-X240s>
- <37a1a2f9-2c94-664f-19fb-8337029b8fe5@arm.com>
- <20220207110325.GA73277@leoy-ThinkPad-X240s>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <08166ea7-243b-b662-0913-6edf6abcd458@arm.com>
-Date:   Mon, 28 Feb 2022 11:56:46 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 28 Feb 2022 06:58:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174F55596;
+        Mon, 28 Feb 2022 03:58:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9C4E61119;
+        Mon, 28 Feb 2022 11:58:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CA16C340FF;
+        Mon, 28 Feb 2022 11:58:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646049493;
+        bh=+wvb9UMyXw53TgaflmlowqbBW5U339MQvEG61L0RkPg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=dKnUYFqwp2nljzB9HyNzLWj4aTyNWXVZA+BytLq5D7XB/wn2bgjZiMOaqskVpLuiD
+         bk1rXCLmdHoF9yjad0YHG+aChMto6BWqkOaSNkASogtC0xwnUDMGmRpKWwbUUHIN9G
+         T2jY86/3NyMp3QaiaqAGDioEuxukYv9eQ1s5RlKdtbtoQzRo06NdJeugzhX7GPJJPU
+         4H6CnJkW0b+1gc1ha/tl8+JooMzw6m0qyd4IheUg8d+VSgFqd3J4We8CPaaoborU6O
+         8ENUz+sQQa6Y+L8l2JDIzlj6xsFuwZlKFvfhceBVVAHW1OeYHoq8q01WwDXvR36vjs
+         Kk7LHoUofOmAg==
+Received: by mail-wr1-f42.google.com with SMTP id u1so15010578wrg.11;
+        Mon, 28 Feb 2022 03:58:13 -0800 (PST)
+X-Gm-Message-State: AOAM533dw46uGUwTvUa5+wLE9uoN2h5ATbcYOXdDFFbTns6XthZ/3n9D
+        /HEjl7TAFNEZb0KAX1gjhqYR+GYnDlAnbQWM97U=
+X-Google-Smtp-Source: ABdhPJwy6iIN+2EltyCCG8tEZNqW13aNO74dzYWDQrDlYbSLva54a7gegIjmFcrq6DWR6/fwUhMsaBFj3vOKpR4gr9Q=
+X-Received: by 2002:adf:edc3:0:b0:1ec:5f11:5415 with SMTP id
+ v3-20020adfedc3000000b001ec5f115415mr13633412wro.317.1646049491206; Mon, 28
+ Feb 2022 03:58:11 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220207110325.GA73277@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <20220228103142.3301082-1-arnd@kernel.org> <CANpmjNP6VE9G8Yng4W7Mayk-0QsqUtAXkrMUSvL5pAP5DpXSmA@mail.gmail.com>
+In-Reply-To: <CANpmjNP6VE9G8Yng4W7Mayk-0QsqUtAXkrMUSvL5pAP5DpXSmA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 28 Feb 2022 12:57:55 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3cRa1piP2BSmN2dTW4QErhSP7AMO9xqAm=_FFYprAkOA@mail.gmail.com>
+Message-ID: <CAK8P3a3cRa1piP2BSmN2dTW4QErhSP7AMO9xqAm=_FFYprAkOA@mail.gmail.com>
+Subject: Re: [PATCH] [v2] Kbuild: move to -std=gnu11
+To:     Marco Elver <elver@google.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
+        Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-btrfs <linux-btrfs@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 07/02/2022 11:03, Leo Yan wrote:
-> [...]
-> Thanks for confirmation, German.
+On Mon, Feb 28, 2022 at 12:47 PM Marco Elver <elver@google.com> wrote:
+> On Mon, 28 Feb 2022 at 11:32, Arnd Bergmann <arnd@kernel.org> wrote:
 >
-> You could add my testing tag for this patch:
+> > Nathan Chancellor reported an additional -Wdeclaration-after-statement
+> > warning that appears in a system header on arm, this still needs a
+> > workaround.
 >
-> Tested-by: Leo Yan <leo.yan@linaro.org>
+> On the topic of Wdeclaration-after-statement, Clang only respects this
+> warning with C99 and later starting with Clang 14:
+> https://github.com/llvm/llvm-project/commit/c65186c89f35#diff-ec770381d76c859f5f572db789175fe44410a72608f58ad5dbb14335ba56eb97R61
+>
+> Until Clang 14, -Wdeclaration-after-statement is ignored by Clang in
+> newer standards. If this is a big problem, we can probably convince
+> the Clang stable folks to backport the fixes. However, the build won't
+> fail, folks might just miss the warning if they don't also test with
+> GCC.
 
-Thanks Leo
+I don't expect this is to be a big issue, as long as the latest clang behaves
+as expected. There are many warnings that are only produced by one of the
+two compilers, so this is something we already deal with.
+
+I think it's more important to address the extra warning that Nathan
+reported, where clang now complains about the intermingled declaration
+in a system header when previously neither gcc nor clang noticed this.
+
+> > The differences between gnu99, gnu11, gnu1x and gnu17 are fairly
+> > minimal and mainly impact warnings at the -Wpedantic level that the
+> > kernel never enables. Between these, gnu11 is the newest version
+> > that is supported by all supported compiler versions, though it is
+> > only the default on gcc-5, while all other supported versions of
+> > gcc or clang default to gnu1x/gnu17.
+> >
+> > Link: https://lore.kernel.org/lkml/CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com/
+> > Link: https://github.com/ClangBuiltLinux/linux/issues/1603
+> > Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> > Cc: Masahiro Yamada <masahiroy@kernel.org>
+> > Cc: linux-kbuild@vger.kernel.org
+> > Cc: llvm@lists.linux.dev
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>
+> Acked-by: Marco Elver <elver@google.com>
+
+Thanks,
+
+         Arnd
