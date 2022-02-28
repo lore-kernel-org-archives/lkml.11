@@ -2,116 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18335C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 21:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 804AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 21:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbiB1VNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 16:13:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37360 "EHLO
+        id S230100AbiB1VNz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 16:13:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiB1VNq (ORCPT
+        with ESMTP id S230084AbiB1VNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 16:13:46 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AE1369C5;
-        Mon, 28 Feb 2022 13:13:06 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id a8so27433004ejc.8;
-        Mon, 28 Feb 2022 13:13:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YElPQ90MzgZ5t7UF5cUawb5iNATJs1V0tAe3h48q5Ic=;
-        b=VzumKY+IFEanIBWPVoBF+6QRo3fWqzDABeMzHukdxfpGhm7Qs4NeK3EDQjUwkRoPqM
-         QyVYV0wukpwoIQmkDwYjT2Wefm5j+vdtSrwPwmBhZRQHv1NdI1hiCYHDDWwL+AXPCNTq
-         6vEb2uH0ArT8ijMlFJe88RWa9APKVj11p4fxch0339KBmiDjqJdarsyYW8sgqiJKD1S+
-         FT44Nb4ORn+Uz1Hoa0+yvqRoX+JkgxvXzg1Mn75bgqSfXFTzGarBm8yqqnm8IkbME+Il
-         4psqYEpN3TLomDnWapAEnXwRwvxSMJpBIFJ2/c07Vjq567JmvS/DuzHDuRoPTk8K01Zx
-         xXFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YElPQ90MzgZ5t7UF5cUawb5iNATJs1V0tAe3h48q5Ic=;
-        b=udt3roYVWR4aytIvaRI7XEFW27nmU8eic051L/rVCYodqEOyL58gqm7DmE4xpJVfg+
-         bdBHN6SEBGj7AVjeQDKBA0VMG6NkDtIgDRxdlTeH6zbSi6ANGVbyu1Qy/VBc7YF853cZ
-         ifPb1sWR3PulqRBIyxuId6r3Oj7236JDXXDnFth7TaMR9gQFfvi7i86p9H6QERvrGSmH
-         VMeC/ETK3iG0am8eDnl30N81lwS2b8dGnW8IlN6uDJvcXtcyqwLPkNMTccDIlB23OwDD
-         HCNBcBoiYnVqyLxhFpa//SNNjOkcHKSR31ptqjJm4+KoJlyBpVsiuajhjoPHypSYi7oC
-         rzOw==
-X-Gm-Message-State: AOAM533GUIAnbTUUpjVoFe7ZygVuTuXrR/BsSNsbKfIXik2bvPQ16hjr
-        heVxxotRcTjCoaGJWPvUpbs=
-X-Google-Smtp-Source: ABdhPJyoLznZAjc0gfKpSzx7Xn/iaaSpoiD3vjUv9rQSy6YLP//XFpDw0mqFQU2V9Q94Y/3Ca9VsJw==
-X-Received: by 2002:a17:906:6b87:b0:6ce:537b:53bb with SMTP id l7-20020a1709066b8700b006ce537b53bbmr16409243ejr.51.1646082785050;
-        Mon, 28 Feb 2022 13:13:05 -0800 (PST)
-Received: from [192.168.2.27] (85-70-151-113.rcd.o2.cz. [85.70.151.113])
-        by smtp.gmail.com with ESMTPSA id g11-20020a170906538b00b006ae38eb0561sm4677545ejo.195.2022.02.28.13.13.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 13:13:04 -0800 (PST)
-Message-ID: <91fe9f87-54d7-4140-4d1a-eac8e2081a7c@gmail.com>
-Date:   Mon, 28 Feb 2022 22:13:02 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [dm-devel] Intel QAT on A2SDi-8C-HLN4F causes massive data
- corruption with dm-crypt + xfs
-Content-Language: en-US
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Kyle Sanderson <kyle.leet@gmail.com>
-Cc:     Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Dave Chinner <david@fromorbit.com>,
-        Linux-Kernal <linux-kernel@vger.kernel.org>, qat-linux@intel.com,
-        linux-xfs <linux-xfs@vger.kernel.org>,
-        device-mapper development <dm-devel@redhat.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-References: <CACsaVZ+mt3CfdXV0_yJh7d50tRcGcRZ12j3n6-hoX2cz3+njsg@mail.gmail.com>
- <20220219210354.GF59715@dread.disaster.area>
- <CACsaVZ+LZUebtsGuiKhNV_No8fNLTv5kJywFKOigieB1cZcKUw@mail.gmail.com>
- <YhN76/ONC9qgIKQc@silpixa00400314>
- <CACsaVZJFane88cXxG_E1VkcMcJm8YVN+GDqQ2+tRYNpCf+m8zA@mail.gmail.com>
- <CAHk-=whVT2GcwiJM8m-XzgJj8CjytTHi_pmgmOnSpzvGWzZM1A@mail.gmail.com>
-From:   Milan Broz <gmazyland@gmail.com>
-In-Reply-To: <CAHk-=whVT2GcwiJM8m-XzgJj8CjytTHi_pmgmOnSpzvGWzZM1A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 28 Feb 2022 16:13:50 -0500
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A2D5ECB1A;
+        Mon, 28 Feb 2022 13:12:56 -0800 (PST)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 21SKr95E005627;
+        Mon, 28 Feb 2022 14:53:09 -0600
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 21SKr7Xe005624;
+        Mon, 28 Feb 2022 14:53:07 -0600
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Mon, 28 Feb 2022 14:53:07 -0600
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        alsa-devel@alsa-project.org, KVM list <kvm@vger.kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>, linux1394-devel@lists.sourceforge.net,
+        drbd-dev@lists.linbit.com, linux-arch <linux-arch@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>, linux-aspeed@lists.ozlabs.org,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        linux-staging@lists.linux.dev,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        intel-wired-lan@lists.osuosl.org,
+        kgdb-bugreport@lists.sourceforge.net,
+        bcm-kernel-feedback-list@broadcom.com,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Arnd Bergman <arnd@arndb.de>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        v9fs-developer@lists.sourceforge.net,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-sgx@vger.kernel.org,
+        linux-block <linux-block@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
+        samba-technical@lists.samba.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        tipc-discussion@lists.sourceforge.net,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Mike Rapoport <rppt@kernel.org>
+Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body as a ptr
+Message-ID: <20220228205307.GD614@gate.crashing.org>
+References: <20220228110822.491923-1-jakobkoschel@gmail.com> <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com> <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com> <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com> <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com> <CAHk-=wj27SZQ3kPTesBzkiGhe-mA3gOQqr_adt_bMFzmg1VNaA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wj27SZQ3kPTesBzkiGhe-mA3gOQqr_adt_bMFzmg1VNaA@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/02/2022 20:25, Linus Torvalds wrote:
-> On Mon, Feb 28, 2022 at 12:18 AM Kyle Sanderson <kyle.leet@gmail.com> wrote:
->>
->> Makes sense - this kernel driver has been destroying users for many
->> years. I'm disappointed that this critical bricking failure isn't
->> searchable for others.
+On Mon, Feb 28, 2022 at 12:14:44PM -0800, Linus Torvalds wrote:
+> On Mon, Feb 28, 2022 at 12:10 PM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > We can do
+> >
+> >         typeof(pos) pos
+> >
+> > in the 'for ()' loop, and never use __iter at all.
+> >
+> > That means that inside the for-loop, we use a _different_ 'pos' than outside.
 > 
-> It does sound like we should just disable that driver entirely until
-> it is fixed.
+> The thing that makes me throw up in my mouth a bit is that in that
 > 
-> Or at least the configuration that can cause problems, if there is
-> some particular sub-case. Although from a cursory glance and the
-> noises made in this thread, it looks like it's all of the 'qat_aeads'
-> cases (since that uses qat_alg_aead_enc() which can return -EAGAIN),
-> which effectively means that all of the QAT stuff.
+>         typeof(pos) pos
 > 
-> So presumably CRYPTO_DEV_QAT should just be marked as
-> 
->          depends on BROKEN || COMPILE_TEST
-> 
-> or similar?
+> the first 'pos' (that we use for just the typeof) is that outer-level
+> 'pos', IOW it's a *different* 'pos' than the second 'pos' in that same
+> declaration that declares the inner level shadowing new 'pos'
+> variable.
 
-Yes, please! Or at least disable it in stable for now.
+The new "pos" has not yet been declared, so this has to refer to the
+outer "pos", it cannot be the inner one.  Because it hasn't been
+declared yet :-)
 
-During the last years, we had several reports of problems with this driver
-for cryptsetup/LUKS (dm-crypt with qat driver; here it is skcipher, not aead, though).
+Compare this to
+  typeof (pos) pos = pos;
+where that last "pos" *does* refer to the newly declared one: that
+declaration has already been done!  (So this code is UB btw, 6.3.2.1/2).
 
-The problem with the misunderstanding of the crypto API queue has been known
-to authors for some time, at least since 2020
-see https://lore.kernel.org/dm-devel/20200601160418.171851200@debian-a64.vm/
-and it is apparently not fixed yet.
+> If I was a compiler person, I would say "Linus, that thing is too ugly
+> to live", and I would hate it. I'm just hoping that even compiler
+> people say "that's *so* ugly it's almost beautiful".
 
-Thanks you,
-Milan
+It is perfectly well-defined.  Well, it would be good if we (GCC) would
+document it does work, and if someone tested it on LLVM as well.  But it
+is really hard to implement it to *not* work :-)
+
+> Because it does seem to work. It's not pretty, but hey, it's not like
+> our headers are really ever be winning any beauty contests...
+
+It is very pretty!  Needs a comment though :-)
+
+
+Segher
