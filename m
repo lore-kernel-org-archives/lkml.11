@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62279C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:11:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 369B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:12:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240016AbiB1SMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:12:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36874 "EHLO
+        id S234780AbiB1SMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:12:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240072AbiB1SHw (ORCPT
+        with ESMTP id S240158AbiB1SH6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:07:52 -0500
+        Mon, 28 Feb 2022 13:07:58 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4005D1B9;
-        Mon, 28 Feb 2022 09:48:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99FE55D64D;
+        Mon, 28 Feb 2022 09:48:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A49C4B81085;
-        Mon, 28 Feb 2022 17:48:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C7CBC340E7;
-        Mon, 28 Feb 2022 17:48:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E44DB810DB;
+        Mon, 28 Feb 2022 17:48:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CFBCC340E7;
+        Mon, 28 Feb 2022 17:48:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070494;
-        bh=kHjlrUGxe5V6yIekYKm6DoIIlAVCwygVHRQyvgZOCHY=;
+        s=korg; t=1646070499;
+        bh=E6574w75kqATyqu0nXYHqLTZcMPRkRFDJ7mSeoReHQw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jb0kvsKSoR8UGPFyhCAvcQb/TCKl0S4PwV4rhRu4yuWKgHQadnsa9OSbANifRF9/i
-         kxabNyvtwHkuEie2CQz1LPv0HWXECAAdskZRpjK2ZXfJko3oK+Mj7ORrQuq/6KZA2U
-         L/R/UfaNpO5SPbirqzNnbea6gIlZ4nCXDn1/3OEM=
+        b=WX8q+6y/tsZMd+q58+AvtwIXgBpahy89seoavjQbnBy/L5spJWuw5VmJg9m0JSU8s
+         pyPcmzbIqqfrNnmZp2nWIfRfVP8qGG9KMnetelHiK8OLh0Z1YebfgJz6nd9nUnT5Xh
+         VP9sS+jmk2QyU2D9zxOKOpjAm+asyCBI9LiSbNuo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Prasad Kumpatla <quic_pkumpatl@quicinc.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 102/164] regmap-irq: Update interrupt clear register for proper reset
-Date:   Mon, 28 Feb 2022 18:24:24 +0100
-Message-Id: <20220228172409.044902805@linuxfoundation.org>
+        stable@vger.kernel.org, stable@kernel.org,
+        Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 5.16 130/164] usb: dwc3: pci: Add "snps,dis_u2_susphy_quirk" for Intel Bay Trail
+Date:   Mon, 28 Feb 2022 18:24:52 +0100
+Message-Id: <20220228172411.881459435@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -52,102 +49,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit d04ad245d67a3991dfea5e108e4c452c2ab39bac ]
+commit d7c93a903f33ff35aa0e6b5a8032eb9755b00826 upstream.
 
-With the existing logic where clear_ack is true (HW doesn’t support
-auto clear for ICR), interrupt clear register reset is not handled
-properly. Due to this only the first interrupts get processed properly
-and further interrupts are blocked due to not resetting interrupt
-clear register.
+Commit e0082698b689 ("usb: dwc3: ulpi: conditionally resume ULPI PHY")
+fixed an issue where ULPI transfers would timeout if any requests where
+send to the phy sometime after init, giving it enough time to auto-suspend.
 
-Example for issue case where Invert_ack is false and clear_ack is true:
+Commit e5f4ca3fce90 ("usb: dwc3: ulpi: Fix USB2.0 HS/FS/LS PHY suspend
+regression") changed the behavior to instead of clearing the
+DWC3_GUSB2PHYCFG_SUSPHY bit, add an extra sleep when it is set.
 
-    Say Default ISR=0x00 & ICR=0x00 and ISR is triggered with 2
-    interrupts making ISR = 0x11.
+But on Bay Trail devices, when phy_set_mode() gets called during init,
+this leads to errors like these:
+[   28.451522] tusb1210 dwc3.ulpi: error -110 writing val 0x01 to reg 0x0a
+[   28.464089] tusb1210 dwc3.ulpi: error -110 writing val 0x01 to reg 0x0a
 
-    Step 1: Say ISR is set 0x11 (store status_buff = ISR). ISR needs to
-            be cleared with the help of ICR once the Interrupt is processed.
+Add "snps,dis_u2_susphy_quirk" to the settings for Bay Trail devices to
+fix this. This restores the old behavior for Bay Trail devices, since
+previously the DWC3_GUSB2PHYCFG_SUSPHY bit would get cleared on the first
+ulpi_read/_write() and then was never set again.
 
-    Step 2: Write ICR = 0x11 (status_buff), this will clear the ISR to 0x00.
-
-    Step 3: Issue - In the existing code, ICR is written with ICR =
-            ~(status_buff) i.e ICR = 0xEE -> This will block all the interrupts
-            from raising except for interrupts 0 and 4. So expectation here is to
-            reset ICR, which will unblock all the interrupts.
-
-            if (chip->clear_ack) {
-                 if (chip->ack_invert && !ret)
-                  ........
-                 else if (!ret)
-                     ret = regmap_write(map, reg,
-                            ~data->status_buf[i]);
-
-So writing 0 and 0xff (when ack_invert is true) should have no effect, other
-than clearing the ACKs just set.
-
-Fixes: 3a6f0fb7b8eb ("regmap: irq: Add support to clear ack registers")
-Signed-off-by: Prasad Kumpatla <quic_pkumpatl@quicinc.com>
-Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Link: https://lore.kernel.org/r/20220217085007.30218-1-quic_pkumpatl@quicinc.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e5f4ca3fce90 ("usb: dwc3: ulpi: Fix USB2.0 HS/FS/LS PHY suspend regression")
+Cc: stable@kernel.org
+Cc: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20220213130524.18748-2-hdegoede@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/regmap/regmap-irq.c | 20 ++++++--------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
+ drivers/usb/dwc3/dwc3-pci.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/base/regmap/regmap-irq.c b/drivers/base/regmap/regmap-irq.c
-index d2656581a6085..4a446259a184e 100644
---- a/drivers/base/regmap/regmap-irq.c
-+++ b/drivers/base/regmap/regmap-irq.c
-@@ -189,11 +189,9 @@ static void regmap_irq_sync_unlock(struct irq_data *data)
- 				ret = regmap_write(map, reg, d->mask_buf[i]);
- 			if (d->chip->clear_ack) {
- 				if (d->chip->ack_invert && !ret)
--					ret = regmap_write(map, reg,
--							   d->mask_buf[i]);
-+					ret = regmap_write(map, reg, UINT_MAX);
- 				else if (!ret)
--					ret = regmap_write(map, reg,
--							   ~d->mask_buf[i]);
-+					ret = regmap_write(map, reg, 0);
- 			}
- 			if (ret != 0)
- 				dev_err(d->map->dev, "Failed to ack 0x%x: %d\n",
-@@ -556,11 +554,9 @@ static irqreturn_t regmap_irq_thread(int irq, void *d)
- 						data->status_buf[i]);
- 			if (chip->clear_ack) {
- 				if (chip->ack_invert && !ret)
--					ret = regmap_write(map, reg,
--							data->status_buf[i]);
-+					ret = regmap_write(map, reg, UINT_MAX);
- 				else if (!ret)
--					ret = regmap_write(map, reg,
--							~data->status_buf[i]);
-+					ret = regmap_write(map, reg, 0);
- 			}
- 			if (ret != 0)
- 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
-@@ -817,13 +813,9 @@ int regmap_add_irq_chip_fwnode(struct fwnode_handle *fwnode,
- 					d->status_buf[i] & d->mask_buf[i]);
- 			if (chip->clear_ack) {
- 				if (chip->ack_invert && !ret)
--					ret = regmap_write(map, reg,
--						(d->status_buf[i] &
--						 d->mask_buf[i]));
-+					ret = regmap_write(map, reg, UINT_MAX);
- 				else if (!ret)
--					ret = regmap_write(map, reg,
--						~(d->status_buf[i] &
--						  d->mask_buf[i]));
-+					ret = regmap_write(map, reg, 0);
- 			}
- 			if (ret != 0) {
- 				dev_err(map->dev, "Failed to ack 0x%x: %d\n",
--- 
-2.34.1
-
+--- a/drivers/usb/dwc3/dwc3-pci.c
++++ b/drivers/usb/dwc3/dwc3-pci.c
+@@ -119,6 +119,13 @@ static const struct property_entry dwc3_
+ 	{}
+ };
+ 
++static const struct property_entry dwc3_pci_intel_byt_properties[] = {
++	PROPERTY_ENTRY_STRING("dr_mode", "peripheral"),
++	PROPERTY_ENTRY_BOOL("snps,dis_u2_susphy_quirk"),
++	PROPERTY_ENTRY_BOOL("linux,sysdev_is_parent"),
++	{}
++};
++
+ static const struct property_entry dwc3_pci_mrfld_properties[] = {
+ 	PROPERTY_ENTRY_STRING("dr_mode", "otg"),
+ 	PROPERTY_ENTRY_STRING("linux,extcon-name", "mrfld_bcove_pwrsrc"),
+@@ -161,6 +168,10 @@ static const struct software_node dwc3_p
+ 	.properties = dwc3_pci_intel_properties,
+ };
+ 
++static const struct software_node dwc3_pci_intel_byt_swnode = {
++	.properties = dwc3_pci_intel_byt_properties,
++};
++
+ static const struct software_node dwc3_pci_intel_mrfld_swnode = {
+ 	.properties = dwc3_pci_mrfld_properties,
+ };
+@@ -344,7 +355,7 @@ static const struct pci_device_id dwc3_p
+ 	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
+ 
+ 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_BYT),
+-	  (kernel_ulong_t) &dwc3_pci_intel_swnode, },
++	  (kernel_ulong_t) &dwc3_pci_intel_byt_swnode, },
+ 
+ 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_MRFLD),
+ 	  (kernel_ulong_t) &dwc3_pci_intel_mrfld_swnode, },
 
 
