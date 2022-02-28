@@ -2,216 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD162C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE12C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238817AbiB1RtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:49:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33284 "EHLO
+        id S238551AbiB1RtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:49:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239943AbiB1Roy (ORCPT
+        with ESMTP id S235865AbiB1RmR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:44:54 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D719819C28;
-        Mon, 28 Feb 2022 09:37:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646069843; x=1677605843;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vXTL8dLX7viXJuGg2oI1j6Lgyk1Ewv5xNOTP7Tgfu/4=;
-  b=e/anaTD22EDSuAss1/vBptNRBVh5a3EEDbjG0AXHstvKH875ksBTxDr4
-   XsfOn+Oqa/OeYq1q5xFa54dXY3KCEtRwVpYhhZnvUcjJRR0s0zNfoBpdz
-   +kBqs65V50fg0MkXbNNXt4M3HDLH4vXdvPKr0N6KdzD8dzG2aRMsF4q6+
-   7ujipAL9JTvp1SHmyKD3fSy3qSqt6moszwlsnr3m3U748eakdKuR2N4wi
-   2+lz9BZo8KSUGp5Db2Y6XqNY2h5m2/zgvI5oG5zFuGvOnZpiMG/b9PFK5
-   v6dpqiovC3VLWHOZrCse12upwScABh63gRgR6AHtY0OCSLLid9U1Z9J1y
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="232912009"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="232912009"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:37:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="708726454"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 28 Feb 2022 09:37:15 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOjxS-0007cT-Lj; Mon, 28 Feb 2022 17:37:14 +0000
-Date:   Tue, 1 Mar 2022 01:36:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Mike Rapoport <rppt@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] MIPS: Refactor early_parse_memmap() to fix
- memmap= parameter
-Message-ID: <202203010025.PU3GDSWx-lkp@intel.com>
-References: <1646054617-16799-4-git-send-email-yangtiezhu@loongson.cn>
+        Mon, 28 Feb 2022 12:42:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59B0498F43;
+        Mon, 28 Feb 2022 09:34:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E5C06614D8;
+        Mon, 28 Feb 2022 17:34:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 097ACC340F0;
+        Mon, 28 Feb 2022 17:34:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069685;
+        bh=x8gsEUFvD/6HJ5lGf/pH1UHKiTAOjFi55OMQrV1AT0s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UD7/wdkjzye8m3VMlB9y9SY8P7TvcBG7Np5AKQfUvnRxjafVAvA4GwBaRSEFOVtM2
+         RQOfYSgRYm3RxhHFtC3QjuhHio3Yf8VlzzrI2GzHaXZHfz7UonX900vkwx5JVnZS1v
+         3LJbNGJsjDadHG+9SITl0xkicBFdHc/UbqlHTfqI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.10 54/80] iio: adc: ad7124: fix mask used for setting AIN_BUFP & AIN_BUFM bits
+Date:   Mon, 28 Feb 2022 18:24:35 +0100
+Message-Id: <20220228172318.205347914@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
+References: <20220228172311.789892158@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1646054617-16799-4-git-send-email-yangtiezhu@loongson.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tiezhu,
+From: Cosmin Tanislav <demonsingur@gmail.com>
 
-Thank you for the patch! Perhaps something to improve:
+commit 0e33d15f1dce9e3a80a970ea7f0b27837168aeca upstream.
 
-[auto build test WARNING on hnaz-mm/master]
-[also build test WARNING on linus/master v5.17-rc6 next-20220225]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+According to page 90 of the datasheet [1], AIN_BUFP is bit 6 and
+AIN_BUFM is bit 5 of the CONFIG_0 -> CONFIG_7 registers.
 
-url:    https://github.com/0day-ci/linux/commits/Tiezhu-Yang/MIPS-Modify-mem-and-memmap-parameter/20220228-212554
-base:   https://github.com/hnaz/linux-mm master
-config: mips-randconfig-r025-20220228 (https://download.01.org/0day-ci/archive/20220301/202203010025.PU3GDSWx-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://github.com/0day-ci/linux/commit/ab143b3c599254c414419565480fc01acb23452a
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Tiezhu-Yang/MIPS-Modify-mem-and-memmap-parameter/20220228-212554
-        git checkout ab143b3c599254c414419565480fc01acb23452a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/kernel/
+Fix the mask used for setting these bits.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[1]: https://www.analog.com/media/en/technical-documentation/data-sheets/ad7124-8.pdf
 
-All warnings (new ones prefixed by >>):
-
-   arch/mips/kernel/setup.c:351:42: warning: format specifies type 'long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
-           pr_notice("Memory limited to %lldMB\n", memory_limit >> 20);
-                                        ~~~~       ^~~~~~~~~~~~~~~~~~
-                                        %u
-   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
-           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-                                     ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   arch/mips/kernel/setup.c:380:6: warning: format specifies type 'long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
-                             memory_base >> 20, (memory_base + memory_limit) >> 20);
-                             ^~~~~~~~~~~~~~~~~
-   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
-           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-                                     ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
->> arch/mips/kernel/setup.c:380:25: warning: format specifies type 'long long' but the argument has type 'unsigned int' [-Wformat]
-                             memory_base >> 20, (memory_base + memory_limit) >> 20);
-                                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
-           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-                                     ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   arch/mips/kernel/setup.c:399:5: warning: format specifies type 'long long' but the argument has type 'phys_addr_t' (aka 'unsigned int') [-Wformat]
-                     memory_base >> 20, (memory_base + memory_limit) >> 20);
-                     ^~~~~~~~~~~~~~~~~
-   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
-           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-                                     ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   arch/mips/kernel/setup.c:399:24: warning: format specifies type 'long long' but the argument has type 'unsigned int' [-Wformat]
-                     memory_base >> 20, (memory_base + memory_limit) >> 20);
-                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/printk.h:509:36: note: expanded from macro 'pr_notice'
-           printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-                                     ~~~     ^~~~~~~~~~~
-   include/linux/printk.h:446:60: note: expanded from macro 'printk'
-   #define printk(fmt, ...) printk_index_wrap(_printk, fmt, ##__VA_ARGS__)
-                                                       ~~~    ^~~~~~~~~~~
-   include/linux/printk.h:418:19: note: expanded from macro 'printk_index_wrap'
-                   _p_func(_fmt, ##__VA_ARGS__);                           \
-                           ~~~~    ^~~~~~~~~~~
-   5 warnings generated.
-
-
-vim +380 arch/mips/kernel/setup.c
-
-   356	
-   357	static int __init early_parse_memmap(char *p)
-   358	{
-   359		char *oldp;
-   360	
-   361		if (!p)
-   362			return -EINVAL;
-   363	
-   364		if (!strncmp(p, "exactmap", 8)) {
-   365			pr_err("\"memmap=exactmap\" invalid on MIPS\n");
-   366			return 0;
-   367		}
-   368	
-   369		oldp = p;
-   370		memory_limit = memparse(p, &p) & PAGE_MASK;
-   371		if (p == oldp)
-   372			return -EINVAL;
-   373	
-   374		if (*p == '@') {
-   375			memory_base = memparse(p + 1, &p) & PAGE_MASK;
-   376		} else if (*p == '$') {
-   377			memory_base = memparse(p+1, &p) & PAGE_MASK;
-   378			memblock_reserve(memory_base, memory_limit);
-   379			pr_notice("Memory reserved to %lldMB-%lldMB\n",
- > 380				  memory_base >> 20, (memory_base + memory_limit) >> 20);
-   381			memory_base = 0;
-   382			memory_limit = 0;
-   383			return 0;
-   384		} else if (*p == '#') {
-   385			pr_err("\"memmap=nn#ss\" invalid on MIPS\n");
-   386			memory_limit = 0;
-   387			return -EINVAL;
-   388		} else if (*p == '!') {
-   389			pr_err("\"memmap=nn!ss\" invalid on MIPS\n");
-   390			memory_limit = 0;
-   391			return -EINVAL;
-   392		} else {
-   393			pr_err("Unrecognized memmap syntax: %s\n", p);
-   394			memory_limit = 0;
-   395			return -EINVAL;
-   396		}
-   397	
-   398		pr_notice("Memory limited to %lldMB-%lldMB\n",
-   399			  memory_base >> 20, (memory_base + memory_limit) >> 20);
-   400	
-   401		return *p == '\0' ? 0 : -EINVAL;
-   402	}
-   403	early_param("memmap", early_parse_memmap);
-   404	
-
+Fixes: 0eaecea6e487 ("iio: adc: ad7124: Add buffered input support")
+Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+Link: https://lore.kernel.org/r/20220112200036.694490-1-cosmin.tanislav@analog.com
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/iio/adc/ad7124.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -74,7 +74,7 @@
+ #define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
+ #define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
+ #define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
+-#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(7, 6)
++#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(6, 5)
+ #define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
+ 
+ /* AD7124_FILTER_X */
+
+
