@@ -2,122 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D29C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 03:44:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 784DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 03:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233024AbiB1Dof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 22:44:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58138 "EHLO
+        id S232457AbiB1Dra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 22:47:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232989AbiB1Dob (ORCPT
+        with ESMTP id S229671AbiB1Dra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 22:44:31 -0500
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF1D3BA4B;
-        Sun, 27 Feb 2022 19:43:52 -0800 (PST)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21RLWt4K008207;
-        Mon, 28 Feb 2022 03:43:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=8vC1OZK1nNYWF0YYyYwoLSw1BkaA8imP9N4exKKwzSY=;
- b=oLzjV1YuvVw8YQcr4MQ/BPNX2Mv+0MG02NfKXUy27z2KUjCcSSMgOgkXc8DF5f4mH8sg
- yZ3cAOEzKxkFIsJBBPUbWJ8zOuDQ8I0MbzQXxtSX1Y4IF27+g2eZfuS3eY4FaICQp9bY
- drrYXktlHV4SglJJbom1gLhhDgIgw3Bo/tjNs5ECSJbscy89NydlmlSf1OXyV6T0s9R5
- 2kj4zugIM5AJMGDDivDfa37809B/CYDEuyHE4hoKXP/qFaJ2quwAD1MAJHUZjznXxSUy
- rlcyrYUaPn0wL8TrNml+3ycaLPEcj7Nu4qA6n2PsUVrWieYA2/4fgDq7k76yyXCs/RdW VA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3efb02k1qu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Feb 2022 03:43:32 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21S3b9eo157682;
-        Mon, 28 Feb 2022 03:43:31 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 3efa8bxnv5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 28 Feb 2022 03:43:31 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 21S3hPvu165853;
-        Mon, 28 Feb 2022 03:43:30 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by aserp3030.oracle.com with ESMTP id 3efa8bxnt3-6;
-        Mon, 28 Feb 2022 03:43:30 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     jinpu.wang@cloud.ionos.com, artur.paszkiewicz@intel.com,
-        hch@lst.de, chenxiang66@hisilicon.com,
-        damien.lemoal@opensource.wdc.com, jejb@linux.ibm.com,
-        John Garry <john.garry@huawei.com>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-doc@vger.kernel.org, Ajish.Koshy@microchip.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        liuqi115@huawei.com, yanaijie@huawei.com, Viswas.G@microchip.com,
-        linuxarm@huawei.com
-Subject: Re: [PATCH v3 00/18] scsi: libsas and users: Factor out LLDD TMF code
-Date:   Sun, 27 Feb 2022 22:43:20 -0500
-Message-Id: <164601967778.4503.718375483137953817.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <1645534259-27068-1-git-send-email-john.garry@huawei.com>
-References: <1645534259-27068-1-git-send-email-john.garry@huawei.com>
+        Sun, 27 Feb 2022 22:47:30 -0500
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3403E5F4F2;
+        Sun, 27 Feb 2022 19:46:51 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4K6RBr61M6z4xcZ;
+        Mon, 28 Feb 2022 14:46:44 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1646020006;
+        bh=JGeeaVAR5956bwfVVgljUJh68aZ9vFPGConLJVz+HF8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UySSGqPFeHqrJ8DdAdVjqez3Z+EoXiBnuLCJlFMUZszuZz5W8fizV8abvPrbnB7zK
+         llUkOCRb9hb8Qsxelwanz+yS6OpJmqqkvKQjTpph5UwxFJpbF5Tzp87H3t+nKoi45P
+         01BuNuexuhbDuRQ6bYqFKh6/yAql05eBPfOLYOD6wINjAZFLpMkAXtlN06/M+sGWn4
+         yWqGJAo3jXTGjcusgRtBnx2VC8XVejTJVLZYbshBQYjwMtQ/rqfa/zLODGl2Ypredr
+         PK5ctK1TnTbx1ntzI0OacpbQIQ07JRpPeX1PN2pxDEhlt7asCdVRFDFLxsFLMLno+h
+         Mi0bxki9tzpAg==
+Date:   Mon, 28 Feb 2022 14:46:44 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Dave Airlie <airlied@linux.ie>
+Cc:     broonie@kernel.org, DRI <dri-devel@lists.freedesktop.org>,
+        Allen Chen <allen.chen@ite.com.tw>,
+        Hsin-yi Wang <hsinyi@chromium.org>,
+        Hermes Wu <hermes.wu@ite.com.tw>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the drm tree
+Message-ID: <20220228144644.776c5261@canb.auug.org.au>
+In-Reply-To: <20220225164231.904173-1-broonie@kernel.org>
+References: <20220225164231.904173-1-broonie@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: s9SiSDTFch1kvu-bDVgPfQwCL3_tVd6o
-X-Proofpoint-ORIG-GUID: s9SiSDTFch1kvu-bDVgPfQwCL3_tVd6o
+Content-Type: multipart/signed; boundary="Sig_/xcldGrkYlQDSe48aCywZHIr";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 22 Feb 2022 20:50:41 +0800, John Garry wrote:
+--Sig_/xcldGrkYlQDSe48aCywZHIr
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> This is just an update of the series to fix a build error, as reported
-> here:
-> https://lore.kernel.org/lkml/59b538b7-b4c5-8111-d2bf-7fb353ecb19b@huawei.com/
-> 
-> Original cover letter is here:
-> https://lore.kernel.org/linux-scsi/0d4f988d-881c-3717-f9d8-38739cf17e91@opensource.wdc.com/T/#mcae9d344f2795bdbb8845da29a140b58dbafb6f8
-> 
-> [...]
+Hi all,
 
-Applied to 5.18/scsi-queue, thanks!
+On Fri, 25 Feb 2022 16:42:31 +0000 broonie@kernel.org wrote:
+>
+> After merging the drm tree, today's linux-next build (x86 allmodconfig)
+> failed like this:
+>=20
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c: In function 'receive=
+_timing_debugfs_show':
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3077:23: error: array=
+ subscript 4096 is outside array bounds of 'u8[200]' {aka 'unsigned char[20=
+0]'} [-Werror=3Darray-bounds]
+>  3077 |  u8 *str =3D read_buf, *end =3D read_buf + PAGE_SIZE;
+>       |                       ^~~
+> /tmp/next/build/drivers/gpu/drm/bridge/ite-it6505.c:3076:5: note: while r=
+eferencing 'read_buf'
+>  3076 |  u8 read_buf[READ_BUFFER_SIZE];
+>       |     ^~~~~~~~
+> cc1: all warnings being treated as errors
+>=20
+> Caused by commit
+>=20
+>   b5c84a9edcd418 ("drm/bridge: add it6505 driver")
+>=20
+> I have used the drm tree from yesterday instead.
 
-[01/18] scsi: libsas: Handle non-TMF codes in sas_scsi_find_task()
-        https://git.kernel.org/mkp/scsi/c/9aacf6fe9059
-[02/18] scsi: libsas: Use enum for response frame DATAPRES field
-        https://git.kernel.org/mkp/scsi/c/1d6049a3b14f
-[03/18] scsi: libsas: Delete lldd_clear_aca callback
-        https://git.kernel.org/mkp/scsi/c/25882c82f850
-[04/18] scsi: libsas: Delete SAS_SG_ERR
-        https://git.kernel.org/mkp/scsi/c/2dd6801a671c
-[05/18] scsi: hisi_sas: Delete unused I_T_NEXUS_RESET_PHYUP_TIMEOUT
-        https://git.kernel.org/mkp/scsi/c/da19eaba6e75
-[06/18] scsi: libsas: Move SMP task handlers to core
-        https://git.kernel.org/mkp/scsi/c/4aef43b25df2
-[07/18] scsi: libsas: Add struct sas_tmf_task
-        https://git.kernel.org/mkp/scsi/c/bbfe82cdbaf8
-[08/18] scsi: libsas: Add sas_task.tmf
-        https://git.kernel.org/mkp/scsi/c/96e54376a8b2
-[09/18] scsi: libsas: Add sas_execute_tmf()
-        https://git.kernel.org/mkp/scsi/c/001ec7f89bea
-[10/18] scsi: libsas: Add sas_execute_ssp_tmf()
-        https://git.kernel.org/mkp/scsi/c/350d85ba5bad
-[11/18] scsi: libsas: Add TMF handler exec complete callback
-        https://git.kernel.org/mkp/scsi/c/2037a340314f
-[12/18] scsi: libsas: Add TMF handler aborted callback
-        https://git.kernel.org/mkp/scsi/c/693e66a0a6ac
-[13/18] scsi: libsas: Add sas_abort_task_set()
-        https://git.kernel.org/mkp/scsi/c/69b80a0ed0b5
-[14/18] scsi: libsas: Add sas_clear_task_set()
-        https://git.kernel.org/mkp/scsi/c/e8585452953a
-[15/18] scsi: libsas: Add sas_lu_reset()
-        https://git.kernel.org/mkp/scsi/c/29d7769055a2
-[16/18] scsi: libsas: Add sas_query_task()
-        https://git.kernel.org/mkp/scsi/c/72f8810e1fdc
-[17/18] scsi: libsas: Add sas_abort_task()
-        https://git.kernel.org/mkp/scsi/c/4fea759edfa7
-[18/18] scsi: libsas: Add sas_execute_ata_cmd()
-        https://git.kernel.org/mkp/scsi/c/3f2e252ef727
+I am still getting these errors and so used the drm tree from
+next-20220224 again.
 
--- 
-Martin K. Petersen	Oracle Linux Engineering
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/xcldGrkYlQDSe48aCywZHIr
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmIcRaQACgkQAVBC80lX
+0GxUyQf/WHKezO+KT8gBi/Py4nVVfOkOJWyyes2+r4+S4bKBGRVb4tfhRR10fswy
+/tOxorz+iAW++BRqJzf5vfNqtIgmmHn8oD7sGQzb0h2chbRCs86g/5hWIg970ET1
+AFht11bLIv/QuIEd5fzZEt1qjFZSxNB0MupR1f+hQuqtV57LMj4WvtQsdJG75y0h
+i5ApJzWWUIcojgunD742cE0+G4QnjKEawlK1oZJW6j0rWQurAFzK11u9DrJUOWdK
+UGvFOxmCFg7hTlPl549WilBwBJkI24t5f7JyW8dweJrKCznG9Dk7Ek5m9SJq7GpC
+SI98fu6ugnYPC6DcvRJlXi5hHjxSIg==
+=69Je
+-----END PGP SIGNATURE-----
+
+--Sig_/xcldGrkYlQDSe48aCywZHIr--
