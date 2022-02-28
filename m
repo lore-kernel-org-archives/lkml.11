@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E98DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235798AbiB1Rac (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:30:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44500 "EHLO
+        id S236225AbiB1Rag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:30:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235175AbiB1R2w (ORCPT
+        with ESMTP id S236058AbiB1R2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:28:52 -0500
+        Mon, 28 Feb 2022 12:28:54 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9442541AB;
-        Mon, 28 Feb 2022 09:27:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FA954BE9;
+        Mon, 28 Feb 2022 09:27:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20F166140B;
-        Mon, 28 Feb 2022 17:27:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A0A0C340F6;
-        Mon, 28 Feb 2022 17:27:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D03B061357;
+        Mon, 28 Feb 2022 17:27:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E896CC340E7;
+        Mon, 28 Feb 2022 17:27:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069269;
-        bh=DPO3BcLiwBn8PmDoRW5r8RbBNLCnhtbo3AwL7su6q/U=;
+        s=korg; t=1646069272;
+        bh=UTyUwZbnXBMu9k4iGGnu3PQEgiOfipBdiJzLoQ///9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c7FT4qGKiXhOYI9GAVAt+FHrHIB0eZlckaOG8yVgKwJx88lHgk221tif+RfLEvKvD
-         vGMDYeciloZz5oONBrhvu+S01xM/kgFQ6+HflfOF3Ss64cXh2tlRQ9T6j1xY7BtowN
-         moPl+xvLNKmgDRHNwXFPrx/Z7L5xz2HYnp5rxOms=
+        b=q7H44TTKQ/vgy8a9ilHIVItgEW6tiyz0ldXUyL/X2Vwl5/CkU7aHWjlZ30qrRVKcb
+         ZtURDxiS9FyLU87/+8SqShQwDklInn0ghGgWFsvgOGuCnwfbwDWw2dtx+WzyOQzF1v
+         bipcGNMQtHTbl8prBKwu4vGg2x/5j1+j9j6I/VOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 4.14 24/31] usb: dwc3: gadget: Let the interrupt handler disable bottom halves.
-Date:   Mon, 28 Feb 2022 18:24:20 +0100
-Message-Id: <20220228172202.213218587@linuxfoundation.org>
+        stable@vger.kernel.org, Puma Hsu <pumahsu@google.com>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 4.14 25/31] xhci: re-initialize the HC during resume if HCE was set
+Date:   Mon, 28 Feb 2022 18:24:21 +0100
+Message-Id: <20220228172202.289613957@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
 References: <20220228172159.515152296@linuxfoundation.org>
@@ -49,57 +48,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Puma Hsu <pumahsu@google.com>
 
-commit 84918a89d6efaff075de570b55642b6f4ceeac6d upstream.
+commit 8b328f8002bcf29ef517ee4bf234e09aabec4d2e upstream.
 
-The interrupt service routine registered for the gadget is a primary
-handler which mask the interrupt source and a threaded handler which
-handles the source of the interrupt. Since the threaded handler is
-voluntary threaded, the IRQ-core does not disable bottom halves before
-invoke the handler like it does for the forced-threaded handler.
+When HCE(Host Controller Error) is set, it means an internal
+error condition has been detected. Software needs to re-initialize
+the HC, so add this check in xhci resume.
 
-Due to changes in networking it became visible that a network gadget's
-completions handler may schedule a softirq which remains unprocessed.
-The gadget's completion handler is usually invoked either in hard-IRQ or
-soft-IRQ context. In this context it is enough to just raise the softirq
-because the softirq itself will be handled once that context is left.
-In the case of the voluntary threaded handler, there is nothing that
-will process pending softirqs. Which means it remain queued until
-another random interrupt (on this CPU) fires and handles it on its exit
-path or another thread locks and unlocks a lock with the bh suffix.
-Worst case is that the CPU goes idle and the NOHZ complains about
-unhandled softirqs.
-
-Disable bottom halves before acquiring the lock (and disabling
-interrupts) and enable them after dropping the lock. This ensures that
-any pending softirqs will handled right away.
-
-Link: https://lkml.kernel.org/r/c2a64979-73d1-2c22-e048-c275c9f81558@samsung.com
-Fixes: e5f68b4a3e7b0 ("Revert "usb: dwc3: gadget: remove unnecessary _irqsave()"")
-Cc: stable <stable@kernel.org>
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Link: https://lore.kernel.org/r/Yg/YPejVQH3KkRVd@linutronix.de
+Cc: stable@vger.kernel.org
+Signed-off-by: Puma Hsu <pumahsu@google.com>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220215123320.1253947-2-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/gadget.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/host/xhci.c |   19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -3153,9 +3153,11 @@ static irqreturn_t dwc3_thread_interrupt
- 	unsigned long flags;
- 	irqreturn_t ret = IRQ_NONE;
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -1022,6 +1022,7 @@ int xhci_resume(struct xhci_hcd *xhci, b
+ 	int			retval = 0;
+ 	bool			comp_timer_running = false;
+ 	bool			pending_portevent = false;
++	bool			reinit_xhc = false;
  
-+	local_bh_disable();
- 	spin_lock_irqsave(&dwc->lock, flags);
- 	ret = dwc3_process_event_buf(evt);
- 	spin_unlock_irqrestore(&dwc->lock, flags);
-+	local_bh_enable();
+ 	if (!hcd->state)
+ 		return 0;
+@@ -1038,10 +1039,11 @@ int xhci_resume(struct xhci_hcd *xhci, b
+ 	set_bit(HCD_FLAG_HW_ACCESSIBLE, &xhci->shared_hcd->flags);
  
- 	return ret;
- }
+ 	spin_lock_irq(&xhci->lock);
+-	if ((xhci->quirks & XHCI_RESET_ON_RESUME) || xhci->broken_suspend)
+-		hibernated = true;
+ 
+-	if (!hibernated) {
++	if (hibernated || xhci->quirks & XHCI_RESET_ON_RESUME || xhci->broken_suspend)
++		reinit_xhc = true;
++
++	if (!reinit_xhc) {
+ 		/*
+ 		 * Some controllers might lose power during suspend, so wait
+ 		 * for controller not ready bit to clear, just as in xHC init.
+@@ -1074,12 +1076,17 @@ int xhci_resume(struct xhci_hcd *xhci, b
+ 			spin_unlock_irq(&xhci->lock);
+ 			return -ETIMEDOUT;
+ 		}
+-		temp = readl(&xhci->op_regs->status);
+ 	}
+ 
+-	/* If restore operation fails, re-initialize the HC during resume */
+-	if ((temp & STS_SRE) || hibernated) {
++	temp = readl(&xhci->op_regs->status);
++
++	/* re-initialize the HC on Restore Error, or Host Controller Error */
++	if (temp & (STS_SRE | STS_HCE)) {
++		reinit_xhc = true;
++		xhci_warn(xhci, "xHC error in resume, USBSTS 0x%x, Reinit\n", temp);
++	}
+ 
++	if (reinit_xhc) {
+ 		if ((xhci->quirks & XHCI_COMP_MODE_QUIRK) &&
+ 				!(xhci_all_ports_seen_u0(xhci))) {
+ 			del_timer_sync(&xhci->comp_mode_recovery_timer);
 
 
