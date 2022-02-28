@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09826C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79182C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239327AbiB1R7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:59:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55422 "EHLO
+        id S232238AbiB1R7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:59:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240102AbiB1Rxy (ORCPT
+        with ESMTP id S240372AbiB1RyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:54 -0500
+        Mon, 28 Feb 2022 12:54:15 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB7AB0D3B;
-        Mon, 28 Feb 2022 09:41:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0BBBB1881;
+        Mon, 28 Feb 2022 09:42:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1807DB815B3;
-        Mon, 28 Feb 2022 17:41:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64F01C340E7;
-        Mon, 28 Feb 2022 17:41:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E2CCB815C5;
+        Mon, 28 Feb 2022 17:42:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DA56C340E7;
+        Mon, 28 Feb 2022 17:41:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070080;
-        bh=Cn10twbBUtOiqEvbLKA92UQCo+W4+Wfu3p3AgWxmyoY=;
+        s=korg; t=1646070118;
+        bh=06YqP0CRIm6WKABvXwMr6LDBuQuGAJqlcFk+Xc34QSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O8Gz6IsrWf2bXfStSy5DWJjg0TSLXmfiRJy/G9Ka5t7OBVbYhQjLEDXdX6Bzgw39L
-         dQdOqtdYGHLrbukNvSVIIdcni9knSIG/O0lRBIjXtrjGruUjJ0hkQ/gEHs3SfNIu6Z
-         iwhOi2PI3/TXIle1SfLbpZjvjSb+kFN84foU4oa8=
+        b=uLZ4bFdHzHjMsxP1/4l6N1r5X0+gTCKKQVhbj9v262vpUwCNF1zI4ydWnCPuoFqKT
+         A7pdwU1WZKNX5P0/GGK2a2O0SIjXfe9auVKPEh3rF3QFr0HFlI4O9Z1P1CpVE4xZwf
+         UU7lLyEqg5+1CGbgLgOi8YvNdQm4NUFMArfDtz9o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christophe Kerello <christophe.kerello@foss.st.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: [PATCH 5.15 117/139] nvmem: core: Fix a conflict between MTD and NVMEM on wp-gpios property
-Date:   Mon, 28 Feb 2022 18:24:51 +0100
-Message-Id: <20220228172359.901562038@linuxfoundation.org>
+        syzbot+831661966588c802aae9@syzkaller.appspotmail.com,
+        Bart Van Assche <bvanassche@acm.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 093/139] RDMA/ib_srp: Fix a deadlock
+Date:   Mon, 28 Feb 2022 18:24:27 +0100
+Message-Id: <20220228172357.373986512@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,71 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Kerello <christophe.kerello@foss.st.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-commit f6c052afe6f802d87c74153b7a57c43b2e9faf07 upstream.
+[ Upstream commit 081bdc9fe05bb23248f5effb6f811da3da4b8252 ]
 
-Wp-gpios property can be used on NVMEM nodes and the same property can
-be also used on MTD NAND nodes. In case of the wp-gpios property is
-defined at NAND level node, the GPIO management is done at NAND driver
-level. Write protect is disabled when the driver is probed or resumed
-and is enabled when the driver is released or suspended.
+Remove the flush_workqueue(system_long_wq) call since flushing
+system_long_wq is deadlock-prone and since that call is redundant with a
+preceding cancel_work_sync()
 
-When no partitions are defined in the NAND DT node, then the NAND DT node
-will be passed to NVMEM framework. If wp-gpios property is defined in
-this node, the GPIO resource is taken twice and the NAND controller
-driver fails to probe.
-
-It would be possible to set config->wp_gpio at MTD level before calling
-nvmem_register function but NVMEM framework will toggle this GPIO on
-each write when this GPIO should only be controlled at NAND level driver
-to ensure that the Write Protect has not been enabled.
-
-A way to fix this conflict is to add a new boolean flag in nvmem_config
-named ignore_wp. In case ignore_wp is set, the GPIO resource will
-be managed by the provider.
-
-Fixes: 2a127da461a9 ("nvmem: add support for the write-protect pin")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christophe Kerello <christophe.kerello@foss.st.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20220220151432.16605-2-srinivas.kandagatla@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20220215210511.28303-3-bvanassche@acm.org
+Fixes: ef6c49d87c34 ("IB/srp: Eliminate state SRP_TARGET_DEAD")
+Reported-by: syzbot+831661966588c802aae9@syzkaller.appspotmail.com
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvmem/core.c           |    2 +-
- include/linux/nvmem-provider.h |    4 +++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/infiniband/ulp/srp/ib_srp.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/nvmem/core.c
-+++ b/drivers/nvmem/core.c
-@@ -768,7 +768,7 @@ struct nvmem_device *nvmem_register(cons
+diff --git a/drivers/infiniband/ulp/srp/ib_srp.c b/drivers/infiniband/ulp/srp/ib_srp.c
+index 71eda91e810cf..5d416ec228717 100644
+--- a/drivers/infiniband/ulp/srp/ib_srp.c
++++ b/drivers/infiniband/ulp/srp/ib_srp.c
+@@ -4038,9 +4038,11 @@ static void srp_remove_one(struct ib_device *device, void *client_data)
+ 		spin_unlock(&host->target_lock);
  
- 	if (config->wp_gpio)
- 		nvmem->wp_gpio = config->wp_gpio;
--	else
-+	else if (!config->ignore_wp)
- 		nvmem->wp_gpio = gpiod_get_optional(config->dev, "wp",
- 						    GPIOD_OUT_HIGH);
- 	if (IS_ERR(nvmem->wp_gpio)) {
---- a/include/linux/nvmem-provider.h
-+++ b/include/linux/nvmem-provider.h
-@@ -66,7 +66,8 @@ struct nvmem_keepout {
-  * @word_size:	Minimum read/write access granularity.
-  * @stride:	Minimum read/write access stride.
-  * @priv:	User context passed to read/write callbacks.
-- * @wp-gpio:   Write protect pin
-+ * @wp-gpio:	Write protect pin
-+ * @ignore_wp:  Write Protect pin is managed by the provider.
-  *
-  * Note: A default "nvmem<id>" name will be assigned to the device if
-  * no name is specified in its configuration. In such case "<id>" is
-@@ -88,6 +89,7 @@ struct nvmem_config {
- 	enum nvmem_type		type;
- 	bool			read_only;
- 	bool			root_only;
-+	bool			ignore_wp;
- 	struct device_node	*of_node;
- 	bool			no_of_node;
- 	nvmem_reg_read_t	reg_read;
+ 		/*
+-		 * Wait for tl_err and target port removal tasks.
++		 * srp_queue_remove_work() queues a call to
++		 * srp_remove_target(). The latter function cancels
++		 * target->tl_err_work so waiting for the remove works to
++		 * finish is sufficient.
+ 		 */
+-		flush_workqueue(system_long_wq);
+ 		flush_workqueue(srp_remove_wq);
+ 
+ 		kfree(host);
+-- 
+2.34.1
+
 
 
