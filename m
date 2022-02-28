@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D24EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74766C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 03:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232908AbiB1Dg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 22:36:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38448 "EHLO
+        id S232953AbiB1Dgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 22:36:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiB1Dg0 (ORCPT
+        with ESMTP id S232933AbiB1Dg3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 22:36:26 -0500
+        Sun, 27 Feb 2022 22:36:29 -0500
 Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64E85B8A8
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 19:35:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C295B8A8
+        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 19:35:51 -0800 (PST)
 Received: from droid01-cd.amlogic.com (10.98.11.200) by mail-sh.amlogic.com
  (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Mon, 28 Feb 2022
- 11:35:45 +0800
+ 11:35:48 +0800
 From:   Shunzhou Jiang <shunzhou.jiang@amlogic.com>
 To:     <shunzhou.jiang@amlogic.com>
 CC:     <linux-arm-kernel@lists.infradead.org>,
@@ -26,10 +26,12 @@ CC:     <linux-arm-kernel@lists.infradead.org>,
         <narmstrong@baylibre.com>, <khilman@baylibre.com>,
         <jbrunet@baylibre.com>, <martin.blumenstingl@googlemail.com>,
         <jianxin.pan@amlogic.com>
-Subject: [PATCH V5 0/2] Power: meson-s4: add s4 power domain driver
-Date:   Mon, 28 Feb 2022 11:35:40 +0800
-Message-ID: <20220228033542.3594861-1-shunzhou.jiang@amlogic.com>
+Subject: [PATCH V5 2/2] soc: s4: Add support for power domains controller
+Date:   Mon, 28 Feb 2022 11:35:42 +0800
+Message-ID: <20220228033542.3594861-3-shunzhou.jiang@amlogic.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220228033542.3594861-1-shunzhou.jiang@amlogic.com>
+References: <20220228033542.3594861-1-shunzhou.jiang@amlogic.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -38,21 +40,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adds Power controller driver support for Meson-S4 SoC
-Likes Meson-A1, the power domains register only can access in secure world
+Add support s4 Power controller. In s4, power control
+registers are in secure domain, and should be accessed by smc.
 
-Shunzhou Jiang (2):
-  dt-bindings: power: add Amlogic s4 power domains bindings
-  soc: s4: Add support for power domains controller
+Signed-off-by: Shunzhou Jiang <shunzhou.jiang@amlogic.com>
+---
+ drivers/soc/amlogic/meson-secure-pwrc.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
- .../power/amlogic,meson-sec-pwrc.yaml         |  3 ++-
- drivers/soc/amlogic/meson-secure-pwrc.c       | 22 +++++++++++++++++++
- include/dt-bindings/power/meson-s4-power.h    | 19 ++++++++++++++++
- 3 files changed, 43 insertions(+), 1 deletion(-)
- create mode 100644 include/dt-bindings/power/meson-s4-power.h
-
-
-base-commit: 3448a018ded03ccd4093d6675f4a39eb2d1a18ef
+diff --git a/drivers/soc/amlogic/meson-secure-pwrc.c b/drivers/soc/amlogic/meson-secure-pwrc.c
+index 59bd195fa9c9..a10a417a87db 100644
+--- a/drivers/soc/amlogic/meson-secure-pwrc.c
++++ b/drivers/soc/amlogic/meson-secure-pwrc.c
+@@ -11,6 +11,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/pm_domain.h>
+ #include <dt-bindings/power/meson-a1-power.h>
++#include <dt-bindings/power/meson-s4-power.h>
+ #include <linux/arm-smccc.h>
+ #include <linux/firmware/meson/meson_sm.h>
+ #include <linux/module.h>
+@@ -119,6 +120,18 @@ static struct meson_secure_pwrc_domain_desc a1_pwrc_domains[] = {
+ 	SEC_PD(RSA,	0),
+ };
+ 
++static struct meson_secure_pwrc_domain_desc s4_pwrc_domains[] = {
++	SEC_PD(S4_DOS_HEVC,	0),
++	SEC_PD(S4_DOS_VDEC,	0),
++	SEC_PD(S4_VPU_HDMI,	0),
++	SEC_PD(S4_USB_COMB,	0),
++	SEC_PD(S4_GE2D,		0),
++	/* ETH is for ethernet online wakeup, and should be always on */
++	SEC_PD(S4_ETH,		GENPD_FLAG_ALWAYS_ON),
++	SEC_PD(S4_DEMOD,	0),
++	SEC_PD(S4_AUDIO,	0),
++};
++
+ static int meson_secure_pwrc_probe(struct platform_device *pdev)
+ {
+ 	int i;
+@@ -187,11 +200,20 @@ static struct meson_secure_pwrc_domain_data meson_secure_a1_pwrc_data = {
+ 	.count = ARRAY_SIZE(a1_pwrc_domains),
+ };
+ 
++static struct meson_secure_pwrc_domain_data meson_secure_s4_pwrc_data = {
++	.domains = s4_pwrc_domains,
++	.count = ARRAY_SIZE(s4_pwrc_domains),
++};
++
+ static const struct of_device_id meson_secure_pwrc_match_table[] = {
+ 	{
+ 		.compatible = "amlogic,meson-a1-pwrc",
+ 		.data = &meson_secure_a1_pwrc_data,
+ 	},
++	{
++		.compatible = "amlogic,meson-s4-pwrc",
++		.data = &meson_secure_s4_pwrc_data,
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, meson_secure_pwrc_match_table);
 -- 
 2.34.1
 
