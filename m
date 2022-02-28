@@ -2,85 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD3A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:58:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48162C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237695AbiB1P6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 10:58:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40374 "EHLO
+        id S237692AbiB1P7N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 10:59:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236238AbiB1P6h (ORCPT
+        with ESMTP id S232034AbiB1P7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 10:58:37 -0500
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6C61C11F
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:57:51 -0800 (PST)
-Received: from mail-wm1-f42.google.com ([209.85.128.42]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mlejs-1o75lX2fGk-00iitS; Mon, 28 Feb 2022 16:57:49 +0100
-Received: by mail-wm1-f42.google.com with SMTP id bg31-20020a05600c3c9f00b00381590dbb33so2533810wmb.3;
-        Mon, 28 Feb 2022 07:57:49 -0800 (PST)
-X-Gm-Message-State: AOAM531l1YBEHnse++Jn6wdDuelDvTv7m0BqcBCBml49+CGttC0H3MhZ
-        d5fMcYeZeEpr4b4ORHfWgeF561WYP1pLr0kvyik=
-X-Google-Smtp-Source: ABdhPJwWO7JpZGQq+hYomYAuL8Jmwra1m177yHdVjT4LcY+LCSudgwemaoWEFE8W+L0d9PhzW8PLwjisjmxhpCV5Slc=
-X-Received: by 2002:a05:600c:154b:b0:381:8148:64d with SMTP id
- f11-20020a05600c154b00b003818148064dmr607563wmg.98.1646063869351; Mon, 28 Feb
- 2022 07:57:49 -0800 (PST)
-MIME-Version: 1.0
-References: <20220301025101.7fb280fd@canb.auug.org.au>
-In-Reply-To: <20220301025101.7fb280fd@canb.auug.org.au>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 28 Feb 2022 16:57:33 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0+fGJniopx1q5OhY9zk-PNemcUZ2XXx-JWOLGdDwmu5A@mail.gmail.com>
-Message-ID: <CAK8P3a0+fGJniopx1q5OhY9zk-PNemcUZ2XXx-JWOLGdDwmu5A@mail.gmail.com>
-Subject: Re: linux-next: Fixes tag needs some work in the arm-soc tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
-        ARM <linux-arm-kernel@lists.infradead.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Conor Dooley <mail@conchuod.ie>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:ck/zoYCKU8CZmRgNR+kp5gcjeL3JEJr3m7MojCX3aWfkojGUGMK
- o5tSIBOGAXqa9e5zG2wj2y1O3HdANI7jeEtwFYiVz83xCp2xUGasBW0P8Sch3MdGcuj09K7
- olwgEYYW6JD6/V4C0D6WnQRMoBw6WoPIAWY/lbz23n1a+M+6Jq0wUvTiq7C90Z4mTnpU55p
- oteGyGJEn01FheCj9szDQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vmZXyb50Crw=:G3VplF78o/BtsRQOWtuS0x
- ujPapp0ztPVYF2hspPPb78BgiNa4yD7IySnFG2yTzyMVYkByLNC6iSD/TNRvMgQp8/HhGcCtO
- 2Ysgz9GXjHwx310t/VQpzZ3LKJdFHm8+6zYP7CxGav9llrQXNqjOZGUO+5F/EWccAyDRciBvV
- pXa+ptXTUgXqdWoIfaeKMgqGlcxbpgWTpYzeqtCIMkox4oQEYLrEo4pa4xogMqumehGjiY6Ky
- gaZqprOdnl58YmnhgFJpbvGg4y7q11J+tEmSlYsg3mREXabJinxzLtP7pWdXxF4KDGYUZJ3x9
- 6G26iq1MLpFF9TR85fkxyjOqnPth6lBZO0CgiYRRG6fYv6i+lUsgQIdRitWsoObsn38Yz/rG+
- Lm23xElWECzXfIQCldz3DKLKB528T4XrRfLmODclZCOXGy7ue/B0dkGFV0wiFrTg75q1urEg9
- FVeBCeFKOHhjDYVcBeEtOUeYxJnEaxN6d7IORCvrPHFvQKwO7BH+o5m5d84DWTqUBzP59HlTw
- NRCKDbAWvYSwMzv1wo/Oap/3uHY9LKSSXSDFRUy726YFR21nEyFT8jYJKM3CUrMMrYVXvamQv
- vqabeP/YyTJ8eu3m/5JjLwDDN5434yUwzjH+bBC8/umBSHOdNW6iABgXdBDDJMdQZZIyEexRQ
- qBVb7XVmCtOVCvigG6Z7BaqjLUGSR1FYIRnFKEiJ2ELsD8JcLm/q/hyR7Jc1Fh5ZEul5CydYu
- YYTEAXeLuv6J8/eKUqgAuD8VVPHlv6tAct8URHmQmJKXdFcIzfjkA9M+ACqZAI405em5owd5S
- 0e9DdxTJLFYLTlLdZqeB9pRWXJLfsq84g8CSkSloSfJ2DXLIQY=
+        Mon, 28 Feb 2022 10:59:11 -0500
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2903E5D8
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:58:32 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 383261F899;
+        Mon, 28 Feb 2022 15:58:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1646063911; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m+rtOFWhDi8V6wphUcuxOzEfwBnHdV4f4I/SuPu6xcI=;
+        b=LX+K4s2bnN0TZrGYKjuGyP5UUwpJhUOEe0xD3owpa3T86p9lry6No/WfwFIKWDSDsIi8hb
+        wa0Xi03HcQ8qodmjLGvTS5uEObC8cAQZGAWwtI5nxA2EoPnKi8bS+mn8QLEC1Re/TuQtG7
+        s4GBbptvLgnD+UwmNjLblLdWE+gPmIE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1646063911;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m+rtOFWhDi8V6wphUcuxOzEfwBnHdV4f4I/SuPu6xcI=;
+        b=gtpL5nrIf2snMGxQkf7AnZZsGNzoF8HADw4yJHGFFMKFcjUkcCvpPbh0WRn99NV7kTywAS
+        VvyTOsmWdavXZ1Cg==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id E6D29A3B84;
+        Mon, 28 Feb 2022 15:58:30 +0000 (UTC)
+Date:   Mon, 28 Feb 2022 16:58:30 +0100
+Message-ID: <s5hee3nrnix.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Raghu Ballappa Bankapur <quic_rbankapu@quicinc.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Vinod Koul <vkoul@kernel.org>,
+        Takashi Iwai <tiwai@suse.com>,
+        "ierre-Louis Bossart" <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        "Ranjani Sridharan" <ranjani.sridharan@linux.intel.com>,
+        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
+        <alsa-devel@alsa-project.org>, Zubin Mithra <zsm@chromium.org>,
+        <linux-kernel@vger.kernel.org>,
+        Krishna Jha <quic_kkishorj@quicinc.com>
+Subject: Re: [PATCH V0 1/1] ALSA: pcm: fix blocking while loop in snd_pcm_update_hw_ptr0()
+In-Reply-To: <35bfd332-891f-1323-8b61-9e4e2fc5cd1c@quicinc.com>
+References: <cover.1645784757.git.quic_rbankapu@quicinc.com>
+        <4d8b1cb4b0db88c3e28207a81403fbf1e4a87bff.1645784757.git.quic_rbankapu@quicinc.com>
+        <83e4b67d-91d3-dca9-4b1f-d209f927d517@perex.cz>
+        <s5hee3rur42.wl-tiwai@suse.de>
+        <35bfd332-891f-1323-8b61-9e4e2fc5cd1c@quicinc.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 4:51 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> In commit
->
->   ed40a635b5ec ("soc: microchip: make mpfs_sys_controller_put static")
->
-> Fixes tag
->
->   Fixes: dsafsdfd0054 ("soc: add microchip polarfire soc system controller")
->
-> has these problem(s):
->
->   - No SHA1 recognised
->
-> Maybe you meant
->
-> Fixes: d0054a470c33 ("soc: add microchip polarfire soc system controller")
+On Fri, 25 Feb 2022 13:26:36 +0100,
+Raghu Ballappa Bankapur wrote:
+> 
+> Hi Takashi,
+> 
+> Thanks for your feedback.
+> 
+> I see your below statement
+> 
+> But, having either this zero check or minimal hw_ptr_buffer_jiffies=1
+> would be good in anyway, even if we add more check for the hw_params
+> for no-period-wakeup case.
+> 
+> Please review if those changes are Ok
 
-Fixed, thanks!
+If you mean about your posted patch for "those changes", as Jaroslav
+suggested in the thread, we may take a different approach: just set
+the minimal hw_ptr_buffer_jiffies to 1.
+
+Could you try this and submit the fix if that works for you?
+
+
+thanks,
+
+Takashi
+
+> 
+> Regards
+> Raghu
+> 
+> On 2/25/2022 4:53 PM, Takashi Iwai wrote:
+> 
+>     On Fri, 25 Feb 2022 11:52:05 +0100,
+>     Jaroslav Kysela wrote:
+>     
+>         On 25. 02. 22 11:39, Raghu Bankapur wrote:
+>         
+>             When period interrupts are disabled, while loop in snd_pcm_update_hw_ptr0()
+>             results in the machine locking up if runtime->hw_ptr_buffer_jiffies is 0.
+>             Validate runtime->hw_ptr_buffer_jiffies value before while loop to avoid
+>             delta check.
+>             
+>         I would set hw_ptr_buffer_jiffies to 1 in this case in snd_pcm_post_start().
+>         
+>     I thought of it at the first glance, but after reading the code again,
+>     I doubt whether it makes sense at all to allow this condition.
+>     Since the buffer size is too small and the rate is too high, we can't
+>     calculate the buffer crossing condition accurately under such
+>     condition.
+>     
+>     But, having either this zero check or minimal hw_ptr_buffer_jiffies=1
+>     would be good in anyway, even if we add more check for the hw_params
+>     for no-period-wakeup case.
+> 
+>     thanks,
+>     
+>     Takashi
+> 
+> 
