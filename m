@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 321F3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 361C8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237773AbiB1RjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:39:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
+        id S237973AbiB1RjK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:39:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238273AbiB1Rgv (ORCPT
+        with ESMTP id S238227AbiB1Rgw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:36:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071D488792;
+        Mon, 28 Feb 2022 12:36:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C87985B4;
         Mon, 28 Feb 2022 09:31:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3342B815A6;
-        Mon, 28 Feb 2022 17:31:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 527E2C340E7;
-        Mon, 28 Feb 2022 17:31:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAB1061365;
+        Mon, 28 Feb 2022 17:31:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C2B3C340F0;
+        Mon, 28 Feb 2022 17:31:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069511;
-        bh=/IPjo5Im5eTlmflgA6jvO3M2vFnLOiss2A90CD++VY8=;
+        s=korg; t=1646069514;
+        bh=vEPAZ3lTc+fwgGKdNcNvLHd+Ln7uEJIIVY59/b1a6eI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bq+3kQpO4S5b/FUiYEB44i2VNzEh69+P8syu2k1RM0U1ne9p0TQ94S6iUwuoqEEJa
-         4+N8rIMHaexHh06lntda2UrpIRzTOcsWwSfler1C2bThCkOsqCthYdmrWxA/RGdUHh
-         4NMX+mT1hGDbMxhoAla2WWw+1xrQGTMd3NIdPVpc=
+        b=sFxfHYtP1FaBxzz0FWPSLrv/YILh+AJlA4frdq02CfVh3sbT/mq8Z4eQ4BXvF34ZS
+         +R16UOZ4TblkUWhhZHYIn0aCnLnRZXOJlUZ0210L7W6HIemPnk0IPtuRKvzpKQVuAu
+         1dbakx0ExormJbBC/doCWYAdqLugIKV6SuYLLPwg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
-        Mathias Nyman <mathias.nyman@linux.intel.com>
-Subject: [PATCH 5.4 46/53] xhci: Prevent futile URB re-submissions due to incorrect return value.
-Date:   Mon, 28 Feb 2022 18:24:44 +0100
-Message-Id: <20220228172251.616249061@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>
+Subject: [PATCH 5.4 47/53] tty: n_gsm: fix encoding of control signal octet bit DV
+Date:   Mon, 28 Feb 2022 18:24:45 +0100
+Message-Id: <20220228172251.681315920@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -48,58 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongyu Xie <xiehongyu1@kylinos.cn>
+From: daniel.starke@siemens.com <daniel.starke@siemens.com>
 
-commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
+commit 737b0ef3be6b319d6c1fd64193d1603311969326 upstream.
 
-The -ENODEV return value from xhci_check_args() is incorrectly changed
-to -EINVAL in a couple places before propagated further.
+n_gsm is based on the 3GPP 07.010 and its newer version is the 3GPP 27.010.
+See https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1516
+The changes from 07.010 to 27.010 are non-functional. Therefore, I refer to
+the newer 27.010 here. Chapter 5.4.6.3.7 describes the encoding of the
+control signal octet used by the MSC (modem status command). The same
+encoding is also used in convergence layer type 2 as described in chapter
+5.5.2. Table 7 and 24 both require the DV (data valid) bit to be set 1 for
+outgoing control signal octets sent by the DTE (data terminal equipment),
+i.e. for the initiator side.
+Currently, the DV bit is only set if CD (carrier detect) is on, regardless
+of the side.
 
-xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
-xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
-the return value of xhci_check_args <= 0.
-This causes problems for example r8152_submit_rx, calling usb_submit_urb
-in drivers/net/usb/r8152.c.
-r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
-is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
+This patch fixes this behavior by setting the DV bit on the initiator side
+unconditionally.
 
-[commit message and header edit -Mathias]
-
-Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
+Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
 Cc: stable@vger.kernel.org
-Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
+Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
+Link: https://lore.kernel.org/r/20220218073123.2121-1-daniel.starke@siemens.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/host/xhci.c |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/tty/n_gsm.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1487,9 +1487,12 @@ static int xhci_urb_enqueue(struct usb_h
- 	struct urb_priv	*urb_priv;
- 	int num_tds;
- 
--	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
--					true, true, __func__) <= 0)
-+	if (!urb)
- 		return -EINVAL;
-+	ret = xhci_check_args(hcd, urb->dev, urb->ep,
-+					true, true, __func__);
-+	if (ret <= 0)
-+		return ret ? ret : -EINVAL;
- 
- 	slot_id = urb->dev->slot_id;
- 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
-@@ -3289,7 +3292,7 @@ static int xhci_check_streams_endpoint(s
- 		return -EINVAL;
- 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
- 	if (ret <= 0)
--		return -EINVAL;
-+		return ret ? ret : -EINVAL;
- 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
- 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
- 				" descriptor for ep 0x%x does not support streams\n",
+--- a/drivers/tty/n_gsm.c
++++ b/drivers/tty/n_gsm.c
+@@ -428,7 +428,7 @@ static u8 gsm_encode_modem(const struct
+ 		modembits |= MDM_RTR;
+ 	if (dlci->modem_tx & TIOCM_RI)
+ 		modembits |= MDM_IC;
+-	if (dlci->modem_tx & TIOCM_CD)
++	if (dlci->modem_tx & TIOCM_CD || dlci->gsm->initiator)
+ 		modembits |= MDM_DV;
+ 	return modembits;
+ }
 
 
