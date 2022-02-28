@@ -2,96 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3813C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC440C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237494AbiB1PPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 10:15:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35268 "EHLO
+        id S237498AbiB1PQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 10:16:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234565AbiB1PPp (ORCPT
+        with ESMTP id S232445AbiB1PQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 10:15:45 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F0181183
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:15:05 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id u3so21156505ybh.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 07:15:05 -0800 (PST)
+        Mon, 28 Feb 2022 10:16:46 -0500
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CDC8093F;
+        Mon, 28 Feb 2022 07:16:07 -0800 (PST)
+Received: by mail-oo1-xc31.google.com with SMTP id r41-20020a4a966c000000b0031bf85a4124so19160081ooi.0;
+        Mon, 28 Feb 2022 07:16:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/DGYCHAP536Nvul99EDTG6hckPiPqs15TjdAiXjOtBM=;
-        b=tVv4ipPxKA03xgTq4Dk1zw4CZCbm4XSeZKExWKEF2kL+Ubm0tK0Ln/uN0xG/ZAf+32
-         SPCvUnyR0gqw+AsgGfTCnYYbi/VGmxyF5OiG6Nre9MBzbGP/LvxPZN9hky45/QD19wDg
-         fZmdRtMjQCHCs6rV3Zoj08xvLSGbHvJQOGy2SGADfTfofnGtiRoXny68fLcXENZdG5T4
-         H24IaYQPHJ4hyNlZnJnFwwfLO3kXKa2ebKHx7S8txcPIDu4vQfYiQnQwanJm+1vnnsHP
-         SfMVdvqF46ReLi28NzQz3Qq4bGX9cCQ99Do+2SdcijBor1wiIfq+f//kjPqZ5BXLBwyI
-         HCPA==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=GXTP6WRaYgXcjvYzSElyj285X0K6M37vtW5QgfC8A08=;
+        b=n5OSBhcuUJpDIK00HLJQdrhKgpinMQfw9ndbqNSrlPr/FF5I+FhRy7idkGL4F4U2jp
+         YiB32put77mHt0HmqFspvvTDWEJtx2BvxE7YWG7yB1AwtwWznsB0TiSez0eXFCGQwPoT
+         gmkjlZAaM8GY6cByvZ+xAR9T0S9nKMDU6BXwaDIby//LAgEF4+b0/sLB9z25IyRCpqbs
+         mNOlzoPHMaoUSI2YYFCJVIJ6ENTw11q+oOLQh5omGSoVofubyUZFMqyiI5ztwkCtDAAi
+         Vq8t3YCyWNtr1ZNPES/DXq1FVXAEVz/rQRpEFYz+dLcJTCQPzwVQPLxKvm5wmLs81pbZ
+         5tvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/DGYCHAP536Nvul99EDTG6hckPiPqs15TjdAiXjOtBM=;
-        b=00wPKuOCH7XTi0/kHrSOrpMaeRYGH49ZGGY+zW70WfFK6cPQr6n1q2Xlknlo0jinNM
-         835I0+waosGf9mu/2Gr6GvW24h0v+t4Rj4tll1QSK1tYUEjpG8IvwnDda/wAZEy1GEOL
-         ZctBcSpogyGVWTB0HgsOVTzw9lSJu88zoBXUArSdjqzRYVpBTSstos0JiVRiQiOzHJeT
-         ucTcuoJ8jVKRaF9oernGhpKjo3Qnlx8oJQ9YsBquEzjXZi4dqBcOzRl9yvW+ZpD60dOP
-         P1VOgHtLUuBJz88jR8t0+LOuGEPhVHx7cQZr8PcFSkqKOO0uWYttyc8x37+AAsWyGqEF
-         EwFg==
-X-Gm-Message-State: AOAM532GgN+A7YlBdJAHsxUUKFmagOy/tIeCBTTddubOwf5r+8j7KQl4
-        1IAPdLfSfP3u6SRwy/LlVpEQDd6Sw+3A6eIfxxCGAA==
-X-Google-Smtp-Source: ABdhPJxlij0ufjiN92AH1OyL8pyemHJU/TWzZLp6QiY6vkNQ+FWGQvbI5YCIn5OheXrUj61MFz1apjjwLuJHsGh+4O4=
-X-Received: by 2002:a25:d2cd:0:b0:61d:6a33:8129 with SMTP id
- j196-20020a25d2cd000000b0061d6a338129mr19241308ybg.246.1646061303068; Mon, 28
- Feb 2022 07:15:03 -0800 (PST)
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=GXTP6WRaYgXcjvYzSElyj285X0K6M37vtW5QgfC8A08=;
+        b=xMNNOmU7aBsRfok1N1j+0xDZ4lEjV2lSqS8Vcq34Uc1rUIJAkVzTnetjmmQ6/BgF26
+         ugVxLpnMTNnlNlKp3X2vKrVWN39OlLApvobAGRxSgXmPU7q+anQqtHOulRka3Z0o6mtv
+         THrSoIe/o51BTpf3Y2DzDuGiRisgUybZkGc/GRqBUNtlxNQomCXrAK5qhuT/UCY+9vJs
+         /PnXzLP5e84bbZzAA/49tN1DnkhkwfGiZ9kADA1y8nZNq21Gch+lJ1wS9q3l+WErlBGh
+         5xK8NwK3xL1JtbHqIkSWufgYjY/Z3GnCC9B8lntk+voG/x9tkECGSsSsX6ux2NcGdYSt
+         oBtg==
+X-Gm-Message-State: AOAM533hWOIV5ITmxTkkxy4hBPbWtAmPQVMaoJoBEicYZv52JnRapo2N
+        pgwC0FUpmXFBX3bXl+7WoBU=
+X-Google-Smtp-Source: ABdhPJymkIo3X9fEwZ10x1T9p+r03XqFNxRjtydoOvAx+l0L+a4gfHrr5Bv2TG77OociyT6PgACJ0w==
+X-Received: by 2002:a05:6870:1704:b0:d7:11b7:5ec with SMTP id h4-20020a056870170400b000d711b705ecmr4368841oae.151.1646061367103;
+        Mon, 28 Feb 2022 07:16:07 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id be40-20020a05680821a800b002d06df28063sm6598421oib.5.2022.02.28.07.16.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 07:16:06 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <314f6804-b4f4-9668-613d-7481d60b4abb@roeck-us.net>
+Date:   Mon, 28 Feb 2022 07:16:04 -0800
 MIME-Version: 1.0
-References: <20220228071022.26143-1-songmuchun@bytedance.com>
- <20220228071022.26143-4-songmuchun@bytedance.com> <YhzfN574YUta3qay@bombadil.infradead.org>
-In-Reply-To: <YhzfN574YUta3qay@bombadil.infradead.org>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Mon, 28 Feb 2022 23:14:27 +0800
-Message-ID: <CAMZfGtXvLj+DQj=YoN6CcVfHZA-ceB24t8waMZs7KEbOoh0jUA@mail.gmail.com>
-Subject: Re: [PATCH 3/3] mm: hugetlb: add hugetlb_free_vmemmap sysctl
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Xiongchun duan <duanxiongchun@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Zev Weiss <zev@bewilderbeest.net>
+Cc:     linux-hwmon@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Renze Nicolai <renze@rnplus.nl>, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+References: <20220226133047.6226-1-zev@bewilderbeest.net>
+ <20220226133047.6226-2-zev@bewilderbeest.net>
+ <b4a1d4e1-a7b9-00f9-75d2-56003138883f@roeck-us.net>
+ <YhyGp0zu9OBOWt/M@hatter.bewilderbeest.net>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH 1/5] hwmon: (nct6775) Rearrange attr-group initialization
+In-Reply-To: <YhyGp0zu9OBOWt/M@hatter.bewilderbeest.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 10:42 PM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> On Mon, Feb 28, 2022 at 03:10:22PM +0800, Muchun Song wrote:
-> > We must add "hugetlb_free_vmemmap=on" to boot cmdline and reboot the
-> > server to enable the feature of freeing vmemmap pages of HugeTLB
-> > pages. Rebooting usually taske a long time. Add a sysctl to enable
-> > the feature at runtime and do not need to reboot.
-> >
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > ---
-> >  Documentation/admin-guide/sysctl/vm.rst | 13 +++++++++++++
-> >  include/linux/hugetlb.h                 |  5 +++++
-> >  include/linux/memory_hotplug.h          |  1 +
-> >  kernel/sysctl.c                         | 11 +++++++++++
->
-> kernel/sysctl.c is a hot mess with tons of knobs from all over the
-> place. And so we've been moving these to their own place. For instance
-> all the filesystem knobs are now properly in fs/. So Adding new ones
-> to the file is undesirable. If this is going to be added, please add
-> it somewhere in mm / hugetlb code.
->
+On 2/28/22 00:24, Zev Weiss wrote:
+> On Sun, Feb 27, 2022 at 07:01:32AM PST, Guenter Roeck wrote:
+>> On 2/26/22 05:30, Zev Weiss wrote:
+>>> We now track the number of attribute groups in nct6775_data, as a
+>>> measure to simplify handling differences in the set of enabled
+>>> attribute groups between nct6775 drivers (platform & i2c).  As a side
+>>> effect, we also reduce the amount of IS_ERR()/PTR_ERR() boilerplate a
+>>> bit.
+>>>
+>>> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+>>> ---
+>>>  drivers/hwmon/nct6775.c | 84 ++++++++++++++++++++---------------------
+>>>  1 file changed, 42 insertions(+), 42 deletions(-)
+>>>
+>>> diff --git a/drivers/hwmon/nct6775.c b/drivers/hwmon/nct6775.c
+>>> index 2b91f7e05126..139b2fe5ca4d 100644
+>>> --- a/drivers/hwmon/nct6775.c
+>>> +++ b/drivers/hwmon/nct6775.c
+>>> @@ -1198,6 +1198,7 @@ struct nct6775_data {
+>>>      const char *name;
+>>>      const struct attribute_group *groups[7];
+>>> +    u8 num_groups;
+>>>      u16 reg_temp[5][NUM_TEMP]; /* 0=temp, 1=temp_over, 2=temp_hyst,
+>>>                      * 3=temp_crit, 4=temp_lcrit
+>>> @@ -1405,10 +1406,18 @@ struct sensor_template_group {
+>>>      int base;
+>>>  };
+>>> -static struct attribute_group *
+>>> -nct6775_create_attr_group(struct device *dev,
+>>> -              const struct sensor_template_group *tg,
+>>> -              int repeat)
+>>> +static int nct6775_add_attr_group(struct nct6775_data *data, const struct attribute_group *group)
+>>> +{
+>>> +    /* Need to leave a NULL terminator at the end of data->groups */
+>>> +    if (WARN_ON(data->num_groups == ARRAY_SIZE(data->groups) - 1))
+>>> +        return -ENOSPC;
+>>> +
+>>
+>> At work we are struggling with a whopping 500,000+ (!) WARN backtraces
+>> _each day_. I would be happy if you send me patches removing some of
+>> those, but I am not inclined to accept patches adding them. If people
+>> don't notice that the driver doesn't load, they won't notice the warning
+>> either, and it will just add to all the other warning backtrace noise.
+>>
+> 
+> Okay, I can remove that -- I mostly just added it out of concern that "no space left on device" would be a fairly confusing error for someone to potentially end up with modprobe reporting, and some further indication of what went wrong could perhaps make it less mystifying (though yes, with any luck it can hopefully remain unreachable in practice as long as data->groups gets expanded when needed).
+> 
+> I'd certainly also be open to suggestions of a more appropriate errno value to return in that case, though I couldn't find one that seemed clearly better to me.  ENOMEM seemed vaguely more appropriate in some ways given that it's an in-memory array that's full rather than a storage device, but it's also definitely not the usual ENOMEM meaning of a dynamic allocation failure due to memory pressure, so...(shrug).  I think FreedBSD's got an EDOOFUS errno value, but as far as I can see Linux doesn't have one for indicating a purely internal error like this.
+> 
 
-I also have realized this when reading another patch [1]. I will
-move this into its hugetlb related code.  Anyway, thanks for
-your suggestion.
+If this is encountered, it would indicate a severe programming error.
+What _user_ do you expect to see that error message ? If this makes it
+into a release, it only means that the code was not tested well enough,
+since any even casual testing should have exposed it.
 
-[1] https://lore.kernel.org/linux-fsdevel/20220220060626.15885-1-tangmeng@uniontech.com/
+I'd even argue that the check is unnecessary to start with because
+the number of required groups is well known in advance.
+
+Anyway, if you don't like ENOSPC, there is also ENOBUFS as possible
+alternative.
+
+Guenter
