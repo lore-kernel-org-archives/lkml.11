@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A5AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:09:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03E3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240179AbiB1SIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42428 "EHLO
+        id S240208AbiB1SIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:08:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240568AbiB1SDk (ORCPT
+        with ESMTP id S240333AbiB1SD0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:03:40 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7E2E91;
-        Mon, 28 Feb 2022 09:47:28 -0800 (PST)
+        Mon, 28 Feb 2022 13:03:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 078DBB238F;
+        Mon, 28 Feb 2022 09:47:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BA90DCE17C5;
-        Mon, 28 Feb 2022 17:47:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA47AC340F0;
-        Mon, 28 Feb 2022 17:47:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE23460916;
+        Mon, 28 Feb 2022 17:46:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00853C340E7;
+        Mon, 28 Feb 2022 17:46:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070421;
-        bh=khOm+X9hpc0wLWcS9Gw7/RGcNpaafm0XrXj87EHoR2g=;
+        s=korg; t=1646070418;
+        bh=w5n1J63yLXEMxOjwktRPcCizXyJY1VAAx5CKeW7zaWc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KcMBLepVT1PGfaoFBWPOouL5b+9zkvbV/ZInuia/ds/xwgY+zZpRq7ZCKE9yFcBpJ
-         Q2G3rjuxgDDkX2CPCcf8GEq9vOHbHxOIDxSbIfRHRgsSqxL6zzYhGBsNgTXC7LJrf2
-         eTN2sDzevaB0t2eeYK1UqX6qUX/VPUg96778pbuE=
+        b=07ay4FusS7DPwMNqoq7xaHS2p4h5B5ZwNCKrsbzw9K659B3Sz7JPjo3CnGDFmHCgR
+         Hmv7AY25Ig6amNfCDgRfqtXSfwQOjZTX5iu32yR2i4LZl2gr3qQnnAQUiJdzTVENji
+         lxa+Rdp0qtwh9CZflx93tyB1WfbyTLepldN+GmUE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kanchan Joshi <joshi.k@samsung.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Daniel Wagner <dwagner@suse.de>
-Subject: [PATCH 5.16 063/164] nvme: also mark passthrough-only namespaces ready in nvme_update_ns_info
-Date:   Mon, 28 Feb 2022 18:23:45 +0100
-Message-Id: <20220228172405.905509293@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 062/164] net: __pskb_pull_tail() & pskb_carve_frag_list() drop_monitor friends
+Date:   Mon, 28 Feb 2022 18:23:44 +0100
+Message-Id: <20220228172405.820372600@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -50,57 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 602e57c9799c19f27e440639deed3ec45cfe1651 upstream.
+commit ef527f968ae05c6717c39f49c8709a7e2c19183a upstream.
 
-Commit e7d65803e2bb ("nvme-multipath: revalidate paths during rescan")
-introduced the NVME_NS_READY flag, which nvme_path_is_disabled() uses
-to check if a path can be used or not.  We also need to set this flag
-for devices that fail the ZNS feature validation and which are available
-through passthrough devices only to that they can be used in multipathing
-setups.
+Whenever one of these functions pull all data from an skb in a frag_list,
+use consume_skb() instead of kfree_skb() to avoid polluting drop
+monitoring.
 
-Fixes: e7d65803e2bb ("nvme-multipath: revalidate paths during rescan")
-Reported-by: Kanchan Joshi <joshi.k@samsung.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-Reviewed-by: Daniel Wagner <dwagner@suse.de>
-Tested-by: Kanchan Joshi <joshi.k@samsung.com>
+Fixes: 6fa01ccd8830 ("skbuff: Add pskb_extract() helper function")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Link: https://lore.kernel.org/r/20220220154052.1308469-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/nvme/host/core.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/core/skbuff.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -1936,7 +1936,7 @@ static int nvme_update_ns_info(struct nv
- 	if (blk_queue_is_zoned(ns->queue)) {
- 		ret = nvme_revalidate_zones(ns);
- 		if (ret && !nvme_first_scan(ns->disk))
--			goto out;
-+			return ret;
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -2254,7 +2254,7 @@ void *__pskb_pull_tail(struct sk_buff *s
+ 		/* Free pulled out fragments. */
+ 		while ((list = skb_shinfo(skb)->frag_list) != insp) {
+ 			skb_shinfo(skb)->frag_list = list->next;
+-			kfree_skb(list);
++			consume_skb(list);
+ 		}
+ 		/* And insert new clone at head. */
+ 		if (clone) {
+@@ -6227,7 +6227,7 @@ static int pskb_carve_frag_list(struct s
+ 	/* Free pulled out fragments. */
+ 	while ((list = shinfo->frag_list) != insp) {
+ 		shinfo->frag_list = list->next;
+-		kfree_skb(list);
++		consume_skb(list);
  	}
- 
- 	if (nvme_ns_head_multipath(ns->head)) {
-@@ -1951,16 +1951,16 @@ static int nvme_update_ns_info(struct nv
- 	return 0;
- 
- out_unfreeze:
--	blk_mq_unfreeze_queue(ns->disk->queue);
--out:
- 	/*
- 	 * If probing fails due an unsupported feature, hide the block device,
- 	 * but still allow other access.
- 	 */
- 	if (ret == -ENODEV) {
- 		ns->disk->flags |= GENHD_FL_HIDDEN;
-+		set_bit(NVME_NS_READY, &ns->flags);
- 		ret = 0;
- 	}
-+	blk_mq_unfreeze_queue(ns->disk->queue);
- 	return ret;
- }
- 
+ 	/* And insert new clone at head. */
+ 	if (clone) {
 
 
