@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C578C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7140AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237874AbiB1RhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:37:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39938 "EHLO
+        id S238258AbiB1RhY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:37:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238037AbiB1Ree (ORCPT
+        with ESMTP id S237773AbiB1Reg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:34:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F46939C9;
-        Mon, 28 Feb 2022 09:31:00 -0800 (PST)
+        Mon, 28 Feb 2022 12:34:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE9969399C;
+        Mon, 28 Feb 2022 09:31:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA4A16135F;
-        Mon, 28 Feb 2022 17:30:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ABB9C340E7;
-        Mon, 28 Feb 2022 17:30:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B2AF61365;
+        Mon, 28 Feb 2022 17:30:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2960C36AE7;
+        Mon, 28 Feb 2022 17:30:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069459;
-        bh=0kLHFsDZCk0ZTM/V8Kf2IsrIaPAGMGwqKe7xccMH9p4=;
+        s=korg; t=1646069454;
+        bh=MLtCPOzQia29se3vECjDQjwtcWHGH9cE0eyTMbvnry8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NEcHk9/y29H0u8CWs78PUuj+AEHCBQGXxuejwvowf1Xs+hAsLmGp4jPa2emjMWYaP
-         pR4HJQtTGtYo603W1moeFwhWQqZHi6wXkyhTYwY4/cQsjcyVwyhKVjK6Gy04vljmq1
-         NiqdD7dATuINwhPdJpU0Uxdj8efShGwca0GJxnkw=
+        b=XrSdotJG68OBZMJvaGpl1JZ4SgF3ZQkSRbVVfS9Jb5xZsh9ncMgk8MLBKjPDO6q0/
+         wwC8wRuNrgukEHKo2KEm+BV8ze1Jw9LXJxCPO9aN5lRI5e6QfACVC3HTueWjm7AJqB
+         CXJme86T+JLVZYuGS7DzE29upaZbMpZw5Yl2aNFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.4 04/53] parisc/unaligned: Fix fldd and fstd unaligned handlers on 32-bit kernel
-Date:   Mon, 28 Feb 2022 18:24:02 +0100
-Message-Id: <20220228172248.619102510@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Simon Horman <simon.horman@corigine.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 25/53] nfp: flower: Fix a potential leak in nfp_tunnel_add_shared_mac()
+Date:   Mon, 28 Feb 2022 18:24:23 +0100
+Message-Id: <20220228172250.117600264@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -47,80 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit dd2288f4a020d693360e3e8d72f8b9d9c25f5ef6 upstream.
+commit 3a14d0888eb4b0045884126acc69abfb7b87814d upstream.
 
-Usually the kernel provides fixup routines to emulate the fldd and fstd
-floating-point instructions if they load or store 8-byte from/to a not
-natuarally aligned memory location.
+ida_simple_get() returns an id between min (0) and max (NFP_MAX_MAC_INDEX)
+inclusive.
+So NFP_MAX_MAC_INDEX (0xff) is a valid id.
 
-On a 32-bit kernel I noticed that those unaligned handlers didn't worked and
-instead the application got a SEGV.
-While checking the code I found two problems:
+In order for the error handling path to work correctly, the 'invalid'
+value for 'ida_idx' should not be in the 0..NFP_MAX_MAC_INDEX range,
+inclusive.
 
-First, the OPCODE_FLDD_L and OPCODE_FSTD_L cases were ifdef'ed out by the
-CONFIG_PA20 option, and as such those weren't built on a pure 32-bit kernel.
-This is now fixed by moving the CONFIG_PA20 #ifdef to prevent the compilation
-of OPCODE_LDD_L and OPCODE_FSTD_L only, and handling the fldd and fstd
-instructions.
+So set it to -1.
 
-The second problem are two bugs in the 32-bit inline assembly code, where the
-wrong registers where used. The calculation of the natural alignment used %2
-(vall) instead of %3 (ior), and the first word was stored back to address %1
-(valh) instead of %3 (ior).
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org
+Fixes: 20cce8865098 ("nfp: flower: enable MAC address sharing for offloadable devs")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+Link: https://lore.kernel.org/r/20220218131535.100258-1-simon.horman@corigine.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/unaligned.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/parisc/kernel/unaligned.c
-+++ b/arch/parisc/kernel/unaligned.c
-@@ -397,7 +397,7 @@ static int emulate_std(struct pt_regs *r
- 	__asm__ __volatile__ (
- "	mtsp	%4, %%sr1\n"
- "	zdep	%2, 29, 2, %%r19\n"
--"	dep	%%r0, 31, 2, %2\n"
-+"	dep	%%r0, 31, 2, %3\n"
- "	mtsar	%%r19\n"
- "	zvdepi	-2, 32, %%r19\n"
- "1:	ldw	0(%%sr1,%3),%%r20\n"
-@@ -409,7 +409,7 @@ static int emulate_std(struct pt_regs *r
- "	andcm	%%r21, %%r19, %%r21\n"
- "	or	%1, %%r20, %1\n"
- "	or	%2, %%r21, %2\n"
--"3:	stw	%1,0(%%sr1,%1)\n"
-+"3:	stw	%1,0(%%sr1,%3)\n"
- "4:	stw	%%r1,4(%%sr1,%3)\n"
- "5:	stw	%2,8(%%sr1,%3)\n"
- "	copy	%%r0, %0\n"
-@@ -596,7 +596,6 @@ void handle_unaligned(struct pt_regs *re
- 		ret = ERR_NOTHANDLED;	/* "undefined", but lets kill them. */
- 		break;
- 	}
--#ifdef CONFIG_PA20
- 	switch (regs->iir & OPCODE2_MASK)
- 	{
- 	case OPCODE_FLDD_L:
-@@ -607,14 +606,15 @@ void handle_unaligned(struct pt_regs *re
- 		flop=1;
- 		ret = emulate_std(regs, R2(regs->iir),1);
- 		break;
-+#ifdef CONFIG_PA20
- 	case OPCODE_LDD_L:
- 		ret = emulate_ldd(regs, R2(regs->iir),0);
- 		break;
- 	case OPCODE_STD_L:
- 		ret = emulate_std(regs, R2(regs->iir),0);
- 		break;
--	}
- #endif
-+	}
- 	switch (regs->iir & OPCODE3_MASK)
- 	{
- 	case OPCODE_FLDW_L:
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -588,8 +588,8 @@ nfp_tunnel_add_shared_mac(struct nfp_app
+ 			  int port, bool mod)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+-	int ida_idx = NFP_MAX_MAC_INDEX, err;
+ 	struct nfp_tun_offloaded_mac *entry;
++	int ida_idx = -1, err;
+ 	u16 nfp_mac_idx = 0;
+ 
+ 	entry = nfp_tunnel_lookup_offloaded_macs(app, netdev->dev_addr);
+@@ -663,7 +663,7 @@ err_remove_hash:
+ err_free_entry:
+ 	kfree(entry);
+ err_free_ida:
+-	if (ida_idx != NFP_MAX_MAC_INDEX)
++	if (ida_idx != -1)
+ 		ida_simple_remove(&priv->tun.mac_off_ids, ida_idx);
+ 
+ 	return err;
 
 
