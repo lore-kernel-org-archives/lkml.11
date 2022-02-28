@@ -2,153 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 559CEC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 09:53:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39BF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 09:54:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234546AbiB1Jx6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 04:53:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
+        id S234554AbiB1JzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 04:55:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232079AbiB1Jx5 (ORCPT
+        with ESMTP id S232079AbiB1JzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 04:53:57 -0500
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445FB25F9;
-        Mon, 28 Feb 2022 01:53:19 -0800 (PST)
-Received: by mail-qk1-x735.google.com with SMTP id c7so9871135qka.7;
-        Mon, 28 Feb 2022 01:53:19 -0800 (PST)
+        Mon, 28 Feb 2022 04:55:01 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A834C13F9A;
+        Mon, 28 Feb 2022 01:54:22 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id p4so5331003wmg.1;
+        Mon, 28 Feb 2022 01:54:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pc2xTazJcGjIwl7ZnhXxuCZmmMzULOqgCvZj3IlaMMY=;
-        b=LNzfZAX5hieB9FG9FLsPTrIanGwIyMKmJnXN/c610bQayVeDntvgfS92u1OMqT5EPE
-         y9Kx3Kd2H9XDu5uKrY/5hzx9MjcZUfKRWf/cDhEiK1rfoH6DQ6RTrSk0yxkASPnHujy9
-         L7f2UJFZ/hIrFNXgGWbU5ySh13EaWvCsdP0wY=
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=U0+Au0d4zAZVX8zuHvuBcFAkWKb2I4OxQR4LPXo/i04=;
+        b=lBmsKprRvQDoqaPn9bYlg31prPOjW/Yb3ltQctqmzTvtjNFxY/HTucaUpL/gguyBcQ
+         h3jPqfWwKcNVgUlz8SzdEbOIeauJXC/EswUoGMXK19kIZyJRF+HDvB8D9mtwxBRoUQiB
+         NrjGYCg81D1I5XotB+WKPsaI9IatCCLrWkDEoXG5pAvTFYWBqBViZy/61vXDrseYAClT
+         CAQnCoTv6iTATd8xs0PGIxJfDFopwl0ijS2pFQWltmOItoAlwJPoVDUCAe2ngtOD7N52
+         ogNAwFlSjiU3ZJzb6GkYEpY3GFGcKulKDqvUW+3Zek78s/X+z/AbUenEa2xDtsFTk4KH
+         7bcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pc2xTazJcGjIwl7ZnhXxuCZmmMzULOqgCvZj3IlaMMY=;
-        b=PzZAr/UEP0GBCKoLAKgPr8F7jZKdVDaE2Kh52hu8c1nh3dVNlMH51ZlWU1Jy9UywhV
-         DOkKqGtSMUPwCd/I4KuH7Sto6OnivMhkJHDabn7iSkbtLGEEXGb4I//ZehtJ67CRj54d
-         QBHP8Iw0ROjbMna5u9rGIzZA/Alf93jpHHRbv8sObmycGksNzXka1tDpDmsLLln3gY2k
-         7RbJJF1UkGU91OJrIk/GLU6mhQiBgW8y1Lo6kX+ZbBw7jMDWAI+ojpD0mnOtv22Geh/e
-         s+/8WMos7scGzpGJVkl61SDG5orrALJC2/pi4ynQjinCVW8JyNtCzdjk5agg0kq9nm2V
-         yCvA==
-X-Gm-Message-State: AOAM532R6iTmsU0BrDqeNAg46C9QvrJMfkUmpqRbz++uP3Vmrmujt6l6
-        4T7LCM/OyM9VYeM7+69IcXP2yM1X/Ik1kERaBRm5scfZbKpbJg==
-X-Google-Smtp-Source: ABdhPJzMUyYueL8jtRtjblWTAghUCWnWt1dd02X0kcufstS2QoUPX8Pj046KPyailSEuY0MJAUQBLTTjgurg5sosZGs=
-X-Received: by 2002:ae9:e841:0:b0:508:1f6e:f020 with SMTP id
- a62-20020ae9e841000000b005081f6ef020mr10495084qkg.243.1646041998337; Mon, 28
- Feb 2022 01:53:18 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=U0+Au0d4zAZVX8zuHvuBcFAkWKb2I4OxQR4LPXo/i04=;
+        b=YdCKfYTp8fGRGBIB2mVnn0943Dal1yKTIO4KQ2jBery8LbHLlCDGadakinY+DAp7g0
+         c4/5qFfhajeNlI1hwu1zaw/wYtJNSUvmMMbPf5zzbiCotQ3aKRVdyWSjlxrptvKhOlaK
+         caJlFO2u73/S6YDh4E/a+3PnW3Qc4aWwWcD0/jPaJ7A9yySouqaTfIENHRLeDF2ciTDR
+         OFrnMPIalHeZhFxxWYr09WSyuf2XJjvdZkZaDdFlE/jtVH26gaG9s/vU2VfylhntLAqg
+         uokWVLx9GfXPhnXRbHCS2de2QM2sVuqaXDOZBaHYnXJcXB3VvCyAqqxgeV3qVaoa+XMb
+         vU2A==
+X-Gm-Message-State: AOAM533CtQxH6WgRWXPo0gcRIIr6/iVmkpSAU6Nxr0IQeDmMCmNkdGj8
+        c07VvwRrytyjA12fhZgaiB0=
+X-Google-Smtp-Source: ABdhPJynDyT2YmvMVI1b9GAPVRUaqoNLjRwFrVI46TNy1tFuIgSt6Ei0JnwCeteZP+gsMvr1dfXmLg==
+X-Received: by 2002:a1c:2b41:0:b0:380:e379:b8b0 with SMTP id r62-20020a1c2b41000000b00380e379b8b0mr12638344wmr.87.1646042061055;
+        Mon, 28 Feb 2022 01:54:21 -0800 (PST)
+Received: from [192.168.0.14] (static-63-182-85-188.ipcom.comunitel.net. [188.85.182.63])
+        by smtp.gmail.com with ESMTPSA id z6-20020a1cf406000000b0037c4e2d3baesm13854560wma.19.2022.02.28.01.54.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 01:54:20 -0800 (PST)
+Message-ID: <b189dee6-a697-6db5-e834-6a5fe6f75f8f@gmail.com>
+Date:   Mon, 28 Feb 2022 10:45:51 +0100
 MIME-Version: 1.0
-References: <20211208013337.13806-1-tommy_huang@aspeedtech.com>
-In-Reply-To: <20211208013337.13806-1-tommy_huang@aspeedtech.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Mon, 28 Feb 2022 09:53:06 +0000
-Message-ID: <CACPK8XcTDUt8q+5s44nnFFK1XiisXw=PBoGaNZowGS7M-j=Phg@mail.gmail.com>
-Subject: Re: [PATCH v5 0/7] Add Aspeed AST2600 soc display support
-To:     Tommy Haung <tommy_huang@aspeedtech.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] arm64: dts: mt8192: Add watchdog node
+Content-Language: en-US
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>, nfraprado@collabora.com
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        srv_heupstream@mediatek.com, Chen-Yu Tsai <wenst@chromium.org>,
+        Ryder Lee <ryder.lee@kernel.org>
+References: <20220207094024.22674-1-allen-kh.cheng@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220207094024.22674-1-allen-kh.cheng@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tommy,
-
-On Wed, 8 Dec 2021 at 01:34, Tommy Haung <tommy_huang@aspeedtech.com> wrote:
->
-> v5:
->   Add lost reset define.
->
-> v4:
->   Add necessary reset control for ast2600.
->   Add chip caps for futher use.
->   These code are test on AST2500 and AST2600 by below steps.
->
->   1. Add below config to turn VT and LOGO on.
->
->         CONFIG_TTY=y
->         CONFIG_VT=y
->         CONFIG_CONSOLE_TRANSLATIONS=y
->         CONFIG_VT_CONSOLE=y
->         CONFIG_VT_CONSOLE_SLEEP=y
->         CONFIG_HW_CONSOLE=y
->         CONFIG_VT_HW_CONSOLE_BINDING=y
->         CONFIG_UNIX98_PTYS=y
->         CONFIG_LDISC_AUTOLOAD=y
->         CONFIG_DEVMEM=y
->         CONFIG_DUMMY_CONSOLE=y
->         CONFIG_FRAMEBUFFER_CONSOLE=y
->         CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
->         CONFIG_LOGO=y
->         CONFIG_LOGO_LINUX_CLUT224=y
->
->   2. The Linux logo will be shown on the screen, when the BMC boot in Linux.
-
-Sorry for the long delay. I have tested your patches on an ast2600a3
-evb and they worked. I have some questions about the reset lines that
-I couldn't answer by reading the datasheet, so once they are cleared
-up we can go ahead with merging your patches.
-
-When you re-send, you will need to fix your git configuration so your
-name appears correctly:
-
-git config --global user.name "Tommy Haung"
-
-And then for each patch, do this to fix up the authorship and the s-o-b line:
-
-git commit --amend --reset-author -s
-
-Cheers,
-
-Joel
 
 
+On 07/02/2022 10:40, Allen-KH Cheng wrote:
+> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> 
+> Add watchdog device node to MT8192 SoC.
+> 
+> Signed-off-by: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
 
->
-> v3:
->   Refine the patch for clear separate purpose.
->   Skip to send devicetree patch
->
-> v2:
->   Remove some unnecessary patch.
->   Refine for reviwer request.
->
-> v1:
->   First add patch.
->
-> Joel Stanley (2):
->   ARM: dts: aspeed: Add GFX node to AST2600
->   ARM: dts: aspeed: ast2600-evb: Enable GFX device
->
-> Tommy Haung (1):
->   dt-bindings:ast2600-clock Add CRT reset define
->
-> tommy-huang (4):
->   drm/aspeed: Update INTR_STS handling
->   drm/aspeed: Add AST2600 chip support
->   drm/aspeed: Add reset and clock for AST2600
->   arm:boot:dts:aspeed-g6 Add more gfx reset control
->
->  arch/arm/boot/dts/aspeed-ast2600-evb.dts  | 18 +++++++
->  arch/arm/boot/dts/aspeed-g6.dtsi          | 13 +++++
->  drivers/gpu/drm/aspeed/aspeed_gfx.h       | 17 +++++-
->  drivers/gpu/drm/aspeed/aspeed_gfx_crtc.c  | 16 ++++++
->  drivers/gpu/drm/aspeed/aspeed_gfx_drv.c   | 65 +++++++++++++++++++++--
->  include/dt-bindings/clock/ast2600-clock.h |  1 +
->  6 files changed, 124 insertions(+), 6 deletions(-)
->
-> --
-> 2.17.1
->
+Applied thanks!
+
+Matthias
+
+> ---
+>   arch/arm64/boot/dts/mediatek/mt8192.dtsi | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8192.dtsi b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> index cc3953df0153..c1d4030e7e4b 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8192.dtsi
+> @@ -301,6 +301,12 @@
+>   			#interrupt-cells = <2>;
+>   		};
+>   
+> +		watchdog: watchdog@10007000 {
+> +			compatible = "mediatek,mt8192-wdt";
+> +			reg = <0 0x10007000 0 0x100>;
+> +			#reset-cells = <1>;
+> +		};
+> +
+>   		apmixedsys: syscon@1000c000 {
+>   			compatible = "mediatek,mt8192-apmixedsys", "syscon";
+>   			reg = <0 0x1000c000 0 0x1000>;
