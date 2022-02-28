@@ -2,108 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C22CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9CAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:47:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232626AbiB1CpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:45:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
+        id S232514AbiB1Cs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 21:48:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231338AbiB1CpN (ORCPT
+        with ESMTP id S231706AbiB1CsV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 27 Feb 2022 21:45:13 -0500
-Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3129C1CB3C;
-        Sun, 27 Feb 2022 18:44:36 -0800 (PST)
-Received: by mail-oo1-f54.google.com with SMTP id n5-20020a4a9545000000b0031d45a442feso9221674ooi.3;
-        Sun, 27 Feb 2022 18:44:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=VfrPv61tJMs17cwzq3IdLBicVTrNBBvHW2vQ3RosnQ8=;
-        b=mGdwEPzgg67xmz0CrHfmk2dUDLgKRooqVszg4d5zcgGLA+aH5c85jIkITiEsX+2/JD
-         iNk0RMRywoaHs98At54Q9DBOe4aiXx4rCjLCdyPrDsgr5t9y5zVkZKu2Z4lx6gqIRR5L
-         T9hex9c2B7u3pntWZ+AjvO13fOGGg2mWeDiyYc54Plv4EnaP1ydza7glYwl0bDh2LmNA
-         z2LNUZktIf5FAwa33jb4aKywow6DSwtaGkqCi9WKJyd0u/1E8O6vF+sRreZqMMNwqlQN
-         27asiuROD7Xkqoxx6MGk+ze8jhHTaj5WQ2cDTOd2LLNm/9Mh85iHOxNH0tlomAT0k5Sg
-         B7UA==
-X-Gm-Message-State: AOAM533liNoyq14Abv1a2R1JtdsI/R+tEBi1/g/wUrHviGAQXMl4tdff
-        Udj6MHh3S3w1u6cqECLyFxsEU+lqYg==
-X-Google-Smtp-Source: ABdhPJyjEdJjOZs+irJb+sLOhRe4AoYqvsKpDtVqAQHQBpJJ4Pn2lzC9wcUA19tmRtUhZ5JPU4peSQ==
-X-Received: by 2002:a05:6870:e0d4:b0:d7:2d7a:e942 with SMTP id a20-20020a056870e0d400b000d72d7ae942mr842478oab.148.1646016275498;
-        Sun, 27 Feb 2022 18:44:35 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id e25-20020a544f19000000b002d53ce2f979sm5302130oiy.38.2022.02.27.18.44.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Feb 2022 18:44:34 -0800 (PST)
-Received: (nullmailer pid 47200 invoked by uid 1000);
-        Mon, 28 Feb 2022 02:44:30 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Alistair Francis <alistair@alistair23.me>
-Cc:     linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com,
-        alistair23@gmail.com, andreas@kemnade.info,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, linux-input@vger.kernel.org,
-        linus.walleij@linaro.org, rydberg@bitmath.org
-In-Reply-To: <20220227123318.313009-3-alistair@alistair23.me>
-References: <20220227123318.313009-1-alistair@alistair23.me> <20220227123318.313009-3-alistair@alistair23.me>
-Subject: Re: [PATCH v6 2/4] dt-bindings: input: Add Cypress TT2100 touchscreen controller
-Date:   Sun, 27 Feb 2022 20:44:30 -0600
-Message-Id: <1646016270.948219.47199.nullmailer@robh.at.kernel.org>
+        Sun, 27 Feb 2022 21:48:21 -0500
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976BD658D;
+        Sun, 27 Feb 2022 18:47:44 -0800 (PST)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 21RN94gn021511;
+        Mon, 28 Feb 2022 02:47:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=to : cc : subject :
+ from : message-id : references : date : in-reply-to : content-type :
+ mime-version; s=corp-2021-07-09;
+ bh=HOs1VrMIPQxwB9ncgQ6s65WREbKinRFXT4xkN51E3vE=;
+ b=AREqqjn7rqXRwmxZpi5ZkGHqo6hg2sYNdZ7MbNdRZZODDNRIXvSfMBp5uad8r/XvaJ7C
+ VFVAlmOOmMFg3+OqyUCFNfXrX3zxPdshXwdOEIKjSijGpPbIlW4WO94VskCUDsFVKI/n
+ Df6IQzXh2I/W1eHBc5RbFhwowoNSepZvyajfDvUhpUCCUiq5ID0ZDhBRPw67ZP+QcpbH
+ rPZHZ2qeHficu2Tw9mHFLZoJiMWttYyu25ORGsu0qpvehMQZovcJS53OLtmG8hXeVzzi
+ ULLlvJE+1+H7n/6CAB1EIpXgt4CDWU9tQgn1xe7KXqwSLExNyw43Y7hJK4fT5Un0gFDj Ig== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3efat1tyae-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Feb 2022 02:47:31 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 21S2j9bC064157;
+        Mon, 28 Feb 2022 02:47:30 GMT
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2174.outbound.protection.outlook.com [104.47.59.174])
+        by aserp3030.oracle.com with ESMTP id 3efa8bwkyt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 28 Feb 2022 02:47:30 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eqBfG7GZyEnVvorx+aT/1CcSQp31MEj0aSAvowPFadmsNMrEizsUxFoE6dKvOkV8l5JuvFcFWcanu52OqaEYMZJ+3lUCpVYSX8wpoVOYhrMPpmn8FIwf3wa4213FH8SC8yInHcqzZL6T+Rto8pLTBlwMFLTP2K43H3HOf16Mkg66+l/w6WTpxRPaJnLhuKfuomWGfTmzIq5XfiKwV5PIHW9qZMjr3hiwpnaX1CmVBmtkscuWzSjkOU0H16j8u9W9orI+lL0YF6U5U7ojd3S+odDDPfzN2BNS8nDHOVSy5Hn0FoHC+hpr/maXHXB00JHtKz1rtCBHPMGE+liOel6r/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HOs1VrMIPQxwB9ncgQ6s65WREbKinRFXT4xkN51E3vE=;
+ b=CW94bMaGtRSyH/CsdvMvfdorSOE9iz2s1nyQwVKQp5WWNopLfGGMvhkBel8l4u+59nCEp4fbxEOoLLBU1FvTeKVFAm9FBliHpEt+LBTJkteG/OyKCGoJmtnT0IumB3OLTjjWd123ObG7gOAUttbmqoDeRwmoW2kcghYHn3iWfOMKuDSTRNLEJ7g1u1zuZj8xONshED1GaAYeO1/3pMBCjP2k0clmSDbXTguaznweGeogRXWediNzh96XMb8VnaFleAIQ4Zn7WVQxYwOYhAQ7iwOgrr0nsE/YLNI/qtonMBQxELQsQvLEH32dKsANbgHv6jdf8pS0PIyk1kul7MhZzw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HOs1VrMIPQxwB9ncgQ6s65WREbKinRFXT4xkN51E3vE=;
+ b=v/BMoL5TFzX0LilivxmmGHo7mBQOElcgSN8u6pvNUYWEjp0HfTMPjKvB5aPKk9mbCxxW+t9O71mD1HQ3nkjOENufdvFUoJ9FZJq1O3dhtsSPN3JcNkzVPskgJYIn2oegSnDTqOPMM+Ug12+V+RFQmr/c3i030TmpQ58uZ+AOUJw=
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com (2603:10b6:510:3d::12)
+ by PH0PR10MB4695.namprd10.prod.outlook.com (2603:10b6:510:3f::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26; Mon, 28 Feb
+ 2022 02:47:29 +0000
+Received: from PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::180:b394:7d46:e1c0]) by PH0PR10MB4759.namprd10.prod.outlook.com
+ ([fe80::180:b394:7d46:e1c0%6]) with mapi id 15.20.5017.026; Mon, 28 Feb 2022
+ 02:47:28 +0000
+To:     John Garry <john.garry@huawei.com>
+Cc:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>,
+        <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>
+Subject: Re: [PATCH 0/6] hisi_sas: Some misc updates
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <yq1bkyr7ln3.fsf@ca-mkp.ca.oracle.com>
+References: <1645703489-87194-1-git-send-email-john.garry@huawei.com>
+Date:   Sun, 27 Feb 2022 21:47:26 -0500
+In-Reply-To: <1645703489-87194-1-git-send-email-john.garry@huawei.com> (John
+        Garry's message of "Thu, 24 Feb 2022 19:51:23 +0800")
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR17CA0042.namprd17.prod.outlook.com
+ (2603:10b6:a03:167::19) To PH0PR10MB4759.namprd10.prod.outlook.com
+ (2603:10b6:510:3d::12)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c824690b-55c4-4ba1-3df8-08d9fa64a8e7
+X-MS-TrafficTypeDiagnostic: PH0PR10MB4695:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR10MB4695D0570A7C02C4C1835CBD8E019@PH0PR10MB4695.namprd10.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QnBpAD3RdWU/Eb+KeOgcqGrim9xhS9CF0lSjcncgFNHdVpLnRYqwUjfJhFu7RcR95rqTzi/WYOFJ8+MhNbsxxZTDtSwu1WpUYrLo7Y5SvLO2p/weOWOo6SVQfqNX/n41eZyZ8P3fElfNFL3q+D75+2RWvy7NHhbKDDEIrG3AoNIIw3yJYIWFmDAa2/Q20Cf40zcsb4vgsfO5wybAEn492mgUtLM6j5niF3UiIVsiGo4wKSNV4rPauu5ewdq0WxxouKICSJ8uADiprO13xBz2YpLL3zVHaPFkASghFrQ9MegmqEskBttrXY1KFOrNwIrIpr03H4dUmH/BktVQrgH6K9R8hDrgj+iQkNGmIKPkZArtgwvo5+aYlpROdvke3gIWsgu0kiyO56wqqNFYTJVBd4FOUWFgX8riOk4OyHOuv7ZcY539GxsKE5A55o9FhHaxtZ+sSwebxhAQchMJEJnvqAfJCaS8eXNtlVw+BW2qSOvuYdlpmnu/b9NxN+CyC95Yr7IaOgR3hvySq/fZUT9+6lzEf9KwddubZky9+PYEXaE9dYQMAtrXI+A3vvJcmaq6gEiMclBIFSFNDdiws+is3mE1IrF05LSzKevHZPtAN665rI2iS/on1iGEiYKc00EFxKTBLZWkzrgTn/CGAyBzINYNpk8pYlDOv2ZBZKNBcDjoyt0jufqTjomZpY6IAr46sLvQQKUyKCreYZE0ZtVaCQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB4759.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(316002)(83380400001)(86362001)(6486002)(6916009)(558084003)(54906003)(36916002)(6512007)(6506007)(52116002)(508600001)(26005)(186003)(8936002)(8676002)(4326008)(66556008)(66946007)(5660300002)(66476007)(15650500001)(38100700002)(38350700002)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Ro6k//uj758VAa3ZY49C98BV1mn/+jHS1dSkNyAWvH7Qx7vufa2mLrGthGQr?=
+ =?us-ascii?Q?PupOBHnuvjkJ+NVULigZkgn42Tq/exH3ql0kWWfOkh1OvygFN0STeFD3++6P?=
+ =?us-ascii?Q?7yByoNQphdUnSBjMz5WruzJWWR9uOSt0Seyf+nNWoO48Q7WqIZ0a1rD31Xeg?=
+ =?us-ascii?Q?NLMylQfH/xgvgImMoVZRvYlFRrvh+dtwgc7KLoKUqMK0jOHbM+neWRhcpz8W?=
+ =?us-ascii?Q?lsv6tpvxAGwRbbxcKEebA0wgl7iQP0jifhWNHmhTseh1rlXO2ubv8R8CC72D?=
+ =?us-ascii?Q?+tP+e96eLHyqBo5phphVDP8zDBpZVQfomOO9fdkHnvTN9xfhxIRDeGtAK8Z0?=
+ =?us-ascii?Q?1zO+aM1CS9bP4cR5xQJ4nljs92hY023NKD4vlBFHpYF/8HJQDnLXh+OOqJzk?=
+ =?us-ascii?Q?p3Un42mSuf9BwkYgI7UXtmH+KdJp3KS74U5Cae7fq7DVh+NPg2RqOD2wWkMW?=
+ =?us-ascii?Q?4g5ZXLtpW56IP16IZAfGSEMyqwLiPNRSnwvrqeT4FTmExOCk+lpqz45qmEL1?=
+ =?us-ascii?Q?6fJ2kN7ZwifYIwccUN+mIb3xgYoTdXXgvKyZqEfn6Lvbr6j8RLKOR/D/yKIP?=
+ =?us-ascii?Q?q7YImaM/6V2JrOHAnK/J9yCuLVYe9qqjQimKlRfBPvBvnbpXwlsrJoFXcqj1?=
+ =?us-ascii?Q?vji4lGpRZqyk/UWaX3volAD4ykhCbDueBhMuTXimc/fX5Ty3xwHDbewarMZ4?=
+ =?us-ascii?Q?Ff2v8I6x0QY+vo7TYJSGtnw5pQY0R7EsTHeLMf/jnQ89FrgkI392AVtXMYgF?=
+ =?us-ascii?Q?X8P5ys8RZbKUzX77xiVcdCyAh4Ud7X+5EVO6SQfKjq3aCdecYGLUYKkj1Eny?=
+ =?us-ascii?Q?h/kDLh+ZVWfv+bcAJMc44rGGzny0+aOvtSlqTZlCFTT999UkOuKq3hrNRb6T?=
+ =?us-ascii?Q?vejV4+w6TdO2wsnQsn/bPu00hYkMt0AeZiM91RvOC6UBM6zGdeg94IyFyhMO?=
+ =?us-ascii?Q?APQQjRVZoVu9Z9nYmmFXFuJkNUyT3gKlzK3XPtLN7U75IOMIbO9R96R0o8zg?=
+ =?us-ascii?Q?+xt6BcNZLhT2usIdr7wztHYASo/7lgnP8QDwBo/Ax0FapEvcZszdbeGiFcQk?=
+ =?us-ascii?Q?980Wb+ehHK9Nnoey+cpnSeH1155d45G6kNeJjU/ske90zSQVkzJGzvXCbk7+?=
+ =?us-ascii?Q?x6LXavqdf6jxfBgFQ9UZkzdlTGy1LU9DCdprKBJ5+2Gt4rnxtzHa/6KBbryp?=
+ =?us-ascii?Q?I97Nl9imXGcnypo7Ffxzznvk6bb8Tm+SHvBK6T3UzQ4MFgpXLgux34YNR4OU?=
+ =?us-ascii?Q?tlLUQfHgREq0aGQ6Nv0jqloV4KrYXZjgHLKs0kdPlIPP1RFvzepEiZ4heT6G?=
+ =?us-ascii?Q?GsdLUQbp7qimo2NQVz2dTiJFvtfVrlNRw0OrraY3K5j3O3DLhcGj8LUGwSte?=
+ =?us-ascii?Q?OVUYdYPUv0feFKzWprJJ71YlGa3v6XurEGU1dKbKu+Fi4+SRU/AmBTYt0pQ0?=
+ =?us-ascii?Q?PLbB6hJJL3yPvCrdDED9XtbNU8/D2xJ6y3qgYk5/iUJ3FYAOLIveUcmzXCL8?=
+ =?us-ascii?Q?Rt9HX0wDj7146L0N08/+1VwNBHLUU03h0yN3u1VoFG3pkqoW4UwuZ0Zc+TO8?=
+ =?us-ascii?Q?VXj0eMyk3VXp+FX8+mMMZ42ccjKX0Ap/dVsKL7p2MvHZIi1ih5Sl3D5X7pkX?=
+ =?us-ascii?Q?11JM6gxYdL32PkmAeSI0Xan7tdg07o2bk2NkyrJKvXC2AqOGMA7wEf82JjRr?=
+ =?us-ascii?Q?1Za4Vg=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c824690b-55c4-4ba1-3df8-08d9fa64a8e7
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB4759.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2022 02:47:28.8442
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LNnG7PHR//jq7wjXlJSoAZh5dSX2Ad8ffADtga4urtYNPeid/e6ptQlaSBKllEX7vyv38sIXOD60FUtixu6lDSN7eRdLF3S84PcWLCLAXYE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB4695
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10271 signatures=684655
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 bulkscore=0 phishscore=0
+ malwarescore=0 mlxscore=0 suspectscore=0 spamscore=0 mlxlogscore=848
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202280015
+X-Proofpoint-GUID: 9P8inrDEUrqlR7huMkilBcNYvxUYLaSX
+X-Proofpoint-ORIG-GUID: 9P8inrDEUrqlR7huMkilBcNYvxUYLaSX
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 27 Feb 2022 22:33:16 +1000, Alistair Francis wrote:
-> Add the Cypress TrueTouch Generation 5 touchscreen device tree bindings
-> documentation. It can use I2C or SPI bus.
-> This touchscreen can handle some defined zone that are designed and
-> sent as button. To be able to customize the keycode sent, the
-> "linux,code" property in a "button" sub-node can be used.
-> 
-> Signed-off-by: Alistair Francis <alistair@alistair23.me>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  .../input/touchscreen/cypress,tt21000.yaml    | 98 +++++++++++++++++++
->  1 file changed, 98 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.yaml
-> 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+John,
 
-yamllint warnings/errors:
+> This series includes some updates as following:
 
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dts:38.21-31: Warning (reg_format): /example-0/i2c/touchscreen@24/button@0:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dts:43.21-31: Warning (reg_format): /example-0/i2c/touchscreen@24/button@1:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dts:48.21-31: Warning (reg_format): /example-0/i2c/touchscreen@24/button@2:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dt.yaml: Warning (pci_device_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dt.yaml: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dt.yaml: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dt.yaml: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dts:37.26-40.19: Warning (avoid_default_addr_size): /example-0/i2c/touchscreen@24/button@0: Relying on default #address-cells value
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dts:37.26-40.19: Warning (avoid_default_addr_size): /example-0/i2c/touchscreen@24/button@0: Relying on default #size-cells value
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dts:42.26-45.19: Warning (avoid_default_addr_size): /example-0/i2c/touchscreen@24/button@1: Relying on default #address-cells value
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dts:42.26-45.19: Warning (avoid_default_addr_size): /example-0/i2c/touchscreen@24/button@1: Relying on default #size-cells value
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dts:47.26-50.19: Warning (avoid_default_addr_size): /example-0/i2c/touchscreen@24/button@2: Relying on default #address-cells value
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dts:47.26-50.19: Warning (avoid_default_addr_size): /example-0/i2c/touchscreen@24/button@2: Relying on default #size-cells value
-Documentation/devicetree/bindings/input/touchscreen/cypress,tt21000.example.dt.yaml: Warning (unique_unit_address_if_enabled): Failed prerequisite 'avoid_default_addr_size'
+Applied to 5.18/scsi-staging, thanks!
 
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1598249
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+-- 
+Martin K. Petersen	Oracle Linux Engineering
