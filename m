@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC149C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:05:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 377E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:05:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239829AbiB1SFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:05:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
+        id S236926AbiB1SFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:05:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239977AbiB1R7I (ORCPT
+        with ESMTP id S239983AbiB1R7J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:59:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5111F5B3CE;
-        Mon, 28 Feb 2022 09:45:14 -0800 (PST)
+        Mon, 28 Feb 2022 12:59:09 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22785B3E6;
+        Mon, 28 Feb 2022 09:45:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C3AF06066C;
-        Mon, 28 Feb 2022 17:45:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4CDCC340E7;
-        Mon, 28 Feb 2022 17:45:13 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 547C4CE17D1;
+        Mon, 28 Feb 2022 17:45:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 648B9C340E7;
+        Mon, 28 Feb 2022 17:45:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070314;
-        bh=0jBTXm7jJGIgq2dhGi+7MvjNoeTBRhMcKZrOltVxSe0=;
+        s=korg; t=1646070308;
+        bh=0+G/jHiDBvpeRX0yJRZinnxdfXV2KZtk2TgUzypQAWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AD8Vc2aaidREoId2KNiYMDCB9YWpPC+ZEmPmnyOIS1/ur4DD6zmlAvDMMVLzaWN0M
-         JaW0BSy7Hw00KJIvfLMUCzMHzfrbQ3me0r0V78hotWlmQNV9/ORHJRuoHUdP7YOsVA
-         Z5rRTI3CCZ8WS1sGolR0NClhH+QajSTey+FZu25c=
+        b=C6aDWtSFOEWNrapkbjNYsCTIEBObqTi32EOs+lfB6gf0kDtZfeUy+k0SDKsLcOjB9
+         qr/hM15WnXzB+1vmds9oAo0euODU+a3TSdiKRo8Y29AitxoBrZf///sbKkWdP3D5uM
+         MrCy6xPxYFQRfrPZOzA51A/pV+EH36RqsHhrWSEU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        Grant Grundler <grundler@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 027/164] sr9700: sanity check for packet length
-Date:   Mon, 28 Feb 2022 18:23:09 +0100
-Message-Id: <20220228172402.604694515@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Subject: [PATCH 5.16 025/164] drm/i915: Correctly populate use_sagv_wm for all pipes
+Date:   Mon, 28 Feb 2022 18:23:07 +0100
+Message-Id: <20220228172402.400359034@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -49,31 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Ville Syrjälä <ville.syrjala@linux.intel.com>
 
-commit e9da0b56fe27206b49f39805f7dcda8a89379062 upstream.
+commit afc189df6bcc6be65961deb54e15ec60e7f85337 upstream.
 
-A malicious device can leak heap data to user space
-providing bogus frame lengths. Introduce a sanity check.
+When changing between SAGV vs. no SAGV on tgl+ we have to
+update the use_sagv_wm flag for all the crtcs or else
+an active pipe not already in the state will end up using
+the wrong watermarks. That is especially bad when we end up
+with the tighter non-SAGV watermarks with SAGV enabled.
+Usually ends up in underruns.
 
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Reviewed-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: stable@vger.kernel.org
+Reviewed-by: Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>
+Fixes: 7241c57d3140 ("drm/i915: Add TGL+ SAGV support")
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220218064039.12834-2-ville.syrjala@linux.intel.com
+(cherry picked from commit 8dd8ffb824ca7b897ce9f2082ffa7e64831c22dc)
+Signed-off-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/sr9700.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/i915/intel_pm.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
---- a/drivers/net/usb/sr9700.c
-+++ b/drivers/net/usb/sr9700.c
-@@ -413,7 +413,7 @@ static int sr9700_rx_fixup(struct usbnet
- 		/* ignore the CRC length */
- 		len = (skb->data[1] | (skb->data[2] << 8)) - 4;
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -4019,6 +4019,17 @@ static int intel_compute_sagv_mask(struc
+ 			return ret;
+ 	}
  
--		if (len > ETH_FRAME_LEN)
-+		if (len > ETH_FRAME_LEN || len > skb->len)
- 			return 0;
++	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
++	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
++		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
++		if (ret)
++			return ret;
++	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
++		ret = intel_atomic_lock_global_state(&new_bw_state->base);
++		if (ret)
++			return ret;
++	}
++
+ 	for_each_new_intel_crtc_in_state(state, crtc,
+ 					 new_crtc_state, i) {
+ 		struct skl_pipe_wm *pipe_wm = &new_crtc_state->wm.skl.optimal;
+@@ -4034,17 +4045,6 @@ static int intel_compute_sagv_mask(struc
+ 			intel_can_enable_sagv(dev_priv, new_bw_state);
+ 	}
  
- 		/* the last packet of current skb */
+-	if (intel_can_enable_sagv(dev_priv, new_bw_state) !=
+-	    intel_can_enable_sagv(dev_priv, old_bw_state)) {
+-		ret = intel_atomic_serialize_global_state(&new_bw_state->base);
+-		if (ret)
+-			return ret;
+-	} else if (new_bw_state->pipe_sagv_reject != old_bw_state->pipe_sagv_reject) {
+-		ret = intel_atomic_lock_global_state(&new_bw_state->base);
+-		if (ret)
+-			return ret;
+-	}
+-
+ 	return 0;
+ }
+ 
 
 
