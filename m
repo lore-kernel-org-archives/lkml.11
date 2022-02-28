@@ -2,355 +2,426 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B27EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 08:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B91C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 08:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234046AbiB1IOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 03:14:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47108 "EHLO
+        id S234051AbiB1IO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 03:14:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233966AbiB1IOW (ORCPT
+        with ESMTP id S233982AbiB1IOb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 03:14:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F296149F23;
-        Mon, 28 Feb 2022 00:13:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0FCCB80E62;
-        Mon, 28 Feb 2022 08:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73B83C36AE2;
-        Mon, 28 Feb 2022 08:13:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646036016;
-        bh=9Z4JPYulrfOQIZ7m1bu8DbwH2cCbsjJBaZhWIz/XpSQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=co+FDNWg284sMrEVA3hgQekcR4y8dyK28HJyLsQUAj56JwHUzIhOYrBEYw/W34MVl
-         /DCp3wYOvI4OqKzN5e0jcPC+n1QPgwN0F3AsYPeUCtgmqFQKl6HVsQDus8uiMA8odb
-         7GbJpbq1qaAMvxWd/02Go7L1dTd+QpzEZ/SPSPJnd44RAlnNMF4TQNgHwJ0UUmLaRp
-         cQCinykij2QE6BXVVgoiw2YydQaiohUqCnJxuuCqAElerEt+cfokhgTWQaqOKKNszz
-         GLd6xiRfE8sB8Zr3grSrdoOtrFjHJiSal5jCoLOj74/IFiGjj8ofUPvrhkMrEzUDkl
-         tpxhmDrxdEsfA==
-From:   SeongJae Park <sj@kernel.org>
-To:     akpm@linux-foundation.org
-Cc:     corbet@lwn.net, skhan@linuxfoundation.org, rientjes@google.com,
-        xhao@linux.alibaba.com, gregkh@linuxfoundation.org,
-        linux-damon@amazon.com, linux-mm@kvack.org,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, SeongJae Park <sj@kernel.org>
-Subject: [PATCH v3 13/13] Docs/ABI/testing: Add DAMON sysfs interface ABI document
-Date:   Mon, 28 Feb 2022 08:13:14 +0000
-Message-Id: <20220228081314.5770-14-sj@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220228081314.5770-1-sj@kernel.org>
-References: <20220228081314.5770-1-sj@kernel.org>
+        Mon, 28 Feb 2022 03:14:31 -0500
+Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF57E4DF6E
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 00:13:41 -0800 (PST)
+Received: by mail-qv1-xf31.google.com with SMTP id d3so11718135qvb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 00:13:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kjU0aFLU81J7x3+xreJKb7q7VvFD5zjHGbYMGBTbZiI=;
+        b=vOEm3/8NROInhW5wkSI1sTjn3qTNLqX8Hmvff+eQvOYSwustZxbn6MRueIdQd6nlfC
+         kHXPAz7zQM5e1XDFDNgOoHZJccAxfUV8TMUfDfMslarY6k+nRWU1x6X8tn9P1ALMjmt2
+         Xlld1b2lVGxdhiOPRaJ+K1bB5d5gDwfuxty3RDD4OFZu8kSnQkFOTiDVA5+DRVr1X3Q4
+         bPjGtXAcakxauQLJ9ACzwdoUsD30TNUKPZaNiDZSGOdz/7Gk2TQvHtq0gDq0iWVfRB22
+         WviHrneSPclLj2FF88oyBuTtHVi3C6XYafe6UoNxtqGN0l/Q1uidtKnVR3NUTYqZdg3W
+         kpcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kjU0aFLU81J7x3+xreJKb7q7VvFD5zjHGbYMGBTbZiI=;
+        b=ZJg42kJzuq0hDmZWQp/kovL8PLIpDiXb1ka0fBc2fePDSG0tkaP57nd4iCXp323Q4o
+         WBiwKDdtwkkqm5uJBQiYzdsEw7Mb8VnBmwKp7+cOL70UWyOfEsPfPbsPt+dgKa5mPhcV
+         E2n8AaKC+Ck8ViqYZslFJPF3EaBtCWiR9t6U3GqyKw/JMe2VKEfQOMD/TjvVtZ7bv3B4
+         a5DsB+q3/mSE5TC+BeBIwsRliV4ri7vu21kPuzlpyBvVvGPTYx2prsvnTGE7nmJ2Xodt
+         MYINWh85cBNMb1yncOwcg9osbdt2pooxnGUr1oLAmp0Zw25E5GrEAHmdMXDRKFWHiMKR
+         OtkQ==
+X-Gm-Message-State: AOAM532hw/qZS7pc/7F/K9Q4jGQvSfg3IA8y8HahZkZEWI/Jxxxs4TfL
+        NmilE/93CZqY7dvmou8VVhSlRpXu/LO9wQJ7yw4GGQ==
+X-Google-Smtp-Source: ABdhPJzsE+xw064/+plf2ba3aI2QPpiUZZeLlNOwsJ/usR8wujbOQkvdC+yFVuHfYX8y3C5q7FRsNBHFGugOv5CXziM=
+X-Received: by 2002:ad4:4490:0:b0:432:fe1b:6e66 with SMTP id
+ m16-20020ad44490000000b00432fe1b6e66mr4732864qvt.122.1646036020854; Mon, 28
+ Feb 2022 00:13:40 -0800 (PST)
+MIME-Version: 1.0
+References: <20220128025513.97188-1-bjorn.andersson@linaro.org> <20220128025513.97188-13-bjorn.andersson@linaro.org>
+In-Reply-To: <20220128025513.97188-13-bjorn.andersson@linaro.org>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Mon, 28 Feb 2022 11:13:30 +0300
+Message-ID: <CAA8EJpq8hV3+EggEYwMnJMh8BKbsvbi_Y-PCFUniXM=cMtpqvg@mail.gmail.com>
+Subject: Re: [PATCH 12/13] arm64: dts: qcom: sm8450: Add remoteproc enablers
+ and instances
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds DAMON sysfs interface ABI document under
-Documentation/ABI/testing.
+On Fri, 28 Jan 2022 at 05:55, Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> The Qualcomm SM8450 carries the familiar set of audio, compute, sensor
+> and modem remoteprocs. Add these and their dependencies.
+>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  arch/arm64/boot/dts/qcom/sm8450.dtsi | 297 +++++++++++++++++++++++++++
+>  1 file changed, 297 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+> index 10c25ad2d0c7..24fb3d3e667b 100644
+> --- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+> @@ -7,6 +7,7 @@
+>  #include <dt-bindings/clock/qcom,gcc-sm8450.h>
+>  #include <dt-bindings/clock/qcom,rpmh.h>
+>  #include <dt-bindings/gpio/gpio.h>
+> +#include <dt-bindings/mailbox/qcom-ipcc.h>
+>  #include <dt-bindings/power/qcom-rpmpd.h>
+>  #include <dt-bindings/soc/qcom,rpmh-rsc.h>
+>
+> @@ -460,6 +461,15 @@ cvp_mem: memory@9ee00000 {
+>                         no-map;
+>                 };
+>
+> +               rmtfs_mem: memory@9fd00000 {
+> +                       compatible = "qcom,rmtfs-mem";
+> +                       reg = <0x0 0x9fd00000 0x0 0x280000>;
+> +                       no-map;
+> +
+> +                       qcom,client-id = <1>;
+> +                       qcom,vmid = <15>;
+> +               };
+> +
+>                 global_sync_mem: memory@a6f00000 {
+>                         reg = <0x0 0xa6f00000 0x0 0x100000>;
+>                         no-map;
+> @@ -540,6 +550,113 @@ trusted_apps_ext_mem: memory@ed900000 {
+>                 };
+>         };
+>
+> +       smp2p-adsp {
+> +               compatible = "qcom,smp2p";
+> +               qcom,smem = <443>, <429>;
+> +               interrupts-extended = <&ipcc IPCC_CLIENT_LPASS
+> +                                            IPCC_MPROC_SIGNAL_SMP2P
+> +                                            IRQ_TYPE_EDGE_RISING>;
+> +               mboxes = <&ipcc IPCC_CLIENT_LPASS
+> +                               IPCC_MPROC_SIGNAL_SMP2P>;
+> +
+> +               qcom,local-pid = <0>;
+> +               qcom,remote-pid = <2>;
+> +
+> +               smp2p_adsp_out: master-kernel {
+> +                       qcom,entry-name = "master-kernel";
+> +                       #qcom,smem-state-cells = <1>;
+> +               };
+> +
+> +               smp2p_adsp_in: slave-kernel {
+> +                       qcom,entry-name = "slave-kernel";
+> +                       interrupt-controller;
+> +                       #interrupt-cells = <2>;
+> +               };
+> +       };
+> +
+> +       smp2p-cdsp {
+> +               compatible = "qcom,smp2p";
+> +               qcom,smem = <94>, <432>;
+> +               interrupts-extended = <&ipcc IPCC_CLIENT_CDSP
+> +                                            IPCC_MPROC_SIGNAL_SMP2P
+> +                                            IRQ_TYPE_EDGE_RISING>;
+> +               mboxes = <&ipcc IPCC_CLIENT_CDSP
+> +                               IPCC_MPROC_SIGNAL_SMP2P>;
+> +
+> +               qcom,local-pid = <0>;
+> +               qcom,remote-pid = <5>;
+> +
+> +               smp2p_cdsp_out: master-kernel {
+> +                       qcom,entry-name = "master-kernel";
+> +                       #qcom,smem-state-cells = <1>;
+> +               };
+> +
+> +               smp2p_cdsp_in: slave-kernel {
+> +                       qcom,entry-name = "slave-kernel";
+> +                       interrupt-controller;
+> +                       #interrupt-cells = <2>;
+> +               };
+> +       };
+> +
+> +       smp2p-modem {
+> +               compatible = "qcom,smp2p";
+> +               qcom,smem = <435>, <428>;
+> +               interrupts-extended = <&ipcc IPCC_CLIENT_MPSS
+> +                                            IPCC_MPROC_SIGNAL_SMP2P
+> +                                            IRQ_TYPE_EDGE_RISING>;
+> +               mboxes = <&ipcc IPCC_CLIENT_MPSS
+> +                               IPCC_MPROC_SIGNAL_SMP2P>;
+> +
+> +               qcom,local-pid = <0>;
+> +               qcom,remote-pid = <1>;
+> +
+> +               smp2p_modem_out: master-kernel {
+> +                       qcom,entry-name = "master-kernel";
+> +                       #qcom,smem-state-cells = <1>;
+> +               };
+> +
+> +               smp2p_modem_in: slave-kernel {
+> +                       qcom,entry-name = "slave-kernel";
+> +                       interrupt-controller;
+> +                       #interrupt-cells = <2>;
+> +               };
+> +
+> +               ipa_smp2p_out: ipa-ap-to-modem {
+> +                       qcom,entry-name = "ipa";
+> +                       #qcom,smem-state-cells = <1>;
+> +               };
+> +
+> +               ipa_smp2p_in: ipa-modem-to-ap {
+> +                       qcom,entry-name = "ipa";
+> +                       interrupt-controller;
+> +                       #interrupt-cells = <2>;
+> +               };
+> +       };
+> +
+> +       smp2p-slpi {
+> +               compatible = "qcom,smp2p";
+> +               qcom,smem = <481>, <430>;
+> +               interrupts-extended = <&ipcc IPCC_CLIENT_SLPI
+> +                                            IPCC_MPROC_SIGNAL_SMP2P
+> +                                            IRQ_TYPE_EDGE_RISING>;
+> +               mboxes = <&ipcc IPCC_CLIENT_SLPI
+> +                               IPCC_MPROC_SIGNAL_SMP2P>;
+> +
+> +               qcom,local-pid = <0>;
+> +               qcom,remote-pid = <3>;
+> +
+> +               smp2p_slpi_out: master-kernel {
+> +                       qcom,entry-name = "master-kernel";
+> +                       #qcom,smem-state-cells = <1>;
+> +               };
+> +
+> +               smp2p_slpi_in: slave-kernel {
+> +                       qcom,entry-name = "slave-kernel";
+> +                       interrupt-controller;
+> +                       #interrupt-cells = <2>;
+> +               };
+> +       };
+> +
+>         soc: soc@0 {
+>                 #address-cells = <2>;
+>                 #size-cells = <2>;
+> @@ -672,6 +789,167 @@ usb_1_ssphy: phy@88e9200 {
+>                         };
+>                 };
+>
+> +               remoteproc_slpi: remoteproc@2400000 {
+> +                       compatible = "qcom,sm8350-slpi-pas";
 
-Signed-off-by: SeongJae Park <sj@kernel.org>
----
- .../ABI/testing/sysfs-kernel-mm-damon         | 274 ++++++++++++++++++
- MAINTAINERS                                   |   1 +
- 2 files changed, 275 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-kernel-mm-damon
+I think this should be sm8450-slpi-pas.
 
-diff --git a/Documentation/ABI/testing/sysfs-kernel-mm-damon b/Documentation/ABI/testing/sysfs-kernel-mm-damon
-new file mode 100644
-index 000000000000..9e282065cbcf
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-kernel-mm-damon
-@@ -0,0 +1,274 @@
-+what:		/sys/kernel/mm/damon/
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Interface for Data Access MONitoring (DAMON).  Contains files
-+		for controlling DAMON.  For more details on DAMON itself,
-+		please refer to Documentation/admin-guide/mm/damon/index.rst.
-+
-+What:		/sys/kernel/mm/damon/admin/
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Interface for privileged users of DAMON.  Contains files for
-+		controlling DAMON that aimed to be used by privileged users.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/nr_kdamonds
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a number 'N' to this file creates the number of
-+		directories for controlling each DAMON worker thread (kdamond)
-+		named '0' to 'N-1' under the kdamonds/ directory.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/state
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing 'on' or 'off' to this file makes the kdamond starts or
-+		stops, respectively.  Reading the file returns the keywords
-+		based on the current status.  Writing 'update_schemes_stats' to
-+		the file updates contents of schemes stats files of the
-+		kdamond.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/pid
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Reading this file returns the pid of the kdamond if it is
-+		running.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/nr_contexts
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a number 'N' to this file creates the number of
-+		directories for controlling each DAMON context named '0' to
-+		'N-1' under the contexts/ directory.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/operations
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a keyword for a monitoring operations set ('vaddr' for
-+		virtual address spaces monitoring, and 'paddr' for the physical
-+		address space monitoring) to this file makes the context to use
-+		the operations set.  Reading the file returns the keyword for
-+		the operations set the context is set to use.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/monitoring_attrs/intervals/sample_us
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a value to this file sets the sampling interval of the
-+		DAMON context in microseconds as the value.  Reading this file
-+		returns the value.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/monitoring_attrs/intervals/aggr_us
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a value to this file sets the aggregation interval of
-+		the DAMON context in microseconds as the value.  Reading this
-+		file returns the value.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/monitoring_attrs/intervals/update_us
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a value to this file sets the update interval of the
-+		DAMON context in microseconds as the value.  Reading this file
-+		returns the value.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/monitoring_attrs/nr_regions/min
-+
-+WDate:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a value to this file sets the minimum number of
-+		monitoring regions of the DAMON context as the value.  Reading
-+		this file returns the value.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/monitoring_attrs/nr_regions/max
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a value to this file sets the maximum number of
-+		monitoring regions of the DAMON context as the value.  Reading
-+		this file returns the value.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/targets/nr_targets
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a number 'N' to this file creates the number of
-+		directories for controlling each DAMON target of the context
-+		named '0' to 'N-1' under the contexts/ directory.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/targets/<T>/pid_target
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the pid of
-+		the target process if the context is for virtual address spaces
-+		monitoring, respectively.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/targets/<T>/regions/nr_regions
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a number 'N' to this file creates the number of
-+		directories for setting each DAMON target memory region of the
-+		context named '0' to 'N-1' under the regions/ directory.  In
-+		case of the virtual address space monitoring, DAMON
-+		automatically sets the target memory region based on the target
-+		processes' mappings.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/targets/<T>/regions/<R>/start
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the start
-+		address of the monitoring region.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/targets/<T>/regions/<R>/end
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the end
-+		address of the monitoring region.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/nr_schemes
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing a number 'N' to this file creates the number of
-+		directories for controlling each DAMON-based operation scheme
-+		of the context named '0' to 'N-1' under the schemes/ directory.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/action
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the action
-+		of the scheme.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/access_pattern/sz/min
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the mimimum
-+		size of the scheme's target regions in bytes.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/access_pattern/sz/max
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the maximum
-+		size of the scheme's target regions in bytes.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/access_pattern/nr_accesses/min
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the manimum
-+		'nr_accesses' of the scheme's target regions.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/access_pattern/nr_accesses/max
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the maximum
-+		'nr_accesses' of the scheme's target regions.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/access_pattern/age/min
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the minimum
-+		'age' of the scheme's target regions.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/access_pattern/age/max
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the maximum
-+		'age' of the scheme's target regions.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/quotas/ms
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the time
-+		quota of the scheme in milliseconds.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/quotas/bytes
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the size
-+		quota of the scheme in bytes.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/quotas/reset_interval_ms
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the quotas
-+		charge reset interval of the scheme in milliseconds.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/quotas/weights/sz_permil
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the
-+		under-quota limit regions prioritization weight for 'size' in
-+		permil.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/quotas/weights/nr_accesses_permil
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the
-+		under-quota limit regions prioritization weight for
-+		'nr_accesses' in permil.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/quotas/weights/age_permil
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the
-+		under-quota limit regions prioritization weight for 'age' in
-+		permil.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/watermarks/metric
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the metric
-+		of the watermarks for the scheme.  The writable/readable
-+		keywords for this file are 'none' for disabling the watermarks
-+		feature, or 'free_mem_rate' for the system's global free memory
-+		rate in permil.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/watermarks/interval_us
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the metric
-+		check interval of the watermarks for the scheme in
-+		microseconds.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/watermarks/high
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the high
-+		watermark of the scheme in permil.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/watermarks/mid
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the mid
-+		watermark of the scheme in permil.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/watermarks/low
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Writing to and reading from this file sets and gets the low
-+		watermark of the scheme in permil.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/stats/nr_tried
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Reading this file returns the number of regions that the action
-+		of the scheme has tried to be applied.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/stats/sz_tried
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Reading this file returns the total size of regions that the
-+		action of the scheme has tried to be applied in bytes.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/stats/nr_applied
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Reading this file returns the number of regions that the action
-+		of the scheme has successfully applied.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/stats/sz_applied
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Reading this file returns the total size of regions that the
-+		action of the scheme has successfully applied in bytes.
-+
-+What:		/sys/kernel/mm/damon/admin/kdamonds/<K>/contexts/<C>/schemes/<S>/stats/qt_exceeds
-+Date:		Mar 2022
-+Contact:	SeongJae Park <sj@kernel.org>
-+Description:	Reading this file returns the number of the exceed events of
-+		the scheme's quotas.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0153a614bab0..f45c6d381e22 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5416,6 +5416,7 @@ DATA ACCESS MONITOR
- M:	SeongJae Park <sj@kernel.org>
- L:	linux-mm@kvack.org
- S:	Maintained
-+F:	Documentation/ABI/testing/sysfs-kernel-mm-damon
- F:	Documentation/admin-guide/mm/damon/
- F:	Documentation/vm/damon/
- F:	include/linux/damon.h
+Otherwise:
+
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+
+> +                       reg = <0 0x02400000 0 0x4000>;
+> +
+> +                       interrupts-extended = <&pdc 9 IRQ_TYPE_LEVEL_HIGH>,
+> +                                             <&smp2p_slpi_in 0 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_slpi_in 1 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_slpi_in 2 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_slpi_in 3 IRQ_TYPE_EDGE_RISING>;
+> +                       interrupt-names = "wdog", "fatal", "ready",
+> +                                         "handover", "stop-ack";
+> +
+> +                       clocks = <&rpmhcc RPMH_CXO_CLK>;
+> +                       clock-names = "xo";
+> +
+> +                       power-domains = <&rpmhpd SM8450_LCX>,
+> +                                       <&rpmhpd SM8450_LMX>;
+> +                       power-domain-names = "lcx", "lmx";
+> +
+> +                       memory-region = <&slpi_mem>;
+> +
+> +                       qcom,qmp = <&aoss_qmp>;
+> +
+> +                       qcom,smem-states = <&smp2p_slpi_out 0>;
+> +                       qcom,smem-state-names = "stop";
+> +
+> +                       status = "disabled";
+> +
+> +                       glink-edge {
+> +                               interrupts-extended = <&ipcc IPCC_CLIENT_SLPI
+> +                                                            IPCC_MPROC_SIGNAL_GLINK_QMP
+> +                                                            IRQ_TYPE_EDGE_RISING>;
+> +                               mboxes = <&ipcc IPCC_CLIENT_SLPI
+> +                                               IPCC_MPROC_SIGNAL_GLINK_QMP>;
+> +
+> +                               label = "slpi";
+> +                               qcom,remote-pid = <3>;
+> +                       };
+> +               };
+> +
+> +               remoteproc_adsp: remoteproc@30000000 {
+> +                       compatible = "qcom,sm8450-adsp-pas";
+> +                       reg = <0 0x030000000 0 0x100>;
+> +
+> +                       interrupts-extended = <&pdc 6 IRQ_TYPE_LEVEL_HIGH>,
+> +                                             <&smp2p_adsp_in 0 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_adsp_in 1 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_adsp_in 2 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_adsp_in 3 IRQ_TYPE_EDGE_RISING>;
+> +                       interrupt-names = "wdog", "fatal", "ready",
+> +                                         "handover", "stop-ack";
+> +
+> +                       clocks = <&rpmhcc RPMH_CXO_CLK>;
+> +                       clock-names = "xo";
+> +
+> +                       power-domains = <&rpmhpd SM8450_LCX>,
+> +                                       <&rpmhpd SM8450_LMX>;
+> +                       power-domain-names = "lcx", "lmx";
+> +
+> +                       memory-region = <&adsp_mem>;
+> +
+> +                       qcom,qmp = <&aoss_qmp>;
+> +
+> +                       qcom,smem-states = <&smp2p_adsp_out 0>;
+> +                       qcom,smem-state-names = "stop";
+> +
+> +                       status = "disabled";
+> +
+> +                       remoteproc_adsp_glink: glink-edge {
+> +                               interrupts-extended = <&ipcc IPCC_CLIENT_LPASS
+> +                                                            IPCC_MPROC_SIGNAL_GLINK_QMP
+> +                                                            IRQ_TYPE_EDGE_RISING>;
+> +                               mboxes = <&ipcc IPCC_CLIENT_LPASS
+> +                                               IPCC_MPROC_SIGNAL_GLINK_QMP>;
+> +
+> +                               label = "lpass";
+> +                               qcom,remote-pid = <2>;
+> +                       };
+> +               };
+> +
+> +               remoteproc_cdsp: remoteproc@32300000 {
+> +                       compatible = "qcom,sm8450-cdsp-pas";
+> +                       reg = <0 0x032300000 0 0x1400000>;
+> +
+> +                       interrupts-extended = <&intc GIC_SPI 578 IRQ_TYPE_LEVEL_HIGH>,
+> +                                             <&smp2p_cdsp_in 0 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_cdsp_in 1 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_cdsp_in 2 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_cdsp_in 3 IRQ_TYPE_EDGE_RISING>;
+> +                       interrupt-names = "wdog", "fatal", "ready",
+> +                                         "handover", "stop-ack";
+> +
+> +                       clocks = <&rpmhcc RPMH_CXO_CLK>;
+> +                       clock-names = "xo";
+> +
+> +                       power-domains = <&rpmhpd SM8450_CX>,
+> +                                       <&rpmhpd SM8450_MXC>;
+> +                       power-domain-names = "cx", "mxc";
+> +
+> +                       memory-region = <&cdsp_mem>;
+> +
+> +                       qcom,qmp = <&aoss_qmp>;
+> +
+> +                       qcom,smem-states = <&smp2p_cdsp_out 0>;
+> +                       qcom,smem-state-names = "stop";
+> +
+> +                       status = "disabled";
+> +
+> +                       glink-edge {
+> +                               interrupts-extended = <&ipcc IPCC_CLIENT_CDSP
+> +                                                            IPCC_MPROC_SIGNAL_GLINK_QMP
+> +                                                            IRQ_TYPE_EDGE_RISING>;
+> +                               mboxes = <&ipcc IPCC_CLIENT_CDSP
+> +                                               IPCC_MPROC_SIGNAL_GLINK_QMP>;
+> +
+> +                               label = "cdsp";
+> +                               qcom,remote-pid = <5>;
+> +                       };
+> +               };
+> +
+> +               remoteproc_mpss: remoteproc@4080000 {
+> +                       compatible = "qcom,sm8450-mpss-pas";
+> +                       reg = <0x0 0x04080000 0x0 0x4040>;
+> +
+> +                       interrupts-extended = <&intc GIC_SPI 264 IRQ_TYPE_LEVEL_HIGH>,
+> +                                             <&smp2p_modem_in 0 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_modem_in 1 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_modem_in 2 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_modem_in 3 IRQ_TYPE_EDGE_RISING>,
+> +                                             <&smp2p_modem_in 7 IRQ_TYPE_EDGE_RISING>;
+> +                       interrupt-names = "wdog", "fatal", "ready", "handover",
+> +                                         "stop-ack", "shutdown-ack";
+> +
+> +                       clocks = <&rpmhcc RPMH_CXO_CLK>;
+> +                       clock-names = "xo";
+> +
+> +                       power-domains = <&rpmhpd 0>,
+> +                                       <&rpmhpd 12>;
+> +                       power-domain-names = "cx", "mss";
+> +
+> +                       memory-region = <&mpss_mem>;
+> +
+> +                       qcom,qmp = <&aoss_qmp>;
+> +
+> +                       qcom,smem-states = <&smp2p_modem_out 0>;
+> +                       qcom,smem-state-names = "stop";
+> +
+> +                       status = "disabled";
+> +
+> +                       glink-edge {
+> +                               interrupts-extended = <&ipcc IPCC_CLIENT_MPSS
+> +                                                            IPCC_MPROC_SIGNAL_GLINK_QMP
+> +                                                            IRQ_TYPE_EDGE_RISING>;
+> +                               mboxes = <&ipcc IPCC_CLIENT_MPSS
+> +                                               IPCC_MPROC_SIGNAL_GLINK_QMP>;
+> +                               interrupts = <GIC_SPI 449 IRQ_TYPE_EDGE_RISING>;
+> +                               label = "modem";
+> +                               qcom,remote-pid = <1>;
+> +                       };
+> +               };
+> +
+>                 pdc: interrupt-controller@b220000 {
+>                         compatible = "qcom,sm8450-pdc", "qcom,pdc";
+>                         reg = <0 0x0b220000 0 0x30000>, <0 0x174000f0 0 0x64>;
+> @@ -682,6 +960,25 @@ pdc: interrupt-controller@b220000 {
+>                         interrupt-controller;
+>                 };
+>
+> +               aoss_qmp: power-controller@c300000 {
+> +                       compatible = "qcom,sm8450-aoss-qmp", "qcom,aoss-qmp";
+> +                       reg = <0 0x0c300000 0 0x400>;
+> +                       interrupts-extended = <&ipcc IPCC_CLIENT_AOP IPCC_MPROC_SIGNAL_GLINK_QMP
+> +                                                    IRQ_TYPE_EDGE_RISING>;
+> +                       mboxes = <&ipcc IPCC_CLIENT_AOP IPCC_MPROC_SIGNAL_GLINK_QMP>;
+> +
+> +                       #clock-cells = <0>;
+> +               };
+> +
+> +               ipcc: mailbox@ed18000 {
+> +                       compatible = "qcom,sm8450-ipcc", "qcom,ipcc";
+> +                       reg = <0 0x0ed18000 0 0x1000>;
+> +                       interrupts = <GIC_SPI 229 IRQ_TYPE_LEVEL_HIGH>;
+> +                       interrupt-controller;
+> +                       #interrupt-cells = <3>;
+> +                       #mbox-cells = <2>;
+> +               };
+> +
+>                 tlmm: pinctrl@f100000 {
+>                         compatible = "qcom,sm8450-tlmm";
+>                         reg = <0 0x0f100000 0 0x300000>;
+> --
+> 2.33.1
+>
+
+
 -- 
-2.17.1
-
+With best wishes
+Dmitry
