@@ -2,82 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0CDEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EACEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 15:27:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236920AbiB1PUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 10:20:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48712 "EHLO
+        id S237131AbiB1P1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 10:27:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232390AbiB1PUu (ORCPT
+        with ESMTP id S232172AbiB1P1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 10:20:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5ECC522C4;
-        Mon, 28 Feb 2022 07:20:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5397D60FD8;
-        Mon, 28 Feb 2022 15:20:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A9F58C340EE;
-        Mon, 28 Feb 2022 15:20:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646061610;
-        bh=szhdfk7+7V9sGlldHCLj5UhBz7sXxIGJHMZ+TCys5dA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BBF27rZrJ6bBGl5XgqNOKiGgQ3ctoLnlS5yJgcQYsTR8aNMvxlevv3hvTOpBt2aIp
-         7ge6Lv9MKdrjeugB4Tqzdk98/q1vu7kunefeqYAftikkRZjZivGnonuaTsTn8lCkyT
-         tg3ZUN0CG/hDcPYOxPAYPKEUC+1Y2yKinzdzI/6ip+ZeG9/bXTpLUMm3g6ikXwitMw
-         L8kIwtucbk9K8on/O4pbBW0YLXDXHjr+il3KiAWYYHyKxmHvnDRyNGM5P+q4bvqfc8
-         qA24eGozJ1/YWcO/QZZ8w7DW4Id50XxeQ4dCyQqUF5o+auCCvky7xQUenkvAHNac52
-         LcLrZkvFWmDaQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8E341E5D087;
-        Mon, 28 Feb 2022 15:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v2] bpftool: Remove redundant slashes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164606161057.12013.6641220017965219668.git-patchwork-notify@kernel.org>
-Date:   Mon, 28 Feb 2022 15:20:10 +0000
-References: <20220226163815.520133-1-ytcoode@gmail.com>
-In-Reply-To: <20220226163815.520133-1-ytcoode@gmail.com>
-To:     Yuntao Wang <ytcoode@gmail.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        quentin@isovalent.com, jean-philippe@linaro.org,
-        mauricio@kinvolk.io, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        Mon, 28 Feb 2022 10:27:36 -0500
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50F897EA1F;
+        Mon, 28 Feb 2022 07:26:58 -0800 (PST)
+Received: by mail-oi1-f180.google.com with SMTP id l25so13455999oic.13;
+        Mon, 28 Feb 2022 07:26:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=I87Fjts+rpNlg39YY3+tnxuJdwSRLJLguMw++XeNFIg=;
+        b=pZQVk6Q1OsBDnd6jtsXO0GseRMyEuph5nFUMF55QSKOAqa/q8AU23THpojWsSw1wBe
+         fyEPYPBHOynzU4iBPtDdYOoGJfVpPR90DqCU3m4kV+IM7RAobIHpfOqwpMKUAXoIYHzg
+         lAeREwT33nC6pRNsL/Vj0O4sdta1HdGta5lOi20ERnJdmfTH8L04p+bAwr2BdnCEkfVx
+         QxxHFRy3delX+al5S6gKtkaaeXqjCNYhauuoCXtEh/WcOFegPHZ9tnVjUyguyCPBOYQL
+         8N0YvtM058ocf0mwDzuMtwDgjxN2nIaKujhIBSzH6GpczBeqgSw8UMxQAeIqhlU4hDSr
+         bMOw==
+X-Gm-Message-State: AOAM533yMwb7PzR4xZhWbuYdCmYzSI+9CU9sN/3jq/TWiMFh2DHRzuvt
+        7NFPf76Fg08CLRU6QJqC9w==
+X-Google-Smtp-Source: ABdhPJyW4S0Ic5zGxvFgmna5a0fy2EDagMuNav85rX4OIYGZLIrUok5+XAS/lrttQvtGHYh80ZPRYw==
+X-Received: by 2002:a05:6808:903:b0:2d4:8451:d651 with SMTP id w3-20020a056808090300b002d48451d651mr9173464oih.29.1646062017625;
+        Mon, 28 Feb 2022 07:26:57 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id c1-20020a056808138100b002d4b30ab04esm6534610oiw.32.2022.02.28.07.26.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 07:26:57 -0800 (PST)
+Received: (nullmailer pid 1049704 invoked by uid 1000);
+        Mon, 28 Feb 2022 15:26:56 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Potin Lai <potin.lai@quantatw.com>
+Cc:     Patrick Williams <patrick@stwcx.xyz>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>, linux-hwmon@vger.kernel.org
+In-Reply-To: <20220228103716.10774-3-potin.lai@quantatw.com>
+References: <20220228103716.10774-1-potin.lai@quantatw.com> <20220228103716.10774-3-potin.lai@quantatw.com>
+Subject: Re: [PATCH v3 2/2] dt-bindings: hwmon: Add sample averaging properties for ADM1275
+Date:   Mon, 28 Feb 2022 09:26:56 -0600
+Message-Id: <1646062016.577370.1049703.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf-next.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Sun, 27 Feb 2022 00:38:15 +0800 you wrote:
-> Because the OUTPUT variable ends with a slash but CURDIR doesn't, to keep
-> the _OUTPUT value consistent, we add a trailing slash to CURDIR when
-> defining _OUTPUT variable.
+On Mon, 28 Feb 2022 18:37:16 +0800, Potin Lai wrote:
+> Add documentation of new properties for sample averaging in PMON_CONFIG
+> register.
 > 
-> Since the _OUTPUT variable holds a value ending with a trailing slash,
-> there is no need to add another one when defining BOOTSTRAP_OUTPUT and
-> LIBBPF_OUTPUT variables.
+> New properties:
+> - adi,volt-curr-sample-average
+> - adi,power-sample-average
 > 
-> [...]
+> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
+> 
+> doc
+> ---
+>  .../bindings/hwmon/adi,adm1275.yaml           | 39 +++++++++++++++++++
+>  1 file changed, 39 insertions(+)
+> 
 
-Here is the summary with links:
-  - [bpf-next,v2] bpftool: Remove redundant slashes
-    https://git.kernel.org/bpf/bpf-next/c/c62dd8a58d19
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/hwmon/adi,adm1275.yaml:68:11: [warning] wrong indentation: expected 12 but found 10 (indentation)
 
+dtschema/dtc warnings/errors:
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1598637
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
