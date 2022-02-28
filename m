@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAE9C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44179C3527E
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:54:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239417AbiB1RxC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:53:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
+        id S239709AbiB1RxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:53:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238858AbiB1Rrq (ORCPT
+        with ESMTP id S239116AbiB1RsF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:47:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D329F3BD;
-        Mon, 28 Feb 2022 09:38:14 -0800 (PST)
+        Mon, 28 Feb 2022 12:48:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F2AA1468;
+        Mon, 28 Feb 2022 09:38:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D83DB815BE;
-        Mon, 28 Feb 2022 17:38:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8EFCC340E7;
-        Mon, 28 Feb 2022 17:38:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B2E0B815A2;
+        Mon, 28 Feb 2022 17:38:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F0BC340F0;
+        Mon, 28 Feb 2022 17:38:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069891;
-        bh=H4bCPBLG7fxRFwWOWxzj2fIKxJazT6R4qsz8GJmb+dM=;
+        s=korg; t=1646069916;
+        bh=3B5j5QUX5u08xk4aMJYKkON1UIdDY6Rc2wo7wVIuseg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2YXX8ZKZfkFYIZ+JmwuBmJuGYJ2kKJB/EvXKW1m4YVj0KNRxixZYP/GdZG/UOgyZt
-         RO8CDc5vXzYlER5eYxAICipDc8rX02d2elcb/l9MAmEcdfQevBj1PjBxY1Z8rvQzFv
-         bPDs6h4bWml2CJaO4Jw4TjSuCrHeJ7hypT6hsT4E=
+        b=czGPzOH1yYs/ZOtA1w/BSvm/vqMBz2CWXn+08ozggtzcwPw2wlEgMe1K7lXX++axB
+         9Xe7nwGUUcet/Mu0J6GwZbpdNYEXuKPA1Xj8ibCYR27qmxhThWj7FXy6k/BTRyEi2b
+         46CD4V4LdwsUdsMk4CIMEvaURC+rdhaOyRL7npKc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 016/139] drm/amd/pm: fix some OEM SKU specific stability issues
-Date:   Mon, 28 Feb 2022 18:23:10 +0100
-Message-Id: <20220228172349.397553169@linuxfoundation.org>
+        stable@vger.kernel.org, Tao Liu <thomas.liu@ucloud.cn>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 059/139] gso: do not skip outer ip header in case of ipip and net_failover
+Date:   Mon, 28 Feb 2022 18:23:53 +0100
+Message-Id: <20220228172353.905687989@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,69 +49,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Evan Quan <evan.quan@amd.com>
+From: Tao Liu <thomas.liu@ucloud.cn>
 
-commit e3f3824874da78db5775a5cb9c0970cd1c6978bc upstream.
+commit cc20cced0598d9a5ff91ae4ab147b3b5e99ee819 upstream.
 
-Add a quirk in sienna_cichlid_ppt.c to fix some OEM SKU
-specific stability issues.
+We encounter a tcp drop issue in our cloud environment. Packet GROed in
+host forwards to a VM virtio_net nic with net_failover enabled. VM acts
+as a IPVS LB with ipip encapsulation. The full path like:
+host gro -> vm virtio_net rx -> net_failover rx -> ipvs fullnat
+ -> ipip encap -> net_failover tx -> virtio_net tx
 
-Signed-off-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: stable@vger.kernel.org
+When net_failover transmits a ipip pkt (gso_type = 0x0103, which means
+SKB_GSO_TCPV4, SKB_GSO_DODGY and SKB_GSO_IPXIP4), there is no gso
+did because it supports TSO and GSO_IPXIP4. But network_header points to
+inner ip header.
+
+Call Trace:
+ tcp4_gso_segment        ------> return NULL
+ inet_gso_segment        ------> inner iph, network_header points to
+ ipip_gso_segment
+ inet_gso_segment        ------> outer iph
+ skb_mac_gso_segment
+
+Afterwards virtio_net transmits the pkt, only inner ip header is modified.
+And the outer one just keeps unchanged. The pkt will be dropped in remote
+host.
+
+Call Trace:
+ inet_gso_segment        ------> inner iph, outer iph is skipped
+ skb_mac_gso_segment
+ __skb_gso_segment
+ validate_xmit_skb
+ validate_xmit_skb_list
+ sch_direct_xmit
+ __qdisc_run
+ __dev_queue_xmit        ------> virtio_net
+ dev_hard_start_xmit
+ __dev_queue_xmit        ------> net_failover
+ ip_finish_output2
+ ip_output
+ iptunnel_xmit
+ ip_tunnel_xmit
+ ipip_tunnel_xmit        ------> ipip
+ dev_hard_start_xmit
+ __dev_queue_xmit
+ ip_finish_output2
+ ip_output
+ ip_forward
+ ip_rcv
+ __netif_receive_skb_one_core
+ netif_receive_skb_internal
+ napi_gro_receive
+ receive_buf
+ virtnet_poll
+ net_rx_action
+
+The root cause of this issue is specific with the rare combination of
+SKB_GSO_DODGY and a tunnel device that adds an SKB_GSO_ tunnel option.
+SKB_GSO_DODGY is set from external virtio_net. We need to reset network
+header when callbacks.gso_segment() returns NULL.
+
+This patch also includes ipv6_gso_segment(), considering SIT, etc.
+
+Fixes: cb32f511a70b ("ipip: add GSO/TSO support")
+Signed-off-by: Tao Liu <thomas.liu@ucloud.cn>
+Reviewed-by: Willem de Bruijn <willemb@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c |   32 +++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
+ net/ipv4/af_inet.c     |    5 ++++-
+ net/ipv6/ip6_offload.c |    2 ++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu11/sienna_cichlid_ppt.c
-@@ -418,6 +418,36 @@ static int sienna_cichlid_store_powerpla
- 	return 0;
- }
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -1380,8 +1380,11 @@ struct sk_buff *inet_gso_segment(struct
+ 	}
  
-+static int sienna_cichlid_patch_pptable_quirk(struct smu_context *smu)
-+{
-+	struct amdgpu_device *adev = smu->adev;
-+	uint32_t *board_reserved;
-+	uint16_t *freq_table_gfx;
-+	uint32_t i;
-+
-+	/* Fix some OEM SKU specific stability issues */
-+	GET_PPTABLE_MEMBER(BoardReserved, &board_reserved);
-+	if ((adev->pdev->device == 0x73DF) &&
-+	    (adev->pdev->revision == 0XC3) &&
-+	    (adev->pdev->subsystem_device == 0x16C2) &&
-+	    (adev->pdev->subsystem_vendor == 0x1043))
-+		board_reserved[0] = 1387;
-+
-+	GET_PPTABLE_MEMBER(FreqTableGfx, &freq_table_gfx);
-+	if ((adev->pdev->device == 0x73DF) &&
-+	    (adev->pdev->revision == 0XC3) &&
-+	    ((adev->pdev->subsystem_device == 0x16C2) ||
-+	    (adev->pdev->subsystem_device == 0x133C)) &&
-+	    (adev->pdev->subsystem_vendor == 0x1043)) {
-+		for (i = 0; i < NUM_GFXCLK_DPM_LEVELS; i++) {
-+			if (freq_table_gfx[i] > 2500)
-+				freq_table_gfx[i] = 2500;
-+		}
+ 	ops = rcu_dereference(inet_offloads[proto]);
+-	if (likely(ops && ops->callbacks.gso_segment))
++	if (likely(ops && ops->callbacks.gso_segment)) {
+ 		segs = ops->callbacks.gso_segment(skb, features);
++		if (!segs)
++			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
 +	}
-+
-+	return 0;
-+}
-+
- static int sienna_cichlid_setup_pptable(struct smu_context *smu)
- {
- 	int ret = 0;
-@@ -438,7 +468,7 @@ static int sienna_cichlid_setup_pptable(
- 	if (ret)
- 		return ret;
  
--	return ret;
-+	return sienna_cichlid_patch_pptable_quirk(smu);
- }
+ 	if (IS_ERR_OR_NULL(segs))
+ 		goto out;
+--- a/net/ipv6/ip6_offload.c
++++ b/net/ipv6/ip6_offload.c
+@@ -114,6 +114,8 @@ static struct sk_buff *ipv6_gso_segment(
+ 	if (likely(ops && ops->callbacks.gso_segment)) {
+ 		skb_reset_transport_header(skb);
+ 		segs = ops->callbacks.gso_segment(skb, features);
++		if (!segs)
++			skb->network_header = skb_mac_header(skb) + nhoff - skb->head;
+ 	}
  
- static int sienna_cichlid_tables_init(struct smu_context *smu)
+ 	if (IS_ERR_OR_NULL(segs))
 
 
