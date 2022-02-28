@@ -2,99 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3518EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:36:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB24C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229730AbiB1Ugo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:36:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44302 "EHLO
+        id S229781AbiB1UkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:40:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiB1Ugm (ORCPT
+        with ESMTP id S229479AbiB1UkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:36:42 -0500
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8E78EB73
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:36:03 -0800 (PST)
-Received: by mail-ot1-x333.google.com with SMTP id a7-20020a9d5c87000000b005ad1467cb59so10470964oti.5
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:36:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=DnbFngqfufuVTV8BEebuiOMNgQnV4+enHodmf57s2nY=;
-        b=Ubg2gogtuClcFrTjghZgjXnPtjDc6NUvr54dAtOrjXTwLIcW4UEVas2lMn9bN23YQH
-         m0zEhI8shmvjqESiG6EdHdvB8pEAd7Ly/QjkAmB2mwTRE8kgbBZPP2GVDFWG1u0ejJNC
-         2AKLLy4/k+cQ6utg/dGqP+Vt799Fz2I487OjQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=DnbFngqfufuVTV8BEebuiOMNgQnV4+enHodmf57s2nY=;
-        b=0aukhCzw/6t/hkbMgbe8j7wB+xGIWf3qWbfrmjf3LtQIMPAsLW0owNlotWXi7WDaFm
-         GMT1R5hWIDNcghEZEnNfUkc5Z1PShesOCqjZ/3N6cFxQWq+vOH8U6BiYULlFpXFV/nb9
-         s2dUDyCDeZD4w5blHRjFIxRM9OBH0DdsX/4pN/DxRAJSQJIB83aDws7xen+ZLBifbqr9
-         BT1AFtwo9J6OZEVzTaSI8bnfXJ4VckKr29PMHsiBImlINeUOmlfMmvJ+aisGoeM1jUFV
-         qiDiTwyTi6S9Msphesz2C7RlpXNVTGk7tx27dMyNVWlIEOKKQuTwjebpCZEr5sgrSRk6
-         8HEQ==
-X-Gm-Message-State: AOAM531yVqUCk7P8ZxvTtjwTvf/pr2VrJbhuA464s3vZyuHF+aR5X5lp
-        5fZwBwsLzW3oxFkbCOFifmKyGNaNCZEiwCPgtVeW2w==
-X-Google-Smtp-Source: ABdhPJzf+lYhpqsqA+oxysJafg7aent578gGwJJLtUFap4dXPJHjOyVXhw/HaLDHOJhrHI4W5Je6BIl+JEjlvzLq+t4=
-X-Received: by 2002:a9d:22e9:0:b0:5ac:1754:342c with SMTP id
- y96-20020a9d22e9000000b005ac1754342cmr10087910ota.159.1646080562525; Mon, 28
- Feb 2022 12:36:02 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 28 Feb 2022 12:36:02 -0800
+        Mon, 28 Feb 2022 15:40:00 -0500
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D1FBFC9;
+        Mon, 28 Feb 2022 12:39:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646080760; x=1677616760;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FyfdXQ0oJJy5xP7LYIM4Hoj9gpwoF/eamju/2GvJ4YU=;
+  b=aiE9s3bSiSwJjl0Vs9/9+37OCrHclvjrXSya7InxGWTy2s9MVCeuJm0Z
+   So4RtH/7zNvCNZeHTA6ebGXZHza7isMt9Jd4ED5NsSjd4yQHWfYt1m/Ge
+   Nkkxx+p3bltCaoHucKV+Gku+8L+rFPXsXOdBp9br2Bm0MqSfrg/hvCTLP
+   otUV9trJd7pHlI56BKe2ia8x10riHbSyGEZ9aZkZPfvrAcIEn+FloP8ap
+   i1+4S+38gTkddT6iJXqawypCHLR6cKgCOUJbdShrbHGFrPVFM7xiEHL8a
+   m6nFOPsgKKu+ee4dNR3Slw27WSiuKo+ZmiHEkMUQuio+57Ukws2EJUCBW
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="252715548"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="252715548"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 12:39:20 -0800
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="510236616"
+Received: from silpixa00400314.ir.intel.com (HELO silpixa00400314) ([10.237.222.76])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 12:39:17 -0800
+Date:   Mon, 28 Feb 2022 20:39:11 +0000
+From:   Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Kyle Sanderson <kyle.leet@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Dave Chinner <david@fromorbit.com>, qat-linux@intel.com,
+        Linux-Kernal <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        device-mapper development <dm-devel@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: Intel QAT on A2SDi-8C-HLN4F causes massive data corruption with
+ dm-crypt + xfs
+Message-ID: <Yh0y75aegqS4jIP7@silpixa00400314>
+References: <CACsaVZ+mt3CfdXV0_yJh7d50tRcGcRZ12j3n6-hoX2cz3+njsg@mail.gmail.com>
+ <20220219210354.GF59715@dread.disaster.area>
+ <CACsaVZ+LZUebtsGuiKhNV_No8fNLTv5kJywFKOigieB1cZcKUw@mail.gmail.com>
+ <YhN76/ONC9qgIKQc@silpixa00400314>
+ <CACsaVZJFane88cXxG_E1VkcMcJm8YVN+GDqQ2+tRYNpCf+m8zA@mail.gmail.com>
+ <CAHk-=whVT2GcwiJM8m-XzgJj8CjytTHi_pmgmOnSpzvGWzZM1A@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <42570508-ed62-af26-220e-c776418a722e@quicinc.com>
-References: <1645182064-15843-1-git-send-email-quic_c_skakit@quicinc.com>
- <1645182064-15843-6-git-send-email-quic_c_skakit@quicinc.com>
- <CAE-0n509bg6RzieOtYuUvicU14D7bmgH-u02F1TB+hBZ+xH4CA@mail.gmail.com> <42570508-ed62-af26-220e-c776418a722e@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 28 Feb 2022 12:36:02 -0800
-Message-ID: <CAE-0n50J=4qrkR9ycEGxbKVHwm9Om8S2YSJR_Y71_iErR-wAHw@mail.gmail.com>
-Subject: Re: [PATCH V7 5/5] arm64: dts: qcom: sc7280: Add pm8008 support for sc7280-idp
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Satya Priya Kakitapalli <quic_c_skakit@quicinc.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Das Srinagesh <gurus@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, quic_collinsd@quicinc.com,
-        quic_subbaram@quicinc.com, quic_jprakash@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=whVT2GcwiJM8m-XzgJj8CjytTHi_pmgmOnSpzvGWzZM1A@mail.gmail.com>
+Organization: Intel Research and Development Ireland Ltd - Co. Reg. #308263 -
+ Collinstown Industrial Park, Leixlip, County Kildare - Ireland
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Satya Priya Kakitapalli (Temp) (2022-02-28 06:25:06)
->
-> On 2/19/2022 7:31 AM, Stephen Boyd wrote:
-> > Quoting Satya Priya (2022-02-18 03:01:03)
->
-> >> +               pins = "gpio4";
-> >> +               function = "normal";
-> >> +               bias-disable;
-> >> +               output-high;
-> > Is this a reset signal? Should the driver be deasserting the reset when
-> > it is ready? That could be the same time the gpio is acquired.
->
->
-> I didn't get your question exactly.. hope this answers your query
->
-> The pm8008 chip needs this gpio to be toggled , in order to come out of
-> reset and start any transactions..
->
-> Please let me know if you have more queries
+On Mon, Feb 28, 2022 at 11:25:49AM -0800, Linus Torvalds wrote:
+> On Mon, Feb 28, 2022 at 12:18 AM Kyle Sanderson <kyle.leet@gmail.com> wrote:
+> >
+> > Makes sense - this kernel driver has been destroying users for many
+> > years. I'm disappointed that this critical bricking failure isn't
+> > searchable for others.
+> 
+> It does sound like we should just disable that driver entirely until
+> it is fixed.
+> 
+> Or at least the configuration that can cause problems, if there is
+> some particular sub-case.
+The dm-crypt + QAT use-case is already disabled since kernel 5.10 due to
+a different issue.
+Is it an option to port those patches to stable till I provide a fix for
+the driver? I drafted already few alternatives for the fix and I am aiming
+for a final set by end of week.
 
-Yes that answers it for me. Thanks.
+Thanks,
 
-This is a reset gpio and should be a DT property like
-
-	reset-gpios = <&pm8350c_gpios 4 GPIO_ACTIVE_HIGH>
-
-in the pm8008 node. When the driver probes it should get the gpio and
-do any toggling to take it out of reset. It shouldn't be done through
-pinconf settings.
+-- 
+Giovanni
