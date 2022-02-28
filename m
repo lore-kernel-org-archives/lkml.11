@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DADC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:52:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239143AbiB1Rwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:52:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33510 "EHLO
+        id S239237AbiB1Rwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:52:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238806AbiB1Rrp (ORCPT
+        with ESMTP id S238871AbiB1Rrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:47:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92EA7888F1;
-        Mon, 28 Feb 2022 09:38:08 -0800 (PST)
+        Mon, 28 Feb 2022 12:47:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6CA9F6C9;
+        Mon, 28 Feb 2022 09:38:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33B58B815A6;
-        Mon, 28 Feb 2022 17:38:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 893E3C340E7;
-        Mon, 28 Feb 2022 17:38:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DB8F61548;
+        Mon, 28 Feb 2022 17:38:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EC4C340E7;
+        Mon, 28 Feb 2022 17:38:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069885;
-        bh=Om8+rVBysDWELT0kes9emjuIoy4hLxF5bRKgmKIMhJ0=;
+        s=korg; t=1646069894;
+        bh=tZIKfWR+H3BlXKJ0ATaZf8/I7giSuWW2xGUyyzNSUi8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yv2YexqFLVayHLCtlPky01pb38tzwHe9ZxWy+ZXpu6PPwwyijIpXzwQ7jmZ+zuZwx
-         UPLG0rq4W/nODMYDyN199KbqvlbeUViI2pS20C1VMTrVCbitvci195n9ztDn00DDJV
-         9N2gKaLn8PkpoB2leLJJ9seSuef/ea/o9ZfC+0gA=
+        b=chrfte3vZSHBzw1QB9cy4Ylzv+m5Izk2eUG0Jw6CNK9hk96yhGUz1eROHRMfPOSOH
+         amVFeZEfPTtkxUky+fKumlv62m/CDYX3LXdDJ2EPwnLB2l+UZEBicM5bbR5fz5u4St
+         cvN3Wh0f3nZ5kleKno5m1286WFC10S/9eyJDAsL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang Zhang <zhangliang5@huawei.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 014/139] KVM: x86/mmu: make apf token non-zero to fix bug
-Date:   Mon, 28 Feb 2022 18:23:08 +0100
-Message-Id: <20220228172349.184013379@linuxfoundation.org>
+        stable@vger.kernel.org, Siarhei Volkau <lis8215@gmail.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 5.15 007/139] clk: jz4725b: fix mmc0 clock gating
+Date:   Mon, 28 Feb 2022 18:23:01 +0100
+Message-Id: <20220228172348.497204774@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -48,79 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang Zhang <zhangliang5@huawei.com>
+From: Siarhei Volkau <lis8215@gmail.com>
 
-commit 6f3c1fc53d86d580d8d6d749c4af23705e4f6f79 upstream.
+commit 2f0754f27a230fee6e6d753f07585cee03bedfe3 upstream.
 
-In current async pagefault logic, when a page is ready, KVM relies on
-kvm_arch_can_dequeue_async_page_present() to determine whether to deliver
-a READY event to the Guest. This function test token value of struct
-kvm_vcpu_pv_apf_data, which must be reset to zero by Guest kernel when a
-READY event is finished by Guest. If value is zero meaning that a READY
-event is done, so the KVM can deliver another.
-But the kvm_arch_setup_async_pf() may produce a valid token with zero
-value, which is confused with previous mention and may lead the loss of
-this READY event.
+The mmc0 clock gate bit was mistakenly assigned to "i2s" clock.
+You can find that the same bit is assigned to "mmc0" too.
+It leads to mmc0 hang for a long time after any sound activity
+also it  prevented PM_SLEEP to work properly.
+I guess it was introduced by copy-paste from jz4740 driver
+where it is really controls I2S clock gate.
 
-This bug may cause task blocked forever in Guest:
- INFO: task stress:7532 blocked for more than 1254 seconds.
-       Not tainted 5.10.0 #16
- "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
- task:stress          state:D stack:    0 pid: 7532 ppid:  1409
- flags:0x00000080
- Call Trace:
-  __schedule+0x1e7/0x650
-  schedule+0x46/0xb0
-  kvm_async_pf_task_wait_schedule+0xad/0xe0
-  ? exit_to_user_mode_prepare+0x60/0x70
-  __kvm_handle_async_pf+0x4f/0xb0
-  ? asm_exc_page_fault+0x8/0x30
-  exc_page_fault+0x6f/0x110
-  ? asm_exc_page_fault+0x8/0x30
-  asm_exc_page_fault+0x1e/0x30
- RIP: 0033:0x402d00
- RSP: 002b:00007ffd31912500 EFLAGS: 00010206
- RAX: 0000000000071000 RBX: ffffffffffffffff RCX: 00000000021a32b0
- RDX: 000000000007d011 RSI: 000000000007d000 RDI: 00000000021262b0
- RBP: 00000000021262b0 R08: 0000000000000003 R09: 0000000000000086
- R10: 00000000000000eb R11: 00007fefbdf2baa0 R12: 0000000000000000
- R13: 0000000000000002 R14: 000000000007d000 R15: 0000000000001000
-
-Signed-off-by: Liang Zhang <zhangliang5@huawei.com>
-Message-Id: <20220222031239.1076682-1-zhangliang5@huawei.com>
+Fixes: 226dfa4726eb ("clk: Add Ingenic jz4725b CGU driver")
+Signed-off-by: Siarhei Volkau <lis8215@gmail.com>
+Tested-by: Siarhei Volkau <lis8215@gmail.com>
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
 Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Link: https://lore.kernel.org/r/20220205171849.687805-2-lis8215@gmail.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/mmu.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/clk/ingenic/jz4725b-cgu.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -3889,12 +3889,23 @@ static void shadow_page_table_clear_floo
- 	walk_shadow_page_lockless_end(vcpu);
- }
+--- a/drivers/clk/ingenic/jz4725b-cgu.c
++++ b/drivers/clk/ingenic/jz4725b-cgu.c
+@@ -139,11 +139,10 @@ static const struct ingenic_cgu_clk_info
+ 	},
  
-+static u32 alloc_apf_token(struct kvm_vcpu *vcpu)
-+{
-+	/* make sure the token value is not 0 */
-+	u32 id = vcpu->arch.apf.id;
-+
-+	if (id << 12 == 0)
-+		vcpu->arch.apf.id = 1;
-+
-+	return (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
-+}
-+
- static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 				    gfn_t gfn)
- {
- 	struct kvm_arch_async_pf arch;
+ 	[JZ4725B_CLK_I2S] = {
+-		"i2s", CGU_CLK_MUX | CGU_CLK_DIV | CGU_CLK_GATE,
++		"i2s", CGU_CLK_MUX | CGU_CLK_DIV,
+ 		.parents = { JZ4725B_CLK_EXT, JZ4725B_CLK_PLL_HALF, -1, -1 },
+ 		.mux = { CGU_REG_CPCCR, 31, 1 },
+ 		.div = { CGU_REG_I2SCDR, 0, 1, 9, -1, -1, -1 },
+-		.gate = { CGU_REG_CLKGR, 6 },
+ 	},
  
--	arch.token = (vcpu->arch.apf.id++ << 12) | vcpu->vcpu_id;
-+	arch.token = alloc_apf_token(vcpu);
- 	arch.gfn = gfn;
- 	arch.direct_map = vcpu->arch.mmu->direct_map;
- 	arch.cr3 = vcpu->arch.mmu->get_guest_pgd(vcpu);
+ 	[JZ4725B_CLK_SPI] = {
 
 
