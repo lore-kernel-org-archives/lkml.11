@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 868F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1FC2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236101AbiB1R3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:29:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45166 "EHLO
+        id S236279AbiB1R35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:29:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234633AbiB1R1i (ORCPT
+        with ESMTP id S237319AbiB1R2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:27:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C21888F1;
-        Mon, 28 Feb 2022 09:26:45 -0800 (PST)
+        Mon, 28 Feb 2022 12:28:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B7717E3D;
+        Mon, 28 Feb 2022 09:27:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0A3461366;
-        Mon, 28 Feb 2022 17:26:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C60B1C340E7;
-        Mon, 28 Feb 2022 17:26:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B109CB815B3;
+        Mon, 28 Feb 2022 17:27:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17E1DC340E7;
+        Mon, 28 Feb 2022 17:27:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069204;
-        bh=OmiwR0cP9/UDpGSq71on02f3Ni28EWSDD1wgMRG9K/M=;
+        s=korg; t=1646069247;
+        bh=Vj7+RV1mSAdxwWoIV35hkfTUgm01kukRlhS/2oE8/tA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cuived22+1m08CaZkVtGWc8sAXH/xHzVHzcgcR6UcCvu8kruBOWx6r5ZLWnpvys6o
-         c1nfYMtxEZiL8/diVeBMxQno/bd/GnviCrxwBC27BdCkI1QuNpRRY+QjzMN25mIC80
-         Cw/5qlUJ16/sgAXifWwLUDc56DJEVdAbw0GLBrAA=
+        b=XEDhL+2bRrDVY5XOyaLBhcMU8I7dxtqYDVxtAnUdf/kvfcrHPym6iBfxntfZNCvJJ
+         TgkUqrvbRrbWQ08JUNOC0scwhIoEusIuOsCBFzcVGouNAZx9gEtGli72FzOf6cvUXo
+         g/B5dON7JzW9RA6y1aZmNHJqYf2N4VK0695e6YBI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniele Palmas <dnlplm@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.9 23/29] USB: serial: option: add Telit LE910R1 compositions
-Date:   Mon, 28 Feb 2022 18:23:50 +0100
-Message-Id: <20220228172144.125876469@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [PATCH 4.14 17/31] ata: pata_hpt37x: disable primary channel on HPT371
+Date:   Mon, 28 Feb 2022 18:24:13 +0100
+Message-Id: <20220228172201.481566753@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172141.744228435@linuxfoundation.org>
-References: <20220228172141.744228435@linuxfoundation.org>
+In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
+References: <20220228172159.515152296@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,43 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniele Palmas <dnlplm@gmail.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit cfc4442c642d568014474b6718ccf65dc7ca6099 upstream.
+commit 8d093e02e898b24c58788b0289e3202317a96d2a upstream.
 
-Add support for the following Telit LE910R1 compositions:
+The HPT371 chip physically has only one channel, the secondary one,
+however the primary channel registers do exist! Thus we have to
+manually disable the non-existing channel if the BIOS hasn't done this
+already. Similarly to the pata_hpt3x2n driver, always disable the
+primary channel.
 
-0x701a: rndis, tty, tty, tty
-0x701b: ecm, tty, tty, tty
-0x9201: tty
-
-Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
-Link: https://lore.kernel.org/r/20220218134552.4051-1-dnlplm@gmail.com
+Fixes: 669a5db411d8 ("[libata] Add a bunch of PATA drivers.")
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/option.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/ata/pata_hpt37x.c |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -1255,10 +1255,16 @@ static const struct usb_device_id option
- 	  .driver_info = NCTRL(2) },
- 	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x7011, 0xff),	/* Telit LE910-S1 (ECM) */
- 	  .driver_info = NCTRL(2) },
-+	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x701a, 0xff),	/* Telit LE910R1 (RNDIS) */
-+	  .driver_info = NCTRL(2) },
-+	{ USB_DEVICE_INTERFACE_CLASS(TELIT_VENDOR_ID, 0x701b, 0xff),	/* Telit LE910R1 (ECM) */
-+	  .driver_info = NCTRL(2) },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9010),				/* Telit SBL FN980 flashing device */
- 	  .driver_info = NCTRL(0) | ZLP },
- 	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9200),				/* Telit LE910S1 flashing device */
- 	  .driver_info = NCTRL(0) | ZLP },
-+	{ USB_DEVICE(TELIT_VENDOR_ID, 0x9201),				/* Telit LE910R1 flashing device */
-+	  .driver_info = NCTRL(0) | ZLP },
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, ZTE_PRODUCT_MF622, 0xff, 0xff, 0xff) }, /* ZTE WCDMA products */
- 	{ USB_DEVICE_AND_INTERFACE_INFO(ZTE_VENDOR_ID, 0x0002, 0xff, 0xff, 0xff),
- 	  .driver_info = RSVD(1) },
+--- a/drivers/ata/pata_hpt37x.c
++++ b/drivers/ata/pata_hpt37x.c
+@@ -920,6 +920,20 @@ static int hpt37x_init_one(struct pci_de
+ 	pci_write_config_byte(dev, 0x5a, irqmask);
+ 
+ 	/*
++	 * HPT371 chips physically have only one channel, the secondary one,
++	 * but the primary channel registers do exist!  Go figure...
++	 * So,  we manually disable the non-existing channel here
++	 * (if the BIOS hasn't done this already).
++	 */
++	if (dev->device == PCI_DEVICE_ID_TTI_HPT371) {
++		u8 mcr1;
++
++		pci_read_config_byte(dev, 0x50, &mcr1);
++		mcr1 &= ~0x04;
++		pci_write_config_byte(dev, 0x50, mcr1);
++	}
++
++	/*
+ 	 * default to pci clock. make sure MA15/16 are set to output
+ 	 * to prevent drives having problems with 40-pin cables. Needed
+ 	 * for some drives such as IBM-DTLA which will not enter ready
 
 
