@@ -2,188 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E858C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:29:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E25C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232764AbiB1S34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:29:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33394 "EHLO
+        id S240649AbiB1ScG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:32:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240717AbiB1S3d (ORCPT
+        with ESMTP id S240518AbiB1Sbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:29:33 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A5ADE6D85;
-        Mon, 28 Feb 2022 10:13:04 -0800 (PST)
-Date:   Mon, 28 Feb 2022 19:12:37 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646071959;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yu+oKc/jlEU/pryQqAsVcrxYwdQgjNADy+5OiJTkgJA=;
-        b=Xrw7w4vAmGFlrfQfFnprBLUlm9gjJPldZC3VSPMenPWNwN+QOgPDlbfw1xCILAV4aOKgCj
-        gU+h4pYpcvR2mQ4tS6FDw7EUYkFFRQe/a8Bfu9Mt/52i+6shRHl/ZiJ7zedRxvFBbM8y7+
-        mV9P4QSpqgKpmhDFxMcclesrJ7ClvsY6iQFXEv1q9NpdHm1SPUS+8toIsAF+H4dxN9b3Qj
-        r5xMkWGEZuSE2j5cbTqPKeD6Pa6CzXF/nhITGiuImi5q1PSKkT+AmIgOEIGj7m/Ud9FZBc
-        P92VKlSLAFHvFUR7hA0nXg9ol8xB3HRDVndz4/byWmhVOEgx+r+A6Li+DL50Fg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646071959;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=yu+oKc/jlEU/pryQqAsVcrxYwdQgjNADy+5OiJTkgJA=;
-        b=ctCnfR1hDdTMQDvfO7wa9Jkz004BwarLRXCcNsl1iIptbF0Yyj3MRvad5/g7RxA3GMMJNQ
-        GwlnQFbVuYy/7kAg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>
-Subject: RFC: Intervals to schedule the worker for mix_interrupt_randomness().
-Message-ID: <Yh0QlQ8aqttjlnKt@linutronix.de>
+        Mon, 28 Feb 2022 13:31:53 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A59EF0A5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:14:54 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id d3so16828708wrf.1
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 10:14:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=laSnQJpbry/7HDfeFASKUPW4HYc9KBwUxVn9S4td0qc=;
+        b=c0WRI4mazSMxTdg2exnk+Q3pEXI74oiHYivOcAxyKozC7Y4/wrofRWWnCvtaPZhGxR
+         IhujeWQfFo00DEXYokFGtCEV1Nn/dkAzptGSD5IEwXwkYfvy1qfoB3e94L+04fLU12+3
+         pcpQ7uF/jzshj84kJryjM8O1p3msTMRKDo8oU509HnrI67clNXOfUUBLIc4+upY8iJaR
+         lijHIn+cImvx6w0OH/8X7tgsuHtgADaACEwj7KzCQe1+ShF5wzUkQf1V0VpMSUNCbwen
+         iJRaVoijltE0Hg7tQ28uZOYG9wwLUfhgUw87xdeEs/IH4v0p+SOczJhRr0p1Uu2joV3V
+         27AQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=laSnQJpbry/7HDfeFASKUPW4HYc9KBwUxVn9S4td0qc=;
+        b=dH09xsLsraabQLlVRTgsHiqR1IEke8MUpBlI0KcbjwBFNYwtZm1gJHNGTko+TNGFsq
+         4Y/uyjJ1iPDQcKyFeViC5DjGQE7gqc4tOzE8WL9iBTSg5ehsGFRfABkun/mwLHwB7Omx
+         UAK0zywc9EVyqJJVZSa7zlPObb2ykDYJVZ7UD3Vhztr9bR3j/mT464IAvcG6BOTAx/1x
+         EJw0x3e6HUuC1Y/OYEIRsg/jJVaLOaZBauOkF3VKP53b13/IAFRuyOOgYI3m7/wNx5jK
+         BFt1CYXqqJ/08kYQferYI5q5MdpGzIweQW2WQlCfmRAheyGynVlINJQsKTgWkn5wyG5p
+         NJ8A==
+X-Gm-Message-State: AOAM5332u0i+jhFxAhlt7Mo57DerfDT9EHQhe2qGSnYuteOP8qo7Iksf
+        UncR+ecAGXnQZlhCPgsRy2o=
+X-Google-Smtp-Source: ABdhPJyhltbPdhysi/wISTmoSAx5kNxmU7sMGyLPJmQFUN5FgbPAW2+eU+jUkbBOfunmlYPPW6hcbw==
+X-Received: by 2002:a5d:648f:0:b0:1e9:5445:4b13 with SMTP id o15-20020a5d648f000000b001e954454b13mr16540343wri.127.1646072082307;
+        Mon, 28 Feb 2022 10:14:42 -0800 (PST)
+Received: from kista.localdomain (cpe-86-58-32-107.static.triera.net. [86.58.32.107])
+        by smtp.gmail.com with ESMTPSA id z2-20020a056000110200b001e7140ddb44sm10780677wrw.49.2022.02.28.10.14.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 10:14:41 -0800 (PST)
+From:   Jernej Skrabec <jernej.skrabec@gmail.com>
+To:     mripard@kernel.org, wens@csie.org
+Cc:     samuel@sholland.org, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: [PATCH] drm/sun4i: mixer: Fix P010 and P210 format numbers
+Date:   Mon, 28 Feb 2022 19:14:36 +0100
+Message-Id: <20220228181436.1424550-1-jernej.skrabec@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+It turns out that DE3 manual has inverted YUV and YVU format numbers for
+P010 and P210. Invert them.
 
-I was debugging my backport and looking for a bug but then I figured out
-that everything works as intended.
+This was tested by playing video decoded to P010 and additionally
+confirmed by looking at BSP driver source.
 
-add_interrupt_randomness() has this piece:
-|         if (new_count < 64 && (!time_after(now, fast_pool->last + HZ) ||
-|                                unlikely(crng_init =3D=3D 0)))
-|                 return;
+Fixes: 169ca4b38932 ("drm/sun4i: Add separate DE3 VI layer formats")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+---
+ drivers/gpu/drm/sun4i/sun8i_mixer.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-I was reading this wrong the whole time as in (with context):
-   If new_count is greater or equal to 64 and a second passed by
-   schedule the worker for mix_interrupt_randomness().
+diff --git a/drivers/gpu/drm/sun4i/sun8i_mixer.h b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+index 145833a9d82d..5b3fbee18671 100644
+--- a/drivers/gpu/drm/sun4i/sun8i_mixer.h
++++ b/drivers/gpu/drm/sun4i/sun8i_mixer.h
+@@ -111,10 +111,10 @@
+ /* format 13 is semi-planar YUV411 VUVU */
+ #define SUN8I_MIXER_FBFMT_YUV411	14
+ /* format 15 doesn't exist */
+-/* format 16 is P010 YVU */
+-#define SUN8I_MIXER_FBFMT_P010_YUV	17
+-/* format 18 is P210 YVU */
+-#define SUN8I_MIXER_FBFMT_P210_YUV	19
++#define SUN8I_MIXER_FBFMT_P010_YUV	16
++/* format 17 is P010 YVU */
++#define SUN8I_MIXER_FBFMT_P210_YUV	18
++/* format 19 is P210 YVU */
+ /* format 20 is packed YVU444 10-bit */
+ /* format 21 is packed YUV444 10-bit */
+ 
+-- 
+2.35.1
 
-Which means a worker once a second on a CPU or longer intervals if the
-CPU is idle. But in reality this is:
-   If new_count is greater _or_ equal to 64 or a at least second passed
-   by then schedule the worker for mix_interrupt_randomness().
-
-This explains why there are some many worker pending/ running for
-mix_interrupt_randomness() in my testing. To give you an example why
-this got my attention:
-
-| [   15.763823] random: mix_interrupt_randomness() CPU16, HAZ: 2
-| [   15.763823] random: mix_interrupt_randomness() CPU17, HAZ: 2
-| [   15.763826] random: mix_interrupt_randomness() CPU07, HAZ: 2
-| [   15.763827] random: mix_interrupt_randomness() CPU06, HAZ: 4
-| [   15.763827] random: mix_interrupt_randomness() CPU04, HAZ: 2
-| [   18.579328] random: mix_interrupt_randomness() CPU18, HAZ: 3
-| [   18.579357] random: mix_interrupt_randomness() CPU16, HAZ: 1
-| [   18.579358] random: mix_interrupt_randomness() CPU03, HAZ: 2
-| [   18.579358] random: mix_interrupt_randomness() CPU17, HAZ: 1
-| [   18.579359] random: mix_interrupt_randomness() CPU04, HAZ: 1
-| [   18.579360] random: mix_interrupt_randomness() CPU05, HAZ: 1
-| [   18.579361] random: mix_interrupt_randomness() CPU06, HAZ: 1
-| [   18.579362] random: mix_interrupt_randomness() CPU07, HAZ: 1
-| [   20.531244] random: mix_interrupt_randomness() CPU18, HAZ: 2
-| [   20.531266] random: mix_interrupt_randomness() CPU16, HAZ: 1
-| [   20.531267] random: mix_interrupt_randomness() CPU03, HAZ: 2
-| [   20.531267] random: mix_interrupt_randomness() CPU17, HAZ: 1
-| [   20.531269] random: mix_interrupt_randomness() CPU04, HAZ: 1
-| [   20.531270] random: mix_interrupt_randomness() CPU05, HAZ: 1
-| [   20.531270] random: mix_interrupt_randomness() CPU06, HAZ: 1
-| [   20.531271] random: mix_interrupt_randomness() CPU07, HAZ: 1
-| [   22.515212] random: mix_interrupt_randomness() CPU18, HAZ: 2
-| [   22.515240] random: mix_interrupt_randomness() CPU16, HAZ: 2
-| [   22.515240] random: mix_interrupt_randomness() CPU17, HAZ: 1
-| [   22.515241] random: mix_interrupt_randomness() CPU03, HAZ: 1
-| [   22.515242] random: mix_interrupt_randomness() CPU04, HAZ: 1
-| [   22.515242] random: mix_interrupt_randomness() CPU05, HAZ: 1
-| [   22.515244] random: mix_interrupt_randomness() CPU06, HAZ: 1
-| [   22.515244] random: mix_interrupt_randomness() CPU07, HAZ: 1
-| [   23.948447] random: mix_interrupt_randomness() CPU18, HAZ: 1
-| [   23.948744] random: mix_interrupt_randomness() CPU16, HAZ: 1
-| [   24.531151] random: mix_interrupt_randomness() CPU17, HAZ: 1
-| [   24.531152] random: mix_interrupt_randomness() CPU03, HAZ: 1
-| [   24.531153] random: mix_interrupt_randomness() CPU04, HAZ: 1
-| [   24.531153] random: mix_interrupt_randomness() CPU05, HAZ: 1
-| [   24.531154] random: mix_interrupt_randomness() CPU06, HAZ: 1
-| [   24.531155] random: mix_interrupt_randomness() CPU07, HAZ: 1
-| [   25.034401] random: mix_interrupt_randomness() CPU16, HAZ: 2
-| [   25.074542] random: mix_interrupt_randomness() CPU18, HAZ: 38
-| [   25.566450] random: mix_interrupt_randomness() CPU03, HAZ: 19
-| [   25.598532] random: mix_interrupt_randomness() CPU05, HAZ: 15
-| [   25.726046] random: mix_interrupt_randomness() CPU18, HAZ: 64
-| [   25.802257] random: mix_interrupt_randomness() CPU18, HAZ: 64
-| [   26.085382] random: mix_interrupt_randomness() CPU18, HAZ: 64
-
-This output comes from the hack at the end of the email (not properly
-formatted). Since the box is idle and runs NO_HZ it is possible that a
-CPU is idle for a second or longer. If you look at the begin of the
-output, CPU16 scheduled the worker for mix_interrupt_randomness() with
-fast_pool::count =3D 2. So did CPU 17, 7 and 6. At the end log you see
-CPU18 got busy and scheduled the worker more frequently since it
-acquired 64 interrupts. This is output includes 10 seconds and CPUs 0
-and 1 are not part of the log.
-
-Is this really what we want? With HAZ=3D1 the CPU was woken up from idle
-poll routine so the registers should have always the same content since
-it is always the same while() routine calling CPU's idle function. At
-least get_reg() rotates them but instruction_pointer() would return
-always the same value. (Side note: on 64bit the upper 32bit of the IP
-register should be all 0xff=E2=80=A6ff for the kernel and 0x00=E2=80=A600 f=
-or userland.
-So this looks like one bit of entropy. I mention this now because I
-noticed that 32bit throws an additional register to the mix to make up
-for the small register)).
-
-Wouldn't it make sense entropy wise to gather more entropy (say the 64)
-before consuming it? And waiting at least a second if more entropy was
-created?
-
-With CONFIG_PERIODIC you have at least CONFIG_HZ interrupts on each CPU.
-"At least" because you have the timer tick interrupt and you may have
-additional interrupt for your device interrupts.  With HZ=3D1000 you have
-1000 timer tick interrupts.
-That is the one extreme. The other is NO_HZ and an idle box. [ Now that
-I look around it appears that risc-v has no get_irq_regs() and
-random_get_entropy() may return 0. Spooky. ]
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1254,6 +1254,7 @@ static unsigned long get_reg(struct fast_pool *f, str=
-uct pt_regs *regs)
-        return *ptr;
- }
-=20
-+enum { MIX_INFLIGHT =3D 1U << 31 };
- static void mix_interrupt_randomness(struct work_struct *work)
- {
-        struct fast_pool *fast_pool =3D container_of(work, struct fast_pool=
-, mix);
-@@ -1271,6 +1272,9 @@ static void mix_interrupt_randomness(struct work_stru=
-ct *work)
-         * consistent view, before we reenable irqs again.
-         */
-        memcpy(pool, fast_pool->pool32, sizeof(pool));
-+       pr_err("%s() CPU%02d, HAZ: %d\n", __func__, smp_processor_id(),
-+              READ_ONCE(fast_pool->count) & ~MIX_INFLIGHT);
-+       WARN_ON((READ_ONCE(fast_pool->count) & MIX_INFLIGHT) =3D=3D 0);
-        fast_pool->count =3D 0;
-        fast_pool->last =3D jiffies;
-        local_irq_enable();
-@@ -1288,7 +1292,6 @@ static void mix_interrupt_randomness(struct work_stru=
-ct *work)
-=20
- void add_interrupt_randomness(int irq)
- {
--       enum { MIX_INFLIGHT =3D 1U << 31 };
-        cycles_t cycles =3D random_get_entropy();
-        unsigned long now =3D jiffies;
-        struct fast_pool *fast_pool =3D this_cpu_ptr(&irq_randomness);
-
-Sebastian
