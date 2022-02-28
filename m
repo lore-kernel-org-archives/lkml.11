@@ -2,142 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 874F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:42:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 255EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 16:44:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232939AbiB1Qms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 11:42:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56808 "EHLO
+        id S237984AbiB1Qog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 11:44:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235440AbiB1Qmq (ORCPT
+        with ESMTP id S235115AbiB1Qoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 11:42:46 -0500
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D8F85BC6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:42:07 -0800 (PST)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 12600240004;
-        Mon, 28 Feb 2022 16:42:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1646066524;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fEyyWd0b4CiKZYdLj1BA1aEWDvj7Y+W6tE6Cp0OtRdQ=;
-        b=XuMlFI0qkm54lAsljGRqzNJteZWG9aohys0TrFRdH4+QGv8yO0hkDMfhVtx+MObRbA2QBj
-        qNNgRqC8DIoLuSknnAerBdMCxmjiL5glqOj0nT9zvM0v8sSux4A9Y14cgnzQkhohUALeVc
-        4g1glrOmq5QS/dguC8iYGNnXZnoh+RmY08/PXzr9sJ4/Ilna5I+15+QuIWOXfU0JUOPrwd
-        BwwwAyU+fSDwWcXIir1Ndn53//fGB+FZZiDwhYSNxsC/3ibEBjER7L9Gvw3kZlAQkHAnNh
-        4V9Y6DhWKgh45l33apqUmuSM1wNO9CpRw49XL0xckL+uLz5YTGTZHFJf+u/ErA==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Pali =?utf-8?Q?Roh=C3=A1r?= <pali@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Marek =?utf-8?Q?Beh=C3=BAn?= <kabel@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: marvell: armada-37xx: Remap IO space to bus
- address 0x0
-In-Reply-To: <87o82r0zjh.fsf@BL-laptop>
-References: <20220218212526.16021-1-pali@kernel.org> <87o82r0zjh.fsf@BL-laptop>
-Date:   Mon, 28 Feb 2022 17:42:03 +0100
-Message-ID: <875yoz0wpw.fsf@BL-laptop>
+        Mon, 28 Feb 2022 11:44:32 -0500
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A87D66623
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:43:53 -0800 (PST)
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 2EDAC3FCAC
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 16:43:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646066631;
+        bh=z46ftlWp8HVzXGwdCryYKmM/VWtrNM7xN3TT5iDqJdM=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=Ureyj2Q+zwI9j11xyAgRf42XkdCdeHShp2UjWyjEZVrGz0xU06ebQzsYhYqFy0usg
+         G0mludPdBKtP4qCRjnzLogq8i11zItgsfKcrv6UGL1vlpLVaGw5+P/t3lk/AtffrdX
+         ussT3oEs8mhn9ZWgziXiu4MaCHBTD7sRcDZEIOx2iU28GVzlh4x8mxgwBg5io2aV4U
+         vIID9JWXZBz9fFgKqU/eJowVqIIbtky1is0NZOV7pABPuEqKWXyFc0o3DgroGBt1/0
+         87INkXV3XNI5MFRIXYCC//UVo/ATi/cy1adH/KYcQ83Mp+tq89M32Zsn/+5+IWCTbW
+         eLS8H+vANsD8A==
+Received: by mail-ed1-f69.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso6203846edt.20
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:43:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=z46ftlWp8HVzXGwdCryYKmM/VWtrNM7xN3TT5iDqJdM=;
+        b=sL3CtX9IepFjg335/wZuklmtyvxri6nn3speQ0hZDY/pxJ2HbKNJgxPtMwD7NNhB5F
+         tdo5BBcWs8+c9qqh2SipJsbLkmjsDYTDLOyLF3C1nTGgUIH3RcUF7IyhMhpUYGySJ7yC
+         B3Pn0v/UhC3Gp2QjjWSCTZPOIDo2VVtFHCvoZ3ebpMrmmw2BpYRrKTXfsmEdm8KGyn8L
+         mXBzr4A9Zf8FPpXzBcxbwMcyF3JCtA1ZPgyISHKWwZoHrWVZIzSRx+Oc3kyA9bsBuXN2
+         fNX76piVyw49Ju40dpIN7x8quhP8apfFn2Pfe1S5fHR4WnS90CSq8DeSLodM6u89hIHD
+         slHA==
+X-Gm-Message-State: AOAM531uxnK+YT6UnthPloao/aIcak5Hn5Mb57d7M+Kd/uvDBmMGB9qJ
+        I+ykQffUTv1EjV5ZDDg6dknhALbGZBNGZheTCpK2+6u/K80sS9yKUtXNy0qnZBrFNweO3wRm0ZQ
+        VgT+iNpQYMKWRWkZO0FVVKfifNS00ij6coHJHZbZw5g==
+X-Received: by 2002:a17:906:b887:b0:6ce:36cb:1e18 with SMTP id hb7-20020a170906b88700b006ce36cb1e18mr16005112ejb.95.1646066630391;
+        Mon, 28 Feb 2022 08:43:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyihmYLKs3hjWBogsCiEne50Bxk+AmKd7XUPOOzE57p2CEzj37GAswbJS4yucW9/3uChBQZMQ==
+X-Received: by 2002:a17:906:b887:b0:6ce:36cb:1e18 with SMTP id hb7-20020a170906b88700b006ce36cb1e18mr16005100ejb.95.1646066630153;
+        Mon, 28 Feb 2022 08:43:50 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
+        by smtp.gmail.com with ESMTPSA id p18-20020a17090635d200b006cdeef01456sm4498443ejb.163.2022.02.28.08.43.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 08:43:49 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        arm@kernel.org, soc@kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [GIT PULL 2/3] memory: mediatek drivers for v5.18
+Date:   Mon, 28 Feb 2022 17:43:12 +0100
+Message-Id: <20220228164313.52931-2-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220228164313.52931-1-krzysztof.kozlowski@canonical.com>
+References: <20220228164313.52931-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
+
+Mediatek specific branch.
+
+Best regards,
+Krzysztof
 
 
-> Hello Pali,
->
->> Remap PCI I/O space to the bus address 0x0 in the Armada 37xx
->> device-tree in order to support legacy I/O port based cards which have
->> hardcoded I/O ports in low address space.
->>
->> Some legacy PCI I/O based cards do not support 32-bit I/O addressing.
->>
->> Since commit 64f160e19e92 ("PCI: aardvark: Configure PCIe resources from
->> 'ranges' DT property") this driver can work with I/O windows which
->> have
->
-> Should we add a "Fixes: 64f160e19e92 ("PCI: aardvark: Configure PCIe
-> resources from 'ranges' DT property")" tag ?
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
 
-Waiting for your confirmation I tried to applied it but it failed.
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
 
-Did you base this patch on v5.17-rc1 ?
+are available in the Git repository at:
 
-Gregory
+  https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux-mem-ctrl.git tags/memory-controller-drv-mediatek-5.18
 
->
-> Gregory
->
->> a different address for CPU than for PCI bus (unless there is some
->> conflict with other A37xx mapping), without needing additional support
->> for this in the firmware.
->>
->> Note that DDR on A37xx is mapped to bus address 0x0 and that mapping of
->> I/O space can be set to address 0x0 too because MEM space and I/O space
->> are separate and so they do not conflict.
->>
->> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
->> Reported-by: Arnd Bergmann <arnd@arndb.de>
->> ---
->>  arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts | 2 +-
->>  arch/arm64/boot/dts/marvell/armada-37xx.dtsi           | 2 +-
->>  2 files changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts b/ar=
-ch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
->> index 6581092c2c90..7d1b9153a901 100644
->> --- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
->> +++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
->> @@ -163,7 +163,7 @@
->>  	 */
->>  	#address-cells =3D <3>;
->>  	#size-cells =3D <2>;
->> -	ranges =3D <0x81000000 0 0xe8000000   0 0xe8000000   0 0x01000000   /*=
- Port 0 IO */
->> +	ranges =3D <0x81000000 0 0x00000000   0 0xe8000000   0 0x01000000   /*=
- Port 0 IO */
->>  		  0x82000000 0 0xe9000000   0 0xe9000000   0 0x07000000>; /* Port 0 M=
-EM */
->>=20=20
->>  	/* enabled by U-Boot if PCIe module is present */
->> diff --git a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi b/arch/arm64/b=
-oot/dts/marvell/armada-37xx.dtsi
->> index 549c3f7c5b27..a099b7787429 100644
->> --- a/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
->> +++ b/arch/arm64/boot/dts/marvell/armada-37xx.dtsi
->> @@ -515,7 +515,7 @@
->>  			 * (totaling 127 MiB) for MEM.
->>  			 */
->>  			ranges =3D <0x82000000 0 0xe8000000   0 0xe8000000   0 0x07f00000   =
-/* Port 0 MEM */
->> -				  0x81000000 0 0xeff00000   0 0xeff00000   0 0x00100000>; /* Port 0=
- IO*/
->> +				  0x81000000 0 0x00000000   0 0xeff00000   0 0x00100000>; /* Port 0=
- IO */
->>  			interrupt-map-mask =3D <0 0 0 7>;
->>  			interrupt-map =3D <0 0 0 1 &pcie_intc 0>,
->>  					<0 0 0 2 &pcie_intc 1>,
->> --=20
->> 2.20.1
->>
->
-> --=20
-> Gregory Clement, Bootlin
-> Embedded Linux and Kernel engineering
-> http://bootlin.com
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+for you to fetch changes up to 12fbfd665fc473800d25d0f3ca4617c82cff42dd:
 
---=20
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+  memory: mtk-smi: Enable sleep ctrl safety function for MT8195 (2022-02-08 09:29:25 +0100)
+
+----------------------------------------------------------------
+Memory controller drivers for v5.18 - Mediatek SoC
+
+1. Several updates in the MTK SMI bindings.
+2. Add support for MT8186 MTK SMI and improvements in support for MT8195.
+
+----------------------------------------------------------------
+AngeloGioacchino Del Regno (1):
+      memory: mtk-smi: Enable sleep ctrl safety function for MT8195
+
+Yong Wu (7):
+      dt-bindings: memory: mtk-smi: Rename clock to clocks
+      dt-bindings: memory: mtk-smi: No need mediatek,larb-id for mt8167
+      dt-bindings: memory: mtk-smi: Correct minItems to 2 for the gals clocks
+      dt-bindings: memory: mediatek: Add mt8186 support
+      memory: mtk-smi: handle positive return value for clk_bulk_prepare_enable
+      memory: mtk-smi: Add sleep ctrl function
+      memory: mtk-smi: mt8186: Add smi support
+
+ .../memory-controllers/mediatek,smi-common.yaml    | 32 ++++++-------
+ .../memory-controllers/mediatek,smi-larb.yaml      | 19 ++++----
+ drivers/memory/mtk-smi.c                           | 54 +++++++++++++++++++++-
+ 3 files changed, 77 insertions(+), 28 deletions(-)
