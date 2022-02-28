@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DF0C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E01C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238557AbiB1Rmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:42:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
+        id S238635AbiB1Rmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:42:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236529AbiB1Rjh (ORCPT
+        with ESMTP id S233680AbiB1Rjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:39:37 -0500
+        Mon, 28 Feb 2022 12:39:53 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EAD09137D;
-        Mon, 28 Feb 2022 09:34:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2715392857;
+        Mon, 28 Feb 2022 09:34:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED32CB815BD;
-        Mon, 28 Feb 2022 17:34:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AB31C340E7;
-        Mon, 28 Feb 2022 17:34:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B170CB815B4;
+        Mon, 28 Feb 2022 17:34:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C84C340E7;
+        Mon, 28 Feb 2022 17:34:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069649;
-        bh=HCABU+6noVfxghNDpa+0Ktp/7wxrthhz8I3ynmU7u1U=;
+        s=korg; t=1646069652;
+        bh=QO6fTW2VcelMu6EAiAhXnvwL+tqQreU8tzQFXXvOUVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1T3lV/w8Bl2voMkafNnIzw5SX6s/fUy/ee8GvUJ4YDJk2RxYaSDQnZp3D+/16byya
-         ITXUMsLeKK17jv5PdTGWpn9s02HXOOkb4v08wIE9BXb10DAbws9t+1EmjPtXqhopBh
-         ocqYfqt7l3dn94wGxlUm90pr+g5T9MN9YjrjK7Y8=
+        b=g/bLjDb48qbJ1MBrDveAwlZ/L+AZOF5+gtPcRe0cb/f6PlPgeR2rMPyX4pq15q8d7
+         KYU0UiTpJ7mGmGL9oVR3J9ozy32Mte3H5rGLDG0DSxK53jPRlQQP2rybiIpl3yRVSH
+         vDa7PtqwkBz1hObV91ATPylE7BAR6j4n24yG8zus=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Gottlieb <maorg@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>,
+        stable@vger.kernel.org, Ariel Levkovich <lariel@nvidia.com>,
+        Maor Dickman <maord@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.10 42/80] net/mlx5: Fix possible deadlock on rule deletion
-Date:   Mon, 28 Feb 2022 18:24:23 +0100
-Message-Id: <20220228172316.633802535@linuxfoundation.org>
+Subject: [PATCH 5.10 43/80] net/mlx5: Fix wrong limitation of metadata match on ecpf
+Date:   Mon, 28 Feb 2022 18:24:24 +0100
+Message-Id: <20220228172316.750087654@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -49,32 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Gottlieb <maorg@nvidia.com>
+From: Ariel Levkovich <lariel@nvidia.com>
 
-commit b645e57debca846f51b3209907546ea857ddd3f5 upstream.
+commit 07666c75ad17d7389b18ac0235c8cf41e1504ea8 upstream.
 
-Add missing call to up_write_ref_node() which releases the semaphore
-in case the FTE doesn't have destinations, such in drop rule case.
+Match metadata support check returns false for ecpf device.
+However, this support does exist for ecpf and therefore this
+limitation should be removed to allow feature such as stacked
+devices and internal port offloaded to be supported.
 
-Fixes: 465e7baab6d9 ("net/mlx5: Fix deletion of duplicate rules")
-Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
+Fixes: 92ab1eb392c6 ("net/mlx5: E-Switch, Enable vport metadata matching if firmware supports it")
+Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
+Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c |    4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -2034,6 +2034,8 @@ void mlx5_del_flow_rules(struct mlx5_flo
- 		fte->node.del_hw_func = NULL;
- 		up_write_ref_node(&fte->node, false);
- 		tree_put_node(&fte->node, false);
-+	} else {
-+		up_write_ref_node(&fte->node, false);
- 	}
- 	kfree(handle);
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -2037,10 +2037,6 @@ esw_check_vport_match_metadata_supported
+ 	if (!MLX5_CAP_ESW_FLOWTABLE(esw->dev, flow_source))
+ 		return false;
+ 
+-	if (mlx5_core_is_ecpf_esw_manager(esw->dev) ||
+-	    mlx5_ecpf_vport_exists(esw->dev))
+-		return false;
+-
+ 	return true;
  }
+ 
 
 
