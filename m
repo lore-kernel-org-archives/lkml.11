@@ -2,133 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C48BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA544C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 20:25:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229509AbiB1UYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 15:24:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
+        id S229556AbiB1UZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 15:25:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiB1UYb (ORCPT
+        with ESMTP id S229447AbiB1UZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 15:24:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DB6756234
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:23:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646079831;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=90VxHOyFuo2ODBqrQg2kpbHyzlakM2kYCuGAJwvAK6A=;
-        b=aTIWLXGeh2miDuNwMlFDCMyqHJgsCo1jhmOe3n7q4T9Qr5rObMx0sIaX1W9RnoS8GHSqxe
-        jpJupPj9DdmnfwFiY30paF78su8ZUMD5zZnHGE1InXgNmfLKI2Tf3jQWy4YuRiwALEZDYU
-        eGxcB8YM4iOtDTqQM594P7QOYQRS0+A=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-401-OFQsS2oJNlmhlbkgeTQxQg-1; Mon, 28 Feb 2022 15:23:49 -0500
-X-MC-Unique: OFQsS2oJNlmhlbkgeTQxQg-1
-Received: by mail-oi1-f197.google.com with SMTP id c3-20020aca3503000000b002d48224d7e8so6154217oia.4
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:23:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=90VxHOyFuo2ODBqrQg2kpbHyzlakM2kYCuGAJwvAK6A=;
-        b=kXZCo4fbHOZ06e+52JSdaBQouGAGH2nMkWf8BMdGh+04korFK/5pyWZrW6BgPsaEK1
-         D4OOPl7t0ZrKXLcLCM+RrztHRvxfP+xZfonOTITNWInPg44wlPR2fV4g/mPZgk1E3I99
-         7pgzL7YP6N5y+Q7sN+1rQDQIvDMDju4YxYBStJyUU67iG12om86LC8eP36JWMUcVirGU
-         zW3QOCOADz3R+frR2XHQ0n1woCj3DlHxwErBpdhFb/ApXPjbOU3zQGpCVk2jOdqbE+Vy
-         viheeavB9gK6wdITlD9YUeRsqt3TXmw8o5roa3eC/jbcOprcz5eOERvu2oxlVNP7aw2I
-         1ghQ==
-X-Gm-Message-State: AOAM530rKgT/7FmxtF+c1A2zqvU6R5B0qUwC2pWPrTeOQ2eEmfphFipT
-        siAaubfrgQ7N/vOCS9FBTv5dTA7mjOjWDqdIg5nNLzOrMz2pdVlZ92PWo7rzdC4r+LnrjtMjmFZ
-        X5KKEdiAVbKzrVPgNPr4TTWTs
-X-Received: by 2002:a05:6870:678c:b0:d6:e495:e9e2 with SMTP id gc12-20020a056870678c00b000d6e495e9e2mr1729699oab.154.1646079829028;
-        Mon, 28 Feb 2022 12:23:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxCoTJvK0Zs83kxVjGLCSp366fI2fadM1e3pMs0iu/tKtBzyVo7yn+bdexHYiCmEVEg2PXmsQ==
-X-Received: by 2002:a05:6870:678c:b0:d6:e495:e9e2 with SMTP id gc12-20020a056870678c00b000d6e495e9e2mr1729684oab.154.1646079828768;
-        Mon, 28 Feb 2022 12:23:48 -0800 (PST)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id v5-20020a544d05000000b002d7652b3c52sm4653982oix.25.2022.02.28.12.23.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 12:23:48 -0800 (PST)
-Date:   Mon, 28 Feb 2022 13:23:46 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, jgg@nvidia.com, cohuck@redhat.com,
-        mgurtovoy@nvidia.com, yishaih@nvidia.com, linuxarm@huawei.com,
-        liulongfang@huawei.com, prime.zeng@hisilicon.com,
-        jonathan.cameron@huawei.com, wangzhou1@hisilicon.com,
-        bhelgaas@google.com, linux-pci@vger.kernel.org
-Subject: Re: [PATCH v6 03/10] hisi_acc_qm: Move PCI device IDs to common
- header
-Message-ID: <20220228132346.77624e5b.alex.williamson@redhat.com>
-In-Reply-To: <20220228201259.GA516607@bhelgaas>
-References: <20220228103338.76da0b3b.alex.williamson@redhat.com>
-        <20220228201259.GA516607@bhelgaas>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        Mon, 28 Feb 2022 15:25:43 -0500
+X-Greylist: delayed 1345 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 12:25:03 PST
+Received: from gateway30.websitewelcome.com (gateway30.websitewelcome.com [192.185.180.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16A256C15
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 12:25:03 -0800 (PST)
+Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id 0E9D9B239
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 14:02:38 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id OmC6nxGp022u3OmC7nw2sw; Mon, 28 Feb 2022 14:00:33 -0600
+X-Authority-Reason: nr=8
+Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:40014 helo=[10.0.0.45])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nOmC5-004Kdt-G2; Mon, 28 Feb 2022 14:00:29 -0600
+Message-ID: <137d3573-051f-5374-70d6-cc99b44d00da@kernel.org>
+Date:   Mon, 28 Feb 2022 21:00:26 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
+Content-Language: en-US
+To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>, rostedt@goodmis.org,
+        paulmck@kernel.org
+Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org, mtosatti@redhat.com
+References: <20220228141423.259691-1-nsaenzju@redhat.com>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <20220228141423.259691-1-nsaenzju@redhat.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 95.232.30.176
+X-Source-L: No
+X-Exim-ID: 1nOmC5-004Kdt-G2
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:40014
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 2
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 28 Feb 2022 14:12:59 -0600
-Bjorn Helgaas <helgaas@kernel.org> wrote:
-
-> On Mon, Feb 28, 2022 at 10:33:38AM -0700, Alex Williamson wrote:
-> > [Cc+ Bjorn, linux-pci]
-> > 
-> > On Mon, 28 Feb 2022 09:01:14 +0000
-> > Shameer Kolothum <shameerali.kolothum.thodi@huawei.com> wrote:
-> >   
-> > > Move the PCI Device IDs of HiSilicon ACC devices to
-> > > a common header and use a uniform naming convention.  
+On 2/28/22 15:14, Nicolas Saenz Julienne wrote:
+> At the moment running osnoise on an isolated CPU and a PREEMPT_RCU
+> kernel might have the side effect of extending grace periods too much.
+> This will eventually entice RCU to schedule a task on the isolated CPU
+> to end the overly extended grace period, adding unwarranted noise to the
+> CPU being traced in the process.
 > 
-> > > --- a/include/linux/pci_ids.h
-> > > +++ b/include/linux/pci_ids.h
-> > > @@ -2529,6 +2529,12 @@
-> > >  #define PCI_DEVICE_ID_KORENIX_JETCARDF3	0x17ff
-> > >  
-> > >  #define PCI_VENDOR_ID_HUAWEI		0x19e5
-> > > +#define PCI_DEVICE_ID_HUAWEI_ZIP_PF	0xa250
-> > > +#define PCI_DEVICE_ID_HUAWEI_ZIP_VF	0xa251
-> > > +#define PCI_DEVICE_ID_HUAWEI_SEC_PF	0xa255
-> > > +#define PCI_DEVICE_ID_HUAWEI_SEC_VF	0xa256
-> > > +#define PCI_DEVICE_ID_HUAWEI_HPRE_PF	0xa258
-> > > +#define PCI_DEVICE_ID_HUAWEI_HPRE_VF	0xa259  
+> So, check if we're the only ones running on this isolated CPU and that
+> we're on a PREEMPT_RCU setup. If so, let's force quiescent states in
+> between measurements.
 > 
-> We usually don't add things to pci_ids.h unless they're used in more
-> than one place (see the comment at the top of the file).  AFAICT,
-> these device IDs are only used in one file, so you can leave the
-> #defines in the file that uses them or use bare hex values.
+> Non-PREEMPT_RCU setups don't need to worry about this as osnoise main
+> loop's cond_resched() will go though a quiescent state for them.
+> 
+> Note that this same exact problem is what extended quiescent states were
+> created for. But adapting them to this specific use-case isn't trivial
+> as it'll imply reworking entry/exit and dynticks/context tracking code.
+> 
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+> ---
+>  kernel/trace/trace_osnoise.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+> 
+> diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
+> index 870a08da5b48..4928358f6e88 100644
+> --- a/kernel/trace/trace_osnoise.c
+> +++ b/kernel/trace/trace_osnoise.c
+> @@ -21,7 +21,9 @@
+>  #include <linux/uaccess.h>
+>  #include <linux/cpumask.h>
+>  #include <linux/delay.h>
+> +#include <linux/tick.h>
+>  #include <linux/sched/clock.h>
+> +#include <linux/sched/isolation.h>
+>  #include <uapi/linux/sched/types.h>
+>  #include <linux/sched.h>
+>  #include "trace.h"
+> @@ -1295,6 +1297,7 @@ static int run_osnoise(void)
+>  	struct osnoise_sample s;
+>  	unsigned int threshold;
+>  	u64 runtime, stop_in;
+> +	unsigned long flags;
+>  	u64 sum_noise = 0;
+>  	int hw_count = 0;
+>  	int ret = -1;
+> @@ -1386,6 +1389,22 @@ static int run_osnoise(void)
+>  					osnoise_stop_tracing();
+>  		}
+>  
+> +		/*
+> +		 * Check if we're the only ones running on this nohz_full CPU
+> +		 * and that we're on a PREEMPT_RCU setup. If so, let's fake a
+> +		 * QS since there is no way for RCU to know we're not making
+> +		 * use of it.
+> +		 *
+> +		 * Otherwise it'll be done through cond_resched().
+> +		 */
+> +		if (IS_ENABLED(CONFIG_PREEMPT_RCU) &&
+> +		    !housekeeping_cpu(raw_smp_processor_id(), HK_FLAG_MISC) &&
 
-Later in this series the VF IDs are added to a vendor variant of the
-vfio-pci driver:
+Does this restrict to only isolcpus cpus? what if this CPU was isolated via
+other methods?
 
-https://lore.kernel.org/all/20220228090121.1903-5-shameerali.kolothum.thodi@huawei.com/
+> +		    tick_nohz_tick_stopped()) {
+> +			local_irq_save(flags);
 
-diff --git a/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-new file mode 100644
-index 000000000000..8129c3457b3b
---- /dev/null
-+++ b/drivers/vfio/pci/hisilicon/hisi_acc_vfio_pci.c
-...
-+static const struct pci_device_id hisi_acc_vfio_pci_table[] = {
-+	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_SEC_VF) },
-+	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_HPRE_VF) },
-+	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_VENDOR_ID_HUAWEI, PCI_DEVICE_ID_HUAWEI_ZIP_VF) },
-+	{ }
-+};
+This code is always with interrupts enabled, so local_irq_disable()/enable()
+should be enough (and faster).
 
-So I think the VFs IDs meet the requirements, but perhaps not the PF
-IDs.  Would it be ok if the PFs were dropped?  Thanks,
+> +			rcu_momentary_dyntick_idle();
+> +			local_irq_restore(flags);
+> +		}
 
-Alex
+Question, if we set this once, we could avoid setting it on every loop unless we
+have a preemption from another thread, right?
 
+>  		/*
+>  		 * For the non-preemptive kernel config: let threads runs, if
+>  		 * they so wish.
+
+/me keeps playing with this patch.
+
+-- Daniel
