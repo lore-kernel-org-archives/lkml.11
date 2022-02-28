@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:34:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6125C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238162AbiB1RfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:35:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39896 "EHLO
+        id S238167AbiB1RfM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:35:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238308AbiB1RdN (ORCPT
+        with ESMTP id S238404AbiB1Rd1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:33:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F078F983;
-        Mon, 28 Feb 2022 09:29:47 -0800 (PST)
+        Mon, 28 Feb 2022 12:33:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B91890277;
+        Mon, 28 Feb 2022 09:29:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEFB76145C;
-        Mon, 28 Feb 2022 17:29:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97CBC340F0;
-        Mon, 28 Feb 2022 17:29:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C74CB815AC;
+        Mon, 28 Feb 2022 17:29:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D4EAC340E7;
+        Mon, 28 Feb 2022 17:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069386;
-        bh=vU/qhmC0dR0bSizI4ccziVaAU5ZeYpReprMKNESwoZQ=;
+        s=korg; t=1646069388;
+        bh=oh/sasvbWZ6S2kcQyCU00pN818bGxsywW0dhY8vbDRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LpeIn1x9h1mQqQtoXTTRc/EAZvQEn+zHsSLmV9+B7SypScJGkN9nZs6W3XyQPtibr
-         NfunRS+Ulol95mr61Rz1yjYZtcoavTmQG305IkmPoUEODeqx9AAB1ggk75dcrzQvin
-         0Li4u2q/4gNPnQqzMh65oatp9cTXS4fCFxKMfjhQ=
+        b=gBeI/L+6zKUH469U5+Vf8InkkiXYPX67XqW5sEnpP5GrP42M0wsaRTUp5YZImYGc/
+         D602sHibzxlrm03unm4joMDapS1Faes+ts+llUsl006a0nyWhKyaYbQ9pKnj3PWMry
+         fjme4MLahkW/yqsPpv65Bxa1ve7zCTmWYnHV0g34=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
-        Thierry Reding <treding@nvidia.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH 4.19 17/34] gpio: tegra186: Fix chip_data type confusion
-Date:   Mon, 28 Feb 2022 18:24:23 +0100
-Message-Id: <20220228172209.845156606@linuxfoundation.org>
+        Ben Skeggs <bskeggs@redhat.com>, Lyude Paul <lyude@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 4.19 18/34] Revert "drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR"
+Date:   Mon, 28 Feb 2022 18:24:24 +0100
+Message-Id: <20220228172209.919418318@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172207.090703467@linuxfoundation.org>
 References: <20220228172207.090703467@linuxfoundation.org>
@@ -50,80 +48,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Karol Herbst <kherbst@redhat.com>
 
-commit d1e972ace42390de739cde87d96043dcbe502286 upstream.
+This reverts commit c9ec3d85c0eef7c71cdc68db758e0f0e378132c0.
 
-The tegra186 GPIO driver makes the assumption that the pointer
-returned by irq_data_get_irq_chip_data() is a pointer to a
-tegra_gpio structure. Unfortunately, it is actually a pointer
-to the inner gpio_chip structure, as mandated by the gpiolib
-infrastructure. Nice try.
+This commit causes a regression if 4cdd2450bf739bada353e82d27b00db9af8c3001
+is not applied as well. This was fixed for 5.16, 5.15 and 5.10.
 
-The saving grace is that the gpio_chip is the first member of
-tegra_gpio, so the bug has gone undetected since... forever.
+On older stable branches backporting this commit is complicated as relevant
+code changed quite a bit. Furthermore most of the affected hardware barely
+works on those and users would want to use the newer kernels anyway.
 
-Fix it by performing a container_of() on the pointer. This results
-in no additional code, and makes it possible to understand how
-the whole thing works.
-
-Fixes: 5b2b135a87fc ("gpio: Add Tegra186 support")
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: Thierry Reding <treding@nvidia.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Link: https://lore.kernel.org/r/20220211093904.1112679-1-maz@kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Cc: stable@vger.kernel.org # 5.4 4.19 and 4.14
+Cc: Ben Skeggs <bskeggs@redhat.com>
+Cc: Lyude Paul <lyude@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/issues/149
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-tegra186.c |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c |   37 ++++++++++---------------
+ 1 file changed, 16 insertions(+), 21 deletions(-)
 
---- a/drivers/gpio/gpio-tegra186.c
-+++ b/drivers/gpio/gpio-tegra186.c
-@@ -237,9 +237,12 @@ static int tegra186_gpio_of_xlate(struct
- 	return offset + pin;
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+@@ -70,13 +70,20 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev
+ 	return 0;
  }
  
-+#define to_tegra_gpio(x) container_of((x), struct tegra_gpio, gpio)
+-static void
++static int
+ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ {
+ 	struct nvkm_device *device = pmu->subdev.device;
+ 
+ 	if (!pmu->func->enabled(pmu))
+-		return;
++		return 0;
 +
- static void tegra186_irq_ack(struct irq_data *data)
++	/* Inhibit interrupts, and wait for idle. */
++	nvkm_wr32(device, 0x10a014, 0x0000ffff);
++	nvkm_msec(device, 2000,
++		if (!nvkm_rd32(device, 0x10a04c))
++			break;
++	);
+ 
+ 	/* Reset. */
+ 	if (pmu->func->reset)
+@@ -87,37 +94,25 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
+ 			break;
+ 	);
++
++	return 0;
+ }
+ 
+ static int
+ nvkm_pmu_preinit(struct nvkm_subdev *subdev)
  {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	nvkm_pmu_reset(pmu);
+-	return 0;
++	return nvkm_pmu_reset(pmu);
+ }
  
- 	base = tegra186_gpio_get_base(gpio, data->hwirq);
-@@ -251,7 +254,8 @@ static void tegra186_irq_ack(struct irq_
- 
- static void tegra186_irq_mask(struct irq_data *data)
+ static int
+ nvkm_pmu_init(struct nvkm_subdev *subdev)
  {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 	u32 value;
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	struct nvkm_device *device = pmu->subdev.device;
+-
+-	if (!pmu->func->init)
+-		return 0;
+-
+-	if (pmu->func->enabled(pmu)) {
+-		/* Inhibit interrupts, and wait for idle. */
+-		nvkm_wr32(device, 0x10a014, 0x0000ffff);
+-		nvkm_msec(device, 2000,
+-			if (!nvkm_rd32(device, 0x10a04c))
+-				break;
+-		);
+-
+-		nvkm_pmu_reset(pmu);
+-	}
+-
+-	return pmu->func->init(pmu);
++	int ret = nvkm_pmu_reset(pmu);
++	if (ret == 0 && pmu->func->init)
++		ret = pmu->func->init(pmu);
++	return ret;
+ }
  
-@@ -266,7 +270,8 @@ static void tegra186_irq_mask(struct irq
- 
- static void tegra186_irq_unmask(struct irq_data *data)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 	u32 value;
- 
-@@ -281,7 +286,8 @@ static void tegra186_irq_unmask(struct i
- 
- static int tegra186_irq_set_type(struct irq_data *data, unsigned int flow)
- {
--	struct tegra_gpio *gpio = irq_data_get_irq_chip_data(data);
-+	struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-+	struct tegra_gpio *gpio = to_tegra_gpio(gc);
- 	void __iomem *base;
- 	u32 value;
- 
+ static int
 
 
