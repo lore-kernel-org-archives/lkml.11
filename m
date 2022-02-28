@@ -2,205 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 685A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 12:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 532DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:00:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232941AbiB1M6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 07:58:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48676 "EHLO
+        id S232772AbiB1NAm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:00:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232605AbiB1M6n (ORCPT
+        with ESMTP id S230392AbiB1NAk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 07:58:43 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB098506D7;
-        Mon, 28 Feb 2022 04:58:04 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id h126so5396815ybc.1;
-        Mon, 28 Feb 2022 04:58:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cPns1/npz7Dlc50rQYvlC2uiB8hqGLU7hoL0Zgx0XJ0=;
-        b=pEolgqNiqpxngoF3DgV5antmR2xK1ESw6GfdlgaC1VRT62KrVi1FE94NVxvHe2y040
-         DCgDJOZ8s0kSQSPw6C9sx78FJavBTotCFHL/anc4DfXGcrgvPo8okv1JUkhqVfi/se9i
-         hW06Ah3qyMKaaKOTNtTu8wbusrbB7phNlPF+AySvdDIO7u1QsCzFU7mpPGJHlzk9Mby6
-         UdsH3Nd6/98kA7DwkBYhjYGX9ZL6TzuOELKMCJfbDGjyY8VVL4mqSLXGaumytYsPQ2HJ
-         9J/sCwpo1GpeL79zD5T/i/qLvHLVrKyKmbC72hCBVyK1VCZmw12EYO+c52RVTUKHhVzh
-         rDoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cPns1/npz7Dlc50rQYvlC2uiB8hqGLU7hoL0Zgx0XJ0=;
-        b=UDc3wWgvAiDsxDBd8oRzclr4XX1NBcSMdez0RVuFiFiclm12iU4YDvY1t5MjuwAu2+
-         E/XEm1iGejBesR9VoKpGeDyeVH2nLy5k7OmGXqgVIecpjJBPQfOA2JBtirMqtI4zuj3r
-         DL7UT/K8St9v1zJ8eAEur0z1Qwz8sXRmAZgR+jDRaY2rBIzBUd96Bu3TYcsma70StjVD
-         f+aENmhB1Uq3VTVu97q/LtfrlG0vUgkNNb0g7ukPx0DFy8xYzQpZJS1OIZhiyfm2B3l8
-         NTfWUf9oDFoIqhx2JE22sbWQZkOxIZAbCH7jWAKcJnM2dGx6BKuTss89Pg2Hr04etmW9
-         XSJg==
-X-Gm-Message-State: AOAM533bzQ0COzHYLi4oKO4LKs3kcpv5HJgz27uM9SkHHmclO38ckiNq
-        l7LknXgYZTfWJdbMlL4FQT+QswfiFsqt5tHOLQM=
-X-Google-Smtp-Source: ABdhPJyMMcn4V8F4Xi286fHhfGSOe0I5iwgQNzJBxzAM62I7vOIac08EqoIzl0comFG8kmVNvryVHX5S6ObASHPyNZo=
-X-Received: by 2002:a25:5145:0:b0:61d:ad99:6e5a with SMTP id
- f66-20020a255145000000b0061dad996e5amr18295765ybb.228.1646053084143; Mon, 28
- Feb 2022 04:58:04 -0800 (PST)
+        Mon, 28 Feb 2022 08:00:40 -0500
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93ACF58E55;
+        Mon, 28 Feb 2022 05:00:01 -0800 (PST)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 5F35721991;
+        Mon, 28 Feb 2022 12:59:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1646053199;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GYvrOH34zCWl0BM57x3MsoAIfmyz0j5aUqs18/+9t2Q=;
+        b=CjK8nNU5xeMNbntdPyPSfsq8/1RCdmnnM+tnemCL9lQAmpVtTSbi2i0S/zED3dXrk+604R
+        F7IO7CYu/SbuKXg9SBt5CXTg/P34/O1YqlSaqPLhtC63aEQddztfpC4Hi7UwtxSCvZvSgX
+        /+ilzqW9cikrpXqztnZDSBZcWjPDsWQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1646053199;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GYvrOH34zCWl0BM57x3MsoAIfmyz0j5aUqs18/+9t2Q=;
+        b=YC640EWtiJvSsnZFCbq8EFRrctbU3bFx2JBcqb+i/kX+D3HkAqM4d4d/mY/yRse7T0PyAW
+        0aoolUYAD4EZD9DA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 81766A3B84;
+        Mon, 28 Feb 2022 12:59:58 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id A86B6DA823; Mon, 28 Feb 2022 13:56:07 +0100 (CET)
+Date:   Mon, 28 Feb 2022 13:56:07 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
+        Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        linux-arm-kernel@lists.infradead.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-btrfs@vger.kernel.org
+Subject: Re: [PATCH] [v2] Kbuild: move to -std=gnu11
+Message-ID: <20220228125607.GG12643@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Arnd Bergmann <arnd@kernel.org>,
+        linux-kbuild@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>, llvm@lists.linux.dev,
+        Jonathan Corbet <corbet@lwn.net>,
+        Federico Vaga <federico.vaga@vaga.pv.it>,
+        Alex Shi <alexs@kernel.org>, Hu Haowen <src.res@email.cn>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc-tw-discuss@lists.sourceforge.net,
+        linux-arm-kernel@lists.infradead.org,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-btrfs@vger.kernel.org
+References: <20220228103142.3301082-1-arnd@kernel.org>
 MIME-Version: 1.0
-References: <20220227153016.950473-1-pgwipeout@gmail.com> <20220227153016.950473-6-pgwipeout@gmail.com>
- <fdacf3eb-7892-c767-ae85-1672f85684dc@wolfvision.net>
-In-Reply-To: <fdacf3eb-7892-c767-ae85-1672f85684dc@wolfvision.net>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Mon, 28 Feb 2022 07:57:52 -0500
-Message-ID: <CAMdYzYoEEY6-kGVDeWj9AoA98BL5hxnc_4CnUPiuStUnSrFXLA@mail.gmail.com>
-Subject: Re: [PATCH v3 5/7] arm64: dts: rockchip: add rk356x dwc3 usb3 nodes
-To:     Michael Riesch <michael.riesch@wolfvision.net>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Johan Jonker <jbx6244@gmail.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228103142.3301082-1-arnd@kernel.org>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 2:24 AM Michael Riesch
-<michael.riesch@wolfvision.net> wrote:
->
-> Hi Peter,
->
-> On 2/27/22 16:30, Peter Geis wrote:
-> > Add the dwc3 device nodes to the rk356x device trees.
-> > The rk3566 has one usb2 capable dwc3 otg controller and one usb3 capable
-> > dwc3 host controller.
-> > The rk3568 has one usb3 capable dwc3 otg controller and one usb3 capable
-> > dwc3 host controller.
-> >
-> > Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> > ---
-> >  arch/arm64/boot/dts/rockchip/rk3566.dtsi | 11 ++++++++
-> >  arch/arm64/boot/dts/rockchip/rk3568.dtsi |  9 ++++++
-> >  arch/arm64/boot/dts/rockchip/rk356x.dtsi | 35 +++++++++++++++++++++++-
-> >  3 files changed, 54 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/arch/arm64/boot/dts/rockchip/rk3566.dtsi b/arch/arm64/boot/dts/rockchip/rk3566.dtsi
-> > index 3839eef5e4f7..0b957068ff89 100644
-> > --- a/arch/arm64/boot/dts/rockchip/rk3566.dtsi
-> > +++ b/arch/arm64/boot/dts/rockchip/rk3566.dtsi
-> > @@ -6,6 +6,10 @@ / {
-> >       compatible = "rockchip,rk3566";
-> >  };
-> >
-> > +&pipegrf {
-> > +     compatible = "rockchip,rk3566-pipe-grf", "syscon";
-> > +};
-> > +
-> >  &power {
-> >       power-domain@RK3568_PD_PIPE {
-> >               reg = <RK3568_PD_PIPE>;
-> > @@ -18,3 +22,10 @@ power-domain@RK3568_PD_PIPE {
-> >               #power-domain-cells = <0>;
-> >       };
-> >  };
-> > +
-> > +&usb_host0_xhci {
-> > +     phys = <&usb2phy0_otg>;
-> > +     phy-names = "usb2-phy";
-> > +     extcon = <&usb2phy0>;
->
-> I wonder what the correct place for this extcon property is. You defined
-> it on SoC (RK3566) level, in my patch for the RK3568 EVB1 it is added on
-> board level. Is this common to all RK356x variants?
+On Mon, Feb 28, 2022 at 11:27:43AM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> 
+> Link: https://lore.kernel.org/lkml/CAHk-=wiyCH7xeHcmiFJ-YgXUy2Jaj7pnkdKpcovt8fYbVFW3TA@mail.gmail.com/
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1603
+> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Cc: Masahiro Yamada <masahiroy@kernel.org>
+> Cc: linux-kbuild@vger.kernel.org
+> Cc: llvm@lists.linux.dev
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> [v2]
+>  - added -std=gnu11 back, rather than just relying on the default
+>  - minor changes to changelog text
+> ---
+>  Documentation/process/programming-language.rst              | 4 ++--
+>  .../translations/it_IT/process/programming-language.rst     | 4 ++--
+>  .../translations/zh_CN/process/programming-language.rst     | 4 ++--
+>  .../translations/zh_TW/process/programming-language.rst     | 4 ++--
+>  Makefile                                                    | 6 +++---
+>  arch/arm64/kernel/vdso32/Makefile                           | 2 +-
+>  drivers/gpu/drm/i915/Makefile                               | 1 +
+>  drivers/staging/greybus/tools/Makefile                      | 3 ++-
 
-Yes, the usb2phy is always available as an extcon unless you make a
-device that doesn't have usb2 capability.
-In that case you'd have to override the device anyways.
-If we want to turn on default role otg here, we'd need this defined
-here as well or things break.
+For
 
->
-> Best regards,
-> Michael
->
-> > +     maximum-speed = "high-speed";
-> > +};
-> > diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-> > index 5b0f528d6818..8ba9334f9753 100644
-> > --- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-> > +++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-> > @@ -99,6 +99,10 @@ opp-1992000000 {
-> >       };
-> >  };
-> >
-> > +&pipegrf {
-> > +     compatible = "rockchip,rk3568-pipe-grf", "syscon";
-> > +};
-> > +
-> >  &power {
-> >       power-domain@RK3568_PD_PIPE {
-> >               reg = <RK3568_PD_PIPE>;
-> > @@ -114,3 +118,8 @@ power-domain@RK3568_PD_PIPE {
-> >               #power-domain-cells = <0>;
-> >       };
-> >  };
-> > +
-> > +&usb_host0_xhci {
-> > +     phys = <&usb2phy0_otg>, <&combphy0 PHY_TYPE_USB3>;
-> > +     phy-names = "usb2-phy", "usb3-phy";
-> > +};
-> > diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-> > index 7cdef800cb3c..072bb9080cd6 100644
-> > --- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-> > +++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-> > @@ -230,6 +230,40 @@ scmi_shmem: sram@0 {
-> >               };
-> >       };
-> >
-> > +     usb_host0_xhci: usb@fcc00000 {
-> > +             compatible = "snps,dwc3";
-> > +             reg = <0x0 0xfcc00000 0x0 0x400000>;
-> > +             interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH>;
-> > +             clocks = <&cru CLK_USB3OTG0_REF>, <&cru CLK_USB3OTG0_SUSPEND>,
-> > +                      <&cru ACLK_USB3OTG0>;
-> > +             clock-names = "ref_clk", "suspend_clk",
-> > +                           "bus_clk";
-> > +             dr_mode = "host";
-> > +             phy_type = "utmi_wide";
-> > +             power-domains = <&power RK3568_PD_PIPE>;
-> > +             resets = <&cru SRST_USB3OTG0>;
-> > +             snps,dis_u2_susphy_quirk;
-> > +             status = "disabled";
-> > +     };
-> > +
-> > +     usb_host1_xhci: usb@fd000000 {
-> > +             compatible = "snps,dwc3";
-> > +             reg = <0x0 0xfd000000 0x0 0x400000>;
-> > +             interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
-> > +             clocks = <&cru CLK_USB3OTG1_REF>, <&cru CLK_USB3OTG1_SUSPEND>,
-> > +                      <&cru ACLK_USB3OTG1>;
-> > +             clock-names = "ref_clk", "suspend_clk",
-> > +                           "bus_clk";
-> > +             dr_mode = "host";
-> > +             phys = <&usb2phy0_host>, <&combphy1 PHY_TYPE_USB3>;
-> > +             phy-names = "usb2-phy", "usb3-phy";
-> > +             phy_type = "utmi_wide";
-> > +             power-domains = <&power RK3568_PD_PIPE>;
-> > +             resets = <&cru SRST_USB3OTG1>;
-> > +             snps,dis_u2_susphy_quirk;
-> > +             status = "disabled";
-> > +     };
-> > +
-> >       gic: interrupt-controller@fd400000 {
-> >               compatible = "arm,gic-v3";
-> >               reg = <0x0 0xfd400000 0 0x10000>, /* GICD */
-> > @@ -297,7 +331,6 @@ pmu_io_domains: io-domains {
-> >       };
-> >
-> >       pipegrf: syscon@fdc50000 {
-> > -             compatible = "rockchip,rk3568-pipe-grf", "syscon";
-> >               reg = <0x0 0xfdc50000 0x0 0x1000>;
-> >       };
-> >
+>  fs/btrfs/Makefile                                           | 1 +
+
+Acked-by: David Sterba <dsterba@suse.com>
