@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 522A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1FBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236029AbiB1R2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:28:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45248 "EHLO
+        id S234689AbiB1R2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:28:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234750AbiB1R1i (ORCPT
+        with ESMTP id S235285AbiB1R1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:27:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDFE887B5;
-        Mon, 28 Feb 2022 09:26:47 -0800 (PST)
+        Mon, 28 Feb 2022 12:27:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A94388B37;
+        Mon, 28 Feb 2022 09:26:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6962361358;
-        Mon, 28 Feb 2022 17:26:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CBCEC340F1;
-        Mon, 28 Feb 2022 17:26:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2633B815AB;
+        Mon, 28 Feb 2022 17:26:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 326D3C340E7;
+        Mon, 28 Feb 2022 17:26:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069206;
-        bh=r2zGWISR8ADy/uMfenbo6oa4HWz6gRQAjuTFHjo4Oaw=;
+        s=korg; t=1646069209;
+        bh=4PQKIwUXxRzP9Abgeu8v7P8lJQoD90sckGSUc3Fd8ko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WThdPCDUqkb1Gp+1Hbr7za3ue6aA2m9h5NDYDkGVxy4cII7ani/eeaneG78M/pJn6
-         G7eX+s7PzyGQApUL0Cb5PQRXz1BiXtxIuHpr6GkhRu4Amri/WPSIL5NXYx3r0l2x3u
-         jx7MzDyTKfhgSLV5mC5SfOAbY2VI0CFDux+2xvy4=
+        b=fjzKplmT8T0+PdDj2wu23qi58gYeMEpQSR6LgHb5leBKdvXk/8ffqwme2aKn3DVuM
+         Heuq0ZDayNlAsLdJl8Wig+CMDardjn0/5ooOOCBkKOzLLdnCTfaYU9KZ5Q232RU4Q0
+         raULftYo2qZdG2QFewTDf+YtPECbufJ87g5c0JBI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH 4.9 24/29] usb: dwc3: gadget: Let the interrupt handler disable bottom halves.
-Date:   Mon, 28 Feb 2022 18:23:51 +0100
-Message-Id: <20220228172144.199942293@linuxfoundation.org>
+        stable@vger.kernel.org, Hongyu Xie <xiehongyu1@kylinos.cn>,
+        Mathias Nyman <mathias.nyman@linux.intel.com>
+Subject: [PATCH 4.9 25/29] xhci: Prevent futile URB re-submissions due to incorrect return value.
+Date:   Mon, 28 Feb 2022 18:23:52 +0100
+Message-Id: <20220228172144.265818325@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172141.744228435@linuxfoundation.org>
 References: <20220228172141.744228435@linuxfoundation.org>
@@ -49,57 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Hongyu Xie <xiehongyu1@kylinos.cn>
 
-commit 84918a89d6efaff075de570b55642b6f4ceeac6d upstream.
+commit 243a1dd7ba48c120986dd9e66fee74bcb7751034 upstream.
 
-The interrupt service routine registered for the gadget is a primary
-handler which mask the interrupt source and a threaded handler which
-handles the source of the interrupt. Since the threaded handler is
-voluntary threaded, the IRQ-core does not disable bottom halves before
-invoke the handler like it does for the forced-threaded handler.
+The -ENODEV return value from xhci_check_args() is incorrectly changed
+to -EINVAL in a couple places before propagated further.
 
-Due to changes in networking it became visible that a network gadget's
-completions handler may schedule a softirq which remains unprocessed.
-The gadget's completion handler is usually invoked either in hard-IRQ or
-soft-IRQ context. In this context it is enough to just raise the softirq
-because the softirq itself will be handled once that context is left.
-In the case of the voluntary threaded handler, there is nothing that
-will process pending softirqs. Which means it remain queued until
-another random interrupt (on this CPU) fires and handles it on its exit
-path or another thread locks and unlocks a lock with the bh suffix.
-Worst case is that the CPU goes idle and the NOHZ complains about
-unhandled softirqs.
+xhci_check_args() returns 4 types of value, -ENODEV, -EINVAL, 1 and 0.
+xhci_urb_enqueue and xhci_check_streams_endpoint return -EINVAL if
+the return value of xhci_check_args <= 0.
+This causes problems for example r8152_submit_rx, calling usb_submit_urb
+in drivers/net/usb/r8152.c.
+r8152_submit_rx will never get -ENODEV after submiting an urb when xHC
+is halted because xhci_urb_enqueue returns -EINVAL in the very beginning.
 
-Disable bottom halves before acquiring the lock (and disabling
-interrupts) and enable them after dropping the lock. This ensures that
-any pending softirqs will handled right away.
+[commit message and header edit -Mathias]
 
-Link: https://lkml.kernel.org/r/c2a64979-73d1-2c22-e048-c275c9f81558@samsung.com
-Fixes: e5f68b4a3e7b0 ("Revert "usb: dwc3: gadget: remove unnecessary _irqsave()"")
-Cc: stable <stable@kernel.org>
-Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Link: https://lore.kernel.org/r/Yg/YPejVQH3KkRVd@linutronix.de
+Fixes: 203a86613fb3 ("xhci: Avoid NULL pointer deref when host dies.")
+Cc: stable@vger.kernel.org
+Signed-off-by: Hongyu Xie <xiehongyu1@kylinos.cn>
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220215123320.1253947-3-mathias.nyman@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/dwc3/gadget.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/usb/host/xhci.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/usb/dwc3/gadget.c
-+++ b/drivers/usb/dwc3/gadget.c
-@@ -2904,9 +2904,11 @@ static irqreturn_t dwc3_thread_interrupt
- 	unsigned long flags;
- 	irqreturn_t ret = IRQ_NONE;
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -1397,9 +1397,12 @@ int xhci_urb_enqueue(struct usb_hcd *hcd
+ 	struct urb_priv	*urb_priv;
+ 	int size, i;
  
-+	local_bh_disable();
- 	spin_lock_irqsave(&dwc->lock, flags);
- 	ret = dwc3_process_event_buf(evt);
- 	spin_unlock_irqrestore(&dwc->lock, flags);
-+	local_bh_enable();
+-	if (!urb || xhci_check_args(hcd, urb->dev, urb->ep,
+-					true, true, __func__) <= 0)
++	if (!urb)
+ 		return -EINVAL;
++	ret = xhci_check_args(hcd, urb->dev, urb->ep,
++					true, true, __func__);
++	if (ret <= 0)
++		return ret ? ret : -EINVAL;
  
- 	return ret;
- }
+ 	slot_id = urb->dev->slot_id;
+ 	ep_index = xhci_get_endpoint_index(&urb->ep->desc);
+@@ -3031,7 +3034,7 @@ static int xhci_check_streams_endpoint(s
+ 		return -EINVAL;
+ 	ret = xhci_check_args(xhci_to_hcd(xhci), udev, ep, 1, true, __func__);
+ 	if (ret <= 0)
+-		return -EINVAL;
++		return ret ? ret : -EINVAL;
+ 	if (usb_ss_max_streams(&ep->ss_ep_comp) == 0) {
+ 		xhci_warn(xhci, "WARN: SuperSpeed Endpoint Companion"
+ 				" descriptor for ep 0x%x does not support streams\n",
 
 
