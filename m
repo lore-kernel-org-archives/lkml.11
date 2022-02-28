@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3A5C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C120C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238235AbiB1RpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:45:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37324 "EHLO
+        id S238318AbiB1RpW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:45:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238359AbiB1RlQ (ORCPT
+        with ESMTP id S237641AbiB1RlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:41:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E8B4939F4;
-        Mon, 28 Feb 2022 09:34:42 -0800 (PST)
+        Mon, 28 Feb 2022 12:41:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95BD939A6;
+        Mon, 28 Feb 2022 09:34:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2719BB815A6;
-        Mon, 28 Feb 2022 17:34:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A393C340E7;
-        Mon, 28 Feb 2022 17:34:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A11A614AC;
+        Mon, 28 Feb 2022 17:34:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41FC2C340E7;
+        Mon, 28 Feb 2022 17:34:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069679;
-        bh=HNlEnn31gDfp78Stg/+wfklDNtibWpDYzDPpIk7TOvg=;
+        s=korg; t=1646069682;
+        bh=b15eEKyFsvxhv7wzv4TWKHP+1e+cw/Eu+//k6NfN7gs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A07PLgZGVsnut3Qr9ON+rO5LIs/Bg1u1Na3jFW8EfRmz1K88mjeaNcvK9FJuX+zHq
-         MBWNrq224dj2NBKccZLmUTDcyVj1v/w8x0KesDXlRJB8drDdPt3EVUVZLAPIXPGa09
-         wgxa7n1XzVpQNTDWJeQxErWLlWJzWfbOJ+L36e1E=
+        b=U9aosH6gwTMj3VD+e3iNSb8i5hW6HB7eJpMehDo3nTp7keDFGk4w96DrddTZCf17S
+         OX/x2fyAseCOF5Bhpb49HGa+vhYsrz8+RVpA9yaz4JZXZQUOWVT6WoIh5n83hcZhdH
+         S5ZaciiVfvBfNhDPxOMVnve+YA5MXiwDWx+WFrHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>
-Subject: [PATCH 5.10 52/80] tracing: Have traceon and traceoff trigger honor the instance
-Date:   Mon, 28 Feb 2022 18:24:33 +0100
-Message-Id: <20220228172318.001204707@linuxfoundation.org>
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.10 53/80] iio: adc: men_z188_adc: Fix a resource leak in an error handling path
+Date:   Mon, 28 Feb 2022 18:24:34 +0100
+Message-Id: <20220228172318.106142861@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
 References: <20220228172311.789892158@linuxfoundation.org>
@@ -50,120 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 302e9edd54985f584cfc180098f3554774126969 upstream.
+commit e0a2e37f303828d030a83f33ffe14b36cb88d563 upstream.
 
-If a trigger is set on an event to disable or enable tracing within an
-instance, then tracing should be disabled or enabled in the instance and
-not at the top level, which is confusing to users.
+If iio_device_register() fails, a previous ioremap() is left unbalanced.
 
-Link: https://lkml.kernel.org/r/20220223223837.14f94ec3@rorschach.local.home
+Update the error handling path and add the missing iounmap() call, as
+already done in the remove function.
 
-Cc: stable@vger.kernel.org
-Fixes: ae63b31e4d0e2 ("tracing: Separate out trace events from global variables")
-Tested-by: Daniel Bristot de Oliveira <bristot@kernel.org>
-Reviewed-by: Tom Zanussi <zanussi@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+Fixes: 74aeac4da66f ("iio: adc: Add MEN 16z188 ADC driver")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Link: https://lore.kernel.org/r/320fc777863880247c2aff4a9d1a54ba69abf080.1643445149.git.christophe.jaillet@wanadoo.fr
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace_events_trigger.c |   52 +++++++++++++++++++++++++++++++-----
- 1 file changed, 46 insertions(+), 6 deletions(-)
+ drivers/iio/adc/men_z188_adc.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/kernel/trace/trace_events_trigger.c
-+++ b/kernel/trace/trace_events_trigger.c
-@@ -940,6 +940,16 @@ static void
- traceon_trigger(struct event_trigger_data *data, void *rec,
- 		struct ring_buffer_event *event)
- {
-+	struct trace_event_file *file = data->private_data;
-+
-+	if (file) {
-+		if (tracer_tracing_is_on(file->tr))
-+			return;
-+
-+		tracer_tracing_on(file->tr);
-+		return;
-+	}
-+
- 	if (tracing_is_on())
- 		return;
+--- a/drivers/iio/adc/men_z188_adc.c
++++ b/drivers/iio/adc/men_z188_adc.c
+@@ -103,6 +103,7 @@ static int men_z188_probe(struct mcb_dev
+ 	struct z188_adc *adc;
+ 	struct iio_dev *indio_dev;
+ 	struct resource *mem;
++	int ret;
  
-@@ -950,8 +960,15 @@ static void
- traceon_count_trigger(struct event_trigger_data *data, void *rec,
- 		      struct ring_buffer_event *event)
- {
--	if (tracing_is_on())
--		return;
-+	struct trace_event_file *file = data->private_data;
+ 	indio_dev = devm_iio_device_alloc(&dev->dev, sizeof(struct z188_adc));
+ 	if (!indio_dev)
+@@ -128,8 +129,14 @@ static int men_z188_probe(struct mcb_dev
+ 	adc->mem = mem;
+ 	mcb_set_drvdata(dev, indio_dev);
+ 
+-	return iio_device_register(indio_dev);
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto err_unmap;
+ 
++	return 0;
 +
-+	if (file) {
-+		if (tracer_tracing_is_on(file->tr))
-+			return;
-+	} else {
-+		if (tracing_is_on())
-+			return;
-+	}
- 
- 	if (!data->count)
- 		return;
-@@ -959,13 +976,26 @@ traceon_count_trigger(struct event_trigg
- 	if (data->count != -1)
- 		(data->count)--;
- 
--	tracing_on();
-+	if (file)
-+		tracer_tracing_on(file->tr);
-+	else
-+		tracing_on();
- }
- 
- static void
- traceoff_trigger(struct event_trigger_data *data, void *rec,
- 		 struct ring_buffer_event *event)
- {
-+	struct trace_event_file *file = data->private_data;
-+
-+	if (file) {
-+		if (!tracer_tracing_is_on(file->tr))
-+			return;
-+
-+		tracer_tracing_off(file->tr);
-+		return;
-+	}
-+
- 	if (!tracing_is_on())
- 		return;
- 
-@@ -976,8 +1006,15 @@ static void
- traceoff_count_trigger(struct event_trigger_data *data, void *rec,
- 		       struct ring_buffer_event *event)
- {
--	if (!tracing_is_on())
--		return;
-+	struct trace_event_file *file = data->private_data;
-+
-+	if (file) {
-+		if (!tracer_tracing_is_on(file->tr))
-+			return;
-+	} else {
-+		if (!tracing_is_on())
-+			return;
-+	}
- 
- 	if (!data->count)
- 		return;
-@@ -985,7 +1022,10 @@ traceoff_count_trigger(struct event_trig
- 	if (data->count != -1)
- 		(data->count)--;
- 
--	tracing_off();
-+	if (file)
-+		tracer_tracing_off(file->tr);
-+	else
-+		tracing_off();
- }
- 
- static int
++err_unmap:
++	iounmap(adc->base);
+ err:
+ 	mcb_release_mem(mem);
+ 	return -ENXIO;
 
 
