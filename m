@@ -2,140 +2,365 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B7EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 08:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF366C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 08:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233815AbiB1IA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 03:00:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38832 "EHLO
+        id S233794AbiB1ICY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 03:02:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233803AbiB1IAy (ORCPT
+        with ESMTP id S232006AbiB1ICU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 03:00:54 -0500
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B5DD69289
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 00:00:11 -0800 (PST)
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220228080008epoutp03386cbf34894942080ec58ce9affd1cfe~X5E0LibAn2398123981epoutp034
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 08:00:08 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220228080008epoutp03386cbf34894942080ec58ce9affd1cfe~X5E0LibAn2398123981epoutp034
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1646035208;
-        bh=5lb/XZEA6d4myjK7HT1vCVf2lq/nLV7+u97my67yA4k=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=otXQUoGcKUCXOuX1p9JtNA/sHvA+3GIBw8Tdp+6++Pw9IP/GNnmQkySkUji74WxWD
-         kbjD2pyTKYT4ile8JeomQM3Nj7w66yAZYGHmMVnHDFxHY2evZLSPOkjh7ndphN7nNf
-         dT+GkrkURskWE6XhcMhhhGVC59b8kohucYOeXAuY=
-Received: from epsmges5p3new.samsung.com (unknown [182.195.42.75]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20220228080007epcas5p298df853932d6c7ad51d203ee1a730dc2~X5EzudzCO2427724277epcas5p2F;
-        Mon, 28 Feb 2022 08:00:07 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        36.E6.05590.7018C126; Mon, 28 Feb 2022 17:00:07 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220228073715epcas5p1b3166e6b673d3c8b610f7e2f5745562b~X4w13oz9J1138311383epcas5p1I;
-        Mon, 28 Feb 2022 07:37:15 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220228073715epsmtrp1bea15c5a3109c1ed5f344252bc521afc~X4w120QQd2358623586epsmtrp1b;
-        Mon, 28 Feb 2022 07:37:15 +0000 (GMT)
-X-AuditID: b6c32a4b-723ff700000015d6-11-621c81077fdc
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        22.77.29871.BAB7C126; Mon, 28 Feb 2022 16:37:15 +0900 (KST)
-Received: from localhost.localdomain (unknown [107.109.224.44]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220228073714epsmtip165f1325c35d89b7f52219a05a50bd505~X4w0P45FU0350703507epsmtip1c;
-        Mon, 28 Feb 2022 07:37:13 +0000 (GMT)
-From:   Maninder Singh <maninder1.s@samsung.com>
-To:     apw@canonical.com, joe@perches.com, dwaipayanray1@gmail.com,
-        lukas.bulwahn@gmail.com, akpm@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org,
-        Maninder Singh <maninder1.s@samsung.com>,
-        Vaneet Narang <v.narang@samsung.com>
-Subject: [PATCH v4] scripts/checkpatch.pl: remove _deferred and
- _deferred_once false warning
-Date:   Mon, 28 Feb 2022 13:07:08 +0530
-Message-Id: <20220228073708.1610603-1-maninder1.s@samsung.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 28 Feb 2022 03:02:20 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AA706928E;
+        Mon, 28 Feb 2022 00:01:42 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id u2so2447568ple.10;
+        Mon, 28 Feb 2022 00:01:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0kMd+1+9I4cwW0irNULMJVKX8ou/gm8Lldcho28W65A=;
+        b=YVJN3Gyq6Dlkv1BxfX2VusX8qBGNAhHAYp1uYVt3Y2vFGoDI5XHz1sJ2yTT5ClDKCO
+         DWyaIcNKRldKSMPgNR03QYx4DMQ7EtTHnzv2RO+OT8gRvo1TV7Rs7rbzbgXYBH040I4E
+         YlcfyEaSGRd1gM0LNkeRJ0fr5uq3VVFBDO3zyafYCp/hOLUF6SVjp4xws0yKg04YgdY0
+         0y1pl/LegL/8ECMFDV8H3uDJ4aGWbNdKZtj9v1v8EfkRV7BOEwEtqaz0Mz0CS9MPz3XA
+         PsMUVdoy7JYvpYX1r0aSw3CyHIAixN6SmJFKpiKsDOE7ItU80ul16t9BXSTlaq2/WrIl
+         zwvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0kMd+1+9I4cwW0irNULMJVKX8ou/gm8Lldcho28W65A=;
+        b=1NsLwJ87Z2htna0liLqFragl8lEuAhdg/u8f41RDPhhi52FvShMn3jh48JM9BA/vnm
+         M6jcDXfI1WHpqI/bmoDJqBBMnAENTgXFeDoc/AOVV+yG2DogSpUTBdS9kJl2uZPa3mDA
+         mW9bym9CDmuQ5wuetXojSzWAn5Lqliolq0cGSBXCPAtYI29bgWfGjFLL/cdMN5XkJy3U
+         4ysyYRrIhHy8CrhTCf7pUJbYEnFad25lSMvrHFFgjXksDjSmUDxgqRK/+GA3JlsRxzhm
+         rcRZdsKSsMzGIhfLoqMwf3it+5h6CHLXOcS6HgEMiVf7CLxwovZCF18nsjvbpzB9E/1B
+         OPzA==
+X-Gm-Message-State: AOAM533glFRLEKN85MZPJb10Ft3HN/UVKdmVRsOutmEpyrERGPR10TgQ
+        YCObAnLlqsKu85JPBlcoc2M=
+X-Google-Smtp-Source: ABdhPJwq4aJ+Z5IbcaznHsI80vw02BrmJPr0pCY2w3MQ3PosRJ69qHQpqpia16LiVPguhk4RCCXCoQ==
+X-Received: by 2002:a17:902:b589:b0:14f:3f88:15e2 with SMTP id a9-20020a170902b58900b0014f3f8815e2mr18922156pls.171.1646035301395;
+        Mon, 28 Feb 2022 00:01:41 -0800 (PST)
+Received: from google.com ([2620:15c:202:201:43a2:93b6:ebd7:94fd])
+        by smtp.gmail.com with ESMTPSA id y8-20020a056a00180800b004e156f7191esm11740621pfa.213.2022.02.28.00.01.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 00:01:40 -0800 (PST)
+Date:   Mon, 28 Feb 2022 00:01:38 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, benjamin.tissoires@redhat.com,
+        Jiri Kosina <jikos@kernel.org>, linux-input@vger.kernel.org,
+        Sean O'Brien <seobrien@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: Re: [PATCH v4 2/4] HID: Extract vivaldi hid feature mapping for use
+ in hid-hammer
+Message-ID: <YhyBYl0DbizOwClS@google.com>
+References: <20220216195901.1326924-1-swboyd@chromium.org>
+ <20220216195901.1326924-3-swboyd@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprMKsWRmVeSWpSXmKPExsWy7bCmhi57o0ySwYp7xhZz1q9hs/iwVsNi
-        /cJlzBaz7z9msbi8aw6bRcvRdhaLw/PbWCwOnZzL6MDhMauhl81j56y77B4nZvxm8fiy6hqz
-        R9+WVYwenzfJBbBFcdmkpOZklqUW6dslcGUs6l/MUrCAu+Lbwx6mBsb5nF2MnBwSAiYSO58f
-        Yepi5OIQEtjNKLFjxkso5xOjxIHXfYwQzjdGiVVbDzLBtDSumwaV2MsoMWHvbyjnC6PEn0M3
-        GUGq2AT0JFbt2sMCYosIlEr8PPiUDcRmFiiS+HKtE6xGWCBOYtONv2BTWQRUJT6sOQNm8wrY
-        SZzv/8kIsU1eYual7+wQcUGJkzOfsEDMkZdo3jqbGWSxhMAtdonGny1AzRxAjovEhCXeEL3C
-        Eq+Ob2GHsKUkXva3sUPUdzNKbOg+xgLhzGCU+HzwKtQ2e4knFxeyggxiFtCUWL9LHyIsKzH1
-        1DomiMV8Er2/n0CDgldixzwYW1Wi5eYGVghbWuLzx48sELaHRPvFPrAjhARiJS5Me8c0gVF+
-        FpJ/ZiH5ZxbC5gWMzKsYJVMLinPTU4tNC4zzUsv1ihNzi0vz0vWS83M3MYLTjZb3DsZHDz7o
-        HWJk4mA8xCjBwawkwsvOKpkkxJuSWFmVWpQfX1Sak1p8iFGag0VJnPdU+oZEIYH0xJLU7NTU
-        gtQimCwTB6dUA9OkNTUCnGZ/1iYVv2RL0bu1SH/rWat9WjMmbykL6rmqwLdxpq6q8PaJ/kX/
-        Dn7k8ij+zj5Z1aspsXPvXimOb9sYLm08mXZuisqpU8sexPV33smtMlGXNn9Rdt7gZcSntWE8
-        B64z/ZRo2Gjpt7uJv/5wsUn333kd8dueB9gkMOUemevEzH713/zTLFPmsn0t2Pru1uk1VcHh
-        nR8faXVnvbn9pSrm4BqT/LdGy/zKTmrPFs2wrtaO3xPS8GTrL+5mdo+bApunx35X62t9E9OW
-        I/1Vy1b4kWT7ed2U+weTK85MuVB6h+nTt1BdU41K8YaAo/8S+htX2u+p5dX6JB0Vue20E/sF
-        1oMhWisO3Ume+F+JpTgj0VCLuag4EQABKqM+pgMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrOLMWRmVeSWpSXmKPExsWy7bCSnO7qapkkgwmPNS3mrF/DZvFhrYbF
-        +oXLmC1m33/MYnF51xw2i5aj7SwWh+e3sVgcOjmX0YHDY1ZDL5vHzll32T1OzPjN4vFl1TVm
-        j74tqxg9Pm+SC2CL4rJJSc3JLEst0rdL4MpY1L+YpWABd8W3hz1MDYzzObsYOTkkBEwkGtdN
-        Y+xi5OIQEtjNKHH8x2pmiIS0xM9/71kgbGGJlf+es0MUfWKU6H13GyzBJqAnsWrXHjBbRKBa
-        Ytbnj0BFHBzMAiUSP/d4g4SFBWIkbk37wwpiswioSnxYc4YJxOYVsJM43/+TEWK+vMTMS9/Z
-        IeKCEidnPgEbyQwUb946m3kCI98sJKlZSFILGJlWMUqmFhTnpucWGxYY5qWW6xUn5haX5qXr
-        JefnbmIEh62W5g7G7as+6B1iZOJgPMQowcGsJMLLziqZJMSbklhZlVqUH19UmpNafIhRmoNF
-        SZz3QtfJeCGB9MSS1OzU1ILUIpgsEwenVAPTyTyO47rdS3rzzkSumhp+RrBsdWq15bop1ksu
-        rOBJ66+I277obLj+mu98XzknLXFtOzfX/JFWyCN5+e11Dv1qLLFb0ttXS/X18/nVbtHpWtD7
-        JHDeRCH329/E1K9Nf6jZluj19ndb2OqvViURa02vrOGbUZrS73yX/f/CmWv/ey1J1d324OHt
-        r+Lnb1x+WXFx5rENFSLqV88uy1DataT99ZWyeyrekwXWW3B8PK8vJ5nFOb/G7veuXl0Pu/bO
-        7RYud3pr0yZEqX2NTvI0O5W/mvvCIcZ5x9hrpBQN7s/La1NJe1VrWLSw+USELGNWo0hd58Uo
-        rWW3p+bX8L01XiHG2u60urS+bKLcN5/tP7crsRRnJBpqMRcVJwIAvLmGxcoCAAA=
-X-CMS-MailID: 20220228073715epcas5p1b3166e6b673d3c8b610f7e2f5745562b
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: REQ_APPROVE
-CMS-TYPE: 105P
-X-CMS-RootMailID: 20220228073715epcas5p1b3166e6b673d3c8b610f7e2f5745562b
-References: <CGME20220228073715epcas5p1b3166e6b673d3c8b610f7e2f5745562b@epcas5p1.samsung.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220216195901.1326924-3-swboyd@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-with commit 98e35f5894cf ("printk: git rid of [sched_delayed] message for
-printk_deferred") printk_deferred and printk_deferred_once requires
-LOGLEVEL in argument, but checkpatch.pl was not fixed and still reports
-it as warning:
+On Wed, Feb 16, 2022 at 11:58:59AM -0800, Stephen Boyd wrote:
+> We need to support parsing the HID device in both the vivaldi and the
+> hammer drivers so that we can properly expose the function row physmap
+> to userspace when a hammer device uses a vivaldi keyboard layout for the
+> function row keys. Extract the feature mapping logic from the vivaldi
+> driver into an hid specific vivaldi library so we can use it from both
+> HID drivers.
+> 
+> Cc: Jiri Kosina <jikos@kernel.org>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Tested-by: "Sean O'Brien" <seobrien@chromium.org>
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Cc: Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>
+> Acked-by: Jiri Kosina <jkosina@suse.cz>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  drivers/hid/Kconfig                |  9 +++
+>  drivers/hid/Makefile               |  1 +
+>  drivers/hid/hid-vivaldi-common.c   | 97 ++++++++++++++++++++++++++++++
+>  drivers/hid/hid-vivaldi.c          | 69 +--------------------
+>  include/linux/input/vivaldi-fmap.h |  9 +++
+>  5 files changed, 118 insertions(+), 67 deletions(-)
+>  create mode 100644 drivers/hid/hid-vivaldi-common.c
+> 
+> diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
+> index 5569a2029dab..ea8fa71c9e9c 100644
+> --- a/drivers/hid/Kconfig
+> +++ b/drivers/hid/Kconfig
+> @@ -403,14 +403,23 @@ config HOLTEK_FF
+>  	  Say Y here if you have a Holtek On Line Grip based game controller
+>  	  and want to have force feedback support for it.
+>  
+> +config HID_VIVALDI_COMMON
+> +	tristate
+> +	help
+> +	  ChromeOS Vivaldi HID parsing support library. This is a hidden
+> +	  option so that drivers can use common code to parse the HID
+> +	  descriptors for vivaldi function row keymap.
+> +
+>  config HID_GOOGLE_HAMMER
+>  	tristate "Google Hammer Keyboard"
+> +	select HID_VIVALDI_COMMON
 
-WARNING: Possible unnecessary KERN_ALERT
-printk_deferred(KERN_ALERT "checking deferred\n");
+This chunk belongs to the next patch.
 
-Co-developed-by: Vaneet Narang <v.narang@samsung.com>
-Signed-off-by: Vaneet Narang <v.narang@samsung.com>
-Signed-off-by: Maninder Singh <maninder1.s@samsung.com>
----
-v3 -> v4: v3 was dropped, because it starts reporting *_printk as
-          unnecessary KERNEL_* levels as report by Joe Perches.
-          dev_printk(KERN_DEBUG "foo", ...). thus fixing it with simple
-          addition of deferred in same line of _ratelimited as original
-          https://lkml.org/lkml/2021/8/24/91
+>  	depends on USB_HID && LEDS_CLASS && CROS_EC
+>  	help
+>  	Say Y here if you have a Google Hammer device.
+>  
+>  config HID_VIVALDI
+>  	tristate "Vivaldi Keyboard"
+> +	select HID_VIVALDI_COMMON
+>  	select INPUT_VIVALDIFMAP
+>  	depends on HID
+>  	help
+> diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
+> index 6d3e630e81af..469a6159ebae 100644
+> --- a/drivers/hid/Makefile
+> +++ b/drivers/hid/Makefile
+> @@ -50,6 +50,7 @@ obj-$(CONFIG_HID_FT260)		+= hid-ft260.o
+>  obj-$(CONFIG_HID_GEMBIRD)	+= hid-gembird.o
+>  obj-$(CONFIG_HID_GFRM)		+= hid-gfrm.o
+>  obj-$(CONFIG_HID_GLORIOUS)  += hid-glorious.o
+> +obj-$(CONFIG_HID_VIVALDI_COMMON) += hid-vivaldi-common.o
+>  obj-$(CONFIG_HID_GOOGLE_HAMMER)	+= hid-google-hammer.o
+>  obj-$(CONFIG_HID_VIVALDI)	+= hid-vivaldi.o
+>  obj-$(CONFIG_HID_GT683R)	+= hid-gt683r.o
+> diff --git a/drivers/hid/hid-vivaldi-common.c b/drivers/hid/hid-vivaldi-common.c
+> new file mode 100644
+> index 000000000000..8a5074fd63b7
+> --- /dev/null
+> +++ b/drivers/hid/hid-vivaldi-common.c
+> @@ -0,0 +1,97 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Helpers for ChromeOS HID Vivaldi keyboards
+> + *
+> + * Copyright (C) 2022 Google, Inc
+> + */
+> +
+> +#include <linux/export.h>
+> +#include <linux/hid.h>
+> +#include <linux/input/vivaldi-fmap.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/types.h>
+> +
+> +#define HID_VD_FN_ROW_PHYSMAP 0x00000001
+> +#define HID_USAGE_FN_ROW_PHYSMAP (HID_UP_GOOGLEVENDOR | HID_VD_FN_ROW_PHYSMAP)
+> +
+> +/**
+> + * vivaldi_hid_feature_mapping - Fill out vivaldi keymap data exposed via HID
+> + * @data: The vivaldi function keymap
+> + * @hdev: HID device to parse
+> + * @field: HID field to parse
+> + * @usage: HID usage to parse
+> + */
+> +void vivaldi_hid_feature_mapping(struct vivaldi_data *data,
+> +				 struct hid_device *hdev,
+> +				 struct hid_field *field,
+> +				 struct hid_usage *usage)
+> +{
+> +	struct hid_report *report = field->report;
+> +	int fn_key;
+> +	int ret;
+> +	u32 report_len;
+> +	u8 *report_data, *buf;
+> +
+> +	if (field->logical != HID_USAGE_FN_ROW_PHYSMAP ||
+> +	    (usage->hid & HID_USAGE_PAGE) != HID_UP_ORDINAL)
+> +		return;
+> +
+> +	fn_key = (usage->hid & HID_USAGE);
+> +	if (fn_key < VIVALDI_MIN_FN_ROW_KEY || fn_key > VIVALDI_MAX_FN_ROW_KEY)
+> +		return;
+> +	if (fn_key > data->num_function_row_keys)
+> +		data->num_function_row_keys = fn_key;
+> +
+> +	report_data = buf = hid_alloc_report_buf(report, GFP_KERNEL);
+> +	if (!report_data)
+> +		return;
+> +
+> +	report_len = hid_report_len(report);
+> +	if (!report->id) {
+> +		/*
+> +		 * hid_hw_raw_request() will stuff report ID (which will be 0)
+> +		 * into the first byte of the buffer even for unnumbered
+> +		 * reports, so we need to account for this to avoid getting
+> +		 * -EOVERFLOW in return.
+> +		 * Note that hid_alloc_report_buf() adds 7 bytes to the size
+> +		 * so we can safely say that we have space for an extra byte.
+> +		 */
+> +		report_len++;
+> +	}
+> +
+> +	ret = hid_hw_raw_request(hdev, report->id, report_data,
+> +				 report_len, HID_FEATURE_REPORT,
+> +				 HID_REQ_GET_REPORT);
+> +	if (ret < 0) {
+> +		dev_warn(&hdev->dev, "failed to fetch feature %d\n",
+> +			 field->report->id);
+> +		goto out;
+> +	}
+> +
+> +	if (!report->id) {
+> +		/*
+> +		 * Undo the damage from hid_hw_raw_request() for unnumbered
+> +		 * reports.
+> +		 */
+> +		report_data++;
+> +		report_len--;
+> +	}
+> +
+> +	ret = hid_report_raw_event(hdev, HID_FEATURE_REPORT, report_data,
+> +				   report_len, 0);
+> +	if (ret) {
+> +		dev_warn(&hdev->dev, "failed to report feature %d\n",
+> +			 field->report->id);
+> +		goto out;
+> +	}
+> +
+> +	data->function_row_physmap[fn_key - VIVALDI_MIN_FN_ROW_KEY] =
+> +	    field->value[usage->usage_index];
+> +
+> +out:
+> +	kfree(buf);
+> +}
+> +EXPORT_SYMBOL_GPL(vivaldi_hid_feature_mapping);
+> +
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/hid/hid-vivaldi.c b/drivers/hid/hid-vivaldi.c
+> index adb56b342948..f70cab6a192b 100644
+> --- a/drivers/hid/hid-vivaldi.c
+> +++ b/drivers/hid/hid-vivaldi.c
+> @@ -13,9 +13,6 @@
+>  #include <linux/module.h>
+>  #include <linux/sysfs.h>
+>  
+> -#define HID_VD_FN_ROW_PHYSMAP 0x00000001
+> -#define HID_USAGE_FN_ROW_PHYSMAP (HID_UP_GOOGLEVENDOR | HID_VD_FN_ROW_PHYSMAP)
+> -
+>  static ssize_t function_row_physmap_show(struct device *dev,
+>  					 struct device_attribute *attr,
+>  					 char *buf)
+> @@ -60,70 +57,8 @@ static void vivaldi_feature_mapping(struct hid_device *hdev,
+>  				    struct hid_usage *usage)
+>  {
+>  	struct vivaldi_data *drvdata = hid_get_drvdata(hdev);
+> -	struct hid_report *report = field->report;
+> -	int fn_key;
+> -	int ret;
+> -	u32 report_len;
+> -	u8 *report_data, *buf;
+> -
+> -	if (field->logical != HID_USAGE_FN_ROW_PHYSMAP ||
+> -	    (usage->hid & HID_USAGE_PAGE) != HID_UP_ORDINAL)
+> -		return;
+> -
+> -	fn_key = (usage->hid & HID_USAGE);
+> -	if (fn_key < VIVALDI_MIN_FN_ROW_KEY || fn_key > VIVALDI_MAX_FN_ROW_KEY)
+> -		return;
+> -	if (fn_key > drvdata->num_function_row_keys)
+> -		drvdata->num_function_row_keys = fn_key;
+> -
+> -	report_data = buf = hid_alloc_report_buf(report, GFP_KERNEL);
+> -	if (!report_data)
+> -		return;
+> -
+> -	report_len = hid_report_len(report);
+> -	if (!report->id) {
+> -		/*
+> -		 * hid_hw_raw_request() will stuff report ID (which will be 0)
+> -		 * into the first byte of the buffer even for unnumbered
+> -		 * reports, so we need to account for this to avoid getting
+> -		 * -EOVERFLOW in return.
+> -		 * Note that hid_alloc_report_buf() adds 7 bytes to the size
+> -		 * so we can safely say that we have space for an extra byte.
+> -		 */
+> -		report_len++;
+> -	}
+> -
+> -	ret = hid_hw_raw_request(hdev, report->id, report_data,
+> -				 report_len, HID_FEATURE_REPORT,
+> -				 HID_REQ_GET_REPORT);
+> -	if (ret < 0) {
+> -		dev_warn(&hdev->dev, "failed to fetch feature %d\n",
+> -			 field->report->id);
+> -		goto out;
+> -	}
+> -
+> -	if (!report->id) {
+> -		/*
+> -		 * Undo the damage from hid_hw_raw_request() for unnumbered
+> -		 * reports.
+> -		 */
+> -		report_data++;
+> -		report_len--;
+> -	}
+> -
+> -	ret = hid_report_raw_event(hdev, HID_FEATURE_REPORT, report_data,
+> -				   report_len, 0);
+> -	if (ret) {
+> -		dev_warn(&hdev->dev, "failed to report feature %d\n",
+> -			 field->report->id);
+> -		goto out;
+> -	}
+> -
+> -	drvdata->function_row_physmap[fn_key - VIVALDI_MIN_FN_ROW_KEY] =
+> -	    field->value[usage->usage_index];
+> -
+> -out:
+> -	kfree(buf);
+> +
+> +	vivaldi_hid_feature_mapping(drvdata, hdev, field, usage);
+>  }
+>  
+>  static int vivaldi_input_configured(struct hid_device *hdev,
+> diff --git a/include/linux/input/vivaldi-fmap.h b/include/linux/input/vivaldi-fmap.h
+> index 57563d9da022..c736200b4511 100644
+> --- a/include/linux/input/vivaldi-fmap.h
+> +++ b/include/linux/input/vivaldi-fmap.h
+> @@ -4,6 +4,10 @@
+>  
+>  #include <linux/types.h>
+>  
+> +struct hid_device;
+> +struct hid_field;
+> +struct hid_usage;
+> +
 
- scripts/checkpatch.pl | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This all HID-specific and does not belong here, I created a new
+hid-vivaldi-common.h in drivers/hid for it.
 
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 2653177f52d9..78053545a0d5 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -6312,7 +6312,7 @@ sub process {
- 		}
- 
- # check for logging functions with KERN_<LEVEL>
--		if ($line !~ /printk(?:_ratelimited|_once)?\s*\(/ &&
-+		if ($line !~ /printk(?:_ratelimited|_once|_deferred|_deferred_once)?\s*\(/ &&
- 		    $line =~ /\b$logFunctions\s*\(.*\b(KERN_[A-Z]+)\b/) {
- 			my $level = $1;
- 			if (WARN("UNNECESSARY_KERN_LEVEL",
+>  #define VIVALDI_MIN_FN_ROW_KEY	1
+>  #define VIVALDI_MAX_FN_ROW_KEY	24
+>  
+> @@ -25,4 +29,9 @@ struct vivaldi_data {
+>  ssize_t vivaldi_function_row_physmap_show(const struct vivaldi_data *data,
+>  					  char *buf);
+>  
+> +void vivaldi_hid_feature_mapping(struct vivaldi_data *data,
+> +				 struct hid_device *hdev,
+> +				 struct hid_field *field,
+> +				 struct hid_usage *usage);
+> +
+>  #endif /* _VIVALDI_KEYMAP_H */
+> -- 
+> https://chromeos.dev
+> 
+
+Thanks.
+
 -- 
-2.17.1
-
+Dmitry
