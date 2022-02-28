@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C401C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 541EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:59:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238051AbiB1SAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:00:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
+        id S239352AbiB1SAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:00:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240176AbiB1Rx5 (ORCPT
+        with ESMTP id S240161AbiB1Rx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:57 -0500
+        Mon, 28 Feb 2022 12:53:56 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625D9B1096;
-        Mon, 28 Feb 2022 09:41:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7B84B0EA7;
+        Mon, 28 Feb 2022 09:41:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 12A5A609EE;
-        Mon, 28 Feb 2022 17:41:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D465C340E7;
-        Mon, 28 Feb 2022 17:41:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F39F61594;
+        Mon, 28 Feb 2022 17:41:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77854C340E7;
+        Mon, 28 Feb 2022 17:41:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070102;
-        bh=Jr5Pyk+otoV6gfQcM3bxSHkPqT76vEIXtzQ45AJ/KPs=;
+        s=korg; t=1646070099;
+        bh=Deh0yLei9Fa2GBCl8z4iR3R8y7VFqMX0cIU0TwjK5y8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sifSREfif1hDBgXId+ENa+aEk+HpFlg66HceEK7JmwD99l3KEEE2ADtG9oUQ1QtYu
-         uPLtqbQBJLvdBe3mymrNKLFeLgsHT/AoYnMR17l427F2fygrmWo+oI6wuE3jyBCejZ
-         Hb3FvRorN2QPq+3fQVxgV9flm2xYhmB3ExKFAm/c=
+        b=W7si+thT/5vZi5VEgFcXgsu1ktpET3FESKIsIjq7/pPx4m7Vl/fhyB8OBDKyYI4Wk
+         YGvb1OJlNxMnyVlFzHOdpFUhUVNce2Asd9UiWlv68HV/vNlfRZmvY3gg7UQnKiXjHQ
+         cuW1+6U14y++ufovMfFRuAMnM0jnalJQ2AetZWso=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Peter <sven@svenpeter.dev>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.15 124/139] tps6598x: clear int mask on probe failure
-Date:   Mon, 28 Feb 2022 18:24:58 +0100
-Message-Id: <20220228172400.668857813@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 088/139] net-timestamp: convert sk->sk_tskey to atomic_t
+Date:   Mon, 28 Feb 2022 18:24:22 +0100
+Message-Id: <20220228172356.894201067@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -49,54 +51,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Eric Dumazet <edumazet@google.com>
 
-commit aba2081e0a9c977396124aa6df93b55ed5912b19 upstream.
+[ Upstream commit a1cdec57e03a1352e92fbbe7974039dda4efcec0 ]
 
-The interrupt mask is enabled before any potential failure points in
-the driver, which can leave a failure path where we exit with
-interrupts enabled but the device not live. This causes an infinite
-stream of interrupts on an Apple M1 Pro laptop on USB-C.
+UDP sendmsg() can be lockless, this is causing all kinds
+of data races.
 
-Add a failure label that's used post enabling interrupts, where we
-mask them again before returning an error.
+This patch converts sk->sk_tskey to remove one of these races.
 
-Suggested-by: Sven Peter <sven@svenpeter.dev>
-Cc: stable <stable@vger.kernel.org>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Link: https://lore.kernel.org/r/e6b80669-20f3-06e7-9ed5-8951a9c6db6f@kernel.dk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+BUG: KCSAN: data-race in __ip_append_data / __ip_append_data
+
+read to 0xffff8881035d4b6c of 4 bytes by task 8877 on cpu 1:
+ __ip_append_data+0x1c1/0x1de0 net/ipv4/ip_output.c:994
+ ip_make_skb+0x13f/0x2d0 net/ipv4/ip_output.c:1636
+ udp_sendmsg+0x12bd/0x14c0 net/ipv4/udp.c:1249
+ inet_sendmsg+0x5f/0x80 net/ipv4/af_inet.c:819
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
+ ___sys_sendmsg net/socket.c:2467 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2553
+ __do_sys_sendmmsg net/socket.c:2582 [inline]
+ __se_sys_sendmmsg net/socket.c:2579 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2579
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+write to 0xffff8881035d4b6c of 4 bytes by task 8880 on cpu 0:
+ __ip_append_data+0x1d8/0x1de0 net/ipv4/ip_output.c:994
+ ip_make_skb+0x13f/0x2d0 net/ipv4/ip_output.c:1636
+ udp_sendmsg+0x12bd/0x14c0 net/ipv4/udp.c:1249
+ inet_sendmsg+0x5f/0x80 net/ipv4/af_inet.c:819
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg net/socket.c:725 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2413
+ ___sys_sendmsg net/socket.c:2467 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2553
+ __do_sys_sendmmsg net/socket.c:2582 [inline]
+ __se_sys_sendmmsg net/socket.c:2579 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2579
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0x0000054d -> 0x0000054e
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 0 PID: 8880 Comm: syz-executor.5 Not tainted 5.17.0-rc2-syzkaller-00167-gdcb85f85fa6f-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 09c2d251b707 ("net-timestamp: add key to disambiguate concurrent datagrams")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/typec/tipd/core.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ include/net/sock.h        | 4 ++--
+ net/can/j1939/transport.c | 2 +-
+ net/core/skbuff.c         | 2 +-
+ net/core/sock.c           | 4 ++--
+ net/ipv4/ip_output.c      | 2 +-
+ net/ipv6/ip6_output.c     | 2 +-
+ 6 files changed, 8 insertions(+), 8 deletions(-)
 
---- a/drivers/usb/typec/tipd/core.c
-+++ b/drivers/usb/typec/tipd/core.c
-@@ -618,12 +618,12 @@ static int tps6598x_probe(struct i2c_cli
+diff --git a/include/net/sock.h b/include/net/sock.h
+index dfb92f91d5be5..7d49196a3880e 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -506,7 +506,7 @@ struct sock {
+ 	u16			sk_tsflags;
+ 	int			sk_bind_phc;
+ 	u8			sk_shutdown;
+-	u32			sk_tskey;
++	atomic_t		sk_tskey;
+ 	atomic_t		sk_zckey;
  
- 	ret = tps6598x_read32(tps, TPS_REG_STATUS, &status);
- 	if (ret < 0)
--		return ret;
-+		goto err_clear_mask;
- 	trace_tps6598x_status(status);
+ 	u8			sk_clockid;
+@@ -2598,7 +2598,7 @@ static inline void _sock_tx_timestamp(struct sock *sk, __u16 tsflags,
+ 		__sock_tx_timestamp(tsflags, tx_flags);
+ 		if (tsflags & SOF_TIMESTAMPING_OPT_ID && tskey &&
+ 		    tsflags & SOF_TIMESTAMPING_TX_RECORD_MASK)
+-			*tskey = sk->sk_tskey++;
++			*tskey = atomic_inc_return(&sk->sk_tskey) - 1;
+ 	}
+ 	if (unlikely(sock_flag(sk, SOCK_WIFI_STATUS)))
+ 		*tx_flags |= SKBTX_WIFI_STATUS;
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index a271688780a2c..307ee1174a6e2 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -2006,7 +2006,7 @@ struct j1939_session *j1939_tp_send(struct j1939_priv *priv,
+ 		/* set the end-packet for broadcast */
+ 		session->pkt.last = session->pkt.total;
  
- 	ret = tps6598x_read32(tps, TPS_REG_SYSTEM_CONF, &conf);
- 	if (ret < 0)
--		return ret;
-+		goto err_clear_mask;
+-	skcb->tskey = session->sk->sk_tskey++;
++	skcb->tskey = atomic_inc_return(&session->sk->sk_tskey) - 1;
+ 	session->tskey = skcb->tskey;
  
- 	/*
- 	 * This fwnode has a "compatible" property, but is never populated as a
-@@ -712,7 +712,8 @@ err_role_put:
- 	usb_role_switch_put(tps->role_sw);
- err_fwnode_put:
- 	fwnode_handle_put(fwnode);
--
-+err_clear_mask:
-+	tps6598x_write64(tps, TPS_REG_INT_MASK1, 0);
- 	return ret;
- }
+ 	return session;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index bb4dce8fd0405..449a96e358ad5 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4844,7 +4844,7 @@ static void __skb_complete_tx_timestamp(struct sk_buff *skb,
+ 		serr->ee.ee_data = skb_shinfo(skb)->tskey;
+ 		if (sk->sk_protocol == IPPROTO_TCP &&
+ 		    sk->sk_type == SOCK_STREAM)
+-			serr->ee.ee_data -= sk->sk_tskey;
++			serr->ee.ee_data -= atomic_read(&sk->sk_tskey);
+ 	}
  
+ 	err = sock_queue_err_skb(sk, skb);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 6ea317f84edd2..deaed1b206823 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -866,9 +866,9 @@ int sock_set_timestamping(struct sock *sk, int optname,
+ 			if ((1 << sk->sk_state) &
+ 			    (TCPF_CLOSE | TCPF_LISTEN))
+ 				return -EINVAL;
+-			sk->sk_tskey = tcp_sk(sk)->snd_una;
++			atomic_set(&sk->sk_tskey, tcp_sk(sk)->snd_una);
+ 		} else {
+-			sk->sk_tskey = 0;
++			atomic_set(&sk->sk_tskey, 0);
+ 		}
+ 	}
+ 
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index a4d2eb691cbc1..131066d0319a2 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -992,7 +992,7 @@ static int __ip_append_data(struct sock *sk,
+ 
+ 	if (cork->tx_flags & SKBTX_ANY_SW_TSTAMP &&
+ 	    sk->sk_tsflags & SOF_TIMESTAMPING_OPT_ID)
+-		tskey = sk->sk_tskey++;
++		tskey = atomic_inc_return(&sk->sk_tskey) - 1;
+ 
+ 	hh_len = LL_RESERVED_SPACE(rt->dst.dev);
+ 
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index ff4e83e2a5068..22bf8fb617165 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1465,7 +1465,7 @@ static int __ip6_append_data(struct sock *sk,
+ 
+ 	if (cork->tx_flags & SKBTX_ANY_SW_TSTAMP &&
+ 	    sk->sk_tsflags & SOF_TIMESTAMPING_OPT_ID)
+-		tskey = sk->sk_tskey++;
++		tskey = atomic_inc_return(&sk->sk_tskey) - 1;
+ 
+ 	hh_len = LL_RESERVED_SPACE(rt->dst.dev);
+ 
+-- 
+2.34.1
+
 
 
