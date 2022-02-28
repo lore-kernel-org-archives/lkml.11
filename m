@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3256BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C794AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239361AbiB1SCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:02:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51172 "EHLO
+        id S236064AbiB1SCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:02:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235015AbiB1Ryq (ORCPT
+        with ESMTP id S238939AbiB1Ryq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:54:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BC653737;
-        Mon, 28 Feb 2022 09:44:01 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB88185;
+        Mon, 28 Feb 2022 09:44:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DECA060909;
-        Mon, 28 Feb 2022 17:44:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C740BC340F0;
-        Mon, 28 Feb 2022 17:43:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4364B81085;
+        Mon, 28 Feb 2022 17:44:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFE69C340E7;
+        Mon, 28 Feb 2022 17:44:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070240;
-        bh=P9+8LyoE7wfKYtVa8BQKxcGYP08SrbQhU1GkxwKfPiQ=;
+        s=korg; t=1646070259;
+        bh=syIQldVdX7I9vkT6zF0HEwnuMxLsFBKjlVxG6GEJKu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JJRGdrPhRoFS8GEpztxEKrs4n34xkC6lHf7dxJITfOcfKuVvBligwA+2WITt+Gk/1
-         zlw5TWaDQgV5L7r376dHfkUEHYUSbl8IoLyKF1UlIwnNT8k6Na+4LY8PkocV78Vmaq
-         457PwjX3SY1lKgtIZm9MEheHhIE1BMXcznC7wO1I=
+        b=02rxw8IiMEio/YykV64XcFrTGiD5pZg09vAb/KYLfu7rMJX0RhyVIHsiwV6Kc8Hpg
+         HQRVE8At/zhR+1RPhHgJqIz/71JcFY9ClcbQc5dF5J000W/98nMuL8/HqKlLxJh0rp
+         0BPf8LPKrTGRc89jGeJjqvM+5HRVMmafp1x7hUXc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexei Budankov <abudankov@huawei.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.16 037/164] perf data: Fix double free in perf_session__delete()
-Date:   Mon, 28 Feb 2022 18:23:19 +0100
-Message-Id: <20220228172403.639757603@linuxfoundation.org>
+        stable@vger.kernel.org, Vikas Gupta <vikas.gupta@broadcom.com>,
+        Somnath Kotur <somnath.kotur@broadcom.com>,
+        Kalesh AP <kalesh-anakkur.purayil@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 043/164] bnxt_en: Fix devlink fw_activate
+Date:   Mon, 28 Feb 2022 18:23:25 +0100
+Message-Id: <20220228172404.168604422@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -58,58 +51,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-commit 69560e366fc4d5fca7bebb0e44edbfafc8bcaf05 upstream.
+commit 1278d17a1fb860e7eab4bc3ff4b026a87cbf5105 upstream.
 
-When perf_data__create_dir() fails, it calls close_dir(), but
-perf_session__delete() also calls close_dir() and since dir.version and
-dir.nr were initialized by perf_data__create_dir(), a double free occurs.
+To install a livepatch, first flash the package to NVM, and then
+activate the patch through the "HWRM_FW_LIVEPATCH" fw command.
+To uninstall a patch from NVM, flash the removal package and then
+activate it through the "HWRM_FW_LIVEPATCH" fw command.
 
-This patch moves the initialization of dir.version and dir.nr after
-successful initialization of dir.files, that prevents double freeing.
-This behavior is already implemented in perf_data__open_dir().
+The "HWRM_FW_LIVEPATCH" fw command has to consider following scenarios:
 
-Fixes: 145520631130bd64 ("perf data: Add perf_data__(create_dir|close_dir) functions")
-Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Antonov <alexander.antonov@linux.intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexei Budankov <abudankov@huawei.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220218152341.5197-2-alexey.v.bayduraev@linux.intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+1. no patch in NVM and no patch active. Do nothing.
+2. patch in NVM, but not active. Activate the patch currently in NVM.
+3. patch is not in NVM, but active. Deactivate the patch.
+4. patch in NVM and the patch active. Do nothing.
+
+Fix the code to handle these scenarios during devlink "fw_activate".
+
+To install and activate a live patch:
+devlink dev flash pci/0000:c1:00.0 file thor_patch.pkg
+devlink -f dev reload pci/0000:c1:00.0 action fw_activate limit no_reset
+
+To remove and deactivate a live patch:
+devlink dev flash pci/0000:c1:00.0 file thor_patch_rem.pkg
+devlink -f dev reload pci/0000:c1:00.0 action fw_activate limit no_reset
+
+Fixes: 3c4153394e2c ("bnxt_en: implement firmware live patching")
+Reviewed-by: Vikas Gupta <vikas.gupta@broadcom.com>
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/data.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c |   39 +++++++++++++++++-----
+ 1 file changed, 31 insertions(+), 8 deletions(-)
 
---- a/tools/perf/util/data.c
-+++ b/tools/perf/util/data.c
-@@ -44,10 +44,6 @@ int perf_data__create_dir(struct perf_da
- 	if (!files)
- 		return -ENOMEM;
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -366,6 +366,16 @@ bnxt_dl_livepatch_report_err(struct bnxt
+ 	}
+ }
  
--	data->dir.version = PERF_DIR_VERSION;
--	data->dir.files   = files;
--	data->dir.nr      = nr;
--
- 	for (i = 0; i < nr; i++) {
- 		struct perf_data_file *file = &files[i];
++/* Live patch status in NVM */
++#define BNXT_LIVEPATCH_NOT_INSTALLED	0
++#define BNXT_LIVEPATCH_INSTALLED	FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_INSTALL
++#define BNXT_LIVEPATCH_REMOVED		FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_ACTIVE
++#define BNXT_LIVEPATCH_MASK		(FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_INSTALL | \
++					 FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_ACTIVE)
++#define BNXT_LIVEPATCH_ACTIVATED	BNXT_LIVEPATCH_MASK
++
++#define BNXT_LIVEPATCH_STATE(flags)	((flags) & BNXT_LIVEPATCH_MASK)
++
+ static int
+ bnxt_dl_livepatch_activate(struct bnxt *bp, struct netlink_ext_ack *extack)
+ {
+@@ -373,8 +383,9 @@ bnxt_dl_livepatch_activate(struct bnxt *
+ 	struct hwrm_fw_livepatch_query_input *query_req;
+ 	struct hwrm_fw_livepatch_output *patch_resp;
+ 	struct hwrm_fw_livepatch_input *patch_req;
++	u16 flags, live_patch_state;
++	bool activated = false;
+ 	u32 installed = 0;
+-	u16 flags;
+ 	u8 target;
+ 	int rc;
  
-@@ -62,6 +58,9 @@ int perf_data__create_dir(struct perf_da
- 		file->fd = ret;
+@@ -393,7 +404,6 @@ bnxt_dl_livepatch_activate(struct bnxt *
+ 		hwrm_req_drop(bp, query_req);
+ 		return rc;
+ 	}
+-	patch_req->opcode = FW_LIVEPATCH_REQ_OPCODE_ACTIVATE;
+ 	patch_req->loadtype = FW_LIVEPATCH_REQ_LOADTYPE_NVM_INSTALL;
+ 	patch_resp = hwrm_req_hold(bp, patch_req);
+ 
+@@ -406,12 +416,20 @@ bnxt_dl_livepatch_activate(struct bnxt *
+ 		}
+ 
+ 		flags = le16_to_cpu(query_resp->status_flags);
+-		if (~flags & FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_INSTALL)
++		live_patch_state = BNXT_LIVEPATCH_STATE(flags);
++
++		if (live_patch_state == BNXT_LIVEPATCH_NOT_INSTALLED)
+ 			continue;
+-		if ((flags & FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_ACTIVE) &&
+-		    !strncmp(query_resp->active_ver, query_resp->install_ver,
+-			     sizeof(query_resp->active_ver)))
++
++		if (live_patch_state == BNXT_LIVEPATCH_ACTIVATED) {
++			activated = true;
+ 			continue;
++		}
++
++		if (live_patch_state == BNXT_LIVEPATCH_INSTALLED)
++			patch_req->opcode = FW_LIVEPATCH_REQ_OPCODE_ACTIVATE;
++		else if (live_patch_state == BNXT_LIVEPATCH_REMOVED)
++			patch_req->opcode = FW_LIVEPATCH_REQ_OPCODE_DEACTIVATE;
+ 
+ 		patch_req->fw_target = target;
+ 		rc = hwrm_req_send(bp, patch_req);
+@@ -423,8 +441,13 @@ bnxt_dl_livepatch_activate(struct bnxt *
  	}
  
-+	data->dir.version = PERF_DIR_VERSION;
-+	data->dir.files   = files;
-+	data->dir.nr      = nr;
- 	return 0;
- 
- out_err:
+ 	if (!rc && !installed) {
+-		NL_SET_ERR_MSG_MOD(extack, "No live patches found");
+-		rc = -ENOENT;
++		if (activated) {
++			NL_SET_ERR_MSG_MOD(extack, "Live patch already activated");
++			rc = -EEXIST;
++		} else {
++			NL_SET_ERR_MSG_MOD(extack, "No live patches found");
++			rc = -ENOENT;
++		}
+ 	}
+ 	hwrm_req_drop(bp, query_req);
+ 	hwrm_req_drop(bp, patch_req);
 
 
