@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1FB5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54600C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 02:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232548AbiB1CQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 27 Feb 2022 21:16:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60844 "EHLO
+        id S232557AbiB1CQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 27 Feb 2022 21:16:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232080AbiB1CPe (ORCPT
+        with ESMTP id S232459AbiB1CPe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 27 Feb 2022 21:15:34 -0500
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACB9C52B0B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF1153B47;
         Sun, 27 Feb 2022 18:14:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1646014496; x=1677550496;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=bFLy9fpNKQd2QeHf+C89Gyebuh/eSQ0CtscuysTcNBI=;
-  b=l2Bw9RMHKTr3DBkyS5wOtrY07VkbY9dMXIUe7lp/tAES+pndaQJXLnHN
-   dJ8A8mEykDvY8NmnMEzIpwv7mcWK0XjNznSK+jScx1DbTcGJfhGBbi6xV
-   05RZetQ28bcrUO7RLZTlvv/XTewXeqzfdHPERI2FNKM7j/KCdsE3hZulX
-   ZIU/ejTp9TTM4fnPlB6zf0Etr1MgSYoyhXIyQjDiTjJ9SouKZ7senEyg7
-   FVcEhWtQSw8a/eeIrOFNOo6uurYHK7uMe5g/IrufCetlFeJohVcwTd0jV
-   C58ndQXE1jXVqOUdAAq/M2vYR4siUMKcXVR6WgWvfaMXAImqgMIJPRARA
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="240191961"
+  bh=1hcI89qzJIq9qMe/CEjop+OcHI446TN21iLPJVGm8LE=;
+  b=DujBQNMxNMQaVqHt9EgTGJlNgVqiZOU6yOtvVomHvYWvBTJFtkMbAG2L
+   uwWSd0PvelyiM6V10PngnsAewMs9Xim3SE6hqnUtsX+Q+FJKaeHynJawK
+   bfsIeuPGyHjHISTo2OjZQ2xivyhhrpy1UQYNZIuhsvHMx6mFNqnsiyDX5
+   VpGbsyaqhgNUYvjF6+ODL+I1tIb1qahVnQQZVx6MH96pnTC+oA9VXNGzE
+   Co84jTxungXE7uM2zVQHWcmnE6E0D8FayUnhi8UvYWQ/F4Mytv8iFpH9s
+   dB6yvvE30DwKTminBOlIC/zDjYiZfzt2hUtG4zCXcnR+MvFyzZoVurJBs
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="240191952"
 X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="240191961"
+   d="scan'208";a="240191952"
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:43 -0800
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:35 -0800
 X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="777936962"
+   d="scan'208";a="777936949"
 Received: from jdpanhor-mobl2.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.254.49.36])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:39 -0800
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 18:14:30 -0800
 From:   Kai Huang <kai.huang@intel.com>
 To:     x86@kernel.org
 Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
@@ -48,9 +48,9 @@ Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         chang.seok.bae@intel.com, keescook@chromium.org,
         hengqi.arch@bytedance.com, laijs@linux.alibaba.com,
         metze@samba.org, linux-kernel@vger.kernel.org, kai.huang@intel.com
-Subject: [RFC PATCH 14/21] x86/virt/tdx: Set up reserved areas for all TDMRs
-Date:   Mon, 28 Feb 2022 15:13:02 +1300
-Message-Id: <e097477f93c17a42f977a75ac0f060ad68f54ec7.1646007267.git.kai.huang@intel.com>
+Subject: [RFC PATCH 12/21] x86/virt/tdx: Create TDMRs to cover all system RAM
+Date:   Mon, 28 Feb 2022 15:13:00 +1300
+Message-Id: <2570f75f10ea67b849a47159e4bcde1227e1c8be.1646007267.git.kai.huang@intel.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1646007267.git.kai.huang@intel.com>
 References: <cover.1646007267.git.kai.huang@intel.com>
@@ -60,191 +60,201 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the last step of constructing TDMRs, create reserved area information
-for the memory region holes in each TDMR.  If any PAMT (or part of it)
-resides within a particular TDMR, also it as reserved.
+The kernel configures TDX usable memory regions to the TDX module via
+an array of "TD Memory Region" (TDMR).  Each TDMR entry (TDMR_INFO)
+contains the information of the base/size of a memory region, the
+base/size of the associated Physical Address Metadata Table (PAMT) and
+a list of reserved areas in the region.
 
-All reserved areas in each TDMR must be in address ascending order,
-required by TDX architecture.
+Create a number of TDMRs according to the verified e820 RAM entries.
+As the first step only set up the base/size information for each TDMR.
+
+TDMR must be 1G aligned and the size must be in 1G granularity.  This
+implies that one TDMR could cover multiple e820 RAM entries.  If a RAM
+entry spans the 1GB boundary and the former part is already covered by
+the previous TDMR, just create a new TDMR for the latter part.
+
+TDX only supports a limited number of TDMRs (currently 64).  Abort the
+TDMR construction process when the number of TDMRs exceeds this
+limitation.
 
 Signed-off-by: Kai Huang <kai.huang@intel.com>
 ---
- arch/x86/virt/vmx/tdx.c | 148 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 146 insertions(+), 2 deletions(-)
+ arch/x86/virt/vmx/tdx.c | 138 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 138 insertions(+)
 
 diff --git a/arch/x86/virt/vmx/tdx.c b/arch/x86/virt/vmx/tdx.c
-index d29e7943f890..8dac98b91c77 100644
+index 0780ec71651b..fe83cf9ac2f9 100644
 --- a/arch/x86/virt/vmx/tdx.c
 +++ b/arch/x86/virt/vmx/tdx.c
-@@ -14,6 +14,7 @@
- #include <linux/smp.h>
- #include <linux/atomic.h>
- #include <linux/slab.h>
-+#include <linux/sort.h>
- #include <asm/msr-index.h>
- #include <asm/msr.h>
- #include <asm/cpufeature.h>
-@@ -1031,6 +1032,145 @@ static int tdmrs_setup_pamt_all(struct tdmr_info **tdmr_array, int tdmr_num)
- 	return -ENOMEM;
+@@ -53,6 +53,18 @@
+ 		((u32)(((_keyid_part) & 0xffffffffull) + 1))
+ #define TDX_KEYID_NUM(_keyid_part)	((u32)((_keyid_part) >> 32))
+ 
++/* TDMR must be 1gb aligned */
++#define TDMR_ALIGNMENT		BIT_ULL(30)
++#define TDMR_PFN_ALIGNMENT	(TDMR_ALIGNMENT >> PAGE_SHIFT)
++
++/* Align up and down the address to TDMR boundary */
++#define TDMR_ALIGN_DOWN(_addr)	ALIGN_DOWN((_addr), TDMR_ALIGNMENT)
++#define TDMR_ALIGN_UP(_addr)	ALIGN((_addr), TDMR_ALIGNMENT)
++
++/* TDMR's start and end address */
++#define TDMR_START(_tdmr)	((_tdmr)->base)
++#define TDMR_END(_tdmr)		((_tdmr)->base + (_tdmr)->size)
++
+ /*
+  * TDX module status during initialization
+  */
+@@ -732,6 +744,44 @@ static int e820_check_against_cmrs(void)
+ 	return 0;
  }
  
-+static int tdmr_add_rsvd_area(struct tdmr_info *tdmr, int *p_idx,
-+			      u64 addr, u64 size)
++/* The starting offset of reserved areas within TDMR_INFO */
++#define TDMR_RSVD_START		64
++
++static struct tdmr_info *__alloc_tdmr(void)
 +{
-+	struct tdmr_reserved_area *rsvd_areas = tdmr->reserved_areas;
-+	int idx = *p_idx;
-+
-+	/* Reserved area must be 4K aligned in offset and size */
-+	if (WARN_ON(addr & ~PAGE_MASK || size & ~PAGE_MASK))
-+		return -EINVAL;
-+
-+	/* Cannot exceed maximum reserved areas supported by TDX */
-+	if (idx >= tdx_sysinfo.max_reserved_per_tdmr)
-+		return -E2BIG;
-+
-+	rsvd_areas[idx].offset = addr - tdmr->base;
-+	rsvd_areas[idx].size = size;
-+
-+	*p_idx = idx + 1;
-+
-+	return 0;
-+}
-+
-+/* Compare function called by sort() for TDMR reserved areas */
-+static int rsvd_area_cmp_func(const void *a, const void *b)
-+{
-+	struct tdmr_reserved_area *r1 = (struct tdmr_reserved_area *)a;
-+	struct tdmr_reserved_area *r2 = (struct tdmr_reserved_area *)b;
-+
-+	if (r1->offset + r1->size <= r2->offset)
-+		return -1;
-+	if (r1->offset >= r2->offset + r2->size)
-+		return 1;
-+
-+	/* Reserved areas cannot overlap.  Caller should guarantee. */
-+	WARN_ON(1);
-+	return -1;
-+}
-+
-+/* Set up reserved areas for a TDMR, including memory holes and PAMTs */
-+static int tdmr_setup_rsvd_areas(struct tdmr_info *tdmr,
-+				     struct tdmr_info **tdmr_array,
-+				     int tdmr_num)
-+{
-+	u64 start, end, prev_end;
-+	int rsvd_idx, i, ret = 0;
-+
-+	/* Mark holes between e820 RAM entries as reserved */
-+	rsvd_idx = 0;
-+	prev_end = TDMR_START(tdmr);
-+	e820_for_each_mem(e820_table, i, start, end) {
-+		/* Break if this entry is after the TDMR */
-+		if (start >= TDMR_END(tdmr))
-+			break;
-+
-+		/* Exclude entries before this TDMR */
-+		if (end < TDMR_START(tdmr))
-+			continue;
-+
-+		/*
-+		 * Skip if no hole exists before this entry. "<=" is
-+		 * used because one e820 entry might span two TDMRs.
-+		 * In that case the start address of this entry is
-+		 * smaller then the start address of the second TDMR.
-+		 */
-+		if (start <= prev_end) {
-+			prev_end = end;
-+			continue;
-+		}
-+
-+		/* Add the hole before this e820 entry */
-+		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, prev_end,
-+				start - prev_end);
-+		if (ret)
-+			return ret;
-+
-+		prev_end = end;
-+	}
-+
-+	/* Add the hole after the last RAM entry if it exists. */
-+	if (prev_end < TDMR_END(tdmr)) {
-+		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, prev_end,
-+				TDMR_END(tdmr) - prev_end);
-+		if (ret)
-+			return ret;
-+	}
++	int tdmr_sz;
 +
 +	/*
-+	 * Walk over all TDMRs to find out whether any PAMT falls into
-+	 * the given TDMR. If yes, mark it as reserved too.
++	 * TDMR_INFO's actual size depends on maximum number of reserved
++	 * areas that one TDMR supports.
 +	 */
-+	for (i = 0; i < tdmr_num; i++) {
-+		struct tdmr_info *tmp = tdmr_array[i];
-+		u64 pamt_start, pamt_end;
++	tdmr_sz = TDMR_RSVD_START + tdx_sysinfo.max_reserved_per_tdmr *
++		sizeof(struct tdmr_reserved_area);
 +
-+		pamt_start = tmp->pamt_4k_base;
-+		pamt_end = pamt_start + tmp->pamt_4k_size +
-+			tmp->pamt_2m_size + tmp->pamt_1g_size;
++	/*
++	 * TDX requires TDMR_INFO to be 512 aligned.  Always align up
++	 * TDMR_INFO size to 512 so the memory allocated via kzalloc()
++	 * can meet the alignment requirement.
++	 */
++	tdmr_sz = ALIGN(tdmr_sz, TDMR_INFO_ALIGNMENT);
 +
-+		/* Skip PAMTs outside of the given TDMR */
-+		if ((pamt_end <= TDMR_START(tdmr)) ||
-+				(pamt_start >= TDMR_END(tdmr)))
-+			continue;
-+
-+		/* Only mark the part within the TDMR as reserved */
-+		if (pamt_start < TDMR_START(tdmr))
-+			pamt_start = TDMR_START(tdmr);
-+		if (pamt_end > TDMR_END(tdmr))
-+			pamt_end = TDMR_END(tdmr);
-+
-+		ret = tdmr_add_rsvd_area(tdmr, &rsvd_idx, pamt_start,
-+				pamt_end - pamt_start);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	/* TDX requires reserved areas listed in address ascending order */
-+	sort(tdmr->reserved_areas, rsvd_idx, sizeof(struct tdmr_reserved_area),
-+			rsvd_area_cmp_func, NULL);
-+
-+	return 0;
++	return kzalloc(tdmr_sz, GFP_KERNEL);
 +}
 +
-+static int tdmrs_setup_rsvd_areas_all(struct tdmr_info **tdmr_array,
-+				      int tdmr_num)
++/* Create a new TDMR at given index in the TDMR array */
++static struct tdmr_info *alloc_tdmr(struct tdmr_info **tdmr_array, int idx)
 +{
-+	int i;
++	struct tdmr_info *tdmr;
 +
-+	for (i = 0; i < tdmr_num; i++) {
-+		int ret;
++	if (WARN_ON_ONCE(tdmr_array[idx]))
++		return NULL;
 +
-+		ret = tdmr_setup_rsvd_areas(tdmr_array[i], tdmr_array,
-+				tdmr_num);
-+		if (ret)
-+			return ret;
++	tdmr = __alloc_tdmr();
++	tdmr_array[idx] = tdmr;
++
++	return tdmr;
++}
++
+ static void free_tdmrs(struct tdmr_info **tdmr_array, int tdmr_num)
+ {
+ 	int i;
+@@ -745,6 +795,89 @@ static void free_tdmrs(struct tdmr_info **tdmr_array, int tdmr_num)
+ 	}
+ }
+ 
++/*
++ * Create TDMRs to cover all RAM entries in e820_table.  The created
++ * TDMRs are saved to @tdmr_array and @tdmr_num is set to the actual
++ * number of TDMRs.  All entries in @tdmr_array must be initially NULL.
++ */
++static int create_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
++{
++	struct tdmr_info *tdmr;
++	u64 start, end;
++	int i, tdmr_idx;
++	int ret = 0;
++
++	tdmr_idx = 0;
++	tdmr = alloc_tdmr(tdmr_array, 0);
++	if (!tdmr)
++		return -ENOMEM;
++	/*
++	 * Loop over all RAM entries in e820 and create TDMRs to cover
++	 * them.  To keep it simple, always try to use one TDMR to cover
++	 * one RAM entry.
++	 */
++	e820_for_each_mem(e820_table, i, start, end) {
++		start = TDMR_ALIGN_DOWN(start);
++		end = TDMR_ALIGN_UP(end);
++
++		/*
++		 * If the current TDMR's size hasn't been initialized, it
++		 * is a new allocated TDMR to cover the new RAM entry.
++		 * Otherwise the current TDMR already covers the previous
++		 * RAM entry.  In the latter case, check whether the
++		 * current RAM entry has been fully or partially covered
++		 * by the current TDMR, since TDMR is 1G aligned.
++		 */
++		if (tdmr->size) {
++			/*
++			 * Loop to next RAM entry if the current entry
++			 * is already fully covered by the current TDMR.
++			 */
++			if (end <= TDMR_END(tdmr))
++				continue;
++
++			/*
++			 * If part of current RAM entry has already been
++			 * covered by current TDMR, skip the already
++			 * covered part.
++			 */
++			if (start < TDMR_END(tdmr))
++				start = TDMR_END(tdmr);
++
++			/*
++			 * Create a new TDMR to cover the current RAM
++			 * entry, or the remaining part of it.
++			 */
++			tdmr_idx++;
++			if (tdmr_idx >= tdx_sysinfo.max_tdmrs) {
++				ret = -E2BIG;
++				goto err;
++			}
++			tdmr = alloc_tdmr(tdmr_array, tdmr_idx);
++			if (!tdmr) {
++				ret = -ENOMEM;
++				goto err;
++			}
++		}
++
++		tdmr->base = start;
++		tdmr->size = end - start;
 +	}
 +
++	/* @tdmr_idx is always the index of last valid TDMR. */
++	*tdmr_num = tdmr_idx + 1;
++
 +	return 0;
++err:
++	/*
++	 * Clean up already allocated TDMRs in case of error.  @tdmr_idx
++	 * indicates the last TDMR that wasn't created successfully,
++	 * therefore only needs to free @tdmr_idx TDMRs.
++	 */
++	free_tdmrs(tdmr_array, tdmr_idx);
++	return ret;
 +}
 +
  static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
  {
  	int ret;
-@@ -1047,8 +1187,12 @@ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
+@@ -753,8 +886,13 @@ static int construct_tdmrs(struct tdmr_info **tdmr_array, int *tdmr_num)
  	if (ret)
- 		goto err_free_tdmrs;
+ 		goto err;
  
--	/* Return -EFAULT until constructing TDMRs is done */
--	ret = -EFAULT;
-+	ret = tdmrs_setup_rsvd_areas_all(tdmr_array, *tdmr_num);
++	ret = create_tdmrs(tdmr_array, tdmr_num);
 +	if (ret)
-+		goto err_free_pamts;
++		goto err;
 +
-+	return 0;
-+err_free_pamts:
- 	tdmrs_free_pamt_all(tdmr_array, *tdmr_num);
- err_free_tdmrs:
- 	free_tdmrs(tdmr_array, *tdmr_num);
+ 	/* Return -EFAULT until constructing TDMRs is done */
+ 	ret = -EFAULT;
++	free_tdmrs(tdmr_array, *tdmr_num);
+ err:
+ 	return ret;
+ }
 -- 
 2.33.1
 
