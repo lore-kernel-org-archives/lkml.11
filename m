@@ -2,160 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 986BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 05:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16071C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 05:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233043AbiB1FAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 00:00:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
+        id S233067AbiB1FBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 00:01:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbiB1FAd (ORCPT
+        with ESMTP id S233064AbiB1FBL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 00:00:33 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23EB065800
-        for <linux-kernel@vger.kernel.org>; Sun, 27 Feb 2022 20:59:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646024395; x=1677560395;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=of+h04jWWIy6BNGzmUc2c/CN/+cG+DmsSBEDO7pVo18=;
-  b=bEdPWzdffGLrOWfgkdH7hHrA5nel+gU95uI/DXXMbqfxaR1Pfdi4+P0Q
-   Z7fu2Zrgg1QDvsPBD8Q8Z1i8P4vDpxLJ0NOLnwpUOnkZnSWqco1MAu8/M
-   eKxgXM3xwMVgFVtA+dHNCQIpHyQgGxcMoxmhLk0jyPBCU7DGPkivSOPjw
-   tZa3ugdXq4SOYBErxSCZk6dgZpQJmFrFM8NrdbCyM5W+rCYu7+x/gJidi
-   ZlfPH7COlpf7nAXAU6d6IV5HNXvD3NxMfMcPtfzFtTX8kITOJ1CaxtvcB
-   Y6b6RnNJzKT2CpI3AuWd0wX6hgajPiYHyUZpFZnLu3EC9IAwmPpyrci4d
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10271"; a="252732430"
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="252732430"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2022 20:59:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,142,1643702400"; 
-   d="scan'208";a="492593588"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 27 Feb 2022 20:59:53 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOY8W-00072y-MD; Mon, 28 Feb 2022 04:59:52 +0000
-Date:   Mon, 28 Feb 2022 12:58:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [arm-de:wip/uclamp_util_cap 2/2] kernel/sched/fair.c:3878:26: error:
- no member named 'tg' in 'struct cfs_rq'
-Message-ID: <202202281217.CMzbqwQB-lkp@intel.com>
+        Mon, 28 Feb 2022 00:01:11 -0500
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A5166FB7;
+        Sun, 27 Feb 2022 21:00:30 -0800 (PST)
+Received: by mail-qk1-x72d.google.com with SMTP id b13so9480676qkj.12;
+        Sun, 27 Feb 2022 21:00:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dl5bImTp8P/vXmU2+b7NmzpeCyOGUJ3zCffquEOpd18=;
+        b=AEGH3S6nmgJiVduVsFiCTpBweUwAf7F44ifshZVPRWwe4Qv6YFIYoFJbINshT644jX
+         oYCZ9rXlkl7Z+fa4VZFs1j46PDj8ZYQlGehSOH7UuIfpnHf/Mabqno5Y/s3aOw5YzvIo
+         q4X3Zd0Yl5/tylayQOeuPJDtyFSxIzToeJA3o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dl5bImTp8P/vXmU2+b7NmzpeCyOGUJ3zCffquEOpd18=;
+        b=pMtSzqz+wY4UeVqjZfg8vSBXmV6cnJhMLDZgLOs5OUwy0Ns9X3H45Ku4bQ2dibswIB
+         AfS6F5kl/ndgPTQ7F2qqIeYuxlNW5Pa0ftOcBvyqnN5QHsDMfuB43H2wHy6cmmIJ7FZh
+         uy1hh6ZB/ZwnlBSz0ZmLxx3f0bCMAHZhAygpxC1RLoVxe3r2aPcYL8UWDXPI/dnYcbEh
+         adJk1tFD67zxJBuHr25w2A5DxPtwzZs68LJH8luvwDY5f3LCRdepPKWv/NORzYxqLZUG
+         UiN8oPAw2CA0zsvMQ4D7NSIk5J0N1nZODnqfdjOSB39EXPpQ3BZBqIEPTLpaeAEZ4EtV
+         FM1g==
+X-Gm-Message-State: AOAM533iEt65g/Cyh5nTGtdoj/XZfdiCOFiOt28PUDGskpTwSxjfs8up
+        urrbNShBvv44fVdS9+uPpuXbmBOWXOc7bP4FPM8=
+X-Google-Smtp-Source: ABdhPJzD+ossvHaHQAKihwxTjH9fBc3NI+O+eeyw7Gb76LJbM2mhqZQ5/unoVcahDCD9C38J+XgCe0KCu1NuXULkWUg=
+X-Received: by 2002:a37:f903:0:b0:648:ca74:b7dc with SMTP id
+ l3-20020a37f903000000b00648ca74b7dcmr10150792qkj.666.1646024429883; Sun, 27
+ Feb 2022 21:00:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220105101719.7093-1-zev@bewilderbeest.net> <CACPK8XeHyoo0D1vQm=L8m284kC5n-O+FEMp1HN+ROWJfx7qjhQ@mail.gmail.com>
+ <Yd4rfi/iICQ5EjGh@hatter.bewilderbeest.net>
+In-Reply-To: <Yd4rfi/iICQ5EjGh@hatter.bewilderbeest.net>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Mon, 28 Feb 2022 05:00:17 +0000
+Message-ID: <CACPK8XfGdTvznj90C7XFJ04QVU96NdwfXQX_Rj+bkCnov1Urpg@mail.gmail.com>
+Subject: Re: [PATCH] ARM: dts: aspeed: Add ASRock ROMED8HM3 BMC
+To:     Zev Weiss <zev@bewilderbeest.net>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Neil Horman <neil.horman@privafy.com>,
+        Anthony Jenkins <anthony.jenkins@privafy.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.gitlab.arm.com/linux-arm/linux-de.git wip/uclamp_util_cap
-head:   df7ef1cab37eca401198f547fd206c7c180fdac5
-commit: df7ef1cab37eca401198f547fd206c7c180fdac5 [2/2] sched/fair, pelt: Force rng se/cfs_rq to !rng if se's util_avg>=uclamp_max for taskgroups
-config: arm64-buildonly-randconfig-r006-20220228 (https://download.01.org/0day-ci/archive/20220228/202202281217.CMzbqwQB-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        git remote add arm-de https://git.gitlab.arm.com/linux-arm/linux-de.git
-        git fetch --no-tags arm-de wip/uclamp_util_cap
-        git checkout df7ef1cab37eca401198f547fd206c7c180fdac5
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash kernel/sched/
+On Wed, 12 Jan 2022 at 01:14, Zev Weiss <zev@bewilderbeest.net> wrote:
+>
+> On Tue, Jan 11, 2022 at 02:59:28AM PST, Joel Stanley wrote:
+> >On Wed, 5 Jan 2022 at 23:10, Zev Weiss <zev@bewilderbeest.net> wrote:
+> >>
+> >> This is a half-width, single-socket Epyc server board with an AST2500
+> >> BMC.  This device tree is sufficient for basic OpenBMC functionality,
+> >> but we'll need to add a few more devices (as driver support becomes
+> >> available) before it's fully usable.
+> >>
+> >> Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+> >
+> >Reviewed-by: Joel Stanley <joel@jms.id.au>
+> >
+>
+> Thanks!
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+I've merged this for v5.18.
 
-All errors (new ones prefixed by >>):
-
->> kernel/sched/fair.c:3878:26: error: no member named 'tg' in 'struct cfs_rq'
-                           uclamp_max = gcfs_rq->tg->uclamp[UCLAMP_MAX].value;
-                                        ~~~~~~~  ^
-   kernel/sched/fair.c:8272:68: error: too few arguments to function call, expected 3, have 2
-           decayed = update_cfs_rq_load_avg(cfs_rq_clock_pelt(cfs_rq), cfs_rq);
-                     ~~~~~~~~~~~~~~~~~~~~~~                                  ^
-   kernel/sched/fair.c:3698:1: note: 'update_cfs_rq_load_avg' declared here
-   update_cfs_rq_load_avg(u64 now, struct cfs_rq *cfs_rq, int running)
-   ^
-   2 errors generated.
-
-
-vim +3878 kernel/sched/fair.c
-
-  3855	
-  3856	
-  3857	
-  3858	/* Update task and its cfs_rq load average */
-  3859	static inline void update_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
-  3860	{
-  3861		u64 now = cfs_rq_clock_pelt(cfs_rq);
-  3862		int decayed, se_running, cfs_rq_running;
-  3863	
-  3864		se_running = cfs_rq->curr == se;
-  3865		cfs_rq_running = cfs_rq->curr != NULL;
-  3866	
-  3867	#ifdef CONFIG_UCLAMP_TASK
-  3868		if (se_running) {
-  3869			unsigned long uclamp_max = ULONG_MAX;
-  3870	
-  3871			if (entity_is_task(se)) {
-  3872				struct task_struct *p = task_of(se);
-  3873				uclamp_max = p->uclamp_req[UCLAMP_MAX].value;
-  3874			}
-  3875	#ifdef CONFIG_UCLAMP_TASK_GROUP
-  3876			else {
-  3877				struct cfs_rq *gcfs_rq = group_cfs_rq(se);
-> 3878				uclamp_max = gcfs_rq->tg->uclamp[UCLAMP_MAX].value;
-  3879			}
-  3880	#endif
-  3881			if (se->avg.util_avg >= uclamp_max) {
-  3882				se_running = 0;
-  3883				cfs_rq_running = 0;
-  3884			}
-  3885		}
-  3886	#endif
-  3887	
-  3888		/*
-  3889		 * Track task load average for carrying it to new CPU after migrated, and
-  3890		 * track group sched_entity load average for task_h_load calc in migration
-  3891		 */
-  3892		if (se->avg.last_update_time && !(flags & SKIP_AGE_LOAD))
-  3893			__update_load_avg_se(now, cfs_rq, se, se_running);
-  3894	
-  3895		decayed  = update_cfs_rq_load_avg(now, cfs_rq, cfs_rq_running);
-  3896		decayed |= propagate_entity_load_avg(se);
-  3897	
-  3898		if (!se->avg.last_update_time && (flags & DO_ATTACH)) {
-  3899	
-  3900			/*
-  3901			 * DO_ATTACH means we're here from enqueue_entity().
-  3902			 * !last_update_time means we've passed through
-  3903			 * migrate_task_rq_fair() indicating we migrated.
-  3904			 *
-  3905			 * IOW we're enqueueing a task on a new CPU.
-  3906			 */
-  3907			attach_entity_load_avg(cfs_rq, se);
-  3908			update_tg_load_avg(cfs_rq);
-  3909	
-  3910		} else if (decayed) {
-  3911			cfs_rq_util_change(cfs_rq, 0);
-  3912	
-  3913			if (flags & UPDATE_TG)
-  3914				update_tg_load_avg(cfs_rq);
-  3915		}
-  3916	}
-  3917	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+> >Have you considered using the openbmc gpio naming scheme for the
+> >gpio-line-names?
+> >
+>
+> I looked at it, but decided not to for a few reasons:
+>
+>   - For systems that are in the early stages of a porting effort (like
+>     this one currently is), I'm still referring to hardware schematics
+>     fairly often, and using the same identifiers in software that are
+>     used in the schematics simplifies things by avoiding an extra
+>     translation step between the two.
+>
+>   - Most of the GPIO-related userspace components (that I'm dealing with
+>     anyway, e.g. x86-power-control and host-error-monitor) already have
+>     their own GPIO line-name configuration/remapping mechanisms that need
+>     to be set up anyway.
+>
+>   - There's a solid mix of GPIOs that would be covered by the naming
+>     guidelines and others that aren't; having a mix of the two styles
+>     seems a bit awkward to me.
+>
+> That said, I sympathize with the motivation behind it and I'm not
+> vehemently opposed on the whole, so if there's a strong preference to
+> follow that scheme I could probably be talked into changing it.
+>
+>
+> Zev
+>
