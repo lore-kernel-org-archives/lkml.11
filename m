@@ -2,318 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A5FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:36:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 11:37:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235871AbiB1LhF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 06:37:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54246 "EHLO
+        id S233197AbiB1LiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 06:38:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235864AbiB1LhB (ORCPT
+        with ESMTP id S235901AbiB1Lh6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 06:37:01 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47CD970F62
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:36:22 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id r187-20020a1c2bc4000000b003810e6b192aso5836094wmr.1
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 03:36:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=xhOyzvT1endqYswdxY89LwfsPMpKGMzBrYmzIyKgpOU=;
-        b=v1vqyaGejr9klYpNo/Ox1PxEkv4+jSggX4MFhBzAjjxlFBiJBH+hYnXPMoUM+kjU8i
-         c84wvySlZEKuEgwjOZ0u2A2ShH9vz2xzgegQoB1mrKSMr7bjyqvihuzcrwmIhZ6HydEE
-         taWOhw5VvOtsgJ2v5Mmu5v8exv+CM/s8VC2S2wJ/sWjB38fCw/9lNTFD/h0m4/T+b9UU
-         bxk0BaYlXIWsvQSGZ9Rr1/YAZ/QX1sQSzRMlFzobmrqj63qZ8JsXu1ecTBdzcDdhyfmW
-         iO8oQYHDYdFUo2DV8COzOK5eUzloJucovLPDwri38QnQIgkvlCNq7UnVXUu45T+Q7GdY
-         T9mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=xhOyzvT1endqYswdxY89LwfsPMpKGMzBrYmzIyKgpOU=;
-        b=f/fW+1wgZUp+Jg5eSmnHHvV87FPHryykMHNXBCloGntbp4hR9YzWsG+K5Q1dY1d39F
-         MB8vMvbHxoqTXxnG/NuuVD2gpjDkuoc8ANBU+i9SE8jDmKMWLxA6yKQpNF4ap02S5MSQ
-         LEyMBUsd1Y355udBU4cMNCaLOH+E8kQQ0uzHDiNtXFgnRa5jm1dreFlTmLqB95oISTps
-         zSXkzmUXsG8TPcW0qWW2+bLTuGfaOAuXgjRS9UnH/BJAXJxLYh3ORull7Fcyv74xVP1r
-         dBvYY7AV74SXLnezxTu9oz4ovOJVB5QViTsHmjunYUARtFqmtm12dfFnJK6MDG0PIpep
-         6UjQ==
-X-Gm-Message-State: AOAM530jy7fjuVw4EirEvsbpIGJBlx+Ggot437E7+IxQPAWH0aGTcxQ6
-        klJtHuO2QGg+hSqlqJ2wz4pzHQ==
-X-Google-Smtp-Source: ABdhPJyNS1ZktAEFh83NAchTl38qLPHJ4wc/ggNRkJVRI2hqHTRihiHnBJHiemrzPsldnsHrMM5Xyw==
-X-Received: by 2002:a1c:6a0c:0:b0:381:3f5a:f30c with SMTP id f12-20020a1c6a0c000000b003813f5af30cmr11658179wmc.153.1646048180794;
-        Mon, 28 Feb 2022 03:36:20 -0800 (PST)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id u4-20020adfdb84000000b001e8d8ac5394sm10704361wri.110.2022.02.28.03.36.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 03:36:20 -0800 (PST)
-References: <20220217063346.21691-1-liang.yang@amlogic.com>
- <20220217063346.21691-2-liang.yang@amlogic.com>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Liang Yang <liang.yang@amlogic.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-mtd@lists.infradead.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH RESEND v2 1/2] mtd: rawnand: meson: discard the common
- MMC sub clock framework
-Date:   Mon, 28 Feb 2022 12:28:57 +0100
-In-reply-to: <20220217063346.21691-2-liang.yang@amlogic.com>
-Message-ID: <1jzgmbw7d8.fsf@starbuckisacylon.baylibre.com>
+        Mon, 28 Feb 2022 06:37:58 -0500
+X-Greylist: delayed 454 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 03:37:19 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F8C70F77;
+        Mon, 28 Feb 2022 03:37:19 -0800 (PST)
+Received: from mail-wr1-f48.google.com ([209.85.221.48]) by
+ mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MLR5f-1nh8rj1OvT-00IVk2; Mon, 28 Feb 2022 12:24:40 +0100
+Received: by mail-wr1-f48.google.com with SMTP id s1so14855590wrg.10;
+        Mon, 28 Feb 2022 03:24:40 -0800 (PST)
+X-Gm-Message-State: AOAM533VZ+zedlRLSkOHfL8O757zEzvIUDFRiVTJh6jWptMe0JRFSjnL
+        FmPgPBCdJ7sDb4xpvgEakSd+LWBPqr36BCuRebQ=
+X-Google-Smtp-Source: ABdhPJxsHhv9ZGMkqj+1xQqmNgWDzHJw3IWMK33HgSuLr4EGxfWw9ZOzndK9wjWGvid3acqW9xY0RN9FzlS1KN4eDoI=
+X-Received: by 2002:adf:edc3:0:b0:1ec:5f11:5415 with SMTP id
+ v3-20020adfedc3000000b001ec5f115415mr13527155wro.317.1646047479895; Mon, 28
+ Feb 2022 03:24:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220226110338.77547-1-chenhuacai@loongson.cn>
+ <20220226110338.77547-10-chenhuacai@loongson.cn> <CAMj1kXHWRZcjF9H2jZ+p-HNuXyPs-=9B8WiYLsrDJGpipgKo_w@mail.gmail.com>
+ <YhupaVZvbipgke2Z@kroah.com> <CAAhV-H6hmvyniHP-CMxtOopRHp6XYaF58re13snMrk_Umj+wSQ@mail.gmail.com>
+ <CAMj1kXFa447Z21q3uu0UFExDDDG9Y42ZHtiUppu6QpuNA_5bhA@mail.gmail.com>
+ <CAAhV-H7X+Txq4HaaF49QZ9deD=Dwx_GX-2E9q_nA8P76ZRDeXg@mail.gmail.com>
+ <CAMj1kXGH1AtL8_KbFkK+FRgWQPzPm1dCdvEF0A2KksREGTSeCg@mail.gmail.com> <CAAhV-H6fdJwbVG_m0ZL_JGROKCrCbc-fKpj3dnOowaEUA+3ujQ@mail.gmail.com>
+In-Reply-To: <CAAhV-H6fdJwbVG_m0ZL_JGROKCrCbc-fKpj3dnOowaEUA+3ujQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 28 Feb 2022 12:24:23 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a2hr2rjyLpkeG1EKiOVGrY4UCB61OHGj5nzft-KCS3jYA@mail.gmail.com>
+Message-ID: <CAK8P3a2hr2rjyLpkeG1EKiOVGrY4UCB61OHGj5nzft-KCS3jYA@mail.gmail.com>
+Subject: Re: [PATCH V6 09/22] LoongArch: Add boot and setup routines
+To:     Huacai Chen <chenhuacai@gmail.com>
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Huacai Chen <chenhuacai@loongson.cn>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-efi <linux-efi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:wyAVrkZQ9dhz0EiWTUNl5iK9wV5bwB9HxL4qTjUVD2+rbG7/Wig
+ wyqTDiAqGrs1iVKsCthNwyzoPv8MefXM/QxnkQqzvrGMNzG3weGgWoptCSZUGamBeL9MfpZ
+ KgKmBq8rnITrsv1e0tuQ89dg6NUjifkaWnf66UJL9OHsQxk+IbZCBBkTojXi3w8XlzK3fX4
+ 8gzZj331JKyaxrMhfZ17g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:qqfNnNNOh2s=:Y9XUL3h6+xj6P3Xs3b68Zd
+ g9clv8i4Qf94p/T7AH+JhTec1ZZZygmZTPEaimeoLMEGMP1ZhnG7Z0P9RBkLIniQ69rNKEpJX
+ 69mbaIGJVqUEo2IeOJ5fdfD4c9fDsCRMW4EIXewNnnwvSU/yehyY12fJtSLCGbgKWmAvnWu2U
+ EQwdXawtqv7Y7Kv4rFoEr98I7jewg5E2dpOIK+U08IVX/zl5wK3JFEBB3ISo/ytv2HYrvnrcu
+ +tEDssEY8Xc3wQB30xB9qFHf5Q/KSnspxW154hw4FVDC0i5lsL6VoYnsLwiVc/4TsdHTfD8Hu
+ EggIfjYyk2LF3qVC9GP4u2CX5r2g99fpMVAvRvlLxYOA7L4ZfdtJcJhs0WEoWKLrr2JbdhFRF
+ T6Ia3wSsU3oOBM19DaanS++kRC92qlWcY7zwjvaihLMpUMi08ClUdgimuZG0rLs/9eQ8DIVOJ
+ SbNVjkTaqzHFs3SMJHJHqR5eab2eHtAzXPz3w1coVpzb7dp2ksFz5prkIzXZrB9ZdXLc2l69u
+ 883q5f71hiXIbsT7VKPFZJiNNl/k5xb06wdr/mSrzfl5Hp3kKiCgM9EbhVhny8MPNZEYvWtN/
+ 7Ws/zkUzVsyCsavL6ajvLZFhSVwinKP7INSuad6TPwnW8jumUHJ0aREhZqFD+u56JRI2POjjd
+ r8I4td9tVBPXhQFdC9LlLaHYjAGl5LA3UqoxVJO7emxpwl6LmqxKTbfZoGJBTxCrJBd8FkzAb
+ pYonxfp2O4H+erVconiHCwOgQwYJj2XTho0561hX48PpZ4D8r7jFTkiSRg+HGlTnptK3vycF2
+ CcHOqw8py+CCgY7JUkxNST05EFBfEonysPVMS3hfyimeWPKXww=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 28, 2022 at 11:42 AM Huacai Chen <chenhuacai@gmail.com> wrote:
+> On Mon, Feb 28, 2022 at 4:52 PM Ard Biesheuvel <ardb@kernel.org> wrote:
+> > On Mon, 28 Feb 2022 at 09:38, Huacai Chen <chenhuacai@gmail.com> wrote:
+> > > >
+> > > > RISC-V is a useful reference for the changes needed - this is the most
+> > > > recent addition to the EFI stub, and avoids some legacy stuff that new
+> > > > architectures have no need for.
+> > > We still want to support the raw elf kernel (RISC-V also does),
+> > > because LoongArch also has MCU and SoC and we want to support FDT (I
+> > > think this is reasonable, because RISC-V also supports raw elf).
+> > >
+> >
+> > That is fine. So perhaps the best course of action is to omit the
+> > UEFI/ACPI parts entirely for now, and focus on the DT/embedded use
+> > case. Once all the spec pieces are in place, the UEFI + ACPI changes
+> > can be presented as a single coherent set.
+> It seems that I made you confusing. :)
+> There are big CPUs and small CPUs (MCU and SoC), big CPUs use
+> UEFI+ACPI, while small CPUs use FDT.
+> At present, the only matured LoongArch CPU is Loongson-3A5000 (big
+> CPU) which uses UEFI+ACPI.
+> We want to support raw elf because it can run on both ACPI firmware
+> and FDT firmware, but at present we only have ACPI firmware.
 
-On Thu 17 Feb 2022 at 14:33, Liang Yang <liang.yang@amlogic.com> wrote:
+Can't you just use the UEFI protocol for kernel entry regardless
+of the bootloader? It seems odd to use a different protocol for loading
+grub and the kernel, especially if that means you end up having to
+support both protocols inside of u-boot and grub, in order to chain-load
+a uefi application like grub.
 
-> EMMC and NAND have the same clock control register named 'SD_EMMC_CLOCK' which is
-> defined in EMMC port internally. bit0~5 of 'SD_EMMC_CLOCK' is the divider and
-> bit6~7 is the mux for fix pll and xtal.A common MMC and NAND sub-clock has been
-> implemented and can be used by the eMMC and NAND controller (which are mutually
-> exclusive anyway). Let's use this new clock.
->
-> Signed-off-by: Liang Yang <liang.yang@amlogic.com>
-> ---
->  drivers/mtd/nand/raw/meson_nand.c | 107 +++++++++++++++++-------------
->  1 file changed, 61 insertions(+), 46 deletions(-)
->
-> diff --git a/drivers/mtd/nand/raw/meson_nand.c b/drivers/mtd/nand/raw/meson_nand.c
-> index ac3be92872d0..c5b892d38ea0 100644
-> --- a/drivers/mtd/nand/raw/meson_nand.c
-> +++ b/drivers/mtd/nand/raw/meson_nand.c
-> @@ -10,6 +10,7 @@
->  #include <linux/dma-mapping.h>
->  #include <linux/interrupt.h>
->  #include <linux/clk.h>
-> +#include <linux/clk-provider.h>
->  #include <linux/mtd/rawnand.h>
->  #include <linux/mtd/mtd.h>
->  #include <linux/mfd/syscon.h>
-> @@ -19,6 +20,7 @@
->  #include <linux/iopoll.h>
->  #include <linux/of.h>
->  #include <linux/of_device.h>
-> +#include <linux/of_address.h>
->  #include <linux/sched/task_stack.h>
->  
->  #define NFC_REG_CMD		0x00
-> @@ -104,6 +106,9 @@
->  
->  #define PER_INFO_BYTE		8
->  
-> +#define CLK_DIV_SHIFT		0
-> +#define CLK_DIV_WIDTH		6
-> +
->  struct meson_nfc_nand_chip {
->  	struct list_head node;
->  	struct nand_chip nand;
-> @@ -151,15 +156,15 @@ struct meson_nfc {
->  	struct nand_controller controller;
->  	struct clk *core_clk;
->  	struct clk *device_clk;
-> -	struct clk *phase_tx;
-> -	struct clk *phase_rx;
-> +	struct clk *nand_clk;
-> +	struct clk_divider nand_divider;
->  
->  	unsigned long clk_rate;
->  	u32 bus_timing;
->  
->  	struct device *dev;
->  	void __iomem *reg_base;
-> -	struct regmap *reg_clk;
-> +	void __iomem *sd_emmc_clock;
->  	struct completion completion;
->  	struct list_head chips;
->  	const struct meson_nfc_data *data;
-> @@ -988,6 +993,8 @@ static const struct mtd_ooblayout_ops meson_ooblayout_ops = {
->  static int meson_nfc_clk_init(struct meson_nfc *nfc)
->  {
->  	int ret;
-> +	struct clk_init_data init = {0};
-> +	struct clk_parent_data nfc_divider_parent_data[1];
->  
->  	/* request core clock */
->  	nfc->core_clk = devm_clk_get(nfc->dev, "core");
-> @@ -1002,21 +1009,26 @@ static int meson_nfc_clk_init(struct meson_nfc *nfc)
->  		return PTR_ERR(nfc->device_clk);
->  	}
->  
-> -	nfc->phase_tx = devm_clk_get(nfc->dev, "tx");
-> -	if (IS_ERR(nfc->phase_tx)) {
-> -		dev_err(nfc->dev, "failed to get TX clk\n");
-> -		return PTR_ERR(nfc->phase_tx);
-> -	}
-> -
-> -	nfc->phase_rx = devm_clk_get(nfc->dev, "rx");
-> -	if (IS_ERR(nfc->phase_rx)) {
-> -		dev_err(nfc->dev, "failed to get RX clk\n");
-> -		return PTR_ERR(nfc->phase_rx);
-> -	}
-> +	init.name = devm_kstrdup(nfc->dev, "nfc#div", GFP_KERNEL);
-> +	init.ops = &clk_divider_ops;
-> +	nfc_divider_parent_data[0].fw_name = __clk_get_name(nfc->device_clk);
-
-This is broken.
-__clk_get_name() gives the actual global name of the clock
-"fw_name" is the DT name which allows to find the index on the clock
-
-From the DT doc, the fw_name is either 'core' or 'device'
-
-I don't think any clock would have such a name so I don't think this can
-actually work. Did you actually test this ?
-
-
-> +	init.parent_data = nfc_divider_parent_data;
-> +	init.num_parents = 1;
-> +	nfc->nand_divider.reg = nfc->sd_emmc_clock;
-> +	nfc->nand_divider.shift = CLK_DIV_SHIFT;
-> +	nfc->nand_divider.width = CLK_DIV_WIDTH;
-> +	nfc->nand_divider.hw.init = &init;
-> +	nfc->nand_divider.flags = CLK_DIVIDER_ONE_BASED |
-> +				  CLK_DIVIDER_ROUND_CLOSEST |
-> +				  CLK_DIVIDER_ALLOW_ZERO;
-> +
-> +	nfc->nand_clk = devm_clk_register(nfc->dev, &nfc->nand_divider.hw);
-> +	if (IS_ERR(nfc->nand_clk))
-> +		return PTR_ERR(nfc->nand_clk);
->  
->  	/* init SD_EMMC_CLOCK to sane defaults w/min clock rate */
-> -	regmap_update_bits(nfc->reg_clk,
-> -			   0, CLK_SELECT_NAND, CLK_SELECT_NAND);
-> +	writel(CLK_SELECT_NAND | readl(nfc->sd_emmc_clock),
-> +	       nfc->sd_emmc_clock);
->  
->  	ret = clk_prepare_enable(nfc->core_clk);
->  	if (ret) {
-> @@ -1030,29 +1042,21 @@ static int meson_nfc_clk_init(struct meson_nfc *nfc)
->  		goto err_device_clk;
->  	}
->  
-> -	ret = clk_prepare_enable(nfc->phase_tx);
-> -	if (ret) {
-> -		dev_err(nfc->dev, "failed to enable TX clock\n");
-> -		goto err_phase_tx;
-> -	}
-> -
-> -	ret = clk_prepare_enable(nfc->phase_rx);
-> +	ret = clk_prepare_enable(nfc->nand_clk);
->  	if (ret) {
-> -		dev_err(nfc->dev, "failed to enable RX clock\n");
-> -		goto err_phase_rx;
-> +		dev_err(nfc->dev, "pre enable NFC divider fail\n");
-> +		goto err_nand_clk;
->  	}
->  
->  	ret = clk_set_rate(nfc->device_clk, 24000000);
->  	if (ret)
-> -		goto err_disable_rx;
-> +		goto err_disable_clk;
->  
->  	return 0;
->  
-> -err_disable_rx:
-> -	clk_disable_unprepare(nfc->phase_rx);
-> -err_phase_rx:
-> -	clk_disable_unprepare(nfc->phase_tx);
-> -err_phase_tx:
-> +err_disable_clk:
-> +	clk_disable_unprepare(nfc->nand_clk);
-> +err_nand_clk:
->  	clk_disable_unprepare(nfc->device_clk);
->  err_device_clk:
->  	clk_disable_unprepare(nfc->core_clk);
-> @@ -1061,8 +1065,7 @@ static int meson_nfc_clk_init(struct meson_nfc *nfc)
->  
->  static void meson_nfc_disable_clk(struct meson_nfc *nfc)
->  {
-> -	clk_disable_unprepare(nfc->phase_rx);
-> -	clk_disable_unprepare(nfc->phase_tx);
-> +	clk_disable_unprepare(nfc->nand_clk);
->  	clk_disable_unprepare(nfc->device_clk);
->  	clk_disable_unprepare(nfc->core_clk);
->  }
-> @@ -1370,11 +1373,31 @@ static const struct of_device_id meson_nfc_id_table[] = {
->  };
->  MODULE_DEVICE_TABLE(of, meson_nfc_id_table);
->  
-> +static int meson_nfc_reg_resource(struct device *dev, struct meson_nfc *nfc)
-> +{
-> +	struct resource res;
-> +	void __iomem *base[2];
-> +	struct device_node *node = dev->of_node;
-> +	int i;
-> +
-> +	for (i = 0; i < 2; i++) {
-> +		if (of_address_to_resource(node, i, &res))
-> +			return -ENOENT;
-> +
-> +		base[i] = devm_ioremap_resource(dev, &res);
-> +		if (IS_ERR(base))
-> +			return PTR_ERR(base);
-> +	}
-> +	nfc->reg_base = base[0];
-> +	nfc->sd_emmc_clock = base[1];
-> +
-
-There is no reason to make a separate function for this.
-
-Please name your ressource and claim them properly instead of interating
-on them.
-
-
-> +	return 0;
-> +}
-> +
->  static int meson_nfc_probe(struct platform_device *pdev)
->  {
->  	struct device *dev = &pdev->dev;
->  	struct meson_nfc *nfc;
-> -	struct resource *res;
->  	int ret, irq;
->  
->  	nfc = devm_kzalloc(dev, sizeof(*nfc), GFP_KERNEL);
-> @@ -1388,20 +1411,12 @@ static int meson_nfc_probe(struct platform_device *pdev)
->  	nand_controller_init(&nfc->controller);
->  	INIT_LIST_HEAD(&nfc->chips);
->  	init_completion(&nfc->completion);
-> -
->  	nfc->dev = dev;
->  
-> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	nfc->reg_base = devm_ioremap_resource(dev, res);
-> -	if (IS_ERR(nfc->reg_base))
-> -		return PTR_ERR(nfc->reg_base);
-> -
-> -	nfc->reg_clk =
-> -		syscon_regmap_lookup_by_phandle(dev->of_node,
-> -						"amlogic,mmc-syscon");
-> -	if (IS_ERR(nfc->reg_clk)) {
-> -		dev_err(dev, "Failed to lookup clock base\n");
-> -		return PTR_ERR(nfc->reg_clk);
-> +	ret = meson_nfc_reg_resource(dev, nfc);
-> +	if (ret) {
-> +		dev_err(dev, "Failed to get reg resource\n");
-> +		return ret;
->  	}
->  
->  	irq = platform_get_irq(pdev, 0);
-
+       Arnd
