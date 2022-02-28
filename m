@@ -2,104 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E2E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:30:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236577AbiB1RbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:31:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
+        id S235069AbiB1Rb2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:31:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235027AbiB1RaG (ORCPT
+        with ESMTP id S236798AbiB1RaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:30:06 -0500
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2E74F471;
-        Mon, 28 Feb 2022 09:28:16 -0800 (PST)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21SFwZIh005113;
-        Mon, 28 Feb 2022 11:28:00 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=t89hC57npduwQLcBV3r9nbt80Vt6eUmyKFdTHvx+Nbo=;
- b=SChsN/oyUxJogKRIB1fDInhsKLxrY0Dyov6N+Zy8p6cDB9QP115Sbz+nNuWh806VPNEK
- Pd8b6CjOm9ZV1Co1AF7c4GceLRgONHxWkrPYXPHW8K8/BR26VFHDKe6TrHX0PUxjuooo
- ZFQgnmIDDHLNIC7Cf7+6ssHoKi3SS1GCILKm6gxigpPztGqYvisY4ITAdBF+XKifyXMg
- VBd9fNvw0WLQDJ/79m0E1AdcNiNvd6Mb3l0HrKI3VaaKxN5KUMOdtR6ujIwTSMjr6aW6
- r659PP/0h9X/LF+Vavmg37fKssdsoQ56CGhKNd5miUzvsw5AKFUPCxxVAMPSVi1CrhBp Xg== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3efjg5thq9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 28 Feb 2022 11:27:59 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 28 Feb
- 2022 17:27:57 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Mon, 28 Feb 2022 17:27:57 +0000
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.64.213])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 099CBB06;
-        Mon, 28 Feb 2022 17:27:57 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <kuninori.morimoto.gx@renesas.com>
-CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH V3 0/2] ASoC: audio_graph_card2: Support variable slot widths
-Date:   Mon, 28 Feb 2022 17:27:52 +0000
-Message-ID: <20220228172754.453783-1-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B23CBFD20;
+        Mon, 28 Feb 2022 09:28:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B49A6144B;
+        Mon, 28 Feb 2022 17:28:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BEA8C340F9;
+        Mon, 28 Feb 2022 17:28:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069293;
+        bh=26Xb+35TOTOStvxAifqvmLSCigYz8oCZj1dgu3YPDO8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SiYe2Fw9a5xh51SI53STLLbaytPLST1noDrC6fpjnkchuBJJv+09DNauIgUh7i8Ac
+         mYpT3xPes1nlFVLVawNeCuHMssCXNOkwQZi8gpoWIIg9sLd2JQGlagpBx4EJz2ZOeC
+         Au90KQTT5UdNGqBkkWLoulNPOUvTkPFRgUg3tdFQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.14 04/31] parisc/unaligned: Fix ldw() and stw() unalignment handlers
+Date:   Mon, 28 Feb 2022 18:24:00 +0100
+Message-Id: <20220228172200.267305553@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172159.515152296@linuxfoundation.org>
+References: <20220228172159.515152296@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: TRZtSh8x4QpWQs5UXd9lvOBw-rZejTc2
-X-Proofpoint-ORIG-GUID: TRZtSh8x4QpWQs5UXd9lvOBw-rZejTc2
-X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds support for I2S/TDM links where the slot width varies
-depending on the sample width, in a way that cannot be guessed by
-component hw_params().
+From: Helge Deller <deller@gmx.de>
 
-A typical example is:
+commit a97279836867b1cb50a3d4f0b1bf60e0abe6d46c upstream.
 
-- 16-bit samples use 16-bit slots
-- 24-bit samples use 32-bit slots
+Fix 3 bugs:
 
-There is no way for a component hw_params() to deduce from the information
-it is passed that 24-bit samples will be in 32-bit slots.
+a) emulate_stw() doesn't return the error code value, so faulting
+instructions are not reported and aborted.
 
-Some audio hardware cannot support a fixed slot width or a slot width
-equal to the sample width in all cases. This is usually due either to
-limitations of the audio serial port or system clocking restrictions.
+b) Tell emulate_ldw() to handle fldw_l as floating point instruction
 
-These two patches add support for defining a mapping between sample widths
-and sample slots. This allows audio_graph_card2 to be used in these
-situations instead of having to write a custom machine driver.
+c) Tell emulate_ldw() to handle ldw_m as integer instruction
 
-Changes since V2:
-- Change property type to uint32-matrix.
-- Put min/max ranges on cells.
-- Use per-item description to document the tuple entries.
-- Add a slot count to the tuple - it's unlikely that this would change
-  for different sample rates but it's trivial to implement support for it.
-- Minor tidying of the code in asoc_simple_parse_tdm_width_map() and
-  asoc_simple_set_tdm().
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/parisc/kernel/unaligned.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Richard Fitzgerald (2):
-  ASoC: dt-bindings: audio-graph-port: Add dai-tdm-slot-width-map
-  ASoC: audio_graph_card2: Add support for variable slot widths
+--- a/arch/parisc/kernel/unaligned.c
++++ b/arch/parisc/kernel/unaligned.c
+@@ -354,7 +354,7 @@ static int emulate_stw(struct pt_regs *r
+ 	: "r" (val), "r" (regs->ior), "r" (regs->isr)
+ 	: "r19", "r20", "r21", "r22", "r1", FIXUP_BRANCH_CLOBBER );
+ 
+-	return 0;
++	return ret;
+ }
+ static int emulate_std(struct pt_regs *regs, int frreg, int flop)
+ {
+@@ -634,10 +634,10 @@ void handle_unaligned(struct pt_regs *re
+ 	{
+ 	case OPCODE_FLDW_L:
+ 		flop=1;
+-		ret = emulate_ldw(regs, R2(regs->iir),0);
++		ret = emulate_ldw(regs, R2(regs->iir), 1);
+ 		break;
+ 	case OPCODE_LDW_M:
+-		ret = emulate_ldw(regs, R2(regs->iir),1);
++		ret = emulate_ldw(regs, R2(regs->iir), 0);
+ 		break;
+ 
+ 	case OPCODE_FSTW_L:
 
- .../bindings/sound/audio-graph-port.yaml      | 20 ++++
- include/sound/simple_card_utils.h             | 11 +++
- sound/soc/generic/audio-graph-card2.c         |  4 +
- sound/soc/generic/simple-card-utils.c         | 97 +++++++++++++++++++
- 4 files changed, 132 insertions(+)
-
--- 
-2.30.2
 
