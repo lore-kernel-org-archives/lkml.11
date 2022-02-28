@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A10C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239107AbiB1Rvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:51:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
+        id S239048AbiB1Rvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:51:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240008AbiB1Ro6 (ORCPT
+        with ESMTP id S240031AbiB1RpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:44:58 -0500
+        Mon, 28 Feb 2022 12:45:00 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04A52656A;
-        Mon, 28 Feb 2022 09:37:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B3812DAB9;
+        Mon, 28 Feb 2022 09:37:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9413B61375;
-        Mon, 28 Feb 2022 17:37:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E96C340E7;
-        Mon, 28 Feb 2022 17:37:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1AD86135F;
+        Mon, 28 Feb 2022 17:37:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF5C9C340E7;
+        Mon, 28 Feb 2022 17:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069848;
-        bh=I5WCHMB1VTrzwLsHeb0NI7Mr1kLeGOCs/cC2bJ5zA0E=;
+        s=korg; t=1646069853;
+        bh=pRsXDIZaX6/B6+4vcBJG6GbnQNuzWJ76G+Fce0QPDKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MSMQb0RYrijXxBiUmtjohTAjl26y8wIZYYM6uthYZvaWCq+VTGsF9StxxCynwpsTm
-         R7AXW4FBm8cBAsyHaZAyhZxF8LUh/KaQUpGzhqq4ldV034mqJzDwBjtY/JXqz+S4F9
-         PNELKs74H5gZSHIIapjb1Aq1uEE10gxGcHxeGrcI=
+        b=HQ38uZItqMpFXogzBnV/deiDMadG8itTQGiHx3APW3LF15eLoJzDfKOYng8SGCPC5
+         eoJXV3KWmP7b4jWafbYFiZuK+sAt1+sS1Z2OA+1aoZQJ7ER+aPSTkhiFDYWuE+gS+r
+         4dB5CLKeMS88pzDlQlvulGEP8cuHrlS1qxSuWkSk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 033/139] Revert "i40e: Fix reset bw limit when DCB enabled with 1 TC"
-Date:   Mon, 28 Feb 2022 18:23:27 +0100
-Message-Id: <20220228172351.253608805@linuxfoundation.org>
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        alexander.shishkin@intel.com, Andi Kleen <ak@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 035/139] perf evlist: Fix failed to use cpu list for uncore events
+Date:   Mon, 28 Feb 2022 18:23:29 +0100
+Message-Id: <20220228172351.462238127@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -50,60 +55,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Palczewski <mateusz.palczewski@intel.com>
+From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
 
-commit fe20371578ef640069e6ae9fa8038f60e7908565 upstream.
+commit 8a3d2ee0de3828e0d01f9682d35ee53704659bd0 upstream.
 
-Revert of a patch that instead of fixing a AQ error when trying
-to reset BW limit introduced several regressions related to
-creation and managing TC. Currently there are errors when creating
-a TC on both PF and VF.
+The 'perf record' and 'perf stat' commands have supported the option
+'-C/--cpus' to count or collect only on the list of CPUs provided.
 
-Error log:
-[17428.783095] i40e 0000:3b:00.1: AQ command Config VSI BW allocation per TC failed = 14
-[17428.783107] i40e 0000:3b:00.1: Failed configuring TC map 0 for VSI 391
-[17428.783254] i40e 0000:3b:00.1: AQ command Config VSI BW allocation per TC failed = 14
-[17428.783259] i40e 0000:3b:00.1: Unable to  configure TC map 0 for VSI 391
+Commit 1d3351e631fc34d7 ("perf tools: Enable on a list of CPUs for
+hybrid") add it to be supported for hybrid. For hybrid support, it
+checks the cpu list are available on hybrid PMU. But when we test only
+uncore events(or events not in cpu_core and cpu_atom), there is a bug:
 
-This reverts commit 3d2504663c41104b4359a15f35670cfa82de1bbf.
+Before:
 
-Fixes: 3d2504663c41 (i40e: Fix reset bw limit when DCB enabled with 1 TC)
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220223175347.1690692-1-anthony.l.nguyen@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+ # perf stat -C0  -e uncore_clock/clockticks/ sleep 1
+   failed to use cpu list 0
+
+In this case, for uncore event, its pmu_name is not cpu_core or
+cpu_atom, so in evlist__fix_hybrid_cpus, perf_pmu__find_hybrid_pmu
+should return NULL,both events_nr and unmatched_count should be 0 ,then
+the cpu list check function evlist__fix_hybrid_cpus return -1 and the
+error "failed to use cpu list 0" will happen. Bypass "events_nr=0" case
+then the issue is fixed.
+
+After:
+
+ # perf stat -C0  -e uncore_clock/clockticks/ sleep 1
+
+ Performance counter stats for 'CPU(s) 0':
+
+       195,476,873      uncore_clock/clockticks/
+
+       1.004518677 seconds time elapsed
+
+When testing with at least one core event and uncore events, it has no
+issue.
+
+ # perf stat -C0  -e cpu_core/cpu-cycles/,uncore_clock/clockticks/ sleep 1
+
+ Performance counter stats for 'CPU(s) 0':
+
+         5,993,774      cpu_core/cpu-cycles/
+       301,025,912      uncore_clock/clockticks/
+
+       1.003964934 seconds time elapsed
+
+Fixes: 1d3351e631fc34d7 ("perf tools: Enable on a list of CPUs for hybrid")
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: alexander.shishkin@intel.com
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: http://lore.kernel.org/lkml/20220218093127.1844241-1-zhengjun.xing@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ tools/perf/util/evlist-hybrid.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -5372,15 +5372,7 @@ static int i40e_vsi_configure_bw_alloc(s
- 	/* There is no need to reset BW when mqprio mode is on.  */
- 	if (pf->flags & I40E_FLAG_TC_MQPRIO)
- 		return 0;
--
--	if (!vsi->mqprio_qopt.qopt.hw) {
--		if (pf->flags & I40E_FLAG_DCB_ENABLED)
--			goto skip_reset;
--
--		if (IS_ENABLED(CONFIG_I40E_DCB) &&
--		    i40e_dcb_hw_get_num_tc(&pf->hw) == 1)
--			goto skip_reset;
--
-+	if (!vsi->mqprio_qopt.qopt.hw && !(pf->flags & I40E_FLAG_DCB_ENABLED)) {
- 		ret = i40e_set_bw_limit(vsi, vsi->seid, 0);
- 		if (ret)
- 			dev_info(&pf->pdev->dev,
-@@ -5388,8 +5380,6 @@ static int i40e_vsi_configure_bw_alloc(s
- 				 vsi->seid);
- 		return ret;
+--- a/tools/perf/util/evlist-hybrid.c
++++ b/tools/perf/util/evlist-hybrid.c
+@@ -153,8 +153,8 @@ int evlist__fix_hybrid_cpus(struct evlis
+ 		perf_cpu_map__put(matched_cpus);
+ 		perf_cpu_map__put(unmatched_cpus);
  	}
 -
--skip_reset:
- 	memset(&bw_data, 0, sizeof(bw_data));
- 	bw_data.tc_valid_bits = enabled_tc;
- 	for (i = 0; i < I40E_MAX_TRAFFIC_CLASS; i++)
+-	ret = (unmatched_count == events_nr) ? -1 : 0;
++	if (events_nr)
++		ret = (unmatched_count == events_nr) ? -1 : 0;
+ out:
+ 	perf_cpu_map__put(cpus);
+ 	return ret;
 
 
