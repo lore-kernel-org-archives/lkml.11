@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E85C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01997C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236225AbiB1SME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:12:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
+        id S239969AbiB1SMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:12:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239920AbiB1SG3 (ORCPT
+        with ESMTP id S240022AbiB1SHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 13:06:29 -0500
+        Mon, 28 Feb 2022 13:07:50 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858E95AECD;
-        Mon, 28 Feb 2022 09:48:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B725C860;
+        Mon, 28 Feb 2022 09:48:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7A818CE1795;
-        Mon, 28 Feb 2022 17:47:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F7C4C340F0;
-        Mon, 28 Feb 2022 17:47:57 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CD26ECE17E0;
+        Mon, 28 Feb 2022 17:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF72C340E7;
+        Mon, 28 Feb 2022 17:48:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070477;
-        bh=rzjIv3Y6uxvOnI6bDTKnF+WA7ReFM5LSD1pxUEbn0uM=;
+        s=korg; t=1646070486;
+        bh=2PUzstzbc4uQGtrmaIFCYCO0Mwn0zemi4VU9SaGRTc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O/D0EV3+PiiLtVQvKlfEwlQp4F5Pk4Pg0wsLo0S5MeFSOkzEdNlF0Mt8zYpv8A9AM
-         yMuuLcztBD230fwqRQ72A+E/a/xTZDLymXpQEK4nDAUjwO4i7SmDJuKjW3cDBr9alh
-         6OgDu234uZpJghSpqVtRwQputnFlmKyl8BXzHakM=
+        b=jnsk3L+a1gvrDOOfSy+wk1Seswo53ph9C1ImxYAybxbG0h75pE0wjtZVJBqUkBg1C
+         OVLmZ3DwsLjdqavpOw+7hD6Ynhke/sE1TWjN1hrDgn0ffLZ1G6i+Vk6zEIMlm7cfeg
+         +LAESh20qStKDJm0ceOnWt14XiQQbvxJM9ulqdcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmytro Bagrii <dimich.dmb@gmail.com>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 5.16 123/164] Revert "USB: serial: ch341: add new Product ID for CH341A"
-Date:   Mon, 28 Feb 2022 18:24:45 +0100
-Message-Id: <20220228172411.363922942@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        "Steven Rostedt (Google)" <rostedt@goodmis.org>
+Subject: [PATCH 5.16 126/164] tracefs: Set the group ownership in apply_options() not parse_options()
+Date:   Mon, 28 Feb 2022 18:24:48 +0100
+Message-Id: <20220228172411.580687405@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
 References: <20220228172359.567256961@linuxfoundation.org>
@@ -48,37 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmytro Bagrii <dimich.dmb@gmail.com>
+From: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-commit 198a7ebd5fa17b4d0be8cb70240ee1be885175c0 upstream.
+commit 851e99ebeec3f4a672bb5010cf1ece095acee447 upstream.
 
-This reverts commit 46ee4abb10a07bd8f8ce910ee6b4ae6a947d7f63.
+Al Viro brought it to my attention that the dentries may not be filled
+when the parse_options() is called, causing the call to set_gid() to
+possibly crash. It should only be called if parse_options() succeeds
+totally anyway.
 
-CH341 has Product ID 0x5512 in EPP/MEM mode which is used for
-I2C/SPI/GPIO interfaces. In asynchronous serial interface mode
-CH341 has PID 0x5523 which is already in the table.
+He suggested the logical place to do the update is in apply_options().
 
-Mode is selected by corresponding jumper setting.
+Link: https://lore.kernel.org/all/20220225165219.737025658@goodmis.org/
+Link: https://lkml.kernel.org/r/20220225153426.1c4cab6b@gandalf.local.home
 
-Signed-off-by: Dmytro Bagrii <dimich.dmb@gmail.com>
-Link: https://lore.kernel.org/r/20220210164137.4376-1-dimich.dmb@gmail.com
-Link: https://lore.kernel.org/r/YJ0OCS/sh+1ifD/q@hovoldconsulting.com
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
+Acked-by: Al Viro <viro@zeniv.linux.org.uk>
+Reported-by: Al Viro <viro@zeniv.linux.org.uk>
+Fixes: 48b27b6b5191 ("tracefs: Set all files to the same group ownership as the mount option")
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/serial/ch341.c |    1 -
- 1 file changed, 1 deletion(-)
+ fs/tracefs/inode.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/serial/ch341.c
-+++ b/drivers/usb/serial/ch341.c
-@@ -81,7 +81,6 @@
- #define CH341_QUIRK_SIMULATE_BREAK	BIT(1)
+--- a/fs/tracefs/inode.c
++++ b/fs/tracefs/inode.c
+@@ -264,7 +264,6 @@ static int tracefs_parse_options(char *d
+ 			if (!gid_valid(gid))
+ 				return -EINVAL;
+ 			opts->gid = gid;
+-			set_gid(tracefs_mount->mnt_root, gid);
+ 			break;
+ 		case Opt_mode:
+ 			if (match_octal(&args[0], &option))
+@@ -291,7 +290,9 @@ static int tracefs_apply_options(struct
+ 	inode->i_mode |= opts->mode;
  
- static const struct usb_device_id id_table[] = {
--	{ USB_DEVICE(0x1a86, 0x5512) },
- 	{ USB_DEVICE(0x1a86, 0x5523) },
- 	{ USB_DEVICE(0x1a86, 0x7522) },
- 	{ USB_DEVICE(0x1a86, 0x7523) },
+ 	inode->i_uid = opts->uid;
+-	inode->i_gid = opts->gid;
++
++	/* Set all the group ids to the mount option */
++	set_gid(sb->s_root, opts->gid);
+ 
+ 	return 0;
+ }
 
 
