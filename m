@@ -2,79 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 366D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70B5FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232630AbiB1Rfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:35:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42236 "EHLO
+        id S238029AbiB1Rfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:35:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238633AbiB1Rdl (ORCPT
+        with ESMTP id S238618AbiB1Rdl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:33:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7163891AFB;
-        Mon, 28 Feb 2022 09:30:25 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63C2091AD9;
+        Mon, 28 Feb 2022 09:30:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5E4D61358;
-        Mon, 28 Feb 2022 17:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE641C340E7;
-        Mon, 28 Feb 2022 17:30:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069421;
-        bh=6dmsWtF2WF6CEy7yiT59gPr76gbVM+Z8NfW08yZAGbI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TPS5+MjFtP6BJa2n2T2YJIAV/jEpuGOaqu4vHHfZyaiMjlXcdPwKY4icmenU5vjRD
-         rqfqGhWAbBhMPHG5fH+skplrCgoM/au4c/uueXOuBENGqAWYIHwJhpyR84eLD8qVgN
-         v0dBgX+PspDC6xeJH28WfPw7MalxdMgCukSH2dWA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>
-Subject: [PATCH 5.4 14/53] ping: remove pr_err from ping_lookup
-Date:   Mon, 28 Feb 2022 18:24:12 +0100
-Message-Id: <20220228172249.363203863@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
-References: <20220228172248.232273337@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3822EB815BB;
+        Mon, 28 Feb 2022 17:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CC5EAC340F1;
+        Mon, 28 Feb 2022 17:30:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646069410;
+        bh=M6RlHK50m518zh9g/W6m7lS2gQjIJv2LEskTH0mM9A4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=F2eTdYUVmG31/oWZlEVR6gXLyzclsyvcR2PUlLFkN7iZzxE3QbmZO/Gcg1g+swIU5
+         d0e5yoDhn4ad7hqSTd7fro1hcZfi6DMKBQPEL59CECVw1ylQRqQ6vyi5zTX36emYfR
+         22IHZwHKBcJLc+zg7ypFFBpo/A8SoHloXkrW9JxHvkKfXjWrHem76fCB0Zn37m5QyQ
+         OPFK0IlBgzXjkx+gUcF3VqOfFNb+foT0jTloCo4LGGBfU+QO+NZBt+3A0EzYqHwr2R
+         G7nxeA+6VCl0z95O1INP1KgRvj9EtSVDQ4gMaQABqsL7I3odalR+8JzJAQ3ZsjI9xV
+         v3w0d8kO/ipLw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B30CAE5D087;
+        Mon, 28 Feb 2022 17:30:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] bpf, docs: add a missing colon in verifier.rst
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164606941072.17364.6616334283282888938.git-patchwork-notify@kernel.org>
+Date:   Mon, 28 Feb 2022 17:30:10 +0000
+References: <20220228080416.1689327-1-wanjiabing@vivo.com>
+In-Reply-To: <20220228080416.1689327-1-wanjiabing@vivo.com>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     corbet@lwn.net, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jiabing.wan@qq.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Long <lucien.xin@gmail.com>
+Hello:
 
-commit cd33bdcbead882c2e58fdb4a54a7bd75b610a452 upstream.
+This patch was applied to bpf/bpf-next.git (master)
+by Daniel Borkmann <daniel@iogearbox.net>:
 
-As Jakub noticed, prints should be avoided on the datapath.
-Also, as packets would never come to the else branch in
-ping_lookup(), remove pr_err() from ping_lookup().
+On Mon, 28 Feb 2022 16:04:16 +0800 you wrote:
+> Add a missing colon to fix the document style.
+> 
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+>  Documentation/bpf/verifier.rst | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Fixes: 35a79e64de29 ("ping: fix the dif and sdif check in ping_lookup")
-Reported-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
-Link: https://lore.kernel.org/r/1ef3f2fcd31bd681a193b1fcf235eee1603819bd.1645674068.git.lucien.xin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/ipv4/ping.c |    1 -
- 1 file changed, 1 deletion(-)
+Here is the summary with links:
+  - bpf, docs: add a missing colon in verifier.rst
+    https://git.kernel.org/bpf/bpf-next/c/43429ea74a12
 
---- a/net/ipv4/ping.c
-+++ b/net/ipv4/ping.c
-@@ -187,7 +187,6 @@ static struct sock *ping_lookup(struct n
- 			 (int)ident, &ipv6_hdr(skb)->daddr, dif);
- #endif
- 	} else {
--		pr_err("ping: protocol(%x) is not supported\n", ntohs(skb->protocol));
- 		return NULL;
- 	}
- 
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
