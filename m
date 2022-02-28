@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CEE2C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D43EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239397AbiB1Rzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:55:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
+        id S239419AbiB1Rz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:55:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239325AbiB1Rwx (ORCPT
+        with ESMTP id S239324AbiB1Rwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:52:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73B86A8EEF;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72028A8EEE;
         Mon, 28 Feb 2022 09:40:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DBEEB815A2;
-        Mon, 28 Feb 2022 17:40:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E66EAC340F1;
-        Mon, 28 Feb 2022 17:39:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 869E561541;
+        Mon, 28 Feb 2022 17:40:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D7D4C340E7;
+        Mon, 28 Feb 2022 17:40:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070000;
-        bh=XSLKRkij1uXAIPZeU+vR3idzKH3jAVHBKW7vVMbPZpQ=;
+        s=korg; t=1646070003;
+        bh=FeXWa6P1qRtmPfj0mdtYpxdTQB265wDqpUFzlISXYoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GXceBZQ/lJt1Ay90Uk8dgdkxoOlJWmUsa0xoyxloTZePakJkH5LGlLWTviUAGXBIJ
-         6Sh4BLICK0G4MYXuf8rjbRFZCMGH9a4Px3QZqm8UbwUDcJCLw1nWB5n89Xtub1vmhX
-         QZ1gxRGIKWNHgX1ax8DwSM4vP1xmnswlSEy+Ea7E=
+        b=V3xVOMnuiSgBdINMAkK9xMUuiblBfZiRC9AnuLuPt4ARO9PvuTTIXNfh5TRPB3ikd
+         ZMoZVNWWl3D4uVJRdG7rMt0HqxBw8on5e5Ybbb5WIK6zuGgFMmiR/oDBdi/S0llO61
+         Jq4ZWEP0mK9IQ9SaZ/NyFErG61zuWHbzbJOg7GPc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH 5.15 051/139] bpf: Do not try bpf_msg_push_data with len 0
-Date:   Mon, 28 Feb 2022 18:23:45 +0100
-Message-Id: <20220228172353.067173515@linuxfoundation.org>
+Subject: [PATCH 5.15 052/139] selftests: bpf: Check bpf_msg_push_data return value
+Date:   Mon, 28 Feb 2022 18:23:46 +0100
+Message-Id: <20220228172353.189917000@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -52,41 +51,95 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Felix Maurer <fmaurer@redhat.com>
 
-commit 4a11678f683814df82fca9018d964771e02d7e6d upstream.
+commit 61d06f01f9710b327a53492e5add9f972eb909b3 upstream.
 
-If bpf_msg_push_data() is called with len 0 (as it happens during
-selftests/bpf/test_sockmap), we do not need to do anything and can
-return early.
+bpf_msg_push_data may return a non-zero value to indicate an error. The
+return value should be checked to prevent undetected errors.
 
-Calling bpf_msg_push_data() with len 0 previously lead to a wrong ENOMEM
-error: we later called get_order(copy + len); if len was 0, copy + len
-was also often 0 and get_order() returned some undefined value (at the
-moment 52). alloc_pages() caught that and failed, but then bpf_msg_push_data()
-returned ENOMEM. This was wrong because we are most probably not out of
-memory and actually do not need any additional memory.
+To indicate an error, the BPF programs now perform a different action
+than their intended one to make the userspace test program notice the
+error, i.e., the programs supposed to pass/redirect drop, the program
+supposed to drop passes.
 
-Fixes: 6fff607e2f14b ("bpf: sk_msg program helper bpf_msg_push_data")
+Fixes: 84fbfe026acaa ("bpf: test_sockmap add options to use msg_push_data")
 Signed-off-by: Felix Maurer <fmaurer@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/df69012695c7094ccb1943ca02b4920db3537466.1644421921.git.fmaurer@redhat.com
+Link: https://lore.kernel.org/bpf/89f767bb44005d6b4dd1f42038c438f76b3ebfad.1644601294.git.fmaurer@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/filter.c |    3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/bpf/progs/test_sockmap_kern.h |   26 ++++++++++++------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2711,6 +2711,9 @@ BPF_CALL_4(bpf_msg_push_data, struct sk_
- 	if (unlikely(flags))
- 		return -EINVAL;
+--- a/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
++++ b/tools/testing/selftests/bpf/progs/test_sockmap_kern.h
+@@ -235,7 +235,7 @@ SEC("sk_msg1")
+ int bpf_prog4(struct sk_msg_md *msg)
+ {
+ 	int *bytes, zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5;
+-	int *start, *end, *start_push, *end_push, *start_pop, *pop;
++	int *start, *end, *start_push, *end_push, *start_pop, *pop, err = 0;
  
-+	if (unlikely(len == 0))
-+		return 0;
-+
- 	/* First find the starting scatterlist element */
- 	i = msg->sg.start;
- 	do {
+ 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
+ 	if (bytes)
+@@ -249,8 +249,11 @@ int bpf_prog4(struct sk_msg_md *msg)
+ 		bpf_msg_pull_data(msg, *start, *end, 0);
+ 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
+ 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
+-	if (start_push && end_push)
+-		bpf_msg_push_data(msg, *start_push, *end_push, 0);
++	if (start_push && end_push) {
++		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
++		if (err)
++			return SK_DROP;
++	}
+ 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
+ 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
+ 	if (start_pop && pop)
+@@ -263,6 +266,7 @@ int bpf_prog6(struct sk_msg_md *msg)
+ {
+ 	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, key = 0;
+ 	int *bytes, *start, *end, *start_push, *end_push, *start_pop, *pop, *f;
++	int err = 0;
+ 	__u64 flags = 0;
+ 
+ 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
+@@ -279,8 +283,11 @@ int bpf_prog6(struct sk_msg_md *msg)
+ 
+ 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
+ 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
+-	if (start_push && end_push)
+-		bpf_msg_push_data(msg, *start_push, *end_push, 0);
++	if (start_push && end_push) {
++		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
++		if (err)
++			return SK_DROP;
++	}
+ 
+ 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
+ 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
+@@ -338,7 +345,7 @@ SEC("sk_msg5")
+ int bpf_prog10(struct sk_msg_md *msg)
+ {
+ 	int *bytes, *start, *end, *start_push, *end_push, *start_pop, *pop;
+-	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5;
++	int zero = 0, one = 1, two = 2, three = 3, four = 4, five = 5, err = 0;
+ 
+ 	bytes = bpf_map_lookup_elem(&sock_apply_bytes, &zero);
+ 	if (bytes)
+@@ -352,8 +359,11 @@ int bpf_prog10(struct sk_msg_md *msg)
+ 		bpf_msg_pull_data(msg, *start, *end, 0);
+ 	start_push = bpf_map_lookup_elem(&sock_bytes, &two);
+ 	end_push = bpf_map_lookup_elem(&sock_bytes, &three);
+-	if (start_push && end_push)
+-		bpf_msg_push_data(msg, *start_push, *end_push, 0);
++	if (start_push && end_push) {
++		err = bpf_msg_push_data(msg, *start_push, *end_push, 0);
++		if (err)
++			return SK_PASS;
++	}
+ 	start_pop = bpf_map_lookup_elem(&sock_bytes, &four);
+ 	pop = bpf_map_lookup_elem(&sock_bytes, &five);
+ 	if (start_pop && pop)
 
 
