@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 639BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 18:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240823AbiB1SEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 13:04:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55660 "EHLO
+        id S240881AbiB1SET (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 13:04:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239430AbiB1RxC (ORCPT
+        with ESMTP id S239363AbiB1Rwz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:02 -0500
+        Mon, 28 Feb 2022 12:52:55 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D52AA9399D;
-        Mon, 28 Feb 2022 09:40:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA16A94D7;
+        Mon, 28 Feb 2022 09:40:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92697614CC;
-        Mon, 28 Feb 2022 17:40:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97030C340E7;
-        Mon, 28 Feb 2022 17:40:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 455056156B;
+        Mon, 28 Feb 2022 17:40:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55268C340E7;
+        Mon, 28 Feb 2022 17:40:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070017;
-        bh=/hYQGTqQQmB6eHTb99rmYrwWLM/X1AuUSuVmxovmtDA=;
+        s=korg; t=1646070005;
+        bh=nxXKOafHAT91L+KEcpG5Ig/Ag6ujqpSqA5C2JyOG9ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xJopDP9Lcx0vkDVnDDqP0QLCTnVehtN45Ne+2AVWHjPvzqCC9+Z17x5cM27E52gG5
-         12Y6NYqvrmKmHdTSC8n1hZVKCMiOOWgqjbIJl7N7Leh8OukFGM9aE3Obh66cZncJ/r
-         LEWImMYM3Ahv8DwaBwIgQkmXhnLNnD79C5BhhPwE=
+        b=K19yfwFzkvTU55nNV32pmjG40BrNUpYv20IKLvt9diOL2WmM8f62vHWcVDhFiX0lW
+         R91/aBtG+KqVf+IF3Kn0UJgpdb15ENSHkw7hBmcvs1G0H4wnhyf+pOjpMlCg0/YT2k
+         2zaJ9pgOoJf+sZ88Zfq6gW10CfQE4k7YfLK7ajtE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Pineda <julia.pineda@analog.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 096/139] iio:imu:adis16480: fix buffering for devices with no burst mode
-Date:   Mon, 28 Feb 2022 18:24:30 +0100
-Message-Id: <20220228172357.703817331@linuxfoundation.org>
+        stable@vger.kernel.org, Edwin Peer <edwin.peer@broadcom.com>,
+        Ben Li <ben.li@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 043/139] bnxt_en: Fix offline ethtool selftest with RDMA enabled
+Date:   Mon, 28 Feb 2022 18:23:37 +0100
+Message-Id: <20220228172352.247071663@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -50,53 +50,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nuno Sá <nuno.sa@analog.com>
+From: Michael Chan <michael.chan@broadcom.com>
 
-commit b0e85f95e30d4d2dc22ea123a30dba36406879a1 upstream.
+commit 6758f937669dba14c6aac7ca004edda42ec1b18d upstream.
 
-The trigger handler defined in the driver assumes that burst mode is
-being used. Hence, for devices that do not support it, we have to use
-the adis library default trigger implementation.
+For offline (destructive) self tests, we need to stop the RDMA driver
+first.  Otherwise, the RDMA driver will run into unrecoverable errors
+when destructive firmware tests are being performed.
 
-Tested-by: Julia Pineda <julia.pineda@analog.com>
-Fixes: 941f130881fa9 ("iio: adis16480: support burst read function")
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20220114132608.241-1-nuno.sa@analog.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+The irq_re_init parameter used in the half close and half open
+sequence when preparing the NIC for offline tests should be set to
+true because the RDMA driver will free all IRQs before the offline
+tests begin.
+
+Fixes: 55fd0cf320c3 ("bnxt_en: Add external loopback test to ethtool selftest.")
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Reviewed-by: Ben Li <ben.li@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/imu/adis16480.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |   10 +++++-----
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |   12 +++++++++---
+ 2 files changed, 14 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-index ed129321a14d..f9b4540db1f4 100644
---- a/drivers/iio/imu/adis16480.c
-+++ b/drivers/iio/imu/adis16480.c
-@@ -1403,6 +1403,7 @@ static int adis16480_probe(struct spi_device *spi)
- {
- 	const struct spi_device_id *id = spi_get_device_id(spi);
- 	const struct adis_data *adis16480_data;
-+	irq_handler_t trigger_handler = NULL;
- 	struct iio_dev *indio_dev;
- 	struct adis16480 *st;
- 	int ret;
-@@ -1474,8 +1475,12 @@ static int adis16480_probe(struct spi_device *spi)
- 		st->clk_freq = st->chip_info->int_clk;
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -10295,12 +10295,12 @@ int bnxt_half_open_nic(struct bnxt *bp)
+ 		goto half_open_err;
  	}
  
-+	/* Only use our trigger handler if burst mode is supported */
-+	if (adis16480_data->burst_len)
-+		trigger_handler = adis16480_trigger_handler;
-+
- 	ret = devm_adis_setup_buffer_and_trigger(&st->adis, indio_dev,
--						 adis16480_trigger_handler);
-+						 trigger_handler);
- 	if (ret)
- 		return ret;
+-	rc = bnxt_alloc_mem(bp, false);
++	rc = bnxt_alloc_mem(bp, true);
+ 	if (rc) {
+ 		netdev_err(bp->dev, "bnxt_alloc_mem err: %x\n", rc);
+ 		goto half_open_err;
+ 	}
+-	rc = bnxt_init_nic(bp, false);
++	rc = bnxt_init_nic(bp, true);
+ 	if (rc) {
+ 		netdev_err(bp->dev, "bnxt_init_nic err: %x\n", rc);
+ 		goto half_open_err;
+@@ -10309,7 +10309,7 @@ int bnxt_half_open_nic(struct bnxt *bp)
  
--- 
-2.35.1
-
+ half_open_err:
+ 	bnxt_free_skbs(bp);
+-	bnxt_free_mem(bp, false);
++	bnxt_free_mem(bp, true);
+ 	dev_close(bp->dev);
+ 	return rc;
+ }
+@@ -10319,9 +10319,9 @@ half_open_err:
+  */
+ void bnxt_half_close_nic(struct bnxt *bp)
+ {
+-	bnxt_hwrm_resource_free(bp, false, false);
++	bnxt_hwrm_resource_free(bp, false, true);
+ 	bnxt_free_skbs(bp);
+-	bnxt_free_mem(bp, false);
++	bnxt_free_mem(bp, true);
+ }
+ 
+ static void bnxt_reenable_sriov(struct bnxt *bp)
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -25,6 +25,7 @@
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
+ #include "bnxt_hwrm.h"
++#include "bnxt_ulp.h"
+ #include "bnxt_xdp.h"
+ #include "bnxt_ptp.h"
+ #include "bnxt_ethtool.h"
+@@ -3502,9 +3503,12 @@ static void bnxt_self_test(struct net_de
+ 	if (!offline) {
+ 		bnxt_run_fw_tests(bp, test_mask, &test_results);
+ 	} else {
+-		rc = bnxt_close_nic(bp, false, false);
+-		if (rc)
++		bnxt_ulp_stop(bp);
++		rc = bnxt_close_nic(bp, true, false);
++		if (rc) {
++			bnxt_ulp_start(bp, rc);
+ 			return;
++		}
+ 		bnxt_run_fw_tests(bp, test_mask, &test_results);
+ 
+ 		buf[BNXT_MACLPBK_TEST_IDX] = 1;
+@@ -3514,6 +3518,7 @@ static void bnxt_self_test(struct net_de
+ 		if (rc) {
+ 			bnxt_hwrm_mac_loopback(bp, false);
+ 			etest->flags |= ETH_TEST_FL_FAILED;
++			bnxt_ulp_start(bp, rc);
+ 			return;
+ 		}
+ 		if (bnxt_run_loopback(bp))
+@@ -3539,7 +3544,8 @@ static void bnxt_self_test(struct net_de
+ 		}
+ 		bnxt_hwrm_phy_loopback(bp, false, false);
+ 		bnxt_half_close_nic(bp);
+-		rc = bnxt_open_nic(bp, false, true);
++		rc = bnxt_open_nic(bp, true, true);
++		bnxt_ulp_start(bp, rc);
+ 	}
+ 	if (rc || bnxt_test_irq(bp)) {
+ 		buf[BNXT_IRQ_TEST_IDX] = 1;
 
 
