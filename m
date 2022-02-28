@@ -2,90 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDFCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:51:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 19:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229759AbiB1Tvv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 14:51:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
+        id S229774AbiB1TwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 14:52:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiB1Tvg (ORCPT
+        with ESMTP id S229743AbiB1Tvq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 14:51:36 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7647210E552
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:49:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B8D51CE107E
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 19:36:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF7ECC340F6
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 19:36:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646076999;
-        bh=uQg4SANC0tJU01vBVn+TzxDgIh1ds1BGQLyvH74OLKI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ru9dbqGPywx4rU8bE2+ALmWNqKepMsAz+aIsY4z/xVDf19gnI7gBbxmQY5gpzLztD
-         u/76HNcsnpdicFc4FWL1gyc7fQdqQNFeIkVh5vgzgd/q76fMCGklz10id4PLc6YuHC
-         yRL3Y5gMvSGm466ekMyUf9XdZpfspZP6MolYzDiqnVhBDFPiu17n6J47JSyi6Te7lB
-         9DRJNywzHl3YfI7X9e6zQsW29lwDxMbJ5J+6m4R5yLxbaRhgZ8M+95Rdy0yoCZpk6d
-         UfYL3W6Exy/9h5Boyw7tkidqi1D+t8TbWZTCaHGl+p1NL7Y24mv9ve43L6bt+qie1Z
-         fmYcGMwHznSjw==
-Received: by mail-ej1-f48.google.com with SMTP id p15so26979983ejc.7
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:36:38 -0800 (PST)
-X-Gm-Message-State: AOAM532jI2z+pmxV9hpArY2IzL7cFMEgFCC/ek2luS6rSPx7d8o2XWIi
-        A299/HGfx/xqXqih8jdQK7MPX2JjRijl1myV8g==
-X-Google-Smtp-Source: ABdhPJwy5V0qZqdzoWekWLIQTK+ex/E6tQfwsl/Ul2TecipRpl9pTgZCDU6AkEbHUbR6Tb1Q5X7GWm2ya30cCXWXbkw=
-X-Received: by 2002:a17:906:9913:b0:6d6:dc48:5d49 with SMTP id
- zl19-20020a170906991300b006d6dc485d49mr1820180ejb.325.1646076997213; Mon, 28
- Feb 2022 11:36:37 -0800 (PST)
+        Mon, 28 Feb 2022 14:51:46 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB320DF29
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 11:50:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646077823; x=1677613823;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fyMzmzWob5BwLEcRZwKRCLnS0Nzkv/dRn06vcSYOlQM=;
+  b=DUC1DxOZ9b9qtpoVAlOYQssJAZ6Z0Mnhemti5/ealu5BTCxe6nkMnggM
+   12tvzd6mXjpkxZOGNTbMfaC9Z6rd0In2/XJhc43c3u9pv3RTkXDQyvIN7
+   UgznB6G2/CIwfLjIP5HMsvqPhrq+Apag+0ZcfdX6HEUvQYhIWxsc7mKQH
+   yssv/vKq7+J/fvedmcwVTcT0do94sN4MhgfdTul4FQh+kwJcYrRIVyXlJ
+   ZtoIxMAQHPxbuAGWllPkXIhvhLgyrhLXia5kzLdz50TfLHDRjPZVxrUcn
+   mHn3t02AqCJJb/7vPR8lVOBHNFhQsaYZg0Es08LKo/TGDkocnjtTqBXwT
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="232942862"
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="232942862"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 11:50:22 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
+   d="scan'208";a="492838943"
+Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 28 Feb 2022 11:50:19 -0800
+Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOm2E-0007kJ-LB; Mon, 28 Feb 2022 19:50:18 +0000
+Date:   Tue, 1 Mar 2022 03:49:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>, mingo@redhat.com,
+        peterz@infradead.org, frederic@kernel.org, rostedt@goodmis.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, tglx@linutronix.de,
+        mtosatti@redhat.com, bristot@redhat.com,
+        linux-kernel@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Subject: Re: [RESEND PATCH 2/2] tracing: Avoid isolated CPUs when queueing
+ fsnotify irqwork
+Message-ID: <202203010318.S1y5cIXE-lkp@intel.com>
+References: <20220228141550.260119-2-nsaenzju@redhat.com>
 MIME-Version: 1.0
-References: <20220124162437.2470344-1-carsten.haitzler@foss.arm.com>
- <Ye/vEilz6j8gX3wu@e110455-lin.cambridge.arm.com> <20220223101851.46423dcf@donnerap.cambridge.arm.com>
-In-Reply-To: <20220223101851.46423dcf@donnerap.cambridge.arm.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 28 Feb 2022 13:36:25 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqL5REBih_Q+q==S_RhH90Ook0pPKhpcz4910h52-AFa+g@mail.gmail.com>
-Message-ID: <CAL_JsqL5REBih_Q+q==S_RhH90Ook0pPKhpcz4910h52-AFa+g@mail.gmail.com>
-Subject: Re: [PATCH] drm/arm: arm hdlcd select DRM_GEM_CMA_HELPER
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     Liviu Dudau <liviu.dudau@arm.com>, carsten.haitzler@foss.arm.com,
-        Arnd Bergmann <arnd@arndb.de>, David Airlie <airlied@linux.ie>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Steven Price <steven.price@arm.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220228141550.260119-2-nsaenzju@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 23, 2022 at 4:19 AM Andre Przywara <andre.przywara@arm.com> wrote:
->
-> On Tue, 25 Jan 2022 12:37:38 +0000
-> Liviu Dudau <liviu.dudau@arm.com> wrote:
->
-> Hi,
->
-> > On Mon, Jan 24, 2022 at 04:24:37PM +0000, carsten.haitzler@foss.arm.com wrote:
-> > > From: Carsten Haitzler <carsten.haitzler@arm.com>
-> > >
-> > > Without DRM_GEM_CMA_HELPER HDLCD won't build. This needs to be there too.
-> > >
-> > > Fixes: 09717af7d13d ("drm: Remove CONFIG_DRM_KMS_CMA_HELPER option")
-> > >
-> > > Signed-off-by: Carsten Haitzler <carsten.haitzler@arm.com>
-> >
-> > Acked-by: Liviu Dudau <liviu.dudau@arm.com>
-> >
-> > I will add Steven's reviewed-by as well when pushing it.
->
-> Did this go anywhere? I see my .config just selecting HDLCD still failing
-> with -rc5. Any chance this can be taken now, as this is a regression
-> introduced with -rc1?
+Hi Nicolas,
 
-I thought Liviu was going to, but in any case I've now pushed it to
-drm-misc-fixes.
+I love your patch! Yet something to improve:
 
-Rob
+[auto build test ERROR on tip/sched/core]
+[also build test ERROR on next-20220228]
+[cannot apply to rostedt-trace/for-next linus/master v5.17-rc6]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Nicolas-Saenz-Julienne/sched-isolation-Use-raw_smp_processor_id-in-housekeeping_any_cpu/20220228-221742
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git 6255b48aebfd4dff375e97fc8b075a235848db0b
+config: i386-randconfig-a002-20220228 (https://download.01.org/0day-ci/archive/20220301/202203010318.S1y5cIXE-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/e3ec0b4adfed05db0d559d2d5234d6d8f1034985
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Nicolas-Saenz-Julienne/sched-isolation-Use-raw_smp_processor_id-in-housekeeping_any_cpu/20220228-221742
+        git checkout e3ec0b4adfed05db0d559d2d5234d6d8f1034985
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> kernel/trace/trace.c:1728:64: error: use of undeclared identifier 'HK_FLAG_MISC'; did you mean 'HK_TYPE_MISC'?
+           irq_work_queue_on(&tr->fsnotify_irqwork, housekeeping_any_cpu(HK_FLAG_MISC));
+                                                                         ^~~~~~~~~~~~
+                                                                         HK_TYPE_MISC
+   include/linux/sched/isolation.h:11:2: note: 'HK_TYPE_MISC' declared here
+           HK_TYPE_MISC,
+           ^
+   1 error generated.
+
+
+vim +1728 kernel/trace/trace.c
+
+  1718	
+  1719	void latency_fsnotify(struct trace_array *tr)
+  1720	{
+  1721		if (!fsnotify_wq)
+  1722			return;
+  1723		/*
+  1724		 * We cannot call queue_work(&tr->fsnotify_work) from here because it's
+  1725		 * possible that we are called from __schedule() or do_idle(), which
+  1726		 * could cause a deadlock.
+  1727		 */
+> 1728		irq_work_queue_on(&tr->fsnotify_irqwork, housekeeping_any_cpu(HK_FLAG_MISC));
+  1729	}
+  1730	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
