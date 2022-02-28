@@ -2,111 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91169C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E68C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 13:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234274AbiB1NKz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 08:10:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56064 "EHLO
+        id S233108AbiB1NNo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 08:13:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiB1NKy (ORCPT
+        with ESMTP id S231624AbiB1NNk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 08:10:54 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BCA97804F
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 05:10:15 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id s1so15338524wrg.10
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 05:10:15 -0800 (PST)
+        Mon, 28 Feb 2022 08:13:40 -0500
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5909B192A3;
+        Mon, 28 Feb 2022 05:13:01 -0800 (PST)
+Received: by mail-lf1-x12c.google.com with SMTP id i11so21302421lfu.3;
+        Mon, 28 Feb 2022 05:13:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y+tfmzsAwXlzwGA/68yHJ/dxS4HEgSBaoMff0gqNFjw=;
-        b=XLm9GW/kvlSiLN8LraAP1WxOyk/8vHRHY+CejJ+XDoLmis0woM7v0Txmy7NBB5WddD
-         UeU3mP2QK6Ahu1W/QcU02gdUZhZor8BeG6DUULAKiVpgdstxhIrjZKZ5jLk8P66gudcP
-         KNYGyvvPcbELGHGcx8beJtj8UfDT12pNqeIJ2eBaH7+aQM/PkolEoEhaXu5Q5huCFcyS
-         u3n+aJIu90mB0gHTsqTdgoEuWN0Sw8zPAeV8uFoz9tpQZr6J9ipAOFjrShB5rCzaFzDE
-         r8ha7JiYIRd6fPWb5LCKWb7N1if9SnODnwGIA4/QV5AWLSFFTc8Cfhl3jwWnTSZ6RhTd
-         LzEw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EdNKXJkj2Hxc1yhKt9uLoL/rsONSDoRoULDQeNZCOcU=;
+        b=IMXYolFvHnfacLay39iifcDxdLKD4Oe83NhqHvBStZwgk1PKAEcMzX9htgXOU8rFDP
+         2xgENzHIst3hifPjBROpgglz1mnWrDyqDPyiu3mwmho+f+u9fmQ/SRi8Q018g5mukNMh
+         LKVFEdy0mm81XfobwjyNcL7WrIQj2MdfJt7FaArruWs+bSsNW0R4Yl+/8NvcNuPeX0q3
+         Sja9GH5vH8geCI6CUFgvicUCGSiz0kJLMkYXsDPTgd5f0Trw1TeW5vYkWD9iI6xRtPWp
+         cCqiNoaqof0i0inU6uzFzrPGh7tcefl09AamjjOPI41VHgMGpkpxAoH5OighSSrb1lRu
+         XzSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y+tfmzsAwXlzwGA/68yHJ/dxS4HEgSBaoMff0gqNFjw=;
-        b=GROqCx6ccAyQ9UVSxNRTO5y82PZdFVnyU1ybyXokkNWfFhkAoAVNsI8y+lntmSYSND
-         zqMRPQ+C3EKj8KCcsDvyltKg8FM++k/a3W+FsFWWliZ+zBSQT4wLCTl6WDjrm4rQlOLh
-         6Z9C29MwVEYZldyIiT7EbtECcpdL6NFaHM5dyb3jcRLHNBpJ6AmRvaggf2UmwGXtMwjc
-         +XymQaIJjgC+5VhZu4O/PVSV8y1yDKk0QRVbz9C444KK9IgDy5jtp6oK5C8jwcPAL1P2
-         kpbxpPgz4uhWFm4JeJwc1Lb+Zdi0Cx32EiOgfbrU+X5AEusx4W2HzMQaQRojuKeM7G7P
-         a9KA==
-X-Gm-Message-State: AOAM531gf4F/Qtp0hSLqIpHL5GwIWnKZftP50l+8hXyBIpSxavug9rvx
-        Ak8IAGhPh/Y1vNzhaK7abylDj75y0jvVrCaTD1kl4A==
-X-Google-Smtp-Source: ABdhPJwpYbHtsKqzvUh856LHTzTP6NBw6Ufzhzl1fuggS7R7Iuv7uS137uKXoomI1n9T2jbuozxHNd7ywAOKOGSkBt8=
-X-Received: by 2002:a5d:64a8:0:b0:1ef:f99c:8c12 with SMTP id
- m8-20020a5d64a8000000b001eff99c8c12mr780480wrp.214.1646053813809; Mon, 28 Feb
- 2022 05:10:13 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EdNKXJkj2Hxc1yhKt9uLoL/rsONSDoRoULDQeNZCOcU=;
+        b=Se2olIuwRHBkiYrKFGRE3NfE7/m0A0aZuA4X7l99VG7KU9NPVvapUGv62NOY2pi/Cq
+         n49k7q5Dmbd08ONbqWjl07BpGNAM4mTVJ7ETtoZg0UG83CVwQ+wYSTvoCPAa2EMLAYFl
+         n4607pUn2BaYeM2J117TTHgzN03n7z1bbWj3qxubOUraD1pYRHHtNKTSCzdyUR83LyVw
+         ByBehuOZrBaP5YTVPTZ+Eq3zQV5vODl88Owesj0SDqP6ZpF5n07BxrH1VEAb4gP+KXj+
+         iQX3YMxyp2QArqJ91fi96OwQosztr/kZ0qbC+8fgw/FXr4Ukbbz4IwaFAeJOxTUoKFia
+         EVlA==
+X-Gm-Message-State: AOAM5314CeYT5eRYFEK/xgJmin2c7HS2fiMsn1+3wrdkAJzCQX3h+FTq
+        clki8XYVV4iXGYwtNFfsNb6C3uM5RpA=
+X-Google-Smtp-Source: ABdhPJzQWEpJrtVBfYUwsC1x5fwzu5Xqz652nAKgxPDmWHbqx9Hq944/Px6uTO9b4lqDQTdU8LP3TQ==
+X-Received: by 2002:a05:6512:3b06:b0:443:3b12:a1ff with SMTP id f6-20020a0565123b0600b004433b12a1ffmr12116447lfv.157.1646053979536;
+        Mon, 28 Feb 2022 05:12:59 -0800 (PST)
+Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.gmail.com with ESMTPSA id l9-20020a2ea309000000b00246299de080sm1316532lje.48.2022.02.28.05.12.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 05:12:59 -0800 (PST)
+From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>, Tom Rini <trini@konsulko.com>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Ricardo Salveti <ricardo@foundries.io>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Jorge Ramirez-Ortiz <jorge@foundries.io>,
+        Sean Anderson <seanga2@gmail.com>, devicetree@vger.kernel.org,
+        u-boot@lists.denx.de, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
+Subject: [PATCH V3] dt-bindings: nvmem: add U-Boot environment variables binding
+Date:   Mon, 28 Feb 2022 14:12:50 +0100
+Message-Id: <20220228131250.16943-1-zajec5@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220216052110.1053665-1-mchitale@ventanamicro.com> <20220216052110.1053665-2-mchitale@ventanamicro.com>
-In-Reply-To: <20220216052110.1053665-2-mchitale@ventanamicro.com>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Mon, 28 Feb 2022 18:39:44 +0530
-Message-ID: <CAAhSdy2imgdYY8nv30Z_Am1PmR83uBy041H07N2+YivnRJN1kg@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/2] riscv: enum for svinval extension
-To:     Mayuresh Chitale <mchitale@ventanamicro.com>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Atish Patra <atishp@rivosinc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Feb 16, 2022 at 10:51 AM Mayuresh Chitale
-<mchitale@ventanamicro.com> wrote:
->
-> Similar to the other ISA extensions, this patch enables
-> callers to check for the presence for the svinval extension.
->
-> Signed-off-by: Mayuresh Chitale <mchitale@ventanamicro.com>
+From: Rafał Miłecki <rafal@milecki.pl>
 
-Please update riscv_fill_hwcap() in arch/riscv/kernel/cpufeature.c
-to probe Svinval extension.
+U-Boot uses environment variables for storing device setup data. It
+usually needs to be accessed by a bootloader, kernel and often
+user-space.
 
-Regards,
-Anup
+This binding allows describing environment data located in a raw flash
+partition. It's treated as NVMEM device and can be reused later for
+other storage devices.
 
-> ---
->  arch/riscv/include/asm/hwcap.h | 1 +
->  arch/riscv/kernel/cpu.c        | 1 +
->  2 files changed, 2 insertions(+)
->
-> diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/hwcap.h
-> index 691fc9c8099b..bbff7cb279ea 100644
-> --- a/arch/riscv/include/asm/hwcap.h
-> +++ b/arch/riscv/include/asm/hwcap.h
-> @@ -51,6 +51,7 @@ extern unsigned long elf_hwcap;
->   * available logical extension id.
->   */
->  enum riscv_isa_ext_id {
-> +       RISCV_ISA_EXT_SVINVAL = RISCV_ISA_EXT_BASE,
->         RISCV_ISA_EXT_ID_MAX = RISCV_ISA_EXT_MAX,
->  };
->
-> diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
-> index ced7e5be8641..ff0613f8cc39 100644
-> --- a/arch/riscv/kernel/cpu.c
-> +++ b/arch/riscv/kernel/cpu.c
-> @@ -71,6 +71,7 @@ int riscv_of_parent_hartid(struct device_node *node)
->         }
->
->  static struct riscv_isa_ext_data isa_ext_arr[] = {
-> +       __RISCV_ISA_EXT_DATA(svinval, RISCV_ISA_EXT_SVINVAL),
->         __RISCV_ISA_EXT_DATA("", RISCV_ISA_EXT_MAX),
->  };
->
-> --
-> 2.25.1
->
+Using DT should be cleaner than hardcoding & duplicating such info in
+multiple places. Bootloader & kernel can share DTS and user-space can
+try reading it too or just have correct data exposed by a kernel.
+
+A custom "compatible" string allows system to automatically load
+relevant NVMEM driver but phandle can be also used for reading raw
+location.
+
+Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+---
+V2: Update descriptions to don't make this binding MTD (flash partition)
+    specific. Mention multiple possible storage ways.
+V3: Drop
+    allOf:
+      - $ref: nvmem.yaml#
+    as we don't use anything rom the nvmem.yaml. Thanks Rob.
+---
+ .../devicetree/bindings/nvmem/u-boot,env.yaml | 62 +++++++++++++++++++
+ MAINTAINERS                                   |  5 ++
+ 2 files changed, 67 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
+
+diff --git a/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml b/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
+new file mode 100644
+index 000000000000..e70b2a60cb9a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/nvmem/u-boot,env.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: U-Boot environment variables
++
++description: |
++  U-Boot uses environment variables to store device parameters and
++  configuration. They may be used for booting process, setup or keeping end user
++  info.
++
++  Data is stored using U-Boot specific formats (variant specific header and NUL
++  separated key-value pairs).
++
++  Environment data can be stored on various storage entities, e.g.:
++  1. Raw flash partition
++  2. UBI volume
++
++  This binding allows marking storage device (as containing env data) and
++  specifying used format.
++
++  Right now only flash partition case is covered but it may be extended to e.g.
++  UBI volumes in the future.
++
++maintainers:
++  - Rafał Miłecki <rafal@milecki.pl>
++
++properties:
++  compatible:
++    oneOf:
++      - description: A standalone env data block
++        const: u-boot,env
++      - description: Two redundant blocks with active one flagged
++        const: u-boot,env-redundant-bool
++      - description: Two redundant blocks with active having higher counter
++        const: u-boot,env-redundant-count
++
++  reg:
++    maxItems: 1
++
++additionalProperties: false
++
++examples:
++  - |
++    partitions {
++        compatible = "fixed-partitions";
++        #address-cells = <1>;
++        #size-cells = <1>;
++
++        partition@0 {
++            reg = <0x0 0x40000>;
++            label = "u-boot";
++            read-only;
++        };
++
++        env: partition@40000 {
++            compatible = "u-boot,env";
++            reg = <0x40000 0x10000>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index db8052bc1d26..24fc181a7e6c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19958,6 +19958,11 @@ W:	http://linuxtv.org
+ T:	git git://linuxtv.org/media_tree.git
+ F:	drivers/media/pci/tw686x/
+ 
++U-BOOT ENVIRONMENT VARIABLES
++M:	Rafał Miłecki <rafal@milecki.pl>
++S:	Maintained
++F:	Documentation/devicetree/bindings/nvmem/u-boot,env.yaml
++
+ UACCE ACCELERATOR FRAMEWORK
+ M:	Zhangfei Gao <zhangfei.gao@linaro.org>
+ M:	Zhou Wang <wangzhou1@hisilicon.com>
+-- 
+2.34.1
+
