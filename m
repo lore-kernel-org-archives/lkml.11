@@ -2,43 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2902C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239165AbiB1RwM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:52:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
+        id S231208AbiB1RwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:52:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238322AbiB1RpW (ORCPT
+        with ESMTP id S240032AbiB1RpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:45:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 863603EF34;
-        Mon, 28 Feb 2022 09:37:48 -0800 (PST)
+        Mon, 28 Feb 2022 12:45:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04F73205B;
+        Mon, 28 Feb 2022 09:37:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBA161544;
-        Mon, 28 Feb 2022 17:37:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5DD8C340F9;
-        Mon, 28 Feb 2022 17:37:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 808B8B815BA;
+        Mon, 28 Feb 2022 17:37:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AADC8C340E7;
+        Mon, 28 Feb 2022 17:37:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069867;
-        bh=a0qr24NteIPpBgqV3/4o2xe9muO4aBdaG98S8jcCPuo=;
+        s=korg; t=1646069856;
+        bh=P9+8LyoE7wfKYtVa8BQKxcGYP08SrbQhU1GkxwKfPiQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2V4dNpYv5I7KFB4gO6PlWxrgyFrWA90JzibMph1H+NV9UtT+Tq0EhC7LifXtn0DwT
-         AdcO2B0JtBqvHnl8M+LNzU9wdYfvXTEO4ox2fe8UEpQ2Hfsq6STVuji60kCufM8obd
-         VDApKSTPRaHSvDTHIDUil/8lQGdXOHPCL3KBn4AY=
+        b=ouqpCh6Ax4pSSRx1sdaeBbj1DzDBTQEw1XQgrEMD1ykP20g68CeC+hrVYRO0T+o+u
+         bKJ7cJ71FT7oh3sdORXxRpsBOi44tjBrQ4cmGHOzWIispPwKOpR3AUZkjaCo8FlydM
+         5CCF2rSN8Rj5hlwwgxujj42o2qcs83jEw3ETKFzc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: [PATCH 5.15 039/139] selftests: mptcp: fix diag instability
-Date:   Mon, 28 Feb 2022 18:23:33 +0100
-Message-Id: <20220228172351.844902009@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexei Budankov <abudankov@huawei.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 036/139] perf data: Fix double free in perf_session__delete()
+Date:   Mon, 28 Feb 2022 18:23:30 +0100
+Message-Id: <20220228172351.564181974@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
 References: <20220228172347.614588246@linuxfoundation.org>
@@ -50,112 +58,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
 
-commit 0cd33c5ffec12bd77a1c02db2469fac08f840939 upstream.
+commit 69560e366fc4d5fca7bebb0e44edbfafc8bcaf05 upstream.
 
-Instead of waiting for an arbitrary amount of time for the MPTCP
-MP_CAPABLE handshake to complete, explicitly wait for the relevant
-socket to enter into the established status.
+When perf_data__create_dir() fails, it calls close_dir(), but
+perf_session__delete() also calls close_dir() and since dir.version and
+dir.nr were initialized by perf_data__create_dir(), a double free occurs.
 
-Additionally let the data transfer application use the slowest
-transfer mode available (-r), to cope with very slow host, or
-high jitter caused by hosting VMs.
+This patch moves the initialization of dir.version and dir.nr after
+successful initialization of dir.files, that prevents double freeing.
+This behavior is already implemented in perf_data__open_dir().
 
-Fixes: df62f2ec3df6 ("selftests/mptcp: add diag interface tests")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/258
-Reported-and-tested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 145520631130bd64 ("perf data: Add perf_data__(create_dir|close_dir) functions")
+Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+Acked-by: Jiri Olsa <jolsa@kernel.org>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Alexander Antonov <alexander.antonov@linux.intel.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Alexei Budankov <abudankov@huawei.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20220218152341.5197-2-alexey.v.bayduraev@linux.intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/net/mptcp/diag.sh |   44 +++++++++++++++++++++++++-----
- 1 file changed, 37 insertions(+), 7 deletions(-)
+ tools/perf/util/data.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/tools/testing/selftests/net/mptcp/diag.sh
-+++ b/tools/testing/selftests/net/mptcp/diag.sh
-@@ -71,6 +71,36 @@ chk_msk_remote_key_nr()
- 		__chk_nr "grep -c remote_key" $*
- }
+--- a/tools/perf/util/data.c
++++ b/tools/perf/util/data.c
+@@ -44,10 +44,6 @@ int perf_data__create_dir(struct perf_da
+ 	if (!files)
+ 		return -ENOMEM;
  
-+# $1: ns, $2: port
-+wait_local_port_listen()
-+{
-+	local listener_ns="${1}"
-+	local port="${2}"
-+
-+	local port_hex i
-+
-+	port_hex="$(printf "%04X" "${port}")"
-+	for i in $(seq 10); do
-+		ip netns exec "${listener_ns}" cat /proc/net/tcp | \
-+			awk "BEGIN {rc=1} {if (\$2 ~ /:${port_hex}\$/ && \$4 ~ /0A/) {rc=0; exit}} END {exit rc}" &&
-+			break
-+		sleep 0.1
-+	done
-+}
-+
-+wait_connected()
-+{
-+	local listener_ns="${1}"
-+	local port="${2}"
-+
-+	local port_hex i
-+
-+	port_hex="$(printf "%04X" "${port}")"
-+	for i in $(seq 10); do
-+		ip netns exec ${listener_ns} grep -q " 0100007F:${port_hex} " /proc/net/tcp && break
-+		sleep 0.1
-+	done
-+}
+-	data->dir.version = PERF_DIR_VERSION;
+-	data->dir.files   = files;
+-	data->dir.nr      = nr;
+-
+ 	for (i = 0; i < nr; i++) {
+ 		struct perf_data_file *file = &files[i];
  
- trap cleanup EXIT
- ip netns add $ns
-@@ -81,15 +111,15 @@ echo "a" | \
- 		ip netns exec $ns \
- 			./mptcp_connect -p 10000 -l -t ${timeout_poll} \
- 				0.0.0.0 >/dev/null &
--sleep 0.1
-+wait_local_port_listen $ns 10000
- chk_msk_nr 0 "no msk on netns creation"
+@@ -62,6 +58,9 @@ int perf_data__create_dir(struct perf_da
+ 		file->fd = ret;
+ 	}
  
- echo "b" | \
- 	timeout ${timeout_test} \
- 		ip netns exec $ns \
--			./mptcp_connect -p 10000 -j -t ${timeout_poll} \
-+			./mptcp_connect -p 10000 -r 0 -t ${timeout_poll} \
- 				127.0.0.1 >/dev/null &
--sleep 0.1
-+wait_connected $ns 10000
- chk_msk_nr 2 "after MPC handshake "
- chk_msk_remote_key_nr 2 "....chk remote_key"
- chk_msk_fallback_nr 0 "....chk no fallback"
-@@ -101,13 +131,13 @@ echo "a" | \
- 		ip netns exec $ns \
- 			./mptcp_connect -p 10001 -l -s TCP -t ${timeout_poll} \
- 				0.0.0.0 >/dev/null &
--sleep 0.1
-+wait_local_port_listen $ns 10001
- echo "b" | \
- 	timeout ${timeout_test} \
- 		ip netns exec $ns \
--			./mptcp_connect -p 10001 -j -t ${timeout_poll} \
-+			./mptcp_connect -p 10001 -r 0 -t ${timeout_poll} \
- 				127.0.0.1 >/dev/null &
--sleep 0.1
-+wait_connected $ns 10001
- chk_msk_fallback_nr 1 "check fallback"
- flush_pids
++	data->dir.version = PERF_DIR_VERSION;
++	data->dir.files   = files;
++	data->dir.nr      = nr;
+ 	return 0;
  
-@@ -119,7 +149,7 @@ for I in `seq 1 $NR_CLIENTS`; do
- 				./mptcp_connect -p $((I+10001)) -l -w 10 \
- 					-t ${timeout_poll} 0.0.0.0 >/dev/null &
- done
--sleep 0.1
-+wait_local_port_listen $ns $((NR_CLIENTS + 10001))
- 
- for I in `seq 1 $NR_CLIENTS`; do
- 	echo "b" | \
+ out_err:
 
 
