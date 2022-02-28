@@ -2,191 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238589AbiB1Rqr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:46:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58918 "EHLO
+        id S231990AbiB1Rqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:46:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239122AbiB1Rnp (ORCPT
+        with ESMTP id S239220AbiB1Rnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:43:45 -0500
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E189BAF2
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:35:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646069743; x=1677605743;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=RAryok0vKfVpAzge8J2hbvbGTyPUqsIIgGWXo0OVMu4=;
-  b=Zam9UHM7pK8ivKOs+rn0xC0znsprEVyxFvvpBF3YeFzHqtZcNGeJ0CPt
-   Yeey+PMbGPlD7gUKON/xrQyrgYSa7DRlTxzVSAcRKzmHucfHcjxhzC3vK
-   7fIC8jDv6lKdl/rjuxTt6S+330jtYUhGpZqkkGlJcIfoe0jUgioU/DY00
-   kSoeVynZxwak/ZYRxuQIlLiKreMyAud/2+UYfX4/F2/P2IjkP1RxX6rBp
-   9Fd5DU1nAP/Y7Md1z343ovTo/1UGO6KASNNL6o4Jxvm7iXcMSbyrtBj37
-   hO5zCu26A+BGc7ynTcv6jiIhDE+w2MHqJnJZ0E7MNSLaWEs/DmC6xp4HL
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="232911588"
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="232911588"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2022 09:35:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,144,1643702400"; 
-   d="scan'208";a="492790835"
-Received: from lkp-server01.sh.intel.com (HELO 788b1cd46f0d) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 28 Feb 2022 09:35:14 -0800
-Received: from kbuild by 788b1cd46f0d with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nOjvW-0007ZJ-5P; Mon, 28 Feb 2022 17:35:14 +0000
-Date:   Tue, 1 Mar 2022 01:34:54 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Liu Yi L <yi.l.liu@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [luxis1999-iommufd:iommufd-v5.17-rc4 21/23] io_pagetable.c:undefined
- reference to `interval_tree_remove'
-Message-ID: <202202281710.JhYsNhcb-lkp@intel.com>
+        Mon, 28 Feb 2022 12:43:51 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 661A59BBA1;
+        Mon, 28 Feb 2022 09:35:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B1EBACE17AC;
+        Mon, 28 Feb 2022 17:35:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D76C340E7;
+        Mon, 28 Feb 2022 17:35:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646069754;
+        bh=HPk5hm2HB6OtjumJUjenYe8eRWx4uz9qEzBAfyzBkdo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MS9STqSTbPyOulapWIdVlxH1wt/o35oS5FXvzT8aYlossjfQ0zovlA1jcKh92BZKF
+         hIya1MWY3Gz8/yAZ8WqpAGGIuxGV7ZZgQl/GJgKtdqu3UhoVfN/z9gXocCl+YPShuC
+         aS9JamZ1B3bGDHAjKYWEOYyZHzvzELl6bH+Eq8xw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Miaohe Lin <linmiaohe@huawei.com>,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: [PATCH 5.10 80/80] memblock: use kfree() to release kmalloced memblock regions
+Date:   Mon, 28 Feb 2022 18:25:01 +0100
+Message-Id: <20220228172321.477435372@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172311.789892158@linuxfoundation.org>
+References: <20220228172311.789892158@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/luxis1999/iommufd iommufd-v5.17-rc4
-head:   1b869a792f9bf8455c2a6cd1b29d79d50182dbd1
-commit: e5b0b18da497e526cec5aad8c987ab9fd704adcd [21/23] vfio/pci: Add bind_iommufd() support
-config: csky-randconfig-c024-20220227 (https://download.01.org/0day-ci/archive/20220228/202202281710.JhYsNhcb-lkp@intel.com/config)
-compiler: csky-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/luxis1999/iommufd/commit/e5b0b18da497e526cec5aad8c987ab9fd704adcd
-        git remote add luxis1999-iommufd https://github.com/luxis1999/iommufd
-        git fetch --no-tags luxis1999-iommufd iommufd-v5.17-rc4
-        git checkout e5b0b18da497e526cec5aad8c987ab9fd704adcd
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=csky SHELL=/bin/bash
+From: Miaohe Lin <linmiaohe@huawei.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+commit c94afc46cae7ad41b2ad6a99368147879f4b0e56 upstream.
 
-All errors (new ones prefixed by >>):
+memblock.{reserved,memory}.regions may be allocated using kmalloc() in
+memblock_double_array(). Use kfree() to release these kmalloced regions
+indicated by memblock_{reserved,memory}_in_slab.
 
-   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_abort_area':
->> io_pagetable.c:(.text+0x72): undefined reference to `interval_tree_remove'
-   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_area_iter_next':
->> io_pagetable.c:(.text+0x8a): undefined reference to `interval_tree_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_area_iter_first':
->> io_pagetable.c:(.text+0x12a): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_fill_domain':
-   io_pagetable.c:(.text+0x1e0): undefined reference to `interval_tree_remove'
->> csky-linux-ld: io_pagetable.c:(.text+0x1ec): undefined reference to `interval_tree_iter_next'
->> csky-linux-ld: io_pagetable.c:(.text+0x21c): undefined reference to `interval_tree_iter_first'
->> csky-linux-ld: io_pagetable.c:(.text+0x242): undefined reference to `interval_tree_insert'
->> csky-linux-ld: io_pagetable.c:(.text+0x28a): undefined reference to `interval_tree_remove'
-   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_unfill_domain':
-   io_pagetable.c:(.text+0x376): undefined reference to `interval_tree_remove'
-   csky-linux-ld: io_pagetable.c:(.text+0x3a0): undefined reference to `interval_tree_insert'
-   csky-linux-ld: io_pagetable.c:(.text+0x3b0): undefined reference to `interval_tree_remove'
-   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_alloc_iova':
->> io_pagetable.c:(.text+0x470): undefined reference to `interval_tree_span_iter_first'
->> csky-linux-ld: io_pagetable.c:(.text+0x490): undefined reference to `interval_tree_span_iter_next'
->> csky-linux-ld: io_pagetable.c:(.text+0x49e): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: io_pagetable.c:(.text+0x4b6): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: io_pagetable.c:(.text+0x4f4): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: io_pagetable.c:(.text+0x4fc): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_alloc_area':
->> io_pagetable.c:(.text+0x598): undefined reference to `interval_tree_insert'
-   csky-linux-ld: io_pagetable.c:(.text+0x5be): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: io_pagetable.c:(.text+0x614): undefined reference to `interval_tree_insert'
-   csky-linux-ld: io_pagetable.c:(.text+0x61c): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_reserve_iova':
-   io_pagetable.c:(.text+0xad0): undefined reference to `interval_tree_insert'
-   csky-linux-ld: io_pagetable.c:(.text+0xb0c): undefined reference to `interval_tree_insert'
-   csky-linux-ld: drivers/iommu/iommufd/io_pagetable.o: in function `iopt_remove_reserved_iova':
-   io_pagetable.c:(.text+0xb2c): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: io_pagetable.c:(.text+0xb42): undefined reference to `interval_tree_iter_next'
-   csky-linux-ld: io_pagetable.c:(.text+0xb52): undefined reference to `interval_tree_remove'
-   csky-linux-ld: io_pagetable.c:(.text+0xb64): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: io_pagetable.c:(.text+0xb68): undefined reference to `interval_tree_iter_next'
-   csky-linux-ld: io_pagetable.c:(.text+0xb6c): undefined reference to `interval_tree_remove'
-   csky-linux-ld: drivers/iommu/iommufd/ioas.o: in function `iommufd_ioas_iova_ranges':
->> ioas.c:(.text+0x278): undefined reference to `interval_tree_span_iter_first'
->> csky-linux-ld: ioas.c:(.text+0x314): undefined reference to `interval_tree_span_iter_next'
->> csky-linux-ld: ioas.c:(.text+0x36c): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: ioas.c:(.text+0x380): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `pfn_reader_init':
->> pages.c:(.text+0x208): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `interval_tree_fully_covers':
->> pages.c:(.text+0x232): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `batch_from_domain':
-   pages.c:(.text+0x2c4): undefined reference to `interval_tree_span_iter_first'
->> csky-linux-ld: pages.c:(.text+0x2c8): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_unpin':
-   pages.c:(.text+0x2fe): undefined reference to `interval_tree_span_iter_first'
->> csky-linux-ld: pages.c:(.text+0x310): undefined reference to `interval_tree_span_iter_next'
->> csky-linux-ld: pages.c:(.text+0x320): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: pages.c:(.text+0x330): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `update_unpinned':
-   pages.c:(.text+0x43c): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: pages.c:(.text+0x448): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_get_exact_user':
-   pages.c:(.text+0x60a): undefined reference to `interval_tree_iter_first'
->> csky-linux-ld: pages.c:(.text+0x620): undefined reference to `interval_tree_iter_next'
-   csky-linux-ld: pages.c:(.text+0x660): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: pages.c:(.text+0x664): undefined reference to `interval_tree_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `pfn_reader_next':
-   pages.c:(.text+0xa6a): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: pages.c:(.text+0xb28): undefined reference to `interval_tree_iter_first'
-   csky-linux-ld: pages.c:(.text+0xb3a): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_area_unfill_partial_domain':
-   pages.c:(.text+0xc44): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_unmap_domain':
-   pages.c:(.text+0xe38): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: pages.c:(.text+0xe54): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_area_fill_domains':
-   pages.c:(.text+0xfa2): undefined reference to `interval_tree_insert'
-   csky-linux-ld: pages.c:(.text+0xfa8): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: pages.c:(.text+0xfb0): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: pages.c:(.text+0xfe8): undefined reference to `interval_tree_insert'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_area_unfill_domains':
-   pages.c:(.text+0x10e0): undefined reference to `interval_tree_remove'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_unfill_xarray':
-   pages.c:(.text+0x1146): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: pages.c:(.text+0x1160): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: pages.c:(.text+0x1190): undefined reference to `interval_tree_remove'
-   csky-linux-ld: pages.c:(.text+0x119c): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: pages.c:(.text+0x11a4): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: pages.c:(.text+0x11c0): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: pages.c:(.text+0x120c): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_fill_xarray':
-   pages.c:(.text+0x12ca): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: pages.c:(.text+0x130c): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: pages.c:(.text+0x1320): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: pages.c:(.text+0x1466): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: pages.c:(.text+0x14c4): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_add_user':
-   pages.c:(.text+0x1562): undefined reference to `interval_tree_insert'
-   csky-linux-ld: drivers/iommu/iommufd/pages.o: in function `iopt_pages_remove_user':
-   pages.c:(.text+0x15b6): undefined reference to `interval_tree_remove'
-   csky-linux-ld: pages.c:(.text+0x15f8): undefined reference to `interval_tree_insert'
-   csky-linux-ld: pages.c:(.text+0x1600): undefined reference to `interval_tree_remove'
-   csky-linux-ld: drivers/iommu/iommufd/vfio_compat.o: in function `iommufd_fill_cap_iova':
-   vfio_compat.c:(.text+0x5e): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: vfio_compat.c:(.text+0xb8): undefined reference to `interval_tree_span_iter_next'
-   csky-linux-ld: vfio_compat.c:(.text+0x130): undefined reference to `interval_tree_span_iter_first'
-   csky-linux-ld: vfio_compat.c:(.text+0x134): undefined reference to `interval_tree_span_iter_next'
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for IOMMUFD
-   Depends on IOMMU_SUPPORT
-   Selected by
-   - VFIO_PCI_CORE && VFIO && PCI && MMU
-
+Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Fixes: 3010f876500f ("mm: discard memblock data later")
+Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ mm/memblock.c |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+--- a/mm/memblock.c
++++ b/mm/memblock.c
+@@ -366,14 +366,20 @@ void __init memblock_discard(void)
+ 		addr = __pa(memblock.reserved.regions);
+ 		size = PAGE_ALIGN(sizeof(struct memblock_region) *
+ 				  memblock.reserved.max);
+-		__memblock_free_late(addr, size);
++		if (memblock_reserved_in_slab)
++			kfree(memblock.reserved.regions);
++		else
++			__memblock_free_late(addr, size);
+ 	}
+ 
+ 	if (memblock.memory.regions != memblock_memory_init_regions) {
+ 		addr = __pa(memblock.memory.regions);
+ 		size = PAGE_ALIGN(sizeof(struct memblock_region) *
+ 				  memblock.memory.max);
+-		__memblock_free_late(addr, size);
++		if (memblock_memory_in_slab)
++			kfree(memblock.memory.regions);
++		else
++			__memblock_free_late(addr, size);
+ 	}
+ 
+ 	memblock_memory = NULL;
+
+
