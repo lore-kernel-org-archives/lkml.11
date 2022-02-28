@@ -2,51 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B67C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B026AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237455AbiB1RgC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:36:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42218 "EHLO
+        id S238178AbiB1RgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:36:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238634AbiB1Rdl (ORCPT
+        with ESMTP id S238660AbiB1Rdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:33:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFBF91AF7;
-        Mon, 28 Feb 2022 09:30:24 -0800 (PST)
+        Mon, 28 Feb 2022 12:33:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C33292851;
+        Mon, 28 Feb 2022 09:30:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D5F6612FA;
-        Mon, 28 Feb 2022 17:30:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A292C340F5;
-        Mon, 28 Feb 2022 17:30:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFD36B815B8;
+        Mon, 28 Feb 2022 17:30:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B24AC340E7;
+        Mon, 28 Feb 2022 17:30:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646069424;
-        bh=P9+8LyoE7wfKYtVa8BQKxcGYP08SrbQhU1GkxwKfPiQ=;
+        s=korg; t=1646069426;
+        bh=ACLnAZQIR5psZ8uhJCL76WGjXIdm6NzshqJBZPCBeCU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YRiy8wbSNxOjtjV39dOCkaiy+GL0vCh/c22KoSnjQuLbQ0CnZIUbSPCT1NyJNm/CD
-         1FrqISLSXx0bvlTRgaZFnEm75LNBQs7MuibTs7x4psEls2aH+Gd4WJUSWDvycwSRf0
-         5GZOlZCILCQ3S+DHY55tMo+99E1LGPU5ZTynNhoI=
+        b=BUA5lYkLWFOE6AtZc7OXFmSDOig08O9wBLKP/0O0tQyZ8jBws5/A9/Pwc//yPts72
+         cpzw+hssUqv9vVv0w5lhtrCUrujbnueoHSog1mzVaR0gwCxoU3YbbX2EqwGBiWEFKf
+         SdG5M6jqYM6VFWmRwCNW7CtnQB3fxGOZrTspKir4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexei Budankov <abudankov@huawei.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.4 15/53] perf data: Fix double free in perf_session__delete()
-Date:   Mon, 28 Feb 2022 18:24:13 +0100
-Message-Id: <20220228172249.441146466@linuxfoundation.org>
+        stable@vger.kernel.org, Felix Maurer <fmaurer@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH 5.4 16/53] bpf: Do not try bpf_msg_push_data with len 0
+Date:   Mon, 28 Feb 2022 18:24:14 +0100
+Message-Id: <20220228172249.525088925@linuxfoundation.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220228172248.232273337@linuxfoundation.org>
 References: <20220228172248.232273337@linuxfoundation.org>
@@ -58,58 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+From: Felix Maurer <fmaurer@redhat.com>
 
-commit 69560e366fc4d5fca7bebb0e44edbfafc8bcaf05 upstream.
+commit 4a11678f683814df82fca9018d964771e02d7e6d upstream.
 
-When perf_data__create_dir() fails, it calls close_dir(), but
-perf_session__delete() also calls close_dir() and since dir.version and
-dir.nr were initialized by perf_data__create_dir(), a double free occurs.
+If bpf_msg_push_data() is called with len 0 (as it happens during
+selftests/bpf/test_sockmap), we do not need to do anything and can
+return early.
 
-This patch moves the initialization of dir.version and dir.nr after
-successful initialization of dir.files, that prevents double freeing.
-This behavior is already implemented in perf_data__open_dir().
+Calling bpf_msg_push_data() with len 0 previously lead to a wrong ENOMEM
+error: we later called get_order(copy + len); if len was 0, copy + len
+was also often 0 and get_order() returned some undefined value (at the
+moment 52). alloc_pages() caught that and failed, but then bpf_msg_push_data()
+returned ENOMEM. This was wrong because we are most probably not out of
+memory and actually do not need any additional memory.
 
-Fixes: 145520631130bd64 ("perf data: Add perf_data__(create_dir|close_dir) functions")
-Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
-Acked-by: Jiri Olsa <jolsa@kernel.org>
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Alexander Antonov <alexander.antonov@linux.intel.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Alexei Budankov <abudankov@huawei.com>
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220218152341.5197-2-alexey.v.bayduraev@linux.intel.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 6fff607e2f14b ("bpf: sk_msg program helper bpf_msg_push_data")
+Signed-off-by: Felix Maurer <fmaurer@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Yonghong Song <yhs@fb.com>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Link: https://lore.kernel.org/bpf/df69012695c7094ccb1943ca02b4920db3537466.1644421921.git.fmaurer@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/util/data.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ net/core/filter.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/tools/perf/util/data.c
-+++ b/tools/perf/util/data.c
-@@ -44,10 +44,6 @@ int perf_data__create_dir(struct perf_da
- 	if (!files)
- 		return -ENOMEM;
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2516,6 +2516,9 @@ BPF_CALL_4(bpf_msg_pop_data, struct sk_m
+ 	if (unlikely(flags))
+ 		return -EINVAL;
  
--	data->dir.version = PERF_DIR_VERSION;
--	data->dir.files   = files;
--	data->dir.nr      = nr;
--
- 	for (i = 0; i < nr; i++) {
- 		struct perf_data_file *file = &files[i];
- 
-@@ -62,6 +58,9 @@ int perf_data__create_dir(struct perf_da
- 		file->fd = ret;
- 	}
- 
-+	data->dir.version = PERF_DIR_VERSION;
-+	data->dir.files   = files;
-+	data->dir.nr      = nr;
- 	return 0;
- 
- out_err:
++	if (unlikely(len == 0))
++		return 0;
++
+ 	/* First find the starting scatterlist element */
+ 	i = msg->sg.start;
+ 	do {
 
 
