@@ -2,85 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBC0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 944ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239448AbiB1R4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:56:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
+        id S239377AbiB1R4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:56:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239578AbiB1RxM (ORCPT
+        with ESMTP id S239662AbiB1RxR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 12:53:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AFB2A9E33;
-        Mon, 28 Feb 2022 09:40:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D50B61540;
-        Mon, 28 Feb 2022 17:40:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56567C340E7;
-        Mon, 28 Feb 2022 17:40:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646070025;
-        bh=0fw9T+tZAvMBuO779pLSBg40CJqtPfcQQrG7q6rLaZE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sY2R920us4u1icyWrJMY2GeuAy0kY63MbA2HZs6NLptwewN4zLpITf5YSZCa/n3u5
-         tfolpw/Sznyto55UJ+8sJOaOj7VKH0KXWB5FTOTBk1mGDZ6fQ/bUZU+5iBOwFp1UEy
-         of5xboglOBaaslhIfmZAq20oUf/uo7RbXPouHx5E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Mon, 28 Feb 2022 12:53:17 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36F61AA2C8
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:40:45 -0800 (PST)
+Date:   Mon, 28 Feb 2022 17:40:40 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646070041;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kaqm2eWHBXcJPmdxh+r33qa7kCgMGlNm6QHSXbUMdi4=;
+        b=ECPVP2fqMGrU3d0J/rccnwOdQrANuJx/NySspOZtXLK7CiQms0HxNP2zAWvNC/Z3HE4IZM
+        cxO47gPRupXAeO1T0apSsgeX4CB2ALFYqcm8AXlEGffTlYiLRCVFwSWiMrHeWh07j6OxUi
+        LtWn+2VbTXFRq7+I1c5NOHufBc7h/zYxm3L0ccRJy6bSos/kql7p7tXLVC6IPIjhb7Sx5T
+        WDhfSZXWYM9ecjwg4xnA1GMvVrG9rI/q+Y59H8JAhR8A/2MyNK+lbYJnUpetRA9lxajz4k
+        uEdSeUpyz9i/9CwEBmtsNrCDr/ElR0iR1p/fYfb+Uqv/5kYp/NoiB/c1PRTkig==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646070041;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kaqm2eWHBXcJPmdxh+r33qa7kCgMGlNm6QHSXbUMdi4=;
+        b=yW3ZadbZGVK2XvwIHmodriTAagc6bujzLd6jbgmR5xm9LtC6fTXJW3peJDiGOheppmrnSz
+        T7x2slkPQ0Alr1Bg==
+From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5.15 099/139] iio: adc: ad7124: fix mask used for setting AIN_BUFP & AIN_BUFM bits
-Date:   Mon, 28 Feb 2022 18:24:33 +0100
-Message-Id: <20220228172358.063554283@linuxfoundation.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
-References: <20220228172347.614588246@linuxfoundation.org>
-User-Agent: quilt/0.66
+Subject: [irqchip: irq/irqchip-next] irqchip/qcom-pdc: Kill qcom_pdc_translate helper
+Cc:     Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: <20220224101226.88373-4-maz@kernel.org>
+References: <20220224101226.88373-4-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Message-ID: <164607004064.16921.9532685853753758205.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cosmin Tanislav <demonsingur@gmail.com>
+The following commit has been merged into the irq/irqchip-next branch of irqchip:
 
-commit 0e33d15f1dce9e3a80a970ea7f0b27837168aeca upstream.
+Commit-ID:     af5d5d1d9f2a4a81ae26cdf3eba30248a95f3c89
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/af5d5d1d9f2a4a81ae26cdf3eba30248a95f3c89
+Author:        Marc Zyngier <maz@kernel.org>
+AuthorDate:    Thu, 24 Feb 2022 10:12:24 
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Mon, 28 Feb 2022 17:32:26 
 
-According to page 90 of the datasheet [1], AIN_BUFP is bit 6 and
-AIN_BUFM is bit 5 of the CONFIG_0 -> CONFIG_7 registers.
+irqchip/qcom-pdc: Kill qcom_pdc_translate helper
 
-Fix the mask used for setting these bits.
+qcom_pdc_translate() really is nothing but an open coded version
+of irq_domain_translate_twocell(). Get rid of it and use the common
+version instead.
 
-[1]: https://www.analog.com/media/en/technical-documentation/data-sheets/ad7124-8.pdf
-
-Fixes: 0eaecea6e487 ("iio: adc: ad7124: Add buffered input support")
-Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Link: https://lore.kernel.org/r/20220112200036.694490-1-cosmin.tanislav@analog.com
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20220224101226.88373-4-maz@kernel.org
 ---
- drivers/iio/adc/ad7124.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/qcom-pdc.c | 19 ++-----------------
+ 1 file changed, 2 insertions(+), 17 deletions(-)
 
---- a/drivers/iio/adc/ad7124.c
-+++ b/drivers/iio/adc/ad7124.c
-@@ -76,7 +76,7 @@
- #define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
- #define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
- #define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
--#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(7, 6)
-+#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(6, 5)
- #define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
+diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+index 5be5314..837ca69 100644
+--- a/drivers/irqchip/qcom-pdc.c
++++ b/drivers/irqchip/qcom-pdc.c
+@@ -198,21 +198,6 @@ static struct pdc_pin_region *get_pin_region(int pin)
+ 	return NULL;
+ }
  
- /* AD7124_FILTER_X */
-
-
+-static int qcom_pdc_translate(struct irq_domain *d, struct irq_fwspec *fwspec,
+-			      unsigned long *hwirq, unsigned int *type)
+-{
+-	if (is_of_node(fwspec->fwnode)) {
+-		if (fwspec->param_count != 2)
+-			return -EINVAL;
+-
+-		*hwirq = fwspec->param[0];
+-		*type = fwspec->param[1] & IRQ_TYPE_SENSE_MASK;
+-		return 0;
+-	}
+-
+-	return -EINVAL;
+-}
+-
+ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
+ 			  unsigned int nr_irqs, void *data)
+ {
+@@ -223,7 +208,7 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
+ 	unsigned int type;
+ 	int ret;
+ 
+-	ret = qcom_pdc_translate(domain, fwspec, &hwirq, &type);
++	ret = irq_domain_translate_twocell(domain, fwspec, &hwirq, &type);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -256,7 +241,7 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
+ }
+ 
+ static const struct irq_domain_ops qcom_pdc_ops = {
+-	.translate	= qcom_pdc_translate,
++	.translate	= irq_domain_translate_twocell,
+ 	.alloc		= qcom_pdc_alloc,
+ 	.free		= irq_domain_free_irqs_common,
+ };
