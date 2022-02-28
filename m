@@ -2,218 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92B16C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D255CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 28 Feb 2022 17:56:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236729AbiB1R4q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 12:56:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48058 "EHLO
+        id S239120AbiB1R4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 12:56:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239675AbiB1RxS (ORCPT
+        with ESMTP id S239674AbiB1RxS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 12:53:18 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB570AA2E9
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 09:40:47 -0800 (PST)
-Date:   Mon, 28 Feb 2022 17:40:41 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646070042;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R8fh9wItMC/HZOdHDqIjndOOW68eWBqfUWixxFYdxCI=;
-        b=UXW7TG8agaM+nFsiEIQVs1bntfeqiGYaW/QMGpplV9bLoZzCQpMo67q/xUI4tLt+GWQYXx
-        csCpt519M8uGm74t/peNssRIfOJhkiWO1vudwn1p8n4TUccX/Gztf5D9UNXTGU6eD/pp5l
-        /49e5ZyQXM9bnmcGK9XKkjcUW9XH+GWWjqtC9qyXxvnijqboJjG+XxR12juIBx4N6TDi+l
-        QP6w4vaU4rfWeajUON2jUokqkuQzZrSbvkbKfKEWLzfj9DdYvJbLMk/T3Q+TZHrHpW7DCU
-        WfuC6CePhL8k7BcDN0XCeFXbtvyPzsST2NNUhYj6a7CSiAbh68Ifhd1dkhpTrw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646070042;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=R8fh9wItMC/HZOdHDqIjndOOW68eWBqfUWixxFYdxCI=;
-        b=7k3Rl//K4tva1wkva0EU7e+SaIs3bkKpLEMpvICmYWfO9iiX9eEqvhrmx8U06glIF11byT
-        tntbyCANODvYSYAA==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A60AA2E6;
+        Mon, 28 Feb 2022 09:40:47 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB149614CC;
+        Mon, 28 Feb 2022 17:40:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F386DC340F0;
+        Mon, 28 Feb 2022 17:40:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646070031;
+        bh=STnS/3RRWhsPBmCHC2DlFKfKbvwnvLdEGavJaXHMJJA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JHSaXV7XlX9crxCqcveNAqBz5n9iXkmcJyoWmRYb0028oyYbC4RxnulQ9FioRuoyn
+         ogrN766rVv+JSOFYCmmbsUjfXbCidS0T7JaaXmQfAlKt8e4Mb362Zz6hDYbCH9EyGO
+         8HdRVkneeH9ceEWsDIF2xx4iilmByY3GJ/VWQ6x4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/qcom-pdc: Kill non-wakeup irqdomain
-Cc:     Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
-In-Reply-To: <20220224101226.88373-3-maz@kernel.org>
-References: <20220224101226.88373-3-maz@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Mario Tesi <mario.tesi@st.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 5.15 101/139] iio: imu: st_lsm6dsx: wait for settling time in st_lsm6dsx_read_oneshot
+Date:   Mon, 28 Feb 2022 18:24:35 +0100
+Message-Id: <20220228172358.298857577@linuxfoundation.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220228172347.614588246@linuxfoundation.org>
+References: <20220228172347.614588246@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Message-ID: <164607004165.16921.333824015089715319.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-Commit-ID:     3b26296c1c56db020100f971a39b59e3fa14491f
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/3b26296c1c56db020100f971a39b59e3fa14491f
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Thu, 24 Feb 2022 10:12:23 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Mon, 28 Feb 2022 17:32:25 
+commit ea85bf906466191b58532bb19f4fbb4591f0a77e upstream.
 
-irqchip/qcom-pdc: Kill non-wakeup irqdomain
+We need to wait for sensor settling time (~ 3/ODR) before reading data
+in st_lsm6dsx_read_oneshot routine in order to avoid corrupted samples.
 
-A careful look at the way the PDC driver works shows that:
-
-- all interrupts are in the same space
-- all interrupts are treated the same
-
-And yet the driver creates two domains based on whether
-the interrupt gets mapped directly or from the pinctrl code,
-which is obviously a waste of resources.
-
-Kill the non-wakeup domain and unify all the interrupt handling.
-
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220224101226.88373-3-maz@kernel.org
+Fixes: 290a6ce11d93 ("iio: imu: add support to lsm6dsx driver")
+Reported-by: Mario Tesi <mario.tesi@st.com>
+Tested-by: Mario Tesi <mario.tesi@st.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Link: https://lore.kernel.org/r/b41ebda5535895298716c76d939f9f165fcd2d13.1644098120.git.lorenzo@kernel.org
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/irqchip/qcom-pdc.c | 84 ++++---------------------------------
- 1 file changed, 10 insertions(+), 74 deletions(-)
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 3b214c4..5be5314 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -21,7 +21,6 @@
- #include <linux/slab.h>
- #include <linux/types.h>
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -1372,8 +1372,12 @@ static int st_lsm6dsx_read_oneshot(struc
+ 	if (err < 0)
+ 		return err;
  
--#define PDC_MAX_IRQS		168
- #define PDC_MAX_GPIO_IRQS	256
++	/*
++	 * we need to wait for sensor settling time before
++	 * reading data in order to avoid corrupted samples
++	 */
+ 	delay = 1000000000 / sensor->odr;
+-	usleep_range(delay, 2 * delay);
++	usleep_range(3 * delay, 4 * delay);
  
- #define CLEAR_INTR(reg, intr)	(reg & ~(1 << intr))
-@@ -228,51 +227,6 @@ static int qcom_pdc_alloc(struct irq_domain *domain, unsigned int virq,
- 	if (ret)
- 		return ret;
- 
--	ret  = irq_domain_set_hwirq_and_chip(domain, virq, hwirq,
--					     &qcom_pdc_gic_chip, NULL);
--	if (ret)
--		return ret;
--
--	region = get_pin_region(hwirq);
--	if (!region)
--		return irq_domain_disconnect_hierarchy(domain->parent, virq);
--
--	if (type & IRQ_TYPE_EDGE_BOTH)
--		type = IRQ_TYPE_EDGE_RISING;
--
--	if (type & IRQ_TYPE_LEVEL_MASK)
--		type = IRQ_TYPE_LEVEL_HIGH;
--
--	parent_fwspec.fwnode      = domain->parent->fwnode;
--	parent_fwspec.param_count = 3;
--	parent_fwspec.param[0]    = 0;
--	parent_fwspec.param[1]    = pin_to_hwirq(region, hwirq);
--	parent_fwspec.param[2]    = type;
--
--	return irq_domain_alloc_irqs_parent(domain, virq, nr_irqs,
--					    &parent_fwspec);
--}
--
--static const struct irq_domain_ops qcom_pdc_ops = {
--	.translate	= qcom_pdc_translate,
--	.alloc		= qcom_pdc_alloc,
--	.free		= irq_domain_free_irqs_common,
--};
--
--static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
--			       unsigned int nr_irqs, void *data)
--{
--	struct irq_fwspec *fwspec = data;
--	struct irq_fwspec parent_fwspec;
--	struct pdc_pin_region *region;
--	irq_hw_number_t hwirq;
--	unsigned int type;
--	int ret;
--
--	ret = qcom_pdc_translate(domain, fwspec, &hwirq, &type);
--	if (ret)
--		return ret;
--
- 	if (hwirq == GPIO_NO_WAKE_IRQ)
- 		return irq_domain_disconnect_hierarchy(domain, virq);
- 
-@@ -301,16 +255,9 @@ static int qcom_pdc_gpio_alloc(struct irq_domain *domain, unsigned int virq,
- 					    &parent_fwspec);
- }
- 
--static int qcom_pdc_gpio_domain_select(struct irq_domain *d,
--				       struct irq_fwspec *fwspec,
--				       enum irq_domain_bus_token bus_token)
--{
--	return bus_token == DOMAIN_BUS_WAKEUP;
--}
--
--static const struct irq_domain_ops qcom_pdc_gpio_ops = {
--	.select		= qcom_pdc_gpio_domain_select,
--	.alloc		= qcom_pdc_gpio_alloc,
-+static const struct irq_domain_ops qcom_pdc_ops = {
-+	.translate	= qcom_pdc_translate,
-+	.alloc		= qcom_pdc_alloc,
- 	.free		= irq_domain_free_irqs_common,
- };
- 
-@@ -361,7 +308,7 @@ static int pdc_setup_pin_mapping(struct device_node *np)
- 
- static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
- {
--	struct irq_domain *parent_domain, *pdc_domain, *pdc_gpio_domain;
-+	struct irq_domain *parent_domain, *pdc_domain;
- 	int ret;
- 
- 	pdc_base = of_iomap(node, 0);
-@@ -383,32 +330,21 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
- 		goto fail;
- 	}
- 
--	pdc_domain = irq_domain_create_hierarchy(parent_domain, 0, PDC_MAX_IRQS,
--						 of_fwnode_handle(node),
--						 &qcom_pdc_ops, NULL);
--	if (!pdc_domain) {
--		pr_err("%pOF: GIC domain add failed\n", node);
--		ret = -ENOMEM;
--		goto fail;
--	}
--
--	pdc_gpio_domain = irq_domain_create_hierarchy(parent_domain,
-+	pdc_domain = irq_domain_create_hierarchy(parent_domain,
- 					IRQ_DOMAIN_FLAG_QCOM_PDC_WAKEUP,
- 					PDC_MAX_GPIO_IRQS,
- 					of_fwnode_handle(node),
--					&qcom_pdc_gpio_ops, NULL);
--	if (!pdc_gpio_domain) {
--		pr_err("%pOF: PDC domain add failed for GPIO domain\n", node);
-+					&qcom_pdc_ops, NULL);
-+	if (!pdc_domain) {
-+		pr_err("%pOF: PDC domain add failed\n", node);
- 		ret = -ENOMEM;
--		goto remove;
-+		goto fail;
- 	}
- 
--	irq_domain_update_bus_token(pdc_gpio_domain, DOMAIN_BUS_WAKEUP);
-+	irq_domain_update_bus_token(pdc_domain, DOMAIN_BUS_WAKEUP);
- 
- 	return 0;
- 
--remove:
--	irq_domain_remove(pdc_domain);
- fail:
- 	kfree(pdc_region);
- 	iounmap(pdc_base);
+ 	err = st_lsm6dsx_read_locked(hw, addr, &data, sizeof(data));
+ 	if (err < 0)
+
+
