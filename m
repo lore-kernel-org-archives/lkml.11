@@ -2,244 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E437C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:26:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:26:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235853AbiCAP0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:26:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
+        id S230153AbiCAP1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:27:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235738AbiCAP01 (ORCPT
+        with ESMTP id S235682AbiCAP0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:26:27 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96134A94FA
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:25:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646148327; x=1677684327;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=klTCVBVGy06UAMHf+o7bameRO0pCmjZQTHig6awHZVU=;
-  b=TTzfOqnhC8jmlQ1WPrm60tFUu/HN650AykYOT3YZSS4y6p3po4eoWLH1
-   tgF+HPiqtgnubg1htvjIJKnC0TTiTBHbCLCeLYW17NMV8mNbEM0DbMbjk
-   OeD5cIpwpPnZ+ZHScZgqJPLdda17pTEoO++7xbaY1E5B7tX1gOqt5D4Lc
-   0dkFOjsNXgbP2JwMYH041VPswjxMXGZ069TL7nJV6wxYK1OzBgLraWwgJ
-   LRK4Ybe50IvruDgH7LuUmuK45BDvB9CFzE+qIlC40Hfz2L73EjZ4hsOYq
-   DPRO1FszDc9DzU/wF0wrB4sczwBOM1ccYYD8jxY3N/c63GckA71c3PIgY
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="250734286"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="250734286"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 07:25:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="630045648"
-Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 01 Mar 2022 07:25:24 -0800
-Received: from kbuild by 2146afe809fb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nP4NQ-0000cC-76; Tue, 01 Mar 2022 15:25:24 +0000
-Date:   Tue, 1 Mar 2022 23:24:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nicolin Chen <nicolinc@nvidia.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Liu Yi L <yi.l.liu@intel.com>
-Subject: [luxis1999-iommufd:iommufd-v5.17-rc4 25/30]
- drivers/vfio/vfio.c:1084:44: error: too many arguments to function call,
- expected single argument 'iommufd', have 2 arguments
-Message-ID: <202203012325.0uoOqdIP-lkp@intel.com>
+        Tue, 1 Mar 2022 10:26:34 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF066A997D
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:25:46 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id p9so21055613wra.12
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 07:25:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=pCV3B7TS4aCvWLkBAafjmXlImHeZ58cVSFXmovkWYyU=;
+        b=JSEJ86n5yjtPt2dV/f43r6O6uLNJZvnHJQc7tAMwdz6x9W56GcYVlZcuh2D9jq2rNk
+         QCkkinyaQrSgD92fl1iodWGfJpFGGO3vicxIvSKYPPIBScrw9Rc5XHFt0/QjrKbQhCpw
+         x9yM0ddrQWdnF8ZFEM+meZFcOxQZtwjFVTpghKahXHJLJkT8QXaqXuINo7mfvg5s9x7s
+         A6falHN7fL3Tv3q781LymlUw98gkLkHFmoLHVZfC9b1OAq9jmHyiiA661Hv5eSKRWsGV
+         9cHQfh/zc7jjHnalpp7kq8w3Extj8deA1OBRHPVRR8ZrBfdQ3IyZgF2Jzs7VBAxRmox9
+         gjnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pCV3B7TS4aCvWLkBAafjmXlImHeZ58cVSFXmovkWYyU=;
+        b=qYYdsscL/vXvqttoCw3mloqgBrESrtpBn7yQ/Jb0JHj02IRMvCvjbMc9AgsJyrHDEN
+         F2kNIq2XJBfmmqwHrFKGRrwDNmkpkjBoLt38c0qwNjlHXmysVcsGWE95i0p5zkM/ADwc
+         kDeD5t9ZrJbeXTeJ8evUX1wwahRUd2QzxulzWU1RW3cRlQJ2OUcc84gAri33/F9B2Wjz
+         eVTsagk8SivMpHxUReKoxppoU+5Sc6SvD/I1GbDIVbnk1PLBSGTQcbBjIu7axzYnHvhv
+         vPDVsfTAcxtpM5+TS9bF8FlZh0o9/kVAKzbXyCTwOmHdONv4YrBtCsZXy6Z65GnpYHZS
+         OOLw==
+X-Gm-Message-State: AOAM533MRq1Up0/6m+UUMLE0zS4A9N9YfPaaQLgKdRKzyBpDLuqBskSr
+        OsnNk0yxCzxmStggMKC6hqLBnPfxEJ+MmRaXxHU=
+X-Google-Smtp-Source: ABdhPJyS38TCc+icP/RpAutyaC8cHH7zyMH8To14lcuUGqOjC0yDAZ0DZG5X3WV1r9HpVMgmIV6UialiQIUEJvG2Xdc=
+X-Received: by 2002:adf:ec03:0:b0:1f0:2488:8ff9 with SMTP id
+ x3-20020adfec03000000b001f024888ff9mr154418wrn.542.1646148345438; Tue, 01 Mar
+ 2022 07:25:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220301124935.2893622-1-michael@walle.cc>
+In-Reply-To: <20220301124935.2893622-1-michael@walle.cc>
+From:   Heiko Thiery <heiko.thiery@gmail.com>
+Date:   Tue, 1 Mar 2022 16:25:33 +0100
+Message-ID: <CAEyMn7YnoGnfgauXUDqgkVJ2krt7RrcXHrwfSgxdTmGmkgBPJA@mail.gmail.com>
+Subject: Re: [PATCH RFC] mtd: spi-nor: unset quad_enable if SFDP doesn't
+ specify it
+To:     Michael Walle <michael@walle.cc>
+Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/luxis1999/iommufd iommufd-v5.17-rc4
-head:   2bca5fa75dad57f41002a93861a950d35d55e568
-commit: 4bc299c908a9e789a2514db95519046d795d1303 [25/30] vfio: Add iommufd VFIO compat support to group_fd
-config: hexagon-randconfig-r041-20220301 (https://download.01.org/0day-ci/archive/20220301/202203012325.0uoOqdIP-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/luxis1999/iommufd/commit/4bc299c908a9e789a2514db95519046d795d1303
-        git remote add luxis1999-iommufd https://github.com/luxis1999/iommufd
-        git fetch --no-tags luxis1999-iommufd iommufd-v5.17-rc4
-        git checkout 4bc299c908a9e789a2514db95519046d795d1303
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/vfio/
+Hi Michael,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Am Di., 1. M=C3=A4rz 2022 um 13:49 Uhr schrieb Michael Walle <michael@walle=
+.cc>:
+>
+> For flashes which use the first JESD216 revision, we don't know
+> which enable method for quad mode we can use. The default one in
+> spi_nor_init_default_params() is wrong for at least the Macronix
+> MX25L12835F, thus clear the enable method. Flashes with such an
+> SFDP revision will have to use a flash (and SFDP revision)
+> specific fixup.
+>
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-All errors (new ones prefixed by >>):
+Tested-by: Heiko Thiery <heiko.thiery@gmail.com>
 
->> drivers/vfio/vfio.c:1084:44: error: too many arguments to function call, expected single argument 'iommufd', have 2 arguments
-                   vfio_group_unset_iommufd(group->iommufd, &group->device_list);
-                   ~~~~~~~~~~~~~~~~~~~~~~~~                 ^~~~~~~~~~~~~~~~~~~
-   include/linux/iommufd.h:56:20: note: 'vfio_group_unset_iommufd' declared here
-   static inline void vfio_group_unset_iommufd(void *iommufd)
-                      ^
->> drivers/vfio/vfio.c:1161:26: error: too few arguments to function call, expected 3, have 2
-                                                   &group->device_list);
-                                                                      ^
-   include/linux/iommufd.h:50:19: note: 'vfio_group_set_iommufd' declared here
-   static inline int vfio_group_set_iommufd(int fd, struct iommu_group *group,
-                     ^
-   2 errors generated.
+> ---
+> Please note, completely, untested. Heiko, could you test this without
+> having the second series from Tudor applied? Then you should have at
+> least a working flash without quad mode.
+
+I removed the second series and applied yours. With that it works.
 
 
-vim +/iommufd +1084 drivers/vfio/vfio.c
+--
+Heiko
 
-  1074	
-  1075	/*
-  1076	 * VFIO Group fd, /dev/vfio/$GROUP
-  1077	 */
-  1078	static void __vfio_group_unset_container(struct vfio_group *group)
-  1079	{
-  1080		struct vfio_container *container = group->container;
-  1081		struct vfio_iommu_driver *driver;
-  1082	
-  1083		if (group->iommufd) {
-> 1084			vfio_group_unset_iommufd(group->iommufd, &group->device_list);
-  1085			group->iommufd = NULL;
-  1086			return;
-  1087		}
-  1088	
-  1089		down_write(&container->group_lock);
-  1090	
-  1091		driver = container->iommu_driver;
-  1092		if (driver)
-  1093			driver->ops->detach_group(container->iommu_data,
-  1094						  group->iommu_group);
-  1095	
-  1096		iommu_group_release_dma_owner(group->iommu_group);
-  1097	
-  1098		group->container = NULL;
-  1099		wake_up(&group->container_q);
-  1100		list_del(&group->container_next);
-  1101	
-  1102		/* Detaching the last group deprivileges a container, remove iommu */
-  1103		if (driver && list_empty(&container->group_list)) {
-  1104			driver->ops->release(container->iommu_data);
-  1105			module_put(driver->ops->owner);
-  1106			container->iommu_driver = NULL;
-  1107			container->iommu_data = NULL;
-  1108		}
-  1109	
-  1110		up_write(&container->group_lock);
-  1111	
-  1112		vfio_container_put(container);
-  1113	}
-  1114	
-  1115	/*
-  1116	 * VFIO_GROUP_UNSET_CONTAINER should fail if there are other users or
-  1117	 * if there was no container to unset.  Since the ioctl is called on
-  1118	 * the group, we know that still exists, therefore the only valid
-  1119	 * transition here is 1->0.
-  1120	 */
-  1121	static int vfio_group_unset_container(struct vfio_group *group)
-  1122	{
-  1123		int users = atomic_cmpxchg(&group->container_users, 1, 0);
-  1124	
-  1125		if (!users)
-  1126			return -EINVAL;
-  1127		if (users != 1)
-  1128			return -EBUSY;
-  1129	
-  1130		__vfio_group_unset_container(group);
-  1131	
-  1132		return 0;
-  1133	}
-  1134	
-  1135	/*
-  1136	 * When removing container users, anything that removes the last user
-  1137	 * implicitly removes the group from the container.  That is, if the
-  1138	 * group file descriptor is closed, as well as any device file descriptors,
-  1139	 * the group is free.
-  1140	 */
-  1141	static void vfio_group_try_dissolve_container(struct vfio_group *group)
-  1142	{
-  1143		if (0 == atomic_dec_if_positive(&group->container_users))
-  1144			__vfio_group_unset_container(group);
-  1145	}
-  1146	
-  1147	static int vfio_group_set_container(struct vfio_group *group, int container_fd)
-  1148	{
-  1149		struct fd f;
-  1150		struct vfio_container *container;
-  1151		struct vfio_iommu_driver *driver;
-  1152		int ret = 0;
-  1153	
-  1154		if (atomic_read(&group->container_users))
-  1155			return -EINVAL;
-  1156	
-  1157		if (group->type == VFIO_NO_IOMMU && !capable(CAP_SYS_RAWIO))
-  1158			return -EPERM;
-  1159	
-  1160		group->iommufd = vfio_group_set_iommufd(container_fd,
-> 1161							&group->device_list);
-  1162		if (group->iommufd) {
-  1163			atomic_inc(&group->container_users);
-  1164			return ret;
-  1165		}
-  1166	
-  1167		f = fdget(container_fd);
-  1168		if (!f.file)
-  1169			return -EBADF;
-  1170	
-  1171		/* Sanity check, is this really our fd? */
-  1172		if (f.file->f_op != &vfio_fops) {
-  1173			fdput(f);
-  1174			return -EINVAL;
-  1175		}
-  1176	
-  1177		container = f.file->private_data;
-  1178		WARN_ON(!container); /* fget ensures we don't race vfio_release */
-  1179	
-  1180		down_write(&container->group_lock);
-  1181	
-  1182		/* Real groups and fake groups cannot mix */
-  1183		if (!list_empty(&container->group_list) &&
-  1184		    container->noiommu != (group->type == VFIO_NO_IOMMU)) {
-  1185			ret = -EPERM;
-  1186			goto unlock_out;
-  1187		}
-  1188	
-  1189		ret = iommu_group_claim_dma_owner(group->iommu_group, f.file);
-  1190		if (ret)
-  1191			goto unlock_out;
-  1192	
-  1193		driver = container->iommu_driver;
-  1194		if (driver) {
-  1195			ret = driver->ops->attach_group(container->iommu_data,
-  1196							group->iommu_group,
-  1197							group->type);
-  1198			if (ret) {
-  1199				iommu_group_release_dma_owner(group->iommu_group);
-  1200				goto unlock_out;
-  1201			}
-  1202		}
-  1203	
-  1204		group->container = container;
-  1205		container->noiommu = (group->type == VFIO_NO_IOMMU);
-  1206		list_add(&group->container_next, &container->group_list);
-  1207	
-  1208		/* Get a reference on the container and mark a user within the group */
-  1209		vfio_container_get(container);
-  1210		atomic_inc(&group->container_users);
-  1211	
-  1212	unlock_out:
-  1213		up_write(&container->group_lock);
-  1214		fdput(f);
-  1215		return ret;
-  1216	}
-  1217	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+>  drivers/mtd/spi-nor/sfdp.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/mtd/spi-nor/sfdp.c b/drivers/mtd/spi-nor/sfdp.c
+> index a5211543d30d..c23e85274ff2 100644
+> --- a/drivers/mtd/spi-nor/sfdp.c
+> +++ b/drivers/mtd/spi-nor/sfdp.c
+> @@ -549,6 +549,14 @@ static int spi_nor_parse_bfpt(struct spi_nor *nor,
+>         map->uniform_erase_type =3D map->uniform_region.offset &
+>                                   SNOR_ERASE_TYPE_MASK;
+>
+> +       /*
+> +        * The first JESD216 revision doesn't specify a method to enable
+> +        * quad mode. spi_nor_init_default_params() will set a legacy
+> +        * default method to enable quad mode. We have to disable it
+> +        * again.
+> +        */
+> +       params->quad_enable =3D NULL;
+> +
+>         /* Stop here if not JESD216 rev A or later. */
+>         if (bfpt_header->length =3D=3D BFPT_DWORD_MAX_JESD216)
+>                 return spi_nor_post_bfpt_fixups(nor, bfpt_header, &bfpt);
+> @@ -562,7 +570,6 @@ static int spi_nor_parse_bfpt(struct spi_nor *nor,
+>         /* Quad Enable Requirements. */
+>         switch (bfpt.dwords[BFPT_DWORD(15)] & BFPT_DWORD15_QER_MASK) {
+>         case BFPT_DWORD15_QER_NONE:
+> -               params->quad_enable =3D NULL;
+>                 break;
+>
+>         case BFPT_DWORD15_QER_SR2_BIT1_BUGGY:
+> --
+> 2.30.2
+>
