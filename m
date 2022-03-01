@@ -2,121 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84268C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:07:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09657C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:07:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233653AbiCAJIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        id S233700AbiCAJIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:08:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233646AbiCAJHx (ORCPT
+        with ESMTP id S233675AbiCAJIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:07:53 -0500
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A359689CD8;
-        Tue,  1 Mar 2022 01:07:11 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4K7BDc6q0nzdZmq;
-        Tue,  1 Mar 2022 17:05:52 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 1 Mar 2022 17:07:08 +0800
-Subject: Re: [PATCH 2/8] mm: khugepaged: remove redundant check for
- VM_NO_KHUGEPAGED
-To:     Yang Shi <shy828301@gmail.com>
-CC:     <linux-mm@kvack.org>, <linux-fsdevel@vger.kernel.org>,
-        <linux-ext4@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <vbabka@suse.cz>,
-        <kirill.shutemov@linux.intel.com>, <songliubraving@fb.com>,
-        <riel@surriel.com>, <willy@infradead.org>, <ziy@nvidia.com>,
-        <akpm@linux-foundation.org>, <tytso@mit.edu>,
-        <adilger.kernel@dilger.ca>, <darrick.wong@oracle.com>
-References: <20220228235741.102941-1-shy828301@gmail.com>
- <20220228235741.102941-3-shy828301@gmail.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <968ccc31-a87c-4657-7193-464f6b5b9259@huawei.com>
-Date:   Tue, 1 Mar 2022 17:07:07 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 1 Mar 2022 04:08:01 -0500
+Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B5A38A31C;
+        Tue,  1 Mar 2022 01:07:18 -0800 (PST)
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181]) (authenticated)
+        by conssluserg-05.nifty.com with ESMTP id 22196kmS002069;
+        Tue, 1 Mar 2022 18:06:47 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 22196kmS002069
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1646125607;
+        bh=UY9OLn7hFjW9U1chVHUgkyiDXtaLJsAZWOhrge7kbXU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=l0XwBzNr1NPLGPpqyMiqVggwwCB/1A72aUdEoK79UH5a67OgyaQfm1oYMV8+RL3E5
+         E+ao5qZzHxewrO6QNfgSp6mk0edql70nkkdLBEAut6S7urcACDu6VTgWV23gEOBnvN
+         zuggLLvot9SWKVVvJcVeQgpZpJLl36cJkN6qK+Y/B2kJO1DbQKU+Dpwq9w9PTyHM/d
+         HJzs6drAtbY4D/wzs/MzOVaXS6k7wmHTde2fPZozhwpzK2tmRbUkKAlYt4xqW8UQ5p
+         lv+u6bvi4zf+AT9eD7iA/rJqgA9x03Tn6fxLnxnW+5B5pp2GfrNJsBnumCjlpvAfhP
+         qfHa/vyDGfvDw==
+X-Nifty-SrcIP: [209.85.214.181]
+Received: by mail-pl1-f181.google.com with SMTP id z2so12937555plg.8;
+        Tue, 01 Mar 2022 01:06:47 -0800 (PST)
+X-Gm-Message-State: AOAM530t/zdrpZUuLmI6iGLy0pyvPkquiFQs3kpThFE4B9+siG2h/9mF
+        MIv79gOEWf62Owdn10QNEbuh+rWOU47HpPvqxh8=
+X-Google-Smtp-Source: ABdhPJzujXuF494nq7rmDEipHgFpDJ0z4oRNLE7toucRij1tBQ/y+Gn6/D2MY52bqp1HVdP8vvAst/HO33aU1B0usQc=
+X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
+ s7-20020a170902988700b001516e1c7082mr7340286plp.162.1646125606345; Tue, 01
+ Mar 2022 01:06:46 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220228235741.102941-3-shy828301@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+References: <20220225144245.182659-1-masahiroy@kernel.org> <CAKwvOd=WjnHSHKLVRJifHxV2tyDsLTkek80NWU=do=FSHhNLug@mail.gmail.com>
+ <67b75a36cf874dfea0871649ccd268d3@AcuMS.aculab.com>
+In-Reply-To: <67b75a36cf874dfea0871649ccd268d3@AcuMS.aculab.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 1 Mar 2022 18:06:04 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARKxd-kr3pABzTC2+uGhEKbyLtXDCSoxn56P0go--bg1A@mail.gmail.com>
+Message-ID: <CAK7LNARKxd-kr3pABzTC2+uGhEKbyLtXDCSoxn56P0go--bg1A@mail.gmail.com>
+Subject: Re: [PATCH v2] fixdep: use fflush() and ferror() to ensure successful
+ write to files
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/1 7:57, Yang Shi wrote:
-> The hugepage_vma_check() called by khugepaged_enter_vma_merge() does
-> check VM_NO_KHUGEPAGED. Remove the check from caller and move the check
-> in hugepage_vma_check() up.
-> 
-> More checks may be run for VM_NO_KHUGEPAGED vmas, but MADV_HUGEPAGE is
-> definitely not a hot path, so cleaner code does outweigh.
-> 
-> Signed-off-by: Yang Shi <shy828301@gmail.com>
-> ---
->  mm/khugepaged.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-> index 131492fd1148..82c71c6da9ce 100644
-> --- a/mm/khugepaged.c
-> +++ b/mm/khugepaged.c
-> @@ -366,8 +366,7 @@ int hugepage_madvise(struct vm_area_struct *vma,
->  		 * register it here without waiting a page fault that
->  		 * may not happen any time soon.
->  		 */
-> -		if (!(*vm_flags & VM_NO_KHUGEPAGED) &&
-> -				khugepaged_enter_vma_merge(vma, *vm_flags))
-> +		if (khugepaged_enter_vma_merge(vma, *vm_flags))
->  			return -ENOMEM;
->  		break;
->  	case MADV_NOHUGEPAGE:
-> @@ -446,6 +445,9 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
->  	if (!transhuge_vma_enabled(vma, vm_flags))
->  		return false;
->  
-> +	if (vm_flags & VM_NO_KHUGEPAGED)
-> +		return false;
-> +
+On Tue, Mar 1, 2022 at 11:28 AM David Laight <David.Laight@aculab.com> wrot=
+e:
+>
+> Someone send HTML mail =E2=80=93 outlook is broken =E2=80=93 only lets yo=
+u top post :-(
+>
+>
+>
+> The return value from fprintf() is normally the number of bytes written t=
+o
+>
+> the internal buffer (8k in glibc?)
+>
+> Only if the buffer is full and an actual write() is done do you get any i=
+ndication of an error.
+>
+> So you can use the error return from fprintf() to terminate a loop =E2=80=
+=93 but it usually
+>
+> just isn=E2=80=99t worth the effort.
+>
+> The error status returned by ferror() is =E2=80=98sticky=E2=80=99, so you=
+ need only check once.
+>
+> But you need to check before fclose().
+>
+> Since fclose() has to write out the buffer =E2=80=93 that write can also =
+fail.
+>
+> I=E2=80=99m not sure whether fclose() returns and error in that case, but=
+ adding fflush()
+>
+> makes the coding easier.
 
-This patch does improve the readability. But I have a question.
-It seems VM_NO_KHUGEPAGED is not checked in the below if-condition:
 
-	/* Only regular file is valid */
-	if (IS_ENABLED(CONFIG_READ_ONLY_THP_FOR_FS) && vma->vm_file &&
-	    (vm_flags & VM_EXEC)) {
-		struct inode *inode = vma->vm_file->f_inode;
+I just checked this.
 
-		return !inode_is_open_for_write(inode) &&
-			S_ISREG(inode->i_mode);
-	}
+fclose() returns -1 if it fails to flush the buffer.
 
-If we return false due to VM_NO_KHUGEPAGED here, it seems it will affect the
-return value of this CONFIG_READ_ONLY_THP_FOR_FS condition check.
-Or am I miss something?
 
-Thanks.
 
->  	if (vma->vm_file && !IS_ALIGNED((vma->vm_start >> PAGE_SHIFT) -
->  				vma->vm_pgoff, HPAGE_PMD_NR))
->  		return false;
-> @@ -471,7 +473,8 @@ static bool hugepage_vma_check(struct vm_area_struct *vma,
->  		return false;
->  	if (vma_is_temporary_stack(vma))
->  		return false;
-> -	return !(vm_flags & VM_NO_KHUGEPAGED);
-> +
-> +	return true;
->  }
->  
->  int __khugepaged_enter(struct mm_struct *mm)
-> 
 
+
+[ test code ]
+#include <stdio.h>
+int main(void)
+{
+        char buf[2049];
+        int ret, i;
+
+        for (i =3D 0; i < 2048; i++)
+                buf[i] =3D 'a';
+
+        buf[2048] =3D 0;
+
+        ret =3D printf("%s", buf);
+        fprintf(stderr, "printf() returned: %d\n", ret);
+
+        ret =3D fclose(stdout);
+        fprintf(stderr, "fclose() returned %d\n", ret);
+
+        return 0;
+}
+
+
+I tested this on Debian buster.
+
+
+I created a very small partition with 1K size,
+then write data to that partition.
+
+
+
+
+root@buster:~# lsblk  /dev/vdb1
+NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+vdb1 254:17   0   1K  0 part
+root@buster:~# ./a.out  > /dev/vdb1
+printf() returned: 2048
+fclose() returned -1
+
+
+
+The buffer size seems 4k
+as far as I tested on Debian.
+
+
+
+
+
+--=20
+Best Regards
+Masahiro Yamada
