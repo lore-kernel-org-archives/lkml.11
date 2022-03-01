@@ -2,138 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF2E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:59:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA01C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 02:03:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232192AbiCACA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 21:00:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52330 "EHLO
+        id S229844AbiCACER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 21:04:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbiCACAX (ORCPT
+        with ESMTP id S230324AbiCACEP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 21:00:23 -0500
-Received: from mail-ua1-x933.google.com (mail-ua1-x933.google.com [IPv6:2607:f8b0:4864:20::933])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C6B38D98;
-        Mon, 28 Feb 2022 17:59:29 -0800 (PST)
-Received: by mail-ua1-x933.google.com with SMTP id a28so1782950uaf.7;
-        Mon, 28 Feb 2022 17:59:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=f9mcavcZ3DY94pj3isyE2zgAKVT28x47K4KRhuEpv6Q=;
-        b=ULr67TFox3RLB7SGJSFxa+NZLUv1bHUeSyhisqV+HNwBrTddKytuBp2MNcLed/VQpe
-         l9zbE5RTm/Imu7PBpGjLc9Gz+n7hgSm9ZHy6Nw+SUOT5PZUcxF4WzMBGMg9GTDEGQCm/
-         si81w2ngBWAgaZufKKYgLdFqVRUaOw3AVWfxs6T7xIG/7YXRuqHet8+R+J9UgFSzE7/B
-         U2LfKUNMafXhYUiHtQpwlVwJ3rppiXsB8dwawdQxjiXi2Gl3tDHz0J7x0eXnukUbuX4C
-         qYq4V8UzXJ+KgSKKE5grqQJwwn64qzCD4LyaRijO2oHbhH8kK+EmMcUDxTP/Xc/S8BKE
-         TZsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=f9mcavcZ3DY94pj3isyE2zgAKVT28x47K4KRhuEpv6Q=;
-        b=4y2w7r6K3PEOJMDMoj0M8KflQFCMMRJ2QTMRzYxYOc4d+8qQ6BYUHScyAk3n26hrbQ
-         juXqt3/dr84qQAtymmXKFCu4xkeSfM90momhtxbPcA1E3LxQThfbx/Kol4isdfs9nN/s
-         hv6QAnf9uqxmk1EbRrIjvH48et7o/CkYTZ2GjYt7+lPfeFrI95yoiY9D+kmv2MjhvHo7
-         F3VfYdujHpyFJmcyK7MDS1Q2Avi4MSVk3bVXkBRir2t1+VR9FyszqbLzuwksIC1gP7AY
-         Aqa/G8kSktM93Ffs488iJxtOEfOJRPtb4kYj1sL5OJGpG6ApmM4U+3o/VcX8LPti3+nX
-         fm4w==
-X-Gm-Message-State: AOAM5311AW5z7trhTRdJE3NaTneJoyhsBsNOE6hyQzepajCYB3j6yiPx
-        x5TkWQI8vVLoDISupRc99iArQtgcPADw01SfYS8=
-X-Google-Smtp-Source: ABdhPJxoiWGfFp+U7mgMRQ9mB+8YY2DQDRlM2bRtZnZScmYZqfYoRf/PUDbxoZRuX8/BkJNU9+sPwbeI2ACWEikb8kc=
-X-Received: by 2002:ab0:5b87:0:b0:33d:b78c:56ca with SMTP id
- y7-20020ab05b87000000b0033db78c56camr9261800uae.117.1646099968324; Mon, 28
- Feb 2022 17:59:28 -0800 (PST)
-MIME-Version: 1.0
-References: <20220222042700.385001-1-yusisamerican@gmail.com>
- <CAJoG2+-97KyWrxym2NXECRtjT9OxVQE_=DcNkUfOsPm_Ax90Aw@mail.gmail.com>
- <20220225155208.GA1377611@yilunxu-OptiPlex-7050> <DM6PR11MB3819C9631EAED0AFE7E8D99B85019@DM6PR11MB3819.namprd11.prod.outlook.com>
-In-Reply-To: <DM6PR11MB3819C9631EAED0AFE7E8D99B85019@DM6PR11MB3819.namprd11.prod.outlook.com>
-From:   Yusuf Khan <yusisamerican@gmail.com>
-Date:   Mon, 28 Feb 2022 17:59:17 -0800
-Message-ID: <CAJoG2+--e6BqpwBYO0w4d_aUwmCmJVch=mvfq7idW__PRxsv6w@mail.gmail.com>
-Subject: Re: [PATCH -next] pga: dfl: pci: Make sure DMA related error check is
- not done twice
-To:     "Wu, Hao" <hao.wu@intel.com>
-Cc:     "Xu, Yilun" <yilun.xu@intel.com>,
+        Mon, 28 Feb 2022 21:04:15 -0500
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D87C3BBEB
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 18:03:35 -0800 (PST)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2210mam2011987;
+        Tue, 1 Mar 2022 02:01:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=gpNPazCw1JDwVIueADQv29xBWWCetVtkVRf+nZQ3mKA=;
+ b=p0I6q7qtrnHR8zk7jc86wf6EHrIkKHziFZG6P/QNbd3XJfFYhHh8k1rwgnGEyNG+QEDy
+ OsbSeTaHfzGU/x702RF32h4Pk78uaeHARlcnn/fas/gVbnUwZBPancBV2WZYyjSykYkb
+ kvhO5v9jBoPdaEuzdRgT4EtSpWSeY/uDmXJZloELRhAeuaDD7RM/ClS6tlfoer84PIcG
+ TAMobm0biV8BUcB/8OPg9y4jA9lDIiZgbzkicdlQPNdDsvmZUTrPWLh19dneRqmUQaa3
+ jj9FyDGnkL1q9LiLCJoLxkKtTzkyiWKZSK+Qs3Nyk7d7p3DPpTwENeNMSmeW1ABAwQuV hw== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3eh996h793-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Mar 2022 02:01:25 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2211hNEx024250;
+        Tue, 1 Mar 2022 02:01:23 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma01fra.de.ibm.com with ESMTP id 3efbu918kk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Mar 2022 02:01:22 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 22121G2551970304
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 1 Mar 2022 02:01:16 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7320111C058;
+        Tue,  1 Mar 2022 02:01:16 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 28EAA11C04C;
+        Tue,  1 Mar 2022 02:01:16 +0000 (GMT)
+Received: from localhost (unknown [9.171.53.31])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue,  1 Mar 2022 02:01:16 +0000 (GMT)
+Date:   Tue, 1 Mar 2022 03:01:14 +0100
+From:   Vasily Gorbik <gor@linux.ibm.com>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-fpga@vger.kernel.org" <linux-fpga@vger.kernel.org>,
-        "mdf@kernel.org" <mdf@kernel.org>,
-        "trix@redhat.com" <trix@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        Andrew Morton <akpm@linux-foundation.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>
+Subject: Re: [PATCH v6 08/71] Maple Tree: Add new data structure
+Message-ID: <your-ad-here.call-01646100074-ext-8278@work.hours>
+References: <20220215143728.3810954-1-Liam.Howlett@oracle.com>
+ <20220215144241.3812052-1-Liam.Howlett@oracle.com>
+ <20220215144241.3812052-8-Liam.Howlett@oracle.com>
+ <your-ad-here.call-01645924312-ext-0398@work.hours>
+ <20220228143633.r4zoemgtmrq4uzvb@revolver>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220228143633.r4zoemgtmrq4uzvb@revolver>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ronGQoVyKppgr6H8OPcgoyREV573J_-F
+X-Proofpoint-ORIG-GUID: ronGQoVyKppgr6H8OPcgoyREV573J_-F
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-02-28_10,2022-02-26_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
+ mlxscore=0 bulkscore=0 priorityscore=1501 malwarescore=0 adultscore=0
+ lowpriorityscore=0 phishscore=0 spamscore=0 mlxlogscore=999 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2203010006
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Will do, but I do not know exactly what to remove  from the commit message,
-I understand what to do for the title
+On Mon, Feb 28, 2022 at 02:36:40PM +0000, Liam Howlett wrote:
+> * Vasily Gorbik <gor@linux.ibm.com> [220226 20:12]:
+> > there is an endianness issue with maple_metadata. This is broken on
+> > all big endian architectures. Tests are crashing. See potential fixup
+> > below. Feel free to apply it or fix the issue in your own way. This does
+> > not resolve all the issues with the patch series though.
+> 
+> The endianness isn't what's causing the issues.  The slots hold a
+> pointer.  Either we can use the entire slot or none of the slot
+> space.  You are just moving the metatdata around in the last slot.
 
-Yusuf
+Fair, it is either or, but shouldn't maple_metadata->end be aligned with
+MAPLE_NODE_MASK?
 
-On Mon, Feb 28, 2022 at 1:58 AM Wu, Hao <hao.wu@intel.com> wrote:
->
-> > On Mon, Feb 21, 2022 at 08:39:48PM -0800, Yusuf Khan wrote:
-> > > Note: This bug was introduced here:
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-
-> > next.git/patch/?id=ada3caabaf6135150077c3f729bb06e8f3b5b8f6
-> > > I saw this commit inside the linux-next branch, it is not present in
-> > > the mainline branch.
-> > > The linux-next branch was last updated 5 days ago, so I am unsure
-> > > about the state of that commit.
-> > >
-> > > On Mon, Feb 21, 2022 at 8:27 PM Yusuf Khan <yusisamerican@gmail.com>
-> > wrote:
-> > > >
-> > > > In the case that the DMA 64 bit bit mask error check does not fail,
-> > > > the error check will be done twice, this patch fixed that.
-> > > >
-> > > > NOTE: This patch is only for use in the linux-next branch as the
-> > > > commit that caused this bug happened there.
->
-> Thanks for the patch.
-> please remove this from the commit message, and fix the title
-> s/pga/fpga/
->
-> Thanks
-> Hao
->
-> > > >
-> > > > Signed-off-by: Yusuf Khan <yusisamerican@gmail.com>
-> > > > ---
-> > > >  drivers/fpga/dfl-pci.c | 9 +++++----
-> > > >  1 file changed, 5 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/drivers/fpga/dfl-pci.c b/drivers/fpga/dfl-pci.c
-> > > > index 717ac9715970..6222f18aed4b 100644
-> > > > --- a/drivers/fpga/dfl-pci.c
-> > > > +++ b/drivers/fpga/dfl-pci.c
-> > > > @@ -356,11 +356,12 @@ int cci_pci_probe(struct pci_dev *pcidev, const
-> > struct pci_device_id *pcidevid)
-> > > >         pci_set_master(pcidev);
-> > > >
-> > > >         ret = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(64));
-> > > > -       if (ret)
-> > > > -               ret = dma_set_mask_and_coherent(&pcidev->dev,
-> > DMA_BIT_MASK(32));
-> > > >         if (ret) {
-> > > > -               dev_err(&pcidev->dev, "No suitable DMA support available.\n");
-> > > > -               goto disable_error_report_exit;
-> > > > +               ret = dma_set_mask_and_coherent(&pcidev->dev,
-> > DMA_BIT_MASK(32));
-> > > > +               if (ret) {
-> > > > +                       dev_err(&pcidev->dev, "No suitable DMA support
-> > available.\n");
-> > > > +                       goto disable_error_report_exit;
-> > > > +               }
-> >
-> > Looks good to me.
-> >
-> > Acked-by: Xu Yilun <yilun.xu@intel.com>
-> >
-> > > >         }
-> > > >
-> > > >         ret = cci_init_drvdata(pcidev);
-> > > > --
-> > > > 2.25.1
-> > > >
+> You may have been confused about my comment, which I believe is
+> outdated, that talks about maple_arange_64, not maple_range_64.  I added
+> maple_range_64 metadata and use the previous pivot to see if the slot
+> contains data or not. If piv[14] == 0 or mas->max means we can use the
+> slot for metadata.
+
+This condition is not present in mas_dead_leaves() where we potentially
+iterate over all 16 slots, simply checking that we have a "valid" node pointer
+with:
+
+entry & ~MAPLE_NODE_MASK != 0
+
+This doesn't work on big endian without the fix.
+
+maple_tree(0x121eaa0) flags 8, height 2 root 0x61a00004c316
+0-18446744073709551615: node 0x61a00004c300 depth 0 type 2 parent 0x121eaa1 contents: 0x61a00002710c 14 0x61a00002a10c 29 0x61a00002d10c 44 0x61a00003070c
+59 0x61a00003370c 74 0x61a00003670c 89 0x61a00003970c 104 0x61a00003c70c 119 0x61a00003f70c 134 0x61a00004270c 149 0x61a00004570c 164 0x61a00004870c
+179 0x61a00004b70c 194 0x61a00004cf0c 203 0x61a00004c90c 18446744073709551615 0xe00000000000000
+										^^^^^^^^^^^^^^^
+
+==564249==ERROR: AddressSanitizer: SEGV on unknown address 0xe00000000000000 (pc 0x00000100ce72 bp 0x61a00004c300 sp 0x03fffe87de00 T0)
+==564249==The signal is caused by a UNKNOWN memory access.
+    #0 0x100ce72 in mte_set_node_dead ../../../lib/maple_tree.c:294
+    #1 0x100ce72 in mas_dead_leaves ../../../lib/maple_tree.c:5381
+    #2 0x100ce72 in mt_destroy_walk ../../../lib/maple_tree.c:5496
+    #3 0x1069af3 in mte_destroy_walk ../../../lib/maple_tree.c:5543
+    #4 0x1069af3 in __mt_destroy ../../../lib/maple_tree.c:6279
+    #5 0x1069b77 in mtree_destroy ../../../lib/maple_tree.c:6294
+    #6 0x106cf19 in check_dfs_preorder ../../../lib/test_maple_tree.c:35732
+    #7 0x106d011 in maple_tree_seed ../../../lib/test_maple_tree.c:37188
+    #8 0x1073ef9 in maple_tree_tests /devel/src/kernel/tools/testing/radix-tree/maple.c:47
+    #9 0x1073f1f in main /devel/src/kernel/tools/testing/radix-tree/maple.c:54
+    #10 0x3ffa1833731 in __libc_start_call_main (/lib64/libc.so.6+0x33731)
+    #11 0x3ffa183380d in __libc_start_main@@GLIBC_2.34 (/lib64/libc.so.6+0x3380d)
+    #12 0x1001d99  (/devel/src/kernel/tools/testing/radix-tree/maple+0x1001d99)
