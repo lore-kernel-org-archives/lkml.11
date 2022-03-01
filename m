@@ -2,185 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34AA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6162C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:56:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237100AbiCASzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:55:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58422 "EHLO
+        id S237127AbiCAS5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:57:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236620AbiCASzn (ORCPT
+        with ESMTP id S237104AbiCAS5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:55:43 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66DE7606FD
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:55:01 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id qa43so6815181ejc.12
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 10:55:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JZw99KMpsKBs3Ab/LBNeIPMebXALTITXobBfJpN/EsI=;
-        b=ZEWbFFu3eWrZxUgaaScwD4ZJ//Z7mV4SGMyACB20WwCKEMFGKIBMMEXVkM4kZXdOyd
-         EokMKBVyAcoYChV/SvtOh5q5h0Yafm3wlsC3jCGOeoM0h4pn550KTbE+/sUn3z3m8p0V
-         ZL0gG9ZTrYCOlyUURTCDAGrluijISoqXbB1wA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JZw99KMpsKBs3Ab/LBNeIPMebXALTITXobBfJpN/EsI=;
-        b=58eLvfzcsK3KRitwUUml6n6aZfOykshs5PrDf3aki9xn2147H4PyJGaoih64pdCE/m
-         5z+H+Tpv464UYfPwHMx2PYMVzWv7kUs1IL+tf4yBbegIYlrq+H+eCs9vTxpI6i3NpIZp
-         JjIsYqanWxukp3zaIc2J7Vx+0apSwwyrm6hVMzyJVNaxBzmGM41frVOl3jeTEv15ffxR
-         U7lsOrXPuBzkhzK8/C/IKHV4YDyYug+VjPeucw/foEwjTTSJL/6+Vrud8wRmaNJE8BZ4
-         k2hviq5fIypa6/TX+0ckckZQYQnfdlX8icmD9ZdBIuIAUwh9jCiDJ981C5GsnCQemKKN
-         oc+w==
-X-Gm-Message-State: AOAM532HTL4IHvt84MQA8dYUae8S2BGRdy1gKIY8gjY2yDWJrRdzoMJn
-        wVGdrccuoAAAm0kZxxboN5vNlgPP0Om0QpWnGh4=
-X-Google-Smtp-Source: ABdhPJxnOC3rqTydo5mjTmVLWDnJVRVy1MshWgVxKe0JwJb9zbXktaFeuS+thkHqblJuDuLnn7Gj0w==
-X-Received: by 2002:a17:907:2711:b0:6cf:350:81c3 with SMTP id w17-20020a170907271100b006cf035081c3mr20210146ejk.712.1646160899639;
-        Tue, 01 Mar 2022 10:54:59 -0800 (PST)
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com. [209.85.218.48])
-        by smtp.gmail.com with ESMTPSA id pg27-20020a170907205b00b006d6e5102ca2sm894268ejb.97.2022.03.01.10.54.59
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 10:54:59 -0800 (PST)
-Received: by mail-ej1-f48.google.com with SMTP id a8so33386318ejc.8
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 10:54:59 -0800 (PST)
-X-Received: by 2002:a05:6512:2033:b0:443:3d49:dac with SMTP id
- s19-20020a056512203300b004433d490dacmr16440784lfs.52.1646160451271; Tue, 01
- Mar 2022 10:47:31 -0800 (PST)
-MIME-Version: 1.0
-References: <20220228110822.491923-1-jakobkoschel@gmail.com>
- <20220228110822.491923-3-jakobkoschel@gmail.com> <2e4e95d6-f6c9-a188-e1cd-b1eae465562a@amd.com>
- <CAHk-=wgQps58DPEOe4y5cTh5oE9EdNTWRLXzgMiETc+mFX7jzw@mail.gmail.com>
- <CAHk-=wj8fkosQ7=bps5K+DDazBXk=ypfn49A0sEq+7-nZnyfXA@mail.gmail.com>
- <CAHk-=wiTCvLQkHcJ3y0hpqH7FEk9D28LDvZZogC6OVLk7naBww@mail.gmail.com>
- <Yh0tl3Lni4weIMkl@casper.infradead.org> <CAHk-=wgBfJ1-cPA2LTvFyyy8owpfmtCuyiZi4+um8DhFNe+CyA@mail.gmail.com>
- <Yh1aMm3hFe/j9ZbI@casper.infradead.org> <CAHk-=wi0gSUMBr2SVF01Gy1xC1w1iGtJT5ztju9BPWYKjdh+NA@mail.gmail.com>
- <202203011008.AA0B5A2D@keescook>
-In-Reply-To: <202203011008.AA0B5A2D@keescook>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 1 Mar 2022 10:47:14 -0800
-X-Gmail-Original-Message-ID: <CAHk-=whccSm8HKANQbomYrF8cqBa1wUi1dvUEUc3Nf=WoX3WHQ@mail.gmail.com>
-Message-ID: <CAHk-=whccSm8HKANQbomYrF8cqBa1wUi1dvUEUc3Nf=WoX3WHQ@mail.gmail.com>
-Subject: Re: [PATCH 2/6] treewide: remove using list iterator after loop body
- as a ptr
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jakob Koschel <jakobkoschel@gmail.com>,
-        alsa-devel@alsa-project.org, linux-aspeed@lists.ozlabs.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Cristiano Giuffrida <c.giuffrida@vu.nl>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        samba-technical@lists.samba.org,
-        linux1394-devel@lists.sourceforge.net, drbd-dev@lists.linbit.com,
-        linux-arch <linux-arch@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-staging@lists.linux.dev, "Bos, H.J." <h.j.bos@vu.nl>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        intel-wired-lan@lists.osuosl.org,
-        kgdb-bugreport@lists.sourceforge.net,
-        bcm-kernel-feedback-list@broadcom.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Arnd Bergman <arnd@arndb.de>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        intel-gfx <intel-gfx@lists.freedesktop.org>,
-        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        v9fs-developer@lists.sourceforge.net,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-sgx@vger.kernel.org,
-        linux-block <linux-block@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>,
-        tipc-discussion@lists.sourceforge.net,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        dma <dmaengine@vger.kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Mike Rapoport <rppt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 1 Mar 2022 13:57:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05FDE60CDB
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:56:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D0C7B81CB0
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 18:56:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFFE8C340EE;
+        Tue,  1 Mar 2022 18:56:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646160985;
+        bh=usfHRRJQxk5ZPBBjY5lM+QOMJJruSA25LZ2RYqAjsk8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=boS0m3SGvvVYdSDPMbk2vmPxKby2L4qP2A0CRlh1JLasCXH718Gwc5zuNqHnFHDDo
+         1bS2HQCfW730Eb+VPYoyxy7qyvC0X4GRiFaOTQiRRcwzEnto9FfSjh8juc7OiGgVWa
+         7kCGiW0awUpro2719e0IwyMHrcZDNvpDf2PCYtkGX8RIYBeLD4rYxYmYOo5LCJcztA
+         6Dc+k0R8Jhd0M5cN49XzxpxULfU/yV76oE8PlIKTpI4uxs+MS+vyLv2pLZinng0u12
+         9ZoVseoreMsjOmJZXMzMLgWxjewxjnyfBXMDH0DTSdkA4bV/FKZPfrw37po1BURHgz
+         Zaw4XH5rzM/1g==
+From:   SeongJae Park <sj@kernel.org>
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        SeongJae Park <sj@kernel.org>
+Subject: [PATCH for-mm] mm/damon/sysfs: Fix out-of-bound array access for wmark_metric_strs[]
+Date:   Tue,  1 Mar 2022 18:56:19 +0000
+Message-Id: <20220301185619.2904-1-sj@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 10:14 AM Kees Cook <keescook@chromium.org> wrote:
->
-> The first big glitch with -Wshadow was with shadowed global variables.
-> GCC 4.8 fixed that, but it still yells about shadowed functions. What
-> _almost_ works is -Wshadow=local.
+Commit 7a8630be880e ("mm/damon/sysfs: support DAMOS watermarks") on -mm
+tree which introduced by a patch[1] titled
+mm-damon-sysfs-support-damos-watermarks.patch allows out-of-bound access
+to damon_sysfs_wmark_metric_strs[] array due to wrong bound check.  This
+commit fixes the wrong bound check.  The issue has found by Coverity
+report for linux-next.
 
-Heh. Yeah, I just have long memories of "-Wshadow was a disaster". You
-looked into the details.
+[1] https://www.ozlabs.org/~akpm/mmotm/broken-out/mm-damon-sysfs-support-damos-watermarks.patch
 
-> Another way to try to catch misused shadow variables is
-> -Wunused-but-set-varible, but it, too, has tons of false positives.
+Addresses-Coverity: ("Out-of-bounds read")
+Fixes: 7a8630be880e ("mm/damon/sysfs: support DAMOS watermarks")
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
+ mm/damon/sysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-That on the face of it should be an easy warning to get technically
-right for a compiler.
+diff --git a/mm/damon/sysfs.c b/mm/damon/sysfs.c
+index 32a9d21c0db5..fda2506c676f 100644
+--- a/mm/damon/sysfs.c
++++ b/mm/damon/sysfs.c
+@@ -266,7 +266,7 @@ static ssize_t metric_store(struct kobject *kobj, struct kobj_attribute *attr,
+ 			struct damon_sysfs_watermarks, kobj);
+ 	enum damos_wmark_metric metric;
+ 
+-	for (metric = 0; metric <= NR_DAMOS_WMARK_METRICS; metric++) {
++	for (metric = 0; metric < NR_DAMOS_WMARK_METRICS; metric++) {
+ 		if (sysfs_streq(buf, damon_sysfs_wmark_metric_strs[metric])) {
+ 			watermarks->metric = metric;
+ 			return count;
+-- 
+2.17.1
 
-So I assume the "false positives" are simply because we end up having
-various variables that really don't end up being used - and
-"intentionally" so).
-
-Or rather, they might only be used under some config option - perhaps
-the use is even syntactically there and parsed, but the compiler
-notices that it's turned off under some
-
-        if (IS_ENABLED(..))
-
-option? Because yeah, we have a lot of those.
-
-I think that's a common theme with a lot of compiler warnings: on the
-face of it they sound "obviously sane" and nobody should ever write
-code like that.
-
-A conditional that is always true? Sounds idiotic, and sounds like a
-reasonable thing for a compiler to warn about, since why would you
-have a conditional in the first place for that?
-
-But then you realize that maybe the conditional is a build config
-option, and "always true" suddenly makes sense. Or it's a test for
-something that is always true on _that_architecture_ but not in some
-general sense (ie testing "sizeof()"). Or it's a purely syntactic
-conditional, like "do { } while (0)".
-
-It's why I'm often so down on a lot of the odd warnings that are
-hiding under W=1 and friends. They all may make sense in the trivial
-case ("That is insane") but then in the end they happen for sane code.
-
-And yeah, -Wshadow has had tons of history with macro nesting, and
-just being badly done in the first place (eg "strlen" can be a
-perfectly fine local variable).
-
-That said, maybe people could ask the gcc and clan people for a way to
-_mark_ the places where we expect to validly see shadowing. For
-example, that "local variable in a macro expression statement" thing
-is absolutely horrendous to fix with preprocessor tricks to try to
-make for unique identifiers.
-
-But I think it would be much more syntactically reasonable to add (for
-example) a "shadow" attribute to such a variable exactly to tell the
-compiler "yeah, yeah, I know this identifier could shadow an outer
-one" and turn it off that way.
-
-               Linus
