@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08098C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C67A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:16:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236109AbiCAUQ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:16:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
+        id S237857AbiCAURF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:17:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237831AbiCAUQl (ORCPT
+        with ESMTP id S237891AbiCAUQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:16:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A97657F6D2;
-        Tue,  1 Mar 2022 12:15:38 -0800 (PST)
+        Tue, 1 Mar 2022 15:16:46 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEF4D83022;
+        Tue,  1 Mar 2022 12:15:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 532E7B81D18;
-        Tue,  1 Mar 2022 20:15:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C759EC340FC;
-        Tue,  1 Mar 2022 20:15:31 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 20551CE1E6B;
+        Tue,  1 Mar 2022 20:15:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63E80C340EF;
+        Tue,  1 Mar 2022 20:15:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165736;
-        bh=szJFOZCUhlXeA7ihv1MS281AU6Nwo6IQMXRbRGEeYK4=;
+        s=k20201202; t=1646165750;
+        bh=ktPF91zrjQqYukHJvi8JLaQ23mLJd5oC5eRxAgYO28Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZOpzqdHND0PgsZveoeK2XENd6kvZQ1S88WwBoS6uBEeWQ8NoG55kObarm6j1Ljjd7
-         54eLtBkriu6w1ThBiuKWA8S8M6sW2naiXzyESTbvc5Zx6lgXCceIK4KQyxNBeq57Fi
-         hH5lKRuGlY6mrkQRz4SFrFbQnepT93VxZpNYkms/FFeSAQ7tXOtzuwxhpK4SO5iDu+
-         YBOI3uJqxrFOfU2FRxv66mAJPdbot/M66MgLvISiRGbYyTxOKBD/QGRspkWCHONIdg
-         aM9O0UjH4KRBYYDS9CjAwKGtAIe5ssL6ceCabTMYWfIc6Hy+jg2oimR+179LpTDl4m
-         7v3yW7evXWDwQ==
+        b=ENjX7uzT/NGwUJDdsXSevrSMeGX1v91JOzh8isKuuoAK7dMaSpswr26O4CwbVUPzI
+         rBw6tZ5Mpii68ccEjrc4jju8oJq7kEqzPLjxscueDel2NZ4Xyt0h6EPHTmV1kF1kf+
+         6AXxVZmMJVJ0Q8GkVB7/mRcBd2HVCMKXQ18jZed9366rf3CbAsJ4+J2ObzHpY7IXhj
+         1sAMeyEEnw+J/iGYRPB5gegoipmoqY/dxxIVLejPMbT2qvwc7aPSd5JpE0khyrWWS+
+         JB5n5gVN9NPt/EUqVdsxIvpnWZ6JlFOFgiBNZpybd9A127/u5jQcmPM+qNKvQRMdwn
+         0jLF9mVVgKeZQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shreeya Patel <shreeya.patel@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>, linux-gpio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 19/28] gpio: Return EPROBE_DEFER if gc->to_irq is NULL
-Date:   Tue,  1 Mar 2022 15:13:24 -0500
-Message-Id: <20220301201344.18191-19-sashal@kernel.org>
+Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, wei.liu@kernel.org,
+        davem@davemloft.net, xen-devel@lists.xenproject.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 21/28] Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
+Date:   Tue,  1 Mar 2022 15:13:26 -0500
+Message-Id: <20220301201344.18191-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301201344.18191-1-sashal@kernel.org>
 References: <20220301201344.18191-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,70 +55,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shreeya Patel <shreeya.patel@collabora.com>
+From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 
-[ Upstream commit ae42f9288846353982e2eab181fb41e7fd8bf60f ]
+[ Upstream commit 0f4558ae91870692ce7f509c31c9d6ee721d8cdc ]
 
-We are racing the registering of .to_irq when probing the
-i2c driver. This results in random failure of touchscreen
-devices.
+This reverts commit 1f2565780e9b7218cf92c7630130e82dcc0fe9c2.
 
-Following explains the race condition better.
+The 'hotplug-status' node should not be removed as long as the vif
+device remains configured. Otherwise the xen-netback would wait for
+re-running the network script even if it was already called (in case of
+the frontent re-connecting). But also, it _should_ be removed when the
+vif device is destroyed (for example when unbinding the driver) -
+otherwise hotplug script would not configure the device whenever it
+re-appear.
 
-[gpio driver] gpio driver registers gpio chip
-[gpio consumer] gpio is acquired
-[gpio consumer] gpiod_to_irq() fails with -ENXIO
-[gpio driver] gpio driver registers irqchip
-gpiod_to_irq works at this point, but -ENXIO is fatal
+Moving removal of the 'hotplug-status' node was a workaround for nothing
+calling network script after xen-netback module is reloaded. But when
+vif interface is re-created (on xen-netback unbind/bind for example),
+the script should be called, regardless of who does that - currently
+this case is not handled by the toolstack, and requires manual
+script call. Keeping hotplug-status=connected to skip the call is wrong
+and leads to not configured interface.
 
-We could see the following errors in dmesg logs when gc->to_irq is NULL
+More discussion at
+https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
 
-[2.101857] i2c_hid i2c-FTS3528:00: HID over i2c has not been provided an Int IRQ
-[2.101953] i2c_hid: probe of i2c-FTS3528:00 failed with error -22
-
-To avoid this situation, defer probing until to_irq is registered.
-Returning -EPROBE_DEFER would be the first step towards avoiding
-the failure of devices due to the race in registration of .to_irq.
-Final solution to this issue would be to avoid using gc irq members
-until they are fully initialized.
-
-This issue has been reported many times in past and people have been
-using workarounds like changing the pinctrl_amd to built-in instead
-of loading it as a module or by adding a softdep for pinctrl_amd into
-the config file.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209413
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Reviewed-by: Paul Durrant <paul@xen.org>
+Link: https://lore.kernel.org/r/20220222001817.2264967-1-marmarek@invisiblethingslab.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpiolib.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/xen-netback/xenbus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index abfbf546d1599..7b3f7f4d1d063 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -3111,6 +3111,16 @@ int gpiod_to_irq(const struct gpio_desc *desc)
+diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+index d24b7a7993aa0..3fad58d22155b 100644
+--- a/drivers/net/xen-netback/xenbus.c
++++ b/drivers/net/xen-netback/xenbus.c
+@@ -256,6 +256,7 @@ static void backend_disconnect(struct backend_info *be)
+ 		unsigned int queue_index;
  
- 		return retirq;
+ 		xen_unregister_watchers(vif);
++		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
+ #ifdef CONFIG_DEBUG_FS
+ 		xenvif_debugfs_delif(vif);
+ #endif /* CONFIG_DEBUG_FS */
+@@ -675,7 +676,6 @@ static void hotplug_status_changed(struct xenbus_watch *watch,
+ 
+ 		/* Not interested in this watch anymore. */
+ 		unregister_hotplug_status_watch(be);
+-		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
  	}
-+#ifdef CONFIG_GPIOLIB_IRQCHIP
-+	if (gc->irq.chip) {
-+		/*
-+		 * Avoid race condition with other code, which tries to lookup
-+		 * an IRQ before the irqchip has been properly registered,
-+		 * i.e. while gpiochip is still being brought up.
-+		 */
-+		return -EPROBE_DEFER;
-+	}
-+#endif
- 	return -ENXIO;
+ 	kfree(str);
  }
- EXPORT_SYMBOL_GPL(gpiod_to_irq);
 -- 
 2.34.1
 
