@@ -2,20 +2,20 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F6CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25839C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:25:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235717AbiCAPZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:25:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
+        id S235720AbiCAPZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:25:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235679AbiCAPZ0 (ORCPT
+        with ESMTP id S235657AbiCAPZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 1 Mar 2022 10:25:26 -0500
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E748AE6A;
-        Tue,  1 Mar 2022 07:24:44 -0800 (PST)
-Date:   Tue, 01 Mar 2022 15:24:41 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314678BE0C;
+        Tue,  1 Mar 2022 07:24:45 -0800 (PST)
+Date:   Tue, 01 Mar 2022 15:24:42 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020; t=1646148283;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
@@ -23,12 +23,12 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Hd7tXxubAvDRFWkEM5saPUusFfGJxYdpuYbN9VmGSls=;
-        b=q/T3tpMIR+haeZEP6OOIVUp1atGeX715n3DmaXQyWQA5dH/abc9MnRW5bvEF+ImptPR28S
-        kTw6hwQ+snJsA0xwkcdaiXVhf5j7kkLkhA0nc+Kvut2IwZHVE3GvhKbLOYqTRB0GE7wiPm
-        OtSv42VulVcwKXHMpFZyiSK0GyKjnht470r9nPLdpkNORoz7t8mfpC62vgs8II/H9C0P5a
-        66AgASJ/lOrhmK9QpsOovQA2bg+DOXWeLiyO24/3GIGc3ZblvHiErsCV+DBQgDRXnXKltP
-        qembwS4d6oPoNwa16UpxXuwFFwHIgpMuhKoppdqNMVMSdydAi2JPfsxg1P9A/A==
+        bh=FgqIQu/w7rPa846Zp4oSmI/zW0SECYHzIYadGlqu5zk=;
+        b=d5IXsbOZoVt/BSJTQWDM38vvY91ni2GoMV8zbx+QgWkuIniAKffab0aVZ7048vSekwn+9C
+        07lEoObHXL0R9Cla5n+4xRnbcDAPIrCka/tFDKqWxgEmJaQK/y5rWZnJKpfsrS+hfuEjKu
+        rhInbOISCoxbu3zB1/qFcr6VSM+bejbgBw4RHTf7bcwk8102Im/J6hNhQgsHasMXlGj3u/
+        LQS+iLh/UofzC9fyqeCmxE8kbkYMSuGXxsgCRGlBNidt6V9zRtEXj3fRu+4zt93xgaKMcG
+        KQk4IB2f2VRApPR/q91wtU7OMUag7/0tll8hdo4+9JA3qY33fZ2bsLNSGN/s7Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
         s=2020e; t=1646148283;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
@@ -36,21 +36,23 @@ DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Hd7tXxubAvDRFWkEM5saPUusFfGJxYdpuYbN9VmGSls=;
-        b=P5tYTrBvIPxZz6qWpH8M/zUh1qtF5WPO1XoHOdjWKNz2Qv1iPAZZKj3NUcOw+fBCAeYAAK
-        SFEUKRxaF8iobvCg==
+        bh=FgqIQu/w7rPa846Zp4oSmI/zW0SECYHzIYadGlqu5zk=;
+        b=kBGbKwr13l37fO2RCTUeTCVImqECI71rmuR/CRXRRa9KQpP6+16lAx/Glb4gVEOOAzd0R/
+        MLeMgOAN8xJI1jAA==
 From:   "tip-bot2 for Chengming Zhou" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: sched/core] sched/cpuacct: Optimize away RCU read lock
-Cc:     "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Chengming Zhou <zhouchengming@bytedance.com>, x86@kernel.org,
+Subject: [tip: sched/core] sched/cpuacct: Fix charge percpu cpuusage
+Cc:     Minye Zhu <zhuminye@bytedance.com>,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Tejun Heo <tj@kernel.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220220051426.5274-2-zhouchengming@bytedance.com>
-References: <20220220051426.5274-2-zhouchengming@bytedance.com>
+In-Reply-To: <20220220051426.5274-1-zhouchengming@bytedance.com>
+References: <20220220051426.5274-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Message-ID: <164614828189.16921.12676564993932566366.tip-bot2@tip-bot2>
+Message-ID: <164614828279.16921.6828134750682486610.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -61,63 +63,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the sched/core branch of tip:
 
-Commit-ID:     dc6e0818bc9a0336d9accf3ea35d146d72aa7a18
-Gitweb:        https://git.kernel.org/tip/dc6e0818bc9a0336d9accf3ea35d146d72aa7a18
+Commit-ID:     248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd
+Gitweb:        https://git.kernel.org/tip/248cc9993d1cc12b8e9ed716cc3fc09f6c3517dd
 Author:        Chengming Zhou <zhouchengming@bytedance.com>
-AuthorDate:    Sun, 20 Feb 2022 13:14:25 +08:00
+AuthorDate:    Sun, 20 Feb 2022 13:14:24 +08:00
 Committer:     Peter Zijlstra <peterz@infradead.org>
-CommitterDate: Tue, 01 Mar 2022 16:18:38 +01:00
+CommitterDate: Tue, 01 Mar 2022 16:18:37 +01:00
 
-sched/cpuacct: Optimize away RCU read lock
+sched/cpuacct: Fix charge percpu cpuusage
 
-Since cpuacct_charge() is called from the scheduler update_curr(),
-we must already have rq lock held, then the RCU read lock can
-be optimized away.
+The cpuacct_account_field() is always called by the current task
+itself, so it's ok to use __this_cpu_add() to charge the tick time.
 
-And do the same thing in it's wrapper cgroup_account_cputime(),
-but we can't use lockdep_assert_rq_held() there, which defined
-in kernel/sched/sched.h.
+But cpuacct_charge() maybe called by update_curr() in load_balance()
+on a random CPU, different from the CPU on which the task is running.
+So __this_cpu_add() will charge that cputime to a random incorrect CPU.
 
-Suggested-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Fixes: 73e6aafd9ea8 ("sched/cpuacct: Simplify the cpuacct code")
+Reported-by: Minye Zhu <zhuminye@bytedance.com>
 Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lore.kernel.org/r/20220220051426.5274-2-zhouchengming@bytedance.com
+Acked-by: Tejun Heo <tj@kernel.org>
+Link: https://lore.kernel.org/r/20220220051426.5274-1-zhouchengming@bytedance.com
 ---
- include/linux/cgroup.h | 2 --
- kernel/sched/cpuacct.c | 4 +---
- 2 files changed, 1 insertion(+), 5 deletions(-)
+ kernel/sched/cpuacct.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
-index 75c1514..9a109c6 100644
---- a/include/linux/cgroup.h
-+++ b/include/linux/cgroup.h
-@@ -791,11 +791,9 @@ static inline void cgroup_account_cputime(struct task_struct *task,
- 
- 	cpuacct_charge(task, delta_exec);
- 
--	rcu_read_lock();
- 	cgrp = task_dfl_cgroup(task);
- 	if (cgroup_parent(cgrp))
- 		__cgroup_account_cputime(cgrp, delta_exec);
--	rcu_read_unlock();
- }
- 
- static inline void cgroup_account_cputime_field(struct task_struct *task,
 diff --git a/kernel/sched/cpuacct.c b/kernel/sched/cpuacct.c
-index 3078005..f79f884 100644
+index 3d06c5e..3078005 100644
 --- a/kernel/sched/cpuacct.c
 +++ b/kernel/sched/cpuacct.c
-@@ -337,12 +337,10 @@ void cpuacct_charge(struct task_struct *tsk, u64 cputime)
- 	unsigned int cpu = task_cpu(tsk);
+@@ -334,12 +334,13 @@ static struct cftype files[] = {
+  */
+ void cpuacct_charge(struct task_struct *tsk, u64 cputime)
+ {
++	unsigned int cpu = task_cpu(tsk);
  	struct cpuacct *ca;
  
--	rcu_read_lock();
-+	lockdep_assert_rq_held(cpu_rq(cpu));
+ 	rcu_read_lock();
  
  	for (ca = task_ca(tsk); ca; ca = parent_ca(ca))
- 		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
--
--	rcu_read_unlock();
- }
+-		__this_cpu_add(*ca->cpuusage, cputime);
++		*per_cpu_ptr(ca->cpuusage, cpu) += cputime;
  
- /*
+ 	rcu_read_unlock();
+ }
