@@ -2,148 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 505B5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF29EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233136AbiCAHwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:52:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56004 "EHLO
+        id S233133AbiCAHxU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:53:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232923AbiCAHwG (ORCPT
+        with ESMTP id S229658AbiCAHxT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:52:06 -0500
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939FB7E597
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:51:25 -0800 (PST)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4K78Xb2Zb5zBrMb;
-        Tue,  1 Mar 2022 15:49:35 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Tue, 1 Mar 2022 15:51:23 +0800
-Subject: Re: [PATCH -V13 2/3] NUMA balancing: optimize page placement for
- memory tiering system
-To:     "Huang, Ying" <ying.huang@intel.com>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        Feng Tang <feng.tang@intel.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Michal Hocko <mhocko@suse.com>,
-        Rik van Riel <riel@surriel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
-        Wei Xu <weixugc@google.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Shakeel Butt <shakeelb@google.com>,
-        zhongjiang-ali <zhongjiang-ali@linux.alibaba.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Andrew Morton <akpm@linux-foundation.org>
-References: <20220221084529.1052339-1-ying.huang@intel.com>
- <20220221084529.1052339-3-ying.huang@intel.com>
- <4652446e-2089-a3c4-fbdb-321322887392@huawei.com>
- <874k4i2mp5.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <d777f1d7-7649-72be-8b77-420f17e35c0f@huawei.com>
-Date:   Tue, 1 Mar 2022 15:51:22 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Tue, 1 Mar 2022 02:53:19 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E8DF3E0FD;
+        Mon, 28 Feb 2022 23:52:36 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id p9so18993671wra.12;
+        Mon, 28 Feb 2022 23:52:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QgCQToL8Lxm+3TwetMYVdeOe6DqGsRMNEoAu1Q0sX+Q=;
+        b=Msr+Hdu9PMBLEomg31EkVjWkx3w3yOPysT2gAqSsy1Q8nTjFwVq5fEbEWtj3XQfw3Z
+         wMwbYkeUhIY4R3e6edyqcz31O0ayYBQBeTF9mfI0KdFDK4ix/14+r91r9UN2lMhMgIUo
+         tDRCl2FLV/pL+h6THIresY/D+6F9qhrlKH9j+cwyWurGztms0gn39cBZKr2FJ0hC6JqC
+         JYlnREcZjjSoUNB+nTruURcr8p4TR3yf18qqtGf7vf/VdB/OHqtftki4oYuae8/SztBA
+         SFPvyV2QxBecnvHvAvu9Uunxik32gNB5/6isELdv+ooSqK8z2SLFe0d9Sr9bpY4QBiu7
+         31Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QgCQToL8Lxm+3TwetMYVdeOe6DqGsRMNEoAu1Q0sX+Q=;
+        b=yurCVAHy7QY3Eya/sgx2LpQjIHNNHon9gP5cRrokAZKba2D4e6jgEPrNwetYD1Hrzx
+         9IXDVyXaKe5gKOBgHSXIPiLwJjKPMgfejkn7rX/MhIBQq1t1cjUCk9VG3VtZ6iSMMzyD
+         Sb9Apzm9RnLqtzTT8kNvSHRvLWQC1uC4iX7wKcyNorUXSAxiy9myIY+9kxtC+gKEhwuW
+         tRH53UVsMvi/WVLZpTg0ocujX3EqbfDV63Y+/Vkp8CDIte5WUWA36ugqSuv/hGe5PCxr
+         T4nApqFPusEoqtw66rz19zaxxi4dhtn/+o45A0kz7g0LkRGj6nwRfNCITxc64hQTkLJO
+         EyBw==
+X-Gm-Message-State: AOAM531BoLvZIWPVsDyejONcVMyljBxnTPOAQg4oOJYLsjHeujIHvYb0
+        UGhh7aVUSv6O0gE+FANS5lc=
+X-Google-Smtp-Source: ABdhPJzVpzmSMCRiuFoBWFG4z44NNPbssCQl1YdBpK/b+IG5izDPFtRvAM2Rl+lb0blw3AIeZ7Vk3Q==
+X-Received: by 2002:a05:6000:8d:b0:1ed:9ed7:c915 with SMTP id m13-20020a056000008d00b001ed9ed7c915mr18482884wrx.543.1646121154834;
+        Mon, 28 Feb 2022 23:52:34 -0800 (PST)
+Received: from [192.168.2.177] ([207.188.167.132])
+        by smtp.gmail.com with ESMTPSA id n10-20020a5d598a000000b001efab095615sm7602985wri.29.2022.02.28.23.52.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Feb 2022 23:52:34 -0800 (PST)
+Message-ID: <95f33dbd-4388-20ec-1e4c-ac323de9d18a@gmail.com>
+Date:   Tue, 1 Mar 2022 08:52:33 +0100
 MIME-Version: 1.0
-In-Reply-To: <874k4i2mp5.fsf@yhuang6-desk2.ccr.corp.intel.com>
-Content-Type: text/plain; charset="windows-1252"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 0/2] Add PMIC wrapper support for Mediatek MT8186 SoC
+ IC
 Content-Language: en-US
+To:     Johnson Wang <johnson.wang@mediatek.com>, robh+dt@kernel.org
+Cc:     angelogioacchino.delregno@collabora.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220207083034.15327-1-johnson.wang@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220207083034.15327-1-johnson.wang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/3/1 14:47, Huang, Ying wrote:
-> Miaohe Lin <linmiaohe@huawei.com> writes:
-> 
->> On 2022/2/21 16:45, Huang Ying wrote:
->>> With the advent of various new memory types, some machines will have
->>> multiple types of memory, e.g. DRAM and PMEM (persistent memory).  The
->>> memory subsystem of these machines can be called memory tiering
->>> system, because the performance of the different types of memory are
->>> usually different.
->>>
->>> In such system, because of the memory accessing pattern changing etc,
->>> some pages in the slow memory may become hot globally.  So in this
->>> patch, the NUMA balancing mechanism is enhanced to optimize the page
->>> placement among the different memory types according to hot/cold
->>> dynamically.
->>>
->>> In a typical memory tiering system, there are CPUs, fast memory and
->>> slow memory in each physical NUMA node.  The CPUs and the fast memory
->>> will be put in one logical node (called fast memory node), while the
->>> slow memory will be put in another (faked) logical node (called slow
->>> memory node).  That is, the fast memory is regarded as local while the
->>> slow memory is regarded as remote.  So it's possible for the recently
->>> accessed pages in the slow memory node to be promoted to the fast
->>> memory node via the existing NUMA balancing mechanism.
->>>
->>> The original NUMA balancing mechanism will stop to migrate pages if
->>> the free memory of the target node becomes below the high watermark.
->>> This is a reasonable policy if there's only one memory type.  But this
->>> makes the original NUMA balancing mechanism almost do not work to
->>> optimize page placement among different memory types.  Details are as
->>> follows.
->>>
->>> It's the common cases that the working-set size of the workload is
->>> larger than the size of the fast memory nodes.  Otherwise, it's
->>> unnecessary to use the slow memory at all.  So, there are almost
->>> always no enough free pages in the fast memory nodes, so that the
->>> globally hot pages in the slow memory node cannot be promoted to the
->>> fast memory node.  To solve the issue, we have 2 choices as follows,
->>>
->>> a. Ignore the free pages watermark checking when promoting hot pages
->>>    from the slow memory node to the fast memory node.  This will
->>>    create some memory pressure in the fast memory node, thus trigger
->>>    the memory reclaiming.  So that, the cold pages in the fast memory
->>>    node will be demoted to the slow memory node.
->>>
->>> b. Make kswapd of the fast memory node to reclaim pages until the free
->>>    pages are a little more than the high watermark (named as promo
->>>    watermark).  Then, if the free pages of the fast memory node reaches
->>>    high watermark, and some hot pages need to be promoted, kswapd of the
->>>    fast memory node will be waken up to demote more cold pages in the
->>>    fast memory node to the slow memory node.  This will free some extra
->>>    space in the fast memory node, so the hot pages in the slow memory
->>>    node can be promoted to the fast memory node.
->>>
->>> The choice "a" may create high memory pressure in the fast memory
->>> node.  If the memory pressure of the workload is high, the memory
->>> pressure may become so high that the memory allocation latency of the
->>> workload is influenced, e.g. the direct reclaiming may be triggered.
->>>
->>> The choice "b" works much better at this aspect.  If the memory
->>> pressure of the workload is high, the hot pages promotion will stop
->>> earlier because its allocation watermark is higher than that of the
->>
->> Many thanks for your path. The patch looks good to me but I have a question.
->> WMARK_PROMO is only used inside pgdat_balanced when NUMA_BALANCING_MEMORY_TIERING
->> is set. So its allocation watermark seems to be as same as the normal memory
->> allocation. How should I understand the above sentence? Am I miss something?
-> 
-> Before allocating pages for promotion, the watermark of the fast node
-> will be checked (please refer to migrate_balanced_pgdat()).  If the
-> watermark is going to be lower than the high watermark, promotion will
-> abort.
 
-I see. The hot pages promotion watermark is "nr_migrate_pages" more than that of the
-normal memory allocation not "_watermark[WMARK_PROMO] - _watermark[WMARK_HIGH]".
 
-Many thanks for your kindly explanation. :)
-
+On 07/02/2022 09:30, Johnson Wang wrote:
+> This series add PMIC wrapper support for Mediatek MT8186 SoC IC
 > 
-> Best Regards,
-> Huang, Ying
-> .
+> Changes since v2:
+> - Replace meaningless suffix _V2 with _MT8186 because
+>    these IPs are only for MT8186 SoC.
+> - Remove not used capability PWRAP_CAP_MONITOR_V2.
+> 
+> Changes since v1:
+> - Fix the conditional logic in pwrap_probe() function.
+> 
+> Johnson Wang (2):
+>    soc: mediatek: pwrap: add pwrap driver for MT8186 SoC
+>    dt-bindings: mediatek: add compatible for MT8186 pwrap
+> 
+>   .../bindings/soc/mediatek/pwrap.txt           |  1 +
+>   drivers/soc/mediatek/mtk-pmic-wrap.c          | 71 +++++++++++++++++++
+>   2 files changed, 72 insertions(+)
 > 
 
+Series applied, thanks!
