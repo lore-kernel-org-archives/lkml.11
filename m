@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:24:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC87C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235549AbiCAUZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:25:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
+        id S237539AbiCAUZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:25:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238621AbiCAUXm (ORCPT
+        with ESMTP id S238661AbiCAUXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:23:42 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D87A2505;
-        Tue,  1 Mar 2022 12:20:49 -0800 (PST)
+        Tue, 1 Mar 2022 15:23:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D7FA4195;
+        Tue,  1 Mar 2022 12:20:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 197F0CE1EA2;
-        Tue,  1 Mar 2022 20:20:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE818C340EF;
-        Tue,  1 Mar 2022 20:20:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 366A5B81B0E;
+        Tue,  1 Mar 2022 20:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DC2C340EF;
+        Tue,  1 Mar 2022 20:20:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166044;
-        bh=dPBOPuj9A9oPdCJrN4XT+8hW5Fqmx4w1Ksp9fQhsW6o=;
+        s=k20201202; t=1646166017;
+        bh=PkjgPIixe5ICMmLEPpIhMS9c1PB8nIr0J/ISNzW9sg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hnS5dT6XgCGni/k1ceu9OhDSrdRh5jOr+ihBxbtn4sOj1nj+735XO0dftooqjSzb3
-         roUy0a8EWv12UA5dUx6kagx4qbF/0eQ3sQ5GnpweOWRLwxziXShKm9PncHP9XxOlzn
-         1MHAC8jJ/EkWkOO/KJ9whK+p0/2EXvZPnKKONxQF3ve4FsY4D0XTJNfrEvW+lEZisC
-         xe8QST1EaBHGLLg/L5AbOv6XbTMPT46ZY2zoZqJCuoG6Hg/aSHd5OA56rK0oFljkL+
-         7TsT10FCgJ5HFMxEdRxAWZOzno7nP6aLWR/Ad4Od+pL3C9UQnvY35g5s3JWjfm/JcP
-         whWrm6ChiBlOw==
+        b=d/AJk41MS3CfhsRXafIPlv2prJM/9RQsVnuK/F1vzuJP/bwTA8KJJsFrTqgHXGL9c
+         XFnKqa0fGRAzcbtdalq3D2Zdi4NjJru2A6R9NHkGhChISd1FsFgYZ7U6Q8tes0FYmY
+         C+RS+qkpODTnZKaqTcl1OV9UvLd9bqrwBHmVxSnawuIv15eJsfEv0+3w41mRuT9GZy
+         OJICJ/1PwgGorB313fDxqWKghqNOmQNvUs3vS99owGSsUpcCGl61w+6jEYw1ajzTkm
+         9l8q5nuzjeMnB+P19D7c2ki5qANMTdJQNfz460z03dO8vvTWkbfYdCOucjkO0I77/e
+         zuJl3IgD08/Ow==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, gthelen@google.com,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 11/11] selftests/memfd: clean up mapping in mfd_fail_write
-Date:   Tue,  1 Mar 2022 15:19:44 -0500
-Message-Id: <20220301201951.19066-11-sashal@kernel.org>
+Cc:     Shreeya Patel <shreeya.patel@collabora.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>, linux-gpio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 05/11] gpio: Return EPROBE_DEFER if gc->to_irq is NULL
+Date:   Tue,  1 Mar 2022 15:19:38 -0500
+Message-Id: <20220301201951.19066-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301201951.19066-1-sashal@kernel.org>
 References: <20220301201951.19066-1-sashal@kernel.org>
@@ -55,55 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Kravetz <mike.kravetz@oracle.com>
+From: Shreeya Patel <shreeya.patel@collabora.com>
 
-[ Upstream commit fda153c89af344d21df281009a9d046cf587ea0f ]
+[ Upstream commit ae42f9288846353982e2eab181fb41e7fd8bf60f ]
 
-Running the memfd script ./run_hugetlbfs_test.sh will often end in error
-as follows:
+We are racing the registering of .to_irq when probing the
+i2c driver. This results in random failure of touchscreen
+devices.
 
-    memfd-hugetlb: CREATE
-    memfd-hugetlb: BASIC
-    memfd-hugetlb: SEAL-WRITE
-    memfd-hugetlb: SEAL-FUTURE-WRITE
-    memfd-hugetlb: SEAL-SHRINK
-    fallocate(ALLOC) failed: No space left on device
-    ./run_hugetlbfs_test.sh: line 60: 166855 Aborted                 (core dumped) ./memfd_test hugetlbfs
-    opening: ./mnt/memfd
-    fuse: DONE
+Following explains the race condition better.
 
-If no hugetlb pages have been preallocated, run_hugetlbfs_test.sh will
-allocate 'just enough' pages to run the test.  In the SEAL-FUTURE-WRITE
-test the mfd_fail_write routine maps the file, but does not unmap.  As a
-result, two hugetlb pages remain reserved for the mapping.  When the
-fallocate call in the SEAL-SHRINK test attempts allocate all hugetlb
-pages, it is short by the two reserved pages.
+[gpio driver] gpio driver registers gpio chip
+[gpio consumer] gpio is acquired
+[gpio consumer] gpiod_to_irq() fails with -ENXIO
+[gpio driver] gpio driver registers irqchip
+gpiod_to_irq works at this point, but -ENXIO is fatal
 
-Fix by making sure to unmap in mfd_fail_write.
+We could see the following errors in dmesg logs when gc->to_irq is NULL
 
-Link: https://lkml.kernel.org/r/20220219004340.56478-1-mike.kravetz@oracle.com
-Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Cc: Shuah Khan <shuah@kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+[2.101857] i2c_hid i2c-FTS3528:00: HID over i2c has not been provided an Int IRQ
+[2.101953] i2c_hid: probe of i2c-FTS3528:00 failed with error -22
+
+To avoid this situation, defer probing until to_irq is registered.
+Returning -EPROBE_DEFER would be the first step towards avoiding
+the failure of devices due to the race in registration of .to_irq.
+Final solution to this issue would be to avoid using gc irq members
+until they are fully initialized.
+
+This issue has been reported many times in past and people have been
+using workarounds like changing the pinctrl_amd to built-in instead
+of loading it as a module or by adding a softdep for pinctrl_amd into
+the config file.
+
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209413
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/memfd/memfd_test.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpio/gpiolib.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
-index c67d32eeb668e..290cec2a6a338 100644
---- a/tools/testing/selftests/memfd/memfd_test.c
-+++ b/tools/testing/selftests/memfd/memfd_test.c
-@@ -421,6 +421,7 @@ static void mfd_fail_write(int fd)
- 			printf("mmap()+mprotect() didn't fail as expected\n");
- 			abort();
- 		}
-+		munmap(p, mfd_def_size);
- 	}
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index abdf448b11a3d..6d7eb6a7570e1 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -3860,6 +3860,16 @@ int gpiod_to_irq(const struct gpio_desc *desc)
  
- 	/* verify PUNCH_HOLE fails */
+ 		return retirq;
+ 	}
++#ifdef CONFIG_GPIOLIB_IRQCHIP
++	if (gc->irq.chip) {
++		/*
++		 * Avoid race condition with other code, which tries to lookup
++		 * an IRQ before the irqchip has been properly registered,
++		 * i.e. while gpiochip is still being brought up.
++		 */
++		return -EPROBE_DEFER;
++	}
++#endif
+ 	return -ENXIO;
+ }
+ EXPORT_SYMBOL_GPL(gpiod_to_irq);
 -- 
 2.34.1
 
