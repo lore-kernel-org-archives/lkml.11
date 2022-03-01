@@ -2,179 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 224EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB15C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:55:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234353AbiCAKx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 05:53:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37424 "EHLO
+        id S233970AbiCAKzp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 05:55:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232098AbiCAKxY (ORCPT
+        with ESMTP id S231251AbiCAKzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 05:53:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1721817061
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 02:52:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646131963;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4B4atLkDITMoub+rHSsBV+3F1nWD6FbRljQkexCK2/s=;
-        b=RSa+V1hvMpOXqwjrattZE6zCO8uU1bH6kopB+caofR0j5EVES9igjsKUGokd8pvkF/cX3I
-        7qoqwWIvskGgq2URGsQ3LYXOHErN/e2ftFQNGE0SU1fTQf/whhnT/LszSbYh7hyuCVe0yZ
-        EC/tdsOMI4E9Xs2ltcuBY+RGX30zHjo=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-465-XKWNAxuZN5CakOyqXT0WkQ-1; Tue, 01 Mar 2022 05:52:42 -0500
-X-MC-Unique: XKWNAxuZN5CakOyqXT0WkQ-1
-Received: by mail-wm1-f72.google.com with SMTP id ay7-20020a05600c1e0700b003813d7a7d03so1035754wmb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 02:52:41 -0800 (PST)
+        Tue, 1 Mar 2022 05:55:43 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104E42D1CD
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 02:55:01 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id r10so19865729wrp.3
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 02:55:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=RC9oQAYhwzqDcFJdvw95JaPm8X/ixpz4G02IlVUuRQA=;
+        b=fYMVAihAYq9J0SIqjc+WIOtnDT9inS98fW1fEi2Sn7ghMnAI3y501AUdeK0R7blrUp
+         0/CzDMOfXmbb80tqsD1JDwEQEQP1Qh2s7zs0K7f0tNTVS6JrKl3ecELo5nx5seZBwdK9
+         vimGyhAwh/LYebJwbHA4Arcm5BmPeEsFLJemnowLmgAGOAWL7CLRKIOXAOmFWoMYREKi
+         4D5KcCD9faaxJIMc6EXKsN/8k3vN7ip7tcOFf8mCfX35R4RqMZGH8fUsTBlUuZtZAyZv
+         CgB9l4S31auUQUUfGqDIj/536k5mlGOJJf5Q1qNYme3xdjdar0ZUR698ZnnbUX1H+b1/
+         4v6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=4B4atLkDITMoub+rHSsBV+3F1nWD6FbRljQkexCK2/s=;
-        b=hgrKqj4oNJgHIfsQq5IHxs6kqho5VRRR2h1sknalmrlaaVBY0BJdlNgmZDfLkOLa9k
-         JBxECgJhwqUVg65GZvOM2cQsB/p6Rxc0WRTY5c0Q3NKudjFfbxOySeeYtIdM2eRHMhAO
-         96ePPlgIs7lI1cFyFrSoDlZ/qG/OzYQp0j1Co1RkUZoGW8GBDuOUWKPSLCc/aYnKscwr
-         UQU4puy/HJTNsfTW1to6GH0POLMFahHZfjDAU9woIOwSLVbZnX0W6OhXecreQ3+chkDa
-         Ie8wN6pG4YbV9DE4e0O83dnyixkdfD/5k/fn2e4KsU7WfrBbO3VieRe15LT1sj/IfcrZ
-         psFw==
-X-Gm-Message-State: AOAM532RZWVGVfLUm3OEo4s0QTw9EoheJgQ5RPNxC6EbNQxG4MZ1m/2L
-        TIiSlOubXOheDlNfKo1AgIDJ5/UcHTKZAZEOVvafEqdeE2ARPFuZilevIRL3uhCBzyo4TcvknWQ
-        NbEOEayCptePIafUbkrzz1CWq
-X-Received: by 2002:a05:600c:154b:b0:381:8148:64d with SMTP id f11-20020a05600c154b00b003818148064dmr3423712wmg.98.1646131960950;
-        Tue, 01 Mar 2022 02:52:40 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxKX4vaY/hTWQjHshhYhaGbJBz9CeZyOjB0CrVVscgUibX1V0+GjJh9k+/nu5TSLOeRT5X6WQ==
-X-Received: by 2002:a05:600c:154b:b0:381:8148:64d with SMTP id f11-20020a05600c154b00b003818148064dmr3423698wmg.98.1646131960696;
-        Tue, 01 Mar 2022 02:52:40 -0800 (PST)
-Received: from ?IPv6:2a0c:5a80:1b14:b500:abb:f9d1:7bc2:3db8? ([2a0c:5a80:1b14:b500:abb:f9d1:7bc2:3db8])
-        by smtp.gmail.com with ESMTPSA id f11-20020a7bcc0b000000b0037e0c362b6dsm2067953wmh.31.2022.03.01.02.52.39
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=RC9oQAYhwzqDcFJdvw95JaPm8X/ixpz4G02IlVUuRQA=;
+        b=YH9Wv5BXtmTRWLB1F/T7ff3NyyRZa8epNdBW/YvL+0USAwSAaFayYThFNUJnDb4DhC
+         HImwpfSzdvAsHHP9hUoXxBjWXavuVusTDJhHXfLWquRxbiTJti20+P46GtQ/EyfC+lVd
+         XM9z0W4h1OHpKt5Xit/JySxTajKRrigrXlkC20w8TXg4h2vYv6/wjg2l23uV+/DsvRM1
+         VDhA1tLH4iBZELpBjJO81KjbAnsR5BiRVX05EAiec7dcKhXq9M0gb/d+BeDuTQYxI6o9
+         eqRe4Y9dOfQM2ncGFxeid4MMmEeUZsfbUDycjZ/A4xW8W9pZoi0rhufnTiAdtw5W13Az
+         mYwQ==
+X-Gm-Message-State: AOAM533HjYqkL4Nm4WVNN5eegjiOKd8Pt++MyjtwDLVq3baVd+M2Rq35
+        29P7667KaftM/R243CE0HqJ8Mg==
+X-Google-Smtp-Source: ABdhPJzdYMhou6o5WrZ52n2EdXq1yT7EjObFb+PF0Vlfb5l46Xdgw8+pUJp/NLWi38XzB8Ln5nF/ug==
+X-Received: by 2002:adf:a512:0:b0:1ea:9656:958b with SMTP id i18-20020adfa512000000b001ea9656958bmr18797120wrb.241.1646132099524;
+        Tue, 01 Mar 2022 02:54:59 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id bg20-20020a05600c3c9400b0037fa5c422c8sm2438734wmb.48.2022.03.01.02.54.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 02:52:40 -0800 (PST)
-Message-ID: <b604526d3186f6cd3da189abb70bd1ad9a6105c5.camel@redhat.com>
-Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        rostedt@goodmis.org, paulmck@kernel.org
-Cc:     mingo@redhat.com, linux-kernel@vger.kernel.org, mtosatti@redhat.com
-Date:   Tue, 01 Mar 2022 11:52:38 +0100
-In-Reply-To: <137d3573-051f-5374-70d6-cc99b44d00da@kernel.org>
-References: <20220228141423.259691-1-nsaenzju@redhat.com>
-         <137d3573-051f-5374-70d6-cc99b44d00da@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Tue, 01 Mar 2022 02:54:59 -0800 (PST)
+Date:   Tue, 1 Mar 2022 10:54:57 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Greg KH <greg@kroah.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alistair Francis <alistair@alistair23.me>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: linux-next: manual merge of the char-misc tree with the mfd tree
+Message-ID: <Yh37gTCPaESkgNzV@google.com>
+References: <20220228193928.3ec6ee98@canb.auug.org.au>
+ <YhyPfcjJtIKNQtF8@google.com>
+ <Yhyn72NO/roH1gA8@kroah.com>
+ <YhzENKPtY+WOp566@google.com>
+ <Yh09/r/nT2LeE82n@kroah.com>
+ <Yh3pZXQPP9kmcSSx@google.com>
+ <Yh325S5PyPiJf4F5@kroah.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yh325S5PyPiJf4F5@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-02-28 at 21:00 +0100, Daniel Bristot de Oliveira wrote:
-> On 2/28/22 15:14, Nicolas Saenz Julienne wrote:
-> > At the moment running osnoise on an isolated CPU and a PREEMPT_RCU
-> > kernel might have the side effect of extending grace periods too much.
-> > This will eventually entice RCU to schedule a task on the isolated CPU
-> > to end the overly extended grace period, adding unwarranted noise to the
-> > CPU being traced in the process.
+On Tue, 01 Mar 2022, Greg KH wrote:
+
+> On Tue, Mar 01, 2022 at 09:37:41AM +0000, Lee Jones wrote:
+> > On Mon, 28 Feb 2022, Greg KH wrote:
 > > 
-> > So, check if we're the only ones running on this isolated CPU and that
-> > we're on a PREEMPT_RCU setup. If so, let's force quiescent states in
-> > between measurements.
+> > > On Mon, Feb 28, 2022 at 12:46:44PM +0000, Lee Jones wrote:
+> > > > On Mon, 28 Feb 2022, Greg KH wrote:
+> > > > 
+> > > > > On Mon, Feb 28, 2022 at 09:01:49AM +0000, Lee Jones wrote:
+> > > > > > On Mon, 28 Feb 2022, Stephen Rothwell wrote:
+> > > > > > 
+> > > > > > > Hi all,
+> > > > > > > 
+> > > > > > > Today's linux-next merge of the char-misc tree got a conflict in:
+> > > > > > 
+> > > > > > I did ask for this *not* to be merged when it was in -testing.
+> > > > > 
+> > > > > Sorry, I missed that, I saw your ack on the patch so that's why I took
+> > > > > it.
+> > > > > 
+> > > > > > I'll follow-up with Greg.
+> > > > > 
+> > > > > Should I revert this from my tree?
+> > > > 
+> > > > I did try to catch it before a revert would have been required.
+> > > 
+> > > My fault.
+> > > 
+> > > > But yes, please revert it.
+> > > 
+> > > Will go do so now.
 > > 
-> > Non-PREEMPT_RCU setups don't need to worry about this as osnoise main
-> > loop's cond_resched() will go though a quiescent state for them.
+> > Thank you.
 > > 
-> > Note that this same exact problem is what extended quiescent states were
-> > created for. But adapting them to this specific use-case isn't trivial
-> > as it'll imply reworking entry/exit and dynticks/context tracking code.
+> > > > The Ack is not standard and should not be merged.
+> > > 
+> > > I do not understand this, what went wrong here?
 > > 
-> > Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
-> > ---
-> >  kernel/trace/trace_osnoise.c | 19 +++++++++++++++++++
-> >  1 file changed, 19 insertions(+)
+> > The "Ack" you saw was just a placeholder.
 > > 
-> > diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-> > index 870a08da5b48..4928358f6e88 100644
-> > --- a/kernel/trace/trace_osnoise.c
-> > +++ b/kernel/trace/trace_osnoise.c
-> > @@ -21,7 +21,9 @@
-> >  #include <linux/uaccess.h>
-> >  #include <linux/cpumask.h>
-> >  #include <linux/delay.h>
-> > +#include <linux/tick.h>
-> >  #include <linux/sched/clock.h>
-> > +#include <linux/sched/isolation.h>
-> >  #include <uapi/linux/sched/types.h>
-> >  #include <linux/sched.h>
-> >  #include "trace.h"
-> > @@ -1295,6 +1297,7 @@ static int run_osnoise(void)
-> >  	struct osnoise_sample s;
-> >  	unsigned int threshold;
-> >  	u64 runtime, stop_in;
-> > +	unsigned long flags;
-> >  	u64 sum_noise = 0;
-> >  	int hw_count = 0;
-> >  	int ret = -1;
-> > @@ -1386,6 +1389,22 @@ static int run_osnoise(void)
-> >  					osnoise_stop_tracing();
-> >  		}
-> >  
-> > +		/*
-> > +		 * Check if we're the only ones running on this nohz_full CPU
-> > +		 * and that we're on a PREEMPT_RCU setup. If so, let's fake a
-> > +		 * QS since there is no way for RCU to know we're not making
-> > +		 * use of it.
-> > +		 *
-> > +		 * Otherwise it'll be done through cond_resched().
-> > +		 */
-> > +		if (IS_ENABLED(CONFIG_PREEMPT_RCU) &&
-> > +		    !housekeeping_cpu(raw_smp_processor_id(), HK_FLAG_MISC) &&
+> > When I provided it, I would have done so like this:
+> > 
+> >     "For my own reference (apply this as-is to your sign-off block):
+> > 
+> >      Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>"
+> > 
+> > REF: https://lore.kernel.org/all/YQ0fYe531yCyP4pf@google.com/
+> > 
+> > The majority of maintainers I regularly work with know this to mean
+> > that the set is due to be routed via MFD (with a subsequent
+> > pull-request to an immutable branch to follow), since MFD is often
+> > the centre piece (parent) of the patch-sets I deal with.
+> > 
+> > I appreciate that this could cause confusion, but I'm not sure of a
+> > better way to convey this information such that it survives through
+> > various submission iterations.
 > 
-> Does this restrict to only isolcpus cpus?
-
-nohz_full CPUs actually, IIUC HK_FLAG_MISC isn't set if isolcpus is used, which
-is deprecated anyway.
-
-> what if this CPU was isolated via other methods?
-
-osnoise with an uncontested FIFO priority for example? I believe in that case
-RCU will start throwing "rcu_preempt detected stalls" style warnings. As it
-won't be able to preempt the osnoise CPU to force the grace period ending.
-
-I see your point though, this would also help in that situation. We could maybe
-relax the entry barrier to rcu_momentary_dyntick_idle(). I think it's safe to
-call it regardless of nohz_full/tick state for most cases, I just wanted to
-avoid the overhead. The only thing that worries me is PREEMPT_RT and its
-rt_spinlocks, which can be preempted.
-
-> > +		    tick_nohz_tick_stopped()) {
-> > +			local_irq_save(flags);
+> But what else is another maintainer supposed to think if they see that
+> ack on the patch?  Ignore it?  I took that to mean "this is good from a
+> mfd-point-of-view" which meant it can go through whatever tree it is
+> supposed to.
 > 
-> This code is always with interrupts enabled, so local_irq_disable()/enable()
-> should be enough (and faster).
+> Are you wanting this individual patch to go through your tree now only?
+> If so, you should say that by NOT acking it :)
 
-Noted.
+It's not quite as easy as that.
 
-> > +			rcu_momentary_dyntick_idle();
-> > +			local_irq_restore(flags);
-> > +		}
-> 
-> Question, if we set this once, we could avoid setting it on every loop unless we
-> have a preemption from another thread, right?
+It wouldn't be fair to the contributor to start reviews once all the
+other patches in the set are ready to be merged.  So how would I
+indicate that the MFD part is ready, fully expecting some of the other
+patches in the set to be reworked and subsequent revisions are to be
+submitted?
 
-This tells RCU the CPU went through a quiescent state, which removes it from
-the current grace period accounting. It's different from an extended quiescent
-state, which fully disables the CPU from RCU's perspective.
+This method actually works really well the majority of the time, and
+has done for a number of years.  However, I am always willing to
+improve on my processes given the opportunity.
 
-We don't need to do it on every iteration, but as Paul explained in the mail
-thread it has to happen at least every ~20-30ms.
+> How do you want to see this merged?
 
-Thanks!
+The plan is for the whole set to be merged together via MFD.
+
+All of the other maintainers have now Acked, so it's ready to go:
+
+  https://lore.kernel.org/all/20220131133049.77780-1-robert.marko@sartura.hr/
+
+Looking at the diff, I'm not entirely sure why you took it in the
+first place?
 
 -- 
-Nicolás Sáenz
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
