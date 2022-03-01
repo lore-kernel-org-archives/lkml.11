@@ -2,116 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E28C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 19:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55EE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 19:46:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237238AbiCATqg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 14:46:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
+        id S237262AbiCATqu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 14:46:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237261AbiCATqe (ORCPT
+        with ESMTP id S237256AbiCATqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 14:46:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648096D182;
-        Tue,  1 Mar 2022 11:45:52 -0800 (PST)
+        Tue, 1 Mar 2022 14:46:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AA16CA51
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 11:46:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D3F0B81CB6;
-        Tue,  1 Mar 2022 19:45:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0303C340EE;
-        Tue,  1 Mar 2022 19:45:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F875B81CB6
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 19:46:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B945BC340F1;
+        Tue,  1 Mar 2022 19:46:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646163949;
-        bh=TFMpz0Cc6VsyzxJzd5ZFpb3OuNzOkVyn05Sx0dNcIGw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FNr+IE5SdDf1bVYHRNpW2iGCJwTS6U3t1T/Cv+jDQdJzR+IPaauMFsRRf3dhMADh9
-         DC/Uj5WTJsPUMXmTvZC3EDLttaXsfz3ScmITAV068+6AC2DmnKaVPzg/TquS4u0m9R
-         nzK6CpUe/uPUPsiwytzl1Da+4vEmDtxJFRh/e5LiBHASSxfOd4lmFlL/CKcMQWs6sf
-         sarU/6MgR5i62e63aj38JxPVdwhVGCWDs1P5zDvLaz1IBUPBSD5i1V9jXJoANV0Syx
-         XifgWSYRrEsN058FteO2k7Oz8V6hhbuhFXbPjgXNFLe5BjJCabxIBOWVoJVh/as34b
-         1DZZyF/cXEdQg==
-Date:   Tue, 1 Mar 2022 20:45:46 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Tyrone Ting <warp5tw@gmail.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, semen.protsenko@linaro.org,
-        yangyicong@hisilicon.com, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, christophe.leroy@csgroup.eu,
-        lukas.bulwahn@gmail.com, olof@lixom.net, arnd@arndb.de,
-        digetx@gmail.com, andriy.shevchenko@linux.intel.com,
-        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 00/11] i2c: npcm: Bug fixes timeout, spurious
- interrupts
-Message-ID: <Yh536s/7bm6Xt6o3@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Tyrone Ting <warp5tw@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        avifishman70@gmail.com, tmaimon77@gmail.com, tali.perry1@gmail.com,
-        venture@google.com, yuenn@google.com, benjaminfair@google.com,
-        robh+dt@kernel.org, semen.protsenko@linaro.org,
-        yangyicong@hisilicon.com, jie.deng@intel.com, sven@svenpeter.dev,
-        bence98@sch.bme.hu, christophe.leroy@csgroup.eu,
-        lukas.bulwahn@gmail.com, olof@lixom.net, arnd@arndb.de,
-        digetx@gmail.com, andriy.shevchenko@linux.intel.com,
-        tali.perry@nuvoton.com, Avi.Fishman@nuvoton.com,
-        tomer.maimon@nuvoton.com, KWLIU@nuvoton.com, JJLIU0@nuvoton.com,
-        kfting@nuvoton.com, openbmc@lists.ozlabs.org,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220220035321.3870-1-warp5tw@gmail.com>
- <5d507fda-525e-4064-3add-0bb0cc23d016@canonical.com>
- <CACD3sJaXeWLu6=oLgxJcU9R+A1J+jB7xKaGcDFwYxof33yj17Q@mail.gmail.com>
- <5ce0f6a6-4a5f-4f25-3cc6-ab0f24bf15cf@canonical.com>
- <CACD3sJaWJMFgwzQgrHFV0KkkbJXzhgFx=umywxSrLszwP+hO2w@mail.gmail.com>
+        s=k20201202; t=1646163961;
+        bh=mr00tSNW5w0FpfgdGMhG7XczKch7qlvemvDq4iiSULE=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=tytK6x0cQP+Yl1Z/orNCK6wmIhpbZ4OpI9CNqKNjhJAPz1pbCtDWuM4I/rJBk0bEC
+         ICijPzPvxYVrSw/ENUt5cLwB293Dgi7P/d7HHTRQfwyI0hNMlrDI3SEpy787cMXUv9
+         vUf/4Im2aiWjxePQXmDcKwW0ylivFpBctp83CNRjf+/bso2Fi5zVmcihu5wJADfWNB
+         m4SPsyfnJCFpqLjaZnICDK0hJjzdjTHLCgTnW4jjK6LKSrvziJo1CXwOiBUP3Rd+Vt
+         dYKq3Xa83lmg8d2U7n6cIH9M9+ULVpBQLEwIeOPLwqO5ixokNISbSOJGej2sg7nz8g
+         7UzKA6okH82zA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 64E855C0440; Tue,  1 Mar 2022 11:46:01 -0800 (PST)
+Date:   Tue, 1 Mar 2022 11:46:01 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>
+Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>, rostedt@goodmis.org,
+        mingo@redhat.com, linux-kernel@vger.kernel.org, mtosatti@redhat.com
+Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
+Message-ID: <20220301194601.GT4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220228141423.259691-1-nsaenzju@redhat.com>
+ <137d3573-051f-5374-70d6-cc99b44d00da@kernel.org>
+ <b604526d3186f6cd3da189abb70bd1ad9a6105c5.camel@redhat.com>
+ <69e92bc6-0917-17e9-1b61-d884d30ba42c@kernel.org>
+ <20220301180509.GQ4285@paulmck-ThinkPad-P17-Gen-1>
+ <c3cf7c0c-27fe-4dfa-4249-a7e1747237a5@kernel.org>
+ <20220301185823.GS4285@paulmck-ThinkPad-P17-Gen-1>
+ <6fd678d8-58fc-5863-fd88-4c8335dd8b38@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ZzqmmcLTueXK0WfW"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CACD3sJaWJMFgwzQgrHFV0KkkbJXzhgFx=umywxSrLszwP+hO2w@mail.gmail.com>
+In-Reply-To: <6fd678d8-58fc-5863-fd88-4c8335dd8b38@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Mar 01, 2022 at 08:29:23PM +0100, Daniel Bristot de Oliveira wrote:
+> On 3/1/22 19:58, Paul E. McKenney wrote:
+> > On Tue, Mar 01, 2022 at 07:44:38PM +0100, Daniel Bristot de Oliveira wrote:
+> >> On 3/1/22 19:05, Paul E. McKenney wrote:
+> >>>> I see, as long as it costs < 1 us, I am ok. If it gets > 1us in a reasonably
+> >>>> fast machine, we start see HW noise where it does not exist, and that would
+> >>>> reduce the resolution of osnoise. AFAICS, it is not causing that problem, but we
+> >>>> need to make it as lightweight as possible.
+> >>> In the common case, it is atomically incrementing a local per-CPU counter
+> >>> and doing a store.  This should be quite cheap.
+> >>>
+> >>> The uncommon case is when the osnoise process was preempted or otherwise
+> >>> interfered with during a recent RCU read-side critical section and
+> >>> preemption was disabled around that critical section's outermost
+> >>> rcu_read_unlock().  This can be quite expensive.  But I would expect
+> >>> you to just not do this.  ;-)
+> >>
+> >> Getting the expensive call after a preemption is not a problem, it is a side
+> >> effect of the most costly preemption.
+> >>
+> >> It this case, we should "ping rcu" before reading the time to account the
+> >> overhead for the previous preemption which caused it.
+> >>
+> >> like (using the current code as example):
+> >>
+> >> ------------------------- %< -------------------------------
+> >> static u64
+> >> set_int_safe_time(struct osnoise_variables *osn_var, u64 *time)
+> >> {
+> >>         u64 int_counter;
+> >>
+> >>         do {
+> >>                 int_counter = local_read(&osn_var->int_counter);
+> >>
+> >> 		------------> HERE <-------------------------------------
+> >>
+> >>                 /* synchronize with interrupts */
+> >>                 barrier();
+> >>
+> >>                 *time = time_get();
+> >>
+> >>                 /* synchronize with interrupts */
+> >>                 barrier();
+> >>         } while (int_counter != local_read(&osn_var->int_counter));
+> >>
+> >>         return int_counter;
+> >> }
+> >> ------------------------- >% -------------------------------
+> >>
+> >> In this way anything that happens before this *time is accounted before it is
+> >> get. If anything happens while this loop is running, it will run again, so it is
+> >> safe to point to the previous case.
+> >>
+> >> We would have to make a copy of this function, and only use the copy for the
+> >> run_osnoise() case. A good name would be something in the lines of
+> >> set_int_safe_time_rcu().
+> >>
+> >> (Unless the expensive is < than 1us.)
+> > 
+> > The outermost rcu_read_unlock() could involve a call into the scheduler
+> > to do an RCU priority deboost, which I would imagine could be a bit
+> > expensive.  But I would expect you to configure the test in such a way
+> > that there was no need for RCU priority boosting.  For example, by making
+> > sure that the osnoise process's RCU readers were never preempted.
+> 
+> So, the noise will not be seeing in the call that Nicolas is doing. but in the
+> rcu_read_unlock() inside osnoise processes?
+> 
+> If that is the case, then the "noise" would already be accounted to the
+> previously preempted thread... and we should be fine then.
 
---ZzqmmcLTueXK0WfW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+It could be either at the rcu_read_unlock() itself, or, if preemption
+was disabled across that rcu_read_unlock(), at a subsequent point where
+preemption is enabled.  Which might amount to the same thing given that
+there won't be any preemption until preemption is enabled?
 
+> > Just out of curiosity, why is this running in the kernel rather than in
+> > userspace?  To focus only on kernel-centric noise sources?  Or are there
+> > people implementing real-time applications within the kernel?
+> 
+> It is in kernel because it allows me to sync the workload and the trace, getting
+> more (and more precise) information.
+> 
+> For example, I can read the "noise in time" and how many interrupts happened in
+> between two reads of the time, so I can look back in the trace to figure out
+> which sources of noise were the cause of the noise I am seeing - without false
+> positives. If no "interference" happened, I can safely say that it was a
+> hardware noise (this saves us time in the debug, no need to run hwlat - I run
+> two tools in one).
+> 
+> This all with a more cheap access to the data. I also use such information to
+> parse trace in kernel in a cheaper way, printing less info to the trace buffer.
 
-> I'll keep old code as fallback, if getting nuvoton,sys-mgr fails as
-> you point out.
+Fair enough!
 
-Yeah, fallback is much needed. And if you implement it, then you can
-also split the series into two. One for the DTS changes and one for the
-I2C changes. That would make upstreaming a lot easier.
+> But the idea is to see the noise for an user-space application as much as
+> possible (and no, I am not doing application in kernel... but I know people
+> doing it using a unikernel, but that is another story... a longer one... :-)).
 
+There have been people writing their applications in Linux kernel modules,
+or at least attempting to do so!  ;-)
 
---ZzqmmcLTueXK0WfW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmIed+oACgkQFA3kzBSg
-KbYcjRAAstcatZMriO8WYTkR7iql0Ykgsnc04dKlPRr6iwYtoyRTgOApX1Jp31Jr
-CbI0tKJgBjEwGrrXzkkVP02QIM9ojCZPXIrdV/ZmQ9dgAB3c0xfZ2uEeHAC+iv2p
-bx63ccy6tbX6UfFu2FeuS5qmYctOTNu4G0OghUErbqA3JlqSQHXaNIQEkFoL1iiw
-anPSYCvvBFJk0DELigsYqEMMuXVtfA+RrmfkMwmTjM1FDh9Q4EsiwEJTdu9Dajjt
-EYsNX0CTIZt/54jiBsgw1Y+9YYPOzk8vCsEn4dWYLYkb5aivX/jiuUupVwOI9Dsm
-FPQJB8CMf9kyD4awOGCzmjtUDDIlftz7+egbVr/P7ra1vkWiUWLuVtwLjIOmQ02N
-sekEy/RBJpmbPCY+1sMqWVkiz2Jzh0ZVNraPw84W9A/vImdz5eUO9zUiKYAmc5dk
-UqH4DNFXSUz1HXiQV0MFvMErR3BvnHo0aW2Yex0g41iEVVbt3NegzgVmCnQbvxWO
-8aqTaho3IMK6R9qprp+2m/F81hFYJmaLYG6axoMB6dRfYN0VJf7VY1fqOs4jxZVV
-poVwHHWgBvFFi27Oh3H/RZ+IaYwY52BOW+4953toW5pRMpXLj289svrTCIzToyGh
-f9P2fQeuCBeyiaplAlyxPbk2TdSjl8q2pcGcXzJdISRO8u4/In4=
-=ueuY
------END PGP SIGNATURE-----
-
---ZzqmmcLTueXK0WfW--
+							Thanx, Paul
