@@ -2,116 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C61A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F01BC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236808AbiCASC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:02:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43932 "EHLO
+        id S236809AbiCASE4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:04:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236786AbiCASCX (ORCPT
+        with ESMTP id S230148AbiCASEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:02:23 -0500
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1596C3FD8F;
-        Tue,  1 Mar 2022 10:01:42 -0800 (PST)
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [80.241.60.245])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4K7Q6r4FqXz9sTd;
-        Tue,  1 Mar 2022 19:01:40 +0100 (CET)
-From:   Marcello Sylvester Bauer <sylv@sylv.io>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
-        t=1646157698;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0gXkkSMWRwsd/tK/1tooWVlC8FpM5vy2KBjzcgp2LuE=;
-        b=iAe/jQEv/SOKEvJJxcCaOC9cqlf7zBIUnz89K/4vNVb+P5N3wkxIDYNcOq/UhMzcWLhnQ8
-        TSIE8eqxkO/6hINImIbSLxACJ4/Gnj7nDroOJms5/iRanIbiF8L5G50wnWublWX8cX9YrH
-        +0rWWGb2r5W8pdezQyUP8fdOeb7tGNsd+aSpZI/QQWLbG6lOjdfWV+v0n47vwK9HXw5lNr
-        qKHdQgnyFvE6CHyoXdg/NRvVKpywZxT1yqYU4x9wc8HBsoyx+NG4Qit4eo09tE2mXLwrd4
-        c6XbXuMP+wV2OLd9COXQ4jILyYpioVIcBYL2TWxTndhVQttY6NjL6VCb6uhl9A==
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>
-Cc:     linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Patrick Rudolph <patrick.rudolph@9elements.com>,
-        Marcello Sylvester Bauer <sylv@sylv.io>
-Subject: [PATCH v3 3/3] hwmon (xdpe12284): Add regulator support
-Date:   Tue,  1 Mar 2022 19:01:13 +0100
-Message-Id: <f747eeeec852fc964151afe0aa387bbe4d7291c5.1646157237.git.sylv@sylv.io>
-In-Reply-To: <cover.1646157237.git.sylv@sylv.io>
-References: <cover.1646157237.git.sylv@sylv.io>
+        Tue, 1 Mar 2022 13:04:53 -0500
+Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C8F205C4;
+        Tue,  1 Mar 2022 10:04:10 -0800 (PST)
+Received: by mail-lj1-f179.google.com with SMTP id v22so22947708ljh.7;
+        Tue, 01 Mar 2022 10:04:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5e5d4xKeEeUZ3+qWANyOhEjefcxDPbVrweTplbTrGL0=;
+        b=XbEol5Idr3Jxdf0oIwFNehiDpMcJvxAGlN7NjXT0vPdtPXflh6W9lIAKvtoS4I3hGM
+         yWFYsUt80IDHhvnkbNn2ZYRdgZp2KUVUIZru832OHfpsyX+b2896Mf6Ny4cM/tIuMk7E
+         CTHbD/vg3Cpa61lx47WLD/NgH+37SMq2hCTXgwuKiTk33vOa/f5p0p7xpXimbuPPZtpV
+         zMmziONZ9eguPTrJe0+uZ5IyTX/umq0gOjgCVm4thjiqONTB80IWMSws7gpoTxk5jRKt
+         KR4jYs12jE1aC4W8ZwPb9sGTIPFf5c4Tyfs955nScnpAGMMVPQ12v8BKp1O3AW5+zH+M
+         Mk7Q==
+X-Gm-Message-State: AOAM5328jZ/YUFO90iMae1glVZy2wFnWHL/2HS5rtwi97QRMEUYYCbnK
+        0oSpQ9aR/KjCnqsSM7Ar3UmqRxB0WhDF8Toyeeo=
+X-Google-Smtp-Source: ABdhPJynEtWmU+r7YVpV/44yaa1XMqFio7eeol8Jvu88b1N6K5fmbNWznf5U9Eepkwm+AIwaL+W1fa4QAVUjN49JMsI=
+X-Received: by 2002:a2e:819a:0:b0:240:8b4c:ef10 with SMTP id
+ e26-20020a2e819a000000b002408b4cef10mr18068820ljg.180.1646157848769; Tue, 01
+ Mar 2022 10:04:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220301010412.431299-1-namhyung@kernel.org> <20220301010412.431299-3-namhyung@kernel.org>
+ <Yh3cwBloddIGvCjU@hirez.programming.kicks-ass.net>
+In-Reply-To: <Yh3cwBloddIGvCjU@hirez.programming.kicks-ass.net>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Tue, 1 Mar 2022 10:03:57 -0800
+Message-ID: <CAM9d7cguuyY74L9XK=z384bwO6nTCw4XOFNK1yaJhhmKYTBBoA@mail.gmail.com>
+Subject: Re: [PATCH 2/4] locking: Apply contention tracepoints in the slow path
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, Radoslaw Burny <rburny@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add simple on/off regulator support for xdpe12284 and
-other pmbus parts supported by the xdpe12284 driver.
+Hi Peter,
 
-Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
----
- drivers/hwmon/pmbus/Kconfig     |  6 ++++++
- drivers/hwmon/pmbus/xdpe12284.c | 11 +++++++++++
- 2 files changed, 17 insertions(+)
+On Tue, Mar 1, 2022 at 12:44 AM Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> On Mon, Feb 28, 2022 at 05:04:10PM -0800, Namhyung Kim wrote:
+> > @@ -80,7 +81,9 @@ static inline void queued_read_lock(struct qrwlock *lock)
+> >               return;
+> >
+> >       /* The slowpath will decrement the reader count, if necessary. */
+> > +     LOCK_CONTENTION_BEGIN(lock, LCB_F_READ);
+> >       queued_read_lock_slowpath(lock);
+> > +     LOCK_CONTENTION_END(lock);
+> >  }
+> >
+> >  /**
+> > @@ -94,7 +97,9 @@ static inline void queued_write_lock(struct qrwlock *lock)
+> >       if (likely(atomic_try_cmpxchg_acquire(&lock->cnts, &cnts, _QW_LOCKED)))
+> >               return;
+> >
+> > +     LOCK_CONTENTION_BEGIN(lock, LCB_F_WRITE);
+> >       queued_write_lock_slowpath(lock);
+> > +     LOCK_CONTENTION_END(lock);
+> >  }
+>
+> > @@ -82,7 +83,9 @@ static __always_inline void queued_spin_lock(struct qspinlock *lock)
+> >       if (likely(atomic_try_cmpxchg_acquire(&lock->val, &val, _Q_LOCKED_VAL)))
+> >               return;
+> >
+> > +     LOCK_CONTENTION_BEGIN(lock, 0);
+> >       queued_spin_lock_slowpath(lock, val);
+> > +     LOCK_CONTENTION_END(lock);
+> >  }
+>
+> Can you please stick that _inside_ the slowpath? You really don't want
+> to inline that.
 
-diff --git a/drivers/hwmon/pmbus/Kconfig b/drivers/hwmon/pmbus/Kconfig
-index 6552467c588d..a2ea1d5a8765 100644
---- a/drivers/hwmon/pmbus/Kconfig
-+++ b/drivers/hwmon/pmbus/Kconfig
-@@ -417,6 +417,12 @@ config SENSORS_XDPE122
- 	  This driver can also be built as a module. If so, the module will
- 	  be called xdpe12284.
- 
-+config SENSORS_XDPE122_REGULATOR
-+	bool "Regulator support for XDPE122 and compatibles"
-+	depends on SENSORS_XDPE122 && REGULATOR
-+	help
-+	  Uses the xdpe12284 or compatible as regulator.
-+
- config SENSORS_ZL6100
- 	tristate "Intersil ZL6100 and compatibles"
- 	help
-diff --git a/drivers/hwmon/pmbus/xdpe12284.c b/drivers/hwmon/pmbus/xdpe12284.c
-index 3413aba9d5be..495c62005aed 100644
---- a/drivers/hwmon/pmbus/xdpe12284.c
-+++ b/drivers/hwmon/pmbus/xdpe12284.c
-@@ -10,6 +10,8 @@
- #include <linux/init.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/regulator/driver.h>
-+
- #include "pmbus.h"
- 
- #define XDPE122_PROT_VR12_5MV		0x01 /* VR12.0 mode, 5-mV DAC */
-@@ -107,6 +109,11 @@ static int xdpe122_identify(struct i2c_client *client,
- 	return 0;
- }
- 
-+static const struct regulator_desc xdpe122_reg_desc[] = {
-+	PMBUS_REGULATOR("vout", 0),
-+	PMBUS_REGULATOR("vout", 1),
-+};
-+
- static struct pmbus_driver_info xdpe122_info = {
- 	.pages = XDPE122_PAGE_NUM,
- 	.format[PSC_VOLTAGE_IN] = linear,
-@@ -122,6 +129,10 @@ static struct pmbus_driver_info xdpe122_info = {
- 		PMBUS_HAVE_IIN | PMBUS_HAVE_IOUT | PMBUS_HAVE_STATUS_IOUT |
- 		PMBUS_HAVE_TEMP | PMBUS_HAVE_STATUS_TEMP |
- 		PMBUS_HAVE_POUT | PMBUS_HAVE_PIN | PMBUS_HAVE_STATUS_INPUT,
-+#if IS_ENABLED(CONFIG_SENSORS_XDPE122_REGULATOR)
-+	.num_regulators = 2,
-+	.reg_desc = xdpe122_reg_desc,
-+#endif
- };
- 
- static int xdpe122_probe(struct i2c_client *client)
--- 
-2.35.1
+I can move it into the slow path with caller ip.
 
+Thanks,
+Namhyung
