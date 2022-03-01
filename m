@@ -2,132 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 003A3C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 448A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238025AbiCAUTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:19:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
+        id S237798AbiCAUT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:19:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237846AbiCAUSg (ORCPT
+        with ESMTP id S236935AbiCAUSk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:18:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 875DA340E7
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:17:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646165873;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kbtnGrIoAXkidAZTj8FmIyhuel5W031FIJwbUY20FAA=;
-        b=QeHSnPwcGqPowM17j08m8fdc1RMPdGb83K6lINecxmUgSUUoEka05hzbpnNUYr+27yNtvI
-        uR82X/jEUdCU3dI+ZPQZGHv7atfA50+8zFYXpYUQ2RLN312erqcvu5lg1vN4hySl81iklw
-        ++icgX40TpjrVppa8O4QDEfbrb6xJ0M=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-631-q1_niGX3MHeDY2N_oV1trQ-1; Tue, 01 Mar 2022 15:17:52 -0500
-X-MC-Unique: q1_niGX3MHeDY2N_oV1trQ-1
-Received: by mail-wm1-f70.google.com with SMTP id ay7-20020a05600c1e0700b003813d7a7d03so1735889wmb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:17:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kbtnGrIoAXkidAZTj8FmIyhuel5W031FIJwbUY20FAA=;
-        b=IWpB4Y2YIs3aQf7NdOCF9u1G2LBwYPr/B+oS76q7Fe04B6ZKzxFOmFg0NUA8DY0b25
-         YWuvMGCK/SWF8bh7jC0JQN5cFJ0TvDv1jg7v1RgTUPw/6noiGN0apy1NUyhmZmTumPsj
-         8QPqDmCptvBMpp7RFiRkOq3T7Pz8YeaEPohs2eydlOvh4TaEbtFBD/N2UTRPZB5ZcJ6j
-         cW2MOMYya95MnW5hCUlFg/pYvYSfVvUt8Kdfa02nGX0R5MBkG6GoBidIWKyu07MQUigz
-         +VSlEI9AnK5EUHcDnZVFu2cNpkqOUDxiwH4OijtCzG9Lj6jKeDDHkfA6iOeinZW7VkZq
-         zeZw==
-X-Gm-Message-State: AOAM532gMZIEjBBAfZvXpZdMFTeK+zt27qL2xvQXdFs2iBR3gfDlbpWc
-        p0LfbQymuD8piiIw+CZVK4IpzZYiICUmYDuNAwBKJ85GjZSiIR/ffXn/l9+ZvcIJ8pAAtJg89IP
-        JqO1fp83jPVovCfCEc7ZTfQ4G
-X-Received: by 2002:a05:600c:4e08:b0:381:9094:6b3c with SMTP id b8-20020a05600c4e0800b0038190946b3cmr3338835wmq.103.1646165870999;
-        Tue, 01 Mar 2022 12:17:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyHRA1O1tPDB9klqjpvqfr2MK6rdobahePsJyhIS2BUsCgaysLn9yR7ZHPI3cYyFrk3Va3iAQ==
-X-Received: by 2002:a05:600c:4e08:b0:381:9094:6b3c with SMTP id b8-20020a05600c4e0800b0038190946b3cmr3338828wmq.103.1646165870783;
-        Tue, 01 Mar 2022 12:17:50 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
-        by smtp.googlemail.com with ESMTPSA id k15-20020adff5cf000000b001e4b8fde355sm14482929wrp.73.2022.03.01.12.17.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 12:17:50 -0800 (PST)
-Message-ID: <2619b94d-d1e8-5185-5533-506421ca7281@redhat.com>
-Date:   Tue, 1 Mar 2022 21:17:49 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH AUTOSEL 5.15 05/23] KVM: Fix lockdep false negative during
- host resume
-Content-Language: en-US
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org
+        Tue, 1 Mar 2022 15:18:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8893C4A0;
+        Tue,  1 Mar 2022 12:17:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3A8B61762;
+        Tue,  1 Mar 2022 20:17:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 162F8C340EE;
+        Tue,  1 Mar 2022 20:17:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646165877;
+        bh=ktPF91zrjQqYukHJvi8JLaQ23mLJd5oC5eRxAgYO28Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CP935D0wG5TwqsAcWuYjMySe/Jun2DWqSzaCQpAZu0fpL95jZmJwxywMTaSTbzVRj
+         tqdqJRY31l4U+DpDkPXL31nCmw1SRYPIuqRAFM5ozaYf421VoKGBuv6TfZmgSin8a6
+         5OEHS2ZvR8EygJKIjBCJfxL9x2ziqIjXvdIIVQANhpEyvdt+OgnWGIDUjov9y859ZE
+         ErJQJ8vzXDNWph7LKktEK95Xnr1uek4AMdb9Ek+xFw51QwyJJy3T8v+ZhzMjKH0g6A
+         KxBiZPlsYg6+R6vWbAciBo6oUt3KinACWwH+hApxukht0vyb+y2FiK7FG8YevVDCvY
+         qR+zcYu4R3WuQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, wei.liu@kernel.org,
+        davem@davemloft.net, xen-devel@lists.xenproject.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 17/23] Revert "xen-netback: remove 'hotplug-status' once it has served its purpose"
+Date:   Tue,  1 Mar 2022 15:16:16 -0500
+Message-Id: <20220301201629.18547-17-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
 References: <20220301201629.18547-1-sashal@kernel.org>
- <20220301201629.18547-5-sashal@kernel.org>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220301201629.18547-5-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/1/22 21:16, Sasha Levin wrote:
-> From: Wanpeng Li <wanpengli@tencent.com>
-> 
-> [ Upstream commit 4cb9a998b1ce25fad74a82f5a5c45a4ef40de337 ]
-> 
-> I saw the below splatting after the host suspended and resumed.
-> 
->     WARNING: CPU: 0 PID: 2943 at kvm/arch/x86/kvm/../../../virt/kvm/kvm_main.c:5531 kvm_resume+0x2c/0x30 [kvm]
->     CPU: 0 PID: 2943 Comm: step_after_susp Tainted: G        W IOE     5.17.0-rc3+ #4
->     RIP: 0010:kvm_resume+0x2c/0x30 [kvm]
->     Call Trace:
->      <TASK>
->      syscore_resume+0x90/0x340
->      suspend_devices_and_enter+0xaee/0xe90
->      pm_suspend.cold+0x36b/0x3c2
->      state_store+0x82/0xf0
->      kernfs_fop_write_iter+0x1b6/0x260
->      new_sync_write+0x258/0x370
->      vfs_write+0x33f/0x510
->      ksys_write+0xc9/0x160
->      do_syscall_64+0x3b/0xc0
->      entry_SYSCALL_64_after_hwframe+0x44/0xae
-> 
-> lockdep_is_held() can return -1 when lockdep is disabled which triggers
-> this warning. Let's use lockdep_assert_not_held() which can detect
-> incorrect calls while holding a lock and it also avoids false negatives
-> when lockdep is disabled.
-> 
-> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-> Message-Id: <1644920142-81249-1-git-send-email-wanpengli@tencent.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   virt/kvm/kvm_main.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> index 13aff136e6eef..5309b3eaa0470 100644
-> --- a/virt/kvm/kvm_main.c
-> +++ b/virt/kvm/kvm_main.c
-> @@ -5416,9 +5416,7 @@ static int kvm_suspend(void)
->   static void kvm_resume(void)
->   {
->   	if (kvm_usage_count) {
-> -#ifdef CONFIG_LOCKDEP
-> -		WARN_ON(lockdep_is_held(&kvm_count_lock));
-> -#endif
-> +		lockdep_assert_not_held(&kvm_count_lock);
->   		hardware_enable_nolock(NULL);
->   	}
->   }
+From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 
-Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+[ Upstream commit 0f4558ae91870692ce7f509c31c9d6ee721d8cdc ]
+
+This reverts commit 1f2565780e9b7218cf92c7630130e82dcc0fe9c2.
+
+The 'hotplug-status' node should not be removed as long as the vif
+device remains configured. Otherwise the xen-netback would wait for
+re-running the network script even if it was already called (in case of
+the frontent re-connecting). But also, it _should_ be removed when the
+vif device is destroyed (for example when unbinding the driver) -
+otherwise hotplug script would not configure the device whenever it
+re-appear.
+
+Moving removal of the 'hotplug-status' node was a workaround for nothing
+calling network script after xen-netback module is reloaded. But when
+vif interface is re-created (on xen-netback unbind/bind for example),
+the script should be called, regardless of who does that - currently
+this case is not handled by the toolstack, and requires manual
+script call. Keeping hotplug-status=connected to skip the call is wrong
+and leads to not configured interface.
+
+More discussion at
+https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
+
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Reviewed-by: Paul Durrant <paul@xen.org>
+Link: https://lore.kernel.org/r/20220222001817.2264967-1-marmarek@invisiblethingslab.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/xen-netback/xenbus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+index d24b7a7993aa0..3fad58d22155b 100644
+--- a/drivers/net/xen-netback/xenbus.c
++++ b/drivers/net/xen-netback/xenbus.c
+@@ -256,6 +256,7 @@ static void backend_disconnect(struct backend_info *be)
+ 		unsigned int queue_index;
+ 
+ 		xen_unregister_watchers(vif);
++		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
+ #ifdef CONFIG_DEBUG_FS
+ 		xenvif_debugfs_delif(vif);
+ #endif /* CONFIG_DEBUG_FS */
+@@ -675,7 +676,6 @@ static void hotplug_status_changed(struct xenbus_watch *watch,
+ 
+ 		/* Not interested in this watch anymore. */
+ 		unregister_hotplug_status_watch(be);
+-		xenbus_rm(XBT_NIL, be->dev->nodename, "hotplug-status");
+ 	}
+ 	kfree(str);
+ }
+-- 
+2.34.1
 
