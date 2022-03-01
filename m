@@ -2,86 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 596DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC34C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235094AbiCANjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 08:39:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50670 "EHLO
+        id S235098AbiCANjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 08:39:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232955AbiCANjM (ORCPT
+        with ESMTP id S229885AbiCANjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 08:39:12 -0500
-Received: from cloud48395.mywhc.ca (cloud48395.mywhc.ca [173.209.37.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBA326101;
-        Tue,  1 Mar 2022 05:38:31 -0800 (PST)
-Received: from [45.44.224.220] (port=56374 helo=localhost)
-        by cloud48395.mywhc.ca with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <olivier@trillion01.com>)
-        id 1nP2hy-0001ms-B1; Tue, 01 Mar 2022 08:38:30 -0500
-Date:   Tue, 01 Mar 2022 08:38:29 -0500
-Message-Id: <cover.1646141294.git.olivier@trillion01.com>
-From:   Olivier Langlois <olivier@trillion01.com>
-To:     Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Cc:     Hao Xu <haoxu@linux.alibaba.com>,
-        io-uring <io-uring@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 0/2] io_uring: Add support for napi_busy_poll
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - cloud48395.mywhc.ca
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - trillion01.com
-X-Get-Message-Sender-Via: cloud48395.mywhc.ca: authenticated_id: olivier@trillion01.com
-X-Authenticated-Sender: cloud48395.mywhc.ca: olivier@trillion01.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+        Tue, 1 Mar 2022 08:39:52 -0500
+Received: from meesny.iki.fi (meesny.iki.fi [IPv6:2001:67c:2b0:1c1::201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DD7232052;
+        Tue,  1 Mar 2022 05:39:11 -0800 (PST)
+Received: from hillosipuli.retiisi.eu (dkvn5pty0gzs3nltj987t-3.rev.dnainternet.fi [IPv6:2001:14ba:4457:9640:1e2d:1f75:a607:ef37])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sailus)
+        by meesny.iki.fi (Postfix) with ESMTPSA id 6566A20039;
+        Tue,  1 Mar 2022 15:39:09 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+        t=1646141949;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PD/Gt8AEGoZfPCQ5uXtPnMbIOq13hkJVTYqaYQvMPtk=;
+        b=MIJkKbG4hMUGK5ygQW8/zJEL6jGZsp3QXXLGZ9ceZS4g4HC2jDwSmAuelQL92APxa69QQt
+        KS0uZZTwe+VlBTKjmQD4FWd0Q1UGzlbPOuKIvTuvcno5/GeLbfxAR7QUZcZO0zWNqV+k4k
+        hHUW6Cb2Cf3fOrU1Tse/xtqOpM5CPQk=
+Received: from valkosipuli.retiisi.eu (valkosipuli.localdomain [192.168.4.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by hillosipuli.retiisi.eu (Postfix) with ESMTPS id 818F5634C90;
+        Tue,  1 Mar 2022 15:39:08 +0200 (EET)
+Date:   Tue, 1 Mar 2022 15:39:08 +0200
+From:   Sakari Ailus <sakari.ailus@iki.fi>
+To:     Jacopo Mondi <jacopo@jmondi.org>
+Cc:     Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Joe Perches <joe@perches.com>
+Subject: Re: [PATCH v8 2/2] On Semi AR0521 sensor driver
+Message-ID: <Yh4h/HThZbXltN6G@valkosipuli.retiisi.eu>
+References: <m3pmn66pie.fsf@t19.piap.pl>
+ <m3h78i6p4t.fsf@t19.piap.pl>
+ <20220301093107.ihokyp4xptkzpbpc@uno.localdomain>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301093107.ihokyp4xptkzpbpc@uno.localdomain>
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=sailus smtp.mailfrom=sakari.ailus@iki.fi
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1646141949; a=rsa-sha256; cv=none;
+        b=WXdIwXkcF1sHLC3WY8URND6uEBkLkGRkOlNBSyw32YN3cLGOxECjwD6zanC6KDy80YiWbP
+        cnZVeOds/ttOsEa51ZLCcg7Ci5dqP/HejKq9/36n9JofOjvcNzuWT+toZHGwiiHN3dqBSz
+        w4qmzmUR4MqL16FriKdy1flngDkwf6Q=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=meesny; t=1646141949;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PD/Gt8AEGoZfPCQ5uXtPnMbIOq13hkJVTYqaYQvMPtk=;
+        b=P+2EWL2hEZiZZDi5S9kvRa+fb4o1H7O8v2R1bPzT21doYa/TZ6h2ec3uUz4dNhXVz+7gyo
+        K6LGT9gh9Io7AsjMlfBk7dXimiAOd+P2PRFilvoSRKXodlVtv72zjpVj+UrKtJy0NOvIrb
+        eRg7dzrpZTyU3T8GflsRMbofjAqXbrw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The sqpoll thread can be used for performing the napi busy poll in a
-similar way that it does io polling for file systems supporting direct
-access bypassing the page cache.
+Hi Jacopo,
 
-The other way that io_uring can be used for napi busy poll is by
-calling io_uring_enter() to get events.
+On Tue, Mar 01, 2022 at 10:31:07AM +0100, Jacopo Mondi wrote:
+> Hi Krzysztof
+> 
+> In subject
+> 
+> "media: i2c:"
+> 
+> Same for 1/2 where permutation of "media: dt-bindings: i2c:" are used
+> when adding bindings for media i2c drivers.
 
-If the user specify a timeout value, it is distributed between polling
-and sleeping by using the systemwide setting
-/proc/sys/net/core/busy_poll.
+Some i2c driver patches tend to have these, some don't. "media" is added by
+Mauro's scripts in any case.
 
-v2:
- * Evaluate list_empty(&ctx->napi_list) outside io_napi_busy_loop() to keep
-   __io_sq_thread() execution as fast as possible
- * In io_cqring_wait(), move up the sig block to avoid needless computation
-   if the block exits the function
- * In io_cqring_wait(), protect ctx->napi_list from race condition by
-   splicing it into a local list
- * In io_cqring_wait(), allow busy polling when uts is missing
- * Fix kernel test robot issues
-v3:
- * Fix do_div() type mismatch warning
- * Reduce uring_lock contention by creating a spinlock for protecting
-   napi_list
- * Support correctly MULTISHOT poll requests
-
-Co-developed-by: Hao Xu <haoxu@linux.alibaba.com>
-Signed-off-by: Hao Xu <haoxu@linux.alibaba.com>
-Signed-off-by: Olivier Langlois <olivier@trillion01.com>
-
-Olivier Langlois (2):
-  io_uring: minor io_cqring_wait() optimization
-  io_uring: Add support for napi_busy_poll
-
- fs/io_uring.c | 246 ++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 237 insertions(+), 9 deletions(-)
-
-
-base-commit: 719fce7539cd3e186598e2aed36325fe892150cf
 -- 
-2.35.1
+Kind regards,
 
+Sakari Ailus
