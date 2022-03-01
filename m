@@ -2,132 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 441B9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC99C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235651AbiCAQV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:21:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
+        id S236173AbiCAQWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:22:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234989AbiCAQVy (ORCPT
+        with ESMTP id S234989AbiCAQW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:21:54 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD44D36334
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:21:10 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id cp23-20020a17090afb9700b001bbfe0fbe94so2609586pjb.3
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:21:10 -0800 (PST)
+        Tue, 1 Mar 2022 11:22:27 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64F771AD9E;
+        Tue,  1 Mar 2022 08:21:46 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id gb39so32562636ejc.1;
+        Tue, 01 Mar 2022 08:21:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=OyJ09A7qvWy9g8jkfUxvXZf1yir4cGwLA0viw7De7Wg=;
-        b=merrIRFvjJolhv/qG/VrKrlxkqICVo4jfOaOwHQ3w/OWhJhS6O7KF09ulMKke6G/2s
-         6tSBtnnig1rn98zTnGLcdqRkMixBrnTcmqPT6VADYi0HZDEMRuvaCVX+GPzcqhzMjFEx
-         HqDGzRSOfhDv7qFjN6wgeNKzHai7v54XqjlJ6G+CPZyIEPM3xjgmaDS4SV5kP4YSTaiC
-         7RNkb9k1FNp067iM6ipgig9dgxR4eJZ5kyPxMYnLr8z0uWQ/jhhN70pngkdQjA3RWeHl
-         pSRWVct/xCwMZLSvowLzyYU5DWqZwJWP+8h24iOInGHOJlrcJUDfY5qs5kbhSidonEgS
-         506Q==
+        bh=Jx8eZ/jgrSE5jtq/IeRwHlPFovNus3LfRlDhg1AW13A=;
+        b=en9t2M3R/YDinK1EfneMzgv5fnKSDbV2GexbGi8qUVmwTSDoEp15UHwZA/M2o65vTS
+         1amV/o9IYHjiDxmjxen42QPAkYKpPfbSgHnHpSavW1XfsTw58PopoiG6cKAbBHAUIh80
+         Z9vXf90FSFzOih7QWrwZWVuvpsy21CRZGjywUCXNukoL5p8tTEzXYMkVKhBYpK7eeQp1
+         iB71j6/AwNLOcWKUYtR2hDgFxCZC/LqpqjPme7lTy8Lh7Q6qlP0sr34zBSPk7aMnM/gD
+         TaZi52W9EXR5i0OekbRJVPsXfV+ELpeg9leOt1TkHdfXLGOy0pvBzQ4B3q69dCXgfx6T
+         Y+XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=OyJ09A7qvWy9g8jkfUxvXZf1yir4cGwLA0viw7De7Wg=;
-        b=zkiwWb6DO4RIVyt3D8QBbKxHtp6ETpdK5R7lmQTE1810jFDvs+FDFgoUTWso88ckWV
-         /rmcBmw7R2WnGm/IlKRnmS/We9p1YutDzWMVui3yVPHJDjxh9aPyPI66Zsqr3XNNdAa7
-         sO4V+EC5nrBiWXEyFLuYMrIvz3aTSEZneqrRYiHc9xoCYeYxkte+PTPeLWSjvrUMIXKC
-         Ddi3KFINlQvm87Zj400auY8+6CaJuoHoEgGt+gjGhfBsafofIpx4+fFgj/SYRh/+Kh3O
-         DS15pTEXVT11cOIgWoX8Pzsswa73AtnIjv70oDzShweVuZevXcTBxH0T3YORzm+9tpsF
-         iWfw==
-X-Gm-Message-State: AOAM5301CFlXL0rUV9hpaeAo/sIf0YV5xhXfCrU/py8Gvf6sCx5aLZz9
-        KJLFwpP2Q/ayItHjVW6ubO1Xdg==
-X-Google-Smtp-Source: ABdhPJzrKSENplSPF1BCssuAgeos2pr1muB+975Yz7lx+H0xV0J5vTBBuAUbdF4sRGsHnUZDAztFKQ==
-X-Received: by 2002:a17:902:7048:b0:151:6d4b:6118 with SMTP id h8-20020a170902704800b001516d4b6118mr9909600plt.50.1646151670176;
-        Tue, 01 Mar 2022 08:21:10 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id t1-20020a634441000000b00372cb183243sm13330538pgk.1.2022.03.01.08.21.09
+        bh=Jx8eZ/jgrSE5jtq/IeRwHlPFovNus3LfRlDhg1AW13A=;
+        b=UH+lNVu3OhqkCZKYJwtLSSNPUdJX8WbISSLiMP2WuNKn+vyjB1H1yWRW7WdNw236Y5
+         VgR0nNOhBBAAY4Hp4lqjsaGbIeNsE0sCAu8Jfb+WXaUQdLNFWdzIOXf2nu80KjO6nA5L
+         stKJJODVhAX5kxQ2Fclxtvrs58HFZPmrzCS/A+Y/1K6v7lyBCMhgmq8CFSKvZjUKubE3
+         Ma8fDg9IET0qk6NC5ZcfTPw23NWRvbeFttvL1d6Vfe4XzKXZzJ6htI/4YEJW9RFVYiNJ
+         xvaO7wOv4n+EBrlktUJGs136gOV6GulOtKr/esZRUU5syuL/cBYiAn6B/V1/Wuv/qSPd
+         kqKg==
+X-Gm-Message-State: AOAM5302IOmnJ8do9msrMHVzFBf8EyuRpbvrWlNG8Z59iwNvPkcv1Wvn
+        2ufeijIs7J62HKhEbv8M5Qk=
+X-Google-Smtp-Source: ABdhPJxGtOTYdS7L0n3Cy3fp114D1jiHE3zZ+VjSMi5+/5L86y6D2puo9eWWttxwjz7E6uhYGujEWA==
+X-Received: by 2002:a17:906:3ac6:b0:6cb:6808:95f9 with SMTP id z6-20020a1709063ac600b006cb680895f9mr19934324ejd.375.1646151704776;
+        Tue, 01 Mar 2022 08:21:44 -0800 (PST)
+Received: from skbuf ([188.25.231.156])
+        by smtp.gmail.com with ESMTPSA id ey10-20020a1709070b8a00b006cee56b87b9sm5486818ejc.141.2022.03.01.08.21.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 08:21:09 -0800 (PST)
-Date:   Tue, 1 Mar 2022 16:21:06 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Borislav Petkov <bp@alien8.de>, x86@kernel.org
-Subject: Re: [PATCH 3/4] KVM: x86: SVM: use vmcb01 in avic_init_vmcb
-Message-ID: <Yh5H8qRhbefuD9YF@google.com>
-References: <20220301135526.136554-1-mlevitsk@redhat.com>
- <20220301135526.136554-4-mlevitsk@redhat.com>
+        Tue, 01 Mar 2022 08:21:44 -0800 (PST)
+Date:   Tue, 1 Mar 2022 18:21:42 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Petr Machata <petrm@nvidia.com>,
+        Cooper Lees <me@cooperlees.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Matt Johnston <matt@codeconstruct.com.au>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 net-next 00/10] net: bridge: Multiple Spanning Trees
+Message-ID: <20220301162142.2rv23g4cyd2yacbs@skbuf>
+References: <20220301100321.951175-1-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301135526.136554-4-mlevitsk@redhat.com>
+In-Reply-To: <20220301100321.951175-1-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Just "KVM: SVM:" for the shortlog, please.
+Hi Tobias,
 
-On Tue, Mar 01, 2022, Maxim Levitsky wrote:
-> Out of precation use vmcb01 when enabling host AVIC.
-> No functional change intended.
+On Tue, Mar 01, 2022 at 11:03:11AM +0100, Tobias Waldekranz wrote:
+> A proposal for the corresponding iproute2 interface is available here:
 > 
-> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> ---
->  arch/x86/kvm/svm/avic.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index e23159f3a62ba..9656e192c646b 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -167,7 +167,7 @@ int avic_vm_init(struct kvm *kvm)
->  
->  void avic_init_vmcb(struct vcpu_svm *svm)
->  {
-> -	struct vmcb *vmcb = svm->vmcb;
-> +	struct vmcb *vmcb = svm->vmcb01.ptr;
+> https://github.com/wkz/iproute2/tree/mst
 
-I don't like this change.  It's not bad code, but it'll be confusing because it
-implies that it's legal for svm->vmcb to be something other than svm->vmcb01.ptr
-when this is called.
-
-If we want to guard AVIC, I'd much rather we do something like:
-
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 7038c76fa841..dcc856bd628d 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -992,8 +992,12 @@ static inline void init_vmcb_after_set_cpuid(struct kvm_vcpu *vcpu)
- static void init_vmcb(struct kvm_vcpu *vcpu)
- {
-        struct vcpu_svm *svm = to_svm(vcpu);
--       struct vmcb_control_area *control = &svm->vmcb->control;
--       struct vmcb_save_area *save = &svm->vmcb->save;
-+       struct vmcb *vmcb = svm->vmcb01.ptr;
-+       struct vmcb_control_area *control = &vmcb->control;
-+       struct vmcb_save_area *save = &vmcb->save;
-+
-+       if (WARN_ON_ONCE(vmcb != svm->vmcb))
-+               svm_leave_nested(vcpu);
-
-        svm_set_intercept(svm, INTERCEPT_CR0_READ);
-        svm_set_intercept(svm, INTERCEPT_CR3_READ);
-
-
-On a related topic, init_vmcb_after_set_cpuid() is broken for nested, it needs to
-play nice with being called when svm->vmcb == &svm->nested.vmcb02, e.g. update
-vmcb01 and re-merge (or just recalc?) vmcb02's intercepts.
-
->  	struct kvm_svm *kvm_svm = to_kvm_svm(svm->vcpu.kvm);
->  	phys_addr_t bpa = __sme_set(page_to_phys(svm->avic_backing_page));
->  	phys_addr_t lpa = __sme_set(page_to_phys(kvm_svm->avic_logical_id_table_page));
-> -- 
-> 2.26.3
-> 
+Please pardon my ignorance. Is there a user-mode STP protocol application
+that supports MSTP, and that you've tested these patches with?
+I'd like to give it a try.
