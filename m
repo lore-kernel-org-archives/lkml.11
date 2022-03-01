@@ -2,98 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBD1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 272FDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:53:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235443AbiCAOxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:53:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45026 "EHLO
+        id S234889AbiCAOyM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:54:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235433AbiCAOxf (ORCPT
+        with ESMTP id S231182AbiCAOyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:53:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26EF483BC;
-        Tue,  1 Mar 2022 06:52:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76EC36159D;
-        Tue,  1 Mar 2022 14:52:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC19EC340F2;
-        Tue,  1 Mar 2022 14:52:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646146371;
-        bh=LfiWmfs6qErICD+TfIJqX84uNv2I/FQMxqCURJD4QRk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oj5yynkamny/AtSQRD5xLhnAE4W3TodX8euUSgx+w4IDEx9hwirHYK/YzcWwlAiKe
-         Mg3CZZjAlee0DdCyh69ulex4StSRHfMowWaXSiygI/D7T3pAtRjY/7TduakOK2tRp0
-         ruh5tHf11STcPDIDu7/jTpRxTT5Ep9eXIh3KpArhOdIc5KNHgjEgBMUVOZccPOHz8d
-         SKWzudpfx2tkaCKiX3qXiLE+5BEHg+bZoUdHwM9tmQhSEHDsr0peusS2SV76uDkNwp
-         mOBX1cTcDDulQKZqtFCr+w47Nq6KtbMZwHVWg9lzZJrJ/gDP0JG4lL2HDvHsc8Pxnx
-         14M0Azozwf7pw==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Marco Elver <elver@google.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        David Sterba <dsterba@suse.com>, Alex Shi <alexs@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-kbuild@vger.kernel.org, llvm@lists.linux.dev,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] Kbuild: use -std=gnu11 for KBUILD_USERCFLAGS
-Date:   Tue,  1 Mar 2022 15:52:33 +0100
-Message-Id: <20220301145233.3689119-3-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220301145233.3689119-1-arnd@kernel.org>
-References: <20220301145233.3689119-1-arnd@kernel.org>
+        Tue, 1 Mar 2022 09:54:08 -0500
+X-Greylist: delayed 508 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 06:53:25 PST
+Received: from v-zimmta03.u-bordeaux.fr (v-zimmta03.u-bordeaux.fr [147.210.215.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9F24EA35
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:53:24 -0800 (PST)
+Received: from v-zimmta03.u-bordeaux.fr (localhost [127.0.0.1])
+        by v-zimmta03.u-bordeaux.fr (Postfix) with ESMTP id 140081800A87;
+        Tue,  1 Mar 2022 15:44:54 +0100 (CET)
+Received: from begin (nat-inria-interne-54-gw-02-bso.bordeaux.inria.fr [194.199.1.54])
+        by v-zimmta03.u-bordeaux.fr (Postfix) with ESMTPSA id D81FB1800A80;
+        Tue,  1 Mar 2022 15:44:53 +0100 (CET)
+Received: from samy by begin with local (Exim 4.95)
+        (envelope-from <samuel.thibault@labri.fr>)
+        id 1nP3kD-00Bpvn-NJ;
+        Tue, 01 Mar 2022 15:44:53 +0100
+Date:   Tue, 1 Mar 2022 15:44:53 +0100
+From:   Samuel Thibault <samuel.thibault@labri.fr>
+To:     willemb@google.com
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] SO_ZEROCOPY should rather return -ENOPROTOOPT
+Message-ID: <20220301144453.snstwdjy3kmpi4zf@begin>
+Mail-Followup-To: Samuel Thibault <samuel.thibault@labri.fr>,
+        willemb@google.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Organization: I am not organized
+User-Agent: NeoMutt/20170609 (1.8.3)
+X-AV-Checked: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+ENOTSUPP is documented as "should never be seen by user programs", and
+is not exposed in <errno.h>, so applications cannot safely check against
+it. We should rather return the well-known -ENOPROTOOPT.
 
-As we change the C language standard for the kernel from gnu89 to
-gnu11, it makes sense to also update the version for user space
-compilation.
+Signed-off-by: Samuel Thibault <samuel.thibault@labri.fr>
 
-Some users have older native compilers than what they use for
-kernel builds, so I considered using gnu99 as the default version
-for wider compatibility with gcc-4.6 and earlier.
-
-However, testing with older compilers showed that we already require
-HOSTCC version 5.1 as well because a lot of host tools include
-linux/compiler.h that uses __has_attribute():
-
-  CC      tools/objtool/exec-cmd.o
-In file included from tools/include/linux/compiler_types.h:36:0,
-                 from tools/include/linux/compiler.h:5,
-                 from exec-cmd.c:2:
-tools/include/linux/compiler-gcc.h:19:5: error: "__has_attribute" is not defined [-Werror=undef]
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/Makefile b/Makefile
-index 37ef6a555dcd..7c9be7f1ccd4 100644
---- a/Makefile
-+++ b/Makefile
-@@ -432,7 +432,7 @@ HOSTCXX	= g++
- endif
- 
- export KBUILD_USERCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
--			    -O2 -fomit-frame-pointer -std=gnu89 \
-+			    -O2 -fomit-frame-pointer -std=gnu11 \
- 			    -Wdeclaration-after-statement
- export KBUILD_USERLDFLAGS :=
- 
--- 
-2.29.2
-
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 4ff806d71921..6e5b84194d56 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1377,9 +1377,9 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 			if (!(sk_is_tcp(sk) ||
+ 			      (sk->sk_type == SOCK_DGRAM &&
+ 			       sk->sk_protocol == IPPROTO_UDP)))
+-				ret = -ENOTSUPP;
++				ret = -ENOPROTOOPT;
+ 		} else if (sk->sk_family != PF_RDS) {
+-			ret = -ENOTSUPP;
++			ret = -ENOPROTOOPT;
+ 		}
+ 		if (!ret) {
+ 			if (val < 0 || val > 1)
