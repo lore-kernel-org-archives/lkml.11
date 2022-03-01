@@ -2,340 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E28AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98798C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236378AbiCAQrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:47:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52454 "EHLO
+        id S232656AbiCAQtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:49:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236238AbiCAQrf (ORCPT
+        with ESMTP id S236316AbiCAQrr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:47:35 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9644DDF9B
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:46:52 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id w7so19124268ioj.5
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:46:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IlOodLUUCH3VK1coffQTSgB1I0zc1Wqs31DSZFOVkN0=;
-        b=RBcGCFXDJJ8ZzrE9Vk7GKX+ExX4lzIRqYzuB0ySgH+QVMsCgCQ0Pnn2qyQbra9yrcy
-         kIF87tPEy75YEiRUopxkM91EB3D6xmlZXnKBeGuRFkilb3M3Th/U6tsDt2b8I3Nt66Jy
-         0urroe3FqevNlZzh4VW1jDt8woXXi6Y32gvwPmz6Wxuw4wi2/4L6hrI+LlU6f+zZcHfI
-         PcPV5PKjEjgV+0H4u/JSd7irDQ8MTBtJ7SVBSRmz2Rt7Ea4/dFzWzp15VpZ0YWgpnkvZ
-         0Cud/7r/bZ3hPZU0RniaPZ2NLp9673D8ZEmRUw42KUv6OkWgAmt+qjOwc8TjPQj69y2V
-         IL5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IlOodLUUCH3VK1coffQTSgB1I0zc1Wqs31DSZFOVkN0=;
-        b=glbi97AYSV0BZLT0osLsN+lM0CmeNkW+jA/dVpriyeeWi4lf2anTUriew5iTD8S5wS
-         yy9bPw6geKWO2DliJfTAbh7Uz0Zx/+zqierG1PQTSzCgNLhBKHw4KHAcRy8uopQ3lRpD
-         Q1DjlsStMR8KRf8Hw9XhTk1EGmIMOW9qU91/Dxg/ElbNPOtp/teUB2k0DHccocz4q+6O
-         X2wTqghJAxa4cuk5RnEIJPj1NJLoC9xM7/x39jUor07QOmYK7dPukedQ4332Jb7elXIm
-         HTCC24kDcYplOb2rmjgypG8YATZA0EUgDPcVd01wT7FE1pNFEGDlT0FOzUtwJ9W3+wdL
-         4WdQ==
-X-Gm-Message-State: AOAM533FD5TjiHvN0PskLECWQciZyfH7NsqszzdZ0MOhxhQefNXPEXfW
-        17rJyNk0m5OZ71azzFSKhJ8=
-X-Google-Smtp-Source: ABdhPJyOq028c+35LWrtfkpWWOPiU4KlcOVtTzmuzVxvWiAYOjcUo0xbHrlGL9pyn8a1tPjvd0i7lQ==
-X-Received: by 2002:a05:6638:6a7:b0:317:494c:35a9 with SMTP id d7-20020a05663806a700b00317494c35a9mr4810361jad.140.1646153211744;
-        Tue, 01 Mar 2022 08:46:51 -0800 (PST)
-Received: from frodo.hsd1.co.comcast.net ([2601:284:8204:2010::f10e])
-        by smtp.googlemail.com with ESMTPSA id o3-20020a6b5a03000000b00640a33c5b0dsm7272411iob.17.2022.03.01.08.46.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 08:46:51 -0800 (PST)
-From:   Jim Cromie <jim.cromie@gmail.com>
-To:     jbaron@akamai.com, gregkh@linuxfoundation.org,
-        daniel.vetter@ffwll.ch, seanpaul@chromium.org, robdclark@gmail.com,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org
-Cc:     Jim Cromie <jim.cromie@gmail.com>
-Subject: [PATCH 03/13] dyndbg: add DEFINE_DYNAMIC_DEBUG_CLASSBITS macro and callbacks
-Date:   Tue,  1 Mar 2022 09:46:19 -0700
-Message-Id: <20220301164629.3814634-4-jim.cromie@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220301164629.3814634-1-jim.cromie@gmail.com>
-References: <20220301164629.3814634-1-jim.cromie@gmail.com>
+        Tue, 1 Mar 2022 11:47:47 -0500
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BDF1F41334;
+        Tue,  1 Mar 2022 08:47:01 -0800 (PST)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9C2DF1042;
+        Tue,  1 Mar 2022 08:47:00 -0800 (PST)
+Received: from localhost (ionvoi01-desktop.cambridge.arm.com [10.1.196.65])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3BF2A3F73D;
+        Tue,  1 Mar 2022 08:47:00 -0800 (PST)
+Date:   Tue, 1 Mar 2022 16:46:58 +0000
+From:   Ionela Voinescu <ionela.voinescu@arm.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Sudeep Holla <sudeep.holla@arm.com>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Pierre Gondois <pierre.gondois@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Giovanni Gherdovich <ggherdovich@suse.cz>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sean Kelley <skelley@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH v2 2/3] arch_topology: obtain cpu capacity using
+ information from CPPC
+Message-ID: <Yh5OAsYVBWWko+CH@arm.com>
+References: <20210824105651.28660-1-ionela.voinescu@arm.com>
+ <20210824105651.28660-3-ionela.voinescu@arm.com>
+ <CAJZ5v0hkgWQqOzfdv4kr6rxz9eMsOgHkMYj0cZpO7yC+=SnQfg@mail.gmail.com>
+ <20210826175138.GA22165@arm.com>
+ <CAJZ5v0i9Ys67E8TvWzJG+NaODKsEMsJiHrF9KM77Lk4L-3OOsA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0i9Ys67E8TvWzJG+NaODKsEMsJiHrF9KM77Lk4L-3OOsA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DEFINE_DYNAMIC_DEBUG_CLASSBITS(fsname, var, bitmap_desc, classes..)
-allows users to create a drm.debug style (bitmap) sysfs interface, to
-control sets of pr_debug's according to their .class_id's
+Hi Rafael,
 
-This wraps existing "class" keyword and behavior:
+Apologies for the delay.
 
-   echo "module drm -p ; module drm class 0 +p ; module drm class 2 +p" >control
+On Thursday 26 Aug 2021 at 20:32:52 (+0200), Rafael J. Wysocki wrote:
+> On Thu, Aug 26, 2021 at 7:51 PM Ionela Voinescu <ionela.voinescu@arm.com> wrote:
+> >
+> > Thanks for the review, Rafael!
+> >
+> > On Wednesday 25 Aug 2021 at 19:54:26 (+0200), Rafael J. Wysocki wrote:
+> > > On Tue, Aug 24, 2021 at 12:57 PM Ionela Voinescu
+> > > <ionela.voinescu@arm.com> wrote:
+> > > >
+> > > > Define topology_init_cpu_capacity_cppc() to use highest performance
+> > > > values from _CPC objects to obtain and set maximum capacity information
+> > > > for each CPU. acpi_cppc_processor_probe() is a good point at which to
+> > > > trigger the initialization of CPU (u-arch) capacity values, as at this
+> > > > point the highest performance values can be obtained from each CPU's
+> > > > _CPC objects. Architectures can therefore use this functionality
+> > > > through arch_init_invariance_cppc().
+> > > >
+> > > > The performance scale used by CPPC is a unified scale for all CPUs in
+> > > > the system. Therefore, by obtaining the raw highest performance values
+> > > > from the _CPC objects, and normalizing them on the [0, 1024] capacity
+> > > > scale, used by the task scheduler, we obtain the CPU capacity of each
+> > > > CPU.
+> > > >
+> > > > While an ACPI Notify(0x85) could alert about a change in the highest
+> > > > performance value, which should in turn retrigger the CPU capacity
+> > > > computations, this notification is not currently handled by the ACPI
+> > > > processor driver. When supported, a call to arch_init_invariance_cppc()
+> > > > would perform the update.
+> > > >
+> > > > Signed-off-by: Ionela Voinescu <ionela.voinescu@arm.com>
+> > > > Tested-by: Valentin Schneider <valentin.schneider@arm.com>
+> > > > Cc: Sudeep Holla <sudeep.holla@arm.com>
+> > > > ---
+> > > >  drivers/base/arch_topology.c  | 37 +++++++++++++++++++++++++++++++++++
+> > > >  include/linux/arch_topology.h |  4 ++++
+> > > >  2 files changed, 41 insertions(+)
+> > > >
+> > > > diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> > > > index 921312a8d957..358e22cd629e 100644
+> > > > --- a/drivers/base/arch_topology.c
+> > > > +++ b/drivers/base/arch_topology.c
+> > > > @@ -306,6 +306,43 @@ bool __init topology_parse_cpu_capacity(struct device_node *cpu_node, int cpu)
+> > > >         return !ret;
+> > > >  }
+> > > >
+> > > > +#ifdef CONFIG_ACPI_CPPC_LIB
+> > > > +#include <acpi/cppc_acpi.h>
+> > > > +
+> > > > +void topology_init_cpu_capacity_cppc(void)
+> > > > +{
+> > > > +       struct cppc_perf_caps perf_caps;
+> > > > +       int cpu;
+> > > > +
+> > > > +       if (likely(acpi_disabled || !acpi_cpc_valid()))
+> > > > +               return;
+> > > > +
+> > > > +       raw_capacity = kcalloc(num_possible_cpus(), sizeof(*raw_capacity),
+> > > > +                              GFP_KERNEL);
+> > > > +       if (!raw_capacity)
+> > > > +               return;
+> > > > +
+> > > > +       for_each_possible_cpu(cpu) {
+> > > > +               if (!cppc_get_perf_caps(cpu, &perf_caps)) {
+> > > > +                       raw_capacity[cpu] = perf_caps.highest_perf;
+> > >
+> > > From experience, I would advise doing some sanity checking on the
+> > > per_caps values before using them here.
+> > >
+> >
+> > cppc_get_perf_caps() already returns -EFAULT if highest_perf is 0, and
+> > I'm not sure if I can make any other assumptions about what a sane
+> > highest_perf value would need to be here.
+> 
+> Well, it cannot be less than lowest_perf or nominal_perf or
+> guaranteed_perf, for instance.
+> 
 
-With the macro in use, this is equivalent:
+True! I'll push a v3 with this change tomorrow, after I rebase and
+re-test on 5.17-rc6.
 
-   echo 0x05 > /sys/module/drm/parameters/debug
+I've not checked for guaranteed performance as according to the
+specification it's optional and it's designed to be between lowest_perf and
+nominal_perf. If guaranteed performance is/will be used anywhere, it should
+have its own validation against lower/nominal/highest.
 
-To use:
+Therefore I think checking that we have a highest_perf value higher or equal
+to both nominal_perf and lowest_perf is the right balance in validation.
 
-DEFINE_DYNAMIC_DEBUG_CLASSBITS(debug, __drm_debug, "pmfl",
-	"drm.debug - bits => categories:",
-	/* vector of uint:4 symbols, ala enum drm_debug_category, 15 is EOL */
-	DRM_UT_CORE,
-	DRM_UT_DRIVER,
-	DRM_UT_KMS ... );
+> > Did you have anything else in mind for sanity checking?
+> >
+> > > Also note that highest_perf may not be sustainable, so would using
+> > > highest_perf as raw_capacity[] always work as expected?
+> > >
+> >
+> > Yes, in my opinion using it is better than the alternative, using the
+> > nominal performance value. This highest performance value helps obtain
+> > the maximum capacity of a CPU on a scale [0, 1024] when referenced to
+> > the highest performance of the biggest CPU in the system. There is no
+> > assumption in the task scheduler that this capacity is sustainable.
+> 
+> That's true, but there are consequences if it is the case.  Namely,
+> you may find that the big CPUs run at the highest performance for a
+> small fraction of time, so most of the time they may appear to be
+> underutilized no matter how many tasks are packed on them, which then
+> will influence the utilization metrics of those tasks.
+> 
 
-The 3rd arg is a string with any of the dyndbg.flags [pmflt_]+
-Full exposure of the flags here lets the module author:
+Yes, there are no perfect solutions, and whether one exposes nominal or
+highest performance there will be consequences. But I think the task
+scheduler has progressed to cope better with unavailable capacity.
 
-- fully customize/take-over the decorations of enabled sites.
-  generally leaving decorations to user is preferred.
+For example, after the PELT changes at [1], CPUs won't seem underutilized
+if they are always running, even if they are not running at the highest
+frequency. Before these changes to PELT, the utilization of a CPU was
+capped to the current capacity of the CPU. So in that case, if the
+nominal_perf was 70% of highest_perf and the CPU was only running at
+nominal_freq, its utilization could not exceed 716 (big CPU). But after
+[1] if the CPU had no idle time, it does exceed 716 and could be marked
+as overutilized. That utilization doesn't really have a meaning (we
+don't know how utilized the CPU would have been if it would have run at
+boosted frequencies) but it does not have to, as long as it signals the
+need of an action: migrate tasks to another CPU, possibly disable EAS.
 
-- aim the debug-stream:
-  now printk, later tracefs.
-  using both together means more work (p or T, in practice)
-  iface doesn't care about new flags added later
+[1]
+https://lore.kernel.org/lkml/tip-23127296889fe84b0762b191b5d041e8ba6f2599@git.kernel.org/
 
-- declare 2 separate sysfs-knobs, one each for p, T, if desired.
+> It may be better to use guaranteed_perf or some value between it at
+> the highest for this reason.
+> 
 
-- decorations are per callsite,
-  shared across sysfs-knobs for any controlled classes
+Guaranteed performance is a tricky one:
+"
+Guaranteed Performance Register conveys to OSPM a Guaranteed Performance
+level, which is the current maximum sustained performance level of a
+processor, taking into account all known external constraints (power
+budgeting, thermal constraints, AC vs DC power source, etc.). All
+processors are expected to be able to sustain their guaranteed
+performance levels simultaneously. The guaranteed performance level is
+required to fall in the range [Lowest Performance, Nominal performance],
+inclusive.
+"
 
-To support the macro, the patch adds:
+In my experience everyone interprets this differently and therefore
+platform providers could populate this vastly differently. One could
+argue that the only true guaranteed performance is the lowest
+performance as it's the only one potentially sustainable under any power
+and especially thermal conditions. As well one could argue that it could
+be closer or equal to nominal performance, but that is the case only if
+one considers thermal effects unlikely. Therefore it may be that it's
+highly unreliable as a generic source of capacity information.
 
- - int param_set_dyndbg_classbits()
- - int param_get_dyndbg_classbits()
- - struct kernel_param_ops param_ops_dyndbg_classbits
 
-Following the model of kernel/params.c STANDARD_PARAM_DEFS, these are
-non-static and exported.
+Therefore, I'm still leaning towards keeping the use of highest_perf in
+this case due to the scheduler's ability to cope with unavailable
+capacity but also because it reflects better u-arch differences between
+CPUs.
 
-get/set use an augmented kernel_param; the arg refs a new struct
-dyndbg_bitmap_param containing:
+Thank you,
+Ionela.
 
-A- the vector of classes (drm.debug "categories") being controlled
-
-This in-line vector of constants (uint [0-14]) specifies a sequence of
-controlling bits (by position, starting at 0) with the values naming
-the class_id's mapped to that bit.
-
-A value of _DPRINTK_SITE_UNCLASSED terminates the vector processing by
-param_set_dyndbg_classbits(), and is appended by the macro to insure a
-defined termination after max 15 classes are applied.
-
-Technically, the vector is a flex-array, but its size is practically
-limited to max 15 in length (repeats are pointless).
-
-B- a pointer to the user module's ulong holding the bits/state.
-
-By accessing client's bit-state, we coordinate with existing code
-that still uses drm_debug_enabled(), so they work unchanged.
-The change to ulong allows use of BIT() etc.
-
-NOTES:
-
-_DPRINTK_SITE_UNCLASSED = 15, ie 2**CLS_BITS-1, deserves special
-mention; it already marks all existing pr-debug callsites, only the
-new drm.debug callsites are initialized to other (DRM_UT_*) values.
-
-_DPRINTK_SITE_UNCLASSED is used in param_set_dyndbg_classbits() to
-limit the range of bits that are processed to what fits in uint:4.
-It also terminates the class-id list passed into the macro, so dont
-use it halfway through your list of classes-to-control.
-
-param_set_dyndbg_classbits() compares new vs old bits, and only
-updates each class on changes.  This maximally preserves the
-underlying state, which may have been customized at some point via
-`echo $cmd >control`.  So if users really want to know that all
-prdbgs are set precisely, they must pre-clear then set.
-
-Identity mapping in (A) is encouraged.  Your vector should exclude 15,
-if used, it terminates the list prematurely; any following bit
-mappings will be ignored (it is the default/non category).
-
-The whole (A) vector/list passed to the macro is:
-
-- not strictly needed: 0-N bits are scanned, only N is needed in the
-  macro interface to do this, not the whole list.
-
-- 0-N list allows juggling the bit->class map
-  Identity map is preferred.
-  15 terminates list if used. (macro impl does this)
-
-That said, (A) is self-documenting; the explicit list is greppable,
-'DRM_UT_*' provides lots of clues.  Further, it could be upgraded,
-something like:
-
-  _pick_sym_(DRM_UT_CORE, "mumble something useful about CORE debug")
-
-_pick_sym_(a,b) a		// gives us what we need here
-_pick_help_(a,b) #a " : " b	// mod-info fodder
-
-Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
----
- include/linux/dynamic_debug.h | 50 +++++++++++++++++++++++
- lib/dynamic_debug.c           | 77 +++++++++++++++++++++++++++++++++++
- 2 files changed, 127 insertions(+)
-
-diff --git a/include/linux/dynamic_debug.h b/include/linux/dynamic_debug.h
-index d4b48f3cc6e8..e83c4e36ad29 100644
---- a/include/linux/dynamic_debug.h
-+++ b/include/linux/dynamic_debug.h
-@@ -209,6 +209,10 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
- 				   KERN_DEBUG, prefix_str, prefix_type,	\
- 				   rowsize, groupsize, buf, len, ascii)
- 
-+struct kernel_param;
-+int param_set_dyndbg_classbits(const char *instr, const struct kernel_param *kp);
-+int param_get_dyndbg_classbits(char *buffer, const struct kernel_param *kp);
-+
- #else /* !CONFIG_DYNAMIC_DEBUG_CORE */
- 
- #include <linux/string.h>
-@@ -255,6 +259,52 @@ static inline int dynamic_debug_exec_queries(const char *query, const char *modn
- 	return 0;
- }
- 
-+struct kernel_param;
-+static inline int param_set_dyndbg_classbits(const char *instr, const struct kernel_param *kp)
-+{ return 0; }
-+static inline int param_get_dyndbg_classbits(char *buffer, const struct kernel_param *kp)
-+{ return 0; }
-+
- #endif /* !CONFIG_DYNAMIC_DEBUG_CORE */
- 
-+#define FLAGS_LEN 8
-+struct dyndbg_classbits_param {
-+	unsigned long *bits;		/* ref to shared state */
-+	const char flags[FLAGS_LEN];	/* toggle these flags on bit-changes */
-+	const int classes[];		/* indexed by bitpos */
-+};
-+
-+#if defined(CONFIG_DYNAMIC_DEBUG) || defined(CONFIG_DYNAMIC_DEBUG_CORE)
-+/**
-+ * DEFINE_DYNAMIC_DEBUG_CLASSBITS() - bitmap control of classed pr_debugs
-+ * @sysname: sysfs-node name
-+ * @_var:    C-identifier holding bit-vector (Bits 0-14 are usable)
-+ * @_flgs:   string with dyndbg flags: 'p' and/or 'T', and maybe "fmlt" also.
-+ * @desc:    string summarizing the controls provided
-+ * @classes: vector of callsite.class_id's (uint:4, 15 is reserved)
-+ *
-+ * This macro implements a DRM.debug API style bitmap, mapping bits
-+ * 0-14 to classes of prdbg's, as initialized in their .class_id fields.
-+ * @_flgs chooses the debug recipient; p - syslog, T - tracefs, and
-+ * can include log decorations; m - module, f - function, l - line_num
-+ */
-+#define DEFINE_DYNAMIC_DEBUG_CLASSBITS(fsname, _var, _flgs, desc, ...)	\
-+	MODULE_PARM_DESC(fsname, desc);					\
-+	static struct dyndbg_classbits_param ddcats_##_var = {		\
-+		.bits = &(_var),					\
-+		.flags = _flgs,						\
-+		.classes = { __VA_ARGS__, _DPRINTK_SITE_UNCLASSED }	\
-+	};								\
-+	module_param_cb(fsname, &param_ops_dyndbg_classbits,		\
-+			&ddcats_##_var, 0644)
-+
-+extern const struct kernel_param_ops param_ops_dyndbg_classbits;
-+
-+#else /* no dyndbg configured, throw error on macro use */
-+
-+#define DEFINE_DYNAMIC_DEBUG_CLASSBITS(fsname, var, bitmap_desc, ...)	\
-+	BUILD_BUG_ON_MSG(1, "CONFIG_DYNAMIC_DEBUG* needed to use this macro: " #fsname)
-+
-+#endif
-+
- #endif
-diff --git a/lib/dynamic_debug.c b/lib/dynamic_debug.c
-index ee2129becacc..7eb1c31f870d 100644
---- a/lib/dynamic_debug.c
-+++ b/lib/dynamic_debug.c
-@@ -611,6 +611,83 @@ int dynamic_debug_exec_queries(const char *query, const char *modname)
- }
- EXPORT_SYMBOL_GPL(dynamic_debug_exec_queries);
- 
-+#ifdef CONFIG_MODULES
-+#define KP_MOD_NAME kp->mod->name
-+#else
-+#define KP_MOD_NAME NULL /* wildcard */
-+#endif
-+#define FMT_QUERY_SIZE 128 /* typically need <40 */
-+/**
-+ * param_set_dyndbg_classbits - bits => categories >control setter
-+ * @instr: string echo>d to sysfs
-+ * @kp:    kp->arg has state: bits, map
-+ *
-+ * Enable/disable prdbgs by their "category", as specified in the
-+ * DEFINE_DYNAMIC_DEBUG_BITGRPS.classbits argument.
-+ *
-+ * Returns: 0 or <0 if error.
-+ */
-+int param_set_dyndbg_classbits(const char *instr, const struct kernel_param *kp)
-+{
-+	unsigned long inbits;
-+	int rc, i, matches = 0, totct = 0;
-+	char query[FMT_QUERY_SIZE];
-+	const struct dyndbg_classbits_param *dcp = kp->arg;
-+
-+	if (!dcp) {
-+		pr_err("set_dyndbg_classbits: no bits=>queries map\n");
-+		return -EINVAL;
-+	}
-+	rc = kstrtoul(instr, 0, &inbits);
-+	if (rc) {
-+		pr_err("set_dyndbg_classbits: expecting unsigned int\n");
-+		return rc;
-+	}
-+	vpr_info("set_dyndbg_classbits: new 0x%lx old 0x%lx\n", inbits, *dcp->bits);
-+
-+	for (i = 0; i < _DPRINTK_SITE_UNCLASSED &&
-+		dcp->classes[i] < _DPRINTK_SITE_UNCLASSED; i++) {
-+
-+		if (test_bit(i, &inbits) == test_bit(i, dcp->bits))
-+			continue;
-+		snprintf(query, FMT_QUERY_SIZE, "class %d %cT", dcp->classes[i],
-+			 test_bit(i, &inbits) ? '+' : '-');
-+
-+		matches = ddebug_exec_queries(query, KP_MOD_NAME);
-+
-+		v2pr_info("bit-%d: %d matches on class:%u\n", i,
-+			  matches, dcp->classes[i]);
-+		totct += matches;
-+	}
-+	*dcp->bits = inbits;
-+	vpr_info("total matches: %d\n", totct);
-+	return 0;
-+}
-+EXPORT_SYMBOL(param_set_dyndbg_classbits);
-+
-+/**
-+ * param_get_dyndbg_classbits - classbits reader
-+ * @buffer: string description of controlled bits -> classes
-+ * @kp:     kp->arg has state: bits, map
-+ *
-+ * Reads last written bits, underlying prdbg state may have changed since.
-+ * Returns: #chars written or <0 on error
-+ */
-+int param_get_dyndbg_classbits(char *buffer, const struct kernel_param *kp)
-+{
-+	const struct dyndbg_classbits_param *p = kp->arg;
-+	unsigned long val = *p->bits;
-+
-+	return scnprintf(buffer, PAGE_SIZE, "0x%lx\n", val);
-+}
-+EXPORT_SYMBOL(param_get_dyndbg_classbits);
-+
-+const struct kernel_param_ops param_ops_dyndbg_classbits = {
-+	.set = param_set_dyndbg_classbits,
-+	.get = param_get_dyndbg_classbits,
-+};
-+EXPORT_SYMBOL(param_ops_dyndbg_classbits);
-+
- #define PREFIX_SIZE 64
- 
- static int remaining(int wrote)
--- 
-2.35.1
-
+> > Using lower values (nominal performance) would shorten the scale and
+> > make smaller CPUs seem bigger than they are. Also, using highest
+> > performance gives a better indication of micro-architectural
+> > differences in performance between CPUs, which plays a role in scaling
+> > utilization, even if some of the performance levels are not sustainable
+> > (which is platform dependent).
