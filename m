@@ -2,128 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD62C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:26:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F98C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234395AbiCAN0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 08:26:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
+        id S235002AbiCAN1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 08:27:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230374AbiCAN0w (ORCPT
+        with ESMTP id S230374AbiCAN1U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 08:26:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37FF9D044;
-        Tue,  1 Mar 2022 05:26:11 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ED796144F;
-        Tue,  1 Mar 2022 13:26:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4705DC340EE;
-        Tue,  1 Mar 2022 13:26:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646141171;
-        bh=q9GySkEXj2qOEws7WQOcFqhKLJ1DJ8LgqDRm04SdGeU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PPYvYuyueG6EFv2fYzIoq3il0/n2kYnPiWjDUpOFBNjDQrEULzkYVHw1eyjRD2VGv
-         rJeF0aqQPQM6AeIBatbJhFQ5vxhYSFPKqUQlEJCvYAv4lLD7TMxD32gi1RUzBLikt0
-         NbF4B03o3T8Il98RCGPWG+TeM4yPwRE9uvPwaJVdv8EVcaDO3GgsHrld3/0odUqSx5
-         seGKIta13pTceYFRVUsn4gxpO0B6dLdW6ias4B3eN2HywOMApIMIQOKAK3Ozqg2zFk
-         EfzDGJbSgVGb1OkOUuWXPJUHik54imQfdglXde2ZN03nr6pbWYcj6z2Xpg0gTS6mXF
-         XOl30WceJBOhQ==
-Date:   Tue, 1 Mar 2022 14:26:48 +0100
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
-        "Chatre, Reinette" <reinette.chatre@intel.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "Lutomirski, Andy" <luto@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "Christopherson,, Sean" <seanjc@google.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "Zhang, Cathy" <cathy.zhang@intel.com>,
-        "Xing, Cedric" <cedric.xing@intel.com>,
-        "Huang, Haitao" <haitao.huang@intel.com>,
-        "Shanahan, Mark" <mark.shanahan@intel.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
- permissions
-Message-ID: <Yh4fGORDaJyVrJQW@iki.fi>
-References: <cover.1644274683.git.reinette.chatre@intel.com>
- <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
- <YhLhoMFPyOFZ2fsX@iki.fi>
- <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
- <Yhy/GvJegnTqYdq6@iki.fi>
- <f6a256a6-a7d7-a8e7-c9a8-e232203c63af@intel.com>
+        Tue, 1 Mar 2022 08:27:20 -0500
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3DEDF9D0C1;
+        Tue,  1 Mar 2022 05:26:39 -0800 (PST)
+HMM_SOURCE_IP: 172.18.0.218:56246.1658835715
+HMM_ATTACHE_NUM: 0001
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-222.210.155.146 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id D6D50280029;
+        Tue,  1 Mar 2022 21:26:25 +0800 (CST)
+X-189-SAVE-TO-SEND: +lic121@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 06415c6c8f124d04b2344848f72223f3 for bpf@vger.kernel.org;
+        Tue, 01 Mar 2022 21:26:35 CST
+X-Transaction-ID: 06415c6c8f124d04b2344848f72223f3
+X-Real-From: lic121@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: lic121@chinatelecom.cn
+Date:   Tue, 1 Mar 2022 13:26:23 +0000
+From:   lic121 <lic121@chinatelecom.cn>
+To:     bpf@vger.kernel.org
+Cc:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lic121@chinatelecom.cn
+Subject: [PATCH bpf] libbpf: unmap rings when umem deleted
+Message-ID: <20220301132623.GA19995@vscode.7~>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f6a256a6-a7d7-a8e7-c9a8-e232203c63af@intel.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 07:16:22AM -0800, Dave Hansen wrote:
-> On 2/28/22 04:24, Jarkko Sakkinen wrote:
-> >> Regarding the recent update of splitting the page permissions change
-> >> request into two IOCTLS (RELAX and RESTRICT), can we combine them into
-> >> one? That is, revert to how it was done in the v1 version?
-> > They are logically separate complex functionalities:
-> > 
-> > 1. "restrict" calls EMODPR and requires EACCEPT
-> > 2. "relax" increases permissions up to vetted ("EADD") and could be
-> >     combined with EMODPE called inside enclave.
-> 
-> It would be great to have a _slightly_ better justification than that.
-> Existing permission interfaces like chmod or mprotect() don't have this
-> asymmetry.
-> 
-> I think you're saying that the underlying hardware implementation is
-> asymmetric, so the interface should be too.  I don't find that argument
-> very convincing.  If the hardware interface is arcane and we can make it
-> look more sane in the ioctl() layer, we should that, asymmetry or not.
+xsk_umem__create() does mmap for fill/comp rings, but xsk_umem__delete()
+doesn't do the unmap. This works fine for regular cases, because
+xsk_socket__delete() does unmap for the rings. But for the case that
+xsk_socket__create_shared() fails, umem rings are not unmapped.
 
-That is my argument, yes.
+fill_save/comp_save are checked to determine if rings have already be
+unmapped by xsk. If fill_save and comp_save are NULL, it means that the
+rings have already been used by xsk. Then they are supposed to be
+unmapped by xsk_socket__delete(). Otherwise, xsk_umem__delete() does the
+unmap.
 
-> If we can't make it any more sane, let's say why the ioctl() must or
-> should be asymmetric.
+Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
+Signed-off-by: lic121 <lic121@chinatelecom.cn>
+---
+ tools/lib/bpf/xsk.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-Perhaps underling this asymmetry in kdoc would be enough.
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index edafe56..32a2f57 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -1193,12 +1193,23 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 
+ int xsk_umem__delete(struct xsk_umem *umem)
+ {
++	struct xdp_mmap_offsets off;
++	int err;
++
+ 	if (!umem)
+ 		return 0;
+ 
+ 	if (umem->refcount)
+ 		return -EBUSY;
+ 
++	err = xsk_get_mmap_offsets(umem->fd, &off);
++	if (!err && umem->fill_save && umem->comp_save) {
++		munmap(umem->fill_save->ring - off.fr.desc,
++		       off.fr.desc + umem->config.fill_size * sizeof(__u64));
++		munmap(umem->comp_save->ring - off.cr.desc,
++		       off.cr.desc + umem->config.comp_size * sizeof(__u64));
++	}
++
+ 	close(umem->fd);
+ 	free(umem);
+ 
+-- 
+1.8.3.1
 
-> The SGX2 page permission mechanism is horribly counter intuitive.
-> *Everybody* that looks at it thinks that it's wrong.  That means that we
-> have a lot of work ahead of us to explain the interfaces that get
-> layered on top.
-
-I fully agree on this :-)
-
-With EACCEPTCOPY (kudos to Mark S. for reminding me of this version of
-EACCEPT @ chat.enarx.dev) it is possible to make R and RX pages but
-obviously new RX pages are now out of the picture:
-
-
-	/*
-	 * Adding a regular page that is architecturally allowed to only
-	 * be created with RW permissions.
-	 * TBD: Interface with user space policy to support max permissions
-	 * of RWX.
-	 */
-	prot = PROT_READ | PROT_WRITE;
-	encl_page->vm_run_prot_bits = calc_vm_prot_bits(prot, 0);
-	encl_page->vm_max_prot_bits = encl_page->vm_run_prot_bits;
-
-If that TBD is left out to the final version the page augmentation has a
-risk of a API bottleneck, and that risk can realize then also in the page
-permission ioctls.
-
-I.e. now any review comment is based on not fully known territory, we have
-one known unknown, and some unknown unknowns from unpredictable effect to
-future API changes.
-
-BR, Jarkko
