@@ -2,96 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236902AbiCASPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:15:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43764 "EHLO
+        id S236928AbiCASPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:15:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236844AbiCASPJ (ORCPT
+        with ESMTP id S236845AbiCASPJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 1 Mar 2022 13:15:09 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82013B55C;
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04016514C;
         Tue,  1 Mar 2022 10:14:17 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id c9so14155008pll.0;
+Received: by mail-lf1-f53.google.com with SMTP id w27so28304626lfa.5;
         Tue, 01 Mar 2022 10:14:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nnvTC2gtVVCd0mSMj/05A70ERgumEKKzDpQ3v91EDxU=;
-        b=E99TwnvlKE/+7dUSA3mRBfKLigkbHMEyKGiIFON9RFsGy7JE8QN0Mi4OzPWMQfecyn
-         wgPUZaTmRNtfp7gWGB9VJfKM6ID1M3qvNqDTe6bIDy/Sh1D3Blmn2arUKVYDzNoAoXTk
-         Ul/ReWtWMX0C2poeSFVFE0eciaMDps12A7addFitTmNyaCThq1t+Qtt/wkM8GT4nGGFF
-         lm4QVyI2CdQyOydBQ+3HAPruYoiTVxYvuIn2S35NItAg1d43gAg2InX+7V8Br5sqUi6q
-         IPaxpNslz7VlkATBmnHsNk9cDsUNP+Stt1y2ZeKPmxRmjPkfeJ+EvSOvsBsbRCZB3r6F
-         d+JA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nnvTC2gtVVCd0mSMj/05A70ERgumEKKzDpQ3v91EDxU=;
-        b=G6i2X8uFLrLYgJXXAFEYDmg7LIIplFtG+6Bb9n+2QZ9Vk00dBX9J3tzsz/G3l/cHuQ
-         RmCAqFcFhSpD8QNoFvg8Hz+m0rnNZuWSpLqHcUROGjjfO8Oajsy8PFmZ6uERoaupfZDm
-         YJK8Iceo7ovTst1xUi+JB282Its4Qwclu2G/icxqtG/ivL2cb4CBmQT981qqViMzvuXd
-         VyeVbz8DNCJaB+ugHbDMTjES9K7x+QRAV3ne26Rhb37ANtwrQoBA6OBYppdlrk4nKWJk
-         pQb6UnUILMXn9d/MIuoaX1SUz69sMaaWoRQY61EMFIz4I+UP+XO4nOj+OZuVV4gH+NUN
-         mD2g==
-X-Gm-Message-State: AOAM530UqiZLX61JlP83fI0EDQocLrjwWES3gQkeMrtDdNA7LxVdvdvZ
-        /7aTLQ8DjMicE5GADDjPZtS/ikGJaB0=
-X-Google-Smtp-Source: ABdhPJzc0UxlELQq13kNnMa9jGVAQVr/GQ7RbeXIWJxryqFAGNMBWJU1MXCH2G6jIUykSJzO1WAL+A==
-X-Received: by 2002:a17:902:b189:b0:14d:6f87:7c25 with SMTP id s9-20020a170902b18900b0014d6f877c25mr27403123plr.31.1646158456915;
-        Tue, 01 Mar 2022 10:14:16 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a20-20020a056a000c9400b004f396b965a9sm18773821pfv.49.2022.03.01.10.14.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 10:14:16 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Markus Mayer <mmayer@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM STB AVS TMON
-        DRIVER), "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        linux-pm@vger.kernel.org (open list:BROADCOM STB AVS TMON DRIVER),
-        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM BCM7XXX
-        ARM ARCHITECTURE)
-Subject: [PATCH RESEND] thermal: brcmstb_thermal: Interrupt is optional
-Date:   Tue,  1 Mar 2022 10:14:12 -0800
-Message-Id: <20220301181412.2008044-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ati6pz51+/93fkjrp3qu8EZp+J9aKKrBiRYbSU6Fg0U=;
+        b=Om1b/3NSga/xQw9wOdywHI2V9HI8m4djhIgNTKV3srkMs4k0nk+2GOvMb2tndm9t5g
+         twyHsKrnN511CmtFTobiO4r5Zp78Yy1vXEEh+J/Ro/yKd0pMORUeoixw/56M8Yywlnkc
+         Uhy3Kkaj8p3pXXSVHdDWsndVxzWADMj7G6WOjVo8aklMX+TWNORD1ljunV8N41n66E0B
+         3/Km1TkKz0nodT5N/m/GO8uCK9OLXYLUf5EYuGS70p1qjYrLReKtCzek70GybFfi2i7j
+         oFDcbM7o6Ho+Avai07riui3B6AWFiQQUnQnv+x7sdOtPx4aaOiafUmZrs+Rvl/U2zDkA
+         QrMA==
+X-Gm-Message-State: AOAM5321BECP3ZttYhVGCgeX7GIhqGX5B3f0lTBtJ0xqKwWdHAP3WuqX
+        LVeZrvIMtb20lN1g0S9ibsODiJqo8HG8lOWHCsU=
+X-Google-Smtp-Source: ABdhPJwwTCy5Iu77Y+Yoc3pN2nsGqYdY3FbTWRPKg/kzAovjLy1lxlN7CbrtLeLiVxVccp2ScsWZHip7IloooCUnZqM=
+X-Received: by 2002:ac2:58d8:0:b0:442:bc4b:afb7 with SMTP id
+ u24-20020ac258d8000000b00442bc4bafb7mr15934522lfo.99.1646158456152; Tue, 01
+ Mar 2022 10:14:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220301010412.431299-1-namhyung@kernel.org> <20220301010412.431299-3-namhyung@kernel.org>
+ <Yh3heodejlBiwqLj@hirez.programming.kicks-ass.net> <20220301094523.5e4bc77d@gandalf.local.home>
+In-Reply-To: <20220301094523.5e4bc77d@gandalf.local.home>
+From:   Namhyung Kim <namhyung@kernel.org>
+Date:   Tue, 1 Mar 2022 10:14:05 -0800
+Message-ID: <CAM9d7ci_8JsvA2U8fLxON0y+5cATmJH5xUZgzWnbAkXLumO2bw@mail.gmail.com>
+Subject: Re: [PATCH 2/4] locking: Apply contention tracepoints in the slow path
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Byungchul Park <byungchul.park@lge.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
+        bpf <bpf@vger.kernel.org>, Radoslaw Burny <rburny@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Utilize platform_get_irq_optional() to silence these messages:
+Hi Steve,
 
-brcmstb_thermal a581500.thermal: IRQ index 0 not found
+On Tue, Mar 1, 2022 at 6:45 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+>
+> On Tue, 1 Mar 2022 10:03:54 +0100
+> Peter Zijlstra <peterz@infradead.org> wrote:
+>
+> > diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
+> > index 8555c4efe97c..18b9f4bf6f34 100644
+> > --- a/kernel/locking/rtmutex.c
+> > +++ b/kernel/locking/rtmutex.c
+> > @@ -1579,6 +1579,8 @@ static int __sched __rt_mutex_slowlock(struct rt_mutex_base *lock,
+> >
+> >       set_current_state(state);
+> >
+> > +     trace_contention_begin(lock, _RET_IP_, LCB_F_RT);
+>
+> I guess one issue with this is that _RET_IP_ will return the rt_mutex
+> address if this is not inlined, making the _RET_IP_ rather useless.
+>
+> Now, if we can pass the _RET_IP_ into __rt_mutex_slowlock() then we could
+> reference that.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/thermal/broadcom/brcmstb_thermal.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Right, that's what I did in patch 03 and 04 for mutex and rwsem.
+But I forgot to update rt_mutex, will fix.
 
-diff --git a/drivers/thermal/broadcom/brcmstb_thermal.c b/drivers/thermal/broadcom/brcmstb_thermal.c
-index 8df5edef1ded..0cedb8b4f00a 100644
---- a/drivers/thermal/broadcom/brcmstb_thermal.c
-+++ b/drivers/thermal/broadcom/brcmstb_thermal.c
-@@ -351,7 +351,7 @@ static int brcmstb_thermal_probe(struct platform_device *pdev)
- 
- 	priv->thermal = thermal;
- 
--	irq = platform_get_irq(pdev, 0);
-+	irq = platform_get_irq_optional(pdev, 0);
- 	if (irq >= 0) {
- 		ret = devm_request_threaded_irq(&pdev->dev, irq, NULL,
- 						brcmstb_tmon_irq_thread,
--- 
-2.25.1
-
+Thanks,
+Namhyung
