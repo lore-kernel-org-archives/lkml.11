@@ -2,122 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C43C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4805C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:12:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233217AbiCAIMh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 03:12:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56758 "EHLO
+        id S233243AbiCAIMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 03:12:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233166AbiCAIMe (ORCPT
+        with ESMTP id S233210AbiCAIMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 03:12:34 -0500
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39E3883003;
-        Tue,  1 Mar 2022 00:11:54 -0800 (PST)
-Received: from integral2.. (unknown [182.2.70.248])
-        by gnuweeb.org (Postfix) with ESMTPSA id B483F7EC80;
-        Tue,  1 Mar 2022 08:11:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1646122313;
-        bh=zdjHxjV5WVf3cpuRmNxzzSq7B8CXjRT0mG4Lpjuog2o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MfhrwLxxD6kbQ0SCSfBIQCUUYcBnNglFhXQXnhx/zNIuKqnZ8rpvS9rEsrnnw+FY3
-         2+63aUj+4tLVqiBi/2dVnNroml53rrruClzZjOQq8C3sgSvFd78yqmU3jNm/4t7Ksy
-         dyi4+DiYLpgTO0D+lxna9FaZiWY3HRdpu9MKni9Na1lN3Vy6kSmckbp9ztBihmrgAc
-         NuYlJR243Pg6pdV9TQEW62Lr1qPmT4ROCcaR1JEldcAM8CzanzU3emU2jkd51JE8Dr
-         A+/gLVNsuNmxLnZyNcUkhHc3K45rVnugcvoa8bEomUH95jN+a0TLq18y9RVyAar8Y7
-         lv15MZzmpjdkA==
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Tony Luck <tony.luck@intel.com>, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, gwml@vger.gnuweeb.org,
-        x86@kernel.org, stable@vger.kernel.org,
-        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Subject: [PATCH v3 0/2] Two x86 fixes
-Date:   Tue,  1 Mar 2022 15:11:31 +0700
-Message-Id: <20220301081133.106875-1-ammarfaizi2@gnuweeb.org>
-X-Mailer: git-send-email 2.32.0
+        Tue, 1 Mar 2022 03:12:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35CC483003
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 00:11:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646122316;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qLkX7j7/Zb/EioGFBRjJTWhVN81CKkKlGzO4G8wrZag=;
+        b=LKpX2qmrRXf958gP5+DYYsOb/jADH9x6LHptzyr7IJx7g+bLe8TZOUZtVG0EFciqXEKfzW
+        cZFLbjDZfLiLCDXrzHC0BWYSN1BRLEp61BZkZeKskGetu6Gds/qWk4/KXiNOdelVa/eEzi
+        +FQ0aIGZH2U98AkQtPG4xznINoHoWZE=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-45-btEfAs1qNZahTvgg7_BMFA-1; Tue, 01 Mar 2022 03:11:55 -0500
+X-MC-Unique: btEfAs1qNZahTvgg7_BMFA-1
+Received: by mail-wr1-f69.google.com with SMTP id ay18-20020a5d6f12000000b001efe36eb038so1489010wrb.17
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 00:11:54 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=qLkX7j7/Zb/EioGFBRjJTWhVN81CKkKlGzO4G8wrZag=;
+        b=GHuMpNb+Yf9rWQPjFmjJKF2Hq1/v7WKDadMpIwVRnCpvGDEDND5eLpezt1w+STgayW
+         UJ4iOaAA2CEgQycDivaYVRBLCCrso9obDyaAeXIcYfT1DMcp22Hbpuztk7vGUnHSKwgW
+         X9eOl9HVuJj/pos0qKTTN1e9apLnp+X7blaohNNMDeKBwWhFCDCgee0fwDgIbKRNKD/D
+         KBunNNwL1RW8mpCDkT0Gt1uHy0dGPPtjQcQoQML3+GUfkQRQkNM6vvqZn5GITpVdGHrJ
+         /64Oo+z4jmN3OCacZodyCbRvss45Rd8X30ATuku5SSRVM0JD/oxleEWKTA5TGZSi7kxm
+         Ep4g==
+X-Gm-Message-State: AOAM5309iD/kojW0+QuGc2ljoXi+G44eTb5fxWoYtNVcDbAEL9FDkbDl
+        zcJNngrIZZOQ/8GwSyqwKyX2TBGHdSMeaPxxFvwH9f9FWDeovPMySlJSFvVmuRo+M6k+HxYmbZ7
+        4Pvi5HIQPCS+eNnmekBmEWjL+
+X-Received: by 2002:adf:80d0:0:b0:1dc:90a8:4a1d with SMTP id 74-20020adf80d0000000b001dc90a84a1dmr18203776wrl.180.1646122313905;
+        Tue, 01 Mar 2022 00:11:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzwBInwnw6NRfKHm0uyj7te/EYVf6/GOQYqJd8ME8Bnl5vPD/mD+TALb3jA9hO3PUEIhyoYLg==
+X-Received: by 2002:adf:80d0:0:b0:1dc:90a8:4a1d with SMTP id 74-20020adf80d0000000b001dc90a84a1dmr18203754wrl.180.1646122313681;
+        Tue, 01 Mar 2022 00:11:53 -0800 (PST)
+Received: from ?IPV6:2003:cb:c70e:5e00:88ce:ad41:cb1b:323? (p200300cbc70e5e0088cead41cb1b0323.dip0.t-ipconnect.de. [2003:cb:c70e:5e00:88ce:ad41:cb1b:323])
+        by smtp.gmail.com with ESMTPSA id j7-20020a05600c1c0700b0037c2c6d2a91sm1962455wms.2.2022.03.01.00.11.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 00:11:53 -0800 (PST)
+Message-ID: <d3973adb-9403-5b64-23ec-d6800d67e538@redhat.com>
+Date:   Tue, 1 Mar 2022 09:11:51 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     John Hubbard <jhubbard@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
+        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@infradead.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        "Darrick J . Wong" <djwong@kernel.org>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Chaitanya Kulkarni <kch@nvidia.com>
+Cc:     linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-xfs@vger.kernel.org, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220225085025.3052894-1-jhubbard@nvidia.com>
+ <20220225085025.3052894-2-jhubbard@nvidia.com>
+ <6ba088ae-4f84-6cd9-cbcc-bbc6b9547f04@redhat.com>
+ <36300717-48b2-79ec-a97b-386e36bbd2a6@nvidia.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC PATCH 1/7] mm/gup: introduce pin_user_page()
+In-Reply-To: <36300717-48b2-79ec-a97b-386e36bbd2a6@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 28.02.22 22:14, John Hubbard wrote:
+> On 2/28/22 05:27, David Hildenbrand wrote:
+> ...
+>>> diff --git a/mm/gup.c b/mm/gup.c
+>>> index 5c3f6ede17eb..44446241c3a9 100644
+>>> --- a/mm/gup.c
+>>> +++ b/mm/gup.c
+>>> @@ -3034,6 +3034,40 @@ long pin_user_pages(unsigned long start, unsigned long nr_pages,
+>>>   }
+>>>   EXPORT_SYMBOL(pin_user_pages);
+>>>   
+>>> +/**
+>>> + * pin_user_page() - apply a FOLL_PIN reference to a page ()
+>>> + *
+>>> + * @page: the page to be pinned.
+>>> + *
+>>> + * Similar to get_user_pages(), in that the page's refcount is elevated using
+>>> + * FOLL_PIN rules.
+>>> + *
+>>> + * IMPORTANT: That means that the caller must release the page via
+>>> + * unpin_user_page().
+>>> + *
+>>> + */
+>>> +void pin_user_page(struct page *page)
+>>> +{
+>>> +	struct folio *folio = page_folio(page);
+>>> +
+>>> +	WARN_ON_ONCE(folio_ref_count(folio) <= 0);
+>>> +
+>>> +	/*
+>>> +	 * Similar to try_grab_page(): be sure to *also*
+>>> +	 * increment the normal page refcount field at least once,
+>>> +	 * so that the page really is pinned.
+>>> +	 */
+>>> +	if (folio_test_large(folio)) {
+>>> +		folio_ref_add(folio, 1);
+>>> +		atomic_add(1, folio_pincount_ptr(folio));
+>>> +	} else {
+>>> +		folio_ref_add(folio, GUP_PIN_COUNTING_BIAS);
+>>> +	}
+>>> +
+>>> +	node_stat_mod_folio(folio, NR_FOLL_PIN_ACQUIRED, 1);
+>>> +}
+>>> +EXPORT_SYMBOL(pin_user_page);
+>>> +
+>>>   /*
+>>>    * pin_user_pages_unlocked() is the FOLL_PIN variant of
+>>>    * get_user_pages_unlocked(). Behavior is the same, except that this one sets
+>>
+>> I assume that function will only get called on a page that has been
+>> obtained by a previous pin_user_pages_fast(), correct?
+>>
+> 
+> Well, no. This is meant to be used in place of get_page(), for code that
+> knows that the pages will be released via unpin_user_page(). So there is
+> no special prerequisite there.
 
-Two fixes for x86 arch.
+That might be problematic and possibly the wrong approach, depending on
+*what* we're actually pinning and what we're intending to do with that.
 
-## Changelog
-v3:
-  - Fold in changes from Alviro, the previous version is still
-    leaking @bank[n].
+My assumption would have been that this interface is to duplicate a pin
+on a page, which would be perfectly fine, because the page actually saw
+a FOLL_PIN previously.
 
-v2:
-  - Fix wrong copy/paste.
-
-## Summary
-[PATCH v3 1/2] x86/delay: Fix the wrong asm constraint in `delay_loop()`
-
-The asm constraint does not reflect that the asm statement can modify
-the value of @loops. But the asm statement in delay_loop() does change
-the @loops.
-
-If by any chance the compiler inlines this function, it may clobber
-random stuff (e.g. local variable, important temporary value in reg,
-etc.).
-
-Fortunately, delay_loop() is only called indirectly (so it can't
-inline), and then the register it clobbers is %rax (which is by the
-nature of the calling convention, it's a caller saved register), so it
-didn't yield any bug.
-
-^ That shouldn't be an excuse for using the wrong constraint anyway.
-
-This changes "a" (as an input) to "+a" (as an input and output).
+We're taking a pin on a page that we haven't obtained via FOLL_PIN if I
+understand correctly. Which raises the questions, how do we end up with
+the pages here, and what are we doing to do with them (use them like we
+obtained them via FOLL_PIN?)?
 
 
-[PATCH v3 2/2] x86/mce/amd: Fix memory leak when `threshold_create_bank()` fails.
+If it's converting FOLL_GET -> FOLL_PIN manually, then we're bypassing
+FOLL_PIN special handling in GUP code:
 
-@bp is a local variable, calling mce_threshold_remove_device() when
-threshold_create_bank() fails will not free the @bp. Note that
-mce_threshold_remove_device() frees the @bp only if it's already
-stored in the @threshold_banks per-CPU variable.
-
-At that point, the @threshold_banks per-CPU variable is still NULL,
-so the mce_threshold_remove_device() will just be a no-op and the
-@bp is leaked.
-
-Fix this by storing @bp to @threshold_banks before the loop, so in
-case we fail, mce_threshold_remove_device() will free the @bp.
-
-This bug is introduced by commit 6458de97fc15530b544 ("x86/mce/amd:
-Straighten CPU hotplug path") [1].
+page = get_user_pages(FOLL_GET)
+pin_user_page(page)
+put_page(page)
 
 
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
-Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
----
-Ammar Faizi (2):
-  x86/delay: Fix the wrong asm constraint in `delay_loop()`
-  x86/mce/amd: Fix memory leak when `threshold_create_bank()` fails
+For anonymous pages, we'll bail out for example once we have
 
- arch/x86/kernel/cpu/mce/amd.c | 16 ++++++++++------
- arch/x86/lib/delay.c          |  4 ++--
- 2 files changed, 12 insertions(+), 8 deletions(-)
+https://lkml.kernel.org/r/20220224122614.94921-14-david@redhat.com
 
+Because the conditions for pinned anonymous pages might no longer hold.
 
-base-commit: 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
+If we won't call pin_user_page() on anonymous pages, it would be fine.
+But then, I still wonder how we come up the "struct page" here.
+
 -- 
-2.32.0
+Thanks,
+
+David / dhildenb
 
