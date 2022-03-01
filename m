@@ -2,176 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30717C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFF3C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236174AbiCAQSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:18:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
+        id S236098AbiCAQTK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:19:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234486AbiCAQSa (ORCPT
+        with ESMTP id S231880AbiCAQTI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:18:30 -0500
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB725B3FE;
-        Tue,  1 Mar 2022 08:17:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646151469; x=1677687469;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=oW7rCjucB/FAM9m562SoKysdtSc96jMNqsGkSaAFJyc=;
-  b=huswXYlCt6OzR/mdF2ftO/wK3tzrZC4LEK/1F60nwtX/odL93YIuOjXG
-   UlbazkApYAGFNAMo5ZofHiqcN8EMCVTv4GTiTxwjvgLOl6gaU+hRq8ET3
-   h2vFMnybKQDHsaG8EmJlAmfMDBCq9a6rMtL6AVLpUx0S1+PKl1EiSDbam
-   id9uwldaBIjzj6rarg/VA4aJXUa3u0g6FUm1ex6FHHBd7+GtGS/E6Fjet
-   mzOhh714wdKEIf+FGsUgKYz9xqh06mixb/OqeVsDT+mlJNtwr6RGeaHCY
-   TmB3VtECprjGy3F4EUtYbSuXmbdM72YpqeCh4Sxfr2yacOZV7DhhTieYA
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="339600547"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="339600547"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 08:17:49 -0800
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="545146496"
-Received: from rbrosius-mobl.amr.corp.intel.com (HELO [10.209.131.146]) ([10.209.131.146])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 08:17:48 -0800
-Message-ID: <a3240a03-2e14-35e6-4915-41f994e365fc@linux.intel.com>
-Date:   Tue, 1 Mar 2022 07:52:43 -0600
+        Tue, 1 Mar 2022 11:19:08 -0500
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E4027FC1;
+        Tue,  1 Mar 2022 08:18:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1646151485;
+        bh=GE6GS19/67yYeeIDztfYNxsDMH/T0wk4DthhRy8ejPU=;
+        h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=U7y+jA6LdTzJujUMK3dzljwv/P/RPSkc8GYdzn/zT29MiYk/TXclPyIt2WkLzo3Fz
+         QaaeABGOQNTaHqKx6l9jTgCBWGH8ff0yIVxJSqFHkiQh1IWmXHDKxrnKWZ7pbkGtab
+         msMU4JCkCx9xKfdLNzgbkjIVDlSvO1qeVpZuRwCk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.178.74] ([149.172.237.68]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mlf4c-1o6hTS2tr0-00ikHQ; Tue, 01
+ Mar 2022 17:18:04 +0100
+Subject: Re: [PATCH v8 1/1] tpm: fix reference counting for struct tpm_chip
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     peterhuewe@gmx.de, jarkko@kernel.org, stefanb@linux.vnet.ibm.com,
+        James.Bottomley@hansenpartnership.com, David.Laight@ACULAB.COM,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        p.rosenberger@kunbus.com,
+        Lino Sanfilippo <l.sanfilippo@kunbus.com>,
+        stable@vger.kernel.org
+References: <20220301022108.30310-1-LinoSanfilippo@gmx.de>
+ <20220301022108.30310-2-LinoSanfilippo@gmx.de>
+ <20220301140544.GF6468@ziepe.ca>
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Message-ID: <65c85c5e-f1ec-c5fe-7477-e28ce2528fd4@gmx.de>
+Date:   Tue, 1 Mar 2022 17:18:03 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v3 3/3] soundwire: qcom: add in-band wake up interrupt
- support
+In-Reply-To: <20220301140544.GF6468@ziepe.ca>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        robh+dt@kernel.org, vkoul@kernel.org,
-        yung-chuan.liao@linux.intel.com
-Cc:     devicetree@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, quic_srivasam@quicinc.com
-References: <20220228172528.3489-1-srinivas.kandagatla@linaro.org>
- <20220228172528.3489-4-srinivas.kandagatla@linaro.org>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220228172528.3489-4-srinivas.kandagatla@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:nwAQctVcgl9fE4nGE+wKXBDsYDQCaWgBIA8cXCrisbPkeQt47B2
+ nmPKtjZcElnwaihQ7+vMokf2+J5s3bYyh2knjZxeZD8myDRLZ5aGQKkmZ9djeHIKdwNJ1ly
+ ewLIUBNNNugJJ9oly2un4nZ/Sode0dlLkjf9Gm/Ntxy0gsPD0PqS+nXgOgJAQT4cc77nK4u
+ UpQ7vKSQXfYuh5CR/VpcA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:/evx627867g=:h2bMDGki3tNTvJeSC47xjm
+ YT2jOIT5na0YxziUccoemGvk09q2jbizZgrpSevssuuc3pzXdAY2gE9GM0VOX3Wl7/H16zOsj
+ wSWlTROL5KwVZ4Zn5ERcNNBrWnXefWacIOxNj2reNOF/K8N/fsaga+QFvSOthrPxcXjIRVE70
+ 2JTv6pp5SwEW4Oi1nwjB6oDCaYHEaHfuFOdXZxq9A2W0UNyXQ9X0UP7AHL0HPF8W/3Te3fVe9
+ H022Jcq7e/+tW+N0k6zzAXvGQb+rdko11Piy/PeapcVuEylv0XpsWmYBylxeZ2Qjcsuu4N+ei
+ MCgi2to7EKo/qQxC++1w2pFRz5FZqb1tuen44DTPz4iMJUvD+LyoZT+aJ3R8/VYBBxl+JY1aC
+ nvKSZYunySJRrr7SR5P8JI+Zyq9k7KbDFTSB7YBluLcUPNJQLzHLvC+W9uo60ZYmpvJFsnNRk
+ cH1KhXetgI2MVrLCBVcS+JahGUbwuoNCaWXmcNQIW4xzbbcGEiov3dyQq3Q9q7ASbPJJRk/eq
+ hZsNlj3laHNx4b/CJh2eUsA0OYjO3dg6WHQ0aqO4WiLTivHhZME9v8T5ea3KaPKml89lRFsQj
+ OQfZI9LtPoXv2DkRrbdhP55D3J7LAI648gva/hKehd7BltHMQqBmyYYWMVR8zB8Z/r0EcsfYt
+ EKJme17Dzp7nz40pzVFKMLpzwax6WmZ0D0CJIXm8+ONy0XrVfIAk+HWfyQeKY/kc176ziYEk3
+ Uizrp4IOYu49zdb11a6cVdQ9zlR9onZ/7+L2aol5KD9KhIEG3GMPOzWYFRw+BDjbf5OY644Pc
+ xCPL7T+qM2irVLdZ0GL2lNyucsFzlske6bS4iLkLEAn+ovJZ3M/wzQyp77TMf3JYEOUPps07l
+ pTrN3H++8G6R1zqZejdQ2Vrlwq5wCEXAcIyT6MVIqHSYfs1RrTxMisdccjcFwBl1TFsc5i2as
+ SrkAJaiK4AJWlMTS1QrkTj7AziOKmYCGm7YQuOiSgmvpCq3rnhfQ6TiKDFvakk208/7b44ciI
+ pVNbXCXuKGhCxEJUudOQMh4hRTd/pU2NUdCxLPrU68IwDVcbT11LFYlQDeiBPwR/I/0mZrwXG
+ bmV2Pu4FFcnBFA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 01.03.22 at 15:05, Jason Gunthorpe wrote:
+> On Tue, Mar 01, 2022 at 03:21:08AM +0100, Lino Sanfilippo wrote:
+>> @@ -653,8 +623,10 @@ void tpm_chip_unregister(struct tpm_chip *chip)
+>>  	if (IS_ENABLED(CONFIG_HW_RANDOM_TPM) && !tpm_is_firmware_upgrade(chip=
+))
+>>  		hwrng_unregister(&chip->hwrng);
+>>  	tpm_bios_log_teardown(chip);
+>> -	if (chip->flags & TPM_CHIP_FLAG_TPM2 && !tpm_is_firmware_upgrade(chip=
+))
+>> +	if (chip->flags & TPM_CHIP_FLAG_TPM2 && !tpm_is_firmware_upgrade(chip=
+)) {
+>>  		cdev_device_del(&chip->cdevs, &chip->devs);
+>> +		put_device(&chip->devs);
+>> +	}
+>
+> I would put those two lines in a function bside tpm_devs_add() as
+> well, more modular.
+>
 
+Agreed, I will put this in a tpm_devs_remove() function as counterpart to =
+tpm_devs_add().
 
-On 2/28/22 11:25, Srinivas Kandagatla wrote:
-> Some of the Qualcomm SoundWire Controller instances like the ones that are
-> connected to RX path along with Headset connections support Waking up
-> Controller from Low power clock stop state using SoundWire In-band interrupt.
-> SoundWire Slave on the bus would initiate this by pulling the data line high,
-> while the clock is stopped.
-> 
-> Add support to this wake up interrupt.
-> 
-> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Regards,
+Lino
 
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-
-> ---
->  drivers/soundwire/qcom.c | 50 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 50 insertions(+)
-> 
-> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-> index 810232686196..e893aee1b057 100644
-> --- a/drivers/soundwire/qcom.c
-> +++ b/drivers/soundwire/qcom.c
-> @@ -14,6 +14,7 @@
->  #include <linux/pm_runtime.h>
->  #include <linux/regmap.h>
->  #include <linux/slab.h>
-> +#include <linux/pm_wakeirq.h>
->  #include <linux/slimbus.h>
->  #include <linux/soundwire/sdw.h>
->  #include <linux/soundwire/sdw_registers.h>
-> @@ -154,6 +155,7 @@ struct qcom_swrm_ctrl {
->  	u8 rd_cmd_id;
->  	int irq;
->  	unsigned int version;
-> +	int wake_irq;
->  	int num_din_ports;
->  	int num_dout_ports;
->  	int cols_index;
-> @@ -503,6 +505,31 @@ static int qcom_swrm_enumerate(struct sdw_bus *bus)
->  	return 0;
->  }
->  
-> +static irqreturn_t qcom_swrm_wake_irq_handler(int irq, void *dev_id)
-> +{
-> +	struct qcom_swrm_ctrl *swrm = dev_id;
-> +	int ret;
-> +
-> +	ret = pm_runtime_get_sync(swrm->dev);
-> +	if (ret < 0 && ret != -EACCES) {
-> +		dev_err_ratelimited(swrm->dev,
-> +				    "pm_runtime_get_sync failed in %s, ret %d\n",
-> +				    __func__, ret);
-> +		pm_runtime_put_noidle(swrm->dev);
-> +	}
-> +
-> +	if (swrm->wake_irq > 0) {
-> +		if (!irqd_irq_disabled(irq_get_irq_data(swrm->wake_irq)))
-> +			disable_irq_nosync(swrm->wake_irq);
-> +	}
-> +
-> +	pm_runtime_mark_last_busy(swrm->dev);
-> +	pm_runtime_put_autosuspend(swrm->dev);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +
->  static irqreturn_t qcom_swrm_irq_handler(int irq, void *dev_id)
->  {
->  	struct qcom_swrm_ctrl *swrm = dev_id;
-> @@ -1340,6 +1367,19 @@ static int qcom_swrm_probe(struct platform_device *pdev)
->  		goto err_clk;
->  	}
->  
-> +	ctrl->wake_irq = of_irq_get(dev->of_node, 1);
-> +	if (ctrl->wake_irq > 0) {
-> +		ret = devm_request_threaded_irq(dev, ctrl->wake_irq, NULL,
-> +						qcom_swrm_wake_irq_handler,
-> +						IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-> +						"swr_wake_irq", ctrl);
-> +		if (ret) {
-> +			dev_err(dev, "Failed to request soundwire wake irq\n");
-> +			goto err_init;
-> +		}
-> +	}
-> +
-> +
->  	ret = sdw_bus_master_add(&ctrl->bus, dev, dev->fwnode);
->  	if (ret) {
->  		dev_err(dev, "Failed to register Soundwire controller (%d)\n",
-> @@ -1424,6 +1464,11 @@ static int swrm_runtime_resume(struct device *dev)
->  	struct qcom_swrm_ctrl *ctrl = dev_get_drvdata(dev);
->  	int ret;
->  
-> +	if (ctrl->wake_irq > 0) {
-> +		if (!irqd_irq_disabled(irq_get_irq_data(ctrl->wake_irq)))
-> +			disable_irq_nosync(ctrl->wake_irq);
-> +	}
-> +
->  	clk_prepare_enable(ctrl->hclk);
->  
->  	if (ctrl->clock_stop_not_supported) {
-> @@ -1491,6 +1536,11 @@ static int __maybe_unused swrm_runtime_suspend(struct device *dev)
->  
->  	usleep_range(300, 305);
->  
-> +	if (ctrl->wake_irq > 0) {
-> +		if (irqd_irq_disabled(irq_get_irq_data(ctrl->wake_irq)))
-> +			enable_irq(ctrl->wake_irq);
-> +	}
-> +
->  	return 0;
->  }
->  
