@@ -2,47 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E307BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59754C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238175AbiCAUnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:43:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
+        id S238338AbiCAUoB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:44:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231341AbiCAUnt (ORCPT
+        with ESMTP id S237647AbiCAUny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:43:49 -0500
-Received: from angie.orcam.me.uk (angie.orcam.me.uk [78.133.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03BEA4A3F8
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:43:07 -0800 (PST)
-Received: by angie.orcam.me.uk (Postfix, from userid 500)
-        id C2F9892009C; Tue,  1 Mar 2022 21:43:05 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by angie.orcam.me.uk (Postfix) with ESMTP id B541C92009B;
-        Tue,  1 Mar 2022 20:43:05 +0000 (GMT)
-Date:   Tue, 1 Mar 2022 20:43:05 +0000 (GMT)
-From:   "Maciej W. Rozycki" <macro@orcam.me.uk>
-To:     Jean Delvare <jdelvare@suse.com>
-cc:     linux-kernel@vger.kernel.org
-Subject: [PING^3][PATCH 0/2] firmware: dmi: Avoid (some) empty names in kernel
- log
-In-Reply-To: <alpine.DEB.2.21.2201020127140.56863@angie.orcam.me.uk>
-Message-ID: <alpine.DEB.2.21.2203011745280.11354@angie.orcam.me.uk>
-References: <alpine.DEB.2.21.2201020127140.56863@angie.orcam.me.uk>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Tue, 1 Mar 2022 15:43:54 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2055B4B844
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:43:12 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id cm8so23629982edb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:43:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rAZcpGOFnijhfBt719P+IqprCBqe8sD9TF0Sez9IwiQ=;
+        b=F+7BPGYsO9QeRc6BTbvPUJxguXCTYika7fzNVLbSEfMjTVK29FjvhOtCtbBO2oalkB
+         9cweHARFFeQAeiDWhTrtcdfTzbCEOfTOrVCN9rTTV3Ek5jpvIVUt3aua8OA61CgDhA1w
+         zQABsshAfnGl6gFdFI9HcnnKU8AOre3uWnEew=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rAZcpGOFnijhfBt719P+IqprCBqe8sD9TF0Sez9IwiQ=;
+        b=ocv4LDaSVM9Yz0yWuGR1odEsZzTGj/47ukShLTyBAX+RMH6HcH24hC7Ti2nBY6Pidz
+         YArd4NVCdmFaLc8U1gcbezrjC9E8qJFWjgQRgvbF3m4ukOS9c15yoUSrZ7DgWzr5KyCF
+         +pbRS4xv5emeNCb9vMl5GmOJbIzfNAgLzzRFO8lUUuceEB2ZPQA22TBtXHiRSCu3FvHm
+         N4zcY+vUoKp/tx5HA6t6IxlBwpFuUP29vypUDRHK3I+G173RNQQ6oRJ7CCQyDWVwwQZe
+         oGTq7wAu7Nss3BEu2HphyLppiq1/eXLu9zJ0d3xNheEorYYsD9R5e+V3T4/ABWyYDaqz
+         qgpw==
+X-Gm-Message-State: AOAM531R92yHu9W6FrWjnlCHiE2WR6uOxdrVwIKD3F8FM8j/hnvO5Zfl
+        ArppZeS/c2Fz6d6XRHZbhPKuOXnPmjKohPCEDjo=
+X-Google-Smtp-Source: ABdhPJypb6MigwwArUdlMd2dDTxxYTvI3Ksw+R1fUSeGwr4zHiZPoqdBVA5d6UoQ+DYRNiAFQrZiGQ==
+X-Received: by 2002:aa7:c986:0:b0:413:30cc:cfd8 with SMTP id c6-20020aa7c986000000b0041330cccfd8mr26365903edt.122.1646167390427;
+        Tue, 01 Mar 2022 12:43:10 -0800 (PST)
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com. [209.85.208.44])
+        by smtp.gmail.com with ESMTPSA id a1-20020a1709063e8100b006ce06ed8aa7sm5707545ejj.142.2022.03.01.12.43.10
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 12:43:10 -0800 (PST)
+Received: by mail-ed1-f44.google.com with SMTP id cm8so23629947edb.3
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:43:10 -0800 (PST)
+X-Received: by 2002:ac2:44a4:0:b0:445:8fc5:a12a with SMTP id
+ c4-20020ac244a4000000b004458fc5a12amr10608648lfm.27.1646166980002; Tue, 01
+ Mar 2022 12:36:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20220228110822.491923-1-jakobkoschel@gmail.com> <20220228110822.491923-7-jakobkoschel@gmail.com>
+In-Reply-To: <20220228110822.491923-7-jakobkoschel@gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 1 Mar 2022 12:36:03 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wgLtKofBbn9kSXRU3MpdX7S2OxN1V5Mc679oJpFnp_VnQ@mail.gmail.com>
+Message-ID: <CAHk-=wgLtKofBbn9kSXRU3MpdX7S2OxN1V5Mc679oJpFnp_VnQ@mail.gmail.com>
+Subject: Re: [PATCH 6/6] treewide: remove check of list iterator against head
+ past the loop body
+To:     Jakob Koschel <jakobkoschel@gmail.com>
+Cc:     linux-arch <linux-arch@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergman <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Brian Johannesmeyer <bjohannesmeyer@gmail.com>,
+        Cristiano Giuffrida <c.giuffrida@vu.nl>,
+        "Bos, H.J." <h.j.bos@vu.nl>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-sgx@vger.kernel.org, drbd-dev@lists.linbit.com,
+        linux-block <linux-block@vger.kernel.org>,
+        linux-iio@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        dma <dmaengine@vger.kernel.org>,
+        linux1394-devel@lists.sourceforge.net,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        intel-gfx <intel-gfx@lists.freedesktop.org>,
+        nouveau@lists.freedesktop.org,
+        linux-rdma <linux-rdma@vger.kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org, Netdev <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-staging@lists.linux.dev, linux-usb@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        linux-mediatek@lists.infradead.org, KVM list <kvm@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        samba-technical@lists.samba.org,
+        Linux F2FS Dev Mailing List 
+        <linux-f2fs-devel@lists.sourceforge.net>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        kgdb-bugreport@lists.sourceforge.net,
+        v9fs-developer@lists.sourceforge.net,
+        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2 Jan 2022, Maciej W. Rozycki wrote:
+So looking at this patch, I really reacted to the fact that quite
+often the "use outside the loop" case is all kinds of just plain
+unnecessary, but _used_ to be a convenience feature.
 
->  Resending as this has gone into void.  Original patches still apply in 
-> their original form at the same respective lines.
+I'll just quote the first chunk in it's entirely as an example - not
+because I think this chunk is particularly important, but because it's
+a good example:
 
- Ping for:
-<https://lore.kernel.org/lkml/alpine.DEB.2.21.2201020127140.56863@angie.orcam.me.uk/>.
+On Mon, Feb 28, 2022 at 3:09 AM Jakob Koschel <jakobkoschel@gmail.com> wrote:
+>
+> diff --git a/arch/arm/mach-mmp/sram.c b/arch/arm/mach-mmp/sram.c
+> index 6794e2db1ad5..fc47c107059b 100644
+> --- a/arch/arm/mach-mmp/sram.c
+> +++ b/arch/arm/mach-mmp/sram.c
+> @@ -39,19 +39,22 @@ static LIST_HEAD(sram_bank_list);
+>  struct gen_pool *sram_get_gpool(char *pool_name)
+>  {
+>         struct sram_bank_info *info = NULL;
+> +       struct sram_bank_info *tmp;
+>
+>         if (!pool_name)
+>                 return NULL;
+>
+>         mutex_lock(&sram_lock);
+>
+> -       list_for_each_entry(info, &sram_bank_list, node)
+> -               if (!strcmp(pool_name, info->pool_name))
+> +       list_for_each_entry(tmp, &sram_bank_list, node)
+> +               if (!strcmp(pool_name, tmp->pool_name)) {
+> +                       info = tmp;
+>                         break;
+> +               }
+>
+>         mutex_unlock(&sram_lock);
+>
+> -       if (&info->node == &sram_bank_list)
+> +       if (!info)
+>                 return NULL;
+>
+>         return info->gpool;
 
-  Maciej
+I realize this was probably at least auto-generated with coccinelle,
+but maybe that script could be taught to do avoid the "use after loop"
+by simply moving the code _into_ the loop.
 
+IOW, this all would be cleaner and clear written as
+
+        if (!pool_name)
+                return NULL;
+
+        mutex_lock(&sram_lock);
+        list_for_each_entry(info, &sram_bank_list, node) {
+                if (!strcmp(pool_name, info->pool_name)) {
+                        mutex_unlock(&sram_lock);
+                        return info;
+                }
+        }
+        mutex_unlock(&sram_lock);
+        return NULL;
+
+Ta-daa - no use outside the loop, no need for new variables, just a
+simple "just do it inside the loop". Yes, we end up having that lock
+thing twice, but it looks worth it from a "make the code obvious"
+standpoint.
+
+Would it be even cleaner if the locking was done in the caller, and
+the loop was some simple helper function? It probably would. But that
+would require a bit more smarts than probably a simple coccinelle
+script would do.
+
+                Linus
