@@ -2,122 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD84C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235339AbiCAPQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:16:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54480 "EHLO
+        id S235527AbiCAPQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:16:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232130AbiCAPP5 (ORCPT
+        with ESMTP id S235585AbiCAPQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:15:57 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0A242A25
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:15:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=UoBxcPGC3UAO5MoKCwirDsxB9KccL9ZfKlxrg2nU4Rg=; b=C30FD7qT/eqfxIdgghplm/arpg
-        RuT7OMxztANsTbDvk6dTA8RY+S9lOhgTFUFRRYdPjPh3vAi454kjZttBJFjhWv5F8C0nbGQT7GSPf
-        wDK48E7rKz8Jqf/BfQYXA8fvZ7MK4eRkr1thTXUZkEFn67W+9yerWkN8qpEpQ5kGzOg+e1kvJ7BWr
-        AB+BdmTVKtOu0Nx9reHWWGpcyd/RH26j6l8L8MOmPlsSPsDzaKKxO0kc/O76lxqWRxUe04HoxagHD
-        Hkdkvoe8AgyvK85mXJNbO70fD4hmpYztzmKipIjc1gb+4w/9RzZwqkw1yMZ4oSvJgF+Ok+Ac4M7DX
-        lEjzXfyA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nP4D8-009h2Q-1Q; Tue, 01 Mar 2022 15:14:46 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 82B1C30018E;
-        Tue,  1 Mar 2022 16:14:42 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 60C62302AEE61; Tue,  1 Mar 2022 16:14:42 +0100 (CET)
-Date:   Tue, 1 Mar 2022 16:14:42 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
-Cc:     "Poimboe, Josh" <jpoimboe@redhat.com>,
-        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "samitolvanen@google.com" <samitolvanen@google.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
-        "Milburn, Alyssa" <alyssa.milburn@intel.com>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "mbenes@suse.cz" <mbenes@suse.cz>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>
-Subject: Re: [PATCH v2 18/39] x86/ibt: Add IBT feature, MSR and #CP handling
-Message-ID: <Yh44YsW8viBscBD0@hirez.programming.kicks-ass.net>
-References: <20220224145138.952963315@infradead.org>
- <20220224151323.069205370@infradead.org>
- <eed8902f21ba9e5f93562432f6b5920137860a98.camel@intel.com>
+        Tue, 1 Mar 2022 10:16:06 -0500
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D165A089
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:15:22 -0800 (PST)
+X-QQ-mid: bizesmtp88t1646147703temkr52f
+Received: from leo.localdomain (unknown [103.144.149.54])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 01 Mar 2022 23:14:40 +0800 (CST)
+X-QQ-SSF: 0140000000800040B000000A0000000
+X-QQ-FEAT: eTtJes0duVstZc8gVtcc01w8JsC2Oa/wyMO1xRzCWSJTvfuFj/wdRfI4Fxr9/
+        4PqsjgGkwfG5zqrKDECD3OdDxjj8GtzqJUCXw9bAqz/1NUuqF4phzsZSt3veKnWnTJZr7kP
+        jiFXuOBIB3sMI/HvPEpwg6z8bQwugTjh5n51rNlxlwpE/UvhJFLwRLPd/M9+2t3ZI1yFTHI
+        4IdsihFpjjJT9sS3VCDCpAcSzzuihjb9F8+BvCoABL3TNg4kXksMlZL0SN6TOU0EU4DVf1U
+        AZi9y01z1L+DvVaFLBhdt2C62CVLf0MQpUOc/LmdouslGVeSApK7JoXTBfw+JX7neu304dk
+        Xn0C5xFI2gIR6jcdBLMHOts4V43Iz9UW8MApWjK
+X-QQ-GoodBg: 2
+From:   Jiajian Ye <yejiajian2018@email.szu.edu.cn>
+To:     akpm@linux-foundation.org
+Cc:     sfr@canb.auug.org.au, caoyixuan2019@email.szu.edu.cn,
+        hanshenghong2019@email.szu.edu.cn,
+        zhaochongxi2019@email.szu.edu.cn, weizhenliang@huawei.com,
+        zhangyinan2019@email.szu.edu.cn, linux-kernel@vger.kernel.org,
+        Jiajian Ye <yejiajian2018@email.szu.edu.cn>
+Subject: [PATCH 1/3] tools/vm/page_owner_sort.c: fix comments
+Date:   Tue,  1 Mar 2022 23:14:36 +0800
+Message-Id: <20220301151438.166118-1-yejiajian2018@email.szu.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <eed8902f21ba9e5f93562432f6b5920137860a98.camel@intel.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:email.szu.edu.cn:qybgforeign:qybgforeign2
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Feb 25, 2022 at 07:59:15PM +0000, Edgecombe, Rick P wrote:
-> On Thu, 2022-02-24 at 15:51 +0100, Peter Zijlstra wrote:
-> > +__noendbr void cet_disable(void)
-> > +{
-> > +       if (cpu_feature_enabled(X86_FEATURE_IBT))
-> > +               wrmsrl(MSR_IA32_S_CET, 0);
-> > +}
-> > +
-> 
-> Did this actually work? 
+Two adjustments are made:
 
-No idea,.. I don't generally have kexec clue.
+1. Correct a grammatical error: replace the "what" in
+"Do the job what you want to debug" with "that".
 
-> There are actually two problems with kexecing
-> when CET is enabled. One is leaving the enforcement enabled when the
-> new kernel can't handle it. The other is that CR4.CET and CR0.WP are
-> tied together such that if you try to disable CR0.WP while CR4.CET is
-> still set, it will #GP. CR0.WP gets unset during kexec/boot in the new
-> kernel, so it blows up if you just disable IBT with the MSR and leave
-> the CR4 bit set.
-> 
-> I was under the impression that this had been tested in the userspace
-> series, but apparently not as I've just produced the CR0.WP issue. So
-> it needs to be fixed in that series too. Userspace doesn't really need
-> it pinned, so it should be easy.
+2. Replace "has not been" with "has been" in the description
+of the -f option: According to Commit b1c9ba071e7d
+("tools/vm/page_owner_sort.c: fix the instructions for use"),
+the description of the "-f" option is "Filter out the information
+of blocks whose memory has been released."
 
-So I see CR0 frobbing in identity_mapped and CR4 frobbing right after
-it. Is there a reason to first do CR0 and then CR4 or can we flip them?
-Otherwise we need to do CR4 twice.
+Signed-off-by: Jiajian Ye <yejiajian2018@email.szu.edu.cn>
+---
+ Documentation/vm/page_owner.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-(Also, whoever wrote that function with _5_ identically named labels in
-it deserves something painful. Also, wth's up with that jmp 1f; 1:)
-
-Something like so?
-
-diff --git a/arch/x86/kernel/relocate_kernel_64.S b/arch/x86/kernel/relocate_kernel_64.S
-index 399f075ccdc4..5b65f6ec5ee6 100644
---- a/arch/x86/kernel/relocate_kernel_64.S
-+++ b/arch/x86/kernel/relocate_kernel_64.S
-@@ -114,6 +114,14 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
- 	/* store the start address on the stack */
- 	pushq   %rdx
+diff --git a/Documentation/vm/page_owner.rst b/Documentation/vm/page_owner.rst
+index 6591e518819f..2ddb632d847b 100644
+--- a/Documentation/vm/page_owner.rst
++++ b/Documentation/vm/page_owner.rst
+@@ -78,7 +78,7 @@ Usage
  
-+	/*
-+	 * Clear X86_CR4_CET (if it was set) such that we can clear CR0_WP
-+	 * below.
-+	 */
-+	movq	%cr4, %rax
-+	andq	$~(X86_CR4_CET), %rax
-+	movq	%rax, %cr4
-+
- 	/*
- 	 * Set cr0 to a known state:
- 	 *  - Paging enabled
+ 2) Enable page owner: add "page_owner=on" to boot cmdline.
+ 
+-3) Do the job what you want to debug
++3) Do the job that you want to debug.
+ 
+ 4) Analyze information from page owner::
+ 
+@@ -126,4 +126,4 @@ Usage
+ 		-c		Cull by comparing stacktrace instead of total block.
+ 
+ 	Filter:
+-		-f		Filter out the information of blocks whose memory has not been released.
++		-f		Filter out the information of blocks whose memory has been released.
+-- 
+2.25.1
+
+
+
