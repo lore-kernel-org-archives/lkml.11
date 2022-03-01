@@ -2,95 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC19C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A4B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235073AbiCANiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 08:38:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45998 "EHLO
+        id S235089AbiCANjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 08:39:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233281AbiCANiA (ORCPT
+        with ESMTP id S232055AbiCANjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 08:38:00 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E2E9D0DE
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 05:37:18 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id y11so14222473pfa.6
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 05:37:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=heitbaum.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4SQZv7AFd28YJZdNAkeaE4ZEJafa6z+sYCo2GCtKzZo=;
-        b=MULJkFnV/faTIU/EqETCI2bbIxQ1HmBnzDwbK/mIfKacmih25rscy+eWV1xZNEbOnI
-         8SJNz4pP4C6M3AmYvUv8Hbb+OysJqcUujWDDfx3SYNh1+oo+PJiAxSRigunBT8Iy54qu
-         TKvwz32nx1DJ6hK0cm5YH3jVwUpgi6XeJxt2s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4SQZv7AFd28YJZdNAkeaE4ZEJafa6z+sYCo2GCtKzZo=;
-        b=NdWfgrEB75L1WFU5DFI5DDsyIr4qCQ1SnsUVRSRq6j+jEJA1rj6mqGzVlFAUP/pE5z
-         U8WT2ILitteDZSD6zwEqXCAEYBZ8GoHTK4FpT5GVwYd64Zz/RYeusNak1geYT7kdppUp
-         HfZmwjF7YmklgKDVwWhOxj/XaG5j9uxy4FmLqKRuJUrUSy8MxKX4BGYdgd83dsd1DJ0i
-         vG5aPVEGZxN1xOKkFg0VXjEgmRxxdIW7wzPTTQAtcLjeYH+kyLP4wmagLS9FEBQQya3u
-         0CiIzglM5yMUgPaLhr0kP7q/b01DvLFmswuZRNie4owqJphvedlbEBcZVgvXYOHav9ki
-         XrdQ==
-X-Gm-Message-State: AOAM533bsGjSWsNpjrTRlW3NJRu9D83WubVUh4mwgr+JNAxbkG0YzHCW
-        J/IbB1c+ym/4Od0SrBLE+EQAVw==
-X-Google-Smtp-Source: ABdhPJw7ozfi6OXOEt5oALjEw9sd6jogKZOmjMaqBs7eRekOAtiQvmQVuuZjfSUsyaTpYkgMVTlxDg==
-X-Received: by 2002:a63:cf09:0:b0:372:d564:8024 with SMTP id j9-20020a63cf09000000b00372d5648024mr21821140pgg.251.1646141837813;
-        Tue, 01 Mar 2022 05:37:17 -0800 (PST)
-Received: from 1bb6de2becdb ([203.221.136.13])
-        by smtp.gmail.com with ESMTPSA id n42-20020a056a000d6a00b004d221c3e021sm16932998pfv.55.2022.03.01.05.37.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 05:37:17 -0800 (PST)
-Date:   Tue, 1 Mar 2022 13:37:08 +0000
-From:   Rudi Heitbaum <rudi@heitbaum.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.16 000/164] 5.16.12-rc1 review
-Message-ID: <20220301133708.GA91@1bb6de2becdb>
-References: <20220228172359.567256961@linuxfoundation.org>
+        Tue, 1 Mar 2022 08:39:11 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5943222BDF;
+        Tue,  1 Mar 2022 05:38:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=PTvDGXpj4QceN1WruyMqNJDszkmC9L67vBNfhw3P1J8=; b=ATmAfbpmSQgx4C/xTj8lT7/TB0
+        eHZTZVRcvLJzGR0a4gdeUHbjJX/sDbo6liX+3izIMNeXz/esL51HF89uMwqqILim5R0GdM80ENCRf
+        3ilyZGA3JiWqbgsnmxxVCPpl+DP7rP+B1gLy1lTP6xARcOO3NOmP3nJYB2bGYcgnNQ4RXhQAyKWLg
+        aXVE+JMlTD4wd6S6+HfBog3u6rO3sRuDyGyGPaB1wRbDKr1BSbolh7fy1fHuFLKZPcGscAPfxbjvw
+        2q/NJVegB4WKM1+5SIUTxU9guQ6m1HUdDTNhTBQVEiUgxqGrw3M4ZLVqVmGcEo72pNckf17htyb+s
+        nj7jJ+Yw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nP2hr-00GvQj-1M; Tue, 01 Mar 2022 13:38:23 +0000
+Date:   Tue, 1 Mar 2022 05:38:23 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     "David E. Box" <david.e.box@linux.intel.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        nirmal.patel@linux.intel.com, jonathan.derrick@linux.dev,
+        lorenzo.pieralisi@arm.com, kw@linux.com, robh@kernel.org,
+        bhelgaas@google.com, michael.a.bottini@linux.intel.com,
+        rafael@kernel.org, me@adhityamohan.in, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V6 1/3] PCI/ASPM: Add pci_enable_default_link_state()
+Message-ID: <Yh4hzz/IGS8xg3vV@infradead.org>
+References: <20220301041943.2935892-1-david.e.box@linux.intel.com>
+ <20220301041943.2935892-2-david.e.box@linux.intel.com>
+ <Yh3Vt6/WzoAasPxZ@infradead.org>
+ <ba9128b499b243f5c08f855018a37cd1484211b6.camel@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220228172359.567256961@linuxfoundation.org>
+In-Reply-To: <ba9128b499b243f5c08f855018a37cd1484211b6.camel@linux.intel.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 06:22:42PM +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.12 release.
-> There are 164 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Tue, Mar 01, 2022 at 05:31:51AM -0800, David E. Box wrote:
+> > Is there any reason the ASPM_* values aren't passed directly to this
+> > function?
+> 
+> The ASPM_* macors aren't visible outside of aspm.c whereas the
+> PCIE_LINK_STATE_* macros are defined in pci.h. This is similar to what
+> is done for pci_disable_link_state().
 
-Hi Greg,
-
-5.16.12-rc1 tested.
-
-Run tested on:
-- Allwinner H6 (Tanix TX6)
-- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
-
-In addition - build tested on:
-- Allwinner A64
-- Allwinner H3
-- Allwinner H5
-- NXP iMX6
-- NXP iMX8
-- Qualcomm Dragonboard
-- Rockchip RK3288
-- Rockchip RK3328
-- Rockchip RK3399pro
-- Samsung Exynos
-
-Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
---
-Rudi
+Ok.  This looks a little weird but I guess we should stick to the
+existing pattern here.
