@@ -2,99 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE8AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:29:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237160AbiCAU2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:28:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
+        id S238420AbiCAUab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:30:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239283AbiCAUYj (ORCPT
+        with ESMTP id S238406AbiCAUaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:24:39 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F183EF31
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:23:53 -0800 (PST)
-Date:   Tue, 1 Mar 2022 21:23:49 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1646166231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JOg1nNSreIv4g+4hnmQwgrhYZxdLsYmyoIF3WgegJzA=;
-        b=EOaCe+YgN2EN/eHhaVZgRG0cE/1QcQrKteAxkzb56dQ0tTAR3Qz6FtLGQzsfl/6m4S5jTD
-        BYzbuE1nqA6356Qkil/PSOIHnqvq9y3MXxc/JeYSGilGgZNnH405JM5DDs++Q4LF3sb+oD
-        0K29lYFVyDQ6ZONSq6e97jQ/c1R8xbsGcRuJZaH6WV9eB1jnydKwbmTCISQ6IwltxYiW7y
-        GX9Mv/q53UNRihygG2DKaybG2lUcfy4q+3yXjLNIzuvXRS62Sr6oYsY0ArF3kyc4PJJ/7A
-        rn+R7lby1rN5ES5ri38sJU+wMj93uJ38eq2O7uobqOn9m883E+c4WBvaUWaDRA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1646166231;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JOg1nNSreIv4g+4hnmQwgrhYZxdLsYmyoIF3WgegJzA=;
-        b=EEB4w2SS7LimcNYXnz4B76ErC9H147ul9l1oPRRerWJcg8Bi95WXRB63EanvoLlvj4xxRD
-        v5TUzcHeIHbhGuBg==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Ben Segall <bsegall@google.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-Subject: Re: [PATCH] sched: Make preempt_enable_no_resched() behave like
- preempt_enable() on PREEMPT_RT
-Message-ID: <Yh6A1a6yBfPW8AMk@linutronix.de>
-References: <Yh5mSGCbvqDdeCa3@linutronix.de>
- <20220301201432.GL11184@worktop.programming.kicks-ass.net>
+        Tue, 1 Mar 2022 15:30:21 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB05A0BDB
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:25:48 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id u20so28870126lff.2
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:25:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PdjKf/a3poLbp/gbxt+Rqw8zr6wpWCPEMBt3Gdf0vVY=;
+        b=K7n4eVxkkqxw4LVOCYp6qjz4Lrn8nUG8scqpDLjNdEqFXZMud6qwqiSVAz5st7Yg7d
+         vC2q3Dqvtvzi4XIPeFoMoc2+dMBhZ16QOgzUWOKknYeZr7LRcjqzvrH7Gver9/sEKKQs
+         f6/zgOwraRIJv6M9/T7aFKvmQFpJdJkC/c588=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PdjKf/a3poLbp/gbxt+Rqw8zr6wpWCPEMBt3Gdf0vVY=;
+        b=bvsKA3TtWlyE3PbVLuwMs1IxVGbcm4z16vZNOUUhRHJXZbtqF5/njp4Gh8ATIoXLJo
+         dT/CTpmYouIflaO7nS+50LGp02i9DGh/NOAgHXpPtTCuUghocI15Vitb4N4X634Qo0nr
+         ymFITspldye1nILxppUg2Td0TMBu+pzgJS5A4mWt1oXbr9ukhG7thLe0xtfrL3kEm3Jr
+         hyuO3iMmSzZvNIawh/iS7/TBw28slLP/zLFKZM1Up/u0yGKgAoddjr78UNHZqe22ohxa
+         oXS0ozeeBBczCfmMDGxPqsUVhgALnCCjWGGxmmHZ4kn9Ex0P2MfiG6mJKE5TuwBlFFpn
+         2SFw==
+X-Gm-Message-State: AOAM531P1Y4kR77h7KdnI9pWfEH19F/a8TZaAM4w7NoO4ibVaP0PY184
+        ogMQoWxBDOM0rflf1FXg7wpl1Q0dF0vkOcMt8qc=
+X-Google-Smtp-Source: ABdhPJwaV73f/JlBF4oGNWkm7YI15ZsxU3mb0PrtZI88RRxbgRJ3B/fdbgMSFMJr+BLwCXihnwRkDg==
+X-Received: by 2002:ac2:4474:0:b0:43a:7681:8fac with SMTP id y20-20020ac24474000000b0043a76818facmr16723211lfl.316.1646166343529;
+        Tue, 01 Mar 2022 12:25:43 -0800 (PST)
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com. [209.85.208.181])
+        by smtp.gmail.com with ESMTPSA id d15-20020a19384f000000b00442ea20f36bsm1654682lfj.299.2022.03.01.12.25.43
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 12:25:43 -0800 (PST)
+Received: by mail-lj1-f181.google.com with SMTP id p20so23494014ljo.0
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:25:43 -0800 (PST)
+X-Received: by 2002:a2e:aa1f:0:b0:244:c2ea:7f20 with SMTP id
+ bf31-20020a2eaa1f000000b00244c2ea7f20mr18277669ljb.164.1646166026459; Tue, 01
+ Mar 2022 12:20:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220301201432.GL11184@worktop.programming.kicks-ass.net>
+References: <20220301145233.3689119-1-arnd@kernel.org> <20220301145233.3689119-2-arnd@kernel.org>
+ <CAKwvOdnkfuT_w_0RNCb+WTKJ+282zLKmhB9UNG=D-UFz9VkUng@mail.gmail.com> <CAKwvOdn-PrCUPe2WzLv18AH3=9DjtFES+r=M1DhoQivy8sHm-g@mail.gmail.com>
+In-Reply-To: <CAKwvOdn-PrCUPe2WzLv18AH3=9DjtFES+r=M1DhoQivy8sHm-g@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 1 Mar 2022 12:20:10 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wh4OdQANe7TLYGdPWUub0MEdbGDr72wpATHxypaSEGAyg@mail.gmail.com>
+Message-ID: <CAHk-=wh4OdQANe7TLYGdPWUub0MEdbGDr72wpATHxypaSEGAyg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] treewide: use -Wdeclaration-after-statement
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Marco Elver <elver@google.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        David Sterba <dsterba@suse.com>, Alex Shi <alexs@kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        llvm@lists.linux.dev,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-01 21:14:32 [+0100], Peter Zijlstra wrote:
-> Ignoring !x86 for a moment:
-> 
-> arch/x86/mm/kmmio.c:    preempt_enable_no_resched();
-> arch/x86/mm/kmmio.c:    preempt_enable_no_resched();
-> include/linux/preempt.h:#define sched_preempt_enable_no_resched() \
-> include/linux/preempt.h:#define preempt_enable_no_resched() sched_preempt_enable_no_resched()
-> include/linux/preempt.h:#define preempt_enable_no_resched_notrace() \
-> include/linux/preempt.h:#define sched_preempt_enable_no_resched()       barrier()
-> include/linux/preempt.h:#define preempt_enable_no_resched()             barrier()
-> include/linux/preempt.h:#define preempt_enable_no_resched_notrace()     barrier()
-> include/linux/preempt.h:#undef sched_preempt_enable_no_resched
-> include/linux/preempt.h:#undef preempt_enable_no_resched
-> include/linux/preempt.h:#undef preempt_enable_no_resched_notrace
-> kernel/sched/core.c:            preempt_enable_no_resched();
-> kernel/sched/core.c:                    preempt_enable_no_resched();
-> kernel/sched/core.c:            sched_preempt_enable_no_resched();
-> kernel/sched/core.c:    sched_preempt_enable_no_resched();
-> kernel/sched/core.c:            sched_preempt_enable_no_resched();
-> kernel/sched/core.c:            preempt_enable_no_resched_notrace();
-> kernel/sched/core.c:            preempt_enable_no_resched_notrace();
-> kernel/sched/core.c:            sched_preempt_enable_no_resched();
-> kernel/sched/core.c:    sched_preempt_enable_no_resched();
-> kernel/signal.c:                preempt_enable_no_resched();
-> kernel/smpboot.c:                       preempt_enable_no_resched();
-> lib/smp_processor_id.c: preempt_enable_no_resched_notrace();
-> 
-> 
-> Surely we can audit that... At a glance the proposed patch does more
-> harm than good. Only the kmmio case looks obviousl fail, but then IIRC
-> kmmio had worse problems.
+On Tue, Mar 1, 2022 at 12:06 PM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> That said, there's a few additional places that reset KBUILD_CFLAGS.
 
-I was looking at the same before posting it. The majority of it
-disappeared over time after certain someone made it worthless for
-modules. So I'm dropping it then.
-Does it make sense to keep sched_preempt_enable_no_resched() or should I
-move everything to preempt_enable_no_resched()?
+Yeah, the boot code and vdso code often sets its own private flags,
+because it's _so_ different.
 
-Sebastian
+The generic kernel CFLAGS often don't work at all, because that code
+may be doing some truly horrendous things.
+
+So I agree that this may not catch all the kernel code, but I don't
+think it's much of a problem.
+
+             Linus
