@@ -2,79 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D5E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 05:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1596C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 05:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232514AbiCAFip (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 00:38:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36000 "EHLO
+        id S231362AbiCAFj0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 00:39:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232507AbiCAFii (ORCPT
+        with ESMTP id S232515AbiCAFjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 00:38:38 -0500
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34614A91C;
-        Mon, 28 Feb 2022 21:37:55 -0800 (PST)
-X-UUID: 87e90516592f4d07952e7df1ac23aa4f-20220301
-X-UUID: 87e90516592f4d07952e7df1ac23aa4f-20220301
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1116615421; Tue, 01 Mar 2022 13:37:36 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 1 Mar 2022 13:37:35 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 1 Mar
- 2022 13:37:35 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 1 Mar 2022 13:37:35 +0800
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <matthias.bgg@gmail.com>, <robh+dt@kernel.org>,
-        <p.zabel@pengutronix.de>
-CC:     <runyang.chen@mediatek.com>, <linux-watchdog@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
+        Tue, 1 Mar 2022 00:39:21 -0500
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDA614B1D9;
+        Mon, 28 Feb 2022 21:38:37 -0800 (PST)
+Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Tue, 1 Mar 2022
+ 13:38:35 +0800
+From:   Yu Tu <yu.tu@amlogic.com>
+To:     <linux-serial@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Rex-BC Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v2 1/3] dt-bindings: watchdog: Add compatible for MediaTek MT8186
-Date:   Tue, 1 Mar 2022 13:37:31 +0800
-Message-ID: <20220301053733.24755-2-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220301053733.24755-1-rex-bc.chen@mediatek.com>
-References: <20220301053733.24755-1-rex-bc.chen@mediatek.com>
+        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Yu Tu <yu.tu@amlogic.com>, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [PATCH] tty: serial: meson: Fixed an issue where pclk was turned on on probe but should be turned off on subsequent errors.
+Date:   Tue, 1 Mar 2022 13:37:38 +0800
+Message-ID: <20220301053738.21163-1-yu.tu@amlogic.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.18.11.248]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add dt-binding documentation of watchdog for MediaTek MT8186 SoC.
+Call clk_prepare_enable in the probe function to enable pclk. If you
+exit the probe function later in an error, call clk_disable_unprepare
+to disable pclk.
 
-Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Fixes: 44023b8e1f14 ("tty: serial:meson: Describes the calculation of the UART baud rate clock using a clock frame“)
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Yu Tu <yu.tu@amlogic.com>
 ---
- Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/meson_uart.c | 37 +++++++++++++++++++++++----------
+ 1 file changed, 26 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-index 0114871f887a..74db01e3658b 100644
---- a/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-+++ b/Documentation/devicetree/bindings/watchdog/mtk-wdt.txt
-@@ -15,6 +15,7 @@ Required properties:
- 	"mediatek,mt7629-wdt", "mediatek,mt6589-wdt": for MT7629
- 	"mediatek,mt7986-wdt", "mediatek,mt6589-wdt": for MT7986
- 	"mediatek,mt8183-wdt": for MT8183
-+	"mediatek,mt8186-wdt", "mediatek,mt6589-wdt": for MT8186
- 	"mediatek,mt8516-wdt", "mediatek,mt6589-wdt": for MT8516
- 	"mediatek,mt8192-wdt": for MT8192
- 	"mediatek,mt8195-wdt", "mediatek,mt6589-wdt": for MT8195
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index bf6be5468aaf..972f210f3492 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -780,28 +780,37 @@ static int meson_uart_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (irq < 0)
+-		return irq;
++	if (irq < 0) {
++		ret = irq;
++		goto err_out_clk_disable;
++	}
+ 
+ 	of_property_read_u32(pdev->dev.of_node, "fifo-size", &fifosize);
+ 
+ 	if (meson_ports[pdev->id]) {
+ 		dev_err(&pdev->dev, "port %d already allocated\n", pdev->id);
+-		return -EBUSY;
++		ret = -EBUSY;
++		goto err_out_clk_disable;
+ 	}
+ 
+ 	port = devm_kzalloc(&pdev->dev, sizeof(struct uart_port), GFP_KERNEL);
+-	if (!port)
+-		return -ENOMEM;
++	if (!port) {
++		ret = -ENOMEM;
++		goto err_out_clk_disable;
++	}
+ 
+ 	port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
+-	if (IS_ERR(port->membase))
+-		return PTR_ERR(port->membase);
++	if (IS_ERR(port->membase)) {
++		ret = PTR_ERR(port->membase);
++		goto err_out_clk_disable;
++	}
+ 
+ 	private_data = devm_kzalloc(&pdev->dev, sizeof(*private_data),
+ 				    GFP_KERNEL);
+-	if (!private_data)
+-		return -ENOMEM;
++	if (!private_data) {
++		ret = -ENOMEM;
++		goto err_out_clk_disable;
++	}
+ 
+ 	if (device_get_match_data(&pdev->dev))
+ 		private_data->use_xtal_clk = true;
+@@ -822,7 +831,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+ 
+ 	ret = meson_uart_probe_clocks(port);
+ 	if (ret)
+-		return ret;
++		goto err_out_clk_disable;
+ 
+ 	meson_ports[pdev->id] = port;
+ 	platform_set_drvdata(pdev, port);
+@@ -831,9 +840,15 @@ static int meson_uart_probe(struct platform_device *pdev)
+ 	meson_uart_reset(port);
+ 
+ 	ret = uart_add_one_port(&meson_uart_driver, port);
+-	if (ret)
++	if (ret) {
+ 		meson_ports[pdev->id] = NULL;
++		goto err_out_clk_disable;
++	}
++
++	return 0;
+ 
++err_out_clk_disable:
++	clk_disable_unprepare(pclk);
+ 	return ret;
+ }
+ 
+
+base-commit: d4ab5487cc77a4053dc9070c5761ad94bf397825
 -- 
-2.18.0
+2.33.1
 
