@@ -2,122 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC87C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07930C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:25:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237539AbiCAUZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:25:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
+        id S238157AbiCAUY6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:24:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238661AbiCAUXn (ORCPT
+        with ESMTP id S238436AbiCAUXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:23:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D7FA4195;
-        Tue,  1 Mar 2022 12:20:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 366A5B81B0E;
-        Tue,  1 Mar 2022 20:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DC2C340EF;
-        Tue,  1 Mar 2022 20:20:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166017;
-        bh=PkjgPIixe5ICMmLEPpIhMS9c1PB8nIr0J/ISNzW9sg0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d/AJk41MS3CfhsRXafIPlv2prJM/9RQsVnuK/F1vzuJP/bwTA8KJJsFrTqgHXGL9c
-         XFnKqa0fGRAzcbtdalq3D2Zdi4NjJru2A6R9NHkGhChISd1FsFgYZ7U6Q8tes0FYmY
-         C+RS+qkpODTnZKaqTcl1OV9UvLd9bqrwBHmVxSnawuIv15eJsfEv0+3w41mRuT9GZy
-         OJICJ/1PwgGorB313fDxqWKghqNOmQNvUs3vS99owGSsUpcCGl61w+6jEYw1ajzTkm
-         9l8q5nuzjeMnB+P19D7c2ki5qANMTdJQNfz460z03dO8vvTWkbfYdCOucjkO0I77/e
-         zuJl3IgD08/Ow==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shreeya Patel <shreeya.patel@collabora.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>, linux-gpio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 05/11] gpio: Return EPROBE_DEFER if gc->to_irq is NULL
-Date:   Tue,  1 Mar 2022 15:19:38 -0500
-Message-Id: <20220301201951.19066-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301201951.19066-1-sashal@kernel.org>
-References: <20220301201951.19066-1-sashal@kernel.org>
+        Tue, 1 Mar 2022 15:23:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 201E7A0BEB
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:20:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646165953;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3FMkSD7aKPC9JzNCskfAuhPbmqVixaqKWqBwlf8S+9I=;
+        b=HoNkIjNXg/YlD3H5jB/q4tPTmwsJJIqtgWPH6hFBIYVgXQ03DHUHEwyG2r+Hs90ZcwC3Qc
+        253Dp+Y1eWpK0EHtlXfiv0ShAd963+f1HJoZ22hWwm645bu65jLIvB2q71A+o298ef6T24
+        Ed1za74uTpSGB+2HqKUjkbSa7ID+4xg=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-563-dVklXsRwOYafpY-PlHHkXA-1; Tue, 01 Mar 2022 15:19:12 -0500
+X-MC-Unique: dVklXsRwOYafpY-PlHHkXA-1
+Received: by mail-wr1-f71.google.com with SMTP id o1-20020adfe801000000b001f023455317so673265wrm.3
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:19:12 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3FMkSD7aKPC9JzNCskfAuhPbmqVixaqKWqBwlf8S+9I=;
+        b=NPELeOseeM9f58MZ+K/HskZPXcaudZDf9R3YqBZ9xGGQdxkxslp+jP9RcE3KcMzA2g
+         IqY5BN2QjFbzeEmyxeM9VGTyx3vg6TtjiTD1qLSNxd3gficuLTrWAWuzJNKTfMkhLmlU
+         oUflZA3CIZ5pufDEYsKWk307wdhqYtKatyKe/ZRwu+VIMMDTZj8K53Rro7u5NGOui3Kb
+         DpMFrRE4eN6lM1/En5UBrnSAUuTXCaol34Yi4xZksM+g34VBWqH8aKupawJUu7uCEBdr
+         cOqoO6DDE8CKlrWs9MCZte8GBmsNacga3d3aeoCCYXSXNYj0CrKfMpc+XuoHnKLfTlsY
+         EvKA==
+X-Gm-Message-State: AOAM533D8RuhnVA0sFj0LKeKLXDhgJhZVVyy05AUlqgvwEoUOGvcXhTD
+        YS304IVLxNcAVMAnXEzgF+tZG/wzOshxrE9lpvuvALihx9Y3rF16fDmeP+oeg2tV8nR9CN6HMhE
+        smTq0Y6mWCdkFYqh0WJWPm72M
+X-Received: by 2002:a05:600c:34d2:b0:381:7817:f5f2 with SMTP id d18-20020a05600c34d200b003817817f5f2mr6933011wmq.23.1646165951057;
+        Tue, 01 Mar 2022 12:19:11 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzBntNzfgavWPnhM1XNJk6gt7pEibOFJYJrpIhZSS48oHJVOgFdHq+mIBx2l9FoRFPmA0lk9w==
+X-Received: by 2002:a05:600c:34d2:b0:381:7817:f5f2 with SMTP id d18-20020a05600c34d200b003817817f5f2mr6932996wmq.23.1646165950789;
+        Tue, 01 Mar 2022 12:19:10 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
+        by smtp.googlemail.com with ESMTPSA id r17-20020a056000015100b001ea7db074cdsm20011822wrx.117.2022.03.01.12.19.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 12:19:10 -0800 (PST)
+Message-ID: <d09b9c37-07fe-fdbb-9647-4f27dd1c400d@redhat.com>
+Date:   Tue, 1 Mar 2022 21:19:09 +0100
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH AUTOSEL 5.10 02/14] KVM: Fix lockdep false negative during
+ host resume
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org
+References: <20220301201833.18841-1-sashal@kernel.org>
+ <20220301201833.18841-2-sashal@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220301201833.18841-2-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shreeya Patel <shreeya.patel@collabora.com>
+On 3/1/22 21:18, Sasha Levin wrote:
+> From: Wanpeng Li <wanpengli@tencent.com>
+> 
+> [ Upstream commit 4cb9a998b1ce25fad74a82f5a5c45a4ef40de337 ]
+> 
+> I saw the below splatting after the host suspended and resumed.
+> 
+>     WARNING: CPU: 0 PID: 2943 at kvm/arch/x86/kvm/../../../virt/kvm/kvm_main.c:5531 kvm_resume+0x2c/0x30 [kvm]
+>     CPU: 0 PID: 2943 Comm: step_after_susp Tainted: G        W IOE     5.17.0-rc3+ #4
+>     RIP: 0010:kvm_resume+0x2c/0x30 [kvm]
+>     Call Trace:
+>      <TASK>
+>      syscore_resume+0x90/0x340
+>      suspend_devices_and_enter+0xaee/0xe90
+>      pm_suspend.cold+0x36b/0x3c2
+>      state_store+0x82/0xf0
+>      kernfs_fop_write_iter+0x1b6/0x260
+>      new_sync_write+0x258/0x370
+>      vfs_write+0x33f/0x510
+>      ksys_write+0xc9/0x160
+>      do_syscall_64+0x3b/0xc0
+>      entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> lockdep_is_held() can return -1 when lockdep is disabled which triggers
+> this warning. Let's use lockdep_assert_not_held() which can detect
+> incorrect calls while holding a lock and it also avoids false negatives
+> when lockdep is disabled.
+> 
+> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+> Message-Id: <1644920142-81249-1-git-send-email-wanpengli@tencent.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>   virt/kvm/kvm_main.c | 4 +---
+>   1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index d22de43925076..06367f2d55000 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -4758,9 +4758,7 @@ static int kvm_suspend(void)
+>   static void kvm_resume(void)
+>   {
+>   	if (kvm_usage_count) {
+> -#ifdef CONFIG_LOCKDEP
+> -		WARN_ON(lockdep_is_held(&kvm_count_lock));
+> -#endif
+> +		lockdep_assert_not_held(&kvm_count_lock);
+>   		hardware_enable_nolock(NULL);
+>   	}
+>   }
 
-[ Upstream commit ae42f9288846353982e2eab181fb41e7fd8bf60f ]
-
-We are racing the registering of .to_irq when probing the
-i2c driver. This results in random failure of touchscreen
-devices.
-
-Following explains the race condition better.
-
-[gpio driver] gpio driver registers gpio chip
-[gpio consumer] gpio is acquired
-[gpio consumer] gpiod_to_irq() fails with -ENXIO
-[gpio driver] gpio driver registers irqchip
-gpiod_to_irq works at this point, but -ENXIO is fatal
-
-We could see the following errors in dmesg logs when gc->to_irq is NULL
-
-[2.101857] i2c_hid i2c-FTS3528:00: HID over i2c has not been provided an Int IRQ
-[2.101953] i2c_hid: probe of i2c-FTS3528:00 failed with error -22
-
-To avoid this situation, defer probing until to_irq is registered.
-Returning -EPROBE_DEFER would be the first step towards avoiding
-the failure of devices due to the race in registration of .to_irq.
-Final solution to this issue would be to avoid using gc irq members
-until they are fully initialized.
-
-This issue has been reported many times in past and people have been
-using workarounds like changing the pinctrl_amd to built-in instead
-of loading it as a module or by adding a softdep for pinctrl_amd into
-the config file.
-
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209413
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpio/gpiolib.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
-index abdf448b11a3d..6d7eb6a7570e1 100644
---- a/drivers/gpio/gpiolib.c
-+++ b/drivers/gpio/gpiolib.c
-@@ -3860,6 +3860,16 @@ int gpiod_to_irq(const struct gpio_desc *desc)
- 
- 		return retirq;
- 	}
-+#ifdef CONFIG_GPIOLIB_IRQCHIP
-+	if (gc->irq.chip) {
-+		/*
-+		 * Avoid race condition with other code, which tries to lookup
-+		 * an IRQ before the irqchip has been properly registered,
-+		 * i.e. while gpiochip is still being brought up.
-+		 */
-+		return -EPROBE_DEFER;
-+	}
-+#endif
- 	return -ENXIO;
- }
- EXPORT_SYMBOL_GPL(gpiod_to_irq);
--- 
-2.34.1
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
