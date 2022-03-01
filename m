@@ -2,81 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C06C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:37:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D871AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234755AbiCAMiQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:38:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34314 "EHLO
+        id S234754AbiCAMi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:38:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230168AbiCAMiN (ORCPT
+        with ESMTP id S234794AbiCAMiY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:38:13 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9905D140E8;
-        Tue,  1 Mar 2022 04:37:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=OgWilR1GahRuy4nq1IiDO3LnXPsAbyIUMZ5wyCYKmFQ=; b=eNOjt+N1AIu4tQdxbvwkMNi+mF
-        8SrJQbXMVHijCcnaCGGiUimdRum866ec8uACk05m4IdInEu3fNhuMnJe4s8jgBYxs37JRSHHBXytc
-        cJ4DNeEKMTZrP3YYE84dJiebjbXctJKQyfX8aPwyqlaGRLshpMN4sAJ3sJOPo8/EuhtSvl2l+vNP0
-        nOU2W0wZja3TuMM1HnzO+Xhpw1ZA2iLFQzg9CEN+t80/NH+Q8bKSSs6WYpFbPAdj0M1N6Me+Y+P1n
-        XjgKqdhfF2TFYZf6//FWRHdXoVHXgx39+9boXTrCLuaTg6r6SGOCycYvqwQTUm98/4c/lZOZDM0tO
-        FBkecvTg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:57578)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nP1kn-0001Ge-6v; Tue, 01 Mar 2022 12:37:21 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nP1kk-00078x-CT; Tue, 01 Mar 2022 12:37:18 +0000
-Date:   Tue, 1 Mar 2022 12:37:18 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Christophe Leroy' <christophe.leroy@csgroup.eu>,
-        'Segher Boessenkool' <segher@kernel.crashing.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: Remove branch in csum_shift()
-Message-ID: <Yh4TfnHuTmCqWZDb@shell.armlinux.org.uk>
-References: <efeeb0b9979b0377cd313311ad29cf0ac060ae4b.1644569106.git.christophe.leroy@csgroup.eu>
- <7f16910a8f63475dae012ef5135f41d1@AcuMS.aculab.com>
- <20220213091619.GY614@gate.crashing.org>
- <476aa649389345db92f86e9103a848be@AcuMS.aculab.com>
- <de560db6-d29a-8565-857b-b42ae35f80f8@csgroup.eu>
- <9cdb4a5243d342efb562bc61d0c1bfcb@AcuMS.aculab.com>
- <c616f9a6-c9db-d3a7-1b23-f827732566bb@csgroup.eu>
- <10309fa64833418a980a8d950d037357@AcuMS.aculab.com>
+        Tue, 1 Mar 2022 07:38:24 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF70C30F60;
+        Tue,  1 Mar 2022 04:37:37 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id g26so1314876ybj.10;
+        Tue, 01 Mar 2022 04:37:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eDhnSrogQYYZ/PDz/FJ1mmPBu5LlPYyHGz4zly3ela0=;
+        b=nix2l333nSPrpKfbmKrEr8yuHirrIsI6H6Q4h1MjwAIfVBJN0KOmGeEUIlLlZmr9h3
+         zuSDaWKW249d9KHqXfxd9d4amX99aiDg66S6ahNJ3RgHgf33clravY6Ra94MxSus5yi5
+         X2qeNaVppLL7BCcHmJqXAwQagR+VjFPlCcJjZJ6GU6AvDC0rRu63L8lQlIBAudcmOxwn
+         0E9MANioUadr4BD7f+PAvQYO4zULO2vGEhfzFsUGYlLq/prNWHZaJxENrbdf3RXSy8BB
+         pC0B+8tcMBX8rAteUBi5tfRkJpdFu3FVHLreGXL5idYUKFtWyfJHXu5WUD6wgFxhO8Z3
+         tFFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eDhnSrogQYYZ/PDz/FJ1mmPBu5LlPYyHGz4zly3ela0=;
+        b=64+c4cGL4yF8AVz3twvA21SohpoV9WHVSXywTvOWX05xlZhooM2qQRHK/c9J+8d19h
+         0lHMFqNUPmnOjGrKaJavTiRpV/JxqLqIvObt8K+Yf1SQS4/HHlYlnObE3mfonf7nHRUU
+         5n21MbdgEMUf/nP0xvR7yMrZtTFpIhgwmJIzJFMaUT8mPVYZp+PZiL/laOFrM+/AE7+2
+         unmexLw4S2uu8SEYxRy6LyDwyrYU4dsGGkzFR19/8CJcK6vSQ2r14qmtKZu78g44UzpR
+         9s5Z4eUUwnS0jdqnd+Y98amFluHRXWfPEYzEJ4WMZLZ9w404u+4l7D7YLwqyyRwI0EYN
+         M9tw==
+X-Gm-Message-State: AOAM532ANbpggjHUft5ajkCJ415v55RIeixMiLDFyLo8h5MATU6jXi6Z
+        J1O9skugEoSp3jTWNrptzZkS6DAvg3yiY6vhrZo=
+X-Google-Smtp-Source: ABdhPJyPGQ1BAYl5MPLZJ0Ym3NE3dFAFBwfJXZm/Vv7mnJozErV8YETJjcrqQ6OZgFYgN+/FDxDgQ2+UfyhwuiDV52k=
+X-Received: by 2002:a05:6902:4e2:b0:611:19fc:a30 with SMTP id
+ w2-20020a05690204e200b0061119fc0a30mr22644183ybs.431.1646138256813; Tue, 01
+ Mar 2022 04:37:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <10309fa64833418a980a8d950d037357@AcuMS.aculab.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20220227230817.31094-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <TYBPR01MB5341A5DC3BBB4AA59668AF87D8019@TYBPR01MB5341.jpnprd01.prod.outlook.com>
+ <CAMuHMdX5yW3_3ydFXZBsOd+s-23-3dCfcgCxi8g_VEg0XPYnDA@mail.gmail.com>
+In-Reply-To: <CAMuHMdX5yW3_3ydFXZBsOd+s-23-3dCfcgCxi8g_VEg0XPYnDA@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Tue, 1 Mar 2022 12:37:11 +0000
+Message-ID: <CA+V-a8uuuQiij4iZvRvTKsqYmdTgEFcKZAMTJJMQv0Er=xRG2g@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: phy: renesas,usb2-phy: Document RZ/V2L phy bindings
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 11:41:06AM +0000, David Laight wrote:
-> From: Christophe Leroy
-> > Sent: 01 March 2022 11:15
-> ...
-> > Looks like ARM also does better code with the generic implementation as
-> > it seems to have some looking like conditional instructions 'rorne' and
-> > 'strne'.
-> 
-> In arm32 (and I think arm64) every instruction is conditional.
+Hi Geert and Shimoda-san,
 
-Almost every instruction in arm32. There are a number of unconditional
-instructions that were introduced.
+Thank you for the review.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+On Mon, Feb 28, 2022 at 2:35 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> On Mon, Feb 28, 2022 at 3:18 AM Yoshihiro Shimoda
+> <yoshihiro.shimoda.uh@renesas.com> wrote:
+> > > From: Lad Prabhakar, Sent: Monday, February 28, 2022 8:08 AM
+> > >
+> > > Document USB phy bindings for RZ/V2L SoC. RZ/V2L USB phy is identical to
+> > > one found on the RZ/G2L SoC. No driver changes are required as generic
+> > > compatible string "renesas,rzg2l-usb2-phy" will be used as a fallback.
+> > >
+> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
+> > > b/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
+> > > index 3a6e1165419c..4c475be413ef 100644
+> > > --- a/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
+> > > +++ b/Documentation/devicetree/bindings/phy/renesas,usb2-phy.yaml
+> > > @@ -33,6 +33,7 @@ properties:
+> > >        - items:
+> > >            - enum:
+> > >                - renesas,usb2-phy-r9a07g044 # RZ/G2{L,LC}
+> > > +              - renesas,usb2-phy-r9a07g054 # RZ/V2L
+> > >            - const: renesas,rzg2l-usb2-phy  # RZ/G2L family
+> >
+> > The "# RZ/G2L family" is not suitable now. I think removing
+> > the comment is better like "renesas,rcar-gen3-usb2-phy".
+>
+> Indeed.
+>
+Agreed, I will drop it and resend a v2.
+
+Cheers,
+Prabhakar
+
+> > I don't have the RZ/V2L- documentation. So, I cannot check
+> > whether the RZ/V2L is the same specification with RZ/G2{L,LC}.
+> > But I trust you. So, after the comment was removed,
+>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+>
+> In personal conversations with technical people, I call myself a hacker. But
+> when I'm talking to journalists I just say "programmer" or something like that.
+>                                 -- Linus Torvalds
