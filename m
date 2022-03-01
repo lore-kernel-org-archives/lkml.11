@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B60C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:33:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B58DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233924AbiCAJeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:34:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47778 "EHLO
+        id S233950AbiCAJeG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:34:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233891AbiCAJdo (ORCPT
+        with ESMTP id S233846AbiCAJd6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:33:44 -0500
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E347BBF7E;
-        Tue,  1 Mar 2022 01:32:56 -0800 (PST)
-Received: by mail-vk1-f181.google.com with SMTP id j201so6536958vke.11;
-        Tue, 01 Mar 2022 01:32:56 -0800 (PST)
+        Tue, 1 Mar 2022 04:33:58 -0500
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25F9C5EDCD;
+        Tue,  1 Mar 2022 01:33:02 -0800 (PST)
+Received: by mail-vs1-f43.google.com with SMTP id d11so15893995vsm.5;
+        Tue, 01 Mar 2022 01:33:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=RH7vc1Kbu92LgRjmvnXCb+Bj6pzUQwOde/W3XJ6RX6M=;
-        b=7y7rMV57CM6P6S0tyAQttkOuYRwNs+GxyYLUczvGV7bwn2CeyqVq2Ms5G3RGzsIoD/
-         gEWN2+zfTPGOc5I+jAfJiAwA9VsUL7jmXQYGNIdaZNmb38kF1KEOV8xgMrlf+PZ4VhIG
-         AVrLmRrIIwmympZGOtYvraWo39/pA3DBNkeNoU6OYaNeSeEMu3APD5VS/JQ/gsVCt9Em
-         IIdZL7o5agKsyEnUM6dNH/U4gnnJFIWcBavH+I0MZW46eqATiLyGGvPfVw0IJ98moSbu
-         tNVwvTqrxb01kPARoswVFZ72IB4q9yfV1mzNNAdIqLHyAy7mZgD2zPWX4gforiCdYUMr
-         jNHA==
-X-Gm-Message-State: AOAM532ooM11Ag2j9kUtRHP1BMPsKHt4PW7p3qRcUNjC4+MdWx7Kt/NY
-        3SAuVfpIhaDJAOr5+tnN+IO+F9UIR/g/lw==
-X-Google-Smtp-Source: ABdhPJxSST1Gjy1Bz/kMDmbc8c4kOdb9EqGiml2aSE0KnzmDfQVr+kFXeN8+uIG2ceozq2vb6u9w4Q==
-X-Received: by 2002:a1f:6e0f:0:b0:32d:5a5b:fa30 with SMTP id j15-20020a1f6e0f000000b0032d5a5bfa30mr9737411vkc.9.1646127175847;
-        Tue, 01 Mar 2022 01:32:55 -0800 (PST)
+        bh=lf33iephp6ug1P/9SN9wHQyO21IddGLRrW3tOM/qrS8=;
+        b=fbRFJ+x8/XWb03ujSpC2UUOsui//z6C/0XHY18N+e6CEbhgV75hyBeq9acDLRBZWuO
+         a+hpoKA4XgO22DpmC/KcNI8I0LySzpU+PqDzKPNEkmeiT0U4wJxgxnk3HvNlqm0FgEHj
+         FasxKk2N/1BRvnX0+GZtitfmQuawsC62dq2GswiN5McFLuQm4mzjNV+VME0sL+6XNRLy
+         iXXZq+u+59F+HvmVGSMw2LCoALtCXEDWnH8WfGiM6PT0TPw4e6Zmn2L9HOul6KIJldHi
+         0VKhSVBkZR9SmS2aQhIpTnKADLEW3NhPHqnk0TLM+YsdsX1f/PzDhHPWG+I+zMba1dyC
+         Kpag==
+X-Gm-Message-State: AOAM533qRZmC3TzHd3+CAyCvmN5fberyqP64OuxTMvCe224Nf2Knrami
+        rzASRcxxFPzsCjAGaJs2nUYLNAsK+oV3NQ==
+X-Google-Smtp-Source: ABdhPJxLT6uZi5gkC7PSIWIsqg57BGgz65kyGhj855AKoYFdeM6eEUsg2hIkDsj4FAwIEz2JKrZkyg==
+X-Received: by 2002:a67:c80c:0:b0:31b:4428:73ea with SMTP id u12-20020a67c80c000000b0031b442873eamr9502557vsk.54.1646127181922;
+        Tue, 01 Mar 2022 01:33:01 -0800 (PST)
 Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com. [209.85.217.41])
-        by smtp.gmail.com with ESMTPSA id m13-20020a056122138d00b0032c5d72c395sm2130953vkp.55.2022.03.01.01.32.55
+        by smtp.gmail.com with ESMTPSA id j8-20020ac5ce08000000b00333295130d5sm1532533vki.0.2022.03.01.01.33.01
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 01:32:55 -0800 (PST)
-Received: by mail-vs1-f41.google.com with SMTP id d26so15958930vsh.0;
-        Tue, 01 Mar 2022 01:32:55 -0800 (PST)
-X-Received: by 2002:a67:e113:0:b0:30e:303d:d1d6 with SMTP id
- d19-20020a67e113000000b0030e303dd1d6mr9030372vsl.38.1646127175398; Tue, 01
- Mar 2022 01:32:55 -0800 (PST)
+        Tue, 01 Mar 2022 01:33:01 -0800 (PST)
+Received: by mail-vs1-f41.google.com with SMTP id q9so15906456vsg.2;
+        Tue, 01 Mar 2022 01:33:01 -0800 (PST)
+X-Received: by 2002:a67:b00e:0:b0:30d:dc98:6024 with SMTP id
+ z14-20020a67b00e000000b0030ddc986024mr10340990vse.57.1646127181303; Tue, 01
+ Mar 2022 01:33:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20220227203744.18355-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220227203744.18355-10-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220227203744.18355-10-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220227203744.18355-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220227203744.18355-13-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220227203744.18355-13-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 1 Mar 2022 10:32:44 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUFSfFkPMbP-cs77MvjD71XQ4gK6YG5NnrE+L0mndQVtw@mail.gmail.com>
-Message-ID: <CAMuHMdUFSfFkPMbP-cs77MvjD71XQ4gK6YG5NnrE+L0mndQVtw@mail.gmail.com>
-Subject: Re: [PATCH 09/12] arm64: dts: renesas: r9a07g054: Add SSI{1,2,3}
- nodes and fillup the SSI0 stub node
+Date:   Tue, 1 Mar 2022 10:32:50 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXggJm39DkL-DjX7UsGSkzfLOuJoQcvb-XG7vpjgT8O9w@mail.gmail.com>
+Message-ID: <CAMuHMdXggJm39DkL-DjX7UsGSkzfLOuJoQcvb-XG7vpjgT8O9w@mail.gmail.com>
+Subject: Re: [PATCH 12/12] arm64: dts: renesas: r9a07g054: Add SPI{0,2} nodes
+ and fillup SPI1 stub node
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Magnus Damm <magnus.damm@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -68,8 +68,8 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Sun, Feb 27, 2022 at 9:38 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Add SSI{1,2,3} nodes and fillup the SSI0 stub node in RZ/V2L
-> (R9A07G054) SoC DTSI.
+> Add SPI{0,2} nodes and fillup SPI1 stub node in RZ/V2L (R9A07G054)
+> SoC DTSI.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
