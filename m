@@ -2,154 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A558C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 901E2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:20:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234127AbiCAKQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 05:16:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46420 "EHLO
+        id S234111AbiCAKVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 05:21:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbiCAKP5 (ORCPT
+        with ESMTP id S231678AbiCAKVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 05:15:57 -0500
-Received: from smtp-bc0a.mail.infomaniak.ch (smtp-bc0a.mail.infomaniak.ch [45.157.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438398CDB2
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 02:15:16 -0800 (PST)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4K7Cmd6DjQzMq5kH;
-        Tue,  1 Mar 2022 11:15:13 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4K7CmZ5H8YzljTgL;
-        Tue,  1 Mar 2022 11:15:10 +0100 (CET)
-Message-ID: <f6b63133-d555-a77c-0847-de15a9302283@digikod.net>
-Date:   Tue, 1 Mar 2022 11:15:09 +0100
+        Tue, 1 Mar 2022 05:21:01 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0144349F1B;
+        Tue,  1 Mar 2022 02:20:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646130021; x=1677666021;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0eY4zn4pc+vtCu2Xj5DMz6jR8t4IQ6TDuDN/OXFaE30=;
+  b=CiZ1VpmI8hbbNqQUxrADj5hwnP4+scLVV9n2gWTpxBxjHACFrUvQgDrA
+   AVtVHaLFFGnMlcYUKy6nz0NPq3OcpMSB2PLyehDKaZMS5i6F6upa+gc1Z
+   uP84jMpe+BmVQmVm57C+aISbOGo1XiXcIUOd7q0wY5qCKp1+f6KJA60bQ
+   8Bpi6PTxn4HSMKqmkl0yeltWaHH6lMfa5/NOxk/xqhFumTv8OSs0uF5jK
+   vr+6RzJBMjT9LTgszZLoKv00fgx928BwJ4W675G3HPAwlM/8WcA0yjs5+
+   l89zK7PLrC5ggfg08bxHcbDB5jpnFGtKXU/n1GMN3A3sa1q8kWVQQFX8W
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253032648"
+X-IronPort-AV: E=Sophos;i="5.90,145,1643702400"; 
+   d="scan'208";a="253032648"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 02:20:19 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,145,1643702400"; 
+   d="scan'208";a="507751717"
+Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 01 Mar 2022 02:20:16 -0800
+Received: from kbuild by 2146afe809fb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nOzc6-0000Ha-Rz; Tue, 01 Mar 2022 10:20:14 +0000
+Date:   Tue, 1 Mar 2022 18:19:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Veerasenareddy Burru <vburru@marvell.com>, davem@davemloft.net,
+        kuba@kernel.org, corbet@lwn.net, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Abhijit Ayarekar <aayarekar@marvell.com>,
+        Satananda Burla <sburla@marvell.com>
+Subject: Re: [PATCH v2 6/7] octeon_ep: add Tx/Rx processing and interrupt
+ support
+Message-ID: <202203011844.8vlB6VII-lkp@intel.com>
+References: <20220301050359.19374-7-vburru@marvell.com>
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Christian Brauner <brauner@kernel.org>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        Eric Paris <eparis@parisplace.org>,
-        James Morris <jmorris@namei.org>,
-        John Johansen <john.johansen@canonical.com>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Paul Moore <paul@paul-moore.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Steve French <sfrench@samba.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@linux.microsoft.com>
-References: <20220228215935.748017-1-mic@digikod.net>
- <20220301092232.wh7m3fxbe7hyxmcu@wittgenstein>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v1] fs: Fix inconsistent f_mode
-In-Reply-To: <20220301092232.wh7m3fxbe7hyxmcu@wittgenstein>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301050359.19374-7-vburru@marvell.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Veerasenareddy,
 
-On 01/03/2022 10:22, Christian Brauner wrote:
-> On Mon, Feb 28, 2022 at 10:59:35PM +0100, Mickaël Salaün wrote:
->> From: Mickaël Salaün <mic@linux.microsoft.com>
->>
->> While transitionning to ACC_MODE() with commit 5300990c0370 ("Sanitize
->> f_flags helpers") and then fixing it with commit 6d125529c6cb ("Fix
->> ACC_MODE() for real"), we lost an open flags consistency check.  Opening
->> a file with O_WRONLY | O_RDWR leads to an f_flags containing MAY_READ |
->> MAY_WRITE (thanks to the ACC_MODE() helper) and an empty f_mode.
->> Indeed, the OPEN_FMODE() helper transforms 3 (an incorrect value) to 0.
->>
->> Fortunately, vfs_read() and vfs_write() both check for FMODE_READ, or
->> respectively FMODE_WRITE, and return an EBADF error if it is absent.
->> Before commit 5300990c0370 ("Sanitize f_flags helpers"), opening a file
->> with O_WRONLY | O_RDWR returned an EINVAL error.  Let's restore this safe
->> behavior.
-> 
-> That specific part seems a bit risky at first glance. Given that the
-> patch referenced is from 2009 this means we've been allowing O_WRONLY |
-> O_RDWR to succeed for almost 13 years now.
+I love your patch! Perhaps something to improve:
 
-Yeah, it's an old bug, but we should keep in mind that a file descriptor 
-created with such flags cannot be used to read nor write. However, 
-unfortunately, it can be used for things like ioctl, fstat, chdir… I 
-don't know if there is any user of this trick.
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.17-rc6 next-20220228]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Either way, there is an inconsistency between those using ACC_MODE() and 
-those using OPEN_FMODE(). If we decide to take a side for the behavior 
-of one or the other, without denying to create such FD, it could also 
-break security policies. We have to choose what to potentially break…
+url:    https://github.com/0day-ci/linux/commits/Veerasenareddy-Burru/Add-octeon_ep-driver/20220301-130525
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 719fce7539cd3e186598e2aed36325fe892150cf
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220301/202203011844.8vlB6VII-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/e0d69d884293634bda9cacbf722024931c0194f2
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Veerasenareddy-Burru/Add-octeon_ep-driver/20220301-130525
+        git checkout e0d69d884293634bda9cacbf722024931c0194f2
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash drivers/net/ethernet/marvell/octeon_ep/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/net/ethernet/marvell/octeon_ep/octep_main.c: In function 'octep_alloc_ioq_vectors':
+   drivers/net/ethernet/marvell/octeon_ep/octep_main.c:53:38: error: implicit declaration of function 'vzalloc'; did you mean 'kvzalloc'? [-Werror=implicit-function-declaration]
+      53 |                 oct->ioq_vector[i] = vzalloc(sizeof(*oct->ioq_vector[i]));
+         |                                      ^~~~~~~
+         |                                      kvzalloc
+>> drivers/net/ethernet/marvell/octeon_ep/octep_main.c:53:36: warning: assignment to 'struct octep_ioq_vector *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+      53 |                 oct->ioq_vector[i] = vzalloc(sizeof(*oct->ioq_vector[i]));
+         |                                    ^
+   drivers/net/ethernet/marvell/octeon_ep/octep_main.c:69:17: error: implicit declaration of function 'vfree'; did you mean 'kvfree'? [-Werror=implicit-function-declaration]
+      69 |                 vfree(oct->ioq_vector[i]);
+         |                 ^~~~~
+         |                 kvfree
+   cc1: some warnings being treated as errors
 
 
-> 
->>
->> To make it consistent with ACC_MODE(), this patch also changes
->> OPEN_FMODE() to return FMODE_READ | FMODE_WRITE for O_WRONLY | O_RDWR.
->> This may help protect from potential spurious issues.
->>
->> This issue could result in inconsistencies with AppArmor, Landlock and
->> SELinux, but the VFS checks would still forbid read and write accesses.
->> Tomoyo uses the ACC_MODE() transformation which is correct, and Smack
->> doesn't check the file mode.  Filesystems using OPEN_FMODE() should also
->> be protected by the VFS checks.
->>
->> Fixes: 5300990c0370 ("Sanitize f_flags helpers")
->> Cc: Al Viro <viro@zeniv.linux.org.uk>
->> Cc: Casey Schaufler <casey@schaufler-ca.com>
->> Cc: Darrick J. Wong <djwong@kernel.org>
->> Cc: Eric Paris <eparis@parisplace.org>
->> Cc: John Johansen <john.johansen@canonical.com>
->> Cc: Kentaro Takeda <takedakn@nttdata.co.jp>
->> Cc: Miklos Szeredi <miklos@szeredi.hu>
->> Cc: Paul Moore <paul@paul-moore.com>
->> Cc: Stephen Smalley <stephen.smalley.work@gmail.com>
->> Cc: Steve French <sfrench@samba.org>
->> Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
->> Signed-off-by: Mickaël Salaün <mic@linux.microsoft.com>
->> Link: https://lore.kernel.org/r/20220228215935.748017-1-mic@digikod.net
->> ---
->>   fs/file_table.c    | 3 +++
->>   include/linux/fs.h | 5 +++--
->>   2 files changed, 6 insertions(+), 2 deletions(-)
->>
->> diff --git a/fs/file_table.c b/fs/file_table.c
->> index 7d2e692b66a9..b936f69525d0 100644
->> --- a/fs/file_table.c
->> +++ b/fs/file_table.c
->> @@ -135,6 +135,9 @@ static struct file *__alloc_file(int flags, const struct cred *cred)
->>   	struct file *f;
->>   	int error;
->>   
->> +	if ((flags & O_ACCMODE) == O_ACCMODE)
->> +		return ERR_PTR(-EINVAL);
->> +
->>   	f = kmem_cache_zalloc(filp_cachep, GFP_KERNEL);
->>   	if (unlikely(!f))
->>   		return ERR_PTR(-ENOMEM);
->> diff --git a/include/linux/fs.h b/include/linux/fs.h
->> index e2d892b201b0..83bc5aaf1c41 100644
->> --- a/include/linux/fs.h
->> +++ b/include/linux/fs.h
->> @@ -3527,8 +3527,9 @@ int __init list_bdev_fs_names(char *buf, size_t size);
->>   #define __FMODE_NONOTIFY	((__force int) FMODE_NONOTIFY)
->>   
->>   #define ACC_MODE(x) ("\004\002\006\006"[(x)&O_ACCMODE])
->> -#define OPEN_FMODE(flag) ((__force fmode_t)(((flag + 1) & O_ACCMODE) | \
->> -					    (flag & __FMODE_NONOTIFY)))
->> +#define OPEN_FMODE(flag) ((__force fmode_t)( \
->> +			(((flag + 1) & O_ACCMODE) ?: O_ACCMODE) | \
->> +			(flag & __FMODE_NONOTIFY)))
->>   
->>   static inline bool is_sxid(umode_t mode)
->>   {
->>
->> base-commit: 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3
->> -- 
->> 2.35.1
->>
+vim +53 drivers/net/ethernet/marvell/octeon_ep/octep_main.c
+
+    33	
+    34	/**
+    35	 * octep_alloc_ioq_vectors() - Allocate Tx/Rx Queue interrupt info.
+    36	 *
+    37	 * @oct: Octeon device private data structure.
+    38	 *
+    39	 * Allocate resources to hold per Tx/Rx queue interrupt info.
+    40	 * This is the information passed to interrupt handler, from which napi poll
+    41	 * is scheduled and includes quick access to private data of Tx/Rx queue
+    42	 * corresponding to the interrupt being handled.
+    43	 *
+    44	 * Return: 0, on successful allocation of resources for all queue interrupts.
+    45	 *         -1, if failed to allocate any resource.
+    46	 */
+    47	static int octep_alloc_ioq_vectors(struct octep_device *oct)
+    48	{
+    49		int i;
+    50		struct octep_ioq_vector *ioq_vector;
+    51	
+    52		for (i = 0; i < oct->num_oqs; i++) {
+  > 53			oct->ioq_vector[i] = vzalloc(sizeof(*oct->ioq_vector[i]));
+    54			if (!oct->ioq_vector[i])
+    55				goto free_ioq_vector;
+    56	
+    57			ioq_vector = oct->ioq_vector[i];
+    58			ioq_vector->iq = oct->iq[i];
+    59			ioq_vector->oq = oct->oq[i];
+    60			ioq_vector->octep_dev = oct;
+    61		}
+    62	
+    63		dev_info(&oct->pdev->dev, "Allocated %d IOQ vectors\n", oct->num_oqs);
+    64		return 0;
+    65	
+    66	free_ioq_vector:
+    67		while (i) {
+    68			i--;
+    69			vfree(oct->ioq_vector[i]);
+    70			oct->ioq_vector[i] = NULL;
+    71		}
+    72		return -1;
+    73	}
+    74	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
