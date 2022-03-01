@@ -2,110 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5427DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD62C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233786AbiCAN0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 08:26:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49408 "EHLO
+        id S234395AbiCAN0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 08:26:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231247AbiCAN0G (ORCPT
+        with ESMTP id S230374AbiCAN0w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 08:26:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004274F463;
-        Tue,  1 Mar 2022 05:25:25 -0800 (PST)
+        Tue, 1 Mar 2022 08:26:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37FF9D044;
+        Tue,  1 Mar 2022 05:26:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0BC8B818F6;
-        Tue,  1 Mar 2022 13:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0D31C340EE;
-        Tue,  1 Mar 2022 13:25:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ED796144F;
+        Tue,  1 Mar 2022 13:26:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4705DC340EE;
+        Tue,  1 Mar 2022 13:26:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646141123;
-        bh=fGz211pe0N4hyHlm5ps1Sr0ecSqu09vLb2sUW2Ygypw=;
+        s=k20201202; t=1646141171;
+        bh=q9GySkEXj2qOEws7WQOcFqhKLJ1DJ8LgqDRm04SdGeU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=TXUqAPpHc5mJtTLGkJ51l+Bmm/zQtdTknQzZXT8z/uv6Km7AH05nVGfqg0rgSb0AO
-         BEacJl8Zyb1mlYH7TfRz/WQksEWh4b2JRZhk5kM10pZilXoDDBZtLY1STg+DE0EEIn
-         nc7vDElSc5HMHgkROk231um8inriyX+/f2GxITTykQz7ket8ytOx5MjtTeywt7ChME
-         zQQTlzb1t6p1sHx6nSEf2EpOvkbnGcCOOshpNjApc7sufnhjO7rBGQ01U4VGvzytfl
-         c0oBfgF/qr69PwAMmMQHbJHLPlQ0cXX1fNEeaAZvTJos7/Cwn7Cekyz9LyzwnWiGT4
-         9c/eq5pEzXL+Q==
-Date:   Tue, 1 Mar 2022 13:25:18 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Rob Herring <robh+dt@kernel.org>, Pratyush Yadav <p.yadav@ti.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v2 2/2] spi: fsl-spi: Implement trailing bits
-Message-ID: <Yh4evlYQXru8c++N@sirena.org.uk>
-References: <cover.1646060734.git.christophe.leroy@csgroup.eu>
- <fe4a3946a66ede73f6d6871700f2aaf0171372a1.1646060734.git.christophe.leroy@csgroup.eu>
- <YhzqbYW1q5bPNWXn@sirena.org.uk>
- <7afaab3d-50e0-4716-18d4-41eabc2a9cb9@csgroup.eu>
- <Yhz0/1kiAy7Mlgtv@sirena.org.uk>
- <fa51ac07-9cba-a8b5-89ed-c51a8a12d452@csgroup.eu>
+        b=PPYvYuyueG6EFv2fYzIoq3il0/n2kYnPiWjDUpOFBNjDQrEULzkYVHw1eyjRD2VGv
+         rJeF0aqQPQM6AeIBatbJhFQ5vxhYSFPKqUQlEJCvYAv4lLD7TMxD32gi1RUzBLikt0
+         NbF4B03o3T8Il98RCGPWG+TeM4yPwRE9uvPwaJVdv8EVcaDO3GgsHrld3/0odUqSx5
+         seGKIta13pTceYFRVUsn4gxpO0B6dLdW6ias4B3eN2HywOMApIMIQOKAK3Ozqg2zFk
+         EfzDGJbSgVGb1OkOUuWXPJUHik54imQfdglXde2ZN03nr6pbWYcj6z2Xpg0gTS6mXF
+         XOl30WceJBOhQ==
+Date:   Tue, 1 Mar 2022 14:26:48 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "Zhang, Cathy" <cathy.zhang@intel.com>,
+        "Xing, Cedric" <cedric.xing@intel.com>,
+        "Huang, Haitao" <haitao.huang@intel.com>,
+        "Shanahan, Mark" <mark.shanahan@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
+ permissions
+Message-ID: <Yh4fGORDaJyVrJQW@iki.fi>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
+ <YhLhoMFPyOFZ2fsX@iki.fi>
+ <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
+ <Yhy/GvJegnTqYdq6@iki.fi>
+ <f6a256a6-a7d7-a8e7-c9a8-e232203c63af@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="0U1od5J5OqUDXV6E"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <fa51ac07-9cba-a8b5-89ed-c51a8a12d452@csgroup.eu>
-X-Cookie: You have a message from the operator.
+In-Reply-To: <f6a256a6-a7d7-a8e7-c9a8-e232203c63af@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Feb 28, 2022 at 07:16:22AM -0800, Dave Hansen wrote:
+> On 2/28/22 04:24, Jarkko Sakkinen wrote:
+> >> Regarding the recent update of splitting the page permissions change
+> >> request into two IOCTLS (RELAX and RESTRICT), can we combine them into
+> >> one? That is, revert to how it was done in the v1 version?
+> > They are logically separate complex functionalities:
+> > 
+> > 1. "restrict" calls EMODPR and requires EACCEPT
+> > 2. "relax" increases permissions up to vetted ("EADD") and could be
+> >     combined with EMODPE called inside enclave.
+> 
+> It would be great to have a _slightly_ better justification than that.
+> Existing permission interfaces like chmod or mprotect() don't have this
+> asymmetry.
+> 
+> I think you're saying that the underlying hardware implementation is
+> asymmetric, so the interface should be too.  I don't find that argument
+> very convincing.  If the hardware interface is arcane and we can make it
+> look more sane in the ioctl() layer, we should that, asymmetry or not.
 
---0U1od5J5OqUDXV6E
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+That is my argument, yes.
 
-On Tue, Mar 01, 2022 at 12:53:58PM +0000, Christophe Leroy wrote:
+> If we can't make it any more sane, let's say why the ioctl() must or
+> should be asymmetric.
 
-> My understanding today is that this trailing transfer with chipselect=20
-> OFF is to be added at the end of transfer_one_message().
+Perhaps underling this asymmetry in kdoc would be enough.
 
-Yes.
+> The SGX2 page permission mechanism is horribly counter intuitive.
+> *Everybody* that looks at it thinks that it's wrong.  That means that we
+> have a lot of work ahead of us to explain the interfaces that get
+> layered on top.
 
-> It can be implemented in the core transfer_one_message() for drivers=20
-> implementing transfer_one(). For the other drivers not having=20
-> transfer_one() but having transfer_one_message(), it must be implemented=
-=20
-> in the driver's transfer_one_message().
+I fully agree on this :-)
 
-> Am I right ?
+With EACCEPTCOPY (kudos to Mark S. for reminding me of this version of
+EACCEPT @ chat.enarx.dev) it is possible to make R and RX pages but
+obviously new RX pages are now out of the picture:
 
-Yes.
 
-> fsl-spi driver is the one I need to support this new functionnality and=
-=20
-> it has its own transfer_one_message().
+	/*
+	 * Adding a regular page that is architecturally allowed to only
+	 * be created with RW permissions.
+	 * TBD: Interface with user space policy to support max permissions
+	 * of RWX.
+	 */
+	prot = PROT_READ | PROT_WRITE;
+	encl_page->vm_run_prot_bits = calc_vm_prot_bits(prot, 0);
+	encl_page->vm_max_prot_bits = encl_page->vm_run_prot_bits;
 
-> What would you expect ?
+If that TBD is left out to the final version the page augmentation has a
+risk of a API bottleneck, and that risk can realize then also in the page
+permission ioctls.
 
-Well, if the fsl-spi driver has a good reason for open coding
-transfer_message() it could continue to do it, however looking at the
-driver it seems like it's only the little bit at the start to optimise
-the trasfer width in CPU mode which looks like it could easily be moved
-to a prepare_message() callback and save a bunch of code so it'd be good
-to convert it.  I guess it shouldn't be strictly essential though.
+I.e. now any review comment is based on not fully known territory, we have
+one known unknown, and some unknown unknowns from unpredictable effect to
+future API changes.
 
---0U1od5J5OqUDXV6E
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIeHr0ACgkQJNaLcl1U
-h9CdLwf+OjYGDExE28BCAFXXyZLYcQHLkDfa219TAYxNuE0upFLoAXBPlCeWYQtB
-2eCk0YJTARvPcwJXkNrv99HibRUA6Fjr0HpbGfTdmSKrwkHlx3XTYirMGj0cQyOL
-1qBOngx+onkeS2+t0p8uxwA4xE+bOci9zUP0OF7oQI60cdWJukl8jK6Bq5uOwULR
-/VuL1ACetClUtnCrJQxCGn9VNLJa+jkKc+PzF7pMWXYw8iWtd9qPnAkPRzvOCBnE
-N14RdzDR8bDyXgJNJp0FchRC83G+eA/c2c4n8QAGj9YkklGHKO2+0kMt7wpjVio+
-hFIp1TxpVQlIxJXsD26VO/hJrm+39Q==
-=bVV1
------END PGP SIGNATURE-----
-
---0U1od5J5OqUDXV6E--
+BR, Jarkko
