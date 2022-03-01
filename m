@@ -2,189 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3940DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:28:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4E15C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237037AbiCAS3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:29:32 -0500
+        id S237028AbiCAS3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:29:45 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233311AbiCAS3X (ORCPT
+        with ESMTP id S237011AbiCAS31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:29:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 497D127FD5
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:28:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646159316;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xHLTg2ZynLQCsdLNoPMgFEBXTh+HTakHjwxMKQ+OnB8=;
-        b=MPatA33FFi2aDjFYn6EhDHbCJoSxbPkMJP1dqrmwt35CnbpnPin/YNS5krTYyVYgxUAjlX
-        1ErHeU9jp0QD4D6vP/aH8crktIKvu3pSnvNBGa+uhgmPZdV7gQrCxRylC3pkHMI/GYisOl
-        cTvW3kMmvA9DWZ02G7bCr6Dxe68snOc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-528-oNTXenyBNvGXwAFj1JC4KA-1; Tue, 01 Mar 2022 13:28:33 -0500
-X-MC-Unique: oNTXenyBNvGXwAFj1JC4KA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5F8CA835DE0;
-        Tue,  1 Mar 2022 18:28:30 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BE20D86C41;
-        Tue,  1 Mar 2022 18:28:23 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        x86@kernel.org, intel-gvt-dev@lists.freedesktop.org,
-        Joerg Roedel <joro@8bytes.org>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>,
-        Jim Mattson <jmattson@google.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        dri-devel@lists.freedesktop.org,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH v3 09/11] KVM: x86: rename .set_apic_access_page_addr to reload_apic_access_page
-Date:   Tue,  1 Mar 2022 20:26:37 +0200
-Message-Id: <20220301182639.559568-10-mlevitsk@redhat.com>
-In-Reply-To: <20220301182639.559568-1-mlevitsk@redhat.com>
-References: <20220301182639.559568-1-mlevitsk@redhat.com>
+        Tue, 1 Mar 2022 13:29:27 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1082A714;
+        Tue,  1 Mar 2022 10:28:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=4qQmMjIAiTQvnNnaC1WHCchcXF9E9dDy4G6npTea56M=; b=0NJSVp1GVv2yfmwiqsdwZ5jiXj
+        RrtALBzQC6KEMXVBXGQozfl49Ir1/XaN60DX6Qh1+8DnpoSnKsBRdbr2yhsnk0dloMgw/viPciUI2
+        +wdAAUwjwKKQA7aowWnivpD7Y49RzNtoT+oM/H/ClT/rgcVYrASHNoK7X6lEcms8+IQcbSIDxJ9fA
+        YM0cnyFiaFxkF+MIsXpnjF2hIRfReWQTXUpZtFVwVhA9+LQhlnsel1S74Hyw8rCeVot2xGLlPYTuI
+        FO2bY3CNIdvaI0H/8MBNP1fM1b3HOxTNh2VhbRuf2jqKB/m4alTTlCpMGY61KePrTEMinzrNxjRbK
+        WfCOGLEQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nP7EY-000C19-Vb; Tue, 01 Mar 2022 18:28:26 +0000
+Date:   Tue, 1 Mar 2022 10:28:26 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Shakeel Butt <shakeelb@google.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        NeilBrown <neilb@suse.de>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Vasily Averin <vvs@virtuozzo.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Michal Hocko <mhocko@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Linux MM <linux-mm@kvack.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>, linux-kernel@vger.kernel.org,
+        kernel@openvz.org
+Subject: Re: [PATCH RFC] net: memcg accounting for veth devices
+Message-ID: <Yh5lyr8dJXmEoFG6@bombadil.infradead.org>
+References: <a5e09e93-106d-0527-5b1e-48dbf3b48b4e@virtuozzo.com>
+ <YhzeCkXEvga7+o/A@bombadil.infradead.org>
+ <20220301180917.tkibx7zpcz2faoxy@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301180917.tkibx7zpcz2faoxy@google.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This will be used on SVM to reload shadow page of the AVIC physid table
+On Tue, Mar 01, 2022 at 10:09:17AM -0800, Shakeel Butt wrote:
+> On Mon, Feb 28, 2022 at 06:36:58AM -0800, Luis Chamberlain wrote:
+> > On Mon, Feb 28, 2022 at 10:17:16AM +0300, Vasily Averin wrote:
+> > > Following one-liner running inside memcg-limited container consumes
+> > > huge number of host memory and can trigger global OOM.
+> > >
+> > > for i in `seq 1 xxx` ; do ip l a v$i type veth peer name vp$i ; done
+> > >
+> > > Patch accounts most part of these allocations and can protect host.
+> > > ---[cut]---
+> > > It is not polished, and perhaps should be splitted.
+> > > obviously it affects other kind of netdevices too.
+> > > Unfortunately I'm not sure that I will have enough time to handle it
+> > properly
+> > > and decided to publish current patch version as is.
+> > > OpenVz workaround it by using per-container limit for number of
+> > > available netdevices, but upstream does not have any kind of
+> > > per-container configuration.
+> > > ------
+> 
+> > Should this just be a new ucount limit on kernel/ucount.c and have veth
+> > use something like inc_ucount(current_user_ns(), current_euid(),
+> > UCOUNT_VETH)?
+> 
+> > This might be abusing ucounts though, not sure, Eric?
+> 
+> 
+> For admins of systems running multiple workloads, there is no easy way
+> to set such limits for each workload.
 
-No functional change intended
+That's why defaults would exist. Today's ulimits IMHO are insane and
+some are arbitrarily large.
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/include/asm/kvm-x86-ops.h | 2 +-
- arch/x86/include/asm/kvm_host.h    | 3 +--
- arch/x86/kvm/vmx/vmx.c             | 8 ++++----
- arch/x86/kvm/x86.c                 | 6 +++---
- 4 files changed, 9 insertions(+), 10 deletions(-)
+> Some may genuinely need more veth
+> than others.
 
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index eb16e32117610..6473b61d241e2 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -82,7 +82,7 @@ KVM_X86_OP_OPTIONAL(hwapic_isr_update)
- KVM_X86_OP_OPTIONAL_RET0(guest_apic_has_interrupt)
- KVM_X86_OP_OPTIONAL(load_eoi_exitmap)
- KVM_X86_OP_OPTIONAL(set_virtual_apic_mode)
--KVM_X86_OP_OPTIONAL(set_apic_access_page_addr)
-+KVM_X86_OP_OPTIONAL(reload_apic_pages)
- KVM_X86_OP(deliver_interrupt)
- KVM_X86_OP_OPTIONAL(sync_pir_to_irr)
- KVM_X86_OP_OPTIONAL_RET0(set_tss_addr)
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 83f734e201e24..c73f8415533a6 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1403,7 +1403,7 @@ struct kvm_x86_ops {
- 	bool (*guest_apic_has_interrupt)(struct kvm_vcpu *vcpu);
- 	void (*load_eoi_exitmap)(struct kvm_vcpu *vcpu, u64 *eoi_exit_bitmap);
- 	void (*set_virtual_apic_mode)(struct kvm_vcpu *vcpu);
--	void (*set_apic_access_page_addr)(struct kvm_vcpu *vcpu);
-+	void (*reload_apic_pages)(struct kvm_vcpu *vcpu);
- 	void (*deliver_interrupt)(struct kvm_lapic *apic, int delivery_mode,
- 				  int trig_mode, int vector);
- 	int (*sync_pir_to_irr)(struct kvm_vcpu *vcpu);
-@@ -1877,7 +1877,6 @@ int kvm_cpu_has_extint(struct kvm_vcpu *v);
- int kvm_arch_interrupt_allowed(struct kvm_vcpu *vcpu);
- int kvm_cpu_get_interrupt(struct kvm_vcpu *v);
- void kvm_vcpu_reset(struct kvm_vcpu *vcpu, bool init_event);
--
- int kvm_pv_send_ipi(struct kvm *kvm, unsigned long ipi_bitmap_low,
- 		    unsigned long ipi_bitmap_high, u32 min,
- 		    unsigned long icr, int op_64_bit);
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index b325f99b21774..4a9a4785b55e4 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -6353,7 +6353,7 @@ void vmx_set_virtual_apic_mode(struct kvm_vcpu *vcpu)
- 	vmx_update_msr_bitmap_x2apic(vcpu);
- }
- 
--static void vmx_set_apic_access_page_addr(struct kvm_vcpu *vcpu)
-+static void vmx_reload_apic_access_page(struct kvm_vcpu *vcpu)
- {
- 	struct page *page;
- 
-@@ -7778,7 +7778,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
- 	.enable_irq_window = vmx_enable_irq_window,
- 	.update_cr8_intercept = vmx_update_cr8_intercept,
- 	.set_virtual_apic_mode = vmx_set_virtual_apic_mode,
--	.set_apic_access_page_addr = vmx_set_apic_access_page_addr,
-+	.reload_apic_pages = vmx_reload_apic_access_page,
- 	.refresh_apicv_exec_ctrl = vmx_refresh_apicv_exec_ctrl,
- 	.load_eoi_exitmap = vmx_load_eoi_exitmap,
- 	.apicv_post_state_restore = vmx_apicv_post_state_restore,
-@@ -7942,12 +7942,12 @@ static __init int hardware_setup(void)
- 		enable_vnmi = 0;
- 
- 	/*
--	 * set_apic_access_page_addr() is used to reload apic access
-+	 * kvm_vcpu_reload_apic_pages() is used to reload apic access
- 	 * page upon invalidation.  No need to do anything if not
- 	 * using the APIC_ACCESS_ADDR VMCS field.
- 	 */
- 	if (!flexpriority_enabled)
--		vmx_x86_ops.set_apic_access_page_addr = NULL;
-+		vmx_x86_ops.reload_apic_pages = NULL;
- 
- 	if (!cpu_has_vmx_tpr_shadow())
- 		vmx_x86_ops.update_cr8_intercept = NULL;
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 14b964eb079e7..1a6cfc27c3b35 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9824,12 +9824,12 @@ void kvm_arch_mmu_notifier_invalidate_range(struct kvm *kvm,
- 		kvm_make_all_cpus_request(kvm, KVM_REQ_APIC_PAGE_RELOAD);
- }
- 
--static void kvm_vcpu_reload_apic_access_page(struct kvm_vcpu *vcpu)
-+static void kvm_vcpu_reload_apic_pages(struct kvm_vcpu *vcpu)
- {
- 	if (!lapic_in_kernel(vcpu))
- 		return;
- 
--	static_call_cond(kvm_x86_set_apic_access_page_addr)(vcpu);
-+	static_call_cond(kvm_x86_reload_apic_pages)(vcpu);
- }
- 
- void __kvm_request_immediate_exit(struct kvm_vcpu *vcpu)
-@@ -9945,7 +9945,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 		if (kvm_check_request(KVM_REQ_LOAD_EOI_EXITMAP, vcpu))
- 			vcpu_load_eoi_exitmap(vcpu);
- 		if (kvm_check_request(KVM_REQ_APIC_PAGE_RELOAD, vcpu))
--			kvm_vcpu_reload_apic_access_page(vcpu);
-+			kvm_vcpu_reload_apic_pages(vcpu);
- 		if (kvm_check_request(KVM_REQ_HV_CRASH, vcpu)) {
- 			vcpu->run->exit_reason = KVM_EXIT_SYSTEM_EVENT;
- 			vcpu->run->system_event.type = KVM_SYSTEM_EVENT_CRASH;
--- 
-2.26.3
+So why not make it a high sensible but not enough to OOM a typical system?
 
+But again, I'd like to hear whether or not a ulimit for veth is a mi-use
+of ulimits or if its the right place. If it's not then perhaps the
+driver can just have its own atomic max definition.
+
+> From admin's perspective it is preferred to have minimal
+> knobs to set and if these objects are charged to memcg then the memcg
+> limits would limit them. There was similar situation for inotify
+> instances where fs sysctl inotify/max_user_instances already limits the
+> inotify instances but we memcg charged them to not worry about setting
+> such limits. See ac7b79fd190b ("inotify, memcg: account inotify
+> instances to kmemcg").
+
+Yes but we want sensible defaults out of the box. What those should be
+IMHO might be work which needs to be figured out well.
+
+IMHO today's ulimits are a bit over the top today. This is off slightly
+off topic but for instance play with:
+
+git clone https://github.com/ColinIanKing/stress-ng
+cd stress-ng
+make -j 8
+echo 0 > /proc/sys/vm/oom_dump_tasks                                            
+i=1; while true; do echo "RUNNING TEST $i"; ./stress-ng --unshare 8192 --unshare-ops 10000;  sleep 1; let i=$i+1; done
+
+If you see:
+
+[  217.798124] cgroup: fork rejected by pids controller in
+/user.slice/user-1000.slice/session-1.scope
+                                                                                
+Edit /usr/lib/systemd/system/user-.slice.d/10-defaults.conf to be:
+
+[Slice]                                                                         
+TasksMax=MAX_TASKS|infinity
+
+Even though we have max_threads set to 61343, things ulimits have a
+different limit set, and what this means is the above can end up easily
+creating over 1048576 (17 times max_threads) threads all eagerly doing
+nothing to just exit, essentially allowing a sort of fork bomb on exit.
+Your system may or not fall to its knees.
+
+  Luis
