@@ -2,67 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D8EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B16E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234884AbiCAM6s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:58:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37366 "EHLO
+        id S234885AbiCAM71 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:59:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230415AbiCAM6r (ORCPT
+        with ESMTP id S231299AbiCAM7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:58:47 -0500
-Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673C013F2F;
-        Tue,  1 Mar 2022 04:58:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=metanate.com; s=stronger; h=In-Reply-To:Content-Type:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description; bh=dEZeDrjsIzY0RrTo4uH6LCxsW77wAiB3aeEDQoZvGb0=; b=y26oi
-        8DUfY7wPVY+Btl2Z6xXD1TtHWrqBS1unDolNzksxqZxi3zr8h7YoSNuGHxoSRtPUmssh7+OQXZnYx
-        3+RGVbJnV1oaYxSAVkQPJSVOKou2Z9XBxPfSE0B8SP/DYjBBo0lQ+0WEn7iZ/SBpM+O9zO7cx10DZ
-        rJuvoFVtc+Trtu1PTmPEFos0fj1SuHz0HADTZCl30sV/GnUIy/xiP0i6vLggJ9IpGdHj3gktvX8wg
-        HZCwx3ohPfypPIFhCwrtTa95V3S5s3FsbQ/T44lQ4uVrEfblktLXmkDopeAZPcApWFLco3QMIXlQF
-        jgNS7o3Ggqpu2opvedY9VqDJxSb9w==;
-Received: from [81.174.171.191] (helo=donbot)
-        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <john@metanate.com>)
-        id 1nP249-0007q7-6Q; Tue, 01 Mar 2022 12:57:21 +0000
-Date:   Tue, 1 Mar 2022 12:57:16 +0000
-From:   John Keeping <john@metanate.com>
-To:     Corentin Labbe <clabbe@baylibre.com>
-Cc:     heiko@sntech.de, herbert@gondor.apana.org.au,
-        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH 10/16] crypto: rockchip: rework by using crypto_engine
-Message-ID: <Yh4YLGeaXAzzr+PK@donbot>
-References: <20220228194037.1600509-1-clabbe@baylibre.com>
- <20220228194037.1600509-11-clabbe@baylibre.com>
+        Tue, 1 Mar 2022 07:59:24 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17C01EACF
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 04:58:43 -0800 (PST)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646139522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iJ7r/RygoFcdcvKuLBfkNBw/GzSsqEbxSHChl9KJjpc=;
+        b=Rn/oBB6JoXJ440HePA4KoE7SHyv9x3/0QwXplchDUyIPvLGR0wyOHY0KC4JGrEFXQarxmO
+        7cB5PmhuTxi7gmcwKQc4QKY1Y9MOsZGGfogoVS62Fi16v248ShkFUTWpB/EAm+67DROtwS
+        khNZu3VIB4tcNYDI/V6DbtxRafiVfAi+HEPqSVmCt0l/Wlwo687urb6Stm5YbgCWc0ncsn
+        SQx835d77Uk3foWzXS6gbSoRSUR2Hkgau9zKUJtm9SeRhBoEKjHs9L0hQxxrroQ+dFg2hM
+        jSlZRDb8TM7aT+rG1wXhnSzh9EAySxgpX2obVeDtmPSAD1ymZUwqo4GJF5nq8Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646139522;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iJ7r/RygoFcdcvKuLBfkNBw/GzSsqEbxSHChl9KJjpc=;
+        b=hkLRwiQ9m7dg/zWDnINxgKSwU0jz3bacT2AsWanzJVIch0Ut+uWwnWyu3GqyHEn6CBaJw3
+        rFi4WoR2fESEheBw==
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Igor Zhbanov <i.zhbanov@omprussia.ru>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH] printk: fix return value of printk.devkmsg __setup handler
+In-Reply-To: <20220228220556.23484-1-rdunlap@infradead.org>
+References: <20220228220556.23484-1-rdunlap@infradead.org>
+Date:   Tue, 01 Mar 2022 14:04:41 +0106
+Message-ID: <87sfs17rsu.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220228194037.1600509-11-clabbe@baylibre.com>
-X-Authenticated: YES
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Feb 28, 2022 at 07:40:31PM +0000, Corentin Labbe wrote:
-> Instead of doing manual queue management, let's use the crypto/engine
-> for that.
-> In the same time, rework the requests handling to be easier to
-> understand (and fix all bugs related to them).
-> 
-> Fixes: ce0183cb6464b ("crypto: rockchip - switch to skcipher API")
-> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
-> ---
+On 2022-02-28, Randy Dunlap <rdunlap@infradead.org> wrote:
+> If an invalid option value is used with "printk.devkmsg=<value>",
+> it is silently ignored.
+> If a valid option value is used, it is honored but the wrong return
+> value (0) is used, indicating that the command line option had an
+> error and was not handled. This string is not added to init's
+> environment strings due to init/main.c::unknown_bootoption()
+> checking for a '.' in the boot option string and then considering
+> that string to be an "Unused module parameter".
+>
+> Print a warning message if a bad option string is used.
+> Always return 1 from the __setup handler to indicate that the command
+> line option has been handled.
+>
+> Fixes: 750afe7babd1 ("printk: add kernel parameter to control writes to /dev/kmsg")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
 
-In addition to the warnings reported by the kernel test robot, this
-needs to add select CRYPTO_ENGINE to Kconfig for the Rockchip driver.
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
 
+> Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
 
-Regards,
-John
+The message at this link is very helpful in explaining the state of
+declaring kernel parameters. Hopefully someday someone will document
+and/or comment this stuff.
+
+John Ogness
