@@ -2,105 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB53C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 624A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238365AbiCAU0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:26:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
+        id S238376AbiCAU0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:26:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238827AbiCAUXz (ORCPT
+        with ESMTP id S238840AbiCAUXz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 1 Mar 2022 15:23:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A2241607;
-        Tue,  1 Mar 2022 12:21:21 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 665B760AE2;
-        Tue,  1 Mar 2022 20:21:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4A65C340EE;
-        Tue,  1 Mar 2022 20:21:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166079;
-        bh=HyUK9pZg1FGxaTxvcSjI4+U0M90v9UG/SsfsqFETqCY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fnlBQEDm+IH25qqwrufIrklI3irwOtxlNw+ePItMI38yWewISaBNOHhQYNHzy7dnH
-         BCpHBWpY5HbfUVlSXXWWlL3lJdpCIu0s9YMmD4DdnAjgxn6XkeUXY0bVZcZ4fPe1er
-         smGfJwaBbctdWL1Bi/6FsgDquYXxeK8B511xl61h66TjOZwabCo5DGRK9nlmLQPdoN
-         /S2WiM9QRUjyHYzELTvZ7SgqmgQ3wS3Q9+5atefry6h09aFeEreVtc8aiWlF7CPHVM
-         xNcn1S6HOTiGNb9rKvpwLyRLq3xDSIIb5wHyXyyYxyST3OXS8a29QhF5oUGLT0ij5p
-         E/HGYXUcJPHTA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Schnelle <svens@linux.ibm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 4.19 6/7] tracing: Ensure trace buffer is at least 4096 bytes large
-Date:   Tue,  1 Mar 2022 15:20:44 -0500
-Message-Id: <20220301202046.19220-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301202046.19220-1-sashal@kernel.org>
-References: <20220301202046.19220-1-sashal@kernel.org>
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D3BA8C7E9
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:21:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646165970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1x6QUK4FLEy8ROUzJyVZ/cWy4d8A2hzSu/J8ehfsP+g=;
+        b=Xuzs1Tok81E2oNm2MdB1zv2pbp0rlGDwOrzGMvRkPIW1O02TeeSSDWXEW4SkgWpg5Zf4yT
+        FTzsnpi/LeEmcvJQjDUOZbTtiOk7Z6DGafqVIUflaFofVHeqiuiIMfd3T+7tYlTpzZXiUm
+        Kqyu4V8rca4qMKMv9RuwMjqMJz0ueys=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-533-AuhMyRALNMCX8mL_ouwz6Q-1; Tue, 01 Mar 2022 15:19:29 -0500
+X-MC-Unique: AuhMyRALNMCX8mL_ouwz6Q-1
+Received: by mail-wr1-f72.google.com with SMTP id ay18-20020a5d6f12000000b001efe36eb038so2310476wrb.17
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:19:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1x6QUK4FLEy8ROUzJyVZ/cWy4d8A2hzSu/J8ehfsP+g=;
+        b=aG4LB2CHOcsLpGkJXJ4HmqgVyZaXqSUoSX3cUAM9JTh3/KWdf3hCuQqCDeh/5x86hF
+         ahmdKgyR/jPajOtl0Y/jpymfcjqCMSNr0RfkP2GEYewz7qFy0IvlG6WInW8hud8GlWnS
+         EbC6p7ulTfrXuK42Bd7SbZsMdnjQ3k30CoSyeQ1r+buswGEMS05Fw9PuPveujZbMhYPj
+         wKF+DPyxsnfYrtBFYS65rrlUgt3phjFQ+JvCPRl1IvVys4/irlvjggtLAVYJ2jUhvBGQ
+         xLIc0Sah2uz2K7sZ0llc7KsXwe/iNyzcQFEGuR7yh21nX022+vi6ep0JMDELaFtqbTnI
+         bA2Q==
+X-Gm-Message-State: AOAM531WbBwjWn04LiBdwcWsVrO38rc5eAsYNMgA0NCBzjN+Q0n1ik97
+        oNq6opP7ODvag84+UFwEzY0xmVAaJmql5bC72T+pH88zZ1i6pHLY/zwo3DjCn2r3K9nFVlk9WgL
+        LNvfF9UmAhLdeCR/jRxtnPsXz
+X-Received: by 2002:a05:600c:2f8f:b0:381:2009:f5bb with SMTP id t15-20020a05600c2f8f00b003812009f5bbmr18448301wmn.163.1646165967846;
+        Tue, 01 Mar 2022 12:19:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy+d4NI+GBVH5ewxls8mvm7BLZHAMn8s6kj98Mu7E4d1X/x3eFx3aILtaWlsRQEjJTRxazgDg==
+X-Received: by 2002:a05:600c:2f8f:b0:381:2009:f5bb with SMTP id t15-20020a05600c2f8f00b003812009f5bbmr18448286wmn.163.1646165967602;
+        Tue, 01 Mar 2022 12:19:27 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
+        by smtp.googlemail.com with ESMTPSA id v20-20020a7bcb54000000b0037fa63db8aasm3539049wmj.5.2022.03.01.12.19.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 12:19:27 -0800 (PST)
+Message-ID: <38116323-b990-9bf6-18a4-71f6ff66f32f@redhat.com>
+Date:   Tue, 1 Mar 2022 21:19:26 +0100
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH AUTOSEL 5.16 05/28] KVM: Fix lockdep false negative during
+ host resume
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org
+References: <20220301201344.18191-1-sashal@kernel.org>
+ <20220301201344.18191-5-sashal@kernel.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220301201344.18191-5-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schnelle <svens@linux.ibm.com>
+On 3/1/22 21:13, Sasha Levin wrote:
+> From: Wanpeng Li <wanpengli@tencent.com>
+> 
+> [ Upstream commit 4cb9a998b1ce25fad74a82f5a5c45a4ef40de337 ]
+> 
+> I saw the below splatting after the host suspended and resumed.
+> 
+>     WARNING: CPU: 0 PID: 2943 at kvm/arch/x86/kvm/../../../virt/kvm/kvm_main.c:5531 kvm_resume+0x2c/0x30 [kvm]
+>     CPU: 0 PID: 2943 Comm: step_after_susp Tainted: G        W IOE     5.17.0-rc3+ #4
+>     RIP: 0010:kvm_resume+0x2c/0x30 [kvm]
+>     Call Trace:
+>      <TASK>
+>      syscore_resume+0x90/0x340
+>      suspend_devices_and_enter+0xaee/0xe90
+>      pm_suspend.cold+0x36b/0x3c2
+>      state_store+0x82/0xf0
+>      kernfs_fop_write_iter+0x1b6/0x260
+>      new_sync_write+0x258/0x370
+>      vfs_write+0x33f/0x510
+>      ksys_write+0xc9/0x160
+>      do_syscall_64+0x3b/0xc0
+>      entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> lockdep_is_held() can return -1 when lockdep is disabled which triggers
+> this warning. Let's use lockdep_assert_not_held() which can detect
+> incorrect calls while holding a lock and it also avoids false negatives
+> when lockdep is disabled.
+> 
+> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
+> Message-Id: <1644920142-81249-1-git-send-email-wanpengli@tencent.com>
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>   virt/kvm/kvm_main.c | 4 +---
+>   1 file changed, 1 insertion(+), 3 deletions(-)
+> 
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 71ddc7a8bc302..6ae9e04d0585e 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -5347,9 +5347,7 @@ static int kvm_suspend(void)
+>   static void kvm_resume(void)
+>   {
+>   	if (kvm_usage_count) {
+> -#ifdef CONFIG_LOCKDEP
+> -		WARN_ON(lockdep_is_held(&kvm_count_lock));
+> -#endif
+> +		lockdep_assert_not_held(&kvm_count_lock);
+>   		hardware_enable_nolock(NULL);
+>   	}
+>   }
 
-[ Upstream commit 7acf3a127bb7c65ff39099afd78960e77b2ca5de ]
-
-Booting the kernel with 'trace_buf_size=1' give a warning at
-boot during the ftrace selftests:
-
-[    0.892809] Running postponed tracer tests:
-[    0.892893] Testing tracer function:
-[    0.901899] Callback from call_rcu_tasks_trace() invoked.
-[    0.983829] Callback from call_rcu_tasks_rude() invoked.
-[    1.072003] .. bad ring buffer .. corrupted trace buffer ..
-[    1.091944] Callback from call_rcu_tasks() invoked.
-[    1.097695] PASSED
-[    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
-[    1.353474] ------------[ cut here ]------------
-[    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
-
-Therefore enforce a minimum of 4096 bytes to make the selftest pass.
-
-Link: https://lkml.kernel.org/r/20220214134456.1751749-1-svens@linux.ibm.com
-
-Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/trace/trace.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 19a6b088f1e72..063b434c89d26 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -1118,10 +1118,12 @@ static int __init set_buf_size(char *str)
- 	if (!str)
- 		return 0;
- 	buf_size = memparse(str, &str);
--	/* nr_entries can not be zero */
--	if (buf_size == 0)
--		return 0;
--	trace_buf_size = buf_size;
-+	/*
-+	 * nr_entries can not be zero and the startup
-+	 * tests require some buffer space. Therefore
-+	 * ensure we have at least 4096 bytes of buffer.
-+	 */
-+	trace_buf_size = max(4096UL, buf_size);
- 	return 1;
- }
- __setup("trace_buf_size=", set_buf_size);
--- 
-2.34.1
+Acked-by: Paolo Bonzini <pbonzini@redhat.com>
 
