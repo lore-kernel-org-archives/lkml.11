@@ -2,111 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F182FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 04:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 447A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 04:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232237AbiCAETl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 23:19:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44358 "EHLO
+        id S232249AbiCAEUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 23:20:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232246AbiCAETg (ORCPT
+        with ESMTP id S230483AbiCAEUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 23:19:36 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17311FD3A;
-        Mon, 28 Feb 2022 20:18:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=SNG8dsJKnqg4yoB1IAs+5+zuDlU3R1ic4tYvheuBHLI=; b=BIJf36tfAUXQXZqcOnbeAxttFX
-        jFYQv0XXdHsIqDASqvzeCHFWihKYilk3cBB7YnenzeaqjtnWquPL2Fw2mclByXwyKXocnLBPj/MCX
-        RaBePffOxZitWR550+mebrZDyIePhbYVH0r8PHLVLJcQx24hXPGUVuFzs6eBqsxmapMTWV5dPeUOv
-        eNLkIn+YKoTteSp0QOkIc8uZW4AlOG4kySu/x+4CVBm28T0TzNfjGU8zpoKzPkyZzXMzw/b14XGcK
-        mTSNmUW4cjUWIdFr5LGTpKGAdsPHshNUie5Tz1iOkAOHpuzMM5XNAoc7gkQiVOqLXFUI9cQd1xprT
-        kRtI7Whg==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nOtyQ-00Er1X-42; Tue, 01 Mar 2022 04:18:54 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     patches@lists.linux.dev, Randy Dunlap <rdunlap@infradead.org>,
-        Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        Ard Biesheuvel <ardb@kernel.org>, linux-efi@vger.kernel.org,
-        Lukas Wunner <lukas@wunner.de>,
-        Octavian Purdila <octavian.purdila@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Matt Fleming <matt@codeblueprint.co.uk>
-Subject: [PATCH] efi: fix return value of __setup handlers
-Date:   Mon, 28 Feb 2022 20:18:51 -0800
-Message-Id: <20220301041851.12459-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 28 Feb 2022 23:20:11 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6073B2715D;
+        Mon, 28 Feb 2022 20:19:31 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id ge19-20020a17090b0e1300b001bcca16e2e7so1019338pjb.3;
+        Mon, 28 Feb 2022 20:19:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=7WIF/rFsMrFPDrw2gcHgdrGC1wbIw9S68Ygx0AL19Vk=;
+        b=VSx8ma8+sJkVK46M3dr+CRRWuxL6aLikfae2qs0RVjdpBMssulwb5Db+eLz2zxJ8SV
+         G4ZKz+Id920UoV44bx+z8KmceckPYlRpdkVPxpHsPr+27hoVm/2wn1RPiJCWm8OuhkdL
+         +6kUP9MtVdyUenH6/wiF/IKNiLS635kz9c5iJiOLx0EYF+L75/S0Xbz2kF+S2jOSiVSj
+         o+wmFxm0VbkwXsEueEOJ4/HqpN1K80+a9LCLacBuE1EJ/+3wrOSnSGChJ3rJqPJYh+QC
+         6ZpFnmsNo38y+UA7uW950MYGJcO06LM9/pT0jK9MWjqtBzEOc0WBzNcaZYC9hBwT1RG1
+         MCwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=7WIF/rFsMrFPDrw2gcHgdrGC1wbIw9S68Ygx0AL19Vk=;
+        b=cjuCy3rhAhg+Et6aSxdmG0OH8VJy4K7d4vjMxP7rSnD7rnab3sgcU2d0IQyc+CH4j4
+         6irzUKEXMkFmzzoCVBavKoLhu7Wbb2/8bQORIJClBd3N0LqxNsmtatxxTegRblTx7ayf
+         cn9VAcqhD+e/toqe59J19iWrjhK3jgjN5PcUyQGYPKZfokzd/XyBYezr03rYOUdwIg6I
+         mOd2OIwEXw5PNeteEC3vPOXNmOVKZcReXz5j8vFm7y/F1iJ3jcdQrYjyxlttxp3rd7T0
+         +nOrVzn0QnyfLRLeW1RfdTPPFSJ6V3SkQfG97qf2UozjZQvCu8oSpYKiiXzEHnBmHbpU
+         Q/Iw==
+X-Gm-Message-State: AOAM530zRdlkXHgDCMZxJY2TrbQixxIV7r44vUs+nXjGlIGgHN7SxlQz
+        1iiA1DeYP5654sPk/DzIZ3c=
+X-Google-Smtp-Source: ABdhPJyiNeiPwEIfZOlYvf1sRBNQdoT2npPd/t0z7m5dBQlhBSRoTv1YbSDoyQryp5nLPOrXZrYOZQ==
+X-Received: by 2002:a17:902:a50c:b0:14d:4e8b:d6f with SMTP id s12-20020a170902a50c00b0014d4e8b0d6fmr23500435plq.42.1646108370901;
+        Mon, 28 Feb 2022 20:19:30 -0800 (PST)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id k20-20020a056a00135400b004ecc81067b8sm16193721pfu.144.2022.02.28.20.19.29
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 28 Feb 2022 20:19:30 -0800 (PST)
+From:   Hammer Hsieh <hammerh0314@gmail.com>
+To:     gregkh@linuxfoundation.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, jirislaby@kernel.org,
+        p.zabel@pengutronix.de
+Cc:     wells.lu@sunplus.com, hammer.hsieh@sunplus.com,
+        Hammer Hsieh <hammerh0314@gmail.com>
+Subject: [PATCH tty-next] serial:sunplus-uart:Fix compile error while CONFIG_SERIAL_SUNPLUS_CONSOLE=n
+Date:   Tue,  1 Mar 2022 12:19:46 +0800
+Message-Id: <1646108386-29905-1-git-send-email-hammerh0314@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When "dump_apple_properties" is used on the kernel boot command line,
-it causes an Unknown parameter message and the string is added to init's
-argument strings:
+1. Fix implicit declaration of function 'wait_for_xmitr' issue.
+2. Fix 'sunplus_uart_console' undeclared here issue.
+3. Fix use of undeclared identifier 'sunplus_uart_console' issue.
 
-  Unknown kernel command line parameters "dump_apple_properties
-    BOOT_IMAGE=/boot/bzImage-517rc6 efivar_ssdt=newcpu_ssdt", will be
-    passed to user space.
+Fixes: 9e8d547032("serial:sunplus-uart:Fix compile error for SP7021")
 
- Run /sbin/init as init process
-   with arguments:
-     /sbin/init
-     dump_apple_properties
-   with environment:
-     HOME=/
-     TERM=linux
-     BOOT_IMAGE=/boot/bzImage-517rc6
-     efivar_ssdt=newcpu_ssdt
-
-Similarly when "efivar_ssdt=somestring" is used, it is added to the
-Unknown parameter message and to init's environment strings, polluting
-them (see examples above).
-
-Change the return value of the __setup functions to 1 to indicate
-that the __setup options have been handled.
-
-Fixes: 58c5475aba67 ("x86/efi: Retrieve and assign Apple device properties")
-Fixes: 475fb4e8b2f4 ("efi / ACPI: load SSTDs from EFI variables")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: linux-efi@vger.kernel.org
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Octavian Purdila <octavian.purdila@intel.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Matt Fleming <matt@codeblueprint.co.uk>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Hammer Hsieh <hammerh0314@gmail.com>
 ---
- drivers/firmware/efi/apple-properties.c |    2 +-
- drivers/firmware/efi/efi.c              |    2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/sunplus-uart.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- linux-next-20220228.orig/drivers/firmware/efi/apple-properties.c
-+++ linux-next-20220228/drivers/firmware/efi/apple-properties.c
-@@ -24,7 +24,7 @@ static bool dump_properties __initdata;
- static int __init dump_properties_enable(char *arg)
+diff --git a/drivers/tty/serial/sunplus-uart.c b/drivers/tty/serial/sunplus-uart.c
+index 450c8e7..1c7a30b 100644
+--- a/drivers/tty/serial/sunplus-uart.c
++++ b/drivers/tty/serial/sunplus-uart.c
+@@ -441,7 +441,7 @@ static int sunplus_verify_port(struct uart_port *port, struct serial_struct *ser
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_SERIAL_SUNPLUS_CONSOLE
++#if defined(CONFIG_SERIAL_SUNPLUS_CONSOLE) || defined(CONFIG_CONSOLE_POLL)
+ static void wait_for_xmitr(struct uart_port *port)
  {
- 	dump_properties = true;
--	return 0;
-+	return 1;
- }
+ 	unsigned int val;
+@@ -562,6 +562,10 @@ static struct console sunplus_uart_console = {
+ 	.index		= -1,
+ 	.data		= &sunplus_uart_driver
+ };
++
++#define	SERIAL_SUNPLUS_CONSOLE	(&sunplus_uart_console)
++#else
++#define	SERIAL_SUNPLUS_CONSOLE	NULL
+ #endif
  
- __setup("dump_apple_properties", dump_properties_enable);
---- linux-next-20220228.orig/drivers/firmware/efi/efi.c
-+++ linux-next-20220228/drivers/firmware/efi/efi.c
-@@ -212,7 +212,7 @@ static int __init efivar_ssdt_setup(char
- 		memcpy(efivar_ssdt, str, strlen(str));
- 	else
- 		pr_warn("efivar_ssdt: name too long: %s\n", str);
--	return 0;
-+	return 1;
- }
- __setup("efivar_ssdt=", efivar_ssdt_setup);
+ static struct uart_driver sunplus_uart_driver = {
+@@ -571,7 +575,7 @@ static struct uart_driver sunplus_uart_driver = {
+ 	.major		= TTY_MAJOR,
+ 	.minor		= 64,
+ 	.nr		= SUP_UART_NR,
+-	.cons		= &sunplus_uart_console,
++	.cons		= SERIAL_SUNPLUS_CONSOLE,
+ };
  
+ static void sunplus_uart_disable_unprepare(void *data)
+-- 
+2.7.4
+
