@@ -2,125 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E9D5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:15:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 15:15:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235573AbiCAPPj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 10:15:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52852 "EHLO
+        id S235339AbiCAPQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 10:16:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232130AbiCAPPh (ORCPT
+        with ESMTP id S232130AbiCAPP5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 10:15:37 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BC442A25
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:14:57 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id t28so10161096qtc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 07:14:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=N+utyRYCNuKyU7IWkP2AJL9he7LLd2jQiK5Xa3sCqIM=;
-        b=pMkLwqmyG0yMcGiVdouydBtN/0qZHBLpEkdACyTw204h15TyZEKz8Vf6iI2+BuTIRp
-         yjU+0IPDwpd9KzkUxX7/X5gdqhFV8bFDWU/f562YiJGD5pxEtuw2RK8o9XZO8igzjA3Q
-         Fqv6sT+PnzO1yaO3lNZkP++tjKl144Lq0VIFHCzBpEgdZeVxlq3f7Sl3w/YnLgmVsyeg
-         BcKD2NEhHMekl/WegBWX81z2hxONIjeljr2hqGdL6//Shvyk1h/+FTgbV+PGLiv9ACML
-         j2XpdOH0w5i35AOrprgvsPTl9IMoA+JyQmL/le/QrvfOTsArXDKUkqjGrj0JQ12ji/xL
-         RiJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=N+utyRYCNuKyU7IWkP2AJL9he7LLd2jQiK5Xa3sCqIM=;
-        b=Q5G0BvIwjOVXkXctA/gG2YsAEyEFMPrc7ar+OmTuEhVGKoLlY9NMUvNj9KNCPLA6lZ
-         q7Ccw87n0ueqLtG74qmsI84RxJ6XNFmX7W3dv4xhInvWmj8Z+tBsh75SsWzOj/CGA6Sm
-         aM7aUY5j7pbyPs2vZOprJPTMizGsFINTgCxxStaNpGf8iSBpWXDF2RfF1b7MqUeAokXq
-         WX3rIes4yJuUNKU8Iwnd2qactQnPZVOEOtzMpnePgW12S2WDiMks2J40qKK8AvdlO3vj
-         S4HDyc2QFMdU03NH4DFDq8iGdWMG/3aKLl78p4joLvS2hvMpXN6+lTS6/KEp9gAE8n51
-         ByhA==
-X-Gm-Message-State: AOAM533NLi8DrYQ03z/th4x5OJCZdndQJB9t54EwLB+zdHtvV7hwSEbK
-        6IH/5AO+OjcZVUQAXvfgO9Q/urAysIEWiQ==
-X-Google-Smtp-Source: ABdhPJyH3VSAZEjc3vJl6+Hf4xRfPKvZWeCzcEM4wjJKgrH9xREgvBNTxNa0yJLenZQvRnsMMGT5MA==
-X-Received: by 2002:a05:622a:3ce:b0:2df:6da9:1b58 with SMTP id k14-20020a05622a03ce00b002df6da91b58mr15407852qtx.438.1646147696165;
-        Tue, 01 Mar 2022 07:14:56 -0800 (PST)
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
-        by smtp.gmail.com with ESMTPSA id n13-20020ac85b4d000000b002de6fe91d2fsm9360012qtw.68.2022.03.01.07.14.55
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 07:14:55 -0800 (PST)
-Received: by mail-yb1-f180.google.com with SMTP id h126so12892312ybc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 07:14:55 -0800 (PST)
-X-Received: by 2002:a05:6902:102a:b0:614:105b:33a6 with SMTP id
- x10-20020a056902102a00b00614105b33a6mr24189687ybt.457.1646147694685; Tue, 01
- Mar 2022 07:14:54 -0800 (PST)
+        Tue, 1 Mar 2022 10:15:57 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0A242A25
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 07:15:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=UoBxcPGC3UAO5MoKCwirDsxB9KccL9ZfKlxrg2nU4Rg=; b=C30FD7qT/eqfxIdgghplm/arpg
+        RuT7OMxztANsTbDvk6dTA8RY+S9lOhgTFUFRRYdPjPh3vAi454kjZttBJFjhWv5F8C0nbGQT7GSPf
+        wDK48E7rKz8Jqf/BfQYXA8fvZ7MK4eRkr1thTXUZkEFn67W+9yerWkN8qpEpQ5kGzOg+e1kvJ7BWr
+        AB+BdmTVKtOu0Nx9reHWWGpcyd/RH26j6l8L8MOmPlsSPsDzaKKxO0kc/O76lxqWRxUe04HoxagHD
+        Hkdkvoe8AgyvK85mXJNbO70fD4hmpYztzmKipIjc1gb+4w/9RzZwqkw1yMZ4oSvJgF+Ok+Ac4M7DX
+        lEjzXfyA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nP4D8-009h2Q-1Q; Tue, 01 Mar 2022 15:14:46 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 82B1C30018E;
+        Tue,  1 Mar 2022 16:14:42 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 60C62302AEE61; Tue,  1 Mar 2022 16:14:42 +0100 (CET)
+Date:   Tue, 1 Mar 2022 16:14:42 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>
+Cc:     "Poimboe, Josh" <jpoimboe@redhat.com>,
+        "hjl.tools@gmail.com" <hjl.tools@gmail.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "joao@overdrivepizza.com" <joao@overdrivepizza.com>,
+        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "rostedt@goodmis.org" <rostedt@goodmis.org>,
+        "samitolvanen@google.com" <samitolvanen@google.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>,
+        "Milburn, Alyssa" <alyssa.milburn@intel.com>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>,
+        "mbenes@suse.cz" <mbenes@suse.cz>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>
+Subject: Re: [PATCH v2 18/39] x86/ibt: Add IBT feature, MSR and #CP handling
+Message-ID: <Yh44YsW8viBscBD0@hirez.programming.kicks-ass.net>
+References: <20220224145138.952963315@infradead.org>
+ <20220224151323.069205370@infradead.org>
+ <eed8902f21ba9e5f93562432f6b5920137860a98.camel@intel.com>
 MIME-Version: 1.0
-References: <20220301144453.snstwdjy3kmpi4zf@begin> <CA+FuTSfi1aXiBr-fOQ+8XJPjCCTnqTicW2A3OUVfNHurfDL3jA@mail.gmail.com>
- <20220301150028.romzjw2b4aczl7kf@begin>
-In-Reply-To: <20220301150028.romzjw2b4aczl7kf@begin>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 1 Mar 2022 10:14:18 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSeZw228fsDj+YoSpu5sLaXsp+uR+N+qHrzZ4e3yMWhPKw@mail.gmail.com>
-Message-ID: <CA+FuTSeZw228fsDj+YoSpu5sLaXsp+uR+N+qHrzZ4e3yMWhPKw@mail.gmail.com>
-Subject: Re: [PATCH] SO_ZEROCOPY should rather return -ENOPROTOOPT
-To:     Samuel Thibault <samuel.thibault@labri.fr>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        willemb@google.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <eed8902f21ba9e5f93562432f6b5920137860a98.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 10:00 AM Samuel Thibault
-<samuel.thibault@labri.fr> wrote:
->
-> Willem de Bruijn, le mar. 01 mars 2022 09:51:45 -0500, a ecrit:
-> > On Tue, Mar 1, 2022 at 9:44 AM Samuel Thibault <samuel.thibault@labri.fr> wrote:
-> > >
-> > > ENOTSUPP is documented as "should never be seen by user programs", and
-> > > is not exposed in <errno.h>, so applications cannot safely check against
-> > > it. We should rather return the well-known -ENOPROTOOPT.
-> > >
-> > > Signed-off-by: Samuel Thibault <samuel.thibault@labri.fr>
-> > >
-> > > diff --git a/net/core/sock.c b/net/core/sock.c
-> > > index 4ff806d71921..6e5b84194d56 100644
-> > > --- a/net/core/sock.c
-> > > +++ b/net/core/sock.c
-> > > @@ -1377,9 +1377,9 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
-> > >                         if (!(sk_is_tcp(sk) ||
-> > >                               (sk->sk_type == SOCK_DGRAM &&
-> > >                                sk->sk_protocol == IPPROTO_UDP)))
-> > > -                               ret = -ENOTSUPP;
-> > > +                               ret = -ENOPROTOOPT;
-> > >                 } else if (sk->sk_family != PF_RDS) {
-> > > -                       ret = -ENOTSUPP;
-> > > +                       ret = -ENOPROTOOPT;
-> > >                 }
-> > >                 if (!ret) {
-> > >                         if (val < 0 || val > 1)
-> >
-> > That should have been a public error code. Perhaps rather EOPNOTSUPP.
-> >
-> > The problem with a change now is that it will confuse existing
-> > applications that check for -524 (ENOTSUPP).
->
-> They were not supposed to hardcord -524...
->
-> Actually, they already had to check against EOPNOTSUPP to support older
-> kernels, so EOPNOTSUPP is not supposed to pose a problem.
+On Fri, Feb 25, 2022 at 07:59:15PM +0000, Edgecombe, Rick P wrote:
+> On Thu, 2022-02-24 at 15:51 +0100, Peter Zijlstra wrote:
+> > +__noendbr void cet_disable(void)
+> > +{
+> > +       if (cpu_feature_enabled(X86_FEATURE_IBT))
+> > +               wrmsrl(MSR_IA32_S_CET, 0);
+> > +}
+> > +
+> 
+> Did this actually work? 
 
-Which older kernels returned EOPNOTSUPP on SO_ZEROCOPY?
+No idea,.. I don't generally have kexec clue.
 
-There is prior art in changing this error code when it leaks to
-userspace, such as commit 2230a7ef5198 ("drop_monitor: Use correct
-error code") and commit 4a5cdc604b9c ("net/tls: Fix return values to
-avoid ENOTSUPP").
+> There are actually two problems with kexecing
+> when CET is enabled. One is leaving the enforcement enabled when the
+> new kernel can't handle it. The other is that CR4.CET and CR0.WP are
+> tied together such that if you try to disable CR0.WP while CR4.CET is
+> still set, it will #GP. CR0.WP gets unset during kexec/boot in the new
+> kernel, so it blows up if you just disable IBT with the MSR and leave
+> the CR4 bit set.
+> 
+> I was under the impression that this had been tested in the userspace
+> series, but apparently not as I've just produced the CR0.WP issue. So
+> it needs to be fixed in that series too. Userspace doesn't really need
+> it pinned, so it should be easy.
 
-I certainly wrote code in the past that explicitly checks for 524
-(ENOTSUPP). But do not immediately see public code that does this.
-Indeed, udpgso_bench_tx checks for both these codes.
+So I see CR0 frobbing in identity_mapped and CR4 frobbing right after
+it. Is there a reason to first do CR0 and then CR4 or can we flip them?
+Otherwise we need to do CR4 twice.
 
-So it's probably fine. Note that there is some risk. But no more than
-with those prior commits.
+(Also, whoever wrote that function with _5_ identically named labels in
+it deserves something painful. Also, wth's up with that jmp 1f; 1:)
+
+Something like so?
+
+diff --git a/arch/x86/kernel/relocate_kernel_64.S b/arch/x86/kernel/relocate_kernel_64.S
+index 399f075ccdc4..5b65f6ec5ee6 100644
+--- a/arch/x86/kernel/relocate_kernel_64.S
++++ b/arch/x86/kernel/relocate_kernel_64.S
+@@ -114,6 +114,14 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
+ 	/* store the start address on the stack */
+ 	pushq   %rdx
+ 
++	/*
++	 * Clear X86_CR4_CET (if it was set) such that we can clear CR0_WP
++	 * below.
++	 */
++	movq	%cr4, %rax
++	andq	$~(X86_CR4_CET), %rax
++	movq	%rax, %cr4
++
+ 	/*
+ 	 * Set cr0 to a known state:
+ 	 *  - Paging enabled
