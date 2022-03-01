@@ -2,140 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF0B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:37:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A57C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:37:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236162AbiCAQhl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:37:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55064 "EHLO
+        id S236150AbiCAQiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:38:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233090AbiCAQhj (ORCPT
+        with ESMTP id S236319AbiCAQiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:37:39 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B580C63C4
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:36:57 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id ay5so11070167plb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:36:57 -0800 (PST)
+        Tue, 1 Mar 2022 11:38:08 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE941BF54
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:37:26 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2d07ae0b1bfso150839517b3.6
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:37:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f/VXPALyA4qT4fV6+jSbzh6LzjJgkQPPGIwaFX4UPSY=;
-        b=UdkXz2dJzg/IVxJxavt2YG7rRfA1LZCMbdyM5TucpptJ6P/MTZNC0M9Vuiaxn0/Mfw
-         IFam9vMb8tuIkX5m1eLKSzlcWIrQSqc5Fm+5VqzBRRlwqM6xdWt+SiJlkS9ffHn4rveZ
-         hx/XG/o5NzH4WipPvV9hrk3aHO4QJDTafxUaD+1iurUDEiMozOZw+Ex3nqBdVow8rQj/
-         K4j/oih4om8zavE+KkL4om2RjZAc/zDCkMm0ET6+WRV8Uw6Zck4Z3ZWgAJYi5sITu/mE
-         cTgYB9Ovi5UHAZKq01Kq6APpf/1ikNLqVDcx9E8YwT+3ZJSiKVoyXVLtYasG8odlPfFJ
-         0H2w==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=HXHGLPLtJRYzjv6GySuP5dGmNicFN4UpBZOGFq6UpJ4=;
+        b=o6wRjxVDReOpmpWTDLYS5JsU4T1jJyPUCbmUFEvt587Yp/bGuKvDeypREjE7RHhUiC
+         vcVMX8ZBItn93oYEpzI7TpbQFudx8Vj3lpXBr83Ws7GfgQCTcvQ0RkTcm+yZkQgJ6yKE
+         g3HEkCiCKxf7kN5Y9GT8GfWLc15Y/FFVBk7kwHOQSqn9SnARxxgoEZ6mXOtnyCeR3Fql
+         im1hyAKLlGjKvxqqKdhy2nhleakAtssezMJPeMJUBoqQcHiXIK0THW0mDJaU3T2sXHea
+         N2BEdLOBPha/U32zMWEVzNuJKnkelg7eB0E+niO1NvUPlfNbrCrxpNSr/ukPmgpOxtcF
+         TE1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=f/VXPALyA4qT4fV6+jSbzh6LzjJgkQPPGIwaFX4UPSY=;
-        b=7Wf3E7xT+enTVd5nsfbvyrjntZux7bmuF74qTC7U7VQLEtBDwOEs9t29Lh0aVtBy5V
-         xeMso1f+y0IY3/1l+vhNQWsc+JAO2zvs1zULEu9vu8RE1L7EnAuuxo6YMf8pwNpFu2X9
-         SVqYwIH9kNk5qMMRdNsyn63hQKoNcbFeA5Ne870/w1sXtG83SVAcKMP45NOLHCHOxyDD
-         vkq08pzoj2L50PuenjBoJX62cT8yMyqqWLS/YjKvv1Ms6Mu1r/YPl7ccoF9vPwHFQ6i1
-         1kk5Af4V4PFMGZ9kdFxvkHKx+eF1HIbMKerlsRre3QlESX533wdU3rM1lojHnCaplQPR
-         vYWQ==
-X-Gm-Message-State: AOAM532B/zDmdNNoHawg3xVJ/Ym6DYxfPyIWonPJtIgZuqUiCSanQJ0+
-        BHOj6g9Cw4ARHF3fVAdy4lE=
-X-Google-Smtp-Source: ABdhPJzYpDmzE1X26H7kMQ0jTDlnFonv1JcA30J3bLBq1DKFf3un5BYohba20Lz6y9A06SJipHl9sQ==
-X-Received: by 2002:a17:90b:3cc:b0:1bc:692b:ad8 with SMTP id go12-20020a17090b03cc00b001bc692b0ad8mr22456843pjb.90.1646152617227;
-        Tue, 01 Mar 2022 08:36:57 -0800 (PST)
-Received: from localhost.localdomain ([115.27.208.93])
-        by smtp.gmail.com with ESMTPSA id k20-20020a056a00135400b004ecc81067b8sm19180965pfu.144.2022.03.01.08.36.54
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 01 Mar 2022 08:36:56 -0800 (PST)
-From:   cz18811105578@gmail.com
-To:     jpoimboe@redhat.com, peterz@infradead.org, mingo@kernel.org,
-        bp@suse.de
-Cc:     linux-kernel@vger.kernel.org, Zong Cao <cz18811105578@gmail.com>
-Subject: [PATCH] objtool: Fix memory leak in objtool_create_backup
-Date:   Wed,  2 Mar 2022 00:36:51 +0800
-Message-Id: <20220301163651.50346-1-cz18811105578@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HXHGLPLtJRYzjv6GySuP5dGmNicFN4UpBZOGFq6UpJ4=;
+        b=a6jRnD1o+UPXsicFkF1GGicafN8T0PUetbTOzcJ1LZs8BAOUoUWW0O75j0bfYRsu3Q
+         zA97oAGR6TtP8xZXM6VPA7Hs7u8pAZk4GfGRG+fvqSF+JZcC4hflxDPD+5fzxIx+O7jm
+         wxeYApSaVEi4Zt3LjiI/ZrU5Rm78XQYiJQXcw6n+Kds/VCufHP8a4HzGG1oL7cAwQNNI
+         J0CiaHXPS7tT4TXmTC1J7NRQTzxQIq/9ereKyj4lPVGILd5T4R0NdpONz+n1OrfMxTZI
+         9p/39obSbB1RRuE/xW+BkZCy+oi2k7EE0WPPqGScIR5kAuMpIcHerBWLflbzJ6CUM3b6
+         Qgvw==
+X-Gm-Message-State: AOAM533jkrmnaCqbUczUnQFsgQigaa++VkzXmNIoPtOThuGBi5T77F4T
+        XxeQb2LXG3JBV8Ph0bDRa15lS4ORpGF+D3car+GJMA==
+X-Google-Smtp-Source: ABdhPJwD/CrTkuqxdqpnyMbKcMWQbQMe61UiZ/DvsEd5/UZrtCbcZx/Gb0RQsU8nZLCtdqz6fItOUA055qNfu6ZPqHA=
+X-Received: by 2002:a81:2f12:0:b0:2d7:d366:164a with SMTP id
+ v18-20020a812f12000000b002d7d366164amr26275690ywv.265.1646152645816; Tue, 01
+ Mar 2022 08:37:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220228172207.090703467@linuxfoundation.org>
+In-Reply-To: <20220228172207.090703467@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Tue, 1 Mar 2022 22:07:13 +0530
+Message-ID: <CA+G9fYvN1awHcozk3A2=TKGF9T2626Qu9BU=E=z5NyBpOM-TXg@mail.gmail.com>
+Subject: Re: [PATCH 4.19 00/34] 4.19.232-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zong Cao <cz18811105578@gmail.com>
+On Mon, 28 Feb 2022 at 22:59, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 4.19.232 release.
+> There are 34 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Wed, 02 Mar 2022 17:20:16 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-=
+4.19.232-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-4.19.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-The error handling branch did not properly free the memory before
-return, which would cause memory leak.
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Fixes: 8ad15c690084 ("objtool: Add --backup")
-Signed-off-by: Zong Cao <cz18811105578@gmail.com>
----
- tools/objtool/objtool.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-diff --git a/tools/objtool/objtool.c b/tools/objtool/objtool.c
-index bdf699f6552b..1f4734c84382 100644
---- a/tools/objtool/objtool.c
-+++ b/tools/objtool/objtool.c
-@@ -62,19 +62,19 @@ static bool objtool_create_backup(const char *_objname)
- 	d = open(name, O_CREAT|O_WRONLY|O_TRUNC, 0644);
- 	if (d < 0) {
- 		perror("failed to create backup file");
--		return false;
-+		goto free_name;
- 	}
- 
- 	s = open(_objname, O_RDONLY);
- 	if (s < 0) {
- 		perror("failed to open orig file");
--		return false;
-+		goto close_d;
- 	}
- 
- 	buf = malloc(4096);
- 	if (!buf) {
- 		perror("failed backup data malloc");
--		return false;
-+		goto close_s;
- 	}
- 
- 	while ((l = read(s, buf, 4096)) > 0) {
-@@ -83,7 +83,7 @@ static bool objtool_create_backup(const char *_objname)
- 			t = write(d, base, l);
- 			if (t < 0) {
- 				perror("failed backup write");
--				return false;
-+				goto free_buf;
- 			}
- 			base += t;
- 			l -= t;
-@@ -92,7 +92,7 @@ static bool objtool_create_backup(const char *_objname)
- 
- 	if (l < 0) {
- 		perror("failed backup read");
--		return false;
-+		goto free_buf;
- 	}
- 
- 	free(name);
-@@ -101,6 +101,17 @@ static bool objtool_create_backup(const char *_objname)
- 	close(s);
- 
- 	return true;
-+
-+free_buf:
-+	free(buf);
-+close_s:
-+	close(s);
-+close_d:
-+	close(d);
-+free_name:
-+	free(name);
-+	return false;
-+
- }
- 
- struct objtool_file *objtool_open_read(const char *_objname)
--- 
-2.30.1 (Apple Git-130)
+## Build
+* kernel: 4.19.232-rc1
+* git: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-=
+rc.git
+* git branch: linux-4.19.y
+* git commit: 277110482a84a0400d6d71b4c12262431b62a5fe
+* git describe: v4.19.231-35-g277110482a84
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-4.19.y/build/v4.19=
+.231-35-g277110482a84
 
+## Test Regressions (compared to v4.19.231)
+No test regressions found.
+
+## Metric Regressions (compared to v4.19.231)
+No metric regressions found.
+
+## Test Fixes (compared to v4.19.231)
+No test fixes found.
+
+## Metric Fixes (compared to v4.19.231)
+No metric fixes found.
+
+## Test result summary
+total: 80757, pass: 67675, fail: 437, skip: 11350, xfail: 1295
+
+## Build Summary
+* arm: 281 total, 275 passed, 6 failed
+* arm64: 39 total, 37 passed, 2 failed
+* dragonboard-410c: 1 total, 1 passed, 0 failed
+* hi6220-hikey: 1 total, 1 passed, 0 failed
+* i386: 19 total, 19 passed, 0 failed
+* juno-r2: 1 total, 1 passed, 0 failed
+* mips: 27 total, 27 passed, 0 failed
+* powerpc: 60 total, 49 passed, 11 failed
+* s390: 12 total, 12 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x15: 1 total, 1 passed, 0 failed
+* x86: 1 total, 1 passed, 0 failed
+* x86_64: 38 total, 38 passed, 0 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kselftest-android
+* kselftest-bpf
+* kselftest-capabilities
+* kselftest-cgroup
+* kselftest-clone3
+* kselftest-core
+* kselftest-cpu-hotplug
+* kselftest-cpufreq
+* kselftest-efivarfs
+* kselftest-filesystems
+* kselftest-firmware
+* kselftest-fpu
+* kselftest-futex
+* kselftest-gpio
+* kselftest-intel_pstate
+* kselftest-ipc
+* kselftest-ir
+* kselftest-kcmp
+* kselftest-kexec
+* kselftest-kvm
+* kselftest-lib
+* kselftest-livepatch
+* kselftest-membarrier
+* kselftest-memfd
+* kselftest-memory-hotplug
+* kselftest-mincore
+* kselftest-mount
+* kselftest-mqueue
+* kselftest-net
+* kselftest-netfilter
+* kselftest-nsfs
+* kselftest-openat2
+* kselftest-pid_namespace
+* kselftest-pidfd
+* kselftest-proc
+* kselftest-pstore
+* kselftest-ptrace
+* kselftest-rseq
+* kselftest-rtc
+* kselftest-seccomp
+* kselftest-sigaltstack
+* kselftest-size
+* kselftest-splice
+* kselftest-static_keys
+* kselftest-sync
+* kselftest-sysctl
+* kselftest-tc-testing
+* kselftest-timens
+* kselftest-timers
+* kselftest-tmpfs
+* kselftest-tpm2
+* kselftest-user
+* kselftest-vm
+* kselftest-x86
+* kselftest-zram
+* kvm-unit-tests
+* libhugetlbfs
+* linux-log-parser
+* ltp-cap_bounds-tests
+* ltp-commands-tests
+* ltp-containers-tests
+* ltp-controllers-tests
+* ltp-cpuhotplug-tests
+* ltp-crypto-tests
+* ltp-cve-tests
+* ltp-dio-tests
+* ltp-fcntl-locktests-tests
+* ltp-filecaps-tests
+* ltp-fs-tests
+* ltp-fs_bind-tests
+* ltp-fs_perms_simple-tests
+* ltp-fsx-tests
+* ltp-hugetlb-tests
+* ltp-io-tests
+* ltp-ipc-tests
+* ltp-math-tests
+* ltp-mm-tests
+* ltp-nptl-tests
+* ltp-open-posix-tests
+* ltp-pty-tests
+* ltp-sched-tests
+* ltp-securebits-tests
+* ltp-syscalls-tests
+* ltp-tracing-tests
+* network-basic-tests
+* packetdrill
+* perf
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
