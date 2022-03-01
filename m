@@ -2,71 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CACAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:38:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C55CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235455AbiCAOjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:39:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33902 "EHLO
+        id S234430AbiCAOjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:39:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232917AbiCAOin (ORCPT
+        with ESMTP id S235360AbiCAOjB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:38:43 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44C1A45520
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:37:42 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 8A374218A9;
-        Tue,  1 Mar 2022 14:37:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646145461; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Tue, 1 Mar 2022 09:39:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 29681517E6
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:37:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646145467;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NMC6gF3NNo1KNsAv5FreKzsMGoqRXBeeXx9LFBEJtYU=;
-        b=gMcugiiyOkN/gK5xNGwFSVeFU8vMwg3F+cViIkKa3j9ATA6mN7xECP67E/Ye3QpNNssk1x
-        qCa2Hnk29BiGDGaNEIY6v9WWxqi7x1v1mLjJyv2jGvtmLEbn4xDplA+ofgDgsCT3nECVEM
-        gidy6vCmKniZBpcM5T6GuYX9cDLhUsI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646145461;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NMC6gF3NNo1KNsAv5FreKzsMGoqRXBeeXx9LFBEJtYU=;
-        b=JMVO4AWod6PvezkiYXtDSJdprBC5JgGwWC8ycchzB2SH9Xx4g91doigQjEj/iYzT4a5rz9
-        NVj4aNoo99mlNZDA==
-Received: from pobox.suse.cz (pobox.suse.cz [10.100.2.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        bh=ACp8ZVG8qwchATOM/Upzz6ZCjFCAYAdWJqd0ApBf+8w=;
+        b=L2Ah8JDbQsoenKQWcabbkVpGJ2XFUn/cod2lo244xVK4YNYNl79/FOGirQKyoQ3QWEkT91
+        hTL2uArJAVUrU3fgarbWK+z7Ac2LXM7i12+pTJfYMIyuFwwECG/vU64Dwqb1ZFuFfgvbOV
+        cRARNSUINpb8FAaXQ8Pp+P30R/i1SBU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-453-5d0OUrfOOruQ9A_D5gtbrw-1; Tue, 01 Mar 2022 09:37:42 -0500
+X-MC-Unique: 5d0OUrfOOruQ9A_D5gtbrw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 66657A3B94;
-        Tue,  1 Mar 2022 14:37:41 +0000 (UTC)
-Date:   Tue, 1 Mar 2022 15:37:41 +0100 (CET)
-From:   Miroslav Benes <mbenes@suse.cz>
-To:     Peter Zijlstra <peterz@infradead.org>
-cc:     x86@kernel.org, joao@overdrivepizza.com, hjl.tools@gmail.com,
-        jpoimboe@redhat.com, andrew.cooper3@citrix.com,
-        linux-kernel@vger.kernel.org, ndesaulniers@google.com,
-        keescook@chromium.org, samitolvanen@google.com,
-        mark.rutland@arm.com, alyssa.milburn@intel.com,
-        rostedt@goodmis.org, mhiramat@kernel.org,
-        alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 04/39] objtool: Add --dry-run
-In-Reply-To: <20220224151322.248747148@infradead.org>
-Message-ID: <alpine.LSU.2.21.2203011537320.8402@pobox.suse.cz>
-References: <20220224145138.952963315@infradead.org> <20220224151322.248747148@infradead.org>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2EF9A1091DA1;
+        Tue,  1 Mar 2022 14:37:39 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.195.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9ABA2842C9;
+        Tue,  1 Mar 2022 14:37:32 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jim Mattson <jmattson@google.com>, x86@kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH v3 6/7] KVM: x86: SVM: allow to force AVIC to be enabled
+Date:   Tue,  1 Mar 2022 16:36:49 +0200
+Message-Id: <20220301143650.143749-7-mlevitsk@redhat.com>
+In-Reply-To: <20220301143650.143749-1-mlevitsk@redhat.com>
+References: <20220301143650.143749-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 24 Feb 2022, Peter Zijlstra wrote:
+Apparently on some systems AVIC is disabled in CPUID but still usable.
 
-> Add a --dry-run argument to skip writing the modifications. This is
-> convenient for debugging.
-> 
-> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Allow the user to override the CPUID if the user is willing to
+take the risk.
 
-Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+---
+ arch/x86/kvm/svm/svm.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-M
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 776585dd77769..a26b4c899899e 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -202,6 +202,9 @@ module_param(tsc_scaling, int, 0444);
+ static bool avic;
+ module_param(avic, bool, 0444);
+ 
++static bool force_avic;
++module_param_unsafe(force_avic, bool, 0444);
++
+ bool __read_mostly dump_invalid_vmcb;
+ module_param(dump_invalid_vmcb, bool, 0644);
+ 
+@@ -4896,10 +4899,14 @@ static __init int svm_hardware_setup(void)
+ 			nrips = false;
+ 	}
+ 
+-	enable_apicv = avic = avic && npt_enabled && boot_cpu_has(X86_FEATURE_AVIC);
++	enable_apicv = avic = avic && npt_enabled && (boot_cpu_has(X86_FEATURE_AVIC) || force_avic);
+ 
+ 	if (enable_apicv) {
+-		pr_info("AVIC enabled\n");
++		if (!boot_cpu_has(X86_FEATURE_AVIC)) {
++			pr_warn("AVIC is not supported in CPUID but force enabled");
++			pr_warn("Your system might crash and burn");
++		} else
++			pr_info("AVIC enabled\n");
+ 
+ 		amd_iommu_register_ga_log_notifier(&avic_ga_log_notifier);
+ 	} else {
+-- 
+2.26.3
+
