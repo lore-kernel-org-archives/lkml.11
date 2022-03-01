@@ -2,139 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09842C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E246C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 17:00:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236322AbiCARBV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 12:01:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57664 "EHLO
+        id S236333AbiCARBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 12:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236245AbiCARBS (ORCPT
+        with ESMTP id S235293AbiCARBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 12:01:18 -0500
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43349C77;
-        Tue,  1 Mar 2022 09:00:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646154037; x=1677690037;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cCIRMrHF0mCOd6L49Nd5tPcRzNX080z43VWjDYEi728=;
-  b=YRgck4uv7jdj5Kme3AK/ovd6Shigo7KPwcjoetafWcp4AyObnkYhnhXI
-   KLT7TBflhptPzDKVGnNYBPGzZqMA8K2CrZWv5awyzBpaLetd+sQjRbrV2
-   kX7Epng0yW0EGaWBuQxJY9L42w+v6D1D+o29ESPdr1r4bGcI4qMarhvq7
-   0qOEeZwUhwQY6fP/UPs9sYDsLqVnc95mBwf9jLsJTF3fws8maSsz/YxcF
-   l406nMPLhyv/T+kl/otS0U3GTya1F1hiohxav/mihAZylpjDUQpZ7RFHw
-   cZQLnqfU6tkbeuN0bRKpe7N9ruMORLhMl7YrKgf3PVwrZ/Ik8QMOXl69t
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="252011958"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="252011958"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 08:58:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="805364065"
-Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 01 Mar 2022 08:58:45 -0800
-Received: from kbuild by 2146afe809fb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nP5pk-0000m1-Qv; Tue, 01 Mar 2022 16:58:44 +0000
-Date:   Wed, 2 Mar 2022 00:58:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lukasz Luba <lukasz.luba@arm.com>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, lukasz.luba@arm.com,
-        dietmar.eggemann@arm.com, viresh.kumar@linaro.org,
-        rafael@kernel.org, daniel.lezcano@linaro.org, nm@ti.com,
-        sboyd@kernel.org, mka@chromium.org, dianders@chromium.org,
-        robh+dt@kernel.org, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH v4 3/4] OPP: Add support of "opp-microwatt" for advanced
- EM registration
-Message-ID: <202203020012.g7rYUP7M-lkp@intel.com>
-References: <20220301093524.8870-4-lukasz.luba@arm.com>
+        Tue, 1 Mar 2022 12:01:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAC21AD82;
+        Tue,  1 Mar 2022 09:00:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E9FA60FCD;
+        Tue,  1 Mar 2022 17:00:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33A3DC340EE;
+        Tue,  1 Mar 2022 17:00:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646154051;
+        bh=h907ipPkeeK8P2nHj6SjBPg75fPHts99jpm7hU3oTe4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uejxuz68JNN+P/Ws/LbTy+IcncnwZTwo3NQso7ZdH7w978wfAVW3186wDBd9SzsvQ
+         kNm3lkRQv5WwuJB/zW5sCTRZw66PNcdHW0Y8xqQzw6dI5HVsJZofimyKsKGnA23U26
+         pm1v1ubbzy45uxc1q1rpOavS/mjiXtwgBo5eyrEsQLMhAHhiNWjvnMUZHulkbiDtey
+         zoovisI+XRC+c3rMe9bDqCkk4dhfLZA9Sz+xxGcMKgexowZ1PBAjwmUFgxDEf7BIU3
+         +QI1xlshWc56KtdACRoQy2cp54d1DnemenhEjTrXbUzW6dj/1IqTUJWR7wl21ymGDK
+         /6i415XEZ/Tqg==
+Date:   Tue, 1 Mar 2022 10:00:45 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Marco Elver <elver@google.com>,
+        Jani Nikula <jani.nikula@intel.com>,
+        David Sterba <dsterba@suse.com>, Alex Shi <alexs@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kbuild@vger.kernel.org, llvm@lists.linux.dev,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] Kbuild: use -std=gnu11 for KBUILD_USERCFLAGS
+Message-ID: <Yh5RPeqikTtoUS80@dev-arch.archlinux-ax161>
+References: <20220301145233.3689119-1-arnd@kernel.org>
+ <20220301145233.3689119-3-arnd@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301093524.8870-4-lukasz.luba@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220301145233.3689119-3-arnd@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lukasz,
+On Tue, Mar 01, 2022 at 03:52:33PM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> As we change the C language standard for the kernel from gnu89 to
+> gnu11, it makes sense to also update the version for user space
+> compilation.
+> 
+> Some users have older native compilers than what they use for
+> kernel builds, so I considered using gnu99 as the default version
+> for wider compatibility with gcc-4.6 and earlier.
+> 
+> However, testing with older compilers showed that we already require
+> HOSTCC version 5.1 as well because a lot of host tools include
+> linux/compiler.h that uses __has_attribute():
+> 
+>   CC      tools/objtool/exec-cmd.o
+> In file included from tools/include/linux/compiler_types.h:36:0,
+>                  from tools/include/linux/compiler.h:5,
+>                  from exec-cmd.c:2:
+> tools/include/linux/compiler-gcc.h:19:5: error: "__has_attribute" is not defined [-Werror=undef]
 
-I love your patch! Yet something to improve:
+For what it's worth, I think this is a bug:
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on linux/master rafael-pm/linux-next linus/master v5.17-rc6 next-20220301]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+https://lore.kernel.org/r/c1b1a299-c60d-28a4-07ab-1ecd211d6da9@i-love.sakura.ne.jp/
+https://lore.kernel.org/r/20220102120201.594408-1-xu.xin16@zte.com.cn/
 
-url:    https://github.com/0day-ci/linux/commits/Lukasz-Luba/Introduce-opp-microwatt-and-Energy-Model-from-DT/20220301-173700
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: arc-randconfig-r014-20220301 (https://download.01.org/0day-ci/archive/20220302/202203020012.g7rYUP7M-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/e1e83de9bf2f261cb3e5eb9f53bde3c83c6e0647
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Lukasz-Luba/Introduce-opp-microwatt-and-Energy-Model-from-DT/20220301-173700
-        git checkout e1e83de9bf2f261cb3e5eb9f53bde3c83c6e0647
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/
+I never got clear feedback on resolving it from the first thread and
+nobody bothered to pick up the second patch.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-All errors (new ones prefixed by >>):
+Nobody has yelled that loud though, so this is probably fine.
 
-   drivers/opp/of.c: In function 'dev_pm_opp_of_register_em':
->> drivers/opp/of.c:1572:22: error: 'struct em_data_callback' has no member named 'active_power'
-    1572 |                 em_cb.active_power = _get_dt_power;
-         |                      ^
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
-
-vim +1572 drivers/opp/of.c
-
-  1540	
-  1541	/**
-  1542	 * dev_pm_opp_of_register_em() - Attempt to register an Energy Model
-  1543	 * @dev		: Device for which an Energy Model has to be registered
-  1544	 * @cpus	: CPUs for which an Energy Model has to be registered. For
-  1545	 *		other type of devices it should be set to NULL.
-  1546	 *
-  1547	 * This checks whether the "dynamic-power-coefficient" devicetree property has
-  1548	 * been specified, and tries to register an Energy Model with it if it has.
-  1549	 * Having this property means the voltages are known for OPPs and the EM
-  1550	 * might be calculated.
-  1551	 */
-  1552	int dev_pm_opp_of_register_em(struct device *dev, struct cpumask *cpus)
-  1553	{
-  1554		struct em_data_callback em_cb = EM_DATA_CB(_get_power);
-  1555		struct device_node *np;
-  1556		int ret, nr_opp;
-  1557		u32 cap;
-  1558	
-  1559		if (IS_ERR_OR_NULL(dev)) {
-  1560			ret = -EINVAL;
-  1561			goto failed;
-  1562		}
-  1563	
-  1564		nr_opp = dev_pm_opp_get_opp_count(dev);
-  1565		if (nr_opp <= 0) {
-  1566			ret = -EINVAL;
-  1567			goto failed;
-  1568		}
-  1569	
-  1570		/* First, try to find more precised Energy Model in DT */
-  1571		if (_of_has_opp_microwatt_property(dev)) {
-> 1572			em_cb.active_power = _get_dt_power;
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> ---
+>  Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/Makefile b/Makefile
+> index 37ef6a555dcd..7c9be7f1ccd4 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -432,7 +432,7 @@ HOSTCXX	= g++
+>  endif
+>  
+>  export KBUILD_USERCFLAGS := -Wall -Wmissing-prototypes -Wstrict-prototypes \
+> -			    -O2 -fomit-frame-pointer -std=gnu89 \
+> +			    -O2 -fomit-frame-pointer -std=gnu11 \
+>  			    -Wdeclaration-after-statement
+>  export KBUILD_USERLDFLAGS :=
+>  
+> -- 
+> 2.29.2
+> 
+> 
