@@ -2,242 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51DF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:39:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A145C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235109AbiCANkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 08:40:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54094 "EHLO
+        id S233957AbiCANnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 08:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235102AbiCANj4 (ORCPT
+        with ESMTP id S231405AbiCANm4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 08:39:56 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DEBE340E9
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 05:39:13 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id y24so2905241ljh.11
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 05:39:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=KI3DsPjaUSjE5QApswpGrywfpQ2UMrOI6XqmpMmLGFI=;
-        b=Srr7kH2rySUlVjGf2Twe6KAmgudo80X8BBHe8on+Jei/I9jMheFpheWEYFMZo+oSw3
-         8zJpx8gqK31Iv0j8VIncXwoNeTaKbokcEE64CL+5Kb3IrFagZbFr6WbE38DeY2QU4KMu
-         iyKxjQNtom2YhxKUGq1s67LE8WaSp8CMWZ7YxoqlCPz6MriXHKrd/RFIxE1Pf7ZwlDAH
-         5e/aBUoLvoTbzqNamdhbvmVcB7MRQu0gjvW1VdRwi3Nbh7rN+utvmE0W3kZMtAj6TKPL
-         BOXLQ2kfIqMO0DITTr3DeRVEBFBFpAty/NGX4/bH0ZzOZgAPmpBXUADKkUXg00mk5xjd
-         1RJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KI3DsPjaUSjE5QApswpGrywfpQ2UMrOI6XqmpMmLGFI=;
-        b=UJ9c63mmZWFwQzkpVpRPPzK3uEjkaSGUhD71Kj+kCGJXW1qbk9V4vCLoeN6LLjDxFX
-         6YdriVibgdIL4ZVkNsxGrNFHf78lLFz7U5/QwSr8b7BPIC+Sm23GBwnNwFfsFy+wf9mn
-         dc30TooeW/wksSQW9bZYPmM3nPKXoa4235MvsG3JKxl+GhDOUebuqOf0W9oBG8XgOymh
-         ikhPjRetL7ngUQDPtGSMuvZA4kQidadEB3bR6ham0tE58oslHAc9ET2ajzQ+HQL9ylXC
-         eemaD9vzdsSlVtM/0xuni7tyf4+49M6EgAzWPBeQCT17XnNA2lh47SKRXb1d5p9ABn/B
-         gnQg==
-X-Gm-Message-State: AOAM531Uyp6YC7WEmbvVg5t+hqIzhFPtdVfVG3JAZ8xr54bXbM7fAy2J
-        Hg75f/iRrd4BV7UH5w/AX2nhe3Sk+/n7fMLULyl9lA==
-X-Google-Smtp-Source: ABdhPJxQrLl9GCc68j2B90OgULF5lx68i1kJiu+LjbX/O8Fik8ofqbCkhLn235Er6Yd++YoQiUS/i3WcPpEaom2eHEs=
-X-Received: by 2002:a2e:8603:0:b0:246:24c:b79c with SMTP id
- a3-20020a2e8603000000b00246024cb79cmr17227730lji.367.1646141951746; Tue, 01
- Mar 2022 05:39:11 -0800 (PST)
+        Tue, 1 Mar 2022 08:42:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FB29E570;
+        Tue,  1 Mar 2022 05:42:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A724B614BE;
+        Tue,  1 Mar 2022 13:42:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3198BC340EE;
+        Tue,  1 Mar 2022 13:42:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646142135;
+        bh=ahSjw3wUn+GFCyQQGsdDHtb34Vw6ym0H5q7SQRteiiw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pphtXXaYXAEqYxD+yk4J7znj4oPZ91A3EQyAzDLIPaJC7UvL0Rkkr/3Z8Z2JRG04k
+         rsOleTpwHny0atwv3QLAcnGH1JWUqHdMH35APN6XPxhev5hxyDc4q84DchtZXsCAjI
+         l9Pqxc1NZy538yFGrCYUfHYO3MWrLRLaNXTtLbsKG2cPcuMDbsf92Cz3RP0ebXhHtA
+         1QTucIgBE49sYJhhDx92w5duKGAhGhzzorbgIzheX33wb/7qq+72ZJRpbU6LU8KI4d
+         PIF/fHg0v9TaG2heaG/4KHNIuhi0zKg8gvaphzGurLWKb3tQFIAe02Itqyo9tipyOP
+         g5hZb8oDoafsQ==
+Date:   Tue, 1 Mar 2022 14:42:58 +0100
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     "Dhanraj, Vijay" <vijay.dhanraj@intel.com>,
+        "Chatre, Reinette" <reinette.chatre@intel.com>,
+        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "bp@alien8.de" <bp@alien8.de>,
+        "Lutomirski, Andy" <luto@kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "linux-sgx@vger.kernel.org" <linux-sgx@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "Zhang, Cathy" <cathy.zhang@intel.com>,
+        "Xing, Cedric" <cedric.xing@intel.com>,
+        "Huang, Haitao" <haitao.huang@intel.com>,
+        "Shanahan, Mark" <mark.shanahan@intel.com>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2 16/32] x86/sgx: Support restricting of enclave page
+ permissions
+Message-ID: <Yh4i4hVcnfZ8QDAl@iki.fi>
+References: <cover.1644274683.git.reinette.chatre@intel.com>
+ <4ce06608b5351f65f4e6bc6fc87c88a71215a2e7.1644274683.git.reinette.chatre@intel.com>
+ <YhLhoMFPyOFZ2fsX@iki.fi>
+ <DM8PR11MB55917F499CDF4CC7D426B0A7F63C9@DM8PR11MB5591.namprd11.prod.outlook.com>
+ <Yhy/GvJegnTqYdq6@iki.fi>
+ <f6a256a6-a7d7-a8e7-c9a8-e232203c63af@intel.com>
+ <Yh4fGORDaJyVrJQW@iki.fi>
 MIME-Version: 1.0
-References: <27DDB061-1235-4F4C-B6A8-F035D77AC9CF@goldelico.com>
-In-Reply-To: <27DDB061-1235-4F4C-B6A8-F035D77AC9CF@goldelico.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Tue, 1 Mar 2022 14:38:35 +0100
-Message-ID: <CAPDyKFrz_2Vp64SUzB8CiHJLTjO8Hx8m3QEhY1VU2ksZhVEx7A@mail.gmail.com>
-Subject: Re: [BUG] mmc: core: adjust polling interval for CMD1
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Huijin Park <huijin.park@samsung.com>,
-        Jean Rene Dawin <jdawin@math.uni-bielefeld.de>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, Tony Lindgren <tony@atomide.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yh4fGORDaJyVrJQW@iki.fi>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 17 Feb 2022 at 21:12, H. Nikolaus Schaller <hns@goldelico.com> wrot=
-e:
->
-> Hi,
-> Jean Rene Dawin did report to me a problem on the Beagle Bone Black start=
-ing
-> with our disto kernel based on v5.17-rc1:
->
-> >> since kernel 5.17-rc1 I noticed slower emmc performance on Beaglebone
-> >> Black, but didn't check the logs.
-> >> When I tried to run 5.17.0-rc3-letux+ it booted fine, but during IO
-> >> traffic there were messages like
-> >>
-> >> [  662.529584] mmc1: error -110 doing runtime resume
-> >> [  669.293590] mmc1: Card stuck being busy! __mmc_poll_for_busy
-> >>
-> >> [  739.076072] mmc1: Timeout waiting for hardware interrupt.
-> >> [  739.145676] mmc1: sdhci: =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D SDHCI=
- REGISTER DUMP =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> >> [  739.231053] mmc1: sdhci: Sys addr:  0x00000000 | Version:  0x000031=
-01
-> >> [  739.316472] mmc1: sdhci: Blk size:  0x00000200 | Blk cnt:  0x000004=
-00
-> >> [  739.401937] mmc1: sdhci: Argument:  0x00342d30 | Trn mode: 0x000000=
-23
-> >> [  739.487439] mmc1: sdhci: Present:   0x01f70000 | Host ctl: 0x000000=
-00
-> >> [  739.573007] mmc1: sdhci: Power:     0x0000000f | Blk gap:  0x000000=
-00
-> >> [  739.658609] mmc1: sdhci: Wake-up:   0x00000000 | Clock:    0x00003c=
-07
-> >> [  739.744224] mmc1: sdhci: Timeout:   0x00000007 | Int stat: 0x000000=
-02
-> >> [  739.829896] mmc1: sdhci: Int enab:  0x027f000b | Sig enab: 0x027f00=
-0b
-> >> [  739.915623] mmc1: sdhci: ACmd stat: 0x00000000 | Slot int: 0x000000=
-01
-> >> [  740.001394] mmc1: sdhci: Caps:      0x07e10080 | Caps_1:   0x000000=
-00
-> >> [  740.087208] mmc1: sdhci: Cmd:       0x0000193a | Max curr: 0x000000=
-00
-> >> [  740.173051] mmc1: sdhci: Resp[0]:   0x00000900 | Resp[1]:  0x000000=
-00
-> >> [  740.258928] mmc1: sdhci: Resp[2]:   0x00000000 | Resp[3]:  0x000000=
-00
-> >> [  740.344854] mmc1: sdhci: Host ctl2: 0x00000000
-> >> [  740.402796] mmc1: sdhci: =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D
-> >>
-> >> and finally IO errors and a corrupted filesystem.
-> >>
-> >> 5.17.0-rc4-letux+ shows the same behaviour.
->
-> I checked with my BeagleBoard Black (am3358) and can confirm this observa=
-tion.
-> It happens only with the integrated eMMC but not with the =C2=B5SD connec=
-ted to
-> the other mmc interface.
->
-> A git bisect found:
->
-> 76bfc7ccc2fa9d382576f6013b57a0ef93d5a722 is the first bad commit
-> commit 76bfc7ccc2fa9d382576f6013b57a0ef93d5a722
-> Author: Huijin Park <huijin.park@samsung.com>
-> Date:   Thu Nov 4 15:32:31 2021 +0900
->
->   mmc: core: adjust polling interval for CMD1
->
->   In mmc_send_op_cond(), loops are continuously performed at the same
->   interval of 10 ms.  However the behaviour is not good for some eMMC
->   which can be out from a busy state earlier than 10 ms if normal.
->
->   Rather than fixing about the interval time in mmc_send_op_cond(),
->   let's instead convert into using the common __mmc_poll_for_busy().
->
->   The reason for adjusting the interval time is that it is important
->   to reduce the eMMC initialization time, especially in devices that
->   use eMMC as rootfs.
->
->   Test log(eMMC:KLM8G1GETF-B041):
->
->   before: 12 ms (0.311016 - 0.298729)
->   [    0.295823] mmc0: starting CMD0 arg 00000000 flags 000000c0
->   [    0.298729] mmc0: starting CMD1 arg 40000080 flags 000000e1<-start
->   [    0.311016] mmc0: starting CMD1 arg 40000080 flags 000000e1<-finish
->   [    0.311336] mmc0: starting CMD2 arg 00000000 flags 00000007
->
->   after: 2 ms (0.301270 - 0.298762)
->   [    0.295862] mmc0: starting CMD0 arg 00000000 flags 000000c0
->   [    0.298762] mmc0: starting CMD1 arg 40000080 flags 000000e1<-start
->   [    0.299067] mmc0: starting CMD1 arg 40000080 flags 000000e1
->   [    0.299441] mmc0: starting CMD1 arg 40000080 flags 000000e1
->   [    0.299879] mmc0: starting CMD1 arg 40000080 flags 000000e1
->   [    0.300446] mmc0: starting CMD1 arg 40000080 flags 000000e1
->   [    0.301270] mmc0: starting CMD1 arg 40000080 flags 000000e1<-finish
->   [    0.301572] mmc0: starting CMD2 arg 00000000 flags 00000007
->
->   Signed-off-by: Huijin Park <huijin.park@samsung.com>
->   Link: https://lore.kernel.org/r/20211104063231.2115-3-huijin.park@samsu=
-ng.com
->   Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
->
-> Reverting this makes v5.17-rc[1-4] work.
->
-> Any suggestions or fixes?
->
-> BR and thanks,
-> Nikolaus Schaller
->
-> Reported-by: jdawin@math.uni-bielefeld.de
->
+On Tue, Mar 01, 2022 at 02:26:48PM +0100, Jarkko Sakkinen wrote:
+> On Mon, Feb 28, 2022 at 07:16:22AM -0800, Dave Hansen wrote:
+> > On 2/28/22 04:24, Jarkko Sakkinen wrote:
+> > >> Regarding the recent update of splitting the page permissions change
+> > >> request into two IOCTLS (RELAX and RESTRICT), can we combine them into
+> > >> one? That is, revert to how it was done in the v1 version?
+> > > They are logically separate complex functionalities:
+> > > 
+> > > 1. "restrict" calls EMODPR and requires EACCEPT
+> > > 2. "relax" increases permissions up to vetted ("EADD") and could be
+> > >     combined with EMODPE called inside enclave.
+> > 
+> > It would be great to have a _slightly_ better justification than that.
+> > Existing permission interfaces like chmod or mprotect() don't have this
+> > asymmetry.
+> > 
+> > I think you're saying that the underlying hardware implementation is
+> > asymmetric, so the interface should be too.  I don't find that argument
+> > very convincing.  If the hardware interface is arcane and we can make it
+> > look more sane in the ioctl() layer, we should that, asymmetry or not.
+> 
+> That is my argument, yes.
+> 
+> > If we can't make it any more sane, let's say why the ioctl() must or
+> > should be asymmetric.
+> 
+> Perhaps underling this asymmetry in kdoc would be enough.
+> 
+> > The SGX2 page permission mechanism is horribly counter intuitive.
+> > *Everybody* that looks at it thinks that it's wrong.  That means that we
+> > have a lot of work ahead of us to explain the interfaces that get
+> > layered on top.
+> 
+> I fully agree on this :-)
+> 
+> With EACCEPTCOPY (kudos to Mark S. for reminding me of this version of
+> EACCEPT @ chat.enarx.dev) it is possible to make R and RX pages but
+> obviously new RX pages are now out of the picture:
+> 
+> 
+> 	/*
+> 	 * Adding a regular page that is architecturally allowed to only
+> 	 * be created with RW permissions.
+> 	 * TBD: Interface with user space policy to support max permissions
+> 	 * of RWX.
+> 	 */
+> 	prot = PROT_READ | PROT_WRITE;
+> 	encl_page->vm_run_prot_bits = calc_vm_prot_bits(prot, 0);
+> 	encl_page->vm_max_prot_bits = encl_page->vm_run_prot_bits;
+> 
+> If that TBD is left out to the final version the page augmentation has a
+> risk of a API bottleneck, and that risk can realize then also in the page
+> permission ioctls.
+> 
+> I.e. now any review comment is based on not fully known territory, we have
+> one known unknown, and some unknown unknowns from unpredictable effect to
+> future API changes.
 
-Thanks for reporting and bisecting!
+I think the best way to move forward would be to do EAUG's explicitly with
+an ioctl that could also include secinfo for permissions. Then you can
+easily do the rest with EACCEPTCOPY inside the enclave.
 
-What changed with the offending commit is two things:
+Putting EAUG to the #PF handler and implicitly call it just too flakky and
+hard to make deterministic for e.g. JIT compiler in our use case (not to
+mention that JIT is not possible at all because inability to do RX pages).
 
-1) We are sending the CMD1 more frequently, initially in the loop in
-the __mmc_poll_for_busy. Step by step, we increase the polling period.
-2) We may end up using a slightly shorter total timeout for polling
-time, compared to what we used before the offending commit.
-
-Hopefully the problem is related to 2), in which case I think the
-below patch should help. Can you please give it a try?
-
-Kind regards
-Uffe
-
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Tue, 1 Mar 2022 14:24:21 +0100
-Subject: [PATCH] mmc: core: Extend timeout to 2s for MMC_SEND_OP_COND
-
-It looks like the timeout for the MMC_SEND_OP_COND (CMD1) might have become
-a bit too small due to recent changes. Therefore, let's extend it to 2s,
-which is probably more inline with its previous value, to fix the reported
-timeout problems.
-
-While at it, let's add a define for the timeout value, rather than using
-a hard-coded value for it.
-
-Reported-by: Jean Rene Dawin <jdawin@math.uni-bielefeld.de>
-Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-Cc: Huijin Park <huijin.park@samsung.com>
-Fixes: 76bfc7ccc2fa ("mmc: core: adjust polling interval for CMD1")
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
----
- drivers/mmc/core/mmc_ops.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/mmc/core/mmc_ops.c b/drivers/mmc/core/mmc_ops.c
-index d63d1c735335..1f57174b3cf3 100644
---- a/drivers/mmc/core/mmc_ops.c
-+++ b/drivers/mmc/core/mmc_ops.c
-@@ -21,6 +21,7 @@
-
- #define MMC_BKOPS_TIMEOUT_MS           (120 * 1000) /* 120s */
- #define MMC_SANITIZE_TIMEOUT_MS                (240 * 1000) /* 240s */
-+#define MMC_OP_COND_TIMEOUT_MS         2000 /* 2s */
-
- static const u8 tuning_blk_pattern_4bit[] =3D {
-        0xff, 0x0f, 0xff, 0x00, 0xff, 0xcc, 0xc3, 0xcc,
-@@ -232,7 +233,8 @@ int mmc_send_op_cond(struct mmc_host *host, u32
-ocr, u32 *rocr)
-        cmd.arg =3D mmc_host_is_spi(host) ? 0 : ocr;
-        cmd.flags =3D MMC_RSP_SPI_R1 | MMC_RSP_R3 | MMC_CMD_BCR;
-
--       err =3D __mmc_poll_for_busy(host, 1000, &__mmc_send_op_cond_cb, &cb=
-_data);
-+       err =3D __mmc_poll_for_busy(host, MMC_OP_COND_TIMEOUT_MS,
-+                                 &__mmc_send_op_cond_cb, &cb_data);
-        if (err)
-                return err;
-
---=20
-2.25.1
+BR, Jarkko
