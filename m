@@ -2,74 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5752AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:59:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238030AbiCAVAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 16:00:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49522 "EHLO
+        id S238454AbiCAVAh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 16:00:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236863AbiCAVAH (ORCPT
+        with ESMTP id S236863AbiCAVAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 16:00:07 -0500
-Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.148.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502D97032F
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:59:26 -0800 (PST)
-Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id CC5C18D6E2
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 14:59:25 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id P9afn6jkGHnotP9afnhQdv; Tue, 01 Mar 2022 14:59:25 -0600
-X-Authority-Reason: nr=8
-Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:40064 helo=[10.0.0.45])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1nP9af-002NW7-A5; Tue, 01 Mar 2022 14:59:25 -0600
-Message-ID: <42012169-2d21-73ef-95b7-abd4d2ddf34c@kernel.org>
-Date:   Tue, 1 Mar 2022 21:59:22 +0100
+        Tue, 1 Mar 2022 16:00:34 -0500
+X-Greylist: delayed 303 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 12:59:52 PST
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623AF70337;
+        Tue,  1 Mar 2022 12:59:52 -0800 (PST)
+Received: from mail-wm1-f42.google.com ([209.85.128.42]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MwQw1-1oF3sg3Nxt-00sMy4; Tue, 01 Mar 2022 21:54:47 +0100
+Received: by mail-wm1-f42.google.com with SMTP id c18-20020a7bc852000000b003806ce86c6dso1959111wml.5;
+        Tue, 01 Mar 2022 12:54:47 -0800 (PST)
+X-Gm-Message-State: AOAM530a05NOVHd+QWqarIZf3oTnW50d/On0hNZyH3ZK8It+IbmP7+V+
+        fxvPVWo0MFrrnGUtvC4Pviunihc0Wd3YCjRAppU=
+X-Google-Smtp-Source: ABdhPJyfexIsGrgwygzot8G9sKT9XjsIQsKTtfBymt2kmTT/NR84Ozb3Ztyvv7y1MPCl2UVcmgGXd7qIz2qyYblVz+s=
+X-Received: by 2002:a05:600c:4f8e:b0:381:6de4:fccc with SMTP id
+ n14-20020a05600c4f8e00b003816de4fcccmr7841096wmq.82.1646168087390; Tue, 01
+ Mar 2022 12:54:47 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] rtla: Set /dev/cpu_dma_latency to avoid exit from idle
- latencies
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
-References: <c74be7f76941cd79404d4dcddd1b8ea2183de38d.1645641162.git.bristot@kernel.org>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <c74be7f76941cd79404d4dcddd1b8ea2183de38d.1645641162.git.bristot@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 95.232.30.176
-X-Source-L: No
-X-Exim-ID: 1nP9af-002NW7-A5
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:40064
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 3
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
+References: <20220301075839.4156-2-xiam0nd.tong@gmail.com> <202203020135.5duGpXM2-lkp@intel.com>
+ <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
+In-Reply-To: <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 1 Mar 2022 21:54:30 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0QAECV=_Bu5xnBxjxUHLcaGjBgJEjfMaeKT7StR=acyQ@mail.gmail.com>
+Message-ID: <CAK8P3a0QAECV=_Bu5xnBxjxUHLcaGjBgJEjfMaeKT7StR=acyQ@mail.gmail.com>
+Subject: Re: [PATCH 1/6] Kbuild: compile kernel with gnu11 std
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kernel test robot <lkp@intel.com>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        kbuild-all@lists.01.org, Arnd Bergmann <arnd@arndb.de>,
+        Jakob Koschel <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:UyQiCNWs1ZLtkg6WG9++n+3GsQgzK+acpBbi33NPnZxg9U8Lwx5
+ seheEZG2JPgKWzfHK4xhcCJfRX4t/+iKXpgvmzXtudKoVUDl/F6sHKr3OP6lhu9/RZwifnY
+ p1tya+JEk/e9rTfqSpw8IKmfPNNWvzEnpKoLpJ61OmhzKwQwpLD82bRl6diLuPrLup6AlWx
+ B5VLEJrpOJWgaCHKW8SjA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Vsttm/+D7CU=:1Sdx8KiiSCJPouRELWDGHf
+ McMVhzXoPD6nxUL5Qa6xVnXmQaDnuJ4BPuvlpXeGWtGQGb3uT5XRGHRAqOob9lvzW/D9x21HQ
+ KjPLwKIz/9xy1KBDym75bhpLIOzRfj1UJiPeKUR1EqCSOZnMlw5O5agGUEgd01h+SUhro5RYk
+ 9oL32khYM6kg1OV00AqTZHSrSFLzCus7s9Gc3RnhMmbMmo0GIR2EzppSiqVOt+MHjg5DO4Qf1
+ MS1LioWFVBx+EJ32Z+4DZV3sqKsOcywJfCptJskcOnGX5hYIG6jVqqrNoxsOBB9JLC53sSz6r
+ 2t5kr3KlKMb80s3T8vbvwr4hsceNlMEWTfKDYLMIcZcGsDg7v6vRnzLEfulCftPOniBFolE1h
+ llT3qd/BX+uACDvqIWYrT4kDsEh6Up8xVIjdkZ2YFMHLXYFwpSTpKKTVB6EdTqIG9NSkoidtP
+ CuufGeDP+y/Qp/4XrsHpuK+lNTWaZRKqaxF56rVANrrD/QrRRxNQLCWuBql43lBb1ynMT0sed
+ jCjIQ42M3xvHRb9jk6o2HferAFWWDG5lTjp25tcK0NdH2uc7E2khsDwqIghdVbfym8+r8DrOD
+ E5B06qpZiqviKYgh95sVwV+3VSs5ylaTyWEDYQqk3OjYZYwqOQPUAGB8JrFLXkvi+MHD6XKjL
+ lQZQr1bsH1+jZn+lyeNbYEqV5IPDxXldImVroekpUudyzFAXBgUv6nwJ6FezX2GYrs2PsvAze
+ mNqaTePmRAVkoyvPBeXX3XJ51Nk4xNet65FkdmP2mdQ8un4QEZpeeRmWbtWc0kf0Ern0BNIRQ
+ jgIWUab9aPQPilgM5t5qiR0w9WM8HSxeYAcjhBXg0RSKdr9jy8=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2/23/22 19:37, Daniel Bristot de Oliveira wrote:
-> Set /dev/cpu_dma_latency to 0 to avoid having exit from idle
-> states latencies influencing in the analysis.
-> 
+On Tue, Mar 1, 2022 at 9:16 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Tue, Mar 1, 2022 at 10:00 AM kernel test robot <lkp@intel.com> wrote:
+> >
+> > All warnings (new ones prefixed by >>):
+> >
+> > >> cc1: warning: result of '-117440512 << 16' requires 44 bits to represent, but 'int' only has 32 bits [-Wshift-overflow=]
+>
+> So that's potentially an interesting warning, but this email doesn't
+> actually tell *where* that warning happens.
+>
+> I'm not entirely sure why this warning is new to this '-std=gnu11'
+> change, but it's intriguing.
+...
+>
+> Is there some place to actually see the full log (or some way to get a
+> better pointer to just the new warning) to see that actual shift
+> overflow thing?
 
-Sending a v2 of this patch together with a new version of rtla features patch
-series.
+gcc-11 only shows the one line warning here. The source is
 
--- Daniel
+/* PCI CFG04 status fields */
+#define PCI_CFG04_STAT_BIT      16
+#define PCI_CFG04_STAT          0xffff0000
+#define PCI_CFG04_STAT_66_MHZ   (1 << 21)
+#define PCI_CFG04_STAT_FBB      (1 << 23)
+#define PCI_CFG04_STAT_MDPE     (1 << 24)
+#define PCI_CFG04_STAT_DST      (1 << 25)
+#define PCI_CFG04_STAT_STA      (1 << 27)
+#define PCI_CFG04_STAT_RTA      (1 << 28)
+#define PCI_CFG04_STAT_RMA      (1 << 29)
+#define PCI_CFG04_STAT_SSE      (1 << 30)
+#define PCI_CFG04_STAT_PE       (1 << 31)
+#define KORINA_STAT             (PCI_CFG04_STAT_MDPE | \
+                                 PCI_CFG04_STAT_STA | \
+                                 PCI_CFG04_STAT_RTA | \
+                                 PCI_CFG04_STAT_RMA | \
+                                 PCI_CFG04_STAT_SSE | \
+                                 PCI_CFG04_STAT_PE)
+#define KORINA_CNFG1            ((KORINA_STAT<<16)|KORINA_CMD)
 
+unsigned int korina_cnfg_regs[25] = {
+        KORINA_CNFG1, /* ... */
+};
+
+This looks like an actual bug to me, the bits are shifted 16 bits twice
+by accident, and it's been like this since rb532 was introduced in
+2008.
+
+         Arnd
