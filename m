@@ -2,168 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E65C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3577EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234281AbiCAQsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:48:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52612 "EHLO
+        id S233718AbiCAQsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:48:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236302AbiCAQrr (ORCPT
+        with ESMTP id S236417AbiCAQr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:47:47 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A159427CD
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:47:00 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id q4so13053836ilt.0
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:47:00 -0800 (PST)
+        Tue, 1 Mar 2022 11:47:56 -0500
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD264665D;
+        Tue,  1 Mar 2022 08:47:15 -0800 (PST)
+Received: by mail-oo1-xc2e.google.com with SMTP id k13-20020a4a948d000000b003172f2f6bdfso23108592ooi.1;
+        Tue, 01 Mar 2022 08:47:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EdO1ZIStJEydDaNsVVTQjhQ+J41BBA4J8A/jLwHByaA=;
-        b=dT5dHERfA7NfWxTqoX5UtBav5p4kPFdv7+9TmqWHP2bK+wtMIESMJrFmYKma5Icf0g
-         +7nH1hhjR4WQRsb9PMzzil9FEypu4su5C84YyCt6kDqnr1M6NLcZDGU/SwMSpwj2DFos
-         2vfYqxcM6kV8dFiT0U/ekaSAV9UJ41JUIN8voJPJ/Th/mun4QzZUEITNp47YhjnH1sGf
-         RHg66r1G4QkiH7zmyGmQD42lVmIsQf3Kekrsvrnm5ksV+v6PLwvKvC/5CNI7DJQjGb1P
-         L89SbkL5rK2xjVuAKdrnLoDaf54r35tPdpRGmlTIY1LYozgr3fHBjpLQLrcKRj0+9wPd
-         JzoA==
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=TJyhIr9uQwSC4Vsri+p7N794sJJ7eTPsgawQLVN8g34=;
+        b=jAPFaDS2K5ULsq1PG8vS4As2lLxVauB/3stdyl7zTknK9bYFJTKyAuGN/oyxHrfSgw
+         Lzmn+8L1wAgiyE/WfKfYB0GIL86iRnemCgOOLznFdl2kHl0uQ87dcwitBgQoddeDdhz7
+         j3sziGJC6IGC+3UxFZSM/YXUU2nsNTPNYCk8T4sVv+mjU3egKf1lKvUpn4U1v8LIjMQu
+         Nrz7u7mxwv2G6BYRjbm8lDQZkntQKYQwj8Bo0ffzbjeyNt1qKS1OzlWy6ondUdg4VGFe
+         zD3SZ4djKqGx7J/aK3N3lHDFnXaKpegB+q7qEKAbIiYUuz0ofQ1m0wMFKUUFizpfEPLa
+         Lw4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EdO1ZIStJEydDaNsVVTQjhQ+J41BBA4J8A/jLwHByaA=;
-        b=YvVKmni7GXcn8PzUt2VHFMqJLCBuiD2ewvDEHLZz0utM6ZbqwBJpeGufaYNLAT0Hgv
-         7xn+NJshx5HOaiCIKRsF2xvK6EyOZJudW4PB3diQUzCscmwEl+zSuTxZNm+Kg9FbnGDn
-         Ub7P0eG40hc6pqQN7hOGY51OWQ0HDoDBf7b43wIXdLkN74gNNhwDCKUidZvuIIE1Qi7g
-         8ztCOQdlEmp2IdTm6fkY3yiFgC/khuQxGykva63By4z0PBa3WOOujbbaMQULeD6cx8mV
-         91mu1jS1PB8+oCg6UYncLR5RrYbyEgjL4vdQSAwPSCFnJyD3ht4buuDNseglgkfTWWAL
-         kZmQ==
-X-Gm-Message-State: AOAM532yp/5Qslvyc5jCXQDOE3qDIHcIn/QtKd7Xar0tOs5CJXfydYnH
-        bk/pRGOqqDKQobh8/TGCjHg=
-X-Google-Smtp-Source: ABdhPJy5GYUXGxdbJtTLoRtjbRmr21Q8zu5mMzrgQM87ZqsoqtWRy3CiT7iy1mU5TW1fmPqVkcyi4A==
-X-Received: by 2002:a05:6e02:1be9:b0:2c2:85a8:50cc with SMTP id y9-20020a056e021be900b002c285a850ccmr24316094ilv.131.1646153219788;
-        Tue, 01 Mar 2022 08:46:59 -0800 (PST)
-Received: from frodo.hsd1.co.comcast.net ([2601:284:8204:2010::f10e])
-        by smtp.googlemail.com with ESMTPSA id o3-20020a6b5a03000000b00640a33c5b0dsm7272411iob.17.2022.03.01.08.46.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 08:46:59 -0800 (PST)
-From:   Jim Cromie <jim.cromie@gmail.com>
-To:     jbaron@akamai.com, gregkh@linuxfoundation.org,
-        daniel.vetter@ffwll.ch, seanpaul@chromium.org, robdclark@gmail.com,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        amd-gfx@lists.freedesktop.org, intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org
-Cc:     Jim Cromie <jim.cromie@gmail.com>
-Subject: [PATCH 13/13] drm_print: use DEFINE_DYNAMIC_DEBUG_CLASSBITS for drm.debug
-Date:   Tue,  1 Mar 2022 09:46:29 -0700
-Message-Id: <20220301164629.3814634-14-jim.cromie@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220301164629.3814634-1-jim.cromie@gmail.com>
-References: <20220301164629.3814634-1-jim.cromie@gmail.com>
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=TJyhIr9uQwSC4Vsri+p7N794sJJ7eTPsgawQLVN8g34=;
+        b=OIwMexZ5Rha8vzU7uX1gpspqvTgo9/kBmlg7qL889u4aN9+vkccl10gRMyQuzjOgA5
+         tcl3Y+g8jBqmdEwqk6f4JAYVJHinoKHirNcbYWITBQxTlpWD/H9hHVkqk1Z0TXI+iaKG
+         Ki6awEWqhiWLpbmrSIoRyUHxjpupch7kpALXDk7pdVUJN/EGmStLpsLGu6HTEuXbSIgA
+         sICRGxMaeQkj9BFJYuyoQWkBQhGABWWmvuGBSTYlmmNx5MP5LaCxzGtxRUkC+/jISyrw
+         1totJt6K+4izqbalRBpM8rT6blXnUdHfW0i9kZQzyiIyO44e8EwNaRIRDTruzuSM0QFZ
+         7ZwA==
+X-Gm-Message-State: AOAM531+sbY8g7ceyQmcXGR5htqL4HJHoa6IiChrPrCyqfIUPzclWUCr
+        PtNODcMhrvOdluI4T4ZDr2s=
+X-Google-Smtp-Source: ABdhPJxRlXCSXw5okfjbvGh+ENHHVpGOLCWC0P46271cFZLQm7p25NH4JHb13DPShvjaBP2+hLP/jw==
+X-Received: by 2002:a05:6870:600a:b0:d7:4895:75be with SMTP id t10-20020a056870600a00b000d7489575bemr4091771oaa.35.1646153234602;
+        Tue, 01 Mar 2022 08:47:14 -0800 (PST)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id q13-20020a0568080ecd00b002d44f01f1d7sm8292922oiv.40.2022.03.01.08.47.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 08:47:13 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <39415d57-ec14-aab8-20fd-92d2a810f3fd@roeck-us.net>
+Date:   Tue, 1 Mar 2022 08:47:11 -0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        POTIN LAI <potin.lai@quantatw.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Patrick Williams <patrick@stwcx.xyz>, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220301103900.12637-1-potin.lai@quantatw.com>
+ <20220301103900.12637-3-potin.lai@quantatw.com>
+ <da4ac970-9e7d-c9cb-eea3-e5ec8a1eef00@kernel.org>
+ <9bb56622-2859-1059-6f14-2242ab6a2427@quantatw.com>
+ <bf1fa181-d2a7-eab9-4045-cf53ae3ce2f2@kernel.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH v4 2/2] dt-bindings: hwmon: Add sample averaging
+ properties for ADM1275
+In-Reply-To: <bf1fa181-d2a7-eab9-4045-cf53ae3ce2f2@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-if CONFIG_DRM_USE_DYNAMIC_DEBUG=y, use new macro to create the sysfs
-bitmap to control drm.debug callsites.
+On 3/1/22 05:21, Krzysztof Kozlowski wrote:
+> On 01/03/2022 13:42, POTIN LAI wrote:
+>>
+>> Krzysztof Kozlowski 於 1/03/2022 7:16 pm 寫道:
+>>> On 01/03/2022 11:39, Potin Lai wrote:
+>>>> Add documentation of new properties for sample averaging in PMON_CONFIG
+>>>> register.
+>>>>
+>>>> New properties:
+>>>> - adi,volt-curr-sample-average
+>>>> - adi,power-sample-average
+>>>> - adi,power-sample-average-enable
+>>>>
+>>>> Signed-off-by: Potin Lai <potin.lai@quantatw.com>
+>>>> ---
+>>>>   .../bindings/hwmon/adi,adm1275.yaml           | 44 +++++++++++++++++++
+>>>>   1 file changed, 44 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/hwmon/adi,adm1275.yaml b/Documentation/devicetree/bindings/hwmon/adi,adm1275.yaml
+>>>> index 223393d7cafd..1b612dc06992 100644
+>>>> --- a/Documentation/devicetree/bindings/hwmon/adi,adm1275.yaml
+>>>> +++ b/Documentation/devicetree/bindings/hwmon/adi,adm1275.yaml
+>>>> @@ -37,6 +37,47 @@ properties:
+>>>>       description:
+>>>>         Shunt resistor value in micro-Ohm.
+>>>>   
+>>>> +  adi,volt-curr-sample-average:
+>>>> +    description: |
+>>>> +      Number of samples to be used to report voltage and current values.
+>>>> +      If the configured value is not a power of 2, sample averaging number
+>>>> +      will be configured with smaller and closest power of 2.
+>>>> +
+>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>>> +    enum: [1, 2, 4, 8, 16, 32, 64, 128]
+>>>> +    default: 1
+>>>> +
+>>>> +  adi,power-sample-average:
+>>>> +    description: |
+>>>> +      Number of samples to be used to report power values.
+>>>> +      If the configured value is not a power of 2, sample averaging number
+>>>> +      will be configured with smaller and closest power of 2.
+>>>> +
+>>>> +    $ref: /schemas/types.yaml#/definitions/uint32
+>>>> +    enum: [1, 2, 4, 8, 16, 32, 64, 128]
+>>>> +    default: 1
+>>>> +
+>>>> +  adi,power-sample-average-enable:
+>>>> +    description: Enable sample averaging for power reading.
+>>>> +    type: boolean
+>>> Why do you need this property? Voltage/current sampling is enabled in
+>>> your driver with presence of adi,volt-curr-sample-average. Why power
+>>> sampling is different?
+>> For "adi,power-sample-average", adm1075, adm1275 & adm127 don't have config reg for power sample average, so I add boolean type property to enable it
+>> But for "adi,power-sample-average-enable", all chips have ability of configuring, so it doesn't need a property to enable or disable.
+> 
+> So the reason to add separate property is that this feature can be
+> disabled. Since your driver does not disable it, it seems it is a
+> default state to have it disabled and you have to enable it, right?
+> Where is the enable code? I see you only write the sample averaging
+> value with adm1275_write_pmon_config(). There is no enable...
+> 
+> But wait, the power averaging is being disabled by writing 0 to
+> register, which is not allowed by bindings. How one can disable it?
+> 
 
-DEFINE_DYNAMIC_DEBUG_CLASSBITS( debug, __drm_debug, "p",
-	"drm.debug - control summary",
-	/* inline vector of _ddebug.class_id's to be controlled, max 14 vals */
-	DRM_UT_CORE,
-	DRM_UT_DRIVER,
-	DRM_UT_KMS,
-	DRM_UT_PRIME,
-	DRM_UT_ATOMIC,
-	DRM_UT_VBL,
-	DRM_UT_STATE,
-	DRM_UT_LEASE,
-	DRM_UT_DP,
-	DRM_UT_DRMRES );
+Valid register values are 0..7, matching dt property values of
+BIT(x) or 1 .. 128. Setting the property value to 1 (= 1 sample)
+is equivalent to disabling sampling.
 
-NOTES:
+> I don't see any usage of "adi,power-sample-average-enable", neither in
+> driver nor in hardware. I also do not see the need for it, the purpose.
+> 
+> Then second part, you added default value of 1 to
+> adi,volt-curr-sample-average and adi,power-sample-average. If the
+> property is missing, then the default of 1 is applied, right? But
+> datasheet says that default is 128!
+> 
+> The bindings neither match hardware nor driver. They look entirely
+> independent. This is wrong. They should instead be strongly related to
+> the hardware, describe the hardware. Then the driver should implement
+> proper logic for it.
+> 
 
-The @_flgs used here is "p", so this bitmap enables input to syslog
-only, matching legacy behavior.
+Agreed.
 
-Also, no "fmlt" decorator flags are used here; that is discouraged, as
-it then toggles those flags along with the "p".  This would overwrite
-any customizations a user added since the sysfs-knob was last used.
-Still, there may be cases/reasons.
-
-_ddebug.class_id is uint:4, values 0-14 are valid. 15 is reserved for
-non-classified callsites (regular pr_debugs).  Using it terminates the
-scan, don't use it halfway through your list.
-
-Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
----
- drivers/gpu/drm/drm_print.c | 20 ++++++++++++++++++--
- include/drm/drm_print.h     |  4 ++--
- 2 files changed, 20 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/gpu/drm/drm_print.c b/drivers/gpu/drm/drm_print.c
-index c9b2a2ab0d3d..d916daa384e5 100644
---- a/drivers/gpu/drm/drm_print.c
-+++ b/drivers/gpu/drm/drm_print.c
-@@ -38,7 +38,7 @@
-  * __drm_debug: Enable debug output.
-  * Bitmask of DRM_UT_x. See include/drm/drm_print.h for details.
-  */
--unsigned int __drm_debug;
-+unsigned long __drm_debug;
- EXPORT_SYMBOL(__drm_debug);
- 
- MODULE_PARM_DESC(debug, "Enable debug output, where each bit enables a debug category.\n"
-@@ -50,7 +50,23 @@ MODULE_PARM_DESC(debug, "Enable debug output, where each bit enables a debug cat
- "\t\tBit 5 (0x20)  will enable VBL messages (vblank code)\n"
- "\t\tBit 7 (0x80)  will enable LEASE messages (leasing code)\n"
- "\t\tBit 8 (0x100) will enable DP messages (displayport code)");
--module_param_named(debug, __drm_debug, int, 0600);
-+
-+#if !defined(CONFIG_DRM_USE_DYNAMIC_DEBUG)
-+module_param_named(debug, __drm_debug, ulong, 0600);
-+#else
-+DEFINE_DYNAMIC_DEBUG_CLASSBITS(debug, __drm_debug, "p",
-+	"enable drm.debug categories - 1 bit per category",
-+	DRM_UT_CORE,
-+	DRM_UT_DRIVER,
-+	DRM_UT_KMS,
-+	DRM_UT_PRIME,
-+	DRM_UT_ATOMIC,
-+	DRM_UT_VBL,
-+	DRM_UT_STATE,
-+	DRM_UT_LEASE,
-+	DRM_UT_DP,
-+	DRM_UT_DRMRES);
-+#endif
- 
- void __drm_puts_coredump(struct drm_printer *p, const char *str)
- {
-diff --git a/include/drm/drm_print.h b/include/drm/drm_print.h
-index 13d52b60f388..419140bf992d 100644
---- a/include/drm/drm_print.h
-+++ b/include/drm/drm_print.h
-@@ -36,7 +36,7 @@
- #include <drm/drm.h>
- 
- /* Do *not* use outside of drm_print.[ch]! */
--extern unsigned int __drm_debug;
-+extern unsigned long __drm_debug;
- 
- /**
-  * DOC: print
-@@ -527,7 +527,7 @@ __printf(1, 2)
- void __drm_err(const char *format, ...);
- 
- #if !defined(CONFIG_DRM_USE_DYNAMIC_DEBUG)
--#define __drm_dbg(fmt, ...)		___drm_dbg(NULL, fmt, ##__VA_ARGS__)
-+#define __drm_dbg(cat, fmt, ...)	___drm_dbg(NULL, cat, fmt, ##__VA_ARGS__)
- #else
- #define __drm_dbg(cat, fmt, ...)					\
- 	_dynamic_func_call_cls(cat, fmt, ___drm_dbg,			\
--- 
-2.35.1
-
+Guenter
