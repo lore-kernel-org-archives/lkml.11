@@ -2,76 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC95C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:38:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F275C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234280AbiCAKi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 05:38:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54104 "EHLO
+        id S234319AbiCAKjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 05:39:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232016AbiCAKi5 (ORCPT
+        with ESMTP id S234249AbiCAKi6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 05:38:57 -0500
-X-Greylist: delayed 4198 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 01 Mar 2022 02:38:16 PST
-Received: from 20.mo584.mail-out.ovh.net (20.mo584.mail-out.ovh.net [46.105.33.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E8A12AF7
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 02:38:14 -0800 (PST)
-Received: from player771.ha.ovh.net (unknown [10.109.146.1])
-        by mo584.mail-out.ovh.net (Postfix) with ESMTP id 1D1ED22DB2
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:19:02 +0000 (UTC)
-Received: from RCM-web4.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player771.ha.ovh.net (Postfix) with ESMTPSA id CEE3927FF4D6E;
-        Tue,  1 Mar 2022 09:18:58 +0000 (UTC)
+        Tue, 1 Mar 2022 05:38:58 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 422B412AF7;
+        Tue,  1 Mar 2022 02:38:18 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A4A26CE1A9A;
+        Tue,  1 Mar 2022 10:38:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6356FC340EF;
+        Tue,  1 Mar 2022 10:38:14 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="eKJ0M/+x"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1646131092;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lksrJfo9QkvpO/yFJGeun7qghTYIG+QeJ6lsYZiAhy0=;
+        b=eKJ0M/+xC1bRrQz3h+YIJ2wdMiBjedO72FmZQKocPapn+M9O/6qjJR5BT4baBoKPyyFFSE
+        pCmBhHw4FUNX5W9X5kqkmSx3F7riSymxuyVxTmf9vAr0I9aQ3udtUjYk1ieAz7Mcj0TT76
+        xO9H3uf55vicDmPrCVeSiFMxNixU5cc=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f3e2f53c (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 1 Mar 2022 10:38:12 +0000 (UTC)
+Received: by mail-yb1-f169.google.com with SMTP id u61so910835ybi.11;
+        Tue, 01 Mar 2022 02:38:11 -0800 (PST)
+X-Gm-Message-State: AOAM531Mtfpzm2akQNyk3HBmw1JGjKP5nAlgW070TnzizuKB0nuG2CND
+        3FrQyBRHRemBVlc5jbRcpUvrGhtec3fysloZsOg=
+X-Google-Smtp-Source: ABdhPJxVMHyS5UlHFoFaBLlDJE2oG/H3jmfuH9grQGZNxbXbUeDPCBWh9I7qEntrlnAwcmKZJ5loGUgJFAEPK74ptkY=
+X-Received: by 2002:a25:e204:0:b0:610:cb53:b753 with SMTP id
+ h4-20020a25e204000000b00610cb53b753mr22080336ybe.267.1646131091156; Tue, 01
+ Mar 2022 02:38:11 -0800 (PST)
 MIME-Version: 1.0
-Date:   Tue, 01 Mar 2022 10:18:58 +0100
-From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] nvmem: check for allocation failure
-In-Reply-To: <20220301081127.GC17375@kili>
-References: <20220301081127.GC17375@kili>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <02cec796f9e50e0895b28c5000ea2254@milecki.pl>
-X-Sender: rafal@milecki.pl
-X-Originating-IP: 194.187.74.233
-X-Webmail-UserID: rafal@milecki.pl
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 16502596412997479291
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddruddtvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeggfffhvffujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeejffdufffgjefgvdeigedukefffeevheejueeikeehudeiudehvdeifeduteehieenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejjedurdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhg
+References: <CAHmME9qHnvwrxEue4Pdm_E1qZQGXFuR9orJSKCWj8fH5TSh6fA@mail.gmail.com>
+ <20220228183355.9090-1-Jason@zx2c4.com> <e9bfc654-5504-29ff-5a5a-b73f24691600@redhat.com>
+In-Reply-To: <e9bfc654-5504-29ff-5a5a-b73f24691600@redhat.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 1 Mar 2022 11:38:00 +0100
+X-Gmail-Original-Message-ID: <CAHmME9oa4VQm7M0xsqCcy_0zaruhZarwodTyJEw0rtJnBskM=Q@mail.gmail.com>
+Message-ID: <CAHmME9oa4VQm7M0xsqCcy_0zaruhZarwodTyJEw0rtJnBskM=Q@mail.gmail.com>
+Subject: Re: [PATCH 2/3 v6] ACPI: allow longer device IDs
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Alexander Graf <graf@amazon.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-01 09:11, Dan Carpenter wrote:
-> Check for if the kcalloc() fails.
-> 
-> Fixes: 299dc152721f ("nvmem: brcm_nvram: parse NVRAM content into NVMEM 
-> cells")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Hi Hans,
 
-Thank you!
+On Tue, Mar 1, 2022 at 11:35 AM Hans de Goede <hdegoede@redhat.com> wrote:
+> Acked-by: Hans de Goede <hdegoede@redhat.com>
 
-Acked-by: Rafał Miłecki <rafal@milecki.pl>
+Thanks for the Ack. I still need Rafael's Ack to take this through my
+random.git tree, right? Or are you two one in the same when it comes
+to that? Trying not to step on toes if possible.
 
-> ---
->  drivers/nvmem/brcm_nvram.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/nvmem/brcm_nvram.c b/drivers/nvmem/brcm_nvram.c
-> index 439f00b9eef6..c80af8a31eba 100644
-> --- a/drivers/nvmem/brcm_nvram.c
-> +++ b/drivers/nvmem/brcm_nvram.c
-> @@ -95,6 +95,8 @@ static int brcm_nvram_parse(struct brcm_nvram *priv)
->  	len = le32_to_cpu(header.len);
-> 
->  	data = kcalloc(1, len, GFP_KERNEL);
-> +	if (!data)
-> +		return -ENOMEM;
->  	memcpy_fromio(data, priv->base, len);
->  	data[len - 1] = '\0';
+Jason
