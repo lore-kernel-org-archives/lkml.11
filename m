@@ -2,106 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7786EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B321C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:15:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237796AbiCAUQE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:16:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
+        id S237830AbiCAUQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:16:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237805AbiCAUP6 (ORCPT
+        with ESMTP id S237803AbiCAUP6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 1 Mar 2022 15:15:58 -0500
-Received: from cloud48395.mywhc.ca (cloud48395.mywhc.ca [173.209.37.211])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEACD79C6D;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209BE79C52;
         Tue,  1 Mar 2022 12:15:01 -0800 (PST)
-Received: from [45.44.224.220] (port=57050 helo=[192.168.1.179])
-        by cloud48395.mywhc.ca with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <olivier@trillion01.com>)
-        id 1nP8tg-0006kw-90; Tue, 01 Mar 2022 15:15:00 -0500
-Message-ID: <628f7ac96c15b0a3d5f2ddcdf4df79a03950b17e.camel@trillion01.com>
-Subject: Re: [PATCH v4 2/2] io_uring: Add support for napi_busy_poll
-From:   Olivier Langlois <olivier@trillion01.com>
-To:     Hao Xu <haoxu@linux.alibaba.com>, Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>
-Cc:     io-uring <io-uring@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Date:   Tue, 01 Mar 2022 15:14:58 -0500
-In-Reply-To: <4f01857ca757ab4f0995420e6b1a6e3668a40da5.camel@trillion01.com>
-References: <cover.1646142288.git.olivier@trillion01.com>
-         <aa38a667ef28cce54c08212fdfa1e2b3747ad3ec.1646142288.git.olivier@trillion01.com>
-         <29bad95d-06f8-ea7c-29fe-81e52823c90a@linux.alibaba.com>
-         <4f01857ca757ab4f0995420e6b1a6e3668a40da5.camel@trillion01.com>
-Organization: Trillion01 Inc
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.42.4 
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6CA661728;
+        Tue,  1 Mar 2022 20:15:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77FE3C340EE;
+        Tue,  1 Mar 2022 20:14:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646165700;
+        bh=nw2k04YizY0+9Uv+jdJmsCsOPsN1u6CoMB/rdPPT+BI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JVlkRjRBtnkDF7AHz1H0dUbA3/D97348E8BGNDuXPGiHoROJKjrOKZlx9MKpeFMF2
+         YEELxa3W05URAX9AgiGyXdFOT31B2SiODyUfcmtxyURMiYWhJvgvS0mNzgRPSi4EZp
+         Pc7n58O0kzlV6L/OkjGya8cPO9OZe5O3r3n+YQZQJ758sE4xW5IjohSyYUlmnu4dDK
+         o+hXEE+DtR8cBJeWtENy4KqJfE0+4jfeEKyVn5dOKsw9W/8Tv1DrPDoXCc5bBM+p8k
+         SzgQsr7pf0PTQokCkfHgGta3J5Hs3/n7wi1xfVySo0fmsYA/AOZSjT624oNZINeBSN
+         yYxn52/ggk67g==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     suresh kumar <suresh2514@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        atenart@kernel.org, edumazet@google.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 14/28] net-sysfs: add check for netdevice being present to speed_show
+Date:   Tue,  1 Mar 2022 15:13:19 -0500
+Message-Id: <20220301201344.18191-14-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220301201344.18191-1-sashal@kernel.org>
+References: <20220301201344.18191-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - cloud48395.mywhc.ca
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - trillion01.com
-X-Get-Message-Sender-Via: cloud48395.mywhc.ca: authenticated_id: olivier@trillion01.com
-X-Authenticated-Sender: cloud48395.mywhc.ca: olivier@trillion01.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-03-01 at 15:06 -0500, Olivier Langlois wrote:
-> On Wed, 2022-03-02 at 02:31 +0800, Hao Xu wrote:
-> > 
-> > 
-> > How about:
-> > 
-> > if (list is singular) {
-> > 
-> >      do something;
-> > 
-> >      return;
-> > 
-> > }
-> > 
-> > while (!io_busy_loop_end() && io_napi_busy_loop())
-> > 
-> >      ;
-> > 
-> 
-> is there a concern with the current code?
-> What would be the benefit of your suggestion over current code?
-> 
-> To me, it seems that if io_blocking_napi_busy_loop() is called, a
-> reasonable expectation would be that some busy looping is done or
-> else
-> you could return the function without doing anything which would,
-> IMHO,
-> be misleading.
-> 
-> By definition, napi_busy_loop() is not blocking and if you desire the
-> device to be in busy poll mode, you need to do it once in a while or
-> else, after a certain time, the device will return back to its
-> interrupt mode.
-> 
-> IOW, io_blocking_napi_busy_loop() follows the same logic used by
-> napi_busy_loop() that does not call loop_end() before having perform
-> 1
-> loop iteration.
-> 
-> > Btw, start_time seems not used in singular branch.
-> 
-> I know. This is why it is conditionally initialized.
-> 
-> Greetings,
-> 
-Another argument for not touching the code the way that it is:
-io_napi_busy_loop() has another function on top of iterating the
-napi_list and calling napi_busy_loop() for each of them.
+From: suresh kumar <suresh2514@gmail.com>
 
-The function also check the list entries validity and frees them when
-they time out. Not calling io_napi_busy_loop() you would bypass this
-check and that could result in timed out entries to never be disposed.
+[ Upstream commit 4224cfd7fb6523f7a9d1c8bb91bb5df1e38eb624 ]
+
+When bringing down the netdevice or system shutdown, a panic can be
+triggered while accessing the sysfs path because the device is already
+removed.
+
+    [  755.549084] mlx5_core 0000:12:00.1: Shutdown was called
+    [  756.404455] mlx5_core 0000:12:00.0: Shutdown was called
+    ...
+    [  757.937260] BUG: unable to handle kernel NULL pointer dereference at           (null)
+    [  758.031397] IP: [<ffffffff8ee11acb>] dma_pool_alloc+0x1ab/0x280
+
+    crash> bt
+    ...
+    PID: 12649  TASK: ffff8924108f2100  CPU: 1   COMMAND: "amsd"
+    ...
+     #9 [ffff89240e1a38b0] page_fault at ffffffff8f38c778
+        [exception RIP: dma_pool_alloc+0x1ab]
+        RIP: ffffffff8ee11acb  RSP: ffff89240e1a3968  RFLAGS: 00010046
+        RAX: 0000000000000246  RBX: ffff89243d874100  RCX: 0000000000001000
+        RDX: 0000000000000000  RSI: 0000000000000246  RDI: ffff89243d874090
+        RBP: ffff89240e1a39c0   R8: 000000000001f080   R9: ffff8905ffc03c00
+        R10: ffffffffc04680d4  R11: ffffffff8edde9fd  R12: 00000000000080d0
+        R13: ffff89243d874090  R14: ffff89243d874080  R15: 0000000000000000
+        ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+    #10 [ffff89240e1a39c8] mlx5_alloc_cmd_msg at ffffffffc04680f3 [mlx5_core]
+    #11 [ffff89240e1a3a18] cmd_exec at ffffffffc046ad62 [mlx5_core]
+    #12 [ffff89240e1a3ab8] mlx5_cmd_exec at ffffffffc046b4fb [mlx5_core]
+    #13 [ffff89240e1a3ae8] mlx5_core_access_reg at ffffffffc0475434 [mlx5_core]
+    #14 [ffff89240e1a3b40] mlx5e_get_fec_caps at ffffffffc04a7348 [mlx5_core]
+    #15 [ffff89240e1a3bb0] get_fec_supported_advertised at ffffffffc04992bf [mlx5_core]
+    #16 [ffff89240e1a3c08] mlx5e_get_link_ksettings at ffffffffc049ab36 [mlx5_core]
+    #17 [ffff89240e1a3ce8] __ethtool_get_link_ksettings at ffffffff8f25db46
+    #18 [ffff89240e1a3d48] speed_show at ffffffff8f277208
+    #19 [ffff89240e1a3dd8] dev_attr_show at ffffffff8f0b70e3
+    #20 [ffff89240e1a3df8] sysfs_kf_seq_show at ffffffff8eedbedf
+    #21 [ffff89240e1a3e18] kernfs_seq_show at ffffffff8eeda596
+    #22 [ffff89240e1a3e28] seq_read at ffffffff8ee76d10
+    #23 [ffff89240e1a3e98] kernfs_fop_read at ffffffff8eedaef5
+    #24 [ffff89240e1a3ed8] vfs_read at ffffffff8ee4e3ff
+    #25 [ffff89240e1a3f08] sys_read at ffffffff8ee4f27f
+    #26 [ffff89240e1a3f50] system_call_fastpath at ffffffff8f395f92
+
+    crash> net_device.state ffff89443b0c0000
+      state = 0x5  (__LINK_STATE_START| __LINK_STATE_NOCARRIER)
+
+To prevent this scenario, we also make sure that the netdevice is present.
+
+Signed-off-by: suresh kumar <suresh2514@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/core/net-sysfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index d7f9ee830d34c..9e5657f632453 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -213,7 +213,7 @@ static ssize_t speed_show(struct device *dev,
+ 	if (!rtnl_trylock())
+ 		return restart_syscall();
+ 
+-	if (netif_running(netdev)) {
++	if (netif_running(netdev) && netif_device_present(netdev)) {
+ 		struct ethtool_link_ksettings cmd;
+ 
+ 		if (!__ethtool_get_link_ksettings(netdev, &cmd))
+-- 
+2.34.1
 
