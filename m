@@ -2,88 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16366C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4581EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232090AbiCAIOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 03:14:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35512 "EHLO
+        id S233230AbiCAIRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 03:17:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiCAIOh (ORCPT
+        with ESMTP id S230521AbiCAIRE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 03:14:37 -0500
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com [209.85.222.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0A247AC0;
-        Tue,  1 Mar 2022 00:13:57 -0800 (PST)
-Received: by mail-ua1-f46.google.com with SMTP id 10so7086114uar.9;
-        Tue, 01 Mar 2022 00:13:57 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Hup4l0SCQpzYB1UP/0yN4hi6PPxy4Oe80sl6oWpNdRw=;
-        b=LKIZuCD5HBVGllMBty9EVsxmSAsANbjpqJ+Ydv8DOivMDR2/wgr+oAVWZ6fXGFUu4b
-         50r6rnlOAohqtdwtyGvg0MZQG3m2rRW3LVQ4ybIQ7OK5SiYRcsU2W7wuKkM+tdU8QPOO
-         vrZKMFNGhJwiAgjJcPaHKXgBGFMlHLlkpW4tdvA9myvsnQGLEtli2zvZxfE3VuXzZ79U
-         Lnjwf+EXSTRArfrCwu2snvg34vilh33ilXZ1ZSS+sol9nBNrV6Oycy1IqWxZdaqqRVXY
-         XnE5kIULiibc9kw35PmVoqDnsHkn3DBbsrlSV3t0nGK3bVZgqLRAVTBUcP5Ekp2b2R4S
-         SAqw==
-X-Gm-Message-State: AOAM532n+lj6EWU1R69imGuYdgFfWiDM1ttblotiXcIsAWdDybtQ21Pf
-        uTZEjlmGaaiyZphRhGqkS6PDe3gM9hXW6Q==
-X-Google-Smtp-Source: ABdhPJy7liRlf8SpUvscezMptczIa9SRDyzDD7vIqEt4LC1fLEJEbUBosbsC8206e07VoDXmtoavfA==
-X-Received: by 2002:ab0:70c7:0:b0:340:5421:a0c2 with SMTP id r7-20020ab070c7000000b003405421a0c2mr9360173ual.40.1646122436301;
-        Tue, 01 Mar 2022 00:13:56 -0800 (PST)
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
-        by smtp.gmail.com with ESMTPSA id a6-20020a056102094600b0031b3c620df5sm1574261vsi.1.2022.03.01.00.13.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 00:13:55 -0800 (PST)
-Received: by mail-ua1-f48.google.com with SMTP id b37so7072226uad.12;
-        Tue, 01 Mar 2022 00:13:51 -0800 (PST)
-X-Received: by 2002:ab0:3da4:0:b0:306:a7f8:f28b with SMTP id
- l36-20020ab03da4000000b00306a7f8f28bmr9979160uac.47.1646122430945; Tue, 01
- Mar 2022 00:13:50 -0800 (PST)
+        Tue, 1 Mar 2022 03:17:04 -0500
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF8F83026;
+        Tue,  1 Mar 2022 00:16:23 -0800 (PST)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R461e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V5vTaqf_1646122580;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V5vTaqf_1646122580)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 01 Mar 2022 16:16:20 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     sre@kernel.org
+Cc:     support.opensource@diasemi.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] power: supply: da9150-fg: Remove unnecessary print function dev_err()
+Date:   Tue,  1 Mar 2022 16:16:19 +0800
+Message-Id: <20220301081619.121904-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-References: <20220227212330.22262-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220227212330.22262-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 1 Mar 2022 09:13:39 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXNrRO2HaZ2pR6eH=6SH+j9fC-72Z3eUjNVwSQyTKQR9w@mail.gmail.com>
-Message-ID: <CAMuHMdXNrRO2HaZ2pR6eH=6SH+j9fC-72Z3eUjNVwSQyTKQR9w@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: mmc: renesas,sdhi: Document RZ/V2L SoC
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Feb 27, 2022 at 10:23 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Document RZ/V2L SDHI bindings. RZ/V2L SDHI is almost identical to one
-> found on the R-Car Gen3. No driver changes are required as generic
-> compatible string "renesas,rcar-gen3-sdhi" will be used as a fallback.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+The print function dev_err() is redundant because
+platform_get_irq_byname() already prints an error.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Eliminate the follow coccicheck warning:
+./drivers/power/supply/da9150-fg.c:524:2-9: line 524 is redundant
+because platform_get_irq() already prints an error
 
-Gr{oetje,eeting}s,
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/power/supply/da9150-fg.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-                        Geert
+diff --git a/drivers/power/supply/da9150-fg.c b/drivers/power/supply/da9150-fg.c
+index e63fa62d1943..8c5e2c49d6c1 100644
+--- a/drivers/power/supply/da9150-fg.c
++++ b/drivers/power/supply/da9150-fg.c
+@@ -520,10 +520,8 @@ static int da9150_fg_probe(struct platform_device *pdev)
+ 
+ 	/* Register IRQ */
+ 	irq = platform_get_irq_byname(pdev, "FG");
+-	if (irq < 0) {
+-		dev_err(dev, "Failed to get IRQ FG: %d\n", irq);
++	if (irq < 0)
+ 		return irq;
+-	}
+ 
+ 	ret = devm_request_threaded_irq(dev, irq, NULL, da9150_fg_irq,
+ 					IRQF_ONESHOT, "FG", fg);
+-- 
+2.20.1.7.g153144c
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
