@@ -2,141 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A677BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C11C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233634AbiCAJHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:07:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55774 "EHLO
+        id S233658AbiCAJH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:07:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229906AbiCAJHv (ORCPT
+        with ESMTP id S233227AbiCAJHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 1 Mar 2022 04:07:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D007A89CE4
+Received: from EUR03-DB5-obe.outbound.protection.outlook.com (mail-eopbgr40055.outbound.protection.outlook.com [40.107.4.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D08A08A309
         for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 01:07:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646125629;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=C9yUIg5j65w+qFKrB2q98qn+HFOuWpxbJH81ykhBbNU=;
-        b=FiaIDJBk+X2R558AyVBr5RQZ401EiJv4UHojjFdRgk8W/5lA6ilh+xHjUj6GWw9j/pMnLy
-        JpIikOrila6PXj8I6gVaudXwke+tWMAPfWXVyp2TK6usLS4pAeIxIlQH4O/bku5m3BjKrB
-        3ptf8BVu62ZGVU7mZMrgshSpgjT0pB8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-36-PNX7isssMnCg8DTO-XnzpQ-1; Tue, 01 Mar 2022 04:07:08 -0500
-X-MC-Unique: PNX7isssMnCg8DTO-XnzpQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 31ACB801AB2;
-        Tue,  1 Mar 2022 09:07:07 +0000 (UTC)
-Received: from localhost (unknown [10.39.194.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id ADCA51038AC5;
-        Tue,  1 Mar 2022 09:07:00 +0000 (UTC)
-Date:   Tue, 1 Mar 2022 09:06:59 +0000
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Akihiko Odaki <akihiko.odaki@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Jens Axboe <axboe@kernel.dk>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] virtio-blk: Assign discard_granularity
-Message-ID: <Yh3iMymdtD6rGYzs@stefanha-x1.localdomain>
-References: <20220224093802.11348-1-akihiko.odaki@gmail.com>
- <YhypTNtWpcgh3gb2@stefanha-x1.localdomain>
- <e306700c-3153-9422-974c-1f5f10e232d6@gmail.com>
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GcgFXsG3B2xBNH9H/uKIFJ3s6g3GQTI3P8TD7kBQjXQrkmDnnKqt9t9NnJzCdNembHDfBT4INdmT8adyESOnXxxRG+L9avQ/geAIkOc0xH3uNeUZYSG5p1ICri75vvw+31w4CqL5h6jEfOiNsllgC61IIhKyyDsI0YBYzZJ3ae9t/OQD//PRIsnj66Na6ALpRawdrL56u1OFjtBbcW3UwOKFJbTqsnTtT7kxROqIp0CCQPLCniqbN0CECTGG/CztDzV8tLm86Z0IU9VqTqgQq1Ncec1SJiWPbv4Vqlaaqsnx6aFwSqvcVNiKASx0mh6qBZH6N4af6aYaVUu2pcdZFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=216MVLc9inij4J/WR/HXOP5RTry1N/LZevU2swycnXM=;
+ b=hu4zhroPJatbA0aCIc0VnCxu2X318eVGEjVG9ZujWyfXIUNsEVdN+ANk8ciZIWqyw1SH8mnaJ/vwNzAWZTi9VTrh23GCvDgT134glY1d6kT0MndTVJna5PfQ/mDhwtLGrmc1jsY/Ehzrdou+vxqe3faHOF3sEJobK3jwbQjMN4zwT+u8e0VCnA1MNgrpICoB+MbnVJUdD4jQfHPeiL3M4DZtZ1xnf00PtiAJLC9I+jhJquhVPup3Sw/p3wWC+lXbATSyye6wQcYDr0+F/WLBTjHgru2yLV7DoNBA8OnSovz839r7d99B6egv1zNlJNAgsa2qG8hpdNk/rogeteA2Ww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=216MVLc9inij4J/WR/HXOP5RTry1N/LZevU2swycnXM=;
+ b=MZla0GdRX37rZBpEfyuELZ1Q11nX856wBTSyJDfCdorOdqTaA2v0tTod3wOsL6bZtj2eFvDDR6aFjThSUdzIUDbUz00HdB/2DGIXFrD4ABPz71cTy6D9DE1yccssTBrvuGzF3HBr351/e0qescbOOXt2gGhqDt+3mSn/zAcMkH8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DB8PR04MB7051.eurprd04.prod.outlook.com (2603:10a6:10:fd::20)
+ by AS8PR04MB8609.eurprd04.prod.outlook.com (2603:10a6:20b:424::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.26; Tue, 1 Mar
+ 2022 09:07:06 +0000
+Received: from DB8PR04MB7051.eurprd04.prod.outlook.com
+ ([fe80::2c87:5af4:1b63:d8ec]) by DB8PR04MB7051.eurprd04.prod.outlook.com
+ ([fe80::2c87:5af4:1b63:d8ec%3]) with mapi id 15.20.5017.027; Tue, 1 Mar 2022
+ 09:07:06 +0000
+Message-ID: <e69997e327e7c259925efa43138a807277c520fd.camel@oss.nxp.com>
+Subject: Re: [PATCH] drm/bridge: nwl-dsi: switch to devm_drm_of_get_bridge
+From:   Liu Ying <victor.liu@oss.nxp.com>
+To:     =?ISO-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
+        andrzej.hajda@intel.com
+Cc:     jonas@kwiboo.se, airlied@linux.ie, robert.foss@linaro.org,
+        dri-devel@lists.freedesktop.org, narmstrong@baylibre.com,
+        linux-kernel@vger.kernel.org, jernej.skrabec@gmail.com,
+        Laurent.pinchart@ideasonboard.com, maxime@cerno.tech
+Date:   Tue, 01 Mar 2022 17:07:08 +0800
+In-Reply-To: <20220228182226.21888-1-jose.exposito89@gmail.com>
+References: <20220228182226.21888-1-jose.exposito89@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.4-0ubuntu1 
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SI2PR02CA0005.apcprd02.prod.outlook.com
+ (2603:1096:4:194::6) To DB8PR04MB7051.eurprd04.prod.outlook.com
+ (2603:10a6:10:fd::20)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="QjNeH+KS6pqTHNut"
-Content-Disposition: inline
-In-Reply-To: <e306700c-3153-9422-974c-1f5f10e232d6@gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6c0ed134-6bea-43a2-1cb7-08d9fb62dbbd
+X-MS-TrafficTypeDiagnostic: AS8PR04MB8609:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-Microsoft-Antispam-PRVS: <AS8PR04MB86093F57EECD1B5586B7655DD9029@AS8PR04MB8609.eurprd04.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vfYvO74NwSpmCKs1tugcEfpIB3uFgJ2kAOuMiQ21f6e7TzKjBpGU+kPulJBHBWIJ3NF30IGFFjicvtUUhbZE/G10/6LY8ClltaZ7i5LU6rERGw7uQQiUYUMa2+sPdX8By9tGkzLcM7I50oFxtg3q81UQGSStCMz6C0Q/dwclwWeLFoRc9xlc+xwfv3IjhRhIqijpKfbnr5h9N+Ufw3g7SybRHGFhlUPvYdmkd/5zKGdDaT3csOzhfK85bx01zIQyXRyURxbDu9J3Q9tiEgCs83OmU0jqwact8U1DPwvbARKYG7nMv5gAMbEtdbzHYVqGHNSWp7+1uVDu6LmuE50S6hCn71+JjQ1qR1LoRRkR84je4ryGRKi1uKWW/yImFMlQMdJnaxgeboyoxYsrH61U3pYu8j03dtHJdtVpVPOlQt/p9zWfoVRb4vF0L45D2NLXRiAPPdmDaFtdgbpoQq80n0EzZHM5zEa/j1dp8CdT43zcGJef6/Pd7WRA4LXH5PG6iZG0U+GLkSnS9WxsuyF7T5ZMQbflULD8WXFfY0OAYfRj6aFtDyGtZ2eLXamHiodJBfRGa2CNBx0/RM2tDcq3XOQh9CJoxp8PZv8LTnd9kYAOsP+cIZW5FVf1u3fOxN3PwzW8+cfvTvL3T0V0RWpVXKuvhodOP5XW14NqCOCnt9J3Ad9Nge52t8QlGJnNGpmyw3nwfv4mVXOxuYXcQBQOKA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB7051.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(86362001)(38350700002)(2906002)(26005)(8936002)(2616005)(66946007)(8676002)(66476007)(4326008)(66556008)(316002)(6486002)(83380400001)(5660300002)(38100700002)(52116002)(6512007)(7416002)(186003)(6506007)(508600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U0ZXcUJIM2hkOC9WUG5meHFQSUJqLzk3WElWSEg1VFhkYUNmRTVuK0JmWGdY?=
+ =?utf-8?B?RTlUbkRkMWJRN3gvMUVtc3NucGtPRmJzS21pZTFDYlhMbWo1V0lKSXh6bWlR?=
+ =?utf-8?B?emltdkFPOTltME1aNmIwczhGQ0lYcXJVTm0wb3B2UFRvUDBTZSsra2VoTzZm?=
+ =?utf-8?B?a084d1VoWUJoNG81MXg2cDhSVFJHVE5hVmNRcEN2eURjOU5yaWlOc3NSRnpY?=
+ =?utf-8?B?QUF5NXFFTHZoNFdOZkhHZGlJNUJIZlJVbDNJZGVvUzJhdWdncU5XUTliQ1Bh?=
+ =?utf-8?B?Nit6a3VnenFPSGVpdnNlS3FXSDZwMkszdHA2NmFVYjRzSEQ2VncwWXhuWml0?=
+ =?utf-8?B?Z21RbC9Wa1htckpYaXlNSCtJMmRGSm5pZU56S3k3NW93dFFhN280aEI2TFZG?=
+ =?utf-8?B?U3NmaUgvOFg4VjNldkVHSzZDeVpiQ1BrMHdjbmczMzcvWDRRRkRTMTRFMUV2?=
+ =?utf-8?B?KzJINUg4Y3c3RlVNM0lBQXFBNkJsRFlONTJxZG1ydGdnK1JySlk1WnZkbEQ3?=
+ =?utf-8?B?akI4bW92eTZVY3QwcUxqZURkMFRid3dpaEhPVnJaVForeDV4b0hsMDlYZ3B6?=
+ =?utf-8?B?Q3B2YUVRUWdhNVJnWDJuYWVraWthUGFKaDlzUlQ0QkVDWEtiWG9pd1R0cnhX?=
+ =?utf-8?B?TWlnWkozVWhCdy9qRHhpWHRQY2NZMzBWYVJEdGM2VWtrRDU2VGZTNE5QSXR6?=
+ =?utf-8?B?RUFLT2Q3N0EwK2tWd0NyeCtHWkptTHJiaW5ZUkJRdm12Yk9VS0xmWFJRckdp?=
+ =?utf-8?B?dXdHVG00Sml0NkxHcHNSUUNVK1Vsd1huanJmVklVTkY4WlJRRzFxVkxGaHdi?=
+ =?utf-8?B?T2I0bm00RHVOR1E0R2VNZ1BGZlQzSGdyQmZKWTZVQ29nT0I4bG8vdlZ4aGNl?=
+ =?utf-8?B?cUtmZGpxOWV6MmM0Vm5FMFVBRUx5UGZucG8wVUJaQ3RpM29hd2NGQ1ZHeXZH?=
+ =?utf-8?B?R3ZlbUFYSXJOcE01cFRVWHhSVC9PVjhlN2NBZ21nb0p0aTdlRmZ2TzMrMER1?=
+ =?utf-8?B?Z21CbjRXbU1GUStvTE82Qkg0elRUeFdMQjlRSnRKSUxnb2pabXpxUTYwc0VK?=
+ =?utf-8?B?bmc0cXZjMHMzeDczVkFqN3lacHcrQXhyU1ZKdTZRYVVsai81WkZqQTJUbFZE?=
+ =?utf-8?B?SVlwNHdUVEZhVkVuV1EyZGVNcnpZZjNrYWY5azJ3MW5lNEExRDVCYkZqc0ZG?=
+ =?utf-8?B?RWpYTmFWbkRlNU44Sk1lVkt3VTlBVC9aR3dqL25JUnZUaThBK2xDWllpby84?=
+ =?utf-8?B?RlM1azVhNFJFUmk1NlpEejRHVkZsV1BmTER2Z2VHRURXdG9CZklpWk1XNEZz?=
+ =?utf-8?B?blZHRHlYR1hPdlRkcWxHamQ5UjlPU2pWMEt2b0N6QUtYT0Nta09LK1ZacjJq?=
+ =?utf-8?B?N2lmdW0zdnlURkZSMFdFa0tFb3hJOFBtNkNncU1LcG15NnR0VTlYRURmRGJE?=
+ =?utf-8?B?ZWt2cU5pOTlGd2JRWVVjUjVTMmpQYmp4M0YvVlNqeUhrNVE5U1RqSWVBQm8x?=
+ =?utf-8?B?MnJvaU4va1YvL21rMGJ0WUh0a2VhbXJ5bzhmWHhmbTlkTlhDZ3g5MndzaWhT?=
+ =?utf-8?B?aE14bENsNUpLaEh2YVBhSE5Qbm1RWnRla0FqTnU4dHphM081UkJpSUtKQmpq?=
+ =?utf-8?B?enFPdDRCZVZYSEhZZjBSaGxZOGNObXUwUEM3L0Qvb211WXF4RzNBVlFIZHJi?=
+ =?utf-8?B?T2l6U0o5TTdYVE80OE5ibFBsZEl1R2VkQXZNVEZpU0t6M2ZHRDJQclRhM0lY?=
+ =?utf-8?B?MGNxcmU2ckhQYW1iVG9JMmIxYkNvM3hzTGRFcHFtWTIwV2o1ZUFHUTNVZ2ZI?=
+ =?utf-8?B?TmYwSVNLTUJjL0FCVjdQczVtQTV2Z0NhbEhrWXR2amYwbmp3TmZZTmpYQ1ov?=
+ =?utf-8?B?L2FUSFZ4UEFCUHNVRVowQ0pGSEg2NDZpNTBIYjJpU0p1UGhrTkVMQy9hSkV4?=
+ =?utf-8?B?OFRjSElWSTNrSnVBelZxWUZBMHMwbG9IUWt6QW54MEtBUElsdjdMSFE1Qkdv?=
+ =?utf-8?B?RDVUVXBiVHV6UGNrYk5EUEQ3VnRVTTlqNDBUdWQwUEdKOGxBa1QrQlNMa3lP?=
+ =?utf-8?B?Z24xRyt3U3IyMFl1OHplUkw2RWRmcWtyWGwxeWlLeDBUbHV6Y25Pd043anJU?=
+ =?utf-8?B?SGtKSGVzZ0RYOFNzeGJCS3piaEs1MHgyaHJrMjBGWGhVeHdBR0M2aEY4R1Q2?=
+ =?utf-8?Q?wgt10KQy2MbliOU1z5ruD4Q=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c0ed134-6bea-43a2-1cb7-08d9fb62dbbd
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB7051.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2022 09:07:06.6605
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: g4Cnp+KJqgArNagBSK3i4DXb1YhSOZPvCkE/HZFE7VWu48AHahQl4Ua6WN1V+uy+5KfGZMqCfeipHaXNeW76lw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR04MB8609
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
---QjNeH+KS6pqTHNut
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+On Mon, 2022-02-28 at 19:22 +0100, José Expósito wrote:
+> The function "drm_of_find_panel_or_bridge" has been deprecated in
+> favor of "devm_drm_of_get_bridge".
+> 
+> Switch to the new function and reduce boilerplate.
+> 
+> Signed-off-by: José Expósito <jose.exposito89@gmail.com>
 
-On Tue, Mar 01, 2022 at 02:43:55PM +0900, Akihiko Odaki wrote:
-> On 2022/02/28 19:51, Stefan Hajnoczi wrote:
-> > On Thu, Feb 24, 2022 at 06:38:02PM +0900, Akihiko Odaki wrote:
-> > > Virtual I/O Device (VIRTIO) Version 1.1
-> > > https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-cs=
-prd01.html
-> > > > discard_sector_alignment can be used by OS when splitting a request
-> > > > based on alignment.
-> > >=20
-> > > According to Documentation/ABI/stable/sysfs-block, the corresponding
-> > > field in the kernel is, confusingly, discard_granularity, not
-> > > discard_alignment.
-> >=20
-> > Good catch, struct virtio_blk_config->discard_sector_alignment is Linux
-> > q->limits.discard_granularity.
-> >=20
-> > >=20
-> > > Signed-off-by: Akihiko Odaki <akihiko.odaki@gmail.com>
-> > > ---
-> > >   drivers/block/virtio_blk.c | 4 +---
-> > >   1 file changed, 1 insertion(+), 3 deletions(-)
-> > >=20
-> > > diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
-> > > index c443cd64fc9b..1fb3c89900e3 100644
-> > > --- a/drivers/block/virtio_blk.c
-> > > +++ b/drivers/block/virtio_blk.c
-> > > @@ -913,11 +913,9 @@ static int virtblk_probe(struct virtio_device *v=
-dev)
-> > >   		blk_queue_io_opt(q, blk_size * opt_io_size);
-> > >   	if (virtio_has_feature(vdev, VIRTIO_BLK_F_DISCARD)) {
-> > > -		q->limits.discard_granularity =3D blk_size;
-> > > -
-> > >   		virtio_cread(vdev, struct virtio_blk_config,
-> > >   			     discard_sector_alignment, &v);
-> > > -		q->limits.discard_alignment =3D v ? v << SECTOR_SHIFT : 0;
-> >=20
-> > Should we use struct virtio_blk_config->topology.alignment_offset
-> > ("offset of first aligned logical block" and used for Linux
-> > blk_queue_alignment_offset()) for q->limits.discard_alignment?
->=20
-> Maybe but I'm not sure. I had looked at the code of QEMU
-> (commit 5c1ee569660d4a205dced9cb4d0306b907fb7599) but it apparently always
-> sets 0 for virtio_blk_config->topology.alignment_offset.
-> I don't have a hardware which requires discard_alignment either so I cann=
-ot
-> test it.
->=20
-> I'd like to leave this patch as is since I cannot deny the possibility th=
-at
-> the host has a different alignment offset for discarding and other
-> operations.
+This doesn't apply to the latest drm-misc-next due to conflict with
+commit 7b1534188c25 ("drm: bridge: nwl-dsi: Drop panel_bridge from
+nwl_dsi").
 
-Fair enough. To do it properly we'd need to add a new configuration
-space field to virtio-blk.
+> ---
+>  drivers/gpu/drm/bridge/nwl-dsi.c | 15 ++++-----------
+>  1 file changed, 4 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
+> index af07eeb47ca0..df3be9dd24fb 100644
+> --- a/drivers/gpu/drm/bridge/nwl-dsi.c
+> +++ b/drivers/gpu/drm/bridge/nwl-dsi.c
+> @@ -909,19 +909,12 @@ static int nwl_dsi_bridge_attach(struct drm_bridge *bridge,
+>  {
+>  	struct nwl_dsi *dsi = bridge_to_dsi(bridge);
+>  	struct drm_bridge *panel_bridge;
+> -	struct drm_panel *panel;
+> -	int ret;
+>  
+> -	ret = drm_of_find_panel_or_bridge(dsi->dev->of_node, 1, 0, &panel,
+> -					  &panel_bridge);
+> -	if (ret)
+> -		return ret;
+> +	panel_bridge = devm_drm_of_get_bridge(dsi->dev, dsi->dev->of_node,
+> +					      1, 0);
+> +	if (IS_ERR(panel_bridge))
+> +		return PTR_ERR(panel_bridge);
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Now that panel_bridge is resource managed, why not remove
+drm_of_panel_bridge_remove() and its caller nwl_dsi_bridge_detach()?
 
---QjNeH+KS6pqTHNut
-Content-Type: application/pgp-signature; name="signature.asc"
+Regards,
+Liu Ying
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmId4jMACgkQnKSrs4Gr
-c8hVTQf/fK2GjZF044xLZweZrpcjLJNrkExfCsyHEH1Ah4G4APuU/5PSDiiYm6XX
-EWrQanPgZ7Js5AkKfqsj5BslgH6HuTGUUfdP96Ww3uOxGG1jXpN3ifmN6vnLLUuR
-+KQjF89iI6zAl8yuV1OvGWl7+KgT0zmGEyFlY2t2ELov/TihbI872+kohZxpUCf4
-/7ZkXj7EL7BJxRmez/82PlVNzp1rqM7WsO9E+exIRL5uedb1w2lO8U96h9B7FO0i
-eCJCD3MH8bTQ5q30xXMdEueNrRanBEnaXtteAmnAyrgXhK43mYGgvklxigXq2wrG
-2ehNobgts6blVTE4GekOllSvt+9ZBw==
-=qaMg
------END PGP SIGNATURE-----
-
---QjNeH+KS6pqTHNut--
+>  
+> -	if (panel) {
+> -		panel_bridge = drm_panel_bridge_add(panel);
+> -		if (IS_ERR(panel_bridge))
+> -			return PTR_ERR(panel_bridge);
+> -	}
+>  	dsi->panel_bridge = panel_bridge;
+>  
+>  	if (!dsi->panel_bridge)
 
