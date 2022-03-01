@@ -2,150 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C0B7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:14:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A7F6C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236081AbiCAQOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:14:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
+        id S236104AbiCAQQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:16:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiCAQOn (ORCPT
+        with ESMTP id S229572AbiCAQQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:14:43 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1636B3D1D0
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:14:02 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id i11so22640900eda.9
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:14:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zB17C2H8amzm3lE/3Osytk3n5h0zezXc46JIi36Gcp0=;
-        b=gTUU0hsxwZ5ymtXgkL7PxDzn2ErgH0cpNuz+LeUA3f5f1EIhiK3lshcpf8jqLKeoC5
-         //ZgjeAXJgZQwJejKAnTX3iMhdwCPjNgjvuEPogc47i6sBqYXt4AOydXcC7nMtdPs8yu
-         cJgp+m9VrT0N4m0zxCPCb3aRnl/zgFy4P1EiQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zB17C2H8amzm3lE/3Osytk3n5h0zezXc46JIi36Gcp0=;
-        b=Ec+vP9XdXMjNYYd1q5Ql0YEzS00ZUeo1C4ZPGX98T75TahO4ufceiejtBBIeUirKyM
-         WMtRS4lBlh7LbCQArHRrF5KdstUz2IU4/wrOdB87CujKQjqlzOsBoU1LsbNGPaJdWhdI
-         0EYdTgFU/xO1JcnDaw/EUQVxKiGW4L142nnaidIklSrSUR7CBMkJ90ZqjJEB1x6YOvXo
-         2Ne3AJGy8C8lOyfMuiq3VEErDiotTt1wU4JgdsWrFALTSbVcG3MX3KD6gmZUpjDix9xa
-         VpH11N5qr5KGu/9zelJvpulHzH8oNeoHfCn/99ry3vPNcOlXvGTc8h09dSXqDPHPbosJ
-         VZ9Q==
-X-Gm-Message-State: AOAM531CZIXMb2RbsLldZWH3PXlcBYaKuSB/UtrjDkUXmakLCroEoqAQ
-        JZSgKT3TwnbZTjdCJ37q6HeW901Ki6P1b7iU
-X-Google-Smtp-Source: ABdhPJwml25l2TbZXBjjppVeaTGJ9yekrfwXWhKLKLHcLWdsqeL2SD/DavACTMPG6K380fYrsgaOXg==
-X-Received: by 2002:aa7:d403:0:b0:40f:739c:cbae with SMTP id z3-20020aa7d403000000b0040f739ccbaemr25544745edq.267.1646151240360;
-        Tue, 01 Mar 2022 08:14:00 -0800 (PST)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id w12-20020a17090649cc00b006d0bee77b9asm5475284ejv.72.2022.03.01.08.13.59
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 08:13:59 -0800 (PST)
-Received: by mail-wr1-f53.google.com with SMTP id ay10so3477789wrb.6
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 08:13:59 -0800 (PST)
-X-Received: by 2002:a5d:64ea:0:b0:1ea:8148:6b97 with SMTP id
- g10-20020a5d64ea000000b001ea81486b97mr19504763wri.679.1646151238740; Tue, 01
- Mar 2022 08:13:58 -0800 (PST)
+        Tue, 1 Mar 2022 11:16:17 -0500
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1764B8EB4A;
+        Tue,  1 Mar 2022 08:15:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+         s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=6+Oq8jelzlqbQiX8GzoogawtERz/ajBxD9i6+lY5xew=; b=u02XHB57b1GKnYc4eKtQlwP+YU
+        mQzI2aQ7gBpzvs/NLdHuaJcj18KHwWj5mPIxm/UxGyNTVVhNKFXQkXnjlqjTGWzwB/cR4TgPw7yyT
+        7WWxqwhn+jNSSP8Au3EryjQFWS/gwY9znJ+iMU0NkZ7qhAGWEpHM4Q6cpjoalrSNTuquqhQyI0Hr7
+        Hqmnb+iKXftQObzvgg4sZfrc11i+9mcYqG9Gkmiq6l1Cb5qhmsq2pPEF77KXFLuVbp0KlK4tzvbCh
+        CUBizMBlQib5poaAKt5Lg4INTaoDCMw+VFETwlf0b0EOyK6bf+FvTSGWyORprvJjwCJwPjVMJXCwE
+        LDx23K7g==;
+Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
+        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <cyndis@kapsi.fi>)
+        id 1nP59q-0003Z8-TY; Tue, 01 Mar 2022 18:15:26 +0200
+From:   cyndis@kapsi.fi
+To:     thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
+        will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
+        krzysztof.kozlowski@canonical.com
+Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Mikko Perttunen <mperttunen@nvidia.com>
+Subject: [PATCH v4 4/9] gpu: host1x: Program context stream ID on submission
+Date:   Tue,  1 Mar 2022 18:14:50 +0200
+Message-Id: <20220301161455.4037062-5-cyndis@kapsi.fi>
+X-Mailer: git-send-email 2.35.0
+In-Reply-To: <20220301161455.4037062-1-cyndis@kapsi.fi>
+References: <20220301161455.4037062-1-cyndis@kapsi.fi>
 MIME-Version: 1.0
-References: <20220223083441.1.I925ce9fa12992a58caed6b297e0171d214866fe7@changeid>
- <CAPDyKFrDncw0D2ccw9GJS+oRdm2kROJh25OV9pMs+992vQV-cQ@mail.gmail.com>
-In-Reply-To: <CAPDyKFrDncw0D2ccw9GJS+oRdm2kROJh25OV9pMs+992vQV-cQ@mail.gmail.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 1 Mar 2022 08:13:46 -0800
-X-Gmail-Original-Message-ID: <CAD=FV=XxCMMLAyfnf=MBu--Fkcjxza6603deCA-dOCCXKeX7uQ@mail.gmail.com>
-Message-ID: <CAD=FV=XxCMMLAyfnf=MBu--Fkcjxza6603deCA-dOCCXKeX7uQ@mail.gmail.com>
-Subject: Re: [PATCH] PM: runtime: Have devm_pm_runtime_enable() handle pm_runtime_dont_use_autosuspend()
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 91.158.25.70
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Mikko Perttunen <mperttunen@nvidia.com>
 
-On Tue, Mar 1, 2022 at 2:27 AM Ulf Hansson <ulf.hansson@linaro.org> wrote:
->
-> On Wed, 23 Feb 2022 at 17:35, Douglas Anderson <dianders@chromium.org> wrote:
-> >
-> > The PM Runtime docs say:
-> >   Drivers in ->remove() callback should undo the runtime PM changes done
-> >   in ->probe(). Usually this means calling pm_runtime_disable(),
-> >   pm_runtime_dont_use_autosuspend() etc.
-> >
-> > From grepping code, it's clear that many people aren't aware of the
-> > need to call pm_runtime_dont_use_autosuspend().
->
-> Well, I admit it's good practice that they should take care of this.
->
-> However, it doesn't really matter to keep the autosuspend turned on
-> when runtime PM becomes disabled, I think. When the driver gets probed
-> again, it will most likely call pm_runtime_use_autosuspend() again,
-> which should work fine, right?
->
-> >
-> > When brainstorming solutions, one idea that came up was to leverage
-> > the new-ish devm_pm_runtime_enable() function. The idea here is that:
-> > * When the devm action is called we know that the driver is being
-> >   removed. It's the perfect time to undo the use_autosuspend.
-> > * The code of pm_runtime_dont_use_autosuspend() already handles the
-> >   case of being called when autosuspend wasn't enabled.
->
-> Hmm, I am hesitating to extend devm_pm_runtime_enable(), as it
-> currently makes it look too simple to turn off things at ->remove()
-> for runtime PM. While in fact it's more complicated.
->
-> A bigger problem, for example, is that a driver calls
-> pm_runtime_put_sync() during ->remove(), relying on that it actually
-> ends up calling its ->runtime_suspend() callback to turn off various
-> specific resources for the device. And in fact there are no guarantees
-> that will happen - and when it doesn't, the next time the driver's
-> ->probe() runs, things are likely to be really screwed up.
->
-> To cover this case, one could use the below code in the ->remove() callback:
->
-> ...
-> pm_runtime_get_sync();
->
-> "turn off resources for the devices - like calling
-> clk_disable_unprepare(), for example"
->
-> pm_runtime_disable();
-> pm_runtime_put_noidle();
-> ...
->
-> In this example, it would be too late to call pm_runtime_disable()
-> through the pm_runtime_disable_action().
+Add code to do stream ID switching at the beginning of a job. The
+stream ID is switched to the stream ID specified by the context
+passed in the job structure.
 
-In the example you're listing above, though, you can't use
-devm_pm_runtime_enable() anyway, right? If you have a reason not to
-use the devm approach then that's fine and this patch won't affect
-you. However, if you're using devm_pm_runtime_enable() already then
-there should be no downside, right?
+Before switching the stream ID, an OP_DONE wait is done on the
+channel's engine to ensure that there is no residual ongoing
+work that might do DMA using the new stream ID.
 
-Though I'm by no means a Runtime PM expert, I think the most common
-use case might be when a driver is kept simple by _rely_ing on
-CONFIG_PM. Certainly folks have debated about this in the past, but at
-least for a set of drivers where nobody has a need for running them
-without CONFIG_PM they can be kept simpler by relying on it. When you
-do this, you don't need quite as many machinations with regards to
-playing with power management when runtime PM is off. You can
-basically just enable runtime power management and assume that the
-runtime resume / runtime suspend will do the work of powering you,
-right?
+Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+---
+v4:
+* Rename job->context to job->memory_context for clarity
+---
+ drivers/gpu/host1x/hw/channel_hw.c        | 52 +++++++++++++++++++++--
+ drivers/gpu/host1x/hw/host1x06_hardware.h | 10 +++++
+ drivers/gpu/host1x/hw/host1x07_hardware.h | 10 +++++
+ include/linux/host1x.h                    |  4 ++
+ 4 files changed, 72 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/gpu/host1x/hw/channel_hw.c b/drivers/gpu/host1x/hw/channel_hw.c
+index 6b40e9af1e88..f84caf06621a 100644
+--- a/drivers/gpu/host1x/hw/channel_hw.c
++++ b/drivers/gpu/host1x/hw/channel_hw.c
+@@ -180,6 +180,45 @@ static void host1x_enable_gather_filter(struct host1x_channel *ch)
+ #endif
+ }
+ 
++static void host1x_channel_program_engine_streamid(struct host1x_job *job)
++{
++#if HOST1X_HW >= 6
++	u32 fence;
++
++	if (!job->memory_context)
++		return;
++
++	fence = host1x_syncpt_incr_max(job->syncpt, 1);
++
++	/* First, increment a syncpoint on OP_DONE condition.. */
++
++	host1x_cdma_push(&job->channel->cdma,
++		host1x_opcode_nonincr(HOST1X_UCLASS_INCR_SYNCPT, 1),
++		HOST1X_UCLASS_INCR_SYNCPT_INDX_F(job->syncpt->id) |
++			HOST1X_UCLASS_INCR_SYNCPT_COND_F(1));
++
++	/* Wait for syncpoint to increment */
++
++	host1x_cdma_push(&job->channel->cdma,
++		host1x_opcode_setclass(HOST1X_CLASS_HOST1X,
++			host1x_uclass_wait_syncpt_r(), 1),
++		host1x_class_host_wait_syncpt(job->syncpt->id, fence));
++
++	/*
++	 * Now that we know the engine is idle, return to class and
++	 * change stream ID.
++	 */
++
++	host1x_cdma_push(&job->channel->cdma,
++		host1x_opcode_setclass(job->class, 0, 0),
++		HOST1X_OPCODE_NOP);
++
++	host1x_cdma_push(&job->channel->cdma,
++		host1x_opcode_setpayload(job->memory_context->stream_id),
++		host1x_opcode_setstreamid(job->engine_streamid_offset / 4));
++#endif
++}
++
+ static int channel_submit(struct host1x_job *job)
+ {
+ 	struct host1x_channel *ch = job->channel;
+@@ -236,18 +275,23 @@ static int channel_submit(struct host1x_job *job)
+ 	if (sp->base)
+ 		synchronize_syncpt_base(job);
+ 
+-	syncval = host1x_syncpt_incr_max(sp, user_syncpt_incrs);
+-
+ 	host1x_hw_syncpt_assign_to_channel(host, sp, ch);
+ 
+-	job->syncpt_end = syncval;
+-
+ 	/* add a setclass for modules that require it */
+ 	if (job->class)
+ 		host1x_cdma_push(&ch->cdma,
+ 				 host1x_opcode_setclass(job->class, 0, 0),
+ 				 HOST1X_OPCODE_NOP);
+ 
++	/*
++	 * Ensure engine DMA is idle and set new stream ID. May increment
++	 * syncpt max.
++	 */
++	host1x_channel_program_engine_streamid(job);
++
++	syncval = host1x_syncpt_incr_max(sp, user_syncpt_incrs);
++	job->syncpt_end = syncval;
++
+ 	submit_gathers(job, syncval - user_syncpt_incrs);
+ 
+ 	/* end CDMA submit & stash pinned hMems into sync queue */
+diff --git a/drivers/gpu/host1x/hw/host1x06_hardware.h b/drivers/gpu/host1x/hw/host1x06_hardware.h
+index 01a142a09800..5d515745eee7 100644
+--- a/drivers/gpu/host1x/hw/host1x06_hardware.h
++++ b/drivers/gpu/host1x/hw/host1x06_hardware.h
+@@ -127,6 +127,16 @@ static inline u32 host1x_opcode_gather_incr(unsigned offset, unsigned count)
+ 	return (6 << 28) | (offset << 16) | BIT(15) | BIT(14) | count;
+ }
+ 
++static inline u32 host1x_opcode_setstreamid(unsigned streamid)
++{
++	return (7 << 28) | streamid;
++}
++
++static inline u32 host1x_opcode_setpayload(unsigned payload)
++{
++	return (9 << 28) | payload;
++}
++
+ static inline u32 host1x_opcode_gather_wide(unsigned count)
+ {
+ 	return (12 << 28) | count;
+diff --git a/drivers/gpu/host1x/hw/host1x07_hardware.h b/drivers/gpu/host1x/hw/host1x07_hardware.h
+index e6582172ebfd..82c0cc9bb0b5 100644
+--- a/drivers/gpu/host1x/hw/host1x07_hardware.h
++++ b/drivers/gpu/host1x/hw/host1x07_hardware.h
+@@ -127,6 +127,16 @@ static inline u32 host1x_opcode_gather_incr(unsigned offset, unsigned count)
+ 	return (6 << 28) | (offset << 16) | BIT(15) | BIT(14) | count;
+ }
+ 
++static inline u32 host1x_opcode_setstreamid(unsigned streamid)
++{
++	return (7 << 28) | streamid;
++}
++
++static inline u32 host1x_opcode_setpayload(unsigned payload)
++{
++	return (9 << 28) | payload;
++}
++
+ static inline u32 host1x_opcode_gather_wide(unsigned count)
+ {
+ 	return (12 << 28) | count;
+diff --git a/include/linux/host1x.h b/include/linux/host1x.h
+index 9dbdc4b0bb82..2793131e8c96 100644
+--- a/include/linux/host1x.h
++++ b/include/linux/host1x.h
+@@ -321,6 +321,10 @@ struct host1x_job {
+ 
+ 	/* Whether host1x-side firewall should be ran for this job or not */
+ 	bool enable_firewall;
++
++	/* Options for configuring engine data stream ID */
++	struct host1x_context *memory_context;
++	u32 engine_streamid_offset;
+ };
+ 
+ struct host1x_job *host1x_job_alloc(struct host1x_channel *ch,
+-- 
+2.35.0
 
--Doug
