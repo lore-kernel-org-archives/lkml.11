@@ -2,107 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DD2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B617CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235158AbiCAN4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 08:56:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39836 "EHLO
+        id S235175AbiCAN4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 08:56:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232609AbiCAN4R (ORCPT
+        with ESMTP id S235167AbiCAN43 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 08:56:17 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B54E8D684;
-        Tue,  1 Mar 2022 05:55:36 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id bg10so31663663ejb.4;
-        Tue, 01 Mar 2022 05:55:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1/9T1huoYjFiDqtcNJauOodI/6xx/bBNHxHqAjTy+6E=;
-        b=JFACJZpQQZU0JE8sw3SHG5rjevA8wOm7xi4vnw+bfXN3poe/QFYS10ZFCjHuil6r0K
-         wQCrNGcM8HftxNW0bonv2MSevDq04rtg265dT3b+HOw/0EVJ9memo4JRqXs4e8NcNjp3
-         fhlu/XHMAlarYxZXoXtPe9tLcs/rMeaeVSv7jnZLSI+pp+auG2pdqy5v6XVxEq47C4w+
-         nBhuv05Za1nRsTGtYo42JgGZbW2lold7TJRTNFMfLzaaF8xfyXbp0XXls04rMBwZrju4
-         YdAg3Tn6zz6kntleWbbXHm2i47doM/ZaA/DadvIMidnjXtdTZoUvt5vHnuBRAWCiJZqO
-         QWBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1/9T1huoYjFiDqtcNJauOodI/6xx/bBNHxHqAjTy+6E=;
-        b=eT8in5bo8vn43F4tFTXOPWEKOCHinhVgYIdTSt4OBKVvsd01jSDTuTDc8a8C9h+ztA
-         hoHe9EIAA4rIoW0cxayZG9rUme4uHTD84H9Rjaw2FRmkDwOelwSh5hXTK+ASMEMqum3t
-         xOT6bFf9MB+ARELKakUKWnkX2F+sKu56yQXAICL/u8XJ64TlVXwtVNnAOAI2olRfCZtL
-         BHVRJXDT7RaYKzttAMbT31CekrCnnAOQzX7HF/W4RIgnXC58xgXqA9aFK7yKFuEcSi1v
-         C1Yz9zz5DIhEfTPTH7MUGMyVFsIt/2vrSi64TnlWymklHyt54VH4VJ/V3YtRB/uz+oHB
-         Uvqw==
-X-Gm-Message-State: AOAM530w9lLNFEiLlia8Xu75B9ZlroOSyfnkHBkaFF+ZErUEUFYqGkX7
-        bmi9etS6pvbm6JAvErqc4yI=
-X-Google-Smtp-Source: ABdhPJydRWeQpk3jXWl6ROPATxujJ8IWoFpZ9DNUqTkIo1y4ybgQwkR0KVLPnfTWn94ktj9xj21aLQ==
-X-Received: by 2002:a17:906:bc8d:b0:6cf:6b41:e48e with SMTP id lv13-20020a170906bc8d00b006cf6b41e48emr18960056ejb.372.1646142934837;
-        Tue, 01 Mar 2022 05:55:34 -0800 (PST)
-Received: from heron.intern.cm-ag (p200300dc6f15d2000000000000000fd2.dip0.t-ipconnect.de. [2003:dc:6f15:d200::fd2])
-        by smtp.gmail.com with ESMTPSA id u1-20020aa7d0c1000000b004132c0a9ee3sm7281675edo.84.2022.03.01.05.55.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 05:55:34 -0800 (PST)
-From:   Max Kellermann <max.kellermann@gmail.com>
-To:     viro@zeniv.linux.org.uk, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Max Kellermann <max.kellermann@gmail.com>
-Subject: [PATCH] drivers/char/mem: implement splice() for /dev/zero, /dev/full
-Date:   Tue,  1 Mar 2022 14:55:21 +0100
-Message-Id: <20220301135521.2889274-1-max.kellermann@gmail.com>
-X-Mailer: git-send-email 2.34.0
+        Tue, 1 Mar 2022 08:56:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A8A549F6F0
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 05:55:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646142946;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OiMjjIHHeTM/gQ1C4O+yjUIrBcfp/Osrq5pxcQPrA3c=;
+        b=AAcQ2G2G/iZrs/YZapnCuxjenxp55uA/TV+ZIZB6d93da9B3GirELjAfy6G9bdR4U2pQPv
+        lq3t5mGX5zEuUgaWlbh3Nj2o4IJ7faxeAriUQb+eVcyIwaWpt8gHvbp6cKzUrGtpINK/uB
+        8f1RoGmLMrm+WEsifiHN81S9YKwiLgA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-609-njn-BBIVOmy3rjb8sccEhA-1; Tue, 01 Mar 2022 08:55:44 -0500
+X-MC-Unique: njn-BBIVOmy3rjb8sccEhA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2F5BA180473E;
+        Tue,  1 Mar 2022 13:55:42 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.40.195.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7E1811057FD2;
+        Tue,  1 Mar 2022 13:55:38 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Jim Mattson <jmattson@google.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Borislav Petkov <bp@alien8.de>, x86@kernel.org,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH 1/4] KVM: x86: mark synthetic SMM vmexit as SVM_EXIT_SW
+Date:   Tue,  1 Mar 2022 15:55:23 +0200
+Message-Id: <20220301135526.136554-2-mlevitsk@redhat.com>
+In-Reply-To: <20220301135526.136554-1-mlevitsk@redhat.com>
+References: <20220301135526.136554-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This allows splicing zeroed pages into a pipe, and allows discarding
-pages from a pipe by splicing them to /dev/zero.  Writing to /dev/zero
-should have the same effect as writing to /dev/null, and a
-"splice_write" implementation exists only for /dev/null.
+Use a dummy unused vmexit reason to mark the 'VM exit' that is happening
+when kvm exits to handle SMM, which is not a real VM exit.
 
-To: linux-fsdevel@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Max Kellermann <max.kellermann@gmail.com>
+This makes it a bit easier to read the KVM trace, and avoids
+other potential problems.
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- drivers/char/mem.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/kvm/svm/svm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/mem.c b/drivers/char/mem.c
-index cc296f0823bd..6c504f92c986 100644
---- a/drivers/char/mem.c
-+++ b/drivers/char/mem.c
-@@ -642,6 +642,7 @@ static int open_port(struct inode *inode, struct file *filp)
- #define full_lseek      null_lseek
- #define write_zero	write_null
- #define write_iter_zero	write_iter_null
-+#define splice_write_zero	splice_write_null
- #define open_mem	open_port
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 7038c76fa8410..c08fd7f4f3414 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4218,7 +4218,7 @@ static int svm_enter_smm(struct kvm_vcpu *vcpu, char *smstate)
+ 	svm->vmcb->save.rsp = vcpu->arch.regs[VCPU_REGS_RSP];
+ 	svm->vmcb->save.rip = vcpu->arch.regs[VCPU_REGS_RIP];
  
- static const struct file_operations __maybe_unused mem_fops = {
-@@ -678,6 +679,8 @@ static const struct file_operations zero_fops = {
- 	.read_iter	= read_iter_zero,
- 	.read		= read_zero,
- 	.write_iter	= write_iter_zero,
-+	.splice_read	= generic_file_splice_read,
-+	.splice_write	= splice_write_zero,
- 	.mmap		= mmap_zero,
- 	.get_unmapped_area = get_unmapped_area_zero,
- #ifndef CONFIG_MMU
-@@ -689,6 +692,7 @@ static const struct file_operations full_fops = {
- 	.llseek		= full_lseek,
- 	.read_iter	= read_iter_zero,
- 	.write		= write_full,
-+	.splice_read	= generic_file_splice_read,
- };
+-	ret = nested_svm_vmexit(svm);
++	ret = nested_svm_simple_vmexit(svm, SVM_EXIT_SW);
+ 	if (ret)
+ 		return ret;
  
- static const struct memdev {
 -- 
-2.34.0
+2.26.3
 
