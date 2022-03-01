@@ -2,93 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F22C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:00:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ACE3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 10:00:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234091AbiCAKBT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 05:01:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35142 "EHLO
+        id S234096AbiCAKBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 05:01:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233239AbiCAKBQ (ORCPT
+        with ESMTP id S234058AbiCAKBg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 05:01:16 -0500
-Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F0DC78C7FA;
-        Tue,  1 Mar 2022 02:00:33 -0800 (PST)
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowAAnCPG27h1i3OLYAQ--.4914S2;
-        Tue, 01 Mar 2022 18:00:23 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] wireless/nl80211: Handle errors for nla_memdup
-Date:   Tue,  1 Mar 2022 18:00:20 +0800
-Message-Id: <20220301100020.3801187-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 1 Mar 2022 05:01:36 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DA08C7F3
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 02:00:54 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id v21so19575172wrv.5
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 02:00:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=J1W+5NXO359jvQpWTWx2S3L1BddQHRxmvi0thYVEQxI=;
+        b=EvioAi2JMzHmdmeCqilFnhiMJEBqSJpLbfddJCFexrQKhoas9sAmLMUXSg+ZUkTN3A
+         3gbW+517u9+GHlE/ttlOlhf7MYLeXgR1yAP3JtAmn3BQa35tAnow3bxo4YfXa6wzFwed
+         XO/wwQBK4BUJcWAucc1CvWou2Z5YRmyxsFH0dthzkcVUKHbuDYHYutzHNR8VdFpMIUWC
+         yqLzFpfhmZFQpUiZAdhs1G/leot2Ib7ZfZPnjd9MGU9c+goa5RnFxXGrqgLUh8qDyUJs
+         F+vTudPweGQdsJ/wiRpPdLwLWjCq8yQlbirDimUiC8TQ53/aepmR6CS0oP3nO6nu19BR
+         xE+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=J1W+5NXO359jvQpWTWx2S3L1BddQHRxmvi0thYVEQxI=;
+        b=drnMgVcmZC+5IJKU7iNTGNRn9jRqPQIHHJ8NttPlIeZCu2bbepoGjwQBc7xM+v3vaq
+         4pJ2eh4DCMbW7FPPCZ8KOkRzrOI1bKP5BkBSWyJJ5gAb2ibcAtJzk4TxqeKr/tdaJ9x5
+         69acWWowdMgYP64G9+TFY6Vu3gjil6uRyZ+A46h3zYI0f+E+autrt5s1+MXOSHKfAU31
+         dql3zwZsszKpynUGK2/q04MfUHS1aOlHSXVWs9D8YHFMEHZXM7iIPgvcSDd4MK4beZ0b
+         iS7w9ayK2Wuat5lEzO52xbk2ti3DfsX00gqwRhxpbbx8SJokEIFUnbw8Q3E90vxsxgu5
+         E9Rg==
+X-Gm-Message-State: AOAM532kT2AXVod+fBpoTfcK7CMKpvT9En8fii9vmMOQeaD55N59bYJQ
+        +ppkJ3rE4nSx9aK2YFk2KS5k2FvnrMWmkg==
+X-Google-Smtp-Source: ABdhPJybNpwkGPWvhpD5Gj/Y2hRNA4Xb9vLVAVuQH7zbt/VnEvQAgZ5cHIde1jf/OW/iV2BGsYNRkA==
+X-Received: by 2002:a5d:6405:0:b0:1ef:7df1:5c04 with SMTP id z5-20020a5d6405000000b001ef7df15c04mr12104965wru.178.1646128853485;
+        Tue, 01 Mar 2022 02:00:53 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id d6-20020a5d4f86000000b001ea8119512bsm13061374wru.55.2022.03.01.02.00.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 02:00:52 -0800 (PST)
+Date:   Tue, 1 Mar 2022 10:00:50 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] dt-bindings: Add compatibles for undocumented trivial
+ syscons
+Message-ID: <Yh3u0uD/oJ41M++b@google.com>
+References: <20220228221537.1700071-1-robh@kernel.org>
+ <c5d61fe7-5238-58ae-c782-5e28531d9b2b@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowAAnCPG27h1i3OLYAQ--.4914S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrZr4DCw1kCF1UXF1ftr4rGrg_yoWDKrb_CF
-        WvqF1Ut3W8Aa1Fga4xCrs0ya92kw48Jr4fWwnIgF9rA345JrZa9F1FvF95Ga45Cry09rW5
-        Gw1DKr1xtwnxWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbzxFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48J
-        MxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwV
-        AFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv2
-        0xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4
-        v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
-        67AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+In-Reply-To: <c5d61fe7-5238-58ae-c782-5e28531d9b2b@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the potential failure of the nla_memdup(),
-it should be better to check it, as same as kmemdup().
+On Tue, 01 Mar 2022, Matthias Brugger wrote:
 
-Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- net/wireless/nl80211.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+> Hi Rob,
+> 
+> On 28/02/2022 23:15, Rob Herring wrote:
+> > 'intel,lgm-syscon', 'marvell,armada-3700-usb2-host-misc',
+> > 'mediatek,mt8135-pctl-a-syscfg', and 'mediatek,mt8135-pctl-b-syscfg' are
+> > all used in DT binding examples and/or dts files, but are not
+> > documented. Add them to syscon.yaml as they are all trivial cases.
+> > 
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> > ---
+> >   Documentation/devicetree/bindings/mfd/syscon.yaml | 4 ++++
+> >   1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/mfd/syscon.yaml b/Documentation/devicetree/bindings/mfd/syscon.yaml
+> > index eeac1cbc5a17..29d4a97f7108 100644
+> > --- a/Documentation/devicetree/bindings/mfd/syscon.yaml
+> > +++ b/Documentation/devicetree/bindings/mfd/syscon.yaml
+> > @@ -44,6 +44,10 @@ properties:
+> >                 - hisilicon,hi6220-sramctrl
+> >                 - hisilicon,pcie-sas-subctrl
+> >                 - hisilicon,peri-subctrl
+> > +              - intel,lgm-syscon
+> > +              - marvell,armada-3700-usb2-host-misc
+> > +              - mediatek,mt8135-pctl-a-syscfg
+> > +              - mediatek,mt8135-pctl-b-syscfg
+> 
+> Thanks for filling the gap. Would you mind to add as well:
+> "mediatek,mt2701-pctl-a-syscfg"
+> "mediatek,mt2712-pctl-a-syscfg"
+> "mediatek,mt7623-pctl-a-syscfg"
+> "mediatek,mt8173-pctl-a-syscfg
+> 
+> With that:
+> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 578bff9c378b..b1909ce2b739 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -13411,6 +13411,9 @@ static int handle_nan_filter(struct nlattr *attr_filter,
- 	i = 0;
- 	nla_for_each_nested(attr, attr_filter, rem) {
- 		filter[i].filter = nla_memdup(attr, GFP_KERNEL);
-+		if (!filter[i].filter)
-+			goto err;
-+
- 		filter[i].len = nla_len(attr);
- 		i++;
- 	}
-@@ -13423,6 +13426,15 @@ static int handle_nan_filter(struct nlattr *attr_filter,
- 	}
- 
- 	return 0;
-+
-+err:
-+	i = 0;
-+	nla_for_each_nested(attr, attr_filter, rem) {
-+		kfree(filter[i].filter);
-+		i++;
-+	}
-+	kfree(filter);
-+	return -ENOMEM;
- }
- 
- static int nl80211_nan_add_func(struct sk_buff *skb,
+Please follow-up with a separate patch.
+
 -- 
-2.25.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
