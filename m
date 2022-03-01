@@ -2,133 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F8DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FD2BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:04:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232460AbiCAIEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 03:04:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60650 "EHLO
+        id S232883AbiCAIFJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 03:05:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230274AbiCAIEJ (ORCPT
+        with ESMTP id S230274AbiCAIFI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 03:04:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A70124BD8;
-        Tue,  1 Mar 2022 00:03:27 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C529C6144E;
-        Tue,  1 Mar 2022 08:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34651C340F3;
-        Tue,  1 Mar 2022 08:03:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646121806;
-        bh=ITNwfYn9yCwXS904JZzxIn6PFJtXdmjz1gwvlBHef/4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=XOzD6a9R4OGNSEJX1LYkmKjNE7qqjiEpEWS9hIDBX++8OPoA66Iw3Sef14Oe/BSyZ
-         MyZayIkr8cPqpEh8Ebwpqic3iVE6Fy+4foJrDMTF5BunjSGGWe2bIuQQzzmXrymcYp
-         X9a4wuB24gF/Z2PraBPYH/W8GARrvnYGDzCjrBQZv0G4UfaeNOzWR2BsH+JJlJ6iXN
-         taf/300eWOY6qWJK5XdGuFIJpMRakfhLmgAqELEZPCDhbJ28NNoCY3PXGWdFAZfzul
-         Ra9eXcdy15Q7kv2N+afg183cAQ+8Ejh47NhI9MZtq3FCEFu4xyeuCnsRlhUnS0F/CL
-         IDtfh3gviFkPg==
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2db2add4516so102940897b3.1;
-        Tue, 01 Mar 2022 00:03:26 -0800 (PST)
-X-Gm-Message-State: AOAM533S207QGlAmUoPHhNp6ujvC1BfjJmIYvxTeoNIXEsc+TzhX/Zu6
-        sUxWU0QS28YppdcjAtGOEKmGiOaJsNxlkPS5ylE=
-X-Google-Smtp-Source: ABdhPJyce8csgpoqsqMHhg4cLB2sjjn6KplAkAfElJEiSb2+Z5kmju7LF8JrCq5cAMKZiVIjvrzh4eQa+WHA+gHyCk0=
-X-Received: by 2002:a0d:dfd5:0:b0:2cf:924b:105d with SMTP id
- i204-20020a0ddfd5000000b002cf924b105dmr24880414ywe.342.1646121805226; Tue, 01
- Mar 2022 00:03:25 -0800 (PST)
+        Tue, 1 Mar 2022 03:05:08 -0500
+Received: from mg.sunplus.com (unknown [113.196.136.146])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F9C270CDC;
+        Tue,  1 Mar 2022 00:04:25 -0800 (PST)
+X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
+        ,3)
+Received: from 172.17.9.112
+        by mg02.sunplus.com with MailGates ESMTP Server V5.0(59936:0:AUTH_RELAY)
+        (envelope-from <lh.Kuo@sunplus.com>); Tue, 01 Mar 2022 16:04:29 +0800 (CST)
+Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
+ sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.26; Tue, 1 Mar 2022 16:04:23 +0800
+Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
+ sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
+ 15.00.1497.026; Tue, 1 Mar 2022 16:04:23 +0800
+From:   =?utf-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Li-hao Kuo <lhjeff911@gmail.com>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "amitk@kernel.org" <amitk@kernel.org>,
+        "rui.zhang@intel.com" <rui.zhang@intel.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
+Subject: RE: [PATCH v4 1/2] thermal: Add thermal driver for Sunplus SP7021
+Thread-Topic: [PATCH v4 1/2] thermal: Add thermal driver for Sunplus SP7021
+Thread-Index: AQHYCPBYT2nt6KgunEqzmIXgO8c/PKykAUMAgAZvzrA=
+Date:   Tue, 1 Mar 2022 08:04:23 +0000
+Message-ID: <eb063f1a287049a1942625b846c0764d@sphcmbx02.sunplus.com.tw>
+References: <cover.1642127137.git.lhjeff911@gmail.com>
+ <2847f96335da1c74dfbee7ba67939bdc474ba2a4.1642127137.git.lhjeff911@gmail.com>
+ <48c9fecc-67eb-891c-fb07-30ae4691031c@linaro.org>
+In-Reply-To: <48c9fecc-67eb-891c-fb07-30ae4691031c@linaro.org>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [172.25.108.51]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220301041851.12459-1-rdunlap@infradead.org>
-In-Reply-To: <20220301041851.12459-1-rdunlap@infradead.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 1 Mar 2022 09:03:13 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXEzxX9vOCaCgdqeQ1n-vwBdJemJgEEMJbSp+R+Jzpx6BA@mail.gmail.com>
-Message-ID: <CAMj1kXEzxX9vOCaCgdqeQ1n-vwBdJemJgEEMJbSp+R+Jzpx6BA@mail.gmail.com>
-Subject: Re: [PATCH] efi: fix return value of __setup handlers
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        patches@lists.linux.dev, Igor Zhbanov <i.zhbanov@omprussia.ru>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Octavian Purdila <octavian.purdila@intel.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Matt Fleming <matt@codeblueprint.co.uk>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 1 Mar 2022 at 05:19, Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> When "dump_apple_properties" is used on the kernel boot command line,
-> it causes an Unknown parameter message and the string is added to init's
-> argument strings:
->
->   Unknown kernel command line parameters "dump_apple_properties
->     BOOT_IMAGE=/boot/bzImage-517rc6 efivar_ssdt=newcpu_ssdt", will be
->     passed to user space.
->
->  Run /sbin/init as init process
->    with arguments:
->      /sbin/init
->      dump_apple_properties
->    with environment:
->      HOME=/
->      TERM=linux
->      BOOT_IMAGE=/boot/bzImage-517rc6
->      efivar_ssdt=newcpu_ssdt
->
-> Similarly when "efivar_ssdt=somestring" is used, it is added to the
-> Unknown parameter message and to init's environment strings, polluting
-> them (see examples above).
->
-> Change the return value of the __setup functions to 1 to indicate
-> that the __setup options have been handled.
->
-> Fixes: 58c5475aba67 ("x86/efi: Retrieve and assign Apple device properties")
-> Fixes: 475fb4e8b2f4 ("efi / ACPI: load SSTDs from EFI variables")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: Igor Zhbanov <i.zhbanov@omprussia.ru>
-> Link: lore.kernel.org/r/64644a2f-4a20-bab3-1e15-3b2cdd0defe3@omprussia.ru
-> Cc: Ard Biesheuvel <ardb@kernel.org>
-> Cc: linux-efi@vger.kernel.org
-> Cc: Lukas Wunner <lukas@wunner.de>
-> Cc: Octavian Purdila <octavian.purdila@intel.com>
-> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> Cc: Matt Fleming <matt@codeblueprint.co.uk>
-
-Queued as a fix,
-
-Thanks,
-Ard.
-
-> ---
->  drivers/firmware/efi/apple-properties.c |    2 +-
->  drivers/firmware/efi/efi.c              |    2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
->
-> --- linux-next-20220228.orig/drivers/firmware/efi/apple-properties.c
-> +++ linux-next-20220228/drivers/firmware/efi/apple-properties.c
-> @@ -24,7 +24,7 @@ static bool dump_properties __initdata;
->  static int __init dump_properties_enable(char *arg)
->  {
->         dump_properties = true;
-> -       return 0;
-> +       return 1;
->  }
->
->  __setup("dump_apple_properties", dump_properties_enable);
-> --- linux-next-20220228.orig/drivers/firmware/efi/efi.c
-> +++ linux-next-20220228/drivers/firmware/efi/efi.c
-> @@ -212,7 +212,7 @@ static int __init efivar_ssdt_setup(char
->                 memcpy(efivar_ssdt, str, strlen(str));
->         else
->                 pr_warn("efivar_ssdt: name too long: %s\n", str);
-> -       return 0;
-> +       return 1;
->  }
->  __setup("efivar_ssdt=", efivar_ssdt_setup);
->
+SGkgTXIgRGFuaWVsIExlemNhbm86DQoNClRoYW5rIHlvdSBmb3IgeW91ciByZXZpZXcgDQoNCj4g
+UGxlYXNlIGNoZWNrIHRoZSBoZWFkZXJzIGFib3ZlLiBTb21lIGFyZSBub3QgbmVjZXNzYXJ5IChl
+ZyBjcHVmcmVxLA0KPiBkZWxheSwgcnRjIC4uLikgQUZBSUNUDQo+IA0KPiA+ICsjZGVmaW5lIERJ
+U0FCTEVfVEhSRU1BTAkJKEJJVCgzMSkgfCBCSVQoMTUpKQ0KPiA+ICsjZGVmaW5lIEVOQUJMRV9U
+SFJFTUFMCQlCSVQoMzEpDQo+ID4gKyNkZWZpbmUgU1BfVEhSRU1BTF9NQVNLCQlHRU5NQVNLKDEw
+LCAwKQ0KPiANCj4gVEhSRU1BTCA/DQo+IA0KPiBzL1RIUkVNQUwvVEhFUk1BTC8gPw0KDQpTb3Jy
+eSwgSSdsbCBjb3JyZWN0IGl0IGluIG5leHQgY29tbWl0Lg0KDQo+ID4gK3N0YXRpYyBjaGFyICpz
+cDcwMjFfb3RwX2NvZWZfcmVhZChzdHJ1Y3QgZGV2aWNlICpkZXYsIHNzaXplX3QgKmxlbikNCj4g
+PiArew0KPiA+ICsJY2hhciAqcmV0ID0gTlVMTDsNCj4gPiArCXN0cnVjdCBudm1lbV9jZWxsICpj
+ID0gbnZtZW1fY2VsbF9nZXQoZGV2LCAiY2FsaWIiKTsNCj4gPiArDQo+ID4gKwlpZiAoSVNfRVJS
+X09SX05VTEwoYykpDQo+ID4gKwkJcmV0dXJuIE5VTEw7DQo+ID4gKw0KPiA+ICsJcmV0ID0gbnZt
+ZW1fY2VsbF9yZWFkKGMsIGxlbik7DQo+ID4gKwludm1lbV9jZWxsX3B1dChjKTsNCj4gDQo+IFRo
+YXQgaXMgd3JvbmcuIFBsZWFzZSByZWZlciB0byB0aGUgZG9jdW1lbnRhdGlvbiBkcml2ZXItYXBp
+L252bWVtLnJzdA0KPiANCj4gbnZtZW1fY2VsbF9wdXQoKSBtdXN0IGJlIGNhbGxlZCB3aGVuIHRo
+ZSBwb2ludGVyIHJldHVybmVkIGJ5DQo+IG52bWVtX2NlbGxfcmVhZCgpIGlzIG5vIGxvbmdlciB1
+c2VkLg0KPg0KDQpTb3JyeSBmb3IgdGhhdC4gSSBkb24ndCBrbm93IHdoaWNoIHBhcnQgaXMgd3Jv
+bmcuDQpudm1lbV9jZWxsX3B1dCgpIGhhcyBiZWVuIGNhbGxlZCBhZnRlciBudm1lbV9jZWxsX3Jl
+YWQoKQ0KSSBhbSBjb2RpbmcgYWNjb3JkaW5nIHRvIHRoZSBleGFtcGxlLg0KDQoNCj4gZHVwbGlj
+YXRlIGxpbmUNCj4gDQo+ID4gKwlzcF9kYXRhLT5vdHBfdGVtcDAgPSBGSUVMRF9HRVQoU1BfVEhS
+RU1BTF9NQVNLLCBzcF9kYXRhLT5vdHBfdGVtcDApOw0KPiA+ICsJc3BfZGF0YS0+b3RwX3RlbXAx
+ID0gKG90cF92WzFdID4+IDMpIHwgKG90cF92WzJdIDw8IDUpOw0KPiA+ICsJc3BfZGF0YS0+b3Rw
+X3RlbXAxID0gRklFTERfR0VUKFNQX1RIUkVNQUxfTUFTSywgc3BfZGF0YS0+b3RwX3RlbXAxKTsN
+Cj4gPiArCWlmIChzcF9kYXRhLT5vdHBfdGVtcDAgPT0gMCkNCj4gPiArCQlzcF9kYXRhLT5vdHBf
+dGVtcDAgPSBURU1QX09UUF9CQVNFOw0KPiANCj4gQ2FuIHlvdSBhZGQgYSBjb21tZW50IGV4cGxh
+aW5pbmcgaG93IGlzIHN0b3JlZCB0aGUgY29lZiBpbiB0aGUgbnZjZWxsLA0KPiBzbyB3ZSBjYW4g
+dW5kZXJzdGFuZCB0aGUgYWJvdmUgYWN0aW9ucyA/DQo+IA0KPg0KDQpJcyB0aGUgY29tbWVudCBi
+ZWxvdyBvaz8NCg0KLyoNCiAqV2hlbiByZW1hbnVmYWN0dXJpbmcsIHRoZSAzNSBkZWdyZWUgVF9D
+T0RFIHdpbGwgYmUgcmVhZCBhbmQgc3RvcmVkIGluIG52Y2VsbC4NCiAqVEVNUF9SQVRFIGlzIHRo
+ZSBTUDcwMjEgdGVtcGVyYXR1cmUgc2xvcGUuDQogKlRfQ09ERSA6IDExIGRpZ2l0cyBpbiB0b3Rh
+bA0KKi8NCg0KDQoNCg==
