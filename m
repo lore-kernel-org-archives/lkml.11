@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52014C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0615C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237867AbiCAUSx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:18:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51184 "EHLO
+        id S232796AbiCAUTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:19:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238083AbiCAUR7 (ORCPT
+        with ESMTP id S238157AbiCAUSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:17:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD017ED87;
-        Tue,  1 Mar 2022 12:17:00 -0800 (PST)
+        Tue, 1 Mar 2022 15:18:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CFE08AE64;
+        Tue,  1 Mar 2022 12:17:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2F7761718;
-        Tue,  1 Mar 2022 20:16:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65035C340EE;
-        Tue,  1 Mar 2022 20:16:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08F836170E;
+        Tue,  1 Mar 2022 20:17:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 032FAC340EE;
+        Tue,  1 Mar 2022 20:17:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165819;
-        bh=eq80Nvoud4uFSN/cBnnpuZbATzFNxwDc8gYn/gxfBqQ=;
+        s=k20201202; t=1646165827;
+        bh=HbSeXkCCNcIiCPTKco1bU66sLMchExDVmSqGybBsPP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KWU05+UUltubaLFReUIIDFJPbv5QyJhv4mmwzlyG12GZxsLmjeDZ1f105UK0KUGKE
-         rYXkYBgiusWziLqt5sW1k8MeE5HHRoAjbK7PkRd3mVBy5dpPzSjsnz7KInFHOlWWC8
-         jvFQrwlpRqbTQTq4AO1JfU3x3BiZ2zXCVwrNN+12R0J4UfC8DwFd48FyNr8vn/XKAZ
-         TrE8lzvWEizFiX22yOap27hfL4PfMkMwoNh5qL40q/t6yw+ky823bjMgMItn6ht2F9
-         n00ic3RD5nVJiYlg2JollTsbXVWw/O/ckO+Cy3CDXVD0HCMX+CIPnM9SeFtsBQszlm
-         5BOSDaafWfYMQ==
+        b=aLg6hjwKPboPVfHYQs95K9T3lVHEeH82LQevRGtnR6mn2aLa/YXtvtdILmHSFxNVy
+         rAKAs7GBQqLboApIXBuE79MsYwCvbmasnIe6ZAP3m464SReQE+FwILP1SNtrBTeK20
+         C2+NZTKAIoIT5ebRpq9Gl0IaK/3Z/Ykyp+xJaHhjskbWX7rWaPu+ibxKUwKtOA6vi7
+         R5RXw8IpClnLREz52G3RwgC2HQFZ3canIEVnBBKJ/DRmJ4F0A6xhH2HuMz9ltC3UBi
+         NjjytzH2yjznWgjDlA0hGYczvAuRanQ48e/Hl7AahZSdp9tuxXBXfR64BlNVJU1cXg
+         qh0+g9MNQfmEg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anton Romanov <romanton@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 06/23] kvm: x86: Disable KVM_HC_CLOCK_PAIRING if tsc is in always catchup mode
-Date:   Tue,  1 Mar 2022 15:16:05 -0500
-Message-Id: <20220301201629.18547-6-sashal@kernel.org>
+Cc:     Jon Lin <jon.lin@rock-chips.com>, Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, heiko@sntech.de,
+        linux-spi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 08/23] spi: rockchip: terminate dma transmission when slave abort
+Date:   Tue,  1 Mar 2022 15:16:07 -0500
+Message-Id: <20220301201629.18547-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
 References: <20220301201629.18547-1-sashal@kernel.org>
@@ -53,46 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anton Romanov <romanton@google.com>
+From: Jon Lin <jon.lin@rock-chips.com>
 
-[ Upstream commit 3a55f729240a686aa8af00af436306c0cd532522 ]
+[ Upstream commit 80808768e41324d2e23de89972b5406c1020e6e4 ]
 
-If vcpu has tsc_always_catchup set each request updates pvclock data.
-KVM_HC_CLOCK_PAIRING consumers such as ptp_kvm_x86 rely on tsc read on
-host's side and do hypercall inside pvclock_read_retry loop leading to
-infinite loop in such situation.
+After slave abort, all DMA should be stopped, or it will affect the
+next transmission and maybe abort again.
 
-v3:
-    Removed warn
-    Changed return code to KVM_EFAULT
-v2:
-    Added warn
-
-Signed-off-by: Anton Romanov <romanton@google.com>
-Message-Id: <20220216182653.506850-1-romanton@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Jon Lin <jon.lin@rock-chips.com>
+Link: https://lore.kernel.org/r/20220216014028.8123-3-jon.lin@rock-chips.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/x86.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/spi/spi-rockchip.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 33cb065181248..c804122bb6e3a 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -8657,6 +8657,13 @@ static int kvm_pv_clock_pairing(struct kvm_vcpu *vcpu, gpa_t paddr,
- 	if (clock_type != KVM_CLOCK_PAIRING_WALLCLOCK)
- 		return -KVM_EOPNOTSUPP;
+diff --git a/drivers/spi/spi-rockchip.c b/drivers/spi/spi-rockchip.c
+index 4f65ba3dd19c2..c6a1bb09be056 100644
+--- a/drivers/spi/spi-rockchip.c
++++ b/drivers/spi/spi-rockchip.c
+@@ -585,6 +585,12 @@ static int rockchip_spi_slave_abort(struct spi_controller *ctlr)
+ {
+ 	struct rockchip_spi *rs = spi_controller_get_devdata(ctlr);
  
-+	/*
-+	 * When tsc is in permanent catchup mode guests won't be able to use
-+	 * pvclock_read_retry loop to get consistent view of pvclock
-+	 */
-+	if (vcpu->arch.tsc_always_catchup)
-+		return -KVM_EOPNOTSUPP;
-+
- 	if (!kvm_get_walltime_and_clockread(&ts, &cycle))
- 		return -KVM_EOPNOTSUPP;
++	if (atomic_read(&rs->state) & RXDMA)
++		dmaengine_terminate_sync(ctlr->dma_rx);
++	if (atomic_read(&rs->state) & TXDMA)
++		dmaengine_terminate_sync(ctlr->dma_tx);
++	atomic_set(&rs->state, 0);
++	spi_enable_chip(rs, false);
+ 	rs->slave_abort = true;
+ 	spi_finalize_current_transfer(ctlr);
  
 -- 
 2.34.1
