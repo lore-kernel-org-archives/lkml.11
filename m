@@ -2,125 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 803E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80800C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237182AbiCAS7I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:59:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35098 "EHLO
+        id S237191AbiCAS7Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:59:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237160AbiCAS7G (ORCPT
+        with ESMTP id S237160AbiCAS7I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:59:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70196FC4
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:58:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C96A61548
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 18:58:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60CE3C340EE;
-        Tue,  1 Mar 2022 18:58:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646161103;
-        bh=2/nZgk/9IpyftnMuUy57Y4SE+vy+TOgblD9YKfS1pT4=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=qlJOMjJVIpRICBycDW/tW+DNUiiSoODQHiAgAAxn+dOnml97PlXpm62oH12MSw7lL
-         qj2FiUrL/zFk3YbUwNEOMx1/lyIBGU1DbqhNnvHli2QSoCPTpjY/JgyIuUgnOqDTnX
-         QpqJcLdOXq5ijeGPFynnBOiOp2AWPxXTjdwpomYTJHMRGJQLj+NyKcBYatjBUE4bCX
-         D42G7iuaax8UqaT0g3tNWx65MHmW8qsKdiSh+QxaSwbd+XmPJL2Mxx7QRWqZGPlUL2
-         TYODUx+qgPPOhRwIIC3xZg7Yd5/KSjz5yLnf2QRgeQ66u8JGENPj8JnzocEaSyLjfa
-         1+DCrtx+Rc9Kw==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 09CE25C0440; Tue,  1 Mar 2022 10:58:23 -0800 (PST)
-Date:   Tue, 1 Mar 2022 10:58:23 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>, rostedt@goodmis.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org, mtosatti@redhat.com
-Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
-Message-ID: <20220301185823.GS4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220228141423.259691-1-nsaenzju@redhat.com>
- <137d3573-051f-5374-70d6-cc99b44d00da@kernel.org>
- <b604526d3186f6cd3da189abb70bd1ad9a6105c5.camel@redhat.com>
- <69e92bc6-0917-17e9-1b61-d884d30ba42c@kernel.org>
- <20220301180509.GQ4285@paulmck-ThinkPad-P17-Gen-1>
- <c3cf7c0c-27fe-4dfa-4249-a7e1747237a5@kernel.org>
+        Tue, 1 Mar 2022 13:59:08 -0500
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C3610D2
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:58:25 -0800 (PST)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 221HclHi005259;
+        Tue, 1 Mar 2022 18:57:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : subject :
+ to : cc : references : in-reply-to : mime-version : message-id :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=fyULgp2edHxAGxvr7DKJSreIgvcHKCLbb/3axRl6veE=;
+ b=sNfThad2MLaBU5h7Ijzs8ptCV0xvlF6KXIsYkv1DPu2DWg/v/OrE6EDfC1O05bzHU7bg
+ keNqJPj/3l6cQbsUouU8gbiLhnzDvGQUSB53nwg5Ad0IOrLYOJPvIKGJlfa1mEyMZSII
+ zE4VwhH7r0OsLdji2XvGmIhAikjeYHz1pOGbZcqFRUpSFtTueEBiecZLICln8rag+Acu
+ qb+XHokQaDX+cxrlRUvX5r3EBg8PD/irJYVqF4Ajfqey+ODGdfv3ahiGtW0AX/glQEKu
+ FyybKEH4rCwzAjaaNbJOSxH4sL+X5BUxERfrxaNuXV3oHpoBlecZIg6ozZT4hft7/3zU dQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ehpd4vp52-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Mar 2022 18:57:58 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 221HfOsc011595;
+        Tue, 1 Mar 2022 18:57:57 GMT
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3ehpd4vp49-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Mar 2022 18:57:57 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 221IsLdZ023428;
+        Tue, 1 Mar 2022 18:57:55 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3efbu9bc4t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 01 Mar 2022 18:57:55 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 221Ivr3147776002
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 1 Mar 2022 18:57:53 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4C1124C046;
+        Tue,  1 Mar 2022 18:57:53 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D18084C044;
+        Tue,  1 Mar 2022 18:57:52 +0000 (GMT)
+Received: from localhost (unknown [9.43.110.204])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue,  1 Mar 2022 18:57:52 +0000 (GMT)
+Date:   Wed, 02 Mar 2022 00:27:51 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [PATCH v2 12/39] x86/ibt,ftrace: Search for __fentry__ location
+To:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     alexei.starovoitov@gmail.com, alyssa.milburn@intel.com,
+        andrew.cooper3@citrix.com, hjl.tools@gmail.com,
+        joao@overdrivepizza.com, jpoimboe@redhat.com,
+        keescook@chromium.org, linux-kernel@vger.kernel.org,
+        mark.rutland@arm.com, mbenes@suse.cz, ndesaulniers@google.com,
+        Peter Zijlstra <peterz@infradead.org>, samitolvanen@google.com,
+        x86@kernel.org
+References: <20220224145138.952963315@infradead.org>
+        <20220224151322.714815604@infradead.org>
+        <20220225005520.c69be2fbdbd28028361792d9@kernel.org>
+        <20220224105847.5c899324@gandalf.local.home>
+        <20220225103449.6084e5314273556f35107cd9@kernel.org>
+        <20220224211919.0612a3f6@rorschach.local.home>
+        <20220225192008.d7a4f2b5558fe43c95909777@kernel.org>
+        <20220225083647.12ceb54b@gandalf.local.home>
+In-Reply-To: <20220225083647.12ceb54b@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c3cf7c0c-27fe-4dfa-4249-a7e1747237a5@kernel.org>
+User-Agent: astroid/4d6b06ad (https://github.com/astroidmail/astroid)
+Message-Id: <1646159447.ngbqgzj71t.naveen@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: yGE9LF1sgFzLdfgxi2aBJzwv6M19TYgW
+X-Proofpoint-GUID: wcgWHILmLsAtH_0yXZOtMNtRoAV_lwQH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-01_07,2022-02-26_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ impostorscore=0 mlxscore=0 mlxlogscore=999 lowpriorityscore=0 bulkscore=0
+ malwarescore=0 suspectscore=0 priorityscore=1501 adultscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2203010093
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 07:44:38PM +0100, Daniel Bristot de Oliveira wrote:
-> On 3/1/22 19:05, Paul E. McKenney wrote:
-> >> I see, as long as it costs < 1 us, I am ok. If it gets > 1us in a reasonably
-> >> fast machine, we start see HW noise where it does not exist, and that would
-> >> reduce the resolution of osnoise. AFAICS, it is not causing that problem, but we
-> >> need to make it as lightweight as possible.
-> > In the common case, it is atomically incrementing a local per-CPU counter
-> > and doing a store.  This should be quite cheap.
-> > 
-> > The uncommon case is when the osnoise process was preempted or otherwise
-> > interfered with during a recent RCU read-side critical section and
-> > preemption was disabled around that critical section's outermost
-> > rcu_read_unlock().  This can be quite expensive.  But I would expect
-> > you to just not do this.  ;-)
-> 
-> Getting the expensive call after a preemption is not a problem, it is a side
-> effect of the most costly preemption.
-> 
-> It this case, we should "ping rcu" before reading the time to account the
-> overhead for the previous preemption which caused it.
-> 
-> like (using the current code as example):
-> 
-> ------------------------- %< -------------------------------
-> static u64
-> set_int_safe_time(struct osnoise_variables *osn_var, u64 *time)
-> {
->         u64 int_counter;
-> 
->         do {
->                 int_counter = local_read(&osn_var->int_counter);
-> 
-> 		------------> HERE <-------------------------------------
-> 
->                 /* synchronize with interrupts */
->                 barrier();
-> 
->                 *time = time_get();
-> 
->                 /* synchronize with interrupts */
->                 barrier();
->         } while (int_counter != local_read(&osn_var->int_counter));
-> 
->         return int_counter;
-> }
-> ------------------------- >% -------------------------------
-> 
-> In this way anything that happens before this *time is accounted before it is
-> get. If anything happens while this loop is running, it will run again, so it is
-> safe to point to the previous case.
-> 
-> We would have to make a copy of this function, and only use the copy for the
-> run_osnoise() case. A good name would be something in the lines of
-> set_int_safe_time_rcu().
-> 
-> (Unless the expensive is < than 1us.)
+Steven Rostedt wrote:
+> On Fri, 25 Feb 2022 19:20:08 +0900
+> Masami Hiramatsu <mhiramat@kernel.org> wrote:
+>=20
+>> > No. It only acts like ftrace_location_range(sym, sym_end) if the passe=
+d
+>> > in argument is the ip of the function (kallsyms returns offset =3D 0) =
+=20
+>>=20
+>> Got it. So now ftrace_location() will return the ftrace address
+>> when the ip =3D=3D func or ip =3D=3D mcount-call.
 
-The outermost rcu_read_unlock() could involve a call into the scheduler
-to do an RCU priority deboost, which I would imagine could be a bit
-expensive.  But I would expect you to configure the test in such a way
-that there was no need for RCU priority boosting.  For example, by making
-sure that the osnoise process's RCU readers were never preempted.
+Won't this cause issues with ftrace_set_filter_ip() and others? If the=20
+passed-in ip points to func+0 when the actual ftrace location is at some=20
+offset, the ftrace location check in ftrace_match_addr() will now pass,=20
+resulting in adding func+0 to the hash. Should we also update=20
+ftrace_match_addr() to use the ip returned by ftrace_location()?
 
-Just out of curiosity, why is this running in the kernel rather than in
-userspace?  To focus only on kernel-centric noise sources?  Or are there
-people implementing real-time applications within the kernel?
 
-							Thanx, Paul
+- Naveen
