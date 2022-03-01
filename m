@@ -2,70 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75DD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:14:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB1BC43217
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237716AbiCAUPe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:15:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
+        id S237741AbiCAUPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:15:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237739AbiCAUPM (ORCPT
+        with ESMTP id S237709AbiCAUPX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:15:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8329C3BFAD;
-        Tue,  1 Mar 2022 12:14:30 -0800 (PST)
+        Tue, 1 Mar 2022 15:15:23 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63F075C35;
+        Tue,  1 Mar 2022 12:14:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1336161713;
-        Tue,  1 Mar 2022 20:14:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFBDBC340EF;
-        Tue,  1 Mar 2022 20:14:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1646165669;
-        bh=hafwu17uRhikdH2rke2Tn6mbfT8wORbeL9okzdEuuII=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wkScooPhM3Fmf3bfroQnCr4dHpjk38eACrIrd11bmRmSi+YI84dXcc2f5Xmk0H79c
-         GI4wfieobByW1LaQtcL+I96Duo2c+tXBrBo8kH5ck70EQbDpuikzqiQJuaa9YsBVMU
-         00zbkQ47nd7Y2o7EY5FD1UOTa2dLMN3nkrRGCWK0=
-Date:   Tue, 1 Mar 2022 21:14:26 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jithu Joseph <jithu.joseph@intel.com>
-Cc:     hdegoede@redhat.com, markgross@kernel.org, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, hpa@zytor.com, corbet@lwn.net,
-        andriy.shevchenko@linux.intel.com, ashok.raj@intel.com,
-        tony.luck@intel.com, rostedt@goodmis.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev,
-        ravi.v.shankar@intel.com
-Subject: Re: [RFC 00/10] Introduce In Field Scan driver
-Message-ID: <Yh5+om/Nr06V0+Qj@kroah.com>
-References: <20220301195457.21152-1-jithu.joseph@intel.com>
- <Yh59rOIH24X+6GyI@kroah.com>
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7B188CE1E66;
+        Tue,  1 Mar 2022 20:14:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A78AC340EE;
+        Tue,  1 Mar 2022 20:14:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646165677;
+        bh=sxwcnYZrfijUZ0ABVlMivZuPH26mfl99x4mhbGdhlos=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=cqLj8vkk1MyIDCY+7ct1w4mKPJ4guzps6Nsu7KkHh9yCx80L5C7unZQhIsk3OlkHL
+         UhKC6h+h0cFFODRz32bIeKuN0gC4xCw9spjYp4yP1nxUxhGpmlZkr0GFv+A8j0kFlD
+         +X3we79E57BwqokuhEUrW0Lz7tB/+xsDUAxSYBC3jbfWzT0VV9prF6sMEbzpCAf/5g
+         3UvgES3ExovXhMuQ/6Hm/EUfyIUyFdu+41LtERWrBVV7aCA0IUXAoonGTmkoXFSitV
+         DQ1weDdzOnXJARrlLXjY7WIx71H6d/cYoUtuCdm19oqYCgAV9KdCrHyhYRBFymi5XE
+         rKJeqEsrTz/hQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Maxime Ripard <maxime@cerno.tech>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, emma@anholt.net,
+        mripard@kernel.org, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 10/28] drm/vc4: hdmi: Unregister codec device on unbind
+Date:   Tue,  1 Mar 2022 15:13:15 -0500
+Message-Id: <20220301201344.18191-10-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220301201344.18191-1-sashal@kernel.org>
+References: <20220301201344.18191-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yh59rOIH24X+6GyI@kroah.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 09:10:20PM +0100, Greg KH wrote:
-> On Tue, Mar 01, 2022 at 11:54:47AM -0800, Jithu Joseph wrote:
-> > Note to Maintainers:
-> > Requesting x86 Maintainers to take a look at patch01 as it
-> > touches arch/x86 portion of the kernel. Also would like to guide them
-> > to patch07 which sets up hotplug notifiers and creates kthreads.
-> > 
-> > Patch 2/10 - Adds Documentation. Requesting Documentation maintainer to review it.
-> > 
-> > Requesting Greg KH to review the sysfs changes added by patch08.
-> 
-> "RFC" means you are not comfortable submitting the changes yet, so you
-> don't need my review at this point in time.  Become confident in your
-> changes before asking for others to review the code please.
+From: Maxime Ripard <maxime@cerno.tech>
 
-Hint, it needs work, sysfs_emit() for one thing, lack of reference
-counting on your cpu objects is another...
+[ Upstream commit e40945ab7c7f966d0c37b7bd7b0596497dfe228d ]
+
+On bind we will register the HDMI codec device but we don't unregister
+it on unbind, leading to a device leakage. Unregister our device at
+unbind.
+
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220127111452.222002-1-maxime@cerno.tech
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 8 ++++++++
+ drivers/gpu/drm/vc4/vc4_hdmi.h | 1 +
+ 2 files changed, 9 insertions(+)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 24f11c07bc3c7..2f53ba54b81ac 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1522,6 +1522,7 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
+ 		dev_err(dev, "Couldn't register the HDMI codec: %ld\n", PTR_ERR(codec_pdev));
+ 		return PTR_ERR(codec_pdev);
+ 	}
++	vc4_hdmi->audio.codec_pdev = codec_pdev;
+ 
+ 	dai_link->cpus		= &vc4_hdmi->audio.cpu;
+ 	dai_link->codecs	= &vc4_hdmi->audio.codec;
+@@ -1561,6 +1562,12 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
+ 
+ }
+ 
++static void vc4_hdmi_audio_exit(struct vc4_hdmi *vc4_hdmi)
++{
++	platform_device_unregister(vc4_hdmi->audio.codec_pdev);
++	vc4_hdmi->audio.codec_pdev = NULL;
++}
++
+ static irqreturn_t vc4_hdmi_hpd_irq_thread(int irq, void *priv)
+ {
+ 	struct vc4_hdmi *vc4_hdmi = priv;
+@@ -2299,6 +2306,7 @@ static void vc4_hdmi_unbind(struct device *dev, struct device *master,
+ 	kfree(vc4_hdmi->hdmi_regset.regs);
+ 	kfree(vc4_hdmi->hd_regset.regs);
+ 
++	vc4_hdmi_audio_exit(vc4_hdmi);
+ 	vc4_hdmi_cec_exit(vc4_hdmi);
+ 	vc4_hdmi_hotplug_exit(vc4_hdmi);
+ 	vc4_hdmi_connector_destroy(&vc4_hdmi->connector);
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.h b/drivers/gpu/drm/vc4/vc4_hdmi.h
+index 33e9f665ab8e4..c0492da736833 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.h
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.h
+@@ -113,6 +113,7 @@ struct vc4_hdmi_audio {
+ 	struct snd_soc_dai_link_component platform;
+ 	struct snd_dmaengine_dai_dma_data dma_data;
+ 	struct hdmi_audio_infoframe infoframe;
++	struct platform_device *codec_pdev;
+ 	bool streaming;
+ };
+ 
+-- 
+2.34.1
+
