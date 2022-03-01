@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C373DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F5EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbiCAN4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 08:56:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40358 "EHLO
+        id S235187AbiCAN4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 08:56:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235161AbiCAN4Z (ORCPT
+        with ESMTP id S235176AbiCAN4c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 08:56:25 -0500
+        Tue, 1 Mar 2022 08:56:32 -0500
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9F2D29F6E4
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 05:55:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 893589F6E1
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 05:55:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646142943;
+        s=mimecast20190719; t=1646142949;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Vh025xasYH3lAD0rZlLLEDVRC/Yu4hHgdUH3WyvQrwA=;
-        b=Xwx36A0dwlPSezA+qJ45EMQAtYA9Wp2Wzo/n1/dqbo5VZLcAh87WJYaU2D4U1UhFNNktTE
-        zfiL7d/T5QTrDQAhfBdTUE0aIs7i2XsS0S1/2D9laDj2u+y7iNH+S9RNIbVu0paC1rtuqT
-        Xb6k/AXzY8DrqLJ36g0qb5sDjXhmhMg=
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gSFeH1i77V/KkgawIUDjeRhR+3rBrHanlQxBcU1qMVM=;
+        b=G5VMHrxqUDkIcxGLJZVuuccQI8SWMf0P9PnEa72SbAu+okvQ1nUqY2mFKOh/mxjRB5vKvx
+        W0Q+QOiRjpUdCqGuAd1IURN2zAeS5QxAqwqlybMcmbraGRCKnAy8qOENUbYQgniuZChuQZ
+        wQfOdFQ4ZAR4//dy3qvq7QpGQo/RmVo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-621-zfU7u-X8PFiaxZkEB0hx8A-1; Tue, 01 Mar 2022 08:55:40 -0500
-X-MC-Unique: zfU7u-X8PFiaxZkEB0hx8A-1
+ us-mta-225-JLkAO0TqMSyP51vTULynBA-1; Tue, 01 Mar 2022 08:55:48 -0500
+X-MC-Unique: JLkAO0TqMSyP51vTULynBA-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 144E2180FD72;
-        Tue,  1 Mar 2022 13:55:38 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 39B8C800422;
+        Tue,  1 Mar 2022 13:55:46 +0000 (UTC)
 Received: from localhost.localdomain (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0AC6E1057FD1;
-        Tue,  1 Mar 2022 13:55:27 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 98BF41057F7C;
+        Tue,  1 Mar 2022 13:55:42 +0000 (UTC)
 From:   Maxim Levitsky <mlevitsk@redhat.com>
 To:     kvm@vger.kernel.org
 Cc:     Jim Mattson <jmattson@google.com>,
@@ -50,36 +51,50 @@ Cc:     Jim Mattson <jmattson@google.com>,
         Wanpeng Li <wanpengli@tencent.com>,
         Borislav Petkov <bp@alien8.de>, x86@kernel.org,
         Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH 0/4] SVM fixes + apic fix
-Date:   Tue,  1 Mar 2022 15:55:22 +0200
-Message-Id: <20220301135526.136554-1-mlevitsk@redhat.com>
-Content-Type: text/plain; charset="utf-8"
+Subject: [PATCH 2/4] KVM: x86: SVM: disable preemption in avic_refresh_apicv_exec_ctrl
+Date:   Tue,  1 Mar 2022 15:55:24 +0200
+Message-Id: <20220301135526.136554-3-mlevitsk@redhat.com>
+In-Reply-To: <20220301135526.136554-1-mlevitsk@redhat.com>
+References: <20220301135526.136554-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Those are few bug fixes which are in my patch queue,=0D
-rebased against current kvm/queue.=0D
-=0D
-Best regards,=0D
-	Maxim Levitsky=0D
-=0D
-Maxim Levitsky (4):=0D
-  KVM: x86: mark synthetic SMM vmexit as SVM_EXIT_SW=0D
-  KVM: x86: SVM: disable preemption in avic_refresh_apicv_exec_ctrl=0D
-  KVM: x86: SVM: use vmcb01 in avic_init_vmcb=0D
-  KVM: x86: lapic: don't allow to set non default apic id when not using=0D
-    x2apic api=0D
-=0D
- arch/x86/kvm/lapic.c    | 17 ++++++++---------=0D
- arch/x86/kvm/svm/avic.c |  6 +++++-=0D
- arch/x86/kvm/svm/svm.c  |  2 +-=0D
- 3 files changed, 14 insertions(+), 11 deletions(-)=0D
-=0D
--- =0D
-2.26.3=0D
-=0D
+avic_refresh_apicv_exec_ctrl is called from vcpu_enter_guest,
+without preemption disabled, however avic_vcpu_load, and
+avic_vcpu_put expect preemption to be disabled.
+
+This issue was found by lockdep.
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+---
+ arch/x86/kvm/svm/avic.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index aea0b13773fd3..e23159f3a62ba 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -640,12 +640,16 @@ void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
+ 	}
+ 	vmcb_mark_dirty(vmcb, VMCB_AVIC);
+ 
++	preempt_disable();
++
+ 	if (activated)
+ 		avic_vcpu_load(vcpu, vcpu->cpu);
+ 	else
+ 		avic_vcpu_put(vcpu);
+ 
+ 	avic_set_pi_irte_mode(vcpu, activated);
++
++	preempt_enable();
+ }
+ 
+ static void svm_ir_list_del(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
+-- 
+2.26.3
 
