@@ -2,95 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34616C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0ECEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234034AbiCAJtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:49:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
+        id S233908AbiCAJtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:49:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232272AbiCAJs7 (ORCPT
+        with ESMTP id S234040AbiCAJtO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:48:59 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9760342A17;
-        Tue,  1 Mar 2022 01:48:18 -0800 (PST)
-Received: from nazgul.tnic (dynamic-002-247-255-128.2.247.pool.telefonica.de [2.247.255.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id D0F961EC053F;
-        Tue,  1 Mar 2022 10:48:12 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1646128093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=+RtOrO/V2Xe6RcjueTstlwPFpZ/tJZ3H1GqzoLfZj+A=;
-        b=OPbNuA9icMYBNiferdOC7ortcT5oZV9YAZskyMI7sFPTGqS8LEmY5QpfDR9THz/YxPWsFF
-        inqKgkiWexXbOIrklEPVbvjnazRVt0Nos7EYErANwlPbl7Wqq2Jmwfp1Z4k+GL1YVv6wmn
-        wPXeKMLtkxReL6gHIl8+ZGMbAzjzEcE=
-Date:   Tue, 1 Mar 2022 10:48:16 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        brijesh.ksingh@gmail.com, tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v11 29/45] x86/boot: Add Confidential Computing type to
- setup_data
-Message-ID: <Yh3r1PSx/fjqoBB3@nazgul.tnic>
-References: <20220224165625.2175020-1-brijesh.singh@amd.com>
- <20220224165625.2175020-30-brijesh.singh@amd.com>
+        Tue, 1 Mar 2022 04:49:14 -0500
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCE1D8C7E6
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 01:48:31 -0800 (PST)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-4-_kwR_xRLO7eUfka9jM6qhg-1; Tue, 01 Mar 2022 09:48:29 +0000
+X-MC-Unique: _kwR_xRLO7eUfka9jM6qhg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Tue, 1 Mar 2022 09:48:28 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Tue, 1 Mar 2022 09:48:28 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Masahiro Yamada' <masahiroy@kernel.org>
+CC:     Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Michal Marek" <michal.lkml@markovi.net>
+Subject: RE: [PATCH v2] fixdep: use fflush() and ferror() to ensure successful
+ write to files
+Thread-Topic: [PATCH v2] fixdep: use fflush() and ferror() to ensure
+ successful write to files
+Thread-Index: AQHYLPcP7Y0QFZ9bvkmwHjXtsXkLWaypyorwgABysACAAAsbwA==
+Date:   Tue, 1 Mar 2022 09:48:28 +0000
+Message-ID: <723970e562d04b22899fe3855d599cab@AcuMS.aculab.com>
+References: <20220225144245.182659-1-masahiroy@kernel.org>
+ <CAKwvOd=WjnHSHKLVRJifHxV2tyDsLTkek80NWU=do=FSHhNLug@mail.gmail.com>
+ <67b75a36cf874dfea0871649ccd268d3@AcuMS.aculab.com>
+ <CAK7LNARKxd-kr3pABzTC2+uGhEKbyLtXDCSoxn56P0go--bg1A@mail.gmail.com>
+In-Reply-To: <CAK7LNARKxd-kr3pABzTC2+uGhEKbyLtXDCSoxn56P0go--bg1A@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220224165625.2175020-30-brijesh.singh@amd.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 10:56:09AM -0600, Brijesh Singh wrote:
-> +/*
-> + * AMD SEV Confidential computing blob structure. The structure is
-> + * defined in OVMF UEFI firmware header:
-> + * https://github.com/tianocore/edk2/blob/master/OvmfPkg/Include/Guid/ConfidentialComputingSevSnpBlob.h
-> + */
-> +#define CC_BLOB_SEV_HDR_MAGIC	0x45444d41
-> +struct cc_blob_sev_info {
-> +	u32 magic;
-	^^^^^^^^^^^^
+RnJvbTogTWFzYWhpcm8gWWFtYWRhDQo+IFNlbnQ6IDAxIE1hcmNoIDIwMjIgMDk6MDYNCj4gDQo+
+IE9uIFR1ZSwgTWFyIDEsIDIwMjIgYXQgMTE6MjggQU0gRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWln
+aHRAYWN1bGFiLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBUaGUgcmV0dXJuIHZhbHVlIGZyb20gZnBy
+aW50ZigpIGlzIG5vcm1hbGx5IHRoZSBudW1iZXIgb2YgYnl0ZXMgd3JpdHRlbiB0bw0KPiA+IHRo
+ZSBpbnRlcm5hbCBidWZmZXIgKDhrIGluIGdsaWJjPykNCj4gPg0KPiA+IE9ubHkgaWYgdGhlIGJ1
+ZmZlciBpcyBmdWxsIGFuZCBhbiBhY3R1YWwgd3JpdGUoKSBpcyBkb25lIGRvIHlvdSBnZXQgYW55
+IGluZGljYXRpb24gb2YgYW4gZXJyb3IuDQo+ID4NCj4gPiBTbyB5b3UgY2FuIHVzZSB0aGUgZXJy
+b3IgcmV0dXJuIGZyb20gZnByaW50ZigpIHRvIHRlcm1pbmF0ZSBhIGxvb3Ag4oCTIGJ1dCBpdCB1
+c3VhbGx5DQo+ID4ganVzdCBpc27igJl0IHdvcnRoIHRoZSBlZmZvcnQuDQo+ID4NCj4gPiBUaGUg
+ZXJyb3Igc3RhdHVzIHJldHVybmVkIGJ5IGZlcnJvcigpIGlzIOKAmHN0aWNreeKAmSwgc28geW91
+IG5lZWQgb25seSBjaGVjayBvbmNlLg0KPiA+DQo+ID4gQnV0IHlvdSBuZWVkIHRvIGNoZWNrIGJl
+Zm9yZSBmY2xvc2UoKS4NCj4gPg0KPiA+IFNpbmNlIGZjbG9zZSgpIGhhcyB0byB3cml0ZSBvdXQg
+dGhlIGJ1ZmZlciDigJMgdGhhdCB3cml0ZSBjYW4gYWxzbyBmYWlsLg0KPiA+DQo+ID4gSeKAmW0g
+bm90IHN1cmUgd2hldGhlciBmY2xvc2UoKSByZXR1cm5zIGFuZCBlcnJvciBpbiB0aGF0IGNhc2Us
+IGJ1dCBhZGRpbmcgZmZsdXNoKCkNCj4gPiBtYWtlcyB0aGUgY29kaW5nIGVhc2llci4NCj4gDQo+
+IA0KPiBJIGp1c3QgY2hlY2tlZCB0aGlzLg0KPiANCj4gZmNsb3NlKCkgcmV0dXJucyAtMSBpZiBp
+dCBmYWlscyB0byBmbHVzaCB0aGUgYnVmZmVyLg0KDQpCdXQgeW91IHN0aWxsIG5lZWQgdG8gY2hl
+Y2sgZmVycm9yKCkgYmVmb3JlIGl0Lg0KU28geW91IG1pZ2h0IGFzIHdlbGwgZG8gZmZsdXNoKCk7
+IGlmIChmZXJyb3IoKSk7IGZjbG9zZSgpOw0KDQpUaGVuIHRoZXJlIGlzIG9ubHkgb25lIGVycm9y
+IGV4aXQgcGF0aC4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwg
+QnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVn
+aXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-You said you wanted to rename this:
-
-https://lore.kernel.org/all/12b945a0-b18c-7f2a-52c7-5e22a944d7f5@amd.com/
-
-and further code is checking magic so I'm guessing you wanna rename the
-OVMF definition to "Magic" too?
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
