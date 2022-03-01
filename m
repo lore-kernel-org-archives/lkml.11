@@ -2,104 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C00C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:37:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 104BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:45:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236986AbiCASiU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:38:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37806 "EHLO
+        id S232515AbiCASqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:46:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237095AbiCASiI (ORCPT
+        with ESMTP id S237205AbiCASpw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:38:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEEFB25EB0;
-        Tue,  1 Mar 2022 10:37:26 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91235B81BFB;
-        Tue,  1 Mar 2022 18:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D9E0C340EE;
-        Tue,  1 Mar 2022 18:37:23 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="aQfeTqt3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1646159840;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=VSlbgJdpoP+AY+bV5mfkN+zErWZpSrp0RJgkPDVSc0A=;
-        b=aQfeTqt3Blqmd7xwmnnemPOkABs2OSRQfD3vrWDfSpclMht5sVb5NhIpVgxjRlEiCLkj7u
-        TWiA9VszkWjvxE0Yx8q/qb/9de6ZpRvFOxGB1JCkF6eZfpa4GxXxMZ/IWhlVmVPlgRK2e5
-        TKYSF2+nWIzlxjGcVXAAqFsV6gVdKi4=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 61d2a11b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 1 Mar 2022 18:37:20 +0000 (UTC)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2dc0364d2ceso5938327b3.7;
-        Tue, 01 Mar 2022 10:37:18 -0800 (PST)
-X-Gm-Message-State: AOAM533aWgITWalmDDlDTyk01ub1VY3yAnLIG9sIfSRQ0gWxD6mJQdbF
-        LnsLkRs33jUjOwpRvgltivZHmvFIxVgMa1kgT8I=
-X-Google-Smtp-Source: ABdhPJxjsymwg5XYl+9GOoc41diKHCjvuVitOGfsmWq8BKG7jLc7Bwscjb/8sbN68Rx5awXeXGZ28M5wy+3vS8Wf7hE=
-X-Received: by 2002:a81:8984:0:b0:2db:6b04:be0c with SMTP id
- z126-20020a818984000000b002db6b04be0cmr13093941ywf.2.1646159837032; Tue, 01
- Mar 2022 10:37:17 -0800 (PST)
+        Tue, 1 Mar 2022 13:45:52 -0500
+Received: from gateway34.websitewelcome.com (gateway34.websitewelcome.com [192.185.148.140])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AECB6A06F
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:44:43 -0800 (PST)
+Received: from cm14.websitewelcome.com (cm14.websitewelcome.com [100.42.49.7])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id B25D211B400
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:44:42 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id P7UIn3tVVHnotP7UInejSJ; Tue, 01 Mar 2022 12:44:42 -0600
+X-Authority-Reason: nr=8
+Received: from host-95-232-30-176.retail.telecomitalia.it ([95.232.30.176]:40042 helo=[10.0.0.45])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1nP7UI-004D9R-1S; Tue, 01 Mar 2022 12:44:42 -0600
+Message-ID: <c3cf7c0c-27fe-4dfa-4249-a7e1747237a5@kernel.org>
+Date:   Tue, 1 Mar 2022 19:44:38 +0100
 MIME-Version: 1.0
-References: <Yh4+9+UpanJWAIyZ@zx2c4.com> <223f858c-34c5-3ccd-b9e8-7585a976364d@redhat.com>
- <Yh5JwK6toc/zBNL7@zx2c4.com> <20220301121419-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220301121419-mutt-send-email-mst@kernel.org>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 1 Mar 2022 19:37:06 +0100
-X-Gmail-Original-Message-ID: <CAHmME9qieLUDVoPYZPo=N8NCL1T-RzQ4p7kCFv3PKFUkhWZPsw@mail.gmail.com>
-Message-ID: <CAHmME9qieLUDVoPYZPo=N8NCL1T-RzQ4p7kCFv3PKFUkhWZPsw@mail.gmail.com>
-Subject: Re: propagating vmgenid outward and upward
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Laszlo Ersek <lersek@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        KVM list <kvm@vger.kernel.org>,
-        QEMU Developers <qemu-devel@nongnu.org>,
-        linux-hyperv@vger.kernel.org,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Alexander Graf <graf@amazon.com>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        adrian@parity.io,
-        =?UTF-8?Q?Daniel_P=2E_Berrang=C3=A9?= <berrange@redhat.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Jann Horn <jannh@google.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Brown, Len" <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Colm MacCarthaigh <colmmacc@amazon.com>,
-        "Theodore Ts'o" <tytso@mit.edu>, Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
+Content-Language: en-US
+To:     paulmck@kernel.org, Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Cc:     rostedt@goodmis.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, mtosatti@redhat.com
+References: <20220228141423.259691-1-nsaenzju@redhat.com>
+ <137d3573-051f-5374-70d6-cc99b44d00da@kernel.org>
+ <b604526d3186f6cd3da189abb70bd1ad9a6105c5.camel@redhat.com>
+ <69e92bc6-0917-17e9-1b61-d884d30ba42c@kernel.org>
+ <20220301180509.GQ4285@paulmck-ThinkPad-P17-Gen-1>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <20220301180509.GQ4285@paulmck-ThinkPad-P17-Gen-1>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 95.232.30.176
+X-Source-L: No
+X-Exim-ID: 1nP7UI-004D9R-1S
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-95-232-30-176.retail.telecomitalia.it ([10.0.0.45]) [95.232.30.176]:40042
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 2
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michael,
+On 3/1/22 19:05, Paul E. McKenney wrote:
+>> I see, as long as it costs < 1 us, I am ok. If it gets > 1us in a reasonably
+>> fast machine, we start see HW noise where it does not exist, and that would
+>> reduce the resolution of osnoise. AFAICS, it is not causing that problem, but we
+>> need to make it as lightweight as possible.
+> In the common case, it is atomically incrementing a local per-CPU counter
+> and doing a store.  This should be quite cheap.
+> 
+> The uncommon case is when the osnoise process was preempted or otherwise
+> interfered with during a recent RCU read-side critical section and
+> preemption was disabled around that critical section's outermost
+> rcu_read_unlock().  This can be quite expensive.  But I would expect
+> you to just not do this.  ;-)
 
-On Tue, Mar 1, 2022 at 6:17 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> Hmm okay, so it's a performance optimization... some batching then? Do
-> you really need to worry about every packet? Every 64 packets not
-> enough?  Packets are after all queued at NICs etc, and VM fork can
-> happen after they leave wireguard ...
+Getting the expensive call after a preemption is not a problem, it is a side
+effect of the most costly preemption.
 
-Unfortunately, yes, this is an "every packet" sort of thing -- if the
-race is to be avoided in a meaningful way. It's really extra bad:
-ChaCha20 and AES-CTR work by xoring a secret stream of bytes with
-plaintext to produce a ciphertext. If you use that same secret stream
-and xor it with a second plaintext and transmit that too, an attacker
-can combine the two different ciphertexts to learn things about the
-original plaintext.
+It this case, we should "ping rcu" before reading the time to account the
+overhead for the previous preemption which caused it.
 
-But, anyway, it seems like the race is here to stay given what we have
-_currently_ available with the virtual hardware. That's why I'm
-focused on trying to get something going that's the least bad with
-what we've currently got, which is racy by design. How vitally
-important is it to have something that doesn't race in the far future?
-I don't know, really. It seems plausible that that ACPI notifier
-triggers so early that nothing else really even has a chance, so the
-race concern is purely theoretical. But I haven't tried to measure
-that so I'm not sure.
+like (using the current code as example):
 
-Jason
+------------------------- %< -------------------------------
+static u64
+set_int_safe_time(struct osnoise_variables *osn_var, u64 *time)
+{
+        u64 int_counter;
+
+        do {
+                int_counter = local_read(&osn_var->int_counter);
+
+		------------> HERE <-------------------------------------
+
+                /* synchronize with interrupts */
+                barrier();
+
+                *time = time_get();
+
+                /* synchronize with interrupts */
+                barrier();
+        } while (int_counter != local_read(&osn_var->int_counter));
+
+        return int_counter;
+}
+------------------------- >% -------------------------------
+
+In this way anything that happens before this *time is accounted before it is
+get. If anything happens while this loop is running, it will run again, so it is
+safe to point to the previous case.
+
+We would have to make a copy of this function, and only use the copy for the
+run_osnoise() case. A good name would be something in the lines of
+set_int_safe_time_rcu().
+
+(Unless the expensive is < than 1us.)
+
+-- Daniel
+
