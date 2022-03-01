@@ -2,98 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4267CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5AF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:37:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233903AbiCAJhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:37:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36036 "EHLO
+        id S233843AbiCAJic (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:38:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233925AbiCAJhN (ORCPT
+        with ESMTP id S231645AbiCAJi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:37:13 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD788BF1E;
-        Tue,  1 Mar 2022 01:36:31 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id bx9-20020a17090af48900b001bc64ee7d3cso1715740pjb.4;
-        Tue, 01 Mar 2022 01:36:31 -0800 (PST)
+        Tue, 1 Mar 2022 04:38:28 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31DEC25CF
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 01:37:46 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id d3so19510237wrf.1
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 01:37:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9PitZ8nos2JLpD1cvo3wp1YCaRCWvKUI1RHgpAgRhjo=;
-        b=YKN7t0gbX/W3dYuoCr8j7HyWdARzIb6Qe6ouXZkiqfV/vbBnbvwJE2l3jcfR4UWOYe
-         xTs5o35w+rSNFQ+ln8XGFPrnRjZOhs91evaJvTOUH7hUyQRynltdZaMmf7J1lJT6AzVk
-         kk9Wv5Sz2MHddl0f77kMy8PEz0e39hvJTJvMHvzieOnJZo7nUNVTQOYzeZ9zBMWSh+Lz
-         HJ9h8nPUDmKUD0BRQ5USUJPdFa5NMlC/XnFOK1fM8cjeoZZIrrSRchibs2QJRaLcknUa
-         sFY8nCVp19F6CJdViRqmG6+dsTp0miQKCZ6f4hLUqCxI7INl0G/riPM5dUOWI0OVeRd+
-         TzWw==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=WL7296Voa7XM5nC6jBcwSH3JZ4O9Js6FwTvwTJrqRDU=;
+        b=K+DLjYVILSKe0zHrgZ7UItTH1K07qNEo5kVY9CPPCIf5Pp91pAZvoCOzFwxKhEGcv5
+         P1JdfHXZvpsMM9l82uHo0jaysLG/XwyLu9O54TjlHWa4Fveiei9nfCEC8K11rSymvtca
+         kF2Cw+W2vEM/6xxb7qBbdxi92f/5Ryev0zA6+Mj9MWJTNMSc+HAf/mNIUj2ZLZFdODlV
+         A6a09QhH0Z1VINB6S3iMvrZ2GX0rJH4uYIIjakQ5nBsBBvpWaOBptNTWSc4/GgwwxAst
+         7fOXALPnQx/BLJcfPHHTHl8r16pf/iZryENtYisXZCdgjasiKAXC22PnjJCisP0vfObA
+         aPjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9PitZ8nos2JLpD1cvo3wp1YCaRCWvKUI1RHgpAgRhjo=;
-        b=osAMXeuGWn4e8QnP0OuexxrAHm7mG77LEmzgrc4a32cu2u7vdF0yWuTsAbkrNDNNSf
-         AQhizrbNjaVB+bBjKErXhNahEpxuNp9Ht/j2rfn7x4pIklfvfhLSJ8YE7UxwnuKMON+2
-         nO78DLOnc/SK0auEDSVTe/ihE9x70oZpd/V3A07r0cncvcgjDG/xrE9elYLY5bPJDfb7
-         6/GBGvmifG0aLI7HpTOV911l20doKDg2T6PYd6p5t8bXHlUHB6mUqMPA+x/DoU80+gOn
-         EEJhQ7bnOgrLHQv732UFCoxXU4qzolGE40dSS5sTUcl9G7fOY1E7ofVo1XBhFWafhUQ3
-         +kGQ==
-X-Gm-Message-State: AOAM532WuGgC6R7C2SctHLiep0vqXLzZ8viYpIGGTTTirVmmFURWaLNk
-        qpXyJESGCPh5IVAefQpsSZc=
-X-Google-Smtp-Source: ABdhPJwTTYFuiYBrqBydgj/V0cOnJIGBMEyWGzsapumS+QqM4wTdxTNnQYJvAfI6JYCPjLYUAIc3cg==
-X-Received: by 2002:a17:902:c403:b0:14f:ecc9:bc82 with SMTP id k3-20020a170902c40300b0014fecc9bc82mr24354108plk.27.1646127391117;
-        Tue, 01 Mar 2022 01:36:31 -0800 (PST)
-Received: from localhost.localdomain ([115.27.208.93])
-        by smtp.gmail.com with ESMTPSA id bh3-20020a056a02020300b00378b62df320sm4131779pgb.73.2022.03.01.01.36.29
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 01 Mar 2022 01:36:30 -0800 (PST)
-From:   Q1IQ <fufuyqqqqqq@gmail.com>
-To:     ioana.ciornei@nxp.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lyz_cs@pku.edu.cn, Q1IQ <fufuyqqqqqq@gmail.com>
-Subject: [PATCH] dpaa2 ethernet switch driver: Fix memory leak in dpaa2_switch_acl_entry_add()
-Date:   Tue,  1 Mar 2022 17:34:44 +0800
-Message-Id: <20220301093444.66863-1-fufuyqqqqqq@gmail.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=WL7296Voa7XM5nC6jBcwSH3JZ4O9Js6FwTvwTJrqRDU=;
+        b=Qg5UyShnkK/82lnV2Lsvuucx5mmGzJDMRFYWZH3dlnS/luJ0g+CQOq520i1VsTsKZC
+         VP24n1KBMkXrBQjcwZ1Tfw62HbQFygUU+ESASY2cf6GyGyAmyAsu4c7m6CaW+f2Rkoqf
+         tqI6vDyKBW3or0cTCNNSkfk6qNorPq8tCXPO8Ddtt8QAh9J+BOLwOWxjD9e95m+kONEr
+         nuWVQ3UmqyWAHWGfnBi1GQDDpgU2+Izf1k2BAFr7Fo1RTNJfNFi3iZRiubP00ByMRC7W
+         +EDIBBYrgivurVFcgKleWHVV14AaEJnubRRngTvJYIZWlGKJhc1YPccv7Bxzv3hCT0Pi
+         oSkg==
+X-Gm-Message-State: AOAM533+mIxsPavz7RULMymnWpYDvJGYEIoPgmvMPI3Q/Qj4JpVqyfgA
+        i4amCXmDl93x7qQcGLKiV6TYTg==
+X-Google-Smtp-Source: ABdhPJxr08d/H3s/W2AJoyjvXMbxtHk6ci/qpVFryLyBkL90xwmqbuQRDW8s/A8J3vOMLJeLCCZx8g==
+X-Received: by 2002:adf:f611:0:b0:1ed:e11a:67a4 with SMTP id t17-20020adff611000000b001ede11a67a4mr18853699wrp.215.1646127464708;
+        Tue, 01 Mar 2022 01:37:44 -0800 (PST)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id l16-20020a05600c4f1000b0033383cdeea1sm2157253wmq.10.2022.03.01.01.37.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 01:37:43 -0800 (PST)
+Date:   Tue, 1 Mar 2022 09:37:41 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Greg KH <greg@kroah.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alistair Francis <alistair@alistair23.me>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: linux-next: manual merge of the char-misc tree with the mfd tree
+Message-ID: <Yh3pZXQPP9kmcSSx@google.com>
+References: <20220228193928.3ec6ee98@canb.auug.org.au>
+ <YhyPfcjJtIKNQtF8@google.com>
+ <Yhyn72NO/roH1gA8@kroah.com>
+ <YhzENKPtY+WOp566@google.com>
+ <Yh09/r/nT2LeE82n@kroah.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yh09/r/nT2LeE82n@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[why]
-The error handling branch did not properly free the memory of cmd_buf
-before return, which would cause memory leak.
+On Mon, 28 Feb 2022, Greg KH wrote:
 
-[how]
-Fix this by adding kfree to the error handling branch.
+> On Mon, Feb 28, 2022 at 12:46:44PM +0000, Lee Jones wrote:
+> > On Mon, 28 Feb 2022, Greg KH wrote:
+> > 
+> > > On Mon, Feb 28, 2022 at 09:01:49AM +0000, Lee Jones wrote:
+> > > > On Mon, 28 Feb 2022, Stephen Rothwell wrote:
+> > > > 
+> > > > > Hi all,
+> > > > > 
+> > > > > Today's linux-next merge of the char-misc tree got a conflict in:
+> > > > 
+> > > > I did ask for this *not* to be merged when it was in -testing.
+> > > 
+> > > Sorry, I missed that, I saw your ack on the patch so that's why I took
+> > > it.
+> > > 
+> > > > I'll follow-up with Greg.
+> > > 
+> > > Should I revert this from my tree?
+> > 
+> > I did try to catch it before a revert would have been required.
+> 
+> My fault.
+> 
+> > But yes, please revert it.
+> 
+> Will go do so now.
 
-Signed-off-by: Q1IQ <fufuyqqqqqq@gmail.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c | 2 ++
- 1 file changed, 2 insertions(+)
+Thank you.
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-index cacd454ac696..4d07aee07f4c 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-switch-flower.c
-@@ -132,6 +132,7 @@ int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *filter_block,
- 						 DMA_TO_DEVICE);
- 	if (unlikely(dma_mapping_error(dev, acl_entry_cfg->key_iova))) {
- 		dev_err(dev, "DMA mapping failed\n");
-+		kfree(cmd_buff);
- 		return -EFAULT;
- 	}
- 
-@@ -142,6 +143,7 @@ int dpaa2_switch_acl_entry_add(struct dpaa2_switch_filter_block *filter_block,
- 			 DMA_TO_DEVICE);
- 	if (err) {
- 		dev_err(dev, "dpsw_acl_add_entry() failed %d\n", err);
-+		kfree(cmd_buff);
- 		return err;
- 	}
- 
+> > The Ack is not standard and should not be merged.
+> 
+> I do not understand this, what went wrong here?
+
+The "Ack" you saw was just a placeholder.
+
+When I provided it, I would have done so like this:
+
+    "For my own reference (apply this as-is to your sign-off block):
+
+     Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>"
+
+REF: https://lore.kernel.org/all/YQ0fYe531yCyP4pf@google.com/
+
+The majority of maintainers I regularly work with know this to mean
+that the set is due to be routed via MFD (with a subsequent
+pull-request to an immutable branch to follow), since MFD is often
+the centre piece (parent) of the patch-sets I deal with.
+
+I appreciate that this could cause confusion, but I'm not sure of a
+better way to convey this information such that it survives through
+various submission iterations.
+
 -- 
-2.30.1 (Apple Git-130)
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
