@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA8F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B194C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:18:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233885AbiCAUTG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:19:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        id S237759AbiCAUTP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:19:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238238AbiCAUSM (ORCPT
+        with ESMTP id S238260AbiCAUSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:18:12 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7EC5FFA;
-        Tue,  1 Mar 2022 12:17:21 -0800 (PST)
+        Tue, 1 Mar 2022 15:18:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC52923BCA;
+        Tue,  1 Mar 2022 12:17:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7B1E8CE1E66;
-        Tue,  1 Mar 2022 20:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5AABC36AE3;
-        Tue,  1 Mar 2022 20:17:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77C5B61715;
+        Tue,  1 Mar 2022 20:17:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FEB7C340EE;
+        Tue,  1 Mar 2022 20:17:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165837;
-        bh=CUyZj62DQefLTzMMGF+hDyJGKchgnq4fyRxIIaIvKME=;
+        s=k20201202; t=1646165850;
+        bh=FTSM6DSbiOxEW6wNuPkqXpYZ5oFWR17UYBbYYSmZ1tk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cwGh1T204qLbleTSwVpI2LAxI7MkNc1BllnV5Q2WOUiZFNg2j3JiDhYJGur5XGb8k
-         F9k7WKMGEjpqeFPmZ/mofDQRAn2qQi3l0XRMnO3vjDtCkLTxsFphBl7amNawJr3wsa
-         eG5clj2K3RfcrhSm7RtIoUGlyHLfsAHa16LOhogs2NGwZLOROudWP7n7Qk/elYgqyr
-         zmmBoGdGSQLPMBUuaAJUR9wuj1cSv7iDWf5nEQYBV5jwIcCAc2l5plE9ZBz5CD/Wac
-         haGcx3xLLfHP5LYjVIovyDvx4wqUcyvGS15d3q5Ey/TPzybFCCVXLqSjduXOLtFBC+
-         ipD12+qno2GrA==
+        b=kywwQhQ0Wska5Q7OhxQVA9CZqTBaMoRzQ4POiv5cTVzFEEdriSKR+ZELKIsYpaUcQ
+         NgdV4NqCn6QqxNH085Ig3icsQeHSZolDk80/VDEKVW3tDSOw/kpoSMIf4PXrEpcsag
+         1TtIx6KKFzwOV5N4kFjo60vHo6/3G7/+5cbKQF3siAoBCPt2QIaLhKVHTB+mPqwtyM
+         vwW518iJ31NaLE5227pQenlkIIa891Hq2unZ5wQo2i6JqJJF6+E1SC9xkov2hcK6en
+         4GkUdhr37dfKR6AcEZamz4wzPgnK+KcrIjkL8YqE2tnyD1LOGBzPL62tBOmevBcHyL
+         riQ9BQkyHhFGw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 10/23] x86/kvm: Don't use pv tlb/ipi/sched_yield if on 1 vCPU
-Date:   Tue,  1 Mar 2022 15:16:09 -0500
-Message-Id: <20220301201629.18547-10-sashal@kernel.org>
+Cc:     Oliver Neukum <oneukum@suse.com>,
+        Grant Grundler <grundler@chromium.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        andrew@lunn.ch, arnd@arndb.de, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 12/23] sr9700: sanity check for packet length
+Date:   Tue,  1 Mar 2022 15:16:11 -0500
+Message-Id: <20220301201629.18547-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
 References: <20220301201629.18547-1-sashal@kernel.org>
@@ -53,52 +54,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wanpeng Li <wanpengli@tencent.com>
+From: Oliver Neukum <oneukum@suse.com>
 
-[ Upstream commit ec756e40e271866f951d77c5e923d8deb6002b15 ]
+[ Upstream commit e9da0b56fe27206b49f39805f7dcda8a89379062 ]
 
-Inspired by commit 3553ae5690a (x86/kvm: Don't use pvqspinlock code if
-only 1 vCPU), on a VM with only 1 vCPU, there is no need to enable
-pv tlb/ipi/sched_yield and we can save the memory for __pv_cpu_mask.
+A malicious device can leak heap data to user space
+providing bogus frame lengths. Introduce a sanity check.
 
-Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-Message-Id: <1645171838-2855-1-git-send-email-wanpengli@tencent.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Reviewed-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/kvm.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/usb/sr9700.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index b656456c3a944..811c7aaf23aac 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -457,19 +457,22 @@ static bool pv_tlb_flush_supported(void)
- {
- 	return (kvm_para_has_feature(KVM_FEATURE_PV_TLB_FLUSH) &&
- 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
--		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
-+		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-+		(num_possible_cpus() != 1));
- }
+diff --git a/drivers/net/usb/sr9700.c b/drivers/net/usb/sr9700.c
+index 6516a37893e27..0c50f24671da3 100644
+--- a/drivers/net/usb/sr9700.c
++++ b/drivers/net/usb/sr9700.c
+@@ -410,7 +410,7 @@ static int sr9700_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 		/* ignore the CRC length */
+ 		len = (skb->data[1] | (skb->data[2] << 8)) - 4;
  
- static bool pv_ipi_supported(void)
- {
--	return kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI);
-+	return (kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI) &&
-+	       (num_possible_cpus() != 1));
- }
+-		if (len > ETH_FRAME_LEN)
++		if (len > ETH_FRAME_LEN || len > skb->len)
+ 			return 0;
  
- static bool pv_sched_yield_supported(void)
- {
- 	return (kvm_para_has_feature(KVM_FEATURE_PV_SCHED_YIELD) &&
- 		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
--	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
-+	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-+	    (num_possible_cpus() != 1));
- }
- 
- #define KVM_IPI_CLUSTER_SIZE	(2 * BITS_PER_LONG)
+ 		/* the last packet of current skb */
 -- 
 2.34.1
 
