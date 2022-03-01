@@ -2,96 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3189CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF301C43219
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232901AbiCAH0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:26:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55700 "EHLO
+        id S232932AbiCAH0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:26:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232871AbiCAH00 (ORCPT
+        with ESMTP id S232881AbiCAH0k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:26:26 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C0387B57E
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:25:45 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id v5-20020a17090ac90500b001bc40b548f9so1366484pjt.0
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:25:45 -0800 (PST)
+        Tue, 1 Mar 2022 02:26:40 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472647B56F;
+        Mon, 28 Feb 2022 23:25:50 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id z16so13426920pfh.3;
+        Mon, 28 Feb 2022 23:25:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QR6ESE2OAl/bWxT4TTgx26HVZoBHd22PyQQgfFHvaEM=;
-        b=QYUVG1XxsSiq+9WIQTSiT00AJtOjabF3YJUaIFMuZtrtG55j6M/bvKPpIEuge2fu7s
-         yyPqARG8xvjSnnjA4aFRy9Ybn7cNil1eIyB+9+PWO3CWh0DIRMO/8+5X7h2yOrDeUnPV
-         KBNdKG7hWpYKGCD7tIeQoYqRfy715d3/QDwz3Q/qv5ydXOC2L/CGMycRcl13Ml2Rkz++
-         rSYcGEq9ETY1PysoGmkoUPtG3VVGhGgs72qdA1sPlo0o6DIwK/u+dqn8Mns2YEwOUv4t
-         2wJupyVTgV+1iHo9eJwaq8nhXkrYZvDH/we/cIWGKayxogBdfq5uT28P+7KwiYi6+d69
-         wEMA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1xwPzYLmL8tsAcjKkLlXm2q5GxjDpfr4uBY/mxxN6f0=;
+        b=p0hUnlIqn4nB+9QAy6YtbzwVtFaaRd3iLy5CeGRJu5XFinQuo46QvcMxMAvlZ01ztU
+         +mh6iQ/P7DJY+bwlRLg36NWkpIyniBCQb0arpYppSI5gzAAuBH1Io0jqnjiBD79g4BqT
+         Koo6G2VmqJP+0hONu2wOf6bENkDdMbyj4bwGiBlIstAqz661ZuLR1ELpxudC5PNdg0nM
+         r37aPSH1Sq8Y1mm+MW4EltUhHuUWbCddplrmHG0WGMmFSVdnLDwd5ZYnmf3lVwACKRQv
+         Ly7j+WZVz6RFqrkCEB5o1hiKiSkS57kzfkMfDyfvxAaLw6JY/oor4ije/sbmdKZiwsdp
+         avZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QR6ESE2OAl/bWxT4TTgx26HVZoBHd22PyQQgfFHvaEM=;
-        b=BUlA2ig1DcwNjGGn+tLzwTucTRMi9ABH4m5+gBxesrDgIx8R80IfYv6nE7EUnHDUwr
-         ZlV2xGtrAKSgj5ZZUzZVDKGfEDufRmtAZDuS5JA61e6WtUAWGD/thMybZWyd0zeCK9ng
-         sW4bTVX7giZTyAXgItXfsaYoMeL8RtJ2X5qDPt9U9o0YpDtO7YNXcRIsH6pEcH+rKgCs
-         N8mZ3ji7NlIFl7SdpxUtu6F4OlECZY+jJb9wutKar4C1xNK8cljjZiKVql3w/7daqA8v
-         5Ev5wwVHSdvt4DzcDdbiXpgqzu0FFP+pVETP/Npylf8JOUOiNtnSCBX4c7ZFhex+ydhj
-         FCxg==
-X-Gm-Message-State: AOAM533s56/PZDu8j84GQLNdoyn4hMjd+yF3pcUmqdgHaMXSN8/EpSzy
-        p5E9LnmjQrbJDUTEdoou5+N6Zw==
-X-Google-Smtp-Source: ABdhPJzPRrnJXmCmZDOwh2M8DI71z41lCJTCgimaM0nvCHg3AeKt3NcTCUEthhMISD0z4qbOr0RnHg==
-X-Received: by 2002:a17:902:e5c3:b0:14f:a4ff:34b8 with SMTP id u3-20020a170902e5c300b0014fa4ff34b8mr23792224plf.24.1646119544920;
-        Mon, 28 Feb 2022 23:25:44 -0800 (PST)
-Received: from localhost.localdomain ([223.179.136.225])
-        by smtp.gmail.com with ESMTPSA id m6-20020a62f206000000b004e152bc0527sm15680445pfh.153.2022.02.28.23.25.40
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1xwPzYLmL8tsAcjKkLlXm2q5GxjDpfr4uBY/mxxN6f0=;
+        b=HQoxAQGY0K1DeezCK3veYbJPxPX+W2hxKWB0gG1d5pIYGoCIZ5NmndiatQDZ3WWTb9
+         Is3KpsAcCNXIAN8t+KnOVPOWNvmuQAjyW1GD4nOTZz92tC/8c+F5PPDR/v3+DlKxgtx1
+         9yk3Iw7XUdfGQMQS55sFZUmIl76RW+qfabJZy5qeJmlPDt7No/s0dDiu6XkX8PRhv7ME
+         6FUQocVq54VFVwobwvadto9xZ9uO7hLTHdkQEwxSjcxEbMVwHa1KPWHWY+DVvuSPKXIP
+         ZXjVo+6Tb7i4Ai9JY5Ze61QLz9qVTFYG16a6FGcFTO1oR40dUpuWUUGDvkAu7l0UmcR9
+         KFbQ==
+X-Gm-Message-State: AOAM530mq7SHM9brWxAF+xuiSNNpX8KnGrOU8l6nbo6DI6wTtzs9NKZW
+        y8y1C8vMfQCfDmARgRjsnKI=
+X-Google-Smtp-Source: ABdhPJxk2kkLGOShKr8fWcTWXMBEiU8Tp/GN26wOurQxDFduiq9JdkHrSPrhG04imVVDVCPRuqu8Bw==
+X-Received: by 2002:a05:6a00:1a04:b0:4e1:786c:cce3 with SMTP id g4-20020a056a001a0400b004e1786ccce3mr25912833pfv.81.1646119549671;
+        Mon, 28 Feb 2022 23:25:49 -0800 (PST)
+Received: from google.com ([2620:15c:202:201:c174:264:5e49:f2cb])
+        by smtp.gmail.com with ESMTPSA id 132-20020a62168a000000b004f40e8b3133sm636489pfw.188.2022.02.28.23.25.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 23:25:44 -0800 (PST)
-From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
-To:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
-        lorenzo.pieralisi@arm.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, svarbanov@mm-sol.com,
-        bhelgaas@google.com, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, sboyd@kernel.org, mturquette@baylibre.com,
-        linux-clk@vger.kernel.org
-Subject: [PATCH v2 3/7] clk: qcom: gcc: Add PCIE_0_GDSC and PCIE_1_GDSC for SM8150
-Date:   Tue,  1 Mar 2022 12:55:07 +0530
-Message-Id: <20220301072511.117818-4-bhupesh.sharma@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220301072511.117818-1-bhupesh.sharma@linaro.org>
-References: <20220301072511.117818-1-bhupesh.sharma@linaro.org>
+        Mon, 28 Feb 2022 23:25:48 -0800 (PST)
+Date:   Mon, 28 Feb 2022 23:25:46 -0800
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Support Opensource <support.opensource@diasemi.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-input@vger.kernel.org
+Subject: Re: [PATCH] Input: da9063 - Use devm_delayed_work_autocancel()
+Message-ID: <Yh3KegzMC+JuUOdn@google.com>
+References: <a76ac3f4c7aee205395b89b5b3f587e30a48df96.1645205312.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a76ac3f4c7aee205395b89b5b3f587e30a48df96.1645205312.git.christophe.jaillet@wanadoo.fr>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the PCIE_0_GDSC and PCIE_1_GDSC defines for SM8150,
-so that dts files can use the same.
+On Fri, Feb 18, 2022 at 06:29:13PM +0100, Christophe JAILLET wrote:
+> Use devm_delayed_work_autocancel() instead of hand-writing it.
+> This saves a few lines of code.
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
----
- include/dt-bindings/clock/qcom,gcc-sm8150.h | 2 ++
- 1 file changed, 2 insertions(+)
+Applied, thank you.
 
-diff --git a/include/dt-bindings/clock/qcom,gcc-sm8150.h b/include/dt-bindings/clock/qcom,gcc-sm8150.h
-index 3e1a91876610..ae9c16410420 100644
---- a/include/dt-bindings/clock/qcom,gcc-sm8150.h
-+++ b/include/dt-bindings/clock/qcom,gcc-sm8150.h
-@@ -241,6 +241,8 @@
- #define GCC_USB_PHY_CFG_AHB2PHY_BCR				28
- 
- /* GCC GDSCRs */
-+#define PCIE_0_GDSC						0
-+#define PCIE_1_GDSC						1
- #define USB30_PRIM_GDSC                     4
- #define USB30_SEC_GDSC						5
- 
 -- 
-2.35.1
-
+Dmitry
