@@ -2,107 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF863C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:48:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D78A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233086AbiCAHtB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:49:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48856 "EHLO
+        id S233095AbiCAHtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:49:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231446AbiCAHtA (ORCPT
+        with ESMTP id S233090AbiCAHtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:49:00 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A4D811C23
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:48:19 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id w3so20794288edu.8
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:48:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=MnJLyK92wo1ianqqQrVmdLoec7cz9whmMUPEVRDu+oA=;
-        b=CVaydF1H4XMdJDb1BVhWeAbLrkhb9uB/9ed31/P7uXF7fh/h34wU1g/MGHbhXoqq/x
-         PlAA6ghBwhXkZz0+3VrZ5uw8cR7wUALpb3C1CE2aTbH7ymko5+P3tfVdexz15pSjAe8l
-         47p28EUON+tDvymCauYnqyXsxHAAZpOOtW8m+9sos3qbT0ZULSdl3B2T0VP2mojFGfJP
-         annWU+NbHk+NTBi5VKQ+btY6oC2k6BUdsouzaNAwklrdOGy7DM3k2xiDHropzjZFGyzj
-         lJagdy3GeyFFJSAOggSBegP3gf/wrRzBZPpB1KdALfoSnYN8CAESli6mBQgCF+Uq482n
-         iQfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=MnJLyK92wo1ianqqQrVmdLoec7cz9whmMUPEVRDu+oA=;
-        b=w4HQj3ItrjXK1OmUmPDBT0HxY30oxoN8ef5C0Ggze8e6P3P7UgdKEsAwsgO7ei4kiJ
-         oe/P6ed3nDkUvoyInOaSeLDoXrkVd+WO3EQm1EwLkRPJahNdEs9sMMsNhSj4FH0ohQ2k
-         nuXU2c+kXCIjQFmze4qSHEvYhBPJfzesJ8sxecc46pj22HPCbumNZf3hwR08l5dqNIab
-         4HvtAfqTzee4hMwW5k6OHDYIxxKJVxVMNWtto0v3P4f8c+TTtkOlPvaAXV5HBYmVNhd8
-         n2kkTpBV1Fv8W1oIqtWW3R0d57ShXZljNqG2x5ZLhjbu0U+mOw5hNmdWMMz3w/461Zs5
-         jcfA==
-X-Gm-Message-State: AOAM530mIefZ5n5I8+sAhEpXXJxWc/aUlnHK01DYIJ0kJioC1CPO0Wc9
-        kZUzPRlijE/6QKP2TNvkZPQ=
-X-Google-Smtp-Source: ABdhPJxSZWuYz9uwbnnp09wf9QrW8XIJMOh8VgkpQ43KaO8e9NlZYPo3jPs4kTe8Z1mnpOegt8/XsA==
-X-Received: by 2002:a05:6402:2065:b0:407:eb07:740 with SMTP id bd5-20020a056402206500b00407eb070740mr22917504edb.406.1646120897282;
-        Mon, 28 Feb 2022 23:48:17 -0800 (PST)
-Received: from [192.168.178.21] (p5b0eab60.dip0.t-ipconnect.de. [91.14.171.96])
-        by smtp.gmail.com with ESMTPSA id eo8-20020a1709069b0800b006ce6eef6836sm5045690ejc.131.2022.02.28.23.48.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 28 Feb 2022 23:48:16 -0800 (PST)
-Message-ID: <b87fb8ff-a427-491b-5a5e-3b401e1de462@gmail.com>
-Date:   Tue, 1 Mar 2022 08:48:15 +0100
+        Tue, 1 Mar 2022 02:49:01 -0500
+X-Greylist: delayed 484 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 23:48:19 PST
+Received: from cstnet.cn (smtp84.cstnet.cn [159.226.251.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1D9C311A13;
+        Mon, 28 Feb 2022 23:48:18 -0800 (PST)
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-05 (Coremail) with SMTP id zQCowAAH6vLHzR1il43WAQ--.23837S2;
+        Tue, 01 Mar 2022 15:39:51 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     lgirdwood@gmail.com, broonie@kernel.org, perex@perex.cz,
+        tiwai@suse.com, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, f.suligoi@asem.it,
+        kuninori.morimoto.gx@renesas.com
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] ASoC: fsi: Add check for clk_enable
+Date:   Tue,  1 Mar 2022 15:39:49 +0800
+Message-Id: <20220301073949.3678707-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] drm/amdgpu: fix suspend/resume hang regression
-Content-Language: en-US
-To:     Qiang Yu <qiang.yu@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220301062655.232955-1-qiang.yu@amd.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
-In-Reply-To: <20220301062655.232955-1-qiang.yu@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowAAH6vLHzR1il43WAQ--.23837S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Xr47tF15uFW3uw4kKFW7Arb_yoWDCwb_Aa
+        yqg39xXa15urWfCF9rJr4DA34j9r42v3WUKry0qa1ftFWUJwnxur4UZ3sYvrn0qw1F93s3
+        Za1DAr4xAr43CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUb38FF20E14v26ryj6rWUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6r4xMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI
+        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
+        evJa73UjIFyTuYvjfUY-BMDUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 01.03.22 um 07:26 schrieb Qiang Yu:
-> Regression has been reported that suspend/resume may hang with
-> the previous vm ready check commit:
-> https://gitlab.freedesktop.org/drm/amd/-/issues/1915#note_1278198
->
-> So bring back the evicted list check as a temp fix.
->
-> Fixes: cc8dd2cc1a97 ("drm/amdgpu: check vm ready by amdgpu_vm->evicting flag")
-> Signed-off-by: Qiang Yu <qiang.yu@amd.com>
+As the potential failure of the clk_enable(),
+it should be better to check it and return error
+if fails.
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Cc: <stable@vger.kernel.org>
+Fixes: ab6f6d85210c ("ASoC: fsi: add master clock control functions")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ sound/soc/sh/fsi.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-> ---
->   drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-> index 2cd9f1a2e5fa..fc4563cf2828 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-> @@ -779,7 +779,8 @@ bool amdgpu_vm_ready(struct amdgpu_vm *vm)
->   	amdgpu_vm_eviction_lock(vm);
->   	ret = !vm->evicting;
->   	amdgpu_vm_eviction_unlock(vm);
-> -	return ret;
-> +
-> +	return ret && list_empty(&vm->evicted);
->   }
->   
->   /**
+diff --git a/sound/soc/sh/fsi.c b/sound/soc/sh/fsi.c
+index cdf3b7f69ba7..93cfa77b8b54 100644
+--- a/sound/soc/sh/fsi.c
++++ b/sound/soc/sh/fsi.c
+@@ -816,14 +816,26 @@ static int fsi_clk_enable(struct device *dev,
+ 			return ret;
+ 		}
+ 
+-		clk_enable(clock->xck);
+-		clk_enable(clock->ick);
+-		clk_enable(clock->div);
++		ret = clk_enable(clock->xck);
++		if (ret)
++			goto err;
++		ret = clk_enable(clock->ick);
++		if (ret)
++			goto err;
++		ret = clk_enable(clock->div);
++		if (ret)
++			goto err;
+ 
+ 		clock->count++;
+ 	}
+ 
+ 	return ret;
++
++err:
++	clk_disable(clock->xck);
++	clk_disable(clock->ick);
++	clk_disable(clock->div);
++	return ret;
+ }
+ 
+ static int fsi_clk_disable(struct device *dev,
+-- 
+2.25.1
 
