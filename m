@@ -2,102 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3346DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:26:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C97C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 07:26:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbiCAH1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 02:27:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
+        id S232957AbiCAH1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 02:27:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232952AbiCAH06 (ORCPT
+        with ESMTP id S229808AbiCAH1A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 02:26:58 -0500
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30F5E7D006;
-        Mon, 28 Feb 2022 23:26:06 -0800 (PST)
-Received: by mail-wr1-f43.google.com with SMTP id d3so18968972wrf.1;
-        Mon, 28 Feb 2022 23:26:05 -0800 (PST)
+        Tue, 1 Mar 2022 02:27:00 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3A07D026
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:26:07 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id h17so7196481plc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 23:26:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Zqsit+rOnmNUmUZtDFG33t7bXRXpX6/2jlTb49W6F6M=;
+        b=XVXq1CqUkOy0IauKoQqHPRVEBDOmFxsVbMCBCVSpMUTt/yZvXTvQxvbCz/HG/S69Q/
+         wwMTH65MgQohU0oNjMp1FnEuFWHDW0eNfoeN3aIk21r8FZZvrnMZU//LlIUHMSbXKQDV
+         xDysHZftETGFVUFXS1OM7O/KKHFvWR9OwxjevkL2Lyqk73wHDTEMpnESbRXR1H13n1pY
+         zGk9G7XmiL1/nZE9ftRRcXSO9iq59bDQ+t6lJgfF36nSB8zPuKUAXjFqJKRrytvXmrGh
+         QxrstRz0p2xzoJ4kZhByWVGjC04ReqyaWLmtX7/DAoPEPYWh3zcZets17Ryd5ZMR8C+K
+         YIFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ycVXdQLM7srrY8c6er1f1RFEBefwbs4q7mdQO3Fucms=;
-        b=KIuTl6X5nAH4ynNAJoVcyH9kGU7GEXa304za85cKoMBzgfN490Ezhj4mNO59nQTNHS
-         0tSvVqPTFgY08vG92FpDgtoSC4W6B/lvwBkGxBUJdVjpSwjSitmbWz469QRXLgIOk6KP
-         +fxzrGnreibaP/+XWKSGQ0nuEg4SMsI93opp2QLmuaYimugzQXcCEePEJ4bWtrLnDQ1X
-         rgGrGQb8hfrqkdSrzHFVrIZD5eaDB05k4JScS3TqoyZgBknd9/YWnUt+OgmIqeTpOnYC
-         B3gSRynQa3DXcjMqReULJF8Hq6liP9H+AHmcOb+Zol7KP0ei4wHnnjgpIBkEFBmVrva+
-         fJjg==
-X-Gm-Message-State: AOAM531vshrgGM6e8Vxv+SoyG8/VO63qEugBva47N2n4jTFRlhq3afDm
-        S+Jp+Xf6hA3EWtO0s4eQ3h0=
-X-Google-Smtp-Source: ABdhPJxE3Km/V44Av4khjm6F1ArDMBaclXCOIRAfcaWBf51w/LDZFt9kUhQFP73MnyWw+1nYI56Bqg==
-X-Received: by 2002:adf:910a:0:b0:1ed:c3fc:2dcf with SMTP id j10-20020adf910a000000b001edc3fc2dcfmr18652299wrj.430.1646119564477;
-        Mon, 28 Feb 2022 23:26:04 -0800 (PST)
-Received: from aryzen.lan (cpc87451-finc19-2-0-cust61.4-2.cable.virginm.net. [82.11.51.62])
-        by smtp.googlemail.com with ESMTPSA id l26-20020a05600c1d1a00b00380def7d3desm1724761wms.17.2022.02.28.23.26.03
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Zqsit+rOnmNUmUZtDFG33t7bXRXpX6/2jlTb49W6F6M=;
+        b=vaehQQIR7HFp7o2QkYsvUxyvgjK5vTA7AzPJUmD567NKfZzQp9fP4J+qIcBHoEWF3O
+         hv7L7lu4dNp8+sKFk8UKDlTmgcWZJPimfJrViChNA/s0sFQUbEk3vonpaLBjt/389aQM
+         1765IEq1hNU/1VxG8XolNMn/71Eatxpj9LQC6zTpZcCzvSTY0tXQX1x0Nsqt3xkgyfQ/
+         kaaDY1IPO4QZeeCT2Dm7gownvTP4Rd0GboSnowHvjv9jJWaNtyNqNOsK9V4NXa9+klcK
+         haThVdK4InADYN/rX/tCJx8qskwYomF/ulcgferwzMpM1bVo5aDV+g4CDnYSCbA+ox9L
+         sZnQ==
+X-Gm-Message-State: AOAM533otObIEx0CjdQnQ71EO5Z/mk1qgvz4Y19Jqt2JqVD8NeYs7u8H
+        it1/elx/qYi2DkHFpaswZ8xbBA==
+X-Google-Smtp-Source: ABdhPJzJGVeQhFZly8+WyH4nDCQf2KMJMEKARcT98uKhQvoA/Cu0zleaoxSFfcjFu38e5cJcnQ9oig==
+X-Received: by 2002:a17:90a:dd46:b0:1b8:8:7303 with SMTP id u6-20020a17090add4600b001b800087303mr20399140pjv.197.1646119566426;
+        Mon, 28 Feb 2022 23:26:06 -0800 (PST)
+Received: from localhost.localdomain ([223.179.136.225])
+        by smtp.gmail.com with ESMTPSA id m6-20020a62f206000000b004e152bc0527sm15680445pfh.153.2022.02.28.23.26.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Feb 2022 23:26:04 -0800 (PST)
-From:   Lucas Tanure <tanure@linux.com>
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-i2c@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Lucas Tanure <tanure@linux.com>
-Subject: [PATCH] i2c: meson: Fix wrong speed use from probe
-Date:   Tue,  1 Mar 2022 07:26:00 +0000
-Message-Id: <20220301072600.12352-1-tanure@linux.com>
+        Mon, 28 Feb 2022 23:26:05 -0800 (PST)
+From:   Bhupesh Sharma <bhupesh.sharma@linaro.org>
+To:     linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     bhupesh.sharma@linaro.org, bhupesh.linux@gmail.com,
+        lorenzo.pieralisi@arm.com, agross@kernel.org,
+        bjorn.andersson@linaro.org, svarbanov@mm-sol.com,
+        bhelgaas@google.com, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, sboyd@kernel.org, mturquette@baylibre.com,
+        linux-clk@vger.kernel.org, Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH v2 7/7] arm64: dts: qcom: sa8155: Enable pcie nodes
+Date:   Tue,  1 Mar 2022 12:55:11 +0530
+Message-Id: <20220301072511.117818-8-bhupesh.sharma@linaro.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220301072511.117818-1-bhupesh.sharma@linaro.org>
+References: <20220301072511.117818-1-bhupesh.sharma@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Having meson_i2c_set_clk_div after i2c_add_adapter
-causes issues for client drivers that try to use
-the bus before the requested speed is applied.
+SA8155p ADP board supports the PCIe0 controller
+in the RC mode (only). So add the support for
+the same.
 
-The bus can be used just after i2c_add_adapter, so
-move i2c_add_adapter to the final step as
-meson_i2c_set_clk_div needs to be called before
-the bus is used.
-
-Signed-off-by: Lucas Tanure <tanure@linux.com>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Rob Herring <robh+dt@kernel.org>
+Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
 ---
- drivers/i2c/busses/i2c-meson.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/arm64/boot/dts/qcom/sa8155p-adp.dts | 42 ++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-meson.c b/drivers/i2c/busses/i2c-meson.c
-index ef73a42577cc..07eb819072c4 100644
---- a/drivers/i2c/busses/i2c-meson.c
-+++ b/drivers/i2c/busses/i2c-meson.c
-@@ -465,18 +465,18 @@ static int meson_i2c_probe(struct platform_device *pdev)
- 	 */
- 	meson_i2c_set_mask(i2c, REG_CTRL, REG_CTRL_START, 0);
+diff --git a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+index 8756c2b25c7e..3f6b3ee404f5 100644
+--- a/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
++++ b/arch/arm64/boot/dts/qcom/sa8155p-adp.dts
+@@ -387,9 +387,51 @@ &usb_2_qmpphy {
+ 	vdda-pll-supply = <&vdda_usb_ss_dp_core_1>;
+ };
  
--	ret = i2c_add_adapter(&i2c->adap);
--	if (ret < 0) {
--		clk_disable_unprepare(i2c->clk);
--		return ret;
--	}
--
- 	/* Disable filtering */
- 	meson_i2c_set_mask(i2c, REG_SLAVE_ADDR,
- 			   REG_SLV_SDA_FILTER | REG_SLV_SCL_FILTER, 0);
- 
- 	meson_i2c_set_clk_div(i2c, timings.bus_freq_hz);
- 
-+	ret = i2c_add_adapter(&i2c->adap);
-+	if (ret < 0) {
-+		clk_disable_unprepare(i2c->clk);
-+		return ret;
-+	}
++&pcie0 {
++	status = "okay";
++};
 +
- 	return 0;
- }
++&pcie0_phy {
++	status = "okay";
++	vdda-phy-supply = <&vreg_l18c_0p88>;
++	vdda-pll-supply = <&vreg_l8c_1p2>;
++};
++
++&pcie1_phy {
++	vdda-phy-supply = <&vreg_l18c_0p88>;
++	vdda-pll-supply = <&vreg_l8c_1p2>;
++};
++
+ &tlmm {
+ 	gpio-reserved-ranges = <0 4>;
  
++	bt_en_default: bt_en_default {
++		mux {
++			pins = "gpio172";
++			function = "gpio";
++		};
++
++		config {
++			pins = "gpio172";
++			drive-strength = <2>;
++			bias-pull-down;
++		};
++	};
++
++	wlan_en_default: wlan_en_default {
++		mux {
++			pins = "gpio169";
++			function = "gpio";
++		};
++
++		config {
++			pins = "gpio169";
++			drive-strength = <16>;
++			output-high;
++			bias-pull-up;
++		};
++	};
++
+ 	usb2phy_ac_en1_default: usb2phy_ac_en1_default {
+ 		mux {
+ 			pins = "gpio113";
 -- 
 2.35.1
 
