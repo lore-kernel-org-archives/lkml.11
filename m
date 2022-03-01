@@ -2,105 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75501C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:27:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229674AbiCAU2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:28:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45072 "EHLO
+        id S237160AbiCAU2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:28:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239142AbiCAUYb (ORCPT
+        with ESMTP id S239283AbiCAUYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:24:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFF891AC5;
-        Tue,  1 Mar 2022 12:22:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F43CB81D49;
-        Tue,  1 Mar 2022 20:22:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABFF1C340F1;
-        Tue,  1 Mar 2022 20:22:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646166123;
-        bh=czIOEoKI3YDaTofUh64cEFyUJvIvKecZ7GlIRIms37w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OKZcYYRUifWWTQmh/TNOgb7rfA3VR5t02IqeO0y515+bij8taOn+2xm8luV6fEiko
-         r5keQBAE0LpmL23t+FMNJ0d8m7IfgTtmTlYftDFpO3yRrlnqUF4MJEK9vTRU9mvN9i
-         mrb5c6+B35k8BIoDSITxfkBwak5vfZUSCcEM0P7D4k2dpLL4SgRb7Jwt61J0qZHNAF
-         Scwu6rwJ3F2ktvLO3Nwduex9sOKI/+Vfz8DH8Zwrr9+a3xWzgD+Lx7Yx+sbA6HTtLb
-         KHK7Sjih2oraTbdTLd3uOuTBW73ZodR0NALXvl+jmFTcFLssTQMVpeO5B0BHPDcQcN
-         L5xHq659EbIag==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sven Schnelle <svens@linux.ibm.com>,
+        Tue, 1 Mar 2022 15:24:39 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20F183EF31
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:23:53 -0800 (PST)
+Date:   Tue, 1 Mar 2022 21:23:49 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646166231;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JOg1nNSreIv4g+4hnmQwgrhYZxdLsYmyoIF3WgegJzA=;
+        b=EOaCe+YgN2EN/eHhaVZgRG0cE/1QcQrKteAxkzb56dQ0tTAR3Qz6FtLGQzsfl/6m4S5jTD
+        BYzbuE1nqA6356Qkil/PSOIHnqvq9y3MXxc/JeYSGilGgZNnH405JM5DDs++Q4LF3sb+oD
+        0K29lYFVyDQ6ZONSq6e97jQ/c1R8xbsGcRuJZaH6WV9eB1jnydKwbmTCISQ6IwltxYiW7y
+        GX9Mv/q53UNRihygG2DKaybG2lUcfy4q+3yXjLNIzuvXRS62Sr6oYsY0ArF3kyc4PJJ/7A
+        rn+R7lby1rN5ES5ri38sJU+wMj93uJ38eq2O7uobqOn9m883E+c4WBvaUWaDRA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646166231;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JOg1nNSreIv4g+4hnmQwgrhYZxdLsYmyoIF3WgegJzA=;
+        b=EEB4w2SS7LimcNYXnz4B76ErC9H147ul9l1oPRRerWJcg8Bi95WXRB63EanvoLlvj4xxRD
+        v5TUzcHeIHbhGuBg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
         Steven Rostedt <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com
-Subject: [PATCH AUTOSEL 4.14 6/7] tracing: Ensure trace buffer is at least 4096 bytes large
-Date:   Tue,  1 Mar 2022 15:21:27 -0500
-Message-Id: <20220301202131.19318-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301202131.19318-1-sashal@kernel.org>
-References: <20220301202131.19318-1-sashal@kernel.org>
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: Re: [PATCH] sched: Make preempt_enable_no_resched() behave like
+ preempt_enable() on PREEMPT_RT
+Message-ID: <Yh6A1a6yBfPW8AMk@linutronix.de>
+References: <Yh5mSGCbvqDdeCa3@linutronix.de>
+ <20220301201432.GL11184@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220301201432.GL11184@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schnelle <svens@linux.ibm.com>
+On 2022-03-01 21:14:32 [+0100], Peter Zijlstra wrote:
+> Ignoring !x86 for a moment:
+> 
+> arch/x86/mm/kmmio.c:    preempt_enable_no_resched();
+> arch/x86/mm/kmmio.c:    preempt_enable_no_resched();
+> include/linux/preempt.h:#define sched_preempt_enable_no_resched() \
+> include/linux/preempt.h:#define preempt_enable_no_resched() sched_preempt_enable_no_resched()
+> include/linux/preempt.h:#define preempt_enable_no_resched_notrace() \
+> include/linux/preempt.h:#define sched_preempt_enable_no_resched()       barrier()
+> include/linux/preempt.h:#define preempt_enable_no_resched()             barrier()
+> include/linux/preempt.h:#define preempt_enable_no_resched_notrace()     barrier()
+> include/linux/preempt.h:#undef sched_preempt_enable_no_resched
+> include/linux/preempt.h:#undef preempt_enable_no_resched
+> include/linux/preempt.h:#undef preempt_enable_no_resched_notrace
+> kernel/sched/core.c:            preempt_enable_no_resched();
+> kernel/sched/core.c:                    preempt_enable_no_resched();
+> kernel/sched/core.c:            sched_preempt_enable_no_resched();
+> kernel/sched/core.c:    sched_preempt_enable_no_resched();
+> kernel/sched/core.c:            sched_preempt_enable_no_resched();
+> kernel/sched/core.c:            preempt_enable_no_resched_notrace();
+> kernel/sched/core.c:            preempt_enable_no_resched_notrace();
+> kernel/sched/core.c:            sched_preempt_enable_no_resched();
+> kernel/sched/core.c:    sched_preempt_enable_no_resched();
+> kernel/signal.c:                preempt_enable_no_resched();
+> kernel/smpboot.c:                       preempt_enable_no_resched();
+> lib/smp_processor_id.c: preempt_enable_no_resched_notrace();
+> 
+> 
+> Surely we can audit that... At a glance the proposed patch does more
+> harm than good. Only the kmmio case looks obviousl fail, but then IIRC
+> kmmio had worse problems.
 
-[ Upstream commit 7acf3a127bb7c65ff39099afd78960e77b2ca5de ]
+I was looking at the same before posting it. The majority of it
+disappeared over time after certain someone made it worthless for
+modules. So I'm dropping it then.
+Does it make sense to keep sched_preempt_enable_no_resched() or should I
+move everything to preempt_enable_no_resched()?
 
-Booting the kernel with 'trace_buf_size=1' give a warning at
-boot during the ftrace selftests:
-
-[    0.892809] Running postponed tracer tests:
-[    0.892893] Testing tracer function:
-[    0.901899] Callback from call_rcu_tasks_trace() invoked.
-[    0.983829] Callback from call_rcu_tasks_rude() invoked.
-[    1.072003] .. bad ring buffer .. corrupted trace buffer ..
-[    1.091944] Callback from call_rcu_tasks() invoked.
-[    1.097695] PASSED
-[    1.097701] Testing dynamic ftrace: .. filter failed count=0 ..FAILED!
-[    1.353474] ------------[ cut here ]------------
-[    1.353478] WARNING: CPU: 0 PID: 1 at kernel/trace/trace.c:1951 run_tracer_selftest+0x13c/0x1b0
-
-Therefore enforce a minimum of 4096 bytes to make the selftest pass.
-
-Link: https://lkml.kernel.org/r/20220214134456.1751749-1-svens@linux.ibm.com
-
-Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- kernel/trace/trace.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index c1da2a4a629a1..c728acb6b14ca 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -1118,10 +1118,12 @@ static int __init set_buf_size(char *str)
- 	if (!str)
- 		return 0;
- 	buf_size = memparse(str, &str);
--	/* nr_entries can not be zero */
--	if (buf_size == 0)
--		return 0;
--	trace_buf_size = buf_size;
-+	/*
-+	 * nr_entries can not be zero and the startup
-+	 * tests require some buffer space. Therefore
-+	 * ensure we have at least 4096 bytes of buffer.
-+	 */
-+	trace_buf_size = max(4096UL, buf_size);
- 	return 1;
- }
- __setup("trace_buf_size=", set_buf_size);
--- 
-2.34.1
-
+Sebastian
