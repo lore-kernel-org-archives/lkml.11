@@ -2,92 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9069BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:58:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60166C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 19:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237206AbiCAS7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:59:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35364 "EHLO
+        id S237139AbiCATBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 14:01:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237184AbiCAS7L (ORCPT
+        with ESMTP id S233650AbiCATBD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:59:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAD8410D1
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:58:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646161107;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kFGZgdXGLGnwvZ+1z11nI3m8EaJ5DlrV2FeYU+AyTr8=;
-        b=GQFCwH2TKH/g3WabtuAGVHx1YgcYLBdqwEqUKUJO0Du3cJd/3eZ48aHqnBI6gYqyTuZOqE
-        tVIzw75Z+M1GjdmBkUO66fm3EOM8jq6wFn0/hmbO0AoPcjSV81eFxew9EnOs+e0HUJu5n7
-        bvWKkrL8YenLViXMTC2bn/QAcqMz5KA=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-613-YYwmTz9rM8-C8yNqKSyWpQ-1; Tue, 01 Mar 2022 13:58:26 -0500
-X-MC-Unique: YYwmTz9rM8-C8yNqKSyWpQ-1
-Received: by mail-ed1-f71.google.com with SMTP id j9-20020a056402238900b004128085d906so8224813eda.19
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 10:58:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kFGZgdXGLGnwvZ+1z11nI3m8EaJ5DlrV2FeYU+AyTr8=;
-        b=d/7RL0GF5xE0aFe0zbtzcXuW+CdaKhL1aeUoa3YGN161htrahaj+c+1GmwSbGrPxP4
-         NKyEfXnQWGjS1FnJieTL6EksdZOgERMXQGkwbVwsgfNubW/8mH/gMdPFBvl/B8gSu/tL
-         9OzJDBQgIkBZ0xT6nZXhg4EHHXN/YSAAT3Ca2eyBQZaVaE1IsckrFP+DWalAAqAoNzDR
-         6YbAVL02lV/Hvx//COSuIcWcUii33F2HJCkidsbdcm7OcejP0WIShuhrHzjuO8rcPkMn
-         3C++RezfWlqGYwAPNurah+8dNcftfvQjuGUTk4sFOZYerF1CGt0VD0S342ncJ+3qbfCA
-         0TuQ==
-X-Gm-Message-State: AOAM5326R2LcXdnOdBVg2ZYLNs/gcgr/o0vKE0DayPMFbGLk8Ga0WKtw
-        n657/L3FZGRUw3jT0P352REK2WlCmYTtwus3XhrRfCkt3GtZq8wczIHKyrM0d3EIo5jG6hVveh2
-        LmjZ0ZA7IBfm+dRYsd1GDTeNs
-X-Received: by 2002:a17:906:6547:b0:6bd:e2ad:8c82 with SMTP id u7-20020a170906654700b006bde2ad8c82mr20029225ejn.693.1646161104901;
-        Tue, 01 Mar 2022 10:58:24 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxoxm0y9DtCYhMH0XDokdx9OLF6FczI4F7yXrDG+1LbabKaLiDeGT+H7vClwVfb8jEpkf/C6Q==
-X-Received: by 2002:a17:906:6547:b0:6bd:e2ad:8c82 with SMTP id u7-20020a170906654700b006bde2ad8c82mr20029210ejn.693.1646161104720;
-        Tue, 01 Mar 2022 10:58:24 -0800 (PST)
-Received: from [10.0.0.45] (host-95-232-30-176.retail.telecomitalia.it. [95.232.30.176])
-        by smtp.gmail.com with ESMTPSA id k19-20020a1709062a5300b006c75a94c587sm5581585eje.65.2022.03.01.10.58.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 10:58:24 -0800 (PST)
-Message-ID: <b823e468-3c98-44d8-ccf6-8a9ddc769fb5@redhat.com>
-Date:   Tue, 1 Mar 2022 19:58:23 +0100
+        Tue, 1 Mar 2022 14:01:03 -0500
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B17110D1
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 11:00:21 -0800 (PST)
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 221J0EI2007282
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 1 Mar 2022 14:00:15 -0500
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 6C61015C0038; Tue,  1 Mar 2022 14:00:14 -0500 (EST)
+Date:   Tue, 1 Mar 2022 14:00:14 -0500
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>
+Subject: Re: [PATCH] random: do not export add_vmfork_randomness() unless
+ needed
+Message-ID: <Yh5tPt2LoLp442zi@mit.edu>
+References: <20220301142528.243059-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2 2/2] tracing: Avoid isolated CPUs when queueing
- fsnotify irqwork
-Content-Language: en-US
-To:     Nicolas Saenz Julienne <nsaenzju@redhat.com>, mingo@redhat.com,
-        peterz@infradead.org, frederic@kernel.org, rostedt@goodmis.org
-Cc:     tglx@linutronix.de, mtosatti@redhat.com,
-        linux-kernel@vger.kernel.org
-References: <20220301113053.141514-1-nsaenzju@redhat.com>
- <20220301113053.141514-2-nsaenzju@redhat.com>
-From:   Daniel Bristot de Oliveira <bristot@redhat.com>
-In-Reply-To: <20220301113053.141514-2-nsaenzju@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220301142528.243059-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/1/22 12:30, Nicolas Saenz Julienne wrote:
-> There isn't any need for this irq_work to be run locally, so avoid doing
-> so when the CPU is isolated.
-> 
-> Note that this is especially bad as queueing it into a local isolated
-> CPU might add noise to what was meant to be traced in the first place.
-> 
-> Signed-off-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+On Tue, Mar 01, 2022 at 03:25:28PM +0100, Jason A. Donenfeld wrote:
+> Since add_vmfork_randomness() is only called from vmgenid.o, we can
+> guard it in CONFIG_VMGENID, similarly to how we do with
+> add_disk_randomness() and CONFIG_BLOCK. If we ever have multiple things
+> calling into add_vmfork_randomness(), we can add another shared Kconfig
+> symbol for that, but for now, this is good enough. Even though
+> add_vmfork_randomess() is a pretty small function, removing it means
+> that there are only calls to crng_reseed(false) and none to
+> crng_reseed(true), which means the compiler can constant propagate it
+> and simply crng_reseed().
 
-Reviewed-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+How about only exporting add_vmfork_randomness if VMGENID is compiled
+as a module?  If it's built-in to the kernel, no need to export the
+symbol.
 
--- Daniel
-
+					- Ted
