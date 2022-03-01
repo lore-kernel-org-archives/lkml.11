@@ -2,79 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E800C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6B0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235390AbiCAOug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:50:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40258 "EHLO
+        id S235414AbiCAOuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:50:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231776AbiCAOud (ORCPT
+        with ESMTP id S235396AbiCAOuw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:50:33 -0500
-Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CD546B0D
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:49:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1646146192;
-  x=1677682192;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=OVXnHx1+bUpU3p6Ka0LCONj//t9wynbM77Xx3/5dJlE=;
-  b=mMUYuhObYXgSSYr7J1qyb5m7aJ0+/Flg6J6J7WYTjkvf5yynlczR/NF5
-   vh3h0bb2DUJwQfSuBj3TRnSgcvwypT6gVBwpwXjG9Op4jTqJTg8OqWHyY
-   uiB9pHdVXZpJt3tOzrsLckMo5z2Tf6ZAXNHmPWD45jl/mwyWFSt78fb8q
-   NDVgIuN5uKHrxPMPc4Kr6Ww7lhKW40DHhOdGF7HRpjND1llXzM2wePhLp
-   1+vJfRqEXwiFBHuE/MyusDRRfxK0b1vFKv24OpC5EefYCnCZcfW+bcVEM
-   lWm738BcP9rKR9QUhZ3MYq3QNtpXSTp79EyPUOxzoDMvSN7is7BRWm3MA
-   Q==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Kees Cook <keescook@chromium.org>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Colin Cross <ccross@android.com>,
-        Tony Luck <tony.luck@intel.com>
-CC:     <kernel@axis.com>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] pstore: Add prefix to ECC messages
-Date:   Tue, 1 Mar 2022 15:49:32 +0100
-Message-ID: <20220301144932.89549-1-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
+        Tue, 1 Mar 2022 09:50:52 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352E38BE25;
+        Tue,  1 Mar 2022 06:50:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C57CB61604;
+        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D75FC340F3;
+        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646146211;
+        bh=T7EEDtDVpo/7MGcsNAe8humb29FdCCXgSHc3f6aTRi8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FyBnkroelMtrz9Lm0OdztFf/JJJPOf4KLs9gmCcyADwhUMHhQiMaObQ9oQdE6mp0g
+         et4jFtCArYcUhYa+4t63NNYcRZRSaaoWCrbsvUeH/23UcP3Pd92OqzGpx5Fa1hPKIF
+         e7whB/S0KbpTuC2h2/Ms1aBBUpFvnem1+H7crI1ZSEMGzyV/VJWjXfxMSekg0tdha8
+         dB79YQIzdEfOcvV2eqjV+jUDuq4WAUhfAyZAeN6ELjWkZxrTIp8v6Rtdvr8zIr79S9
+         5xaINpoBgoH3/tJRODhOKncve0RzKyo4CwCYFFQCxf1dNioesgZFFiSx5K7wKVcy/v
+         t0WzUtz+CoUiQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 00B1FEAC09D;
+        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Subject: Re: [PATCH] wireless/nl80211: Handle errors for nla_memdup
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164614621099.32176.8459771035422066340.git-patchwork-notify@kernel.org>
+Date:   Tue, 01 Mar 2022 14:50:10 +0000
+References: <20220301100020.3801187-1-jiasheng@iscas.ac.cn>
+In-Reply-To: <20220301100020.3801187-1-jiasheng@iscas.ac.cn>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The "No errors detected" message from the ECC code is shown at the end
-of the pstore log and can be confusing or misleading, especially since
-it usually appears just after a kernel crash log which normally means
-quite the opposite of "no errors".  Prefix the message to clarify that
-this message is only about ECC-detected errors.
+Hello:
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
- fs/pstore/ram_core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This patch was applied to netdev/net.git (master)
+by Johannes Berg <johannes.berg@intel.com>:
 
-diff --git a/fs/pstore/ram_core.c b/fs/pstore/ram_core.c
-index fe5305028c6e..a89e33719fcf 100644
---- a/fs/pstore/ram_core.c
-+++ b/fs/pstore/ram_core.c
-@@ -263,10 +263,10 @@ ssize_t persistent_ram_ecc_string(struct persistent_ram_zone *prz,
- 
- 	if (prz->corrected_bytes || prz->bad_blocks)
- 		ret = snprintf(str, len, ""
--			"\n%d Corrected bytes, %d unrecoverable blocks\n",
-+			"\nECC: %d Corrected bytes, %d unrecoverable blocks\n",
- 			prz->corrected_bytes, prz->bad_blocks);
- 	else
--		ret = snprintf(str, len, "\nNo errors detected\n");
-+		ret = snprintf(str, len, "\nECC: No errors detected\n");
- 
- 	return ret;
- }
+On Tue,  1 Mar 2022 18:00:20 +0800 you wrote:
+> As the potential failure of the nla_memdup(),
+> it should be better to check it, as same as kmemdup().
+> 
+> Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  net/wireless/nl80211.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+
+Here is the summary with links:
+  - wireless/nl80211: Handle errors for nla_memdup
+    https://git.kernel.org/netdev/net/c/6ad27f522cb3
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
