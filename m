@@ -2,55 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B88BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB94C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233822AbiCAJd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:33:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
+        id S233839AbiCAJde (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:33:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233816AbiCAJdZ (ORCPT
+        with ESMTP id S233818AbiCAJd1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:33:25 -0500
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD48F1090;
-        Tue,  1 Mar 2022 01:32:33 -0800 (PST)
-Received: by mail-vk1-f181.google.com with SMTP id k9so6542993vki.4;
-        Tue, 01 Mar 2022 01:32:33 -0800 (PST)
+        Tue, 1 Mar 2022 04:33:27 -0500
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com [209.85.217.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39C5CFA;
+        Tue,  1 Mar 2022 01:32:42 -0800 (PST)
+Received: by mail-vs1-f54.google.com with SMTP id q9so15905582vsg.2;
+        Tue, 01 Mar 2022 01:32:42 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=JewjBvTz72R+8K96y3pWlhGhOTqqPKm2D0L3LCWGapc=;
-        b=cXj2I73JyzcboCghrBrdaePwE/SwuQoWc+ryOofBe/N0BcDDQ2HROZ0/qLw8tlVjX3
-         jGo0OGgLVBUFe6t2c0R/dokXD7HaFhnc5/TJ9iJpFrDYFYkZE1+0u5A0vvDpL2xp4ilM
-         TqazDjwiVfYaVHltVI1KGWXuJemjC4wCPr0TuBIrgTQQOn8VgAUZ7cwxZl+UhFt/Tv7E
-         JpM6LBgsMRwvGkyOOvpsbXZyX3eP9BpzF257yjK0brM7Vwvhs1KK3rtewGwTMQ5SUe9R
-         ielv8YDHi9s3vBBGoiU7ONOB3pkg2ScWekB/jWsdsfXEYwGEz39Nf95ZU2UiBKdSTSEO
-         Co+g==
-X-Gm-Message-State: AOAM530FwLEq+ERynRvGkX53uogGBfoiUJ4pZj+iByHyK7xQLPLAAdEH
-        g3picnXJS+ks1ZSUJgkBYlqMNJRQWGRwOA==
-X-Google-Smtp-Source: ABdhPJzEEteiw+8b2xBdTr45TSwjVYghMnR6qU2K2ZMJ+SknnFp3IY0ZKrQqoJ4nW0BvowRoeAftlg==
-X-Received: by 2002:a1f:348a:0:b0:32d:34f:7941 with SMTP id b132-20020a1f348a000000b0032d034f7941mr9607573vka.13.1646127152627;
-        Tue, 01 Mar 2022 01:32:32 -0800 (PST)
-Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com. [209.85.217.45])
-        by smtp.gmail.com with ESMTPSA id 4-20020a1f1604000000b00330d7b11691sm2083692vkw.51.2022.03.01.01.32.32
+        bh=qpscL9B8Nz+lvpBTfdUs1xuYvC00k/bdpIJSBHlbzjY=;
+        b=UjaBXvJ6XUTS+onNV5lIuzvcEfJn6FaQ6XQUnw2MiV8waRgr4IexKsQGa7sKvIrotu
+         fFOxZfZaN3FhZ6m+yKNOywmbb1fnt49eu/wrWIJ2N0zNldt7q3yaQoIu0e71SqHJQvWV
+         YKujrwDqWMDaJk/Sd2HlbF1vJlmSn0AbxuvxK2lAoiM62tAtlyBJJTKt5ba3LOF4F/LX
+         4wgQZYG97hI5yvc23nSzTNIZcTDKaAzkrCdSYoJg2NjoE5b+X8tauAdBjI4AAPEyKINt
+         u/05E9Yh1Y8tJE5weV8CA6WlTGKdPJRT6RNMTBhr0ACQvpCIPEvisW1tGaC5yIfmEBBD
+         buUQ==
+X-Gm-Message-State: AOAM530m/YL36TB0PwK9DFb9g9u7AJ6LBiJL5dhfuP78KJWUKTHwvOIm
+        oBzrV0OY0qc5kf8jtdE4yIKyb2F7VWFLQg==
+X-Google-Smtp-Source: ABdhPJxTz6mNov2ew16/GO+qY5kYysQYIMngc20fOi8igCoTnJR4LEcbr3Hv5bMd+VuNVBiH0LxyVQ==
+X-Received: by 2002:a67:e24e:0:b0:31b:f9d7:612e with SMTP id w14-20020a67e24e000000b0031bf9d7612emr9926619vse.51.1646127161086;
+        Tue, 01 Mar 2022 01:32:41 -0800 (PST)
+Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
+        by smtp.gmail.com with ESMTPSA id g9-20020a67fac9000000b0031e6f70befdsm1485235vsq.12.2022.03.01.01.32.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 01:32:32 -0800 (PST)
-Received: by mail-vs1-f45.google.com with SMTP id i27so15842686vsr.10;
-        Tue, 01 Mar 2022 01:32:32 -0800 (PST)
-X-Received: by 2002:a67:b00e:0:b0:30d:dc98:6024 with SMTP id
- z14-20020a67b00e000000b0030ddc986024mr10340330vse.57.1646127152232; Tue, 01
- Mar 2022 01:32:32 -0800 (PST)
+        Tue, 01 Mar 2022 01:32:40 -0800 (PST)
+Received: by mail-ua1-f44.google.com with SMTP id l45so1700886uad.1;
+        Tue, 01 Mar 2022 01:32:40 -0800 (PST)
+X-Received: by 2002:ab0:7043:0:b0:306:68f7:efb1 with SMTP id
+ v3-20020ab07043000000b0030668f7efb1mr9522842ual.30.1646127160138; Tue, 01 Mar
+ 2022 01:32:40 -0800 (PST)
 MIME-Version: 1.0
-References: <20220227203744.18355-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220227203744.18355-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20220227203744.18355-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20220227203744.18355-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20220227203744.18355-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220227203744.18355-6-prabhakar.mahadev-lad.rj@bp.renesas.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 1 Mar 2022 10:32:20 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdW2ckTAttC4Wx8Uo=Q6FAAktK-40usfGMgNS9x5jtEeyg@mail.gmail.com>
-Message-ID: <CAMuHMdW2ckTAttC4Wx8Uo=Q6FAAktK-40usfGMgNS9x5jtEeyg@mail.gmail.com>
-Subject: Re: [PATCH 02/12] arm64: dts: renesas: r9a07g054l2-smarc: Drop
- deleting gpio-hog pins related to SDHI
+Date:   Tue, 1 Mar 2022 10:32:28 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWinXFByLXkLMExwAC12P8nbpFMuexp3E3RDbcEkJVSfg@mail.gmail.com>
+Message-ID: <CAMuHMdWinXFByLXkLMExwAC12P8nbpFMuexp3E3RDbcEkJVSfg@mail.gmail.com>
+Subject: Re: [PATCH 05/12] arm64: dts: renesas: r9a07g054: Fillup the
+ I2C{0,1,2,3} stub nodes
 To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 Cc:     Magnus Damm <magnus.damm@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -68,8 +68,7 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Sun, Feb 27, 2022 at 9:38 PM Lad Prabhakar
 <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> Drop deleting gpio-hog pins related to SDHI0/1 so that SDHI functionality
-> gets enabled on Renesas RZ/V2L SMARC EVK.
+> Fillup the I2C{0,1,2,3} stub nodes in RZ/V2L (R9A07G054) SoC DTSI.
 >
 > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
