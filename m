@@ -2,162 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55EE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 19:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B71B1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 19:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237262AbiCATqu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 14:46:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51824 "EHLO
+        id S237277AbiCATrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 14:47:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237256AbiCATqr (ORCPT
+        with ESMTP id S231839AbiCATrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 14:46:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82AA16CA51
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 11:46:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F875B81CB6
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 19:46:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B945BC340F1;
-        Tue,  1 Mar 2022 19:46:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646163961;
-        bh=mr00tSNW5w0FpfgdGMhG7XczKch7qlvemvDq4iiSULE=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=tytK6x0cQP+Yl1Z/orNCK6wmIhpbZ4OpI9CNqKNjhJAPz1pbCtDWuM4I/rJBk0bEC
-         ICijPzPvxYVrSw/ENUt5cLwB293Dgi7P/d7HHTRQfwyI0hNMlrDI3SEpy787cMXUv9
-         vUf/4Im2aiWjxePQXmDcKwW0ylivFpBctp83CNRjf+/bso2Fi5zVmcihu5wJADfWNB
-         m4SPsyfnJCFpqLjaZnICDK0hJjzdjTHLCgTnW4jjK6LKSrvziJo1CXwOiBUP3Rd+Vt
-         dYKq3Xa83lmg8d2U7n6cIH9M9+ULVpBQLEwIeOPLwqO5ixokNISbSOJGej2sg7nz8g
-         7UzKA6okH82zA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 64E855C0440; Tue,  1 Mar 2022 11:46:01 -0800 (PST)
-Date:   Tue, 1 Mar 2022 11:46:01 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     Nicolas Saenz Julienne <nsaenzju@redhat.com>, rostedt@goodmis.org,
-        mingo@redhat.com, linux-kernel@vger.kernel.org, mtosatti@redhat.com
-Subject: Re: [PATCH] tracing/osnoise: Force quiescent states while tracing
-Message-ID: <20220301194601.GT4285@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220228141423.259691-1-nsaenzju@redhat.com>
- <137d3573-051f-5374-70d6-cc99b44d00da@kernel.org>
- <b604526d3186f6cd3da189abb70bd1ad9a6105c5.camel@redhat.com>
- <69e92bc6-0917-17e9-1b61-d884d30ba42c@kernel.org>
- <20220301180509.GQ4285@paulmck-ThinkPad-P17-Gen-1>
- <c3cf7c0c-27fe-4dfa-4249-a7e1747237a5@kernel.org>
- <20220301185823.GS4285@paulmck-ThinkPad-P17-Gen-1>
- <6fd678d8-58fc-5863-fd88-4c8335dd8b38@kernel.org>
+        Tue, 1 Mar 2022 14:47:11 -0500
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7961C6C947;
+        Tue,  1 Mar 2022 11:46:30 -0800 (PST)
+Received: from IOURIT-Z4.ntdev.corp.microsoft.com (unknown [192.182.151.181])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 23A3520B7188;
+        Tue,  1 Mar 2022 11:46:30 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 23A3520B7188
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1646163990;
+        bh=d7flK6DTAH4K/8AvhJPZUlMO2bWVUd8vNwXQiXnMMWs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fsj9iNpSw0BDb8TUlWvxRAA+GEbids65zPPqkAmeWGHPGUGNdL6iK5kUFOwTBqil6
+         5MfmuuNXwOpPNGOnxEM7I8DWsIg2I48G6iJeb3JBgXswoiqZ05p2dTE325K3mNvARW
+         yb/4iLUmuWQKMi6qcxLkC/UcvcdEHShn7fj0R1xQ=
+From:   Iouri Tarassov <iourit@linux.microsoft.com>
+To:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, spronovo@microsoft.com,
+        spronovo@linux.microsoft.com, gregkh@linuxfoundation.org
+Subject: [PATCH v3 01/30] drivers: hv: dxgkrnl: Add virtual compute device VM bus channel guids
+Date:   Tue,  1 Mar 2022 11:45:48 -0800
+Message-Id: <719fe06b7cbe9ac12fa4a729e810e3383ab421c1.1646163378.git.iourit@linux.microsoft.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1646161341.git.iourit@linux.microsoft.com>
+References: <cover.1646161341.git.iourit@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6fd678d8-58fc-5863-fd88-4c8335dd8b38@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 08:29:23PM +0100, Daniel Bristot de Oliveira wrote:
-> On 3/1/22 19:58, Paul E. McKenney wrote:
-> > On Tue, Mar 01, 2022 at 07:44:38PM +0100, Daniel Bristot de Oliveira wrote:
-> >> On 3/1/22 19:05, Paul E. McKenney wrote:
-> >>>> I see, as long as it costs < 1 us, I am ok. If it gets > 1us in a reasonably
-> >>>> fast machine, we start see HW noise where it does not exist, and that would
-> >>>> reduce the resolution of osnoise. AFAICS, it is not causing that problem, but we
-> >>>> need to make it as lightweight as possible.
-> >>> In the common case, it is atomically incrementing a local per-CPU counter
-> >>> and doing a store.  This should be quite cheap.
-> >>>
-> >>> The uncommon case is when the osnoise process was preempted or otherwise
-> >>> interfered with during a recent RCU read-side critical section and
-> >>> preemption was disabled around that critical section's outermost
-> >>> rcu_read_unlock().  This can be quite expensive.  But I would expect
-> >>> you to just not do this.  ;-)
-> >>
-> >> Getting the expensive call after a preemption is not a problem, it is a side
-> >> effect of the most costly preemption.
-> >>
-> >> It this case, we should "ping rcu" before reading the time to account the
-> >> overhead for the previous preemption which caused it.
-> >>
-> >> like (using the current code as example):
-> >>
-> >> ------------------------- %< -------------------------------
-> >> static u64
-> >> set_int_safe_time(struct osnoise_variables *osn_var, u64 *time)
-> >> {
-> >>         u64 int_counter;
-> >>
-> >>         do {
-> >>                 int_counter = local_read(&osn_var->int_counter);
-> >>
-> >> 		------------> HERE <-------------------------------------
-> >>
-> >>                 /* synchronize with interrupts */
-> >>                 barrier();
-> >>
-> >>                 *time = time_get();
-> >>
-> >>                 /* synchronize with interrupts */
-> >>                 barrier();
-> >>         } while (int_counter != local_read(&osn_var->int_counter));
-> >>
-> >>         return int_counter;
-> >> }
-> >> ------------------------- >% -------------------------------
-> >>
-> >> In this way anything that happens before this *time is accounted before it is
-> >> get. If anything happens while this loop is running, it will run again, so it is
-> >> safe to point to the previous case.
-> >>
-> >> We would have to make a copy of this function, and only use the copy for the
-> >> run_osnoise() case. A good name would be something in the lines of
-> >> set_int_safe_time_rcu().
-> >>
-> >> (Unless the expensive is < than 1us.)
-> > 
-> > The outermost rcu_read_unlock() could involve a call into the scheduler
-> > to do an RCU priority deboost, which I would imagine could be a bit
-> > expensive.  But I would expect you to configure the test in such a way
-> > that there was no need for RCU priority boosting.  For example, by making
-> > sure that the osnoise process's RCU readers were never preempted.
-> 
-> So, the noise will not be seeing in the call that Nicolas is doing. but in the
-> rcu_read_unlock() inside osnoise processes?
-> 
-> If that is the case, then the "noise" would already be accounted to the
-> previously preempted thread... and we should be fine then.
+Add VM bus channel guids, which are used by hyper-v virtual
+compute device driver.
 
-It could be either at the rcu_read_unlock() itself, or, if preemption
-was disabled across that rcu_read_unlock(), at a subsequent point where
-preemption is enabled.  Which might amount to the same thing given that
-there won't be any preemption until preemption is enabled?
+Signed-off-by: Iouri Tarassov <iourit@linux.microsoft.com>
+---
+ include/linux/hyperv.h | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-> > Just out of curiosity, why is this running in the kernel rather than in
-> > userspace?  To focus only on kernel-centric noise sources?  Or are there
-> > people implementing real-time applications within the kernel?
-> 
-> It is in kernel because it allows me to sync the workload and the trace, getting
-> more (and more precise) information.
-> 
-> For example, I can read the "noise in time" and how many interrupts happened in
-> between two reads of the time, so I can look back in the trace to figure out
-> which sources of noise were the cause of the noise I am seeing - without false
-> positives. If no "interference" happened, I can safely say that it was a
-> hardware noise (this saves us time in the debug, no need to run hwlat - I run
-> two tools in one).
-> 
-> This all with a more cheap access to the data. I also use such information to
-> parse trace in kernel in a cheaper way, printing less info to the trace buffer.
+diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+index b823311eac79..9d21055b003d 100644
+--- a/include/linux/hyperv.h
++++ b/include/linux/hyperv.h
+@@ -1414,6 +1414,22 @@ void vmbus_free_mmio(resource_size_t start, resource_size_t size);
+ 	.guid = GUID_INIT(0xda0a7802, 0xe377, 0x4aac, 0x8e, 0x77, \
+ 			  0x05, 0x58, 0xeb, 0x10, 0x73, 0xf8)
+ 
++/*
++ * GPU paravirtualization global DXGK channel
++ * {DDE9CBC0-5060-4436-9448-EA1254A5D177}
++ */
++#define HV_GPUP_DXGK_GLOBAL_GUID \
++	.guid = GUID_INIT(0xdde9cbc0, 0x5060, 0x4436, 0x94, 0x48, \
++			  0xea, 0x12, 0x54, 0xa5, 0xd1, 0x77)
++
++/*
++ * GPU paravirtualization per virtual GPU DXGK channel
++ * {6E382D18-3336-4F4B-ACC4-2B7703D4DF4A}
++ */
++#define HV_GPUP_DXGK_VGPU_GUID \
++	.guid = GUID_INIT(0x6e382d18, 0x3336, 0x4f4b, 0xac, 0xc4, \
++			  0x2b, 0x77, 0x3, 0xd4, 0xdf, 0x4a)
++
+ /*
+  * Synthetic FC GUID
+  * {2f9bcc4a-0069-4af3-b76b-6fd0be528cda}
+-- 
+2.35.1
 
-Fair enough!
-
-> But the idea is to see the noise for an user-space application as much as
-> possible (and no, I am not doing application in kernel... but I know people
-> doing it using a unikernel, but that is another story... a longer one... :-)).
-
-There have been people writing their applications in Linux kernel modules,
-or at least attempting to do so!  ;-)
-
-							Thanx, Paul
