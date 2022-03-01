@@ -2,153 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09657C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEBF9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 09:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233700AbiCAJIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 04:08:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
+        id S230006AbiCAJIY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 04:08:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233675AbiCAJIB (ORCPT
+        with ESMTP id S233681AbiCAJIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 04:08:01 -0500
-Received: from conssluserg-05.nifty.com (conssluserg-05.nifty.com [210.131.2.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B5A38A31C;
-        Tue,  1 Mar 2022 01:07:18 -0800 (PST)
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 22196kmS002069;
-        Tue, 1 Mar 2022 18:06:47 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 22196kmS002069
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1646125607;
-        bh=UY9OLn7hFjW9U1chVHUgkyiDXtaLJsAZWOhrge7kbXU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=l0XwBzNr1NPLGPpqyMiqVggwwCB/1A72aUdEoK79UH5a67OgyaQfm1oYMV8+RL3E5
-         E+ao5qZzHxewrO6QNfgSp6mk0edql70nkkdLBEAut6S7urcACDu6VTgWV23gEOBnvN
-         zuggLLvot9SWKVVvJcVeQgpZpJLl36cJkN6qK+Y/B2kJO1DbQKU+Dpwq9w9PTyHM/d
-         HJzs6drAtbY4D/wzs/MzOVaXS6k7wmHTde2fPZozhwpzK2tmRbUkKAlYt4xqW8UQ5p
-         lv+u6bvi4zf+AT9eD7iA/rJqgA9x03Tn6fxLnxnW+5B5pp2GfrNJsBnumCjlpvAfhP
-         qfHa/vyDGfvDw==
-X-Nifty-SrcIP: [209.85.214.181]
-Received: by mail-pl1-f181.google.com with SMTP id z2so12937555plg.8;
-        Tue, 01 Mar 2022 01:06:47 -0800 (PST)
-X-Gm-Message-State: AOAM530t/zdrpZUuLmI6iGLy0pyvPkquiFQs3kpThFE4B9+siG2h/9mF
-        MIv79gOEWf62Owdn10QNEbuh+rWOU47HpPvqxh8=
-X-Google-Smtp-Source: ABdhPJzujXuF494nq7rmDEipHgFpDJ0z4oRNLE7toucRij1tBQ/y+Gn6/D2MY52bqp1HVdP8vvAst/HO33aU1B0usQc=
-X-Received: by 2002:a17:902:9887:b0:151:6e1c:7082 with SMTP id
- s7-20020a170902988700b001516e1c7082mr7340286plp.162.1646125606345; Tue, 01
- Mar 2022 01:06:46 -0800 (PST)
+        Tue, 1 Mar 2022 04:08:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903D613CF2;
+        Tue,  1 Mar 2022 01:07:36 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 312CFB817F7;
+        Tue,  1 Mar 2022 09:07:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73901C340EE;
+        Tue,  1 Mar 2022 09:07:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646125653;
+        bh=2u98asnBmPKIGgO3EIdj0rvNyZeALdXhp3s7aF1sT0s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HpNol1ar3qyK5CZCPYkworAtpi3XK2nfDDIfXHNkFWmDyFWhqxW40zojZKAMKBi2q
+         yL6UWuw0DW8j2JVoIJ0Wg3IIOUF9EvNlQN/O3SVpYIn+JjMkNPndeYtIeySu1ZThyA
+         +TVZyOUIt6EHrHSG18mAOvUUqUJNkzYQi4CK6WkzXs4ycIBUwQZvzslb7pxq7VUX2N
+         jmi+3Vo2TqSJ40qB/jTQnDIiiGFkV1+DQZxG9zhs/6brTjm5HvXRHYfy67fQ2xM+lE
+         RVcqFdjYZugtAdsXXQybeu3dU55KLY8qIrHlYAbb+f4G7VPQWqy6EclNa2Sq7h1wfd
+         gMuYTw3aVZM9A==
+From:   Georgi Djakov <djakov@kernel.org>
+To:     elder@linaro.org, djakov@kernel.org
+Cc:     bjorn.andersson@linaro.org, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] interconnect: Add stubs for the bulk API
+Date:   Tue,  1 Mar 2022 11:07:35 +0200
+Message-Id: <20220301090735.26599-1-djakov@kernel.org>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-References: <20220225144245.182659-1-masahiroy@kernel.org> <CAKwvOd=WjnHSHKLVRJifHxV2tyDsLTkek80NWU=do=FSHhNLug@mail.gmail.com>
- <67b75a36cf874dfea0871649ccd268d3@AcuMS.aculab.com>
-In-Reply-To: <67b75a36cf874dfea0871649ccd268d3@AcuMS.aculab.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 1 Mar 2022 18:06:04 +0900
-X-Gmail-Original-Message-ID: <CAK7LNARKxd-kr3pABzTC2+uGhEKbyLtXDCSoxn56P0go--bg1A@mail.gmail.com>
-Message-ID: <CAK7LNARKxd-kr3pABzTC2+uGhEKbyLtXDCSoxn56P0go--bg1A@mail.gmail.com>
-Subject: Re: [PATCH v2] fixdep: use fflush() and ferror() to ensure successful
- write to files
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 1, 2022 at 11:28 AM David Laight <David.Laight@aculab.com> wrot=
-e:
->
-> Someone send HTML mail =E2=80=93 outlook is broken =E2=80=93 only lets yo=
-u top post :-(
->
->
->
-> The return value from fprintf() is normally the number of bytes written t=
-o
->
-> the internal buffer (8k in glibc?)
->
-> Only if the buffer is full and an actual write() is done do you get any i=
-ndication of an error.
->
-> So you can use the error return from fprintf() to terminate a loop =E2=80=
-=93 but it usually
->
-> just isn=E2=80=99t worth the effort.
->
-> The error status returned by ferror() is =E2=80=98sticky=E2=80=99, so you=
- need only check once.
->
-> But you need to check before fclose().
->
-> Since fclose() has to write out the buffer =E2=80=93 that write can also =
-fail.
->
-> I=E2=80=99m not sure whether fclose() returns and error in that case, but=
- adding fflush()
->
-> makes the coding easier.
+Add stub functions for the bulk API to allow compile testing.
 
+Signed-off-by: Georgi Djakov <djakov@kernel.org>
+---
+ include/linux/interconnect.h | 36 +++++++++++++++++++++++++++++-------
+ 1 file changed, 29 insertions(+), 7 deletions(-)
 
-I just checked this.
-
-fclose() returns -1 if it fails to flush the buffer.
-
-
-
-
-
-[ test code ]
-#include <stdio.h>
-int main(void)
-{
-        char buf[2049];
-        int ret, i;
-
-        for (i =3D 0; i < 2048; i++)
-                buf[i] =3D 'a';
-
-        buf[2048] =3D 0;
-
-        ret =3D printf("%s", buf);
-        fprintf(stderr, "printf() returned: %d\n", ret);
-
-        ret =3D fclose(stdout);
-        fprintf(stderr, "fclose() returned %d\n", ret);
-
-        return 0;
-}
-
-
-I tested this on Debian buster.
-
-
-I created a very small partition with 1K size,
-then write data to that partition.
-
-
-
-
-root@buster:~# lsblk  /dev/vdb1
-NAME MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
-vdb1 254:17   0   1K  0 part
-root@buster:~# ./a.out  > /dev/vdb1
-printf() returned: 2048
-fclose() returned -1
-
-
-
-The buffer size seems 4k
-as far as I tested on Debian.
-
-
-
-
-
---=20
-Best Regards
-Masahiro Yamada
+diff --git a/include/linux/interconnect.h b/include/linux/interconnect.h
+index f2dd2fc8d3cd..f685777b875e 100644
+--- a/include/linux/interconnect.h
++++ b/include/linux/interconnect.h
+@@ -38,13 +38,6 @@ struct icc_bulk_data {
+ 	u32 peak_bw;
+ };
+ 
+-int __must_check of_icc_bulk_get(struct device *dev, int num_paths,
+-				 struct icc_bulk_data *paths);
+-void icc_bulk_put(int num_paths, struct icc_bulk_data *paths);
+-int icc_bulk_set_bw(int num_paths, const struct icc_bulk_data *paths);
+-int icc_bulk_enable(int num_paths, const struct icc_bulk_data *paths);
+-void icc_bulk_disable(int num_paths, const struct icc_bulk_data *paths);
+-
+ #if IS_ENABLED(CONFIG_INTERCONNECT)
+ 
+ struct icc_path *icc_get(struct device *dev, const int src_id,
+@@ -58,6 +51,12 @@ int icc_disable(struct icc_path *path);
+ int icc_set_bw(struct icc_path *path, u32 avg_bw, u32 peak_bw);
+ void icc_set_tag(struct icc_path *path, u32 tag);
+ const char *icc_get_name(struct icc_path *path);
++int __must_check of_icc_bulk_get(struct device *dev, int num_paths,
++				 struct icc_bulk_data *paths);
++void icc_bulk_put(int num_paths, struct icc_bulk_data *paths);
++int icc_bulk_set_bw(int num_paths, const struct icc_bulk_data *paths);
++int icc_bulk_enable(int num_paths, const struct icc_bulk_data *paths);
++void icc_bulk_disable(int num_paths, const struct icc_bulk_data *paths);
+ 
+ #else
+ 
+@@ -112,6 +111,29 @@ static inline const char *icc_get_name(struct icc_path *path)
+ 	return NULL;
+ }
+ 
++static inline int of_icc_bulk_get(struct device *dev, int num_paths, struct icc_bulk_data *paths)
++{
++	return 0;
++}
++
++static inline void icc_bulk_put(int num_paths, struct icc_bulk_data *paths)
++{
++}
++
++static inline int icc_bulk_set_bw(int num_paths, const struct icc_bulk_data *paths)
++{
++	return 0;
++}
++
++static inline int icc_bulk_enable(int num_paths, const struct icc_bulk_data *paths)
++{
++	return 0;
++}
++
++static inline void icc_bulk_disable(int num_paths, const struct icc_bulk_data *paths)
++{
++}
++
+ #endif /* CONFIG_INTERCONNECT */
+ 
+ #endif /* __LINUX_INTERCONNECT_H */
