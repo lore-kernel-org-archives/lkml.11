@@ -2,124 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A43BDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:32:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 01:32:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiCABcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 20:32:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
+        id S231998AbiCABdg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 20:33:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229781AbiCABcn (ORCPT
+        with ESMTP id S229965AbiCABdf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 28 Feb 2022 20:32:43 -0500
-X-Greylist: delayed 313 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 28 Feb 2022 17:32:02 PST
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4131FF06
-        for <linux-kernel@vger.kernel.org>; Mon, 28 Feb 2022 17:32:01 -0800 (PST)
-Received: from mxde.zte.com.cn (unknown [10.35.8.63])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4K702t401Mz1FPMg
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:26:46 +0800 (CST)
-Received: from mxus.zte.com.cn (unknown [10.207.168.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxde.zte.com.cn (FangMail) with ESMTPS id 4K702c2gSmzB5kdn
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:26:32 +0800 (CST)
-Received: from mxhk.zte.com.cn (unknown [192.168.250.137])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxus.zte.com.cn (FangMail) with ESMTPS id 4K702X6pChzdmX8m
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:26:28 +0800 (CST)
-Received: from mxct.zte.com.cn (unknown [192.168.251.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4K702T1vNzz8PxDy
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 09:26:25 +0800 (CST)
-Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mxct.zte.com.cn (FangMail) with ESMTPS id 4K702Q4kt9z8fkWd;
-        Tue,  1 Mar 2022 09:26:22 +0800 (CST)
-Received: from szxlzmapp05.zte.com.cn ([10.5.230.85])
-        by mse-fl2.zte.com.cn with SMTP id 2211Q6Ev061421;
-        Tue, 1 Mar 2022 09:26:07 +0800 (GMT-8)
-        (envelope-from wang.yi59@zte.com.cn)
-Received: from fox-cloudhost8.localdomain (unknown [10.234.72.110])
-        by smtp (Zmail) with SMTP;
-        Tue, 1 Mar 2022 09:26:06 +0800
-X-Zmail-TransId: 3e81621d762e002-92466
-From:   Yi Wang <wang.yi59@zte.com.cn>
-To:     mst@redhat.com
-Cc:     jasowang@redhat.com, elic@nvidia.com, xieyongji@bytedance.com,
-        sgarzare@redhat.com, wuzongyong@linux.alibaba.com,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
-        wang.yi59@zte.com.cn, wang.liang82@zte.com.cn,
-        Zhang Min <zhang.min9@zte.com.cn>
-Subject: [PATCH] vdpa: fix use-after-free on vp_vdpa_remove
-Date:   Tue,  1 Mar 2022 17:10:59 +0800
-Message-Id: <20220301091059.46869-1-wang.yi59@zte.com.cn>
-X-Mailer: git-send-email 2.33.0.rc0.dirty
+        Mon, 28 Feb 2022 20:33:35 -0500
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0860F245AF;
+        Mon, 28 Feb 2022 17:32:55 -0800 (PST)
+Received: by mail-qk1-x72e.google.com with SMTP id z66so11879205qke.10;
+        Mon, 28 Feb 2022 17:32:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9JEn06hcww2L6NS4S3p4jO39Ct9x9lpXynd0qsWDBiA=;
+        b=ooLMJfc6fgqPxZvdt2P1iN6fDeJda7eqKYC88DNkDtigehLPK04vGLcKYaIEcNWnol
+         1z/ZNyUr+FHs/Jf1Nqru9j1ugBzU2M+kuZ3RxxdzKw+ZaE8lfOApbt+dSfM44nBWtqlF
+         bS7DApyT+OfSYITA1ftjd9QnyR4S0fY9yBlbHdRdouLIadZfFGkKqqPEw3oZCOFGJe5N
+         PDLA1hRe8DQVmdOqBv+j1MI5i/VnovsR9VsR53vCpHovS0gWK2QdSGFr+obDTZIRk9r+
+         0iUGYqi9lyPIx2DR6zh3OoA4zWGYgUcu2qd2hOzwmJpu1CePifEq0lVA3EiZ6OwlpPH3
+         YDVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9JEn06hcww2L6NS4S3p4jO39Ct9x9lpXynd0qsWDBiA=;
+        b=GKsXB9qjDqgp1X7co5aBrEAWXh+4LUyz1n9b7PbMDMRyvEoLky0jg92U1Xb1mVjCcn
+         +7x2lijvEOR7vEr2b/QHurJmJpPqSWltQIYz3INiDFdAYTEQkt2GArXJpP5lb8XwCfXG
+         gXmoKEXxUiStZ5UifRaErcK8to8FMG1csAdmLSStxDkiSBtYXQ6DksYRQ6hE0vid2TEr
+         SYjXR+FsyqH4lGK1zbtnNmlHNOedH4SmcH7yCN5m5ybN9xuWtC2ubk+K7tp4ow2RDoPw
+         44aLrfz1TL7LWg5Yqm/EYtpmPM8eleRLcbfw5lqIclfdyz5ftvgHC4XOYAgedBNAvWEN
+         bYiw==
+X-Gm-Message-State: AOAM533st4jJ3l5xfCUC1Em7dPNPYHzBROSDMuapZCea95woi+rsE3hR
+        qCZ5qd52U7YTV8r5+SdQ3pk=
+X-Google-Smtp-Source: ABdhPJzo0tWiorMvWcE9Vcd9FqDf7fgvFbLMLlJtG/G2wXt9rlQP2Mw+EG2A3+Gk1V8rJH1HWcjz2A==
+X-Received: by 2002:a37:2791:0:b0:60d:d5a2:965e with SMTP id n139-20020a372791000000b0060dd5a2965emr12712941qkn.701.1646098374149;
+        Mon, 28 Feb 2022 17:32:54 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id y16-20020a05622a121000b002deaa0af9e2sm7937286qtx.49.2022.02.28.17.32.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Feb 2022 17:32:53 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     kvalo@kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Lv Ruyi (CGEL ZTE)" <lv.ruyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] ath11k: remove unneeded flush_workqueue
+Date:   Tue,  1 Mar 2022 01:32:46 +0000
+Message-Id: <20220301013246.2052570-1-lv.ruyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain;
-        charset="UTF-8"
-X-MAIL: mse-fl2.zte.com.cn 2211Q6Ev061421
-X-Fangmail-Gw-Spam-Type: 0
-X-FangMail-Miltered: at cgslv5.04-192.168.251.14.novalocal with ID 621D7655.000 by FangMail milter!
-X-FangMail-Envelope: 1646098006/4K702t401Mz1FPMg/621D7655.000/10.35.8.63/[10.35.8.63]/mxde.zte.com.cn/<wang.yi59@zte.com.cn>
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 621D7655.000/4K702t401Mz1FPMg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Min <zhang.min9@zte.com.cn>
+From: "Lv Ruyi (CGEL ZTE)" <lv.ruyi@zte.com.cn>
 
-When vp_vdpa driver is unbind, vp_vdpa is freed in vdpa_unregister_device
-and then vp_vdpa->mdev.pci_dev is dereferenced in vp_modern_remove,
-triggering use-after-free.
+All work currently pending will be done first by calling destroy_workqueue,
+so there is no need to flush it explicitly.
 
-Call Trace of unbinding driver free vp_vdpa :
-do_syscall_64
-  vfs_write
-    kernfs_fop_write_iter
-      device_release_driver_internal
-        pci_device_remove
-          vp_vdpa_remove
-            vdpa_unregister_device
-              kobject_release
-                device_release
-                  kfree
-
-Call Trace of dereference vp_vdpa->mdev.pci_dev:
-vp_modern_remove
-  pci_release_selected_regions
-    pci_release_region
-      pci_resource_len
-        pci_resource_end
-          (dev)->resource[(bar)].end
-
-Signed-off-by: Zhang Min <zhang.min9@zte.com.cn>
-Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi (CGEL ZTE) <lv.ruyi@zte.com.cn>
 ---
- drivers/vdpa/virtio_pci/vp_vdpa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
-index a57e381e830b..cce101e6a940 100644
---- a/drivers/vdpa/virtio_pci/vp_vdpa.c
-+++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
-@@ -533,8 +533,8 @@ static void vp_vdpa_remove(struct pci_dev *pdev)
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index 5d570a2cc2a5..71eb7d04c3bf 100644
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -1417,7 +1417,6 @@ EXPORT_SYMBOL(ath11k_core_deinit);
+ 
+ void ath11k_core_free(struct ath11k_base *ab)
  {
- 	struct vp_vdpa *vp_vdpa = pci_get_drvdata(pdev);
+-	flush_workqueue(ab->workqueue);
+ 	destroy_workqueue(ab->workqueue);
  
--	vdpa_unregister_device(&vp_vdpa->vdpa);
- 	vp_modern_remove(&vp_vdpa->mdev);
-+	vdpa_unregister_device(&vp_vdpa->vdpa);
- }
- 
- static struct pci_driver vp_vdpa_driver = {
+ 	kfree(ab);
 -- 
-2.27.0
+2.25.1
+
