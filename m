@@ -2,195 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 494C5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41BC0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:08:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236000AbiCAQHt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:07:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        id S235965AbiCAQIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:08:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236013AbiCAQHr (ORCPT
+        with ESMTP id S232419AbiCAQIj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:07:47 -0500
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81CA6AC91D;
-        Tue,  1 Mar 2022 08:07:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646150824; x=1677686824;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hRh2SjknJ5JBtOZ2co7ZjEevgpRiwVpG4mTh8FguEAw=;
-  b=fQGe35J3g0L4bk72Cki4tLJi7NlBgU7mzaCBgsVqWM1zUgSTroDcxIX6
-   6eDfxE/eU/1OG8COO7BOdhrIZUFY5zctpdMFLogit1TwKjlyr2OOdudMk
-   aJS4GiWbfzGfrBEVLM16LENIJjw8nHM8w5NA6WWdimvncHaZ3RjO7HISW
-   kiXLkk/g1HxMZQ2cD4UAjC8cLpjQp4ehIMNS/OdzHFR4NuKQj8qmq1dE+
-   kKo1UewW1vaxuXt1y1aUqnn8RqPGsbxuwm3TUDWUdyyfn8lDgS4zni0cp
-   I7gKuhUAajhz2JyQrsdtJABi4Ej/NjZMcqK3Bh6trs9xC3e5iKBBk5sJ8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253091596"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="253091596"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 08:06:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="493154440"
-Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 01 Mar 2022 08:06:31 -0800
-Received: from kbuild by 2146afe809fb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nP51D-0000fi-8J; Tue, 01 Mar 2022 16:06:31 +0000
-Date:   Wed, 2 Mar 2022 00:06:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Meng Tang <tangmeng@uniontech.com>, mcgrof@kernel.org,
-        keescook@chromium.org, yzaikin@google.com, ebiederm@xmission.com,
-        willy@infradead.org
-Cc:     kbuild-all@lists.01.org, nixiaoming@huawei.com,
-        nizhen@uniontech.com, zhanglianjie@uniontech.com,
-        sujiaxun@uniontech.com, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Meng Tang <tangmeng@uniontech.com>
-Subject: Re: [PATCH v2 1/2] fs/proc: optimize exactly register one ctl_table
-Message-ID: <202203012347.yd56xhtd-lkp@intel.com>
-References: <20220301115341.30101-1-tangmeng@uniontech.com>
+        Tue, 1 Mar 2022 11:08:39 -0500
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F3B84BB87;
+        Tue,  1 Mar 2022 08:07:57 -0800 (PST)
+Received: by mail-yb1-f169.google.com with SMTP id f38so16259929ybi.3;
+        Tue, 01 Mar 2022 08:07:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HEeJ/FQgP1YcfXQzCrZz1Sk7yO260+E7FFUojjd4FWs=;
+        b=aKJ6vcXMa1rNfu/IpCGHZ7Un1TLkNdWqpRs0CsdSWJqV+EtV9i9GA8egSwtxyIV93g
+         ZBXCUJmd0cvZeVV4Ff5LFCLhFHygulaufbipWaKDO3ISCF7HJFUM6egvSyrwYMu2UgJ2
+         mJWkQc71ybipjLcfzA4qaBqaCbZ2W5+e44zRBnIvMc0S6LoLJHtBmhQrBqM9XnPSwHo+
+         dET0kv+Rj/SqEB39BK5UJQiM2HqVjsjJakd4wFPo4sFbg6ZRrSQesgUoBZcqzvMiMBNU
+         TRjlKkfJ9haYLpv4XOXIGdFrHsnKJDNDEq0hsl7RmmhMe0TKQXfVgBFcBAqMbUWlL/qx
+         1+cw==
+X-Gm-Message-State: AOAM532aP9N9aaS9tCxXPA2dvG6ctjSCvgG4BDcqIYGZViHTuDVOJJ7u
+        scQy3PTYPUfXY53S7fGU6LUz9agL9vB6X1zYK4I=
+X-Google-Smtp-Source: ABdhPJzhWslSmMvtH7+++uNGNjmHVGo1V4LddcDj0zC449QbnV6wuHVFVOnywkOd3I82eLRW/Y3747CPWc7SF8ghQow=
+X-Received: by 2002:a25:d90d:0:b0:615:e400:94c1 with SMTP id
+ q13-20020a25d90d000000b00615e40094c1mr24365841ybg.81.1646150876474; Tue, 01
+ Mar 2022 08:07:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301115341.30101-1-tangmeng@uniontech.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220223100350.3523826-1-Jinzhou.Su@amd.com> <20220223100350.3523826-2-Jinzhou.Su@amd.com>
+ <CAJZ5v0iaY3tsNKFXv09Z4wg_2R3+9UsSnqfPBbOYFaqoVS1qCg@mail.gmail.com> <BL1PR12MB51447B1235E91A81309190B2F7029@BL1PR12MB5144.namprd12.prod.outlook.com>
+In-Reply-To: <BL1PR12MB51447B1235E91A81309190B2F7029@BL1PR12MB5144.namprd12.prod.outlook.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 1 Mar 2022 17:07:45 +0100
+Message-ID: <CAJZ5v0jDbNVEtRiaiUXembZB2r4uxVy3iKO0aTqOJsB0rLpV=A@mail.gmail.com>
+Subject: Re: [PATCH 1/3] cpufreq: amd-pstate: Add more tracepoint for AMD
+ P-State module
+To:     "Deucher, Alexander" <Alexander.Deucher@amd.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Su, Jinzhou (Joe)" <Jinzhou.Su@amd.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Doug Smythies <dsmythies@telus.net>,
+        "Huang, Ray" <Ray.Huang@amd.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Todd Brandt <todd.e.brandt@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Sharma, Deepak" <Deepak.Sharma@amd.com>,
+        "Du, Xiaojian" <Xiaojian.Du@amd.com>,
+        "Yuan, Perry" <Perry.Yuan@amd.com>,
+        "Meng, Li (Jassmine)" <Li.Meng@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Meng,
+On Tue, Mar 1, 2022 at 5:05 PM Deucher, Alexander
+<Alexander.Deucher@amd.com> wrote:
+>
+> [AMD Official Use Only]
+>
+> > -----Original Message-----
+> > From: Rafael J. Wysocki <rafael@kernel.org>
+> > Sent: Tuesday, March 1, 2022 10:26 AM
+> > To: Su, Jinzhou (Joe) <Jinzhou.Su@amd.com>
+> > Cc: Rafael J. Wysocki <rjw@rjwysocki.net>; Linux PM <linux-
+> > pm@vger.kernel.org>; Srinivas Pandruvada
+> > <srinivas.pandruvada@linux.intel.com>; Doug Smythies
+> > <dsmythies@telus.net>; Huang, Ray <Ray.Huang@amd.com>; Viresh Kumar
+> > <viresh.kumar@linaro.org>; Todd Brandt <todd.e.brandt@linux.intel.com>;
+> > Linux Kernel Mailing List <linux-kernel@vger.kernel.org>; Sharma, Deepak
+> > <Deepak.Sharma@amd.com>; Deucher, Alexander
+> > <Alexander.Deucher@amd.com>; Du, Xiaojian <Xiaojian.Du@amd.com>;
+> > Yuan, Perry <Perry.Yuan@amd.com>; Meng, Li (Jassmine)
+> > <Li.Meng@amd.com>
+> > Subject: Re: [PATCH 1/3] cpufreq: amd-pstate: Add more tracepoint for AMD
+> > P-State module
+> >
+> > On Wed, Feb 23, 2022 at 11:04 AM Jinzhou Su <Jinzhou.Su@amd.com>
+> > wrote:
+> > >
+> > > Add frequency, mperf, aperf and tsc in the trace. This can be used to
+> > > debug and tune the performance of AMD P-state driver.
+> > >
+> > > Use the time difference between amd_pstate_update to calculate CPU
+> > > frequency. There could be sleep in arch_freq_get_on_cpu, so do not use
+> > > it here.
+> > >
+> > > Signed-off-by: Jinzhou Su <Jinzhou.Su@amd.com>
+> > > Signed-off-by: Huang Rui <ray.huang@amd.com>
+> >
+> > I'm not sure what the second sign-off is for.
+> >
+> > If this is a maintainer's sign-off, it should be added by the maintainer himself
+> > and you should not add it when submitting the patch.
+>
+> Both developers co-worked on the patch.  Isn't that pretty standard when you rework someone else's patch?
 
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on mcgrof/sysctl-next]
-[also build test WARNING on jack-fs/fsnotify rostedt-trace/for-next linus/master v5.17-rc6 next-20220301]
-[cannot apply to kees/for-next/pstore]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Meng-Tang/fs-proc-optimize-exactly-register-one-ctl_table/20220301-195515
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mcgrof/linux.git sysctl-next
-config: nds32-allnoconfig (https://download.01.org/0day-ci/archive/20220301/202203012347.yd56xhtd-lkp@intel.com/config)
-compiler: nds32le-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/d9e9a410cf46b383390d668770fff70540e27528
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Meng-Tang/fs-proc-optimize-exactly-register-one-ctl_table/20220301-195515
-        git checkout d9e9a410cf46b383390d668770fff70540e27528
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash fs/proc/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   fs/proc/proc_sysctl.c: In function 'new_links_single':
->> fs/proc/proc_sysctl.c:1281:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-    1281 |         int len = strlen(table->procname) + 1;
-         |         ^~~
-   fs/proc/proc_sysctl.c: At top level:
->> fs/proc/proc_sysctl.c:1638:26: warning: no previous prototype for '__register_sysctl_table_single' [-Wmissing-prototypes]
-    1638 | struct ctl_table_header *__register_sysctl_table_single(
-         |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   fs/proc/proc_sysctl.c: In function 'put_links_single':
-   fs/proc/proc_sysctl.c:1988:9: warning: ISO C90 forbids mixed declarations and code [-Wdeclaration-after-statement]
-    1988 |         struct ctl_table_header *link_head;
-         |         ^~~~~~
-
-
-vim +1281 fs/proc/proc_sysctl.c
-
-  1256	
-  1257	static struct ctl_table_header *new_links_single(struct ctl_dir *dir, struct ctl_table *table,
-  1258		struct ctl_table_root *link_root)
-  1259	{
-  1260		struct ctl_table *link_table;
-  1261		struct ctl_table_header *links;
-  1262		struct ctl_node *node;
-  1263		char *link_name;
-  1264		int name_bytes = 0;
-  1265	
-  1266		name_bytes += strlen(table->procname) + 1;
-  1267	
-  1268		links = kzalloc(sizeof(struct ctl_table_header) +
-  1269				sizeof(struct ctl_node) +
-  1270				sizeof(struct ctl_table)*2 +
-  1271				name_bytes,
-  1272				GFP_KERNEL);
-  1273	
-  1274		if (!links)
-  1275			return NULL;
-  1276	
-  1277		node = (struct ctl_node *)(links + 1);
-  1278		link_table = (struct ctl_table *)(node + 1);
-  1279		link_name = (char *)&link_table[2];
-  1280	
-> 1281		int len = strlen(table->procname) + 1;
-  1282	
-  1283		memcpy(link_name, table->procname, len);
-  1284		link_table->procname = link_name;
-  1285		link_table->mode = S_IFLNK|S_IRWXUGO;
-  1286		link_table->data = link_root;
-  1287		link_name += len;
-  1288	
-  1289		init_header_single(links, dir->header.root, dir->header.set, node, link_table);
-  1290		links->nreg = 1;
-  1291	
-  1292		return links;
-  1293	}
-  1294	static struct ctl_table_header *new_links(struct ctl_dir *dir, struct ctl_table *table,
-  1295		struct ctl_table_root *link_root)
-  1296	{
-  1297		struct ctl_table *link_table, *entry, *link;
-  1298		struct ctl_table_header *links;
-  1299		struct ctl_node *node;
-  1300		char *link_name;
-  1301		int nr_entries, name_bytes;
-  1302	
-  1303		name_bytes = 0;
-  1304		nr_entries = 0;
-  1305		for (entry = table; entry->procname; entry++) {
-  1306			nr_entries++;
-  1307			name_bytes += strlen(entry->procname) + 1;
-  1308		}
-  1309	
-  1310		links = kzalloc(sizeof(struct ctl_table_header) +
-  1311				sizeof(struct ctl_node)*nr_entries +
-  1312				sizeof(struct ctl_table)*(nr_entries + 1) +
-  1313				name_bytes,
-  1314				GFP_KERNEL);
-  1315	
-  1316		if (!links)
-  1317			return NULL;
-  1318	
-  1319		node = (struct ctl_node *)(links + 1);
-  1320		link_table = (struct ctl_table *)(node + nr_entries);
-  1321		link_name = (char *)&link_table[nr_entries + 1];
-  1322	
-  1323		for (link = link_table, entry = table; entry->procname; link++, entry++) {
-  1324			int len = strlen(entry->procname) + 1;
-  1325			memcpy(link_name, entry->procname, len);
-  1326			link->procname = link_name;
-  1327			link->mode = S_IFLNK|S_IRWXUGO;
-  1328			link->data = link_root;
-  1329			link_name += len;
-  1330		}
-  1331		init_header(links, dir->header.root, dir->header.set, node, link_table);
-  1332		links->nreg = nr_entries;
-  1333	
-  1334		return links;
-  1335	}
-  1336	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+It is, but that's when Co-developed-by should be used.  Otherwise the
+meaning of the second s-o-b is unclear.
