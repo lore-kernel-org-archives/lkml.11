@@ -2,88 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B85EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:15:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236928AbiCASPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:15:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43766 "EHLO
+        id S235805AbiCASQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:16:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236845AbiCASPJ (ORCPT
+        with ESMTP id S232483AbiCASQI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:15:09 -0500
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04016514C;
-        Tue,  1 Mar 2022 10:14:17 -0800 (PST)
-Received: by mail-lf1-f53.google.com with SMTP id w27so28304626lfa.5;
-        Tue, 01 Mar 2022 10:14:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ati6pz51+/93fkjrp3qu8EZp+J9aKKrBiRYbSU6Fg0U=;
-        b=Om1b/3NSga/xQw9wOdywHI2V9HI8m4djhIgNTKV3srkMs4k0nk+2GOvMb2tndm9t5g
-         twyHsKrnN511CmtFTobiO4r5Zp78Yy1vXEEh+J/Ro/yKd0pMORUeoixw/56M8Yywlnkc
-         Uhy3Kkaj8p3pXXSVHdDWsndVxzWADMj7G6WOjVo8aklMX+TWNORD1ljunV8N41n66E0B
-         3/Km1TkKz0nodT5N/m/GO8uCK9OLXYLUf5EYuGS70p1qjYrLReKtCzek70GybFfi2i7j
-         oFDcbM7o6Ho+Avai07riui3B6AWFiQQUnQnv+x7sdOtPx4aaOiafUmZrs+Rvl/U2zDkA
-         QrMA==
-X-Gm-Message-State: AOAM5321BECP3ZttYhVGCgeX7GIhqGX5B3f0lTBtJ0xqKwWdHAP3WuqX
-        LVeZrvIMtb20lN1g0S9ibsODiJqo8HG8lOWHCsU=
-X-Google-Smtp-Source: ABdhPJwwTCy5Iu77Y+Yoc3pN2nsGqYdY3FbTWRPKg/kzAovjLy1lxlN7CbrtLeLiVxVccp2ScsWZHip7IloooCUnZqM=
-X-Received: by 2002:ac2:58d8:0:b0:442:bc4b:afb7 with SMTP id
- u24-20020ac258d8000000b00442bc4bafb7mr15934522lfo.99.1646158456152; Tue, 01
- Mar 2022 10:14:16 -0800 (PST)
+        Tue, 1 Mar 2022 13:16:08 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32AD531211
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:15:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646158527; x=1677694527;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=2exBBjBLdIHC1K+wFc+04tbUBRcDoyFCQXB7El+ibuk=;
+  b=CAySWsKr5miTj17W/lESFZQGvVV3nvlN/VNNvuTQiNuoL99chGqd1Y8I
+   oqO1LykIOc890YsEv0aLxRQdcqJK4Jnawve1B+p6Uq368hF76kZIEBRtM
+   yHX8URRauf07VJiiDE+MRT4It5VhMPp7TLsMfMMTQ2h8t3LBU5cMU03vc
+   Vfsm6Pl1YGKJ7oF6NqHUyxT9yiiQxKxr8yO3ZKQs+Tv1ys79qZWeNPdnt
+   UB0z61XzPZcPhB4hHUFguXlUfwrjNZlFo4ogU2ZIb37Zs+m0zAp4vl2lI
+   WyMJvtGOeKNQho11SL7sMHojhLOwoTjuq5u9sfkLcHRmJrGb5SMZ4dz/R
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="236713345"
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="236713345"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 10:15:26 -0800
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="639463469"
+Received: from bklinvil-mobl.amr.corp.intel.com (HELO localhost) ([10.212.48.220])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 10:15:26 -0800
+Date:   Tue, 1 Mar 2022 10:15:25 -0800
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     Dan Williams <dan.j.williams@intel.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Rick Edgecombe <rick.p.edgecombe@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V8 37/44] memremap_pages: Set PKS PKey in PTEs if
+ PGMAP_PROTECTIONS is requested
+Message-ID: <Yh5ivUp1dIFlih6L@iweiny-desk3>
+References: <20220127175505.851391-1-ira.weiny@intel.com>
+ <20220127175505.851391-38-ira.weiny@intel.com>
+ <CAPcyv4go5pqWdvR7w7kDjOKQywTUwZ=Tbn-LSmOyE-4GdhZsmg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220301010412.431299-1-namhyung@kernel.org> <20220301010412.431299-3-namhyung@kernel.org>
- <Yh3heodejlBiwqLj@hirez.programming.kicks-ass.net> <20220301094523.5e4bc77d@gandalf.local.home>
-In-Reply-To: <20220301094523.5e4bc77d@gandalf.local.home>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Tue, 1 Mar 2022 10:14:05 -0800
-Message-ID: <CAM9d7ci_8JsvA2U8fLxON0y+5cATmJH5xUZgzWnbAkXLumO2bw@mail.gmail.com>
-Subject: Re: [PATCH 2/4] locking: Apply contention tracepoints in the slow path
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Byungchul Park <byungchul.park@lge.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org,
-        bpf <bpf@vger.kernel.org>, Radoslaw Burny <rburny@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPcyv4go5pqWdvR7w7kDjOKQywTUwZ=Tbn-LSmOyE-4GdhZsmg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Steve,
-
-On Tue, Mar 1, 2022 at 6:45 AM Steven Rostedt <rostedt@goodmis.org> wrote:
->
-> On Tue, 1 Mar 2022 10:03:54 +0100
-> Peter Zijlstra <peterz@infradead.org> wrote:
->
-> > diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-> > index 8555c4efe97c..18b9f4bf6f34 100644
-> > --- a/kernel/locking/rtmutex.c
-> > +++ b/kernel/locking/rtmutex.c
-> > @@ -1579,6 +1579,8 @@ static int __sched __rt_mutex_slowlock(struct rt_mutex_base *lock,
+On Fri, Feb 04, 2022 at 09:41:59AM -0800, Dan Williams wrote:
+> On Thu, Jan 27, 2022 at 9:55 AM <ira.weiny@intel.com> wrote:
 > >
-> >       set_current_state(state);
+> > From: Ira Weiny <ira.weiny@intel.com>
 > >
-> > +     trace_contention_begin(lock, _RET_IP_, LCB_F_RT);
->
-> I guess one issue with this is that _RET_IP_ will return the rt_mutex
-> address if this is not inlined, making the _RET_IP_ rather useless.
->
-> Now, if we can pass the _RET_IP_ into __rt_mutex_slowlock() then we could
-> reference that.
+> > When the user requests protections the dev_pagemap mappings need to have
+> > a PKEY set.
+> >
+> > Define devmap_protection_adjust_pgprot() to add the PKey to the page
+> > protections.  Call it when PGMAP_PROTECTIONS is requested when remapping
+> > pages.
+> >
+> > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> > ---
+> 
+> Does this patch have a reason to exist independent of the patch that
+> introduced devmap_protection_enable()?
+> 
+> Otherwise looks ok.
 
-Right, that's what I did in patch 03 and 04 for mutex and rwsem.
-But I forgot to update rt_mutex, will fix.
+Just easier to review this specific change.  For V8 I split the patches up
+quite a bit to be much more direct to 1 change/patch.  I think it worked out
+well and I don't plan to merge much in V9 because as you say this change looks
+good.  :-D
 
-Thanks,
-Namhyung
+Ira
