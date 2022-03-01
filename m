@@ -2,87 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE92C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:04:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98BC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:04:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238474AbiCAVFP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 16:05:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34168 "EHLO
+        id S238485AbiCAVFc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 16:05:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236415AbiCAVFN (ORCPT
+        with ESMTP id S234273AbiCAVF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 16:05:13 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDEEB70337
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 13:04:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646168671; x=1677704671;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JkBpiGS9qT2A5/AO8ZoQHW0JjgI9k0Vg9Eiwm+kBaEU=;
-  b=T80kjfOwWDXOidMtxI9TOh3GIX2AzvLqmWHjj7OOjb3sS1sGIydpmftX
-   6371v5p0DXAis3WjCpiWG6jvYqGA5Hq3Ii7a+8hoDmbooZG6e8Hn6Uchy
-   gr4KrEHUTq7+JNOmA8QAYENt0WDKOPnWCr2t1K1KhdcmzYtkVFOXsmrvu
-   4YmVFIWPXNLcS2f/nM3SfZtlbHxns0bWbNC1oZTi69uo/hCwafIUFGGUf
-   MPGfWuVv4QG16t7vVxs/8eJG05aitTgRLw1gvmVX/Em/wHdhvPR1MZEcg
-   o7ZqMRgZgGNOEe+BlOsaauYwnXQn9JnCmJpro5Y3+4MW9NEhyrY2J2yS2
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10273"; a="313961779"
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="313961779"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 13:04:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
-   d="scan'208";a="641421998"
-Received: from lkp-server01.sh.intel.com (HELO 2146afe809fb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 01 Mar 2022 13:04:30 -0800
-Received: from kbuild by 2146afe809fb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nP9fZ-00011o-8l; Tue, 01 Mar 2022 21:04:29 +0000
-Date:   Wed, 2 Mar 2022 05:03:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Palmer <daniel@0x0f.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [chenxing:msc313_mainlining 80/96] Error:
- arch/arm/boot/dts/mstar-infinity2m-ssd201-wirelesstag-ido-som2d01.dtsi:18.1-9
- Label or path pm_uart not found
-Message-ID: <202203020419.Kj7avg87-lkp@intel.com>
+        Tue, 1 Mar 2022 16:05:28 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5394370337
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 13:04:46 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id y24so4553626ljh.11
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 13:04:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jpkBhqMELpJRUkOoHFKbzsupAYwAnlqKB8gXhGz5QEA=;
+        b=gAEAIwp5TiyGoTgh4JNV+tH2eEHsDrzmeuag0zysI+PtG0mBbTlY+GQ2Irys79Qi+L
+         cwZSjxBpwdC2wHTKgnSPUDEg4jG5Iqs6jc/4r4BP55ON/wZvI6SvnOqgbVfnTZXuNlCj
+         Sko4sfN5Hk+tcMgzt8aDx7pTJ2JptgMqAsdqc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jpkBhqMELpJRUkOoHFKbzsupAYwAnlqKB8gXhGz5QEA=;
+        b=mRPS7kbxIlKK0UiMkk+YIVDEdk/T1sYsqWlJtq7b61FSEQGGvUff0z6G+8rIaKyB4i
+         SbpkCUN/REgmacPBD8tHTRbsX5R7GkSevGhFEMt2GWFPFEv27QvWQg4/fsRqNPskIStt
+         KKIanwaDpMhKoAv8R3TFFj+INIdsd2l6W21KDb+wb7yTDgxCi+7J0CnJbdmJS/EWWDsg
+         iaH4aLMnssGHJhmXqnnUJtQ9l/EttTyeL6dyV0IuuIu+FM7Pj6Fwz5KYdWNpd2MUwfxv
+         CGl2BkJkxifq8svL9XHZannv3Rxqbg9lGIyPBr98VQt3krQTHwQhjnfCcPx3wvMMDJGK
+         HICQ==
+X-Gm-Message-State: AOAM533DNq7DdhseFiYSBNwwJIZy126ZE5RhbkXNriDLG0+U1otNlmso
+        jYzOv3GlKu2x2mpVfpbckx/y6jtregFYxjP3RRM=
+X-Google-Smtp-Source: ABdhPJxXO16X3+bGO2fzNNUvwtLif5FmOK/c6qwRpsPceXA1PG1C3SF7QgfSS7MENsi/G7Zs7KYlnA==
+X-Received: by 2002:a05:651c:49d:b0:244:ca08:f811 with SMTP id s29-20020a05651c049d00b00244ca08f811mr18285718ljc.379.1646168683883;
+        Tue, 01 Mar 2022 13:04:43 -0800 (PST)
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com. [209.85.208.173])
+        by smtp.gmail.com with ESMTPSA id z25-20020a2eb539000000b00244db8751a7sm2105985ljm.67.2022.03.01.13.04.42
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 01 Mar 2022 13:04:43 -0800 (PST)
+Received: by mail-lj1-f173.google.com with SMTP id v28so23525123ljv.9
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 13:04:42 -0800 (PST)
+X-Received: by 2002:a2e:bc17:0:b0:246:32b7:464 with SMTP id
+ b23-20020a2ebc17000000b0024632b70464mr18195828ljf.506.1646168682597; Tue, 01
+ Mar 2022 13:04:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220301075839.4156-2-xiam0nd.tong@gmail.com> <202203020135.5duGpXM2-lkp@intel.com>
+ <CAHk-=wiVF0SeV2132vaTAcL1ccVDP25LkAgNgPoHXdFc27x-0g@mail.gmail.com> <CAK8P3a0QAECV=_Bu5xnBxjxUHLcaGjBgJEjfMaeKT7StR=acyQ@mail.gmail.com>
+In-Reply-To: <CAK8P3a0QAECV=_Bu5xnBxjxUHLcaGjBgJEjfMaeKT7StR=acyQ@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 1 Mar 2022 13:04:26 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiFbzpyt1-9ZAigFYU7R8g9mEgJho3w7yGYe0h-W==nsw@mail.gmail.com>
+Message-ID: <CAHk-=wiFbzpyt1-9ZAigFYU7R8g9mEgJho3w7yGYe0h-W==nsw@mail.gmail.com>
+Subject: Re: [PATCH 1/6] Kbuild: compile kernel with gnu11 std
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kernel test robot <lkp@intel.com>,
+        Xiaomeng Tong <xiam0nd.tong@gmail.com>,
+        kbuild-all@lists.01.org, Jakob Koschel <jakobkoschel@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Jann Horn <jannh@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>, Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://github.com/linux-chenxing/linux.git msc313_mainlining
-head:   8ac61fd8fe35232e1061ab5e3e7b665cac918068
-commit: a129af18616a3b5ad4c4af70458703a052da2d63 [80/96] ARM: dts: mstar: Add top level dts for ssd201-som2d01
-config: arm-randconfig-r006-20220301 (https://download.01.org/0day-ci/archive/20220302/202203020419.Kj7avg87-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d271fc04d5b97b12e6b797c6067d3c96a8d7470e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/linux-chenxing/linux/commit/a129af18616a3b5ad4c4af70458703a052da2d63
-        git remote add chenxing git://github.com/linux-chenxing/linux.git
-        git fetch --no-tags chenxing msc313_mainlining
-        git checkout a129af18616a3b5ad4c4af70458703a052da2d63
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+On Tue, Mar 1, 2022 at 12:54 PM Arnd Bergmann <arnd@arndb.de> wrote:
+>
+> gcc-11 only shows the one line warning here.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+What an odd warning. Not even a filename, much less a line number?
 
-All errors (new ones prefixed by >>):
+> The source is
+>
+> /* PCI CFG04 status fields */
+> #define PCI_CFG04_STAT_BIT      16
+> #define PCI_CFG04_STAT          0xffff0000
+> #define PCI_CFG04_STAT_66_MHZ   (1 << 21)
+> #define PCI_CFG04_STAT_FBB      (1 << 23)
+> #define PCI_CFG04_STAT_MDPE     (1 << 24)
+> #define PCI_CFG04_STAT_DST      (1 << 25)
+> #define PCI_CFG04_STAT_STA      (1 << 27)
+> #define PCI_CFG04_STAT_RTA      (1 << 28)
+> #define PCI_CFG04_STAT_RMA      (1 << 29)
+> #define PCI_CFG04_STAT_SSE      (1 << 30)
+> #define PCI_CFG04_STAT_PE       (1 << 31)
+> #define KORINA_STAT             (PCI_CFG04_STAT_MDPE | \
+>                                  PCI_CFG04_STAT_STA | \
+>                                  PCI_CFG04_STAT_RTA | \
+>                                  PCI_CFG04_STAT_RMA | \
+>                                  PCI_CFG04_STAT_SSE | \
+>                                  PCI_CFG04_STAT_PE)
+> #define KORINA_CNFG1            ((KORINA_STAT<<16)|KORINA_CMD)
 
->> Error: arch/arm/boot/dts/mstar-infinity2m-ssd201-wirelesstag-ido-som2d01.dtsi:18.1-9 Label or path pm_uart not found
->> FATAL ERROR: Syntax error parsing input tree
+Yeah, looks like that "<< 16" is likely just wrong.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I'm guessing that that KORINA_CNFG1 thing either ends up not
+mattering, or - probably more likely - nobody really used that
+platform at all. It has had pretty much zero updates sinced 2008.
+
+               Linus
