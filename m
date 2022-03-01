@@ -2,135 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:19:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C605C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237939AbiCAUUW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:20:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58178 "EHLO
+        id S235720AbiCAUU1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:20:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237915AbiCAUSr (ORCPT
+        with ESMTP id S238015AbiCAUS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:18:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BD3503ED36
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:18:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646165884;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZQZrtVuy9kKKsyT+8Y9jp+2u0Tvvpcn4qKJuYdqXs+k=;
-        b=VUGXGtK7MojqNmFYEmKvyIaJeD/RjaxsY6zmP9ZVTYhuDwmrsaDKeKSjNqJTPFuYxVyE1X
-        KNxhUN7dKN1qrc3w6NrLpXiWrS5/2wuQFCfJE/RSgWZxBr6hDv17mpBnuC4Ap8ApLMpkJQ
-        IPe08H6cGnI05Zyn06TIlhPjtc5zvII=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-662-FB0fb_oNNIKQZgCaX0zaEQ-1; Tue, 01 Mar 2022 15:18:01 -0500
-X-MC-Unique: FB0fb_oNNIKQZgCaX0zaEQ-1
-Received: by mail-wm1-f69.google.com with SMTP id i20-20020a05600c051400b00380d5eb51a7so1728497wmc.3
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:18:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZQZrtVuy9kKKsyT+8Y9jp+2u0Tvvpcn4qKJuYdqXs+k=;
-        b=smnSa0C4HAOBqJDHAOU0fSM+G5OHmQYlC6098m6rRNeQIvlf7AmQ+X+fLhac6Oth42
-         8axP+Iw6kBPtQYa1n8CC2YosbWSYGnCJSw1Rxy3Ffe9rYOeAIIfkNKdysJb9M7ezImor
-         NO10D5v+y41Y20AziCQV0eoEdq6hD2uESpWs+RSlR9DGs40rtqU7Fr2PuzVbnOS0AJkm
-         v7n95IjHd24DOGmFIYfdxErjdAVCD3CMc0LxrhYfdWXs0TvpxO9u/eBc/dgkLOugukjL
-         Cv4olhjCzt8Icj0HOO+LhROFKDcnZArSEwoQdSPigawSdyr0qmjW9dciKYywEOeGRPVM
-         P2gw==
-X-Gm-Message-State: AOAM530+B0kKkdTSHDz/XmM8iuFw5xTmrE8h7cq6+/98yX54+KRKt5ho
-        KMamCFTYckL0Bvj7y/xpo4pg9fQvGjsjiXySLq2p4mq2i3RVyYJj4QWJsBh0tbCN2U4YxVAo1RE
-        RKDGHBvIcmt6i670PlUtKWBHy
-X-Received: by 2002:adf:e751:0:b0:1f0:2139:2489 with SMTP id c17-20020adfe751000000b001f021392489mr2670919wrn.319.1646165880604;
-        Tue, 01 Mar 2022 12:18:00 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwSGFT/AiTOTVDsPN9t4qCs3g6teuVwBPhl3eBpDFuJTK7Dxs8z9mp2S00EWTLHlAwjOYoweQ==
-X-Received: by 2002:adf:e751:0:b0:1f0:2139:2489 with SMTP id c17-20020adfe751000000b001f021392489mr2670909wrn.319.1646165880336;
-        Tue, 01 Mar 2022 12:18:00 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
-        by smtp.googlemail.com with ESMTPSA id b13-20020a05600c4e0d00b003816cb4892csm6799721wmq.0.2022.03.01.12.17.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 12:17:59 -0800 (PST)
-Message-ID: <815a7008-b8b0-d745-e1c3-96092e887772@redhat.com>
-Date:   Tue, 1 Mar 2022 21:17:58 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH AUTOSEL 5.15 10/23] x86/kvm: Don't use pv
- tlb/ipi/sched_yield if on 1 vCPU
-Content-Language: en-US
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, kvm@vger.kernel.org
+        Tue, 1 Mar 2022 15:18:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3882D3FBDB;
+        Tue,  1 Mar 2022 12:18:07 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFA3D61763;
+        Tue,  1 Mar 2022 20:18:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02A4AC340F2;
+        Tue,  1 Mar 2022 20:18:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646165886;
+        bh=/UQX7PDAgZm+2XBb1KJevOgdGQXGHiW7vLKQqRymvpU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WBsaJWC7vcEPtAGUvHswaRG6nrg4U0MET5mhVFtRjYXSv3XGiMs3xtw76MnriyZMI
+         LBqUtAlO/Zh4jIZA+9M/QELkYetZ90Wtd5haQoGKu86OlfqH/wyN4gK9maJaOwwn1b
+         BpRzn3k4GVrllBk5r/5CV7S1neW2RZVA/Um2zyZNfCJ61z2imznqkwHoePwvdOSCpC
+         k2OZKQFlujrx2msAKaNWhjDpZ6GC9jb5dZTMss7mLCTXtl0PVSDyvmxrhYVdYn01aX
+         HRXYirMGJNC80Fx9gRviSwDzd3J6/PikQFXadoYpDBrMRegk3gEgEnEkHb5d+aYJAF
+         kpeeDihyz3XaA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Niels Dossche <dossche.niels@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Niels Dossche <niels.dossche@ugent.be>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 19/23] ipv6: prevent a possible race condition with lifetimes
+Date:   Tue,  1 Mar 2022 15:16:18 -0500
+Message-Id: <20220301201629.18547-19-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220301201629.18547-1-sashal@kernel.org>
 References: <20220301201629.18547-1-sashal@kernel.org>
- <20220301201629.18547-10-sashal@kernel.org>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220301201629.18547-10-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/1/22 21:16, Sasha Levin wrote:
-> From: Wanpeng Li <wanpengli@tencent.com>
-> 
-> [ Upstream commit ec756e40e271866f951d77c5e923d8deb6002b15 ]
-> 
-> Inspired by commit 3553ae5690a (x86/kvm: Don't use pvqspinlock code if
-> only 1 vCPU), on a VM with only 1 vCPU, there is no need to enable
-> pv tlb/ipi/sched_yield and we can save the memory for __pv_cpu_mask.
-> 
-> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-> Message-Id: <1645171838-2855-1-git-send-email-wanpengli@tencent.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   arch/x86/kernel/kvm.c | 9 ++++++---
->   1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-> index b656456c3a944..811c7aaf23aac 100644
-> --- a/arch/x86/kernel/kvm.c
-> +++ b/arch/x86/kernel/kvm.c
-> @@ -457,19 +457,22 @@ static bool pv_tlb_flush_supported(void)
->   {
->   	return (kvm_para_has_feature(KVM_FEATURE_PV_TLB_FLUSH) &&
->   		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
-> -		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
-> +		kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-> +		(num_possible_cpus() != 1));
->   }
->   
->   static bool pv_ipi_supported(void)
->   {
-> -	return kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI);
-> +	return (kvm_para_has_feature(KVM_FEATURE_PV_SEND_IPI) &&
-> +	       (num_possible_cpus() != 1));
->   }
->   
->   static bool pv_sched_yield_supported(void)
->   {
->   	return (kvm_para_has_feature(KVM_FEATURE_PV_SCHED_YIELD) &&
->   		!kvm_para_has_hint(KVM_HINTS_REALTIME) &&
-> -	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME));
-> +	    kvm_para_has_feature(KVM_FEATURE_STEAL_TIME) &&
-> +	    (num_possible_cpus() != 1));
->   }
->   
->   #define KVM_IPI_CLUSTER_SIZE	(2 * BITS_PER_LONG)
+From: Niels Dossche <dossche.niels@gmail.com>
 
+[ Upstream commit 6c0d8833a605e195ae219b5042577ce52bf71fff ]
 
-NACK
+valid_lft, prefered_lft and tstamp are always accessed under the lock
+"lock" in other places. Reading these without taking the lock may result
+in inconsistencies regarding the calculation of the valid and preferred
+variables since decisions are taken on these fields for those variables.
 
-Not really necessary.
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
+Link: https://lore.kernel.org/r/20220223131954.6570-1-niels.dossche@ugent.be
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv6/addrconf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Paolo
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index c6e1989ab2ed9..01cbfb4321eec 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4996,6 +4996,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
+ 	    nla_put_s32(skb, IFA_TARGET_NETNSID, args->netnsid))
+ 		goto error;
+ 
++	spin_lock_bh(&ifa->lock);
+ 	if (!((ifa->flags&IFA_F_PERMANENT) &&
+ 	      (ifa->prefered_lft == INFINITY_LIFE_TIME))) {
+ 		preferred = ifa->prefered_lft;
+@@ -5017,6 +5018,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
+ 		preferred = INFINITY_LIFE_TIME;
+ 		valid = INFINITY_LIFE_TIME;
+ 	}
++	spin_unlock_bh(&ifa->lock);
+ 
+ 	if (!ipv6_addr_any(&ifa->peer_addr)) {
+ 		if (nla_put_in6_addr(skb, IFA_LOCAL, &ifa->addr) < 0 ||
+-- 
+2.34.1
 
