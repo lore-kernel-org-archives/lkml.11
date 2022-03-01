@@ -2,184 +2,359 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B34C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98953C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237590AbiCAUNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:13:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40732 "EHLO
+        id S237647AbiCAUOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:14:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237466AbiCAUNa (ORCPT
+        with ESMTP id S232861AbiCAUOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:13:30 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2667813DC3
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:12:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646165564;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kUL9utw17ggwuAli/GlAqssIM3wigY+ILrUoFV3hSoM=;
-        b=L0b/NZF7aYRavNKnSrzEjbNNzUM+EofRM2aZMaxcnfrmMeRM/o0KLJxsnP54WrhsdQbvg9
-        AZkhVpIl9Ag8VV/1bd1KDdzFVnIAY06uRK87+ekZFQrB7ZUyZ5r7p8uvDKJJzG0Ty6Wfvp
-        UsZq2R7eDqDDN9Wc0tuK2bU3cnovuJ4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-321-1oiBged-MraGCngYKN2FyA-1; Tue, 01 Mar 2022 15:12:43 -0500
-X-MC-Unique: 1oiBged-MraGCngYKN2FyA-1
-Received: by mail-wm1-f70.google.com with SMTP id f7-20020a7bcd07000000b003815081b984so907625wmj.7
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:12:42 -0800 (PST)
+        Tue, 1 Mar 2022 15:14:20 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFF431349;
+        Tue,  1 Mar 2022 12:13:35 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id r187-20020a1c2bc4000000b003810e6b192aso2093561wmr.1;
+        Tue, 01 Mar 2022 12:13:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=cNkSABONt1iilJgkq2YMVmO0Set3/v2FPmsLCi8Uqs4=;
+        b=qiQAcVWEGHMTEbYpNdDeCnzKri1SumVGIwsTbmLRl+4F1NoaYSlLt1lMk8uLPMf8vf
+         EWXqbZxsLcJicelqJcif5ezMG54km1qCSm5Tw/NmpUtZyYLrdsyys39XfxZ530OEwnON
+         +VzVV2KdTRFlZBObGfvWyJk4w3m27Amx+dhX9SDrYwWr7PL9ENugZ1ew10hSxugB2YGH
+         B+PToZWHN8O5wdHei+18mPyDtJ1ahxKNW+WZxBlooj0NpeLTPOE3VmfgEOOtu5m4n/kQ
+         95POXWtjgAE13h0NpsiUEwp2Ge4R7XC9abbIxkTOHO30a+cmmHz6xkc3bgXX+YlMNDb4
+         sytg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kUL9utw17ggwuAli/GlAqssIM3wigY+ILrUoFV3hSoM=;
-        b=KdDO88JFWFUPuuSfIwqsBfVMt4DHdFA0/taVnnppfKPQ+6bre3I2U1cz9PwflQ85Md
-         R7HkLlkOARxkYvZvumgu+MIJW8t09v+WznbZYcvrsbUlQGOT33Wb4inQuGG9K8tXjTGg
-         7f24sRQt4auQWUqjfvEqxA4GUNQOvYbC8Rs3LHRFNxb41LQSL/mmx7bRJFPpsB9WEg2V
-         8z9dWYgAmcY/zxMrhiwKZKr5pLLwQIvp9MtQ+CYtu20GL3/wxvbredMiOe+dcETmDUSO
-         +evUF5kGHk9jUPK5878Z+LF6HPZNdJ25cpm+4GqmKWUoklM8oI13wdTiMAZ+0eTtseer
-         AgrA==
-X-Gm-Message-State: AOAM530Tt98EWTicVHM1hZgwurgjldPxz8YpC/yxBQ+5m6gnmx/y9MqZ
-        dn+21QaWbPxNv9rxC1tUU05i0LP9eNnjxEunduskHgNe8YIIfJKtVc4sXWtRBkZmuo5lddd3sgg
-        V0EuyRQf0L57DV8Y9Oxf59lcM
-X-Received: by 2002:a05:600c:1d1f:b0:381:4146:bcd9 with SMTP id l31-20020a05600c1d1f00b003814146bcd9mr15607284wms.69.1646165561816;
-        Tue, 01 Mar 2022 12:12:41 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxU0cx8bRi3mlhUWzUAEJSXjw3hX6vV+cLQs5XnWT1Bft/chRXuWwxeF43jYoFaCBpyw6jj+w==
-X-Received: by 2002:a05:600c:1d1f:b0:381:4146:bcd9 with SMTP id l31-20020a05600c1d1f00b003814146bcd9mr15607276wms.69.1646165561512;
-        Tue, 01 Mar 2022 12:12:41 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
-        by smtp.googlemail.com with ESMTPSA id z3-20020a1cf403000000b0037d1f4a2201sm3401809wma.21.2022.03.01.12.12.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 12:12:40 -0800 (PST)
-Message-ID: <f444790d-3bc7-9870-576e-29f30354a63b@redhat.com>
-Date:   Tue, 1 Mar 2022 21:12:39 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cNkSABONt1iilJgkq2YMVmO0Set3/v2FPmsLCi8Uqs4=;
+        b=508jJMa1Nke8XQTVpeC3po+gJuPyjLT1tWpJd+inpZX+LJ4vrnxZHVuPuUSa71L7T0
+         7xaqX0fF9dwZXCNfsDnNefeguMovQpbAu/7qqgH1PnayKeaWvmlJQCVwEcL2CGyiY3A1
+         LXEKHjcqFPqQrof/OAV7IhRw6dY9RdA6AbsZrkDXXsbSjLGyzyF3OaJV6GSkDS+iMoT9
+         Eea/5hKnL+SUeAkcWtv624CzB2DVLG/cUV0CJagQRWnSmMoEyAiOAhgxtKmAM4t5A4D2
+         EylkaUjKAOsUS8VqbVA2WKbMcdeyChdLzcLls2juFSvtEbWxnLDm5+N3RwREFaZ1YYVr
+         CCgQ==
+X-Gm-Message-State: AOAM5313MVkAj9/FivxxVXDyvEeG0J1eshA713Kx0L2jfWN569hYUnXo
+        Jnl4rb4RRbcD7FoCfXlUQnY=
+X-Google-Smtp-Source: ABdhPJzj4CEi9+klR+Zl+Z4BwpFJwMS67HUqMOKpBUhrAmFq7liQlA7Bpra6Dk99ZRQ8yq4l+tVq3w==
+X-Received: by 2002:a05:600c:1f14:b0:381:812d:7214 with SMTP id bd20-20020a05600c1f1400b00381812d7214mr5539531wmb.190.1646165613668;
+        Tue, 01 Mar 2022 12:13:33 -0800 (PST)
+Received: from adroid (027-177-184-091.ip-addr.vsenet.de. [91.184.177.27])
+        by smtp.gmail.com with ESMTPSA id l13-20020a05600002ad00b001ea78a5df11sm17133591wry.1.2022.03.01.12.13.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 12:13:33 -0800 (PST)
+Date:   Tue, 1 Mar 2022 21:13:30 +0100
+From:   Martin =?iso-8859-1?Q?J=FCcker?= <martin.juecker@gmail.com>
+To:     Inki Dae <inki.dae@samsung.com>
+Cc:     Joonyoung Shim <jy0922.shim@samsung.com>,
+        Seung-Woo Kim <sw0312.kim@samsung.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin =?iso-8859-1?Q?J=FCcker?= <martin.juecker@gmail.com>
+Subject: Re: [PATCH] drm/exynos: fimd: add BGR support for exynos4/5
+Message-ID: <20220301201330.GA12615@adroid>
+References: <CGME20220129220203epcas1p25b1704191dd7babfb8d5b8dc6704d566@epcas1p2.samsung.com>
+ <20220129220153.GA33165@adroid>
+ <5e18705f-79c1-18a7-57f2-74866abe21e9@samsung.com>
+ <20220224232723.GA133007@adroid>
+ <b9650211-2e98-5e1f-1dc9-9c5c3571f359@samsung.com>
+ <20220225093313.GA87542@adroid>
+ <45867b37-1fb0-2f09-5961-6f099a1ed611@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 20/28] KVM: x86/mmu: Allow yielding when zapping GFNs
- for defunct TDP MMU root
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Ben Gardon <bgardon@google.com>,
-        Mingwei Zhang <mizhang@google.com>
-References: <20220226001546.360188-1-seanjc@google.com>
- <20220226001546.360188-21-seanjc@google.com>
- <28276890-c90c-e9a9-3cab-15264617ef5a@redhat.com>
- <Yh53V23gSJ6jphnS@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <Yh53V23gSJ6jphnS@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <45867b37-1fb0-2f09-5961-6f099a1ed611@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/1/22 20:43, Sean Christopherson wrote:
->> and after spending quite some time I wonder if all this should just be
->>
->>          if (refcount_dec_not_one(&root->tdp_mmu_root_count))
->>                  return;
->>
->> 	if (!xchg(&root->role.invalid, true) {
+Hi Inki,
+
+On Tue, Mar 01, 2022 at 04:52:20PM +0900, Inki Dae wrote:
+> Hi Martin,
 > 
-> The refcount being '1' means there's another task currently using root, marking
-> the root invalid will mean checks on the root's validity are non-deterministic
-> for the other task.
+> 22. 2. 25. 18:33에 Martin Jücker 이(가) 쓴 글:
+> > Hello Inki,
+> > 
+> > On Fri, Feb 25, 2022 at 12:52:56PM +0900, Inki Dae wrote:
+> >> Hi Martin,
+> >>
+> >> 22. 2. 25. 08:27에 Martin Jücker 이(가) 쓴 글:
+> >>> Hello Inki,
+> >>>
+> >>> On Thu, Feb 24, 2022 at 10:41:04AM +0900, Inki Dae wrote:
+> >>>> Hi Martin.
+> >>>>
+> >>>> I found that exynos4 and 5 data sheet include documented same register.
+> >>>> RGB_ORDER_E field of VIDCONx registers will do same thing.
+> >>>
+> >>> If I read the manual correctly, this register combined with the
+> >>> RGB_ORDER_O makes it possible to map the whole RGB interface output to a
+> >>> different order. What my patch provides is a way to configure each
+> >>> hardware plane separately while maintaining a consistent output on the
+> >>> RGB interface.
+> >>>
+> >>
+> >> Understood. Your patch will allow BGR pixel order per a plane. Seems to be useful because a framebuffer with BGR pixel format can be displayed on screen without any color space conversion. :)
+> >>
+> >>> Implementing the RGB_ORDER_O and E would need some logic to make sure
+> >>> that all planes are always using the same RGB order.
+> >>>
+> >>>>
+> >>>> I'm not sure whether the use of undocumented register is safe or not - maybe some HW bug exists.
+> >>>
+> >>> I see, that makes sense. Would it be possible then to introduce a new
+> >>> compatible, e.g. samsung,exynos4210-fimd-ext which can be used on tested
+> >>
+> >> Seems providing a new compatible is not a good idea.
 
-Do you mean it's not possible to use refcount_dec_not_one, otherwise 
-kvm_tdp_mmu_get_root is not guaranteed to reject the root?
+Thinking about it afterwards, I fully agree :)
 
->> 	 	tdp_mmu_zap_root(kvm, root, shared);
->>
->> 		/*
->> 		 * Do not assume the refcount is still 1: because
->> 		 * tdp_mmu_zap_root can yield, a different task
->> 		 * might have grabbed a reference to this root.
->> 		 *
->> 	        if (refcount_dec_not_one(&root->tdp_mmu_root_count))
+> >>
+> >>> devices? I know that some other Galaxy Note and S devices with the
+> >>> exynos4 chip have the same problem (and solution).
+> >>
+> >> Could you give me more details about the same problem and its solution on the devices?
+> >> It would be useful for us to decide the upstream direction.
+> >>
+> >> If necessary then we may need to contact HW engineer for clarity.
+> > 
+> > Here is my current understanding of the situation:
+> > 
+> > The issue is related to Android and a recovery image having conflicting
+> > pixel formats on the same device. There is a solution in Replicant[1]
+> > for this using parameters for the fimd driver to force the pixel format
+> > to RGB or BGR. It's using the PNRMODE register on VIDCON0, but this
+> > solution needs two separate kernels to be built to add the parameter as
+> > the boot loader is not adjustable.
+> > 
+> > This was also discussed in dri-devel irc and it was proposed to expose
+> > both formats and fail the atomic commit if userspace tried to use both
+> > RGB and BGR formats at the same time. With this approach there should be
+> > something on the screen but it might happen that some users can't deal
+> > with the failing commits as it's rather difficult to find the cause and
+> > fix it on the go.
 > 
-> This is wrong, _this_ task can't drop a reference taken by the other task.
-
-This is essentially the "kvm_tdp_mmu_put_root(kvm, root, shared);" (or 
-"goto beginning_of_function;") part of your patch.
-
->>          	        return;
->> 	}
->>
->> 	/*
->> 	 * The root is invalid, and its reference count has reached
->> 	 * zero.  It must have been zapped either in the "if" above or
->> 	 * by someone else, and we're definitely the last thread to see
->> 	 * it apart from RCU-protected page table walks.
->> 	 */
->> 	refcount_set(&root->tdp_mmu_root_count, 0);
+> Thanks for sharing.
 > 
-> Not sure what you intended here, KVM should never force a refcount to '0'.
-
-It's turning a refcount_dec_not_one into a refcount_dec_and_test.  It 
-seems legit to me, because the only refcount_inc_not_zero is in a 
-write-side critical section.  If the refcount goes to zero on the 
-read-side, the root is gone for good.
-
-> xchg() is a very good idea.  The smp_mb_*() stuff was carried over from the previous
-> version where this sequence set another flag in addition to role.invalid.
+> > 
+> > After that I accidentally discovered this undocumented register while
+> > reading the old vendor sources and it seems that it fixes all the
 > 
-> Is this less funky (untested)?
+> Are the old vendor sources using this undocumented register? If so then the use of the register would be safe.
+
+Here are some examples for vendor sources collected by Krzysztof that
+make use of this register on several Exynos4/5 devices.
+
+* Galaxy S4 (Exynos 5410) [1]
+* Samsung Galaxy Tab S10.5 (Exynos 5420) [2]
+* Galaxy Note 10.1 (Exynos 4412) [3]
+* Galaxy S2/S3 (Exynos 4210/4412) [4]
+
 > 
-> 	/*
-> 	 * Invalidate the root to prevent it from being reused by a vCPU while
-> 	 * the root is being zapped, i.e. to allow yielding while zapping the
-> 	 * root (see below).
-> 	 *
-> 	 * Free the root if it's already invalid.  Invalid roots must be zapped
-> 	 * before their last reference is put, i.e. there's no work to be done,
-> 	 * and all roots must be invalidated before they're freed (this code).
-> 	 * Re-zapping invalid roots would put KVM into an infinite loop.
-> 	 *
-> 	 * Note, xchg() provides an implicit barrier to ensure role.invalid is
-> 	 * visible if a concurrent reader acquires a reference after the root's
-> 	 * refcount is reset.
-> 	 */
-> 	if (xchg(root->role.invalid, true))
-> 		spin_lock(&kvm->arch.tdp_mmu_pages_lock);
-> 		list_del_rcu(&root->link);
-> 		spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
+> > issues. At least if there are no HW bugs as you mentioned.
 > 
-> 		call_rcu(&root->rcu_head, tdp_mmu_free_sp_rcu_callback);
-> 		return;
-> 	}
+> I will try to contact HW engineer and check if no problem.
 
-Based on my own version, I guess you mean (without comments due to 
-family NMI):
+If you could get definitive confirmation, that would be great of course.
 
-         if (!refcount_dec_and_test(&root->tdp_mmu_root_count))
-                 return;
+Thank you for your effort.
 
-	if (!xchg(&root->role.invalid, true) {
-		refcount_set(&root->tdp_mmu_count, 1);
-	 	tdp_mmu_zap_root(kvm, root, shared);
-	        if (!refcount_dec_and_test(&root->tdp_mmu_root_count))
-         	        return;
-	}
+Kind Regards
+Martin
 
-         spin_lock(&kvm->arch.tdp_mmu_pages_lock);
-         list_del_rcu(&root->link);
-         spin_unlock(&kvm->arch.tdp_mmu_pages_lock);
-         call_rcu(&root->rcu_head, tdp_mmu_free_sp_rcu_callback);
+[1] https://github.com/krzk/linux-vendor-backup/blob/mokee/android-3.4-samsung-galaxy-s4-i9500-exynos5410/drivers/video/s3c-fb.c#L1127
+[2] https://github.com/krzk/linux-vendor-backup/blob/mokee/android-3.4-samsung-galaxy-tab-s-10.5-sm-t805-exynos5420/drivers/video/s3c-fb.c#L1533
+[3] https://github.com/krzk/linux-vendor-backup/blob/samsung/galaxy-note-tab-10.1-2012-gt-n8010-p4note-exynos4412-dump/drivers/video/samsung/s3cfb_ops.c#L1594
+[4] https://github.com/krzk/linux-vendor-backup/blob/lineage/android-samsung-galaxy-i9100-i9300-exynos4210-exynos4412/drivers/video/samsung/s3cfb_ops.c#L1600
 
-Paolo
-
+>
+> Thanks,
+> Inki Dae
+> 
+> > 
+> 
+> 
+> 
+> > Kind Regards
+> > Martin
+> > 
+> > [1] https://protect2.fireeye.com/v1/url?k=d515db34-b4683348-d514507b-74fe485cc33c-0ee001ffdcafd932&q=1&e=851ccfed-b6fa-4794-8989-27ef28bc7ac6&u=https%3A%2F%2Fgit.replicant.us%2Freplicant-next%2Fkernel_replicant_linux%2Fcommit%2F%3Fh%3Dreplicant-11%26id%3Dcc5a0615b40cd5ede1eb87a60daa50333701a135
+> > 
+> >>
+> >> Thanks,
+> >> Inki Dae
+> >>
+> >>>
+> >>>>
+> >>>> Anyway, I'd like to recommend you to use documented register only.
+> >>>>
+> >>>> Sorry for late and thanks,
+> >>>> Inki Dae
+> >>>
+> >>> Kind Regards
+> >>> Martin
+> >>>
+> >>>>
+> >>>> 22. 1. 30. 07:01에 Martin Jücker 이(가) 쓴 글:
+> >>>>> In the downstream kernels for exynos4 and exynos5 devices, there is an
+> >>>>> undocumented register that controls the order of the RGB output. It can
+> >>>>> be set to either normal order or reversed, which enables BGR support for
+> >>>>> those SoCs.
+> >>>>>
+> >>>>> This patch enables the BGR support for all the SoCs that were found to
+> >>>>> have at least one device with this logic in the corresponding downstream
+> >>>>> kernels.
+> >>>>>
+> >>>>> Signed-off-by: Martin Jücker <martin.juecker@gmail.com>
+> >>>>> ---
+> >>>>>  drivers/gpu/drm/exynos/exynos_drm_fimd.c | 42 ++++++++++++++++++++++--
+> >>>>>  include/video/samsung_fimd.h             |  4 +++
+> >>>>>  2 files changed, 44 insertions(+), 2 deletions(-)
+> >>>>>
+> >>>>> diff --git a/drivers/gpu/drm/exynos/exynos_drm_fimd.c b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> >>>>> index c735e53939d8..cb632360c968 100644
+> >>>>> --- a/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> >>>>> +++ b/drivers/gpu/drm/exynos/exynos_drm_fimd.c
+> >>>>> @@ -109,6 +109,7 @@ struct fimd_driver_data {
+> >>>>>  	unsigned int has_dp_clk:1;
+> >>>>>  	unsigned int has_hw_trigger:1;
+> >>>>>  	unsigned int has_trigger_per_te:1;
+> >>>>> +	unsigned int has_bgr_support:1;
+> >>>>>  };
+> >>>>>  
+> >>>>>  static struct fimd_driver_data s3c64xx_fimd_driver_data = {
+> >>>>> @@ -138,6 +139,7 @@ static struct fimd_driver_data exynos4_fimd_driver_data = {
+> >>>>>  	.lcdblk_bypass_shift = 1,
+> >>>>>  	.has_shadowcon = 1,
+> >>>>>  	.has_vtsel = 1,
+> >>>>> +	.has_bgr_support = 1,
+> >>>>>  };
+> >>>>>  
+> >>>>>  static struct fimd_driver_data exynos5_fimd_driver_data = {
+> >>>>> @@ -149,6 +151,7 @@ static struct fimd_driver_data exynos5_fimd_driver_data = {
+> >>>>>  	.has_vidoutcon = 1,
+> >>>>>  	.has_vtsel = 1,
+> >>>>>  	.has_dp_clk = 1,
+> >>>>> +	.has_bgr_support = 1,
+> >>>>>  };
+> >>>>>  
+> >>>>>  static struct fimd_driver_data exynos5420_fimd_driver_data = {
+> >>>>> @@ -162,6 +165,7 @@ static struct fimd_driver_data exynos5420_fimd_driver_data = {
+> >>>>>  	.has_vtsel = 1,
+> >>>>>  	.has_mic_bypass = 1,
+> >>>>>  	.has_dp_clk = 1,
+> >>>>> +	.has_bgr_support = 1,
+> >>>>>  };
+> >>>>>  
+> >>>>>  struct fimd_context {
+> >>>>> @@ -226,6 +230,18 @@ static const uint32_t fimd_formats[] = {
+> >>>>>  	DRM_FORMAT_ARGB8888,
+> >>>>>  };
+> >>>>>  
+> >>>>> +static const uint32_t fimd_extended_formats[] = {
+> >>>>> +	DRM_FORMAT_C8,
+> >>>>> +	DRM_FORMAT_XRGB1555,
+> >>>>> +	DRM_FORMAT_XBGR1555,
+> >>>>> +	DRM_FORMAT_RGB565,
+> >>>>> +	DRM_FORMAT_BGR565,
+> >>>>> +	DRM_FORMAT_XRGB8888,
+> >>>>> +	DRM_FORMAT_XBGR8888,
+> >>>>> +	DRM_FORMAT_ARGB8888,
+> >>>>> +	DRM_FORMAT_ABGR8888,
+> >>>>> +};
+> >>>>> +
+> >>>>>  static const unsigned int capabilities[WINDOWS_NR] = {
+> >>>>>  	0,
+> >>>>>  	EXYNOS_DRM_PLANE_CAP_WIN_BLEND | EXYNOS_DRM_PLANE_CAP_PIX_BLEND,
+> >>>>> @@ -673,21 +689,25 @@ static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win,
+> >>>>>  		val |= WINCONx_BYTSWP;
+> >>>>>  		break;
+> >>>>>  	case DRM_FORMAT_XRGB1555:
+> >>>>> +	case DRM_FORMAT_XBGR1555:
+> >>>>>  		val |= WINCON0_BPPMODE_16BPP_1555;
+> >>>>>  		val |= WINCONx_HAWSWP;
+> >>>>>  		val |= WINCONx_BURSTLEN_16WORD;
+> >>>>>  		break;
+> >>>>>  	case DRM_FORMAT_RGB565:
+> >>>>> +	case DRM_FORMAT_BGR565:
+> >>>>>  		val |= WINCON0_BPPMODE_16BPP_565;
+> >>>>>  		val |= WINCONx_HAWSWP;
+> >>>>>  		val |= WINCONx_BURSTLEN_16WORD;
+> >>>>>  		break;
+> >>>>>  	case DRM_FORMAT_XRGB8888:
+> >>>>> +	case DRM_FORMAT_XBGR8888:
+> >>>>>  		val |= WINCON0_BPPMODE_24BPP_888;
+> >>>>>  		val |= WINCONx_WSWP;
+> >>>>>  		val |= WINCONx_BURSTLEN_16WORD;
+> >>>>>  		break;
+> >>>>>  	case DRM_FORMAT_ARGB8888:
+> >>>>> +	case DRM_FORMAT_ABGR8888:
+> >>>>>  	default:
+> >>>>>  		val |= WINCON1_BPPMODE_25BPP_A1888;
+> >>>>>  		val |= WINCONx_WSWP;
+> >>>>> @@ -695,6 +715,18 @@ static void fimd_win_set_pixfmt(struct fimd_context *ctx, unsigned int win,
+> >>>>>  		break;
+> >>>>>  	}
+> >>>>>  
+> >>>>> +	switch (pixel_format) {
+> >>>>> +	case DRM_FORMAT_XBGR1555:
+> >>>>> +	case DRM_FORMAT_XBGR8888:
+> >>>>> +	case DRM_FORMAT_ABGR8888:
+> >>>>> +	case DRM_FORMAT_BGR565:
+> >>>>> +		writel(WIN_RGB_ORDER_REVERSE, ctx->regs + WIN_RGB_ORDER(win));
+> >>>>> +		break;
+> >>>>> +	default:
+> >>>>> +		writel(WIN_RGB_ORDER_FORWARD, ctx->regs + WIN_RGB_ORDER(win));
+> >>>>> +		break;
+> >>>>> +	}
+> >>>>> +
+> >>>>>  	/*
+> >>>>>  	 * Setting dma-burst to 16Word causes permanent tearing for very small
+> >>>>>  	 * buffers, e.g. cursor buffer. Burst Mode switching which based on
+> >>>>> @@ -1074,8 +1106,14 @@ static int fimd_bind(struct device *dev, struct device *master, void *data)
+> >>>>>  	ctx->drm_dev = drm_dev;
+> >>>>>  
+> >>>>>  	for (i = 0; i < WINDOWS_NR; i++) {
+> >>>>> -		ctx->configs[i].pixel_formats = fimd_formats;
+> >>>>> -		ctx->configs[i].num_pixel_formats = ARRAY_SIZE(fimd_formats);
+> >>>>> +		if (ctx->driver_data->has_bgr_support) {
+> >>>>> +			ctx->configs[i].pixel_formats = fimd_extended_formats;
+> >>>>> +			ctx->configs[i].num_pixel_formats = ARRAY_SIZE(fimd_extended_formats);
+> >>>>> +		} else {
+> >>>>> +			ctx->configs[i].pixel_formats = fimd_formats;
+> >>>>> +			ctx->configs[i].num_pixel_formats = ARRAY_SIZE(fimd_formats);
+> >>>>> +		}
+> >>>>> +
+> >>>>>  		ctx->configs[i].zpos = i;
+> >>>>>  		ctx->configs[i].type = fimd_win_types[i];
+> >>>>>  		ctx->configs[i].capabilities = capabilities[i];
+> >>>>> diff --git a/include/video/samsung_fimd.h b/include/video/samsung_fimd.h
+> >>>>> index c4a93ce1de48..e6966d187591 100644
+> >>>>> --- a/include/video/samsung_fimd.h
+> >>>>> +++ b/include/video/samsung_fimd.h
+> >>>>> @@ -476,6 +476,10 @@
+> >>>>>   * 1111		-none-	 -none-   -none-   -none-    -none-
+> >>>>>  */
+> >>>>>  
+> >>>>> +#define WIN_RGB_ORDER(_win)			(0x2020 + ((_win) * 4))
+> >>>>> +#define WIN_RGB_ORDER_FORWARD			(0 << 11)
+> >>>>> +#define WIN_RGB_ORDER_REVERSE			(1 << 11)
+> >>>>> +
+> >>>>>  /* FIMD Version 8 register offset definitions */
+> >>>>>  #define FIMD_V8_VIDTCON0	0x20010
+> >>>>>  #define FIMD_V8_VIDTCON1	0x20014
+> >>>
+> > 
