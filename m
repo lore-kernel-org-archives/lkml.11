@@ -2,137 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9FE0C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:15:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7786EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237761AbiCAUQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:16:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
+        id S237796AbiCAUQE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:16:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237768AbiCAUPj (ORCPT
+        with ESMTP id S237805AbiCAUP6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:15:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C28C77AA3;
-        Tue,  1 Mar 2022 12:14:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 424B061711;
-        Tue,  1 Mar 2022 20:14:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77B91C340EE;
-        Tue,  1 Mar 2022 20:14:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165691;
-        bh=mP0xiCBVTZASpvu8NNbLJL21KC5qPlxAQ6iuEZZckyA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lmn6PpA2vAMF0xESuvaq6m5wkC7LpxWx6MgC0l7GQCTlShYvqg5rjlA6hvczSQcCv
-         HAdQKVAta5kcQfL50aafT50jpDLHauhdb2/g4GQFv6mBbqPDxBNmmD7M3k6+kNS1es
-         Mv2OfuXDXPrQ4hJNJlDle7Dc4vjwuuCkDKbTBEee57Z8x10/RWLA8FBlDfxQc9xgn/
-         MhD0gyqTnPD/95+8Yw+KiMgKOPGzpib+Uth/tJYAwh+aBSvdzzImEbHqehHh5olej2
-         B00UKuRvjyfuBpTQfODfHcV7tj1SidPtLKjvEVTElhDP4YAHM4AUGj/4FUOB1C9C3Z
-         9UVm8KtLamVqA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Duoming Zhou <duoming@zju.edu.cn>, Lin Ma <linma@zju.edu.cn>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, ajk@comnets.uni-bremen.de,
-        kuba@kernel.org, linux-hams@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 13/28] drivers: hamradio: 6pack: fix UAF bug caused by mod_timer()
-Date:   Tue,  1 Mar 2022 15:13:18 -0500
-Message-Id: <20220301201344.18191-13-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301201344.18191-1-sashal@kernel.org>
-References: <20220301201344.18191-1-sashal@kernel.org>
+        Tue, 1 Mar 2022 15:15:58 -0500
+Received: from cloud48395.mywhc.ca (cloud48395.mywhc.ca [173.209.37.211])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEACD79C6D;
+        Tue,  1 Mar 2022 12:15:01 -0800 (PST)
+Received: from [45.44.224.220] (port=57050 helo=[192.168.1.179])
+        by cloud48395.mywhc.ca with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <olivier@trillion01.com>)
+        id 1nP8tg-0006kw-90; Tue, 01 Mar 2022 15:15:00 -0500
+Message-ID: <628f7ac96c15b0a3d5f2ddcdf4df79a03950b17e.camel@trillion01.com>
+Subject: Re: [PATCH v4 2/2] io_uring: Add support for napi_busy_poll
+From:   Olivier Langlois <olivier@trillion01.com>
+To:     Hao Xu <haoxu@linux.alibaba.com>, Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Cc:     io-uring <io-uring@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Date:   Tue, 01 Mar 2022 15:14:58 -0500
+In-Reply-To: <4f01857ca757ab4f0995420e6b1a6e3668a40da5.camel@trillion01.com>
+References: <cover.1646142288.git.olivier@trillion01.com>
+         <aa38a667ef28cce54c08212fdfa1e2b3747ad3ec.1646142288.git.olivier@trillion01.com>
+         <29bad95d-06f8-ea7c-29fe-81e52823c90a@linux.alibaba.com>
+         <4f01857ca757ab4f0995420e6b1a6e3668a40da5.camel@trillion01.com>
+Organization: Trillion01 Inc
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.42.4 
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - cloud48395.mywhc.ca
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - trillion01.com
+X-Get-Message-Sender-Via: cloud48395.mywhc.ca: authenticated_id: olivier@trillion01.com
+X-Authenticated-Sender: cloud48395.mywhc.ca: olivier@trillion01.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+On Tue, 2022-03-01 at 15:06 -0500, Olivier Langlois wrote:
+> On Wed, 2022-03-02 at 02:31 +0800, Hao Xu wrote:
+> > 
+> > 
+> > How about:
+> > 
+> > if (list is singular) {
+> > 
+> >      do something;
+> > 
+> >      return;
+> > 
+> > }
+> > 
+> > while (!io_busy_loop_end() && io_napi_busy_loop())
+> > 
+> >      ;
+> > 
+> 
+> is there a concern with the current code?
+> What would be the benefit of your suggestion over current code?
+> 
+> To me, it seems that if io_blocking_napi_busy_loop() is called, a
+> reasonable expectation would be that some busy looping is done or
+> else
+> you could return the function without doing anything which would,
+> IMHO,
+> be misleading.
+> 
+> By definition, napi_busy_loop() is not blocking and if you desire the
+> device to be in busy poll mode, you need to do it once in a while or
+> else, after a certain time, the device will return back to its
+> interrupt mode.
+> 
+> IOW, io_blocking_napi_busy_loop() follows the same logic used by
+> napi_busy_loop() that does not call loop_end() before having perform
+> 1
+> loop iteration.
+> 
+> > Btw, start_time seems not used in singular branch.
+> 
+> I know. This is why it is conditionally initialized.
+> 
+> Greetings,
+> 
+Another argument for not touching the code the way that it is:
+io_napi_busy_loop() has another function on top of iterating the
+napi_list and calling napi_busy_loop() for each of them.
 
-[ Upstream commit efe4186e6a1b54bf38b9e05450d43b0da1fd7739 ]
-
-When a 6pack device is detaching, the sixpack_close() will act to cleanup
-necessary resources. Although del_timer_sync() in sixpack_close()
-won't return if there is an active timer, one could use mod_timer() in
-sp_xmit_on_air() to wake up timer again by calling userspace syscall such
-as ax25_sendmsg(), ax25_connect() and ax25_ioctl().
-
-This unexpected waked handler, sp_xmit_on_air(), realizes nothing about
-the undergoing cleanup and may still call pty_write() to use driver layer
-resources that have already been released.
-
-One of the possible race conditions is shown below:
-
-      (USE)                      |      (FREE)
-ax25_sendmsg()                   |
- ax25_queue_xmit()               |
-  ...                            |
-  sp_xmit()                      |
-   sp_encaps()                   | sixpack_close()
-    sp_xmit_on_air()             |  del_timer_sync(&sp->tx_t)
-     mod_timer(&sp->tx_t,...)    |  ...
-                                 |  unregister_netdev()
-                                 |  ...
-     (wait a while)              | tty_release()
-                                 |  tty_release_struct()
-                                 |   release_tty()
-    sp_xmit_on_air()             |    tty_kref_put(tty_struct) //FREE
-     pty_write(tty_struct) //USE |    ...
-
-The corresponding fail log is shown below:
-===============================================================
-BUG: KASAN: use-after-free in __run_timers.part.0+0x170/0x470
-Write of size 8 at addr ffff88800a652ab8 by task swapper/2/0
-...
-Call Trace:
-  ...
-  queue_work_on+0x3f/0x50
-  pty_write+0xcd/0xe0pty_write+0xcd/0xe0
-  sp_xmit_on_air+0xb2/0x1f0
-  call_timer_fn+0x28/0x150
-  __run_timers.part.0+0x3c2/0x470
-  run_timer_softirq+0x3b/0x80
-  __do_softirq+0xf1/0x380
-  ...
-
-This patch reorders the del_timer_sync() after the unregister_netdev()
-to avoid UAF bugs. Because the unregister_netdev() is well synchronized,
-it flushs out any pending queues, waits the refcount of net_device
-decreases to zero and removes net_device from kernel. There is not any
-running routines after executing unregister_netdev(). Therefore, we could
-not arouse timer from userspace again.
-
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Lin Ma <linma@zju.edu.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/hamradio/6pack.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/hamradio/6pack.c b/drivers/net/hamradio/6pack.c
-index 8a19a06b505d1..ff2bb3d80fac8 100644
---- a/drivers/net/hamradio/6pack.c
-+++ b/drivers/net/hamradio/6pack.c
-@@ -668,11 +668,11 @@ static void sixpack_close(struct tty_struct *tty)
- 	 */
- 	netif_stop_queue(sp->dev);
- 
-+	unregister_netdev(sp->dev);
-+
- 	del_timer_sync(&sp->tx_t);
- 	del_timer_sync(&sp->resync_t);
- 
--	unregister_netdev(sp->dev);
--
- 	/* Free all 6pack frame buffers after unreg. */
- 	kfree(sp->rbuff);
- 	kfree(sp->xbuff);
--- 
-2.34.1
+The function also check the list entries validity and frees them when
+they time out. Not calling io_napi_busy_loop() you would bypass this
+check and that could result in timed out entries to never be disposed.
 
