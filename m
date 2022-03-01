@@ -2,117 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80824C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B1EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234790AbiCAMjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:39:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37708 "EHLO
+        id S234801AbiCAMkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:40:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234065AbiCAMjD (ORCPT
+        with ESMTP id S231470AbiCAMkj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:39:03 -0500
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B63372983B;
-        Tue,  1 Mar 2022 04:38:22 -0800 (PST)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7F42DED1;
-        Tue,  1 Mar 2022 04:38:22 -0800 (PST)
-Received: from [10.57.39.47] (unknown [10.57.39.47])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1BD743F70D;
-        Tue,  1 Mar 2022 04:38:20 -0800 (PST)
-Message-ID: <54b24f3d-3762-abbd-5ac4-dc5728f2fe4e@arm.com>
-Date:   Tue, 1 Mar 2022 12:38:17 +0000
+        Tue, 1 Mar 2022 07:40:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77D5E2983B
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 04:39:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0DD51612AE
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:39:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2C16C340EE;
+        Tue,  1 Mar 2022 12:39:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646138397;
+        bh=hv62MHfq4rzzCEl2fTmyE2lMMF0TTQx9kHnlP0mZ57Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hCkTo8BNi0iiE3Mh2y/NkqcWKbhqtCehGr0gcy3/Ip1/62ExDHQWn726l5rzSAa9Y
+         C3rzMpEH6DeQ1/AYJ2dF/hMRRnWiytpnIWliRwxTHII7NIuVtmsTU2cvouHe7JE7TV
+         2IDQQKw10mgW2PggXEDAM+Srdev+vDTDpAKSBAfWc5Bm8sMgvdV6V+FmoEftpKfwgg
+         jwaYdK/BF9wueTa8Vl3FBOQhJx0K3moy0yExuvVxw6h3dyjpCTl+ucjjo5h0rddDSZ
+         /9UARZPdb4NWMkxlUCAfrxgDU60pWKE6g4sZOiLeLU9wHPraEFFgWCVk3nCPsmWLV1
+         wqaN0q/nZ/JSA==
+Date:   Tue, 1 Mar 2022 12:39:52 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        tangmeng@uniontech.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] ASoC: amd: Fix an ignored error return from
+ platform_get_irq_byname()
+Message-ID: <Yh4UGGuspsc/gAyY@sirena.org.uk>
+References: <20220301064920.37788-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH] mmc: host: dw-mmc-rockchip: avoid logspam when cd-broken
-Content-Language: en-GB
-To:     Peter Geis <pgwipeout@gmail.com>
-Cc:     Jaehoon Chung <jh80.chung@samsung.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>, linux-mmc@vger.kernel.org,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20220228223642.1136229-1-pgwipeout@gmail.com>
- <c12e74b7-0bef-ac7a-20c1-2a17ddd050dd@arm.com>
- <CAMdYzYq0A4FitRGe49fxvjbwLUCi_KGwCtfz7pmayt_dK=r32w@mail.gmail.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CAMdYzYq0A4FitRGe49fxvjbwLUCi_KGwCtfz7pmayt_dK=r32w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uxmg+A5/E9EeDZt4"
+Content-Disposition: inline
+In-Reply-To: <20220301064920.37788-1-yang.lee@linux.alibaba.com>
+X-Cookie: You have a message from the operator.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-03-01 11:49, Peter Geis wrote:
-> On Tue, Mar 1, 2022 at 6:23 AM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 2022-02-28 22:36, Peter Geis wrote:
->>> The dw_mmc-rockchip driver drops a large amound of logspam constantly
->>> when the cd-broken flag is enabled.
->>> Set the warning to be debug ratelimited in this case.
->>
->> Isn't this just papering over some fundamental problem with the clock?
->> If it's failing to set the expected rate for communicating with a card,
->> then presumably that's an issue for correct operation in general? The
->> fact that polling for a card makes a lot more of that communication
->> happen seems unrelated :/
-> 
-> Good Morning,
-> 
-> This only happens when a card is not inserted, so communication cannot happen.
 
-Well, I suppose there's a philosophical question in there about whether 
-shouting into the void counts as "communication", but AFAIR what the 
-polling function does is power up the controller, send a command, and 
-see if it gets a response.
+--uxmg+A5/E9EeDZt4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-If the clock can't be set to the proper rate for low-speed discovery, 
-some or all cards may not be detected properly. Conversely if it is 
-already at a slow enough rate for discovery but can't be set higher once 
-a proper communication mode has been established, data transfer 
-performance will be terrible. Either way, it is not OK in general for 
-clk_set_rate() to fail, hence the warning. You have a clock driver problem.
+On Tue, Mar 01, 2022 at 02:49:20PM +0800, Yang Li wrote:
 
-Cheers,
-Robin.
+> -	adata->i2s_irq = platform_get_irq_byname(pdev, "acp_dai_irq");
+> -	if (adata->i2s_irq < 0)
+> +	adata->i2s_irq = ret = platform_get_irq_byname(pdev, "acp_dai_irq");
+> +	if (ret < 0)
+>  		return -ENODEV;
 
-> I found it while lighting off the SoQuartz module.
-> As it is pin compatible with the RPi CM4, and the CM4 does not have a
-> card detect line, sdmmc is non functional without cd-broken.
-> This led to the fun spew when there wasn't a card inserted as this
-> function is called every poll tick.
-> 
-> Thanks,
-> Peter
-> 
->>
->> Robin.
->>
->>> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
->>> ---
->>>    drivers/mmc/host/dw_mmc-rockchip.c | 9 +++++++--
->>>    1 file changed, 7 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/mmc/host/dw_mmc-rockchip.c b/drivers/mmc/host/dw_mmc-rockchip.c
->>> index 95d0ec0f5f3a..d0ebf0afa42a 100644
->>> --- a/drivers/mmc/host/dw_mmc-rockchip.c
->>> +++ b/drivers/mmc/host/dw_mmc-rockchip.c
->>> @@ -50,8 +50,13 @@ static void dw_mci_rk3288_set_ios(struct dw_mci *host, struct mmc_ios *ios)
->>>                cclkin = ios->clock * RK3288_CLKGEN_DIV;
->>>
->>>        ret = clk_set_rate(host->ciu_clk, cclkin);
->>> -     if (ret)
->>> -             dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
->>> +     if (ret) {
->>> +             /* this screams when card detection is broken */
->>> +             if (host->slot->mmc->caps & MMC_CAP_NEEDS_POLL)
->>> +                     dev_dbg_ratelimited(host->dev, "failed to set rate %uHz\n", ios->clock);
->>> +             else
->>> +                     dev_warn(host->dev, "failed to set rate %uHz\n", ios->clock);
->>> +     }
->>>
->>>        bus_hz = clk_get_rate(host->ciu_clk) / RK3288_CLKGEN_DIV;
->>>        if (bus_hz != host->bus_hz) {
+If an error code is being returned we should report that error code
+rather than squashing it down to -ENODEV.
+
+--uxmg+A5/E9EeDZt4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmIeFBcACgkQJNaLcl1U
+h9CFbgf/UYP8faM7a5tWC5+cSxh/9F9ahjHk7TXhiiQvjPIoYkrlThUWycOcaTSX
+HJieKH2i6j9k3IjeZZcz37jTDi7xrczrqDXCe4KKEd8yx3+Ez7fnVdZIf71ffzKI
+mZfaVT4VxwwImIaJRoDnHbx1a607Yj1AjiJz6fCA+s9LpXq8bF/cGd9TDtbdLm25
+ya7GoTU3S/tasM1nU30vcvqXc0hBbZtwvt6I99WM24B5V1dxyUw0SUO4lXj59hSe
+HipddydH6lpW/GojwROrEyaxawBNaB0W6GXhXkaXOFHw+nUzrILNp+Okjgf1HUS7
+w8ZY4LHBFQ70HxHCzWC5/CRChrVCCw==
+=rnGn
+-----END PGP SIGNATURE-----
+
+--uxmg+A5/E9EeDZt4--
