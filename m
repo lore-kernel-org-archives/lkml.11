@@ -2,117 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AD5C43217
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:26:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E1D9C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235245AbiCAO0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:26:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
+        id S234204AbiCAO05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:26:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231732AbiCAO0o (ORCPT
+        with ESMTP id S235256AbiCAO0w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:26:44 -0500
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC5A6E4C9;
-        Tue,  1 Mar 2022 06:26:02 -0800 (PST)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id A216C2110B;
-        Tue,  1 Mar 2022 14:26:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1646144761;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=igSUBiGP75gcwuKKcw5IrELkytjlsx5b26P1/uxLTDI=;
-        b=m4GhdnjslealexAP/oRzJR1pak++pQpgQY4kGvEzjaC3YgUl6DX+wndyUWZb7LLrMlUDUL
-        bDXGGES3NylgjPmmsF6g4hclkisVsizYxF7LUGh4WuoXDGkJOvlIsbr9g2ywdN4oZ/N8I5
-        Egd3FZTeVFhYl7SEjKJmrYj0gjJMsmc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1646144761;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=igSUBiGP75gcwuKKcw5IrELkytjlsx5b26P1/uxLTDI=;
-        b=AS2kmChYl/LTYbL9BGHDEoAKkBtbDX0SK3ZHu2HGLBKbGwSLvwAIOHJkcZ711kpgGAIw50
-        0JidFyRYjfU/SpDg==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 600F3A3B81;
-        Tue,  1 Mar 2022 14:26:01 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id E36AEDA80E; Tue,  1 Mar 2022 15:22:09 +0100 (CET)
-Date:   Tue, 1 Mar 2022 15:22:09 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Christoph Hellwig <hch@lst.de>
-Cc:     Jens Axboe <axboe@kernel.dk>, Coly Li <colyli@suse.de>,
-        Mike Snitzer <snitzer@redhat.com>, Song Liu <song@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        linux-block@vger.kernel.org, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org, linux-bcache@vger.kernel.org,
-        linux-raid@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org
-Subject: Re: [PATCH 1/5] btrfs: simplify ->flush_bio handling
-Message-ID: <20220301142209.GN12643@suse.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Christoph Hellwig <hch@lst.de>,
-        Jens Axboe <axboe@kernel.dk>, Coly Li <colyli@suse.de>,
-        Mike Snitzer <snitzer@redhat.com>, Song Liu <song@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Josef Bacik <josef@toxicpanda.com>, David Sterba <dsterba@suse.com>,
-        Phillip Lougher <phillip@squashfs.org.uk>,
-        linux-block@vger.kernel.org, dm-devel@redhat.com,
-        linux-kernel@vger.kernel.org, linux-bcache@vger.kernel.org,
-        linux-raid@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-btrfs@vger.kernel.org
-References: <20220301084552.880256-1-hch@lst.de>
- <20220301084552.880256-2-hch@lst.de>
+        Tue, 1 Mar 2022 09:26:52 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F909A99D;
+        Tue,  1 Mar 2022 06:26:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646144771; x=1677680771;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=n4vtaAj6xE9MJ82UUcFkIcwFnLsTI1TghnfEZ1HrPDk=;
+  b=K560aeZrjL56vfDZIZeCp+fuZMH/xrRQHYqOQDj1nNPbs/e7PYOgQhWs
+   SjkMDlCiRAlZKjNE+pHMQextA+N4unMDa6cXkNhb10ViBph8s/f87zjOT
+   8S5dsZ+6c3Ive+VRb4II6B4P7yMz0bgQhJbdXgSEZUbd8vpbgi+9Z/hJm
+   4ZWivV7h68RNcsqIiKVyjhtshBjbHALx3oMi5xbSdzEOKSvC/8O6h+LqY
+   Gb819es2h3B6z/MmGd8qhSq9nRTnV1GGOZeAr6pxsEU+3sOvBnjjQclRc
+   cYUnPC0fE7V+cDfL9R6DIYVzZf4cvB9dXkItSvPgIX3cuiIqpQrNEVQSB
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="236648051"
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="236648051"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 06:26:11 -0800
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="709077634"
+Received: from smile.fi.intel.com ([10.237.72.59])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 06:26:08 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nP3RI-009qvk-1C;
+        Tue, 01 Mar 2022 16:25:20 +0200
+Date:   Tue, 1 Mar 2022 16:25:19 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>, rafael@kernel.org,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-acpi@vger.kernel.org, Alexander Graf <graf@amazon.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Len Brown <lenb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Subject: Re: [PATCH 2/3 v6] ACPI: allow longer device IDs
+Message-ID: <Yh4sz8tpNxUecRQw@smile.fi.intel.com>
+References: <CAHmME9qHnvwrxEue4Pdm_E1qZQGXFuR9orJSKCWj8fH5TSh6fA@mail.gmail.com>
+ <20220228183355.9090-1-Jason@zx2c4.com>
+ <e9bfc654-5504-29ff-5a5a-b73f24691600@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220301084552.880256-2-hch@lst.de>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+In-Reply-To: <e9bfc654-5504-29ff-5a5a-b73f24691600@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 10:45:48AM +0200, Christoph Hellwig wrote:
-> @@ -6962,16 +6961,6 @@ struct btrfs_device *btrfs_alloc_device(struct btrfs_fs_info *fs_info,
->  	if (!dev)
->  		return ERR_PTR(-ENOMEM);
->  
-> -	/*
-> -	 * Preallocate a bio that's always going to be used for flushing device
-> -	 * barriers and matches the device lifespan
-> -	 */
-> -	dev->flush_bio = bio_kmalloc(GFP_KERNEL, 0);
-> -	if (!dev->flush_bio) {
-> -		kfree(dev);
-> -		return ERR_PTR(-ENOMEM);
-> -	}
-> -
->  	INIT_LIST_HEAD(&dev->dev_list);
->  	INIT_LIST_HEAD(&dev->dev_alloc_list);
->  	INIT_LIST_HEAD(&dev->post_commit_list);
-> diff --git a/fs/btrfs/volumes.h b/fs/btrfs/volumes.h
-> index 005c9e2a491a1..9af7b6211920c 100644
-> --- a/fs/btrfs/volumes.h
-> +++ b/fs/btrfs/volumes.h
-> @@ -117,7 +117,7 @@ struct btrfs_device {
->  	u64 commit_bytes_used;
->  
->  	/* for sending down flush barriers */
-> -	struct bio *flush_bio;
+On Tue, Mar 01, 2022 at 11:35:12AM +0100, Hans de Goede wrote:
+> On 2/28/22 19:33, Jason A. Donenfeld wrote:
 
-Please add this comment to the struct member declaration:
+> > Co-authored-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-	/* Bio used for flushing device barriers */
+Official tag is Co-developed-by
 
-> +	struct bio flush_bio;
+> > [Jason: reworked commit message a bit, went with len=16 approach.]
+> > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 
-Otherwise
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Reviewed-by: David Sterba <dsterba@suse.com>
 
-Thanks.
