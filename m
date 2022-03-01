@@ -2,132 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 624A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC67C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238376AbiCAU0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:26:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
+        id S238381AbiCAU00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:26:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238840AbiCAUXz (ORCPT
+        with ESMTP id S238861AbiCAUX4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:23:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D3BA8C7E9
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:21:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646165970;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1x6QUK4FLEy8ROUzJyVZ/cWy4d8A2hzSu/J8ehfsP+g=;
-        b=Xuzs1Tok81E2oNm2MdB1zv2pbp0rlGDwOrzGMvRkPIW1O02TeeSSDWXEW4SkgWpg5Zf4yT
-        FTzsnpi/LeEmcvJQjDUOZbTtiOk7Z6DGafqVIUflaFofVHeqiuiIMfd3T+7tYlTpzZXiUm
-        Kqyu4V8rca4qMKMv9RuwMjqMJz0ueys=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-533-AuhMyRALNMCX8mL_ouwz6Q-1; Tue, 01 Mar 2022 15:19:29 -0500
-X-MC-Unique: AuhMyRALNMCX8mL_ouwz6Q-1
-Received: by mail-wr1-f72.google.com with SMTP id ay18-20020a5d6f12000000b001efe36eb038so2310476wrb.17
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:19:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1x6QUK4FLEy8ROUzJyVZ/cWy4d8A2hzSu/J8ehfsP+g=;
-        b=aG4LB2CHOcsLpGkJXJ4HmqgVyZaXqSUoSX3cUAM9JTh3/KWdf3hCuQqCDeh/5x86hF
-         ahmdKgyR/jPajOtl0Y/jpymfcjqCMSNr0RfkP2GEYewz7qFy0IvlG6WInW8hud8GlWnS
-         EbC6p7ulTfrXuK42Bd7SbZsMdnjQ3k30CoSyeQ1r+buswGEMS05Fw9PuPveujZbMhYPj
-         wKF+DPyxsnfYrtBFYS65rrlUgt3phjFQ+JvCPRl1IvVys4/irlvjggtLAVYJ2jUhvBGQ
-         xLIc0Sah2uz2K7sZ0llc7KsXwe/iNyzcQFEGuR7yh21nX022+vi6ep0JMDELaFtqbTnI
-         bA2Q==
-X-Gm-Message-State: AOAM531WbBwjWn04LiBdwcWsVrO38rc5eAsYNMgA0NCBzjN+Q0n1ik97
-        oNq6opP7ODvag84+UFwEzY0xmVAaJmql5bC72T+pH88zZ1i6pHLY/zwo3DjCn2r3K9nFVlk9WgL
-        LNvfF9UmAhLdeCR/jRxtnPsXz
-X-Received: by 2002:a05:600c:2f8f:b0:381:2009:f5bb with SMTP id t15-20020a05600c2f8f00b003812009f5bbmr18448301wmn.163.1646165967846;
-        Tue, 01 Mar 2022 12:19:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy+d4NI+GBVH5ewxls8mvm7BLZHAMn8s6kj98Mu7E4d1X/x3eFx3aILtaWlsRQEjJTRxazgDg==
-X-Received: by 2002:a05:600c:2f8f:b0:381:2009:f5bb with SMTP id t15-20020a05600c2f8f00b003812009f5bbmr18448286wmn.163.1646165967602;
-        Tue, 01 Mar 2022 12:19:27 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e? ([2001:b07:6468:f312:5e2c:eb9a:a8b6:fd3e])
-        by smtp.googlemail.com with ESMTPSA id v20-20020a7bcb54000000b0037fa63db8aasm3539049wmj.5.2022.03.01.12.19.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 12:19:27 -0800 (PST)
-Message-ID: <38116323-b990-9bf6-18a4-71f6ff66f32f@redhat.com>
-Date:   Tue, 1 Mar 2022 21:19:26 +0100
+        Tue, 1 Mar 2022 15:23:56 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC4C74DC3;
+        Tue,  1 Mar 2022 12:21:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0831560B5B;
+        Tue,  1 Mar 2022 20:21:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C23D6C340EE;
+        Tue,  1 Mar 2022 20:21:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646166087;
+        bh=i1SwAQFnSGgytL7J0QLaNRlGyuxB5Ya4Unjb1C+P3aU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=NHh1zrliZGiFuIEGTeeMmoFFdw7eXW/nvwpsc/o380CYAsNKhMvJe4tA6WrGLUVzb
+         2WU6Cn/6FVMgxlPcZZV2AJgiL9Zx5LX3ILxRBrBXGnEJfI+e8QN47+So1SQtchL32S
+         Nx1VQZsfqOza6VgCM+tLIgmlhLoT0n7FV+hnYjthxnOXHhi8qEjcqYFE90tCCADwT+
+         REWBVqqJL6wWnZkSChXbQhQW5DCE/zBF5OAwDmmiuwnBex7X3zTZ07hL0GloQdwYY5
+         QNdxKMGdl4LbnY5BsHITaKSgBdhTADJmV5J09/opYdL5zcOkcbk2QwoqjMieiYxtzq
+         LOEiwRtOCs3rA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, gthelen@google.com,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 7/7] selftests/memfd: clean up mapping in mfd_fail_write
+Date:   Tue,  1 Mar 2022 15:20:45 -0500
+Message-Id: <20220301202046.19220-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220301202046.19220-1-sashal@kernel.org>
+References: <20220301202046.19220-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH AUTOSEL 5.16 05/28] KVM: Fix lockdep false negative during
- host resume
-Content-Language: en-US
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Wanpeng Li <wanpengli@tencent.com>, kvm@vger.kernel.org
-References: <20220301201344.18191-1-sashal@kernel.org>
- <20220301201344.18191-5-sashal@kernel.org>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220301201344.18191-5-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 3/1/22 21:13, Sasha Levin wrote:
-> From: Wanpeng Li <wanpengli@tencent.com>
-> 
-> [ Upstream commit 4cb9a998b1ce25fad74a82f5a5c45a4ef40de337 ]
-> 
-> I saw the below splatting after the host suspended and resumed.
-> 
->     WARNING: CPU: 0 PID: 2943 at kvm/arch/x86/kvm/../../../virt/kvm/kvm_main.c:5531 kvm_resume+0x2c/0x30 [kvm]
->     CPU: 0 PID: 2943 Comm: step_after_susp Tainted: G        W IOE     5.17.0-rc3+ #4
->     RIP: 0010:kvm_resume+0x2c/0x30 [kvm]
->     Call Trace:
->      <TASK>
->      syscore_resume+0x90/0x340
->      suspend_devices_and_enter+0xaee/0xe90
->      pm_suspend.cold+0x36b/0x3c2
->      state_store+0x82/0xf0
->      kernfs_fop_write_iter+0x1b6/0x260
->      new_sync_write+0x258/0x370
->      vfs_write+0x33f/0x510
->      ksys_write+0xc9/0x160
->      do_syscall_64+0x3b/0xc0
->      entry_SYSCALL_64_after_hwframe+0x44/0xae
-> 
-> lockdep_is_held() can return -1 when lockdep is disabled which triggers
-> this warning. Let's use lockdep_assert_not_held() which can detect
-> incorrect calls while holding a lock and it also avoids false negatives
-> when lockdep is disabled.
-> 
-> Signed-off-by: Wanpeng Li <wanpengli@tencent.com>
-> Message-Id: <1644920142-81249-1-git-send-email-wanpengli@tencent.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   virt/kvm/kvm_main.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> index 71ddc7a8bc302..6ae9e04d0585e 100644
-> --- a/virt/kvm/kvm_main.c
-> +++ b/virt/kvm/kvm_main.c
-> @@ -5347,9 +5347,7 @@ static int kvm_suspend(void)
->   static void kvm_resume(void)
->   {
->   	if (kvm_usage_count) {
-> -#ifdef CONFIG_LOCKDEP
-> -		WARN_ON(lockdep_is_held(&kvm_count_lock));
-> -#endif
-> +		lockdep_assert_not_held(&kvm_count_lock);
->   		hardware_enable_nolock(NULL);
->   	}
->   }
+From: Mike Kravetz <mike.kravetz@oracle.com>
 
-Acked-by: Paolo Bonzini <pbonzini@redhat.com>
+[ Upstream commit fda153c89af344d21df281009a9d046cf587ea0f ]
+
+Running the memfd script ./run_hugetlbfs_test.sh will often end in error
+as follows:
+
+    memfd-hugetlb: CREATE
+    memfd-hugetlb: BASIC
+    memfd-hugetlb: SEAL-WRITE
+    memfd-hugetlb: SEAL-FUTURE-WRITE
+    memfd-hugetlb: SEAL-SHRINK
+    fallocate(ALLOC) failed: No space left on device
+    ./run_hugetlbfs_test.sh: line 60: 166855 Aborted                 (core dumped) ./memfd_test hugetlbfs
+    opening: ./mnt/memfd
+    fuse: DONE
+
+If no hugetlb pages have been preallocated, run_hugetlbfs_test.sh will
+allocate 'just enough' pages to run the test.  In the SEAL-FUTURE-WRITE
+test the mfd_fail_write routine maps the file, but does not unmap.  As a
+result, two hugetlb pages remain reserved for the mapping.  When the
+fallocate call in the SEAL-SHRINK test attempts allocate all hugetlb
+pages, it is short by the two reserved pages.
+
+Fix by making sure to unmap in mfd_fail_write.
+
+Link: https://lkml.kernel.org/r/20220219004340.56478-1-mike.kravetz@oracle.com
+Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Cc: Shuah Khan <shuah@kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/memfd/memfd_test.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
+index 10baa1652fc2a..a4e520b94e431 100644
+--- a/tools/testing/selftests/memfd/memfd_test.c
++++ b/tools/testing/selftests/memfd/memfd_test.c
+@@ -386,6 +386,7 @@ static void mfd_fail_write(int fd)
+ 			printf("mmap()+mprotect() didn't fail as expected\n");
+ 			abort();
+ 		}
++		munmap(p, mfd_def_size);
+ 	}
+ 
+ 	/* verify PUNCH_HOLE fails */
+-- 
+2.34.1
 
