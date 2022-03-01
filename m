@@ -2,181 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4805C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:12:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A7DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 08:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233243AbiCAIMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 03:12:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
+        id S233271AbiCAIMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 03:12:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233210AbiCAIMh (ORCPT
+        with ESMTP id S233282AbiCAIMk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 03:12:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35CC483003
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 00:11:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646122316;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qLkX7j7/Zb/EioGFBRjJTWhVN81CKkKlGzO4G8wrZag=;
-        b=LKpX2qmrRXf958gP5+DYYsOb/jADH9x6LHptzyr7IJx7g+bLe8TZOUZtVG0EFciqXEKfzW
-        cZFLbjDZfLiLCDXrzHC0BWYSN1BRLEp61BZkZeKskGetu6Gds/qWk4/KXiNOdelVa/eEzi
-        +FQ0aIGZH2U98AkQtPG4xznINoHoWZE=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-45-btEfAs1qNZahTvgg7_BMFA-1; Tue, 01 Mar 2022 03:11:55 -0500
-X-MC-Unique: btEfAs1qNZahTvgg7_BMFA-1
-Received: by mail-wr1-f69.google.com with SMTP id ay18-20020a5d6f12000000b001efe36eb038so1489010wrb.17
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 00:11:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=qLkX7j7/Zb/EioGFBRjJTWhVN81CKkKlGzO4G8wrZag=;
-        b=GHuMpNb+Yf9rWQPjFmjJKF2Hq1/v7WKDadMpIwVRnCpvGDEDND5eLpezt1w+STgayW
-         UJ4iOaAA2CEgQycDivaYVRBLCCrso9obDyaAeXIcYfT1DMcp22Hbpuztk7vGUnHSKwgW
-         X9eOl9HVuJj/pos0qKTTN1e9apLnp+X7blaohNNMDeKBwWhFCDCgee0fwDgIbKRNKD/D
-         KBunNNwL1RW8mpCDkT0Gt1uHy0dGPPtjQcQoQML3+GUfkQRQkNM6vvqZn5GITpVdGHrJ
-         /64Oo+z4jmN3OCacZodyCbRvss45Rd8X30ATuku5SSRVM0JD/oxleEWKTA5TGZSi7kxm
-         Ep4g==
-X-Gm-Message-State: AOAM5309iD/kojW0+QuGc2ljoXi+G44eTb5fxWoYtNVcDbAEL9FDkbDl
-        zcJNngrIZZOQ/8GwSyqwKyX2TBGHdSMeaPxxFvwH9f9FWDeovPMySlJSFvVmuRo+M6k+HxYmbZ7
-        4Pvi5HIQPCS+eNnmekBmEWjL+
-X-Received: by 2002:adf:80d0:0:b0:1dc:90a8:4a1d with SMTP id 74-20020adf80d0000000b001dc90a84a1dmr18203776wrl.180.1646122313905;
-        Tue, 01 Mar 2022 00:11:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzwBInwnw6NRfKHm0uyj7te/EYVf6/GOQYqJd8ME8Bnl5vPD/mD+TALb3jA9hO3PUEIhyoYLg==
-X-Received: by 2002:adf:80d0:0:b0:1dc:90a8:4a1d with SMTP id 74-20020adf80d0000000b001dc90a84a1dmr18203754wrl.180.1646122313681;
-        Tue, 01 Mar 2022 00:11:53 -0800 (PST)
-Received: from ?IPV6:2003:cb:c70e:5e00:88ce:ad41:cb1b:323? (p200300cbc70e5e0088cead41cb1b0323.dip0.t-ipconnect.de. [2003:cb:c70e:5e00:88ce:ad41:cb1b:323])
-        by smtp.gmail.com with ESMTPSA id j7-20020a05600c1c0700b0037c2c6d2a91sm1962455wms.2.2022.03.01.00.11.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 01 Mar 2022 00:11:53 -0800 (PST)
-Message-ID: <d3973adb-9403-5b64-23ec-d6800d67e538@redhat.com>
-Date:   Tue, 1 Mar 2022 09:11:51 +0100
+        Tue, 1 Mar 2022 03:12:40 -0500
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517B88567E;
+        Tue,  1 Mar 2022 00:11:58 -0800 (PST)
+Received: from integral2.. (unknown [182.2.70.248])
+        by gnuweeb.org (Postfix) with ESMTPSA id B53897EDA1;
+        Tue,  1 Mar 2022 08:11:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1646122318;
+        bh=8R4MhWSJNcQ8evBE1421lIDo5eU1fFu91hoE2oHOvBg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=H7mfpRoL4IFPI4IwnFbCWGgXQ9KCcggX8P3NzGZvxcvHpJGK46dVQ74wW32wS/TL6
+         aBKNGo9YEMk0ukcYMpiH6ZImAdu9SjZDsPGHkLZTp+2VwdH5xZSOrvEYpgeck6qrD9
+         EaQS9Zi/JZy7RB5rfUO84sL29zklzfAhHWOz3wHYK5z7tCYQU+PsnihJE9l8yIsB4/
+         +i2fAOwsn80mJTrREmAbSO7TuJnO7dzZIahex7JLE+4Hi0p5WoVo7+6Jz+xtLOYrpi
+         szpfPJJa6eKM0UKx53Xc9OpeY6O/nd1omi5Mu+RqJzHrzX2X3YM/7AZx+mEoXXuidE
+         nuGty+hYy7stw==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tony Luck <tony.luck@intel.com>, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gwml@vger.gnuweeb.org,
+        x86@kernel.org, stable@vger.kernel.org,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>,
+        Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Subject: [PATCH v3 1/2] x86/delay: Fix the wrong asm constraint in `delay_loop()`
+Date:   Tue,  1 Mar 2022 15:11:32 +0700
+Message-Id: <20220301081133.106875-2-ammarfaizi2@gnuweeb.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220301081133.106875-1-ammarfaizi2@gnuweeb.org>
+References: <20220301081133.106875-1-ammarfaizi2@gnuweeb.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Content-Language: en-US
-To:     John Hubbard <jhubbard@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
-        Jan Kara <jack@suse.cz>, Christoph Hellwig <hch@infradead.org>,
-        Dave Chinner <dchinner@redhat.com>,
-        "Darrick J . Wong" <djwong@kernel.org>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Chaitanya Kulkarni <kch@nvidia.com>
-Cc:     linux-block@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-xfs@vger.kernel.org, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220225085025.3052894-1-jhubbard@nvidia.com>
- <20220225085025.3052894-2-jhubbard@nvidia.com>
- <6ba088ae-4f84-6cd9-cbcc-bbc6b9547f04@redhat.com>
- <36300717-48b2-79ec-a97b-386e36bbd2a6@nvidia.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [RFC PATCH 1/7] mm/gup: introduce pin_user_page()
-In-Reply-To: <36300717-48b2-79ec-a97b-386e36bbd2a6@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28.02.22 22:14, John Hubbard wrote:
-> On 2/28/22 05:27, David Hildenbrand wrote:
-> ...
->>> diff --git a/mm/gup.c b/mm/gup.c
->>> index 5c3f6ede17eb..44446241c3a9 100644
->>> --- a/mm/gup.c
->>> +++ b/mm/gup.c
->>> @@ -3034,6 +3034,40 @@ long pin_user_pages(unsigned long start, unsigned long nr_pages,
->>>   }
->>>   EXPORT_SYMBOL(pin_user_pages);
->>>   
->>> +/**
->>> + * pin_user_page() - apply a FOLL_PIN reference to a page ()
->>> + *
->>> + * @page: the page to be pinned.
->>> + *
->>> + * Similar to get_user_pages(), in that the page's refcount is elevated using
->>> + * FOLL_PIN rules.
->>> + *
->>> + * IMPORTANT: That means that the caller must release the page via
->>> + * unpin_user_page().
->>> + *
->>> + */
->>> +void pin_user_page(struct page *page)
->>> +{
->>> +	struct folio *folio = page_folio(page);
->>> +
->>> +	WARN_ON_ONCE(folio_ref_count(folio) <= 0);
->>> +
->>> +	/*
->>> +	 * Similar to try_grab_page(): be sure to *also*
->>> +	 * increment the normal page refcount field at least once,
->>> +	 * so that the page really is pinned.
->>> +	 */
->>> +	if (folio_test_large(folio)) {
->>> +		folio_ref_add(folio, 1);
->>> +		atomic_add(1, folio_pincount_ptr(folio));
->>> +	} else {
->>> +		folio_ref_add(folio, GUP_PIN_COUNTING_BIAS);
->>> +	}
->>> +
->>> +	node_stat_mod_folio(folio, NR_FOLL_PIN_ACQUIRED, 1);
->>> +}
->>> +EXPORT_SYMBOL(pin_user_page);
->>> +
->>>   /*
->>>    * pin_user_pages_unlocked() is the FOLL_PIN variant of
->>>    * get_user_pages_unlocked(). Behavior is the same, except that this one sets
->>
->> I assume that function will only get called on a page that has been
->> obtained by a previous pin_user_pages_fast(), correct?
->>
-> 
-> Well, no. This is meant to be used in place of get_page(), for code that
-> knows that the pages will be released via unpin_user_page(). So there is
-> no special prerequisite there.
+The asm constraint does not reflect that the asm statement can modify
+the value of @loops. But the asm statement in delay_loop() does change
+the @loops.
 
-That might be problematic and possibly the wrong approach, depending on
-*what* we're actually pinning and what we're intending to do with that.
+If by any chance the compiler inlines this function, it may clobber
+random stuff (e.g. local variable, important temporary value in reg,
+etc.).
 
-My assumption would have been that this interface is to duplicate a pin
-on a page, which would be perfectly fine, because the page actually saw
-a FOLL_PIN previously.
+Fortunately, delay_loop() is only called indirectly (so it can't
+inline), and then the register it clobbers is %rax (which is by the
+nature of the calling convention, it's a caller saved register), so it
+didn't yield any bug.
 
-We're taking a pin on a page that we haven't obtained via FOLL_PIN if I
-understand correctly. Which raises the questions, how do we end up with
-the pages here, and what are we doing to do with them (use them like we
-obtained them via FOLL_PIN?)?
+^ That shouldn't be an excuse for using the wrong constraint anyway.
 
+This changes "a" (as an input) to "+a" (as an input and output).
 
-If it's converting FOLL_GET -> FOLL_PIN manually, then we're bypassing
-FOLL_PIN special handling in GUP code:
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Fixes: e01b70ef3eb3080fecc35e15f68cd274c0a48163 ("x86: fix bug in arch/i386/lib/delay.c file, delay_loop function")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
+ arch/x86/lib/delay.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-page = get_user_pages(FOLL_GET)
-pin_user_page(page)
-put_page(page)
-
-
-For anonymous pages, we'll bail out for example once we have
-
-https://lkml.kernel.org/r/20220224122614.94921-14-david@redhat.com
-
-Because the conditions for pinned anonymous pages might no longer hold.
-
-If we won't call pin_user_page() on anonymous pages, it would be fine.
-But then, I still wonder how we come up the "struct page" here.
-
+diff --git a/arch/x86/lib/delay.c b/arch/x86/lib/delay.c
+index 65d15df6212d..0e65d00e2339 100644
+--- a/arch/x86/lib/delay.c
++++ b/arch/x86/lib/delay.c
+@@ -54,8 +54,8 @@ static void delay_loop(u64 __loops)
+ 		"	jnz 2b		\n"
+ 		"3:	dec %0		\n"
+ 
+-		: /* we don't need output */
+-		:"a" (loops)
++		: "+a" (loops)
++		:
+ 	);
+ }
+ 
 -- 
-Thanks,
-
-David / dhildenb
+2.32.0
 
