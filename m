@@ -2,66 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2130FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D9AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 13:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234903AbiCANFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 08:05:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
+        id S234904AbiCANJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 08:09:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230291AbiCANF3 (ORCPT
+        with ESMTP id S230075AbiCANJE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 08:05:29 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAD19ADA5
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 05:04:48 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id s11so3790530pfu.13
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 05:04:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bBkJiLuPHjOc9NWEYiRCYWyb3Lk5w/JeF/xlR5gs4hs=;
-        b=Xc9NL1d+//BooJG2pml3jrtqXm6+Y0L6ReYIipFBYiAymzfd3Ro0UqCIsGGv7pzmzs
-         xmfs7tpUkyH4huXwN7+tUwnFGMU01DX1figlNAeGeLriBYIUcG66wEYEA0KsonhyYqZ8
-         bHQBGhQrQpOg6xou2P8/xGjovxtgl+Xaqbxc+YWjthRy5q584R+01bTRHZkGvaKMfrkm
-         1LdB2u7uyU0teOYEp3os+zMzGQbKRoOJsCGejqjuF06p8wNAxQGgCgeU7rfE2x2/p+6l
-         LPMD2gm3iABuMy6uDufsjPLtW6V6kjYojC9fWN8kKLk2/O79llXkR2U4BBPdeSWdx6Hq
-         F/xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bBkJiLuPHjOc9NWEYiRCYWyb3Lk5w/JeF/xlR5gs4hs=;
-        b=Wekq+JILrazzXmWTZuNx/C/Dk08jHETc2nZJdxqfVe8fmgvickT8VICm8oQuBixXda
-         Me58xgoQS7O5vJ2xAHk9KBXJQLbCGV5uIrbXokqJCWxPequKp4K66bo9FJ+9NUHQTMsG
-         sSxIsF0AKgvNSGiLvTvfbVay0ZiA1Q8nelJ6BGBpmTbiTxiz/9YjCA5DZM9W1T0gFCtC
-         i6wtvsioPNhJ7lNyq7MZaXCcnmmn+0Ptj74IfYHj3JnEWA8uMDhrN/j7DPhMc9StPTZ8
-         JjPP5nssgvCmXEeSo9qAycSmoKMfOmQDzizM8LDh0RCEx3Da/42upGA8jPCzP/4SZ01O
-         9VLA==
-X-Gm-Message-State: AOAM530yjoueTt+MQSJD/Koh9EW4RHxCzlGI4GxPpjgHn4pCsYd18y3A
-        lNQskZBT7e8w5CvUteQ/k3JQTHL5Y3GtSX1pKtk4tw==
-X-Google-Smtp-Source: ABdhPJxTmBed6kFC71ml0AX/2OYElQqn2M8Fyn2ERareq2KhsmTlJ76U//wIcIqT2V7P9FR+3qat6BDCYU/HtN0UeOI=
-X-Received: by 2002:a05:6a00:889:b0:4e0:dcc3:5e06 with SMTP id
- q9-20020a056a00088900b004e0dcc35e06mr27213845pfj.29.1646139887560; Tue, 01
- Mar 2022 05:04:47 -0800 (PST)
+        Tue, 1 Mar 2022 08:09:04 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 946541EAF4
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 05:08:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646140101;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=G47XnttoMjqU/tQxN3E9pOF1GgvxHfmes01K+EO8oi0=;
+        b=IHnnxXbIXRYAI3M8TAryoqID4t/aBCg8XuCco8S4z/WGSZXXGyazmAIaiAVa2RaAdRVOR2
+        fonlktCFv7ioLUBOMSCQBmSRqqD3kW59BIUFX0vnApxk7T4s+CLOPX4qAa6DRXF//4lpEz
+        sDFMY4OKHsUUOr0OPTMvCdYE2SFeN0M=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-80-onNUPhVdMhaFdFUkDab97A-1; Tue, 01 Mar 2022 08:08:18 -0500
+X-MC-Unique: onNUPhVdMhaFdFUkDab97A-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2F517800422;
+        Tue,  1 Mar 2022 13:08:17 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AB9FF78363;
+        Tue,  1 Mar 2022 13:08:16 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: [GIT PULL] KVM changes for 5.17-rc7
+Date:   Tue,  1 Mar 2022 08:08:15 -0500
+Message-Id: <20220301130815.151511-1-pbonzini@redhat.com>
 MIME-Version: 1.0
-References: <20220221074224.12920-1-jose.exposito89@gmail.com> <20220221085643.b7klu7heomv6rubv@houat>
-In-Reply-To: <20220221085643.b7klu7heomv6rubv@houat>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Tue, 1 Mar 2022 14:04:36 +0100
-Message-ID: <CAG3jFysW1jFPr7v0=tNANRoMKrqy6dkWBmp7Y=-eEsyKeCNkbA@mail.gmail.com>
-Subject: Re: [PATCH] drm/bridge: chipone-icn6211: switch to devm_drm_of_get_bridge
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        jagan@amarulasolutions.com, andrzej.hajda@intel.com,
-        narmstrong@baylibre.com, laurent.pinchart@ideasonboard.com,
-        jonas@kwiboo.se, jernej.skrabec@gmail.com, airlied@linux.ie,
-        daniel@ffwll.ch, lgirdwood@gmail.com, broonie@kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied to drm-misc-next.
+Linus,
+
+The following changes since commit e910a53fb4f20aa012e46371ffb4c32c8da259b4:
+
+  KVM: x86: nSVM: disallow userspace setting of MSR_AMD64_TSC_RATIO to non default value when tsc scaling disabled (2022-02-24 13:04:47 -0500)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
+
+for you to fetch changes up to ece32a75f003464cad59c26305b4462305273d70:
+
+  Merge tag 'kvmarm-fixes-5.17-4' of git://git.kernel.org/pub/scm/linux/kernel/git/kvmarm/kvmarm into HEAD (2022-02-25 09:49:30 -0500)
+
+----------------------------------------------------------------
+The bigger part of the change is a revert for x86 hosts.  Here the
+second patch was supposed to fix the first, but in reality it was
+just as broken, so both have to go.
+
+x86 host:
+
+* Revert incorrect assumption that cr3 changes come with preempt notifier
+  callbacks (they don't when static branches are changed, for example)
+
+ARM host:
+
+* Correctly synchronise PMR and co on PSCI CPU_SUSPEND
+
+* Skip tests that depend on GICv3 when the HW isn't available
+
+----------------------------------------------------------------
+Mark Brown (1):
+      KVM: selftests: aarch64: Skip tests if we can't create a vgic-v3
+
+Oliver Upton (1):
+      KVM: arm64: Don't miss pending interrupts for suspended vCPU
+
+Paolo Bonzini (1):
+      Merge tag 'kvmarm-fixes-5.17-4' of git://git.kernel.org/pub/scm/linux/kernel/git/kvmarm/kvmarm into HEAD
+
+Sean Christopherson (2):
+      Revert "KVM: VMX: Save HOST_CR3 in vmx_set_host_fs_gs()"
+      Revert "KVM: VMX: Save HOST_CR3 in vmx_prepare_switch_to_guest()"
+
+ arch/arm64/kvm/psci.c                            |  3 +--
+ arch/x86/kvm/vmx/nested.c                        | 11 +++++++---
+ arch/x86/kvm/vmx/vmx.c                           | 28 ++++++++++++++----------
+ arch/x86/kvm/vmx/vmx.h                           |  5 ++---
+ tools/testing/selftests/kvm/aarch64/arch_timer.c |  7 +++++-
+ tools/testing/selftests/kvm/aarch64/vgic_irq.c   |  4 ++++
+ tools/testing/selftests/kvm/lib/aarch64/vgic.c   |  4 +++-
+ 7 files changed, 41 insertions(+), 21 deletions(-)
+
