@@ -2,391 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C06A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:16:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51915C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 16:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236170AbiCAQRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 11:17:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42096 "EHLO
+        id S236150AbiCAQRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 11:17:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236084AbiCAQQT (ORCPT
+        with ESMTP id S236092AbiCAQQU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 11:16:19 -0500
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A919682A;
-        Tue,  1 Mar 2022 08:15:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
-         s=20161220; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=6OJiMNq4xXSwhQjWakj+XiedN7LRKxKK1btq8hnzu0w=; b=vqTTyNt3FiealCrzcS5BgHTfOF
-        IWeuwI9Y7t3J7WeCJxbMd4PaRCKwrV6zcffOF7hefyB9naDxGNVUBAs9DBwatzqUCazmUZypS9Q9K
-        16jakxSHgulj5MLVbvjMiIYGUL4bkZkWa804QYXdCKVSyWZEdn4s4ouGFIYxv6qi/u5EAu05iiwdp
-        lAgZjgCffe7ou54CmHzJo6XVrcJrzasWFiStzbM4G91+bhDv4vt2YqqQXL0/oGPhTJe7y12PTCs5Z
-        aISwNYt5u5lxUCMHiUUv59xlYJdP2RzVYz4t9A57E2BAgusnvkDhj5epKFlYr08b/0z6cPUsUd+fP
-        IoKeJg5w==;
-Received: from 91-158-25-70.elisa-laajakaista.fi ([91.158.25.70] helo=toshino.localdomain)
-        by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <cyndis@kapsi.fi>)
-        id 1nP59q-0003Z8-PE; Tue, 01 Mar 2022 18:15:26 +0200
-From:   cyndis@kapsi.fi
-To:     thierry.reding@gmail.com, jonathanh@nvidia.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, robh+dt@kernel.org,
-        krzysztof.kozlowski@canonical.com
-Cc:     linux-tegra@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Mikko Perttunen <mperttunen@nvidia.com>
-Subject: [PATCH v4 3/9] gpu: host1x: Add context device management code
-Date:   Tue,  1 Mar 2022 18:14:49 +0200
-Message-Id: <20220301161455.4037062-4-cyndis@kapsi.fi>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220301161455.4037062-1-cyndis@kapsi.fi>
-References: <20220301161455.4037062-1-cyndis@kapsi.fi>
+        Tue, 1 Mar 2022 11:16:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49A3D8EB47
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 08:15:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1646151338;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3grHwAXXbGYwyAryp9bJyqsNbw74zcSGCcHBAqcfYSk=;
+        b=J6n+xbzpucA0Amyp3lrgoSg6kFrRTckb1CmlDgVjrkQx5yvaN3bUfDe8R7rxks/ChSWYg+
+        Z4snv+a2Y2Z01z6n7mSZ3Zfb/jA+NC4agLTVsTkRk/vNdSyZoOQ6qj9u4f9EwW1aTWY5uy
+        eNBw/pZNZUWGDo2/1rYG/hRA7YxsOIc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-599-6HVYFuQtMwm2zVtRCXzZeQ-1; Tue, 01 Mar 2022 11:15:35 -0500
+X-MC-Unique: 6HVYFuQtMwm2zVtRCXzZeQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 315BE180FD76;
+        Tue,  1 Mar 2022 16:15:31 +0000 (UTC)
+Received: from lacos-laptop-7.usersys.redhat.com (unknown [10.39.194.186])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 33EF52ED97;
+        Tue,  1 Mar 2022 16:15:22 +0000 (UTC)
+Subject: Re: propagating vmgenid outward and upward
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-hyperv@vger.kernel.org,
+        linux-crypto@vger.kernel.org, graf@amazon.com,
+        mikelley@microsoft.com, gregkh@linuxfoundation.org,
+        adrian@parity.io, berrange@redhat.com, linux@dominikbrodowski.net,
+        jannh@google.com, mst@redhat.com, rafael@kernel.org,
+        len.brown@intel.com, pavel@ucw.cz, linux-pm@vger.kernel.org,
+        colmmacc@amazon.com, tytso@mit.edu, arnd@arndb.de
+References: <Yh4+9+UpanJWAIyZ@zx2c4.com>
+From:   Laszlo Ersek <lersek@redhat.com>
+Message-ID: <223f858c-34c5-3ccd-b9e8-7585a976364d@redhat.com>
+Date:   Tue, 1 Mar 2022 17:15:21 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 91.158.25.70
-X-SA-Exim-Mail-From: cyndis@kapsi.fi
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+In-Reply-To: <Yh4+9+UpanJWAIyZ@zx2c4.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikko Perttunen <mperttunen@nvidia.com>
+On 03/01/22 16:42, Jason A. Donenfeld wrote:
+> Hey folks,
+> 
+> Having finally wrapped up development of the initial vmgenid driver, I
+> thought I'd pull together some thoughts on vmgenid, notification, and
+> propagating, from disjointed conversations I've had with a few of you
+> over the last several weeks.
+> 
+> The basic problem is: VMs can be cloned, forked, rewound, or
+> snapshotted, and when this happens, a) the RNG needs to reseed itself,
+> and b) cryptographic algorithms that are not reuse resistant need to
+> reinitialize in one way or another. For 5.18, we're handling (a) via the
+> new vmgenid driver, which implements a spec from Microsoft, whereby the
+> driver receives ACPI notifications when a 16 byte unique value changes.
+> 
+> The vmgenid driver basically works, though it is racy, because that ACPI
+> notification can arrive after the system is already running again. This
+> race is even worse on Windows, where they kick the notification into a
+> worker thread, which then publishes it upward elsewhere to another async
+> mechanism, and eventually it hits the RNG and various userspace apps.
+> On Linux it's not that bad -- we reseed immediately upon receiving the
+> notification -- but it still inherits this same "push"-model deficiency,
+> which a "pull"-model would not have.
+> 
+> If we had a "pull" model, rather than just expose a 16-byte unique
+> identifier, the vmgenid virtual hardware would _also_ expose a
+> word-sized generation counter, which would be incremented every time the
+> unique ID changed. Then, every time we would touch the RNG, we'd simply
+> do an inexpensive check of this memremap()'d integer, and reinitialize
+> with the unique ID if the integer changed.
 
-Add code to register context devices from device tree, allocate them
-out and manage their refcounts.
+Does the vmgenid spec (as-is) preclude the use of the 16-byte identifier
+like this?
 
-Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
----
-v2:
-* Directly set DMA mask instead of inheriting from Host1x.
-* Use iommu-map instead of custom DT property.
-v4:
-* Use u64 instead of dma_addr_t for DMA mask
-* Use unsigned ints for indexes and adjust error handling flow
-* Parse iommu-map property at top level host1x DT node
-* Use separate DMA mask per device
-* Export symbols as GPL
----
- drivers/gpu/host1x/Makefile  |   1 +
- drivers/gpu/host1x/context.c | 160 +++++++++++++++++++++++++++++++++++
- drivers/gpu/host1x/context.h |  27 ++++++
- drivers/gpu/host1x/dev.c     |  12 ++-
- drivers/gpu/host1x/dev.h     |   2 +
- include/linux/host1x.h       |  18 ++++
- 6 files changed, 219 insertions(+), 1 deletion(-)
- create mode 100644 drivers/gpu/host1x/context.c
- create mode 100644 drivers/gpu/host1x/context.h
+After all, once you locate the identifier via the ADDR object, you could
+perhaps consult it every time you were about to touch the RNG. Perhaps
+with the help of 16-byte atomic (?) operations, you could maintain a
+copy of the identifier elsewhere, and detect (atomically, upon each RNG
+access) whether the identifier has changed, without waiting for the Notify.
 
-diff --git a/drivers/gpu/host1x/Makefile b/drivers/gpu/host1x/Makefile
-index c891a3e33844..8a65e13d113a 100644
---- a/drivers/gpu/host1x/Makefile
-+++ b/drivers/gpu/host1x/Makefile
-@@ -10,6 +10,7 @@ host1x-y = \
- 	debug.o \
- 	mipi.o \
- 	fence.o \
-+	context.o \
- 	hw/host1x01.o \
- 	hw/host1x02.o \
- 	hw/host1x04.o \
-diff --git a/drivers/gpu/host1x/context.c b/drivers/gpu/host1x/context.c
-new file mode 100644
-index 000000000000..c5889be64634
---- /dev/null
-+++ b/drivers/gpu/host1x/context.c
-@@ -0,0 +1,160 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) 2021, NVIDIA Corporation.
-+ */
-+
-+#include <linux/device.h>
-+#include <linux/kref.h>
-+#include <linux/of.h>
-+#include <linux/of_platform.h>
-+#include <linux/pid.h>
-+#include <linux/slab.h>
-+
-+#include "context.h"
-+#include "dev.h"
-+
-+int host1x_context_list_init(struct host1x *host1x)
-+{
-+	struct host1x_context_list *cdl = &host1x->context_list;
-+	struct device_node *node = host1x->dev->of_node;
-+	struct host1x_context *ctx;
-+	unsigned int i;
-+	int err;
-+
-+	cdl->devs = NULL;
-+	cdl->len = 0;
-+	mutex_init(&cdl->lock);
-+
-+	err = of_property_count_u32_elems(node, "iommu-map");
-+	if (err < 0)
-+		return 0;
-+
-+	cdl->devs = kcalloc(err, sizeof(*cdl->devs), GFP_KERNEL);
-+	if (!cdl->devs)
-+		return -ENOMEM;
-+	cdl->len = err / 4;
-+
-+	for (i = 0; i < cdl->len; i++) {
-+		struct iommu_fwspec *fwspec;
-+
-+		ctx = &cdl->devs[i];
-+
-+		ctx->host = host1x;
-+
-+		device_initialize(&ctx->dev);
-+
-+		/*
-+		 * Due to an issue with T194 NVENC, only 38 bits can be used.
-+		 * Anyway, 256GiB of IOVA ought to be enough for anyone.
-+		 */
-+		ctx->dma_mask = DMA_BIT_MASK(38);
-+		ctx->dev.dma_mask = &ctx->dma_mask;
-+		ctx->dev.coherent_dma_mask = ctx->dma_mask;
-+		dev_set_name(&ctx->dev, "host1x-ctx.%d", i);
-+		ctx->dev.bus = &host1x_context_device_bus_type;
-+		ctx->dev.parent = host1x->dev;
-+
-+		dma_set_max_seg_size(&ctx->dev, UINT_MAX);
-+
-+		err = device_add(&ctx->dev);
-+		if (err) {
-+			dev_err(host1x->dev, "could not add context device %d: %d\n", i, err);
-+			goto del_devices;
-+		}
-+
-+		err = of_dma_configure_id(&ctx->dev, node, true, &i);
-+		if (err) {
-+			dev_err(host1x->dev, "IOMMU configuration failed for context device %d: %d\n",
-+				i, err);
-+			device_del(&ctx->dev);
-+			goto del_devices;
-+		}
-+
-+		fwspec = dev_iommu_fwspec_get(&ctx->dev);
-+		if (!fwspec) {
-+			dev_err(host1x->dev, "Context device %d has no IOMMU!\n", i);
-+			device_del(&ctx->dev);
-+			goto del_devices;
-+		}
-+
-+		ctx->stream_id = fwspec->ids[0] & 0xffff;
-+	}
-+
-+	return 0;
-+
-+del_devices:
-+	while (i--)
-+		device_del(&cdl->devs[i].dev);
-+
-+	kfree(cdl->devs);
-+	cdl->len = 0;
-+
-+	return err;
-+}
-+
-+void host1x_context_list_free(struct host1x_context_list *cdl)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < cdl->len; i++)
-+		device_del(&cdl->devs[i].dev);
-+
-+	kfree(cdl->devs);
-+	cdl->len = 0;
-+}
-+
-+struct host1x_context *host1x_context_alloc(struct host1x *host1x,
-+					    struct pid *pid)
-+{
-+	struct host1x_context_list *cdl = &host1x->context_list;
-+	struct host1x_context *free = NULL;
-+	int i;
-+
-+	if (!cdl->len)
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	mutex_lock(&cdl->lock);
-+
-+	for (i = 0; i < cdl->len; i++) {
-+		struct host1x_context *cd = &cdl->devs[i];
-+
-+		if (cd->owner == pid) {
-+			refcount_inc(&cd->ref);
-+			mutex_unlock(&cdl->lock);
-+			return cd;
-+		} else if (!cd->owner && !free) {
-+			free = cd;
-+		}
-+	}
-+
-+	if (!free) {
-+		mutex_unlock(&cdl->lock);
-+		return ERR_PTR(-EBUSY);
-+	}
-+
-+	refcount_set(&free->ref, 1);
-+	free->owner = get_pid(pid);
-+
-+	mutex_unlock(&cdl->lock);
-+
-+	return free;
-+}
-+EXPORT_SYMBOL_GPL(host1x_context_alloc);
-+
-+void host1x_context_get(struct host1x_context *cd)
-+{
-+	refcount_inc(&cd->ref);
-+}
-+EXPORT_SYMBOL_GPL(host1x_context_get);
-+
-+void host1x_context_put(struct host1x_context *cd)
-+{
-+	struct host1x_context_list *cdl = &cd->host->context_list;
-+
-+	if (refcount_dec_and_mutex_lock(&cd->ref, &cdl->lock)) {
-+		put_pid(cd->owner);
-+		cd->owner = NULL;
-+		mutex_unlock(&cdl->lock);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(host1x_context_put);
-diff --git a/drivers/gpu/host1x/context.h b/drivers/gpu/host1x/context.h
-new file mode 100644
-index 000000000000..268ecdf6b1bb
---- /dev/null
-+++ b/drivers/gpu/host1x/context.h
-@@ -0,0 +1,27 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Host1x context devices
-+ *
-+ * Copyright (c) 2020, NVIDIA Corporation.
-+ */
-+
-+#ifndef __HOST1X_CONTEXT_H
-+#define __HOST1X_CONTEXT_H
-+
-+#include <linux/mutex.h>
-+#include <linux/refcount.h>
-+
-+struct host1x;
-+
-+extern struct bus_type host1x_context_device_bus_type;
-+
-+struct host1x_context_list {
-+	struct mutex lock;
-+	struct host1x_context *devs;
-+	unsigned int len;
-+};
-+
-+int host1x_context_list_init(struct host1x *host1x);
-+void host1x_context_list_free(struct host1x_context_list *cdl);
-+
-+#endif
-diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
-index 6994f8c0e02e..40f64efd5865 100644
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -28,6 +28,7 @@
- 
- #include "bus.h"
- #include "channel.h"
-+#include "context.h"
- #include "debug.h"
- #include "dev.h"
- #include "intr.h"
-@@ -502,10 +503,16 @@ static int host1x_probe(struct platform_device *pdev)
- 		goto iommu_exit;
- 	}
- 
-+	err = host1x_context_list_init(host);
-+	if (err) {
-+		dev_err(&pdev->dev, "failed to initialize context list\n");
-+		goto free_channels;
-+	}
-+
- 	err = host1x_syncpt_init(host);
- 	if (err) {
- 		dev_err(&pdev->dev, "failed to initialize syncpts\n");
--		goto free_channels;
-+		goto free_contexts;
- 	}
- 
- 	err = host1x_intr_init(host, syncpt_irq);
-@@ -549,6 +556,8 @@ static int host1x_probe(struct platform_device *pdev)
- 	host1x_intr_deinit(host);
- deinit_syncpt:
- 	host1x_syncpt_deinit(host);
-+free_contexts:
-+	host1x_context_list_free(&host->context_list);
- free_channels:
- 	host1x_channel_list_free(&host->channel_list);
- iommu_exit:
-@@ -568,6 +577,7 @@ static int host1x_remove(struct platform_device *pdev)
- 
- 	host1x_intr_deinit(host);
- 	host1x_syncpt_deinit(host);
-+	host1x_context_list_free(&host->context_list);
- 	host1x_iommu_exit(host);
- 	host1x_bo_cache_destroy(&host->cache);
- 
-diff --git a/drivers/gpu/host1x/dev.h b/drivers/gpu/host1x/dev.h
-index ca4b082f0cd4..92f4804d8b70 100644
---- a/drivers/gpu/host1x/dev.h
-+++ b/drivers/gpu/host1x/dev.h
-@@ -14,6 +14,7 @@
- 
- #include "cdma.h"
- #include "channel.h"
-+#include "context.h"
- #include "intr.h"
- #include "job.h"
- #include "syncpt.h"
-@@ -141,6 +142,7 @@ struct host1x {
- 	struct mutex syncpt_mutex;
- 
- 	struct host1x_channel_list channel_list;
-+	struct host1x_context_list context_list;
- 
- 	struct dentry *debugfs;
- 
-diff --git a/include/linux/host1x.h b/include/linux/host1x.h
-index e8dc5bc41f79..9dbdc4b0bb82 100644
---- a/include/linux/host1x.h
-+++ b/include/linux/host1x.h
-@@ -440,4 +440,22 @@ int tegra_mipi_disable(struct tegra_mipi_device *device);
- int tegra_mipi_start_calibration(struct tegra_mipi_device *device);
- int tegra_mipi_finish_calibration(struct tegra_mipi_device *device);
- 
-+/* host1x context devices */
-+
-+struct host1x_context {
-+	struct host1x *host;
-+
-+	refcount_t ref;
-+	struct pid *owner;
-+
-+	struct device dev;
-+	u64 dma_mask;
-+	u32 stream_id;
-+};
-+
-+struct host1x_context *host1x_context_alloc(struct host1x *host1x,
-+					    struct pid *pid);
-+void host1x_context_get(struct host1x_context *cd);
-+void host1x_context_put(struct host1x_context *cd);
-+
- #endif
--- 
-2.35.0
+We'd require (or assume) the hypervisors to modify the identifier in
+guest RAM before resuming execution of the guest. And we'd have to delay
+RNG accesses in the guest kernel until after the vmgenid device -- or
+its absence -- were discovered.
+
+Just a random guesss.
+
+Thanks
+Laszlo
+
+> In this way, the race would
+> be entirely eliminated. We would then be able to propagate this outwards
+> to other drivers, by just exporting an extern symbol, in the manner of
+> `jiffies`, and propagate it upwards to userspace, by putting it in the
+> vDSO, in the manner of gettimeofday. And like that, there'd be no
+> terrible async thing and things would work pretty easily.
+> 
+> But that's not what we have, because Microsoft didn't collaborate with
+> anybody on this, and now it's implemented in several hypervisors. Given
+> that I'm already spending considerable time working on the RNG, entirely
+> without funding, somehow I'm not super motivated to lead a
+> cross-industry political effort to change Microsoft's vmgenid spec.
+> Maybe somebody else has an appetite for this, but either way, those
+> changes would be several years off at best.
+> 
+> So given we have a "push"-model mechanism, there are two problems to
+> tackle, perhaps in the same way, perhaps in a different way:
+> 
+> A) Outwards propagation toward other kernel drivers: in this case, I
+>    have in mind WireGuard, naturally, which very much needs to clear its
+>    existing sessions when VMs are forked.
+> 
+> B) Upwards propagation to userspace: in this case, we handle the
+>    concerns of the Amazon engineers on this thread who broached this
+>    topic a few years ago, in which s2n, their TLS library, wants to
+>    reinitialize its userspace RNG (a silly thing, but I digress) and
+>    probably clear session keys too, for the same good reason as
+>    WireGuard.
+> 
+> For (A), at least wearing my WireGuard-maintainer hat, there is an easy
+> way and there is a "race-free" way. I use scare quotes there because
+> we're still in a "push"-model, which means it's still racy no matter
+> what.
+> 
+> The faux "race-free" way involves having `extern u32 rng_vm_generation;`
+> or similar in random.h, and then everything that generates a session key
+> would snapshot this value, and every time a session key is used, a
+> comparison would be made. This works, but given that we're going to be
+> racy no matter what, I think I'd prefer avoiding the extra code in the
+> hot path and extra per-session storage. It seems like that'd involve a
+> lot of fiddly engineering for no real world benefit.
+> 
+> The easy way, and the way that I think I prefer, would be to just have a
+> sync notifier_block for this, just like we have with
+> register_pm_notifier(). From my perspective, it'd be simplest to just
+> piggy back on the already existing PM notifier with an extra event,
+> PM_POST_VMFORK, which would join the existing set of 7, following
+> PM_POST_RESTORE. I think that'd be coherent. However, if the PM people
+> don't want to play ball, we could always come up with our own
+> notifier_block. But I don't see the need. Plus, WireGuard *already*
+> uses the PM notifier for clearing keys, so code-wise for my use case,
+> that'd amount adding another case for PM_POST_VMFORK, in addition to the
+> currently existing PM_HIBERNATION_PREPARE and PM_SUSPEND_PREPARE cases,
+> which all would be treated the same way. Ezpz. So if that sounds like an
+> interesting thing to the PM people, I think I'd like to propose a patch
+> for that, possibly even for 5.18, given that it'd be very straight-
+> forward.
+> 
+> For (B), it's a little bit trickier. But I think our options follow the
+> same rubric. We can expose a generation counter in the vDSO, with
+> semantics akin to the extern integer I described above. Or we could
+> expose that counter in a file that userspace could poll() on and receive
+> notifications that way. Or perhaps a third way. I'm all ears here.
+> Alex's team from Amazon last year proposed something similar to the vDSO
+> idea, except using mmap on a sysfs file, though from what I can tell,
+> that wound up being kind of complicated. Due to the fact that we're
+> _already_ racy, I think I'm most inclined at this point toward the
+> poll() approach for the same reasons as I prefer a notifier_block. But
+> on userspace I could be convinced otherwise, and I'd be interested in
+> totally different ideas here too.
+> 
+> Another thing I should note is that, while I'm not currently leaning
+> toward it, the vDSO approach also ties into interesting discussions
+> about userspace RNGs (generally a silly idea), and their need for things
+> like fork detection and also learning when the kernel RNG was last
+> reseeded. So cracking open the vDSO book might invite all sorts of other
+> interesting questions and discussions, which may be productive or may be
+> a humongous distraction. (Also, again, I'm not super enthusiastic about
+> userspace RNGs.)
+> 
+> Also, there is an interesting question to decide with regards to
+> userspace, which is whether the vmgenid driver should expose its unique
+> ID to userspace, as Alex requested on an earlier thread. I am actually
+> sort of opposed to this. That unique ID may or may not be secret and
+> entropic; if it isn't, the crypto is designed to not be impacted
+> negatively, but if it is, we should keep it secret. So, rather, I think
+> the correct flow is that userspace simply calls getrandom() upon
+> learning that the VM forked, which is guaranteed to have been
+> reinitialized already by add_vmfork_randomness(), and that will
+> guarantee a value that is unique to the VM, without having to actually
+> expose that value.
+> 
+> So, anyway, this is more or less where my thinking on this matter is.
+> Would be happy to hear some fresh ideas here too.
+> 
+> Regards,
+> Jason
+> 
 
