@@ -2,120 +2,552 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68591C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235317AbiCAOha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:37:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
+        id S235318AbiCAOhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:37:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234969AbiCAOh2 (ORCPT
+        with ESMTP id S229780AbiCAOhp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:37:28 -0500
-Received: from AUS01-SY4-obe.outbound.protection.outlook.com (mail-sy4aus01olkn2162.outbound.protection.outlook.com [40.92.62.162])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D24CA147D;
-        Tue,  1 Mar 2022 06:36:47 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jCyUmwavYzNCCVUTRQZj2glPFAsvHyVizT2TDMUXU60yMckbtsT2O9mxGsx3LUtFv8BuJ/E/l7grkAMEDzAsjZVNUWhViMnQU92PC2iZTUWAPZGhfj1hHipRuqS0FDxdYNk8+nRmJ9hFTieqRUajr7uSjHAZfv+D/I5zb1LOtj7YZ0lJMRWJ53XzKIIvfzLgUv/tirGjL/pabggG12WOYzJTb8xC8ODAzZ7UYTam47teKra7wU7Ay9hYZNpQf0hG0fzsrhDj8OH534oC23ShbQYEiJvoLJGj8RbKsTxcYyKEcPmNAXAT5fTtx+uuJQZwwUJiB6NK5HOpCCbOcpLKIg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=unQjfd55W5pWsGPF0DgIfnyK6p+y/uD8/BZU9Pp4uQE=;
- b=O9SCUAZgzaPbCl0VUGfxqlsDGUBPJ8asznkmiwrcsqu+ZwtyO/AH/7MROGhIXqFqqlAdm2KSqSdelU/DjLRCAIdhLZuleTULb39L4UPPFCdM560zJom5jUvrjeugakivQecI83jlNmgeK0C06y+suABKy3QkJ+uiEnQP/kvoS0UnbwrpxFH5UryU99DyWhckSfXe/x2C1C1FgBIFfen7Avyl5GmE5ERVURc/gYB9PCnvkCJH19ypr1T3ooydqTcb/0GYb12gLxqg66A/LgjoS6evdQQROU/xp5VOop5AycaTXq9Gl4MNiBMvtPOAijgZEfIoF6INwJWWSCQzXQZIKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=unQjfd55W5pWsGPF0DgIfnyK6p+y/uD8/BZU9Pp4uQE=;
- b=RHOagGtZtzYMVHCi96dO7qDqRZv1pNieKqTpyWJQG5yccsWKC9RshD4NbRHsIuYAB3+DvrSFWRcxttCFQ/JXToMHTq8/RUBDyxjtvjgGONHKVSWxtr64/qROlshe5kkoVIYB6+rUH4PJOVWJx76n7FiMlmM5eKF8AFAUFWza+AEZSHbehRIFursHMsNssyUrYuWJd35lNpTVZY83rFwahhj9rPatWeNCzBGnBwmPuD9WaK853htH6hHoarKdGvuvIFbatEvrn3qRfuydBoAfvfKhq9kPUEMrtmnvHvu1IwcXtWl2YVwDCs2ZJvPsfWT5QDtN9MRCBzlc9XWRVUN5pg==
-Received: from SYZP282MB3331.AUSP282.PROD.OUTLOOK.COM (2603:10c6:10:16c::18)
- by ME3P282MB3902.AUSP282.PROD.OUTLOOK.COM (2603:10c6:220:1b6::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5017.23; Tue, 1 Mar
- 2022 14:36:42 +0000
-Received: from SYZP282MB3331.AUSP282.PROD.OUTLOOK.COM
- ([fe80::6855:2b32:afdf:7cd0]) by SYZP282MB3331.AUSP282.PROD.OUTLOOK.COM
- ([fe80::6855:2b32:afdf:7cd0%4]) with mapi id 15.20.5017.027; Tue, 1 Mar 2022
- 14:36:42 +0000
-From:   Tao Chen <chentao3@hotmail.com>
-To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tao Chen <chentao3@hotmail.com>
-Subject: [PATCH v2] tcp: Remove the unused api
-Date:   Tue,  1 Mar 2022 06:35:42 -0800
-Message-ID: <SYZP282MB33317DEE1253B37C0F57231E86029@SYZP282MB3331.AUSP282.PROD.OUTLOOK.COM>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-TMN:  [p3W4J5laGABtap5dHIyIC8Ycxg0qNWaW]
-X-ClientProxiedBy: HK0PR01CA0064.apcprd01.prod.exchangelabs.com
- (2603:1096:203:a6::28) To SYZP282MB3331.AUSP282.PROD.OUTLOOK.COM
- (2603:10c6:10:16c::18)
-X-Microsoft-Original-Message-ID: <20220301143542.36116-1-chentao3@hotmail.com>
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6a0c7126-5c33-484e-9402-08d9fb90e510
-X-MS-Exchange-SLBlob-MailProps: vJxI5U0j4N5GrV8Xh0i7CpMlcr4Gx/E4OfmnlGp3SnDbzWkZqlcaAxVBWPa2n+kKBPFuCmGJQp+lhMN6n8T58i5FzYBihO8S2UG7nBMlaSWakKUfbJwaDyFeBqCz7dRdi+TS8Wft93utIGiRzWkVM7Qy4aiFFukDNdQSfBUqZiIfT2EX3Zy0qx3SLSLfa3CcvqMr9ooI7y6Oa2CgebBq1iU9lCuePf+R6V/HR+eP8yw+1t22XKXE7wdsZ92ZOgJ4W85gOD9chjTuMpSYqx94tTMqa5zQ6KoQlNuEoQ2esIILFhFYl7XuYmPmflCb3GfkU8EhXsc8QKf0MuYkgnI2XlNUan3De48929CbtF9mG3QC4TA0rFt8JR43LHH2c1KkpuEDDeIWU31BsCQ0FF/3aKu2KHtLUWnII793YWmyH27xmd8epCV4cUbTOOhPQXwYqlAsm2ceYWS7qyVNYfd7CjzjTZR0FtagW9AeqytIDy8uzYA9HZEDpHfh4b6AGFH4MMmhH2XNesWTKg8d/hbkMpzOMx8ZcNt2kX1P9+wLpuPGgwyJLpfC4h0rjWNoJTQ8O3v3OjhaOdthwip3jjFSbL5K4wUc31u30SEDMA/e38saULSmJsySM3w/f/OygrLU8DSZ/2gczzxDHwgvkA4ylHV4gKwPoSNzkyXDK7TiW9BTX5rWYtCPBJ0/YOGAJpK7AtTdtWB65nvqHJi3M//dW5z+D8XYkyQr
-X-MS-TrafficTypeDiagnostic: ME3P282MB3902:EE_
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: arbrvoktAy4B70Yii5JmGaO++QzeAl8IY1qFkUz7bwq+4s9bJrKTskomH2f4ml6gJtE8BkWF6DMy+meQ6O7zYCHdSh4wZjizny0KrZ+4RIsTTMRr/MFSr/BDgJUdLUfcMSAWov05Jh0RewYlN40ug7gsHyl9dyE0VxER+9CcenvOmOxsEcYz1yEnBqPy56nOG5j5/vfaOJfGvtri47s+TFj8BsuZdu44vfgl/3TO+0PLJUb2X898I6707XyBBHWpnYOD5jIk7On1/HVT3hSF/FV8+WWEH2CqMx3AJ5MCMbueDsIJ6U7iEFZWkDEI5IRT4Z40ks65MFFl+a+MvCD0VeCDIBJqIIL+Uhn0PUVwSjSGO1EFjbRMs+sIKY04QAfU8Ldb5KBj6tLxQVfZFurVAqQlE4NUKG8qsz+6t0bkplRK5AohV77FJKRHt6/4rP8UphtLGNQRXjDdV6QgvaZubD508cGE560Zl+j8YHF8cLL13D+zGd4H7xmrHXl+QV57AQnsoIJ69BtRcUBLjKQXiwbJmHBXprrNHaI4RcCCHa0jC/xBM/TFz+ZD2aGKilW1Td1rxSIn23Pcj/JLY3r0nA==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WkT914R3YStYJp//d0Bbmr1izrA3LC3smOqhwSDs1Ds0tcLylS2D33ZlVYE3?=
- =?us-ascii?Q?f6YE2mWk77mCIn4GfCJ9Dz+9CeALRhW/YTcbWNGddV6r3R+60qN8JsGJIl4o?=
- =?us-ascii?Q?UK1oGBDo5+ot93+AOqq52SsndDnwYs+Elb8yWToE1KSTI9pf1k/2qYacWQKu?=
- =?us-ascii?Q?dWMfLz/dXMxCQc43E1IbIfbndiyGyFo1+cnm/STIbiniWhpJoTM+Q9xGgnTC?=
- =?us-ascii?Q?+dQuSUO7xiFCt1jQQ4x85KIw6aH0VWBMOCLNAKyRGpz74wL7HRlJtmkS0HMB?=
- =?us-ascii?Q?fiXIOUlXGTdvaf4XofmV3ZRU/4UpwXv3M3oK+gcKDV49sLm/R3/mzjIfhAXi?=
- =?us-ascii?Q?8CSV3/gcOztrq5x6szMYwxMA9q8hxFOMaap0OrZtzq+w5WFe8e1D4gYJ5tx5?=
- =?us-ascii?Q?yUA1TGRhYQmPznGONKxqgRENuNXHjqaJGg0nzpOnonH5l/4pQolwVUlS2UXe?=
- =?us-ascii?Q?X4SPiXAl0d1M/T6AHxIzwT+utqLxVKInzrAC72hXb8Ed4GwX+djjZZzXxWAl?=
- =?us-ascii?Q?LV+5sNpr1NSI4unFDk0g5/8+pHEfoiDqZV9JDjZD2EUzVSPo8PxzAcppzKqL?=
- =?us-ascii?Q?l072iHd2tSfDZUfCVu5tQ9h7ar959UHYH29Vp6yjJelhvVdehwUfzLsB1IBG?=
- =?us-ascii?Q?oBfZ3OlWRVCvN8TO4u4zxDwQFc9xxC/C4xSZ2zKDN+D0mZIDSd/dvchkbdmG?=
- =?us-ascii?Q?xt2F6S2AU2ZS72MtntvbZhe00djRnmSM/whBZZCkyc4PpCuvpvDCFXn0Clpt?=
- =?us-ascii?Q?7Spm8qdMN4Bzk0dPoQdRr2xvxwaSmnAVqHMNDHbaZLkaWmsgmBlvOsftkTWN?=
- =?us-ascii?Q?bBKbP3Omcsu9TegFPFRgFtOrs8eGcCisJNmEtteFDx1rjt8pkX5/IzCdcaD8?=
- =?us-ascii?Q?sbSlLjpSzdTwguumuINJUoePrSMmgE8penbaGUzPHjAlYe4XICWGVljPYw0D?=
- =?us-ascii?Q?KPhPmOGObRwlxNfy34k9CQ=3D=3D?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-746f3.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a0c7126-5c33-484e-9402-08d9fb90e510
-X-MS-Exchange-CrossTenant-AuthSource: SYZP282MB3331.AUSP282.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2022 14:36:42.8290
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ME3P282MB3902
+        Tue, 1 Mar 2022 09:37:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B49A1BE7
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:37:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8EA4FB81A31
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 14:37:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7B61C340EE;
+        Tue,  1 Mar 2022 14:37:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1646145421;
+        bh=irkWJT8/ZLr+fxlu6Qj278EE4XweUHQcnlXn48/Y3co=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SNhbpgA9Ngu+KhFXolqQKv4Bt3ffDPR6lodITHB4ulcNeWnBEik3rPPTuvc61swKu
+         ZDFXoDYnaV+KAf0uAfnXGOQDp0hefwS64qMeozEMOsO9Ky0gA+3QN84IYDtlnwhMv3
+         AfMNw3oeg74DbGL3MX0DurL0/inOUZYfJ/hKH1YiZPRIEGVEe0amblS8DQNuNWBip2
+         g/5jGI6il1xIcUwdZCrjG4GHIsrdFJCPI+pPUqpRF02DTkiQrLSKy9F1uw9ZcW8YF+
+         Akrn1SxNbYZ5mN7D6d0gqLKZc5s4FH5SkZSuHXPeIp4+O0SyNp+HYJylyQLf2mYboR
+         lGFF+rq7DyyPA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nP3cY-00BQec-4X; Tue, 01 Mar 2022 14:36:58 +0000
+Date:   Tue, 01 Mar 2022 14:36:57 +0000
+Message-ID: <87czj53fjq.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 3/6] RISC-V: Treat IPIs as normal Linux IRQs
+In-Reply-To: <20220301042722.401113-4-apatel@ventanamicro.com>
+References: <20220301042722.401113-1-apatel@ventanamicro.com>
+        <20220301042722.401113-4-apatel@ventanamicro.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: apatel@ventanamicro.com, palmer@dabbelt.com, paul.walmsley@sifive.com, tglx@linutronix.de, daniel.lezcano@linaro.org, atishp@atishpatra.org, Alistair.Francis@wdc.com, anup@brainfault.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Last tcp_write_queue_head() use was removed in commit
-114f39feab36 ("tcp: restore autocorking"), so remove it.
+On Tue, 01 Mar 2022 04:27:19 +0000,
+Anup Patel <apatel@ventanamicro.com> wrote:
+> 
+> Currently, the RISC-V kernel provides arch specific hooks (i.e.
+> struct riscv_ipi_ops) to register IPI handling methods. The stats
+> gathering of IPIs is also arch specific in the RISC-V kernel.
+> 
+> Other architectures (such as ARM, ARM64, and MIPS) have moved away
+> from custom arch specific IPI handling methods. Currently, these
+> architectures have Linux irqchip drivers providing a range of Linux
+> IRQ numbers to be used as IPIs and IPI triggering is done using
+> generic IPI APIs. This approach allows architectures to treat IPIs
+> as normal Linux IRQs and IPI stats gathering is done by the generic
+> Linux IRQ subsystem.
+> 
+> We extend the RISC-V IPI handling as-per above approach so that arch
+> specific IPI handling methods (struct riscv_ipi_ops) can be removed
+> and the IPI handling is done through the Linux IRQ subsystem.
+> 
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> ---
+>  arch/riscv/Kconfig                |   1 +
+>  arch/riscv/include/asm/ipi-mux.h  |  43 ++++++
+>  arch/riscv/include/asm/sbi.h      |   2 +
+>  arch/riscv/include/asm/smp.h      |  35 +++--
+>  arch/riscv/kernel/Makefile        |   1 +
+>  arch/riscv/kernel/cpu-hotplug.c   |   3 +-
+>  arch/riscv/kernel/ipi-mux.c       | 222 ++++++++++++++++++++++++++++++
+>  arch/riscv/kernel/irq.c           |   3 +-
+>  arch/riscv/kernel/sbi.c           |  13 +-
+>  arch/riscv/kernel/smp.c           | 153 ++++++++++----------
+>  arch/riscv/kernel/smpboot.c       |   5 +-
+>  drivers/clocksource/timer-clint.c |   8 +-
+>  drivers/irqchip/irq-riscv-intc.c  |  55 ++++----
+>  13 files changed, 405 insertions(+), 139 deletions(-)
 
-Signed-off-by: Tao Chen <chentao3@hotmail.com>
----
- include/net/tcp.h | 5 -----
- 1 file changed, 5 deletions(-)
+This patch is huge and touches way too many things to be reviewed as
+such. Please split arch-specific stuff from clocksource and irqchip,
+going through a transition phase.
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index b9fc978fb2ca..a4cebb7f6f9b 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1817,11 +1817,6 @@ static inline struct sk_buff *tcp_rtx_queue_tail(const struct sock *sk)
- 	return skb_rb_last(&sk->tcp_rtx_queue);
- }
- 
--static inline struct sk_buff *tcp_write_queue_head(const struct sock *sk)
--{
--	return skb_peek(&sk->sk_write_queue);
--}
--
- static inline struct sk_buff *tcp_write_queue_tail(const struct sock *sk)
- {
- 	return skb_peek_tail(&sk->sk_write_queue);
+More below.
+
+>  create mode 100644 arch/riscv/include/asm/ipi-mux.h
+>  create mode 100644 arch/riscv/kernel/ipi-mux.c
+> 
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index 5adcbd9b5e88..167681d6d3f8 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -54,6 +54,7 @@ config RISCV
+>  	select GENERIC_GETTIMEOFDAY if HAVE_GENERIC_VDSO
+>  	select GENERIC_IDLE_POLL_SETUP
+>  	select GENERIC_IOREMAP if MMU
+> +	select GENERIC_IRQ_IPI
+>  	select GENERIC_IRQ_MULTI_HANDLER
+>  	select GENERIC_IRQ_SHOW
+>  	select GENERIC_IRQ_SHOW_LEVEL
+> diff --git a/arch/riscv/include/asm/ipi-mux.h b/arch/riscv/include/asm/ipi-mux.h
+> new file mode 100644
+> index 000000000000..988e2bba372a
+> --- /dev/null
+> +++ b/arch/riscv/include/asm/ipi-mux.h
+> @@ -0,0 +1,43 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2022 Ventana Micro Systems Inc.
+> + */
+> +
+> +#ifndef _ASM_RISCV_IPI_MUX_H
+> +#define _ASM_RISCV_IPI_MUX_H
+> +
+> +struct cpumask;
+> +
+> +#ifdef CONFIG_SMP
+> +
+> +/* Handle muxed IPIs */
+> +void riscv_ipi_mux_handle_irq(void);
+> +
+> +/* Create irq_domain for muxed IPIs */
+> +struct irq_domain *riscv_ipi_mux_create(bool use_soft_irq,
+> +			void (*clear_ipi)(void),
+> +			void (*send_ipi)(const struct cpumask *mask));
+> +
+> +/* Destroy irq_domain for muxed IPIs */
+> +void riscv_ipi_mux_destroy(struct irq_domain *d);
+> +
+> +#else
+> +
+> +static inline void riscv_ipi_mux_handle_irq(void)
+> +{
+> +}
+> +
+> +static inline struct irq_domain *riscv_ipi_mux_create(bool use_soft_irq,
+> +			void (*clear_ipi)(void),
+> +			void (*send_ipi)(const struct cpumask *mask))
+> +{
+> +	return NULL;
+> +}
+> +
+> +static inline void riscv_ipi_mux_destroy(struct irq_domain *d)
+> +{
+> +}
+> +
+> +#endif
+> +
+> +#endif /* _ASM_RISCV_IPI_MUX_H */
+> diff --git a/arch/riscv/include/asm/sbi.h b/arch/riscv/include/asm/sbi.h
+> index 06133b4f8e20..edd2c3135b4a 100644
+> --- a/arch/riscv/include/asm/sbi.h
+> +++ b/arch/riscv/include/asm/sbi.h
+> @@ -133,6 +133,7 @@ struct sbiret {
+>  };
+>  
+>  void sbi_init(void);
+> +void sbi_ipi_init(void);
+>  struct sbiret sbi_ecall(int ext, int fid, unsigned long arg0,
+>  			unsigned long arg1, unsigned long arg2,
+>  			unsigned long arg3, unsigned long arg4,
+> @@ -202,6 +203,7 @@ static inline unsigned long sbi_mk_version(unsigned long major,
+>  int sbi_err_map_linux_errno(int err);
+>  #else /* CONFIG_RISCV_SBI */
+>  static inline int sbi_remote_fence_i(const struct cpumask *cpu_mask) { return -1; }
+> +static inline void sbi_ipi_init(void) { }
+>  static inline void sbi_init(void) {}
+>  #endif /* CONFIG_RISCV_SBI */
+>  #endif /* _ASM_RISCV_SBI_H */
+> diff --git a/arch/riscv/include/asm/smp.h b/arch/riscv/include/asm/smp.h
+> index 23170c933d73..178fe4ada592 100644
+> --- a/arch/riscv/include/asm/smp.h
+> +++ b/arch/riscv/include/asm/smp.h
+> @@ -15,11 +15,6 @@
+>  struct seq_file;
+>  extern unsigned long boot_cpu_hartid;
+>  
+> -struct riscv_ipi_ops {
+> -	void (*ipi_inject)(const struct cpumask *target);
+> -	void (*ipi_clear)(void);
+> -};
+> -
+>  #ifdef CONFIG_SMP
+>  /*
+>   * Mapping between linux logical cpu index and hartid.
+> @@ -33,9 +28,6 @@ void show_ipi_stats(struct seq_file *p, int prec);
+>  /* SMP initialization hook for setup_arch */
+>  void __init setup_smp(void);
+>  
+> -/* Called from C code, this handles an IPI. */
+> -void handle_IPI(struct pt_regs *regs);
+> -
+>  /* Hook for the generic smp_call_function_many() routine. */
+>  void arch_send_call_function_ipi_mask(struct cpumask *mask);
+>  
+> @@ -44,11 +36,17 @@ void arch_send_call_function_single_ipi(int cpu);
+>  
+>  int riscv_hartid_to_cpuid(int hartid);
+>  
+> -/* Set custom IPI operations */
+> -void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops);
+> +/* Enable IPI for CPU hotplug */
+> +void riscv_ipi_enable(void);
+> +
+> +/* Disable IPI for CPU hotplug */
+> +void riscv_ipi_disable(void);
+>  
+> -/* Clear IPI for current CPU */
+> -void riscv_clear_ipi(void);
+> +/* Check if IPI interrupt numbers are available */
+> +bool riscv_ipi_have_virq_range(void);
+> +
+> +/* Set the IPI interrupt numbers for arch (called by irqchip drivers) */
+> +void riscv_ipi_set_virq_range(int virq, int nr_irqs);
+>  
+>  /* Secondary hart entry */
+>  asmlinkage void smp_callin(void);
+> @@ -82,11 +80,20 @@ static inline unsigned long cpuid_to_hartid_map(int cpu)
+>  	return boot_cpu_hartid;
+>  }
+>  
+> -static inline void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops)
+> +static inline void riscv_ipi_enable(void)
+>  {
+>  }
+>  
+> -static inline void riscv_clear_ipi(void)
+> +static inline void riscv_ipi_disable(void)
+> +{
+> +}
+> +
+> +static inline bool riscv_ipi_have_virq_range(void)
+> +{
+> +	return false;
+> +}
+> +
+> +static inline void riscv_ipi_set_virq_range(int virq, int nr)
+>  {
+>  }
+>  
+> diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+> index ffc87e76b1dd..5047723e5527 100644
+> --- a/arch/riscv/kernel/Makefile
+> +++ b/arch/riscv/kernel/Makefile
+> @@ -42,6 +42,7 @@ obj-$(CONFIG_RISCV_M_MODE)	+= traps_misaligned.o
+>  obj-$(CONFIG_FPU)		+= fpu.o
+>  obj-$(CONFIG_SMP)		+= smpboot.o
+>  obj-$(CONFIG_SMP)		+= smp.o
+> +obj-$(CONFIG_SMP)		+= ipi-mux.o
+>  obj-$(CONFIG_SMP)		+= cpu_ops.o
+>  
+>  obj-$(CONFIG_RISCV_BOOT_SPINWAIT) += cpu_ops_spinwait.o
+> diff --git a/arch/riscv/kernel/cpu-hotplug.c b/arch/riscv/kernel/cpu-hotplug.c
+> index f7a832e3a1d1..39235cf50652 100644
+> --- a/arch/riscv/kernel/cpu-hotplug.c
+> +++ b/arch/riscv/kernel/cpu-hotplug.c
+> @@ -13,7 +13,7 @@
+>  #include <asm/irq.h>
+>  #include <asm/cpu_ops.h>
+>  #include <asm/numa.h>
+> -#include <asm/sbi.h>
+> +#include <asm/smp.h>
+>  
+>  bool cpu_has_hotplug(unsigned int cpu)
+>  {
+> @@ -43,6 +43,7 @@ int __cpu_disable(void)
+>  	remove_cpu_topology(cpu);
+>  	numa_remove_cpu(cpu);
+>  	set_cpu_online(cpu, false);
+> +	riscv_ipi_disable();
+>  	irq_migrate_all_off_this_cpu();
+>  
+>  	return ret;
+> diff --git a/arch/riscv/kernel/ipi-mux.c b/arch/riscv/kernel/ipi-mux.c
+> new file mode 100644
+> index 000000000000..3a0405f0e0de
+> --- /dev/null
+> +++ b/arch/riscv/kernel/ipi-mux.c
+> @@ -0,0 +1,222 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Multiplex several IPIs over a single HW IPI.
+> + *
+> + * Copyright (c) 2022 Ventana Micro Systems Inc.
+> + */
+> +
+> +#define pr_fmt(fmt) "riscv-ipi-mux: " fmt
+> +#include <linux/cpu.h>
+> +#include <linux/cpumask.h>
+> +#include <linux/init.h>
+> +#include <linux/irq.h>
+> +#include <linux/irqchip.h>
+> +#include <linux/irqchip/chained_irq.h>
+> +#include <linux/irqdomain.h>
+> +#include <linux/smp.h>
+> +#include <asm/ipi-mux.h>
+> +
+> +struct ipi_mux {
+> +	struct irq_domain *domain;
+> +	int parent_virq;
+> +	void (*clear_ipi)(void);
+> +	void (*send_ipi)(const struct cpumask *mask);
+> +};
+
+Why do you need this in the arch code? It really looks like something
+that is irqchip specific (single IPI signal on which actual IPIs are
+overlayed). It is also something that other irqchips are already
+implementing, so there is potential for consolidation.
+
+> +
+> +static struct ipi_mux ipi_mux_priv;
+> +static DEFINE_PER_CPU(unsigned long, ipi_mux_bits);
+> +
+> +static void ipi_mux_dummy(struct irq_data *d)
+> +{
+> +}
+> +
+> +static void ipi_mux_send_mask(struct irq_data *d, const struct cpumask *mask)
+> +{
+> +	int cpu;
+> +
+> +	/* Barrier before doing atomic bit update to IPI bits */
+> +	smp_mb__before_atomic();
+> +
+> +	for_each_cpu(cpu, mask)
+> +		set_bit(d->hwirq, per_cpu_ptr(&ipi_mux_bits, cpu));
+> +
+> +	/* Barrier after doing atomic bit update to IPI bits */
+> +	smp_mb__after_atomic();
+> +
+> +	if (ipi_mux_priv.send_ipi)
+> +		ipi_mux_priv.send_ipi(mask);
+> +}
+> +
+> +static struct irq_chip ipi_mux_chip = {
+> +	.name		= "RISC-V IPI Mux",
+> +	.irq_mask	= ipi_mux_dummy,
+> +	.irq_unmask	= ipi_mux_dummy,
+> +	.ipi_send_mask	= ipi_mux_send_mask,
+> +};
+> +
+> +static int ipi_mux_domain_map(struct irq_domain *d, unsigned int irq,
+> +			      irq_hw_number_t hwirq)
+> +{
+> +	irq_set_percpu_devid(irq);
+> +	irq_domain_set_info(d, irq, hwirq, &ipi_mux_chip, d->host_data,
+> +			    handle_percpu_devid_irq, NULL, NULL);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ipi_mux_domain_alloc(struct irq_domain *d, unsigned int virq,
+> +				unsigned int nr_irqs, void *arg)
+> +{
+> +	int i, ret;
+> +	irq_hw_number_t hwirq;
+> +	unsigned int type = IRQ_TYPE_NONE;
+> +	struct irq_fwspec *fwspec = arg;
+> +
+> +	ret = irq_domain_translate_onecell(d, fwspec, &hwirq, &type);
+> +	if (ret)
+> +		return ret;
+> +
+> +	for (i = 0; i < nr_irqs; i++) {
+> +		ret = ipi_mux_domain_map(d, virq + i, hwirq + i);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct irq_domain_ops ipi_mux_domain_ops = {
+> +	.translate	= irq_domain_translate_onecell,
+> +	.alloc		= ipi_mux_domain_alloc,
+> +	.free		= irq_domain_free_irqs_top,
+> +};
+> +
+> +void riscv_ipi_mux_handle_irq(void)
+> +{
+> +	int err;
+> +	unsigned long irqs, *bits = this_cpu_ptr(&ipi_mux_bits);
+> +	irq_hw_number_t hwirq;
+> +
+> +	while (true) {
+> +		if (ipi_mux_priv.clear_ipi)
+> +			ipi_mux_priv.clear_ipi();
+> +
+> +		/* Order bit clearing and data access. */
+> +		mb();
+> +
+> +		irqs = xchg(bits, 0);
+> +		if (!irqs)
+> +			break;
+> +
+> +		for_each_set_bit(hwirq, &irqs, BITS_PER_LONG) {
+> +			err = generic_handle_domain_irq(ipi_mux_priv.domain,
+> +							hwirq);
+> +			if (unlikely(err))
+> +				pr_warn_ratelimited(
+> +					"can't find mapping for hwirq %lu\n",
+> +					hwirq);
+> +		}
+> +	}
+> +}
+> +
+> +static void ipi_mux_handle_irq(struct irq_desc *desc)
+> +{
+> +	struct irq_chip *chip = irq_desc_get_chip(desc);
+> +
+> +	chained_irq_enter(chip, desc);
+> +	riscv_ipi_mux_handle_irq();
+> +	chained_irq_exit(chip, desc);
+> +}
+> +
+> +static int ipi_mux_dying_cpu(unsigned int cpu)
+> +{
+> +	if (ipi_mux_priv.parent_virq)
+> +		disable_percpu_irq(ipi_mux_priv.parent_virq);
+> +	return 0;
+> +}
+> +
+> +static int ipi_mux_starting_cpu(unsigned int cpu)
+> +{
+> +	if (ipi_mux_priv.parent_virq)
+> +		enable_percpu_irq(ipi_mux_priv.parent_virq,
+> +			irq_get_trigger_type(ipi_mux_priv.parent_virq));
+> +	return 0;
+> +}
+> +
+> +struct irq_domain *riscv_ipi_mux_create(bool use_soft_irq,
+> +			void (*clear_ipi)(void),
+> +			void (*send_ipi)(const struct cpumask *mask))
+> +{
+
+There really shouldn't be a need for such a registration interface
+anyway (the current idiom is to allocate IPIs in the root irqchip, and
+pass them to the arch code).
+
+Why can't you model it after the existing architectures?
+
+> +	int virq, parent_virq = 0;
+> +	struct irq_domain *domain;
+> +	struct irq_fwspec ipi;
+> +
+> +	if (ipi_mux_priv.domain || riscv_ipi_have_virq_range())
+> +		return NULL;
+> +
+> +	if (use_soft_irq) {
+> +		domain = irq_find_matching_fwnode(riscv_get_intc_hwnode(),
+> +						  DOMAIN_BUS_ANY);
+> +		if (!domain) {
+> +			pr_err("unable to find INTC IRQ domain\n");
+> +			return NULL;
+> +		}
+> +
+> +		parent_virq = irq_create_mapping(domain, RV_IRQ_SOFT);
+> +		if (!parent_virq) {
+> +			pr_err("unable to create INTC IRQ mapping\n");
+> +			return NULL;
+> +		}
+> +	}
+> +
+> +	domain = irq_domain_add_linear(NULL, BITS_PER_LONG,
+> +				       &ipi_mux_domain_ops, NULL);
+> +	if (!domain) {
+> +		pr_err("unable to add IPI Mux domain\n");
+> +		goto fail_dispose_mapping;
+> +	}
+> +
+> +	ipi.fwnode = domain->fwnode;
+> +	ipi.param_count = 1;
+> +	ipi.param[0] = 0;
+> +	virq = __irq_domain_alloc_irqs(domain, -1, BITS_PER_LONG,
+> +				       NUMA_NO_NODE, &ipi, false, NULL);
+> +	if (virq <= 0) {
+> +		pr_err("unable to alloc IRQs from IPI Mux domain\n");
+> +		goto fail_domain_remove;
+> +	}
+> +
+> +	ipi_mux_priv.domain = domain;
+> +	ipi_mux_priv.parent_virq = parent_virq;
+> +	ipi_mux_priv.clear_ipi = clear_ipi;
+> +	ipi_mux_priv.send_ipi = send_ipi;
+> +
+> +	if (parent_virq)
+> +		irq_set_chained_handler(parent_virq, ipi_mux_handle_irq);
+> +
+> +	cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
+> +			  "irqchip/riscv/ipi-mux:starting",
+> +			  ipi_mux_starting_cpu, ipi_mux_dying_cpu);
+> +
+> +	riscv_ipi_set_virq_range(virq, BITS_PER_LONG);
+> +
+> +	return ipi_mux_priv.domain;
+> +
+> +fail_domain_remove:
+> +	irq_domain_remove(domain);
+> +fail_dispose_mapping:
+> +	if (parent_virq)
+> +		irq_dispose_mapping(parent_virq);
+> +	return NULL;
+> +}
+> +
+> +void riscv_ipi_mux_destroy(struct irq_domain *d)
+> +{
+> +	if (!d || ipi_mux_priv.domain != d)
+> +		return;
+> +
+> +	irq_domain_remove(ipi_mux_priv.domain);
+> +	if (ipi_mux_priv.parent_virq)
+> +		irq_dispose_mapping(ipi_mux_priv.parent_virq);
+> +	memset(&ipi_mux_priv, 0, sizeof(ipi_mux_priv));
+> +}
+
+Err... Under which circumstances do you destroy such an irqdomain?
+Once all the CPUs have been removed from the machine?
+
+I really think you should aim for a simpler abstraction. The arch code
+should deal with the interrupts themselves, and leave the
+*implementation* of the IPI to the driver code, potentially shared
+across irqchips. This would avoid creating more new interfaces that
+are specific to one architecture or another.
+
+	M.
+
 -- 
-2.17.1
-
+Without deviation from the norm, progress is not possible.
