@@ -2,102 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E45C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 505BBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235172AbiCAOJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:09:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51728 "EHLO
+        id S235155AbiCAOMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:12:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229730AbiCAOJd (ORCPT
+        with ESMTP id S229730AbiCAOMj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:09:33 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943411D0EF
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:08:52 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id d17so14352462pfl.0
-        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 06:08:52 -0800 (PST)
+        Tue, 1 Mar 2022 09:12:39 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6852649
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:11:57 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id gb39so31764329ejc.1
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 06:11:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+EXe7kCkvoVySWS7NDybEWGjJI7VTkRTM5K2XTeA48M=;
-        b=BnU3SGJbHdN3D2WYcP41BQh0jc/9FhwlQ6R6WZaEaAgS9KAo3pZ/5usqTELZf3m6nl
-         XP8S3ynDO2vQTblrp8fv7x+65QPQem4s9ITfvrrzTOqj0VSUjyockkKba98UnFlwEjA/
-         Us4Q0ie0b4UUlUfkOc2Bm0GEf6yyGD7BDbQvrB3WoqYlpTYXHrgYHHg+dHs9K/qSbgO3
-         3FuFYMECTJYdkNTrXAGBG+yBQIPxRuNO+3dxJcRV815UKSj1aCQ+d1iJFhd3i0mQVmee
-         wwAl0cPRe0NFzhCvAzC+dJ5YA61MfcpNdmDZm0U9AR8430Vk+A+6OhNSfwd3LXqBWQyj
-         Nvpg==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MfimAMOL9WrDUaU8ysDXEywlIYs/LjUgbSBpoFo63aY=;
+        b=diqOb2yAU+tqO43un6fTJiInrvAguRgXo6fKbg98DcAITNF7Gl/ir+uwUFM4exGOnE
+         YWlZD/j93Kus3CV+xQR5OC5IMibNE7XQ2pB/aTfiI/1KZNPNXcOO3N9Wf3Vm40eucwnf
+         KCZsoDpcY3RlPvtOsdJvp3hvhWagp6mK0k8X9hB4q0IxoucacjoWQi8jZW0I4mBzsyy9
+         n6oZMx4YJlf1gFF12Wsy9ZDaGuUem8Mt98GLD1DxF50P0y5ScMfaySWjOjxxNE6G+z7v
+         xyulVL4kfYG9fG3Wd3tJMX78+QbEpgZ8N6/qMfJwekH8lawM05Io640S/r6Xl6082e7W
+         cILg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=+EXe7kCkvoVySWS7NDybEWGjJI7VTkRTM5K2XTeA48M=;
-        b=0JwslAHwL4Ck/zFn1sVGBrIw5Esy05COVCRlOyGIvF59Z4YULY0uT3JvwKQ7FyW6sF
-         S0e7Zr6BHu23WCI1WYurKwizKriDwJS6zs/Z1mO3/MAv3K6oRdl/ZkJZSid4HsTkDPmf
-         DgW70LBw81Ikf0PJINmmgubyJTm8DtUyFKMd2ESVl/S91WL3Np5LIzPUeJpoQ4yX9MKj
-         +cOTBksxM+BgmbFFBcfGWscbl7qWx4zXuNv+kCqq7UNcwpWX2YWsA6Sa+/XkPIn1qWOJ
-         h5Beg7zdV1QjFEzGsze3fe4FAzdAbfCFY6JFoXkmlASYnjzum52cJaRFFIB34Lif2TEx
-         TySQ==
-X-Gm-Message-State: AOAM532MxAe0RtDLqhmaJk0hELvBHyfnIgGVe+Z4EdWVkpWkLt7J+GNZ
-        zvnphr9I+7qEKZWWem3/OJ7VJA==
-X-Google-Smtp-Source: ABdhPJzXPDrukQGTza7+DOawnjWJWVOY67CPIgDYANP1SXI2mtt/5N9lBLvXpLy2FuBE4dw1bE0vsQ==
-X-Received: by 2002:a63:4a44:0:b0:372:db13:5583 with SMTP id j4-20020a634a44000000b00372db135583mr21596475pgl.210.1646143731686;
-        Tue, 01 Mar 2022 06:08:51 -0800 (PST)
-Received: from C02CV1DAMD6P.bytedance.net ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id q24-20020aa79618000000b004e0e89985eesm16310318pfg.156.2022.03.01.06.08.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Mar 2022 06:08:51 -0800 (PST)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-To:     jpoimboe@redhat.com, jikos@kernel.org, mbenes@suse.cz,
-        pmladek@suse.com, joe.lawrence@redhat.com
-Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com, qirui.001@bytedance.com,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH] livepatch: Only block the removal of KLP_UNPATCHED forced transition patch
-Date:   Tue,  1 Mar 2022 22:08:40 +0800
-Message-Id: <20220301140840.29345-1-zhouchengming@bytedance.com>
-X-Mailer: git-send-email 2.35.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MfimAMOL9WrDUaU8ysDXEywlIYs/LjUgbSBpoFo63aY=;
+        b=EGEJF8hLep1NOdF0hgJ0bfhINBM6pZtSbAb0OPKN2JsL5suwAydNiRiXSJKSIazR1u
+         6G4pTYJ9piTadCVNClcOXTm2wMBVNWiTgrMyl1HqJOwwCVaYb+NdhqAvvwZQXkLStuU2
+         wBn1LLsm3og3JdGsyTjRDWmgWDEr0CnFlq83sE6uLJJRyzsnSddfpec+uxLJLDQivH8x
+         Oa2sdy64n9wKLLQaWzG1THGsFXUJhRFpEbEp6utPa6/A9VohbX4RlpR6FSG10FH90tsj
+         6t7ti1qaVaHBKQmuN1ekzRiRbnpvqtbeuS6nrGMgM7Oie24xA9JGhTtTkj3oTueRNJiC
+         HaCw==
+X-Gm-Message-State: AOAM531qbiKAhTeitl1t9boiZykauLvZU08Axk0ZCDll5+LU5Wa0+Y2+
+        o77693KVh8E/f3T8d5jqMgQRi8IlQwVtZVZBwsfTdA==
+X-Google-Smtp-Source: ABdhPJyQzWax9/NRtsMdZsexRmcWnD7j8+o1lWNAilFPrZ3u8SDBbGi9pMoyHhZ+JtbcuqS+XYYSjU6RcqlDOS3fzRU=
+X-Received: by 2002:a17:906:2ecd:b0:6d3:d7c9:8fa4 with SMTP id
+ s13-20020a1709062ecd00b006d3d7c98fa4mr18884616eji.144.1646143916142; Tue, 01
+ Mar 2022 06:11:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211028140009.23331-1-etienne.carriere@linaro.org>
+ <58a0e791-9573-99c2-0cc5-3920a1048113@pengutronix.de> <CAN5uoS_DQNkG8J0C-oT8aC-Xfozy9hgwAge_x2e4S-HOhSn5=w@mail.gmail.com>
+In-Reply-To: <CAN5uoS_DQNkG8J0C-oT8aC-Xfozy9hgwAge_x2e4S-HOhSn5=w@mail.gmail.com>
+From:   Etienne Carriere <etienne.carriere@linaro.org>
+Date:   Tue, 1 Mar 2022 15:11:44 +0100
+Message-ID: <CAN5uoS8QotrsoWYX3rCjxCKQFJNhFBXHc6JDYAn1rcX6N5mj4w@mail.gmail.com>
+Subject: Re: [PATCH v8 1/2] dt-bindings: arm: Add OP-TEE transport for SCMI
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-module_put() is currently never called for a patch with forced flag, to block
-the removal of that patch module that might still be in use after a forced
-transition.
+Hi sorry,
 
-But klp_force_transition() will flag all patches on the list to be forced, since
-commit d67a53720966 ("livepatch: Remove ordering (stacking) of the livepatches")
-has removed stack ordering of the livepatches, it will cause all other patches can't
-be unloaded after disabled even if they have completed the KLP_UNPATCHED transition.
+I sent the mail while i was still typing it...
+Here is with the full answer.
 
-In fact, we don't need to flag a patch to forced if it's a KLP_PATCHED forced
-transition. It can still be unloaded only if it has passed through the consistency
-model in KLP_UNPATCHED transition.
 
-So this patch only set forced flag and block the removal of a KLP_UNPATCHED forced
-transition livepatch.
+On Tue, 1 Mar 2022 at 15:05, Etienne Carriere
+<etienne.carriere@linaro.org> wrote:
+>
+> Hello Ahmad,
+>
+> On Mon, 28 Feb 2022 at 17:01, Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
+> >
+> > Hello Etienne,
+> >
+> > On 28.10.21 16:00, Etienne Carriere wrote:
+> > > Introduce compatible "linaro,scmi-optee" for SCMI transport channel
+> > > based on an OP-TEE service invocation. The compatible mandates a
+> > > channel ID defined with property "linaro,optee-channel-id".
+> >
+> > I just found this thread via the compatible in the STM32MP131 patch set:
+> > https://lore.kernel.org/all/20220225133137.813919-1-gabriel.fernandez@foss.st.com/
+> >
+> > Linux doesn't care whether PSCI is provided by TF-A, OP-TEE or something
+> > else, so there is just the arm,psci* compatible.
+> >
+> > What's different about SCMI that this is not possible? Why couldn't the
+> > existing binding and driver be used to communicate with OP-TEE as secure
+> > monitor as well?
+>
+> Compatible "linaro,scmi-optee" denote a alternate SCMI transport to
+> those already in v5.16.
 
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
----
- kernel/livepatch/transition.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+It is names scmi-optee because the interface exposed to access SCMI services is
+based on TEE's interface (UUID to open a session with and invoke commands).
 
-diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
-index 5683ac0d2566..8b296ad9e407 100644
---- a/kernel/livepatch/transition.c
-+++ b/kernel/livepatch/transition.c
-@@ -641,6 +641,6 @@ void klp_force_transition(void)
- 	for_each_possible_cpu(cpu)
- 		klp_update_patch_state(idle_task(cpu));
- 
--	klp_for_each_patch(patch)
--		patch->forced = true;
-+	if (klp_target_state == KLP_UNPATCHED)
-+		klp_transition_patch->forced = true;
- }
--- 
-2.20.1
+The compatible is described in the Linux Documentation but not yet
+merged in the linux-next.
+It can be found in the tree of arm_scmi driver maintainers:
+https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/log/?h=for-linux-next
 
+This commit:
+https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/commit/?h=for-linux-next&id=b7d2cf7c817b86e705b97f72c6be192a6760a14f
+
+Br,
+Etienne
+
+>
+>
+> >
+> > Cheers,
+> > Ahmad
+> >
+> > >
+> > > Cc: devicetree@vger.kernel.org
+> > > Cc: Rob Herring <robh+dt@kernel.org>
+> > > Signed-off-by: Etienne Carriere <etienne.carriere@linaro.org>
+> > > ---
+> > > Changes since v6:
+> > >  - Remove maxItems from linaro,optee-channel-id description
+> > >
+> > > No change since v5
+> > >
+> > > Changes since v4:
+> > >  - Fix sram node name in DTS example: s/-shm-/-sram-/
+> > >
+> > > Changes since v3:
+> > >  - Add description for linaro,optee-channel-id in patternProperties
+> > >    specifying protocol can optionaly define a dedicated channel id.
+> > >  - Fix DTS example (duplicated phandles issue, subnodes ordering)
+> > >  - Fix typo in DTS example and description comments.
+> > >
+> > > Changes since v2:
+> > >  - Define mandatory property linaro,optee-channel-id
+> > >  - Rebased on yaml description file
+> > >
+> > > Changes since v1:
+> > >  - Removed modification regarding mboxes property description.
+> > > ---
+> > >  .../bindings/firmware/arm,scmi.yaml           | 65 +++++++++++++++++++
+> > >  1 file changed, 65 insertions(+)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+> > > index 5c4c6782e052..eae15df36eef 100644
+> > > --- a/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+> > > +++ b/Documentation/devicetree/bindings/firmware/arm,scmi.yaml
+> > > @@ -38,6 +38,9 @@ properties:
+> > >                       The virtio transport only supports a single device.
+> > >          items:
+> > >            - const: arm,scmi-virtio
+> > > +      - description: SCMI compliant firmware with OP-TEE transport
+> > > +        items:
+> > > +          - const: linaro,scmi-optee
+> > >
+> > >    interrupts:
+> > >      description:
+> > > @@ -83,6 +86,11 @@ properties:
+> > >      description:
+> > >        SMC id required when using smc or hvc transports
+> > >
+> > > +  linaro,optee-channel-id:
+> > > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > > +    description:
+> > > +      Channel specifier required when using OP-TEE transport.
+> > > +
+> > >    protocol@11:
+> > >      type: object
+> > >      properties:
+> > > @@ -195,6 +203,12 @@ patternProperties:
+> > >          minItems: 1
+> > >          maxItems: 2
+> > >
+> > > +      linaro,optee-channel-id:
+> > > +        $ref: /schemas/types.yaml#/definitions/uint32
+> > > +        description:
+> > > +          Channel specifier required when using OP-TEE transport and
+> > > +          protocol has a dedicated communication channel.
+> > > +
+> > >      required:
+> > >        - reg
+> > >
+> > > @@ -226,6 +240,16 @@ else:
+> > >        - arm,smc-id
+> > >        - shmem
+> > >
+> > > +  else:
+> > > +    if:
+> > > +      properties:
+> > > +        compatible:
+> > > +          contains:
+> > > +            const: linaro,scmi-optee
+> > > +    then:
+> > > +      required:
+> > > +        - linaro,optee-channel-id
+> > > +
+> > >  examples:
+> > >    - |
+> > >      firmware {
+> > > @@ -340,7 +364,48 @@ examples:
+> > >                  reg = <0x11>;
+> > >                  #power-domain-cells = <1>;
+> > >              };
+> > > +        };
+> > > +    };
+> > > +
+> > > +  - |
+> > > +    firmware {
+> > > +        scmi {
+> > > +            compatible = "linaro,scmi-optee";
+> > > +            linaro,optee-channel-id = <0>;
+> > > +
+> > > +            #address-cells = <1>;
+> > > +            #size-cells = <0>;
+> > > +
+> > > +            scmi_dvfs1: protocol@13 {
+> > > +                reg = <0x13>;
+> > > +                linaro,optee-channel-id = <1>;
+> > > +                shmem = <&cpu_optee_lpri0>;
+> > > +                #clock-cells = <1>;
+> > > +            };
+> > > +
+> > > +            scmi_clk0: protocol@14 {
+> > > +                reg = <0x14>;
+> > > +                #clock-cells = <1>;
+> > > +            };
+> > > +        };
+> > > +    };
+> > >
+> > > +    soc {
+> > > +        #address-cells = <2>;
+> > > +        #size-cells = <2>;
+> > > +
+> > > +        sram@51000000 {
+> > > +            compatible = "mmio-sram";
+> > > +            reg = <0x0 0x51000000 0x0 0x10000>;
+> > > +
+> > > +            #address-cells = <1>;
+> > > +            #size-cells = <1>;
+> > > +            ranges = <0 0x0 0x51000000 0x10000>;
+> > > +
+> > > +            cpu_optee_lpri0: optee-sram-section@0 {
+> > > +                compatible = "arm,scmi-shmem";
+> > > +                reg = <0x0 0x80>;
+> > > +            };
+> > >          };
+> > >      };
+> > >
+> >
+> >
+> > --
+> > Pengutronix e.K.                           |                             |
+> > Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> > 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> > Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
