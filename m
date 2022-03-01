@@ -2,330 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B704FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0FDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235453AbiCAOj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:39:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34022 "EHLO
+        id S233723AbiCAOkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:40:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235326AbiCAOjO (ORCPT
+        with ESMTP id S234116AbiCAOkJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:39:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9172E5622E
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 06:37:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646145477;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0tWrE2ecUAeuayWTb6qWiE2IZ32+GPry/OrGiauA+5A=;
-        b=H/8vPkbLUL9amYD9t5HAIc53N7QPAcCKt1Wlasx+17lIqUXWjtq9U2HYb9bCQDWMIvNCDM
-        r0d6Gmo7pzRqyvtmlgXrIvqjJKnEcbSCDg/uHjLybE1WeP0QyySDr1RlByGYGaDxy4iFyY
-        Hu9LKibGwjg9AZjA8D3nuHHD/MrI2LE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-110-6h4I2hSTOm6QLva9BWCYOQ-1; Tue, 01 Mar 2022 09:37:52 -0500
-X-MC-Unique: 6h4I2hSTOm6QLva9BWCYOQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 79D89801DDB;
-        Tue,  1 Mar 2022 14:37:50 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 99C8E842C9;
-        Tue,  1 Mar 2022 14:37:39 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jim Mattson <jmattson@google.com>, x86@kernel.org,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH v3 7/7] KVM: x86: SVM: allow AVIC to co-exist with a nested guest running
-Date:   Tue,  1 Mar 2022 16:36:50 +0200
-Message-Id: <20220301143650.143749-8-mlevitsk@redhat.com>
-In-Reply-To: <20220301143650.143749-1-mlevitsk@redhat.com>
-References: <20220301143650.143749-1-mlevitsk@redhat.com>
+        Tue, 1 Mar 2022 09:40:09 -0500
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F167264B;
+        Tue,  1 Mar 2022 06:39:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646145568; x=1677681568;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DRmNmAo5LxqGAA9xWA1po2CgEZAaq3Bwkeuu4aOIzQw=;
+  b=XbY8LbEEIW8VeiKOzcnUaqrPstvw18WdbjWEQiEKBuSQpsZOrAC2+xsn
+   ilZRSMeMtRQpE48AXfEl9BzE949h9UK/IyRAaMceDEvNyP49CmBNB+ldT
+   bbyqLTP+qa9xv+7YWeZ4cn4nzD3HbDWFO3r+tJ053GKvKumCkWoDY27rj
+   8qStFSKuK4fFW8+fvciduF/cs6lqdziRu8sQOfI2uatNdy6oz+XdFCqae
+   EVc2z43RIiOKltdcHYycCT+loh0ZwE/cGb0fv0gnfQ3ktXyby8apDhuIn
+   RXLhaiQxLtyVVK0zAOEVk/PE9PJL3J9p246mq1XhuaxRrbiyXR2qaAvSi
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10272"; a="253333704"
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="253333704"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 06:39:28 -0800
+X-IronPort-AV: E=Sophos;i="5.90,146,1643702400"; 
+   d="scan'208";a="510532163"
+Received: from ssahani-mobl.amr.corp.intel.com (HELO [10.212.127.177]) ([10.212.127.177])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2022 06:39:25 -0800
+Message-ID: <559c9698-f182-fa93-d6a7-009aadfd8c66@linux.intel.com>
+Date:   Tue, 1 Mar 2022 14:39:23 +0000
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 3/3] drm/msm: Expose client engine utilization via fdinfo
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220225202614.225197-1-robdclark@gmail.com>
+ <20220225202614.225197-3-robdclark@gmail.com>
+ <CAF6AEGvXs9etrtBUP5fAx7z6pLMV76a-FEXrdk2gY8npDHrFnA@mail.gmail.com>
+ <f460b115-6ff6-7f69-8b0d-174c4defc771@linux.intel.com>
+ <CAF6AEGsNHkODt4oOgAhLdrik1Jt-cfcyjk+nGzDhSMNfFMEWsA@mail.gmail.com>
+From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Organization: Intel Corporation UK Plc
+In-Reply-To: <CAF6AEGsNHkODt4oOgAhLdrik1Jt-cfcyjk+nGzDhSMNfFMEWsA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Inhibit the AVIC of the vCPU that is running nested for the duration of the
-nested run, so that all interrupts arriving from both its vCPU siblings
-and from KVM are delivered using normal IPIs and cause that vCPU to vmexit.
 
-Note that unlike normal AVIC inhibition, there is no need to
-update the AVIC mmio memslot, because the nested guest uses its
-own set of paging tables.
-That also means that AVIC doesn't need to be inhibited VM wide.
+On 28/02/2022 16:01, Rob Clark wrote:
+> On Mon, Feb 28, 2022 at 6:33 AM Tvrtko Ursulin
+> <tvrtko.ursulin@linux.intel.com> wrote:
+>>
+>>
+>> On 25/02/2022 22:14, Rob Clark wrote:
+>>> On Fri, Feb 25, 2022 at 12:25 PM Rob Clark <robdclark@gmail.com> wrote:
+>>>>
+>>>> From: Rob Clark <robdclark@chromium.org>
+>>>>
+>>>> Similar to AMD commit
+>>>> 874442541133 ("drm/amdgpu: Add show_fdinfo() interface"), using the
+>>>> infrastructure added in previous patches, we add basic client info
+>>>> and GPU engine utilisation for msm.
+>>>>
+>>>> Example output:
+>>>>
+>>>>           # cat /proc/`pgrep glmark2`/fdinfo/6
+>>>>           pos:    0
+>>>>           flags:  02400002
+>>>>           mnt_id: 21
+>>>>           ino:    162
+>>>>           drm-driver:     msm
+>>>>           drm-client-id:  7
+>>>>           drm-engine-gpu: 1734371319 ns
+>>>>           drm-cycles-gpu: 1153645024
+>>
+>> Nice, so my vendor agnostic actually worked (with that single fixup of
+>> accounting for the fact pdev tag is optional)?
+>>
+>>> Note that it might be useful to have a standardized way to report # of
+>>> cycles and max freq, so userspace tool can derive %utilization in
+>>> addition to just %busy
+>>
+>> How do you define %utilisation vs %busy - I don't exactly follow since I
+>> see the two as same?
+> 
+> so, say you are running at 50% of max clk, and gpu is busy 70% of the
+> time.  The utilization is only 35% because the gpu could scale up the
+> clk to get more work done.
 
-Note that in the theory when a nested guest doesn't intercept
-physical interrupts, we could continue using AVIC to deliver them
-to it but don't bother doing so for now. Plus when nested AVIC
-is implemented, the nested guest will likely use it, which will
-not allow this optimization to be used
+Got it, thanks. I don't think we have the equivalent on the i915 side 
+(we do have global frequency reporting via perf/PMU). In general things 
+like these I imagined would be defined as driver specific tags. If you 
+look at the drm-usage-stats.rst in my series, there is a "Driver 
+specific implementations" section in there which links to the i915 doc 
+section.
 
-(can't use real AVIC to support both L1 and L2 at the same time)
+I've also put a "big fat" comment into the i915 fdinfo fops vfunc 
+pointing back to drm-usage-stats.rst which I think is useful when large 
+teams work on a driver. Not sure if that applies to msm so just mentioning.
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- arch/x86/include/asm/kvm-x86-ops.h |  1 +
- arch/x86/include/asm/kvm_host.h    |  7 ++++++-
- arch/x86/kvm/svm/avic.c            |  6 +++++-
- arch/x86/kvm/svm/nested.c          | 15 ++++++++++-----
- arch/x86/kvm/svm/svm.c             | 31 +++++++++++++++++++-----------
- arch/x86/kvm/svm/svm.h             |  1 +
- arch/x86/kvm/x86.c                 | 15 +++++++++++++--
- 7 files changed, 56 insertions(+), 20 deletions(-)
+Since this all works for you, would you mind applying your ack against 
+20220222140422.1121163-9-tvrtko.ursulin@linux.intel.com?
 
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index 29affccb353cd..eb16e32117610 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -126,6 +126,7 @@ KVM_X86_OP_OPTIONAL(migrate_timers)
- KVM_X86_OP(msr_filter_changed)
- KVM_X86_OP(complete_emulated_msr)
- KVM_X86_OP(vcpu_deliver_sipi_vector)
-+KVM_X86_OP_OPTIONAL_RET0(vcpu_has_apicv_inhibit_condition);
- 
- #undef KVM_X86_OP
- #undef KVM_X86_OP_OPTIONAL
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index ccec837e520d8..efe7414361de8 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1039,7 +1039,6 @@ struct kvm_x86_msr_filter {
- 
- #define APICV_INHIBIT_REASON_DISABLE    0
- #define APICV_INHIBIT_REASON_HYPERV     1
--#define APICV_INHIBIT_REASON_NESTED     2
- #define APICV_INHIBIT_REASON_IRQWIN     3
- #define APICV_INHIBIT_REASON_PIT_REINJ  4
- #define APICV_INHIBIT_REASON_X2APIC	5
-@@ -1490,6 +1489,12 @@ struct kvm_x86_ops {
- 	int (*complete_emulated_msr)(struct kvm_vcpu *vcpu, int err);
- 
- 	void (*vcpu_deliver_sipi_vector)(struct kvm_vcpu *vcpu, u8 vector);
-+
-+	/*
-+	 * Returns true if for some reason APICv (e.g guest mode)
-+	 * must be inhibited on this vCPU
-+	 */
-+	bool (*vcpu_has_apicv_inhibit_condition)(struct kvm_vcpu *vcpu);
- };
- 
- struct kvm_x86_nested_ops {
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index aea0b13773fd3..d5ce0868c5a74 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -357,6 +357,11 @@ int avic_incomplete_ipi_interception(struct kvm_vcpu *vcpu)
- 	return 1;
- }
- 
-+bool avic_has_vcpu_inhibit_condition(struct kvm_vcpu *vcpu)
-+{
-+	return is_guest_mode(vcpu);
-+}
-+
- static u32 *avic_get_logical_id_entry(struct kvm_vcpu *vcpu, u32 ldr, bool flat)
- {
- 	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
-@@ -859,7 +864,6 @@ bool avic_check_apicv_inhibit_reasons(ulong bit)
- 	ulong supported = BIT(APICV_INHIBIT_REASON_DISABLE) |
- 			  BIT(APICV_INHIBIT_REASON_ABSENT) |
- 			  BIT(APICV_INHIBIT_REASON_HYPERV) |
--			  BIT(APICV_INHIBIT_REASON_NESTED) |
- 			  BIT(APICV_INHIBIT_REASON_IRQWIN) |
- 			  BIT(APICV_INHIBIT_REASON_PIT_REINJ) |
- 			  BIT(APICV_INHIBIT_REASON_X2APIC) |
-diff --git a/arch/x86/kvm/svm/nested.c b/arch/x86/kvm/svm/nested.c
-index 4f8b5a330096e..573e0be84e874 100644
---- a/arch/x86/kvm/svm/nested.c
-+++ b/arch/x86/kvm/svm/nested.c
-@@ -616,11 +616,6 @@ static void nested_vmcb02_prepare_control(struct vcpu_svm *svm)
- 	 * exit_int_info, exit_int_info_err, next_rip, insn_len, insn_bytes.
- 	 */
- 
--	/*
--	 * Also covers avic_vapic_bar, avic_backing_page, avic_logical_id,
--	 * avic_physical_id.
--	 */
--	WARN_ON(kvm_apicv_activated(svm->vcpu.kvm));
- 
- 
- 
-@@ -746,6 +741,9 @@ int enter_svm_guest_mode(struct kvm_vcpu *vcpu, u64 vmcb12_gpa,
- 
- 	svm_set_gif(svm, true);
- 
-+	if (kvm_vcpu_apicv_active(vcpu))
-+		kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
-+
- 	return 0;
- }
- 
-@@ -1018,6 +1016,13 @@ int nested_svm_vmexit(struct vcpu_svm *svm)
- 	if (unlikely(svm->vmcb->save.rflags & X86_EFLAGS_TF))
- 		kvm_queue_exception(&(svm->vcpu), DB_VECTOR);
- 
-+	/*
-+	 * Un-inhibit the AVIC right away, so that other vCPUs can start
-+	 * to benefit from VM-exit less IPI right away
-+	 */
-+	if (kvm_apicv_activated(vcpu->kvm))
-+		kvm_vcpu_update_apicv(vcpu);
-+
- 	return 0;
- }
- 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index a26b4c899899e..ed620d6f68b91 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -1474,7 +1474,8 @@ static void svm_set_vintr(struct vcpu_svm *svm)
- 	/*
- 	 * The following fields are ignored when AVIC is enabled
- 	 */
--	WARN_ON(kvm_apicv_activated(svm->vcpu.kvm));
-+	if (!is_guest_mode(&svm->vcpu))
-+		WARN_ON(kvm_apicv_activated(svm->vcpu.kvm));
- 
- 	svm_set_intercept(svm, INTERCEPT_VINTR);
- 
-@@ -2968,10 +2969,16 @@ static int interrupt_window_interception(struct kvm_vcpu *vcpu)
- 	svm_clear_vintr(to_svm(vcpu));
- 
- 	/*
--	 * For AVIC, the only reason to end up here is ExtINTs.
-+	 * If not running nested, for AVIC, the only reason to end up here is ExtINTs.
- 	 * In this case AVIC was temporarily disabled for
- 	 * requesting the IRQ window and we have to re-enable it.
-+	 *
-+	 * If running nested, still uninhibit the AVIC in case irq window
-+	 * was requested when it was not running nested.
-+	 * All vCPUs which run nested will have their AVIC still
-+	 * inhibited due to AVIC inhibition override for that.
- 	 */
-+
- 	kvm_request_apicv_update(vcpu->kvm, true, APICV_INHIBIT_REASON_IRQWIN);
- 
- 	++vcpu->stat.irq_window_exits;
-@@ -3569,8 +3576,16 @@ static void svm_enable_irq_window(struct kvm_vcpu *vcpu)
- 		 * unless we have pending ExtINT since it cannot be injected
- 		 * via AVIC. In such case, we need to temporarily disable AVIC,
- 		 * and fallback to injecting IRQ via V_IRQ.
-+		 *
-+		 * If running nested, this vCPU will use separate page tables
-+		 * which don't have L1's AVIC mapped, and the AVIC is
-+		 * already inhibited thus there is no need for global
-+		 * AVIC inhibition.
- 		 */
--		kvm_request_apicv_update(vcpu->kvm, false, APICV_INHIBIT_REASON_IRQWIN);
-+
-+		if (!is_guest_mode(vcpu))
-+			kvm_request_apicv_update(vcpu->kvm, false, APICV_INHIBIT_REASON_IRQWIN);
-+
- 		svm_set_vintr(svm);
- 	}
- }
-@@ -4041,14 +4056,6 @@ static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 		if (guest_cpuid_has(vcpu, X86_FEATURE_X2APIC))
- 			kvm_request_apicv_update(vcpu->kvm, false,
- 						 APICV_INHIBIT_REASON_X2APIC);
--
--		/*
--		 * Currently, AVIC does not work with nested virtualization.
--		 * So, we disable AVIC when cpuid for SVM is set in the L1 guest.
--		 */
--		if (nested && guest_cpuid_has(vcpu, X86_FEATURE_SVM))
--			kvm_request_apicv_update(vcpu->kvm, false,
--						 APICV_INHIBIT_REASON_NESTED);
- 	}
- 	init_vmcb_after_set_cpuid(vcpu);
- }
-@@ -4710,6 +4717,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.complete_emulated_msr = svm_complete_emulated_msr,
- 
- 	.vcpu_deliver_sipi_vector = svm_vcpu_deliver_sipi_vector,
-+	.vcpu_has_apicv_inhibit_condition = avic_has_vcpu_inhibit_condition,
- };
- 
- /*
-@@ -4912,6 +4920,7 @@ static __init int svm_hardware_setup(void)
- 	} else {
- 		svm_x86_ops.vcpu_blocking = NULL;
- 		svm_x86_ops.vcpu_unblocking = NULL;
-+		svm_x86_ops.vcpu_has_apicv_inhibit_condition = NULL;
- 	}
- 
- 	if (vls) {
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 7e2f9bddf47dd..641f3bb23217d 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -618,6 +618,7 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
- void avic_vcpu_blocking(struct kvm_vcpu *vcpu);
- void avic_vcpu_unblocking(struct kvm_vcpu *vcpu);
- void avic_ring_doorbell(struct kvm_vcpu *vcpu);
-+bool avic_has_vcpu_inhibit_condition(struct kvm_vcpu *vcpu);
- 
- /* sev.c */
- 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index c712c33c1521f..14b964eb079e7 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9681,6 +9681,11 @@ void kvm_make_scan_ioapic_request(struct kvm *kvm)
- 	kvm_make_all_cpus_request(kvm, KVM_REQ_SCAN_IOAPIC);
- }
- 
-+static bool vcpu_has_apicv_inhibit_condition(struct kvm_vcpu *vcpu)
-+{
-+	return static_call(kvm_x86_vcpu_has_apicv_inhibit_condition)(vcpu);
-+}
-+
- void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
- {
- 	bool activate;
-@@ -9690,7 +9695,9 @@ void kvm_vcpu_update_apicv(struct kvm_vcpu *vcpu)
- 
- 	down_read(&vcpu->kvm->arch.apicv_update_lock);
- 
--	activate = kvm_apicv_activated(vcpu->kvm);
-+	activate = kvm_apicv_activated(vcpu->kvm) &&
-+		   !vcpu_has_apicv_inhibit_condition(vcpu);
-+
- 	if (vcpu->arch.apicv_active == activate)
- 		goto out;
- 
-@@ -10091,7 +10098,11 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
- 		 * per-VM state, and responsing vCPUs must wait for the update
- 		 * to complete before servicing KVM_REQ_APICV_UPDATE.
- 		 */
--		WARN_ON_ONCE(kvm_apicv_activated(vcpu->kvm) != kvm_vcpu_apicv_active(vcpu));
-+		if (vcpu_has_apicv_inhibit_condition(vcpu))
-+			WARN_ON_ONCE(kvm_vcpu_apicv_active(vcpu));
-+		else
-+			WARN_ON_ONCE(kvm_apicv_activated(vcpu->kvm) != kvm_vcpu_apicv_active(vcpu));
-+
- 
- 		exit_fastpath = static_call(kvm_x86_vcpu_run)(vcpu);
- 		if (likely(exit_fastpath != EXIT_FASTPATH_REENTER_GUEST))
--- 
-2.26.3
+I need to get some updates r-b's for my series and then I submit it 
+again to Dave and Daniel for final acks.
 
+After that, for a 2nd/follow-up phase, I plan to re-surrect the amdgpu 
+patch I had to make it compliant to common format, plus document the 
+option of engine utilisation tag being in percentage units as exposed 
+from that driver. And extending gputop to support that as well.
+
+Regards,
+
+Tvrtko
+
+>> Looking at your patch I guess I don't understand the difference between
+>> 'elapsed' and 'cycles' inside your retire_submit(). Both are scoped to a
+>> single context and are not global? If 'elapsed' is time context has
+>> spent on the GPU, cycles isn't the same just in a different unit?
+> 
+> Correct, we capture (from GPU cmdstream) two counters both before and
+> after a submit (aka execbuf) runs, one is a fixed-rate counter, which
+> gives us elapsed time.  The second is a counter that increments every
+> clk cycle, which gives us the # of cycles.  With the two values, we
+> can calculate GPU frequency.
+> 
+> BR,
+> -R
+> 
+>> Regards,
+>>
+>> Tvrtko
+>>
