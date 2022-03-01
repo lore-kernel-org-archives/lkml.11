@@ -2,68 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8B3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B2FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 21:24:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238562AbiCAVXa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 16:23:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48628 "EHLO
+        id S238568AbiCAVYp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 16:24:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231721AbiCAVX3 (ORCPT
+        with ESMTP id S237410AbiCAVYm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 16:23:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD9719C0D;
-        Tue,  1 Mar 2022 13:22:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A387EB81DB9;
-        Tue,  1 Mar 2022 21:22:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5D66FC340EE;
-        Tue,  1 Mar 2022 21:22:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646169763;
-        bh=2ThIYJUboftWJtEkVuCmm8qttmiUF0uXJz8iNhPvKlc=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=Rmb9ubCIKI8Az60WV3Y3tRl1icAEIs2TIrZ98dUB/3PjiasLV8TIcadGHs18yqj2S
-         EzMX6xl582Sm2Gtro/1AbaaLSetXrVcYmXo17oxH31FN0sfhvcb4WDF9CONvceerzs
-         3RGK/1J+MITovOrWs4bodrNZ7/gVNQFvrDvdMc7Z34S6KBuCLGi5Jsrsx0OhtCcJF9
-         jIKt2aeFuqF1jzUQmceQwvnPThNPRmkJpVoG3ym5NyKK+fw5uA3ccn7kIIK0tU2UeU
-         dHZUmfajFPAoB5E5viLZlHZrdkRiNAjDyrvjyx+KIdGQ7WdP444mT6MgL43sbmsQk3
-         Q9mbe74R8rPzw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 482E7E6D4BB;
-        Tue,  1 Mar 2022 21:22:43 +0000 (UTC)
-Subject: Re: [GIT PULL] KVM changes for 5.17-rc7
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220301130815.151511-1-pbonzini@redhat.com>
-References: <20220301130815.151511-1-pbonzini@redhat.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220301130815.151511-1-pbonzini@redhat.com>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
-X-PR-Tracked-Commit-Id: ece32a75f003464cad59c26305b4462305273d70
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: fb184c4af9b9f4563e7a126219389986a71d5b5b
-Message-Id: <164616976328.25768.4740704337539258559.pr-tracker-bot@kernel.org>
-Date:   Tue, 01 Mar 2022 21:22:43 +0000
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
+        Tue, 1 Mar 2022 16:24:42 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BAE3A710
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 13:24:01 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id c7so14025132qka.7
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 13:24:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kudzu-us.20210112.gappssmtp.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=1hxW1EGVkY2JeE6b+2heOI5s0Cr26hXM37u0kOu84ew=;
+        b=7EC0WjPjpVXX5wLzTCQ1zWHQ2/F0THAIt3QBUTkc8M8BzqOtaotoaSiloAzG6Nlkr2
+         40s87cb4Hz1S7+O6OTGwOk2SNQUND59+6VS/jNMQMGqU6FwPamkdQ15ptWeTjx+5mmK6
+         U3rUd6FUkMTRPrdV/TldBhMNv2053+SGa3BvI9gRzDXN/K4jXboBBe4yUqJX1QDeUI2+
+         tNwMHZPGaPAkGazIQPoHmaTb14W4jMR/QxsC5f2bwf2CKuGUXiknORvKHDHWa7QwDLHs
+         omqlkRTdNXmdoIA4Xbra/XcLzIqigrUZGFO4N08MNqUbv3L7LT2lrrJx+ybY3vLSk/aw
+         kq9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=1hxW1EGVkY2JeE6b+2heOI5s0Cr26hXM37u0kOu84ew=;
+        b=8SZHyk3slvBp+vt11LTnbURe1gPqbkNUsMnXqzVKYFvhVN56t15SyFseyMd+aaaRva
+         +mLYcdU5OHquLOnBuqZ/zHpDfsJPwjVXwIw2xdoyPBzHBIiMstSBBZtqUJGoymvPMff5
+         jlSLtL9Skcz3Ja2ZXXAdcOP9LRxFyDzwpU8sONIKvS6esHzcnCDHa5NdJhWBEyZ48Mtp
+         eyIIpODkGem2wGOYNfid818Q62l0e/L8eARDrI+2FYFX/Mb7Mf/tMaPl0wN+lpIvxMW2
+         qstuJkZOiC2EbKsumPlHQSCaeTsClFMbbKuvzxi2QTPSM3rFoqjHWKiVEssGI6aX7X0Q
+         Oivg==
+X-Gm-Message-State: AOAM5303NEQeolHTaW/emt4HMxTBqVjNJvT4c9agSlNuqKVAvDPDHj/Z
+        tZqP5a1xRccLCgJZns8mSiHW4g==
+X-Google-Smtp-Source: ABdhPJwY0aoBJrEONgibzMk7/y+sRBTD6g5QfO5xkwuHNI8ic+sDHMDAa187VNsVRjQq7qpNq+4P/w==
+X-Received: by 2002:a37:5d2:0:b0:5e9:5876:7f0 with SMTP id 201-20020a3705d2000000b005e9587607f0mr14619695qkf.4.1646169840382;
+        Tue, 01 Mar 2022 13:24:00 -0800 (PST)
+Received: from localhost ([2605:a601:a665:9200:a5cf:2f00:e792:9b5b])
+        by smtp.gmail.com with ESMTPSA id g2-20020a37e202000000b00607e264a208sm7072611qki.40.2022.03.01.13.23.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Mar 2022 13:24:00 -0800 (PST)
+From:   Jon Mason <jdmason@kudzu.us>
+X-Google-Original-From: Jon Mason <jdm@athena.kudzu.us>
+Date:   Tue, 1 Mar 2022 16:23:59 -0500
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, linux-ntb@googlegroups.com
+Subject: [GIT PULL] NTB bug fixes for 5.17
+Message-ID: <Yh6O7wmp8HCjxOn3@athena.kudzu.us>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue,  1 Mar 2022 08:08:15 -0500:
+Hello Linus,
+Here are a few NTB bug fixes for 5.17.  Please consider pulling them.
 
-> https://git.kernel.org/pub/scm/virt/kvm/kvm.git tags/for-linus
+Thanks,
+Jon
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/fb184c4af9b9f4563e7a126219389986a71d5b5b
 
-Thank you!
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+The following changes since commit e783362eb54cd99b2cac8b3a9aeac942e6f6ac07:
+
+  Linux 5.17-rc1 (2022-01-23 10:12:53 +0200)
+
+are available in the Git repository at:
+
+  git://github.com/jonmason/ntb tags/ntb-5.17-bugfixes
+
+for you to fetch changes up to 9b818634f8e7e0bca3386a50b1fada7a49036408:
+
+  MAINTAINERS: update mailing list address for NTB subsystem (2022-02-02 17:34:18 -0500)
+
+----------------------------------------------------------------
+Bug fixes for sparse warning, intel port config offset, and a new
+mailing list
+
+----------------------------------------------------------------
+Dave Jiang (2):
+      ntb: intel: fix port config status offset for SPR
+      MAINTAINERS: update mailing list address for NTB subsystem
+
+Gustavo A. R. Silva (1):
+      NTB/msi: Use struct_size() helper in devm_kzalloc()
+
+ MAINTAINERS                        |  8 ++++----
+ drivers/ntb/hw/intel/ntb_hw_gen4.c | 17 ++++++++++++++++-
+ drivers/ntb/hw/intel/ntb_hw_gen4.h | 16 ++++++++++++++++
+ drivers/ntb/msi.c                  |  6 ++----
+ 4 files changed, 38 insertions(+), 9 deletions(-)
