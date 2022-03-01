@@ -2,103 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC28BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F70C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 12:35:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234783AbiCAMfV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 07:35:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59598 "EHLO
+        id S234170AbiCAMgQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 07:36:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233475AbiCAMfS (ORCPT
+        with ESMTP id S230119AbiCAMgN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 07:35:18 -0500
-Received: from ni.piap.pl (ni.piap.pl [195.187.100.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F33097BAD;
-        Tue,  1 Mar 2022 04:34:30 -0800 (PST)
-Received: from t19.piap.pl (OSB1819.piap.pl [10.0.9.19])
-        by ni.piap.pl (Postfix) with ESMTPSA id 67F41C3F2A54;
-        Tue,  1 Mar 2022 13:34:28 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ni.piap.pl 67F41C3F2A54
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=piap.pl; s=mail;
-        t=1646138068; bh=Upk6FCKfHLUjo081LeWtb4iS+Al74dKX2WaYB56S9xo=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=kXYIsJ80HZokbCGHnuV2OFIkxix+CA3DMXYWfvgWcHU3RNN7Hr5+i3M2rzLz/hxMG
-         pCIbWjt5jhEh7jb/ogvQ5lLrtV5TU086PUfetRWksya/uv6W5Nb6V0IXwZ03IBA83N
-         xNdi/RU0jSCkllUrb+BGFJNs1d41WTd7OJdWS6PA=
-From:   =?utf-8?Q?Krzysztof_Ha=C5=82asa?= <khalasa@piap.pl>
-To:     Jacopo Mondi <jacopo@jmondi.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Sakari Ailus <sakari.ailus@iki.fi>,
-        Joe Perches <joe@perches.com>
-Subject: Re: [PATCH v8 2/2] On Semi AR0521 sensor driver
-References: <m3pmn66pie.fsf@t19.piap.pl> <m3h78i6p4t.fsf@t19.piap.pl>
-        <20220301093107.ihokyp4xptkzpbpc@uno.localdomain>
-Sender: khalasa@piap.pl
-Date:   Tue, 01 Mar 2022 13:34:28 +0100
-In-Reply-To: <20220301093107.ihokyp4xptkzpbpc@uno.localdomain> (Jacopo Mondi's
-        message of "Tue, 1 Mar 2022 10:31:07 +0100")
-Message-ID: <m38rtt7sx7.fsf@t19.piap.pl>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-KLMS-Rule-ID: 3
-X-KLMS-Message-Action: skipped
-X-KLMS-AntiSpam-Status: not scanned, whitelist
-X-KLMS-AntiPhishing: not scanned, whitelist
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, not scanned, whitelist
+        Tue, 1 Mar 2022 07:36:13 -0500
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BCE997BBF;
+        Tue,  1 Mar 2022 04:35:32 -0800 (PST)
+X-IronPort-AV: E=Sophos;i="5.90,146,1643641200"; 
+   d="scan'208";a="112805924"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 01 Mar 2022 21:35:31 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id C326A4006CD9;
+        Tue,  1 Mar 2022 21:35:29 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: [PATCH v2] dt-bindings: memory: renesas,rpc-if: Document RZ/V2L SoC
+Date:   Tue,  1 Mar 2022 12:35:26 +0000
+Message-Id: <20220301123527.15950-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jacopo Mondi <jacopo@jmondi.org> writes:
+Document RZ/V2L RPC-IF bindings. RZ/V2L RPC-IF is identical to one found
+on the RZ/G2L SoC. No driver changes are required as generic compatible
+string "renesas,rzg2l-rpc-if" will be used as a fallback.
 
-> In subject
->
-> "media: i2c:"
->
-> Same for 1/2 where permutation of "media: dt-bindings: i2c:" are used
-> when adding bindings for media i2c drivers.
+While at it, drop the comment "# RZ/G2L family" for "renesas,rzg2l-rpc-if"
+compatible string as this will avoid changing the line for every new SoC
+addition.
 
-You know, it's rather hard to know all these tiny requirements. Let
-alone get them right all the time.
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+v1->v2
+* Included RB tag
+* Dropped the comment from generic compatible string as suggested
+  by Geert.
 
->> +	pm_runtime_set_active(&client->dev);
->> +	pm_runtime_enable(&client->dev);
->> +	pm_runtime_idle(&client->dev);
->
-> Do you have an _idle() callback ? This seems a no-op to me, or am I
-> mistaken ? (runtime_pm is still cryptic to me sometimes)
+v1:
+https://patchwork.kernel.org/project/linux-renesas-soc/patch/
+20220227215308.26135-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+---
+ .../devicetree/bindings/memory-controllers/renesas,rpc-if.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Do you mean only the pm_runtime_idle()? Sakari just requested I add it.
+diff --git a/Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml b/Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml
+index 294f1036420d..9a6dbf54b540 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/renesas,rpc-if.yaml
+@@ -40,7 +40,8 @@ properties:
+       - items:
+           - enum:
+               - renesas,r9a07g044-rpc-if      # RZ/G2{L,LC}
+-          - const: renesas,rzg2l-rpc-if       # RZ/G2L family
++              - renesas,r9a07g054-rpc-if      # RZ/V2L
++          - const: renesas,rzg2l-rpc-if
+ 
+   reg:
+     items:
+-- 
+2.17.1
 
-> Can't you just remove power_on() if it's not needed ?
-
-It wouldn't work without CONFIG_PM then, would it?
-
-> There still are a few checkpatch warnings which might be worth
-> considering  but nothing huge.
-
-Do you mean this?
-
-WARNING: Block comments use * on subsequent lines
-#411: FILE: drivers/media/i2c/ar0521.c:351:
-+               /* Reset gain, the sensor may produce all white pixels with=
-out
-+                  this */
-
-WARNING: Block comments use a trailing */ on a separate line
-#411: FILE: drivers/media/i2c/ar0521.c:351:
-+                  this */
-
-... which are about a single comment which I had to wrap to fit in 80
-columns, hardly a block comment by my standards. Not to mention Linus
-saying...
---=20
-Krzysztof "Chris" Ha=C5=82asa
-
-Sie=C4=87 Badawcza =C5=81ukasiewicz
-Przemys=C5=82owy Instytut Automatyki i Pomiar=C3=B3w PIAP
-Al. Jerozolimskie 202, 02-486 Warszawa
