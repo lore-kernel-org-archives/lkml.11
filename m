@@ -2,54 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D79C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D253FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:16:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237864AbiCAURJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:17:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
+        id S237884AbiCAURN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:17:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237887AbiCAUQp (ORCPT
+        with ESMTP id S237898AbiCAUQq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:16:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D5A80911;
-        Tue,  1 Mar 2022 12:15:49 -0800 (PST)
+        Tue, 1 Mar 2022 15:16:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD6627E081;
+        Tue,  1 Mar 2022 12:15:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E568CB81CB6;
-        Tue,  1 Mar 2022 20:15:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF95FC340EE;
-        Tue,  1 Mar 2022 20:15:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7437161725;
+        Tue,  1 Mar 2022 20:15:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50981C36AE5;
+        Tue,  1 Mar 2022 20:15:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165746;
-        bh=Qw/TSEqu3187tiIZfPiCaoDI+0CGQKmUat2XoI5t67w=;
+        s=k20201202; t=1646165755;
+        bh=pw0Qj8vjosGWO4vo4tauge3HBJo809oseTBs39UMTuE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=raWlfxiQUB/mtltp0PdCry0pfx6QCBjmsN1M1JpJxVCyR5NqzmTr00Zbhi6WdQbKy
-         mAMgv1eHZ93lM7FgKyShvrn/o4moDIGrOXIPRKvux51B7qpqrHq8X0HLffdCAxKqO2
-         3n/GkKotSGy/JMOjjbHuitNgZiFqPRQQdvcEWhNVhOLDDQpOLuRw+tr4qjrUeU5pNc
-         fe5Z7BJnpzNJsTeoSHdxaLtgYnco5cI3OvJiYDgsFA3dyDo6Y6mq4peLvo/b482JZb
-         G6o+hIFWG7nvBLRZA5nxC13t3BYc5sNpEMnaSLclDwJB0M7r6opgGReR9eKz3Wv09P
-         xwXdVR72Baxzg==
+        b=Cf7WkDdcPErdbHz/jdnLHgVJNSLfl9pSkBiaMGC1lNYzB8h1v31LWuSWZSM+gMDj1
+         vmYEzRbTZ5khT8T3mmm4R9YpzmbkJItVqvSR9PPhV1RwxiX7tDfh61zykTOBx3FeCk
+         G5Fa6+VrzjanTRkm/ty/KssRR1q4C6bbOq1IGW5Ohzwfg2pl00bafpZas3pGzROlmu
+         wnvGVihkVDYJDAC7YInCZi5HuJhZzVsyNai389IcEotROQscbuOr415k3+9JEYctRg
+         SXZ4NmcV6mouTa3e9zJVPz6o6/qRq8kmmK/lG/XPmRtR4EobzkFmk6DlYAArX/Ocio
+         sboPtiqgsyl0w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Guchun Chen <guchun.chen@amd.com>,
-        Leslie Shi <Yuliang.Shi@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        mdaenzer@redhat.com, contact@emersion.fr, evan.quan@amd.com,
-        qingqing.zhuo@amd.com, bas@basnieuwenhuizen.nl,
-        markyacoub@chromium.org, seanpaul@chromium.org,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 20/28] drm/amdgpu: bypass tiling flag check in virtual display case (v2)
-Date:   Tue,  1 Mar 2022 15:13:25 -0500
-Message-Id: <20220301201344.18191-20-sashal@kernel.org>
+Cc:     =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?= 
+        <marmarek@invisiblethingslab.com>, Paul Durrant <paul@xen.org>,
+        Michael Brown <mbrown@fensystems.co.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, wei.liu@kernel.org,
+        davem@davemloft.net, xen-devel@lists.xenproject.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 22/28] Revert "xen-netback: Check for hotplug-status existence before watching"
+Date:   Tue,  1 Mar 2022 15:13:27 -0500
+Message-Id: <20220301201344.18191-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301201344.18191-1-sashal@kernel.org>
 References: <20220301201344.18191-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -57,45 +56,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guchun Chen <guchun.chen@amd.com>
+From: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
 
-[ Upstream commit e2b993302f40c4eb714ecf896dd9e1c5be7d4cd7 ]
+[ Upstream commit e8240addd0a3919e0fd7436416afe9aa6429c484 ]
 
-vkms leverages common amdgpu framebuffer creation, and
-also as it does not support FB modifier, there is no need
-to check tiling flags when initing framebuffer when virtual
-display is enabled.
+This reverts commit 2afeec08ab5c86ae21952151f726bfe184f6b23d.
 
-This can fix below calltrace:
+The reasoning in the commit was wrong - the code expected to setup the
+watch even if 'hotplug-status' didn't exist. In fact, it relied on the
+watch being fired the first time - to check if maybe 'hotplug-status' is
+already set to 'connected'. Not registering a watch for non-existing
+path (which is the case if hotplug script hasn't been executed yet),
+made the backend not waiting for the hotplug script to execute. This in
+turns, made the netfront think the interface is fully operational, while
+in fact it was not (the vif interface on xen-netback side might not be
+configured yet).
 
-amdgpu 0000:00:08.0: GFX9+ requires FB check based on format modifier
-WARNING: CPU: 0 PID: 1023 at drivers/gpu/drm/amd/amdgpu/amdgpu_display.c:1150 amdgpu_display_framebuffer_init+0x8e7/0xb40 [amdgpu]
+This was a workaround for 'hotplug-status' erroneously being removed.
+But since that is reverted now, the workaround is not necessary either.
 
-v2: check adev->enable_virtual_display instead as vkms can be
-	enabled in bare metal as well.
+More discussion at
+https://lore.kernel.org/xen-devel/afedd7cb-a291-e773-8b0d-4db9b291fa98@ipxe.org/T/#u
 
-Signed-off-by: Leslie Shi <Yuliang.Shi@amd.com>
-Signed-off-by: Guchun Chen <guchun.chen@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+Reviewed-by: Paul Durrant <paul@xen.org>
+Reviewed-by: Michael Brown <mbrown@fensystems.co.uk>
+Link: https://lore.kernel.org/r/20220222001817.2264967-2-marmarek@invisiblethingslab.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_display.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/xen-netback/xenbus.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_display.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_display.c
-index dc50c05f23fc2..5c08047adb594 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_display.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_display.c
-@@ -1145,7 +1145,7 @@ int amdgpu_display_framebuffer_init(struct drm_device *dev,
- 	if (ret)
- 		return ret;
+diff --git a/drivers/net/xen-netback/xenbus.c b/drivers/net/xen-netback/xenbus.c
+index 3fad58d22155b..990360d75cb64 100644
+--- a/drivers/net/xen-netback/xenbus.c
++++ b/drivers/net/xen-netback/xenbus.c
+@@ -824,15 +824,11 @@ static void connect(struct backend_info *be)
+ 	xenvif_carrier_on(be->vif);
  
--	if (!dev->mode_config.allow_fb_modifiers) {
-+	if (!dev->mode_config.allow_fb_modifiers && !adev->enable_virtual_display) {
- 		drm_WARN_ONCE(dev, adev->family >= AMDGPU_FAMILY_AI,
- 			      "GFX9+ requires FB check based on format modifier\n");
- 		ret = check_tiling_flags_gfx6(rfb);
+ 	unregister_hotplug_status_watch(be);
+-	if (xenbus_exists(XBT_NIL, dev->nodename, "hotplug-status")) {
+-		err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch,
+-					   NULL, hotplug_status_changed,
+-					   "%s/%s", dev->nodename,
+-					   "hotplug-status");
+-		if (err)
+-			goto err;
++	err = xenbus_watch_pathfmt(dev, &be->hotplug_status_watch, NULL,
++				   hotplug_status_changed,
++				   "%s/%s", dev->nodename, "hotplug-status");
++	if (!err)
+ 		be->have_hotplug_status_watch = 1;
+-	}
+ 
+ 	netif_tx_wake_all_queues(be->vif->dev);
+ 
 -- 
 2.34.1
 
