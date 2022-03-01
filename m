@@ -2,78 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E6B0C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FB2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 14:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235414AbiCAOuy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 09:50:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41794 "EHLO
+        id S235340AbiCAOwy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 09:52:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235396AbiCAOuw (ORCPT
+        with ESMTP id S233998AbiCAOwx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 09:50:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352E38BE25;
-        Tue,  1 Mar 2022 06:50:12 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C57CB61604;
-        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1D75FC340F3;
-        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646146211;
-        bh=T7EEDtDVpo/7MGcsNAe8humb29FdCCXgSHc3f6aTRi8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FyBnkroelMtrz9Lm0OdztFf/JJJPOf4KLs9gmCcyADwhUMHhQiMaObQ9oQdE6mp0g
-         et4jFtCArYcUhYa+4t63NNYcRZRSaaoWCrbsvUeH/23UcP3Pd92OqzGpx5Fa1hPKIF
-         e7whB/S0KbpTuC2h2/Ms1aBBUpFvnem1+H7crI1ZSEMGzyV/VJWjXfxMSekg0tdha8
-         dB79YQIzdEfOcvV2eqjV+jUDuq4WAUhfAyZAeN6ELjWkZxrTIp8v6Rtdvr8zIr79S9
-         5xaINpoBgoH3/tJRODhOKncve0RzKyo4CwCYFFQCxf1dNioesgZFFiSx5K7wKVcy/v
-         t0WzUtz+CoUiQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 00B1FEAC09D;
-        Tue,  1 Mar 2022 14:50:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 1 Mar 2022 09:52:53 -0500
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4499596808;
+        Tue,  1 Mar 2022 06:52:12 -0800 (PST)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2d07c4a0d06so146778967b3.13;
+        Tue, 01 Mar 2022 06:52:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=p6Qg573gQNt9jfmniDqk9TUY0R6tRZETMQPLMgu5ja0=;
+        b=MVzYKmbx2t7YMZV9Xu+2eR04C5rESan7pI1k2NW1iYgltGe4Mb7IYmeBqg2gA+t6MG
+         19DmTPhph79iYaEvmXnUGkuQOiv3Q80nP5y4TZZ1Ok2g1V+Zvyj/WwRldjuPZWv4INRi
+         GmfapsiSFKSnJ9UKK0+QxdmRLrzOuilB+dRkm7orz8EKBJ3FLi8f2hgUfu63BTWEbxAM
+         Gw1PfN9U3QqKRA5svNldODCwyLCWCAzyB9ORWAAw76IPRNZkrhe28RVRSDoVsJJYEA3l
+         Ugp9K89fWodTQTziL8XmaWk0Yv4gfZeG9DDTZbnlzCoeZcOYbpkI7jQ6bi/9u5P6IwSP
+         JOoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=p6Qg573gQNt9jfmniDqk9TUY0R6tRZETMQPLMgu5ja0=;
+        b=Qsnua7bwtLBYVjFGa4bOCj1QykROn1soaoYma+QVWIIOBVE82PHLVkpfXJ49dZ2xx7
+         9NVGKavpbux3zPZrj1EAxN6Drw6gJ43ofQxNRtXmvZCkre5IgEK6ppC3SVA1aSbfx+dA
+         VSBpGwR1SdWW4xZjfEhq52wTRZv3DA2Kq3e3/Zgmh5LUETu/3AygkNUP2seXcXAwDu9e
+         7LbQo8/6LWIEinCKiZU/gZgzGhemEN57T8FJ+cu+x90sNAN3ytKMioW2dpL9GTKQlpQS
+         MxbtWVdH7zmgF7rh2plnr0gXagBKHHBhBgDFHLEGGNgt9SzdshLJoHznYBgu5T5BPW+K
+         lIOA==
+X-Gm-Message-State: AOAM5335rMxRRbpwQd04qjBZL0oCgXirPTYxytQ98ONQN2KSFR0Wimcc
+        OcuNL7RHnDdp43tImY3ltR89a59syBgdcjn3lEc=
+X-Google-Smtp-Source: ABdhPJyysLGtnRH92oZtE9p17EhgqGO4pnLHjiquEF3VshCrVWSWx0aniFMT/paLW5OieVagmvOftjmUzRGi1FAxI8c=
+X-Received: by 2002:a05:690c:89:b0:2d7:fb7d:db7 with SMTP id
+ be9-20020a05690c008900b002d7fb7d0db7mr27255346ywb.219.1646146331471; Tue, 01
+ Mar 2022 06:52:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] wireless/nl80211: Handle errors for nla_memdup
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164614621099.32176.8459771035422066340.git-patchwork-notify@kernel.org>
-Date:   Tue, 01 Mar 2022 14:50:10 +0000
-References: <20220301100020.3801187-1-jiasheng@iscas.ac.cn>
-In-Reply-To: <20220301100020.3801187-1-jiasheng@iscas.ac.cn>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     johannes@sipsolutions.net, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220228135700.1089526-1-pgwipeout@gmail.com> <20220228135700.1089526-2-pgwipeout@gmail.com>
+In-Reply-To: <20220228135700.1089526-2-pgwipeout@gmail.com>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Tue, 1 Mar 2022 09:52:00 -0500
+Message-ID: <CAMdYzYqs=iRY6uNzVSkHrrhPYFixXdbZjtwSpPOjf-6f8TXutw@mail.gmail.com>
+Subject: Re: [PATCH v4 1/8] dt-bindings: soc: grf: fix rk3568 usb definitions
+To:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Vinod Koul <vkoul@kernel.org>,
+        Yifeng Zhao <yifeng.zhao@rock-chips.com>,
+        Johan Jonker <jbx6244@gmail.com>
+Cc:     "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Michael Riesch <michael.riesch@wolfvision.net>,
+        Rob Herring <robh@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Good Morning,
 
-This patch was applied to netdev/net.git (master)
-by Johannes Berg <johannes.berg@intel.com>:
+Would it be possible to pull this patch individually, to fix the
+current error reported by Rob?
 
-On Tue,  1 Mar 2022 18:00:20 +0800 you wrote:
-> As the potential failure of the nla_memdup(),
-> it should be better to check it, as same as kmemdup().
-> 
-> Fixes: a442b761b24b ("cfg80211: add add_nan_func / del_nan_func")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Thanks,
+Peter
+
+On Mon, Feb 28, 2022 at 8:57 AM Peter Geis <pgwipeout@gmail.com> wrote:
+>
+> The rockchip,rk3568-pipe-grf and rockchip,rk3568-pipe-phy-grf
+> compatibles were incorrectly assigned to the syscon, simple-mfd
+> enumeration, vice only the syscon enumeration.
+> This leads a dtbs_check failure.
+>
+> Move these to the syscon enumeration.
+>
+> Fixes: b3df807e1fb0 ("dt-bindings: soc: grf: add naneng combo phy register compatible")
+>
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 > ---
->  net/wireless/nl80211.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-
-Here is the summary with links:
-  - wireless/nl80211: Handle errors for nla_memdup
-    https://git.kernel.org/netdev/net/c/6ad27f522cb3
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>  Documentation/devicetree/bindings/soc/rockchip/grf.yaml | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/soc/rockchip/grf.yaml b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
+> index 072318fcd57b..5079e9d24af6 100644
+> --- a/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
+> +++ b/Documentation/devicetree/bindings/soc/rockchip/grf.yaml
+> @@ -15,6 +15,8 @@ properties:
+>        - items:
+>            - enum:
+>                - rockchip,rk3288-sgrf
+> +              - rockchip,rk3568-pipe-grf
+> +              - rockchip,rk3568-pipe-phy-grf
+>                - rockchip,rk3568-usb2phy-grf
+>                - rockchip,rv1108-usbgrf
+>            - const: syscon
+> @@ -39,8 +41,6 @@ properties:
+>                - rockchip,rk3399-grf
+>                - rockchip,rk3399-pmugrf
+>                - rockchip,rk3568-grf
+> -              - rockchip,rk3568-pipe-grf
+> -              - rockchip,rk3568-pipe-phy-grf
+>                - rockchip,rk3568-pmugrf
+>                - rockchip,rv1108-grf
+>                - rockchip,rv1108-pmugrf
+> --
+> 2.25.1
+>
