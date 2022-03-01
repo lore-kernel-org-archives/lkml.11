@@ -2,148 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56312C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 19:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E7DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 19:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237138AbiCATlX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 14:41:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39044 "EHLO
+        id S237220AbiCATmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 14:42:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235982AbiCATlT (ORCPT
+        with ESMTP id S232112AbiCATmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 14:41:19 -0500
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318A765494;
-        Tue,  1 Mar 2022 11:40:38 -0800 (PST)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-2d07c4a0d06so156071267b3.13;
-        Tue, 01 Mar 2022 11:40:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rC4BvLXBCXqc68pcQ7m+8z/EJtaEH/MsSh5u4qPMaYc=;
-        b=8EHGEbua/oGeSyQUtI/MrV2CcYEyH/d49+zMmDMvo8umN+6wx3t5kciPpKlA6rS225
-         G3jIUyIJNnFeaLorxKJaJQSRR8mDXcDNnxcLcKeB9dOGzexMychR3xow0PoTzl+oDIdf
-         YMNK7OeP3C5qC0sboLEk+LV1hQ0JeQz8+WjtC9jywXhRl/7U5SKKhkEu+guB6DOaZE+t
-         IbvgNvDSzhZzS4YsUkrezFfAQFlxTIGHacdc4pd/OLOonFjW6cKGMaA3euswl10djTxn
-         mU0Fi3TWf+wyhAzdqThTrcSzSwieOukwUERwQqwWYWLmloxMACCnYpYOVWosU0bsq29z
-         Jo1Q==
-X-Gm-Message-State: AOAM531ztxFb6jy4TYyI6dkfum8eUPuWyQaUPmoJaHt0FK0QCCvOgJLL
-        kDahWjtc/3K7QhTWe8wjW5sDUqtrKm6bVhmwxwM=
-X-Google-Smtp-Source: ABdhPJzqz8NvN2OYlSJ4r049oH9twxzobfp3rZ5a9AqKOhlvAWL0GuQURf4suVyw4zXef72pObOLA5ljD92LHelrPUU=
-X-Received: by 2002:a81:1611:0:b0:2d6:3290:9bd3 with SMTP id
- 17-20020a811611000000b002d632909bd3mr26858713yww.19.1646163637141; Tue, 01
- Mar 2022 11:40:37 -0800 (PST)
+        Tue, 1 Mar 2022 14:42:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D683465495;
+        Tue,  1 Mar 2022 11:41:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7246761632;
+        Tue,  1 Mar 2022 19:41:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58888C340EE;
+        Tue,  1 Mar 2022 19:41:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1646163700;
+        bh=C1fiXSQzp/6mGSE4wF5VaDuuI40Za2PZjhJbinmIoDs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sFIIaOr3qhOtKIiGkw47+sRkCTakK6s4LOKKAyeJYuUR4/NwdOwfdasXUZZE+y2dN
+         qTfAkZtm3bVoFwgnBR5c5AAcIWhrEK1eSu+jJttv2IPEGbRWp65T3CHVpPdKS0aQpb
+         RsAEvhp7ssUECvOQfFWuscCf7xqrvhDIw/AQ44yk=
+Date:   Tue, 1 Mar 2022 20:41:37 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        KVM list <kvm@vger.kernel.org>,
+        QEMU Developers <qemu-devel@nongnu.org>,
+        linux-hyperv@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Alexander Graf <graf@amazon.com>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        adrian@parity.io, Laszlo Ersek <lersek@redhat.com>,
+        Daniel =?iso-8859-1?Q?P=2E_Berrang=E9?= <berrange@redhat.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Jann Horn <jannh@google.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Brown, Len" <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Colm MacCarthaigh <colmmacc@amazon.com>,
+        Theodore Ts'o <tytso@mit.edu>, Arnd Bergmann <arnd@arndb.de>
+Subject: Re: propagating vmgenid outward and upward
+Message-ID: <Yh528WPZrQn5s7vO@kroah.com>
+References: <Yh4+9+UpanJWAIyZ@zx2c4.com>
+ <Yh5fbe71BTT6xc8h@kroah.com>
+ <CAHmME9oGcp7HNLeieptMKztgg7Fq4MnOuAEsiFJxsLbmjSuFCw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220224113807.91771-1-pmenzel@molgen.mpg.de>
-In-Reply-To: <20220224113807.91771-1-pmenzel@molgen.mpg.de>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 1 Mar 2022 20:40:26 +0100
-Message-ID: <CAJZ5v0iCwJ10gM0+LsOMU9X3X4ToN_OHBW=9vVsfEP3+cRpudQ@mail.gmail.com>
-Subject: Re: [PATCH 1/4] acpi: exsystem: Add units to time variable names
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     Robert Moore <robert.moore@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:ACPI COMPONENT ARCHITECTURE (ACPICA)" <devel@acpica.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHmME9oGcp7HNLeieptMKztgg7Fq4MnOuAEsiFJxsLbmjSuFCw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Feb 24, 2022 at 12:38 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
->
-> `how_long` uses different units in both functions, so make it more
-> clear, what unit they expect.
->
-> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
-> ---
->  drivers/acpi/acpica/exsystem.c | 20 ++++++++++----------
+On Tue, Mar 01, 2022 at 07:24:11PM +0100, Jason A. Donenfeld wrote:
+> Hi Greg,
+> 
+> On Tue, Mar 1, 2022 at 7:01 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > A notifier block like this makes sense, but why tie onto the PM_ stuff?
+> > This isn't power management issues, it's a system-wide change that I am
+> > sure others will want to know about that doesn't reflect any power
+> > changes.
+> >
+> > As much as I hate adding new notifiers in the kernel, that might be all
+> > you need here.
+> 
+> You might indeed be right. I guess I was thinking that "resuming from
+> suspend" and "resuming from a VM fork" are kind of the same thing.
+> There _is_ a certain kind of similarity between the two. I was hoping
+> if the similarity was a strong enough one, maybe it'd make sense to do
+> them together rather than adding another notifier. But I suppose you
+> disagree, and it sounds like Rafael might too --
+> <https://lore.kernel.org/lkml/CAJZ5v0g+GihH_b9YvwuHzdrUVNGXOeabOznDC1vK6qLi8gtSTQ@mail.gmail.com/>.
 
-As ACPICA material, this should be submitted to the upstream project
-via https://github.com/acpica/acpica/.
+Hey, nice, we agree!  :)
 
-This applies to the other patches in the series too.
+> Code-wise for me with WireGuard it's of course appealing to treat them
+> the same, since it's like a one line change, but if I need to add a
+> new notifier call there, it's not the end of the world.
 
->  1 file changed, 10 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/acpi/acpica/exsystem.c b/drivers/acpi/acpica/exsystem.c
-> index 1281c07112de..6bc5b46e6927 100644
-> --- a/drivers/acpi/acpica/exsystem.c
-> +++ b/drivers/acpi/acpica/exsystem.c
-> @@ -107,7 +107,7 @@ acpi_status acpi_ex_system_wait_mutex(acpi_mutex mutex, u16 timeout)
->   *
->   * FUNCTION:    acpi_ex_system_do_stall
->   *
-> - * PARAMETERS:  how_long        - The amount of time to stall,
-> + * PARAMETERS:  how_long_us     - The amount of time to stall,
->   *                                in microseconds
->   *
->   * RETURN:      Status
-> @@ -120,13 +120,13 @@ acpi_status acpi_ex_system_wait_mutex(acpi_mutex mutex, u16 timeout)
->   *
->   ******************************************************************************/
->
-> -acpi_status acpi_ex_system_do_stall(u32 how_long)
-> +acpi_status acpi_ex_system_do_stall(u32 how_long_us)
->  {
->         acpi_status status = AE_OK;
->
->         ACPI_FUNCTION_ENTRY();
->
-> -       if (how_long > 255) {   /* 255 microseconds */
-> +       if (how_long_us > 255) {        /* 255 microseconds */
->                 /*
->                  * Longer than 255 usec, this is an error
->                  *
-> @@ -134,10 +134,10 @@ acpi_status acpi_ex_system_do_stall(u32 how_long)
->                  * order to support existing BIOSs)
->                  */
->                 ACPI_ERROR((AE_INFO,
-> -                           "Time parameter is too large (%u)", how_long));
-> +                           "Time parameter is too large (%u)", how_long_us));
->                 status = AE_AML_OPERAND_VALUE;
->         } else {
-> -               acpi_os_stall(how_long);
-> +               acpi_os_stall(how_long_us);
->         }
->
->         return (status);
-> @@ -147,7 +147,7 @@ acpi_status acpi_ex_system_do_stall(u32 how_long)
->   *
->   * FUNCTION:    acpi_ex_system_do_sleep
->   *
-> - * PARAMETERS:  how_long        - The amount of time to sleep,
-> + * PARAMETERS:  how_long_ms     - The amount of time to sleep,
->   *                                in milliseconds
->   *
->   * RETURN:      None
-> @@ -156,7 +156,7 @@ acpi_status acpi_ex_system_do_stall(u32 how_long)
->   *
->   ******************************************************************************/
->
-> -acpi_status acpi_ex_system_do_sleep(u64 how_long)
-> +acpi_status acpi_ex_system_do_sleep(u64 how_long_ms)
->  {
->         ACPI_FUNCTION_ENTRY();
->
-> @@ -168,11 +168,11 @@ acpi_status acpi_ex_system_do_sleep(u64 how_long)
->          * For compatibility with other ACPI implementations and to prevent
->          * accidental deep sleeps, limit the sleep time to something reasonable.
->          */
-> -       if (how_long > ACPI_MAX_SLEEP) {
-> -               how_long = ACPI_MAX_SLEEP;
-> +       if (how_long_ms > ACPI_MAX_SLEEP) {
-> +               how_long_ms = ACPI_MAX_SLEEP;
->         }
->
-> -       acpi_os_sleep(how_long);
-> +       acpi_os_sleep(how_long_ms);
->
->         /* And now we must get the interpreter again */
->
-> --
-> 2.35.1
->
+I know there are other places in the kernel that would like to be
+notified when they have been moved to another machine so that they can
+do things like determine if the CPU functionality has changed (or not),
+and perhaps do other types of device reconfiguration.  Right now the
+kernel does not have any way of knowing this, so it makes sense that if
+the platform (i.e. ACPI here) has a way of creating such a event, it
+should and then we can start tieing in other subsystems to use it
+as-needed.
+
+thanks,
+
+greg k-h
