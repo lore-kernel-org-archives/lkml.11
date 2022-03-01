@@ -2,241 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77248C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE55AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 18:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230072AbiCASaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 13:30:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47354 "EHLO
+        id S234327AbiCASbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 13:31:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237077AbiCAS3l (ORCPT
+        with ESMTP id S232479AbiCASbQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 13:29:41 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5EEE666AC0
-        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:28:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1646159333;
+        Tue, 1 Mar 2022 13:31:16 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53581DEDD
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 10:30:35 -0800 (PST)
+Date:   Tue, 1 Mar 2022 19:30:32 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1646159433;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cLntVg1A2GtP5Mk+abzswn9NBODKG9gpF8Mfluysqbk=;
-        b=c03GXZua8P41EmaQETMz9PsZx5kmCxxedGVgSwndKQ67GCwlsomPedVC3JiVYjwhMJpzeU
-        cqBhrzCreami6aeISz8f5XmfmwlQMAfOjM2ozAW7RROQUjytBqfUyHz1Pw/gkNOSy3QCVp
-        A8bxJMbDtskKt0zVSTC/LR8GZAtU2k4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-489-QlxQAoN2PdyIiLAMBUF16g-1; Tue, 01 Mar 2022 13:28:48 -0500
-X-MC-Unique: QlxQAoN2PdyIiLAMBUF16g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4792B1854E21;
-        Tue,  1 Mar 2022 18:28:45 +0000 (UTC)
-Received: from localhost.localdomain (unknown [10.40.195.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E207286C41;
-        Tue,  1 Mar 2022 18:28:38 +0000 (UTC)
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     kvm@vger.kernel.org
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=X/igFnMcoOX+ydXY9MUnlr0F1iHCWfAGr8xhEWYL6WE=;
+        b=HQWwZEwuugW2+rq5sKc02C0vnXM6Q/bO48uFSAI8sEU9vOc7Y1QR3evbhzpXApf6Y6nRMW
+        Od5ApdEx5aawtviTZFdsljr0FPjSTQZTBnaSjtBALqVLIx6uqhSwmZ6B3p+Fi4xm54rO/4
+        ucKcOqSrBKaQIwj5PVxBizX7cq9hr3a6WdJBvScmI6syicfzgs/C2m1hA6zqI62PsdUdFG
+        5WeqM6pYXLGWymBHwCUiCkaGXZpngwXzR0qquobbjsclynCQId2NHwtMNuWBKzwgLdgqci
+        eANAy6q6OwYF99+wn8E90MEtvI1RsbtFLiDjLBgPjHLe35OgMs5wn324hQY6vQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1646159433;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=X/igFnMcoOX+ydXY9MUnlr0F1iHCWfAGr8xhEWYL6WE=;
+        b=nolF4nj6/9ks17p52HZyda3SYrlti8KaEWjBXcfw+0+PCGL99jyaye+DeZ8xqSTPQ7sM5n
+        TZ5WdlP0ItvH7VCg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ben Segall <bsegall@google.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
         Ingo Molnar <mingo@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        x86@kernel.org, intel-gvt-dev@lists.freedesktop.org,
-        Joerg Roedel <joro@8bytes.org>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>,
-        Jim Mattson <jmattson@google.com>,
-        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Mel Gorman <mgorman@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        dri-devel@lists.freedesktop.org,
-        Maxim Levitsky <mlevitsk@redhat.com>
-Subject: [PATCH v3 11/11] KVM: SVM: allow to avoid not needed updates to is_running
-Date:   Tue,  1 Mar 2022 20:26:39 +0200
-Message-Id: <20220301182639.559568-12-mlevitsk@redhat.com>
-In-Reply-To: <20220301182639.559568-1-mlevitsk@redhat.com>
-References: <20220301182639.559568-1-mlevitsk@redhat.com>
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: [PATCH] sched: Make preempt_enable_no_resched() behave like
+ preempt_enable() on PREEMPT_RT
+Message-ID: <Yh5mSGCbvqDdeCa3@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow optionally to make KVM not update is_running unless it is
-functionally needed which is only when a vCPU halts,
-or is in the guest mode.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-This means security wise that if a vCPU is scheduled out,
-other vCPUs could still send doorbell messages to the
-last physical CPU where this vCPU was last running.
+Use the distinction that has been made earlier between
+preempt_enable_no_resched() and sched_preempt_enable_no_resched().
+sched_preempt_enable_no_resched() is used within the scheduler where an
+immediate schedule() follows. preempt_enable_no_resched() is used
+outside of the scheduler and an immediate schedule() invocation may not
+follow for other reasons.
 
-This in theory can be considered less secure, thus
-this option is not enabled by default.
+The lack of an immediate schedule() invocation matters on PREEMPT_RT
+where it will introduce latencies while the scheduler expects a context
+switch.
 
-The option is avic_doorbell_strict and is true by
-default, setting it to false allows this relaxed
-non strict mode.
-
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- arch/x86/kvm/svm/avic.c | 39 +++++++++++++++++++++++++++------------
- arch/x86/kvm/svm/svm.c  |  7 +++++--
- arch/x86/kvm/svm/svm.h  |  1 +
- virt/kvm/kvm_main.c     |  3 ++-
- 4 files changed, 35 insertions(+), 15 deletions(-)
+ include/linux/preempt.h | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index dd13fd3588e2b..1d690a9d3952e 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -166,10 +166,13 @@ void avic_physid_shadow_table_update_vcpu_location(struct kvm_vcpu *vcpu, int cp
- 	raw_spin_lock_irqsave(&kvm_svm->avic.table_entries_lock, flags);
+diff --git a/include/linux/preempt.h b/include/linux/preempt.h
+index b4381f255a5ca..582e43856a532 100644
+--- a/include/linux/preempt.h
++++ b/include/linux/preempt.h
+@@ -210,7 +210,11 @@ do { \
+ 	preempt_count_dec(); \
+ } while (0)
  
- 	list_for_each_entry(e, &vcpu_svm->nested.physid_ref_entries, link) {
--		u64 sentry = READ_ONCE(*e->sentry);
-+		u64 old_sentry = READ_ONCE(*e->sentry);
-+		u64 new_sentry = old_sentry;
+-#define preempt_enable_no_resched() sched_preempt_enable_no_resched()
++#ifdef CONFIG_PREEMPT_RT
++# define preempt_enable_no_resched() preempt_enable()
++#else
++# define preempt_enable_no_resched() sched_preempt_enable_no_resched()
++#endif
  
--		physid_entry_set_apicid(&sentry, cpu);
--		WRITE_ONCE(*e->sentry, sentry);
-+		physid_entry_set_apicid(&new_sentry, cpu);
-+
-+		if (new_sentry != old_sentry)
-+			WRITE_ONCE(*e->sentry, new_sentry);
- 		nentries++;
- 	}
- 
-@@ -1507,7 +1510,7 @@ avic_update_iommu_vcpu_affinity(struct kvm_vcpu *vcpu, int cpu, bool r)
- 
- void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- {
--	u64 entry;
-+	u64 old_entry, new_entry;
- 	/* ID = 0xff (broadcast), ID > 0xff (reserved) */
- 	int h_physical_id = kvm_cpu_get_apicid(cpu);
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -1531,14 +1534,16 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- 	if (kvm_vcpu_is_blocking(vcpu))
- 		return;
- 
--	entry = READ_ONCE(*(svm->avic_physical_id_cache));
--	WARN_ON(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
-+	old_entry = READ_ONCE(*(svm->avic_physical_id_cache));
-+	new_entry = old_entry;
- 
--	entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
--	entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
--	entry |= AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
-+	new_entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
-+	new_entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
-+	new_entry |= AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
-+
-+	if (old_entry != new_entry)
-+		WRITE_ONCE(*(svm->avic_physical_id_cache), new_entry);
- 
--	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
- 	avic_update_iommu_vcpu_affinity(vcpu, h_physical_id, true);
- }
- 
-@@ -1549,14 +1554,24 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
- 
- 	lockdep_assert_preemption_disabled();
- 
-+	avic_update_iommu_vcpu_affinity(vcpu, -1, 0);
-+
-+	/*
-+	 * It is only meaningful to intercept IPIs from the guest
-+	 * when either vCPU is blocked, or in guest mode.
-+	 * In all other cases (e.g userspace vmexit, or preemption
-+	 * by other task, the vCPU is guaranteed to return to guest mode
-+	 * as soon as it can
-+	 */
-+	if (!avic_doorbell_strict && !kvm_vcpu_is_blocking(vcpu) && !is_guest_mode(vcpu))
-+		return;
-+
- 	entry = READ_ONCE(*(svm->avic_physical_id_cache));
- 
- 	/* Nothing to do if IsRunning == '0' due to vCPU blocking. */
- 	if (!(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK))
- 		return;
- 
--	avic_update_iommu_vcpu_affinity(vcpu, -1, 0);
--
- 	entry &= ~AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
- 	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
- }
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 0d6b715375a69..463b756f665ae 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -202,6 +202,9 @@ module_param(tsc_scaling, int, 0444);
- static bool avic;
- module_param(avic, bool, 0444);
- 
-+bool avic_doorbell_strict = true;
-+module_param(avic_doorbell_strict, bool, 0444);
-+
- bool __read_mostly dump_invalid_vmcb;
- module_param(dump_invalid_vmcb, bool, 0644);
- 
-@@ -1340,7 +1343,8 @@ static void svm_vcpu_put(struct kvm_vcpu *vcpu)
- 	svm->loaded = false;
- 
- 	if (svm->nested.initialized && svm->avic_enabled)
--		avic_physid_shadow_table_update_vcpu_location(vcpu, -1);
-+		if (!avic_doorbell_strict || kvm_vcpu_is_blocking(vcpu))
-+			avic_physid_shadow_table_update_vcpu_location(vcpu, -1);
- 
- 	svm_prepare_host_switch(vcpu);
- 
-@@ -4707,7 +4711,6 @@ static __init void svm_set_cpu_caps(void)
- 	/* CPUID 0x80000001 and 0x8000000A (SVM features) */
- 	if (nested) {
- 		kvm_cpu_cap_set(X86_FEATURE_SVM);
--		kvm_cpu_cap_set(X86_FEATURE_VMCBCLEAN);
- 
- 		if (nrips)
- 			kvm_cpu_cap_set(X86_FEATURE_NRIPS);
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index 8ebda12995abe..d0108bae2cdac 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -33,6 +33,7 @@
- extern u32 msrpm_offsets[MSRPM_OFFSETS] __read_mostly;
- extern bool npt_enabled;
- extern bool intercept_smi;
-+extern bool avic_doorbell_strict;
- 
- /*
-  * Clean bits in VMCB.
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index cdf1fa3c60ae2..67a29233e216b 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -3291,9 +3291,10 @@ bool kvm_vcpu_block(struct kvm_vcpu *vcpu)
- 
- 	vcpu->stat.generic.blocking = 1;
- 
-+	prepare_to_rcuwait(wait);
-+
- 	kvm_arch_vcpu_blocking(vcpu);
- 
--	prepare_to_rcuwait(wait);
- 	for (;;) {
- 		set_current_state(TASK_INTERRUPTIBLE);
+ #define preemptible()	(preempt_count() == 0 && !irqs_disabled())
  
 -- 
-2.26.3
+2.35.1
 
