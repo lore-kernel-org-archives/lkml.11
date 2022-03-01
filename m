@@ -2,86 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 788DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B97E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237309AbiCAUDF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:03:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43246 "EHLO
+        id S237342AbiCAUEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:04:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231549AbiCAUDC (ORCPT
+        with ESMTP id S231549AbiCAUEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:03:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB01270336;
-        Tue,  1 Mar 2022 12:02:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F9A461681;
-        Tue,  1 Mar 2022 20:02:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BAACC340EE;
-        Tue,  1 Mar 2022 20:02:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646164939;
-        bh=UUVYbmulLMUrxKXtd4GDe7HCMoTaW7UmSbQD4MyDMB4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=D5kGyTrI2spf/l4NhdmT6MAfu6xixhKJBqviPcNaGRRDED6ajN1UzpP5rXAYiiuia
-         jTBj9CGU34KkG+O57KUHrA3ewxgVMa5RSQpdXpQa/c6cO6uE9TJYin/jEeGU+h3K79
-         GNKln+BmV1OsZplf7va3TlkqAtFHEHgmgMR7P3xMJleJv8STfn4Ah+WdZMauHmpSnb
-         0JMEpV8Jew1RdVjBpmik8GdluzN8ZI4PPi8+y6BsLrblZ8KiX7eaOE0G0XhL8nrN4P
-         synUu/GHEihS+iTVu4SHcXDVotSKNn+tpN9DDxa73RDy6xGJB+J9Y+p0pFJMR3jWRx
-         0AD9vkEDXV3VA==
-Date:   Tue, 1 Mar 2022 14:02:18 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     trix@redhat.com
-Cc:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        corbet@lwn.net, bhelgaas@google.com,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vgaarbiter: fix vgaarbiter doc build break
-Message-ID: <20220301200218.GA642697@bhelgaas>
+        Tue, 1 Mar 2022 15:04:07 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D74B5F25F
+        for <linux-kernel@vger.kernel.org>; Tue,  1 Mar 2022 12:03:26 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id c9so14394911pll.0
+        for <linux-kernel@vger.kernel.org>; Tue, 01 Mar 2022 12:03:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=fSMui3hb8vcTDMe5kaPLIXg5UWvv+kUKTIPpRbR8NwY=;
+        b=n8wjHVOWwurhgpdgv7LpXZyaTnkSbmFtSp5Ig+Nn/e1LDHrYCKBt5DR1D/2AmsLz2h
+         YQK2zK/WutUGij2Ru5R3SNjZSgQGgfX0IZhNaK7ULjYy70WT2eKCrSnC+MJSmZqlwOVk
+         b0UlcZ7p5Rwj6ehsI7gtY4LRh8wpYPVGgTsc6hsx6ZBw5rkAYBEkP8RCJnUdZolyCH+j
+         xyxlNMdQT/kVzSyo8K0uo1Eh1ZYj8JKx4G+96x4ttCgNS2MEo13yK39WJU9qRPE2t9c9
+         yaG/e4t7WaEuRsMc0jJXkgpdVKywf0lxIQnH0LngUyxRCOBUMYi6HhTb+YpkgLfnrxHY
+         V6ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=fSMui3hb8vcTDMe5kaPLIXg5UWvv+kUKTIPpRbR8NwY=;
+        b=QRior09y0/WWONnDbCoj5BCiOzVmZNGfClcSeoRWvJMQb5N6/1EmHRCmqQTzZxisdM
+         27nEgkAYcUXMRAZujv0eRnf2FVF532THVwRcoSkfDPYiRVZF/oqtXO/phi6kb0RculC7
+         6WF+79HamLI2KPkQoJ0eH+iWF5myNQTEidyJM0supvDKBeaO5wrSk2EBtcN7AZtgCkeE
+         fHVIpNZKgAteowWPuoMlapLXVOlst/1DgHjtRqZzuOff60EJAM+ZKg4ru9qECpW5/gMR
+         czpoap92X2UP617+6s4ceYCDDeRmU+b2o19ejes8RWjN7lwNMDc6sYaWxbcZueEPgYIa
+         DQuw==
+X-Gm-Message-State: AOAM530KvlHe+R0Hoqh83y1TtSKunNE1gjCufXY393aVKkJA+R9T3UwS
+        acjREXpdgVvDt4PAngaMqXvE35s2sss0zeb9YK9lMQ==
+X-Google-Smtp-Source: ABdhPJyre94rPDWXttSaBX95VPuuVGyfvgxrpPugorBDjc0/0U0mWLmGUjdWT9l8QfMRcfE4Ef/A532YkCfcN2A4Wi4=
+X-Received: by 2002:a17:902:ec88:b0:14f:de5b:2fbe with SMTP id
+ x8-20020a170902ec8800b0014fde5b2fbemr27266532plg.123.1646165005203; Tue, 01
+ Mar 2022 12:03:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220301192909.294900-1-trix@redhat.com>
+References: <20210805043503.20252-1-bvanassche@acm.org> <20210805043503.20252-4-bvanassche@acm.org>
+ <20210809145953.GB21234@lst.de> <bcf5fd83-b30a-8887-361e-603821562d9a@acm.org>
+ <20210810165029.GA20722@lst.de> <9b1e5c35-1d11-0afa-d382-6f5dc0b14a23@acm.org>
+ <e329b0a1-ffe4-9bfa-2bea-33e17da70f58@linuxfoundation.org> <CAFd5g45hMt9OwAVDVuxLNa2EfkTH0tY=KS_qxoUmndPYDvnyig@mail.gmail.com>
+In-Reply-To: <CAFd5g45hMt9OwAVDVuxLNa2EfkTH0tY=KS_qxoUmndPYDvnyig@mail.gmail.com>
+From:   Brendan Higgins <brendanhiggins@google.com>
+Date:   Tue, 1 Mar 2022 15:03:14 -0500
+Message-ID: <CAFd5g44vkQ1jiKa1YQ2g8ByHMOiA0rFGS1nRuYk-Dunr-aFHyA@mail.gmail.com>
+Subject: Re: [PATCH v4 3/3] configfs: Add unit tests
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Joel Becker <jlbec@evilplan.org>, linux-kernel@vger.kernel.org,
+        Bodo Stroesser <bostroesser@gmail.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Yanko Kaneti <yaneti@declera.com>,
+        KUnit Development <kunit-dev@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Mar 01, 2022 at 11:29:09AM -0800, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> make htmldocs fails with
-> Error: Cannot open file ./drivers/gpu/vga/vgaarb.c
-> 
-> The location of the file changed
-> drivers/gpu/vga/vgaarb.c -> drivers/pci/vgaarb.c
-> So update the docs with the new location.
-> 
-> Fixes: d6e1898bfa5b ("PCI/VGA: Move vgaarb to drivers/pci")
-> Signed-off-by: Tom Rix <trix@redhat.com>
+On Wed, Aug 11, 2021 at 5:00 AM Brendan Higgins
+<brendanhiggins@google.com> wrote:
+>
+> On Tue, Aug 10, 2021 at 1:50 PM Shuah Khan <skhan@linuxfoundation.org> wr=
+ote:
+> >
+> > On 8/10/21 12:45 PM, Bart Van Assche wrote:
+> > > On 8/10/21 9:50 AM, Christoph Hellwig wrote:
+> > >> On Mon, Aug 09, 2021 at 11:31:23AM -0700, Bart Van Assche wrote:
+> > >>>>> +config CONFIGFS_KUNIT_TEST
+> > >>>>> +    bool "Configfs Kunit test" if !KUNIT_ALL_TESTS
+> > >>>>> +    depends on CONFIGFS_FS && KUNIT=3Dy
+> > >>>>> +    default KUNIT_ALL_TESTS
+> > >>>>
+> > >>>> Why does it depend on KUNIT=3Dy?  What is the issue with a modular=
+ KUNIT
+> > >>>> build?
+> > >>>
+> > >>> The unit tests calls do_mount(). do_mount() has not been exported a=
+nd
+> > >>> hence is not available to kernel modules. Hence the exclusion of KU=
+NIT=3Dm.
+> > >>
+> > >> You should probably document that.  But then again this is another
+> > >> big red flag that this code should live in userspace.
+> > >>
+> > >>>> To me this sounds like userspace would be a better place for these
+> > >>>> kinds of tests.
+> > >>>
+> > >>> Splitting the code that can only be run from inside the kernel (cre=
+ation
+> > >>> of configfs attributes) and the code that can be run from user spac=
+e and
+> > >>> making sure that the two run in a coordinated fashion would involve=
+ a
+> > >>> significant amount of work. I prefer to keep the current approach.
+> > >>
+> > >> But userspace is the right place to do this kind of pathname
+> > >> based file system I/O.
+> > >
+> > > Shuah, as selftest maintainer, can you recommend an approach? How abo=
+ut splitting patch 3/3 from this series into a kernel module (the code that=
+ creates the configfs test attributes) and user space code (the code that r=
+eads and writes the configfs attributes) and adding the user space code in =
+a subdirectory of tools/testing/selftests/?
+> > >
+> >
+> > I am missing a lot of context here. I don't see this series in my inbox
+> > except patch 2/3 which says:
+> >
+> > "A common feature of unit testing frameworks is support for sharing a t=
+est
+> > configuration across multiple unit tests. Add this functionality to the
+> > KUnit framework. This functionality will be used in the next patch in t=
+his
+> > series."
+>
+> Yeah, I mentioned this to one of the other KUnit people who said he
+> might want to post some comments. Bart, could you CC
+> kunit-dev@googlegroups.com and/or linux-kselftest@vger.kernel.org
+> if/when you send follow-up patches?
+>
+> Actually, I suppose regardless of what you do with this patch, you
+> will probably want to merge via the kselftest tree (KUnit changes and
+> many tests go through the kselftest tree as well). So, you should
+> probably CC linux-kselftest@vger.kernel.org no matter what.
+>
+> > That doesn't tell me much other than what happens that it is a common u=
+nit
+> > testing framework without explaining why it should be done this way.
+> >
+> > Taking a quick look at the original message on lore - I agree with Chri=
+stoph
+> > that this code belongs in userspace. I would like to see the division o=
+f
+> > kernel userspace.
+> >
+> > Why do the unit tests need to call do_mount() - can whatever the unit t=
+ests
+> > are currently doing can be done from userspace.
+> >
+> > If part of the test code must live in kernel space then kernel test mod=
+ule
+> > approach can be used.
 
-Fixed, thanks!
+I am not sure if you are still working on this test or not, but Kees
+recently posted a patch to create a KUnit UAPI:
+https://lore.kernel.org/lkml/20220227184517.504931-8-keescook@chromium.org/
 
-> ---
->  Documentation/gpu/vgaarbiter.rst | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/gpu/vgaarbiter.rst b/Documentation/gpu/vgaarbiter.rst
-> index 339ed5fecd2e4..bde3c0afb0590 100644
-> --- a/Documentation/gpu/vgaarbiter.rst
-> +++ b/Documentation/gpu/vgaarbiter.rst
-> @@ -100,7 +100,7 @@ In-kernel interface
->  .. kernel-doc:: include/linux/vgaarb.h
->     :internal:
->  
-> -.. kernel-doc:: drivers/gpu/vga/vgaarb.c
-> +.. kernel-doc:: drivers/pci/vgaarb.c
->     :export:
->  
->  libpciaccess
-> -- 
-> 2.26.3
-> 
+Not sure if you have any interest, or even if this would be the right
+tool for the job, but I figured it's worth a look because it might
+save you the effort of having to completely rewrite your test.
+
+Cheers
