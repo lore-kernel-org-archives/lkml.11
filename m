@@ -2,134 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD55C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 04:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4D65C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 04:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232385AbiCAEaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 28 Feb 2022 23:30:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44768 "EHLO
+        id S232256AbiCAEaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 28 Feb 2022 23:30:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231911AbiCAE3w (ORCPT
+        with ESMTP id S232338AbiCAE3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 28 Feb 2022 23:29:52 -0500
 Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 183784DF4E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 179134D614;
         Mon, 28 Feb 2022 20:29:09 -0800 (PST)
 Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Bx4M4NoR1iUhoAAA--.595S3;
-        Tue, 01 Mar 2022 12:29:02 +0800 (CST)
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Bx4M4NoR1iUhoAAA--.595S6;
+        Tue, 01 Mar 2022 12:29:03 +0800 (CST)
 From:   Tiezhu Yang <yangtiezhu@loongson.cn>
 To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Mike Rapoport <rppt@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>
 Cc:     Xuefeng Li <lixuefeng@loongson.cn>, linux-mips@vger.kernel.org,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/4] MIPS: Refactor early_parse_mem() to fix mem= parameter
-Date:   Tue,  1 Mar 2022 12:28:58 +0800
-Message-Id: <1646108941-27919-2-git-send-email-yangtiezhu@loongson.cn>
+Subject: [PATCH v4 4/4] MIPS: Remove not used variable usermem
+Date:   Tue,  1 Mar 2022 12:29:01 +0800
+Message-Id: <1646108941-27919-5-git-send-email-yangtiezhu@loongson.cn>
 X-Mailer: git-send-email 2.1.0
 In-Reply-To: <1646108941-27919-1-git-send-email-yangtiezhu@loongson.cn>
 References: <1646108941-27919-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9Bx4M4NoR1iUhoAAA--.595S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7Zr15JF17tFyUXF1rCFyrCrg_yoW5JFW5pw
-        4fZw1fKr48JFnrZayIyrn3Zry5Gw1vkFW3XFW2kr95Z3WUCr17Cr1IqrW2gFy2qrWxJ3W2
-        qF1ktFyjganFy3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBa14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
-        x26xkF7I0E14v26r1I6r4UM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l84
-        ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AI
-        xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
-        vE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
-        r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8XwCF04k20x
-        vY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I
-        3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIx
-        AIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAI
-        cVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2js
-        IEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JU4q2_UUUUU=
+X-CM-TRANSID: AQAAf9Bx4M4NoR1iUhoAAA--.595S6
+X-Coremail-Antispam: 1UD129KBjvdXoW7XFW7Xw4kJr48CryfXr1rtFb_yoWfJFb_tr
+        42qF1kZr15Z3Wj9rWqqw4fWFWIyan2qFZavw1vv3yayw15Jr1UurWYyF9xXrn5ur4kArZY
+        yrZ0vFn0kF4xWjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbhxFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUAVCq3wA2048vs2
+        IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28E
+        F7xvwVC0I7IYx2IY67AKxVW8JVW5JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
+        A2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1l
+        e2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI
+        8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwAC
+        jcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r45MxAIw2
+        8IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4l
+        x2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrw
+        CI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI
+        42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z2
+        80aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjPxhJUUUUU==
 X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to Documentation/admin-guide/kernel-parameters.txt,
-the kernel command-line parameter mem= means "Force usage of
-a specific amount of memory", but when add "mem=3G" to the
-command-line, kernel boot hangs in sparse_init().
-
-This commit is similar with the implementation of the other
-archs such as arm64, powerpc and riscv, refactor the function
-early_parse_mem() and then use memblock_enforce_memory_limit()
-to limit the memory size.
-
-With this patch, when add "mem=3G" to the command-line, the
-kernel boots successfully, we can see the following messages:
-
-  [    0.000000] Memory limited to 3072MB
-  ...
-  [    0.000000] Early memory node ranges
-  [    0.000000]   node   0: [mem 0x0000000000200000-0x000000000effffff]
-  [    0.000000]   node   0: [mem 0x0000000090200000-0x00000000ffffffff]
-  [    0.000000]   node   0: [mem 0x0000000120000000-0x00000001613fffff]
-  ...
-  [    0.000000] Memory: 3005280K/3145728K available (...)
-
-After login, the output of free command is consistent with the
-above log.
+Now, the variable usermem is not used any more, just remove it.
 
 Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
- arch/mips/kernel/setup.c | 26 +++++++++-----------------
- 1 file changed, 9 insertions(+), 17 deletions(-)
+ arch/mips/kernel/setup.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
 diff --git a/arch/mips/kernel/setup.c b/arch/mips/kernel/setup.c
-index f979adf..50396ba 100644
+index 30c7d95..8f900f8 100644
 --- a/arch/mips/kernel/setup.c
 +++ b/arch/mips/kernel/setup.c
-@@ -339,27 +339,15 @@ static void __init bootmem_init(void)
+@@ -338,7 +338,6 @@ static void __init bootmem_init(void)
+ 
  #endif	/* CONFIG_SGI_IP27 */
  
- static int usermem __initdata;
-+static phys_addr_t memory_limit;
+-static int usermem __initdata;
+ static phys_addr_t memory_limit;
+ static phys_addr_t memory_base;
  
- static int __init early_parse_mem(char *p)
- {
--	phys_addr_t start, size;
+@@ -628,10 +627,6 @@ static void __init arch_mem_init(char **cmdline_p)
+ 	*cmdline_p = command_line;
+ 
+ 	parse_early_param();
 -
--	/*
--	 * If a user specifies memory size, we
--	 * blow away any automatically generated
--	 * size.
--	 */
--	if (usermem == 0) {
--		usermem = 1;
--		memblock_remove(memblock_start_of_DRAM(),
--			memblock_end_of_DRAM() - memblock_start_of_DRAM());
--	}
--	start = 0;
--	size = memparse(p, &p);
--	if (*p == '@')
--		start = memparse(p + 1, &p);
-+	if (!p)
-+		return 1;
+-	if (usermem)
+-		pr_info("User-defined physical RAM map overwrite\n");
+-
+ 	check_kernel_sections_mem();
  
--	memblock_add(start, size);
-+	memory_limit = memparse(p, &p) & PAGE_MASK;
-+	pr_notice("Memory limited to %lluMB\n", (u64)memory_limit >> 20);
- 
- 	return 0;
- }
-@@ -678,6 +666,10 @@ static void __init arch_mem_init(char **cmdline_p)
- 	memblock_reserve(__pa_symbol(&__nosave_begin),
- 		__pa_symbol(&__nosave_end) - __pa_symbol(&__nosave_begin));
- 
-+	/* Limit the memory. */
-+	memblock_enforce_memory_limit(memory_limit);
-+	memblock_allow_resize();
-+
- 	early_memtest(PFN_PHYS(ARCH_PFN_OFFSET), PFN_PHYS(max_low_pfn));
- }
- 
+ 	early_init_fdt_reserve_self();
 -- 
 2.1.0
 
