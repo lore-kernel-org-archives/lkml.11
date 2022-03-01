@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E47AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C8AC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 20:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238213AbiCAUWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 15:22:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33888 "EHLO
+        id S235041AbiCAUYr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 15:24:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237521AbiCAUWJ (ORCPT
+        with ESMTP id S238273AbiCAUW7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 15:22:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E058F9A1;
-        Tue,  1 Mar 2022 12:19:27 -0800 (PST)
+        Tue, 1 Mar 2022 15:22:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DCD79C52;
+        Tue,  1 Mar 2022 12:19:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA39CB81D40;
-        Tue,  1 Mar 2022 20:19:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BCECC340EE;
-        Tue,  1 Mar 2022 20:18:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE2256175F;
+        Tue,  1 Mar 2022 20:19:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ED30C340F2;
+        Tue,  1 Mar 2022 20:19:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1646165939;
-        bh=W22IEdIigD62oUVI3mkYtPahNLc0wJCx5X8TIWtxc7U=;
+        s=k20201202; t=1646165967;
+        bh=oeHYLosH0rGD25dO4lclQ4e9vwxl+hCvFdwkzpcdhck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P135CLQZL8/aFnUW3bvO1atjuyUWxQFI7CZpZAeoVY36h/TJ0YRfW6DiTzCIidbAJ
-         FAOmZdyB9+k4mgB6F80fOllRmFsmz7EA0wLIbhF+qYA66itM/pJz61LyOKtpNGJRl8
-         A3uSDcsv8ztwQTZJNLRfvXH8w1JqnQf6aIT5HNEZTBRVEvjOM/rI1lZk7a6ykI8Vkn
-         s7mgGzS3NZuwmQrqiqu/LopavmkeIIXcwkEmDFMnM2+JROJs9ZpCgWPsd3KYUePx6q
-         S9ZT3T48g1WBe5UTCH0huL72Xno8iHG7jPejHFOe8uENZq+QVBCR062Nt8YCmZ65E0
-         6AdA8J8ve7A9A==
+        b=T5dYThiMzXLqyUluTqxFfNoGxM/U4GayDo6bXfJsau1FF1ovle9fX2F49fnIb9DBC
+         MQ2b4kkZQH8/Gsu+/6zSwkr4+JXME3gtsS4cOkKP2BevmiqeU8jo8cgVnB4ZBoOlkD
+         P+63gjovXNWG1v25TEn1ZOo8Gm3rSpGzI9fVKInMv5JNjll1lou1DPC/tTeXyzDfhY
+         ZXflV58Y17xGtytHIXjXGz67OlQUI+I5Ol6F2Rf2oPqW2gWVs+MPNU1dDRbwUTDrfM
+         FvqyrGMAxxcScdLeAdR5bK0AB366sR8NNyQXTfWsfxN3BgFBeEqhHALV0Z+DzNh6sN
+         Q9fBRwEvCx18A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     suresh kumar <suresh2514@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
-        atenart@kernel.org, edumazet@google.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 05/14] net-sysfs: add check for netdevice being present to speed_show
-Date:   Tue,  1 Mar 2022 15:18:17 -0500
-Message-Id: <20220301201833.18841-5-sashal@kernel.org>
+Cc:     Niels Dossche <dossche.niels@gmail.com>,
+        David Ahern <dsahern@kernel.org>,
+        Niels Dossche <niels.dossche@ugent.be>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 11/14] ipv6: prevent a possible race condition with lifetimes
+Date:   Tue,  1 Mar 2022 15:18:23 -0500
+Message-Id: <20220301201833.18841-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220301201833.18841-1-sashal@kernel.org>
 References: <20220301201833.18841-1-sashal@kernel.org>
@@ -52,76 +54,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: suresh kumar <suresh2514@gmail.com>
+From: Niels Dossche <dossche.niels@gmail.com>
 
-[ Upstream commit 4224cfd7fb6523f7a9d1c8bb91bb5df1e38eb624 ]
+[ Upstream commit 6c0d8833a605e195ae219b5042577ce52bf71fff ]
 
-When bringing down the netdevice or system shutdown, a panic can be
-triggered while accessing the sysfs path because the device is already
-removed.
+valid_lft, prefered_lft and tstamp are always accessed under the lock
+"lock" in other places. Reading these without taking the lock may result
+in inconsistencies regarding the calculation of the valid and preferred
+variables since decisions are taken on these fields for those variables.
 
-    [  755.549084] mlx5_core 0000:12:00.1: Shutdown was called
-    [  756.404455] mlx5_core 0000:12:00.0: Shutdown was called
-    ...
-    [  757.937260] BUG: unable to handle kernel NULL pointer dereference at           (null)
-    [  758.031397] IP: [<ffffffff8ee11acb>] dma_pool_alloc+0x1ab/0x280
-
-    crash> bt
-    ...
-    PID: 12649  TASK: ffff8924108f2100  CPU: 1   COMMAND: "amsd"
-    ...
-     #9 [ffff89240e1a38b0] page_fault at ffffffff8f38c778
-        [exception RIP: dma_pool_alloc+0x1ab]
-        RIP: ffffffff8ee11acb  RSP: ffff89240e1a3968  RFLAGS: 00010046
-        RAX: 0000000000000246  RBX: ffff89243d874100  RCX: 0000000000001000
-        RDX: 0000000000000000  RSI: 0000000000000246  RDI: ffff89243d874090
-        RBP: ffff89240e1a39c0   R8: 000000000001f080   R9: ffff8905ffc03c00
-        R10: ffffffffc04680d4  R11: ffffffff8edde9fd  R12: 00000000000080d0
-        R13: ffff89243d874090  R14: ffff89243d874080  R15: 0000000000000000
-        ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
-    #10 [ffff89240e1a39c8] mlx5_alloc_cmd_msg at ffffffffc04680f3 [mlx5_core]
-    #11 [ffff89240e1a3a18] cmd_exec at ffffffffc046ad62 [mlx5_core]
-    #12 [ffff89240e1a3ab8] mlx5_cmd_exec at ffffffffc046b4fb [mlx5_core]
-    #13 [ffff89240e1a3ae8] mlx5_core_access_reg at ffffffffc0475434 [mlx5_core]
-    #14 [ffff89240e1a3b40] mlx5e_get_fec_caps at ffffffffc04a7348 [mlx5_core]
-    #15 [ffff89240e1a3bb0] get_fec_supported_advertised at ffffffffc04992bf [mlx5_core]
-    #16 [ffff89240e1a3c08] mlx5e_get_link_ksettings at ffffffffc049ab36 [mlx5_core]
-    #17 [ffff89240e1a3ce8] __ethtool_get_link_ksettings at ffffffff8f25db46
-    #18 [ffff89240e1a3d48] speed_show at ffffffff8f277208
-    #19 [ffff89240e1a3dd8] dev_attr_show at ffffffff8f0b70e3
-    #20 [ffff89240e1a3df8] sysfs_kf_seq_show at ffffffff8eedbedf
-    #21 [ffff89240e1a3e18] kernfs_seq_show at ffffffff8eeda596
-    #22 [ffff89240e1a3e28] seq_read at ffffffff8ee76d10
-    #23 [ffff89240e1a3e98] kernfs_fop_read at ffffffff8eedaef5
-    #24 [ffff89240e1a3ed8] vfs_read at ffffffff8ee4e3ff
-    #25 [ffff89240e1a3f08] sys_read at ffffffff8ee4f27f
-    #26 [ffff89240e1a3f50] system_call_fastpath at ffffffff8f395f92
-
-    crash> net_device.state ffff89443b0c0000
-      state = 0x5  (__LINK_STATE_START| __LINK_STATE_NOCARRIER)
-
-To prevent this scenario, we also make sure that the netdevice is present.
-
-Signed-off-by: suresh kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Niels Dossche <niels.dossche@ugent.be>
+Link: https://lore.kernel.org/r/20220223131954.6570-1-niels.dossche@ugent.be
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/net-sysfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/addrconf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 99303897b7bb7..989b3f7ee85f4 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -213,7 +213,7 @@ static ssize_t speed_show(struct device *dev,
- 	if (!rtnl_trylock())
- 		return restart_syscall();
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 4dde49e628fab..616556f50f2be 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4975,6 +4975,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
+ 	    nla_put_s32(skb, IFA_TARGET_NETNSID, args->netnsid))
+ 		goto error;
  
--	if (netif_running(netdev)) {
-+	if (netif_running(netdev) && netif_device_present(netdev)) {
- 		struct ethtool_link_ksettings cmd;
++	spin_lock_bh(&ifa->lock);
+ 	if (!((ifa->flags&IFA_F_PERMANENT) &&
+ 	      (ifa->prefered_lft == INFINITY_LIFE_TIME))) {
+ 		preferred = ifa->prefered_lft;
+@@ -4996,6 +4997,7 @@ static int inet6_fill_ifaddr(struct sk_buff *skb, struct inet6_ifaddr *ifa,
+ 		preferred = INFINITY_LIFE_TIME;
+ 		valid = INFINITY_LIFE_TIME;
+ 	}
++	spin_unlock_bh(&ifa->lock);
  
- 		if (!__ethtool_get_link_ksettings(netdev, &cmd))
+ 	if (!ipv6_addr_any(&ifa->peer_addr)) {
+ 		if (nla_put_in6_addr(skb, IFA_LOCAL, &ifa->addr) < 0 ||
 -- 
 2.34.1
 
