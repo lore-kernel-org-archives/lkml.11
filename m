@@ -2,120 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56804C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 11:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 782D8C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue,  1 Mar 2022 11:20:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234540AbiCALTk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 1 Mar 2022 06:19:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37296 "EHLO
+        id S233757AbiCALVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 1 Mar 2022 06:21:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234484AbiCALT0 (ORCPT
+        with ESMTP id S229736AbiCALVC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 1 Mar 2022 06:19:26 -0500
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5A92253C;
-        Tue,  1 Mar 2022 03:18:45 -0800 (PST)
+        Tue, 1 Mar 2022 06:21:02 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 679A192D05;
+        Tue,  1 Mar 2022 03:20:22 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id b35so26476785ybi.13;
+        Tue, 01 Mar 2022 03:20:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1646133526;
-  x=1677669526;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=KAoobEf0FgmH/phyTwuBEP9MQR4VO/sSwTaKsDfFC5Q=;
-  b=SUAAsqaSBWYEmuv7bWXIZEcC0p8L1gZvwMLwCgOoQCyJsZ4Bi6IeRlU5
-   y9vPHAn7ge5t9eQh5lN1x3qQOH+mv5yYAV+gIjGDvO7WnQlbdRhEOyDhO
-   V3VkBVD9YbgWDfpwuCns9Q+wBTjR5pAiZei7lNhD1h1l0DK/coJCRM8eh
-   nHPeOQ/iv9YP40QnMwZBE6h1pWw57VaXefar7E1XyPQDaIN4lwjBYFgdx
-   3CTR+ggUKtbkpf8UaIFTLLtlVVp3+e2S4NXEBZeXvriqURwP33Gsasclh
-   Gx3fRE7gqP4b8GvdlvBH0fgJQqZ9qPtyH4zeV0SamZFFT+Hi65svHrZdj
-   A==;
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     <lgirdwood@gmail.com>, <broonie@kernel.org>
-CC:     <kernel@axis.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>
-Subject: [PATCH v2 3/3] regulator: virtual: add devicetree support
-Date:   Tue, 1 Mar 2022 12:18:31 +0100
-Message-ID: <20220301111831.3742383-4-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220301111831.3742383-1-vincent.whitchurch@axis.com>
-References: <20220301111831.3742383-1-vincent.whitchurch@axis.com>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0T0gSikPTrVECzotPCXInq3GYJxj5g1aZIYL6syoEIU=;
+        b=HklaV1Cs9+rJp25ErTKhRKoE80TEBZLB7YWf7aYAqQaUQZUtYlWphcMuItZi1W44fM
+         52mpLVbCYesybBkVWu3/YtWQ5wyCaD+Z59Um5GNzKDDBZaf/TMB3nxCuB30XB0gt4Utb
+         a0AtcTTr9xt4wRCXmS0wkhn2UAQ7w9TwCAE1GPbn99e/gEzlg5W6SUNhg7OOs5OQ9wRg
+         u3e/3EaTytfbcs9ZvXVy6h7JVDA/2zk3XQeHZKj0OQjV4v/T0EmQmvULCGUNkxBAXt/2
+         y1QDvJgOc05YrCv1BojSYhhFv2h8O/jDLY3kNlJoBbA4GAi4e/h+onCOuJ1SqXBXM6Pb
+         Z7rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0T0gSikPTrVECzotPCXInq3GYJxj5g1aZIYL6syoEIU=;
+        b=t9LL5VO2Rn91pzwRC3sp67x87iXTPXrpQAIWAtG51Ndk64cRYcTNmnWm/MTftEyy05
+         h488c1knmdC/FvUu/H2dM+YoXWj+oEeb/t2E3hW/gcgQWmE5dQvS2RlU6bR8/Nhrk/0y
+         qGBdFtu1XshWpkMIomAWQZVVxx2cB8tsuukXDfa5m1djshZoL9ywaPAmf1bVZCmmuor4
+         lUuvkULmFlwQPsW0FXKpiMU9Vctu83TCUMkqsOd6loMzLmu1zMeLHgzepJZusxgFS3SN
+         RCQXBgSdj1N5b/JDChpIcLryLX76R4J4jL9LP1bYsCNRQymFlmcYiDdWLQQYLPba16ih
+         srdg==
+X-Gm-Message-State: AOAM5329zfFNo8H9Ywvj9wo7F8J5jkHls6lV7NYw+CQ9UIvAmg8IS/Qt
+        oiHcoZMoYjG8cE7J23SSvWETyXKP4KwL1XJhMcM=
+X-Google-Smtp-Source: ABdhPJwOEvMwWhE4ZaDlTxB0TFjEYbrp4JPVed1eNLSGqlWh9vshf9+agBKo/K2Eo4i2Yh4YNJX5FWhFR6ETLa1L5SU=
+X-Received: by 2002:a25:6a43:0:b0:624:45c7:f629 with SMTP id
+ f64-20020a256a43000000b0062445c7f629mr22413278ybc.218.1646133621662; Tue, 01
+ Mar 2022 03:20:21 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220227225309.28098-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <CAMuHMdX1J=S+LczVXy3cmWEkRV4U_WffAuxTTReeLAJ8rpacjQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdX1J=S+LczVXy3cmWEkRV4U_WffAuxTTReeLAJ8rpacjQ@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Tue, 1 Mar 2022 11:19:55 +0000
+Message-ID: <CA+V-a8t62gJLfsJZA0HiHdp0i2DB-dW=2TB=2wfbpPLkdT_wQw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: watchdog: renesas,wdt: Document RZ/V2L SoC
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The reg-virt-consumer is very useful for development and testing of
-regulator drivers since it allows voltages and modes to be set from
-userspace.  However, it currently requires platform data so it cannot be
-used without patching the kernel.  Add support for probing it from the
-devicetree to remedy this.
+Hi Geert,
 
-Since this driver is only meant for testing and is a purely software
-construct, no binding documentation is added.
+Thank you for the review.
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
----
+On Mon, Feb 28, 2022 at 2:29 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> On Sun, Feb 27, 2022 at 11:53 PM Lad Prabhakar
+> <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> > Document RZ/V2L WDT bindings. RZ/V2L WDT is identical to one found
+> > on the RZ/G2L SoC. No driver changes are required as generic compatible
+> > string "renesas,rzg2l-wdt" will be used as a fallback.
+> >
+> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> > ---
+> > DTSI changes have been posted as part of series [0].
+> >
+> > [0] https://patchwork.kernel.org/project/linux-renesas-soc/patch/
+> > 20220227203744.18355-9-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> > ---
+> >  Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
+> > index 91a98ccd4226..26c7a152ff98 100644
+> > --- a/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
+> > +++ b/Documentation/devicetree/bindings/watchdog/renesas,wdt.yaml
+> > @@ -22,6 +22,7 @@ properties:
+> >        - items:
+> >            - enum:
+> >                - renesas,r9a07g044-wdt    # RZ/G2{L,LC}
+> > +              - renesas,r9a07g054-wdt    # RZ/V2L
+> >            - const: renesas,rzg2l-wdt     # RZ/G2L
+>
+> Please drop the comment on the previous line.
+>
+OK, I will drop " # RZ/G2L" and resend the patch.
 
-Notes:
-    v2:
-    - Only use the "default" supply name if dt
-    - Add a comment explaining the "default" supply name
-
- drivers/regulator/virtual.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
-
-diff --git a/drivers/regulator/virtual.c b/drivers/regulator/virtual.c
-index 9e0abbee1df5..5d32628a5011 100644
---- a/drivers/regulator/virtual.c
-+++ b/drivers/regulator/virtual.c
-@@ -13,6 +13,7 @@
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/module.h>
-+#include <linux/of.h>
- 
- struct virtual_consumer_data {
- 	struct mutex lock;
-@@ -281,6 +282,14 @@ static const struct attribute_group regulator_virtual_attr_group = {
- 	.attrs	= regulator_virtual_attributes,
- };
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id regulator_virtual_consumer_of_match[] = {
-+	{ .compatible = "regulator-virtual-consumer" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, regulator_virtual_consumer_of_match);
-+#endif
-+
- static int regulator_virtual_probe(struct platform_device *pdev)
- {
- 	char *reg_id = dev_get_platdata(&pdev->dev);
-@@ -305,6 +314,14 @@ static int regulator_virtual_probe(struct platform_device *pdev)
- 	if (drvdata == NULL)
- 		return -ENOMEM;
- 
-+	/*
-+	 * This virtual consumer does not have any hardware-defined supply
-+	 * name, so just allow the regulator to be specified in a property
-+	 * named "default-supply" when we're being probed from devicetree.
-+	 */
-+	if (!reg_id && pdev->dev.of_node)
-+		reg_id = "default";
-+
- 	mutex_init(&drvdata->lock);
- 
- 	drvdata->regulator = devm_regulator_get(&pdev->dev, reg_id);
-@@ -345,6 +362,7 @@ static struct platform_driver regulator_virtual_consumer_driver = {
- 	.remove		= regulator_virtual_remove,
- 	.driver		= {
- 		.name		= "reg-virt-consumer",
-+		.of_match_table = of_match_ptr(regulator_virtual_consumer_of_match),
- 	},
- };
- 
--- 
-2.34.1
-
+Cheers,
+Prabhakar
